@@ -1,82 +1,114 @@
 #include <ossia-max/src/ossia-max.hpp>
-#include <ossia/context.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/logger.hpp>
-// Types
+
 using namespace ossia::max;
+
+# pragma mark -
+# pragma mark library
+
+// ossia-max library loading
 extern "C"
 void ext_main(void *r)
 {
-  auto& instance = singleton::instance();
-
-  // Instantiate the parameter class
-  instance.ossia_parameter_class = class_new(
-        "ossia.parameter",
-        (method)ossia_parameter_new, (method)ossia_parameter_free, (long)sizeof(ossia::max::parameter),
-        0L, A_GIMME, 0);
-
-  class_addmethod(instance.ossia_parameter_class, (method) ossia_parameter_assist, "assist", A_CANT, 0);
-  class_addmethod(instance.ossia_parameter_class, (method) ossia_parameter_in_bang, "bang", 0);
-  class_addmethod(instance.ossia_parameter_class, (method) ossia_parameter_in_int, "int", A_LONG, 0);
-  class_addmethod(instance.ossia_parameter_class, (method) ossia_parameter_in_float, "float", A_FLOAT, 0);
-  class_addmethod(instance.ossia_parameter_class, (method) ossia_parameter_in_symbol, "symbol", A_SYM, 0);
-  class_addmethod(instance.ossia_parameter_class, (method) ossia_parameter_in_anything, "anything", A_GIMME, 0);
-  class_register(CLASS_BOX, instance.ossia_parameter_class);
-
-  instance.ossia_logger_class = class_new("ossia.logger", (method) ossia_logger_new, (method) ossia_logger_free,
-                                          (long) sizeof(logger), 0L, A_GIMME, 0);
-
-  class_addmethod(instance.ossia_logger_class, (method) ossia_logger_in_anything, "anything", A_GIMME, 0);
-  class_register(CLASS_BOX, instance.ossia_logger_class);
-
-  post("Welcome to OSSIA library for Max");
+    ossia_logger_setup();
+    ossia_parameter_setup();
+    
+    post("OSSIA library for Max is loaded");
 }
 
-singleton& singleton::instance()
+// ossia-max library constructor
+ossia_max::ossia_max()
+{}
+
+// ossia-max library instance
+ossia_max& ossia_max::instance()
 {
-  static singleton dev;
-  return dev;
+    static ossia_max library_instance;
+    return library_instance;
 }
 
-ossia::net::device_base& singleton::device_instance()
+# pragma mark -
+# pragma mark registration
+
+template<typename T> bool object_register(T *x)
 {
-  return instance().m_device;
+    post("OSSIA library : object_register todo");
+    /*
+    if (x->x_node) return true; // already registered
+    if (x->x_dead) return false; // object will be removed soon
+    
+    int l;
+    t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
+    t_client *client = (t_client*) find_parent(&x->x_obj,"ossia.client", 0, &l);
+    
+    // first try to locate a ossia.device in the parent hierarchy...
+    if (!device && !client) {
+        return false; // not ready to register : if there is no device, nothing could be registered
+    }
+    
+    t_model *model = nullptr;
+    t_view *view = nullptr;
+    int view_level=0, model_level=0;
+    
+    if (!x->x_absolute){
+        // then try to locate a parent view or model
+        if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
+            view = find_parent_alive<t_view>(&x->x_obj,"ossia.view", 0, &view_level);
+        } else {
+            model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 0, &model_level);
+        }
+    }
+    
+    ossia::net::node_base*  node = nullptr;
+    
+    if (view){
+        node = view->x_node;
+    } else if (model){
+        node = model->x_node;
+    } else if (client){
+        node = client->x_node;
+    } else {
+        node = device->x_node;
+    }
+    
+    return x->register_node(node);
+     */
+    return false;
 }
 
-std::shared_ptr<ossia::websocket_threaded_connection> singleton::get_connection(std::string ip)
+//template bool object_register<t_parameter> (t_parameter *x);
+//template bool object_register<t_remote>(t_remote *x);
+//template bool object_register<t_model> (t_model *x);
+//template bool object_register<t_view>  (t_view *x);
+
+template<typename T> void object_quarantining(T* x)
 {
-  // Look if there is already a connection open
-  std::shared_ptr<ossia::websocket_threaded_connection> ws;
-  auto conn_it = m_connections.find(ip);
-  if(conn_it != m_connections.end())
-  {
-    ws = conn_it.value();
-  }
-  else
-  {
-    ws = std::make_shared<ossia::websocket_threaded_connection>(ip);
-    m_connections.insert({ip, ws});
-  }
-  return ws;
+    if ( !object_isQuarantined<T>(x) ) x->quarantine().push_back(x);
 }
 
-void singleton::collect_garbage()
+//template void object_quarantining<t_parameter> (t_parameter  *x);
+//template void object_quarantining<t_model> (t_model  *x);
+//template void object_quarantining<t_remote>(t_remote *x);
+//template void object_quarantining<t_view>  (t_view   *x);
+
+template<typename T> void object_dequarantining(T* x)
 {
-  auto it = ossia::find_if(m_connections, [] (const auto& val) {
-    return val.second.unique();
-  });
-  if(it != m_connections.end())
-  {
-    m_connections.erase(it);
-  }
+    x->quarantine().erase(std::remove(x->quarantine().begin(), x->quarantine().end(), x), x->quarantine().end());
 }
 
-singleton::singleton():
-  m_localProtocol{new ossia::net::local_protocol},
-  m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_device"}
+//template void object_dequarantining<t_parameter> (t_parameter  *x);
+//template void object_dequarantining<t_model> (t_model  *x);
+//template void object_dequarantining<t_remote>(t_remote *x);
+//template void objct_dequarantining<t_view>  (t_view   *x);
+
+template<typename T> bool object_isQuarantined(T* x)
 {
-  m_localProtocol->expose_to(
-        std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
+    return ossia::contains(x->quarantine(),x);
 }
+
+//template bool object_isQuarantined<t_parameter> (t_parameter  *x);
+//template bool object_isQuarantined<t_model> (t_model  *x);
+//template bool object_isQuarantined<t_remote>(t_remote *x);
+//template bool object_isQuarantined<t_view>  (t_view   *x);
+
