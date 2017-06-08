@@ -3,14 +3,14 @@
 namespace ossia {
 namespace max {
     
-    void t_object_base::setValue(const ossia::value& v)
+    void t_object_base :: setValue(const ossia::value& v)
     {
-        value_visitor<t_obj_base> vm;
-        vm.x = (t_obj_base*) &m_obj;
+        value_visitor<t_object_base> vm;
+        vm.x = (t_object_base*) &m_object;
         v.apply(vm);
     }
     
-    void t_object_base::push(t_object_base *x, t_symbol* , int argc, t_atom* argv)
+    void t_object_base :: push(t_object_base *x, t_symbol* , int argc, t_atom* argv)
     {
         if (x->m_node && x->m_node->get_address())
         {
@@ -18,7 +18,7 @@ namespace max {
             {
                 // convert one element array to single element
                 if (argv->a_type == A_SYM)
-                    x->m_node->get_address()->push_value(std::string(atom_getsymbol(argv)->s_name));
+                    x->m_node->get_address()->push_value(std::string(atom_getsym(argv)->s_name));
                 
                 else if (argv->a_type == A_FLOAT)
                     x->m_node->get_address()->push_value(atom_getfloat(argv));
@@ -30,10 +30,10 @@ namespace max {
                 for (; argc > 0 ; argc--, argv++)
                 {
                     if (argv->a_type == A_SYM)
-                        list.push_back(std::string(atom_getsymbol(argv)->s_name));
+                        list.push_back(std::string(atom_getsym(argv)->s_name));
                     else if (argv->a_type == A_FLOAT)
                         list.push_back(atom_getfloat(argv));
-                    else pd_error(x,"value type not handled");
+                    else object_error((t_object*)x,"value type not handled");
                 }
                 
                 x->m_node->get_address()->push_value(list);

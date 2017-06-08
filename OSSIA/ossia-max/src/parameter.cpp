@@ -4,44 +4,6 @@
 using namespace ossia::max;
 
 # pragma mark -
-# pragma mark Utilities
-
-// Converts a max string to a type used in the api
-static ossia::val_type name_to_type(ossia::string_view name)
-{
-    if(name == "integer") return ossia::val_type::INT;
-    if(name == "float") return ossia::val_type::FLOAT;
-    if(name == "numeric") return ossia::val_type::FLOAT;
-    if(name == "array") return ossia::val_type::TUPLE;
-    if(name == "impulse") return ossia::val_type::IMPULSE;
-    if(name == "bool") return ossia::val_type::BOOL;
-    if(name == "boolean") return ossia::val_type::BOOL;
-    if(name == "string") return ossia::val_type::STRING;
-    if(name == "symbol") return ossia::val_type::STRING;
-    if(name == "vec2f") return ossia::val_type::VEC2F;
-    if(name == "vec3f") return ossia::val_type::VEC3F;
-    if(name == "vec4f") return ossia::val_type::VEC4F;
-    if(name == "char") return ossia::val_type::CHAR;
-    return ossia::val_type::FLOAT;
-}
-
-// Typed function switcher
-struct ossia_value_to_outlet
-{
-    void* outlet{};
-    void operator()(ossia::impulse) const { outlet_bang(outlet); }
-    void operator()(int32_t v) const { outlet_int(outlet, v); }
-    void operator()(float v) const { outlet_float(outlet, v); }
-    void operator()(char v) const { }
-    void operator()(ossia::vec2f v) const { }
-    void operator()(ossia::vec3f v) const { }
-    void operator()(ossia::vec4f v) const { }
-    void operator()(const std::string& v) const { }
-    void operator()(const std::vector<ossia::value>& v) const { }
-    void operator()() { }
-};
-
-# pragma mark -
 # pragma mark ossia_parameter class methods
 
 extern "C"
@@ -75,8 +37,9 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
     if (x)
     {
         // make outlets
-        x->m_outlets = (void**)sysmem_newptr(sizeof(void*) * 2);
-        x->m_outlets[data_out] = outlet_new(x, NULL);						// anything outlet to output data
+        x->m_data_out = outlet_new(x, NULL);						// anything outlet to output data
+        x->m_set_out = outlet_new(x, NULL);                         // anything outlet to output data for ui
+        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump parameter state
         
         x->m_node = nullptr;
         
@@ -179,6 +142,26 @@ void ossia_parameter_free(t_parameter* x)
 
 # pragma mark -
 # pragma mark t_parameter structure functions
+
+bool t_parameter :: register_node(ossia::net::node_base* node)
+{
+    bool res = do_registration(node);
+    
+    if (res)
+    {
+        object_dequarantining<t_parameter>(this);
+        /*
+        for (auto remote : t_remote::quarantine())
+        {
+            obj_register<t_remote>(static_cast<t_remote*>(remote));
+        }
+         */
+    }
+    else
+        object_dequarantining<t_parameter>(this);
+    
+    return res;
+}
 
 bool t_parameter :: do_registration(ossia::net::node_base* node)
 {

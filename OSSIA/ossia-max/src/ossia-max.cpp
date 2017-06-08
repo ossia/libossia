@@ -33,47 +33,46 @@ ossia_max& ossia_max::instance()
 
 template<typename T> bool object_register(T *x)
 {
-    post("OSSIA library : object_register todo");
+    post("OSSIA library : object_register TODO");
     /*
-    if (x->x_node) return true; // already registered
-    if (x->x_dead) return false; // object will be removed soon
+    if (x->m_node) return true; // already registered
+    if (x->m_dead) return false; // object will be removed soon
     
     int l;
-    t_device *device = (t_device*) find_parent(&x->x_obj,"ossia.device", 0, &l);
-    t_client *client = (t_client*) find_parent(&x->x_obj,"ossia.client", 0, &l);
+    t_device *device = (t_device*) find_parent(&x->m_object,"ossia.device", 0, &l);
+    t_client *client = (t_client*) find_parent(&x->m_object,"ossia.client", 0, &l);
     
     // first try to locate a ossia.device in the parent hierarchy...
-    if (!device && !client) {
+    if (!device && !client)
         return false; // not ready to register : if there is no device, nothing could be registered
-    }
     
     t_model *model = nullptr;
     t_view *view = nullptr;
     int view_level=0, model_level=0;
     
-    if (!x->x_absolute){
+    if (!x->m_absolute)
+    {
         // then try to locate a parent view or model
-        if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
-            view = find_parent_alive<t_view>(&x->x_obj,"ossia.view", 0, &view_level);
-        } else {
-            model = find_parent_alive<t_model>(&x->x_obj,"ossia.model", 0, &model_level);
-        }
+        if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value)
+            view = find_parent_alive<t_view>(&x->m_obj,"ossia.view", 0, &view_level);
+        else
+            model = find_parent_alive<t_model>(&x->m_obj,"ossia.model", 0, &model_level);
     }
     
     ossia::net::node_base*  node = nullptr;
     
-    if (view){
-        node = view->x_node;
-    } else if (model){
-        node = model->x_node;
-    } else if (client){
-        node = client->x_node;
-    } else {
-        node = device->x_node;
-    }
+    if (view)
+        node = view->m_node;
+    else if (model)
+        node = model->m_node;
+    else if (client)
+        node = client->m_node;
+    else
+        node = device->m_node;
     
     return x->register_node(node);
      */
+    
     return false;
 }
 
