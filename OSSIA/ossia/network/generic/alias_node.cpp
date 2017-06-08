@@ -26,6 +26,7 @@ bool alias_node::remove_address()
 
 address_base*alias_node::get_address() const
 {
+  // TODO thread_local rec_count = 0;
   return m_origin ? m_origin->get_address() : nullptr;
 }
 
