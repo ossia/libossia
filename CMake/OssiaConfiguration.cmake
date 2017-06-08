@@ -30,6 +30,7 @@ option(OSSIA_PROTOCOL_OSCQUERY "Enable OSCQuery protocol" ON)
 option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
+option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidgets library
 option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
 option(OSSIA_NO_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)

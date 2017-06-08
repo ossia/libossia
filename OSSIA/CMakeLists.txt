@@ -88,6 +88,22 @@ if(OSSIA_PROTOCOL_SERIAL)
   endif()
 endif()
 
+if(OSSIA_PROTOCOL_PHIDGETS)
+  find_package(Phidgets)
+  find_package(USB)
+  find_package(DL)
+
+  if(NOT "${LIBPHIDGETS_FOUND}")
+    set(OSSIA_PROTOCOL_PHIDGETS FALSE)
+  endif()
+  if(NOT "${LIBUSB_FOUND}")
+    set(OSSIA_PROTOCOL_PHIDGETS FALSE)
+  endif()
+  if(NOT "${Libdl_FOUND}")
+    set(OSSIA_PROTOCOL_PHIDGETS FALSE)
+  endif()
+endif()
+
 ### Library ###
 if(APPLE AND OSSIA_FRAMEWORK)
   add_library(ossia MODULE ${SRCS})
@@ -139,6 +155,13 @@ if(OSSIA_PROTOCOL_SERIAL)
   target_sources(ossia PRIVATE ${OSSIA_SERIAL_HEADERS} ${OSSIA_SERIAL_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::SerialPort)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)
+endif()
+
+if(OSSIA_PROTOCOL_PHIDGETS)
+  target_sources(ossia PRIVATE ${OSSIA_PHIDGETS_HEADERS} ${OSSIA_PHIDGETS_SRCS})
+  target_include_directories(ossia PUBLIC ${LIBPHIDGETS_INCLUDE_DIR})
+  target_link_libraries(ossia PUBLIC ${LIBPHIDGETS_LIBRARIES} ${LIBUSB_LIBRARIES} ${LIBDL_LIBRARIES})
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Phidgets)
 endif()
 
 # Additional features
