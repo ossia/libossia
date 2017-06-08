@@ -31,6 +31,8 @@ include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
 set(PROJECT_SRCS
     src/ossia-max.cpp
     src/ossia-max.hpp
+    src/ossia_object_base.cpp
+    src/ossia_object_base.hpp
     src/parameter.hpp
     src/parameter.cpp
     src/logger.hpp

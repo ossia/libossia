@@ -5,36 +5,70 @@
 #undef post
 
 #include <ossia/ossia.hpp>
-#include <ossia/context.hpp>
-#include <ossia/network/common/websocket_log_sink.hpp>
 
 namespace ossia
 {
 namespace max
 {
+    
+# pragma mark -
+# pragma mark Library
+    
+    extern "C" void ossia_logger_setup(void);
+    extern "C" void ossia_parameter_setup(void);
+    
+    class ossia_max
+    {
+    public:
+        static ossia_max& instance();
+        
+        t_class* ossia_parameter_class{};
+        t_class* ossia_logger_class{};
+        
+    private:
+        ossia_max();
+    };
+    
+# pragma mark -
+# pragma mark Registration
+    
+    // we can't have virtual methods with C linkage so we need a bunch a template instead...
+    template<typename T> extern bool object_register(T *x);
+    //template<typename T> extern void object_bang(T *x);
+    //template<typename T> extern void object_dump(T *x);
+    
+    template<typename T> extern void object_quarantining(T* x);
+    template<typename T> extern void object_dequarantining(T* x);
+    template<typename T> extern bool object_isQuarantined(T* x);
 
-// Return a singleton local device that can be used if the user has not made any device.
-class singleton
-{
-public:
-  static singleton& instance();
-
-  static ossia::net::device_base& device_instance();
-
-  t_class* ossia_parameter_class{};
-  t_class* ossia_logger_class{};
-
-  std::shared_ptr<ossia::websocket_threaded_connection> get_connection(std::string ip);
-  void collect_garbage();
-
-private:
-  singleton();
-
-  ossia::context ctx;
-  ossia::net::local_protocol* m_localProtocol{};
-  ossia::net::generic_device m_device;
-  string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
-};
-
-}
-}
+# pragma mark -
+# pragma mark Utilities
+    
+    static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
+    {
+        std::vector<std::string> tags;
+        
+        if (tags_symbol)
+        {
+            char* c = tags_symbol->s_name;
+            std::string tag="";
+            
+            while (*c!='\0')
+            {
+                if (*c==' ')
+                {
+                    tags.push_back(tag);
+                    tag = std::string("");
+                }
+                else tag += *c;
+                
+                c++;
+            }
+            tags.push_back(tag);
+        }
+        
+        return tags;
+    }
+    
+} // max namespace
+} // ossia namespace
