@@ -31,24 +31,24 @@ class OSSIA_EXPORT time_constraint
 {
 
 public:
-  auto running() const { return m_clock->running(); }
-  auto get_date() const { return m_clock->get_date(); }
-  auto get_position() const { return m_clock->get_position(); }
-  auto get_drive_mode() const { return m_clock->get_drive_mode(); }
-  auto get_granularity() const { return m_clock->get_granularity(); }
-  auto get_offset() const { return m_clock->get_offset(); }
-  auto get_speed() const { return m_clock->get_speed(); }
-  auto get_exec_status_callback() const { return m_clock->get_exec_status_callback(); }
-  auto paused() const { return m_clock->paused(); }
-  void set_offset(ossia::time_value g) const { m_clock->set_offset(g); }
-  void set_drive_mode(clock::drive_mode m) const { m_clock->set_drive_mode(m); }
-  void set_granularity(ossia::time_value g) const { m_clock->set_granularity(g); }
-  void set_speed(double g) const { m_clock->set_speed(g); }
-  bool tick() { return m_clock->tick(); }
-  bool tick(ossia::time_value usec) { return m_clock->tick(usec); }
-  void set_exec_status_callback(clock::exec_status_callback c) { m_clock->set_exec_status_callback(c); }
+  auto running() const { return m_clock.running(); }
+  auto get_date() const { return m_clock.get_date(); }
+  auto get_position() const { return m_clock.get_position(); }
+  auto get_drive_mode() const { return m_clock.get_drive_mode(); }
+  auto get_granularity() const { return m_clock.get_granularity(); }
+  auto get_offset() const { return m_clock.get_offset(); }
+  auto get_speed() const { return m_clock.get_speed(); }
+  auto get_exec_status_callback() const { return m_clock.get_exec_status_callback(); }
+  auto paused() const { return m_clock.paused(); }
+  void set_offset(ossia::time_value g) { m_clock.set_offset(g); }
+  void set_drive_mode(clock::drive_mode m) { m_clock.set_drive_mode(m); }
+  void set_granularity(ossia::time_value g) { m_clock.set_granularity(g); }
+  void set_speed(double g) { m_clock.set_speed(g); }
+  bool tick() { return m_clock.tick(); }
+  bool tick(ossia::time_value usec) { return m_clock.tick(usec); }
+  void set_exec_status_callback(clock::exec_status_callback c) { m_clock.set_exec_status_callback(c); }
 
-  clock& get_clock() { return *m_clock; }
+  clock& get_clock() { return m_clock; }
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
@@ -73,11 +73,6 @@ public:
 
    time_constraint(
        time_constraint::exec_callback, time_event&,
-       time_event&, time_value = Infinite, time_value = Zero,
-       time_value = Infinite);
-
-   time_constraint(
-       time_constraint::exec_callback, std::unique_ptr<clock>, time_event&,
        time_event&, time_value = Infinite, time_value = Zero,
        time_value = Infinite);
 
@@ -181,8 +176,8 @@ private:
   ossia::state make_state();
 
   std::vector<std::shared_ptr<time_process>> m_processes;
-  std::unique_ptr<clock> m_clock;
   time_constraint::exec_callback m_callback;
+  clock m_clock;
 
   time_event& m_start;
   time_event& m_end;

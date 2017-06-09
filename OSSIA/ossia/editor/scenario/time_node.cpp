@@ -1,5 +1,6 @@
 #include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
+
 namespace ossia
 {
 
@@ -164,6 +165,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
           if (timeConstraint->get_date() >= timeConstraint->get_max_duration())
           {
             maximalDurationReached = true;
+            break;
           }
         }
 
@@ -194,7 +196,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   }
 
   // if all TimeEvents are not PENDING
-  if (m_pending.size() != get_time_events().size())
+  if (m_pending.size() != m_timeEvents.size())
   {
     if(m_evaluating)
     {
@@ -210,10 +212,6 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
     m_evaluating = true;
     entered_evaluation.send();
   }
-
-  // false expression mute TimeNode triggering
-  if (*m_expression == expressions::expression_false())
-    return;
 
   //! \todo force triggering if at leat one TimeEvent has
   // at least one TimeConstraint over its maximal duration
@@ -246,7 +244,12 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
   }
 }
 
-bool time_node::is_observing_expression()
+bool time_node::is_evaluating() const
+{
+  return m_evaluating;
+}
+
+bool time_node::is_observing_expression() const
 {
   return m_observe;
 }
