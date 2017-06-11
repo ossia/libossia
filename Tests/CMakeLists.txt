@@ -53,6 +53,7 @@ ossia_add_test(LoopTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/L
 ossia_add_test(MapperTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Editor/MapperTest.cpp")
 ossia_add_test(MessageTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Editor/MessageTest.cpp")
 ossia_add_test(ScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
+ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioAlgoTest.cpp")
 ossia_add_test(StateTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/StateTest.cpp")
 ossia_add_test(TimeConstraintTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeConstraintTest.cpp")
 ossia_add_test(TimeEventTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")

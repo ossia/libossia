@@ -4,46 +4,9 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include "../Editor/TestUtils.hpp"
 
 using namespace ossia;
-struct root_scenario
-{
-  std::shared_ptr<ossia::time_node> start_node{std::make_shared<ossia::time_node>()};
-  std::shared_ptr<ossia::time_node> end_node{std::make_shared<ossia::time_node>()};
-
-  std::shared_ptr<ossia::time_event> start_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *start_node, ossia::expressions::make_expression_true())};
-  std::shared_ptr<ossia::time_event> end_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *end_node, ossia::expressions::make_expression_true())};
-
-  std::shared_ptr<ossia::time_constraint> constraint{ossia::time_constraint::create([] (auto&&...) {}, *start_event, *end_event, 15000_tv, 15000_tv, 15000_tv)};
-  std::shared_ptr<ossia::scenario> scenario{std::make_shared<ossia::scenario>()};
-
-  root_scenario()
-  {
-    start_node->insert(start_node->get_time_events().end(), start_event);
-    end_node->insert(end_node->get_time_events().end(), end_event);
-
-    constraint->set_granularity(50_tv);
-    constraint->set_drive_mode(ossia::clock::drive_mode::EXTERNAL);
-
-    constraint->add_time_process(scenario);
-    auto scen_sn = scenario->get_start_time_node();
-    auto scen_se = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *scen_sn, ossia::expressions::make_expression_true());
-    scen_sn->insert(scen_sn->get_time_events().end(), scen_se);
-  }
-};
-
-std::ostream& operator<<(std::ostream& s, ossia::time_event::status st)
-{
-  switch(st)
-  {
-    case ossia::time_event::status::NONE: s << "none"; break;
-    case ossia::time_event::status::PENDING: s << "pending"; break;
-    case ossia::time_event::status::HAPPENED: s << "happened"; break;
-    case ossia::time_event::status::DISPOSED: s << "disposed"; break;
-  }
-  return s;
-}
-
 class ConstraintBenchmark : public QObject
 {
   Q_OBJECT

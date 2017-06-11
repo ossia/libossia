@@ -5,13 +5,13 @@
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
 #include <ossia_export.h>
-
+#include <set>
 namespace ossia
 {
 class time_event;
 class time_constraint;
 class time_node;
-
+using constraint_set = std::set<time_constraint*>;
 class OSSIA_EXPORT scenario final :
     public time_process
 {
@@ -73,5 +73,12 @@ class OSSIA_EXPORT scenario final :
     boost::container::flat_map<time_value, std::shared_ptr<time_event>> m_pastEvents;
 
     ossia::state m_lastState;
+
+    constraint_set running_constraints;
+    std::vector<time_node*> running_nodes;
+    std::vector<time_event*> running_events;
+    void process_this(time_node& node, ptr_container<time_event>& statusChangedEvents, constraint_set& started, constraint_set& stopped);
+    void make_happen(time_event& event, constraint_set& started, constraint_set& stopped);
+    void make_dispose(time_event& event, constraint_set& stopped);
 };
 }

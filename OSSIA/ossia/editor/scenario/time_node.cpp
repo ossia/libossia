@@ -27,7 +27,7 @@ bool time_node::trigger()
   // now TimeEvents will happen or be disposed
   for (auto& timeEvent : m_pending)
   {
-    auto& ev = *timeEvent;
+    time_event& ev = *timeEvent;
     auto& expr = ev.get_expression();
     // update any Destination value into the expression
     expressions::update(expr);
