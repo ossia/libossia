@@ -42,7 +42,7 @@ loop::~loop()
   m_endNode->cleanup();
 }
 
-state_element loop::offset(ossia::time_value offset)
+state_element loop::offset(ossia::time_value offset, double pos)
 {
   if (parent()->running())
   {
@@ -70,7 +70,7 @@ state_element loop::offset(ossia::time_value offset)
   return m_offsetState;
 }
 
-state_element loop::state()
+state_element loop::state(ossia::time_value date, double pos)
 {
   auto& p = *parent();
   if (!p.running())
@@ -81,7 +81,6 @@ state_element loop::state()
   }
 
   // if date hasn't been processed already
-  time_value date = p.get_date();
   if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;

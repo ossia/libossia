@@ -21,12 +21,12 @@ void color_automation::set_gradient(color_automation::grad_type t)
   m_data = std::move(t);
 }
 
-state_element color_automation::offset(time_value)
+state_element color_automation::offset(time_value, double pos)
 {
   return {};
 }
 
-state_element color_automation::state()
+state_element color_automation::state(ossia::time_value, double pos)
 {
   if(m_address)
   {
@@ -40,8 +40,7 @@ state_element color_automation::state()
       return ossia::message{addr, ossia::argb{m_data.begin()->second}.dataspace_value};
     }
 
-    auto t = parent()->get_date() / parent()->get_nominal_duration();
-    auto it_next = m_data.lower_bound(t);
+    auto it_next = m_data.lower_bound(pos);
     // Before start
     if(it_next == m_data.begin())
       return ossia::message{addr, ossia::argb{m_data.begin()->second}.dataspace_value};
@@ -57,7 +56,7 @@ state_element color_automation::state()
     const ossia::hunter_lab prev{it_prev->second};
     const ossia::hunter_lab next{it_next->second};
 
-    const auto coeff = (t - it_prev->first) / (it_next->first - it_prev->first);
+    const auto coeff = (pos - it_prev->first) / (it_next->first - it_prev->first);
 
     ossia::hunter_lab res;
     ossia::easing::ease e{};

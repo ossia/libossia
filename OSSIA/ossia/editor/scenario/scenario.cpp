@@ -45,7 +45,7 @@ static void process_timenode_dates(time_node& t, DateMap& map)
   }
 }
 
-state_element scenario::offset(ossia::time_value offset)
+state_element scenario::offset(ossia::time_value offset, double pos)
 {
   auto& p = *parent();
   if (p.running())
@@ -131,6 +131,7 @@ state_element scenario::offset(ossia::time_value offset)
     if (constraintOffset >= Zero && constraintOffset <= cst.get_max_duration())
     {
       flatten_and_filter(cur_state, cst.offset(constraintOffset));
+      m_runningConstraints.insert(&cst);
     }
   }
 
@@ -163,7 +164,7 @@ void scenario::make_happen(time_event& event, constraint_set& started, constrain
 
 
 
-void scenario::make_dispose(time_event& event, constraint_set& stopp)
+void scenario::make_dispose(time_event& event, constraint_set& stopped)
 {
   if (event.m_status == time_event::status::HAPPENED)
   {
@@ -178,7 +179,7 @@ void scenario::make_dispose(time_event& event, constraint_set& stopp)
   for (auto& timeConstraint : event.previous_time_constraints())
   {
     timeConstraint->stop();
-    stopp.insert(timeConstraint.get());
+    stopped.insert(timeConstraint.get());
   }
 
   // dispose next TimeConstraints end event if everything is disposed before
@@ -352,12 +353,35 @@ void scenario::process_this(time_node& node, ptr_container<time_event>& statusCh
     node.m_status = time_node::DONE_TRIGGERED;
 }
 
-state_element scenario::state()
+struct overtick {
+    ossia::time_value min;
+    ossia::time_value max;
+};
+using overtick_map =  std::map<time_node*, overtick>;
+void update_overtick(time_constraint& constraint, time_node* end_node, ossia::time_value tick_us, ossia::time_value cst_old_date, overtick_map& node_tick_dur)
+{
+  // Store the over-ticking min / max, scaled to speed = 1.
+  // That is : tick - (max_dur - tick_start_dur) / speed
+  auto cst_speed = constraint.get_speed();
+  auto overtick = tick_us - (constraint.get_max_duration() * 1000. - cst_old_date) / cst_speed;
+
+  auto node_it = node_tick_dur.find(end_node);
+  if(node_it == node_tick_dur.end())
+  {
+    node_tick_dur.insert(node_it, {end_node, {overtick, overtick}});
+  }
+  else
+  {
+    auto& cur = node_it->second;
+
+    if(overtick < cur.min) cur.min = overtick;
+    if(overtick > cur.max) cur.max = overtick;
+  }
+}
+
+state_element scenario::state(ossia::time_value date, double pos)
 {
   //ossia::logger().info("scenario::state starts");
-  auto& par = *parent();
-  const time_value date = par.get_date();
-
   if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
@@ -373,7 +397,7 @@ state_element scenario::state()
     std::set<time_node*> end_nodes;
     std::set<time_constraint*> mid_cst;
 
-    std::map<time_node*, std::pair<time_value, time_value>> node_tick_dur;
+    overtick_map overticks;
     // First we should find, for each running constraint, the actual maximum tick length
     // that they can be ticked. If it is < tick_us, then they won't execute.
 
@@ -382,17 +406,17 @@ state_element scenario::state()
     // * intermediary ones (e.g. fitting entirely in one tick) : we take their state at 0.5
     // * the ones we're finishing in : we take their state where we finish
 
-    for(time_node* n : running_nodes)
+    for(time_node* n : m_waitingNodes)
     {
       ptr_container<time_event> statusChangedEvents;
-      process_this(*n, statusChangedEvents, running_constraints, running_constraints);
+      process_this(*n, statusChangedEvents, m_runningConstraints, m_runningConstraints);
       if(!statusChangedEvents.empty())
       {
-        running_nodes.clear();
+        m_waitingNodes.clear();
       }
     }
 
-    for(time_constraint* constraint : running_constraints)
+    for(time_constraint* constraint : m_runningConstraints)
     {
       // TODO We should tick with max(default duration)
       // so that the state is not 1.01*automation for instance.
@@ -401,26 +425,10 @@ state_element scenario::state()
       constraint->tick(tick_us);
       // ossia::logger().info("scenario::state tick {}: {}", (void*)constraint, tick_us);
 
-      auto cst_speed = constraint->get_speed();
       auto end_node = &constraint->get_end_event().get_time_node();
       end_nodes.insert(end_node);
 
-      // Store the over-ticking min / max, scaled to speed = 1.
-      // That is : tick - (max_dur - tick_start_dur) / speed
-      auto overtick = tick_us - (constraint->get_max_duration() * 1000. - cst_old_date) / cst_speed;
-
-      auto node_it = node_tick_dur.find(end_node);
-      if(node_it == node_tick_dur.end())
-      {
-        node_tick_dur.insert(node_it, {end_node, {overtick, overtick}});
-      }
-      else
-      {
-        auto& cur = node_it->second;
-
-        if(overtick < cur.first) cur.first = overtick;
-        if(overtick > cur.second) cur.second = overtick;
-      }
+      update_overtick(*constraint, end_node, tick_us, cst_old_date, overticks);
     }
 
     enum progress_mode { PROGRESS_MIN, PROGRESS_MAX } mode{PROGRESS_MAX};
@@ -437,8 +445,8 @@ state_element scenario::state()
     }
 
     for(auto c : constraints_stopped)
-      running_constraints.erase(c);
-    running_constraints.insert(constraints_started.begin(), constraints_started.end());
+      m_runningConstraints.erase(c);
+    m_runningConstraints.insert(constraints_started.begin(), constraints_started.end());
 
     end_nodes.clear();
     do
@@ -459,8 +467,8 @@ state_element scenario::state()
             if(ev.get_time_node().get_status() == time_node::status::DONE_MAX_REACHED)
             {
               // Propagate the remaining tick to the next constraints
-              auto it = node_tick_dur.find(&ev.get_time_node());
-              if(it == node_tick_dur.end())
+              auto it = overticks.find(&ev.get_time_node());
+              if(it == overticks.end())
               {
                 // ossia::logger().info("scenario::state tick_dur not found");
                 continue;
@@ -471,39 +479,23 @@ state_element scenario::state()
                 if(&constraint->get_start_event() != &ev)
                   continue;
 
-                time_value tick_dur;
+                time_value remaining_tick;
                 if(mode == PROGRESS_MAX)
                 {
-                  tick_dur = it->second.second;
+                  remaining_tick = it->second.max;
                 }
                 else if(mode == PROGRESS_MIN)
                 {
-                  tick_dur = it->second.first;
+                  remaining_tick = it->second.min;
                 }
 
                 // ossia::logger().info("scenario::state tick {}: {}", (void*)constraint, tick_dur);
-                constraint->tick(tick_dur);
+                constraint->tick(remaining_tick);
 
-                auto cst_speed = constraint->get_speed();
                 auto end_node = &constraint->get_end_event().get_time_node();
                 end_nodes.insert(end_node);
 
-                // Store the over-ticking min / max, scaled to speed = 1.
-                // That is : tick - (max_dur - tick_start_dur) / speed
-                auto overtick = tick_dur - (constraint->get_max_duration() * 1000.) / cst_speed;
-
-                auto node_it = node_tick_dur.find(end_node);
-                if(node_it == node_tick_dur.end())
-                {
-                  node_tick_dur.insert(node_it, {end_node, {overtick, overtick}});
-                }
-                else
-                {
-                  auto& cur = node_it->second;
-
-                  if(overtick < cur.first) cur.first = overtick;
-                  if(overtick > cur.second) cur.second = overtick;
-                }
+                update_overtick(*constraint, end_node, remaining_tick, 0._tv, overticks);
               }
             }
 
@@ -537,13 +529,17 @@ state_element scenario::state()
       }
 
       for(auto c : constraints_stopped)
-        running_constraints.erase(c);
-      running_constraints.insert(constraints_started.begin(), constraints_started.end());
+        m_runningConstraints.erase(c);
+      m_runningConstraints.insert(constraints_started.begin(), constraints_started.end());
       end_nodes.clear();
 
 
     } while(!statusChangedEvents.empty());
 
+    for(auto& constraint : m_runningConstraints)
+    {
+      flatten_and_filter(cur_state, constraint->state());
+    }
 
     m_lastState = cur_state;
   }
@@ -669,7 +665,7 @@ state_element scenario::state()
 */
 void scenario::start()
 {
-  running_nodes.push_back(m_nodes[0].get());
+  m_waitingNodes.push_back(m_nodes[0].get());
   // start each TimeConstraint if possible
   for (const auto& timeConstraint : m_constraints)
   {
@@ -693,7 +689,7 @@ void scenario::start()
         startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::NONE)
     {
-      running_constraints.insert(&cst);
+      m_runningConstraints.insert(&cst);
       cst.start();
     }
     // the end of the constraint is pending
@@ -701,7 +697,7 @@ void scenario::start()
         startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::PENDING)
     {
-      running_constraints.insert(&cst);
+      m_runningConstraints.insert(&cst);
       cst.start();
     }
     // the constraint is in the future
@@ -737,9 +733,8 @@ void scenario::stop()
       node->reset();
   }
 
-  running_constraints.clear();
-  running_events.clear();
-  running_nodes.clear();
+  m_runningConstraints.clear();
+  m_waitingNodes.clear();
 }
 
 void scenario::pause()

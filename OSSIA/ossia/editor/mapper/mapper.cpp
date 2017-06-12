@@ -29,7 +29,7 @@ mapper::~mapper()
   stop();
 }
 
-ossia::state_element mapper::offset(ossia::time_value offset)
+ossia::state_element mapper::offset(ossia::time_value offset, double pos)
 {
   if (parent()->running())
     throw execution_error("mapper_impl::offset: "
@@ -38,7 +38,7 @@ ossia::state_element mapper::offset(ossia::time_value offset)
   return {}; // TODO why not state ?
 }
 
-ossia::state_element mapper::state()
+ossia::state_element mapper::state(ossia::time_value date, double pos)
 {
   auto& par = *parent();
   if (!par.running())
@@ -49,7 +49,6 @@ ossia::state_element mapper::state()
   }
 
   // if date hasn't been processed already
-  ossia::time_value date = par.get_date();
   if (date != m_lastDate)
   {
     m_lastDate = date;

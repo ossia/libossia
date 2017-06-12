@@ -136,7 +136,7 @@ private Q_SLOTS:
 
     constraint->add_time_process(std::move(autom));
 
-    auto state = tp.offset(constraint->get_nominal_duration() * 0.5);
+    auto state = tp.offset(constraint->get_nominal_duration() * 0.5, 0.5);
     auto mess = state.target<ossia::message>() ;
     QVERIFY(mess != nullptr);
 

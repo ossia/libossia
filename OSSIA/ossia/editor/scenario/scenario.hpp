@@ -20,9 +20,9 @@ class OSSIA_EXPORT scenario final :
 
     ~scenario();
 
-    state_element offset(ossia::time_value) override;
+    state_element offset(ossia::time_value, double pos) override;
 
-    state_element state() override;
+    state_element state(ossia::time_value date, double pos) override;
 
     void start() override;
     void stop() override;
@@ -74,9 +74,8 @@ class OSSIA_EXPORT scenario final :
 
     ossia::state m_lastState;
 
-    constraint_set running_constraints;
-    std::vector<time_node*> running_nodes;
-    std::vector<time_event*> running_events;
+    constraint_set m_runningConstraints;
+    std::vector<time_node*> m_waitingNodes;
     void process_this(time_node& node, ptr_container<time_event>& statusChangedEvents, constraint_set& started, constraint_set& stopped);
     void make_happen(time_event& event, constraint_set& started, constraint_set& stopped);
     void make_dispose(time_event& event, constraint_set& stopped);

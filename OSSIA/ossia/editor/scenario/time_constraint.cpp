@@ -96,13 +96,14 @@ ossia::state time_constraint::offset(ossia::time_value date)
   const auto& processes = get_time_processes();
   ossia::state state;
   state.reserve(processes.size());
+  const auto pos = date / get_nominal_duration();
 
   // get the state of each TimeProcess at current clock position and date
   for (const auto& timeProcess : processes)
   {
     if(timeProcess->enabled())
     {
-      auto res = timeProcess->offset(date);
+      auto res = timeProcess->offset(date, pos);
       if(res)
         state.add(std::move(res));
     }
@@ -278,12 +279,15 @@ ossia::state time_constraint::state_impl()
   ossia::state state;
   state.reserve(processes.size());
 
+  const auto date = get_date();
+  const auto pos = date / get_nominal_duration();
+
   // get the state of each TimeProcess at current clock position and date
-  for (const auto& timeProcess : processes)
+  for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
   {
     if(timeProcess->enabled())
     {
-      auto res = timeProcess->state();
+      auto res = timeProcess->state(date, pos);
       if(res)
         state.add(std::move(res));
     }

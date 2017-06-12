@@ -44,8 +44,8 @@ public:
   void pause() override;
   void resume() override;
 
-  state_element offset(ossia::time_value) override;
-  state_element state() override;
+  state_element offset(ossia::time_value, double pos) override;
+  state_element state(ossia::time_value date, double pos) override;
 
   /*! get the pattern #time_constraint
    \return std::shared_ptr<TimeConstraint> */

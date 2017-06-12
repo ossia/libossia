@@ -118,10 +118,10 @@ private Q_SLOTS:
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
       QVERIFY_EXCEPTION_THROWN(constraint->state(), execution_error);
-      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(a)->state(), execution_error);
-      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(s)->state(), execution_error);
-      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(m)->state(), execution_error);
-      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(l)->state(), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(a)->state(0._tv, 0.), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(s)->state(0._tv, 0.), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(m)->state(0._tv, 0.), execution_error);
+      QVERIFY_EXCEPTION_THROWN(static_cast<time_process*>(l)->state(0._tv, 0.), execution_error);
 
     }
 };

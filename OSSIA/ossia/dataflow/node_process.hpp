@@ -15,14 +15,14 @@ public:
       std::shared_ptr<ossia::graph_node> n):
     m_graph{std::move(g)}, m_node{std::move(n)} { }
 
-  ossia::state_element offset(ossia::time_value) override
+  ossia::state_element offset(ossia::time_value, double pos) override
   {
     return {};
   }
 
-  ossia::state_element state() override
+  ossia::state_element state(ossia::time_value parent_date, double relative_position) override
   {
-    m_node->set_time(parent()->get_date() / parent()->get_nominal_duration());
+    m_node->set_time(relative_position);
     m_graph->enable(*m_node);
     return {};
   }

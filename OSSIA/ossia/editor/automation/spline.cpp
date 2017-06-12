@@ -15,7 +15,7 @@ void spline_automation::set_destination(Destination a)
   m_address = std::move(a);
 }
 
-state_element spline_automation::offset(time_value)
+state_element spline_automation::offset(time_value, double pos)
 {
   return {};
 }
@@ -34,14 +34,13 @@ void spline_automation::set_spline(const spline_data& t)
                        , m_spline.data());
 }
 
-ossia::state_element spline_automation::state()
+ossia::state_element spline_automation::state(ossia::time_value date, double pos)
 {
   if(m_address)
   {
     auto& addr = *m_address;
-    auto t = parent()->get_date() / parent()->get_nominal_duration();
 
-    auto p = m_spline.evaluate(t);
+    auto p = m_spline.evaluate(pos);
     auto d = p.data();
     return ossia::message{
       addr,
