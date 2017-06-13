@@ -4,6 +4,7 @@
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
 #include <ossia_export.h>
 #include <set>
 namespace ossia
@@ -11,7 +12,12 @@ namespace ossia
 class time_event;
 class time_constraint;
 class time_node;
-using constraint_set = std::set<time_constraint*>;
+using constraint_set = boost::container::flat_set<time_constraint*>;
+struct overtick {
+    ossia::time_value min;
+    ossia::time_value max;
+};
+using overtick_map = boost::container::flat_map<time_node*, overtick>;
 class OSSIA_EXPORT scenario final :
     public time_process
 {
@@ -59,23 +65,19 @@ class OSSIA_EXPORT scenario final :
      \return #Container<#time_constraint> */
     const ptr_container<time_constraint>& get_time_constraints() const;
 
-    /*! order all HAPPENED TimeEvents into mOffetEventMap */
-    void process_offset(time_node&, time_value);
-
   private:
     ptr_container<time_constraint> m_constraints;
     ptr_container<time_node> m_nodes; // list of all TimeNodes of the scenario
                                          // (the first is the start node, the
                                          // second is the end node)
 
-    // a temporary list to order all past events to build the
-    // offset state
-    boost::container::flat_map<time_value, std::shared_ptr<time_event>> m_pastEvents;
-
     ossia::state m_lastState;
 
     constraint_set m_runningConstraints;
     std::vector<time_node*> m_waitingNodes;
+    overtick_map m_overticks;
+    boost::container::flat_set<time_node*> m_endNodes;
+
     void process_this(time_node& node, ptr_container<time_event>& statusChangedEvents, constraint_set& started, constraint_set& stopped);
     void make_happen(time_event& event, constraint_set& started, constraint_set& stopped);
     void make_dispose(time_event& event, constraint_set& stopped);

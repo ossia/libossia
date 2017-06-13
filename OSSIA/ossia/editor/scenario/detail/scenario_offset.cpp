@@ -15,6 +15,7 @@
 
 namespace ossia
 {
+using past_events_map = boost::container::flat_map<time_value, std::shared_ptr<time_event>>;
 using DateMap = tsl::hopscotch_map<time_node*, time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using ConstraintPtr = std::shared_ptr<ossia::time_constraint>;
@@ -31,8 +32,8 @@ static void process_timenode_dates(time_node& t, DateMap& map)
   }
 }
 
-void scenario::process_offset(
-    time_node& timenode, time_value offset)
+void process_offset(
+    time_node& timenode, time_value offset, past_events_map& pastEvents)
 {
   time_value date = timenode.get_date();
   auto get_event_status = [] (const time_event& event)
@@ -99,12 +100,12 @@ void scenario::process_offset(
 
     // add HAPPENED event to offset event list
     if (eventStatus == time_event::status::HAPPENED)
-      m_pastEvents.insert(std::make_pair(date, ev_ptr));
+      pastEvents.insert(std::make_pair(date, ev_ptr));
 
     // propagate offset processing to setup all TimeEvents
     for (const auto& timeConstraint : event.next_time_constraints())
     {
-      process_offset(timeConstraint->get_end_event().get_time_node(), offset);
+      process_offset(timeConstraint->get_end_event().get_time_node(), offset, pastEvents);
     }
   }
 }
@@ -113,7 +114,11 @@ void scenario::process_offset(
 state_element scenario::offset(ossia::time_value offset, double pos)
 {
   // reset internal offset list and state
-  m_pastEvents.clear();
+
+  // a temporary list to order all past events to build the
+  // offset state
+  past_events_map pastEvents;
+
   m_runningConstraints.clear();
   ossia::state cur_state;
 
@@ -167,12 +172,12 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   }
 
   // propagate offset from the first TimeNode
-  process_offset(*m_nodes[0], offset);
+  process_offset(*m_nodes[0], offset, pastEvents);
 
   // build offset state from all ordered past events
   if(unmuted())
   {
-    for (const auto& p : m_pastEvents)
+    for (const auto& p : pastEvents)
     {
       flatten_and_filter(cur_state, p.second->get_state());
     }
