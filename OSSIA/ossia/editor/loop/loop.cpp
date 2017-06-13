@@ -44,12 +44,6 @@ loop::~loop()
 
 state_element loop::offset(ossia::time_value offset, double pos)
 {
-  if (parent()->running())
-  {
-    throw execution_error("loop::offset: "
-                           "parent time constraint is running");
-    return {};
-  }
   // reset internal mOffsetState
   m_offsetState.clear();
 
@@ -72,14 +66,6 @@ state_element loop::offset(ossia::time_value offset, double pos)
 
 state_element loop::state(ossia::time_value date, double pos)
 {
-  auto& p = *parent();
-  if (!p.running())
-  {
-    throw execution_error("loop::state: "
-                          "parent time constraint is not running");
-    return {};
-  }
-
   // if date hasn't been processed already
   if (date != m_lastDate)
   {

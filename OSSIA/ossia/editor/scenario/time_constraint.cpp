@@ -114,14 +114,25 @@ ossia::state time_constraint::offset(ossia::time_value date)
 
 ossia::state time_constraint::state()
 {
-  if (!m_clock.running())
+  const auto& processes = get_time_processes();
+  ossia::state state;
+  state.reserve(processes.size());
+
+  const auto date = get_date();
+  const auto pos = date / get_nominal_duration();
+
+  // get the state of each TimeProcess at current clock position and date
+  for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
   {
-    throw execution_error("time_constraint::state: "
-                          "time constraint is not running");
-    return {};
+    if(timeProcess->enabled())
+    {
+      auto res = timeProcess->state(date, pos);
+      if(res)
+        state.add(std::move(res));
+    }
   }
 
-  return state_impl();
+  return state;
 }
 
 void time_constraint::pause()
@@ -249,7 +260,7 @@ clock::exec_callback time_constraint::make_callback()
   if(m_callback)
   {
     return [this] (ossia::time_value t, time_value t2, unsigned char c) {
-      m_callback(t, t2, state_impl());
+      m_callback(t, t2, state());
     };
   }
   else
@@ -273,27 +284,5 @@ clock::exec_callback time_constraint::make_stateless_callback()
   }
 }
 
-ossia::state time_constraint::state_impl()
-{
-  const auto& processes = get_time_processes();
-  ossia::state state;
-  state.reserve(processes.size());
-
-  const auto date = get_date();
-  const auto pos = date / get_nominal_duration();
-
-  // get the state of each TimeProcess at current clock position and date
-  for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
-  {
-    if(timeProcess->enabled())
-    {
-      auto res = timeProcess->state(date, pos);
-      if(res)
-        state.add(std::move(res));
-    }
-  }
-
-  return state;
-}
 
 }

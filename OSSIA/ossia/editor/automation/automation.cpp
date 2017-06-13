@@ -42,13 +42,6 @@ void automation::update_message(double t)
 
 ossia::state_element automation::offset(ossia::time_value offset, double pos)
 {
-  auto& par = *parent();
-  if (par.running())
-  {
-    throw execution_error("automation_impl::offset: "
-                          "parent time constraint is running");
-    return {};
-  }
   // edit a Message handling the new Value
   update_message(pos);
 
@@ -59,28 +52,18 @@ ossia::state_element automation::offset(ossia::time_value offset, double pos)
 
 ossia::state_element automation::state(ossia::time_value date, double pos)
 {
-  auto& par = *parent();
-  if (par.running())
+  // if date hasn't been processed already
+  if (date != m_lastDate)
   {
-    // if date hasn't been processed already
-    if (date != m_lastDate)
-    {
-      m_lastDate = date;
+    m_lastDate = date;
 
-      // edit a Message handling the new Value
-      update_message(pos);
-    }
+    // edit a Message handling the new Value
+    update_message(pos);
+  }
 
-    if(unmuted() && m_lastMessage)
-      return *m_lastMessage;
-    return ossia::state_element{};
-  }
-  else
-  {
-    throw execution_error("automation_impl::state: "
-                          "parent time constraint is not running");
-    return {};
-  }
+  if(unmuted() && m_lastMessage)
+    return *m_lastMessage;
+  return ossia::state_element{};
 }
 
 void automation::start()

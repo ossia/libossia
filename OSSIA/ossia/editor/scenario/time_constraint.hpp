@@ -172,7 +172,6 @@ public:
 private:
   clock::exec_callback make_callback();
   clock::exec_callback make_stateless_callback();
-  ossia::state state_impl();
   ossia::state make_state();
 
   std::vector<std::shared_ptr<time_process>> m_processes;

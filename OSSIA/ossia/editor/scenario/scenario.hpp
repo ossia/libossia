@@ -79,5 +79,6 @@ class OSSIA_EXPORT scenario final :
     void process_this(time_node& node, ptr_container<time_event>& statusChangedEvents, constraint_set& started, constraint_set& stopped);
     void make_happen(time_event& event, constraint_set& started, constraint_set& stopped);
     void make_dispose(time_event& event, constraint_set& stopped);
+    void tick_constraint(time_constraint& c, time_value tick);
 };
 }
