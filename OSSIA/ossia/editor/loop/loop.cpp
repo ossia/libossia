@@ -1,8 +1,7 @@
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/loop/loop.hpp>
-
 #include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/detail/algorithms.hpp>
-
 namespace ossia
 {
 loop::loop(
