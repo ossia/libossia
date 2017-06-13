@@ -24,33 +24,15 @@ namespace max {
         t_clock*    m_clock{};
         t_clock*    m_regclock{};       // registration clock
         t_clock*    m_unregclock{};     // unregistration clock
-    
-        void setValue(const ossia::value& val);
+
+        void set_value(const ossia::value& val);
         
         static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
         static void bang(t_object_base* x);
-        
-        void isDeleted(const ossia::net::node_base& n);
-        bool isRenamed();
-        void renaming();
-        void derenaming();
-        
-        static std::vector<t_object_base*>& quarantine()
-        {
-            static std::vector<t_object_base*> quarantine;
-            return quarantine;
-        }
-        
-        static std::vector<t_object_base*>& rename()
-        {
-            static std::vector<t_object_base*> rename;
-            return rename;
-        }
     };
     
 # pragma mark -
 # pragma mark Utilities
-    
     
     // Converts a max string to a type used in the api
     static ossia::val_type name_to_type(ossia::string_view name)

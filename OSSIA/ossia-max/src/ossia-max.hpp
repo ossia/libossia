@@ -30,17 +30,22 @@ namespace max
     };
     
 # pragma mark -
-# pragma mark Registration
+# pragma mark Templates
     
     // we can't have virtual methods with C linkage so we need a bunch a template instead...
-    template<typename T> extern bool object_register(T *x);
-    //template<typename T> extern void object_bang(T *x);
-    //template<typename T> extern void object_dump(T *x);
     
-    template<typename T> extern void object_quarantining(T* x);
-    template<typename T> extern void object_dequarantining(T* x);
-    template<typename T> extern bool object_isQuarantined(T* x);
-
+    template<typename T> extern bool object_register(T*);
+    
+    template<typename T> extern std::string object_path(T*);
+    
+    template<typename T> extern void object_quarantining(T*);
+    
+    template<typename T> extern void object_dequarantining(T*);
+    
+    template<typename T> extern bool object_is_quarantined(T*);
+    
+    template<typename T> extern void object_dump(T*);
+    
 # pragma mark -
 # pragma mark Utilities
     

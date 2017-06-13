@@ -135,7 +135,8 @@ extern "C"
 void ossia_parameter_free(t_parameter* x)
 {
     x->unregister();
-    object_dequarantining<t_parameter>(x);
+    
+    object_dequarantining(x);
     
     // TODO : free outlets
 }
@@ -149,16 +150,16 @@ bool t_parameter :: register_node(ossia::net::node_base* node)
     
     if (res)
     {
-        object_dequarantining<t_parameter>(this);
+        object_dequarantining(this);
         /*
         for (auto remote : t_remote::quarantine())
         {
-            obj_register<t_remote>(static_cast<t_remote*>(remote));
+            object_register<t_remote>(static_cast<t_remote*>(remote));
         }
          */
     }
     else
-        object_dequarantining<t_parameter>(this);
+        object_dequarantining(this);
     
     return res;
 }
@@ -180,9 +181,9 @@ bool t_parameter :: do_registration(ossia::net::node_base* node)
     
     m_node = &ossia::net::create_node(*node, m_name->s_name);
     if (m_node->get_name() != std::string(m_name->s_name))
-        renaming();
+        renaming(this);
     
-    m_node->about_to_be_deleted.connect<t_object_base, &t_object_base::isDeleted>(this);
+    m_node->about_to_be_deleted.connect<t_parameter, &t_parameter::is_deleted>(this);
     ossia::net::address_base* localAddress{};
     
     if (std::string(m_type->s_name) == "float")
@@ -315,7 +316,7 @@ bool t_parameter :: do_registration(ossia::net::node_base* node)
     
     ossia::net::set_priority(localAddress->getNode(), m_priority);
     
-    localAddress->add_callback([=](const ossia::value& v) { setValue(v); });
+    localAddress->add_callback([=](const ossia::value& v) { set_value(v); });
     
     clock_delay(m_clock, 0);
     
@@ -338,18 +339,39 @@ bool t_parameter :: unregister()
          */
     }
     
-    object_quarantining<t_parameter>(this);
+    object_quarantining(this);
+    derenaming(this);
     
-    derenaming();
-    
-    for (auto parameter : t_object_base::rename())
+    for (auto parameter : t_parameter::rename())
     {
-        if ( strcmp(parameter->m_name->s_name, m_name->s_name) == 0 )
+        if (strcmp(parameter->m_name->s_name, m_name->s_name) == 0)
         {
-            ((t_parameter*)parameter)->unregister();
-            object_register<t_parameter>((t_parameter*)parameter);
+            parameter->unregister();
+            object_register<t_parameter>(parameter);
         }
     }
     
     return true;
+}
+
+void t_parameter :: is_deleted(const ossia::net::node_base& n)
+{
+    m_node->about_to_be_deleted.disconnect<t_parameter, &t_parameter::is_deleted>(this);
+    m_node = nullptr;
+    object_quarantining<t_parameter>(this);
+}
+
+bool t_parameter :: is_renamed(t_parameter* x)
+{
+    return ossia::contains(x->rename(), x);
+}
+
+void t_parameter :: renaming(t_parameter* x)
+{
+    if (!is_renamed(x)) x->rename().push_back(x);
+}
+
+void t_parameter :: derenaming(t_parameter* x)
+{
+    x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
 }

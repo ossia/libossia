@@ -3,7 +3,7 @@
 namespace ossia {
 namespace max {
     
-    void t_object_base :: setValue(const ossia::value& v)
+    void t_object_base :: set_value(const ossia::value& v)
     {
         value_visitor<t_object_base> vm;
         vm.x = (t_object_base*) &m_object;
@@ -41,33 +41,12 @@ namespace max {
         }
     }
     
-    void t_object_base::bang(t_object_base *x)
+    void t_object_base :: bang(t_object_base *x)
     {
         if (x->m_node && x->m_node->get_address())
-            x->setValue(x->m_node->get_address()->value());
+            x->set_value(x->m_node->get_address()->value());
     }
     
-    void t_object_base :: isDeleted(const ossia::net::node_base& n)
-    {
-        m_node->about_to_be_deleted.disconnect<t_object_base, &t_object_base::isDeleted>(this);
-        m_node = nullptr;
-        object_quarantining<t_object_base>(this);
-    }
     
-    bool t_object_base :: isRenamed()
-    {
-        return ossia::contains(rename(), this);
-    }
-    
-    void t_object_base :: renaming()
-    {
-        if ( !isRenamed() ) rename().push_back(this);
-    }
-    
-    void t_object_base :: derenaming()
-    {
-        rename().erase(std::remove(rename().begin(), rename().end(), this), rename().end());
-    }
-
 } // max namespace
 } // ossia namespace

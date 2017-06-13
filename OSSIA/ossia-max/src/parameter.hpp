@@ -28,10 +28,32 @@ namespace ossia {
             int         m_priority;
             
             bool register_node(ossia::net::node_base* node);
+            
             bool do_registration(ossia::net::node_base* node);
+            
             bool unregister();
+            
+            void is_deleted(const ossia::net::node_base& n);
+            
+            bool is_renamed(t_parameter*);
+            
+            void renaming(t_parameter* x);
+            
+            void derenaming(t_parameter* x);
+            
+            static std::vector<t_parameter*>& quarantine()
+            {
+                static std::vector<t_parameter*> quarantine;
+                return quarantine;
+            }
+            
+            static std::vector<t_parameter*>& rename()
+            {
+                static std::vector<t_parameter*> rename;
+                return rename;
+            }
         };
-        
+             
 # pragma mark -
 # pragma mark Utilities
         
