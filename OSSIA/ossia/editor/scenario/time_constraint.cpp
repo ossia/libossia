@@ -82,7 +82,7 @@ void time_constraint::stop()
   m_clock.m_elapsedTime = 0;
 }
 
-ossia::state time_constraint::offset(ossia::time_value date)
+ossia::state_element time_constraint::offset(ossia::time_value date)
 {
   if (m_clock.running())
   {
@@ -94,45 +94,54 @@ ossia::state time_constraint::offset(ossia::time_value date)
   m_clock.do_set_offset(date);
 
   const auto& processes = get_time_processes();
-  ossia::state state;
-  state.reserve(processes.size());
-  const auto pos = date / get_nominal_duration();
-
-  // get the state of each TimeProcess at current clock position and date
-  for (const auto& timeProcess : processes)
+  const auto N = processes.size();
+  if(N > 0)
   {
-    if(timeProcess->enabled())
-    {
-      auto res = timeProcess->offset(date, pos);
-      if(res)
-        state.add(std::move(res));
-    }
-  }
+    ossia::state state;
+    state.reserve(N);
+    const auto pos = date / get_nominal_duration();
 
-  return state;
+    // get the state of each TimeProcess at current clock position and date
+    for (const auto& timeProcess : processes)
+    {
+      if(timeProcess->enabled())
+      {
+        auto res = timeProcess->offset(date, pos);
+        if(res)
+          state.add(std::move(res));
+      }
+    }
+    return state;
+  }
+  return {};
 }
 
-ossia::state time_constraint::state()
+ossia::state_element time_constraint::state()
 {
   const auto& processes = get_time_processes();
-  ossia::state state;
-  state.reserve(processes.size());
-
-  const auto date = get_date();
-  const auto pos = date / get_nominal_duration();
-
-  // get the state of each TimeProcess at current clock position and date
-  for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
+  const auto N = processes.size();
+  if(N > 0)
   {
-    if(timeProcess->enabled())
-    {
-      auto res = timeProcess->state(date, pos);
-      if(res)
-        state.add(std::move(res));
-    }
-  }
+    ossia::state state;
+    state.reserve(N);
 
-  return state;
+    const auto date = get_date();
+    const auto pos = date / get_nominal_duration();
+
+    // get the state of each TimeProcess at current clock position and date
+    for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
+    {
+      auto& p = *timeProcess;
+      if(p.enabled())
+      {
+        if(auto res = p.state(date, pos))
+          state.add(std::move(res));
+      }
+    }
+
+    return state;
+  }
+  return {};
 }
 
 void time_constraint::pause()

@@ -6,13 +6,12 @@
 
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/clock.hpp>
+#include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
-
-class state;
 class time_event;
 class time_process;
 struct time_value;
@@ -54,7 +53,7 @@ public:
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
   using exec_callback
-      = std::function<void(ossia::time_value, time_value, const state&)>;
+      = std::function<void(ossia::time_value, time_value, const state_element&)>;
 
   /*! constructor
    \details by default a #time_constraint has an infinite duration with no
@@ -97,14 +96,14 @@ public:
    \details don't call offset when the #time_constraint is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  ossia::state offset(ossia::time_value);
+  ossia::state_element offset(ossia::time_value);
 
   /*! get a #State from the constraint depending on its #Clock date
    \details the returned #State is made of as many as sub States for each
    TimeProcess the #time_constraint manages
    \details don't call state when the #time_constraint is not running
    \return std::shared_ptr<#State> */
-  ossia::state state();
+  ossia::state_element state();
 
   /*! sets a new callback for the constraint
     \param #time_constraint::ExecutionCallback to use to be notified at each

@@ -92,10 +92,10 @@ class OSSIA_EXPORT time_node final :
     // Interface to be used for set-up by other time processes
     /* process all TimeEvents to propagate execution */
     void process(
-        ptr_container<time_event>& statusChangedEvents);
+        std::vector<time_event*>& statusChangedEvents);
 
     void process_this(
-        ptr_container<time_event>& statusChangedEvents);
+        std::vector<time_event*>& statusChangedEvents);
 
     /* is the TimeNode observing its Expression ? */
     bool is_observing_expression() const;
@@ -139,7 +139,7 @@ class OSSIA_EXPORT time_node final :
     ossia::expression_ptr m_expression;
 
     ptr_container<time_event> m_timeEvents;
-    ptr_container<time_event> m_pending;
+    std::vector<time_event*> m_pending;
 
     optional<expressions::expression_callback_iterator> m_callback;
 

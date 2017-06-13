@@ -26,7 +26,7 @@ loop::loop(
 
   // create a pattern TimeConstraint with all durations equal by default
   m_constraint = time_constraint::create(
-      [=](ossia::time_value position, time_value date, const ossia::state& state) {
+      [=](ossia::time_value position, time_value date, const ossia::state_element& state) {
         return constraint_callback(position, date, state);
       },
       *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
@@ -76,7 +76,7 @@ state_element loop::state(ossia::time_value date, double pos)
     m_currentState.clear();
 
     // process the loop from the pattern start TimeNode
-    ptr_container<time_event> statusChangedEvents;
+    std::vector<time_event*> statusChangedEvents;
     m_startNode->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
@@ -104,9 +104,9 @@ state_element loop::state(ossia::time_value date, double pos)
         // ticks
         auto& startEvent = m_constraint->get_start_event();
         bool not_starting = none_of(
-            statusChangedEvents, [&](const std::shared_ptr<time_event>& ev) {
+            statusChangedEvents, [&](time_event* ev) {
               return ev->get_status() == time_event::status::HAPPENED
-                     && ev.get() == &startEvent;
+                     && ev == &startEvent;
             });
 
         if (not_starting)
@@ -183,7 +183,7 @@ const std::shared_ptr<time_node> loop::get_end_timenode() const
 }
 
 void loop::constraint_callback(
-    time_value position, time_value date, const ossia::state&)
+    time_value position, time_value date, const ossia::state_element&)
 {
   if (m_constraintCallback)
   {

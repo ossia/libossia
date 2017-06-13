@@ -4,7 +4,7 @@
 
 using namespace ossia;
 
-void constraint_callback(ossia::time_value position, time_value date, const ossia::state& element)
+void constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element)
 {
     ;
 }

@@ -6,7 +6,7 @@
 
 using namespace ossia;
 
-void constraint_callback(ossia::time_value position, ossia::time_value date, const state& element)
+void constraint_callback(ossia::time_value position, ossia::time_value date, const state_element& element)
 {
     ;
 }
@@ -54,7 +54,7 @@ private Q_SLOTS:
         QVERIFY(constraint->get_min_duration() == 1000._tv);
         QVERIFY(constraint->get_max_duration() == 3000._tv);
         QVERIFY(constraint->get_offset() == 500._tv);
-        QVERIFY(state.size() == 0);
+        QVERIFY(!state);
 
         QCOMPARE(constraint->get_position(), 0.25_tv);
         QVERIFY(constraint->running() == false);

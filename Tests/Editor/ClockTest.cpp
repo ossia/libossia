@@ -265,7 +265,7 @@ private Q_SLOTS:
         c.start();
 
         // wait the clock to pass 50 ms
-        while (c.get_date() < 50._tv)
+        while (c.get_date() < 50._tv) std::cerr << c.get_date() << "\n";
             ;
 
         // then pause: the clock should be still running

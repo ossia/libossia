@@ -10,9 +10,9 @@ class LoopTest : public QObject
 {
     Q_OBJECT
 
-    void constraint_callback(ossia::time_value position, time_value date, const state& element)
+    void constraint_callback(ossia::time_value position, time_value date, const state_element& element)
     {
-        element.launch();
+        ossia::launch(element);
     }
 
     void event_callback(time_event::status newStatus)
