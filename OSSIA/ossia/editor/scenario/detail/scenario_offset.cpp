@@ -199,6 +199,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   }
 
   m_lastState = cur_state;
+  m_lastDate = offset;
 
   return m_lastState;
 }

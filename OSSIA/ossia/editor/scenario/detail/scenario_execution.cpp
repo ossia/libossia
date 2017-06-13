@@ -435,20 +435,11 @@ state_element scenario::state(ossia::time_value date, double pos)
 
 /// Old execution algorithm ///
 
+
 /*
-
-state_element scenario::state()
+state_element scenario::state(ossia::time_value date, double pos)
 {
-  auto& par = *parent();
-  if (!par.running())
-  {
-    throw execution_error("scenario_impl::state: "
-                          "parent time constraint is not running");
-    return {};
-  }
-
   // if date hasn't been processed already
-  time_value date = par.get_date();
   if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
@@ -458,7 +449,7 @@ state_element scenario::state()
     // reset internal mCurrentState
 
     // process the scenario from the first TimeNode to the running constraints
-    ptr_container<time_event> statusChangedEvents;
+    std::vector<time_event*> statusChangedEvents;
     time_node& n = *m_nodes[0];
     n.process(statusChangedEvents);
 
@@ -491,9 +482,9 @@ state_element scenario::state()
         // don't tick if the TimeConstraint is starting to avoid double ticks
         auto& startEvent = cst.get_start_event();
         bool not_starting = none_of(
-            statusChangedEvents, [&](const std::shared_ptr<time_event>& ev) {
+            statusChangedEvents, [&](auto ev) {
               return ev->get_status() == time_event::status::HAPPENED
-                     && ev.get() == &startEvent;
+                     && ev == &startEvent;
             });
 
         if (not_starting)
@@ -538,7 +529,7 @@ state_element scenario::state()
     // if the Scenario is done : stop the parent TimeConstraint
     if (done)
     {
-      if (date > par.get_min_duration())
+      if (date > parent()->get_min_duration())
       {
         ; //! \todo mParent->stop(); // if the parent TimeConstraint's Clock is
           //! in EXTERNAL drive mode, it creates a deadlock.
@@ -548,7 +539,6 @@ state_element scenario::state()
 
   return m_lastState;
 }
-
 */
 
 }
