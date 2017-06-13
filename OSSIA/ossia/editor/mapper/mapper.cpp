@@ -59,7 +59,7 @@ ossia::state_element mapper::state()
       if (m_valueToMap.valid())
       {
         // edit a Message handling the mapped value
-        auto val = m_valueToMap;
+        ossia::value val = std::move(m_valueToMap);
         // forget the former value
 
         m_valueToMap.reset();
@@ -169,8 +169,6 @@ struct mapper_compute_visitor
   {
     auto base_curve = c.get();
     auto t = base_curve->get_type();
-    if(t.first != ossia::curve_segment_type::FLOAT)
-      return {};
 
     switch (t.second)
     {
@@ -200,8 +198,6 @@ struct mapper_compute_visitor
   {
     auto base_curve = c.get();
     auto t = base_curve->get_type();
-    if(t.first != ossia::curve_segment_type::INT)
-      return {};
 
     switch (t.second)
     {
@@ -231,8 +227,6 @@ struct mapper_compute_visitor
   {
     auto base_curve = c.get();
     auto t = base_curve->get_type();
-    if(t.first != ossia::curve_segment_type::BOOL)
-      return {};
 
     switch (t.second)
     {
@@ -376,17 +370,23 @@ void mapper::driver_value_callback(ossia::value value)
       if(driver.index.size() == 1)
       {
         value = get_value_at_index(std::move(v), driver.index);
+
       }
       else
       {
         value = std::move(v);
       }
     }
+    else if(!driver.index.empty())
+    {
+      auto val = std::move(value);
+      value = get_value_at_index(std::move(val), driver.index);
+    }
 
     {
       lock_t lock(m_valueToMapMutex);
 
-      m_valueToMap = value;
+      m_valueToMap = std::move(value);
     }
   }
 }

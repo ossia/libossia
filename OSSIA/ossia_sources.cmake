@@ -325,7 +325,28 @@ set(OSSIA_SERIAL_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_address.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_address.cpp"
+)
+
+
+set(OSSIA_PHIDGETS_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/phidgetspp.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/sensors.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_address_data.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets.hpp")
+
+set(OSSIA_PHIDGETS_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/phidgetspp.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_address.cpp")
 
 
 set(OSSIA_WS_CLIENT_HEADERS

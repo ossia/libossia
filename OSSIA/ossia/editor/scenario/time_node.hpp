@@ -8,6 +8,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <nano_signal_slot.hpp>
+#include <hopscotch_set.h>
 #include <ossia_export.h>
 
 namespace ossia
@@ -89,10 +90,13 @@ class OSSIA_EXPORT time_node final :
 
     // Interface to be used for set-up by other time processes
     /* process all TimeEvents to propagate execution */
-    void process(ptr_container<time_event>& statusChangedEvents);
+    void process(
+        ptr_container<time_event>& statusChangedEvents);
 
     /* is the TimeNode observing its Expression ? */
-    bool is_observing_expression();
+    bool is_observing_expression() const;
+
+    bool is_evaluating() const;
 
     /* enable observation of the Expression */
     void observe_expression(bool);

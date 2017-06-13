@@ -34,3 +34,4 @@ Documentation/Doxygen/*ml*
 Documentation/Doxygen/API
 *.so
 *.pyc
+3rdparty/libphidgets
