@@ -30,14 +30,17 @@ ossia_max& ossia_max::instance()
 
 namespace ossia {
 namespace max {
-
-template<typename T>
-bool object_register(T* x)
-{
-    post("OSSIA library : object_register TODO");
     
-    if (x->m_node) return true; // already registered
-    if (x->m_dead) return false; // object will be removed soon
+# pragma mark -
+# pragma mark Templates
+
+    template<typename T>
+    bool object_register(T* x)
+    {
+        post("OSSIA library : object_register TODO");
+    
+        if (x->m_node) return true; // already registered
+        if (x->m_dead) return false; // object will be removed soon
     /*
     int l;
     t_device* device = (t_device*) find_parent(&x->m_object, "ossia.device", 0, &l);
@@ -74,16 +77,16 @@ bool object_register(T* x)
     return x->register_node(node);
     */
     
-    return false;
-}
-
-template bool object_register<t_parameter> (t_parameter*);
-
-template<typename T>
-std::string object_path(T* x)
-{
-    post("OSSIA library : object_register TODO");
-    /*
+        return false;
+    }
+    
+    template bool object_register<t_parameter> (t_parameter*);
+    
+    template<typename T>
+    std::string object_path(T* x)
+    {
+        post("OSSIA library : object_register TODO");
+        /*
     std::vector<std::string> vs;
     
     t_model* model = nullptr;
@@ -167,205 +170,234 @@ std::string object_path(T* x)
     return fullpath.str();
      */
     
-    std::stringstream fullpath;
-    return fullpath.str();
-}
+        std::stringstream fullpath;
+        return fullpath.str();
+    }
     
-template std::string object_path<t_parameter> (t_parameter*);
-
-template<typename T>
-void object_quarantining(T* x)
-{
-    if ( !object_is_quarantined<T>(x) ) x->quarantine().push_back(x);
-}
+    template std::string object_path<t_parameter> (t_parameter*);
     
-template void object_quarantining<t_parameter> (t_parameter*);
-
-template<typename T>
-void object_dequarantining(T* x)
-{
-    x->quarantine().erase(std::remove(x->quarantine().begin(), x->quarantine().end(), x), x->quarantine().end());
-}
-    
-template void object_dequarantining<t_parameter> (t_parameter*);
-
-template<typename T>
-bool object_is_quarantined(T* x)
-{
-    return ossia::contains(x->quarantine(), x);
-}
-    
-template bool object_is_quarantined<t_parameter> (t_parameter*);
-    
-template<typename T>
-void object_dump(T* x)
-{
-    t_atom a;
-    std::string fullpath ;
-    
-    if (x->m_node)
+    template<typename T>
+    void object_quarantining(T* x)
     {
-        fullpath = ossia::net::address_string_from_node(*x->m_node);
+        if ( !object_is_quarantined<T>(x) ) x->quarantine().push_back(x);
+    }
+    
+    template void object_quarantining<t_parameter> (t_parameter*);
+    
+    template<typename T>
+    void object_dequarantining(T* x)
+    {
+        x->quarantine().erase(std::remove(x->quarantine().begin(), x->quarantine().end(), x), x->quarantine().end());
+    }
+    
+    template void object_dequarantining<t_parameter> (t_parameter*);
+    
+    template<typename T>
+    bool object_is_quarantined(T* x)
+    {
+        return ossia::contains(x->quarantine(), x);
+    }
+    
+    template bool object_is_quarantined<t_parameter> (t_parameter*);
+    
+    template<typename T>
+    void object_dump(T* x)
+    {
+        t_atom a;
+        std::string fullpath ;
+        
+        if (x->m_node)
+        {
+            fullpath = ossia::net::address_string_from_node(*x->m_node);
+            atom_setsym(&a, gensym(fullpath.c_str()));
+            outlet_anything(x->m_dump_out, gensym("fullpath"), 1, &a);
+        }
+        
+        fullpath = object_path(x);
+        if (fullpath.back() != '/')
+            fullpath += "/";
+        
+        fullpath += x->m_name->s_name;
         atom_setsym(&a, gensym(fullpath.c_str()));
-        outlet_anything(x->m_dump_out, gensym("fullpath"), 1, &a);
+        outlet_anything(x->m_dump_out, gensym("maxpath"), 1, &a);
+        
+        if (x->m_node)
+            atom_setfloat(&a, 1.);
+        else
+            atom_setfloat(&a, 0.);
+        
+        outlet_anything(x->m_dump_out, gensym("registered"), 1, &a);
+        
+        atom_setfloat(&a, object_is_quarantined(x));
+        outlet_anything(x->m_dump_out, gensym("quarantined"), 1, &a);
+        
+        if (x->m_node)
+        {
+            ossia::net::address_base* address = x->m_node->get_address();
+            if (address)
+            {
+                // type
+                std::string type = "unknown";
+                switch (address->get_value_type())
+                {
+                    case ossia::val_type::FLOAT:
+                        type = "float";
+                        break;
+                    case ossia::val_type::INT:
+                        type = " int";
+                        break;
+                    case ossia::val_type::VEC2F:
+                        type = "vec2f";
+                        break;
+                    case ossia::val_type::VEC3F:
+                        type = "vec3f";
+                        break;
+                    case ossia::val_type::VEC4F:
+                        type = "vec4f";
+                        break;
+                    case ossia::val_type::IMPULSE:
+                        type = "impulse";
+                        break;
+                    case ossia::val_type::BOOL:
+                        type = "bool";
+                        break;
+                    case ossia::val_type::STRING:
+                        type = "string";
+                        break;
+                    case ossia::val_type::TUPLE:
+                        type = "tuple";
+                        break;
+                    case ossia::val_type::CHAR:
+                        type = "char";
+                        break;
+                    default:
+                        type = "unknown";
+                }
+                
+                atom_setsym(&a, gensym(type.c_str()));
+                outlet_anything(x->m_dump_out, gensym("type"), 1, &a);
+                
+                // domain
+                ossia::domain domain = address->get_domain();
+                atom_setsym(&a, gensym(domain.to_pretty_string().c_str()));
+                outlet_anything(x->m_dump_out, gensym("domain"), 1, &a);
+                
+                // bounding mode
+                std::string bounding_mode;
+                switch(address->get_bounding())
+                {
+                    case ossia::bounding_mode::FREE:
+                        bounding_mode = "free";
+                        break;
+                    case ossia::bounding_mode::CLIP:
+                        bounding_mode = "clip";
+                        break;
+                    case ossia::bounding_mode::WRAP:
+                        bounding_mode = "wrap";
+                        break;
+                    case ossia::bounding_mode::FOLD:
+                        bounding_mode = "fold";
+                        break;
+                    case ossia::bounding_mode::LOW:
+                        bounding_mode = "low";
+                        break;
+                    case ossia::bounding_mode::HIGH:
+                        bounding_mode = "high";
+                        break;
+                    default:
+                        bounding_mode = "unknown";
+                }
+                
+                atom_setsym(&a, gensym(bounding_mode.c_str()));
+                outlet_anything(x->m_dump_out, gensym("bounding_mode"), 1, &a);
+                
+                // access mode
+                std::string access_mode;
+                switch(address->get_access())
+                {
+                    case ossia::access_mode::BI:
+                        access_mode = "bi";
+                        break;
+                    case ossia::access_mode::GET:
+                        access_mode = "get";
+                        break;
+                    case ossia::access_mode::SET:
+                        access_mode = "set";
+                        break;
+                    default:
+                        access_mode = "unknown";
+                }
+                
+                atom_setsym(&a, gensym(access_mode.c_str()));
+                outlet_anything(x->m_dump_out, gensym("access_mode"), 1, &a);
+                
+                // repetition filter
+                bool rep = address->get_repetition_filter();
+                atom_setfloat(&a, rep);
+                outlet_anything(x->m_dump_out,gensym("repetition_filter"), 1, &a);
+                
+                // unit
+                // TODO
+                address->get_unit();
+            }
+            
+            // description
+            auto description = ossia::net::get_description(*(x->m_node));
+            if (description)
+            {
+                atom_setsym(&a, gensym((*description).c_str()));
+                outlet_anything(x->m_dump_out, gensym("description"), 1, &a);
+            }
+            else
+                outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
+            
+            // tags
+            auto tags = ossia::net::get_tags(*x->m_node);
+            if (tags)
+            {
+                std::size_t N = (*tags).size();
+                std::vector<t_atom> l(N);
+                for(std::size_t i = 0; i < N; i++)
+                {
+                    atom_setsym(&l[i], gensym((*tags)[i].c_str()));
+                }
+                outlet_anything(x->m_dump_out, gensym("tags"), N, l.data());
+            }
+            else
+                outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
+        }
     }
-
-    fullpath = object_path(x);
-    if (fullpath.back() != '/')
-    fullpath += "/";
-     
-    fullpath += x->m_name->s_name;
-    atom_setsym(&a, gensym(fullpath.c_str()));
-    outlet_anything(x->m_dump_out, gensym("maxpath"), 1, &a);
     
-    if (x->m_node)
-        atom_setfloat(&a, 1.);
-    else
-        atom_setfloat(&a, 0.);
+    template void object_dump<t_parameter> (t_parameter*);
     
-    outlet_anything(x->m_dump_out, gensym("registered"), 1, &a);
+# pragma mark -
+# pragma mark Utilities
     
-    atom_setfloat(&a, object_is_quarantined(x));
-    outlet_anything(x->m_dump_out, gensym("quarantined"), 1, &a);
-    
-    if (x->m_node)
+    std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
     {
-        ossia::net::address_base* address = x->m_node->get_address();
-        if (address)
+        std::vector<std::string> tags;
+        
+        if (tags_symbol)
         {
-            // type
-            std::string type = "unknown";
-            switch (address->get_value_type())
+            char* c = tags_symbol->s_name;
+            std::string tag="";
+            
+            while (*c!='\0')
             {
-                case ossia::val_type::FLOAT:
-                    type = "float";
-                    break;
-                case ossia::val_type::INT:
-                    type = " int";
-                    break;
-                case ossia::val_type::VEC2F:
-                    type = "vec2f";
-                    break;
-                case ossia::val_type::VEC3F:
-                    type = "vec3f";
-                    break;
-                case ossia::val_type::VEC4F:
-                    type = "vec4f";
-                    break;
-                case ossia::val_type::IMPULSE:
-                    type = "impulse";
-                    break;
-                case ossia::val_type::BOOL:
-                    type = "bool";
-                    break;
-                case ossia::val_type::STRING:
-                    type = "string";
-                    break;
-                case ossia::val_type::TUPLE:
-                    type = "tuple";
-                    break;
-                case ossia::val_type::CHAR:
-                    type = "char";
-                    break;
-                default:
-                    type = "unknown";
+                if (*c==' ')
+                {
+                    tags.push_back(tag);
+                    tag = std::string("");
+                }
+                else tag += *c;
+                
+                c++;
             }
-            
-            atom_setsym(&a, gensym(type.c_str()));
-            outlet_anything(x->m_dump_out, gensym("type"), 1, &a);
-            
-            // domain
-            ossia::domain domain = address->get_domain();
-            atom_setsym(&a, gensym(domain.to_pretty_string().c_str()));
-            outlet_anything(x->m_dump_out, gensym("domain"), 1, &a);
-            
-            // bounding mode
-            std::string bounding_mode;
-            switch(address->get_bounding())
-            {
-                case ossia::bounding_mode::FREE:
-                    bounding_mode = "free";
-                    break;
-                case ossia::bounding_mode::CLIP:
-                    bounding_mode = "clip";
-                    break;
-                case ossia::bounding_mode::WRAP:
-                    bounding_mode = "wrap";
-                    break;
-                case ossia::bounding_mode::FOLD:
-                    bounding_mode = "fold";
-                    break;
-                case ossia::bounding_mode::LOW:
-                    bounding_mode = "low";
-                    break;
-                case ossia::bounding_mode::HIGH:
-                    bounding_mode = "high";
-                    break;
-                default:
-                    bounding_mode = "unknown";
-            }
-            
-            atom_setsym(&a, gensym(bounding_mode.c_str()));
-            outlet_anything(x->m_dump_out, gensym("bounding_mode"), 1, &a);
-            
-            // access mode
-            std::string access_mode;
-            switch(address->get_access())
-            {
-                case ossia::access_mode::BI:
-                    access_mode = "bi";
-                    break;
-                case ossia::access_mode::GET:
-                    access_mode = "get";
-                    break;
-                case ossia::access_mode::SET:
-                    access_mode = "set";
-                    break;
-                default:
-                    access_mode = "unknown";
-            }
-            
-            atom_setsym(&a, gensym(access_mode.c_str()));
-            outlet_anything(x->m_dump_out, gensym("access_mode"), 1, &a);
-            
-            // repetition filter
-            bool rep = address->get_repetition_filter();
-            atom_setfloat(&a, rep);
-            outlet_anything(x->m_dump_out,gensym("repetition_filter"), 1, &a);
-            
-            // unit
-            // TODO
-            address->get_unit();
+            tags.push_back(tag);
         }
         
-        // description
-        auto description = ossia::net::get_description(*(x->m_node));
-        if (description)
-        {
-            atom_setsym(&a, gensym((*description).c_str()));
-            outlet_anything(x->m_dump_out, gensym("description"), 1, &a);
-        }
-        else
-            outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
-        
-        // tags
-        auto tags = ossia::net::get_tags(*x->m_node);
-        if (tags)
-        {
-            std::size_t N = (*tags).size();
-            std::vector<t_atom> l(N);
-            for(std::size_t i = 0; i < N; i++)
-            {
-                atom_setsym(&l[i], gensym((*tags)[i].c_str()));
-            }
-            outlet_anything(x->m_dump_out, gensym("tags"), N, l.data());
-        }
-        else
-            outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
+        return tags;
     }
-}
     
-template void object_dump<t_parameter> (t_parameter*);
-
 } // max namespace
 } // ossia namespace

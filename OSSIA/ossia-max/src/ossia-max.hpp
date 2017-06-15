@@ -14,6 +14,7 @@ namespace max
 # pragma mark -
 # pragma mark Library
     
+    extern "C" void ossia_client_setup(void);
     extern "C" void ossia_logger_setup(void);
     extern "C" void ossia_parameter_setup(void);
     
@@ -22,6 +23,7 @@ namespace max
     public:
         static ossia_max& instance();
         
+        t_class* ossia_client_class{};
         t_class* ossia_parameter_class{};
         t_class* ossia_logger_class{};
         
@@ -49,31 +51,7 @@ namespace max
 # pragma mark -
 # pragma mark Utilities
     
-    static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
-    {
-        std::vector<std::string> tags;
-        
-        if (tags_symbol)
-        {
-            char* c = tags_symbol->s_name;
-            std::string tag="";
-            
-            while (*c!='\0')
-            {
-                if (*c==' ')
-                {
-                    tags.push_back(tag);
-                    tag = std::string("");
-                }
-                else tag += *c;
-                
-                c++;
-            }
-            tags.push_back(tag);
-        }
-        
-        return tags;
-    }
+    std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
     
 } // max namespace
 } // ossia namespace

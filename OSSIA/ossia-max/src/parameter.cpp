@@ -18,12 +18,12 @@ void ossia_parameter_setup()
                                                     (long)sizeof(ossia::max::t_parameter),
                                                     0L, A_GIMME, 0);
     
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_assist,        "assist",       A_CANT, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_bang,       "bang",         0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_int,        "int",          A_LONG, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_float,      "float",        A_FLOAT, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_symbol,     "symbol",       A_SYM, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_anything,   "anything",     A_GIMME, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_assist,        "assist",       A_CANT, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_bang,       "bang",         0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_int,        "int",          A_LONG, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_float,      "float",        A_FLOAT, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_symbol,     "symbol",       A_SYM, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_anything,   "anything",     A_GIMME, 0);
     
     class_register(CLASS_BOX, ossia_library.ossia_parameter_class);
 }
@@ -71,7 +71,8 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
             }
         }
         
-        if (x->m_name == _sym_nothing) {
+        if (x->m_name == _sym_nothing)
+        {
             object_error((t_object*)x, "needs a name as first argument");
             x->m_name = gensym("untitledParam");
             return x;
@@ -140,6 +141,9 @@ void ossia_parameter_free(t_parameter* x)
     
     // TODO : free outlets
 }
+
+namespace ossia {
+namespace max {
 
 # pragma mark -
 # pragma mark t_parameter structure functions
@@ -375,3 +379,6 @@ void t_parameter :: derenaming(t_parameter* x)
 {
     x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
 }
+
+} // max namespace
+} // ossia namespace
