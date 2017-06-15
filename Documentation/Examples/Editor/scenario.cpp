@@ -18,9 +18,9 @@ using namespace std;
 void local_play_callback(const value& v);
 void local_test_callback(const value& v);
 
-void main_constraint_callback(ossia::time_value position, time_value date, const state& element);
-void first_constraint_callback(ossia::time_value position, time_value date, const state& element);
-void second_constraint_callback(ossia::time_value position, time_value date, const state& element);
+void main_constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element);
+void first_constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element);
+void second_constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element);
 void event_callback(time_event::status newStatus);
 
 shared_ptr<time_constraint> main_constraint;
@@ -240,7 +240,7 @@ int main()
     main_constraint->set_speed(2._tv);
 
     // start at 500 ms (and launch the state at this time)
-    main_constraint->offset(500._tv).launch();
+    ossia::launch(main_constraint->offset(500._tv));
 
     local_play_address->push_value(true);
 
@@ -284,20 +284,20 @@ void local_test_callback(const value& v)
     cout << endl;
 }
 
-void main_constraint_callback(ossia::time_value position, time_value date, const state& element)
+void main_constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element)
 {
-    element.launch();
+    ossia::launch(element);
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
-void first_constraint_callback(ossia::time_value position, time_value date, const state& element)
+void first_constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch element here as the element produced by the first time_constraint is handled by the main time_constraint
 }
 
-void second_constraint_callback(ossia::time_value position, time_value date, const state& element)
+void second_constraint_callback(ossia::time_value position, time_value date, const ossia::state_element& element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 

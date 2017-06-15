@@ -24,7 +24,7 @@ int main()
   // Our process will play for five seconds
   auto constraint =
       std::make_shared<time_constraint>(
-        [] (auto t, auto t2, const auto& state) { state.launch(); },
+        [] (auto t, auto t2, const auto& state) { ossia::launch(state); },
         *start_event, *end_event, 5000._tv, 5000._tv, 5000._tv);
 
   // The curve that we want to play. Do one curve per address.

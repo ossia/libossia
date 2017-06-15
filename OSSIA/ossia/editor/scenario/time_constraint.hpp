@@ -53,7 +53,7 @@ public:
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
   using exec_callback
-      = std::function<void(ossia::time_value, time_value, const state_element&)>;
+      = std::function<void(ossia::time_value, ossia::time_value, const ossia::state_element&)>;
 
   /*! constructor
    \details by default a #time_constraint has an infinite duration with no
