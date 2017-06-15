@@ -1,8 +1,10 @@
 #include "client.hpp"
+#include "device.hpp"
 //#include "model.hpp"
 #include "parameter.hpp"
 //#include "remote.hpp"
 //#include "view.hpp"
+
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include "ossia/network/osc/osc.hpp"
 
@@ -13,7 +15,7 @@
 using namespace ossia::max;
 
 # pragma mark -
-# pragma mark ossia_parameter class methods
+# pragma mark ossia_client class methods
 
 extern "C"
 void ossia_client_setup(void)
@@ -27,11 +29,11 @@ void ossia_client_setup(void)
                                                  (short)sizeof(t_client),
                                                  0L, A_GIMME, 0);
     
-    class_addmethod(ossia_library.ossia_client_class, (method)t_client::register_children,      "register",     A_NOTHING,  0);
-    class_addmethod(ossia_library.ossia_client_class, (method)ossia_client_loadbang,            "loadbang",     A_NOTHING,  0);
-    class_addmethod(ossia_library.ossia_client_class, (method)ossia_client_dump,                "dump",         A_NOTHING,  0);
-    class_addmethod(ossia_library.ossia_client_class, (method)ossia_client_connect,             "connect",      A_GIMME,    0);
-    class_addmethod(ossia_library.ossia_client_class, (method)ossia_client_print_protocol_help, "help",         A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_client_class, (method)t_client::register_children,              "register",     A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_client_class, (method)t_client::loadbang,                       "loadbang",     A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_client_class, (method)ossia_client_dump,                        "dump",         A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_client_class, (method)ossia_client_connect,                     "connect",      A_GIMME,    0);
+    class_addmethod(ossia_library.ossia_client_class, (method)protocol_settings::print_protocol_help,   "help",         A_NOTHING,  0);
     
     class_register(CLASS_BOX, ossia_library.ossia_client_class);
 }
@@ -79,13 +81,6 @@ void ossia_client_free(t_client *x)
     x->m_device = nullptr;
 }
 
-extern "C"
-void ossia_client_loadbang(t_client* x)
-{
-    //if (LB_LOAD == (int)type)
-    t_client::register_children(x);
-}
-
 static void dump_child(t_client *x, const ossia::net::node_base& node)
 {
     for (const auto& child : node.children())
@@ -124,9 +119,7 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
         if (protocol == "Minuit")
         {
             std::string device_name = "Max";
-            std::string remoteip = "127.0.0.1";
-            int remoteport = 6666;
-            int localport = 9999;
+            protocol_settings::minuit settings{};
             
             argc--;
             argv++;
@@ -138,15 +131,15 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
                 && argv[3].a_type == A_FLOAT)
             {
                 device_name = atom_getsym(argv++)->s_name;
-                remoteip = atom_getsym(argv++)->s_name;
-                remoteport = atom_getfloat(argv++);
-                localport = atom_getfloat(argv++);
+                settings.remoteip = atom_getsym(argv++)->s_name;
+                settings.remoteport = atom_getfloat(argv++);
+                settings.localport = atom_getfloat(argv++);
             }
             
             try
             {
                 x->m_device = new ossia::net::generic_device
-                { std::make_unique<ossia::net::minuit_protocol>(device_name, remoteip, remoteport, localport), x->m_name->s_name };
+                { std::make_unique<ossia::net::minuit_protocol>(device_name, settings.remoteip, settings.remoteport, settings.localport), x->m_name->s_name };
             }
             catch (const std::exception& e)
             {
@@ -154,15 +147,16 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
                 return;
             }
             
-            object_post((t_object*)x, "Connected with Minuit protocol to %s");
+            object_post((t_object*)x, "Connected with Minuit protocol to %s on port %u and listening on port %u",  settings.remoteip.c_str(), settings.remoteport, settings.localport);
         }
         else if (protocol == "oscquery")
         {
+            std::string wsurl;
+            
             argc--;
             argv++;
-            std::string wsurl = "ws://127.0.0.1:5678";
             
-            if ( argc == 1 && argv[0].a_type == A_SYM)
+            if (argc == 1 && argv[0].a_type == A_SYM)
             {
                 wsurl = atom_getsym(argv)->s_name;
             }
@@ -170,10 +164,7 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
             try
             {
                 auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
-                x->m_device = new ossia::net::generic_device{std::unique_ptr<ossia::net::protocol_base>(protocol), "Pd"};
-                
-                if (x->m_device)
-                    std::cout << "connected to device " << x->m_device->get_name() << " on " << wsurl << std::endl;
+                x->m_device = new ossia::net::generic_device{std::unique_ptr<ossia::net::protocol_base>(protocol), "Max"};
             }
             catch (const std::exception&  e)
             {
@@ -191,7 +182,7 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
     }
     else
     {
-        ossia_client_print_protocol_help(x);
+        protocol_settings::print_protocol_help();
         return;
     }
     
@@ -210,25 +201,11 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
     }
 }
 
-extern "C"
-void ossia_client_print_protocol_help(t_client *x)
-{
-    object_post((t_object*)x, "connect <protocol> <args> ...");
-    object_post((t_object*)x, "Available protocols (case sensitive): Minuit, oscquery");
-    object_post((t_object*)x, "Protocols parameters :");
-    object_post((t_object*)x, "Minuit <remoteip> <remoteport> <localport> :\n");
-    object_post((t_object*)x, "\tremoteip (symbol): ip of target device\n");
-    object_post((t_object*)x, "\tremoteport (float): port on which packet should be send\n");
-    object_post((t_object*)x, "\tlocalport (float): port to which this device is listening");
-    object_post((t_object*)x, "oscquery <oscport> <wsurl> :\n");
-    object_post((t_object*)x, "\twsurl (symbol) : url to connect to (default : ws://127.0.0.1:5678)\n");
-}
-
 namespace ossia {
 namespace max {
     
 # pragma mark -
-# pragma mark t_parameter structure functions
+# pragma mark t_client structure functions
     
     void t_client :: register_children(t_client* x)
     {
@@ -284,6 +261,12 @@ namespace max {
             }
         }
          */
+    }
+    
+    void t_client :: loadbang(t_client* x)
+    {
+        //if (LB_LOAD == (int)type)
+        register_children(x);
     }
     
     void t_client :: explore(const ossia::net::node_base& node)

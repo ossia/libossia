@@ -37,6 +37,8 @@ set(PROJECT_SRCS
     src/parameter.cpp
     src/client.hpp
     src/client.cpp
+    src/device.hpp
+    src/device.cpp
     src/logger.hpp
     src/logger.cpp
     )

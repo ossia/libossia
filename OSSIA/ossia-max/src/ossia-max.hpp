@@ -15,6 +15,7 @@ namespace max
 # pragma mark Library
     
     extern "C" void ossia_client_setup(void);
+    extern "C" void ossia_device_setup(void);
     extern "C" void ossia_logger_setup(void);
     extern "C" void ossia_parameter_setup(void);
     
@@ -24,6 +25,7 @@ namespace max
         static ossia_max& instance();
         
         t_class* ossia_client_class{};
+        t_class* ossia_device_class{};
         t_class* ossia_parameter_class{};
         t_class* ossia_logger_class{};
         
