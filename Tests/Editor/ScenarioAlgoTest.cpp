@@ -179,8 +179,8 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3_tv, 2_tv, 4_tv);
       std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100_tv, 100_tv, 100_tv);
 
-      s.scenario->add_time_constraint(c0);
-      s.scenario->add_time_constraint(c1);
+      scenario.add_time_constraint(c0);
+      scenario.add_time_constraint(c1);
 
       s.constraint->start();
       s.constraint->tick(3000_tv);
@@ -189,6 +189,81 @@ class ScenarioAlgoTest : public QObject
       s.constraint->tick(1500_tv); // Go past the max
       QCOMPARE(c0->get_date(), 0_tv);
       QCOMPARE(c1->get_date(), 0.5_tv);
+    }
+
+    void test_autom()
+    {
+      std::cerr << "\n\ntest_autom\n";
+      using namespace ossia;
+      root_scenario s;
+      TestUtils utils;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+
+      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_constraint(c0);
+
+      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
+      proc->set_destination(*utils.float_addr);
+
+      auto crv = std::make_shared<curve<double, float>>();
+      curve_segment_linear<float> linearSegment;
+
+      crv->set_x0(0.);
+      crv->set_y0(0.);
+      crv->add_point(linearSegment, 1., 1.);
+
+      proc->set_behavior(crv);
+      c0->add_time_process(proc);
+
+      s.constraint->set_callback([] (ossia::time_value, time_value, const state_element& s) {
+        ossia::print(std::cerr, s);
+      });
+      s.constraint->start();
+      s.constraint->tick(1000_tv);
+      s.constraint->tick(999_tv);
+      s.constraint->tick(1_tv);
+    }
+
+    void test_autom_and_state()
+    {
+      std::cerr << "\n\ntest_autom_and_state\n";
+      using namespace ossia;
+      root_scenario s;
+      TestUtils utils;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      e0->add_state(ossia::message{*utils.float_addr, ossia::value{36.}});
+      e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
+
+
+      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_constraint(c0);
+
+      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
+      proc->set_destination(*utils.float_addr);
+
+      auto crv = std::make_shared<curve<double, float>>();
+      curve_segment_linear<float> linearSegment;
+
+      crv->set_x0(0.);
+      crv->set_y0(0.);
+      crv->add_point(linearSegment, 1., 1.);
+
+      proc->set_behavior(crv);
+      c0->add_time_process(proc);
+
+      s.constraint->set_callback([] (ossia::time_value, time_value, const state_element& s) {
+        ossia::print(std::cerr, s);
+      });
+      s.constraint->start();
+      s.constraint->tick(1000_tv);
+      s.constraint->tick(999_tv);
+      s.constraint->tick(1_tv);
 
     }
 };

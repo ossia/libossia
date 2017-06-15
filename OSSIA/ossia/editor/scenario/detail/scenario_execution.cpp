@@ -25,7 +25,6 @@ void scenario::make_happen(
   // stop previous TimeConstraints
   for (auto& timeConstraint : event.previous_time_constraints())
   {
-    timeConstraint->stop();
     stopped.insert(timeConstraint.get());
   }
 
@@ -58,7 +57,6 @@ void scenario::make_dispose(
   // stop previous TimeConstraints
   for (auto& timeConstraint : event.previous_time_constraints())
   {
-    timeConstraint->stop();
     stopped.insert(timeConstraint.get());
   }
 
@@ -283,6 +281,8 @@ state_element scenario::state(ossia::time_value date, double pos)
   //ossia::logger().info("scenario::state starts");
   if (date != m_lastDate)
   {
+    const bool is_unmuted = unmuted();
+
     auto prev_last_date = m_lastDate;
     m_lastDate = date;
 
@@ -314,6 +314,15 @@ state_element scenario::state(ossia::time_value date, double pos)
       if(!statusChangedEvents.empty())
       {
         // TODO won't work if there are multiple waiting nodes
+
+        if(is_unmuted)
+        {
+          for (const auto& ev : statusChangedEvents)
+          {
+            flatten_and_filter(cur_state, ev->get_state());
+          }
+        }
+
         m_waitingNodes.clear();
         statusChangedEvents.clear();
       }
@@ -347,7 +356,16 @@ state_element scenario::state(ossia::time_value date, double pos)
     m_endNodes.clear();
     do
     {
-      const bool is_unmuted = unmuted();
+      if(is_unmuted)
+      {
+        // For constraints that did finish, we take their last state :
+        for(auto constraint : constraints_stopped)
+        {
+          flatten_and_filter(cur_state, constraint->state());
+          constraint->stop();
+        }
+      }
+
       for (const auto& timeEvent : statusChangedEvents)
       {
         time_event& ev = *timeEvent;
@@ -395,12 +413,6 @@ state_element scenario::state(ossia::time_value date, double pos)
           default:
             break;
         }
-      }
-
-      // For constraints that did finish, we take their last state :
-      for(auto constraint : constraints_stopped)
-      {
-        flatten_and_filter(cur_state, constraint->state());
       }
 
       statusChangedEvents.clear();
