@@ -8,13 +8,6 @@
 
 namespace ossia
 {
-
-
-//! This class allows to provide a custom clock source to ossia::clock.
-struct OSSIA_EXPORT clock_source
-{
-  static const constexpr auto now = [] { return clock_type::now(); };
-};
 clock::clock(
     ossia::time_constraint& cst,
     double ratio)
@@ -44,8 +37,7 @@ void clock::start()
 
   // set clock at a tick
   m_date = 0.;
-  m_position = 0.;
-  m_lastTime = clock_source::now();
+  m_lastTime = clock_type::now();
   m_elapsedTime = 0.;
 
   // notify the owner
@@ -69,7 +61,6 @@ void clock::stop()
   m_constraint.stop();
 
   m_date = 0;
-  m_position = 0;
   m_lastTime = clock_type::time_point{};
   m_elapsedTime = 0;
 }
@@ -89,7 +80,7 @@ void clock::resume()
   m_paused = false;
 
   // reset the time reference
-  m_lastTime = clock_source::now();
+  m_lastTime = clock_type::now();
 }
 
 bool clock::tick()
@@ -105,7 +96,7 @@ bool clock::tick()
 
   // how many time since the last tick ?
   int64_t deltaInUs
-      = duration_cast<microseconds>(clock_source::now() - m_lastTime).count();
+      = duration_cast<microseconds>(clock_type::now() - m_lastTime).count();
 
   // how much ticks it represents ?
   droppedTicks = ossia::llround(std::floor(deltaInUs / granularityInUs));
@@ -119,8 +110,6 @@ bool clock::tick()
     // maybe the clock reaches the end ?
     if (m_duration - m_date < Zero && !m_duration.infinite())
     {
-      m_position = m_date / m_duration;
-
       // notify the owner
       m_constraint.tick(time_value{deltaInUs});
 
@@ -139,22 +128,22 @@ bool clock::tick()
     while (pauseInUs > 5000)
     {
       // pause the thread logarithmically
-      auto t1 = clock_source::now();
+      auto t1 = clock_type::now();
       std::this_thread::sleep_for(std::chrono::microseconds(pauseInUs / 2));
-      auto t2 = clock_source::now();
+      auto t2 = clock_type::now();
       pauseInUs -= duration_cast<microseconds>(t2 - t1).count();
     }
 
     {
       // busy loop
-      auto t1 = clock_source::now();
-      while (duration_cast<microseconds>(clock_source::now() - t1).count()
+      auto t1 = clock_type::now();
+      while (duration_cast<microseconds>(clock_type::now() - t1).count()
              < (pauseInUs + 10))
         ;
     }
 
     deltaInUs
-        = duration_cast<microseconds>(clock_source::now() - m_lastTime).count()
+        = duration_cast<microseconds>(clock_type::now() - m_lastTime).count()
           - droppedTicks * granularityInUs;
   }
 
@@ -165,14 +154,12 @@ bool clock::tick()
   m_elapsedTime += deltaInUs;
 
   // note the time now to evaluate how long is the callback processing
-  m_lastTime = clock_source::now();
+  m_lastTime = clock_type::now();
 
   // test paused and running status after computing the date because there is a
   // sleep before
   if (!paused && running)
   {
-    m_position = m_date / m_duration;
-
     // notify the owner
     m_constraint.tick(time_value{deltaInUs}, m_ratio);
 
@@ -214,11 +201,6 @@ bool clock::running() const
   return m_running;
 }
 
-time_value clock::get_position() const
-{
-  return m_position;
-}
-
 time_value clock::get_date() const
 {
   return m_date;
@@ -248,11 +230,6 @@ clock::exec_status_callback clock::get_exec_status_callback() const
 void clock::do_set_duration(ossia::time_value duration)
 {
   m_duration = duration;
-
-  if (m_duration != Zero)
-    m_position = m_date / m_duration;
-  else
-    m_position = Zero;
 }
 
 void clock::threadCallback()

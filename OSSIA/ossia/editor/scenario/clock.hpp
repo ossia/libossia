@@ -103,10 +103,6 @@ public:
   /// speed factor
   time_value m_granularity{}; /// the minimum time between each tick (in ms)
 
-  /// the progression of the clock between the beginning
-  /// and the end [0. :: 1.]
-  time_value m_position{};
-
   /// how many time the clock is running (without no speed
   /// factor consideration)
   time_value m_date{};
