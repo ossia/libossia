@@ -6,7 +6,7 @@
 
 using namespace ossia;
 
-void constraint_callback(ossia::time_value position, ossia::time_value date, const state_element& element)
+void constraint_callback(double position, ossia::time_value date, const state_element& element)
 {
     ;
 }
@@ -32,23 +32,24 @@ private Q_SLOTS:
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
         auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);
+        ossia::clock c{*constraint};
         QVERIFY(constraint != nullptr);
 
-        QVERIFY(constraint->get_granularity() == 1._tv);
+        QVERIFY(c.get_granularity() == 1._tv);
         QVERIFY(constraint->get_offset() == 0._tv);
         QVERIFY(constraint->get_speed() == 1._tv);
         QVERIFY(constraint->get_nominal_duration() == 1000._tv);
         QVERIFY(constraint->get_min_duration() == 0._tv);
         QVERIFY(constraint->get_max_duration() == Infinite);
 
-        constraint->set_granularity(50._tv);
+        c.set_granularity(50._tv);
         constraint->set_speed(2._tv);
         constraint->set_nominal_duration(2000._tv);
         constraint->set_min_duration(1000._tv);
         constraint->set_max_duration(3000._tv);
         auto state = constraint->offset(500._tv);
 
-        QVERIFY(constraint->get_granularity() == 50._tv);
+        QVERIFY(c.get_granularity() == 50._tv);
         QVERIFY(constraint->get_speed() == 2._tv);
         QVERIFY(constraint->get_nominal_duration() == 2000._tv);
         QVERIFY(constraint->get_min_duration() == 1000._tv);
@@ -56,8 +57,8 @@ private Q_SLOTS:
         QVERIFY(constraint->get_offset() == 500._tv);
         QVERIFY(!state);
 
-        QCOMPARE(constraint->get_position(), 0.25_tv);
-        QVERIFY(constraint->running() == false);
+        QCOMPARE(constraint->get_position(), 0.25);
+        QVERIFY(c.running() == false);
         QVERIFY(constraint->get_date() == 500._tv);
 
         QVERIFY(&constraint->get_start_event() == start_event.get());

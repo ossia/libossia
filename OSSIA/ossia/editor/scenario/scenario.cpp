@@ -88,10 +88,7 @@ void scenario::stop()
   for (const auto& timeConstraint : m_constraints)
   {
     time_constraint& cst = *timeConstraint;
-    if (cst.running())
-    {
-      cst.stop();
-    }
+    cst.stop();
   }
 
   for(const auto& node : m_nodes)
@@ -109,10 +106,7 @@ void scenario::pause()
   for (const auto& timeConstraint : m_constraints)
   {
     auto& cst = *timeConstraint;
-    if (cst.running())
-    {
-      cst.pause();
-    }
+    cst.pause();
   }
 }
 
@@ -122,10 +116,7 @@ void scenario::resume()
   for (const auto& timeConstraint : m_constraints)
   {
     auto& cst = *timeConstraint;
-    if (cst.running())
-    {
-      cst.resume();
-    }
+    cst.resume();
   }
 }
 
@@ -145,18 +136,12 @@ void scenario::add_time_constraint(
 
   // store TimeConstraint's end node if it is not already stored
   add_time_node(cst.get_end_event().get_time_node().shared_from_this());
-
-  // set TimeConstraint's clock in external mode
-  cst.set_drive_mode(clock::drive_mode::EXTERNAL);
 }
 
 void scenario::remove_time_constraint(
     const std::shared_ptr<time_constraint>& timeConstraint)
 {
   remove_one(m_constraints, timeConstraint);
-
-  // set the TimeConstraint's clock in none external mode
-  timeConstraint->set_drive_mode(clock::drive_mode::INTERNAL);
 }
 
 void scenario::add_time_node(std::shared_ptr<time_node> timeNode)

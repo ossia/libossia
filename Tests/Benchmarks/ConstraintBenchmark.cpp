@@ -25,7 +25,6 @@ class ConstraintBenchmark : public QObject
     auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
     en->insert(en->get_time_events().end(), ee);
     auto c = ossia::time_constraint::create([] (auto&&...) {}, *se, *ee, def, min, max);
-    c->set_drive_mode(ossia::clock::drive_mode::EXTERNAL);
     s.add_time_constraint(c);
   }
 

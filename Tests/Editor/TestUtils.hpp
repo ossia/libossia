@@ -47,6 +47,7 @@ struct root_scenario
             *start_event, *end_event,
             ossia::time_value(15000), ossia::time_value(15000), ossia::time_value(15000))};
   std::shared_ptr<ossia::scenario> scenario{std::make_shared<ossia::scenario>()};
+  ossia::clock clck{*constraint};
 
   root_scenario()
   {
@@ -54,8 +55,7 @@ struct root_scenario
     start_node->insert(start_node->get_time_events().end(), start_event);
     end_node->insert(end_node->get_time_events().end(), end_event);
 
-    constraint->set_granularity(50_tv);
-    constraint->set_drive_mode(ossia::clock::drive_mode::EXTERNAL);
+    clck.set_granularity(50_tv);
 
     constraint->add_time_process(scenario);
     auto scen_sn = scenario->get_start_time_node();

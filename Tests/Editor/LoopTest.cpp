@@ -10,7 +10,7 @@ class LoopTest : public QObject
 {
     Q_OBJECT
 
-    void constraint_callback(ossia::time_value position, time_value date, const state_element& element)
+    void constraint_callback(double position, time_value date, const state_element& element)
     {
         ossia::launch(element);
     }
@@ -54,12 +54,13 @@ private Q_SLOTS:
 
         auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
+        ossia::clock c{*constraint};
         constraint->add_time_process(
               std::make_unique<loop>(25._tv, constraint_callback, event_callback, event_callback));
 
-        constraint->start();
+        c.start();
 
-        while (constraint->running())
+        while (c.running())
             ;
     }
 };

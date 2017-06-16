@@ -19,7 +19,7 @@ class MapperTest : public QObject
   address_base* m_int_address{};
   std::vector<value> m_int_address_values;
 
-  void constraint_callback(ossia::time_value position, time_value date, const state_element& st)
+  void constraint_callback(double position, time_value date, const state_element& st)
   {
     ossia::launch(st);
   }
@@ -93,17 +93,17 @@ private Q_SLOTS:
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 400._tv, 400._tv, 400._tv);
     constraint->add_time_process(
           std::make_unique<mapper>(Destination{*m_float_address}, Destination{*m_int_address}, curve_ptr{c}));
-
+    ossia::clock clck{*constraint};
     m_float_address_values.clear();
     m_int_address_values.clear();
 
     float f(-10.);
     m_float_address->push_value(f);
 
-    constraint->set_granularity(10._tv);
-    constraint->start();
+    clck.set_granularity(10._tv);
+    clck.start();
 
-    while (constraint->running())
+    while (clck.running())
     {
       std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }

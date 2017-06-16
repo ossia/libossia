@@ -13,13 +13,15 @@ namespace ossia
  */
 struct OSSIA_EXPORT time_value
 {
-  explicit constexpr time_value(double d) noexcept :
-    impl{d}
+  static const constexpr auto infinity = std::numeric_limits<int64_t>::max();
+  template<typename T>
+  explicit constexpr time_value(T d) noexcept :
+    impl{(int64_t)d}
   {
   }
 
   explicit constexpr time_value() noexcept :
-    impl{0.}
+    impl{0}
   {
   }
 
@@ -81,7 +83,7 @@ struct OSSIA_EXPORT time_value
   {
     if (infinite() || t.infinite())
     {
-      return time_value(INFINITY);
+      return time_value(infinity);
     }
 
     return time_value(impl + t.impl);
@@ -97,7 +99,7 @@ struct OSSIA_EXPORT time_value
   {
     if (infinite() || t.infinite())
     {
-      return time_value(INFINITY);
+      return time_value(infinity);
     }
 
     return time_value(impl - t.impl);
@@ -134,13 +136,13 @@ struct OSSIA_EXPORT time_value
   bool infinite() const noexcept
   {
     //! \todo this prevents ever compiling with -Ofast
-    return std::isinf(impl);
+    return std::numeric_limits<int64_t>::max() == impl;
   }
 
   bool operator==(ossia::time_value rhs) const noexcept { return impl == rhs.impl; }
   bool operator!=(ossia::time_value rhs) const noexcept { return impl != rhs.impl; }
 
-  double impl;
+  int64_t impl{};
 };
 
 OSSIA_EXPORT inline time_value operator "" _tv(long double v)
@@ -150,11 +152,11 @@ OSSIA_EXPORT inline time_value operator "" _tv(long double v)
 
 OSSIA_EXPORT inline time_value operator "" _tv(unsigned long long v)
 {
-    return time_value(v);
+    return time_value((int64_t)v);
 }
 
-const constexpr time_value Infinite{INFINITY};
-const constexpr time_value Zero{0.};
-const constexpr time_value One{1.};
+const constexpr time_value Infinite{time_value::infinity};
+const constexpr time_value Zero{0};
+const constexpr time_value One{1};
 
 }

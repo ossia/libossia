@@ -60,7 +60,7 @@ public:
   const std::shared_ptr<time_node> get_end_timenode() const;
 
   private:
-  void constraint_callback(ossia::time_value, time_value, const ossia::state_element&);
+  void constraint_callback(double, time_value, const ossia::state_element&);
 
   void start_event_callback(time_event::status);
 

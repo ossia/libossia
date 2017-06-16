@@ -243,7 +243,7 @@ void update_overtick(time_constraint& constraint, time_node* end_node, ossia::ti
   // Store the over-ticking min / max, scaled to speed = 1.
   // That is : tick - (max_dur - tick_start_dur) / speed
   auto cst_speed = constraint.get_speed();
-  auto ot = tick_us - (constraint.get_max_duration() * 1000. - cst_old_date) / cst_speed;
+  auto ot = tick_us - (constraint.get_max_duration() - cst_old_date) / cst_speed;
 
   auto node_it = node_tick_dur.lower_bound(end_node);
   if(node_it != node_tick_dur.end() && (end_node == node_it->first))
@@ -263,11 +263,11 @@ void scenario::tick_constraint(time_constraint& constraint, time_value tick)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
-  auto cst_old_date = constraint.get_date() * 1000.;
+  auto cst_old_date = constraint.get_date();
   auto cst_max_dur = constraint.get_max_duration();
   if(!cst_max_dur.infinite())
   {
-    auto this_tick = std::min(tick, cst_max_dur * 1000. - cst_old_date + 1.);
+    auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
     constraint.tick(this_tick);
   }
   else
@@ -287,9 +287,9 @@ state_element scenario::state(ossia::time_value date, double pos)
     m_lastDate = date;
 
     // Duration of this tick.
-    time_value tick_us = (prev_last_date == Infinite)
-                         ? date * 1000.
-                         : (date - prev_last_date) * 1000.;
+    time_value tick_ms = (prev_last_date == Infinite)
+                         ? date
+                         : (date - prev_last_date) ;
 
     ossia::state cur_state;
     m_overticks.clear();
@@ -330,15 +330,15 @@ state_element scenario::state(ossia::time_value date, double pos)
 
     for(time_constraint* constraint : m_runningConstraints)
     {
-      auto cst_old_date = constraint->get_date() * 1000.;
-      tick_constraint(*constraint, tick_us);
+      auto cst_old_date = constraint->get_date();
+      tick_constraint(*constraint, tick_ms);
 
       // ossia::logger().info("scenario::state tick {}: {}", (void*)constraint, tick_us);
 
       auto end_node = &constraint->get_end_event().get_time_node();
       m_endNodes.insert(end_node);
 
-      update_overtick(*constraint, end_node, tick_us, cst_old_date, m_overticks);
+      update_overtick(*constraint, end_node, tick_ms, cst_old_date, m_overticks);
     }
 
     // Handle time nodes / events... if they are not finished, constraints in running_constraint are in cur_cst

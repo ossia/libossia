@@ -30,30 +30,21 @@ class OSSIA_EXPORT time_constraint
 {
 
 public:
-  auto running() const { return m_clock.running(); }
-  auto get_date() const { return m_clock.get_date(); }
-  auto get_position() const { return m_clock.get_position(); }
-  auto get_drive_mode() const { return m_clock.get_drive_mode(); }
-  auto get_granularity() const { return m_clock.get_granularity(); }
-  auto get_offset() const { return m_clock.get_offset(); }
-  auto get_speed() const { return m_clock.get_speed(); }
-  auto get_exec_status_callback() const { return m_clock.get_exec_status_callback(); }
-  auto paused() const { return m_clock.paused(); }
-  void set_offset(ossia::time_value g) { m_clock.set_offset(g); }
-  void set_drive_mode(clock::drive_mode m) { m_clock.set_drive_mode(m); }
-  void set_granularity(ossia::time_value g) { m_clock.set_granularity(g); }
-  void set_speed(double g) { m_clock.set_speed(g); }
-  bool tick() { return m_clock.tick(); }
-  bool tick(ossia::time_value usec) { return m_clock.tick(usec); }
-  void set_exec_status_callback(clock::exec_status_callback c) { m_clock.set_exec_status_callback(c); }
+  auto get_date() const { return m_date; }
+  auto get_position() const { return m_position; }
+  auto get_offset() const { return m_offset; }
+  auto get_speed() const { return m_speed; }
+  void set_offset(ossia::time_value g) { m_offset = g; }
+  void set_speed(double g) { m_speed = g; }
+  void tick(ossia::time_value usec);
+  void tick(ossia::time_value usec, double ratio);
 
-  clock& get_clock() { return m_clock; }
   /*! to get the constraint execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
   using exec_callback
-      = std::function<void(ossia::time_value, ossia::time_value, const ossia::state_element&)>;
+      = std::function<void(double, ossia::time_value, const ossia::state_element&)>;
 
   /*! constructor
    \details by default a #time_constraint has an infinite duration with no
@@ -169,13 +160,10 @@ public:
   }
 
 private:
-  clock::exec_callback make_callback();
-  clock::exec_callback make_stateless_callback();
   ossia::state make_state();
 
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_constraint::exec_callback m_callback;
-  clock m_clock;
 
   time_event& m_start;
   time_event& m_end;
@@ -183,5 +171,17 @@ private:
   time_value m_nominal{};
   time_value m_min{};
   time_value m_max{};
+
+  /// the progression of the clock between the beginning
+  /// and the end [0. :: 1.]
+  double m_position{};
+
+  /// how many time the clock is running (without no speed
+  /// factor consideration)
+  time_value m_date{};
+
+  time_value m_offset{};      /// the date (in ms) the clock will run from
+  double m_speed{1.};           /// the speed factor of the clock
+
 };
 }

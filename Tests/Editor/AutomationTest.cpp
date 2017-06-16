@@ -12,8 +12,10 @@ class AutomationTest : public QObject
 
   std::vector<value> m_address_values;
 
-  void constraint_callback(ossia::time_value position, time_value date, const state_element& element)
+  void constraint_callback(double position, time_value date, const state_element& element)
   {
+    std::cerr << position << std::endl;
+    ossia::print(std::cerr, element);
     ossia::launch(element);
   }
 
@@ -73,12 +75,13 @@ private Q_SLOTS:
     auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
     constraint->add_time_process(std::make_unique<automation>(*address, curve_ptr{c}));
 
+    ossia::clock clck{*constraint};
     m_address_values.clear();
 
-    constraint->set_granularity(10._tv);
-    constraint->start();
+    clck.set_granularity(10._tv);
+    clck.start();
 
-    while (constraint->running())
+    while (clck.running())
       ;
     // Let the time for callbacks to happen...
     //std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -94,6 +97,7 @@ private Q_SLOTS:
     bool different_from_previous = true;
     for (auto v : m_address_values)
     {
+      qDebug() << ossia::convert<float>(v) << previous;
       different_from_previous = (v != previous);
       if (!different_from_previous)
         break;

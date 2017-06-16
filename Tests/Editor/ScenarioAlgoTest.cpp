@@ -5,7 +5,7 @@
 namespace ossia {
 char* toString(const ossia::time_value& val)
 {
-  return QTest::toString(QByteArray::number(val.impl));
+  return QTest::toString(QByteArray::number((qint64)val.impl));
 }
 }
 
@@ -39,8 +39,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> se = start_event(scenario);
       std::shared_ptr<time_event> ee = create_event(scenario);
 
-      std::shared_ptr<time_constraint> c = time_constraint::create([] (auto&&...) {}, *se, *ee, 3_tv, 3_tv, 3_tv);
-      c->set_drive_mode(clock::drive_mode::EXTERNAL);
+      std::shared_ptr<time_constraint> c = time_constraint::create([] (auto&&...) {}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
       s.scenario->add_time_constraint(c);
 
       s.constraint->start();
@@ -48,11 +47,11 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c->get_date(), 0_tv);
 
       s.constraint->tick(1000_tv);
-      QCOMPARE(c->get_date(), 1_tv);
+      QCOMPARE(c->get_date(), 1000_tv);
       s.constraint->tick(1000_tv);
-      QCOMPARE(c->get_date(), 2_tv);
+      QCOMPARE(c->get_date(), 2000_tv);
       s.constraint->tick(999_tv);
-      QCOMPARE(c->get_date(), 2.999_tv);
+      QCOMPARE(c->get_date(), 2999_tv);
       s.constraint->tick(1_tv); // The constraint is stopped
 
       QCOMPARE(c->get_date(), 0_tv);
@@ -76,20 +75,20 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3_tv, 3_tv, 3_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 3_tv, 3_tv, 3_tv);
+      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
 
       s.scenario->add_time_constraint(c0);
       s.scenario->add_time_constraint(c1);
 
       s.constraint->start();
       s.constraint->tick(500_tv);
-      QCOMPARE(c0->get_date(), 0.5_tv);
+      QCOMPARE(c0->get_date(), 500_tv);
       QCOMPARE(c1->get_date(), 0_tv);
       s.constraint->tick(3000_tv);
 
       QCOMPARE(c0->get_date(), 0_tv);
-      QCOMPARE(c1->get_date(), 0.5_tv);
+      QCOMPARE(c1->get_date(), 500_tv);
     }
 
     void test_exec_chain_multi()
@@ -109,7 +108,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 1_tv, 1_tv, 1_tv);
       std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 1_tv, 1_tv, 1_tv);
       std::shared_ptr<time_constraint> c2 = time_constraint::create([] (auto&&...) {}, *e2, *e3, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_constraint> c3 = time_constraint::create([] (auto&&...) {}, *e3, *e4, 1000_tv, 1000_tv, 1000_tv);
+      std::shared_ptr<time_constraint> c3 = time_constraint::create([] (auto&&...) {}, *e3, *e4, 10_tv, 10_tv, 10_tv);
 
       s.scenario->add_time_constraint(c0);
       s.scenario->add_time_constraint(c1);
@@ -118,7 +117,7 @@ class ScenarioAlgoTest : public QObject
 
       std::cerr << c0.get() << " " << c1.get() << " " << c2.get() << " " << c3.get() << std::endl;
       s.constraint->start();
-      s.constraint->tick(5000_tv);
+      s.constraint->tick(5_tv);
       std::cerr << e0->get_status() << " "
                 << e1->get_status() << " "
                 << e2->get_status() << " "
@@ -142,15 +141,15 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3_tv, 2_tv, 4_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100_tv, 100_tv, 100_tv);
+      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
       s.scenario->add_time_constraint(c0);
       s.scenario->add_time_constraint(c1);
 
       s.constraint->start();
       s.constraint->tick(1000_tv);
-      QCOMPARE(c0->get_date(), 1_tv);
+      QCOMPARE(c0->get_date(), 1000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
       s.constraint->tick(1500_tv); // Get into the min; the node is triggered
       QCOMPARE(c0->get_date(), 0_tv);
@@ -160,7 +159,7 @@ class ScenarioAlgoTest : public QObject
       s.constraint->tick(5000_tv);
 
       QCOMPARE(c0->get_date(), 0_tv);
-      QCOMPARE(c1->get_date(), 5_tv);
+      QCOMPARE(c1->get_date(), 5000_tv);
     }
 
     void test_max()
@@ -176,19 +175,19 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_node().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3_tv, 2_tv, 4_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100_tv, 100_tv, 100_tv);
+      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
       scenario.add_time_constraint(c0);
       scenario.add_time_constraint(c1);
 
       s.constraint->start();
       s.constraint->tick(3000_tv);
-      QCOMPARE(c0->get_date(), 3_tv);
+      QCOMPARE(c0->get_date(), 3000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
       s.constraint->tick(1500_tv); // Go past the max
       QCOMPARE(c0->get_date(), 0_tv);
-      QCOMPARE(c1->get_date(), 0.5_tv);
+      QCOMPARE(c1->get_date(), 500_tv);
     }
 
     void test_autom()
@@ -218,7 +217,7 @@ class ScenarioAlgoTest : public QObject
       proc->set_behavior(crv);
       c0->add_time_process(proc);
 
-      s.constraint->set_callback([] (ossia::time_value, time_value, const state_element& s) {
+      s.constraint->set_callback([] (double, time_value, const state_element& s) {
         ossia::print(std::cerr, s);
       });
       s.constraint->start();
@@ -257,7 +256,7 @@ class ScenarioAlgoTest : public QObject
       proc->set_behavior(crv);
       c0->add_time_process(proc);
 
-      s.constraint->set_callback([] (ossia::time_value, time_value, const state_element& s) {
+      s.constraint->set_callback([] (double, time_value, const state_element& s) {
         ossia::print(std::cerr, s);
       });
       s.constraint->start();
