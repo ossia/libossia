@@ -1,4 +1,5 @@
 #include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/model.hpp>
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/logger.hpp>
 
@@ -81,6 +82,7 @@ namespace max {
     }
     
     template bool object_register<t_parameter> (t_parameter*);
+    template bool object_register<t_model> (t_model*);
     
     template<typename T>
     std::string object_path(T* x)
@@ -175,6 +177,7 @@ namespace max {
     }
     
     template std::string object_path<t_parameter> (t_parameter*);
+    template std::string object_path<t_model> (t_model*);
     
     template<typename T>
     void object_quarantining(T* x)
@@ -183,6 +186,7 @@ namespace max {
     }
     
     template void object_quarantining<t_parameter> (t_parameter*);
+    template void object_quarantining<t_model> (t_model*);
     
     template<typename T>
     void object_dequarantining(T* x)
@@ -191,6 +195,7 @@ namespace max {
     }
     
     template void object_dequarantining<t_parameter> (t_parameter*);
+     template void object_dequarantining<t_model> (t_model*);
     
     template<typename T>
     bool object_is_quarantined(T* x)
@@ -199,6 +204,7 @@ namespace max {
     }
     
     template bool object_is_quarantined<t_parameter> (t_parameter*);
+    template bool object_is_quarantined<t_model> (t_model*);
     
     template<typename T>
     void object_dump(T* x)
@@ -369,9 +375,35 @@ namespace max {
     }
     
     template void object_dump<t_parameter> (t_parameter*);
+    template void object_dump<t_model> (t_model*);
     
 # pragma mark -
 # pragma mark Utilities
+    
+    
+    void register_quarantinized()
+    {
+        for (auto model : t_model::quarantine())
+        {
+            object_register<t_model>(static_cast<t_model*>(model));
+        }
+        
+        for (auto parameter : t_parameter::quarantine())
+        {
+            object_register<t_parameter>(static_cast<t_parameter*>(parameter));
+        }
+        /*
+        for (auto view : t_view::quarantine())
+        {
+            object_register<t_view>(static_cast<t_view*>(view));
+        }
+        
+        for (auto remote : t_remote::quarantine())
+        {
+            object_register<t_remote>(static_cast<t_remote*>(remote));
+        }
+         */
+    }
     
     std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
     {

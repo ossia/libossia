@@ -17,6 +17,7 @@ namespace max
     extern "C" void ossia_client_setup(void);
     extern "C" void ossia_device_setup(void);
     extern "C" void ossia_logger_setup(void);
+    extern "C" void ossia_model_setup(void);
     extern "C" void ossia_parameter_setup(void);
     
     class ossia_max
@@ -27,6 +28,7 @@ namespace max
         t_class* ossia_client_class{};
         t_class* ossia_device_class{};
         t_class* ossia_parameter_class{};
+        t_class* ossia_model_class{};
         t_class* ossia_logger_class{};
         
     private:
@@ -52,6 +54,11 @@ namespace max
     
 # pragma mark -
 # pragma mark Utilities
+    
+    /**
+     * @brief register_quarantinized Try to register all quarantinized objects
+     */
+    void register_quarantinized();
     
     std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
     

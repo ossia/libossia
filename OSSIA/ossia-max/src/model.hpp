@@ -1,49 +1,46 @@
 #pragma once
 
-#include "ossia_obj_base.hpp"
-#include "ossia-pd.hpp"
-#include "device.hpp"
+#include "ossia_object_base.hpp"
 
-namespace ossia { namespace pd {
-
-struct t_model : t_obj_base
-{
-    bool register_node(ossia::net::node_base*  node);
-    bool do_registration(ossia::net::node_base*  node);
-    bool unregister();
-
-    static std::vector<t_model*>& quarantine(){
-        static std::vector<t_model*> quarantine;
-        return quarantine;
-    }
-    t_symbol* x_tags;
-    t_symbol* x_description;
-
-    void isDeleted(const ossia::net::node_base& n)
+namespace ossia {
+namespace max {
+    
+# pragma mark -
+# pragma mark t_model structure declaration
+    
+    struct t_model : t_object_base
     {
-        if (!x_dead){
-            x_node->about_to_be_deleted.disconnect<t_model, &t_model::isDeleted>(this);
-            x_node = nullptr;
-            obj_quarantining<t_model>(this);
+        t_symbol* m_tags;
+        t_symbol* m_description;
+        
+        bool register_node(ossia::net::node_base*);
+        bool do_registration(ossia::net::node_base*);
+        bool unregister();
+        
+        void is_deleted(const ossia::net::node_base&);
+        bool is_renamed(t_model*);
+        void renaming(t_model*);
+        void derenaming(t_model*);
+        
+        static std::vector<t_model*>& quarantine()
+        {
+            static std::vector<t_model*> quarantine;
+            return quarantine;
         }
-    }
+        
+        static std::vector<t_model*>& rename()
+        {
+            static std::vector<t_model*> rename;
+            return rename;
+        }
+    };
 
-    static std::vector<t_model*>& rename(){
-        static std::vector<t_model*> rename;
-        return rename;
-    }
+} // max namespace
+} // ossia namespace
 
-    bool isRenamed(t_model* x){
-      return ossia::contains(x->rename(),x);
-    }
-
-    void renaming(t_model* x){
-        if ( !isRenamed(x) ) x->rename().push_back(x);
-    }
-
-    void derenaming(t_model* x){
-        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
-    }
-};
-
-} } // namespace
+extern "C"
+{
+    void* ossia_model_new(t_symbol*, long, t_atom*);
+    void ossia_model_assist(ossia::max::t_model*, void*, long, long, char*);
+    void ossia_model_free(ossia::max::t_model*);
+}

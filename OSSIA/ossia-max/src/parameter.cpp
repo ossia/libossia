@@ -74,7 +74,7 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
         if (x->m_name == _sym_nothing)
         {
             object_error((t_object*)x, "needs a name as first argument");
-            x->m_name = gensym("untitledParam");
+            x->m_name = gensym("untitledParameter");
             return x;
         }
         
@@ -83,6 +83,16 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
     }
     
     return x;
+}
+
+extern "C"
+void ossia_parameter_free(t_parameter* x)
+{
+    x->unregister();
+    
+    object_dequarantining(x);
+    
+    // TODO : free outlets
 }
 
 extern "C"
@@ -131,16 +141,6 @@ void ossia_parameter_in_char(t_parameter* x, char f)
 extern "C"
 void ossia_parameter_in_anything(t_parameter* x, t_symbol *s, long argc, t_atom *argv)
 { /* todo */ }
-
-extern "C"
-void ossia_parameter_free(t_parameter* x)
-{
-    x->unregister();
-    
-    object_dequarantining(x);
-    
-    // TODO : free outlets
-}
 
 namespace ossia {
 namespace max {

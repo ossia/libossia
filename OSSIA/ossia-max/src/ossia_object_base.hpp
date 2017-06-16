@@ -7,8 +7,8 @@ namespace max {
 # pragma mark -
 # pragma mark t_object_base structure declaration
     
-    struct t_object_base {
-        
+    struct t_object_base
+    {
         t_object    m_object;
         void**      m_inlets{};
         void*       m_data_out{};
