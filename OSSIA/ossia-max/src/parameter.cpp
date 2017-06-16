@@ -19,6 +19,7 @@ void ossia_parameter_setup()
                                                     0L, A_GIMME, 0);
     
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_assist,        "assist",       A_CANT, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_dbclick,		"dblclick",		A_CANT, 0);
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_bang,       "bang",         0);
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_int,        "int",          A_LONG, 0);
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_float,      "float",        A_FLOAT, 0);
@@ -55,7 +56,7 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
         x->m_description = gensym("");
         x->m_priority = 0;
         
-        //x->m_clock = clock_new(x, ossia::max::push_default_value);
+        x->m_clock = clock_new(x, (method)ossia::max::push_default_value);
         
         // parse attributes
         long attrstart = attr_args_offset(argc, argv);
@@ -89,21 +90,28 @@ extern "C"
 void ossia_parameter_free(t_parameter* x)
 {
     x->unregister();
-    
     object_dequarantining(x);
-    
+    object_free(x->m_clock);
     // TODO : free outlets
 }
 
 extern "C"
 void ossia_parameter_assist(t_parameter *x, void *b, long m, long a, char *s)
 {
-    if (m == ASSIST_INLET) { // inlet
+    if (m == ASSIST_INLET)
+    {
         sprintf(s, "I am inlet %ld", a);
     }
-    else {	// outlet
+    else
+    {
         sprintf(s, "I am outlet %ld", a);
     }
+}
+
+void ossia_parameter_dbclick(ossia::max::t_parameter* x, t_symbol* msg, long argc, const t_atom* argv)
+{
+    int l;
+    object_post(find_parent((t_object*)x, gensym("ossia.model"), 0, &l), "click on this log message to find parent");
 }
 
 template<typename T>

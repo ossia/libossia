@@ -24,30 +24,25 @@ void ossia_device_setup(void)
                                                  (short)sizeof(t_device),
                                                  0L, A_GIMME, 0);
     
-    class_addmethod(ossia_library.ossia_client_class, (method)t_device::register_children,              "register",     A_NOTHING,  0);
-    class_addmethod(ossia_library.ossia_client_class, (method)t_device::loadbang,                       "loadbang",     A_NOTHING,  0);
-    class_addmethod(ossia_library.ossia_client_class, (method)ossia_device_dump,                        "dump",         A_NOTHING,  0);
-    class_addmethod(ossia_library.ossia_client_class, (method)ossia_device_expose,                      "expose",       A_GIMME,    0);
-    class_addmethod(ossia_library.ossia_client_class, (method)protocol_settings::print_protocol_help,   "help",         A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_device_class, (method)t_device::register_children,              "register",     A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_device_class, (method)t_device::loadbang,                       "loadbang",     A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_device_class, (method)ossia_device_dump,                        "dump",         A_NOTHING,  0);
+    class_addmethod(ossia_library.ossia_device_class, (method)ossia_device_expose,                      "expose",       A_GIMME,    0);
+    class_addmethod(ossia_library.ossia_device_class, (method)protocol_settings::print_protocol_help,   "help",         A_NOTHING,  0);
     
-    class_register(CLASS_BOX, ossia_library.ossia_client_class);
+    class_register(CLASS_BOX, ossia_library.ossia_device_class);
 }
 
 extern "C"
 void *ossia_device_new(t_symbol *name, long argc, t_atom *argv)
 {
     auto& ossia_library = ossia_max::instance();
-    t_device* x = (t_device *) object_alloc(ossia_library.ossia_device_class);
+    t_device* x = (t_device*) object_alloc(ossia_library.ossia_device_class);
     
     if (x)
     {
         // make outlets
         x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump client state
-        
-        auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-        x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->m_name->s_name};
-        
-        x->m_node = &x->m_device->get_root_node();
         
         // parse attributes
         long attrstart = attr_args_offset(argc, argv);
@@ -61,6 +56,13 @@ void *ossia_device_new(t_symbol *name, long argc, t_atom *argv)
                 x->m_name = atom_getsym(argv);
             }
         }
+        
+        // TODO : move local protocol creation into ossia Library loading to do this only one time
+        // TODO : only allow local device renaming here
+        auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
+        x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->m_name->s_name};
+        
+        x->m_node = &x->m_device->get_root_node();
     }
     
     return (x);

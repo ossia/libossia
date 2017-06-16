@@ -1,7 +1,9 @@
 #include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/client.hpp>
+#include <ossia-max/src/device.hpp>
+#include <ossia-max/src/logger.hpp>
 #include <ossia-max/src/model.hpp>
 #include <ossia-max/src/parameter.hpp>
-#include <ossia-max/src/logger.hpp>
 
 # pragma mark -
 # pragma mark library
@@ -12,7 +14,10 @@ using namespace ossia::max;
 extern "C"
 void ext_main(void *r)
 {
+    ossia_client_setup();
+    ossia_device_setup();
     ossia_logger_setup();
+    ossia_model_setup();
     ossia_parameter_setup();
     
     post("OSSIA library for Max is loaded");
@@ -39,43 +44,43 @@ namespace max {
     bool object_register(T* x)
     {
         post("OSSIA library : object_register TODO");
-    
+        
         if (x->m_node) return true; // already registered
         if (x->m_dead) return false; // object will be removed soon
-    /*
-    int l;
-    t_device* device = (t_device*) find_parent(&x->m_object, "ossia.device", 0, &l);
-    t_client* client = (t_client*) find_parent(&x->m_object, "ossia.client", 0, &l);
-    
-    // first try to locate a ossia.device in the parent hierarchy...
-    if (!device && !client)
-        return false; // not ready to register : if there is no device, nothing could be registered
-    
-    t_model *model = nullptr;
-    t_view *view = nullptr;
-    int view_level=0, model_level=0;
-    
-    if (!x->m_absolute)
-    {
-        // then try to locate a parent view or model
-        if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
-            view = find_parent_alive<t_view>(&x->m_object, "ossia.view", 0, &view_level);
+        
+        int l;
+        t_device* device = (t_device*) find_parent((t_object*)x, gensym("ossia.device"), 0, &l);
+        t_client* client = (t_client*) find_parent((t_object*)x, gensym("ossia.client"), 0, &l);
+        /*
+        // first try to locate a ossia.device in the parent hierarchy...
+        if (!device && !client)
+            return false; // not ready to register : if there is no device, nothing could be registered
+        
+        t_model* model = nullptr;
+        t_view* view = nullptr;
+        int view_level = 0, model_level = 0;
+        
+        if (!x->m_absolute)
+        {
+            // then try to locate a parent view or model
+            if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+                view = find_parent_alive<t_view>(&x->m_object, gensym("ossia.view"), 0, &view_level);
+            else
+                model = find_parent_alive<t_model>(&x->m_object, gensym("ossia.model"), 0, &model_level);
+        }
+        
+        ossia::net::node_base*  node = nullptr;
+        
+        if (view)
+            node = view->m_node;
+        else if (model)
+            node = model->m_node;
+        else if (client)
+            node = client->m_node;
         else
-            model = find_parent_alive<t_model>(&x->m_object, "ossia.model", 0, &model_level);
-    }
-    
-    ossia::net::node_base*  node = nullptr;
-    
-    if (view)
-        node = view->m_node;
-    else if (model)
-        node = model->m_node;
-    else if (client)
-        node = client->m_node;
-    else
-        node = device->m_node;
-    
-    return x->register_node(node);
+            node = device->m_node;
+        
+        return x->register_node(node);
     */
     
         return false;
@@ -102,14 +107,14 @@ namespace max {
         if (std::is_same<T, t_view>::value)
             start_level = 1;
         
-        view = find_parent_alive<t_view>(&x->m_object, "ossia.view", start_level, &view_level);
+        view = find_parent_alive<t_view>(&x->m_object, gensym("ossia.view"), start_level, &view_level);
         t_view* tmp = nullptr;
         
         while (view)
         {
             vs.push_back(view->m_name->s_name);
             tmp = view;
-            view = find_parent_alive<t_view>(&tmp->m_object, "ossia.view", 1, &view_level);
+            view = find_parent_alive<t_view>(&tmp->m_object, gensym("ossia.view"), 1, &view_level);
         }
         
         t_object* object = nullptr;
@@ -120,8 +125,8 @@ namespace max {
             object = &m_object;
         
         int l = 0;
-        t_device* device = (t_device*) find_parent(object, "ossia.device", 0, &l);
-        t_client* client = (t_client*) find_parent(object, "ossia.client", 0, &l);
+        t_device* device = (t_device*) find_parent(object, gensym("ossia.device"), 0, &l);
+        t_client* client = (t_client*) find_parent(object, gensym("ossia.client"), 0, &l);
         
         if (client)
             fullpath << client->m_name->s_name << ":";
@@ -134,14 +139,14 @@ namespace max {
         if (std::is_same<T, t_model>::value)
             start_level = 1;
         
-        model = find_parent_alive<t_model>(&x->m_object, "ossia.model", start_level, &model_level);
+        model = find_parent_alive<t_model>(&x->m_object, gensym("ossia.model"), start_level, &model_level);
         t_model* tmp = nullptr;
         
         while (model)
         {
             vs.push_back(model->m_name->s_name);
             tmp = model;
-            model = find_parent_alive<t_model>(&tmp->m_object, "ossia.model", 1, &model_level);
+            model = find_parent_alive<t_model>(&tmp->m_object, gensym("ossia.model"), 1, &model_level);
         }
         
         t_object* object = nullptr;
@@ -154,7 +159,7 @@ namespace max {
         t_device *device = nullptr;
         
         if (object)
-            device = (t_device*) find_parent(object, "ossia.device", 0, &l);
+            device = (t_device*) find_parent(object, gensym("ossia.device"), 0, &l);
         
         if (device)
             fullpath << device->m_name->s_name << ":";
@@ -403,6 +408,51 @@ namespace max {
             object_register<t_remote>(static_cast<t_remote*>(remote));
         }
          */
+    }
+    
+    t_object* find_parent(t_object* x, t_symbol* classname, int start_level, int* level)
+    {
+        t_object* parent = nullptr;
+        
+        // look upper if there is an upper level and if it is not the level where to start the research
+        t_object* patcher = get_patcher(x);
+        
+        if (patcher && start_level)
+            parent = find_parent(patcher, classname, start_level--, level);
+        
+        // if no parent object have been found in upper patcher, look around
+        if (!parent)
+        {
+            t_object* obj = object_attr_getobj(patcher, _sym_firstobject);
+            
+            while (obj)
+            {
+                if (object_attr_getsym(obj, _sym_maxclass) == classname)
+                {
+                    parent = obj;
+                    *level = start_level;
+                    break;
+                }
+                
+                obj = object_attr_getobj(obj, _sym_nextobject);
+            }
+        }
+
+        return parent;
+    }
+    
+    t_object* get_patcher(t_object *obj)
+    {
+        t_object *patcher = NULL;
+        object_obex_lookup(obj, gensym("#P"), &patcher);
+        
+        // If obj is in a bpatcher, the patcher is NULL
+        if (!patcher)
+        {
+            patcher = object_attr_getobj(obj, _sym_parentpatcher);
+        }
+        
+        return patcher;
     }
     
     std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)

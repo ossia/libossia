@@ -21,9 +21,9 @@ namespace max {
         bool        m_absolute = false;
         bool        m_dead = false;     // wether this object is being deleted or not;
         
-        t_clock*    m_clock{};
-        t_clock*    m_regclock{};       // registration clock
-        t_clock*    m_unregclock{};     // unregistration clock
+        void*       m_clock{};
+        void*       m_regclock{};       // registration clock
+        void*       m_unregclock{};     // unregistration clock
 
         void set_value(const ossia::value& val);
         

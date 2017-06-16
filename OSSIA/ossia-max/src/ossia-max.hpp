@@ -60,6 +60,22 @@ namespace max
      */
     void register_quarantinized();
     
+    /**
+     * @brief             Find the first instance of classname beside or above (in a parent patcher) context.
+     * @details           The function iterate all objects at the same level or above x and return the first instance of classname found.
+     * @param x           The object around which to search.
+     * @param classname   The class name of the object we are looking for.
+     * @param start_level Level above current object where to start. 0 for current patcher, 1 start searching in parent canvas.
+     * @param level       Return level of the found object
+     * @return The instance of the parent object if exists. Otherwise returns nullptr.
+     */
+    t_object* find_parent(t_object* x, t_symbol* classname, int start_level, int* level);
+    
+    /** 
+     * @brief             Convenient method to get the patcher easily
+     */
+    t_object *get_patcher(t_object *obj);
+    
     std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
     
 } // max namespace

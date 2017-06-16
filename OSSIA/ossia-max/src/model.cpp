@@ -43,7 +43,7 @@ void* ossia_model_new(t_symbol *name, long argc, t_atom *argv)
         x->m_description = _sym_nothing;
         x->m_tags = _sym_nothing;
         
-        //x->m_regclock = clock_new(x, (method)object_register<t_model>);
+        x->m_regclock = clock_new(x, (method)object_register<t_model>);
         
         // parse attributes
         long attrstart = attr_args_offset(argc, argv);
@@ -81,16 +81,18 @@ void ossia_model_free(t_model *x)
     x->m_dead = true;
     x->unregister();
     object_dequarantining<t_model>(x);
-    clock_free(x->m_regclock);
+    object_free(x->m_regclock);
 }
 
 extern "C"
 void ossia_model_assist(t_model *x, void *b, long m, long a, char *s)
 {
-    if (m == ASSIST_INLET) { // inlet
+    if (m == ASSIST_INLET)
+    {
         sprintf(s, "I am inlet %ld", a);
     }
-    else {	// outlet
+    else
+    {
         sprintf(s, "I am outlet %ld", a);
     }
 }

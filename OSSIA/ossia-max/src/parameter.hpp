@@ -82,6 +82,7 @@ extern "C"
     void ossia_parameter_free(ossia::max::t_parameter*);
     
     void ossia_parameter_assist(ossia::max::t_parameter*, void*, long, long, char*);
+    void ossia_parameter_dbclick(ossia::max::t_parameter*, t_symbol*, long , const t_atom*);
     void ossia_parameter_in_float(ossia::max::t_parameter*, double f);
     void ossia_parameter_in_int(ossia::max::t_parameter*, long int f);
     void ossia_parameter_in_bang(ossia::max::t_parameter*);
