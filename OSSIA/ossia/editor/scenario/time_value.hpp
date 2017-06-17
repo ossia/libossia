@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <cinttypes>
+#include <limits>
 #include <ossia_export.h>
 
 namespace ossia
