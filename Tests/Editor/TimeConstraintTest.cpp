@@ -51,7 +51,7 @@ private Q_SLOTS:
         constraint->set_max_duration(3000._tv);
         auto state = constraint->offset(500._tv);
 
-        QVERIFY(c.get_granularity() == 50'000._tv);
+        QVERIFY(c.get_granularity() == 50000._tv);
         QVERIFY(constraint->get_speed() == 2._tv);
         QVERIFY(constraint->get_nominal_duration() == 2000._tv);
         QVERIFY(constraint->get_min_duration() == 1000._tv);
