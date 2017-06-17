@@ -55,7 +55,8 @@ struct root_scenario
     start_node->insert(start_node->get_time_events().end(), start_event);
     end_node->insert(end_node->get_time_events().end(), end_event);
 
-    clck.set_granularity(50_tv);
+    using namespace std::literals;
+    clck.set_granularity(50ms);
 
     constraint->add_time_process(scenario);
     auto scen_sn = scenario->get_start_time_node();

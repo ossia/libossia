@@ -100,7 +100,8 @@ private Q_SLOTS:
     float f(-10.);
     m_float_address->push_value(f);
 
-    clck.set_granularity(10._tv);
+    using namespace std::literals;
+    clck.set_granularity(10ms);
     clck.start();
 
     while (clck.running())

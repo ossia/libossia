@@ -204,8 +204,9 @@ int main()
     // change main time_constraint speed, granularity and offset
     ossia::clock clk{*main_constraint};
     main_clock = &clk;
+    using namespace std::literals;
 
-    clk.set_granularity(50._tv);
+    clk.set_granularity(50ms);
     clk.set_duration(main_duration);
     main_constraint->set_speed(1._tv);
 

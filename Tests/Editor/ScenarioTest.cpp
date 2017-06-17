@@ -137,6 +137,8 @@ private Q_SLOTS:
     auto main_end_event = *(main_end_node->emplace(main_end_node->get_time_events().begin(), e_callback));
     main_constraint = time_constraint::create(mc_callback, *main_start_event, *main_end_event, 5000._tv, 5000._tv, 5000._tv);
     ossia::clock c{*main_constraint};
+    using namespace std::literals;
+    c.set_granularity(50ms);
 
     auto main_scenario = std::make_unique<scenario>();
 

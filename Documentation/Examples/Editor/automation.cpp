@@ -28,7 +28,9 @@ int main()
         *start_event, *end_event, 5000._tv, 5000._tv, 5000._tv);
 
   ossia::clock clk{*constraint};
-  clk.set_granularity(50._tv);
+  using namespace std::literals;
+
+  clk.set_granularity(50ms);
   clk.set_duration(5000._tv);
 
   // The curve that we want to play. Do one curve per address.

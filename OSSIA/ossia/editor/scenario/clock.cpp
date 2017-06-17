@@ -13,7 +13,9 @@ clock::clock(
     double ratio)
     : m_constraint{cst}
     , m_ratio(ratio)
-    , m_duration(cst.get_max_duration())
+    , m_duration(cst.get_max_duration().infinite()
+                 ? time_value::infinity
+                 : cst.get_max_duration() * ratio)
     , m_granularity(1)
     , m_running(false)
     , m_paused(false)
@@ -91,7 +93,7 @@ bool clock::tick()
   if (paused || !running)
     return false;
 
-  int64_t granularityInUs(ossia::llround(m_granularity * 1000.));
+  int64_t granularityInUs = ossia::llround(m_granularity);
   int64_t droppedTicks = 0;
 
   // how many time since the last tick ?
@@ -100,6 +102,7 @@ bool clock::tick()
 
   // how much ticks it represents ?
   droppedTicks = ossia::llround(std::floor(deltaInUs / granularityInUs));
+
 
   // adjust date and elapsed time considering the dropped ticks
   if (droppedTicks)
@@ -122,6 +125,7 @@ bool clock::tick()
 
   // how many time to pause to reach the next tick ?
   int64_t pauseInUs = granularityInUs - m_elapsedTime % granularityInUs;
+  //std::cerr << m_granularity << " " << m_ratio << " " << deltaInUs << " "<< droppedTicks << " "  << granularityInUs << " " << pauseInUs << std::endl;
   // if too early: wait
   if (pauseInUs > 0)
   {
@@ -148,9 +152,10 @@ bool clock::tick()
   }
 
 
+  //std::cerr << deltaInUs << std::endl;
   // how many time elapsed from the start ?
 
-  m_date += (deltaInUs / 1000.);
+  m_date += deltaInUs;
   m_elapsedTime += deltaInUs;
 
   // note the time now to evaluate how long is the callback processing
@@ -190,9 +195,15 @@ time_value clock::get_granularity() const
   return m_granularity;
 }
 
-ossia::clock& clock::set_granularity(ossia::time_value granularity)
+ossia::clock& clock::set_granularity(std::chrono::milliseconds granularity)
 {
-  m_granularity = granularity;
+  m_granularity = granularity.count() * 1000;
+  return *this;
+}
+
+ossia::clock& clock::set_granularity(std::chrono::microseconds granularity)
+{
+  m_granularity = granularity.count();
   return *this;
 }
 

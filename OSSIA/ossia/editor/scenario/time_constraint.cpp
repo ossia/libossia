@@ -10,8 +10,10 @@ namespace ossia
 {
 void time_constraint::tick(time_value usec)
 {
-  m_date += usec.impl * m_speed;
+  // std::cerr << "USEC 0/ " << usec << " " << std::endl;
+  m_date += std::llround(usec.impl * m_speed);
 
+  // std::cerr << usec.impl * m_speed << " " << std::llround(usec.impl * m_speed) << std::endl;
   m_position = double(m_date) / double(m_nominal);
 
   if(m_callback)
@@ -20,7 +22,9 @@ void time_constraint::tick(time_value usec)
 
 void time_constraint::tick(time_value usec, double ratio)
 {
-  m_date += usec.impl / ratio * m_speed;
+  // std::cerr << "USEC/ " << usec << " " << ratio << std::endl;
+  m_date += std::llround(usec.impl * m_speed / ratio);
+  // std::cerr << usec.impl * m_speed / ratio << " " << std::llround(usec.impl * m_speed) / ratio << std::endl;
 
   m_position = double(m_date) / double(m_nominal);
 

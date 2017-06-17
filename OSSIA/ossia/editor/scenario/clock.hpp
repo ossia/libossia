@@ -68,7 +68,8 @@ public:
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
    \return #Clock the clock */
-  clock& set_granularity(ossia::time_value);
+  clock& set_granularity(std::chrono::microseconds);
+  clock& set_granularity(std::chrono::milliseconds);
 
   /*! get the running status of the clock
    \return bool true if is running */

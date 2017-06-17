@@ -42,14 +42,16 @@ private Q_SLOTS:
         QVERIFY(constraint->get_min_duration() == 0._tv);
         QVERIFY(constraint->get_max_duration() == Infinite);
 
-        c.set_granularity(50._tv);
+        using namespace std::literals;
+
+        c.set_granularity(50ms);
         constraint->set_speed(2._tv);
         constraint->set_nominal_duration(2000._tv);
         constraint->set_min_duration(1000._tv);
         constraint->set_max_duration(3000._tv);
         auto state = constraint->offset(500._tv);
 
-        QVERIFY(c.get_granularity() == 50._tv);
+        QVERIFY(c.get_granularity() == 50'000._tv);
         QVERIFY(constraint->get_speed() == 2._tv);
         QVERIFY(constraint->get_nominal_duration() == 2000._tv);
         QVERIFY(constraint->get_min_duration() == 1000._tv);

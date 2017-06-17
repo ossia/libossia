@@ -78,7 +78,9 @@ private Q_SLOTS:
     ossia::clock clck{*constraint};
     m_address_values.clear();
 
-    clck.set_granularity(10._tv);
+    using namespace std::literals;
+
+    clck.set_granularity(10ms);
     clck.start();
 
     while (clck.running())
