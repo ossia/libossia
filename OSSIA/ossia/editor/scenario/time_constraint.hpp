@@ -182,6 +182,7 @@ private:
 
   time_value m_offset{};      /// the date (in ms) the clock will run from
   double m_speed{1.};           /// the speed factor of the clock
+  bool m_running{};
 
 };
 }

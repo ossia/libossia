@@ -63,31 +63,39 @@ time_constraint::~time_constraint()
 
 void time_constraint::start()
 {
-  // start all time processes
-  for (const auto& timeProcess : get_time_processes())
+  if(!m_running)
   {
-    if(timeProcess->enabled())
-      timeProcess->start();
+    m_running = true;
+    // start all time processes
+    for (const auto& timeProcess : get_time_processes())
+    {
+      if(timeProcess->enabled())
+        timeProcess->start();
+    }
+
+    // launch the clock
+    if (m_nominal <= m_offset)
+      return stop();
+
+    // set clock at a tick
+    m_date = m_offset;
+    tick(0_tv);
   }
-
-  // launch the clock
-  if (m_nominal <= m_offset)
-    return stop();
-
-  // set clock at a tick
-  m_date = m_offset;
-  tick(0_tv);
 }
 
 void time_constraint::stop()
 {
-  // stop all jamoma time processes
-  for (const auto& timeProcess : get_time_processes())
+  if(m_running)
   {
-    timeProcess->stop();
+    // stop all jamoma time processes
+    for (const auto& timeProcess : get_time_processes())
+    {
+      timeProcess->stop();
+    }
+    m_date = 0;
+    m_position = 0;
+    m_running = false;
   }
-  m_date = 0;
-  m_position = 0;
 }
 
 ossia::state_element time_constraint::offset(ossia::time_value date)

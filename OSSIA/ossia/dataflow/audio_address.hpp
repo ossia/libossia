@@ -6,6 +6,7 @@
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
 #include <ossia/network/midi/midi_protocol.hpp>
+#include <GL/gl.h>
 namespace ossia
 {
 class OSSIA_EXPORT audio_address : public ossia::net::address_base
@@ -128,6 +129,68 @@ public:
     {
       m_output->send(mess);
     }
+  }
+
+  net::node_base&getNode() const override
+  { return m_node; }
+
+  void pull_value() override
+  { }
+  net::address_base&push_value(const ossia::value&) override
+  { return *this; }
+  net::address_base&push_value(ossia::value&&) override
+  { return *this; }
+  net::address_base&push_value() override
+  { return *this; }
+  ossia::value value() const override
+  { return {}; }
+  net::address_base& set_value(const ossia::value&) override
+  { return *this; }
+  net::address_base& set_value(ossia::value&&) override
+  { return *this; }
+  val_type get_value_type() const override
+  { return {}; }
+  net::address_base&set_value_type(val_type) override
+  { return *this; }
+  access_mode get_access() const override
+  { return {}; }
+  net::address_base&set_access(access_mode) override
+  { return *this; }
+  const domain&get_domain() const override
+  { throw; }
+  net::address_base&set_domain(const domain&) override
+  { return *this; }
+  bounding_mode get_bounding() const override
+  { return {}; }
+  net::address_base&set_bounding(bounding_mode) override
+  { return *this; }
+  repetition_filter get_repetition_filter() const override
+  { return {}; }
+  net::address_base&set_repetition_filter(repetition_filter) override
+  { return *this; }
+};
+
+
+
+class OSSIA_EXPORT texture_generic_address : public ossia::net::address_base
+{
+  ossia::net::node_base& m_node;
+  GLuint m_tex{};
+
+public:
+  texture_generic_address(
+      ossia::net::node_base& n):
+    m_node{n}
+  { }
+
+  virtual ~texture_generic_address();
+
+  void clone_value() const
+  {
+  }
+
+  void push_value(int)
+  {
   }
 
   net::node_base&getNode() const override
