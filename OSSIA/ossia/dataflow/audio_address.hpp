@@ -6,7 +6,7 @@
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
 #include <ossia/network/midi/midi_protocol.hpp>
-#include <GL/gl.h>
+
 namespace ossia
 {
 class OSSIA_EXPORT audio_address : public ossia::net::address_base
@@ -175,7 +175,7 @@ public:
 class OSSIA_EXPORT texture_generic_address : public ossia::net::address_base
 {
   ossia::net::node_base& m_node;
-  GLuint m_tex{};
+  int32_t m_tex{};
 
 public:
   texture_generic_address(
