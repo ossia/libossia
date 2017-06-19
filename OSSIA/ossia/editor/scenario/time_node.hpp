@@ -18,7 +18,7 @@ class expression_base;
 class state;
 class time_event;
 struct time_value;
-
+class scenario;
 /**
  * \brief #time_node is use to describe temporal structure to synchronize each
  * attached #time_event evaluation.
@@ -30,6 +30,7 @@ struct time_value;
 class OSSIA_EXPORT time_node final :
     public std::enable_shared_from_this<time_node>
 {
+    friend class ossia::scenario;
   public:
     using iterator = ptr_container<time_event>::iterator;
     using const_iterator = ptr_container<time_event>::const_iterator;
@@ -91,7 +92,10 @@ class OSSIA_EXPORT time_node final :
     // Interface to be used for set-up by other time processes
     /* process all TimeEvents to propagate execution */
     void process(
-        ptr_container<time_event>& statusChangedEvents);
+        std::vector<time_event*>& statusChangedEvents);
+
+    void process_this(
+        std::vector<time_event*>& statusChangedEvents);
 
     /* is the TimeNode observing its Expression ? */
     bool is_observing_expression() const;
@@ -125,14 +129,21 @@ class OSSIA_EXPORT time_node final :
     callback_container<std::function<void(bool)>> finished_evaluation;
 
 
+    enum status {
+      NOT_DONE,
+      DONE_TRIGGERED,
+      DONE_MAX_REACHED
+    };
+    status get_status() const { return m_status; }
   private:
     ossia::expression_ptr m_expression;
 
     ptr_container<time_event> m_timeEvents;
-    ptr_container<time_event> m_pending;
+    std::vector<time_event*> m_pending;
 
     optional<expressions::expression_callback_iterator> m_callback;
 
+    status m_status = NOT_DONE;
     bool m_observe = false;
     bool m_evaluating = false;
 };

@@ -86,7 +86,7 @@ case "$TRAVIS_OS_NAME" in
   ;;
 
   osx)
-    export QT_PATH=$(dirname $(dirname $(find /usr/local/Cellar/qt5 -name Qt5Config.cmake) ) )
+    export QT_PATH=$(dirname $(dirname $(find /usr/local/Cellar/qt -name Qt5Config.cmake) ) )
     export CXX=clang++
     export CMAKE_PREFIX_PATH="$QT_PATH"
 

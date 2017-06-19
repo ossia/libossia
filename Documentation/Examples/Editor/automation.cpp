@@ -24,8 +24,14 @@ int main()
   // Our process will play for five seconds
   auto constraint =
       std::make_shared<time_constraint>(
-        [] (auto t, auto t2, const auto& state) { state.launch(); },
+        [] (auto t, auto t2, const auto& state) { ossia::launch(state); },
         *start_event, *end_event, 5000._tv, 5000._tv, 5000._tv);
+
+  ossia::clock clk{*constraint};
+  using namespace std::literals;
+
+  clk.set_granularity(50ms);
+  clk.set_duration(5000._tv);
 
   // The curve that we want to play. Do one curve per address.
   auto behaviour = std::make_shared<curve<double, float>>();
@@ -38,28 +44,29 @@ int main()
   constraint->add_time_process(std::make_unique<automation>(*address, (curve_ptr)behaviour));
 
   constraint->set_speed(1._tv);
-  constraint->set_granularity(50._tv); // In milliseconds.
 
   // Start the execution. It runs in its own separate thread.
-  constraint->start();
-  while (constraint->running())
+  std::cerr << "Starting\n";
+  clk.start();
+  while (clk.running())
       ;
-  constraint->stop();
+  clk.stop();
 
+  std::cerr << "Starting again\n";
   // The execution resets to zero:
-  constraint->start();
-  while (constraint->running())
+  clk.start();
+  while (clk.running())
       ;
-  constraint->stop();
+  clk.stop();
 
+  std::cerr << "Starting manually\n";
   // We can have the execution perform manually, too,
   // for instance for use with an external clock source
-  constraint->set_drive_mode(clock::drive_mode::EXTERNAL);
   constraint->start();
-  for(int i = 0; i < 1000; i++)
+  for(int i = 0; i < 500; i++)
   {
-    // Tick every 100 microseconds
-    constraint->tick(100._tv);
+    // Tick every 100 units of time
+    constraint->tick(10._tv);
   }
   constraint->stop();
 

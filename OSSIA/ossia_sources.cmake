@@ -182,6 +182,8 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_execution.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_offset.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.cpp"
