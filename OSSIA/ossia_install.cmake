@@ -89,6 +89,7 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
 install(FILES
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_hash.h
+     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_set.h
         DESTINATION include/
         COMPONENT Devel)
 
