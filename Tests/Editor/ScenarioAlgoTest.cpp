@@ -190,6 +190,43 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c1->get_date(), 500_tv);
     }
 
+    void test_unconnected()
+    {
+      std::cerr << "\n\ntest_unconnected\n";
+
+      root_scenario s;
+      using namespace ossia;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = create_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+
+      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_constraint(c0);
+
+      QCOMPARE(c0->get_position(), 0.);
+      QVERIFY(e0->get_status() == time_event::status::NONE);
+      QVERIFY(e1->get_status() == time_event::status::NONE);
+
+      s.constraint->start();
+
+      QCOMPARE(c0->get_position(), 0.);
+      QVERIFY(e0->get_status() == time_event::status::NONE);
+      QVERIFY(e1->get_status() == time_event::status::NONE);
+
+      s.constraint->tick(1_tv);
+
+      QCOMPARE(c0->get_position(), 0.);
+      QVERIFY(e0->get_status() == time_event::status::NONE);
+      QVERIFY(e1->get_status() == time_event::status::NONE);
+
+      s.constraint->tick(1_tv);
+
+      QCOMPARE(c0->get_position(), 0.);
+      QVERIFY(e0->get_status() == time_event::status::NONE);
+      QVERIFY(e1->get_status() == time_event::status::NONE);
+    }
+
     void test_autom()
     {
       std::cerr << "\n\ntest_autom\n";
