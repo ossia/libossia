@@ -42,6 +42,8 @@ class OSSIA_EXPORT time_node final :
     /*! evaluate all #time_event's to make them to happen or to dispose them
    \return boolean true if the operation succeeded */
     bool trigger();
+    std::atomic_bool trigger_request{};
+
 
     /*! get the date
    \details the date is the sum of its previous #time_constraint durations

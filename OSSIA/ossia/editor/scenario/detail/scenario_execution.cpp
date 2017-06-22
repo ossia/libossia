@@ -193,7 +193,9 @@ void scenario::process_this(
 
     node.observe_expression(true);
 
-    if (!expressions::evaluate(*node.m_expression))
+    if(node.trigger_request)
+      node.trigger_request = false;
+    else if (!expressions::evaluate(*node.m_expression))
       return;
   }
 
