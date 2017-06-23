@@ -41,7 +41,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target
         echo List TRAVIS_BUILD_DIR content
         ls $TRAVIS_BUILD_DIR
-        tar -xf ossia-pd.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+        tar -cf ossia-pd-linux.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
       ;;
       Coverage)
         gem install coveralls-lcov
@@ -115,7 +115,7 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . --target install
       echo List TRAVIS_BUILD_DIR content
       ls $TRAVIS_BUILD_DIR
-      tar -xf ossia-pd.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+      tar -cf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
 
     else
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
