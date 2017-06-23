@@ -38,7 +38,7 @@ case "$TRAVIS_OS_NAME" in
       PdRelease)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target
+        $CMAKE_BIN --build . --target install
         echo List TRAVIS_BUILD_DIR content
         ls $TRAVIS_BUILD_DIR
         tar -cf ossia-pd-linux.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
