@@ -110,32 +110,12 @@ void t_client :: unregister_children(){
     }
 }
 
-static void explore(const ossia::net::node_base& node)
-{
-  for (const auto& child : node.children_copy())
-  {
-    if (auto addr = child->get_address())
-    {
-      // attach to callback to display value update
-      addr->add_callback([=] (const value& v) {
-        std::cerr << "[message] " << osc_address_string(*addr)
-                  << " <- " <<  value_to_pretty_string(v) << std::endl;
-
-      });
-
-      // update the value
-      addr->pull_value();
+static void client_update(t_client* x){
+    if (x->x_device){
+        x->x_device->get_protocol().update(*x->x_device);
+        x->x_node = &x->x_device->get_root_node();
+        t_client :: register_children(x);
     }
-
-    /*
-    fmt::MemoryWriter w;
-    w << *child;
-    std::cerr << w.str() << "\n";
-    */
-    std::cout << child->get_name() <<  std::endl;
-
-    explore(*child);
-  }
 }
 
 static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv){
@@ -199,15 +179,6 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv){
         t_client::print_protocol_help();
         return;
     }
-    if (x->x_device){
-        x->x_device->get_protocol().update(*x->x_device);
-        x->x_node = &x->x_device->get_root_node();
-        t_client :: register_children(x);
-        explore(x->x_device->get_root_node());
-        for (auto& child : x->x_device->children()){
-            std::cout << child->get_name() << std::endl;
-        }
-    }
 }
 
 extern "C" void setup_ossia0x2eclient(void)
@@ -217,6 +188,7 @@ extern "C" void setup_ossia0x2eclient(void)
     if(c)
     {
         eclass_addmethod(c, (method) t_client::register_children, "register", A_NULL, 0);
+        eclass_addmethod(c, (method) client_update, "update", A_NULL, 0);
         eclass_addmethod(c, (method) t_client::loadbang, "loadbang", A_NULL, 0);
         eclass_addmethod(c, (method) client_dump, "dump", A_NULL, 0);
         eclass_addmethod(c, (method) client_connect, "connect", A_GIMME, 0);
