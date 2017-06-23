@@ -118,3 +118,17 @@ elseif(UNIX)
         set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_linux")
     endif()
 endif()
+
+set(OSSIA_PD_INSTALL_FOLDER "ossia-pd-package/ossia" CACHE STRING "PD Package Install folder")
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
+        DESTINATION ${OSSIA_PD_INSTALL_FOLDER}
+        COMPONENT ossia-pd)
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples"
+        DESTINATION ${OSSIA_PD_INSTALL_FOLDER}
+        COMPONENT ossia-pd)
+
+install(TARGETS ${PROJECT_NAME}
+        DESTINATION "${OSSIA_PD_INSTALL_FOLDER}"
+        COMPONENT ossia-pd)
