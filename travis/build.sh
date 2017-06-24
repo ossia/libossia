@@ -112,7 +112,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_CI=1 \
                ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target DCMAKE_INSTALL_PREFIX > /dev/null
+      $CMAKE_BIN --build . --target install > /dev/null
       echo List TRAVIS_BUILD_DIR content
       ls $TRAVIS_BUILD_DIR
       tar -cf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
