@@ -36,9 +36,9 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       PdRelease)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 ..
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install
+        $CMAKE_BIN --build . --target install > /dev/null
         echo List TRAVIS_BUILD_DIR content
         ls $TRAVIS_BUILD_DIR
         tar -cf ossia-pd-linux.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
@@ -107,12 +107,12 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_TESTING=0 \
                -DOSSIA_EXAMPLES=0 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
-               -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR
+               -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
                ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install
+      $CMAKE_BIN --build . --target DCMAKE_INSTALL_PREFIX > /dev/null
       echo List TRAVIS_BUILD_DIR content
       ls $TRAVIS_BUILD_DIR
       tar -cf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
