@@ -100,7 +100,7 @@ case "$TRAVIS_OS_NAME" in
 
     export CMAKE_BIN=$(which cmake)
 
-    if [ "$BUILD_TYPE" = "PdRelease "]; then
+    if [ "$BUILD_TYPE" = "PdRelease" ]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
