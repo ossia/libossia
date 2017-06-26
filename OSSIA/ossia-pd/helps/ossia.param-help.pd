@@ -1,4 +1,4 @@
-#N canvas 643 183 1104 611 10;
+#N canvas 634 222 1104 611 10;
 #X text 628 27 Attributes :;
 #X text 664 228 int : integer value;
 #X text 664 208 float : most comment \, simple float value;
@@ -46,15 +46,12 @@ filter \, could be 0 or 1;
 #X obj 103 132 ossia.param foo;
 #X text 30 111 Needed argument : parameter name with no special character
 ;
-#X obj 420 350 print bar-dumpout;
+#X obj 441 335 print bar-dumpout;
 #X obj 52 334 unpack 0 0 0 0;
 #X floatatom 43 367 5 0 0 0 - - -, f 5;
 #X floatatom 87 365 5 0 0 0 - - -, f 5;
 #X floatatom 130 362 5 0 0 0 - - -, f 5;
 #X floatatom 178 360 5 0 0 0 - - -, f 5;
-#X obj 52 286 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @bounding_mode CLIP @access_mode
-BI @range 0 1;
 #X msg 80 225 dump;
 #N canvas 0 151 450 300 set 0;
 #X obj 161 163 pack 0 0 0 0;
@@ -79,7 +76,7 @@ BI @range 0 1;
 #X connect 7 1 0 1;
 #X coords 0 -1 1 1 220 25 1 100 100;
 #X restore 52 191 pd set;
-#X obj 182 540 ossia.device dummy;
+#X obj 122 540 ossia.device dummy;
 #X text 119 224 send attribute values and parameter state through right
 most output;
 #X obj 80 260 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
@@ -87,12 +84,16 @@ most output;
 #X text 97 258 get current value;
 #X text 69 39 ossia.parameter defines a parameter with lots of attributes
 ;
+#X text 257 539 <-- need a device to register to;
+#X obj 52 286 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
+"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
+bi @range 0 1;
 #X connect 23 0 24 0;
 #X connect 23 1 25 0;
 #X connect 23 2 26 0;
 #X connect 23 3 27 0;
-#X connect 28 0 23 0;
-#X connect 28 1 22 0;
-#X connect 29 0 28 0;
-#X connect 30 0 28 0;
-#X connect 33 0 28 0;
+#X connect 28 0 36 0;
+#X connect 29 0 36 0;
+#X connect 32 0 36 0;
+#X connect 36 0 23 0;
+#X connect 36 1 22 0;

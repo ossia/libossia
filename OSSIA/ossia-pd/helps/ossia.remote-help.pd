@@ -1,0 +1,40 @@
+#N canvas 714 231 696 329 10;
+#X text 97 21 ossia.remote access an OSSIA parameter which can be declared
+in Pd with [ossia.parameter] or somewhere else in the same computer
+or not.;
+#N canvas 519 475 621 431 localDevice 1;
+#X obj 139 148 ossia.remote foo;
+#X floatatom 84 149 5 0 0 0 - - -, f 5;
+#X obj 136 210 ossia.param foo;
+#X floatatom 136 192 5 0 0 0 - - -, f 5;
+#X floatatom 136 232 5 0 0 0 - - -, f 5;
+#X text 92 47 Here the remote connect to a local device and a local
+parameter \, it acts more or less like a send/receive pair.;
+#X text 226 300 <-- we need a device to register parameter and remote
+;
+#X obj 114 298 ossia.device Pd;
+#X msg 121 269 expose oscquery 3456 5678;
+#X text 318 268 expose this device to the network;
+#X connect 0 0 1 0;
+#X connect 1 0 0 0;
+#X connect 2 0 4 0;
+#X connect 3 0 2 0;
+#X connect 8 0 7 0;
+#X restore 113 119 pd localDevice;
+#N canvas 0 122 604 337 distantDevice 1;
+#X floatatom 84 149 5 0 0 0 - - -, f 5;
+#X msg 138 211 connect oscquery ws://127.0.0.1:5678;
+#X msg 150 237 dump;
+#X msg 199 235 update;
+#X obj 138 284 print clientDump;
+#X obj 139 148 ossia.remote foo;
+#X obj 138 262 ossia.client;
+#X text 151 192 connect to the device in [pd localDevice] subpatch
+;
+#X connect 0 0 5 0;
+#X connect 1 0 6 0;
+#X connect 2 0 6 0;
+#X connect 3 0 6 0;
+#X connect 5 0 0 0;
+#X connect 6 0 4 0;
+#X restore 113 149 pd distantDevice;
