@@ -21,7 +21,7 @@ option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
 option(OSSIA_JAVA "Build JNI bindings" OFF)
 option(OSSIA_PD "Build PureData externals" ON)
 option(OSSIA_MAX "Build Max/MSP externals" OFF)
-option(OSSIA_PYTHON "Build Python bindings" ON)
+option(OSSIA_PYTHON "Build Python bindings" OFF)
 option(OSSIA_QT "Build Qt bindings" ON)
 option(OSSIA_C "Build C bindings" ON)
 
