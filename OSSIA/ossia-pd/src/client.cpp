@@ -63,7 +63,8 @@ static void dump_child(t_client *x, const ossia::net::node_base& node){
 }
 
 static void client_dump(t_client *x){
-    dump_child(x, x->x_device->get_root_node());
+    if(x->x_device)
+      dump_child(x, x->x_device->get_root_node());
 }
 
 void t_client :: loadbang(t_client* x, t_float type){
@@ -179,6 +180,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv){
         t_client::print_protocol_help();
         return;
     }
+    client_update(x);
 }
 
 extern "C" void setup_ossia0x2eclient(void)
