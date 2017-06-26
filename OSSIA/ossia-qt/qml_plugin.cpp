@@ -17,9 +17,13 @@ namespace qt
 void qml_plugin::reg(const char* uri)
 {
   // See ossia_global_init
-  qmlRegisterSingletonType<qt::qml_context>(uri, 1, 0, "Context",
+  qmlRegisterSingletonType<qt::qml_logger>(uri, 1, 0, "Logger",
                                             [] (QQmlEngine* e, QJSEngine*) -> QObject*
-  { return new qt::qml_context; });
+  { return new qt::qml_logger; });
+  qmlRegisterUncreatableType<qt::qml_val_type>(uri, 1, 0, "Type", "Value type");
+  qmlRegisterUncreatableType<qt::qml_access_mode>(uri, 1, 0, "Access", "Access mode");
+  qmlRegisterUncreatableType<qt::qml_bounding_mode>(uri, 1, 0, "Bounding", "Bounding mode");
+  qmlRegisterUncreatableType<qt::qml_rep_filter>(uri, 1, 0, "Repetitions", "Repetition filter");
 
   qmlRegisterSingletonType<qt::qml_singleton_device>(uri, 1, 0, "SingleDevice",
                                                      [] (QQmlEngine* e, QJSEngine*) -> QObject*

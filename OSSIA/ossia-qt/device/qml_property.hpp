@@ -20,10 +20,10 @@ class qml_property :
   Q_INTERFACES(QQmlPropertyValueSource)
 
   Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged RESET resetUnit FINAL)
-  Q_PROPERTY(ossia::qt::qml_context::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
-  Q_PROPERTY(ossia::qt::qml_context::access_mode access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess FINAL)
-  Q_PROPERTY(ossia::qt::qml_context::bounding_mode bounding READ bounding WRITE setBounding NOTIFY boundingChanged RESET resetBounding FINAL)
-  Q_PROPERTY(ossia::qt::qml_context::repetition_filter filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged RESET resetFilterRepetitions FINAL)
+  Q_PROPERTY(ossia::qt::qml_val_type::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
+  Q_PROPERTY(ossia::qt::qml_access_mode::access_mode access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess FINAL)
+  Q_PROPERTY(ossia::qt::qml_bounding_mode::bounding_mode bounding READ bounding WRITE setBounding NOTIFY boundingChanged RESET resetBounding FINAL)
+  Q_PROPERTY(ossia::qt::qml_rep_filter::repetition_filter filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged RESET resetFilterRepetitions FINAL)
 
   Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged RESET resetMin FINAL)
   Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged RESET resetMax FINAL)
@@ -40,10 +40,10 @@ public:
 
   void updateQtValue();
 
-  qml_context::val_type valueType() const;
-  qml_context::access_mode access() const;
-  qml_context::bounding_mode bounding() const;
-  qml_context::repetition_filter filterRepetitions() const;
+  qml_val_type::val_type valueType() const;
+  qml_access_mode::access_mode access() const;
+  qml_bounding_mode::bounding_mode bounding() const;
+  qml_rep_filter::repetition_filter filterRepetitions() const;
   QVariant min() const;
   QVariant max() const;
   QVariantList values() const;
@@ -52,10 +52,10 @@ public:
 signals:
   void setValue_sig(const value&);
 
-  void valueTypeChanged(qml_context::val_type valueType);
-  void accessChanged(qml_context::access_mode access);
-  void boundingChanged(qml_context::bounding_mode bounding);
-  void filterRepetitionsChanged(qml_context::repetition_filter filterRepetitions);
+  void valueTypeChanged(qml_val_type::val_type valueType);
+  void accessChanged(qml_access_mode::access_mode access);
+  void boundingChanged(qml_bounding_mode::bounding_mode bounding);
+  void filterRepetitionsChanged(qml_rep_filter::repetition_filter filterRepetitions);
   void minChanged(QVariant min);
   void maxChanged(QVariant max);
   void valuesChanged(QVariantList values);
@@ -65,10 +65,10 @@ public slots:
   void qtVariantChanged();
   void setValue_slot(const value&);
 
-  void setValueType(qml_context::val_type valueType);
-  void setAccess(qml_context::access_mode access);
-  void setBounding(qml_context::bounding_mode bounding);
-  void setFilterRepetitions(qml_context::repetition_filter filterRepetitions);
+  void setValueType(qml_val_type::val_type valueType);
+  void setAccess(qml_access_mode::access_mode access);
+  void setBounding(qml_bounding_mode::bounding_mode bounding);
+  void setFilterRepetitions(qml_rep_filter::repetition_filter filterRepetitions);
   void setMin(QVariant min);
   void setMax(QVariant max);
   void setValues(QVariantList values);
@@ -91,10 +91,10 @@ private:
   QQmlProperty m_targetProperty;
   ossia::net::address_base* m_address{};
   optional<ossia::net::address_base::iterator> m_callback;
-  optional<qml_context::val_type> m_valueType{};
-  optional<qml_context::access_mode> m_access{};
-  optional<qml_context::bounding_mode> m_bounding{};
-  optional<qml_context::repetition_filter> m_filterRepetitions{};
+  optional<qml_val_type::val_type> m_valueType{};
+  optional<qml_access_mode::access_mode> m_access{};
+  optional<qml_bounding_mode::bounding_mode> m_bounding{};
+  optional<qml_rep_filter::repetition_filter> m_filterRepetitions{};
   QVariant m_min{};
   QVariant m_max{};
   optional<QVariantList> m_values{};

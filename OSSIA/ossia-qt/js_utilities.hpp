@@ -53,22 +53,22 @@ struct matching_ossia_enum
 template<>
 struct matching_ossia_enum<ossia::val_type>
 {
-  using type = qml_context::val_type;
+  using type = qml_val_type::val_type;
 };
 template<>
 struct matching_ossia_enum<ossia::access_mode>
 {
-  using type = qml_context::access_mode;
+  using type = qml_access_mode::access_mode;
 };
 template<>
 struct matching_ossia_enum<ossia::bounding_mode>
 {
-  using type = qml_context::bounding_mode;
+  using type = qml_bounding_mode::bounding_mode;
 };
 template<>
 struct matching_ossia_enum<ossia::repetition_filter>
 {
-  using type = qml_context::repetition_filter;
+  using type = qml_rep_filter::repetition_filter;
 };
 
 
@@ -206,7 +206,7 @@ struct js_value_outbound_visitor
 {
   QJSEngine& engine;
 
-  QJSValue to_enum(qml_context::val_type t) const;
+  QJSValue to_enum(qml_val_type::val_type t) const;
 
   QJSValue operator()(impulse) const;
 
@@ -458,7 +458,7 @@ OSSIA_EXPORT QString sanitize_name(QString name_base, const std::vector<QString>
 
 }
 
-Q_DECLARE_METATYPE(ossia::qt::qml_context*)
+Q_DECLARE_METATYPE(ossia::qt::qml_logger*)
 #else
 #error This file requires Qt.
 #endif

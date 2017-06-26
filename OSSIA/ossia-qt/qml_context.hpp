@@ -12,19 +12,10 @@ namespace ossia
 namespace qt
 {
 class qml_device;
-/**
- * @brief The qml_context struct
- *
- * This class is used to allow QML scripts to access common enums
- * in Ossia.
- */
-class qml_context : public QObject
+class qml_val_type
 {
-  Q_OBJECT
-
+  Q_GADGET
 public:
-  // QML enums have to begin with a capital
-  virtual ~qml_context();
   enum val_type
   {
     Float, //! \see float
@@ -38,14 +29,26 @@ public:
     Tuple, //! \see std::vector<ossia::value>
     Char //! \see char
   };
+  Q_ENUM(val_type)
+};
 
+class qml_access_mode
+{
+  Q_GADGET
+public:
   enum access_mode
   {
     Get,
     Set,
     Bi
   };
+  Q_ENUM(access_mode)
+};
 
+class qml_bounding_mode
+{
+  Q_GADGET
+public:
   enum bounding_mode
   {
     Free,
@@ -55,17 +58,35 @@ public:
     Low,
     High
   };
+  Q_ENUM(bounding_mode)
+};
 
+class qml_rep_filter
+{
+  Q_GADGET
+public:
   enum repetition_filter
   {
     On,
     Off
   };
 
-  Q_ENUM(val_type)
-  Q_ENUM(access_mode)
-  Q_ENUM(bounding_mode)
   Q_ENUM(repetition_filter)
+};
+
+/**
+ * @brief The qml_context struct
+ *
+ * This class is used to allow QML scripts to access common enums
+ * in Ossia.
+ */
+class qml_logger : public QObject
+{
+  Q_OBJECT
+
+public:
+  // QML enums have to begin with a capital
+  virtual ~qml_logger();
 
 public slots:
   void logTrace(const QString& s);
@@ -78,7 +99,7 @@ public slots:
 }
 }
 
-Q_DECLARE_METATYPE(ossia::qt::qml_context::val_type)
-Q_DECLARE_METATYPE(ossia::qt::qml_context::access_mode)
-Q_DECLARE_METATYPE(ossia::qt::qml_context::bounding_mode)
-Q_DECLARE_METATYPE(ossia::qt::qml_context::repetition_filter)
+Q_DECLARE_METATYPE(ossia::qt::qml_val_type::val_type)
+Q_DECLARE_METATYPE(ossia::qt::qml_access_mode::access_mode)
+Q_DECLARE_METATYPE(ossia::qt::qml_bounding_mode::bounding_mode)
+Q_DECLARE_METATYPE(ossia::qt::qml_rep_filter::repetition_filter)
