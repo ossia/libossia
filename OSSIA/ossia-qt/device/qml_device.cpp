@@ -21,6 +21,8 @@
 #include <ossia/network/osc/osc.hpp>
 #endif
 #include <QCoreApplication>
+#include <ossia/network/common/websocket_log_sink.hpp>
+#include <spdlog/spdlog.h>
 namespace ossia
 {
 namespace qt
@@ -31,6 +33,9 @@ qml_device::qml_device(QObject* parent):
   m_device{std::make_unique<ossia::net::generic_device>(
              std::make_unique<ossia::net::multiplex_protocol>(),
              m_name.toUtf8().toStdString())}
+, m_logger{spdlog::get("ossia")}
+, m_appName{"The App"}
+, m_loggerHost{"ws://127.0.0.1:1337"}
 {
 }
 
@@ -51,9 +56,9 @@ bool qml_device::readPreset() const
   return m_readPreset;
 }
 
-QString qml_device::appAuthor() const
+QString qml_device::appName() const
 {
-  return m_appAuthor;
+  return m_appName;
 }
 
 QString qml_device::appVersion() const
@@ -99,9 +104,14 @@ QString qml_device::name() const
   return m_name;
 }
 
+QString qml_device::loggerHost() const
+{
+    return m_loggerHost;
+}
+
 void qml_device::setupLocal()
 {
-  // If there is an error we re-create a dummy device instead.
+    // If there is an error we re-create a dummy device instead.
   m_device = std::make_unique<ossia::net::generic_device>(
         std::make_unique<ossia::net::multiplex_protocol>(),
         m_name.toUtf8().toStdString());
@@ -436,13 +446,14 @@ void qml_device::saveDevice(const QUrl& file)
   ossia::logger().error("Could not save device file: {}", file.toLocalFile().toStdString());
 }
 
-void qml_device::setAppAuthor(QString appAuthor)
+void qml_device::setAppName(QString appAuthor)
 {
-  if (m_appAuthor == appAuthor)
+  if (m_appName == appAuthor)
     return;
 
-  m_appAuthor = appAuthor;
-  emit appAuthorChanged(appAuthor);
+  m_appName = appAuthor;
+  emit appNameChanged(appAuthor);
+  connectLogger();
 }
 
 void qml_device::setAppVersion(QString appVersion)
@@ -475,9 +486,42 @@ void qml_device::setName(QString name)
   emit nameChanged(name);
 }
 
+void qml_device::connectLogger()
+{
+    m_logger.reset();
+    if(m_loggerHost.isEmpty())
+        return;
+    if(m_appName.isEmpty())
+        return;
+    new spdlog::logger(
+                "qml-logger", std::make_shared<websocket_log_sink>(
+                std::make_shared<websocket_threaded_connection>(
+                    m_loggerHost.toStdString()),
+                    m_appName.toStdString()));
+}
+
+void qml_device::logTrace(const QString& s) { m_logger->trace("{}", s.toStdString()); }
+void qml_device::logInfo(const QString& s) { m_logger->info("{}", s.toStdString()); }
+void qml_device::logDebug(const QString& s) { m_logger->debug("{}", s.toStdString()); }
+void qml_device::logWarning(const QString& s) { m_logger->warn("{}", s.toStdString()); }
+void qml_device::logError(const QString& s) { m_logger->error("{}", s.toStdString()); }
+void qml_device::logCritical(const QString& s) { m_logger->critical("{}", s.toStdString()); }
+
+void qml_device::setLoggerHost(QString loggerHost)
+{
+    if (m_loggerHost == loggerHost)
+        return;
+
+    m_loggerHost = loggerHost;
+    emit loggerHostChanged(m_loggerHost);
+    connectLogger();
+}
+
+
+
 qml_singleton_device::qml_singleton_device()
 {
-  QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 qml_singleton_device::~qml_singleton_device()
