@@ -458,7 +458,6 @@ OSSIA_EXPORT QString sanitize_name(QString name_base, const std::vector<QString>
 
 }
 
-Q_DECLARE_METATYPE(ossia::qt::qml_logger*)
 #else
 #error This file requires Qt.
 #endif

@@ -6,7 +6,9 @@
 #include <QDebug>
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-c/preset/preset.hpp>
-
+namespace spdlog {
+class logger;
+}
 namespace ossia
 {
 namespace qt
@@ -74,28 +76,6 @@ public:
   Q_ENUM(repetition_filter)
 };
 
-/**
- * @brief The qml_context struct
- *
- * This class is used to allow QML scripts to access common enums
- * in Ossia.
- */
-class qml_logger : public QObject
-{
-  Q_OBJECT
-
-public:
-  // QML enums have to begin with a capital
-  virtual ~qml_logger();
-
-public slots:
-  void logTrace(const QString& s);
-  void logInfo(const QString& s);
-  void logDebug(const QString& s);
-  void logWarning(const QString& s);
-  void logError(const QString& s);
-  void logCritical(const QString& s);
-};
 }
 }
 
