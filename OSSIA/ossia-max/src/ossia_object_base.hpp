@@ -7,8 +7,8 @@ namespace max {
 # pragma mark -
 # pragma mark t_object_base structure declaration
     
-    struct t_object_base {
-        
+    struct t_object_base
+    {
         t_object    m_object;
         void**      m_inlets{};
         void*       m_data_out{};
@@ -21,36 +21,37 @@ namespace max {
         bool        m_absolute = false;
         bool        m_dead = false;     // wether this object is being deleted or not;
         
-        t_clock*    m_clock{};
-        t_clock*    m_regclock{};       // registration clock
-        t_clock*    m_unregclock{};     // unregistration clock
-    
-        void setValue(const ossia::value& val);
+        void*       m_clock{};
+        void*       m_regclock{};       // registration clock
+        void*       m_unregclock{};     // unregistration clock
+
+        void set_value(const ossia::value& val);
         
         static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
         static void bang(t_object_base* x);
-        
-        void isDeleted(const ossia::net::node_base& n);
-        bool isRenamed();
-        void renaming();
-        void derenaming();
-        
-        static std::vector<t_object_base*>& quarantine()
-        {
-            static std::vector<t_object_base*> quarantine;
-            return quarantine;
-        }
-        
-        static std::vector<t_object_base*>& rename()
-        {
-            static std::vector<t_object_base*> rename;
-            return rename;
-        }
     };
     
 # pragma mark -
 # pragma mark Utilities
     
+    /**
+     * @brief The object_hierachy class
+     * @details Little class to store object pointer and hierarchy level, useful for iterating object from top to bottom.
+     */
+    class object_hierachy
+    {
+    public:
+        t_object_base* x;
+        int hierarchy;
+        std::string classname;
+        
+        friend bool operator<(object_hierachy a, object_hierachy b)
+        {
+            return a.hierarchy < b.hierarchy;
+        }
+    };
+    
+    //std::vector<object_hierachy> find_child_to_register(t_object_base* x, t_gobj* start_list, std::string classname);
     
     // Converts a max string to a type used in the api
     static ossia::val_type name_to_type(ossia::string_view name)

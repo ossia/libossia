@@ -18,12 +18,13 @@ void ossia_parameter_setup()
                                                     (long)sizeof(ossia::max::t_parameter),
                                                     0L, A_GIMME, 0);
     
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_assist,        "assist",       A_CANT, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_bang,       "bang",         0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_int,        "int",          A_LONG, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_float,      "float",        A_FLOAT, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_symbol,     "symbol",       A_SYM, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method) ossia_parameter_in_anything,   "anything",     A_GIMME, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_assist,        "assist",       A_CANT, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_dbclick,		"dblclick",		A_CANT, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_bang,       "bang",         0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_int,        "int",          A_LONG, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_float,      "float",        A_FLOAT, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_symbol,     "symbol",       A_SYM, 0);
+    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_anything,   "anything",     A_GIMME, 0);
     
     class_register(CLASS_BOX, ossia_library.ossia_parameter_class);
 }
@@ -55,7 +56,7 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
         x->m_description = gensym("");
         x->m_priority = 0;
         
-        //x->m_clock = clock_new(x, ossia::max::push_default_value);
+        x->m_clock = clock_new(x, (method)ossia::max::push_default_value);
         
         // parse attributes
         long attrstart = attr_args_offset(argc, argv);
@@ -71,9 +72,10 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
             }
         }
         
-        if (x->m_name == _sym_nothing) {
+        if (x->m_name == _sym_nothing)
+        {
             object_error((t_object*)x, "needs a name as first argument");
-            x->m_name = gensym("untitledParam");
+            x->m_name = gensym("untitledParameter");
             return x;
         }
         
@@ -85,14 +87,31 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
 }
 
 extern "C"
+void ossia_parameter_free(t_parameter* x)
+{
+    x->unregister();
+    object_dequarantining(x);
+    object_free(x->m_clock);
+    // TODO : free outlets
+}
+
+extern "C"
 void ossia_parameter_assist(t_parameter *x, void *b, long m, long a, char *s)
 {
-    if (m == ASSIST_INLET) { // inlet
+    if (m == ASSIST_INLET)
+    {
         sprintf(s, "I am inlet %ld", a);
     }
-    else {	// outlet
+    else
+    {
         sprintf(s, "I am outlet %ld", a);
     }
+}
+
+void ossia_parameter_dbclick(ossia::max::t_parameter* x, t_symbol* msg, long argc, const t_atom* argv)
+{
+    int l;
+    object_post(find_parent((t_object*)x, gensym("ossia.model"), 0, &l), "click on this log message to find parent");
 }
 
 template<typename T>
@@ -131,14 +150,8 @@ extern "C"
 void ossia_parameter_in_anything(t_parameter* x, t_symbol *s, long argc, t_atom *argv)
 { /* todo */ }
 
-extern "C"
-void ossia_parameter_free(t_parameter* x)
-{
-    x->unregister();
-    object_dequarantining<t_parameter>(x);
-    
-    // TODO : free outlets
-}
+namespace ossia {
+namespace max {
 
 # pragma mark -
 # pragma mark t_parameter structure functions
@@ -149,16 +162,16 @@ bool t_parameter :: register_node(ossia::net::node_base* node)
     
     if (res)
     {
-        object_dequarantining<t_parameter>(this);
+        object_dequarantining(this);
         /*
         for (auto remote : t_remote::quarantine())
         {
-            obj_register<t_remote>(static_cast<t_remote*>(remote));
+            object_register<t_remote>(static_cast<t_remote*>(remote));
         }
          */
     }
     else
-        object_dequarantining<t_parameter>(this);
+        object_dequarantining(this);
     
     return res;
 }
@@ -180,9 +193,9 @@ bool t_parameter :: do_registration(ossia::net::node_base* node)
     
     m_node = &ossia::net::create_node(*node, m_name->s_name);
     if (m_node->get_name() != std::string(m_name->s_name))
-        renaming();
+        renaming(this);
     
-    m_node->about_to_be_deleted.connect<t_object_base, &t_object_base::isDeleted>(this);
+    m_node->about_to_be_deleted.connect<t_parameter, &t_parameter::is_deleted>(this);
     ossia::net::address_base* localAddress{};
     
     if (std::string(m_type->s_name) == "float")
@@ -315,7 +328,7 @@ bool t_parameter :: do_registration(ossia::net::node_base* node)
     
     ossia::net::set_priority(localAddress->getNode(), m_priority);
     
-    localAddress->add_callback([=](const ossia::value& v) { setValue(v); });
+    localAddress->add_callback([=](const ossia::value& v) { set_value(v); });
     
     clock_delay(m_clock, 0);
     
@@ -338,18 +351,42 @@ bool t_parameter :: unregister()
          */
     }
     
-    object_quarantining<t_parameter>(this);
+    object_quarantining(this);
+    derenaming(this);
     
-    derenaming();
-    
-    for (auto parameter : t_object_base::rename())
+    for (auto parameter : t_parameter::rename())
     {
-        if ( strcmp(parameter->m_name->s_name, m_name->s_name) == 0 )
+        if (strcmp(parameter->m_name->s_name, m_name->s_name) == 0)
         {
-            ((t_parameter*)parameter)->unregister();
-            object_register<t_parameter>((t_parameter*)parameter);
+            parameter->unregister();
+            object_register<t_parameter>(parameter);
         }
     }
     
     return true;
 }
+
+void t_parameter :: is_deleted(const ossia::net::node_base& n)
+{
+    m_node->about_to_be_deleted.disconnect<t_parameter, &t_parameter::is_deleted>(this);
+    m_node = nullptr;
+    object_quarantining<t_parameter>(this);
+}
+
+bool t_parameter :: is_renamed(t_parameter* x)
+{
+    return ossia::contains(x->rename(), x);
+}
+
+void t_parameter :: renaming(t_parameter* x)
+{
+    if (!is_renamed(x)) x->rename().push_back(x);
+}
+
+void t_parameter :: derenaming(t_parameter* x)
+{
+    x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+}
+
+} // max namespace
+} // ossia namespace

@@ -26,7 +26,6 @@ bool t_remote :: do_registration(ossia::net::node_base* node){
     if(node){
         if ( x_absolute ){
             x_node = ossia::net::find_node(*node, x_name->s_name);
-            if (!x_node)pd_error(this, "can't find node %s !", x_name->s_name);
         } else {
           std::string absolute_path = get_absolute_path<t_remote>(this);
           std::string address_string = ossia::net::address_string_from_node(*node);

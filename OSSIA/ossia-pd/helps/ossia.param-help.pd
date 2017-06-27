@@ -1,18 +1,5 @@
-#N canvas 1255 210 450 164 10;
-#X obj 61 43 ossia.device B;
-#N canvas 623 151 1165 570 subpatch 1;
-#X floatatom 112 72 5 0 0 0 - - -, f 5;
-#X floatatom 162 222 5 0 0 0 - - -, f 5;
-#X floatatom 112 42 5 0 0 0 - - -, f 5;
-#X symbolatom 162 161 10 0 0 0 - - -, f 10;
-#X obj 241 116 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X text 258 115 get current value;
-#X floatatom 162 292 5 0 0 0 - - -, f 5;
-#X obj 212 248 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#N canvas 634 222 1104 611 10;
 #X text 628 27 Attributes :;
-#X text 654 188 @type define value type \, could be one of :;
 #X text 664 228 int : integer value;
 #X text 664 208 float : most comment \, simple float value;
 #X text 664 248 bool : bollean value \, 0 or 1;
@@ -27,63 +14,86 @@
 values;
 #X text 654 78 @range <float> <float> define min and max at the same
 time;
-#X text 654 98 @default <value type> define defalt value \, fired at
-loading;
 #X text 655 118 @tags <symbol> string list to decribe some key features
 (like audio \, video \, synthesis \, effect...);
 #X text 654 147 @description <symbol> textual decription of the parameter
 ;
-#X obj 162 40 ossia.param p1 @min -10;
-#X obj 162 70 ossia.param p2 @range -100 100;
-#X obj 162 140 ossia.param p3 @type symbol @default communiste;
-#X symbolatom 162 117 10 0 0 0 - - -, f 10;
-#X floatatom 162 182 5 0 0 0 - - -, f 5;
-#X floatatom 162 252 5 0 0 0 - - -, f 5;
-#X obj 162 200 ossia.param p4 @min -10;
-#X obj 162 270 ossia.param p5 @default 0.5;
-#X floatatom 162 352 5 0 0 0 - - -, f 5;
-#X obj 212 308 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X floatatom 162 312 5 0 0 0 - - -, f 5;
-#X obj 162 330 ossia.param p6 @type bool 0.5;
-#X obj 229 417 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 162 462 unpack;
-#X floatatom 162 484 5 0 0 0 - - -, f 5;
-#X floatatom 215 484 5 0 0 0 - - -, f 5;
-#X obj 162 418 pack 0 0;
-#X floatatom 149 378 5 0 0 0 - - -, f 5;
-#X floatatom 192 379 5 0 0 0 - - -, f 5;
-#X obj 192 398 t b f;
-#X obj 274 478 print;
-#X msg 256 417 dump;
-#X obj 446 465 print dump-p6;
-#X obj 162 440 ossia.param p7 @type vec2f @default 1 0.4;
-#X connect 0 0 23 0;
-#X connect 2 0 22 0;
-#X connect 4 0 24 0;
-#X connect 7 0 29 0;
-#X connect 22 0 2 0;
-#X connect 23 0 0 0;
-#X connect 24 0 3 0;
-#X connect 25 0 24 0;
-#X connect 26 0 28 0;
-#X connect 27 0 29 0;
-#X connect 28 0 1 0;
-#X connect 29 0 6 0;
-#X connect 31 0 33 0;
-#X connect 32 0 33 0;
-#X connect 33 0 30 0;
-#X connect 34 0 45 0;
-#X connect 35 0 36 0;
-#X connect 35 1 37 0;
-#X connect 38 0 45 0;
-#X connect 39 0 38 0;
-#X connect 40 0 41 0;
-#X connect 41 0 38 0;
-#X connect 41 1 38 1;
-#X connect 43 0 45 0;
-#X connect 45 0 35 0;
-#X connect 45 0 42 0;
-#X connect 45 1 44 0;
-#X restore 62 15 pd subpatch;
+#X text 654 188 @type <symbol> define value type \, could be one of
+:;
+#X text 654 98 @default <atoms> define default value \, fired at loading
+;
+#X text 651 366 @priority <int> defines recall order \, higher priority
+comes first;
+#N canvas 0 151 848 854 unit 0;
+#X text 226 110 distance.m distance.km distance.dm distance.cm distance.mm
+distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
+position.cart3D position.cart2D position.spherical position.polar position.openGL
+position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
+speed.ft/h orientation.quaternion orientation.euler orientation.axis
+angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
+color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
+gain.db gain.db-raw time.second time.bark time.bpm time.cents time.fps
+time.mel time.midinote time.ms time.speed, f 23;
+#X restore 717 420 pd unit list;
+#X text 651 395 @unit <symbol> defines unit \, see list :;
+#X text 651 445 @bounding_mode <symbol> defines behavior when value
+go out of range \, could be one of : FREE \, CLIP \, WRAP \, FOLD \,
+LOW \, HIGH;
+#X text 651 495 @access_mode <symbol> defines if the value can be read
+\, write or both \, could be : BI \, GET \, SET \, RW \, R \, W;
+#X text 651 525 @repetition_filter <float> enable/disable repetition
+filter \, could be 0 or 1;
+#X obj 103 132 ossia.param foo;
+#X text 30 111 Needed argument : parameter name with no special character
+;
+#X obj 441 335 print bar-dumpout;
+#X obj 52 334 unpack 0 0 0 0;
+#X floatatom 43 367 5 0 0 0 - - -, f 5;
+#X floatatom 87 365 5 0 0 0 - - -, f 5;
+#X floatatom 130 362 5 0 0 0 - - -, f 5;
+#X floatatom 178 360 5 0 0 0 - - -, f 5;
+#X msg 80 225 dump;
+#N canvas 0 151 450 300 set 0;
+#X obj 161 163 pack 0 0 0 0;
+#X floatatom 161 105 5 0 0 0 - - -, f 5;
+#X floatatom 201 105 5 0 0 0 - - -, f 5;
+#X floatatom 241 105 5 0 0 0 - - -, f 5;
+#X floatatom 281 105 5 0 0 0 - - -, f 5;
+#X obj 281 133 t b f;
+#X obj 241 133 t b f;
+#X obj 201 133 t b f;
+#X obj 161 185 outlet;
+#X connect 0 0 8 0;
+#X connect 1 0 0 0;
+#X connect 2 0 7 0;
+#X connect 3 0 6 0;
+#X connect 4 0 5 0;
+#X connect 5 0 1 0;
+#X connect 5 1 0 3;
+#X connect 6 0 1 0;
+#X connect 6 1 0 2;
+#X connect 7 0 1 0;
+#X connect 7 1 0 1;
+#X coords 0 -1 1 1 220 25 1 100 100;
+#X restore 52 191 pd set;
+#X obj 122 540 ossia.device dummy;
+#X text 119 224 send attribute values and parameter state through right
+most output;
+#X obj 80 260 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 97 258 get current value;
+#X text 69 39 ossia.parameter defines a parameter with lots of attributes
+;
+#X text 257 539 <-- need a device to register to;
+#X obj 52 286 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
+"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
+bi @range 0 1;
+#X connect 23 0 24 0;
+#X connect 23 1 25 0;
+#X connect 23 2 26 0;
+#X connect 23 3 27 0;
+#X connect 28 0 36 0;
+#X connect 29 0 36 0;
+#X connect 32 0 36 0;
+#X connect 36 0 23 0;
+#X connect 36 1 22 0;

@@ -35,6 +35,12 @@ set(PROJECT_SRCS
     src/ossia_object_base.hpp
     src/parameter.hpp
     src/parameter.cpp
+    src/client.hpp
+    src/client.cpp
+    src/device.hpp
+    src/device.cpp
+    src/model.hpp
+    src/model.cpp
     src/logger.hpp
     src/logger.cpp
     )
