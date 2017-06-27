@@ -1,5 +1,5 @@
 find_package(Qt5 5.6 REQUIRED COMPONENTS Core Test)
-if(OSSIA_NO_QT)
+if(NOT OSSIA_QT)
     return()
 endif()
 set(CMAKE_AUTOMOC ON)
