@@ -1,27 +1,49 @@
-#N canvas 714 231 696 329 10;
+#N canvas 708 257 696 329 10;
 #X text 97 21 ossia.remote access an OSSIA parameter which can be declared
 in Pd with [ossia.parameter] or somewhere else in the same computer
 or not.;
-#N canvas 519 475 621 431 localDevice 1;
+#N canvas 516 517 621 431 localDevice 0;
 #X obj 139 148 ossia.remote foo;
 #X floatatom 84 149 5 0 0 0 - - -, f 5;
 #X obj 136 210 ossia.param foo;
 #X floatatom 136 192 5 0 0 0 - - -, f 5;
 #X floatatom 136 232 5 0 0 0 - - -, f 5;
-#X text 92 47 Here the remote connect to a local device and a local
-parameter \, it acts more or less like a send/receive pair.;
-#X text 226 300 <-- we need a device to register parameter and remote
+#X text 180 394 <-- we need a device to register parameter and remote
 ;
-#X obj 114 298 ossia.device Pd;
-#X msg 121 269 expose oscquery 3456 5678;
-#X text 318 268 expose this device to the network;
+#X obj 68 392 ossia.device Pd;
+#X msg 75 363 expose oscquery 3456 5678;
+#X text 272 362 expose this device to the network;
+#N canvas 476 146 450 300 view 0;
+#X obj 154 103 ossia.remote bar;
+#X floatatom 114 104 5 0 0 0 - - -, f 5;
+#X obj 143 198 ossia.view sub;
+#X text 20 53 you can double click on a remote to locate its associated
+osssia.param;
+#X connect 0 0 1 0;
+#X connect 1 0 0 0;
+#X restore 324 150 pd view;
+#N canvas 0 151 450 300 model 0;
+#X floatatom 161 58 5 0 0 0 - - -, f 5;
+#X floatatom 161 98 5 0 0 0 - - -, f 5;
+#X obj 161 76 ossia.param bar;
+#X obj 164 183 ossia.model sub;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X restore 324 201 pd model;
+#X obj 328 251 ossia.remote /sub/bar;
+#X floatatom 283 252 5 0 0 0 - - -, f 5;
+#X text 282 232 you can use an absolute address;
+#X text 91 47 Here the remote connects to a local device and a local
+parameter \, it acts more or less like a send/receive pair.;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 4 0;
 #X connect 3 0 2 0;
-#X connect 8 0 7 0;
+#X connect 7 0 6 0;
+#X connect 11 0 12 0;
+#X connect 12 0 11 0;
 #X restore 113 119 pd localDevice;
-#N canvas 0 122 604 337 distantDevice 1;
+#N canvas 0 193 604 337 distantDevice 0;
 #X floatatom 84 149 5 0 0 0 - - -, f 5;
 #X msg 138 211 connect oscquery ws://127.0.0.1:5678;
 #X msg 150 237 dump;
@@ -31,10 +53,22 @@ parameter \, it acts more or less like a send/receive pair.;
 #X obj 138 262 ossia.client;
 #X text 151 192 connect to the device in [pd localDevice] subpatch
 ;
+#N canvas 476 146 450 300 view 0;
+#X obj 154 103 ossia.remote bar;
+#X floatatom 114 104 5 0 0 0 - - -, f 5;
+#X obj 143 198 ossia.view sub;
+#X connect 0 0 1 0;
+#X connect 1 0 0 0;
+#X restore 313 147 pd view;
+#X obj 357 90 ossia.remote /sub/bar;
+#X floatatom 312 91 5 0 0 0 - - -, f 5;
+#X text 311 71 you can use an absolute address;
 #X connect 0 0 5 0;
 #X connect 1 0 6 0;
 #X connect 2 0 6 0;
 #X connect 3 0 6 0;
 #X connect 5 0 0 0;
 #X connect 6 0 4 0;
+#X connect 9 0 10 0;
+#X connect 10 0 9 0;
 #X restore 113 149 pd distantDevice;
