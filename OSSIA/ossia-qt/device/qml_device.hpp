@@ -4,6 +4,7 @@
 #include <QVariantMap>
 #include <hopscotch_map.h>
 #include <ossia_export.h>
+namespace spdlog { class logger; }
 namespace ossia
 {
 namespace net { class device_base; }
