@@ -6,6 +6,7 @@
 #include <ossia-qt/device/qml_property.hpp>
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_node.hpp>
+#include <ossia-qt/device/qml_logger.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/context.hpp>
 
@@ -17,6 +18,7 @@ namespace qt
 void qml_plugin::reg(const char* uri)
 {
   // See ossia_global_init
+  qmlRegisterType<qt::qml_logger>(uri, 1, 0, "Logger");
   qmlRegisterUncreatableType<qt::qml_val_type>(uri, 1, 0, "Type", "Value type");
   qmlRegisterUncreatableType<qt::qml_access_mode>(uri, 1, 0, "Access", "Access mode");
   qmlRegisterUncreatableType<qt::qml_bounding_mode>(uri, 1, 0, "Bounding", "Bounding mode");

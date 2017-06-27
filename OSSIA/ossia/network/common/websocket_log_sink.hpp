@@ -16,14 +16,22 @@ struct websocket_threaded_connection
   {
     running = true;
     thread = std::thread( [=] {
+      try {
         while(running) {
           socket.connect(ip);
-          ossia::logger().critical("Logger could not connect to {}", ip);
           if(running) {
               // Try to reconnect
+              ossia::logger().critical("Logger could not connect to {}", ip);
               std::this_thread::sleep_for(std::chrono::seconds(1));
           }
         }
+      } catch(const websocketpp::exception& e) {
+        ossia::logger().critical("Logger error: ", e.what());
+      } catch(const std::exception& e) {
+        ossia::logger().critical("Logger error: ", e.what());
+      } catch(...) {
+        ossia::logger().critical("Logger error");
+      }
     } );
   }
 
@@ -53,24 +61,25 @@ struct websocket_log_sink final : public spdlog::sinks::sink
   void log(const spdlog::details::log_msg& msg) override
   {
     buffer.Clear();
-    rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
+    {
+      rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
 
-    writer.StartObject();
+      writer.StartObject();
 
-    writer.Key("operation");
-    writer.String("log");
+      writer.Key("operation");
+      writer.String("log");
 
-    writer.Key("level");
-    writer.String(spdlog::level::level_names[msg.level]);
+      writer.Key("level");
+      writer.String(spdlog::level::level_names[msg.level]);
 
-    writer.Key("sender");
-    writer.String(sender.data(), sender.size());
+      writer.Key("sender");
+      writer.String(sender.data(), sender.size());
 
-    writer.Key("message");
-    writer.String(msg.raw.data(), msg.raw.size());
+      writer.Key("message");
+      writer.String(msg.raw.data(), msg.raw.size());
 
-    writer.EndObject();
-
+      writer.EndObject();
+    }
     socket->socket.send_message(buffer);
   }
 

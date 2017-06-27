@@ -4,7 +4,6 @@
 #include <QVariantMap>
 #include <hopscotch_map.h>
 #include <ossia_export.h>
-namespace spdlog { class logger; }
 namespace ossia
 {
 namespace net { class device_base; }
@@ -29,12 +28,7 @@ class OSSIA_EXPORT qml_device :
 {
   Q_OBJECT
   Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged FINAL)
-
-  Q_PROPERTY(QString appName READ appName WRITE setAppName NOTIFY appNameChanged FINAL)
-  Q_PROPERTY(QString appVersion READ appVersion WRITE setAppVersion NOTIFY appVersionChanged FINAL)
-  Q_PROPERTY(QString appCreator READ appCreator WRITE setAppCreator NOTIFY appCreatorChanged FINAL)
   Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
-  Q_PROPERTY(QString loggerHost READ loggerHost WRITE setLoggerHost NOTIFY loggerHostChanged)
 
 public:
   qml_device(QObject* parent = nullptr);
@@ -45,10 +39,6 @@ public:
   ossia::net::multiplex_protocol* localProtocol() const;
 
   bool readPreset() const;
-
-  QString appName() const;
-  QString appVersion() const;
-  QString appCreator() const;
 
   void add(qml_node* n);
   void remove(qml_node* n);
@@ -66,7 +56,6 @@ public:
   void remove(qml_callback* n);
 
   QString name() const;
-  QString loggerHost() const;
 
 public slots:
   bool openOSC(QString ip, int localPort, int remotePort);
@@ -86,39 +75,18 @@ public slots:
   void loadPreset(QObject* root, QString file);
   void saveDevice(const QUrl& file);
 
-  void setAppName(QString appName);
-  void setAppVersion(QString appVersion);
-  void setAppCreator(QString appCreator);
-
   void setName(QString name);
-
-  void logTrace(const QString& s);
-  void logInfo(const QString& s);
-  void logDebug(const QString& s);
-  void logWarning(const QString& s);
-  void logError(const QString& s);
-  void logCritical(const QString& s);
-  void setLoggerHost(QString loggerHost);
 
 signals:
   void readPresetChanged(bool readPreset);
-
-  void appNameChanged(QString appName);
-  void appVersionChanged(QString appVersion);
-  void appCreatorChanged(QString appCreator);
-
   void nameChanged(QString name);
-
-  void loggerHostChanged(QString loggerHost);
 
 private:
   void setupLocal();
   void clearEmptyElements();
-  void connectLogger();
 
   QString m_name{"device"};
   std::unique_ptr<ossia::net::device_base> m_device;
-  std::shared_ptr<spdlog::logger> m_logger;
 
   ptr_set<qml_node> m_nodes;
   ptr_set<qml_property> m_properties;
@@ -127,11 +95,6 @@ private:
   ptr_set<qml_model_property> m_models;
   ptr_set<qml_binding> m_bindings;
   ptr_set<qml_callback> m_callbacks;
-
-  QString m_appName;
-  QString m_appVersion;
-  QString m_appCreator;
-  QString m_loggerHost;
   bool m_readPreset{false};
 };
 
