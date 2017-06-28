@@ -1,9 +1,15 @@
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/state/state_element.hpp>
 
 namespace ossia
 {
 time_process::~time_process()
 {
+}
+
+state_element time_process::offset(time_value date, double pos)
+{
+  return state(date, pos);
 }
 
 void time_process::start()

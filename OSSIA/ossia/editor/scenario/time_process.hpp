@@ -27,7 +27,7 @@ public:
    \param date offset date
    \param pos offset position (in [0;1] relative to parent nominal duration)
    \return state_element */
-  virtual state_element offset(ossia::time_value date, double pos) = 0;
+  virtual state_element offset(ossia::time_value date, double pos);
 
   /*! get a #StateElement from the process depending on its parent
    #time_constraint date
