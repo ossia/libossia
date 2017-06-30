@@ -63,7 +63,7 @@ qint32 qml_node_base::priority() const
   if(m_ossia_node)
     if(auto prio = ossia::net::get_priority(*m_ossia_node))
       return *prio;
-  return {};
+  return m_priority;
 }
 
 QString qml_node_base::description() const
@@ -71,7 +71,15 @@ QString qml_node_base::description() const
   if(m_ossia_node)
     if(auto desc = ossia::net::get_description(*m_ossia_node))
       return QString::fromStdString(*desc);
-  return {};
+  return m_description;
+}
+
+QString qml_node_base::extendedType() const
+{
+  if(m_ossia_node)
+    if(auto desc = ossia::net::get_extended_type(*m_ossia_node))
+      return QString::fromStdString(*desc);
+  return m_extendedType;
 }
 
 static QStringList fromStringVector(const std::vector<std::string>& vec)
@@ -133,11 +141,18 @@ bool qml_node_base::critical() const
   return m_critical;
 }
 
-bool qml_node_base::zombie() const
+bool qml_node_base::hidden() const
 {
   if(m_ossia_node)
-    return ossia::net::get_zombie(*m_ossia_node);
-  return m_zombie;
+    return ossia::net::get_hidden(*m_ossia_node);
+  return m_hidden;
+}
+
+bool qml_node_base::muted() const
+{
+  if(m_ossia_node)
+    return ossia::net::get_muted(*m_ossia_node);
+  return m_muted;
 }
 
 void qml_node_base::setNode(QString node)
@@ -262,9 +277,47 @@ void qml_node_base::setCritical(bool critical)
   emit criticalChanged(critical);
 }
 
+void qml_node_base::setHidden(bool hidden)
+{
+  if (m_hidden == hidden)
+    return;
+
+  m_hidden = hidden;
+
+  if(m_ossia_node)
+    ossia::net::set_hidden(*m_ossia_node, m_hidden);
+
+  emit hiddenChanged(m_hidden);
+}
+
+void qml_node_base::setMuted(bool muted)
+{
+  if (m_muted == muted)
+    return;
+
+  m_muted = muted;
+
+  if(m_ossia_node)
+    ossia::net::set_muted(*m_ossia_node, m_muted);
+
+  emit mutedChanged(m_muted);
+}
+
+void qml_node_base::setExtendedType(QString extendedType)
+{
+  if (m_extendedType == extendedType)
+    return;
+
+  m_extendedType = extendedType;
+
+  if(m_ossia_node)
+    ossia::net::set_extended_type(*m_ossia_node, m_extendedType.toStdString());
+
+  emit extendedTypeChanged(m_extendedType);
+}
+
 void qml_node_base::applyNodeAttributes()
 {
-  return;
   if(m_ossia_node)
   {
     ossia::net::set_description(*m_ossia_node, m_description.toStdString());
@@ -273,7 +326,10 @@ void qml_node_base::applyNodeAttributes()
     ossia::net::set_refresh_rate(*m_ossia_node, m_refreshRate);
     ossia::net::set_value_step_size(*m_ossia_node, m_stepSize);
     ossia::net::set_default_value(*m_ossia_node, qt_to_ossia{}(m_defaultValue));
+    ossia::net::set_extended_type(*m_ossia_node, m_extendedType.toStdString());
     ossia::net::set_critical(*m_ossia_node, m_critical);
+    ossia::net::set_hidden(*m_ossia_node, m_hidden);
+    ossia::net::set_muted(*m_ossia_node, m_muted);
   }
 
 }

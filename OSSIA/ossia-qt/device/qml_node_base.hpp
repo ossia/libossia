@@ -28,13 +28,16 @@ class qml_node_base
   Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged FINAL)
 
   Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged FINAL)
+  Q_PROPERTY(QString extendedType READ extendedType WRITE setExtendedType NOTIFY extendedTypeChanged FINAL)
   Q_PROPERTY(QStringList tags READ tags WRITE setTags NOTIFY tagsChanged FINAL)
   Q_PROPERTY(qint32 priority READ priority WRITE setPriority NOTIFY priorityChanged FINAL)
   Q_PROPERTY(qint32 refreshRate READ refreshRate WRITE setRefreshRate NOTIFY refreshRateChanged FINAL)
   Q_PROPERTY(double stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged FINAL)
   Q_PROPERTY(QVariant defaultValue READ defaultValue WRITE setDefaultValue NOTIFY defaultValueChanged FINAL)
   Q_PROPERTY(bool critical READ critical WRITE setCritical NOTIFY criticalChanged FINAL)
-  Q_PROPERTY(bool zombie READ zombie FINAL)
+  Q_PROPERTY(bool hidden READ hidden WRITE setHidden NOTIFY hiddenChanged FINAL)
+  Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY mutedChanged FINAL)
+
 
 
 public:
@@ -58,7 +61,9 @@ public:
   double stepSize() const;
   QVariant defaultValue() const;
   bool critical() const;
-  bool zombie() const;
+  bool hidden() const;
+  bool muted() const;
+  QString extendedType() const;
 
 public slots:
   void setNode(QString node);
@@ -68,10 +73,14 @@ public slots:
   void setPriority(qint32 priority);
   void setDescription(QString description);
   void setTags(QStringList tags);
+  void setExtendedType(QString extendedType);
   void setRefreshRate(qint32 refreshRate);
   void setStepSize(double stepSize);
   void setDefaultValue(QVariant defaultValue);
   void setCritical(bool critical);
+  void setHidden(bool hidden);
+  void setMuted(bool muted);
+
 
 signals:
   void nodeChanged(QString node);
@@ -82,11 +91,14 @@ signals:
 
   void priorityChanged(qint32 priority);
   void descriptionChanged(QString description);
+  void extendedTypeChanged(QString extendedType);
   void tagsChanged(QStringList tags);
   void refreshRateChanged(qint32 refreshRate);
   void stepSizeChanged(double stepSize);
   void defaultValueChanged(QVariant defaultValue);
   void criticalChanged(bool critical);
+  void hiddenChanged(bool hidden);
+  void mutedChanged(bool muted);
 
 protected:
   void applyNodeAttributes();
@@ -106,15 +118,17 @@ protected:
   QString m_path;
 
   // Attributes :
-
   QString m_description;
+  QString m_extendedType;
   QStringList m_tags;
+  QVariant m_defaultValue;
   qint32 m_priority{};
   qint32 m_refreshRate{};
   double m_stepSize{};
-  QVariant m_defaultValue;
   bool m_critical{};
-  bool m_zombie{};
+  bool m_hidden{};
+  bool m_muted{};
+
 };
 
 class qml_property_base : public qml_node_base

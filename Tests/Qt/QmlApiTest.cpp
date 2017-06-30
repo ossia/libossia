@@ -4,6 +4,8 @@
 #include <ossia/network/base/address.hpp>
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_model_property.hpp>
+#include <ossia-qt/device/qml_property.hpp>
 #include <ossia-qt/qml_plugin.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -74,6 +76,7 @@ class QmlApiTest : public QObject
 
                           Item {
                           Ossia.Parameter {
+                            // Address attributes:
                             valueType: Ossia.Type.Float
                             node: "/foo/bar/float"
                             min: -5
@@ -83,6 +86,18 @@ class QmlApiTest : public QObject
                             bounding: Ossia.Bounding.Wrap
                             filterRepetitions: Ossia.Repetitions.Filtered
                             unit: "distance.cm"
+
+                            // Node attributes:
+                            description: "une bien jolie node!"
+                            tags: ["foo", "bar"]
+                            extendedType: "filepath"
+                            priority: 36
+                            refreshRate: 50
+                            stepSize: 20
+                            defaultValue: 40.34
+                            critical: true
+                            hidden: true
+                            muted: true
                           }
                           Component.onCompleted: Ossia.SingleDevice.recreate(this)
                           }
@@ -111,6 +126,122 @@ class QmlApiTest : public QObject
       }
     }
 
+    void test_model()
+    {
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      QQmlEngine engine;
+
+      engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+      engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+
+      {
+        QQmlComponent component(&engine);
+        component.setData(R"_(
+                          import Ossia 1.0 as Ossia
+                          import QtQuick 2.5
+
+                          Item {
+                          Repeater {
+                            model: Ossia.Instances { id: rp; node: "foo"; count: 10 }
+                            Item {
+                              Ossia.Node { node: "foo." + index; id: n }
+                              Ossia.Property on x { parentNode: n }
+                              Ossia.Property on y { parentNode: n }
+                            }
+                          }
+                          }
+                          )_", QUrl{});
+
+        qDebug() << component.errorString();
+        QVERIFY(component.errors().empty());
+        auto item = (QQuickItem*) component.create();
+        QVERIFY(item);
+
+        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+        std::cerr << c.str();
+
+        for(int i = 0; i < 10;i ++)
+        {
+          ossia::net::node_base* node = ossia::net::find_node(
+                                          dev.device().get_root_node(),
+                                          "/foo." + std::to_string(i) + "/x");
+          QVERIFY(node);
+          QVERIFY(node->get_address());
+          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+        }
+
+        item->setParent(&app);
+        auto model = item->findChildren<ossia::qt::qml_model_property*>();
+        qDebug() << "Model: " << model.size();
+        for(auto m : model)
+          qDebug() << m << m->QObject::parent();
+        auto props = item->findChildren<ossia::qt::qml_property*>();
+
+
+        qDebug() << "Props: " << props.size();
+        for(auto p : props)
+          qDebug() << p << p->parent() << p->parentItem();
+        qDebug() << "Child items: " << item->childItems();
+
+        cleanup(item);
+      }
+    }
+
+    /* What we want but not possible due to
+     * https://bugreports.qt.io/browse/QTBUG-60121
+    void test_model_simpler()
+    {
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      QQmlEngine engine;
+
+      engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+      engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+
+      {
+        QQmlComponent component(&engine);
+        component.setData(R"_(
+                          import Ossia 1.0 as Ossia
+                          import QtQuick 2.5
+
+                          Item {
+                          Repeater {
+                            model: Ossia.Instances { node: "foo"; count: 10 }
+                            Item {
+                              Ossia.Property on x { }
+                              Ossia.Property on y { }
+                            }
+                          }
+                          }
+                          )_", QUrl{});
+
+        qDebug() << component.errorString();
+        QVERIFY(component.errors().empty());
+        auto item = component.create();
+        QVERIFY(item);
+
+        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+        std::cerr << c.str();
+
+        for(int i = 0; i < 10;i ++)
+        {
+          ossia::net::node_base* node = ossia::net::find_node(
+                                          dev.device().get_root_node(),
+                                          "/foo." + std::to_string(i) + "/x");
+          QVERIFY(node);
+          QVERIFY(node->get_address());
+          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+        }
+
+        cleanup(item);
+      }
+    }
+    */
     void test_property()
     {
       int argc{}; char** argv{};
