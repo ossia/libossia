@@ -16,7 +16,9 @@ template<typename T>
 using ptr_set = tsl::hopscotch_map<T*, QPointer<T>>;
 
 class qml_node;
+class qml_parameter;
 class qml_property;
+class qml_signal;
 class qml_property_reader;
 class qml_property_writer;
 class qml_model_property;
@@ -44,6 +46,11 @@ public:
   void remove(qml_node* n);
   void add(qml_property* n);
   void remove(qml_property* n);
+  void add(qml_parameter* n);
+  void remove(qml_parameter* n);
+  void add(qml_signal* n);
+  void remove(qml_signal* n);
+
   void add(qml_property_reader* n);
   void remove(qml_property_reader* n);
   void add(qml_property_writer* n);
@@ -90,6 +97,8 @@ private:
 
   ptr_set<qml_node> m_nodes;
   ptr_set<qml_property> m_properties;
+  ptr_set<qml_parameter> m_parameters;
+  ptr_set<qml_signal> m_signals;
   ptr_set<qml_property_reader> m_reader_properties;
   ptr_set<qml_property_writer> m_writer_properties;
   ptr_set<qml_model_property> m_models;

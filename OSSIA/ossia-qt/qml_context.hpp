@@ -69,8 +69,8 @@ class qml_rep_filter
 public:
   enum repetition_filter
   {
-    On,
-    Off
+    Unfiltered,
+    Filtered
   };
 
   Q_ENUM(repetition_filter)

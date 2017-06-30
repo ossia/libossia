@@ -7,6 +7,8 @@
 #include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/device/qml_property.hpp>
+#include <ossia-qt/device/qml_signal.hpp>
+#include <ossia-qt/device/qml_parameter.hpp>
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/network/common/debug.hpp>
@@ -52,31 +54,30 @@ bool qml_device::readPreset() const
 }
 
 void qml_device::add(qml_node* n) { m_nodes.insert({n, n}); }
-
 void qml_device::remove(qml_node* n) { m_nodes.erase(n); }
 
 void qml_device::add(qml_property* n) { m_properties.insert({n, n}); }
-
 void qml_device::remove(qml_property* n) { m_properties.erase(n); }
 
-void qml_device::add(qml_property_reader* n) { m_reader_properties.insert({n, n}); }
+void qml_device::add(qml_parameter* n) { m_parameters.insert({n, n}); }
+void qml_device::remove(qml_parameter* n) { m_parameters.erase(n); }
 
+void qml_device::add(qml_signal* n) { m_signals.insert({n, n}); }
+void qml_device::remove(qml_signal* n) { m_signals.erase(n); }
+
+void qml_device::add(qml_property_reader* n) { m_reader_properties.insert({n, n}); }
 void qml_device::remove(qml_property_reader* n) { m_reader_properties.erase(n); }
 
 void qml_device::add(qml_property_writer* n) { m_writer_properties.insert({n, n}); }
-
 void qml_device::remove(qml_property_writer* n) { m_writer_properties.erase(n); }
 
 void qml_device::add(qml_model_property* n) { m_models.insert({n, n}); }
-
 void qml_device::remove(qml_model_property* n) { m_models.erase(n); }
 
 void qml_device::add(qml_binding* n) { m_bindings.insert({n, n}); }
-
 void qml_device::remove(qml_binding* n) { m_bindings.erase(n); }
 
 void qml_device::add(qml_callback* n) { m_callbacks.insert({n, n}); }
-
 void qml_device::remove(qml_callback* n) { m_callbacks.erase(n); }
 
 QString qml_device::name() const
@@ -274,14 +275,13 @@ void qml_device::recreate(QObject* root)
       }
     }
 
-    {
-      auto props = m_properties;
+    for_each_in_tuple(std::make_tuple(m_properties, m_parameters, m_signals), [this] (auto& props) {
       for(const auto& obj : props)
       {
         if(obj.second) obj.first->resetNode();
         else remove(obj.first);
       }
-    }
+    });
 
     //for(auto obj : models)
     {
@@ -344,6 +344,9 @@ void qml_device::clearEmptyElements()
 {
   for(auto it = m_properties.begin(); it != m_properties.end();)
     if(it->second) ++it; else it = m_properties.erase(it);
+
+  for(auto it = m_parameters.begin(); it != m_parameters.end();)
+    if(it->second) ++it; else it = m_parameters.erase(it);
 
   for(auto it = m_models.begin(); it != m_models.end();)
     if(it->second) ++it; else it = m_models.erase(it);

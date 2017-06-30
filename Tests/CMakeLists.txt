@@ -73,6 +73,7 @@ ossia_add_test(PathTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/
 
 ossia_add_test(QtTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
 ossia_add_test(QmlTest                     "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
+ossia_add_test(QmlApiTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlApiTest.cpp")
 
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
@@ -131,7 +132,8 @@ else()
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml")
 
-    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir-testing"
+        "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
 endif()
 
 include(CTest)

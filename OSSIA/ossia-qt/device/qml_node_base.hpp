@@ -5,9 +5,15 @@
 #include <QQuickItem>
 #include <boost/any.hpp>
 #include <nano_observer.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/network/base/address.hpp>
 namespace ossia
 {
-namespace net { class node_base; }
+namespace net
+{
+class node_base;
+class address_base;
+}
 namespace qt
 {
 class qml_device;
@@ -84,6 +90,8 @@ signals:
 
 protected:
   void applyNodeAttributes();
+  ossia::net::node_base& get_parent(QObject* obj, bool relative);
+
 
   void setPath(QString str);
   ossia::net::node_base& findClosestParent(
@@ -109,5 +117,16 @@ protected:
   bool m_zombie{};
 };
 
+class qml_property_base : public qml_node_base
+{
+  public:
+    void on_node_deleted(const net::node_base& n);
+  protected:
+    using qml_node_base::qml_node_base;
+    void clearNode(bool reading);
+
+    ossia::net::address_base* m_address{};
+    ossia::optional<ossia::net::address_base::iterator> m_callback;
+};
 }
 }

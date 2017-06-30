@@ -766,5 +766,21 @@ create_node(node_base& node, ossia::string_view address)
   // address now looks like a/b/c
   return create_node_rec(node, address);
 }
+
+node_base* find_or_create_node(
+    node_base& dev,
+    string_view address_base,
+    bool create)
+{
+  if(create)
+  {
+    return ossia::net::find_node(dev, address_base);
+  }
+  else
+  {
+    return &ossia::net::create_node(dev, address_base);
+  }
+}
+
 }
 }

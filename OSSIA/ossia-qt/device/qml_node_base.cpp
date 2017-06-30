@@ -26,6 +26,12 @@ qml_node_base::~qml_node_base()
       auto node = m_ossia_node;
       m_ossia_node = nullptr;
       par->remove_child(*node);
+      while(!par->get_address() && par->children().empty() && par->get_parent())
+      {
+        node = par;
+        par = par->get_parent();
+        par->remove_child(*node);
+      }
     }
   }
 }
@@ -272,6 +278,21 @@ void qml_node_base::applyNodeAttributes()
 
 }
 
+net::node_base&qml_node_base::get_parent(QObject* obj, bool relative)
+{
+  if(m_parentNode)
+    return *m_parentNode->ossiaNode();
+
+  if(relative)
+  {
+    return findClosestParent(obj, m_device->device().get_root_node());
+  }
+  else
+  {
+    return m_device->device().get_root_node();
+  }
+}
+
 ossia::net::node_base& qml_node_base::findClosestParent(
     QObject* obj,
     ossia::net::node_base& root)
@@ -323,5 +344,31 @@ void qml_node_base::setPath(QString path)
 
   emit pathChanged(path);
 }
+
+void qml_property_base::on_node_deleted(const net::node_base& n)
+{
+  m_address = nullptr;
+  m_ossia_node = nullptr;
+  m_callback = ossia::none;
+}
+
+void qml_property_base::clearNode(bool reading)
+{
+  m_node.clear();
+  if(m_ossia_node)
+  {
+    auto par = m_ossia_node->get_parent();
+    if(par)
+    {
+      auto node = m_ossia_node;
+      m_address = nullptr;
+      m_ossia_node = nullptr;
+      m_callback = ossia::none;
+      if(!reading)
+        par->remove_child(*node);
+    }
+  }
+}
+
 }
 }
