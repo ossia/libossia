@@ -84,13 +84,13 @@ if(OSSIA_PROTOCOL_PHIDGETS)
   ossia_add_test(PhidgetTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/PhidgetTest.cpp")
 endif()
 
-ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
 if(OSSIA_BENCHMARKS)
+ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
+ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
+                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 ossia_add_test(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
 ossia_add_test(DeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_server.cpp")
 ossia_add_test(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
-ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
-                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 # ossia_add_test(AutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp
 endif()
 

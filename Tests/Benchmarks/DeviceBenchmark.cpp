@@ -4,103 +4,46 @@
 #include "Random.hpp"
 #include <thread>
 #include <atomic>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 Random r;
 using namespace ossia;
 
 std::atomic<int> num_received{0};
-OSSIA::Node* createNodeFromPath(
-        const std::vector<std::string> &path,
-        OSSIA::Device *dev)
-{
-    using namespace ossia;
-    // Find the relevant node to add in the device
-    OSSIA::Node* node = dev;
-    for(int i = 0; i < path.size(); i++)
-    {
-        const auto& children = node->children();
-        auto it = boost::range::find_if(
-                    children,
-                    [&] (const std::shared_ptr<OSSIA::Node>& ossia_node) {
-            return ossia_node->getName() == path[i];
-        });
-
-        if(it != children.end())
-        {
-            node = it->get();
-        }
-        else
-        {
-            // We have to start adding sub-nodes from here.
-            for(int k = i; k < path.size(); k++)
-            {
-                auto newNodeIt = node->emplace(node->children().begin(), path[k]);
-                node = newNodeIt->get();
-                auto addr = node->create_address(Type::FLOAT);
-                //dev->get_protocol()->observeAddressValue(addr, true);
-                addr->addCallback([&] (const OSSIA::Value* val) {
-                    ++num_received;
-                });
-            }
-
-            break;
-        }
-    }
-
-    return node;
-}
 
 class DeviceBenchmark : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-
-    /*! test life cycle and accessors functions */
-    void test_basic()
+    void test_oscq()
     {
-        auto localProtocol = Local::create();
-        auto localDevice = Device::create(localProtocol, "B");
-
-        auto addrlist = r.getRandomAddresses(100);
-        for(const auto& addr : addrlist)
+        return;
+        std::map<int, double> dur;
+        for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
+            700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+            20000})
         {
-            createNodeFromPath(addr, localDevice.get());
+            ossia::net::generic_device src{std::make_unique<ossia::oscquery::oscquery_server_protocol>(1122, 5566), "dev"};
+            for(int i = 0; i < k; i++)
+            {
+                auto n = src.create_child(std::to_string(i));
+                auto a = n->create_address(ossia::val_type::FLOAT);
+            }
+
+            auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5566");
+            std::unique_ptr<ossia::net::protocol_base> p(proto);
+            ossia::net::generic_device dest{std::move(p), "dev"};
+
+            std::cerr << "K : " << k << std::endl;
+            auto t0 = std::chrono::high_resolution_clock::now();
+            proto->update(dest);
+            auto t1 = std::chrono::high_resolution_clock::now();
+            auto tick_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+            std::cerr << "WRITE: " << tick_us << std::endl;
         }
-
-        // Add two nodes for start and stop of the timer.
-
-        std::chrono::steady_clock::time_point start_time;
-        std::chrono::steady_clock::time_point stop_time;
-
-        bool b = false;
-
-        auto st = localDevice->emplace(localDevice->children().end(), "startTick");
-        auto st_addr = (*st)->create_address(OSSIA::Type::IMPULSE);
-        st_addr->addCallback([&] (const OSSIA::Value* val) {
-            start_time = std::chrono::steady_clock::now();
-            std::cerr << "START received" << std::endl;
-        });
-        auto et = localDevice->emplace(localDevice->children().end(), "stopTick");
-        auto et_addr = (*et)->create_address(OSSIA::Type::IMPULSE);
-        et_addr->addCallback([&] (const OSSIA::Value* val) {
-            stop_time = std::chrono::steady_clock::now();
-            b = true;
-            std::cerr << "STOP received" << std::endl;
-        });
-
-        auto minuitProtocol = Minuit::create("127.0.0.1", 9999, 6666);
-        auto minuitDevice = Device::create(minuitProtocol, "A");
-
-        while(!b)
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        auto diff = stop_time - start_time;
-        std::cout << "Receiving 10000000: "
-                  << std::chrono::duration <double, std::milli> (diff).count()
-                  << "" << std::endl;
     }
-
 };
 
 
