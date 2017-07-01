@@ -10,43 +10,13 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
     # On windows we have to create a .lib file for Pd since the original one is incomplete
 
     # First download Pd.
-    file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.47-1.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+    file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/ovgiq6dt7dcqqiji/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
 
     # Extract Pd.
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
 
-    # Then we follow this process :
-    # https://adrianhenke.wordpress.com/2008/12/05/create-lib-file-from-dll
-    execute_process(
-        COMMAND dumpbin /exports "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.dll"
-        OUTPUT_VARIABLE PD_WIN32_DEF)
-
-    # Convert to list
-    string(REPLACE "\n" ";" PD_WIN32_DEF "${PD_WIN32_DEF}")
-
-    # Only keep the relevant lines
-    list(FILTER PD_WIN32_DEF INCLUDE REGEX " *([0-9]+) *([A-F0-9]+) ([A-F0-9]+) (.*)")
-
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}\\pd.def" "EXPORTS\n")
-
-    # Filter each line to get only the function name
-    foreach(PD_FUN_LINE ${PD_WIN32_DEF})
-        string(REGEX REPLACE " *([0-9]+) *([A-F0-9]+) ([A-F0-9]+) " ""  PD_FUN_LINE "${PD_FUN_LINE}")
-        string(STRIP "${PD_FUN_LINE}" PD_FUN_LINE)
-        file(APPEND "${CMAKE_CURRENT_BINARY_DIR}\\pd.def" "${PD_FUN_LINE}\n")
-    endforeach()
-
-    # Finally, create a .lib from the .def
-    if(${CMAKE_GENERATOR} MATCHES "64")
-        set(PD_LIB_MACHINE X64)
-    else()
-        set(PD_LIB_MACHINE X86)
-    endif()
-
-    execute_process(
-        COMMAND lib "/MACHINE:${PD_LIB_MACHINE}" "/def:${CMAKE_CURRENT_BINARY_DIR}\\pd.def" "/OUT:${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
 endif()
 endif()
 
