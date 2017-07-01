@@ -14,6 +14,7 @@ namespace ossia
 class state;
 class time_constraint;
 class time_node;
+class scenario;
 /**
  * @brief The time_event class
  *
@@ -26,6 +27,7 @@ class time_node;
  */
 class OSSIA_EXPORT time_event
 {
+    friend class ossia::scenario;
 public:
   /*! event status */
   enum class status: int8_t

@@ -27,7 +27,7 @@ bool time_node::trigger()
   // now TimeEvents will happen or be disposed
   for (auto& timeEvent : m_pending)
   {
-    auto& ev = *timeEvent;
+    time_event& ev = *timeEvent;
     auto& expr = ev.get_expression();
     // update any Destination value into the expression
     expressions::update(expr);
@@ -93,7 +93,7 @@ time_node::iterator time_node::insert(
 
 void time_node::remove(const std::shared_ptr<time_event>& e)
 {
-  remove_one(m_pending, e);
+  remove_one(m_pending, e.get());
   remove_one(m_timeEvents, e);
 }
 
@@ -106,7 +106,7 @@ time_node::iterator time_node::emplace(
         std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
-void time_node::process(ptr_container<time_event>& statusChangedEvents)
+void time_node::process(std::vector<time_event*>& statusChangedEvents)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_node::trigger
@@ -158,7 +158,7 @@ void time_node::process(ptr_container<time_event>& statusChangedEvents)
       // PENDING TimeEvent is ready for evaluation
       case time_event::status::PENDING:
       {
-        m_pending.push_back(timeEvent);
+        m_pending.push_back(timeEvent.get());
 
         for (auto& timeConstraint : timeEvent->previous_time_constraints())
         {

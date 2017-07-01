@@ -11,6 +11,7 @@
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "ossia/editor/dataspace/dataspace_visitors.hpp"
 
 static t_class *ossia_class;
 
@@ -352,8 +353,9 @@ template<typename T> void obj_dump(T *x){
 
 
             // unit
-            // TODO
-            address->get_unit();
+            std::string pretty_unit = ossia::get_pretty_unit_text(address->get_unit());
+            SETSYMBOL(&a, gensym(pretty_unit.c_str()));
+            outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
         }
 
         // description

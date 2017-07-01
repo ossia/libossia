@@ -18,12 +18,12 @@ using namespace std;
 void local_play_callback(const value& v);
 void local_test_callback(const value& v);
 
-void main_constraint_callback(ossia::time_value position, time_value date, const state& element);
-void first_constraint_callback(ossia::time_value position, time_value date, const state& element);
-void second_constraint_callback(ossia::time_value position, time_value date, const state& element);
+void main_constraint_callback(double position, time_value date, const ossia::state_element& element);
+void first_constraint_callback(double position, time_value date, const ossia::state_element& element);
+void second_constraint_callback(double position, time_value date, const ossia::state_element& element);
 void event_callback(time_event::status newStatus);
 
-shared_ptr<time_constraint> main_constraint;
+ossia::clock* main_clock{};
 
 int main()
 {
@@ -65,7 +65,7 @@ int main()
 
     // create the main time_constraint
     time_value main_duration(5000.);
-    main_constraint = std::make_shared<time_constraint>(
+    auto main_constraint = std::make_shared<time_constraint>(
                              main_constraint_callback,
                              *main_start_event,
                              *main_end_event,
@@ -202,26 +202,29 @@ int main()
     cout << "second_end_node date = " << second_end_node->get_date() << endl;
 
     // change main time_constraint speed, granularity and offset
+    ossia::clock clk{*main_constraint};
+    main_clock = &clk;
+    using namespace std::literals;
+
+    clk.set_granularity(50ms);
+    clk.set_duration(main_duration);
     main_constraint->set_speed(1._tv);
-    main_constraint->set_granularity(50._tv);
 
     // set minimal duration of the first constraint to 1000 ms
     first_constraint->set_min_duration(1000._tv);
 
     // change first and second time_constraint speed and granularity
     first_constraint->set_speed(1._tv);
-    first_constraint->set_granularity(50._tv);
     second_constraint->set_speed(1._tv);
-    second_constraint->set_granularity(50._tv);
 
     cout << "***** START *****" << endl;
 
     // play the main time_constraint
     //local_play_address->pushvalue(&True);
-    main_constraint->start();
+    clk.start();
 
     // wait the main time_constraint end
-    while (main_constraint->running())
+    while (clk.running())
         ;
 
     cout << "***** END *****" << endl;
@@ -240,12 +243,12 @@ int main()
     main_constraint->set_speed(2._tv);
 
     // start at 500 ms (and launch the state at this time)
-    main_constraint->offset(500._tv).launch();
+    ossia::launch(main_constraint->offset(500._tv));
 
     local_play_address->push_value(true);
 
     // wait the main time_constraint end
-    while (main_constraint->running())
+    while (clk.running())
         ;
 
     cout << "***** END *****" << endl;
@@ -257,9 +260,9 @@ void local_play_callback(const value& v)
     {
         auto b = v.get<bool>();
         if (b)
-            main_constraint->start();
+            main_clock->start();
         else
-            main_constraint->stop();
+            main_clock->stop();
     }
 }
 
@@ -284,20 +287,20 @@ void local_test_callback(const value& v)
     cout << endl;
 }
 
-void main_constraint_callback(ossia::time_value position, time_value date, const state& element)
+void main_constraint_callback(double position, time_value date, const ossia::state_element& element)
 {
-    element.launch();
+    ossia::launch(element);
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
-void first_constraint_callback(ossia::time_value position, time_value date, const state& element)
+void first_constraint_callback(double position, time_value date, const ossia::state_element& element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch element here as the element produced by the first time_constraint is handled by the main time_constraint
 }
 
-void second_constraint_callback(ossia::time_value position, time_value date, const state& element)
+void second_constraint_callback(double position, time_value date, const ossia::state_element& element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 

@@ -90,6 +90,7 @@ public:
 
   value(bool val) noexcept : v{val} { }
   value(int val) noexcept : v{val} { }
+  value(long val) noexcept : v{(int)val} { }
   value(char val) noexcept : v{val} { }
   value(float val) noexcept : v{val} { }
   value(double val) noexcept : v{(float)val} { }
