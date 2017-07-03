@@ -10,7 +10,7 @@ namespace ossia
 {
 namespace qt
 {
-class qml_model_property :
+class OSSIA_EXPORT qml_model_property :
     public QAbstractItemModel
 {
   Q_OBJECT

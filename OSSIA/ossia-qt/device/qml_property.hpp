@@ -12,7 +12,7 @@ namespace qt
 class qml_node;
 class qml_device;
 
-class qml_property :
+class OSSIA_EXPORT qml_property :
     public qml_property_base,
     public QQmlPropertyValueSource
 {

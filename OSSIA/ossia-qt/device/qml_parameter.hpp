@@ -11,7 +11,7 @@ namespace qt
 class qml_node;
 class qml_device;
 
-class qml_parameter :
+class OSSIA_EXPORT qml_parameter :
     public qml_property_base
 {
   Q_OBJECT

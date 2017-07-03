@@ -17,7 +17,7 @@ class address_base;
 namespace qt
 {
 class qml_device;
-class qml_node_base
+class OSSIA_EXPORT qml_node_base
     : public QQuickItem
     , public Nano::Observer
 {
@@ -131,7 +131,7 @@ protected:
 
 };
 
-class qml_property_base : public qml_node_base
+class OSSIA_EXPORT qml_property_base : public qml_node_base
 {
   public:
     void on_node_deleted(const net::node_base& n);
