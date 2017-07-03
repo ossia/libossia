@@ -53,7 +53,7 @@ bool qml_logger::logQtMessages() const
   return m_logQtMessages;
 }
 
-uint32_t qml_logger::heartbeat() const
+quint32 qml_logger::heartbeat() const
 {
   return m_heartbeatDur;
 }
@@ -201,7 +201,7 @@ void qml_logger::setLogQtMessages(bool logQtMessages)
   }
 }
 
-void qml_logger::setHeartbeat(uint32_t heartbeat)
+void qml_logger::setHeartbeat(quint32 heartbeat)
 {
   if (m_heartbeatDur == heartbeat)
     return;

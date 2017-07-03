@@ -19,7 +19,7 @@ class OSSIA_EXPORT qml_logger:
     Q_PROPERTY(QString appVersion READ appVersion WRITE setAppVersion NOTIFY appVersionChanged FINAL)
     Q_PROPERTY(QString appCreator READ appCreator WRITE setAppCreator NOTIFY appCreatorChanged FINAL)
     Q_PROPERTY(QString loggerHost READ loggerHost WRITE setLoggerHost NOTIFY loggerHostChanged)
-    Q_PROPERTY(uint32_t heartbeat READ heartbeat WRITE setHeartbeat NOTIFY heartbeatChanged)
+    Q_PROPERTY(quint32 heartbeat READ heartbeat WRITE setHeartbeat NOTIFY heartbeatChanged)
     Q_PROPERTY(bool logQtMessages READ logQtMessages WRITE setLogQtMessages NOTIFY logQtMessagesChanged)
 
 public:
@@ -34,7 +34,7 @@ public:
 
     bool logQtMessages() const;
 
-    uint32_t heartbeat() const;
+    quint32 heartbeat() const;
 
 signals:
     void appNameChanged(QString appName);
@@ -44,7 +44,7 @@ signals:
 
     void logQtMessagesChanged(bool logQtMessages);
 
-    void heartbeatChanged(uint32_t heartbeat);
+    void heartbeatChanged(quint32 heartbeat);
 
 public slots:
     void setAppName(QString appName);
@@ -60,7 +60,7 @@ public slots:
     void setLoggerHost(QString loggerHost);
     void setLogQtMessages(bool logQtMessages);
 
-    void setHeartbeat(uint32_t heartbeat);
+    void setHeartbeat(quint32 heartbeat);
 
 private:
     void connectLogger();
@@ -73,7 +73,7 @@ private:
     QString m_appCreator;
     QString m_loggerHost;
 
-    uint32_t m_heartbeatDur{5};
+    quint32 m_heartbeatDur{5};
     bool m_logQtMessages{};
 };
 }
