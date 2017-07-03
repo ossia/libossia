@@ -2,7 +2,7 @@
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <spdlog/spdlog.h>
 #include <QFileInfo>
-
+#include <QQmlEngine>
 namespace ossia
 {
 namespace qt
@@ -15,6 +15,7 @@ qml_logger::qml_logger()
   , m_loggerHost{"ws://127.0.0.1:1337"}
 {
   m_globalQtLogger = m_logger;
+  QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
 qml_logger::~qml_logger()
@@ -91,6 +92,7 @@ void qml_logger::connectLogger()
   using namespace std::literals;
   m_heartbeat.reset();
   m_logger.reset();
+  m_globalQtLogger.reset();
   m_ws.reset();
   if(m_loggerHost.isEmpty())
     return;

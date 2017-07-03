@@ -69,6 +69,9 @@ class websocket_client
 
     void stop()
     {
+      if(!connected())
+          return;
+
       scoped_lock guard(m_lock);
       m_client.close(m_hdl, websocketpp::close::status::normal, "");
       m_open = false;
