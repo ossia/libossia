@@ -51,12 +51,12 @@ public slots:
     void setAppVersion(QString appVersion);
     void setAppCreator(QString appCreator);
 
-    void logTrace(const QString& s);
-    void logInfo(const QString& s);
-    void logDebug(const QString& s);
-    void logWarning(const QString& s);
-    void logError(const QString& s);
-    void logCritical(const QString& s);
+    void trace(const QString& s);
+    void info(const QString& s);
+    void debug(const QString& s);
+    void warning(const QString& s);
+    void error(const QString& s);
+    void critical(const QString& s);
     void setLoggerHost(QString loggerHost);
     void setLogQtMessages(bool logQtMessages);
 

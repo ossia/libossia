@@ -110,22 +110,22 @@ void qml_logger::connectLogger()
   }
 }
 
-void qml_logger::logTrace(const QString& s) {
+void qml_logger::trace(const QString& s) {
   if(m_logger) m_logger->trace("{}", s.toStdString());
 }
-void qml_logger::logInfo(const QString& s) {
+void qml_logger::info(const QString& s) {
   if(m_logger) m_logger->info("{}", s.toStdString());
 }
-void qml_logger::logDebug(const QString& s) {
+void qml_logger::debug(const QString& s) {
   if(m_logger) m_logger->debug("{}", s.toStdString());
 }
-void qml_logger::logWarning(const QString& s) {
+void qml_logger::warning(const QString& s) {
   if(m_logger) m_logger->warn("{}", s.toStdString());
 }
-void qml_logger::logError(const QString& s) {
+void qml_logger::error(const QString& s) {
   if(m_logger) m_logger->error("{}", s.toStdString());
 }
-void qml_logger::logCritical(const QString& s) {
+void qml_logger::critical(const QString& s) {
   if(m_logger) m_logger->critical("{}", s.toStdString());
 }
 
