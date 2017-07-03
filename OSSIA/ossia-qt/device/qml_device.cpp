@@ -357,7 +357,12 @@ void qml_device::loadPreset(QObject* root, QString file)
   m_readPreset = false;
   recreate(root);
   try {
-    QFile f(file);
+    QFile f;
+    if(file.startsWith("file:"))
+      f.setFileName(QUrl{file}.toLocalFile());
+    else
+      f.setFileName(file);
+
     if(f.open(QIODevice::ReadOnly))
     {
       // First reset all item models since they will be in the preset

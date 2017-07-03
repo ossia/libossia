@@ -1,17 +1,31 @@
 #include "qml_logger.hpp"
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <spdlog/spdlog.h>
+#include <QFileInfo>
 
 namespace ossia
 {
 namespace qt
 {
+
+static std::shared_ptr<spdlog::logger> m_globalQtLogger;
 qml_logger::qml_logger()
   : m_logger{spdlog::get("ossia")}
   , m_appName{"The App"}
   , m_loggerHost{"ws://127.0.0.1:1337"}
 {
+  m_globalQtLogger = m_logger;
+}
 
+qml_logger::~qml_logger()
+{
+
+}
+
+qml_logger& qml_logger::instance()
+{
+  static qml_logger logger;
+  return logger;
 }
 
 QString qml_logger::appName() const
@@ -32,6 +46,16 @@ QString qml_logger::appCreator() const
 QString qml_logger::loggerHost() const
 {
   return m_loggerHost;
+}
+
+bool qml_logger::logQtMessages() const
+{
+  return m_logQtMessages;
+}
+
+uint32_t qml_logger::heartbeat() const
+{
+  return m_heartbeatDur;
 }
 
 void qml_logger::setAppName(QString appAuthor)
@@ -79,7 +103,11 @@ void qml_logger::connectLogger()
                "qml-logger",
                std::make_shared<websocket_log_sink>(m_ws,
                m_appName.toStdString()));
-  m_heartbeat = std::make_shared<websocket_heartbeat>(m_ws, 2s);
+  m_globalQtLogger = m_logger;
+  if(m_heartbeat > 0)
+  {
+    m_heartbeat = std::make_shared<websocket_heartbeat>(m_ws, std::chrono::seconds(m_heartbeatDur));
+  }
 }
 
 void qml_logger::logTrace(const QString& s) {
@@ -108,6 +136,78 @@ void qml_logger::setLoggerHost(QString loggerHost)
 
   m_loggerHost = loggerHost;
   emit loggerHostChanged(m_loggerHost);
+  connectLogger();
+}
+
+static void LogQtToOssia(
+    QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+  if(!m_globalQtLogger)
+    return;
+
+  auto basename_arr = QFileInfo(context.file).baseName().toUtf8();
+  auto filename = basename_arr.constData();
+
+  QByteArray localMsg = msg.toLocal8Bit();
+  switch (type)
+  {
+    case QtDebugMsg:
+      m_globalQtLogger->debug("{} ({}:{})",
+                              localMsg.constData(),
+                              filename,
+                              context.line);
+      break;
+    case QtInfoMsg:
+      m_globalQtLogger->info("{} ({}:{})",
+                              localMsg.constData(),
+                              filename,
+                              context.line);
+      break;
+    case QtWarningMsg:
+      m_globalQtLogger->warn("{} ({}:{})",
+                              localMsg.constData(),
+                              filename,
+                              context.line);
+      break;
+    case QtCriticalMsg:
+      m_globalQtLogger->error("{} ({}:{})",
+                              localMsg.constData(),
+                              filename,
+                              context.line);
+      break;
+    case QtFatalMsg:
+      m_globalQtLogger->critical("{} ({}:{})",
+                              localMsg.constData(),
+                              filename,
+                              context.line);
+  }
+}
+
+void qml_logger::setLogQtMessages(bool logQtMessages)
+{
+  if (m_logQtMessages == logQtMessages)
+    return;
+
+  m_logQtMessages = logQtMessages;
+  emit logQtMessagesChanged(m_logQtMessages);
+
+  if(m_logQtMessages)
+  {
+    qInstallMessageHandler(LogQtToOssia);
+  }
+  else
+  {
+    qInstallMessageHandler(nullptr);
+  }
+}
+
+void qml_logger::setHeartbeat(uint32_t heartbeat)
+{
+  if (m_heartbeatDur == heartbeat)
+    return;
+
+  m_heartbeatDur = heartbeat;
+  emit heartbeatChanged(m_heartbeatDur);
   connectLogger();
 }
 
