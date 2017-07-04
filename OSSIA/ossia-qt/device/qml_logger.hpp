@@ -21,8 +21,19 @@ class OSSIA_EXPORT qml_logger:
     Q_PROPERTY(QString loggerHost READ loggerHost WRITE setLoggerHost NOTIFY loggerHostChanged)
     Q_PROPERTY(quint32 heartbeat READ heartbeat WRITE setHeartbeat NOTIFY heartbeatChanged)
     Q_PROPERTY(bool logQtMessages READ logQtMessages WRITE setLogQtMessages NOTIFY logQtMessagesChanged)
-
+    Q_PROPERTY(log_level logLevel READ logLevel WRITE setLogLevel NOTIFY logLevelChanged)
 public:
+    enum log_level
+    {
+        Trace = 0,
+        Debug = 1,
+        Info = 2,
+        Warning = 3,
+        Error = 4,
+        Critical = 5
+    };
+    Q_ENUM(log_level)
+
     qml_logger();
     ~qml_logger();
 
@@ -36,15 +47,16 @@ public:
 
     quint32 heartbeat() const;
 
+    log_level logLevel() const;
+
 signals:
     void appNameChanged(QString appName);
     void appVersionChanged(QString appVersion);
     void appCreatorChanged(QString appCreator);
     void loggerHostChanged(QString loggerHost);
-
     void logQtMessagesChanged(bool logQtMessages);
-
     void heartbeatChanged(quint32 heartbeat);
+    void logLevelChanged(log_level logLevel);
 
 public slots:
     void setAppName(QString appName);
@@ -61,6 +73,9 @@ public slots:
     void setLogQtMessages(bool logQtMessages);
 
     void setHeartbeat(quint32 heartbeat);
+    void setLogLevel(log_level);
+
+    void startHeartbeat(QVariantMap);
 
 private:
     void connectLogger();
@@ -74,6 +89,7 @@ private:
     QString m_loggerHost;
 
     quint32 m_heartbeatDur{5};
+    log_level m_logLevel{Debug};
     bool m_logQtMessages{};
 };
 }

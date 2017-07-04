@@ -7,6 +7,7 @@
 #include <websocketpp/common/thread.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
+#include <nano_signal_slot.hpp>
 
 namespace ossia
 {
@@ -18,6 +19,7 @@ class websocket_client
 {
   public:
     using connection_handler = websocketpp::connection_hdl;
+    Nano::Signal<void()> onOpen;
     std::function<void()> onClose;
     std::function<void()> onFail;
 
@@ -35,6 +37,7 @@ class websocket_client
       {
         scoped_lock guard(m_lock);
         m_open = true;
+        onOpen();
       });
 
       m_client.set_message_handler(
@@ -79,6 +82,10 @@ class websocket_client
 
     void close() { stop(); }
 
+    auto& client() { return m_client; }
+    auto& handle() { return m_hdl; }
+    auto after_connect() { return m_connected; }
+
     // This function returns if the connection is stopped / fails.
     void connect(const std::string & uri)
     {
@@ -94,8 +101,11 @@ class websocket_client
 
       m_hdl = con->get_handle();
       m_client.connect(con);
+      m_connected = true;
 
       m_client.run();
+
+      m_connected = false;
       m_client.reset(); // In order to be able to reconnect afterwards.
     }
 
@@ -139,6 +149,7 @@ class websocket_client
     connection_handler m_hdl;
     websocketpp::lib::mutex m_lock;
     bool m_open;
+    bool m_connected{false};
 };
 
 }
