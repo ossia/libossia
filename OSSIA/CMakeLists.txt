@@ -51,9 +51,7 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 
-if(TARGET ModernMIDI)
-  set(OSSIA_PROTOCOL_MIDI ON)
-else()
+if(NOT TARGET ModernMIDI)
   set(OSSIA_PROTOCOL_MIDI OFF)
 endif()
 
