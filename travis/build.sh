@@ -41,7 +41,25 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install > /dev/null
         echo List TRAVIS_BUILD_DIR content
         ls $TRAVIS_BUILD_DIR
-        tar -cf ossia-pd-linux.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+        tar -cf ossia-pd-linux_x86_64.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+      ;;
+      RpiPdRelease)
+        # download, extract and mount raspberry pi image with gcc-6 installed
+        wget https://u3680458.dl.dropboxusercontent.com/u/3680458/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
+        tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
+        sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
+
+        #setup some environment variable to help CMAKE to find libraries
+        export RPI_ROOT_PATH=/tmp/rpi/root
+        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
+        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="../CMake/toolchain/arm-linux-gnueabihf.cmake" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_PYTHON=0 -DOSSIA_NO_QT=1 ..
+        $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install > /dev/null
+        echo List TRAVIS_BUILD_DIR content
+        ls $TRAVIS_BUILD_DIR
+        tar -cf ossia-pd-linux_arm.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
       ;;
       Coverage)
         gem install coveralls-lcov
