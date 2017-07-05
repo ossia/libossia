@@ -266,12 +266,12 @@ void scenario::tick_constraint(time_constraint& constraint, time_value tick)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
-  auto cst_old_date = constraint.get_date();
   auto cst_max_dur = constraint.get_max_duration();
   if(!cst_max_dur.infinite())
   {
-    auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
+    auto this_tick = std::min(tick, cst_max_dur - constraint.get_date());
     constraint.tick(this_tick);
+    std::cerr << this_tick << std::endl;
   }
   else
   {
