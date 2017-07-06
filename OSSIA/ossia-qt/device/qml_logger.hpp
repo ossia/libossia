@@ -7,8 +7,8 @@ namespace spdlog { class logger; }
 
 namespace ossia
 {
-class websocket_threaded_connection;
-class websocket_heartbeat;
+struct websocket_threaded_connection;
+struct websocket_heartbeat;
 namespace qt
 {
 class OSSIA_EXPORT qml_logger:
