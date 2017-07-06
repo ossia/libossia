@@ -12,6 +12,7 @@
 #include "remote.hpp"
 #include "view.hpp"
 #include "ossia/editor/dataspace/dataspace_visitors.hpp"
+#include <ossia_pd_export.h>
 
 static t_class *ossia_class;
 
@@ -29,7 +30,7 @@ static void *ossia_new(t_symbol *name, int argc, t_atom *argv)
     return (x);
 }
 
-extern "C" void ossia_setup(void)
+extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 {
     t_class* c = class_new(gensym("ossia"),
                            (t_newmethod)ossia_new, nullptr,

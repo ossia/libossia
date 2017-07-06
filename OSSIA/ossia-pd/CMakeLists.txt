@@ -30,6 +30,7 @@ add_subdirectory("${OSSIA_CICM_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/Cicm-build")
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 
 include_directories("${OSSIA_CICM_PATH}/Sources")
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
@@ -52,8 +53,11 @@ set(PROJECT_SRCS
   src/view.cpp
   src/view.hpp)
 
+include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
+
+generate_export_header(${PROJECT_NAME} BASE_NAME OSSIA_PD)
 
 # These two lines are used to display the QMLs in the project view of IDEs
 set(QMLS "examples/client-example.qml")
