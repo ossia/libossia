@@ -10,16 +10,18 @@ environment:
 #     QTDIR: C:\Qt\5.9\msvc2017_64
 #     CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
 #     CMAKE_OPTION: -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5"
+#     APPVEYOR_BUILD_TYPE: testing
 #   - platform: x64
 #     configuration: Release
 #     QTDIR: C:\Qt\5.9\msvc2017_64
 #     CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
 #     CMAKE_OPTION: -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5"
+#     APPVEYOR_BUILD_TYPE: testing
     - platform: x64
       configuration: Release
-      QTDIR: C:\Qt\5.9\msvc2017_64
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
       CMAKE_OPTION: -DOSSIA_PD=1 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5"
+      APPVEYOR_BUILD_TYPE: pd
 
 before_build:
   - git submodule update --init --recursive
@@ -33,10 +35,14 @@ build:
   parallel: true
 
 after_build:
-  - copy OSSIA\%configuration%\ossia.dll Tests\%configuration%\
+  - ps: cd C:\projects\libossia\travis\after_build.ps1
 
 test_script:
   - cd C:\projects\libossia\build\
   - dir
   - cmake --build . --target RUN_TESTS --config %configuration%
 
+artifacts:
+  - path: %APPVEYOR_BUILD_FOLDER%\ossia-pd-package\
+    name: ossia-pd-windows-x86_64
+    type: zip
