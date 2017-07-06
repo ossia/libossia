@@ -19,7 +19,6 @@ void ossia_parameter_setup()
                                                     0L, A_GIMME, 0);
     
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_assist,        "assist",       A_CANT, 0);
-    class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_dbclick,		"dblclick",		A_CANT, 0);
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_bang,       "bang",         0);
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_int,        "int",          A_LONG, 0);
     class_addmethod(ossia_library.ossia_parameter_class, (method)ossia_parameter_in_float,      "float",        A_FLOAT, 0);
@@ -108,12 +107,6 @@ void ossia_parameter_assist(t_parameter *x, void *b, long m, long a, char *s)
     }
 }
 
-void ossia_parameter_dbclick(ossia::max::t_parameter* x, t_symbol* msg, long argc, const t_atom* argv)
-{
-    int l;
-    object_post(find_parent((t_object*)x, gensym("ossia.model"), 0, &l), "click on this log message to find parent");
-}
-
 template<typename T>
 void ossia_parameter_in(t_parameter* x, T f)
 {
@@ -171,25 +164,26 @@ bool t_parameter :: register_node(ossia::net::node_base* node)
          */
     }
     else
-        object_dequarantining(this);
+        object_quarantining(this);
     
     return res;
 }
 
 bool t_parameter :: do_registration(ossia::net::node_base* node)
 {
-    if (m_node && m_node->get_parent() == node )
+    if (m_node && m_node->get_parent() == node)
         return true; // already register to this node;
     
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
     
-    if (!node) return false;
+    if (!node)
+        return false;
     
-    /*
-     std::string absolute_path = get_absolute_path<t_param>(this);
-     std::string address_string = ossia::net::address_string_from_node(*node);
-     if (absolute_path != address_string) return false;
-     */
+    std::string absolute_path = object_path_absolute<t_parameter>(this);
+    std::string address_string = ossia::net::address_string_from_node(*node);
+
+    if (absolute_path != address_string)
+        return false;
     
     m_node = &ossia::net::create_node(*node, m_name->s_name);
     if (m_node->get_name() != std::string(m_name->s_name))

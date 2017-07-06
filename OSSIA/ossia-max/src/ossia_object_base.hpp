@@ -9,7 +9,9 @@ namespace max {
     
     struct t_object_base
     {
-        t_object    m_object;
+        t_object    m_object;           // the Max object instance.
+                                        // !!! this member is handled by Max API : that's why there is no place in our code where it is initialized.
+        
         void**      m_inlets{};
         void*       m_data_out{};
         void*       m_set_out{};

@@ -209,7 +209,7 @@ namespace max {
     
     void t_client :: register_children(t_client* x)
     {
-        //std::vector<object_hierachy> viewnodes = find_child_to_register(x, x->m_object.o_canvas->gl_list, "ossia.view");
+        //std::vector<object_hierachy> viewnodes = find_child_to_register(x, &x->m_object.o_canvas->gl_list, "ossia.view");
         /*
         for (auto v : viewnodes)
         {

@@ -6,7 +6,7 @@ namespace max {
     void t_object_base :: set_value(const ossia::value& v)
     {
         value_visitor<t_object_base> vm;
-        vm.x = (t_object_base*) &m_object;
+        vm.x = this;
         v.apply(vm);
     }
     
@@ -14,7 +14,7 @@ namespace max {
     {
         if (x->m_node && x->m_node->get_address())
         {
-            if (argc==1)
+            if (argc == 1)
             {
                 // convert one element array to single element
                 if (argv->a_type == A_SYM)

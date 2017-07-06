@@ -111,7 +111,7 @@ namespace max {
         {
             object_dequarantining<t_model>(this);
             
-            //std::vector<object_hierachy> obj = find_child_to_register(this, m_object.o_canvas->gl_list, "ossia.model");
+//            std::vector<object_hierachy> obj = find_child_to_register(this, m_object.o_canvas->gl_list, "ossia.model");
             /*
             for (auto v : obj)
             {
@@ -160,9 +160,9 @@ namespace max {
         if (!node)
             return false;
         
+        // check if a node with the same name already exists to avoid auto-incrementing name
         if (node->find_child(m_name->s_name))
         {
-            // we have to check if a node with the same name already exists to avoid auto-incrementing name
             //std::vector<object_hierachy> obj = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
             /*
             for (auto v : obj)
