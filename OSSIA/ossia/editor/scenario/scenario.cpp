@@ -58,6 +58,12 @@ void scenario::start()
       m_runningConstraints.insert(&cst);
       cst.start();
     }
+    // the constraint starts in the void and ends on a timenode that did execute
+    else if (
+             startStatus == time_event::status::NONE
+             && endStatus == time_event::status::HAPPENED)
+    {
+    }
     // the end of the constraint is pending
     else if (
         startStatus == time_event::status::HAPPENED
