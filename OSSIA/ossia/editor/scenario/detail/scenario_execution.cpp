@@ -271,7 +271,6 @@ void scenario::tick_constraint(time_constraint& constraint, time_value tick)
   {
     auto this_tick = std::min(tick, cst_max_dur - constraint.get_date());
     constraint.tick(this_tick);
-    std::cerr << this_tick << std::endl;
   }
   else
   {

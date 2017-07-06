@@ -11,22 +11,22 @@ ws_generic_client_node::ws_generic_client_node(
     const ws_generic_client_address_data& data,
     ws_generic_client_device& aDevice,
     ws_generic_client_node& aParent):
-  mName{data.name},
-  mDevice{aDevice},
-  mParent{&aParent}
+  m_device{aDevice},
+  m_parent{&aParent}
 {
+  m_name = data.name;
   if(!data.request.isNull() || data.type)
-    mAddress = std::make_unique<ws_generic_client_address>(data, *this);
+    m_address = std::make_unique<ws_generic_client_address>(data, *this);
 }
 
 ws_generic_client_node::ws_generic_client_node(
     const ws_generic_client_address_data& data,
     ws_generic_client_device& aDevice):
-  mName{data.name},
-  mDevice{aDevice}
+  m_device{aDevice}
 {
+  m_name = data.name;
   if(!data.request.isNull() || data.type)
-    mAddress = std::make_unique<ws_generic_client_address>(data, *this);
+    m_address = std::make_unique<ws_generic_client_address>(data, *this);
 }
 
 ws_generic_client_node::~ws_generic_client_node()
@@ -35,23 +35,20 @@ ws_generic_client_node::~ws_generic_client_node()
 
   write_lock_t lock{m_mutex};
   m_children.clear();
-  mAddress.reset();
+  m_address.reset();
 }
 
 device_base& ws_generic_client_node::get_device() const
-{ return mDevice; }
+{ return m_device; }
 
 node_base*ws_generic_client_node::get_parent() const
-{ return mParent; }
-
-std::string ws_generic_client_node::get_name() const
-{ return mName; }
+{ return m_parent; }
 
 node_base&ws_generic_client_node::set_name(std::string)
 { return *this; }
 
 address_base* ws_generic_client_node::get_address() const
-{ return mAddress.get(); }
+{ return m_address.get(); }
 
 address_base*ws_generic_client_node::create_address(val_type)
 { return nullptr; }

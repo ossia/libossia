@@ -12,10 +12,9 @@ class http_address;
 class OSSIA_EXPORT http_node :
     public ossia::net::node_base
 {
-  std::string mName;
-  ossia::net::http_device& mDevice;
-  ossia::net::http_node* mParent{};
-  std::unique_ptr<ossia::net::http_address> mAddress;
+  ossia::net::http_device& m_device;
+  ossia::net::http_node* m_parent{};
+  std::unique_ptr<ossia::net::http_address> m_address;
 
   friend class http_protocol;
 public:
@@ -33,7 +32,6 @@ public:
   device_base& get_device() const override;
   node_base* get_parent() const override;
 
-  std::string get_name() const override;
   node_base& set_name(std::string) override;
 
   address_base* get_address() const override;
