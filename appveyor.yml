@@ -35,7 +35,7 @@ build:
   parallel: true
 
 after_build:
-  - ps: cd C:\projects\libossia\travis\after_build.ps1
+  - ps: C:\projects\libossia\travis\after_build.ps1
 
 test_script:
   - cd C:\projects\libossia\build\
