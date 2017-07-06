@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 159.0, 160.0, 670.0, 356.0 ],
+		"rect" : [ 114.0, 152.0, 777.0, 356.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -69,9 +69,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 72.0, 163.0, 559.0, 22.0 ],
+					"patching_rect" : [ 72.0, 163.0, 650.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_float @type float @bounding_mode WRAP @access_mode BI @repetition_filter 1"
+					"text" : "ossia.parameter my_float @type float @bounding_mode WRAP @access_mode BI @repetition_filter 1 @range -1.5 2.5"
 				}
 
 			}
@@ -82,9 +82,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 72.0, 123.0, 479.0, 22.0 ],
+					"patching_rect" : [ 72.0, 123.0, 549.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_int @type int @bounding_mode FREE @access_mode BI @unit m"
+					"text" : "ossia.parameter my_int @type int @bounding_mode FREE @access_mode BI @unit m @range -1 1"
 				}
 
 			}

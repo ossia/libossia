@@ -27,8 +27,7 @@ void ossia_parameter_setup()
     
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
     CLASS_ATTR_LONG(ossia_library.ossia_parameter_class, "type_size", 0, t_parameter, m_type_size);
-    // TODO : default
-    // TODO : range
+    CLASS_ATTR_ATOM_ARRAY(ossia_library.ossia_parameter_class, "range", 0, t_parameter, m_range, 2);
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "bounding_mode", 0, t_parameter, m_bounding_mode);
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "access_mode", 0, t_parameter, m_access_mode);
     CLASS_ATTR_LONG(ossia_library.ossia_parameter_class, "repetition_filter", 0, t_parameter, m_repetition_filter);
@@ -37,8 +36,12 @@ void ossia_parameter_setup()
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "description", 0, t_parameter, m_description);
     CLASS_ATTR_LONG(ossia_library.ossia_parameter_class, "priority", 0, t_parameter, m_priority);
     
+    //class_addattr(ossia_library.ossia_parameter_class, attr_offset_new("default", _sym_atom, 0, (method)default_attr_get, (method)default_attr_set, 0));
+    
     // TODO : for each attribute : CLASS_ATTR_ADD_FLAGS(ossia_library.ossia_parameter_class, "attrname", ATTR_SET_OPAQUE);
     // note : ATTR_SET_OPAQUE means that the attribute can't be changed by message afterward
+    
+    CLASS_ATTR_STYLE(ossia_library.ossia_parameter_class, "repetition_filter", 0, "onoff");
     
     class_register(CLASS_BOX, ossia_library.ossia_parameter_class);
 }
@@ -59,8 +62,8 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
         x->m_node = nullptr;
         
         // initialize attributes
-        x->m_range[0] = 0.;
-        x->m_range[1] = 1.;
+        atom_setfloat(&x->m_range[0], 0.);
+        atom_setfloat(&x->m_range[1], 1.);
         x->m_access_mode = gensym("RW");
         x->m_bounding_mode = gensym("FREE");
         x->m_unit = gensym("");
@@ -305,7 +308,7 @@ namespace ossia {
             if (!localAddress)
                 return false;
             
-            localAddress->set_domain(ossia::make_domain(m_range[0], m_range[1]));
+            localAddress->set_domain(ossia::make_domain(atom_getfloat(&m_range[0]), atom_getfloat(&m_range[1])));
             
             // FIXME : we need case insensitive comparison here
             if (m_bounding_mode == gensym("FREE"))

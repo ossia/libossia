@@ -18,7 +18,7 @@ namespace ossia {
             t_atom      m_default[64];
             
             // TODO use optional for range
-            float       m_range[2];
+            t_atom      m_range[2];
             t_symbol*   m_bounding_mode;
             t_symbol*   m_access_mode;
             bool        m_repetition_filter;
