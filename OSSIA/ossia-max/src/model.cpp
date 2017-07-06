@@ -111,27 +111,28 @@ namespace max {
         {
             object_dequarantining<t_model>(this);
             
-//            std::vector<object_hierachy> obj = find_child_to_register(this, m_object.o_canvas->gl_list, "ossia.model");
-            /*
-            for (auto v : obj)
+            std::vector<box_hierachy> children = find_children_to_register(&m_object, get_patcher(&m_object), gensym("ossia.model"));
+            
+            for (auto child : children)
             {
-                if (v.classname == "ossia.model")
+                if (child.classname == gensym("ossia.model"))
                 {
-                    t_model* model = (t_model*) v.x;
+                    t_model* model = (t_model*)jbox_get_object(child.box);
+                    
+                    // ignore itself
                     if (model == this)
-                    {
-                        // not registering itself
                         continue;
-                    }
+                    
                     model->register_node(m_node);
                 }
-                else if (v.classname == "ossia.param")
+                else if (child.classname == gensym("ossia.parameter"))
                 {
-                    t_parameter* parameter = (t_parameter*) v.x;
+                    t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+                    
                     parameter->register_node(m_node);
                 }
             }
-            
+/*
             for (auto view : t_view::quarantine())
             {
                 object_register<t_view>(static_cast<t_view*>(view));
@@ -142,7 +143,7 @@ namespace max {
             {
                 object_register<t_remote>(static_cast<t_remote*>(remote));
             }
-             */
+ */
         }
         else
             object_quarantining<t_model>(this);
@@ -152,10 +153,12 @@ namespace max {
     
     bool t_model :: do_registration(ossia::net::node_base* node)
     {
+        // already register to this node
         if (m_node && m_node->get_parent() == node)
-            return true; // already register to this node;
+            return true;
         
-        unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
+        // we should unregister here because we may have add a node between the registered node and the parameter
+        unregister();
        
         if (!node)
             return false;
@@ -163,22 +166,23 @@ namespace max {
         // check if a node with the same name already exists to avoid auto-incrementing name
         if (node->find_child(m_name->s_name))
         {
-            //std::vector<object_hierachy> obj = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
-            /*
-            for (auto v : obj)
+            std::vector<box_hierachy> children_model = find_children_to_register(&m_object, get_patcher(&m_object), gensym("ossia.model"));
+            
+            for (auto child : children_model)
             {
-                if(v.classname == "ossia.param")
+                if (child.classname == gensym("ossia.parameter"))
                 {
-                    t_parameter* parameter = (t_parameter*) v.x;
-                    if (std::string(parameter->m_name->s_name) == std::string(m_name->s_name))
+                    t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+                    
+                    // if we already have a t_parameter node of that name, unregister it
+                    // we will register it again after node creation
+                    if (parameter->m_name == m_name)
                     {
-                        parameter->unregister(); // if we already have a t_param node of that name, unregister it
-                        // we will register it again after node creation
+                        parameter->unregister();
                         continue;
                     }
                 }
             }
-             */
         }
         
         m_node = &ossia::net::create_node(*node, m_name->s_name);
@@ -192,8 +196,9 @@ namespace max {
     
     bool t_model :: unregister()
     {
+        // not registered
         if (!m_node)
-            return true; // not registered
+            return true;
         
         if (m_node && m_node->get_parent())
             m_node->get_parent()->remove_child(*m_node); // this calls isDeleted() on each registered child and put them into quarantine

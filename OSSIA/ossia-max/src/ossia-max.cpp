@@ -105,7 +105,7 @@ namespace max {
             
             while (view)
             {
-                tmp = (t_view*)jbox_get_patcher(view_box);
+                tmp = (t_view*)jbox_get_object(view_box);
  
                 vs.push_back(tmp->m_name->s_name);
                 view = find_parent_box_alive(&tmp->m_object, gensym("ossia.view"), 1, &view_level);
@@ -136,7 +136,7 @@ namespace max {
             model_box = find_parent_box_alive(&x->m_object, gensym("ossia.model"), start_level, &model_level);
             t_model* tmp = nullptr;
         
-           while (model_box)
+            while (model_box)
             {
                 tmp = (t_model*)jbox_get_object(model_box);
                 
@@ -458,91 +458,98 @@ namespace max {
         
         return parent_box;
     }
-/*
-    std::vector<obj_hierachy> find_child_to_register(t_obj_base* x, t_gobj* start_list, std::string classname)
+
+    std::vector<box_hierachy> find_children_to_register(t_object* object, t_object* patcher, t_symbol* classname)
     {
-        std::string subclassname = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
+        t_symbol* subclassname = classname == gensym("ossia.model") ? gensym("ossia.parameter") : gensym("ossia.remote");
         
-        t_gobj* list = start_list;
-        std::vector<obj_hierachy> found;
+        std::vector<box_hierachy> found;
+        t_object* next_box;
         
-        // 1: iterate object list and look for ossia.model / ossia.view object
-        while (list && list->g_pd)
+        // 1: look for [classname] objects into the patcher
+        next_box = object_attr_getobj(patcher, _sym_firstobject);
+        
+        while (next_box)
         {
-            std::string current = list->g_pd->c_name->s_name;
-            
-            if ( current == classname )
+            if (object_attr_getsym(next_box, _sym_maxclass) == classname)
             {
-                obj_hierachy oh;
+                t_object* object_box = NULL;
+                object_obex_lookup(object, gensym("#B"), &object_box);
                 
-                oh.hierarchy = 0;
-                oh.x = (t_obj_base*) &list->g_pd;
-                oh.classname = classname;
-                
-                // TODO check if object is dying
-                if (x != oh.x && !oh.x->x_dead)
+                // the object itself cannot be stored into the hierachy
+                if (next_box != object_box)
                 {
-                    t_obj_base* o = oh.x;
-                    found.push_back(oh);
+                    box_hierachy oh;
+                
+                    oh.box = next_box;
+                    oh.hierarchy = 0;
+                    oh.classname = classname;
+                
+                    // ignore dying object
+                    if (!((t_object_base*)jbox_get_object(oh.box))->m_dead)
+                        found.push_back(oh);
                 }
             }
             
-            list=list->g_next;
+            next_box = object_attr_getobj(next_box, _sym_nextobject);
         }
         
         // 2: if there is no ossia.model / ossia.view in the current patch, look into the subpatches
-        
         if (found.empty())
         {
-            list = start_list;
-            while (list && list->g_pd)
+            next_box = object_attr_getobj(patcher, _sym_firstobject);
+            
+            while (next_box)
             {
-                std::string current = list->g_pd->c_name->s_name;
-                if (current == "canvas")
+                t_symbol* next_box_classname = object_attr_getsym(next_box, _sym_maxclass);
+                
+                // jpatcher or bpatcher case
+                if (next_box_classname == _sym_jpatcher || next_box_classname == _sym_bpatcher)
                 {
-                    t_canvas* canvas = (t_canvas*) &list->g_pd;
+                    t_object* patcher = jbox_get_object(next_box);
                     
-                    if (!canvas_istable(canvas))
+                    std::vector<box_hierachy> found_tmp = find_children_to_register(object, patcher, classname);
+                    
+                    for (auto obj : found_tmp)
                     {
-                        t_gobj* _list = canvas->gl_list;
-                        std::vector<obj_hierachy> found_tmp = find_child_to_register(x, _list, classname);
-                        
-                        for (auto obj : found_tmp)
-                        {
-                            obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
-                            found.push_back(obj);
-                        }
+                        obj.hierarchy++; // increase hierarchy of objects found in a subpatcher
+                        found.push_back(obj);
                     }
                 }
                 
-                list=list->g_next;
+                next_box = object_attr_getobj(next_box, _sym_nextobject);
             }
             
             // 3: finally look for ossia.param / ossia.remote in the same pather
-            list = start_list;
-            while (list && list->g_pd)
+            next_box = object_attr_getobj(patcher, _sym_firstobject);
+            
+            while (next_box)
             {
-                std::string current = list->g_pd->c_name->s_name;
-                
-                if (current == subclassname)
+                if (object_attr_getsym(next_box, _sym_maxclass) == subclassname)
                 {
-                    obj_hierachy oh;
+                    t_object* object_box = NULL;
+                    object_obex_lookup(object, gensym("#B"), &object_box);
                     
-                    oh.hierarchy = 0;
-                    oh.x = (t_obj_base*) &list->g_pd;
-                    oh.classname = subclassname;
+                    // the object itself cannot be stored into the hierachy
+                    if (next_box != object_box)
+                    {
+                        box_hierachy oh;
                     
-                    if (x != oh.x)
+                        oh.box = next_box;
+                        oh.hierarchy = 0;
+                        oh.classname = subclassname;
+                    
                         found.push_back(oh);
+                    }
                 }
                 
-                list=list->g_next;
+                next_box = object_attr_getobj(next_box, _sym_nextobject);
             }
         }
         
         return found;
     }
-*/    
+ 
     t_object* get_patcher(t_object *object)
     {
         t_object *patcher = NULL;
