@@ -43,6 +43,6 @@ test_script:
   - cmake --build . --target RUN_TESTS --config %configuration%
 
 artifacts:
-  - path: %APPVEYOR_BUILD_FOLDER%\ossia-pd-package\
+  - path: ossia-pd-package
     name: ossia-pd-windows-x86_64
     type: zip
