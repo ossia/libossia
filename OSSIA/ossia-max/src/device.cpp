@@ -44,7 +44,7 @@ void *ossia_device_new(t_symbol *name, long argc, t_atom *argv)
         // make outlets
         x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump client state
         
-        // parse attributes
+        // parse arguments
         long attrstart = attr_args_offset(argc, argv);
         
         // check name argument
@@ -57,11 +57,14 @@ void *ossia_device_new(t_symbol *name, long argc, t_atom *argv)
             }
         }
         
+        // process attr args, if any
+        attr_args_process(x, argc-attrstart, argv+attrstart);
+        
         // TODO : move local protocol creation into ossia Library loading to do this only one time
         // TODO : only allow local device renaming here
         auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-        x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->m_name->s_name};
         
+        x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr), x->m_name->s_name};
         x->m_node = &x->m_device->get_root_node();
     }
     

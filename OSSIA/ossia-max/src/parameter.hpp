@@ -14,7 +14,7 @@ namespace ossia {
         struct t_parameter : t_object_base
         {
             t_symbol*   m_type;
-            int         m_type_size;
+            long        m_type_size;
             t_atom      m_default[64];
             
             // TODO use optional for range
@@ -25,7 +25,7 @@ namespace ossia {
             t_symbol*   m_unit;
             t_symbol*   m_tags;
             t_symbol*   m_description;
-            int         m_priority;
+            long        m_priority;
             
             bool register_node(ossia::net::node_base* node);
             
@@ -80,7 +80,7 @@ extern "C"
 {
     void* ossia_parameter_new(t_symbol*, long, t_atom*);
     void ossia_parameter_free(ossia::max::t_parameter*);
-    
+
     void ossia_parameter_assist(ossia::max::t_parameter*, void*, long, long, char*);
     void ossia_parameter_in_float(ossia::max::t_parameter*, double f);
     void ossia_parameter_in_int(ossia::max::t_parameter*, long int f);

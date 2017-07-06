@@ -52,7 +52,7 @@ void *ossia_client_new(t_symbol* name, long argc, t_atom* argv)
         x->m_device = 0;
         x->m_node = 0;
         
-        // parse attributes
+        // parse arguments
         long attrstart = attr_args_offset(argc, argv);
         
         // check name argument
@@ -64,6 +64,9 @@ void *ossia_client_new(t_symbol* name, long argc, t_atom* argv)
                 x->m_name = atom_getsym(argv);
             }
         }
+        
+        // process attr args, if any
+        attr_args_process(x, argc-attrstart, argv+attrstart);
     }
 
     return (x);

@@ -45,7 +45,7 @@ void* ossia_model_new(t_symbol *name, long argc, t_atom *argv)
         
         x->m_regclock = clock_new(x, (method)object_register<t_model>);
         
-        // parse attributes
+        // parse arguments
         long attrstart = attr_args_offset(argc, argv);
         
         // check name argument
@@ -65,6 +65,9 @@ void* ossia_model_new(t_symbol *name, long argc, t_atom *argv)
             x->m_name = gensym("untitledModel");
             return x;
         }
+        
+        // process attr args, if any
+        attr_args_process(x, argc-attrstart, argv+attrstart);
         
         // we need to delay registration because object may use patcher hierarchy to check address validity
         // and object will be added to patcher's objects list (aka canvas g_list) after model_new() returns.
