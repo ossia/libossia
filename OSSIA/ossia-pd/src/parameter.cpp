@@ -154,6 +154,8 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 
     ossia::net::set_priority(local_address->getNode(), x_priority);
 
+    ossia::net::set_hidden(local_address->getNode(), x_hidden);
+
     local_address->add_callback([=](const ossia::value& v){
         setValue(v);
     });
@@ -208,6 +210,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
         x->x_tags = gensym("");
         x->x_description = gensym("");
         x->x_priority = 0;
+        x->x_hidden = false;
 
         x->x_clock = clock_new(x, (t_method)push_default_value);
 
@@ -246,18 +249,19 @@ extern "C" void setup_ossia0x2eparam(void)
         eclass_addmethod(c, (method) t_obj_base::obj_bang, "bang",     A_NULL, 0);
         eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",       A_NULL, 0);
 
-        CLASS_ATTR_SYMBOL     (c, "type",            0, t_param, x_type);
-        CLASS_ATTR_SYMBOL     (c, "unit",            0, t_param, x_unit);
-        CLASS_ATTR_SYMBOL     (c, "bounding_mode",   0, t_param, x_bounding_mode);
-        CLASS_ATTR_SYMBOL     (c, "access_mode",     0, t_param, x_access_mode);
-        CLASS_ATTR_SYMBOL     (c, "description",     0, t_param, x_description);
-        CLASS_ATTR_SYMBOL     (c, "tags",            0, t_param, x_tags);
+        CLASS_ATTR_SYMBOL     (c, "type",              0, t_param, x_type);
+        CLASS_ATTR_SYMBOL     (c, "unit",              0, t_param, x_unit);
+        CLASS_ATTR_SYMBOL     (c, "bounding_mode",     0, t_param, x_bounding_mode);
+        CLASS_ATTR_SYMBOL     (c, "access_mode",       0, t_param, x_access_mode);
+        CLASS_ATTR_SYMBOL     (c, "description",       0, t_param, x_description);
+        CLASS_ATTR_SYMBOL     (c, "tags",              0, t_param, x_tags);
 
-        CLASS_ATTR_ATOM_ARRAY (c, "default",         0, t_param, x_default, 64);
-        CLASS_ATTR_FLOAT_ARRAY(c, "range",           0, t_param, x_range, 2);
-        CLASS_ATTR_FLOAT      (c, "min",             0, t_param, x_range);
+        CLASS_ATTR_ATOM_ARRAY (c, "default",           0, t_param, x_default, 64);
+        CLASS_ATTR_FLOAT_ARRAY(c, "range",             0, t_param, x_range, 2);
+        CLASS_ATTR_FLOAT      (c, "min",               0, t_param, x_range);
         CLASS_ATTR_FLOAT      (c, "repetition_filter", 0, t_param, x_repetition_filter);
-        CLASS_ATTR_INT        (c, "priority",        0, t_param, x_priority);
+        CLASS_ATTR_INT        (c, "priority",          0, t_param, x_priority);
+        CLASS_ATTR_INT        (c, "hidden",            0, t_param, x_hidden);
         // CLASS_ATTR_FLOAT(c, "max", 0, t_parameter, range+1);
         eclass_new_attr_typed(c,"max", "float", 1, 0, 0, calcoffset(t_param,x_range)+sizeof(float));
 
