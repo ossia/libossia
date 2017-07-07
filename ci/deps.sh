@@ -8,8 +8,7 @@ fi
 case "$TRAVIS_OS_NAME" in
   linux)
     if [[ "$BUILD_TYPE" == "RpiDocker" ]]; then
-      sudo apt-get install binfmt-support
-      update-binfmts --enable qemu-arm
+      sudo update-binfmts --enable qemu-arm
     else
       sudo wget https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
 
