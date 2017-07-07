@@ -27,7 +27,7 @@ case "$TRAVIS_OS_NAME" in
       (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
       tar xaf cmake-linux.tgz
-      mv cmake-*-x86_64
+      mv cmake-*-x86_64 cmake
     fi
   ;;
   osx)
