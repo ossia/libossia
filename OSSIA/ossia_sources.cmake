@@ -251,6 +251,14 @@ set(OSSIA_C_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.cpp"
     )
 
+set(OSSIA_CPP_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp/ossia-cpp98.hpp"
+    )
+
+set(OSSIA_CPP_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp/ossia-cpp98.cpp"
+    )
+
 set(OSSIA_MIDI_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"

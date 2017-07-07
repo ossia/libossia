@@ -170,6 +170,13 @@ if(OSSIA_C)
   )
 endif()
 
+if(OSSIA_CPP)
+    target_sources(ossia PRIVATE ${OSSIA_CPP_HEADERS} ${OSSIA_CPP_SRCS})
+    target_include_directories(ossia PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp"
+        )
+endif()
+
 if(OSSIA_JAVA)
   target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
   target_include_directories(ossia PRIVATE

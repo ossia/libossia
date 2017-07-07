@@ -24,6 +24,7 @@ option(OSSIA_MAX "Build Max/MSP externals" OFF)
 option(OSSIA_PYTHON "Build Python bindings" OFF)
 option(OSSIA_QT "Build Qt bindings. Implies websocket, serial, http." OFF)
 option(OSSIA_C "Build C bindings" ON)
+option(OSSIA_CPP "Build CPP bindings" ON)
 
 # Protocols :
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
