@@ -120,7 +120,7 @@ case "$TRAVIS_OS_NAME" in
       ls $TRAVIS_BUILD_DIR
       tar -cf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
 
-    else if [ "$BUILD_TYPE" = "MaxRelease" ]; then
+    elif [ "$BUILD_TYPE" = "MaxRelease" ]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
