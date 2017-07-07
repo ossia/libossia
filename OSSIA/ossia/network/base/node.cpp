@@ -292,7 +292,7 @@ node_base* node_base::create_child(std::string name)
     sanitize_name(name, m_children);
     auto res = make_child(name);
 
-    if (ptr = res.get())
+    if ((ptr = res.get()))
     {
       m_children.push_back(std::move(res));
     }
