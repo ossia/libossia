@@ -27,7 +27,7 @@ before_build:
   - git submodule update --init --recursive
   - mkdir build
   - cd build
-  - set PATH=%QTDIR%\bin;%PATH%
+  - if exist "%QTDIR%\bin\" set PATH=%QTDIR%\bin;%PATH%
   - cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_OPTION%  ..
 
 build:
