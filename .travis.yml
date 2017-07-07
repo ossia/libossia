@@ -50,6 +50,8 @@ matrix:
     env: BUILD_TYPE=Release OSSIA_STATIC=1
   - os: osx
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
+  - os: osx
+    env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
 
   - os: linux
     env: BUILD_TYPE=Coverage
