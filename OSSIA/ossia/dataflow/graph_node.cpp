@@ -40,10 +40,10 @@ void graph_node::run(execution_state&)
 
 }
 
-void graph_node::set_time(double d)
+void graph_node::set_date(ossia::time_value d)
 {
-  m_previous_time = m_time;
-  m_time = d;
+  m_prev_date = m_date;
+  m_date = d;
 }
 
 bool graph_node::can_execute(const execution_state&) const

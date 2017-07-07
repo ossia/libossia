@@ -13,9 +13,6 @@ serial_device::serial_device(const QByteArray& code, const QSerialPortInfo& bot)
   m_protocol->set_device(*this);
 }
 
-std::string serial_device::get_name() const
-{ return m_name; }
-
 node_base& serial_device::set_name(std::string n)
 { m_name = n; return *this; }
 

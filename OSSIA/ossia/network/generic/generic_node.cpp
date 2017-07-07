@@ -12,13 +12,15 @@ namespace net
 {
 generic_node_base::generic_node_base(
     std::string name, ossia::net::device_base& aDevice, node_base& aParent)
-    : m_name{std::move(name)}, m_device{aDevice}, m_parent{&aParent}
+    : m_device{aDevice}, m_parent{&aParent}
 {
+  m_name = std::move(name);
 }
 
 generic_node_base::generic_node_base(std::string name, ossia::net::device_base& aDevice)
-    : m_name{std::move(name)}, m_device{aDevice}
+    : m_device{aDevice}
 {
+  m_name = std::move(name);
 }
 
 device_base&generic_node_base::get_device() const
@@ -32,26 +34,14 @@ node_base*generic_node_base::get_parent() const
   return m_parent;
 }
 
-
-std::string generic_node_base::get_name() const
-{
-  return m_name;
-}
-
-
 node_base& generic_node_base::set_name(std::string name)
 {
   auto old_name = std::move(m_name);
   if(m_parent)
   {
-    const auto& bros = m_parent->children();
-    std::vector<std::string> bros_names;
-    bros_names.reserve(bros.size());
-
-    std::transform(bros.cbegin(), bros.cend(), std::back_inserter(bros_names),
-                   [] (const auto& n) { return n->get_name(); });
-
-    m_name = sanitize_name(std::move(name), bros_names);
+    read_lock_t lock{m_mutex};
+    sanitize_name(name, m_parent->unsafe_children());
+    m_name = name;
   }
   else
   {
@@ -64,7 +54,6 @@ node_base& generic_node_base::set_name(std::string name)
 
   return *this;
 }
-
 
 
 generic_node::generic_node(

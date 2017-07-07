@@ -238,7 +238,8 @@ void scenario::process_this(
     node.m_status = time_node::DONE_TRIGGERED;
 }
 
-enum progress_mode { PROGRESS_MIN, PROGRESS_MAX } mode{PROGRESS_MAX};
+enum progress_mode { PROGRESS_MIN, PROGRESS_MAX };
+static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void update_overtick(time_constraint& constraint, time_node* end_node, ossia::time_value tick_us, ossia::time_value cst_old_date, overtick_map& node_tick_dur)
 {
@@ -265,11 +266,10 @@ void scenario::tick_constraint(time_constraint& constraint, time_value tick)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
-  auto cst_old_date = constraint.get_date();
   auto cst_max_dur = constraint.get_max_duration();
   if(!cst_max_dur.infinite())
   {
-    auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
+    auto this_tick = std::min(tick, cst_max_dur - constraint.get_date());
     constraint.tick(this_tick);
   }
   else

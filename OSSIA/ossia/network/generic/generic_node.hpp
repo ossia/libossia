@@ -13,7 +13,6 @@ class protocol_base;
 class OSSIA_EXPORT generic_node_base : public ossia::net::node_base
 {
 protected:
-  std::string m_name;
   ossia::net::device_base& m_device;
   ossia::net::node_base* m_parent{};
 
@@ -35,7 +34,7 @@ public:
 
   ossia::net::device_base& get_device() const final override;
   ossia::net::node_base* get_parent() const final override;
-  std::string get_name() const final override;
+
   ossia::net::node_base& set_name(std::string) final override;
 };
 

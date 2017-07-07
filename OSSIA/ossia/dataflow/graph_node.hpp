@@ -2,6 +2,7 @@
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 
 namespace ossia
 {
@@ -24,8 +25,9 @@ public:
 
   virtual void run(execution_state&);
 
-  void set_time(double d);
-  double time() const { return m_time; }
+  void set_date(ossia::time_value d);
+  void set_date(int64_t d) { set_date(ossia::time_value(d)); }
+  ossia::time_value time() const { return m_date; }
 
   bool can_execute(const execution_state&) const;
 
@@ -48,8 +50,8 @@ protected:
   inlets m_inlets;
   outlets m_outlets;
 
-  double m_previous_time{};
-  double m_time{};
+  ossia::time_value m_prev_date{};
+  ossia::time_value m_date{};
 
   bool m_enabled{};
   bool m_executed{};

@@ -12,6 +12,25 @@
 #include <ossia/detail/logger.hpp>
 #include <spdlog/spdlog.h>
 #include <iostream>
+#if defined(OSSIA_QT)
+#include <QString>
+// Taken from https://stackoverflow.com/a/18230916/1495627
+OSSIA_EXPORT bool latinCompare(const QString& qstr, const std::string& str)
+{
+  if( qstr.length() != (int) str.size() )
+    return false;
+
+  const QChar* qstrData = qstr.data();
+  const int N = qstr.length();
+  for(int i = 0; i < N; ++i)
+  {
+    if(qstrData[i].toLatin1() != str[i])
+      return false;
+  }
+  return true;
+}
+
+#endif
 
 namespace ossia
 {
@@ -128,6 +147,87 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
   }
 }
 
+
+void sanitize_name(std::string& name, const node_base::children_t& brethren)
+{
+  sanitize_name(name);
+  bool is_here = false;
+  ossia::optional<int> name_instance;
+  chobo::small_vector<int, 16> instance_num;
+  instance_num.reserve(brethren.size());
+
+  // First get the root name : the first part of the "a.b"
+  std::string root_name = name;
+  {
+    auto pos = name.find_last_of('.');
+    if(pos != std::string::npos)
+    {
+      try
+      {
+        name_instance = boost::lexical_cast<int>(name.substr(pos + 1)); // OPTIMIZEME
+        root_name = name.substr(0, pos);
+      }
+      catch (...)
+      {
+      }
+    }
+  }
+
+  const auto root_len = root_name.size();
+  for (const auto& bro : brethren)
+  {
+    const auto& n_name = bro->get_name();
+    if (n_name == name)
+    {
+      is_here = true;
+    }
+
+    if(n_name.size() < (root_len + 1))
+      continue;
+
+    bool same_root = (n_name.compare(0, root_len, root_name) == 0);
+    if (same_root && (n_name[root_len] == '.'))
+    {
+      // Instance
+      try
+      {
+        int n = boost::lexical_cast<int>(n_name.substr(root_len + 1)); // OPTIMIZEME
+        instance_num.push_back(n);
+      }
+      catch (...)
+      {
+        continue;
+      }
+    }
+    // case where we have the "default" instance without .0
+    else if(same_root && root_len == n_name.length())
+    {
+      instance_num.push_back(0);
+    }
+  }
+
+  if (!is_here)
+  {
+    return;
+  }
+  else
+  {
+    auto n = instance_num.size();
+    if ((n == 0) || ((n == 1) && (instance_num[0] == 0)))
+    {
+      name = root_name;
+      name += ".1";
+    }
+    else
+    {
+      std::sort(instance_num.begin(), instance_num.end());
+      name = root_name;
+      name += '.';
+      name += boost::lexical_cast<std::string>(instance_num.back() + 1);
+    }
+  }
+}
+
 std::vector<std::string> address_parts(const ossia::string_view& src)
 {
   std::vector<std::string> sub;
@@ -185,18 +285,23 @@ node_base* node_base::create_child(std::string name)
   auto& dev = get_device();
   if(!dev.get_capabilities().change_tree)
     return nullptr;
-
-  auto res = make_child(sanitize_name(std::move(name), children_names()));
-
-  auto ptr = res.get();
-  if (res)
+  ossia::net::node_base* ptr{};
   {
-    { write_lock_t lock{m_mutex};
+    write_lock_t lock{m_mutex};
+
+    sanitize_name(name, m_children);
+    auto res = make_child(name);
+
+    if ((ptr = res.get()))
+    {
       m_children.push_back(std::move(res));
     }
-    dev.on_node_created(*ptr);
   }
 
+  if(ptr)
+  {
+    dev.on_node_created(*ptr);
+  }
   return ptr;
 }
 
@@ -221,10 +326,10 @@ bool node_base::is_root_instance(const node_base& child) const
   read_lock_t lock{m_mutex};
   SPDLOG_TRACE((&ossia::logger()), "locked(is_root_instance)");
 
-  auto child_name = child.get_name();
+  const auto& child_name = child.get_name();
   for(auto& cld : m_children)
   {
-    auto bro_name = cld->get_name();
+    const auto& bro_name = cld->get_name();
     if((bro_name.size() > (child_name.size() + 1))
     && boost::starts_with(bro_name, child_name)
     && (bro_name[child_name.size()] == '.'))
@@ -248,7 +353,7 @@ node_base*node_base::add_child(std::unique_ptr<node_base> n)
 
   if(n)
   {
-    const auto name = n->get_name();
+    const auto& name = n->get_name();
     if(name == sanitize_name(name, children_names()))
     {
       auto ptr = n.get();
@@ -281,6 +386,29 @@ node_base* node_base::find_child(ossia::string_view name)
   SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
   return nullptr;
 }
+
+#if defined(OSSIA_QT)
+node_base* node_base::find_child(const QString& name)
+{
+  {
+    SPDLOG_TRACE((&ossia::logger()), "locking(findChild)");
+    read_lock_t lock{m_mutex};
+    SPDLOG_TRACE((&ossia::logger()), "locked(findChild)");
+    for(auto& node : m_children)
+    {
+      if(latinCompare(name, node->get_name()))
+      {
+        SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
+        return node.get();
+      }
+    }
+  }
+
+  SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
+  return nullptr;
+}
+#endif
+
 
 bool node_base::has_child(node_base& n)
 {

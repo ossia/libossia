@@ -11,27 +11,22 @@ serial_node::serial_node(
     const serial_address_data& data,
     serial_device& aDevice,
     serial_node& aParent):
-  m_name{data.name},
   m_device{aDevice},
   m_parent{&aParent}
 {
+  m_name = data.name;
   if(!data.request.isEmpty() || data.type)
-    mAddress = std::make_unique<serial_address>(data, *this);
+    m_address = std::make_unique<serial_address>(data, *this);
 }
 
 serial_node::serial_node(
     const serial_address_data& data,
     serial_device& aDevice):
-  m_name{data.name},
   m_device{aDevice}
 {
+  m_name = data.name;
   if(!data.request.isEmpty() || data.type)
-    mAddress = std::make_unique<serial_address>(data, *this);
-}
-
-std::string serial_node::get_name() const
-{
-  return m_name;
+    m_address = std::make_unique<serial_address>(data, *this);
 }
 
 ossia::net::device_base& serial_node::get_device() const
@@ -51,7 +46,7 @@ ossia::net::node_base& serial_node::set_name(std::string)
 
 ossia::net::address_base* serial_node::get_address() const
 {
-  return mAddress.get();
+  return m_address.get();
 }
 
 ossia::net::address_base* serial_node::create_address(ossia::val_type)
