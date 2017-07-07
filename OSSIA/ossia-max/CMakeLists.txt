@@ -68,3 +68,16 @@ elseif(WIN32)
     endif()
 endif()
 
+set(OSSIA_MAX_INSTALL_FOLDER "ossia-max-package/ossia" CACHE STRING "Max Package Install folder")
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
+        DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
+        COMPONENT ${PROJECT_NAME})
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples"
+        DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
+        COMPONENT ${PROJECT_NAME})
+
+install(TARGETS ${PROJECT_NAME}
+        DESTINATION "${OSSIA_MAX_INSTALL_FOLDER}"
+        COMPONENT ${PROJECT_NAME})
