@@ -85,6 +85,10 @@ if(OSSIA_PROTOCOL_PHIDGETS)
   ossia_add_test(PhidgetTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/PhidgetTest.cpp")
 endif()
 
+if(OSSIA_CPP)
+    ossia_add_test(Cpp98Test                  "${CMAKE_CURRENT_SOURCE_DIR}/CPP/CPP98.cpp")
+endif()
+
 if(OSSIA_BENCHMARKS)
 ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
 ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"

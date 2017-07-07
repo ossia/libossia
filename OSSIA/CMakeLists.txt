@@ -53,6 +53,7 @@ endif()
 
 if(NOT TARGET ModernMIDI)
   set(OSSIA_PROTOCOL_MIDI OFF)
+  set(OSSIA_DATAFLOW OFF)
 endif()
 
 include(ossia_sources.cmake)

@@ -83,6 +83,7 @@ public:
   node();
   node(const node&);
   node& operator=(const node&);
+  ~node();
 
   std::string get_name() const;
   void set_name(std::string s);
@@ -200,7 +201,7 @@ private:
 class oscquery_server
 {
 public:
-  oscquery_server(std::string name, int wsPort, int oscPort);
+  oscquery_server(std::string name, int wsPort = 5678, int oscPort = 1234);
   ~oscquery_server();
   node get_root_node() const;
 private:
@@ -210,10 +211,12 @@ private:
 class oscquery_mirror
 {
 public:
-  oscquery_mirror(std::string name, std::string host);
+  oscquery_mirror(std::string name,std::string host = "ws://127.0.0.1:5678");
   ~oscquery_mirror();
 
   node get_root_node() const;
+  void refresh();
+  void reconnect(std::string name, std::string host);
 private:
   ossia::net::device_base* impl;
 };

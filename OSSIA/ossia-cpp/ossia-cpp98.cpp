@@ -110,6 +110,15 @@ node&node::operator=(const node& other)
   return *this;
 }
 
+node::~node()
+{
+  if(node_impl)
+  {
+    node_impl->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
+    node_impl->get_device().on_address_removing.disconnect<node, &node::cleanup_address>(*this);
+  }
+}
+
 std::string node::get_name() const { return node_impl ? node_impl->get_name() : ""; }
 
 void node::set_name(std::string s) { if(node_impl) node_impl->set_name(std::move(s)); }
@@ -796,12 +805,12 @@ node oscquery_server::get_root_node() const
 }
 
 oscquery_mirror::oscquery_mirror(std::string name, std::string host)
-{
+try {
   impl = new ossia::net::generic_device(
            std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host),
            name
            );
-}
+} catch(...) { }
 
 oscquery_mirror::~oscquery_mirror()
 {
@@ -810,7 +819,26 @@ oscquery_mirror::~oscquery_mirror()
 
 node oscquery_mirror::get_root_node() const
 {
-  return node{&impl->get_root_node()};
+  if(impl)
+    return node{&impl->get_root_node()};
+  return node{};
+}
+
+void oscquery_mirror::refresh()
+{
+  if(impl)
+    static_cast<ossia::oscquery::oscquery_mirror_protocol&>(impl->get_protocol()).update(impl->get_root_node());
+}
+
+void oscquery_mirror::reconnect(std::string name, std::string host)
+{
+  if(impl)
+    delete impl;
+  impl = new ossia::net::generic_device(
+           std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host),
+           name
+           );
+
 }
 
 
