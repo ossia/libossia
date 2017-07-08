@@ -77,7 +77,7 @@ private:
 
 typedef void (*value_callback)(void*, const opp::value&);
 
-class node
+class OSSIA_EXPORT node
 {
 public:
   node();
@@ -198,7 +198,7 @@ private:
   ossia::net::address_base* addr_impl;
 };
 
-class oscquery_server
+class OSSIA_EXPORT oscquery_server
 {
 public:
   oscquery_server(std::string name, int wsPort = 5678, int oscPort = 1234);
@@ -208,7 +208,7 @@ private:
   ossia::net::device_base* impl;
 };
 
-class oscquery_mirror
+class OSSIA_EXPORT oscquery_mirror
 {
 public:
   oscquery_mirror(std::string name,std::string host = "ws://127.0.0.1:5678");
