@@ -12,6 +12,7 @@
 #include <QString>
 #include <QJSValue>
 #include <QJSValueIterator>
+#include <QDebug>
 #include <QJSEngine>
 #include <QMetaEnum>
 #include <QTime>
@@ -457,6 +458,8 @@ OSSIA_EXPORT QString sanitize_name(QString name_base, const std::vector<QString>
 }
 
 }
+
+OSSIA_EXPORT QDebug operator<<(QDebug s, const ossia::value& v);
 
 #else
 #error This file requires Qt.
