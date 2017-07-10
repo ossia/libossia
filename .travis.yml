@@ -3,6 +3,7 @@ language: cpp
 branches:
   except:
     - gh-pages
+    - feature/appveyor_pd
 
 env:
   global:
