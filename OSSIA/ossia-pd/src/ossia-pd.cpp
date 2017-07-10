@@ -201,6 +201,11 @@ template<typename T> bool obj_register(T *x)
     t_view *view = nullptr;
     int view_level=0, model_level=0;
 
+    if (std::is_same<T,t_view>::value || std::is_same<T,t_model>::value) {
+        view_level=1;
+        model_level=1;
+    }
+
     if (!x->x_absolute){
         // then try to locate a parent view or model
         if (std::is_same<T,t_view>::value || std::is_same<T,t_remote>::value) {
