@@ -9,7 +9,9 @@ namespace max {
     
     struct t_object_base
     {
-        t_object    m_object;
+        t_object    m_object;           // the Max object instance.
+                                        // !!! this member is handled by Max API : that's why there is no place in our code where it is initialized.
+        
         void**      m_inlets{};
         void*       m_data_out{};
         void*       m_set_out{};
@@ -33,25 +35,6 @@ namespace max {
     
 # pragma mark -
 # pragma mark Utilities
-    
-    /**
-     * @brief The object_hierachy class
-     * @details Little class to store object pointer and hierarchy level, useful for iterating object from top to bottom.
-     */
-    class object_hierachy
-    {
-    public:
-        t_object_base* x;
-        int hierarchy;
-        std::string classname;
-        
-        friend bool operator<(object_hierachy a, object_hierachy b)
-        {
-            return a.hierarchy < b.hierarchy;
-        }
-    };
-    
-    //std::vector<object_hierachy> find_child_to_register(t_object_base* x, t_gobj* start_list, std::string classname);
     
     // Converts a max string to a type used in the api
     static ossia::val_type name_to_type(ossia::string_view name)

@@ -11,7 +11,8 @@ namespace max
     
     struct t_logger
     {
-        t_object m_object;
+        t_object m_object;                              // the Max object instance
+                                                        // !!! this member is handled by Max API : that's why there is no place in our code where it is initialized.
         std::shared_ptr<spdlog::logger> m_log;
     };
 } // max namespace

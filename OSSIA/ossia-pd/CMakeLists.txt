@@ -10,7 +10,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
     # On windows we have to create a .lib file for Pd since the original one is incomplete
 
     # First download Pd.
-    file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/ovgiq6dt7dcqqiji/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+    file(DOWNLOAD "https://ci.appveyor.com/api/projects/avilleret/pure-data/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
 
     # Extract Pd.
     execute_process(
@@ -18,6 +18,10 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
 
 endif()
+endif()
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  add_definitions(-D_GLIBCXX_DEBUG)
 endif()
 
 set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
@@ -30,6 +34,7 @@ add_subdirectory("${OSSIA_CICM_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/Cicm-build")
 set(BUILD_SHARED_LIBS ${OLD_BUILD_SHARED_LIBS})
 
 include_directories("${OSSIA_CICM_PATH}/Sources")
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
@@ -52,8 +57,11 @@ set(PROJECT_SRCS
   src/view.cpp
   src/view.hpp)
 
+include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
+
+generate_export_header(${PROJECT_NAME} BASE_NAME OSSIA_PD)
 
 # These two lines are used to display the QMLs in the project view of IDEs
 set(QMLS "examples/client-example.qml")
@@ -93,12 +101,12 @@ set(OSSIA_PD_INSTALL_FOLDER "ossia-pd-package/ossia" CACHE STRING "PD Package In
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
         DESTINATION ${OSSIA_PD_INSTALL_FOLDER}
-        COMPONENT ossia-pd)
+        COMPONENT ${PROJECT_NAME})
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples"
         DESTINATION ${OSSIA_PD_INSTALL_FOLDER}
-        COMPONENT ossia-pd)
+        COMPONENT ${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME}
         DESTINATION "${OSSIA_PD_INSTALL_FOLDER}"
-        COMPONENT ossia-pd)
+        COMPONENT ${PROJECT_NAME})

@@ -34,11 +34,11 @@
 [submodule "3rdparty/hopscotch-map"]
 	path = 3rdparty/hopscotch-map
 	url = https://github.com/tessil/hopscotch-map.git
-[submodule "OSSIA/ossia-pd/pure-data"]
+[submodule "3rdparty/pure-data"]
 	path = 3rdparty/pure-data
 	url = https://github.com/avilleret/pure-data.git
 	#url = https://git.code.sf.net/p/pure-data/pure-data
-[submodule "OSSIA/ossia-pd/CicmWrapper"]
+[submodule "3rdparty/CicmWrapper"]
 	path = 3rdparty/CicmWrapper
 	url = https://github.com/avilleret/CicmWrapper.git
 [submodule "3rdparty/chobo-shl"]
