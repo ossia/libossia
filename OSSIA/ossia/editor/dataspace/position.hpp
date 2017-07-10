@@ -94,7 +94,7 @@ struct OSSIA_EXPORT polar_u :
     const auto y = self.dataspace_value[1];
 
     return {
-          (float)(std::atan2(x, y) * rad_to_deg),
+          (float)(std::atan2(y, x) * rad_to_deg),
           (float)(ossia::norm(x, y))
         };
   }
