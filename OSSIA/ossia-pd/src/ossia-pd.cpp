@@ -395,7 +395,8 @@ template void obj_quarantining<t_remote>(t_remote *x);
 template void obj_quarantining<t_view>  (t_view   *x);
 
 template<typename T> void obj_dequarantining(T* x){
-    x->quarantine().erase(std::remove(x->quarantine().begin(), x->quarantine().end(), x), x->quarantine().end());
+	std::vector<T*> vec = x->quarantine();
+	if (!obj_isQuarantined<T>(x)) vec.erase(std::remove(vec.begin(), vec.end(), x), vec.end());
 }
 template void obj_dequarantining<t_param> (t_param  *x);
 template void obj_dequarantining<t_model> (t_model  *x);

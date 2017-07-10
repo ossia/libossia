@@ -18,7 +18,7 @@ struct t_view : t_obj_base
         }
     }
 
-    static std::vector<t_view*>& quarantine(){
+    static std::vector<t_view*> quarantine(){
         static std::vector<t_view*> quarantine;
         return quarantine;
     }
