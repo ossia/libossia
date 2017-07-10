@@ -233,6 +233,7 @@ static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 
 static void parameter_free(t_param *x)
 {
+    x->x_dead = true;
     x->unregister();
     obj_dequarantining<t_param>(x);
     outlet_free(x->x_dataout);

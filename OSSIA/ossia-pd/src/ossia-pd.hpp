@@ -264,13 +264,13 @@ static t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int*
         t_gobj* list = canvas->gl_list;
         while(list){
             std::string current = list->g_pd->c_name->s_name;
-            if (list->g_pd && (current==classname) &&  (&(list->g_pd) != &(x->o_obj.te_g.g_pd))){
+            if ( (current==classname) &&  (&(list->g_pd) != &(x->o_obj.te_g.g_pd))){ // check if type match and not the same intance...
                 return &(list->g_pd);
             }
             list = list->g_next;
         }
         canvas = canvas->gl_owner;
-        *level++;
+        (*level)++;
     }
     return nullptr;
 }
