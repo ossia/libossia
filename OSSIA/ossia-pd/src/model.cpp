@@ -48,12 +48,14 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
     if (!node) return false;
 
-    if (node->find_child(x_name->s_name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
+	std::string name(x_name->s_name);
+
+    if (node->find_child(name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
         std::vector<obj_hierachy> obj = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
         for (auto v : obj){
             if(v.classname == "ossia.param"){
                 t_param* param = (t_param*) v.x;
-                if (std::string(param->x_name->s_name) == std::string(x_name->s_name)) {
+                if (std::string(param->x_name->s_name) == name) {
                     param->unregister(); // if we already have a t_param node of that name, unregister it
                     // we will register it again after node creation
                     continue;
@@ -62,10 +64,10 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
         }
     }
 
-    x_node = &ossia::net::create_node(*node, x_name->s_name);
+    x_node = &ossia::net::create_node(*node, name);
     x_node->about_to_be_deleted.connect<t_model, &t_model::isDeleted>(this);
 
-    ossia::net::set_description(*x_node, x_description->s_name);
+    ossia::net::set_description(*x_node, std::string(x_description->s_name));
     ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
 
     return true;
