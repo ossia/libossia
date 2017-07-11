@@ -586,12 +586,12 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
     {
       case ossia::val_type::IMPULSE :
       {
-        v.AddMember("valueType", "impulse", alloc);
+        v.AddMember("type", "impulse", alloc);
         break;
       }
       case ossia::val_type::BOOL :
       {
-        v.AddMember("valueType", "boolean", alloc);
+        v.AddMember("type", "boolean", alloc);
 
         if(default_value)
           if (auto valueDefault = default_value->target<bool>())
@@ -603,7 +603,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       case ossia::val_type::INT :
       {
         // append type attribute
-        v.AddMember("valueType", "integer", alloc);
+        v.AddMember("type", "integer", alloc);
 
         // append default value attribute
         if(default_value)
@@ -633,7 +633,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       case ossia::val_type::FLOAT :
       {
         // append type attribute
-        v.AddMember("valueType", "decimal", alloc);
+        v.AddMember("type", "decimal", alloc);
         // append default value attribute
         if(default_value)
           if (auto valueDefault = default_value->target<float>())
@@ -660,7 +660,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       }
       case ossia::val_type::CHAR :
       {
-        v.AddMember("valueType", "char", alloc);
+        v.AddMember("type", "char", alloc);
         if(default_value)
           if (auto valueDefault = default_value->target<char>())
           {
@@ -671,7 +671,15 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       }
       case ossia::val_type::STRING :
       {
-        v.AddMember("valueType", "string", alloc);
+        auto ex = ossia::net::get_extended_type(*node);
+        if(ex && *ex == ossia::filesystem_path_type())
+        {
+          v.AddMember("type", "filepath", alloc);
+        }
+        else
+        {
+          v.AddMember("type", "string", alloc);
+        }
 
         if(default_value)
           if (auto valueDefault = default_value->target<std::string>())

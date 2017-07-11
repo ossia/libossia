@@ -91,12 +91,12 @@ void qml_parameter::resetNode()
       m_ossia_node->about_to_be_deleted.connect<qml_property_base, &qml_property_base::on_node_deleted>(this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
       m_address = m_ossia_node->get_address();
-      applyNodeAttributes();
 
       setPath(
             QString::fromStdString(
               ossia::net::address_string_from_node(*m_ossia_node)));
       setupAddress(reading);
+      applyNodeAttributes();
       return;
     } // else, we go through the reset:
   }
