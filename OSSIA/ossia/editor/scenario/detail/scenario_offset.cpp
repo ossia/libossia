@@ -186,10 +186,21 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   // offset all TimeConstraints
   for (const auto& timeConstraint : m_constraints)
   {
-    auto& cst = *timeConstraint;
+    ossia::time_constraint& cst = *timeConstraint;
+
+    auto& sev = cst.get_start_event();
+    auto& stn = sev.get_time_node();
+    auto start_date = sev.get_time_node().get_date();
+    bool all_empty = ossia::all_of(stn.get_time_events(),
+                                    [] (const auto& ev) {
+      return ev->previous_time_constraints().empty();
+    });
+
+    if(all_empty && &stn != m_nodes[0].get())
+      continue;
+
     // offset TimeConstraint's Clock
-    time_value constraintOffset
-        = offset - cst.get_start_event().get_time_node().get_date();
+    time_value constraintOffset = offset - start_date;
 
     if (constraintOffset >= Zero && constraintOffset <= cst.get_max_duration())
     {

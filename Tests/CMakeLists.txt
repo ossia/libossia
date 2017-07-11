@@ -1,5 +1,5 @@
 find_package(Qt5 5.6 REQUIRED COMPONENTS Core Test)
-if(OSSIA_NO_QT)
+if(NOT OSSIA_QT)
     return()
 endif()
 set(CMAKE_AUTOMOC ON)
@@ -73,6 +73,7 @@ ossia_add_test(PathTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/
 
 ossia_add_test(QtTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
 ossia_add_test(QmlTest                     "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
+ossia_add_test(QmlApiTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlApiTest.cpp")
 
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
@@ -84,13 +85,17 @@ if(OSSIA_PROTOCOL_PHIDGETS)
   ossia_add_test(PhidgetTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/PhidgetTest.cpp")
 endif()
 
-ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
+if(OSSIA_CPP)
+    ossia_add_test(Cpp98Test                  "${CMAKE_CURRENT_SOURCE_DIR}/CPP/CPP98.cpp")
+endif()
+
 if(OSSIA_BENCHMARKS)
+ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
+ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
+                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 ossia_add_test(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
 ossia_add_test(DeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_server.cpp")
 ossia_add_test(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
-ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
-                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 # ossia_add_test(AutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp
 endif()
 
@@ -131,7 +136,8 @@ else()
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml")
 
-    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir-testing"
+        "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
 endif()
 
 include(CTest)

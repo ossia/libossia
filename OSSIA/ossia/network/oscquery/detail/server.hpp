@@ -27,6 +27,7 @@ class websocket_server
     {
       m_server.init_asio();
       m_server.set_reuse_addr(true);
+      m_server.clear_access_channels(websocketpp::log::alevel::all);
       m_server.set_socket_init_handler([] (websocketpp::connection_hdl, asio::ip::tcp::socket & s)
       {
         asio::ip::tcp::no_delay option(true);

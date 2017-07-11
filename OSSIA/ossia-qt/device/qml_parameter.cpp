@@ -1,4 +1,4 @@
-#include "qml_property.hpp"
+#include "qml_parameter.hpp"
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
@@ -10,18 +10,18 @@ namespace ossia
 {
 namespace qt
 {
-qml_property::qml_property(QQuickItem *parent)
+qml_parameter::qml_parameter(QQuickItem *parent)
   : qml_property_base(parent)
 {
-  connect(this, &qml_property::setValue_sig,
-          this, &qml_property::setValue_slot,
+  connect(this, &qml_parameter::setValue_sig,
+          this, &qml_parameter::setValue_slot,
           Qt::QueuedConnection);
 
   setDevice(&qml_singleton_device::instance());
   resetNode();
 }
 
-qml_property::~qml_property()
+qml_parameter::~qml_parameter()
 {
   if(m_ossia_node)
   {
@@ -31,29 +31,7 @@ qml_property::~qml_property()
   m_address = nullptr;
 }
 
-void qml_property::setTarget(const QQmlProperty &prop)
-{
-  m_targetProperty = prop;
-  resetNode();
-}
-
-void qml_property::qtVariantChanged()
-{
-  if(!m_updatingFromSetValue && m_address)
-  {
-    if(m_callback)
-      m_address->remove_callback(*m_callback);
-
-    m_address->push_value(qt_to_ossia{}(m_targetProperty.read()));
-
-    m_callback = m_address->add_callback([this] (const ossia::value& v)
-    {
-      setValue_sig(v);
-    });
-  }
-}
-
-void qml_property::setDevice(QObject* device)
+void qml_parameter::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
@@ -73,7 +51,7 @@ void qml_property::setDevice(QObject* device)
   }
 }
 
-void qml_property::resetNode()
+void qml_parameter::resetNode()
 {
   const bool reading = m_device ? m_device->readPreset() : false;
   clearNode(reading);
@@ -94,7 +72,7 @@ void qml_property::resetNode()
 
     if(m_userRequestedNode.isEmpty())
     {
-      node_name = m_targetProperty.name().replace('.', '_').toStdString();
+      node_name = "value";
       relative = true;
     }
     else if(m_userRequestedNode[0] != '/')
@@ -107,7 +85,7 @@ void qml_property::resetNode()
       node_name = m_userRequestedNode.toStdString();
     }
 
-    m_ossia_node = ossia::net::find_or_create_node(get_parent(m_targetProperty.object(), relative), node_name, reading);
+    m_ossia_node = ossia::net::find_or_create_node(get_parent(this->parentItem(), relative), node_name, reading);
     if(m_ossia_node)
     {
       m_ossia_node->about_to_be_deleted.connect<qml_property_base, &qml_property_base::on_node_deleted>(this);
@@ -129,35 +107,35 @@ void qml_property::resetNode()
   m_callback = ossia::none;
 }
 
-qml_val_type::val_type qml_property::valueType() const
+qml_val_type::val_type qml_parameter::valueType() const
 {
   if(m_address)
     return static_cast<qml_val_type::val_type>(m_address->get_value_type());
   return m_valueType ? *m_valueType : qml_val_type::val_type{};
 }
 
-qml_access_mode::access_mode qml_property::access() const
+qml_access_mode::access_mode qml_parameter::access() const
 {
   if(m_address)
     return static_cast<qml_access_mode::access_mode>(m_address->get_access());
   return m_access ? *m_access : qml_access_mode::access_mode::Bi;
 }
 
-qml_bounding_mode::bounding_mode qml_property::bounding() const
+qml_bounding_mode::bounding_mode qml_parameter::bounding() const
 {
   if(m_address)
     return static_cast<qml_bounding_mode::bounding_mode>(m_address->get_bounding());
   return m_bounding ? *m_bounding : qml_bounding_mode::bounding_mode::Free;
 }
 
-qml_rep_filter::repetition_filter qml_property::filterRepetitions() const
+qml_rep_filter::repetition_filter qml_parameter::filterRepetitions() const
 {
   if(m_address)
     return static_cast<qml_rep_filter::repetition_filter>(m_address->get_repetition_filter());
   return m_filterRepetitions ? *m_filterRepetitions : qml_rep_filter::repetition_filter{};
 }
 
-QVariant qml_property::min() const
+QVariant qml_parameter::min() const
 {
   if(m_address)
   {
@@ -166,7 +144,7 @@ QVariant qml_property::min() const
   return m_min;
 }
 
-QVariant qml_property::max() const
+QVariant qml_parameter::max() const
 {
   if(m_address)
   {
@@ -175,31 +153,29 @@ QVariant qml_property::max() const
   return m_max;
 }
 
-QVariantList qml_property::values() const
+QVariantList qml_parameter::values() const
 {
   return *m_values;
 }
 
-QString qml_property::unit() const
+QString qml_parameter::unit() const
 {
   if(m_address)
     return QString::fromStdString(ossia::get_pretty_unit_text(m_address->get_unit()));
   return m_unit ? *m_unit : QString{};
 }
 
-void qml_property::setValue_slot(const value& v)
+void qml_parameter::setValue_slot(const ossia::value& v)
 {
-  auto cur = m_targetProperty.read();
-  auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
-  if(cur != next)
+  auto next = ossia_to_qvariant{}(m_value.type(), v);
+  if(m_value != next)
   {
-    m_updatingFromSetValue = true;
-    m_targetProperty.write(next);
-    m_updatingFromSetValue = false;
+    m_value = std::move(next);
+    emit valueChanged(m_value);
   }
 }
 
-void qml_property::setValueType(qml_val_type::val_type valueType)
+void qml_parameter::setValueType(qml_val_type::val_type valueType)
 {
   if (m_valueType == valueType)
     return;
@@ -210,7 +186,7 @@ void qml_property::setValueType(qml_val_type::val_type valueType)
   emit valueTypeChanged(valueType);
 }
 
-void qml_property::setAccess(qml_access_mode::access_mode access)
+void qml_parameter::setAccess(qml_access_mode::access_mode access)
 {
   if (m_access == access)
     return;
@@ -221,7 +197,7 @@ void qml_property::setAccess(qml_access_mode::access_mode access)
   emit accessChanged(access);
 }
 
-void qml_property::setBounding(qml_bounding_mode::bounding_mode bounding)
+void qml_parameter::setBounding(qml_bounding_mode::bounding_mode bounding)
 {
   if (m_bounding == bounding)
     return;
@@ -232,7 +208,7 @@ void qml_property::setBounding(qml_bounding_mode::bounding_mode bounding)
   emit boundingChanged(bounding);
 }
 
-void qml_property::setFilterRepetitions(qml_rep_filter::repetition_filter filterRepetitions)
+void qml_parameter::setFilterRepetitions(qml_rep_filter::repetition_filter filterRepetitions)
 {
   if (m_filterRepetitions == filterRepetitions)
     return;
@@ -243,7 +219,7 @@ void qml_property::setFilterRepetitions(qml_rep_filter::repetition_filter filter
   emit filterRepetitionsChanged(filterRepetitions);
 }
 
-void qml_property::setMin(QVariant min)
+void qml_parameter::setMin(QVariant min)
 {
   if (m_min == min)
     return;
@@ -253,7 +229,7 @@ void qml_property::setMin(QVariant min)
   emit minChanged(min);
 }
 
-void qml_property::setMax(QVariant max)
+void qml_parameter::setMax(QVariant max)
 {
   if (m_max == max)
     return;
@@ -263,7 +239,7 @@ void qml_property::setMax(QVariant max)
   emit maxChanged(max);
 }
 
-void qml_property::setValues(QVariantList values)
+void qml_parameter::setValues(QVariantList values)
 {
   if (m_values == values)
     return;
@@ -273,7 +249,7 @@ void qml_property::setValues(QVariantList values)
   emit valuesChanged(values);
 }
 
-void qml_property::setUnit(QString unit)
+void qml_parameter::setUnit(QString unit)
 {
   if (m_unit == unit)
     return;
@@ -284,7 +260,29 @@ void qml_property::setUnit(QString unit)
   emit unitChanged(unit);
 }
 
-void qml_property::setupAddress(bool reading)
+void qml_parameter::setValue(QVariant value)
+{
+  if (m_value == value)
+    return;
+
+  m_value = value;
+  emit valueChanged(m_value);
+
+  if(m_address)
+  {
+    if(m_callback)
+      m_address->remove_callback(*m_callback);
+
+    m_address->push_value(qt_to_ossia{}(m_value));
+
+    m_callback = m_address->add_callback([this] (const ossia::value& v)
+    {
+      setValue_sig(v);
+    });
+  }
+}
+
+void qml_parameter::setupAddress(bool reading)
 {
   if(reading)
   {
@@ -305,12 +303,11 @@ void qml_property::setupAddress(bool reading)
     if(m_address)
     {
       if(!m_valueType)
-        set_address_type((QVariant::Type)m_targetProperty.propertyType(), *m_address);
+        set_address_type(m_value.type(), *m_address);
 
-      if(m_targetProperty.hasNotifySignal())
-      {
-        m_targetProperty.connectNotifySignal(this, SLOT(qtVariantChanged()));
-      }
+      if(m_value.isValid())
+        m_address->push_value(qt_to_ossia{}(m_value));
+
       if(m_access)
         m_address->set_access(static_cast<ossia::access_mode>(*m_access));
 
@@ -328,12 +325,12 @@ void qml_property::setupAddress(bool reading)
       {
         setValue_sig(v);
       });
-      m_address->set_value_quiet(qt_to_ossia{}(m_targetProperty.read()));
+      m_address->set_value_quiet(qt_to_ossia{}(m_value));
     }
   }
 }
 
-void qml_property::updateDomain()
+void qml_parameter::updateDomain()
 {
   auto val_min = qt_to_ossia{}(m_min);
   auto val_max = qt_to_ossia{}(m_max);

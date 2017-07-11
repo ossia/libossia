@@ -1,7 +1,6 @@
 #pragma once
 #include <QObject>
 #include <QQmlProperty>
-#include <QQmlPropertyValueSource>
 #include <ossia/network/base/address.hpp>
 #include <ossia-qt/device/qml_node_base.hpp>
 #include <ossia-qt/qml_context.hpp>
@@ -12,13 +11,12 @@ namespace qt
 class qml_node;
 class qml_device;
 
-class OSSIA_EXPORT qml_property :
-    public qml_property_base,
-    public QQmlPropertyValueSource
+class OSSIA_EXPORT qml_parameter :
+    public qml_property_base
 {
   Q_OBJECT
-  Q_INTERFACES(QQmlPropertyValueSource)
 
+  Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
   Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged RESET resetUnit FINAL)
   Q_PROPERTY(ossia::qt::qml_val_type::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
   Q_PROPERTY(ossia::qt::qml_access_mode::access_mode access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess FINAL)
@@ -29,10 +27,9 @@ class OSSIA_EXPORT qml_property :
   Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged RESET resetMax FINAL)
   Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged RESET resetValues FINAL)
 public:
-  qml_property(QQuickItem *parent = nullptr);
-  ~qml_property();
+  qml_parameter(QQuickItem *parent = nullptr);
+  ~qml_parameter();
 
-  void setTarget(const QQmlProperty &prop) override;
   void resetNode() override;
   void setDevice(QObject* device) override;
 
@@ -44,6 +41,11 @@ public:
   QVariant max() const;
   QVariantList values() const;
   QString unit() const;
+
+  QVariant value() const
+  {
+    return m_value;
+  }
 
 signals:
   void setValue_sig(const ossia::value&);
@@ -57,9 +59,10 @@ signals:
   void valuesChanged(QVariantList values);
   void unitChanged(QString unit);
 
+  void valueChanged(QVariant value);
+
 public slots:
-  void qtVariantChanged();
-  void setValue_slot(const value&);
+  void setValue_slot(const ossia::value&);
 
   void setValueType(qml_val_type::val_type valueType);
   void setAccess(qml_access_mode::access_mode access);
@@ -78,11 +81,13 @@ public slots:
   void resetMax() { setMax(QVariant{});  }
   void resetValues() { if(m_values) { m_values = ossia::none; } }
   void resetUnit() { if(m_unit) { m_values = ossia::none; } }
+  void setValue(QVariant value);
+
 private:
   void setupAddress(bool reading);
   void updateDomain();
 
-  QQmlProperty m_targetProperty;
+  QVariant m_value;
   optional<qml_val_type::val_type> m_valueType{};
   optional<qml_access_mode::access_mode> m_access{};
   optional<qml_bounding_mode::bounding_mode> m_bounding{};
@@ -91,9 +96,7 @@ private:
   QVariant m_max{};
   optional<QVariantList> m_values{};
   optional<QString> m_unit{};
-  bool m_updatingFromSetValue{};
 };
-
 
 }
 }

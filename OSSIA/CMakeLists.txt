@@ -18,14 +18,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 set(WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 find_package(Boost REQUIRED)
 
-if(NOT "${OSSIA_NO_QT}")
-  if("${OSSIA_QT}")
-    find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml Quick)
-    if(NOT "${Qt5Quick_FOUND}")
-      set(OSSIA_QT OFF)
-    else()
-      set(CMAKE_AUTOMOC 1)
-    endif()
+if(OSSIA_QT)
+  find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml Quick)
+  if(NOT "${Qt5Quick_FOUND}")
+    set(OSSIA_QT OFF)
+  else()
+    set(CMAKE_AUTOMOC 1)
   endif()
 endif()
 
@@ -41,7 +39,7 @@ if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_SERIAL FALSE)
 endif()
 
-if(OSSIA_NO_QT)
+if(NOT OSSIA_QT)
   set(OSSIA_PROTOCOL_HTTP FALSE)
   set(OSSIA_PROTOCOL_WEBSOCKETS FALSE)
   set(OSSIA_PROTOCOL_SERIAL FALSE)
@@ -53,10 +51,9 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 
-if(TARGET ModernMIDI)
-  set(OSSIA_PROTOCOL_MIDI ON)
-else()
+if(NOT TARGET ModernMIDI)
   set(OSSIA_PROTOCOL_MIDI OFF)
+  set(OSSIA_DATAFLOW OFF)
 endif()
 
 include(ossia_sources.cmake)
@@ -170,6 +167,13 @@ if(OSSIA_C)
   target_include_directories(ossia PRIVATE
       "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c"
   )
+endif()
+
+if(OSSIA_CPP)
+    target_sources(ossia PRIVATE ${OSSIA_CPP_HEADERS} ${OSSIA_CPP_SRCS})
+    target_include_directories(ossia PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp"
+        )
 endif()
 
 if(OSSIA_JAVA)

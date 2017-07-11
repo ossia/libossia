@@ -14,6 +14,10 @@
 #include <string>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
+#if defined(OSSIA_QT)
+class QString;
+bool latinCompare(const QString& qstr, const std::string& str);
+#endif
 
 namespace ossia
 {
@@ -66,7 +70,7 @@ public:
    *
    * \see ossia::net::address_string_from_node
    */
-  virtual std::string get_name() const = 0;
+  const std::string& get_name() const { return m_name; }
   virtual node_base& set_name(std::string) = 0;
 
   //! Allows a node to carry a value
@@ -137,6 +141,10 @@ public:
    *
    */
   node_base* find_child(ossia::string_view name);
+#if defined(OSSIA_QT)
+  node_base* find_child(const QString& name);
+#endif
+
 
   //! Return true if this node is parent of this children
   bool has_child(ossia::net::node_base&);
@@ -177,18 +185,46 @@ protected:
   //! Reimplement for a specific removal action.
   virtual void removing_child(node_base& node_base) = 0;
 
+  std::string m_name;
   children_t m_children;
   mutable shared_mutex_t m_mutex;
   extended_attributes m_extended{0};
 };
 
 // address : format /a/b/c
+/**
+ * @brief Find a node in a device
+ *
+ * @return null if the node was not found.
+ */
 OSSIA_EXPORT node_base*
 find_node(node_base& dev, ossia::string_view address_base);
+
+/**
+ * @brief Create a node in a device.
+ *
+ * If the node already exists, a new instance will be created.
+ * Hence there is no guarantee that the created node name is the same
+ * than the one requested; the output should be checked.
+ */
 OSSIA_EXPORT node_base&
 create_node(node_base& dev, ossia::string_view address_base);
+
+/**
+ * @brief Find a node and create it if it does not exist.
+ *
+ * If the node exists, it will be returned, else a new node will be created.
+ */
 OSSIA_EXPORT node_base&
 find_or_create_node(node_base& dev, ossia::string_view address_base);
 
+/**
+ * @brief Calls find_node or create_node according to the value `create`
+ */
+OSSIA_EXPORT node_base*
+find_or_create_node(node_base& dev, ossia::string_view address_base, bool create);
+
+
+void sanitize_name(std::string& name, const node_base::children_t& brethren);
 }
 }

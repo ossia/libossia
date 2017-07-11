@@ -25,6 +25,7 @@ serial_protocol::serial_protocol(
           this, [=] (QQmlComponent::Status status)
   {
     qDebug() << status;
+    qDebug() << mComponent->errorString();
     if(!mDevice)
       return;
 
@@ -64,10 +65,10 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
   switch(addr.get_value_type())
   {
     case ossia::val_type::FLOAT:
-      str.replace("$0", QString::number(ad.getValue().get<float>(), 'g', 4));
+      str.replace("$val", QString::number(ad.getValue().get<float>(), 'g', 4));
       break;
     case ossia::val_type::INT:
-      str.replace("$0", QString::number(ad.getValue().get<int32_t>()));
+      str.replace("$val", QString::number(ad.getValue().get<int32_t>()));
       break;
     case ossia::val_type::IMPULSE:
       break;
@@ -97,6 +98,7 @@ void serial_protocol::set_device(device_base& dev)
   {
     mDevice = htdev;
     mComponent->setData(mCode, QUrl{});
+    qDebug() << mComponent->errorString();
   }
 }
 

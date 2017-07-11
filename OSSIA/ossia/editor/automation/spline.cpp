@@ -15,11 +15,6 @@ void spline_automation::set_destination(Destination a)
   m_address = std::move(a);
 }
 
-state_element spline_automation::offset(time_value, double pos)
-{
-  return {};
-}
-
 void spline_automation::set_spline(const spline_data& t)
 {
   m_spline = tinyspline::BSpline(

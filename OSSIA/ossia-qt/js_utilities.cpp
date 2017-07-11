@@ -205,6 +205,7 @@ value js_value_inbound_visitor::operator()() const { return {}; }
 ossia::complex_type get_type(const QJSValue& val)
 {
   // TODO handle other cases ? string, extended, etc...
+  qDebug() << val.isNumber() << val.isString();
   auto opt_t = get_enum<ossia::val_type>(val);
   if(opt_t) return *opt_t;
   return complex_type{};
@@ -267,7 +268,7 @@ net::address_data make_address_data(const QJSValue &js)
 
 
 
-QJSValue js_value_outbound_visitor::to_enum(qml_context::val_type t) const
+QJSValue js_value_outbound_visitor::to_enum(qml_val_type::val_type t) const
 {
   return engine.toScriptValue(QVariant::fromValue(t));
 }
@@ -275,14 +276,14 @@ QJSValue js_value_outbound_visitor::to_enum(qml_context::val_type t) const
 QJSValue js_value_outbound_visitor::operator()(impulse) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Impulse));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Impulse));
   return v;
 }
 
 QJSValue js_value_outbound_visitor::operator()(int32_t val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Int));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Int));
   v.setProperty("value", int32_t(val));
   return v;
 }
@@ -290,7 +291,7 @@ QJSValue js_value_outbound_visitor::operator()(int32_t val) const
 QJSValue js_value_outbound_visitor::operator()(float val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Float));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Float));
   v.setProperty("value", val);
   return v;
 }
@@ -298,7 +299,7 @@ QJSValue js_value_outbound_visitor::operator()(float val) const
 QJSValue js_value_outbound_visitor::operator()(bool val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Bool));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Bool));
   v.setProperty("value", val);
   return v;
 }
@@ -306,7 +307,7 @@ QJSValue js_value_outbound_visitor::operator()(bool val) const
 QJSValue js_value_outbound_visitor::operator()(char val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Char));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Char));
   v.setProperty("value", val);
   return v;
 }
@@ -314,7 +315,7 @@ QJSValue js_value_outbound_visitor::operator()(char val) const
 QJSValue js_value_outbound_visitor::operator()(const std::string &val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::String));
+  v.setProperty("type", to_enum(qml_val_type::val_type::String));
   v.setProperty("value", QString::fromStdString(val));
   return v;
 }
@@ -335,7 +336,7 @@ QJSValue js_value_outbound_visitor::make_tuple(const std::vector<value> &arr) co
 QJSValue js_value_outbound_visitor::operator()(const std::vector<ossia::value> &val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Tuple));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Tuple));
   v.setProperty("value", make_tuple(val));
   return v;
 }
@@ -343,7 +344,7 @@ QJSValue js_value_outbound_visitor::operator()(const std::vector<ossia::value> &
 QJSValue js_value_outbound_visitor::operator()(vec2f val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Vec2f));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Vec2f));
   v.setProperty("value", make_array(val));
   return v;
 }
@@ -351,7 +352,7 @@ QJSValue js_value_outbound_visitor::operator()(vec2f val) const
 QJSValue js_value_outbound_visitor::operator()(vec3f val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Vec3f));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Vec3f));
   v.setProperty("value", make_array(val));
   return v;
 }
@@ -359,7 +360,7 @@ QJSValue js_value_outbound_visitor::operator()(vec3f val) const
 QJSValue js_value_outbound_visitor::operator()(vec4f val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_context::val_type::Vec4f));
+  v.setProperty("type", to_enum(qml_val_type::val_type::Vec4f));
   v.setProperty("value", make_array(val));
   return v;
 }
@@ -693,3 +694,8 @@ value qt_to_ossia::operator()(const QVariant& v)
 
 }
 #endif
+
+QDebug operator<<(QDebug s, const ossia::value& v)
+{
+  return s << QString::fromStdString(ossia::value_to_pretty_string(v));
+}

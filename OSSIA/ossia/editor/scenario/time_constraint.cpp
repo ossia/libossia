@@ -48,7 +48,6 @@ time_constraint::time_constraint(
     time_event& endEvent, time_value nominal, time_value min,
     time_value max)
   : m_callback(std::move(callback))
-  //, m_clock(make_callback(), max, One)
   , m_start(startEvent)
   , m_end(endEvent)
   , m_nominal(nominal)
@@ -87,7 +86,7 @@ void time_constraint::stop()
 {
   if(m_running)
   {
-    // stop all jamoma time processes
+    // stop all time processes
     for (const auto& timeProcess : get_time_processes())
     {
       timeProcess->stop();
@@ -161,7 +160,7 @@ ossia::state_element time_constraint::state()
 
 void time_constraint::pause()
 {
-  // pause all jamoma time processes
+  // pause all time processes
   for (const auto& timeProcess : get_time_processes())
   {
     timeProcess->pause();
@@ -170,7 +169,7 @@ void time_constraint::pause()
 
 void time_constraint::resume()
 {
-  // resume all jamoma time processes
+  // resume all time processes
   for (const auto& timeProcess : get_time_processes())
   {
     timeProcess->resume();

@@ -16,7 +16,6 @@ class OSSIA_EXPORT color_automation : public ossia::time_process
     void set_destination(ossia::Destination a);
     void set_gradient(grad_type t);
 
-    ossia::state_element offset(ossia::time_value, double pos) override;
     ossia::state_element state(ossia::time_value date, double pos) override;
 
     void start() override;

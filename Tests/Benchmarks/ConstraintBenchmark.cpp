@@ -11,6 +11,22 @@ class ConstraintBenchmark : public QObject
 {
   Q_OBJECT
 
+    void print_states(const ossia::scenario& s)
+    {
+      int i = 0;
+      for(const auto& node : s.get_time_nodes())
+      {
+        std::cout << "Node " << i << "(" << node->is_evaluating() << ")";
+        int j = 0;
+        for(auto& ev : node->get_time_events())
+        {
+          std::cout << ":  Event: " << j << " => " << ev->get_status() << "\n";
+          j++;
+        }
+        i++;
+      }
+    }
+
   void add_constraint_parallel(
       ossia::scenario& s,
       ossia::time_value def = 100._tv,
@@ -28,20 +44,21 @@ class ConstraintBenchmark : public QObject
     s.add_time_constraint(c);
   }
 
-  void print_states(const ossia::scenario& s)
+  ossia::time_event* add_constraint_serial(
+      ossia::scenario& s,
+      ossia::time_event& se,
+      ossia::time_value def = 100._tv,
+      ossia::time_value min = 100._tv,
+      ossia::time_value max = 100._tv)
   {
-    int i = 0;
-    for(const auto& node : s.get_time_nodes())
-    {
-      std::cout << "Node " << i << "(" << node->is_evaluating() << ")";
-      int j = 0;
-      for(auto& ev : node->get_time_events())
-      {
-        std::cout << ":  Event: " << j << " => " << ev->get_status() << "\n";
-        j++;
-      }
-      i++;
-    }
+    using namespace ossia;
+    auto en = std::make_shared<ossia::time_node>();
+    en->set_expression(ossia::expressions::make_expression_false());
+    auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
+    en->insert(en->get_time_events().end(), ee);
+    auto c = ossia::time_constraint::create([] (auto&&...) {}, se, *ee, def, min, max);
+    s.add_time_constraint(c);
+    return ee.get();
   }
 
 private Q_SLOTS:
@@ -200,13 +217,13 @@ private Q_SLOTS:
     qDebug() << tick_us;
   }
 
-  void test_graph()
+  void test_graph_parallel()
   {
     return;
     std::map<int, double> dur;
     for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
-        700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000/*,
-        20000, 50000, 100000, 200000, 500000*/})
+        700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+        20000, 50000, 100000})
     {
       root_scenario root;
 
@@ -229,7 +246,87 @@ private Q_SLOTS:
 
     for(auto e : dur)
     {
-      std::cerr << e.first << " " << e.second << "\n";
+      std::cerr << "XYPoint { x: " << e.first << "; y: " << e.second << " }\n";
+    }
+  }
+
+  void test_graph_serial()
+  {
+    return;
+    std::map<int, double> dur;
+    for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
+        700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+        20000, 50000, 100000})
+    {
+      root_scenario root;
+
+      ossia::time_event* start{root.start_event.get()};
+      for(int i = 0; i < k; i++)
+        start = add_constraint_serial(*root.scenario, *start);
+
+      const int N = 1000;
+      root.constraint->start();
+      auto t0 = std::chrono::high_resolution_clock::now();
+      for(int i = 0; i < N; i++)
+      {
+        root.constraint->tick(1000_tv);
+      }
+      auto t1 = std::chrono::high_resolution_clock::now();
+
+      auto tick_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / double(N);
+      dur.insert({k, tick_us});
+      qDebug() << tick_us;
+    }
+
+    for(auto e : dur)
+    {
+      // XYPoint { x: 0; y: 0 }
+      std::cerr << "XYPoint { x: " << e.first << "; y: " << e.second << " }\n";
+    }
+  }
+
+
+  void test_graph_random()
+  {
+    std::map<int, double> dur;
+    for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
+        700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+        20000, 50000, 100000})
+    {
+      root_scenario root;
+
+      ossia::time_event* start{root.start_event.get()};
+      for(int i = 0; i < k; i++)
+      {
+        auto t = rand() % 2;
+        if(t == 0)
+            add_constraint_parallel(*root.scenario);
+        else
+        {
+            auto N = root.scenario->get_time_nodes().size();
+            auto e = root.scenario->get_time_nodes()[rand() % N]->get_time_events()[0];
+
+            add_constraint_serial(*root.scenario, *e);
+        }
+      }
+      const int N = 1000;
+      root.constraint->start();
+      auto t0 = std::chrono::high_resolution_clock::now();
+      for(int i = 0; i < N; i++)
+      {
+        root.constraint->tick(1000_tv);
+      }
+      auto t1 = std::chrono::high_resolution_clock::now();
+
+      auto tick_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / double(N);
+      dur.insert({k, tick_us});
+      qDebug() << tick_us;
+    }
+
+    for(auto e : dur)
+    {
+      // XYPoint { x: 0; y: 0 }
+      std::cerr << "XYPoint { x: " << e.first << "; y: " << e.second << " }\n";
     }
   }
 

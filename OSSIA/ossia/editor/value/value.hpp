@@ -297,6 +297,9 @@ inline ossia::value init_value(ossia::val_type type)
       return vec3f{};
     case val_type::VEC4F:
       return vec4f{};
+    case val_type::NONE:
+    default:
+      break;
   }
 
   throw invalid_value_type_error("init_value: Invalid type");
