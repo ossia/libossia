@@ -145,6 +145,7 @@ OSSIA_EXPORT void set_default_value(extended_attributes& n, long v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, bool v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, char v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, float v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, double v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, const char* v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::none_t v);
 

@@ -616,6 +616,8 @@ void set_default_value(extended_attributes& n, char arg)
 { set_default_value(n, ossia::value{arg}); }
 void set_default_value(extended_attributes& n, float arg)
 { set_default_value(n, ossia::value{arg}); }
+void set_default_value(extended_attributes& n, double arg)
+{ set_default_value(n, ossia::value{arg}); }
 void set_default_value(extended_attributes& n, const char* arg)
 { set_default_value(n, ossia::value{std::string(arg)}); }
 
