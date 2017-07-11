@@ -4,6 +4,7 @@
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <vector>
+#include <limits>
 #include <string>
 #include <ossia_export.h>
 

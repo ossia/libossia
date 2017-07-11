@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <cstdint>
+#include <limits>
 namespace ossia
 {
 /**
@@ -22,7 +23,7 @@ enum class val_type : int8_t
   STRING, //! \see String
   TUPLE, //! \see Tuple
   CHAR,
-  NONE
+  NONE = std::numeric_limits<int8_t>::max()
 };
 
 
