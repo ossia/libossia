@@ -74,7 +74,7 @@ endif()
 
 set(OSSIA_MAX_INSTALL_FOLDER "ossia-max-package/ossia" CACHE STRING "Max Package Install folder")
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/help"
         DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
         COMPONENT ${PROJECT_NAME})
 
