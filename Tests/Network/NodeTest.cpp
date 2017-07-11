@@ -253,9 +253,37 @@ private Q_SLOTS:
     QVERIFY((bool)get_domain(n));
     QCOMPARE(get_domain(n), make_domain(-10, 10));
 
-    n.set(default_value_attribute{}, ossia::value(0));
+    ossia::net::set_default_value(n, 0);
     QVERIFY((bool)get_default_value(n));
     QCOMPARE(*get_default_value(n), ossia::value(0));
+
+    ossia::net::set_default_value(n, true);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(true));
+
+    ossia::net::set_default_value(n, false);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(false));
+
+    ossia::net::set_default_value(n, "foo");
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value("foo"));
+
+    n.set(default_value_attribute{}, 0);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(0));
+
+    n.set(default_value_attribute{}, true);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(true));
+
+    n.set(default_value_attribute{}, false);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(false));
+
+    n.set(default_value_attribute{}, "foo");
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value("foo"));
 
     tags the_tags{"fancy", "wow", "1234"};
     n.set(tags_attribute{}, the_tags);

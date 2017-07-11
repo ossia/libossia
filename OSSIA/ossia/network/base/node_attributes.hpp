@@ -140,6 +140,12 @@ OSSIA_EXPORT ossia::string_view text_default_value();
 OSSIA_EXPORT optional<ossia::value> get_default_value(const extended_attributes& n);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, const ossia::value& v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::value&& v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, int v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, long v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, bool v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, char v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, float v);
+OSSIA_EXPORT void set_default_value(extended_attributes& n, const char* v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::none_t v);
 
 // These attributes require an address

@@ -80,9 +80,8 @@ public:
   // Construction
   template <typename T>
   value(T*) = delete;
-  template <int N>
-  value(const char (&txt)[N]):
-    v{std::string(txt, N)}
+  value(const char* txt):
+    v{std::string(txt)}
   {
 
   }

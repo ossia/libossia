@@ -606,6 +606,19 @@ void set_description(extended_attributes& n, const char* arg)
     set_description(n, ossia::none);
 }
 
+void set_default_value(extended_attributes& n, int arg)
+{ set_default_value(n, ossia::value{arg}); }
+void set_default_value(extended_attributes& n, long arg)
+{ set_default_value(n, ossia::value{arg}); }
+void set_default_value(extended_attributes& n, bool arg)
+{ set_default_value(n, ossia::value{arg}); }
+void set_default_value(extended_attributes& n, char arg)
+{ set_default_value(n, ossia::value{arg}); }
+void set_default_value(extended_attributes& n, float arg)
+{ set_default_value(n, ossia::value{arg}); }
+void set_default_value(extended_attributes& n, const char* arg)
+{ set_default_value(n, ossia::value{std::string(arg)}); }
+
 // Address-related getters - setters
 ossia::string_view text_value()
 { return make_string_view("value"); }
