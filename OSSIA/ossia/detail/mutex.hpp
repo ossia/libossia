@@ -5,8 +5,8 @@
   #define OSSIA_HAS_SHARED_MUTEX
   #include <shared_mutex>
 #else
-  #include <AvailabilityMacros.h>
-  #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12
+  #include <Availability.h>
+  #ifdef __MAC_10_12
     #define OSSIA_HAS_SHARED_MUTEX
     #include <shared_mutex>
   #endif
