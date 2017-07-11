@@ -1,8 +1,8 @@
 #include "device.hpp"
 #include "model.hpp"
 #include "parameter.hpp"
-//#include "remote.hpp"
-//#include "view.hpp"
+#include "remote.hpp"
+#include "view.hpp"
 
 #include "ossia/network/oscquery/oscquery_server.hpp"
 #include "ossia/network/osc/osc.hpp"
@@ -235,17 +235,17 @@ namespace max {
         
         std::vector<box_hierachy> children_view = find_children_to_register(&x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
         
-        for (auto v : children_view)
+        for (auto child : children_view)
         {
-            if (v.classname == gensym("ossia.view"))
+            if (child.classname == gensym("ossia.view"))
             {
-//                t_view* view = (t_view*)jbox_get_object(child.box);
-//                view->register_node(x->m_node);
+                t_view* view = (t_view*)jbox_get_object(child.box);
+                view->register_node(x->m_node);
             }
-            else if (v.classname == gensym("ossia.remote"))
+            else if (child.classname == gensym("ossia.remote"))
             {
-//                t_remote* remote = (t_remote*)jbox_get_object(child.box);
-//                remote->register_node(x->m_node);
+                t_remote* remote = (t_remote*)jbox_get_object(child.box);
+                remote->register_node(x->m_node);
             }
         }
     }
@@ -274,13 +274,13 @@ namespace max {
         {
             if (child.classname == gensym("ossia.view"))
             {
-//                t_view* view = (t_view*)jbox_get_object(child.box);
-//                view->unregister();
+                t_view* view = (t_view*)jbox_get_object(child.box);
+                view->unregister();
             }
             else if (child.classname == gensym("ossia.remote"))
             {
-//                t_remote* remote = (t_remote*)jbox_get_object(child.box);
-//                remote->unregister();
+                t_remote* remote = (t_remote*)jbox_get_object(child.box);
+                remote->unregister();
             }
         }
     }

@@ -46,6 +46,15 @@ namespace max {
         if (x->m_node && x->m_node->get_address())
             x->apply_value_visitor(x->m_node->get_address()->value());
     }
-    
+/*
+    void t_object_base :: tick(t_object_base* x)
+    {
+        if (x->m_last_opened_canvas)
+        {
+            glist_noselect(x->m_last_opened_canvas);
+            x->m_last_opened_canvas = nullptr;
+        }
+    }
+*/
 } // max namespace
 } // ossia namespace

@@ -1,7 +1,7 @@
 #include "model.hpp"
 #include "parameter.hpp"
-//#include "view.hpp"
-//#include "remote.hpp"
+#include "view.hpp"
+#include "remote.hpp"
 #include <ossia/network/base/node_attributes.hpp>
 
 using namespace ossia::max;
@@ -135,7 +135,7 @@ namespace max {
                     parameter->register_node(m_node);
                 }
             }
-/*
+
             for (auto view : t_view::quarantine())
             {
                 object_register<t_view>(static_cast<t_view*>(view));
@@ -146,7 +146,6 @@ namespace max {
             {
                 object_register<t_remote>(static_cast<t_remote*>(remote));
             }
- */
         }
         else
             object_quarantining<t_model>(this);

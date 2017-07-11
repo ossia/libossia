@@ -43,6 +43,10 @@ set(PROJECT_SRCS
     src/model.cpp
     src/logger.hpp
     src/logger.cpp
+    src/remote.hpp
+    src/remote.cpp
+    src/view.hpp
+    src/view.cpp
     )
 
 add_library(${PROJECT_NAME} MODULE ${PROJECT_SRCS})
