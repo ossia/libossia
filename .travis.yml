@@ -41,9 +41,9 @@ matrix:
   - os: linux
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
     dist: trusty
-  - os: linux
-    env: BUILD_TYPE=RpiDocker OSSIA_STATIC=1
-    dist: trusty
+#  - os: linux
+#    env: BUILD_TYPE=RpiDocker OSSIA_STATIC=1
+#    dist: trusty
 
   - os: osx
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
