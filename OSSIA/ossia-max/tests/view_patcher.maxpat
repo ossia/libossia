@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 545.0, 87.0, 298.0, 150.0 ],
+		"rect" : [ 545.0, 332.0, 298.0, 150.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -44,7 +44,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 215.0, 116.0, 50.0, 22.0 ],
+					"patching_rect" : [ 207.0, 121.0, 50.0, 22.0 ],
 					"style" : ""
 				}
 
@@ -57,7 +57,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 149.0, 116.0, 50.0, 22.0 ],
+					"patching_rect" : [ 141.0, 121.0, 50.0, 22.0 ],
 					"style" : ""
 				}
 
@@ -70,7 +70,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 149.0, 58.0, 50.0, 22.0 ],
+					"patching_rect" : [ 141.0, 61.0, 50.0, 22.0 ],
 					"style" : ""
 				}
 
@@ -82,9 +82,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 149.0, 86.0, 116.0, 22.0 ],
+					"patching_rect" : [ 141.0, 91.0, 99.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter blu"
+					"text" : "ossia.remote blu"
 				}
 
 			}
@@ -95,9 +95,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 24.0, 27.0, 137.0, 22.0 ],
+					"patching_rect" : [ 24.0, 27.0, 119.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.model sub_model"
+					"text" : "ossia.view sub_view"
 				}
 
 			}
