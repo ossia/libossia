@@ -10,7 +10,7 @@ case "$TRAVIS_OS_NAME" in
     if [[ "$BUILD_TYPE" == "RpiDocker" ]]; then
       sudo apt-get install -qq binfmt-support qemu
       set +e
-      sudo update-binfmts --enable qemu-system-arm
+      sudo update-binfmts --enable qemu-arm
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
