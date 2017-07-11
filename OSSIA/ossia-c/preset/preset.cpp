@@ -671,7 +671,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       }
       case ossia::val_type::STRING :
       {
-        auto ex = ossia::net::get_extended_type(*node);
+        auto ex = ossia::net::get_extended_type(node);
         if(ex && *ex == ossia::filesystem_path_type())
         {
           v.AddMember("type", "filepath", alloc);

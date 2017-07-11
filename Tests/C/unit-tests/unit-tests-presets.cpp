@@ -105,7 +105,7 @@ TEST_CASE ("Building JSON array") {
         p.insert(std::make_pair("/a.3", i4));
         p.insert(std::make_pair("/a.4", i5));
 
-        std::string json = ossia::presets::write_json(p);
+        std::string json = ossia::presets::write_json("device", p);
 
         rapidjson::Document d;
         d.Parse(json.c_str());
@@ -141,7 +141,7 @@ TEST_CASE ("Building JSON array") {
 
         // a = [[[1], [2, 3, 4]], [5, 6]]
 
-        std::string json = ossia::presets::write_json(p);
+        std::string json = ossia::presets::write_json("device", p);
 
         rapidjson::Document d;
         d.Parse(json.c_str());
@@ -182,7 +182,7 @@ TEST_CASE ("Building object"){
     p.insert(std::make_pair ("/b/d", i3));
     p.insert(std::make_pair ("/b/e/f", i4));
 
-    std::string json = ossia::presets::write_json(p);
+    std::string json = ossia::presets::write_json("device", p);
 
     rapidjson::Document d;
     d.Parse(json.c_str());
@@ -240,7 +240,7 @@ TEST_CASE ("Device") {
     for(auto& preset : p)
       std::cerr << preset.first << " : " << preset.second << " \n";
 
-    std::string json = ossia::presets::write_json(p);
+    std::string json = ossia::presets::write_json("device", p);
 
     rapidjson::Document d;
     d.Parse(json.c_str());
@@ -264,7 +264,7 @@ TEST_CASE ("Instances") {
     p.insert(std::make_pair ("/leText.3/color", "bar"s));
     p.insert(std::make_pair ("/leText.3/font.pointSize", 456));
 
-    std::string json = ossia::presets::write_json(p);
+    std::string json = ossia::presets::write_json("device", p);
 
     rapidjson::Document d;
     d.Parse(json.c_str());
@@ -283,7 +283,7 @@ TEST_CASE ("Nested arrays and objects") {
     p.insert(std::make_pair ("/a.1/b.0/c", i3));
     p.insert(std::make_pair ("/a.1/b.0/d", i4));
 
-    std::string json = ossia::presets::write_json(p);
+    std::string json = ossia::presets::write_json("device", p);
 
     rapidjson::Document d;
     d.Parse(json.c_str());
@@ -336,7 +336,7 @@ TEST_CASE ("Types conversion") {
     p.insert(std::make_pair ("/float", f));
     p.insert(std::make_pair ("/string", s));
 
-    std::string json = ossia::presets::write_json(p);
+    std::string json = ossia::presets::write_json("device", p);
 
     rapidjson::Document d;
     d.Parse(json.c_str());
