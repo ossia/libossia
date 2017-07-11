@@ -3,7 +3,7 @@
 namespace ossia {
 namespace max {
     
-    void t_object_base :: set_value(const ossia::value& v)
+    void t_object_base :: apply_value_visitor(const ossia::value& v)
     {
         value_visitor<t_object_base> vm;
         vm.x = this;
@@ -44,7 +44,7 @@ namespace max {
     void t_object_base :: bang(t_object_base *x)
     {
         if (x->m_node && x->m_node->get_address())
-            x->set_value(x->m_node->get_address()->value());
+            x->apply_value_visitor(x->m_node->get_address()->value());
     }
     
 } // max namespace
