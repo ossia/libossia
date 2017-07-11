@@ -40,7 +40,7 @@ using instance_functions =
 using preset_pair = std::pair<std::string, ossia::value>;
 
 OSSIA_EXPORT preset read_json(const std::string&);
-OSSIA_EXPORT std::string write_json(const preset&);
+OSSIA_EXPORT std::string write_json(const std::string& devicename, const preset&);
 
 OSSIA_EXPORT std::string to_string(const preset&);
 }

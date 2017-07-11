@@ -329,7 +329,7 @@ void qml_device::savePreset(const QUrl& file)
       {
         auto preset = ossia::devices::make_preset(device());
 
-        auto str = ossia::presets::write_json(preset);
+        auto str = ossia::presets::write_json(device().get_name(), preset);
         f.write(str.data(), str.size());
         return;
       }
