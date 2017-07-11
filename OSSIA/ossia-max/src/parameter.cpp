@@ -307,8 +307,9 @@ namespace ossia {
             else if (m_type == gensym("char"))
             {
                 localAddress = m_node->create_address(ossia::val_type::CHAR);
+                
                 if (m_default[0].a_type == A_LONG)
-                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_float);
+                    ossia::net::set_default_value(localAddress->getNode(), (char)m_default[0].a_w.w_long);
             }
             else
             {
