@@ -1,4 +1,5 @@
 #include <ossia-max/src/parameter.hpp>
+#include <ossia-max/src/remote.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 
 using namespace ossia::max;
@@ -185,12 +186,9 @@ namespace ossia {
             if (res)
             {
                 object_dequarantining(this);
-                /*
-                 for (auto remote : t_remote::quarantine())
-                 {
-                 object_register<t_remote>(static_cast<t_remote*>(remote));
-                 }
-                 */
+                
+                for (auto remote : t_remote::quarantine())
+                    object_register<t_remote>(static_cast<t_remote*>(remote));
             }
             else
                 object_quarantining(this);
@@ -367,12 +365,10 @@ namespace ossia {
                     m_node->get_parent()->remove_child(*m_node);
                 
                 m_node = nullptr;
-                /*
-                 for (auto remote : t_remote::quarantine())
-                 {
-                 object_register<t_remote>(static_cast<t_remote*>(remote));
-                 }
-                 */
+                
+                for (auto remote : t_remote::quarantine())
+                    object_register<t_remote>(static_cast<t_remote*>(remote));
+                
             }
             
             object_quarantining(this);

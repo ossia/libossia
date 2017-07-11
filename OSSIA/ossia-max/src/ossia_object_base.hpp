@@ -22,6 +22,7 @@ namespace ossia {
             t_symbol*   m_name{};
             bool        m_absolute = false;
             bool        m_dead = false;     // wether this object is being deleted or not;
+//            t_canvas*   m_last_opened_canvas{};
             
             void*       m_clock{};
             void*       m_regclock{};       // registration clock
@@ -31,6 +32,7 @@ namespace ossia {
             
             static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
             static void bang(t_object_base* x);
+//            static void tick(t_object_base* x);
         };
         
 # pragma mark -

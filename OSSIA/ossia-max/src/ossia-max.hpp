@@ -20,6 +20,8 @@ namespace ossia
         extern "C" void ossia_logger_setup(void);
         extern "C" void ossia_model_setup(void);
         extern "C" void ossia_parameter_setup(void);
+        extern "C" void ossia_remote_setup(void);
+        extern "C" void ossia_view_setup(void);
         
         class ossia_max
         {
@@ -28,9 +30,11 @@ namespace ossia
             
             t_class* ossia_client_class{};
             t_class* ossia_device_class{};
-            t_class* ossia_parameter_class{};
-            t_class* ossia_model_class{};
             t_class* ossia_logger_class{};
+            t_class* ossia_model_class{};
+            t_class* ossia_parameter_class{};
+            t_class* ossia_remote_class{};
+            t_class* ossia_view_class{};
             
         private:
             ossia_max();

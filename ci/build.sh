@@ -43,6 +43,10 @@ case "$TRAVIS_OS_NAME" in
         ls $TRAVIS_BUILD_DIR
         tar -cf ossia-pd-linux.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
       ;;
+      RpiDocker)
+        echo "Building for Rpi in Docker"
+        docker run -it  -v $TRAVIS_BUILD_DIR/ci/docker.sh:/docker.sh iscore/iscore-rpi-sdk /bin/bash /docker.sh
+      ;;
       Coverage)
         gem install coveralls-lcov
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 -DOSSIA_CI=1 -DOSSIA_QT=1 ..
@@ -100,7 +104,7 @@ case "$TRAVIS_OS_NAME" in
 
     export CMAKE_BIN=$(which cmake)
 
-    if [ "$BUILD_TYPE" = "PdRelease" ]; then
+    if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
@@ -120,7 +124,7 @@ case "$TRAVIS_OS_NAME" in
       ls $TRAVIS_BUILD_DIR
       tar -cf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
 
-    elif [ "$BUILD_TYPE" = "MaxRelease" ]; then
+    elif [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \

@@ -4,6 +4,8 @@
 #include <ossia-max/src/logger.hpp>
 #include <ossia-max/src/model.hpp>
 #include <ossia-max/src/parameter.hpp>
+#include <ossia-max/src/remote.hpp>
+#include <ossia-max/src/view.hpp>
 
 # pragma mark -
 # pragma mark library
@@ -19,6 +21,8 @@ void ext_main(void *r)
     ossia_logger_setup();
     ossia_model_setup();
     ossia_parameter_setup();
+    ossia_remote_setup();
+    ossia_view_setup();
     
     post("OSSIA library for Max is loaded");
 }
@@ -55,23 +59,23 @@ namespace max {
             return false; // not ready to register : if there is no device, nothing could be registered
         
         t_object* model_box = nullptr;
-//        t_object* view_box = nullptr;
+        t_object* view_box = nullptr;
         int view_level = 0, model_level = 0;
         
         if (!x->m_absolute)
         {
             // then try to locate a parent view or model
-//            if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
-//                view_box = find_parent_box_alive(&x->m_object, gensym("ossia.view"), 0, &view_level);
-//            else
+            if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+                view_box = find_parent_box_alive(&x->m_object, gensym("ossia.view"), 0, &view_level);
+            else
                 model_box = find_parent_box_alive(&x->m_object, gensym("ossia.model"), 0, &model_level);
         }
          
         ossia::net::node_base*  node = nullptr;
         
-/*        if (view_box)
+        if (view_box)
             node = ((t_view*)jbox_get_object(view_box))->m_node;
-        else */if (model_box)
+        else if (model_box)
             node = ((t_model*)jbox_get_object(model_box))->m_node;
         else if (client_box)
             node = ((t_client*)jbox_get_object(client_box))->m_node;
@@ -83,6 +87,8 @@ namespace max {
     
     template bool object_register<t_parameter> (t_parameter*);
     template bool object_register<t_model> (t_model*);
+    template bool object_register<t_remote> (t_remote*);
+    template bool object_register<t_view> (t_view*);
     
     template<typename T>
     std::string object_path_absolute(T* x)
@@ -90,25 +96,26 @@ namespace max {
         std::vector<std::string> vs;
         
         t_object* model_box = nullptr;
-//      t_object* view_box = nullptr;
+        t_object* view_box = nullptr;
         int view_level = 0, model_level = 0;
         std::stringstream fullpath;
         
-/*        if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+        if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
         {
             int start_level = 0;
+            
             if (std::is_same<T, t_view>::value)
                 start_level = 1;
             
             view_box = find_parent_box_alive(&x->m_object, gensym("ossia.view"), start_level, &view_level);
             t_view* tmp = nullptr;
             
-            while (view)
+            while (view_box)
             {
                 tmp = (t_view*)jbox_get_object(view_box);
  
                 vs.push_back(tmp->m_name->s_name);
-                view = find_parent_box_alive(&tmp->m_object, gensym("ossia.view"), 1, &view_level);
+                view_box = find_parent_box_alive(&tmp->m_object, gensym("ossia.view"), 1, &view_level);
             }
             
             t_object* object = nullptr;
@@ -116,7 +123,7 @@ namespace max {
             if (tmp)
                 object = &tmp->m_object;
             else
-                object = &m_object;
+                object = &x->m_object;
             
             int l = 0;
             t_object* device_box = find_parent_box(object, gensym("ossia.device"), 0, &l);
@@ -128,7 +135,7 @@ namespace max {
                 fullpath << ((t_device*)jbox_get_object(device_box))->m_name->s_name << ":";
         }
         else
-        {*/
+        {
             int start_level = 0;
             if (std::is_same<T, t_model>::value)
                 start_level = 1;
@@ -158,7 +165,7 @@ namespace max {
             
             if (device_box)
                 fullpath << ((t_device*)jbox_get_object(device_box))->m_name->s_name << ":";
-//      }
+        }
         
         auto rit = vs.rbegin();
         for ( ; rit != vs.rend() ; ++rit)
@@ -174,6 +181,8 @@ namespace max {
     
     template std::string object_path_absolute<t_parameter> (t_parameter*);
     template std::string object_path_absolute<t_model> (t_model*);
+    template std::string object_path_absolute<t_remote> (t_remote*);
+    template std::string object_path_absolute<t_view> (t_view*);
     
     template<typename T>
     void object_quarantining(T* x)
@@ -183,6 +192,8 @@ namespace max {
     
     template void object_quarantining<t_parameter> (t_parameter*);
     template void object_quarantining<t_model> (t_model*);
+    template void object_quarantining<t_remote> (t_remote*);
+    template void object_quarantining<t_view> (t_view*);
     
     template<typename T>
     void object_dequarantining(T* x)
@@ -191,7 +202,9 @@ namespace max {
     }
     
     template void object_dequarantining<t_parameter> (t_parameter*);
-     template void object_dequarantining<t_model> (t_model*);
+    template void object_dequarantining<t_model> (t_model*);
+    template void object_dequarantining<t_remote> (t_remote*);
+    template void object_dequarantining<t_view> (t_view*);
     
     template<typename T>
     bool object_is_quarantined(T* x)
@@ -201,6 +214,8 @@ namespace max {
     
     template bool object_is_quarantined<t_parameter> (t_parameter*);
     template bool object_is_quarantined<t_model> (t_model*);
+    template bool object_is_quarantined<t_remote> (t_remote*);
+    template bool object_is_quarantined<t_view> (t_view*);
     
     template<typename T>
     void object_dump(T* x)
@@ -372,6 +387,8 @@ namespace max {
     
     template void object_dump<t_parameter> (t_parameter*);
     template void object_dump<t_model> (t_model*);
+    template void object_dump<t_remote> (t_remote*);
+    template void object_dump<t_view> (t_view*);
     
 # pragma mark -
 # pragma mark Utilities
@@ -387,7 +404,7 @@ namespace max {
         {
             object_register<t_parameter>(static_cast<t_parameter*>(parameter));
         }
-        /*
+        
         for (auto view : t_view::quarantine())
         {
             object_register<t_view>(static_cast<t_view*>(view));
@@ -397,7 +414,6 @@ namespace max {
         {
             object_register<t_remote>(static_cast<t_remote*>(remote));
         }
-         */
     }
     
     t_object* find_parent_box(t_object* object, t_symbol* classname, int start_level, int* level)
