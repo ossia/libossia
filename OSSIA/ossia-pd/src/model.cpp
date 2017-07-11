@@ -76,6 +76,7 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
 
 bool t_model :: unregister(){
 
+    clock_unset(x_regclock);
     if(!x_node) return true; // not registered
 
     if (x_node && x_node->get_parent())
