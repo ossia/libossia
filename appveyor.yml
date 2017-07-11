@@ -35,10 +35,10 @@ build:
   parallel: true
 
 after_build:
-  - ps: C:\projects\libossia\travis\after_build.ps1
+  - ps: C:\projects\libossia\ci\after_build.ps1
 
 test_script:
-  - ps: C:\projects\libossia\travis\test.ps1
+  - ps: C:\projects\libossia\ci\test.ps1
 
 artifacts:
   - path: ossia-pd-package
