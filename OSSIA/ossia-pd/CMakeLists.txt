@@ -20,10 +20,6 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
 endif()
 endif()
 
-if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  add_definitions(-D_GLIBCXX_DEBUG)
-endif()
-
 set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
 set(OSSIA_CICM_PATH "${OSSIA_3RDPARTY_FOLDER}/CicmWrapper")
 include_directories("${OSSIA_PD_PATH}/src")
