@@ -8,6 +8,7 @@
 namespace ossia { namespace pd {
 
 static t_eclass *model_class;
+static void model_free(t_model *x);
 
 bool t_model :: register_node(ossia::net::node_base*  node){
     bool res = do_registration(node);
@@ -48,7 +49,7 @@ bool t_model :: do_registration(ossia::net::node_base*  node){
     unregister(); // we should unregister here because we may have add a node between the registered node and the parameter
     if (!node) return false;
 
-	std::string name(x_name->s_name);
+    std::string name(x_name->s_name);
 
     if (node->find_child(name)) { // we have to check if a node with the same name already exists to avoid auto-incrementing name
         std::vector<obj_hierachy> obj = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
@@ -115,6 +116,20 @@ static void *model_new(t_symbol *name, int argc, t_atom *argv)
         // and object will be added to patcher's objects list (aka canvas g_list) after model_new() returns.
         // 0 ms delay means that it will be perform on next clock tick
         clock_delay(x->x_regclock, 0);
+    }
+
+    t_gobj* list = x->x_obj.o_canvas->gl_list;
+    while (list){
+        std::string current = list->g_pd->c_name->s_name;
+        if ( current == "ossia.model" ) {
+            if ( x != (t_model*) &list->g_pd ) {
+                pd_error(&list->g_pd,"Only one [ossia.model] intance per patcher is allowed.");
+                model_free(x);
+                x = nullptr;
+                break;
+            }
+        }
+        list=list->g_next;
     }
 
     return (x);
