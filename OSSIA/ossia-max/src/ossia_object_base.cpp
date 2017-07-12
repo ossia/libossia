@@ -34,6 +34,8 @@ namespace max {
                 {
                     if (argv->a_type == A_SYM)
                         list.push_back(std::string(atom_getsym(argv)->s_name));
+                    else if (argv->a_type == A_LONG)
+                        list.push_back((int32_t)atom_getlong(argv));
                     else if (argv->a_type == A_FLOAT)
                         list.push_back(atom_getfloat(argv));
                     else object_error((t_object*)x,"value type not handled");

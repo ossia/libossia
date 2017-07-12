@@ -124,8 +124,8 @@ void ossia_device_expose(t_device* x, t_symbol*, long argc, t_atom* argv)
             
             if (argc == 3
                 && argv[0].a_type == A_SYM
-                && argv[1].a_type == A_FLOAT
-                && argv[2].a_type == A_FLOAT)
+                && argv[1].a_type == A_LONG
+                && argv[2].a_type == A_LONG)
             {
                 settings.remoteip = atom_getsym(argv++)->s_name;
                 settings.remoteport = atom_getfloat(argv++);
@@ -152,8 +152,8 @@ void ossia_device_expose(t_device* x, t_symbol*, long argc, t_atom* argv)
             argv++;
             
             if (argc == 2
-                && argv[0].a_type == A_FLOAT
-                && argv[1].a_type == A_FLOAT)
+                && argv[0].a_type == A_LONG
+                && argv[1].a_type == A_LONG)
             {
                 settings.oscport = atom_getfloat(argv++);
                 settings.wsport = atom_getfloat(argv++);
@@ -181,8 +181,8 @@ void ossia_device_expose(t_device* x, t_symbol*, long argc, t_atom* argv)
             
             if (argc == 3
                 && argv[0].a_type == A_SYM
-                && argv[1].a_type == A_FLOAT
-                && argv[2].a_type == A_FLOAT)
+                && argv[1].a_type == A_LONG
+                && argv[2].a_type == A_LONG)
             {
                 settings.remoteip = atom_getsym(argv)->s_name;
                 settings.remoteport = atom_getfloat(argv++);

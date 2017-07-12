@@ -130,8 +130,8 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
             if ( argc == 4
                 && argv[0].a_type == A_SYM
                 && argv[1].a_type == A_SYM
-                && argv[2].a_type == A_FLOAT
-                && argv[3].a_type == A_FLOAT)
+                && argv[2].a_type == A_LONG
+                && argv[3].a_type == A_LONG)
             {
                 device_name = atom_getsym(argv++)->s_name;
                 settings.remoteip = atom_getsym(argv++)->s_name;

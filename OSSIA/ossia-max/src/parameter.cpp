@@ -296,6 +296,8 @@ namespace ossia {
                 {
                     if (m_default[i].a_type == A_FLOAT)
                         list.push_back(atom_getfloat(&m_default[i]));
+                    else if (m_default[i].a_type == A_LONG)
+                        list.push_back((int32_t)atom_getlong(&m_default[i]));
                     else if (m_default[i].a_type == A_SYM)
                         list.push_back(std::string(atom_getsym(&m_default[i])->s_name));
                 }
