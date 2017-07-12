@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia-config.hpp>
 #include <string>
 #include <vector>
 #include <cinttypes>
