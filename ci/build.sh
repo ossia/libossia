@@ -117,6 +117,9 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_QT=0 \
                -DOSSIA_NO_QT=1 \
                -DOSSIA_PYTHON=0 \
+               -DOSSIA_PD=1 \
+               -DOSSIA_MAX=0 \
+               -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -139,6 +142,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_PYTHON=0 \
                -DOSSIA_PD=0 \
                -DOSSIA_MAX=1 \
+               -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
