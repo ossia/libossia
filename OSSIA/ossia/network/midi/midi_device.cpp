@@ -14,11 +14,6 @@ midi_device::midi_device(std::unique_ptr<protocol_base> prot)
 {
 }
 
-std::string midi_device::get_name() const
-{
-  return m_name;
-}
-
 node_base& midi_device::set_name(std::string n)
 {
   m_name = n;

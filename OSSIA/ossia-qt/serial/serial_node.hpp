@@ -13,10 +13,9 @@ class serial_node :
     public ossia::net::node_base
 {
 protected:
-  std::string m_name;
   serial_device& m_device;
   serial_node* m_parent{};
-  std::unique_ptr<serial_address> mAddress;
+  std::unique_ptr<serial_address> m_address;
 
 public:
   serial_node(
@@ -27,8 +26,6 @@ public:
       const serial_address_data& dat,
       serial_device& aDevice,
       serial_node& aParent);
-
-  std::string get_name() const override;
 
   ossia::net::device_base& get_device() const final override;
 

@@ -108,7 +108,7 @@ int main()
 
     // Save the preset to disk
     std::cerr << "\n\n== PRESET JSON ==\n";
-    auto json_preset = ossia::presets::write_json(preset);
+    auto json_preset = ossia::presets::write_json("device", preset);
     std::cerr << json_preset << "\n";
 
     // Reapply the preset

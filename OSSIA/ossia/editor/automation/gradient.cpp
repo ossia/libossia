@@ -21,11 +21,6 @@ void color_automation::set_gradient(color_automation::grad_type t)
   m_data = std::move(t);
 }
 
-state_element color_automation::offset(time_value, double pos)
-{
-  return {};
-}
-
 state_element color_automation::state(ossia::time_value, double pos)
 {
   if(m_address)

@@ -249,8 +249,16 @@ void clock::threadCallback()
   {
     // launch the tick if the duration is valid and while it have to run
     if (m_duration > Zero)
+    {
+
       while (m_running && !m_shouldStop)
-        tick();
+      {
+        if(!m_paused)
+            tick();
+        else
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+      }
+    }
 
     if(m_shouldStop)
       m_running = false;

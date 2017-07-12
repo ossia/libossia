@@ -2,12 +2,18 @@
 #include <ossia/detail/config.hpp>
 #include <mutex>
 #if !defined(__APPLE__)
-#define OSSIA_HAS_SHARED_MUTEX
-#include <shared_mutex>
+  #define OSSIA_HAS_SHARED_MUTEX
+  #include <shared_mutex>
+#else
+  #include <Availability.h>
+  #ifdef __MAC_10_12 && (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAX_10_12)
+    #define OSSIA_HAS_SHARED_MUTEX
+    #include <shared_mutex>
+  #endif
 #endif
 namespace ossia
 {
-#if !defined(__APPLE__)
+#if defined(OSSIA_HAS_SHARED_MUTEX)
 using mutex_t = std::mutex;
 using lock_t = std::lock_guard<mutex_t>;
 

@@ -22,6 +22,15 @@ OSSIA_EXPORT extended_type filesystem_path_type();
 //! Means that the array should be interpreted as a fixed float array (e.g. vec2f, etc)
 OSSIA_EXPORT extended_type float_array_type();
 
+//! Means that the array should be interpreted as a dynamic float list
+OSSIA_EXPORT extended_type float_list_type();
+
+//! Means that the array should be interpreted as a dynamic int list
+OSSIA_EXPORT extended_type integer_list_type();
+
+//! Means that the array should be interpreted as a dynamic string list
+OSSIA_EXPORT extended_type string_list_type();
+
 //! Means that the array is a dynamic array (e.g. ossia::val_type::TUPLE)
 OSSIA_EXPORT extended_type tuple_type();
 

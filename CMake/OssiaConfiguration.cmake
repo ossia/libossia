@@ -21,9 +21,10 @@ option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
 option(OSSIA_JAVA "Build JNI bindings" OFF)
 option(OSSIA_PD "Build PureData externals" ON)
 option(OSSIA_MAX "Build Max/MSP externals" OFF)
-option(OSSIA_PYTHON "Build Python bindings" ON)
-option(OSSIA_QT "Build Qt bindings" ON)
+option(OSSIA_PYTHON "Build Python bindings" OFF)
+option(OSSIA_QT "Build Qt bindings. Implies websocket, serial, http." OFF)
 option(OSSIA_C "Build C bindings" ON)
+option(OSSIA_CPP "Build CPP bindings" ON)
 
 # Protocols :
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
@@ -32,8 +33,7 @@ option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidgets library
-option(OSSIA_NO_QT "Disable all the features that may require Qt" OFF)
-option(OSSIA_NO_QT_PLUGIN "Disable building of a Qt plugin" OFF)
+option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
@@ -44,7 +44,7 @@ include(LinkerWarnings)
 
 if(OSSIA_MAX)
     set(OSSIA_OSX_FAT_LIBRARIES 1)
-    set(OSSIA_NO_QT 1)
+    set(OSSIA_QT 0)
 endif()
 if(OSSIA_OSX_FAT_LIBRARIES)
     set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")

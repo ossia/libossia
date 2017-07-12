@@ -4,6 +4,7 @@
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <vector>
+#include <limits>
 #include <string>
 #include <ossia_export.h>
 
@@ -79,9 +80,8 @@ public:
   // Construction
   template <typename T>
   value(T*) = delete;
-  template <int N>
-  value(const char (&txt)[N]):
-    v{std::string(txt, N)}
+  value(const char* txt):
+    v{std::string(txt)}
   {
 
   }
@@ -297,6 +297,9 @@ inline ossia::value init_value(ossia::val_type type)
       return vec3f{};
     case val_type::VEC4F:
       return vec4f{};
+    case val_type::NONE:
+    default:
+      break;
   }
 
   throw invalid_value_type_error("init_value: Invalid type");

@@ -29,11 +29,6 @@ inline char* toString(const ossia::value &point)
 }
 }
 
-inline QDebug operator<<(QDebug s, const ossia::value& v)
-{
-    return s << QString::fromStdString(ossia::value_to_pretty_string(v));
-}
-
 struct root_scenario
 {
   std::shared_ptr<ossia::time_node> start_node{std::make_shared<ossia::time_node>()};

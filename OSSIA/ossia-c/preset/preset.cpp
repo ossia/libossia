@@ -66,10 +66,10 @@ ossia_preset_result ossia_presets_free(ossia_preset_t preset) {
   return OSSIA_PRESETS_OK;
 }
 
-ossia_preset_result ossia_presets_write_json(const ossia_preset_t preset, const char** buffer) {
+ossia_preset_result ossia_presets_write_json(const ossia_preset_t preset, const char* device, const char** buffer) {
   if (preset) {
     try {
-      *buffer = copy_string(ossia::presets::write_json(preset->impl));
+      *buffer = copy_string(ossia::presets::write_json(device, preset->impl));
       return OSSIA_PRESETS_OK;
     }
     catch (...) {
@@ -383,16 +383,19 @@ rapidjson::Value ossia_to_json_value(
   return val.apply(ossia::oscquery::detail::value_to_json_value{docallocator});
 }
 
+template<typename Alloc>
 void insert(
     rapidjson::Value& recipient,
     const std::vector<std::string>& keys,
     const ossia::value& val,
-    rapidjson::Document& doc);
+    Alloc& doc);
+
+template<typename Alloc>
 void insert_array(
     rapidjson::Value& array,
     const std::vector<std::string>& keys,
     const ossia::value& val,
-    rapidjson::Document& doc,
+    Alloc& alloc,
     const std::vector<std::string>& arraykeys) {
 
   if (!array.IsArray()) {
@@ -405,35 +408,36 @@ void insert_array(
       auto missing = index - array.Size() + 1;
       for (std::size_t i = 0; i < missing; ++i) {
         rapidjson::Value dummy;
-        array.PushBack(dummy, doc.GetAllocator());
+        array.PushBack(dummy, alloc);
       }
     }
     if (arraykeys.size() == 1) {
       if (keys.empty()) {
         rapidjson::Value v;
-        v = ossia_to_json_value(val, doc.GetAllocator());
+        v = ossia_to_json_value(val, alloc);
         array[index].Swap(v);
       }
       else {
         if (array[index].IsNull()) {
           array[index].SetObject();
         }
-        insert(array[index], keys, val, doc);
+        insert(array[index], keys, val, alloc);
       }
     }
     else {
       std::vector<std::string> newarraykeys (arraykeys);
       newarraykeys.erase(newarraykeys.begin());
-      insert_array(array[index], keys, val, doc, newarraykeys);
+      insert_array(array[index], keys, val, alloc, newarraykeys);
     }
   }
 }
 
+template<typename Alloc>
 void insert(
     rapidjson::Value& recipient,
     const std::vector<std::string>& keys,
     const ossia::value& val,
-    rapidjson::Document& doc) {
+    Alloc& alloc) {
   if (!keys.empty()) {
 
     std::string currentkey = keys[0];
@@ -450,25 +454,25 @@ void insert(
 
       rapidjson::Value arrname (rapidjson::kStringType);
       std::string arrnamestr (arraykeys[0]);
-      arrname.SetString(arrnamestr, doc.GetAllocator());
+      arrname.SetString(arrnamestr, alloc);
       arraykeys.erase(arraykeys.begin());
 
       if (!recipient.HasMember(arrname)) {
         rapidjson::Value array (rapidjson::kArrayType);
-        recipient.AddMember(arrname, array, doc.GetAllocator());
+        recipient.AddMember(arrname, array, alloc);
       }
 
-      arrname.SetString(arrnamestr, doc.GetAllocator());
-      insert_array(recipient[arrname], newkeys, val, doc, arraykeys);
+      arrname.SetString(arrnamestr, alloc);
+      insert_array(recipient[arrname], newkeys, val, alloc, arraykeys);
     }
 
     else {
       if (keys.size() == 1) {
-        rapidjson::Value v = ossia_to_json_value(val, doc.GetAllocator());
+        rapidjson::Value v = ossia_to_json_value(val, alloc);
         if (!recipient.HasMember(currentkey)) {
           rapidjson::Value name (rapidjson::kStringType);
-          name.SetString(currentkey, doc.GetAllocator());
-          recipient.AddMember(name, v, doc.GetAllocator());
+          name.SetString(currentkey, alloc);
+          recipient.AddMember(name, v, alloc);
         }
         else {
           recipient[currentkey].Swap(v);
@@ -479,27 +483,31 @@ void insert(
         if (!recipient.HasMember(currentkey)) {
           rapidjson::Value node (rapidjson::kObjectType);
           rapidjson::Value name (rapidjson::kStringType);
-          name.SetString(currentkey, doc.GetAllocator());
-          recipient.AddMember(name, node, doc.GetAllocator());
+          name.SetString(currentkey, alloc);
+          recipient.AddMember(name, node, alloc);
         }
-        insert(recipient[currentkey], newkeys, val, doc);
+        insert(recipient[currentkey], newkeys, val, alloc);
       }
     }
   }
 }
 
-std::string ossia::presets::write_json(const preset & prst) {
+std::string ossia::presets::write_json(const std::string& devicename, const preset & prst) {
   rapidjson::Document d;
 
   d.SetObject();
+  rapidjson::Value obj;
+  obj.SetObject();
 
   for (auto it = prst.begin(); it != prst.end(); ++it) {
     std::vector<std::string> keys;
     boost::split(keys, it->first, [](char c){return c == '/';}, boost::token_compress_on);
     keys.erase(keys.begin()); // first element is empty
     auto& val = it->second;
-    insert((rapidjson::Value&)d, keys, val, d);
+    insert(obj, keys, val, d.GetAllocator());
   }
+  rapidjson::Value k; k.SetString(devicename, d.GetAllocator());
+  d.AddMember(k, std::move(obj), d.GetAllocator());
 
   rapidjson::StringBuffer buffer;
   rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
@@ -578,12 +586,12 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
     {
       case ossia::val_type::IMPULSE :
       {
-        v.AddMember("valueType", "impulse", alloc);
+        v.AddMember("type", "impulse", alloc);
         break;
       }
       case ossia::val_type::BOOL :
       {
-        v.AddMember("valueType", "boolean", alloc);
+        v.AddMember("type", "boolean", alloc);
 
         if(default_value)
           if (auto valueDefault = default_value->target<bool>())
@@ -595,7 +603,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       case ossia::val_type::INT :
       {
         // append type attribute
-        v.AddMember("valueType", "integer", alloc);
+        v.AddMember("type", "integer", alloc);
 
         // append default value attribute
         if(default_value)
@@ -625,7 +633,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       case ossia::val_type::FLOAT :
       {
         // append type attribute
-        v.AddMember("valueType", "decimal", alloc);
+        v.AddMember("type", "decimal", alloc);
         // append default value attribute
         if(default_value)
           if (auto valueDefault = default_value->target<float>())
@@ -652,7 +660,7 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       }
       case ossia::val_type::CHAR :
       {
-        v.AddMember("valueType", "char", alloc);
+        v.AddMember("type", "char", alloc);
         if(default_value)
           if (auto valueDefault = default_value->target<char>())
           {
@@ -663,7 +671,15 @@ rapidjson::Value export_nodes_to_json(const ossia::net::node_base& node, rapidjs
       }
       case ossia::val_type::STRING :
       {
-        v.AddMember("valueType", "string", alloc);
+        auto ex = ossia::net::get_extended_type(node);
+        if(ex && *ex == ossia::filesystem_path_type())
+        {
+          v.AddMember("type", "filepath", alloc);
+        }
+        else
+        {
+          v.AddMember("type", "string", alloc);
+        }
 
         if(default_value)
           if (auto valueDefault = default_value->target<std::string>())

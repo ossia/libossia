@@ -166,6 +166,7 @@ bool t_param :: do_registration(ossia::net::node_base* node){
 }
 
 bool t_param :: unregister(){
+    clock_unset(x_clock);
     if (x_node) {
         if (x_node->get_parent()) x_node->get_parent()->remove_child(*x_node);
         x_node = nullptr;

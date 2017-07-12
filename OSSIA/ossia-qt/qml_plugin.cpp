@@ -4,8 +4,11 @@
 #include <ossia-qt/js_utilities.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_property.hpp>
+#include <ossia-qt/device/qml_parameter.hpp>
+#include <ossia-qt/device/qml_signal.hpp>
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_node.hpp>
+#include <ossia-qt/device/qml_logger.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia/context.hpp>
 
@@ -17,17 +20,23 @@ namespace qt
 void qml_plugin::reg(const char* uri)
 {
   // See ossia_global_init
-  qmlRegisterSingletonType<qt::qml_context>(uri, 1, 0, "Context",
-                                            [] (QQmlEngine* e, QJSEngine*) -> QObject*
-  { return new qt::qml_context; });
+  qmlRegisterUncreatableType<qt::qml_val_type>(uri, 1, 0, "Type", "Value type");
+  qmlRegisterUncreatableType<qt::qml_access_mode>(uri, 1, 0, "Access", "Access mode");
+  qmlRegisterUncreatableType<qt::qml_bounding_mode>(uri, 1, 0, "Bounding", "Bounding mode");
+  qmlRegisterUncreatableType<qt::qml_rep_filter>(uri, 1, 0, "Repetitions", "Repetition filter");
 
   qmlRegisterSingletonType<qt::qml_singleton_device>(uri, 1, 0, "SingleDevice",
                                                      [] (QQmlEngine* e, QJSEngine*) -> QObject*
   { return &qt::qml_singleton_device::instance(); });
+  qmlRegisterSingletonType<qt::qml_logger>(uri, 1, 0, "Logger",
+                                                     [] (QQmlEngine* e, QJSEngine*) -> QObject*
+  { return &qt::qml_logger::instance(); });
 
   qmlRegisterType<qt::qml_node>(uri, 1, 0, "NodeImpl");
   qmlRegisterType<qt::qml_device>(uri, 1, 0, "Device");
   qmlRegisterType<qt::qml_property>(uri, 1, 0, "Property");
+  qmlRegisterType<qt::qml_parameter>(uri, 1, 0, "Parameter");
+  qmlRegisterType<qt::qml_signal>(uri, 1, 0, "Signal");
   qmlRegisterType<qt::qml_property_reader>(uri, 1, 0, "ReaderImpl");
   qmlRegisterType<qt::qml_property_writer>(uri, 1, 0, "WriterImpl");
   qmlRegisterType<qt::qml_binding>(uri, 1, 0, "BindingImpl");

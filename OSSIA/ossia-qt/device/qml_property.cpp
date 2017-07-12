@@ -11,7 +11,7 @@ namespace ossia
 namespace qt
 {
 qml_property::qml_property(QQuickItem *parent)
-  : qml_node_base(parent)
+  : qml_property_base(parent)
 {
   connect(this, &qml_property::setValue_sig,
           this, &qml_property::setValue_slot,
@@ -23,6 +23,10 @@ qml_property::qml_property(QQuickItem *parent)
 
 qml_property::~qml_property()
 {
+  if(m_ossia_node)
+  {
+    m_ossia_node->about_to_be_deleted.disconnect<qml_property_base, &qml_property_base::on_node_deleted>(this);
+  }
   if(m_device) m_device->remove(this);
   m_address = nullptr;
 }
@@ -103,43 +107,18 @@ void qml_property::resetNode()
       node_name = m_userRequestedNode.toStdString();
     }
 
-    auto get_parent = [&] () -> ossia::net::node_base&
-    {
-      if(m_parentNode)
-        return *m_parentNode->ossiaNode();
-
-      if(relative)
-      {
-        return findClosestParent(m_targetProperty.object(), m_device->device().get_root_node());
-      }
-      else
-      {
-        return m_device->device().get_root_node();
-      }
-    };
-
-    ossia::net::node_base& parent = get_parent();
-
-    if(reading)
-    {
-      m_ossia_node = ossia::net::find_node(parent, node_name);
-    }
-    else
-    {
-      m_ossia_node = &ossia::net::create_node(parent, node_name);
-    }
-
+    m_ossia_node = ossia::net::find_or_create_node(get_parent(m_targetProperty.object(), relative), node_name, reading);
     if(m_ossia_node)
     {
-      m_ossia_node->about_to_be_deleted.connect<qml_property, &qml_property::on_node_deleted>(this);
+      m_ossia_node->about_to_be_deleted.connect<qml_property_base, &qml_property_base::on_node_deleted>(this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
       m_address = m_ossia_node->get_address();
-      applyNodeAttributes();
 
       setPath(
             QString::fromStdString(
               ossia::net::address_string_from_node(*m_ossia_node)));
       setupAddress(reading);
+      applyNodeAttributes();
       return;
     } // else, we go through the reset:
   }
@@ -150,37 +129,32 @@ void qml_property::resetNode()
   m_callback = ossia::none;
 }
 
-void qml_property::updateQtValue()
-{
-  setValue_sig(m_address->value());
-}
-
-qml_context::val_type qml_property::valueType() const
+qml_val_type::val_type qml_property::valueType() const
 {
   if(m_address)
-    return static_cast<qml_context::val_type>(m_address->get_value_type());
-  return m_valueType ? *m_valueType : qml_context::val_type{};
+    return static_cast<qml_val_type::val_type>(m_address->get_value_type());
+  return m_valueType ? *m_valueType : qml_val_type::val_type{};
 }
 
-qml_context::access_mode qml_property::access() const
+qml_access_mode::access_mode qml_property::access() const
 {
   if(m_address)
-    return static_cast<qml_context::access_mode>(m_address->get_access());
-  return m_access ? *m_access : qml_context::access_mode::Bi;
+    return static_cast<qml_access_mode::access_mode>(m_address->get_access());
+  return m_access ? *m_access : qml_access_mode::access_mode::Bi;
 }
 
-qml_context::bounding_mode qml_property::bounding() const
+qml_bounding_mode::bounding_mode qml_property::bounding() const
 {
   if(m_address)
-    return static_cast<qml_context::bounding_mode>(m_address->get_bounding());
-  return m_bounding ? *m_bounding : qml_context::bounding_mode::Free;
+    return static_cast<qml_bounding_mode::bounding_mode>(m_address->get_bounding());
+  return m_bounding ? *m_bounding : qml_bounding_mode::bounding_mode::Free;
 }
 
-qml_context::repetition_filter qml_property::filterRepetitions() const
+qml_rep_filter::repetition_filter qml_property::filterRepetitions() const
 {
   if(m_address)
-    return static_cast<qml_context::repetition_filter>(m_address->get_repetition_filter());
-  return m_filterRepetitions ? *m_filterRepetitions : qml_context::repetition_filter{};
+    return static_cast<qml_rep_filter::repetition_filter>(m_address->get_repetition_filter());
+  return m_filterRepetitions ? *m_filterRepetitions : qml_rep_filter::repetition_filter{};
 }
 
 QVariant qml_property::min() const
@@ -225,7 +199,7 @@ void qml_property::setValue_slot(const value& v)
   }
 }
 
-void qml_property::setValueType(qml_context::val_type valueType)
+void qml_property::setValueType(qml_val_type::val_type valueType)
 {
   if (m_valueType == valueType)
     return;
@@ -236,7 +210,7 @@ void qml_property::setValueType(qml_context::val_type valueType)
   emit valueTypeChanged(valueType);
 }
 
-void qml_property::setAccess(qml_context::access_mode access)
+void qml_property::setAccess(qml_access_mode::access_mode access)
 {
   if (m_access == access)
     return;
@@ -247,7 +221,7 @@ void qml_property::setAccess(qml_context::access_mode access)
   emit accessChanged(access);
 }
 
-void qml_property::setBounding(qml_context::bounding_mode bounding)
+void qml_property::setBounding(qml_bounding_mode::bounding_mode bounding)
 {
   if (m_bounding == bounding)
     return;
@@ -258,7 +232,7 @@ void qml_property::setBounding(qml_context::bounding_mode bounding)
   emit boundingChanged(bounding);
 }
 
-void qml_property::setFilterRepetitions(qml_context::repetition_filter filterRepetitions)
+void qml_property::setFilterRepetitions(qml_rep_filter::repetition_filter filterRepetitions)
 {
   if (m_filterRepetitions == filterRepetitions)
     return;
@@ -316,7 +290,7 @@ void qml_property::setupAddress(bool reading)
   {
     if(m_address)
     {
-      updateQtValue();
+      setValue_sig(m_address->value());
     }
     return;
   }
@@ -371,31 +345,6 @@ void qml_property::updateDomain()
   else
   {
     m_address->set_domain(ossia::make_domain(std::move(val_min), std::move(val_max)));
-  }
-}
-
-void qml_property::on_node_deleted(const net::node_base&)
-{
-  m_address = nullptr;
-  m_ossia_node = nullptr;
-  m_callback = ossia::none;
-}
-
-void qml_property::clearNode(bool reading)
-{
-  m_node.clear();
-  if(m_ossia_node)
-  {
-    auto par = m_ossia_node->get_parent();
-    if(par)
-    {
-      auto node = m_ossia_node;
-      m_address = nullptr;
-      m_ossia_node = nullptr;
-      m_callback = ossia::none;
-      if(!reading)
-        par->remove_child(*node);
-    }
   }
 }
 

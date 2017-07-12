@@ -11,22 +11,22 @@ http_node::http_node(
     const http_address_data& data,
     http_device& aDevice,
     http_node& aParent):
-  mName{data.name},
-  mDevice{aDevice},
-  mParent{&aParent}
+  m_device{aDevice},
+  m_parent{&aParent}
 {
+  m_name = data.name;
   if(!data.request.isEmpty() || data.type)
-    mAddress = std::make_unique<http_address>(data, *this);
+    m_address = std::make_unique<http_address>(data, *this);
 }
 
 http_node::http_node(
     const http_address_data& data,
     http_device& aDevice):
-  mName{data.name},
-  mDevice{aDevice}
+  m_device{aDevice}
 {
+  m_name = data.name;
   if(!data.request.isEmpty() || data.type)
-    mAddress = std::make_unique<http_address>(data, *this);
+    m_address = std::make_unique<http_address>(data, *this);
 }
 
 http_node::~http_node()
@@ -35,23 +35,20 @@ http_node::~http_node()
 
   write_lock_t lock{m_mutex};
   m_children.clear();
-  mAddress.reset();
+  m_address.reset();
 }
 
 device_base& http_node::get_device() const
-{ return mDevice; }
+{ return m_device; }
 
 node_base*http_node::get_parent() const
-{ return mParent; }
-
-std::string http_node::get_name() const
-{ return mName; }
+{ return m_parent; }
 
 node_base&http_node::set_name(std::string)
 { return *this; }
 
 address_base* http_node::get_address() const
-{ return mAddress.get(); }
+{ return m_address.get(); }
 
 address_base*http_node::create_address(val_type)
 { return nullptr; }
@@ -71,7 +68,7 @@ void http_node::add_child(std::unique_ptr<node_base> p)
 std::unique_ptr<node_base> http_node::make_child(const std::string& name)
 { return nullptr; }
 
-void http_node::removing_child(node_base& node_base)
+void http_node::removing_child(ossia::net::node_base& node_base)
 { }
 
 }

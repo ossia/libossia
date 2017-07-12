@@ -2,8 +2,8 @@
 #include "device.hpp"
 #include "model.hpp"
 #include "parameter.hpp"
-//#include "remote.hpp"
-//#include "view.hpp"
+#include "remote.hpp"
+#include "view.hpp"
 
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include "ossia/network/osc/osc.hpp"
@@ -130,8 +130,8 @@ void ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
             if ( argc == 4
                 && argv[0].a_type == A_SYM
                 && argv[1].a_type == A_SYM
-                && argv[2].a_type == A_FLOAT
-                && argv[3].a_type == A_FLOAT)
+                && argv[2].a_type == A_LONG
+                && argv[3].a_type == A_LONG)
             {
                 device_name = atom_getsym(argv++)->s_name;
                 settings.remoteip = atom_getsym(argv++)->s_name;
@@ -218,13 +218,13 @@ namespace max {
         {
             if (child.classname == gensym("ossia.view"))
             {
-//                t_view* view = (t_view*)jbox_get_object(child.box);
-//                view->register_node(x->m_node);
+                t_view* view = (t_view*)jbox_get_object(child.box);
+                view->register_node(x->m_node);
             }
             else if (child.classname == gensym("ossia.remote"))
             {
-//                t_remote* remote = (t_remote*)jbox_get_object(child.box);
-//                remote->register_node(x->m_node);
+                t_remote* remote = (t_remote*)jbox_get_object(child.box);
+                remote->register_node(x->m_node);
             }
         }
     }
@@ -253,13 +253,13 @@ namespace max {
         {
             if (child.classname == gensym("ossia.view"))
             {
-//                t_view* view = (t_view*)jbox_get_object(child.box);
-//                view->unregister();
+                t_view* view = (t_view*)jbox_get_object(child.box);
+                view->unregister();
             }
             else if (child.classname == gensym("ossia.remote"))
             {
-//                t_remote* remote = (t_remote*)jbox_get_object(child.box);
-//                remote->unregister();
+                t_remote* remote = (t_remote*)jbox_get_object(child.box);
+                remote->unregister();
             }
         }
     }

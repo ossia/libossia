@@ -43,6 +43,10 @@ set(PROJECT_SRCS
     src/model.cpp
     src/logger.hpp
     src/logger.cpp
+    src/remote.hpp
+    src/remote.cpp
+    src/view.hpp
+    src/view.cpp
     )
 
 add_library(${PROJECT_NAME} MODULE ${PROJECT_SRCS})
@@ -70,7 +74,7 @@ endif()
 
 set(OSSIA_MAX_INSTALL_FOLDER "ossia-max-package/ossia" CACHE STRING "Max Package Install folder")
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/help"
         DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
         COMPONENT ${PROJECT_NAME})
 

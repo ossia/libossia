@@ -12,7 +12,6 @@ namespace ossia
 class OSSIA_EXPORT audio_address : public ossia::net::address_base
 {
   ossia::net::node_base& m_node;
-
 public:
   audio_address(ossia::net::node_base& n): m_node{n} { }
 
@@ -87,7 +86,10 @@ public:
   net::address_base&set_access(access_mode) override
   { return *this; }
   const domain&get_domain() const override
-  { throw; }
+  {
+    static ossia::domain d;
+    return d;
+  }
   net::address_base&set_domain(const domain&) override
   { return *this; }
   bounding_mode get_bounding() const override

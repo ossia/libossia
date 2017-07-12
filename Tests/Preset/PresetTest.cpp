@@ -45,7 +45,8 @@ private slots:
     a4->push_value("bar"s);
 
     auto preset = ossia::devices::make_preset(dev);
-    auto presetJSON = ossia::presets::write_json(preset);
+    qDebug() << preset.begin()->first.c_str();
+    auto presetJSON = ossia::presets::write_json("mydevice", preset);
     qDebug() << presetJSON.c_str();
 
     auto str = ossia::devices::write_json(dev);

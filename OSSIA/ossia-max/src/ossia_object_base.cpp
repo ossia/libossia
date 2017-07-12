@@ -3,7 +3,7 @@
 namespace ossia {
 namespace max {
     
-    void t_object_base :: set_value(const ossia::value& v)
+    void t_object_base :: apply_value_visitor(const ossia::value& v)
     {
         value_visitor<t_object_base> vm;
         vm.x = this;
@@ -20,6 +20,9 @@ namespace max {
                 if (argv->a_type == A_SYM)
                     x->m_node->get_address()->push_value(std::string(atom_getsym(argv)->s_name));
                 
+                else if (argv->a_type == A_LONG)
+                    x->m_node->get_address()->push_value((int32_t)atom_getlong(argv));
+                
                 else if (argv->a_type == A_FLOAT)
                     x->m_node->get_address()->push_value(atom_getfloat(argv));
             }
@@ -31,6 +34,8 @@ namespace max {
                 {
                     if (argv->a_type == A_SYM)
                         list.push_back(std::string(atom_getsym(argv)->s_name));
+                    else if (argv->a_type == A_LONG)
+                        list.push_back((int32_t)atom_getlong(argv));
                     else if (argv->a_type == A_FLOAT)
                         list.push_back(atom_getfloat(argv));
                     else object_error((t_object*)x,"value type not handled");
@@ -44,8 +49,17 @@ namespace max {
     void t_object_base :: bang(t_object_base *x)
     {
         if (x->m_node && x->m_node->get_address())
-            x->set_value(x->m_node->get_address()->value());
+            x->apply_value_visitor(x->m_node->get_address()->value());
     }
-    
+/*
+    void t_object_base :: tick(t_object_base* x)
+    {
+        if (x->m_last_opened_canvas)
+        {
+            glist_noselect(x->m_last_opened_canvas);
+            x->m_last_opened_canvas = nullptr;
+        }
+    }
+*/
 } // max namespace
 } // ossia namespace

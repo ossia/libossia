@@ -1,4 +1,5 @@
 #include <ossia-max/src/parameter.hpp>
+#include <ossia-max/src/remote.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 
 using namespace ossia::max;
@@ -27,6 +28,7 @@ void ossia_parameter_setup()
     
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
     CLASS_ATTR_LONG(ossia_library.ossia_parameter_class, "type_size", 0, t_parameter, m_type_size);
+    CLASS_ATTR_ATOM_ARRAY(ossia_library.ossia_parameter_class, "default", 0, t_parameter, m_default, 64);
     CLASS_ATTR_ATOM_ARRAY(ossia_library.ossia_parameter_class, "range", 0, t_parameter, m_range, 2);
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "bounding_mode", 0, t_parameter, m_bounding_mode);
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "access_mode", 0, t_parameter, m_access_mode);
@@ -35,8 +37,6 @@ void ossia_parameter_setup()
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "tags", 0, t_parameter, m_tags);
     CLASS_ATTR_SYM(ossia_library.ossia_parameter_class, "description", 0, t_parameter, m_description);
     CLASS_ATTR_LONG(ossia_library.ossia_parameter_class, "priority", 0, t_parameter, m_priority);
-    
-    //class_addattr(ossia_library.ossia_parameter_class, attr_offset_new("default", _sym_atom, 0, (method)default_attr_get, (method)default_attr_set, 0));
     
     // TODO : for each attribute : CLASS_ATTR_ADD_FLAGS(ossia_library.ossia_parameter_class, "attrname", ATTR_SET_OPAQUE);
     // note : ATTR_SET_OPAQUE means that the attribute can't be changed by message afterward
@@ -55,16 +55,16 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
     if (x)
     {
         // make outlets
-        x->m_data_out = outlet_new(x, NULL);						// anything outlet to output data
-        x->m_set_out = outlet_new(x, NULL);                         // anything outlet to output data for ui
         x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump parameter state
+        x->m_set_out = outlet_new(x, NULL);                         // anything outlet to output data for ui
+        x->m_data_out = outlet_new(x, NULL);						// anything outlet to output data
         
         x->m_node = nullptr;
         
         // initialize attributes
         atom_setfloat(&x->m_range[0], 0.);
         atom_setfloat(&x->m_range[1], 1.);
-        x->m_access_mode = gensym("RW");
+        x->m_access_mode = gensym("BI");
         x->m_bounding_mode = gensym("FREE");
         x->m_unit = gensym("");
         x->m_type = gensym("tuple");
@@ -131,9 +131,9 @@ void ossia_parameter_assist(t_parameter *x, void *b, long m, long a, char *s)
 template<typename T>
 void ossia_parameter_in(t_parameter* x, T f)
 {
-    if(x && x->m_node)
+    if (x && x->m_node)
     {
-        if(auto addr = x->m_node->get_address())
+        if (auto addr = x->m_node->get_address())
         {
             addr->push_value(f);
         }
@@ -162,7 +162,16 @@ void ossia_parameter_in_char(t_parameter* x, char f)
 
 extern "C"
 void ossia_parameter_in_anything(t_parameter* x, t_symbol *s, long argc, t_atom *argv)
-{ /* todo */ }
+{
+    if (argc == 0)
+    {
+        ossia_parameter_in(x, std::string(s->s_name));
+    }
+    else
+    {
+        /* todo */
+    }
+}
 
 namespace ossia {
     namespace max {
@@ -177,12 +186,9 @@ namespace ossia {
             if (res)
             {
                 object_dequarantining(this);
-                /*
-                 for (auto remote : t_remote::quarantine())
-                 {
-                 object_register<t_remote>(static_cast<t_remote*>(remote));
-                 }
-                 */
+                
+                for (auto remote : t_remote::quarantine())
+                    object_register<t_remote>(static_cast<t_remote*>(remote));
             }
             else
                 object_quarantining(this);
@@ -218,8 +224,8 @@ namespace ossia {
             {
                 localAddress = m_node->create_address(ossia::val_type::FLOAT);
                 
-                if (m_default[0].a_type == A_FLOAT )
-                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_float);
+                if (m_default[0].a_type == A_FLOAT)
+                    ossia::net::set_default_value(localAddress->getNode(), (float)m_default[0].a_w.w_float);
             }
             else if (m_type == gensym("string"))
             {
@@ -232,15 +238,15 @@ namespace ossia {
             {
                 localAddress = m_node->create_address(ossia::val_type::INT);
                 
-                if (m_default[0].a_type == A_FLOAT )
-                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_float);
+                if (m_default[0].a_type == A_LONG)
+                    ossia::net::set_default_value(localAddress->getNode(), (int32_t)m_default[0].a_w.w_long);
             }
             else if (m_type == gensym("vec2f"))
             {
                 localAddress = m_node->create_address(ossia::val_type::VEC2F);
                 m_type_size = 2;
                 
-                if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT )
+                if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT)
                 {
                     vec2f vec = make_vec(m_default[0].a_w.w_float, m_default[1].a_w.w_float);
                     ossia::net::set_default_value(localAddress->getNode(), vec);
@@ -251,7 +257,8 @@ namespace ossia {
                 localAddress = m_node->create_address(ossia::val_type::VEC3F);
                 m_type_size = 3;
                 
-                if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT && m_default[2].a_type == A_FLOAT ){
+                if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT && m_default[2].a_type == A_FLOAT)
+                {
                     vec3f vec = make_vec(m_default[0].a_w.w_float, m_default[1].a_w.w_float, m_default[2].a_w.w_float);
                     ossia::net::set_default_value(localAddress->getNode(), vec);
                 }
@@ -261,7 +268,8 @@ namespace ossia {
                 localAddress = m_node->create_address(ossia::val_type::VEC4F);
                 m_type_size = 4;
                 
-                if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT && m_default[2].a_type == A_FLOAT && m_default[3].a_type == A_FLOAT ){
+                if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT && m_default[2].a_type == A_FLOAT && m_default[3].a_type == A_FLOAT)
+                {
                     vec4f vec = make_vec(m_default[0].a_w.w_float, m_default[1].a_w.w_float, m_default[2].a_w.w_float, m_default[3].a_w.w_float);
                     ossia::net::set_default_value(localAddress->getNode(), vec);
                 }
@@ -275,8 +283,8 @@ namespace ossia {
             {
                 localAddress = m_node->create_address(ossia::val_type::BOOL);
                 
-                if (m_default[0].a_type == A_FLOAT )
-                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_float);
+                if (m_default[0].a_type == A_LONG)
+                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_long>0?true:false);
             }
             else if (m_type == gensym("tuple"))
             {
@@ -288,6 +296,8 @@ namespace ossia {
                 {
                     if (m_default[i].a_type == A_FLOAT)
                         list.push_back(atom_getfloat(&m_default[i]));
+                    else if (m_default[i].a_type == A_LONG)
+                        list.push_back((int32_t)atom_getlong(&m_default[i]));
                     else if (m_default[i].a_type == A_SYM)
                         list.push_back(std::string(atom_getsym(&m_default[i])->s_name));
                 }
@@ -297,8 +307,9 @@ namespace ossia {
             else if (m_type == gensym("char"))
             {
                 localAddress = m_node->create_address(ossia::val_type::CHAR);
-                if (m_default[0].a_type == A_FLOAT )
-                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_float);
+                
+                if (m_default[0].a_type == A_LONG)
+                    ossia::net::set_default_value(localAddress->getNode(), (char)m_default[0].a_w.w_long);
             }
             else
             {
@@ -341,7 +352,7 @@ namespace ossia {
             
             ossia::net::set_priority(localAddress->getNode(), m_priority);
             
-            localAddress->add_callback([=](const ossia::value& v) { set_value(v); });
+            localAddress->add_callback([=](const ossia::value& v) { apply_value_visitor(v); });
             
             clock_delay(m_clock, 0);
             
@@ -356,12 +367,10 @@ namespace ossia {
                     m_node->get_parent()->remove_child(*m_node);
                 
                 m_node = nullptr;
-                /*
-                 for (auto remote : t_remote::quarantine())
-                 {
-                 object_register<t_remote>(static_cast<t_remote*>(remote));
-                 }
-                 */
+                
+                for (auto remote : t_remote::quarantine())
+                    object_register<t_remote>(static_cast<t_remote*>(remote));
+                
             }
             
             object_quarantining(this);

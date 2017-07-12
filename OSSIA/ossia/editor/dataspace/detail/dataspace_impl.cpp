@@ -263,7 +263,7 @@ spherical_u::value_type spherical_u::from_neutral(strong_value<spherical_u::neut
   const auto temp = std::pow(x, 2.) + std::pow(y, 2.);
 
   return {
-    (float)(std::atan2(x, y) * rad_to_deg),
+    (float)(std::atan2(y, x) * rad_to_deg),
         (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
         (float)(std::sqrt(temp + std::pow(z, 2.)))
   };
@@ -290,7 +290,7 @@ cylindrical_u::value_type cylindrical_u::from_neutral(strong_value<cylindrical_u
 
   return {
     (float)(ossia::norm(x, y)),
-        (float)(std::atan2(x, y) * rad_to_deg),
+        (float)(std::atan2(y, x) * rad_to_deg),
         z
   };
 }

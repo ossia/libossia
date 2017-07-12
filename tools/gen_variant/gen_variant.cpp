@@ -308,7 +308,7 @@ struct gen_var
     for(int i = 0; i < num_types; i++)
       str << "Type" << i << ", ";
 
-    str << "Npos\n";
+    str << "Npos = std::numeric_limits<int8_t>::max()\n";
     str << "};\n";
   }
 

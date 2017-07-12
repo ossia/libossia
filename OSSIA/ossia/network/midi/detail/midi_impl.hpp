@@ -22,16 +22,14 @@ class OSSIA_EXPORT note_on_N_node final
     : public midi_node
     , public midi_address
 {
-  const std::string& m_name;
-
 public:
   note_on_N_node(
       midi_size_t channel,
       midi_size_t note, midi_device& aDevice, ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
       , midi_address{address_info{channel, address_info::Type::NoteOn_N, note}, *this}
-      , m_name{midi_node_name(note)}
   {
+    m_name = midi_node_name(note);
     m_address.reset(this);
   }
 
@@ -40,27 +38,20 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    return m_name;
-  }
 };
 
 class OSSIA_EXPORT note_off_N_node final
     : public midi_node
     , public midi_address
 {
-  const std::string& m_name;
-
 public:
   note_off_N_node(
           midi_size_t channel,
       midi_size_t note, midi_device& aDevice, ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
       , midi_address{address_info{channel, address_info::Type::NoteOff_N, note}, *this}
-      , m_name{midi_node_name(note)}
   {
+    m_name = midi_node_name(note);
     m_address.reset(this);
   }
 
@@ -69,27 +60,20 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    return m_name;
-  }
 };
 
 class OSSIA_EXPORT control_N_node final
     : public midi_node
     , public midi_address
 {
-  const std::string& m_name;
-
 public:
   control_N_node(
       midi_size_t channel,
       midi_size_t param, midi_device& aDevice, ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
       , midi_address{address_info{channel, address_info::Type::CC_N, param}, *this}
-      , m_name{midi_node_name(param)}
   {
+    m_name = midi_node_name(param);
     m_address.reset(this);
   }
 
@@ -98,27 +82,20 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    return m_name;
-  }
 };
 
 class OSSIA_EXPORT program_N_node final
     : public midi_node
     , public midi_address
 {
-  const std::string& m_name;
-
 public:
   program_N_node(
       midi_size_t channel,
       midi_size_t param, midi_device& aDevice, ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
       , midi_address{address_info{channel, address_info::Type::PC_N, param}, *this}
-      , m_name{midi_node_name(param)}
   {
+    m_name = midi_node_name(param);
     m_address.reset(this);
   }
 
@@ -126,11 +103,6 @@ public:
   {
     about_to_be_deleted(*this);
     m_address.release();
-  }
-
-  std::string get_name() const final override
-  {
-    return m_name;
   }
 };
 
@@ -143,6 +115,8 @@ public:
       midi_node(aDevice, aDevice)
     , midi_address{address_info{channel, address_info::Type::PC, 0}, *this}
   {
+      using namespace std::literals;
+      m_name = "program"s;
       m_address.reset(this);
       m_children.reserve(128);
       for (int i = 0; i < 128; i++)
@@ -157,12 +131,6 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    using namespace std::literals;
-    return "program"s;
-  }
 };
 
 class OSSIA_EXPORT note_on_node final
@@ -174,6 +142,8 @@ public:
       midi_node(aDevice, aDevice)
     , midi_address{address_info{channel, address_info::Type::NoteOn, 0}, *this}
   {
+      using namespace std::literals;
+      m_name = "on"s;
       m_address.reset(this);
       m_children.reserve(128);
       for (int i = 0; i < 128; i++)
@@ -188,12 +158,6 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    using namespace std::literals;
-    return "on"s;
-  }
 };
 
 class OSSIA_EXPORT note_off_node final
@@ -205,6 +169,8 @@ public:
       midi_node(aDevice, aDevice)
     , midi_address{address_info{channel, address_info::Type::NoteOff, 0}, *this}
   {
+      using namespace std::literals;
+      m_name = "off"s;
       m_address.reset(this);
 
       m_children.reserve(128);
@@ -220,12 +186,6 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    using namespace std::literals;
-    return "off"s;
-  }
 };
 
 class OSSIA_EXPORT control_node final
@@ -237,6 +197,8 @@ public:
       midi_node(aDevice, aDevice)
     , midi_address{address_info{channel, address_info::Type::CC, 0}, *this}
   {
+      using namespace std::literals;
+      m_name = "control"s;
       m_address.reset(this);
 
       m_children.reserve(128);
@@ -252,37 +214,30 @@ public:
     about_to_be_deleted(*this);
     m_address.release();
   }
-
-  std::string get_name() const final override
-  {
-    using namespace std::literals;
-    return "control"s;
-  }
 };
 
 class OSSIA_EXPORT channel_node final : public midi_node
 {
-  const midi_size_t mChannel;
-  const std::string& mName;
+  const midi_size_t m_channel;
 
 public:
   channel_node(midi_size_t channel, midi_device& aDevice)
       : midi_node(aDevice, aDevice)
-      , mChannel{channel}
-      , mName(midi_node_name(channel))
+      , m_channel{channel}
   {
+      m_name = midi_node_name(channel);
       m_children.reserve(4);
       {
-        m_children.push_back(std::make_unique<note_on_node>(mChannel, m_device));
+        m_children.push_back(std::make_unique<note_on_node>(m_channel, m_device));
       }
       {
-        m_children.push_back(std::make_unique<note_off_node>(mChannel, m_device));
+        m_children.push_back(std::make_unique<note_off_node>(m_channel, m_device));
       }
       {
-        m_children.push_back(std::make_unique<control_node>(mChannel, m_device));
+        m_children.push_back(std::make_unique<control_node>(m_channel, m_device));
       }
       {
-        m_children.push_back(std::make_unique<program_node>(mChannel, m_device));
+        m_children.push_back(std::make_unique<program_node>(m_channel, m_device));
       }
   }
 
@@ -304,11 +259,6 @@ public:
           ossia::message{*c[1]->get_address(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
           ossia::message{*c[1]->children()[note]->get_address(), int32_t{vel}}
       }};
-  }
-
-  std::string get_name() const final override
-  {
-    return mName;
   }
 };
 }

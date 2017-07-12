@@ -39,7 +39,7 @@ QtObject
                         {
                             name: "dx",
                             type: Ossia.Float,
-                            request: "dx $0",
+                            request: "dx $val",
                             min: -300,
                             max: 300,
                             access: Ossia.Set,
@@ -49,7 +49,7 @@ QtObject
                         {
                             name: "dy",
                             type: Ossia.Float,
-                            request: "dy $0",
+                            request: "dy $val",
                             min: -300,
                             max: 300,
                             access: Ossia.Set,
@@ -59,7 +59,7 @@ QtObject
                         {
                             name: "h",
                             type: Ossia.Float,
-                            request: "h $0",
+                            request: "h $val",
                             min: -120,
                             max: 30,
                             access: Ossia.Set,
@@ -69,7 +69,7 @@ QtObject
                         {
                             name: "turn",
                             type: Ossia.Float,
-                            request: "turn $0",
+                            request: "turn $val",
                             min: -300,
                             max: 300,
                             access: Ossia.Set,
@@ -79,7 +79,7 @@ QtObject
                         {
                             name: "crab",
                             type: Ossia.Float,
-                            request: "crab $0",
+                            request: "crab $val",
                             min: 0,
                             max: 10,
                             access: Ossia.Set,
@@ -89,7 +89,7 @@ QtObject
                         {
                             name: "backleg",
                             type: Ossia.Float,
-                            request: "backleg $0",
+                            request: "backleg $val",
                             min: 0,
                             max: 10,
                             access: Ossia.Set,
@@ -99,7 +99,7 @@ QtObject
                         {
                             name: "freq",
                             type: Ossia.Float,
-                            request: "freq $0",
+                            request: "freq $val",
                             min: 0,
                             max: 3,
                             access: Ossia.Set,
@@ -110,7 +110,7 @@ QtObject
                         {
                             name: "alt",
                             type: Ossia.Int,
-                            request: "alt $0",
+                            request: "alt $val",
                             min: 0,
                             max: 10,
                             access: Ossia.Set,

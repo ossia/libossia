@@ -249,6 +249,8 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       return f(ossia::value_trait<vec3f>{}, std::forward<Args>(args)...);
     case val_type::VEC4F:
       return f(ossia::value_trait<vec4f>{}, std::forward<Args>(args)...);
+    case val_type::NONE:
+      break;
   }
 
   throw invalid_value_type_error("lift: Invalid type");

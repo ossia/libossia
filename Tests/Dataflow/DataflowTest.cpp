@@ -413,24 +413,24 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_time(0);
-    g.n2->set_time(0);
+    g.n1->set_date(0);
+    g.n2->set_date(0);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(1);
-    g.n2->set_time(1);
+    g.n1->set_date(1);
+    g.n2->set_date(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(2);
-    g.n2->set_time(2);
+    g.n1->set_date(2);
+    g.n2->set_date(2);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
@@ -449,9 +449,9 @@ private slots:
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
     g.g.enable(*g.n3);
-    g.n1->set_time(0);
-    g.n2->set_time(0);
-    g.n3->set_time(0);
+    g.n1->set_date(0);
+    g.n2->set_date(0);
+    g.n3->set_date(0);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
@@ -472,24 +472,24 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_time(0);
-    g.n2->set_time(0);
+    g.n1->set_date(0);
+    g.n2->set_date(0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(1);
-    g.n2->set_time(1);
+    g.n1->set_date(1);
+    g.n2->set_date(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(2);
-    g.n2->set_time(2);
+    g.n1->set_date(2);
+    g.n2->set_date(2);
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -508,24 +508,24 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_time(0);
-    g.n1->set_time(0);
+    g.n1->set_date(0);
+    g.n1->set_date(0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(1);
-    g.n2->set_time(1);
+    g.n1->set_date(1);
+    g.n2->set_date(1);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(2);
-    g.n2->set_time(2);
+    g.n1->set_date(2);
+    g.n2->set_date(2);
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -542,7 +542,7 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_time(0);
+    g.n1->set_date(0);
 
     // f1 pushes 1 * 1 in its queue
     g.g.state();
@@ -550,8 +550,8 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(1);
-    g.n2->set_time(0);
+    g.n1->set_date(1);
+    g.n2->set_date(0);
 
     // f1(0) = 1
     // f1(1) = 2
@@ -561,8 +561,8 @@ private slots:
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_time(2);
-    g.n2->set_time(1);
+    g.n1->set_date(2);
+    g.n2->set_date(1);
 
     // f2(f1(1), 1) = [2, 20]
     g.g.state(); // f2 o f1(t-1)

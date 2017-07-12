@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <cstdint>
+#include <limits>
 namespace ossia
 {
 /**
@@ -9,8 +10,7 @@ namespace ossia
  * @note If changing this, also take care of changing :
  * * val_type in qml_context
  * * ossia_type in ossia-c.h
- * * State::ValueType
- */
+ * * ossia::val_type */
 enum class val_type : int8_t
 {
   FLOAT, //! \see Float
@@ -22,7 +22,8 @@ enum class val_type : int8_t
   BOOL, //! \see Bool
   STRING, //! \see String
   TUPLE, //! \see Tuple
-  CHAR
+  CHAR,
+  NONE = std::numeric_limits<int8_t>::max()
 };
 
 

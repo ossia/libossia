@@ -55,13 +55,13 @@ ossia_preset_result ossia_presets_free(
 /**
  * @brief ossia_presets_write_json
  * @param a preset
+ * @param a root name
  * @param a buffer receiving the text json version of the preset
  * @return A result code
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_write_json(
-        const ossia_preset_t,
+ossia_preset_result ossia_presets_write_json(const ossia_preset_t, const char* device,
         const char**);
 /**
  * @brief ossia_presets_write_xml

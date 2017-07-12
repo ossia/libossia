@@ -22,7 +22,8 @@ public:
 
   ossia::state_element state(ossia::time_value parent_date, double relative_position) override
   {
-    m_node->set_time(relative_position);
+    std::cerr << parent_date;
+    m_node->set_date(parent_date);
     m_graph->enable(*m_node);
     return {};
   }
