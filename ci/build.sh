@@ -44,12 +44,6 @@ case "$TRAVIS_OS_NAME" in
         tar -cf ossia-pd-linux_x86_64.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
       ;;
       RpiPdRelease)
-        # download, extract and mount raspberry pi image with gcc-6 installed
-        wget --quiet --output-document /dev/null  https://u3680458.dl.dropboxusercontent.com/u/3680458/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
-        tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
-        mkdir -p /tmp/rpi/root
-        sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
-
         #setup some environment variable to help CMAKE to find libraries
         export RPI_ROOT_PATH=/tmp/rpi/root
         export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
