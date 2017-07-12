@@ -64,7 +64,7 @@ void* ossia_parameter_new(t_symbol *s, long argc, t_atom *argv)
         // initialize attributes
         atom_setfloat(&x->m_range[0], 0.);
         atom_setfloat(&x->m_range[1], 1.);
-        x->m_access_mode = gensym("RW");
+        x->m_access_mode = gensym("BI");
         x->m_bounding_mode = gensym("FREE");
         x->m_unit = gensym("");
         x->m_type = gensym("tuple");
