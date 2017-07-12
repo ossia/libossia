@@ -1,0 +1,11 @@
+max objectfile ossia.parameter ossia-max;
+max objectfile ossia.model ossia-max;
+max objectfile ossia.view ossia-max;
+max objectfile ossia.device ossia-max;
+max objectfile ossia.remote ossia-max;
+
+max oblist ossia-max ossia.parameter;
+max oblist ossia-max ossia.model;
+max oblist ossia-max ossia.view;
+max oblist ossia-max ossia.remote;
+max oblist ossia-max ossia.device;
