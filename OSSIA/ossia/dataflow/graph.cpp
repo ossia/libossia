@@ -517,5 +517,9 @@ midi_generic_address::~midi_generic_address()
 {
 
 }
+texture_generic_address::~texture_generic_address()
+{
+
+}
 
 }

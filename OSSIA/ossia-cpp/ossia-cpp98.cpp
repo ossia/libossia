@@ -70,16 +70,19 @@ void value::set_bool(bool v) { *this = std::move(v); }
 void value::set_list(std::vector<value> v) { *this = std::move(v); }
 void value::set_string(std::string v) { *this = std::move(v); }
 
-value::value(value&& v): impl{new ossia::value{std::move(*v.impl)}}
+#if defined(OSSIA_CPP_CXX11)
+value::value(opp::value&& v)
+    : impl{new ossia::value{std::move(*v.impl)}}
 {
 
 }
 
-value& value::operator=(value&& v)
+value& value::operator=(opp::value&& v)
 {
   *impl = std::move(*v.impl);
   return *this;
 }
+#endif
 
 value::value(const ossia::value& v): impl{new ossia::value(v)} { }
 

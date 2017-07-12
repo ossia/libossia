@@ -22,8 +22,6 @@ if(APPLE)
         include_directories("${FILE_H_DIR}")
     endif()
 endif()
-include_directories(src)
-include_directories(${MAXSDK_MAX_INCLUDE_DIR})
 
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
@@ -54,9 +52,12 @@ use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY})
-target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${MAXSDK_MAX_INCLUDE_DIR})
 
-if(NOT MSVC)
+if(APPLE)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++1z)
 endif()
 
@@ -81,7 +82,7 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/help"
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples"
         DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
         COMPONENT ${PROJECT_NAME})
-
 install(TARGETS ${PROJECT_NAME}
+        BUNDLE RUNTIME LIBRARY
         DESTINATION "${OSSIA_MAX_INSTALL_FOLDER}"
         COMPONENT ${PROJECT_NAME})
