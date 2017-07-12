@@ -38,7 +38,7 @@ void* ossia_model_new(t_symbol *name, long argc, t_atom *argv)
     if (x)
     {
         // make outlets
-        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump client state
+        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump model state
         
         x->m_description = _sym_nothing;
         x->m_tags = _sym_nothing;

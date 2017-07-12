@@ -42,7 +42,7 @@ void *ossia_device_new(t_symbol *name, long argc, t_atom *argv)
     if (x)
     {
         // make outlets
-        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump client state
+        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump device state
         
         // parse arguments
         long attrstart = attr_args_offset(argc, argv);

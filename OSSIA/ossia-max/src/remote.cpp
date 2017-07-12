@@ -46,7 +46,7 @@ void *ossia_remote_new(t_symbol *name, long argc, t_atom *argv)
     if (x)
     {
         // make outlets
-        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump parameter state
+        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump remote state
         x->m_set_out = outlet_new(x, NULL);                         // anything outlet to output data for ui
         x->m_data_out = outlet_new(x, NULL);						// anything outlet to output data
         

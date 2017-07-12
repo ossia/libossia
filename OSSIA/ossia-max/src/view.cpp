@@ -36,7 +36,7 @@ void *ossia_view_new(t_symbol *name, long argc, t_atom *argv)
     if (x)
     {
         // make outlets
-        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump client state
+        x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump view state
         
 //        x->m_clock = clock_new(x, (method)t_object_base::tick);
         x->m_regclock = clock_new(x, (method)object_register<t_view>);

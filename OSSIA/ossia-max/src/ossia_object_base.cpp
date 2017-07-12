@@ -20,6 +20,9 @@ namespace max {
                 if (argv->a_type == A_SYM)
                     x->m_node->get_address()->push_value(std::string(atom_getsym(argv)->s_name));
                 
+                else if (argv->a_type == A_LONG)
+                    x->m_node->get_address()->push_value((int32_t)atom_getlong(argv));
+                
                 else if (argv->a_type == A_FLOAT)
                     x->m_node->get_address()->push_value(atom_getfloat(argv));
             }

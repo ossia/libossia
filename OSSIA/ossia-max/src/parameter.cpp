@@ -225,7 +225,7 @@ namespace ossia {
                 localAddress = m_node->create_address(ossia::val_type::FLOAT);
                 
                 if (m_default[0].a_type == A_FLOAT)
-                    ossia::net::set_default_value(localAddress->getNode(), m_default[0].a_w.w_float);
+                    ossia::net::set_default_value(localAddress->getNode(), (float)m_default[0].a_w.w_float);
             }
             else if (m_type == gensym("string"))
             {
