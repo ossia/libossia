@@ -43,8 +43,8 @@ case "$TRAVIS_OS_NAME" in
     brew link --force boost cmake ninja qt5
 
     if [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
-      mkdir -p "~/Documents/Max 7/Packages"
-      cd "~/Documents/Max 7/Packages"
+      mkdir -p "$HOME/Documents/Max 7/Packages"
+      cd "$HOME/Documents/Max 7/Packages"
       MAXSDKARCHIVE=max-sdk-7.3.3.zip
       wget --quiet "https://cycling74.s3.amazonaws.com/download/$MAXSDKARCHIVE"
       tar xf "$MAXSDKARCHIVE"
