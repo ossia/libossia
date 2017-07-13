@@ -12,8 +12,8 @@ struct t_model : t_obj_base
     bool do_registration(ossia::net::node_base*  node);
     bool unregister();
 
-    static std::vector<t_model*>& quarantine(){
-        static std::vector<t_model*> quarantine;
+    static ossia::safe_vector<t_model*>& quarantine(){
+        static ossia::safe_vector<t_model*> quarantine;
         return quarantine;
     }
     t_symbol* x_tags;
@@ -28,13 +28,13 @@ struct t_model : t_obj_base
         }
     }
 
-    static std::vector<t_model*>& rename(){
-        static std::vector<t_model*> rename;
+    static ossia::safe_vector<t_model*>& rename(){
+        static ossia::safe_vector<t_model*> rename;
         return rename;
     }
 
     bool isRenamed(t_model* x){
-      return ossia::contains(x->rename(),x);
+        return x->rename().contains(x);
     }
 
     void renaming(t_model* x){
@@ -42,7 +42,7 @@ struct t_model : t_obj_base
     }
 
     void derenaming(t_model* x){
-        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+        x->rename().remove_all(x);
     }
 };
 

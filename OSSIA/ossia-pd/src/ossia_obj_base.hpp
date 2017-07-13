@@ -1,5 +1,6 @@
 #pragma once
 #include "ossia-pd.hpp"
+#include <ossia/detail/safe_vec.hpp>
 
 namespace ossia { namespace pd {
 

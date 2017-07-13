@@ -234,8 +234,6 @@ public:
     }
 };
 
-template<typename T> auto copy(const T& v) { return v; }
-
 /**
  * @brief register_quarantinized Try to register all quarantinized objects
  */

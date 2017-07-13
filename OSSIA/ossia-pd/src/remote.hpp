@@ -19,8 +19,8 @@ struct t_remote : t_obj_base
         }
     }
 
-    static std::vector<t_remote*>& quarantine(){
-        static std::vector<t_remote*> quarantine;
+    static ossia::safe_vector<t_remote*>& quarantine(){
+        static ossia::safe_vector<t_remote*> quarantine;
         return quarantine;
     }
 };

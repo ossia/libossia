@@ -26,8 +26,8 @@ struct t_param : t_obj_base
     int x_priority;
     bool x_hidden;
 
-    static std::vector<t_param*>& quarantine(){
-        static std::vector<t_param*> quarantine;
+    static ossia::safe_vector<t_param*>& quarantine(){
+        static ossia::safe_vector<t_param*> quarantine;
         return quarantine;
     }
 
@@ -38,13 +38,13 @@ struct t_param : t_obj_base
         obj_quarantining<t_param>(this);
     }
 
-    static std::vector<t_param*>& rename(){
-        static std::vector<t_param*> rename;
+    static ossia::safe_vector<t_param*>& rename(){
+        static ossia::safe_vector<t_param*> rename;
         return rename;
     }
 
     bool isRenamed(t_param* x){
-      return ossia::contains(x->rename(),x);
+      return x->rename().contains(x);
     }
 
     void renaming(t_param* x){
@@ -52,7 +52,7 @@ struct t_param : t_obj_base
     }
 
     void derenaming(t_param* x){
-        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+        x->rename().remove_all(x);
     }
 };
 
