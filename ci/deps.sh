@@ -51,8 +51,8 @@ case "$TRAVIS_OS_NAME" in
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost /usr/include/
-        sudo rm -rf /tmp/root/usr/include/boost
-        sudo cp -R /opt/boost /tmp/root/usr/include/
+        sudo rm -rf /tmp/rpi/root/usr/include/boost
+        sudo cp -R /opt/boost /tmp/rpi/root/usr/include/
     fi
   ;;
   osx)
