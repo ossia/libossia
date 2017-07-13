@@ -15,7 +15,7 @@ bool t_param :: register_node(ossia::net::node_base* node){
     bool res = do_registration(node);
     if (res) {
         obj_dequarantining<t_param>(this);
-        for (auto remote : t_remote::quarantine()){
+        for (auto remote : copy(t_remote::quarantine())){
             obj_register<t_remote>(static_cast<t_remote*>(remote));
         }
     } else obj_quarantining<t_param>(this);
@@ -170,7 +170,7 @@ bool t_param :: unregister(){
     if (x_node) {
         if (x_node->get_parent()) x_node->get_parent()->remove_child(*x_node);
         x_node = nullptr;
-        for (auto remote : t_remote::quarantine()){
+        for (auto remote : copy(t_remote::quarantine())){
             obj_register<t_remote>(static_cast<t_remote*>(remote));
         }
     }
