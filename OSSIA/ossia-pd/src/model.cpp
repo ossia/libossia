@@ -144,12 +144,6 @@ static void model_free(t_model *x)
     clock_free(x->x_regclock);
 }
 
-static void model_bind(t_model* x, t_symbol* address){
-    x->x_name = address;
-    if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
-    obj_register(x);
-}
-
 extern "C" void setup_ossia0x2emodel(void)
 {
     t_eclass *c = eclass_new("ossia.model", (method)model_new, (method)model_free, (short)sizeof(t_model), CLASS_DEFAULT, A_GIMME, 0);
@@ -157,7 +151,6 @@ extern "C" void setup_ossia0x2emodel(void)
     if(c)
     {
         eclass_addmethod(c, (method) obj_dump<t_model>,   "dump",  A_NULL,   0);
-        eclass_addmethod(c, (method) model_bind,          "bind",  A_SYMBOL, 0);
 
         CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
         CLASS_ATTR_SYMBOL(c, "tags",        0, t_model, x_tags);
