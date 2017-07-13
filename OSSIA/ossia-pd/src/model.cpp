@@ -145,58 +145,60 @@ ossia::safe_vector<t_model*>& t_model::rename()
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
   t_model* x = (t_model*)eobj_new(model_class);
-
-  t_binbuf* d = binbuf_via_atoms(argc, argv);
-  if (x && d)
+  if(x)
   {
-    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
-
-    if (argc != 0 && argv[0].a_type == A_SYMBOL)
+    t_binbuf* d = binbuf_via_atoms(argc, argv);
+    if (d)
     {
-      x->x_name = atom_getsymbol(argv);
-      if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-        x->x_absolute = true;
-    }
-    else
-    {
-      x->x_name = gensym("untitledModel");
-      pd_error(x, "You have to pass a name as the first argument");
-    }
+      x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+      x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
 
-    x->x_description = gensym("");
-    x->x_tags = gensym("");
-
-    ebox_attrprocess_viabinbuf(x, d);
-
-    // we need to delay registration because object may use patcher hierarchy
-    // to check address validity
-    // and object will be added to patcher's objects list (aka canvas g_list)
-    // after model_new() returns.
-    // 0 ms delay means that it will be perform on next clock tick
-    clock_delay(x->x_regclock, 0);
-  }
-
-  t_gobj* list = x->x_obj.o_canvas->gl_list;
-  while (list)
-  {
-    std::string current = list->g_pd->c_name->s_name;
-    if (current == "ossia.model")
-    {
-      if (x != (t_model*)&list->g_pd)
+      if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
-        pd_error(
-            &list->g_pd,
-            "Only one [ossia.model] intance per patcher is allowed.");
-        model_free(x);
-        x = nullptr;
-        break;
+        x->x_name = atom_getsymbol(argv);
+        if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
+          x->x_absolute = true;
       }
+      else
+      {
+        x->x_name = gensym("untitledModel");
+        pd_error(x, "You have to pass a name as the first argument");
+      }
+
+      x->x_description = gensym("");
+      x->x_tags = gensym("");
+
+      ebox_attrprocess_viabinbuf(x, d);
+
+      // we need to delay registration because object may use patcher hierarchy
+      // to check address validity
+      // and object will be added to patcher's objects list (aka canvas g_list)
+      // after model_new() returns.
+      // 0 ms delay means that it will be perform on next clock tick
+      clock_delay(x->x_regclock, 0);
     }
-    list = list->g_next;
+
+    t_gobj* list = x->x_obj.o_canvas->gl_list;
+    while (list)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == "ossia.model")
+      {
+        if (x != (t_model*)&list->g_pd)
+        {
+          pd_error(
+                &list->g_pd,
+                "Only one [ossia.model] intance per patcher is allowed.");
+          model_free(x);
+          x = nullptr;
+          break;
+        }
+      }
+      list = list->g_next;
+    }
   }
 
-  return (x);
+  return x;
 }
 
 static void model_free(t_model* x)
