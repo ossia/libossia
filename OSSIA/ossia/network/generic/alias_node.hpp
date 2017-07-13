@@ -27,13 +27,12 @@ public:
 
 protected:
   std::unique_ptr<node_base> make_child(const std::string& name) override;
-  void removing_child(node_base& ) override;
+  void removing_child(node_base&) override;
 
 private:
   void onDeletion(const ossia::net::node_base& orig);
 
   ossia::net::node_base* m_origin{};
 };
-
 }
 }

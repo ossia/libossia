@@ -18,11 +18,13 @@ struct time_value;
 class OSSIA_EXPORT time_process
 {
   friend class time_constraint;
+
 public:
   /*! destructor */
   virtual ~time_process();
 
-  /*! get a #StateElement from the process on its parent #time_constraint offset
+  /*! get a #StateElement from the process on its parent #time_constraint
+   offset
    \details don't call offset when the parent #time_constraint is running
    \param date offset date
    \param pos offset position (in [0;1] relative to parent nominal duration)
@@ -88,7 +90,6 @@ public:
   //! True if the process is enabled.
   bool enabled() const;
 
-
   /**
    * @brief parent The parent time_constraint of the process
    *
@@ -100,17 +101,17 @@ public:
    */
   time_constraint* parent() const;
 
-  protected:
-    //! Reimplement this to have a special behaviour on mute
-    virtual void mute_impl(bool);
-    ossia::time_value m_lastDate{ossia::Infinite};
-    // used to filter multiple state calls at the
-    // same time (use date as position can be always
-    // 0 in infinite duration case)
+protected:
+  //! Reimplement this to have a special behaviour on mute
+  virtual void mute_impl(bool);
+  ossia::time_value m_lastDate{ossia::Infinite};
+  // used to filter multiple state calls at the
+  // same time (use date as position can be always
+  // 0 in infinite duration case)
 
-  private:
-    time_constraint* m_parent{};
-    bool m_unmuted = true;
-    bool m_enabled = true;
+private:
+  time_constraint* m_parent{};
+  bool m_unmuted = true;
+  bool m_enabled = true;
 };
 }

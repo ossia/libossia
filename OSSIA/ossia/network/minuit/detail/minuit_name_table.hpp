@@ -1,7 +1,7 @@
 #pragma once
+#include <ossia/detail/string_view.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <array>
-#include <ossia/detail/string_view.hpp>
 #include <string>
 namespace ossia
 {

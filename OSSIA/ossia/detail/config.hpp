@@ -2,13 +2,16 @@
 #include <ossia-config.hpp>
 #include <type_traits>
 
-#if defined(__cplusplus) && ((__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
+#if defined(__cplusplus) \
+    && ((__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
 #define OSSIA_CXX11 1
 #endif
-#if defined(__cplusplus) && ((__cplusplus >= 201403L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
+#if defined(__cplusplus) \
+    && ((__cplusplus >= 201403L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
 #define OSSIA_CXX14 1
 #endif
-#if defined(__cplusplus) && ((__cplusplus >= 201703L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
+#if defined(__cplusplus) \
+    && ((__cplusplus >= 201703L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
 #define OSSIA_CXX17 1
 #endif
 
@@ -30,14 +33,14 @@
 #if defined(_MSC_VER) || defined(__cpp_lib_void_t)
 namespace ossia
 {
-  template<typename... Args>
-  using void_t = std::void_t<Args...>;
+template <typename... Args>
+using void_t = std::void_t<Args...>;
 }
 #else
 namespace ossia
 {
-  template<typename... Args>
-  using void_t = void;
+template <typename... Args>
+using void_t = void;
 }
 #endif
 
@@ -51,15 +54,15 @@ namespace ossia
 #define SPDLOG_TRACE_ON
 
 #if !defined(SPDLOG_FMT_EXTERNAL)
-  #define SPDLOG_FMT_EXTERNAL
+#define SPDLOG_FMT_EXTERNAL
 #endif
 
 #if !defined(FMT_HEADER_ONLY)
-  #define FMT_HEADER_ONLY
+#define FMT_HEADER_ONLY
 #endif
 
 #if !defined(RAPIDJSON_HAS_STDSTRING)
-  #define RAPIDJSON_HAS_STDSTRING 1
+#define RAPIDJSON_HAS_STDSTRING 1
 #endif
 
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
@@ -68,7 +71,7 @@ namespace ossia
 #define _WEBSOCKETPP_CPP11_STRICT_ 1
 
 #if !defined(ASIO_STANDALONE)
-  #define ASIO_STANDALONE 1
+#define ASIO_STANDALONE 1
 #endif
 
 #if !defined(BOOST_REGEX_NO_LIB)

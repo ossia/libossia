@@ -1,26 +1,39 @@
 #ifndef OSSIA_CPP98_HPP_2017_07_07
 #define OSSIA_CPP98_HPP_2017_07_07
+#include <ossia_export.h>
 #include <string>
 #include <vector>
-#include <ossia_export.h>
 #if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
 #define OSSIA_CPP_CXX11
 #endif
-namespace ossia {
-  class value;
-  namespace net {
-    class node_base;
-    class address_base;
-    class device_base;
-  }
+namespace ossia
+{
+class value;
+namespace net
+{
+class node_base;
+class address_base;
+class device_base;
+}
 }
 namespace opp
 {
 enum access_mode
-{ Get, Set, Bi };
+{
+  Get,
+  Set,
+  Bi
+};
 
 enum bounding_mode
-{ Free, Clip, Wrap, Fold, Low, High };
+{
+  Free,
+  Clip,
+  Wrap,
+  Fold,
+  Low,
+  High
+};
 
 class node;
 class oscquery_server;
@@ -203,6 +216,7 @@ public:
   oscquery_server(std::string name, int wsPort = 5678, int oscPort = 1234);
   ~oscquery_server();
   node get_root_node() const;
+
 private:
   ossia::net::device_base* impl;
 };
@@ -210,12 +224,13 @@ private:
 class OSSIA_EXPORT oscquery_mirror
 {
 public:
-  oscquery_mirror(std::string name,std::string host = "ws://127.0.0.1:5678");
+  oscquery_mirror(std::string name, std::string host = "ws://127.0.0.1:5678");
   ~oscquery_mirror();
 
   node get_root_node() const;
   void refresh();
   void reconnect(std::string name, std::string host);
+
 private:
   ossia::net::device_base* impl;
 };

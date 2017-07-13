@@ -1,8 +1,8 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
-#include <ossia/network/exceptions.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/exceptions.hpp>
 #include <exception>
 
 namespace ossia
@@ -80,7 +80,7 @@ ossia::string_view to_minuit_type_text(const ossia::value& val);
 inline ossia::string_view to_minuit_type_text(ossia::val_type val)
 {
   // integer, decimal, string, generic, boolean, none, array.
-  switch(val)
+  switch (val)
   {
     case val_type::IMPULSE:
       return make_string_view("none");

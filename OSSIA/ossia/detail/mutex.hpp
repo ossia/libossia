@@ -2,15 +2,16 @@
 #include <ossia/detail/config.hpp>
 #include <mutex>
 #if !defined(__APPLE__)
-  #define OSSIA_HAS_SHARED_MUTEX
-  #include <shared_mutex>
+#define OSSIA_HAS_SHARED_MUTEX
+#include <shared_mutex>
 #else
-  #include <Availability.h>
-  #include <AvailabilityMacros.h>
-  #if defined(MAC_OS_X_VERSION_10_12) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
-    #include <shared_mutex>
-    #define OSSIA_HAS_SHARED_MUTEX
-  #endif
+#include <Availability.h>
+#include <AvailabilityMacros.h>
+#if defined(MAC_OS_X_VERSION_10_12) \
+    && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
+#include <shared_mutex>
+#define OSSIA_HAS_SHARED_MUTEX
+#endif
 #endif
 namespace ossia
 {

@@ -10,8 +10,7 @@ namespace expressions
  * @brief expression_bool : a constant boolean value.
  * @see expression.hpp
  */
-class OSSIA_EXPORT expression_bool final :
-    public expression_callback_container
+class OSSIA_EXPORT expression_bool final : public expression_callback_container
 {
   bool m_result{};
 

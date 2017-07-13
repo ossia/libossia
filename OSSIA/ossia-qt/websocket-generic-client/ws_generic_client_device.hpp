@@ -8,15 +8,16 @@ namespace ossia
 namespace net
 {
 class ws_generic_client_protocol;
-class OSSIA_EXPORT ws_generic_client_device final :
-    public ossia::net::device_base,
-    public ws_generic_client_node
+class OSSIA_EXPORT ws_generic_client_device final
+    : public ossia::net::device_base,
+      public ws_generic_client_node
 {
 public:
   ws_generic_client_device() = delete;
   ws_generic_client_device(const ws_generic_client_device&) = delete;
   ws_generic_client_device(ws_generic_client_device&&) = delete;
-  ws_generic_client_device& operator=(const ws_generic_client_device&) = delete;
+  ws_generic_client_device& operator=(const ws_generic_client_device&)
+      = delete;
   ws_generic_client_device& operator=(ws_generic_client_device&&) = delete;
 
   ws_generic_client_device(
@@ -37,6 +38,5 @@ public:
 
   ~ws_generic_client_device();
 };
-
 }
 }

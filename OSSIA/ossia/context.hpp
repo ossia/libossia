@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia_export.h>
 #include <memory>
+#include <ossia_export.h>
 #include <vector>
 
 namespace spdlog

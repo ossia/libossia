@@ -2,10 +2,10 @@
 #include <ossia/editor/expression/expression_atom.hpp>
 #include <ossia/editor/expression/expression_bool.hpp>
 #include <ossia/editor/expression/expression_composition.hpp>
+#include <ossia/editor/expression/expression_fwd.hpp>
+#include <ossia/editor/expression/expression_generic.hpp>
 #include <ossia/editor/expression/expression_not.hpp>
 #include <ossia/editor/expression/expression_pulse.hpp>
-#include <ossia/editor/expression/expression_generic.hpp>
-#include <ossia/editor/expression/expression_fwd.hpp>
 
 /**
  * @file expression.hpp
@@ -55,8 +55,9 @@ namespace expressions
  */
 OSSIA_EXPORT bool evaluate(const expression_base& e);
 OSSIA_EXPORT inline bool evaluate(const expression_ptr& e)
-{ return evaluate(*e); }
-
+{
+  return evaluate(*e);
+}
 
 /**
  * @brief update
@@ -67,10 +68,13 @@ OSSIA_EXPORT inline bool evaluate(const expression_ptr& e)
  */
 OSSIA_EXPORT void update(const expression_base& e);
 OSSIA_EXPORT inline void update(const expression_ptr& e)
-{ update(*e); }
+{
+  update(*e);
+}
 
 /**
- * @brief operator==(const expression_base& lhs, const expression_base& rhs) Compares two expressions.
+ * @brief operator==(const expression_base& lhs, const expression_base& rhs)
+ * Compares two expressions.
  *
  * Two expressions are comparable if they have all the same terms.
  */
@@ -85,7 +89,6 @@ operator!=(const expression_base& lhs, const expression_base& rhs);
 OSSIA_EXPORT expression_callback_iterator
 add_callback(expression_base&, expression_result_callback);
 
-
 /**
  * @brief remove_callback Remove a callback to an expression.
  */
@@ -99,7 +102,8 @@ remove_callback(expression_base&, expression_callback_iterator);
 OSSIA_EXPORT std::size_t callback_count(expression_base&);
 
 /**
-  \brief expression_true Convenience constant expression always evaluating to true.
+  \brief expression_true Convenience constant expression always evaluating to
+  true.
  */
 OSSIA_EXPORT const expression_base& expression_true();
 
@@ -107,8 +111,6 @@ OSSIA_EXPORT const expression_base& expression_true();
   \brief false Convenience constant expression always evaluating to false.
  */
 OSSIA_EXPORT const expression_base& expression_false();
-
-
 
 /**
  * The following functions are factories used to create
@@ -136,7 +138,6 @@ OSSIA_EXPORT inline expression_ptr make_expression_false()
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_bool>, false);
 }
-
 
 /**
  * @brief make_expression_atom

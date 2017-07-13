@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
 #include <ossia/editor/state/message.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 
@@ -18,16 +18,15 @@ namespace midi
 {
 const std::string& midi_node_name(midi_size_t i);
 
-class OSSIA_EXPORT note_on_N_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT note_on_N_node final : public midi_node, public midi_address
 {
 public:
   note_on_N_node(
-      midi_size_t channel,
-      midi_size_t note, midi_device& aDevice, ossia::net::node_base& aParent)
+      midi_size_t channel, midi_size_t note, midi_device& aDevice,
+      ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
-      , midi_address{address_info{channel, address_info::Type::NoteOn_N, note}, *this}
+      , midi_address{address_info{channel, address_info::Type::NoteOn_N, note},
+                     *this}
   {
     m_name = midi_node_name(note);
     m_address.reset(this);
@@ -40,16 +39,16 @@ public:
   }
 };
 
-class OSSIA_EXPORT note_off_N_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT note_off_N_node final : public midi_node,
+                                           public midi_address
 {
 public:
   note_off_N_node(
-          midi_size_t channel,
-      midi_size_t note, midi_device& aDevice, ossia::net::node_base& aParent)
+      midi_size_t channel, midi_size_t note, midi_device& aDevice,
+      ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
-      , midi_address{address_info{channel, address_info::Type::NoteOff_N, note}, *this}
+      , midi_address{
+            address_info{channel, address_info::Type::NoteOff_N, note}, *this}
   {
     m_name = midi_node_name(note);
     m_address.reset(this);
@@ -62,16 +61,15 @@ public:
   }
 };
 
-class OSSIA_EXPORT control_N_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT control_N_node final : public midi_node, public midi_address
 {
 public:
   control_N_node(
-      midi_size_t channel,
-      midi_size_t param, midi_device& aDevice, ossia::net::node_base& aParent)
+      midi_size_t channel, midi_size_t param, midi_device& aDevice,
+      ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
-      , midi_address{address_info{channel, address_info::Type::CC_N, param}, *this}
+      , midi_address{address_info{channel, address_info::Type::CC_N, param},
+                     *this}
   {
     m_name = midi_node_name(param);
     m_address.reset(this);
@@ -84,16 +82,15 @@ public:
   }
 };
 
-class OSSIA_EXPORT program_N_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT program_N_node final : public midi_node, public midi_address
 {
 public:
   program_N_node(
-      midi_size_t channel,
-      midi_size_t param, midi_device& aDevice, ossia::net::node_base& aParent)
+      midi_size_t channel, midi_size_t param, midi_device& aDevice,
+      ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
-      , midi_address{address_info{channel, address_info::Type::PC_N, param}, *this}
+      , midi_address{address_info{channel, address_info::Type::PC_N, param},
+                     *this}
   {
     m_name = midi_node_name(param);
     m_address.reset(this);
@@ -106,24 +103,22 @@ public:
   }
 };
 
-class OSSIA_EXPORT program_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT program_node final : public midi_node, public midi_address
 {
 public:
-  program_node(midi_size_t channel, midi_device& aDevice) :
-      midi_node(aDevice, aDevice)
-    , midi_address{address_info{channel, address_info::Type::PC, 0}, *this}
+  program_node(midi_size_t channel, midi_device& aDevice)
+      : midi_node(aDevice, aDevice)
+      , midi_address{address_info{channel, address_info::Type::PC, 0}, *this}
   {
-      using namespace std::literals;
-      m_name = "program"s;
-      m_address.reset(this);
-      m_children.reserve(128);
-      for (int i = 0; i < 128; i++)
-      {
-        auto ptr = std::make_unique<program_N_node>(channel, i, m_device, *this);
-        m_children.push_back(std::move(ptr));
-      }
+    using namespace std::literals;
+    m_name = "program"s;
+    m_address.reset(this);
+    m_children.reserve(128);
+    for (int i = 0; i < 128; i++)
+    {
+      auto ptr = std::make_unique<program_N_node>(channel, i, m_device, *this);
+      m_children.push_back(std::move(ptr));
+    }
   }
 
   ~program_node()
@@ -133,24 +128,23 @@ public:
   }
 };
 
-class OSSIA_EXPORT note_on_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT note_on_node final : public midi_node, public midi_address
 {
 public:
-  note_on_node(midi_size_t channel, midi_device& aDevice) :
-      midi_node(aDevice, aDevice)
-    , midi_address{address_info{channel, address_info::Type::NoteOn, 0}, *this}
+  note_on_node(midi_size_t channel, midi_device& aDevice)
+      : midi_node(aDevice, aDevice)
+      , midi_address{address_info{channel, address_info::Type::NoteOn, 0},
+                     *this}
   {
-      using namespace std::literals;
-      m_name = "on"s;
-      m_address.reset(this);
-      m_children.reserve(128);
-      for (int i = 0; i < 128; i++)
-      {
-        auto ptr = std::make_unique<note_on_N_node>(channel, i, m_device, *this);
-        m_children.push_back(std::move(ptr));
-      }
+    using namespace std::literals;
+    m_name = "on"s;
+    m_address.reset(this);
+    m_children.reserve(128);
+    for (int i = 0; i < 128; i++)
+    {
+      auto ptr = std::make_unique<note_on_N_node>(channel, i, m_device, *this);
+      m_children.push_back(std::move(ptr));
+    }
   }
 
   ~note_on_node()
@@ -160,25 +154,25 @@ public:
   }
 };
 
-class OSSIA_EXPORT note_off_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT note_off_node final : public midi_node, public midi_address
 {
 public:
-  note_off_node(midi_size_t channel, midi_device& aDevice) :
-      midi_node(aDevice, aDevice)
-    , midi_address{address_info{channel, address_info::Type::NoteOff, 0}, *this}
+  note_off_node(midi_size_t channel, midi_device& aDevice)
+      : midi_node(aDevice, aDevice)
+      , midi_address{address_info{channel, address_info::Type::NoteOff, 0},
+                     *this}
   {
-      using namespace std::literals;
-      m_name = "off"s;
-      m_address.reset(this);
+    using namespace std::literals;
+    m_name = "off"s;
+    m_address.reset(this);
 
-      m_children.reserve(128);
-      for (int i = 0; i < 128; i++)
-      {
-        auto ptr = std::make_unique<note_off_N_node>(channel, i, m_device, *this);
-        m_children.push_back(std::move(ptr));
-      }
+    m_children.reserve(128);
+    for (int i = 0; i < 128; i++)
+    {
+      auto ptr
+          = std::make_unique<note_off_N_node>(channel, i, m_device, *this);
+      m_children.push_back(std::move(ptr));
+    }
   }
 
   ~note_off_node()
@@ -188,25 +182,23 @@ public:
   }
 };
 
-class OSSIA_EXPORT control_node final
-    : public midi_node
-    , public midi_address
+class OSSIA_EXPORT control_node final : public midi_node, public midi_address
 {
 public:
-  control_node(midi_size_t channel, midi_device& aDevice) :
-      midi_node(aDevice, aDevice)
-    , midi_address{address_info{channel, address_info::Type::CC, 0}, *this}
+  control_node(midi_size_t channel, midi_device& aDevice)
+      : midi_node(aDevice, aDevice)
+      , midi_address{address_info{channel, address_info::Type::CC, 0}, *this}
   {
-      using namespace std::literals;
-      m_name = "control"s;
-      m_address.reset(this);
+    using namespace std::literals;
+    m_name = "control"s;
+    m_address.reset(this);
 
-      m_children.reserve(128);
-      for (int i = 0; i < 128; i++)
-      {
-        auto ptr = std::make_unique<control_N_node>(channel, i, m_device, *this);
-        m_children.push_back(std::move(ptr));
-      }
+    m_children.reserve(128);
+    for (int i = 0; i < 128; i++)
+    {
+      auto ptr = std::make_unique<control_N_node>(channel, i, m_device, *this);
+      m_children.push_back(std::move(ptr));
+    }
   }
 
   ~control_node()
@@ -222,43 +214,51 @@ class OSSIA_EXPORT channel_node final : public midi_node
 
 public:
   channel_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice)
-      , m_channel{channel}
+      : midi_node(aDevice, aDevice), m_channel{channel}
   {
-      m_name = midi_node_name(channel);
-      m_children.reserve(4);
-      {
-        m_children.push_back(std::make_unique<note_on_node>(m_channel, m_device));
-      }
-      {
-        m_children.push_back(std::make_unique<note_off_node>(m_channel, m_device));
-      }
-      {
-        m_children.push_back(std::make_unique<control_node>(m_channel, m_device));
-      }
-      {
-        m_children.push_back(std::make_unique<program_node>(m_channel, m_device));
-      }
+    m_name = midi_node_name(channel);
+    m_children.reserve(4);
+    {
+      m_children.push_back(
+          std::make_unique<note_on_node>(m_channel, m_device));
+    }
+    {
+      m_children.push_back(
+          std::make_unique<note_off_node>(m_channel, m_device));
+    }
+    {
+      m_children.push_back(
+          std::make_unique<control_node>(m_channel, m_device));
+    }
+    {
+      m_children.push_back(
+          std::make_unique<program_node>(m_channel, m_device));
+    }
   }
 
-  ~channel_node() { about_to_be_deleted(*this); }
+  ~channel_node()
+  {
+    about_to_be_deleted(*this);
+  }
 
   std::array<ossia::message, 2> note_on(midi_size_t note, midi_size_t vel)
   {
-      const auto& c = children();
-      return {{
-          ossia::message{ *c[0]->get_address(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
-          ossia::message{ *c[0]->children()[note]->get_address(), int32_t{vel}}
-      }};
+    const auto& c = children();
+    return {{ossia::message{
+                 *c[0]->get_address(),
+                 std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+             ossia::message{*c[0]->children()[note]->get_address(),
+                            int32_t{vel}}}};
   }
 
   std::array<ossia::message, 2> note_off(midi_size_t note, midi_size_t vel)
   {
     const auto& c = children();
-      return {{
-          ossia::message{*c[1]->get_address(), std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
-          ossia::message{*c[1]->children()[note]->get_address(), int32_t{vel}}
-      }};
+    return {{ossia::message{
+                 *c[1]->get_address(),
+                 std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+             ossia::message{*c[1]->children()[note]->get_address(),
+                            int32_t{vel}}}};
   }
 };
 }

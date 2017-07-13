@@ -1,17 +1,17 @@
 #pragma once
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/base/address.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/domain/domain.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
-#include <ossia/detail/optional.hpp>
 #include <ossia/detail/mutex.hpp>
+#include <ossia/detail/optional.hpp>
 #include <thread>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace ossia
 {
@@ -21,7 +21,8 @@ namespace net
 struct address_data;
 class protocol_base;
 
-//! Default implementation for address_base, with everything expected and mutable
+//! Default implementation for address_base, with everything expected and
+//! mutable
 class OSSIA_EXPORT generic_address : public ossia::net::address_base
 {
 protected:
@@ -44,11 +45,8 @@ protected:
   ossia::value m_previousValue; //! Used for repetition filter.
 
 public:
-  generic_address(
-      ossia::net::node_base& node_base);
-  generic_address(
-      const address_data&,
-      ossia::net::node_base& node_base);
+  generic_address(ossia::net::node_base& node_base);
+  generic_address(const address_data&, ossia::net::node_base& node_base);
 
   ~generic_address();
 
@@ -82,7 +80,8 @@ public:
   ossia::net::generic_address& set_domain(const ossia::domain&) final override;
 
   ossia::bounding_mode get_bounding() const final override;
-  ossia::net::generic_address& set_bounding(ossia::bounding_mode) final override;
+  ossia::net::generic_address&
+      set_bounding(ossia::bounding_mode) final override;
 
   ossia::repetition_filter get_repetition_filter() const final override;
   ossia::net::generic_address&

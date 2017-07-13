@@ -12,7 +12,6 @@ public:
   qml_node(QQuickItem* parent = nullptr);
   ~qml_node();
 
-
   void resetNode() override;
 
 public slots:

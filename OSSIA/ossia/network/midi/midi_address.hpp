@@ -62,11 +62,13 @@ struct address_info
         return "/" + boost::lexical_cast<std::string>(channel) + "/note/off/"
                + boost::lexical_cast<std::string>(note);
       case Type::CC_N:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/CC/" + boost::lexical_cast<std::string>(note);
+        return "/" + boost::lexical_cast<std::string>(channel) + "/CC/"
+               + boost::lexical_cast<std::string>(note);
       case Type::PC:
         return "/" + boost::lexical_cast<std::string>(channel) + "/PC";
       case Type::PC_N:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/PC/" + boost::lexical_cast<std::string>(note);
+        return "/" + boost::lexical_cast<std::string>(channel) + "/PC/"
+               + boost::lexical_cast<std::string>(note);
     }
     return {};
   }

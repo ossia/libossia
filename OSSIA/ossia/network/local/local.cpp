@@ -28,7 +28,8 @@ bool multiplex_protocol::push(const ossia::net::address_base& address)
   return b;
 }
 
-bool multiplex_protocol::observe(ossia::net::address_base& address, bool enable)
+bool multiplex_protocol::observe(
+    ossia::net::address_base& address, bool enable)
 {
   bool b = true;
   for (auto& proto : m_protocols)
@@ -49,11 +50,11 @@ void multiplex_protocol::set_device(device_base& dev)
 
 static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
 {
-  for(auto& cld : n.children())
+  for (auto& cld : n.children())
   {
-    if(auto addr = cld->get_address())
+    if (auto addr = cld->get_address())
     {
-      if(!addr->callbacks_empty())
+      if (!addr->callbacks_empty())
       {
         proto.observe_quietly(*addr, true);
       }

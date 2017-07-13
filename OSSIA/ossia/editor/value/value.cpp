@@ -1,48 +1,40 @@
-#include <ossia/editor/curve/curve.hpp>
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/value/value_comparison.hpp>
-#include <ossia/editor/value/value_algorithms.hpp>
-#include <ossia/editor/value/value_traits.hpp>
-#include <ossia/editor/value/detail/value_conversion_impl.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/base/node.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/value/detail/value_conversion_impl.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/editor/value/value_algorithms.hpp>
+#include <ossia/editor/value/value_comparison.hpp>
+#include <ossia/editor/value/value_traits.hpp>
+#include <ossia/network/base/node.hpp>
 #include <sstream>
 
 namespace ossia
 {
 
+template OSSIA_EXPORT impulse convert<impulse>(const ossia::value& val);
+template OSSIA_EXPORT int convert<int>(const ossia::value& val);
+template OSSIA_EXPORT float convert<float>(const ossia::value& val);
+template OSSIA_EXPORT double convert<double>(const ossia::value& val);
+template OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
+template OSSIA_EXPORT char convert<char>(const ossia::value& val);
+template OSSIA_EXPORT std::string
+convert<std::string>(const ossia::value& val);
+template OSSIA_EXPORT std::vector<ossia::value>
+convert<std::vector<ossia::value>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 2>
+convert<std::array<float, 2>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 3>
+convert<std::array<float, 3>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 4>
+convert<std::array<float, 4>>(const ossia::value& val);
 
-template
-OSSIA_EXPORT impulse convert<impulse>(const ossia::value& val);
-template
-OSSIA_EXPORT int convert<int>(const ossia::value& val);
-template
-OSSIA_EXPORT float convert<float>(const ossia::value& val);
-template
-OSSIA_EXPORT double convert<double>(const ossia::value& val);
-template
-OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
-template
-OSSIA_EXPORT char convert<char>(const ossia::value& val);
-template
-OSSIA_EXPORT std::string convert<std::string>(const ossia::value& val);
-template
-OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value& val);
-template
-OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const ossia::value& val);
-template
-OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const ossia::value& val);
-template
-OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::value& val);
-
-
-template
-OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
-template
-OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
-template
-OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 2>
+convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 3>
+convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 4>
+convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
 Destination::Destination(const Destination& other) = default;
 Destination::Destination(Destination&& other) = default;
@@ -67,15 +59,15 @@ Destination::Destination(ossia::net::address_base& v, destination_index idx)
   // TODO should we also copy the unit of the address ?
 }
 
-Destination::Destination(ossia::net::address_base& v, destination_index idx, const ossia::unit_t& u)
+Destination::Destination(
+    ossia::net::address_base& v, destination_index idx, const ossia::unit_t& u)
     : value(v), index(std::move(idx)), unit{u}
 {
 }
 
-Destination::Destination(net::address_base& v, const unit_t&u)
-  : value(v), unit{u}
+Destination::Destination(net::address_base& v, const unit_t& u)
+    : value(v), unit{u}
 {
-
 }
 
 bool Destination::operator==(const ossia::value& v) const
@@ -129,18 +121,17 @@ bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
   return lhs.value != rhs || !lhs.index.empty();
 }
 
-
 std::string to_pretty_string(const destination_index& index)
 {
   std::string str;
 
   const int n = index.size();
-  if(n > 0)
+  if (n > 0)
   {
     str += "[";
     str += boost::lexical_cast<std::string>(index[0]);
 
-    for(int i = 1; i < n; i++)
+    for (int i = 1; i < n; i++)
     {
       str += ", " + boost::lexical_cast<std::string>(index[i]);
     }
@@ -153,10 +144,10 @@ std::string to_pretty_string(const destination_index& index)
 std::string to_pretty_string(const Destination& d)
 {
   using namespace std::literals;
-  return
-      ossia::net::address_string_from_node(d.value.get()) +
-      to_pretty_string(d.index)
-      + (d.unit ? ("["s + ossia::get_pretty_unit_text(d.unit) + "]"s) : ":"s);
+  return ossia::net::address_string_from_node(d.value.get())
+         + to_pretty_string(d.index)
+         + (d.unit ? ("["s + ossia::get_pretty_unit_text(d.unit) + "]"s)
+                   : ":"s);
 }
 
 template <typename Comparator>
@@ -179,7 +170,7 @@ struct partial_lhs_value_comparison_visitor2
 {
   const Value& lhs;
 
-  template<typename T>
+  template <typename T>
   bool operator()(const T& rhs);
 };
 
@@ -187,7 +178,7 @@ template <typename Value, typename Comparator>
 struct partial_rhs_value_comparison_visitor2
 {
   const Value& rhs;
-  template<typename T>
+  template <typename T>
   bool operator()(const T& lhs);
 };
 
@@ -237,7 +228,6 @@ struct value_comparison_visitor2
     return Comparator{}(v, comparisons::String_T{});
   }
 
-
   // * - String
   bool operator()(int32_t v, const std::string& lhs) const
   {
@@ -270,24 +260,24 @@ struct value_comparison_visitor2
   }
 
   // Tuple
-  template<typename T>
+  template <typename T>
   bool operator()(const T& lhs, const std::vector<ossia::value>& v) const
   {
     // Note : v.size == 1 only makes sense if comparator is ==...
-    return (v.size() == 1) && v[0].v && (
-          ossia::apply_nonnull(
-            partial_lhs_value_comparison_visitor2<T, Comparator>{lhs},
-            v[0].v));
+    return (v.size() == 1) && v[0].v
+           && (ossia::apply_nonnull(
+                  partial_lhs_value_comparison_visitor2<T, Comparator>{lhs},
+                  v[0].v));
   }
 
-  template<typename T>
+  template <typename T>
   bool operator()(const std::vector<ossia::value>& v, const T& rhs) const
   {
     // Note : v.size == 1 only makes sense if comparator is ==...
-    return (v.size() == 1) && v[0].v && (
-          ossia::apply_nonnull(
-            partial_rhs_value_comparison_visitor2<T, Comparator>{rhs},
-            v[0].v));
+    return (v.size() == 1) && v[0].v
+           && (ossia::apply_nonnull(
+                  partial_rhs_value_comparison_visitor2<T, Comparator>{rhs},
+                  v[0].v));
   }
 
   bool operator()(const impulse& lhs, const std::vector<ossia::value>& v) const
@@ -299,7 +289,9 @@ struct value_comparison_visitor2
     return Comparator{}(v, lhs);
   }
 
-  bool operator()(const std::vector<ossia::value>& lhs, const std::vector<ossia::value>& rhs) const
+  bool operator()(
+      const std::vector<ossia::value>& lhs,
+      const std::vector<ossia::value>& rhs) const
   {
     if (lhs.size() != rhs.size())
       return false;
@@ -308,7 +300,7 @@ struct value_comparison_visitor2
     auto tit = rhs.begin();
     for (const auto& val : lhs)
     {
-      if(val.valid() && tit->valid())
+      if (val.valid() && tit->valid())
       {
         result &= ossia::apply(*this, val.v, tit->v);
       }
@@ -325,70 +317,78 @@ struct value_comparison_visitor2
     return result;
   }
 
-
-  template<std::size_t N>
-  bool operator()(const std::vector<ossia::value>& lhs, const std::array<float, N>& v) const
+  template <std::size_t N>
+  bool operator()(
+      const std::vector<ossia::value>& lhs,
+      const std::array<float, N>& v) const
   {
     // TODO
     return false;
   }
 
-  template<std::size_t N>
-  bool operator()(const std::array<float, N>& v, const std::vector<ossia::value>& rhs) const
+  template <std::size_t N>
+  bool operator()(
+      const std::array<float, N>& v,
+      const std::vector<ossia::value>& rhs) const
   {
     // TODO
     return false;
   }
 
-  template<typename T, std::size_t N>
+  template <typename T, std::size_t N>
   bool operator()(const T& lhs, const std::array<float, N>& v) const
   {
     return false;
   }
 
-  template<typename T, std::size_t N>
+  template <typename T, std::size_t N>
   bool operator()(const std::array<float, N>& v, const T& rhs) const
   {
     return false;
   }
 
-  template<std::size_t N>
-  bool operator()(const std::array<float, N>& lhs, const std::array<float, N>& rhs) const
+  template <std::size_t N>
+  bool operator()(
+      const std::array<float, N>& lhs, const std::array<float, N>& rhs) const
   {
     bool b = true;
-    for(std::size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
       b &= Comparator{}(lhs[i], rhs[i]);
     return b;
   }
 
-  template<std::size_t N, std::size_t M>
-  bool operator()(const std::array<float, N>& lhs, const std::array<float, M>& rhs) const
+  template <std::size_t N, std::size_t M>
+  bool operator()(
+      const std::array<float, N>& lhs, const std::array<float, M>& rhs) const
   {
     return false;
   }
-
 };
 
-  template<typename Value, typename Comparator> template<typename T>
-  bool partial_lhs_value_comparison_visitor2<Value, Comparator>::operator()(const T& rhs)
-  {
-    return value_comparison_visitor2<Comparator>{}(lhs, rhs);
-  }
+template <typename Value, typename Comparator>
+template <typename T>
+bool partial_lhs_value_comparison_visitor2<Value, Comparator>::
+operator()(const T& rhs)
+{
+  return value_comparison_visitor2<Comparator>{}(lhs, rhs);
+}
 
-  template<typename Value, typename Comparator> template<typename T>
-  bool partial_rhs_value_comparison_visitor2<Value, Comparator>::operator()(const T& lhs)
-  {
-    return value_comparison_visitor2<Comparator>{}(lhs, rhs);
-  }
+template <typename Value, typename Comparator>
+template <typename T>
+bool partial_rhs_value_comparison_visitor2<Value, Comparator>::
+operator()(const T& lhs)
+{
+  return value_comparison_visitor2<Comparator>{}(lhs, rhs);
+}
 
 bool operator==(const value& lhs, const value& rhs)
 {
-  if(lhs.v && rhs.v)
+  if (lhs.v && rhs.v)
   {
     return ossia::apply(
-          value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
+        value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
   }
-  else if(!lhs.v && !rhs.v)
+  else if (!lhs.v && !rhs.v)
   {
     return true;
   }
@@ -397,12 +397,12 @@ bool operator==(const value& lhs, const value& rhs)
 
 bool operator!=(const value& lhs, const value& rhs)
 {
-  if(lhs.v && rhs.v)
+  if (lhs.v && rhs.v)
   {
     return !ossia::apply(
         value_comparison_visitor2<std::equal_to<>>{}, lhs.v, rhs.v);
   }
-  else if(!lhs.v && !rhs.v)
+  else if (!lhs.v && !rhs.v)
   {
     return false;
   }
@@ -411,10 +411,10 @@ bool operator!=(const value& lhs, const value& rhs)
 
 bool operator>(const value& lhs, const value& rhs)
 {
-  if(lhs.v && rhs.v)
+  if (lhs.v && rhs.v)
   {
     return ossia::apply(
-          value_comparison_visitor2<std::greater<>>{}, lhs.v, rhs.v);
+        value_comparison_visitor2<std::greater<>>{}, lhs.v, rhs.v);
   }
   else
   {
@@ -424,12 +424,12 @@ bool operator>(const value& lhs, const value& rhs)
 
 bool operator>=(const value& lhs, const value& rhs)
 {
-  if(lhs.v && rhs.v)
+  if (lhs.v && rhs.v)
   {
     return ossia::apply(
-          value_comparison_visitor2<std::greater_equal<>>{}, lhs.v, rhs.v);
+        value_comparison_visitor2<std::greater_equal<>>{}, lhs.v, rhs.v);
   }
-  else if(!lhs.v && !rhs.v)
+  else if (!lhs.v && !rhs.v)
   {
     return true;
   }
@@ -441,9 +441,11 @@ bool operator>=(const value& lhs, const value& rhs)
 
 bool operator<(const value& lhs, const value& rhs)
 {
-  if(lhs.v && rhs.v)
+  if (lhs.v && rhs.v)
   {
-    return ossia::apply(value_comparison_visitor2<std::less<>>{}, lhs.v, rhs.v);;
+    return ossia::apply(
+        value_comparison_visitor2<std::less<>>{}, lhs.v, rhs.v);
+    ;
   }
   else
   {
@@ -453,12 +455,12 @@ bool operator<(const value& lhs, const value& rhs)
 
 bool operator<=(const value& lhs, const value& rhs)
 {
-  if(lhs.v && rhs.v)
+  if (lhs.v && rhs.v)
   {
     return ossia::apply(
-          value_comparison_visitor2<std::less_equal<>>{}, lhs.v, rhs.v);
+        value_comparison_visitor2<std::less_equal<>>{}, lhs.v, rhs.v);
   }
-  else if(!lhs.v && !rhs.v)
+  else if (!lhs.v && !rhs.v)
   {
     return true;
   }
@@ -470,7 +472,7 @@ bool operator<=(const value& lhs, const value& rhs)
 
 namespace
 {
-template<typename Vis>
+template <typename Vis>
 struct value_prettyprint_visitor
 {
   Vis& s;
@@ -520,7 +522,6 @@ struct value_prettyprint_visitor
     s << "invalid";
   }
 };
-
 }
 
 std::string value_to_pretty_string(const ossia::value& val)
@@ -530,12 +531,10 @@ std::string value_to_pretty_string(const ossia::value& val)
   return s.str();
 }
 
-
 ossia::value get_value_at_index(
-    const ossia::value& val,
-    const ossia::destination_index& idx)
+    const ossia::value& val, const ossia::destination_index& idx)
 {
-  if(idx.empty())
+  if (idx.empty())
     return val;
   return val.apply(detail::destination_index_retriever{idx, idx.cbegin()});
 }
@@ -544,7 +543,7 @@ namespace detail
 {
 struct is_numeric_helper
 {
-  template<typename T>
+  template <typename T>
   bool operator()(const T&)
   {
     return ossia::value_trait<T>::is_numeric;
@@ -553,7 +552,7 @@ struct is_numeric_helper
 
 struct is_array_helper
 {
-  template<typename T>
+  template <typename T>
   bool operator()(const T&)
   {
     return ossia::value_trait<T>::is_array;
@@ -563,21 +562,21 @@ struct is_array_helper
 
 bool is_numeric(const ossia::value& val)
 {
-  if(val.valid())
+  if (val.valid())
     return ossia::apply_nonnull(detail::is_numeric_helper{}, val.v);
   return false;
 }
 
 bool is_array(const ossia::value& val)
 {
-  if(val.valid())
+  if (val.valid())
     return ossia::apply_nonnull(detail::is_array_helper{}, val.v);
   return false;
 }
 
 ossia::value convert(const ossia::value& val, ossia::val_type newtype)
 {
-  return lift(newtype, [&] (auto t) -> ossia::value {
+  return lift(newtype, [&](auto t) -> ossia::value {
     using ossia_type = typename decltype(t)::ossia_type;
     return convert<ossia_type>(val);
   });
@@ -585,15 +584,13 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
 
 value::~value() noexcept
 {
-
+}
 }
 
-}
-
-namespace std {
-std::ostream& operator<<(
-    std::ostream& s,
-    const std::vector<ossia::value>& tuple)
+namespace std
+{
+std::ostream&
+operator<<(std::ostream& s, const std::vector<ossia::value>& tuple)
 {
 
   const int n = tuple.size();
@@ -619,36 +616,31 @@ std::ostream& operator<<(
   return s;
 }
 
-std::ostream& operator<<(
-    std::ostream& s,
-    const std::array<float, 2>& vec)
+std::ostream& operator<<(std::ostream& s, const std::array<float, 2>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << "]";
   return s;
 }
 
-std::ostream& operator<<(
-    std::ostream& s,
-    const std::array<float, 3>& vec)
+std::ostream& operator<<(std::ostream& s, const std::array<float, 3>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
   return s;
 }
 
-std::ostream& operator<<(
-    std::ostream& s,
-    const std::array<float, 4>& vec)
+std::ostream& operator<<(std::ostream& s, const std::array<float, 4>& vec)
 {
   s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
   return s;
 }
 
-std::ostream& operator<<(std::ostream& s, const std::vector<std::string>& tuple)
+std::ostream&
+operator<<(std::ostream& s, const std::vector<std::string>& tuple)
 {
   const int n = tuple.size();
 
   s << "[";
-  if(!tuple.empty())
+  if (!tuple.empty())
   {
     s << tuple[0];
     for (int i = 1; i < n; i++)

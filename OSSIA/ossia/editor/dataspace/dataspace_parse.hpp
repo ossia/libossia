@@ -6,9 +6,9 @@
 
 namespace ossia
 {
-using unit_parse_symbols_t = boost::spirit::qi::symbols<char, ossia::destination_qualifiers>;
+using unit_parse_symbols_t
+    = boost::spirit::qi::symbols<char, ossia::destination_qualifiers>;
 
 OSSIA_EXPORT
 const unit_parse_symbols_t& get_unit_parser();
-
 }

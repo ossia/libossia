@@ -1,12 +1,13 @@
 #pragma once
-#include <QObject>
-#include <QUrl>
-#include <QFile>
-#include <QQmlEngine>
 #include <QDebug>
-#include <ossia-qt/device/qml_device.hpp>
+#include <QFile>
+#include <QObject>
+#include <QQmlEngine>
+#include <QUrl>
 #include <ossia-c/preset/preset.hpp>
-namespace spdlog {
+#include <ossia-qt/device/qml_device.hpp>
+namespace spdlog
+{
 class logger;
 }
 namespace ossia
@@ -20,16 +21,16 @@ class qml_val_type
 public:
   enum val_type
   {
-    Float, //! \see float
-    Int, //! \see int32_t
-    Vec2f, //! \see ossia::vec2f
-    Vec3f, //! \see ossia::vec3f
-    Vec4f, //! \see ossia::vec4f
+    Float,   //! \see float
+    Int,     //! \see int32_t
+    Vec2f,   //! \see ossia::vec2f
+    Vec3f,   //! \see ossia::vec3f
+    Vec4f,   //! \see ossia::vec4f
     Impulse, //! \see ossia::impulse
-    Bool, //! \see bool
-    String, //! \see std::string
-    Tuple, //! \see std::vector<ossia::value>
-    Char //! \see char
+    Bool,    //! \see bool
+    String,  //! \see std::string
+    Tuple,   //! \see std::vector<ossia::value>
+    Char     //! \see char
   };
   Q_ENUM(val_type)
 };
@@ -75,7 +76,6 @@ public:
 
   Q_ENUM(repetition_filter)
 };
-
 }
 }
 

@@ -1,11 +1,11 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/value/destination.hpp>
 #include <ossia/editor/state/destination_qualifiers.hpp>
-#include <ossia_export.h>
-#include <utility>
+#include <ossia/editor/value/destination.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <bitset>
 #include <memory>
+#include <ossia_export.h>
+#include <utility>
 
 namespace ossia
 {
@@ -26,19 +26,22 @@ struct OSSIA_EXPORT message
   ossia::Destination destination;
   ossia::value message_value;
 
-  const ossia::unit_t& get_unit() const { return destination.unit; }
+  const ossia::unit_t& get_unit() const
+  {
+    return destination.unit;
+  }
   void launch() const;
 
   friend bool operator==(const message& lhs, const message& rhs)
   {
-    return lhs.destination == rhs.destination &&
-        lhs.message_value == rhs.message_value;
+    return lhs.destination == rhs.destination
+           && lhs.message_value == rhs.message_value;
   }
 
   friend bool operator!=(const message& lhs, const message& rhs)
   {
-    return lhs.destination != rhs.destination ||
-        lhs.message_value != rhs.message_value;
+    return lhs.destination != rhs.destination
+           || lhs.message_value != rhs.message_value;
   }
 
   message() = delete;
@@ -47,14 +50,22 @@ struct OSSIA_EXPORT message
   message& operator=(const message&) = default;
   message& operator=(message&&) = default;
 
-  message(const Destination& d, const ossia::value& v): destination{d}, message_value{v} { }
-  message(const Destination& d, ossia::value&& v): destination{d}, message_value{std::move(v)} { }
-  message(const Destination& d, const ossia::value& v, const ossia::unit_t& u):
-    destination{d.value, d.index, u},
-    message_value{v} { }
-  message(const Destination& d, ossia::value&& v, const ossia::unit_t& u):
-    destination{d.value, d.index, u},
-    message_value{std::move(v)} { }
+  message(const Destination& d, const ossia::value& v)
+      : destination{d}, message_value{v}
+  {
+  }
+  message(const Destination& d, ossia::value&& v)
+      : destination{d}, message_value{std::move(v)}
+  {
+  }
+  message(const Destination& d, const ossia::value& v, const ossia::unit_t& u)
+      : destination{d.value, d.index, u}, message_value{v}
+  {
+  }
+  message(const Destination& d, ossia::value&& v, const ossia::unit_t& u)
+      : destination{d.value, d.index, u}, message_value{std::move(v)}
+  {
+  }
 };
 
 struct OSSIA_EXPORT piecewise_message
@@ -63,25 +74,28 @@ struct OSSIA_EXPORT piecewise_message
   std::vector<ossia::value> message_value;
   ossia::unit_t unit;
 
-  const ossia::unit_t& get_unit() const { return unit; }
+  const ossia::unit_t& get_unit() const
+  {
+    return unit;
+  }
   void launch() const;
 
-  friend bool operator==(const piecewise_message& lhs, const piecewise_message& rhs)
+  friend bool
+  operator==(const piecewise_message& lhs, const piecewise_message& rhs)
   {
     return &lhs.address.get() == &rhs.address.get()
-        && lhs.message_value == rhs.message_value
-        && lhs.unit == rhs.unit;
+           && lhs.message_value == rhs.message_value && lhs.unit == rhs.unit;
   }
 
-  friend bool operator!=(const piecewise_message& lhs, const piecewise_message& rhs)
+  friend bool
+  operator!=(const piecewise_message& lhs, const piecewise_message& rhs)
   {
     return &lhs.address.get() != &rhs.address.get()
-        || lhs.message_value != rhs.message_value
-        || lhs.unit != rhs.unit;
+           || lhs.message_value != rhs.message_value || lhs.unit != rhs.unit;
   }
 };
 
-template<std::size_t N>
+template <std::size_t N>
 struct piecewise_vec_message
 {
   std::reference_wrapper<ossia::net::address_base> address;
@@ -89,23 +103,26 @@ struct piecewise_vec_message
   ossia::unit_t unit;
   std::bitset<N> used_values; // True for each value that has been set.
 
-  const ossia::unit_t& get_unit() const { return unit; }
+  const ossia::unit_t& get_unit() const
+  {
+    return unit;
+  }
   void launch() const;
 
-  friend bool operator==(const piecewise_vec_message& lhs, const piecewise_vec_message& rhs)
+  friend bool operator==(
+      const piecewise_vec_message& lhs, const piecewise_vec_message& rhs)
   {
     return &lhs.address.get() == &rhs.address.get()
-        && lhs.message_value == rhs.message_value
-        && lhs.unit == rhs.unit
-        && lhs.used_values == rhs.used_values;
+           && lhs.message_value == rhs.message_value && lhs.unit == rhs.unit
+           && lhs.used_values == rhs.used_values;
   }
 
-  friend bool operator!=(const piecewise_vec_message& lhs, const piecewise_vec_message& rhs)
+  friend bool operator!=(
+      const piecewise_vec_message& lhs, const piecewise_vec_message& rhs)
   {
     return &lhs.address.get() != &rhs.address.get()
-        || lhs.message_value != rhs.message_value
-        || lhs.unit != rhs.unit
-        || lhs.used_values != rhs.used_values;
+           || lhs.message_value != rhs.message_value || lhs.unit != rhs.unit
+           || lhs.used_values != rhs.used_values;
   }
 };
 }

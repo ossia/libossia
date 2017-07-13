@@ -6,8 +6,6 @@ namespace expressions
 
 expression_generic_base::~expression_generic_base()
 {
-
 }
-
 }
 }

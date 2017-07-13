@@ -33,7 +33,8 @@ public:
   address_base* create_address(val_type) final override;
   bool remove_address() final override;
 
-  std::unique_ptr<node_base> make_child(const std::string& name) final override;
+  std::unique_ptr<node_base>
+  make_child(const std::string& name) final override;
   void removing_child(node_base& node_base) final override;
 };
 }

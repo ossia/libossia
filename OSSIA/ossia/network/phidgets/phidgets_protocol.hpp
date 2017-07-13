@@ -7,12 +7,13 @@ namespace ossia
 class phidget_device;
 class OSSIA_EXPORT phidget_protocol : public ossia::net::protocol_base
 {
-    ppp::phidgets_manager m_mgr;
-    phidget_device* m_dev{};
-    std::function<void()> m_commandCb;
-    moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
+  ppp::phidgets_manager m_mgr;
+  phidget_device* m_dev{};
+  std::function<void()> m_commandCb;
+  moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
+
 public:
-    phidget_protocol();
+  phidget_protocol();
 
   bool pull(net::address_base&) override;
   std::future<void> pull_async(net::address_base&) override;
@@ -23,7 +24,6 @@ public:
   bool update(net::node_base& node_base) override;
 
   void set_device(net::device_base& dev) override;
-
 
   void set_command_callback(std::function<void()>);
   void run_commands();

@@ -7,283 +7,340 @@ namespace ossia
 // to occur only if the destination value is null
 // (it won't replace an existing value).
 
-
-template<bool SourcePrecedence = true>
+template <bool SourcePrecedence = true>
 struct value_merger
 {
-template<typename Value_T>
-static void merge_value(ossia::value& dest, Value_T&& src)
-{
-  if(!dest.valid())
+  template <typename Value_T>
+  static void merge_value(ossia::value& dest, Value_T&& src)
   {
-    dest = src;
-    return;
-  }
-  else
-  {
-    if(dest.valid() && src.valid())
+    if (!dest.valid())
     {
-      switch(src.getType())
-      {
-        case ossia::val_type::TUPLE:
-        {
-          auto& src_vec = src.template get<std::vector<ossia::value>>();
-          switch(dest.getType())
-          {
-            case ossia::val_type::TUPLE: merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec); break;
-            case ossia::val_type::VEC2F: merge_tuple(dest.get<ossia::vec2f>(), src_vec); break;
-            case ossia::val_type::VEC3F: merge_tuple(dest.get<ossia::vec3f>(), src_vec); break;
-            case ossia::val_type::VEC4F: merge_tuple(dest.get<ossia::vec4f>(), src_vec); break;
-            default: break;
-          }
-          break;
-        }
-        case ossia::val_type::VEC2F:
-        {
-          auto& src_vec = src.template get<ossia::vec2f>();
-          switch(dest.getType())
-          {
-            case ossia::val_type::TUPLE: merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec); break;
-            case ossia::val_type::VEC2F: merge_tuple(dest.get<ossia::vec2f>(), src_vec); break;
-            case ossia::val_type::VEC3F: merge_tuple(dest.get<ossia::vec3f>(), src_vec); break;
-            case ossia::val_type::VEC4F: merge_tuple(dest.get<ossia::vec4f>(), src_vec); break;
-            default: break;
-          }
-          break;
-        }
-        case ossia::val_type::VEC3F:
-        {
-          auto& src_vec = src.template get<ossia::vec3f>();
-          switch(dest.getType())
-          {
-            case ossia::val_type::TUPLE: merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec); break;
-            case ossia::val_type::VEC2F: merge_tuple(dest.get<ossia::vec2f>(), src_vec); break;
-            case ossia::val_type::VEC3F: merge_tuple(dest.get<ossia::vec3f>(), src_vec); break;
-            case ossia::val_type::VEC4F: merge_tuple(dest.get<ossia::vec4f>(), src_vec); break;
-            default: break;
-          }
-          break;
-        }
-        case ossia::val_type::VEC4F:
-        {
-          auto& src_vec = src.template get<ossia::vec4f>();
-          switch(dest.getType())
-          {
-            case ossia::val_type::TUPLE: merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec); break;
-            case ossia::val_type::VEC2F: merge_tuple(dest.get<ossia::vec2f>(), src_vec); break;
-            case ossia::val_type::VEC3F: merge_tuple(dest.get<ossia::vec3f>(), src_vec); break;
-            case ossia::val_type::VEC4F: merge_tuple(dest.get<ossia::vec4f>(), src_vec); break;
-            default: break;
-          }
-          break;
-        }
-        default:
-        {
-          switch(dest.getType())
-          {
-            case ossia::val_type::TUPLE: set_first_value(dest.get<std::vector<ossia::value>>(), std::forward<Value_T>(src)); break;
-            case ossia::val_type::VEC2F: set_first_value(dest.get<ossia::vec2f>(), std::forward<Value_T>(src)); break;
-            case ossia::val_type::VEC3F: set_first_value(dest.get<ossia::vec3f>(), std::forward<Value_T>(src)); break;
-            case ossia::val_type::VEC4F: set_first_value(dest.get<ossia::vec4f>(), std::forward<Value_T>(src)); break;
-            default:
-            {
-              // src overwrites dest
-              if(SourcePrecedence)
-                dest = std::forward<Value_T>(src);
-              return;
-            }
-          }
-          break;
-        }
-      }
+      dest = src;
       return;
-
     }
     else
     {
-      if(auto dest_tuple_ptr = dest.target<std::vector<ossia::value>>())
+      if (dest.valid() && src.valid())
       {
-        // Merge a single value in a tuple
-        set_first_value(*dest_tuple_ptr, std::forward<Value_T>(src));
+        switch (src.getType())
+        {
+          case ossia::val_type::TUPLE:
+          {
+            auto& src_vec = src.template get<std::vector<ossia::value>>();
+            switch (dest.getType())
+            {
+              case ossia::val_type::TUPLE:
+                merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec);
+                break;
+              case ossia::val_type::VEC2F:
+                merge_tuple(dest.get<ossia::vec2f>(), src_vec);
+                break;
+              case ossia::val_type::VEC3F:
+                merge_tuple(dest.get<ossia::vec3f>(), src_vec);
+                break;
+              case ossia::val_type::VEC4F:
+                merge_tuple(dest.get<ossia::vec4f>(), src_vec);
+                break;
+              default:
+                break;
+            }
+            break;
+          }
+          case ossia::val_type::VEC2F:
+          {
+            auto& src_vec = src.template get<ossia::vec2f>();
+            switch (dest.getType())
+            {
+              case ossia::val_type::TUPLE:
+                merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec);
+                break;
+              case ossia::val_type::VEC2F:
+                merge_tuple(dest.get<ossia::vec2f>(), src_vec);
+                break;
+              case ossia::val_type::VEC3F:
+                merge_tuple(dest.get<ossia::vec3f>(), src_vec);
+                break;
+              case ossia::val_type::VEC4F:
+                merge_tuple(dest.get<ossia::vec4f>(), src_vec);
+                break;
+              default:
+                break;
+            }
+            break;
+          }
+          case ossia::val_type::VEC3F:
+          {
+            auto& src_vec = src.template get<ossia::vec3f>();
+            switch (dest.getType())
+            {
+              case ossia::val_type::TUPLE:
+                merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec);
+                break;
+              case ossia::val_type::VEC2F:
+                merge_tuple(dest.get<ossia::vec2f>(), src_vec);
+                break;
+              case ossia::val_type::VEC3F:
+                merge_tuple(dest.get<ossia::vec3f>(), src_vec);
+                break;
+              case ossia::val_type::VEC4F:
+                merge_tuple(dest.get<ossia::vec4f>(), src_vec);
+                break;
+              default:
+                break;
+            }
+            break;
+          }
+          case ossia::val_type::VEC4F:
+          {
+            auto& src_vec = src.template get<ossia::vec4f>();
+            switch (dest.getType())
+            {
+              case ossia::val_type::TUPLE:
+                merge_tuple(dest.get<std::vector<ossia::value>>(), src_vec);
+                break;
+              case ossia::val_type::VEC2F:
+                merge_tuple(dest.get<ossia::vec2f>(), src_vec);
+                break;
+              case ossia::val_type::VEC3F:
+                merge_tuple(dest.get<ossia::vec3f>(), src_vec);
+                break;
+              case ossia::val_type::VEC4F:
+                merge_tuple(dest.get<ossia::vec4f>(), src_vec);
+                break;
+              default:
+                break;
+            }
+            break;
+          }
+          default:
+          {
+            switch (dest.getType())
+            {
+              case ossia::val_type::TUPLE:
+                set_first_value(
+                    dest.get<std::vector<ossia::value>>(),
+                    std::forward<Value_T>(src));
+                break;
+              case ossia::val_type::VEC2F:
+                set_first_value(
+                    dest.get<ossia::vec2f>(), std::forward<Value_T>(src));
+                break;
+              case ossia::val_type::VEC3F:
+                set_first_value(
+                    dest.get<ossia::vec3f>(), std::forward<Value_T>(src));
+                break;
+              case ossia::val_type::VEC4F:
+                set_first_value(
+                    dest.get<ossia::vec4f>(), std::forward<Value_T>(src));
+                break;
+              default:
+              {
+                // src overwrites dest
+                if (SourcePrecedence)
+                  dest = std::forward<Value_T>(src);
+                return;
+              }
+            }
+            break;
+          }
+        }
         return;
       }
-      else if(auto src_tuple_ptr = src.template target<std::vector<ossia::value>>())
+      else
       {
-        // If one of the two values is invalid, we always keep the other
-        if(src_tuple_ptr->empty())
+        if (auto dest_tuple_ptr = dest.target<std::vector<ossia::value>>())
         {
-          std::vector<ossia::value> t{dest};
-          dest = std::move(t);
+          // Merge a single value in a tuple
+          set_first_value(*dest_tuple_ptr, std::forward<Value_T>(src));
           return;
         }
-        else if(!(*src_tuple_ptr)[0].valid())
+        else if (
+            auto src_tuple_ptr
+            = src.template target<std::vector<ossia::value>>())
         {
-          std::vector<ossia::value> t = *src_tuple_ptr;
-          t[0] = dest;
-          dest = std::move(t);
-          return;
+          // If one of the two values is invalid, we always keep the other
+          if (src_tuple_ptr->empty())
+          {
+            std::vector<ossia::value> t{dest};
+            dest = std::move(t);
+            return;
+          }
+          else if (!(*src_tuple_ptr)[0].valid())
+          {
+            std::vector<ossia::value> t = *src_tuple_ptr;
+            t[0] = dest;
+            dest = std::move(t);
+            return;
+          }
+          else
+          {
+            // src overwrites dest
+            if (src.valid() && SourcePrecedence)
+              dest = std::forward<Value_T>(src);
+            return;
+          }
         }
         else
         {
           // src overwrites dest
-          if(src.valid() && SourcePrecedence)
+          if (src.valid() && SourcePrecedence)
             dest = std::forward<Value_T>(src);
           return;
         }
       }
+    }
+  }
+
+  template <typename Value_T>
+  static void insert_in_tuple(
+      std::vector<ossia::value>& t, Value_T&& v,
+      const ossia::destination_index& idx)
+  {
+    std::vector<ossia::value>* cur_ptr = &t;
+    for (auto it = idx.begin(); it != idx.end();)
+    {
+      auto& cur = *cur_ptr;
+      std::size_t pos = *it;
+      if (cur.size() < pos + 1)
+      {
+        cur.resize(pos + 1);
+      }
+
+      if (++it == idx.end())
+      {
+        // We're at the deepest index position :
+        // we add the value at the current place.
+        merge_value(cur[pos], std::forward<Value_T>(v));
+      }
       else
       {
-        // src overwrites dest
-        if(src.valid() && SourcePrecedence)
-          dest = std::forward<Value_T>(src);
-        return;
+        // We go through another depth layer.
+        if (auto sub_tuple = cur[pos].target<std::vector<ossia::value>>())
+        {
+          cur_ptr = sub_tuple;
+        }
+        else
+        {
+          // We put the current value at cur[pos] at index 0 of the
+          // newly-created sub-tuple.
+          std::vector<ossia::value> t{cur[pos]};
+          cur[pos] = std::move(t);
+
+          // And use it for the next iteration
+          cur_ptr = cur[pos].target<std::vector<ossia::value>>();
+        }
       }
     }
   }
-}
 
-template<typename Value_T>
-static void insert_in_tuple(std::vector<ossia::value>& t, Value_T&& v, const ossia::destination_index& idx)
-{
-  std::vector<ossia::value>* cur_ptr = &t;
-  for(auto it = idx.begin(); it != idx.end(); )
+  static void write_float(const ossia::value& val, float& f)
   {
-    auto& cur = *cur_ptr;
-    std::size_t pos = *it;
-    if(cur.size() < pos + 1)
+    if (val.valid())
     {
-      cur.resize(pos + 1);
+      switch (val.getType())
+      {
+        case ossia::val_type::INT:
+          f = (float)val.template get<int>();
+          break;
+        case ossia::val_type::FLOAT:
+          f = (float)val.template get<float>();
+          break;
+        case ossia::val_type::CHAR:
+          f = (float)val.template get<char>();
+          break;
+        case ossia::val_type::BOOL:
+          f = (float)val.template get<bool>();
+          break;
+        default:
+          break;
+      }
     }
+  }
 
-    if(++it == idx.end())
+  template <std::size_t N, typename Value_T>
+  static void set_first_value(std::array<float, N>& t, Value_T&& val)
+  {
+    write_float(val, t[0]);
+  }
+
+  template <typename Value_T>
+  static void set_first_value(std::vector<ossia::value>& t, Value_T&& val)
+  {
+    if (t.empty())
     {
-      // We're at the deepest index position :
-      // we add the value at the current place.
-      merge_value(cur[pos], std::forward<Value_T>(v));
+      t.push_back(std::forward<Value_T>(val));
     }
     else
     {
-      // We go through another depth layer.
-      if(auto sub_tuple = cur[pos].target<std::vector<ossia::value>>())
-      {
-        cur_ptr = sub_tuple;
-      }
-      else
-      {
-        // We put the current value at cur[pos] at index 0 of the newly-created sub-tuple.
-        std::vector<ossia::value> t{cur[pos]};
-        cur[pos] = std::move(t);
-
-        // And use it for the next iteration
-        cur_ptr = cur[pos].target<std::vector<ossia::value>>();
-      }
+      merge_value(t[0], std::forward<Value_T>(val));
     }
   }
-}
 
-static void write_float(const ossia::value& val, float& f)
-{
-  if(val.valid())
+  static void merge_tuple(
+      std::vector<ossia::value>& lhs, const std::vector<ossia::value>& rhs)
   {
-    switch(val.getType())
+    std::size_t n = rhs.size();
+    if (lhs.size() < n)
     {
-      case ossia::val_type::INT:
-        f = (float)val.template get<int>();
-        break;
-      case ossia::val_type::FLOAT:
-        f = (float)val.template get<float>();
-        break;
-      case ossia::val_type::CHAR:
-        f = (float)val.template get<char>();
-        break;
-      case ossia::val_type::BOOL:
-        f = (float)val.template get<bool>();
-        break;
-      default:
-        break;
+      lhs.resize(n);
+    }
+
+    for (std::size_t i = 0u; i < n; i++)
+    {
+      merge_value(lhs[i], rhs[i]);
     }
   }
-}
-
-template<std::size_t N, typename Value_T>
-static void set_first_value(std::array<float, N>& t, Value_T&& val)
-{
-  write_float(val, t[0]);
-}
-
-template<typename Value_T>
-static void set_first_value(std::vector<ossia::value>& t, Value_T&& val)
-{
-  if(t.empty())
+  static void
+  merge_tuple(std::vector<ossia::value>& lhs, std::vector<ossia::value>&& rhs)
   {
-    t.push_back(std::forward<Value_T>(val));
-  }
-  else
-  {
-    merge_value(t[0], std::forward<Value_T>(val));
-  }
-}
+    std::size_t n = rhs.size();
+    if (lhs.size() < n)
+    {
+      lhs.resize(n);
+    }
 
-static void merge_tuple(std::vector<ossia::value>& lhs, const std::vector<ossia::value>& rhs)
-{
-  std::size_t n = rhs.size();
-  if(lhs.size() < n)
-  {
-    lhs.resize(n);
+    for (std::size_t i = 0u; i < n; i++)
+    {
+      merge_value(lhs[i], std::move(rhs)[i]);
+    }
   }
 
-  for(std::size_t i = 0u; i < n; i++)
+  template <std::size_t N>
+  static void
+  merge_tuple(std::vector<ossia::value>& lhs, const std::array<float, N>& rhs)
   {
-    merge_value(lhs[i], rhs[i]);
-  }
-}
-static void merge_tuple(std::vector<ossia::value>& lhs, std::vector<ossia::value>&& rhs)
-{
-  std::size_t n = rhs.size();
-  if(lhs.size() < n)
-  {
-    lhs.resize(n);
+    if (lhs.size() < N)
+    {
+      lhs.resize(N);
+    }
+
+    for (std::size_t i = 0u; i < N; i++)
+    {
+      lhs[i] = rhs[i];
+    }
   }
 
-  for(std::size_t i = 0u; i < n; i++)
+  template <std::size_t N>
+  static void
+  merge_tuple(std::array<float, N>& lhs, const std::vector<ossia::value>& rhs)
   {
-    merge_value(lhs[i], std::move(rhs)[i]);
-  }
-}
-
-template<std::size_t N>
-static void merge_tuple(std::vector<ossia::value>& lhs, const std::array<float, N>& rhs)
-{
-  if(lhs.size() < N)
-  {
-    lhs.resize(N);
+    const std::size_t n = std::min(N, rhs.size());
+    for (std::size_t i = 0u; i < n; i++)
+    {
+      write_float(rhs[i], lhs[i]);
+    }
   }
 
-  for(std::size_t i = 0u; i < N; i++)
+  template <std::size_t N, std::size_t M>
+  static void
+  merge_tuple(std::array<float, N>& lhs, const std::array<float, M>& rhs)
   {
-    lhs[i] = rhs[i];
+    const std::size_t n = std::min(N, M);
+    for (std::size_t i = 0u; i < n; i++)
+    {
+      lhs[i] = rhs[i];
+    }
   }
-}
-
-template<std::size_t N>
-static void merge_tuple(std::array<float, N>& lhs, const std::vector<ossia::value>& rhs)
-{
-  const std::size_t n = std::min(N, rhs.size());
-  for(std::size_t i = 0u; i < n; i++)
-  {
-    write_float(rhs[i], lhs[i]);
-  }
-}
-
-template<std::size_t N, std::size_t M>
-static void merge_tuple(std::array<float, N>& lhs, const std::array<float, M>& rhs)
-{
-  const std::size_t n = std::min(N, M);
-  for(std::size_t i = 0u; i < n; i++)
-  {
-    lhs[i] = rhs[i];
-  }
-}
 };
 
 namespace detail
@@ -302,11 +359,11 @@ struct destination_index_retriever
 
   ossia::value operator()(const std::vector<ossia::value>& t)
   {
-    if(it == index.end())
+    if (it == index.end())
     {
       return t;
     }
-    else if(t.size() > *it)
+    else if (t.size() > *it)
     {
       auto& val = t[*it];
       ++it;
@@ -318,10 +375,10 @@ struct destination_index_retriever
     }
   }
 
-  template<typename T>
+  template <typename T>
   ossia::value operator()(const T& t)
   {
-    if(it == index.end())
+    if (it == index.end())
     {
       return t;
     }
@@ -331,16 +388,16 @@ struct destination_index_retriever
     }
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   ossia::value operator()(const std::array<float, N>& t)
   {
-    if(it == index.end())
+    if (it == index.end())
     {
       return t;
     }
-    else if(t.size() > *it)
+    else if (t.size() > *it)
     {
-      if(it + 1 == index.end())
+      if (it + 1 == index.end())
         return float{t[*it]};
     }
 
@@ -353,5 +410,4 @@ struct destination_index_retriever
   }
 };
 }
-
 }

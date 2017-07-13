@@ -1,8 +1,8 @@
 #include <ossia/editor/automation/automation.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/automation/curve_value_visitor.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/network/base/address.hpp>
 #include <iostream>
 
@@ -11,22 +11,19 @@ namespace ossia
 
 automation::automation()
 {
-
 }
 
-automation::automation(
-    Destination address, const ossia::behavior& drive)
-  : m_drive(drive)
-  , m_lastMessage{ossia::message{address, ossia::value{}}}
-  , m_drivenType{address.address().value(address.index).getType()}
+automation::automation(Destination address, const ossia::behavior& drive)
+    : m_drive(drive)
+    , m_lastMessage{ossia::message{address, ossia::value{}}}
+    , m_drivenType{address.address().value(address.index).getType()}
 {
 }
 
-automation::automation(
-    Destination address, ossia::behavior&& drive)
-  : m_drive(std::move(drive))
-  , m_lastMessage{ossia::message{address, ossia::value{}}}
-  , m_drivenType{address.address().value(address.index).getType()}
+automation::automation(Destination address, ossia::behavior&& drive)
+    : m_drive(std::move(drive))
+    , m_lastMessage{ossia::message{address, ossia::value{}}}
+    , m_drivenType{address.address().value(address.index).getType()}
 {
 }
 
@@ -34,7 +31,7 @@ automation::~automation() = default;
 
 void automation::update_message(double t)
 {
-  if(m_lastMessage)
+  if (m_lastMessage)
   {
     m_lastMessage->message_value = compute_value(t, m_drivenType, m_drive);
   }
@@ -45,7 +42,7 @@ ossia::state_element automation::offset(ossia::time_value offset, double pos)
   // edit a Message handling the new Value
   update_message(pos);
 
-  if(unmuted() && m_lastMessage)
+  if (unmuted() && m_lastMessage)
     return *m_lastMessage;
   return ossia::state_element{};
 }
@@ -61,7 +58,7 @@ ossia::state_element automation::state(ossia::time_value date, double pos)
     update_message(pos);
   }
 
-  if(unmuted() && m_lastMessage)
+  if (unmuted() && m_lastMessage)
     return *m_lastMessage;
   return ossia::state_element{};
 }
@@ -86,7 +83,7 @@ void automation::resume()
 void automation::set_destination(Destination d)
 {
   m_drivenType = d.address().value(d.index).getType();
-  if(m_lastMessage)
+  if (m_lastMessage)
   {
     m_lastMessage->destination = std::move(d);
   }
@@ -107,15 +104,12 @@ void automation::clean()
   m_lastMessage = ossia::none;
 }
 
-ossia::value
-automation::compute_value(
-    double position,
-    ossia::val_type drivenType,
-    const ossia::behavior& drive)
+ossia::value automation::compute_value(
+    double position, ossia::val_type drivenType, const ossia::behavior& drive)
 {
-  if(drive)
-    return ossia::apply(detail::compute_value_visitor{position, drivenType}, drive);
+  if (drive)
+    return ossia::apply(
+        detail::compute_value_visitor{position, drivenType}, drive);
   return {};
 }
-
 }

@@ -1,7 +1,7 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/value/value.hpp>
 #include <chobo/static_vector.hpp>
 namespace ossia
 {
@@ -9,29 +9,30 @@ namespace detail
 {
 
 using vec_behavior = chobo::static_vector<curve<double, float>*, 4>;
-static vec_behavior tuple_convertible_to_vec(
-    const std::vector<ossia::behavior>& t)
+static vec_behavior
+tuple_convertible_to_vec(const std::vector<ossia::behavior>& t)
 {
   const auto n = t.size();
 
   chobo::static_vector<curve<double, float>*, 4> arr;
   bool ok = false;
-  if(n >= 2 && n <= 4)
+  if (n >= 2 && n <= 4)
   {
-    for(const ossia::behavior& v : t)
+    for (const ossia::behavior& v : t)
     {
       auto target = v.target<std::shared_ptr<ossia::curve_abstract>>();
-      if(!target)
+      if (!target)
         return {};
 
       ossia::curve_abstract* c = target->get();
-      if(!c)
+      if (!c)
         return {};
 
       auto t = c->get_type();
-      if(t.first == ossia::curve_segment_type::DOUBLE && t.second == ossia::curve_segment_type::FLOAT)
+      if (t.first == ossia::curve_segment_type::DOUBLE
+          && t.second == ossia::curve_segment_type::FLOAT)
       {
-        arr.push_back(static_cast<ossia::curve<double,float>*>(c));
+        arr.push_back(static_cast<ossia::curve<double, float>*>(c));
         ok = true;
         continue;
       }
@@ -42,7 +43,7 @@ static vec_behavior tuple_convertible_to_vec(
       }
     }
 
-    if(ok)
+    if (ok)
       return arr;
     else
       return {};
@@ -50,10 +51,9 @@ static vec_behavior tuple_convertible_to_vec(
   return {};
 }
 
-template<int N>
+template <int N>
 ossia::value make_filled_vec(
-    ossia::curve_abstract* base_curve,
-    ossia::curve_segment_type t,
+    ossia::curve_abstract* base_curve, ossia::curve_segment_type t,
     double position)
 {
   switch (t)
@@ -81,32 +81,37 @@ ossia::value make_filled_vec(
   return {};
 }
 
-
 struct compute_value_uninformed_visitor
 {
   double position;
 
   ossia::value error() const
   {
-    throw invalid_value_type_error("computeValue_visitor: "
-                                   "Unhandled drive value type.");
+    throw invalid_value_type_error(
+        "computeValue_visitor: "
+        "Unhandled drive value type.");
     return {};
   }
 
-  template<typename T>
+  template <typename T>
   ossia::value operator()(const T&) const
-  { return error(); }
+  {
+    return error();
+  }
 
   ossia::value operator()() const
-  { return error(); }
+  {
+    return error();
+  }
 
   ossia::value operator()(const curve_ptr& c) const
   {
     auto base_curve = c.get();
-    if(!base_curve)
+    if (!base_curve)
     {
-      throw invalid_value_type_error("computeValue_visitor: "
-                                     "invalid Behavior");
+      throw invalid_value_type_error(
+          "computeValue_visitor: "
+          "invalid Behavior");
       return {};
     }
 
@@ -114,11 +119,14 @@ struct compute_value_uninformed_visitor
     switch (t.second)
     {
       case ossia::curve_segment_type::FLOAT:
-        return float{static_cast<curve<double, float>*>(base_curve)->value_at(position)};
+        return float{static_cast<curve<double, float>*>(base_curve)
+                         ->value_at(position)};
       case ossia::curve_segment_type::INT:
-        return int32_t{static_cast<curve<double, int>*>(base_curve)->value_at(position)};
+        return int32_t{
+            static_cast<curve<double, int>*>(base_curve)->value_at(position)};
       case ossia::curve_segment_type::BOOL:
-        return bool{static_cast<curve<double, bool>*>(base_curve)->value_at(position)};
+        return bool{
+            static_cast<curve<double, bool>*>(base_curve)->value_at(position)};
       case ossia::curve_segment_type::DOUBLE:
         break;
       case ossia::curve_segment_type::ANY:
@@ -126,8 +134,9 @@ struct compute_value_uninformed_visitor
         return static_cast<constant_curve*>(base_curve)->value();
     }
 
-    throw invalid_value_type_error("computeValue_visitor: "
-                                   "drive curve type is not DOUBLE");
+    throw invalid_value_type_error(
+        "computeValue_visitor: "
+        "drive curve type is not DOUBLE");
     return {};
   }
 
@@ -136,14 +145,19 @@ struct compute_value_uninformed_visitor
     vec_behavior arr = tuple_convertible_to_vec(b);
 
     // VecNf case.
-    switch(arr.size())
+    switch (arr.size())
     {
       case 2:
-        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position));
+        return ossia::make_vec(
+            arr[0]->value_at(position), arr[1]->value_at(position));
       case 3:
-        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position));
+        return ossia::make_vec(
+            arr[0]->value_at(position), arr[1]->value_at(position),
+            arr[2]->value_at(position));
       case 4:
-        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position), arr[3]->value_at(position));
+        return ossia::make_vec(
+            arr[0]->value_at(position), arr[1]->value_at(position),
+            arr[2]->value_at(position), arr[3]->value_at(position));
       default:
         break;
     }
@@ -152,9 +166,9 @@ struct compute_value_uninformed_visitor
     std::vector<ossia::value> t;
     t.reserve(b.size());
 
-    for(const auto& e : b)
+    for (const auto& e : b)
     {
-      if(e)
+      if (e)
         t.push_back(ossia::apply_nonnull(*this, e));
       else
         return {};
@@ -171,25 +185,31 @@ struct compute_value_visitor
 
   ossia::value error() const
   {
-    throw invalid_value_type_error("computeValue_visitor: "
-                                   "Unhandled drive value type.");
+    throw invalid_value_type_error(
+        "computeValue_visitor: "
+        "Unhandled drive value type.");
     return {};
   }
 
-  template<typename T>
+  template <typename T>
   ossia::value operator()(const T&) const
-  { return error(); }
+  {
+    return error();
+  }
 
   ossia::value operator()() const
-  { return error(); }
+  {
+    return error();
+  }
 
   ossia::value operator()(const curve_ptr& c) const
   {
     auto base_curve = c.get();
-    if(!base_curve)
+    if (!base_curve)
     {
-      throw invalid_value_type_error("computeValue_visitor: "
-                                     "invalid Behavior");
+      throw invalid_value_type_error(
+          "computeValue_visitor: "
+          "invalid Behavior");
       return {};
     }
 
@@ -205,11 +225,14 @@ struct compute_value_visitor
           switch (t.second)
           {
             case ossia::curve_segment_type::FLOAT:
-              return float{static_cast<curve<double, float>*>(base_curve)->value_at(position)};
+              return float{static_cast<curve<double, float>*>(base_curve)
+                               ->value_at(position)};
             case ossia::curve_segment_type::INT:
-              return int32_t{static_cast<curve<double, int>*>(base_curve)->value_at(position)};
+              return int32_t{static_cast<curve<double, int>*>(base_curve)
+                                 ->value_at(position)};
             case ossia::curve_segment_type::BOOL:
-              return bool{static_cast<curve<double, bool>*>(base_curve)->value_at(position)};
+              return bool{static_cast<curve<double, bool>*>(base_curve)
+                              ->value_at(position)};
             case ossia::curve_segment_type::DOUBLE:
               break;
             case ossia::curve_segment_type::ANY:
@@ -234,8 +257,9 @@ struct compute_value_visitor
       }
     }
 
-    throw invalid_value_type_error("computeValue_visitor: "
-                                   "drive curve type is not DOUBLE");
+    throw invalid_value_type_error(
+        "computeValue_visitor: "
+        "drive curve type is not DOUBLE");
     return {};
   }
 
@@ -244,14 +268,19 @@ struct compute_value_visitor
     vec_behavior arr = tuple_convertible_to_vec(b);
 
     // VecNf case.
-    switch(arr.size())
+    switch (arr.size())
     {
       case 2:
-        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position));
+        return ossia::make_vec(
+            arr[0]->value_at(position), arr[1]->value_at(position));
       case 3:
-        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position));
+        return ossia::make_vec(
+            arr[0]->value_at(position), arr[1]->value_at(position),
+            arr[2]->value_at(position));
       case 4:
-        return ossia::make_vec(arr[0]->value_at(position), arr[1]->value_at(position), arr[2]->value_at(position), arr[3]->value_at(position));
+        return ossia::make_vec(
+            arr[0]->value_at(position), arr[1]->value_at(position),
+            arr[2]->value_at(position), arr[3]->value_at(position));
       default:
         break;
     }
@@ -260,10 +289,11 @@ struct compute_value_visitor
     std::vector<ossia::value> t;
     t.reserve(b.size());
 
-    for(const auto& e : b)
+    for (const auto& e : b)
     {
-      if(e)
-        t.push_back(ossia::apply_nonnull(compute_value_uninformed_visitor{position}, e));
+      if (e)
+        t.push_back(ossia::apply_nonnull(
+            compute_value_uninformed_visitor{position}, e));
       else
         return {};
     }

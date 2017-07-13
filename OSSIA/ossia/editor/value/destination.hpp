@@ -1,14 +1,14 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
-#include <ossia/network/common/address_properties.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/value/value.hpp>
+#include <ossia/network/common/address_properties.hpp>
+#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <ossia_export.h>
-#include <vector>
-#include <functional>
 #include <utility>
+#include <vector>
 namespace ossia
 {
 class value;
@@ -30,8 +30,14 @@ public:
   ossia::unit_t unit;
 
   ossia::value pull() const;
-  ossia::net::address_base& address() { return value.get(); }
-  ossia::net::address_base& address() const { return value.get(); }
+  ossia::net::address_base& address()
+  {
+    return value.get();
+  }
+  ossia::net::address_base& address() const
+  {
+    return value.get();
+  }
 
   Destination(net::address_base& v);
   Destination(net::address_base& v, destination_index);
@@ -53,9 +59,10 @@ public:
 
 OSSIA_EXPORT bool operator==(const Destination&, const Destination&);
 OSSIA_EXPORT bool operator!=(const Destination&, const Destination&);
-OSSIA_EXPORT bool operator==(const Destination&, const ossia::net::address_base&);
-OSSIA_EXPORT bool operator!=(const Destination&, const ossia::net::address_base&);
+OSSIA_EXPORT bool
+operator==(const Destination&, const ossia::net::address_base&);
+OSSIA_EXPORT bool
+operator!=(const Destination&, const ossia::net::address_base&);
 
 OSSIA_EXPORT std::string to_pretty_string(const Destination& d);
 }
-

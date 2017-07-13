@@ -1,10 +1,10 @@
 #pragma once
-#include <ossia-config.hpp>
-#include <string>
-#include <vector>
 #include <cinttypes>
 #include <memory>
+#include <ossia-config.hpp>
 #include <ossia_export.h>
+#include <string>
+#include <vector>
 
 namespace servus
 {
@@ -78,11 +78,7 @@ OSSIA_EXPORT std::vector<oscquery_connection_data> list_oscquery_devices();
  * @return A running Zeroconf server exposing the device info.
  */
 OSSIA_EXPORT zeroconf_server make_zeroconf_server(
-    std::string description,
-    std::string service,
-    std::string local_name,
-    int32_t local_port,
-    int32_t remote_port);
-
+    std::string description, std::string service, std::string local_name,
+    int32_t local_port, int32_t remote_port);
 }
 }

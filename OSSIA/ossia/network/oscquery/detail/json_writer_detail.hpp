@@ -27,31 +27,31 @@ struct json_writer_impl
   void writeValue(double i) const;
   void writeValue(bool i) const;
   void writeValue(const std::string& i) const;
-  void writeValue(const ossia::repetition_filter & i) const;
-  void writeValue(const ossia::net::instance_bounds & i) const;
+  void writeValue(const ossia::repetition_filter& i) const;
+  void writeValue(const ossia::net::instance_bounds& i) const;
 
-  template<typename T>
+  template <typename T>
   void writeValue(const optional<T>& t) const
   {
-    if(t) { writeValue(*t); }
-    else  { writer.Null(); }
+    if (t)
+    {
+      writeValue(*t);
+    }
+    else
+    {
+      writer.Null();
+    }
   }
 
   //! Writes a single attribute
   void writeAttribute(
-      const ossia::net::node_base& n,
-      ossia::string_view method
-      ) const;
-
+      const ossia::net::node_base& n, ossia::string_view method) const;
 
   //! Writes only the attributes
-  void writeNodeAttributes(
-      const ossia::net::node_base& n) const;
+  void writeNodeAttributes(const ossia::net::node_base& n) const;
 
   //! Writes a node recursively. Creates a new object.
   void writeNode(const ossia::net::node_base& n);
-
-
 };
 }
 }

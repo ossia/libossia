@@ -9,7 +9,7 @@ namespace qt
 class OSSIA_EXPORT qml_plugin
 {
 public:
-    static void reg(const char* uri);
+  static void reg(const char* uri);
 };
 #else
 class OSSIA_EXPORT qml_plugin : public QQmlExtensionPlugin
@@ -18,9 +18,9 @@ class OSSIA_EXPORT qml_plugin : public QQmlExtensionPlugin
   Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
 
 public:
-    static void reg(const char* uri);
+  static void reg(const char* uri);
 
-    void registerTypes(const char *uri) override;
+  void registerTypes(const char* uri) override;
 };
 #endif
 }

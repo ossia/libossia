@@ -18,8 +18,7 @@ namespace expressions
  * @brief expression_atom : numeric operators in expressions.
  * @see expression.hpp
  */
-class OSSIA_EXPORT expression_atom final :
-    public expression_callback_container
+class OSSIA_EXPORT expression_atom final : public expression_callback_container
 {
 public:
   using val_t = eggs::variant<ossia::value, ossia::Destination>;
@@ -30,16 +29,13 @@ public:
       const Destination& lhs, comparator op = comparator::EQUAL,
       const value& rhs = impulse{});
   expression_atom(
-      const Destination& lhs, comparator op,
-      const Destination& rhs);
-  expression_atom(
-      const value& lhs, comparator op,
-      const Destination& rhs);
+      const Destination& lhs, comparator op, const Destination& rhs);
+  expression_atom(const value& lhs, comparator op, const Destination& rhs);
 
-  struct dummy_t { };
-  expression_atom(
-      const val_t& lhs, comparator op,
-      const val_t& rhs, dummy_t);
+  struct dummy_t
+  {
+  };
+  expression_atom(const val_t& lhs, comparator op, const val_t& rhs, dummy_t);
 
   expression_atom(expression_atom&& other) = delete;
   expression_atom& operator=(expression_atom&& other) = delete;
@@ -56,11 +52,13 @@ public:
   comparator get_operator() const;
   const val_t& get_second_operand() const;
 
-
   bool operator()(const ossia::value& first, const ossia::value& second) const;
-  bool operator()(const ossia::value& first, const ossia::Destination& second) const;
-  bool operator()(const ossia::Destination& first, const ossia::value& second) const;
-  bool operator()(const ossia::Destination& first, const ossia::Destination& second) const;
+  bool operator()(
+      const ossia::value& first, const ossia::Destination& second) const;
+  bool operator()(
+      const ossia::Destination& first, const ossia::value& second) const;
+  bool operator()(
+      const ossia::Destination& first, const ossia::Destination& second) const;
 
 private:
   bool operator()(const ossia::value& first, const val_t& second) const;

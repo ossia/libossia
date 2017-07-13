@@ -7,8 +7,8 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia_export.h>
 #include <cstdint>
+#include <ossia_export.h>
 namespace ossia
 {
 class state;
@@ -27,10 +27,11 @@ class scenario;
  */
 class OSSIA_EXPORT time_event
 {
-    friend class ossia::scenario;
+  friend class ossia::scenario;
+
 public:
   /*! event status */
-  enum class status: int8_t
+  enum class status : int8_t
   {
     NONE,
     PENDING,
@@ -44,11 +45,11 @@ public:
      * does an offset beyond this event. This is useful to
      * make default cases for the scenario.
      */
-  enum class offset_behavior: int8_t
+  enum class offset_behavior : int8_t
   {
-    EXPRESSION_TRUE, //! The condition is considered True
+    EXPRESSION_TRUE,  //! The condition is considered True
     EXPRESSION_FALSE, //! The condition is considered False
-    EXPRESSION //! The condition will be evaluated
+    EXPRESSION        //! The condition will be evaluated
   };
 
   /*! to get the event status back
@@ -57,18 +58,16 @@ public:
 
 public:
   time_event(
-      time_event::exec_callback,
-      time_node& aTimeNode,
+      time_event::exec_callback, time_node& aTimeNode,
       expression_ptr anExpression);
 
   /*! destructor */
   ~time_event();
 
-
   /*! changes the callback in the event
    \param #time_event::ExecutionCallback to get #time_event's status back
    \details this may be unsafe to do during execution */
-  void set_callback(time_event::exec_callback) ;
+  void set_callback(time_event::exec_callback);
 
   /*! make the event happen to propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method
@@ -76,7 +75,7 @@ public:
    it will raise a runtime_error
    \details turning the event' status into HAPPENED will call the callback to
    notify its owner */
-  void happen() ;
+  void happen();
 
   /*! dispose the event to not propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method
@@ -84,36 +83,36 @@ public:
    it will raise a runtime_error
    \details turning the event' status into DISPOSED will call the callback to
    notify its owner */
-  void dispose() ;
+  void dispose();
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */
-  void add_state(state_element&&) ;
+  void add_state(state_element&&);
 
   /*! remove a sub state from the state of the event
    \param std::shared_ptr<#State> to remove */
-  void remove_state(const state_element&) ;
+  void remove_state(const state_element&);
 
   /*! get the #time_node where the event is
    \return std::shared_ptr<#time_node> */
-  time_node& get_time_node() const ;
+  time_node& get_time_node() const;
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
-  const state& get_state() const ;
+  const state& get_state() const;
 
   /*! get the expression of the event
   \return std::shared_ptr<expression> */
-  const expression& get_expression() const ;
+  const expression& get_expression() const;
 
   /*! set the expression of the event
    \param std::shared_ptr<expression>
    \return #time_event the event */
-  time_event& set_expression(expression_ptr) ;
+  time_event& set_expression(expression_ptr);
 
   /*! get the status of the event
    \return #Status */
-  status get_status() const ;
+  status get_status() const;
 
   /**
    * @brief getOffsetValue Returns the value of the condition if

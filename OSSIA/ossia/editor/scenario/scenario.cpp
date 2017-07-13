@@ -1,16 +1,16 @@
 #include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
 
-#include <ossia/editor/exceptions.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
-#include <iostream>
-#include <hopscotch_map.h>
+#include <ossia/editor/exceptions.hpp>
 #include <cassert>
-#include <set>
+#include <hopscotch_map.h>
+#include <iostream>
 #include <map>
+#include <set>
 
 namespace ossia
 {
@@ -23,7 +23,7 @@ scenario::scenario()
 
 scenario::~scenario()
 {
-  for(auto& timenode : m_nodes)
+  for (auto& timenode : m_nodes)
   {
     timenode->cleanup();
   }
@@ -58,10 +58,11 @@ void scenario::start()
       m_runningConstraints.insert(&cst);
       cst.start();
     }
-    // the constraint starts in the void and ends on a timenode that did execute
+    // the constraint starts in the void and ends on a timenode that did
+    // execute
     else if (
-             startStatus == time_event::status::NONE
-             && endStatus == time_event::status::HAPPENED)
+        startStatus == time_event::status::NONE
+        && endStatus == time_event::status::HAPPENED)
     {
     }
     // the end of the constraint is pending
@@ -81,7 +82,8 @@ void scenario::start()
     // error
     else
     {
-      throw execution_error("scenario_impl::start: "
+      throw execution_error(
+          "scenario_impl::start: "
           "TimeEvent's status configuration of the "
           "TimeConstraint is not handled");
     }
@@ -97,9 +99,9 @@ void scenario::stop()
     cst.stop();
   }
 
-  for(const auto& node : m_nodes)
+  for (const auto& node : m_nodes)
   {
-      node->reset();
+    node->reset();
   }
 
   m_runningConstraints.clear();
@@ -178,6 +180,4 @@ const ptr_container<time_constraint>& scenario::get_time_constraints() const
 {
   return m_constraints;
 }
-
-
 }

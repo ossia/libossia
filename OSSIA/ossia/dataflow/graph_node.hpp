@@ -1,7 +1,7 @@
 #pragma once
-#include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
 namespace ossia
@@ -26,15 +26,20 @@ public:
   virtual void run(execution_state&);
 
   void set_date(ossia::time_value d);
-  void set_date(int64_t d) { set_date(ossia::time_value(d)); }
-  ossia::time_value time() const { return m_date; }
+  void set_date(int64_t d)
+  {
+    set_date(ossia::time_value(d));
+  }
+  ossia::time_value time() const
+  {
+    return m_date;
+  }
 
   bool can_execute(const execution_state&) const;
 
   bool has_port_inputs() const;
   bool has_global_inputs() const;
   bool has_local_inputs(const execution_state&) const;
-
 
   const inlets& inputs() const;
   const outlets& outputs() const;
@@ -55,7 +60,5 @@ protected:
 
   bool m_enabled{};
   bool m_executed{};
-
 };
-
 }

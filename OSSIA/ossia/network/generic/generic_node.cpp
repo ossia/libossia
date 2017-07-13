@@ -3,8 +3,8 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
-#include <cassert>
 #include <boost/algorithm/string/replace.hpp>
+#include <cassert>
 #include <iostream>
 namespace ossia
 {
@@ -17,19 +17,19 @@ generic_node_base::generic_node_base(
   m_name = std::move(name);
 }
 
-generic_node_base::generic_node_base(std::string name, ossia::net::device_base& aDevice)
+generic_node_base::generic_node_base(
+    std::string name, ossia::net::device_base& aDevice)
     : m_device{aDevice}
 {
   m_name = std::move(name);
 }
 
-device_base&generic_node_base::get_device() const
+device_base& generic_node_base::get_device() const
 {
   return m_device;
 }
 
-
-node_base*generic_node_base::get_parent() const
+node_base* generic_node_base::get_parent() const
 {
   return m_parent;
 }
@@ -37,7 +37,7 @@ node_base*generic_node_base::get_parent() const
 node_base& generic_node_base::set_name(std::string name)
 {
   auto old_name = std::move(m_name);
-  if(m_parent)
+  if (m_parent)
   {
     read_lock_t lock{m_mutex};
     sanitize_name(name, m_parent->unsafe_children());
@@ -55,22 +55,15 @@ node_base& generic_node_base::set_name(std::string name)
   return *this;
 }
 
-
 generic_node::generic_node(
-    std::string name,
-    device_base& aDevice,
-    node_base& aParent):
-  generic_node_base{std::move(name), aDevice, aParent}
+    std::string name, device_base& aDevice, node_base& aParent)
+    : generic_node_base{std::move(name), aDevice, aParent}
 {
-
 }
 
-generic_node::generic_node(
-    std::string name,
-    device_base& aDevice):
-  generic_node_base{std::move(name), aDevice}
+generic_node::generic_node(std::string name, device_base& aDevice)
+    : generic_node_base{std::move(name), aDevice}
 {
-
 }
 
 generic_node::~generic_node()
@@ -81,7 +74,6 @@ generic_node::~generic_node()
   remove_address();
 }
 
-
 ossia::net::address_base* generic_node::get_address() const
 {
   return m_address.get();
@@ -90,7 +82,7 @@ ossia::net::address_base* generic_node::get_address() const
 void generic_node::set_address(std::unique_ptr<ossia::net::address_base> addr)
 {
   remove_address();
-  if(addr)
+  if (addr)
   {
     m_address = std::move(addr);
     m_device.on_address_created(*m_address);
@@ -136,11 +128,7 @@ bool generic_node::remove_address()
 std::unique_ptr<ossia::net::node_base>
 generic_node::make_child(const std::string& name_base)
 {
-  return std::make_unique<generic_node>(
-              name_base,
-              m_device,
-              *this);
+  return std::make_unique<generic_node>(name_base, m_device, *this);
 }
-
 }
 }

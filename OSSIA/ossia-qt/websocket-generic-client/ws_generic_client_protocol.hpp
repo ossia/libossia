@@ -2,9 +2,9 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_address.hpp>
 
-#include <QList>
 #include <QByteArray>
 #include <QJSValue>
+#include <QList>
 #include <QObject>
 
 class QQmlEngine;
@@ -20,9 +20,9 @@ class ws_generic_client_device;
 class ws_generic_client_node;
 class ws_generic_client_address;
 
-class OSSIA_EXPORT ws_generic_client_protocol final :
-    public QObject,
-    public ossia::net::protocol_base
+class OSSIA_EXPORT ws_generic_client_protocol final
+    : public QObject,
+      public ossia::net::protocol_base
 {
   Q_OBJECT
 
@@ -31,7 +31,8 @@ public:
 
   ws_generic_client_protocol(const ws_generic_client_protocol&) = delete;
   ws_generic_client_protocol(ws_generic_client_protocol&&) = delete;
-  ws_generic_client_protocol& operator=(const ws_generic_client_protocol&) = delete;
+  ws_generic_client_protocol& operator=(const ws_generic_client_protocol&)
+      = delete;
   ws_generic_client_protocol& operator=(ws_generic_client_protocol&&) = delete;
 
   ~ws_generic_client_protocol();
@@ -46,7 +47,10 @@ public:
 
   void set_device(ossia::net::device_base& dev) override;
 
-  static ws_generic_client_address_data read_data(const QJSValue& js) { return js; }
+  static ws_generic_client_address_data read_data(const QJSValue& js)
+  {
+    return js;
+  }
 signals:
   void sig_push(const ws_generic_client_address*);
 
@@ -56,7 +60,7 @@ private slots:
 private:
   void apply_reply(QJSValue);
 
-  QQmlEngine *mEngine{};
+  QQmlEngine* mEngine{};
   QQmlComponent* mComponent{};
   QObject* mItem{};
 
@@ -65,9 +69,7 @@ private:
   QByteArray mCode;
   ws_generic_client_device* mDevice{};
   QList<std::pair<QNetworkReply*, const ws_generic_client_address*>> mReplies;
-
 };
-
 }
 }
 

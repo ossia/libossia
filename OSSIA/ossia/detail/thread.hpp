@@ -1,7 +1,7 @@
 #pragma once
-#include <thread>
 #include <ossia/detail/config.hpp>
 #include <ossia_export.h>
+#include <thread>
 
 namespace ossia
 {

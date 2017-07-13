@@ -1,8 +1,8 @@
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
 #include <ossia/editor/value/value_conversion.hpp>
-#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/base/address_data.hpp>
+#include <ossia/network/common/complex_type.hpp>
 namespace ossia
 {
 namespace net
@@ -11,9 +11,9 @@ OSSIA_EXPORT void sanitize_name(QString& ret)
 {
   // Keep in sync with node.cpp
   const QChar underscore = '_';
-  for(auto& c : ret)
+  for (auto& c : ret)
   {
-    if(ossia::net::is_valid_character_for_name(c))
+    if (ossia::net::is_valid_character_for_name(c))
       continue;
     else
       c = underscore;
@@ -33,11 +33,11 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
   QString root_name = name;
   {
     auto pos = name.lastIndexOf('.');
-    if(pos != -1)
+    if (pos != -1)
     {
       bool res = false;
       name_instance = name.mid(pos + 1).toInt(&res);
-      if(res)
+      if (res)
         root_name = name.mid(0, pos);
     }
   }
@@ -50,13 +50,13 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
       is_here = true;
     }
 
-    if(n_name.size() < (root_len + 1))
+    if (n_name.size() < (root_len + 1))
       continue;
 
     bool same_root = true;
-    for(int i = 0; i < root_len; i++)
+    for (int i = 0; i < root_len; i++)
     {
-      if(n_name[i] != root_name[i])
+      if (n_name[i] != root_name[i])
       {
         break;
         same_root = false;
@@ -68,11 +68,11 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
       // Instance
       bool b = false;
       int n = n_name.midRef(root_len + 1).toInt(&b);
-      if(b)
+      if (b)
         instance_num.push_back(n);
     }
     // case where we have the "default" instance without .0
-    else if(same_root && root_len == n_name.length())
+    else if (same_root && root_len == n_name.length())
     {
       instance_num.push_back(0);
     }
@@ -96,7 +96,6 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
     }
   }
 }
-
 }
 namespace qt
 {
@@ -124,24 +123,25 @@ value js_value_inbound_visitor::operator()(bool v) const
 value js_value_inbound_visitor::operator()(char v) const
 {
   auto str = val.toString();
-  if(str.size() > 0)
+  if (str.size() > 0)
     return char(str[0].toLatin1());
   return v;
 }
 
-value js_value_inbound_visitor::operator()(const std::string &v) const
+value js_value_inbound_visitor::operator()(const std::string& v) const
 {
   return std::string(val.toString().toStdString());
 }
 
-value js_value_inbound_visitor::operator()(const std::vector<ossia::value> &v) const
+value js_value_inbound_visitor::
+operator()(const std::vector<ossia::value>& v) const
 {
-  if(val.isArray())
+  if (val.isArray())
   {
     std::vector<ossia::value> t;
 
     QJSValueIterator it(val);
-    while(it.hasNext())
+    while (it.hasNext())
     {
       it.next();
       t.push_back(value_from_jsvalue(it.value()));
@@ -154,12 +154,12 @@ value js_value_inbound_visitor::operator()(const std::vector<ossia::value> &v) c
 
 value js_value_inbound_visitor::operator()(vec2f v) const
 {
-  if(val.isArray())
+  if (val.isArray())
   {
     QJSValueIterator it(val);
     int i = 0;
     const int N = v.size();
-    while(it.hasNext() && i < N)
+    while (it.hasNext() && i < N)
     {
       it.next();
       v[i] = it.value().toNumber();
@@ -170,12 +170,12 @@ value js_value_inbound_visitor::operator()(vec2f v) const
 
 value js_value_inbound_visitor::operator()(vec3f v) const
 {
-  if(val.isArray())
+  if (val.isArray())
   {
     QJSValueIterator it(val);
     int i = 0;
     const int N = v.size();
-    while(it.hasNext() && i < N)
+    while (it.hasNext() && i < N)
     {
       it.next();
       v[i] = it.value().toNumber();
@@ -186,12 +186,12 @@ value js_value_inbound_visitor::operator()(vec3f v) const
 
 value js_value_inbound_visitor::operator()(vec4f v) const
 {
-  if(val.isArray())
+  if (val.isArray())
   {
     QJSValueIterator it(val);
     int i = 0;
     const int N = v.size();
-    while(it.hasNext() && i < N)
+    while (it.hasNext() && i < N)
     {
       it.next();
       v[i] = it.value().toNumber();
@@ -199,25 +199,28 @@ value js_value_inbound_visitor::operator()(vec4f v) const
   }
   return v;
 }
-value js_value_inbound_visitor::operator()() const { return {}; }
-
+value js_value_inbound_visitor::operator()() const
+{
+  return {};
+}
 
 ossia::complex_type get_type(const QJSValue& val)
 {
   // TODO handle other cases ? string, extended, etc...
   qDebug() << val.isNumber() << val.isString();
   auto opt_t = get_enum<ossia::val_type>(val);
-  if(opt_t) return *opt_t;
+  if (opt_t)
+    return *opt_t;
   return complex_type{};
 }
 
-net::address_data make_address_data(const QJSValue &js)
+net::address_data make_address_data(const QJSValue& js)
 {
   using namespace ossia::net;
   address_data dat;
 
   QJSValue name = js.property("name");
-  if(name.isString())
+  if (name.isString())
   {
     dat.name = name.toString().toStdString();
   }
@@ -227,7 +230,7 @@ net::address_data make_address_data(const QJSValue &js)
   }
 
   dat.type = get_type(js.property("type"));
-  if(dat.type)
+  if (dat.type)
   {
     ossia::val_type base = ossia::underlying_type(dat.type);
     auto base_v = init_value(base);
@@ -238,35 +241,36 @@ net::address_data make_address_data(const QJSValue &js)
     dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
-    dat.repetition_filter = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
-    dat.unit = ossia::parse_pretty_unit(js.property("unit").toString().toStdString());
-    ossia::net::set_description(dat.extended, js.property("description").toString().toStdString());
+    dat.repetition_filter
+        = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
+    dat.unit = ossia::parse_pretty_unit(
+        js.property("unit").toString().toStdString());
+    ossia::net::set_description(
+        dat.extended, js.property("description").toString().toStdString());
     QJSValue tags = js.property("tags");
-    if(tags.isArray())
+    if (tags.isArray())
     {
       ossia::net::tags t;
 
       QJSValueIterator tags_it{tags};
-      while(tags_it.hasNext())
+      while (tags_it.hasNext())
       {
         tags_it.next();
         auto str = tags_it.value().toString();
-        if(!str.isEmpty())
+        if (!str.isEmpty())
           t.push_back(str.toStdString());
       }
 
-      if(!t.empty())
+      if (!t.empty())
         ossia::net::set_tags(dat.extended, std::move(t));
 
-      //! \todo handle the other attributes. We should have a map of the "allowed" attributes in the qml api.
+      //! \todo handle the other attributes. We should have a map of the
+      //! "allowed" attributes in the qml api.
     }
   }
 
   return dat;
 }
-
-
-
 
 QJSValue js_value_outbound_visitor::to_enum(qml_val_type::val_type t) const
 {
@@ -312,7 +316,7 @@ QJSValue js_value_outbound_visitor::operator()(char val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(const std::string &val) const
+QJSValue js_value_outbound_visitor::operator()(const std::string& val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_val_type::val_type::String));
@@ -320,12 +324,13 @@ QJSValue js_value_outbound_visitor::operator()(const std::string &val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::make_tuple(const std::vector<value> &arr) const
+QJSValue
+js_value_outbound_visitor::make_tuple(const std::vector<value>& arr) const
 {
   auto array = engine.newArray(arr.size());
   int i = 0;
 
-  for(const auto& child : arr)
+  for (const auto& child : arr)
   {
     array.setProperty(i++, value_to_js_value(child, engine));
   }
@@ -333,7 +338,8 @@ QJSValue js_value_outbound_visitor::make_tuple(const std::vector<value> &arr) co
   return array;
 }
 
-QJSValue js_value_outbound_visitor::operator()(const std::vector<ossia::value> &val) const
+QJSValue js_value_outbound_visitor::
+operator()(const std::vector<ossia::value>& val) const
 {
   QJSValue v;
   v.setProperty("type", to_enum(qml_val_type::val_type::Tuple));
@@ -365,7 +371,10 @@ QJSValue js_value_outbound_visitor::operator()(vec4f val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()() const { return {}; }
+QJSValue js_value_outbound_visitor::operator()() const
+{
+  return {};
+}
 
 QString js_string_outbound_visitor::operator()(impulse) const
 {
@@ -392,20 +401,21 @@ QString js_string_outbound_visitor::operator()(char val) const
   return "\"" % QString{val} % "\"";
 }
 
-QString js_string_outbound_visitor::operator()(const std::string &val) const
+QString js_string_outbound_visitor::operator()(const std::string& val) const
 {
   return "\"" % QString::fromStdString(val) % "\"";
 }
 
-QString js_string_outbound_visitor::operator()(const std::vector<ossia::value> &val) const
+QString js_string_outbound_visitor::
+operator()(const std::vector<ossia::value>& val) const
 {
   QString s = "[";
 
   std::size_t n = val.size();
-  if(n != 0)
+  if (n != 0)
   {
     s += value_to_js_string(val[0]);
-    for(std::size_t i = 1; i < n; i++)
+    for (std::size_t i = 1; i < n; i++)
     {
       s += ", " % value_to_js_string(val[i]);
     }
@@ -430,28 +440,31 @@ QString js_string_outbound_visitor::operator()(vec4f val) const
   return make_array(val);
 }
 
-QString js_string_outbound_visitor::operator()() const { return (*this)(impulse{}); }
+QString js_string_outbound_visitor::operator()() const
+{
+  return (*this)(impulse{});
+}
 
 value value_from_jsvalue(const QJSValue& v)
 {
-  if(v.isNumber())
+  if (v.isNumber())
   {
     return v.toNumber();
   }
-  else if(v.isBool())
+  else if (v.isBool())
   {
     return v.toBool();
   }
-  else if(v.isString())
+  else if (v.isString())
   {
     return v.toString().toStdString();
   }
-  else if(v.isArray())
+  else if (v.isArray())
   {
     // TODO handle vec2/vec3/vec4
     QJSValueIterator it(v);
     std::vector<ossia::value> t;
-    while(it.hasNext())
+    while (it.hasNext())
     {
       t.push_back(value_from_jsvalue(it.value()));
     }
@@ -465,7 +478,7 @@ value value_from_jsvalue(const QJSValue& v)
 
 void set_address_type(QVariant::Type type, net::address_base& addr)
 {
-  switch(type)
+  switch (type)
   {
     case QVariant::Bool:
       addr.set_value_type(ossia::val_type::BOOL);
@@ -520,9 +533,10 @@ void set_address_type(QVariant::Type type, net::address_base& addr)
   }
 }
 
-QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_val)
+QVariant ossia_to_qvariant::
+operator()(QVariant::Type type, const value& ossia_val)
 {
-  switch(type)
+  switch (type)
   {
     case QVariant::Bool:
       return QVariant::fromValue(convert<bool>(ossia_val));
@@ -537,15 +551,18 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
     case QVariant::Char:
       return QVariant::fromValue(QChar::fromLatin1(convert<char>(ossia_val)));
     case QVariant::String:
-      return QVariant::fromValue(QString::fromStdString(convert<std::string>(ossia_val)));
+      return QVariant::fromValue(
+          QString::fromStdString(convert<std::string>(ossia_val)));
     case QVariant::ByteArray:
-      return QVariant::fromValue(QByteArray::fromStdString(convert<std::string>(ossia_val)));
+      return QVariant::fromValue(
+          QByteArray::fromStdString(convert<std::string>(ossia_val)));
     case QVariant::Double:
       return QVariant::fromValue(convert<double>(ossia_val));
     case QVariant::Color:
     {
       auto val = convert<vec4f>(ossia_val);
-      return QVariant::fromValue(QColor::fromRgbF(val[1], val[2], val[3], val[0]));
+      return QVariant::fromValue(
+          QColor::fromRgbF(val[1], val[2], val[3], val[0]));
     }
     case QVariant::Point:
     {
@@ -562,7 +579,7 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
       auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QVector2D(val[0], val[1]));
     }
-      break;
+    break;
     case QVariant::Vector3D:
     {
       auto val = convert<vec3f>(ossia_val);
@@ -617,7 +634,7 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
       // TODO tuple of string
     }
     case QVariant::Date:
-      // TODO double ?
+    // TODO double ?
     default:
     {
       // Use the ossia type instead
@@ -630,7 +647,7 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
 
 value qt_to_ossia::operator()(const QVariant& v)
 {
-  switch(v.type())
+  switch (v.type())
   {
     case QVariant::Bool:
       return operator()(v.toBool());
@@ -682,16 +699,13 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toStringList());
     case QVariant::Date:
       return operator()(v.toDate());
-//    case 1024: // QJSValue -> seems to crash
-//      return value_from_jsvalue(v.value<QJSValue>());
+    //    case 1024: // QJSValue -> seems to crash
+    //      return value_from_jsvalue(v.value<QJSValue>());
     default:
       return operator()();
   }
 }
-
-
 }
-
 }
 #endif
 

@@ -4,8 +4,7 @@
 namespace ossia
 {
 
-
-template<typename T>
+template <typename T>
 struct distance_ratio;
 struct distance_dataspace;
 
@@ -21,7 +20,7 @@ using inch_u = distance_ratio<std::ratio<254, 10000>>;
 using foot_u = distance_ratio<std::ratio<254 * 12, 10000>>;
 using mile_u = distance_ratio<std::ratio<254 * 12 * 5280, 10000>>;
 
-template<typename Impl>
+template <typename Impl>
 struct distance_unit
 {
   using is_unit = std::true_type;
@@ -31,83 +30,100 @@ struct distance_unit
   using dataspace_type = distance_dataspace;
 };
 
-template<typename T>
-struct distance_ratio :
-    public linear_unit<distance_unit<distance_ratio<T>>, T>
+template <typename T>
+struct distance_ratio : public linear_unit<distance_unit<distance_ratio<T>>, T>
 {
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
-
 };
 
-template<>
+template <>
 struct unit_traits<meter_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("m", "meters"); }
+  {
+    return ossia::make_string_array("m", "meters");
+  }
 };
 
-template<>
+template <>
 struct unit_traits<kilometer_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("km", "kilometers"); }
+  {
+    return ossia::make_string_array("km", "kilometers");
+  }
 };
-template<>
+template <>
 struct unit_traits<decimeter_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("dm", "decimeters"); }
+  {
+    return ossia::make_string_array("dm", "decimeters");
+  }
 };
-template<>
+template <>
 struct unit_traits<centimeter_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("cm", "centimeters"); }
+  {
+    return ossia::make_string_array("cm", "centimeters");
+  }
 };
-template<>
+template <>
 struct unit_traits<millimeter_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("mm", "millimeters"); }
+  {
+    return ossia::make_string_array("mm", "millimeters");
+  }
 };
-template<>
+template <>
 struct unit_traits<micrometer_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("um", "micrometers"); }
+  {
+    return ossia::make_string_array("um", "micrometers");
+  }
 };
-template<>
+template <>
 struct unit_traits<nanometer_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("nm", "nanometers"); }
+  {
+    return ossia::make_string_array("nm", "nanometers");
+  }
 };
-template<>
+template <>
 struct unit_traits<picometer_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("pm", "picometers"); }
+  {
+    return ossia::make_string_array("pm", "picometers");
+  }
 };
 
-
-template<>
+template <>
 struct unit_traits<inch_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("inches", "\""); }
+  {
+    return ossia::make_string_array("inches", "\"");
+  }
 };
-template<>
+template <>
 struct unit_traits<foot_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("feet", "'"); }
+  {
+    return ossia::make_string_array("feet", "'");
+  }
 };
-template<>
+template <>
 struct unit_traits<mile_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("miles"); }
+  {
+    return ossia::make_string_array("miles");
+  }
 };
-
-
 }

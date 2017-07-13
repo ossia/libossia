@@ -1,7 +1,7 @@
 #include "qml_model_property.hpp"
-#include <ossia-qt/device/qml_device.hpp>
-#include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_attributes.hpp>
+#include <ossia-qt/device/qml_device.hpp>
 
 #include <boost/algorithm/string.hpp>
 namespace ossia
@@ -9,16 +9,15 @@ namespace ossia
 namespace qt
 {
 
-qml_model_property::qml_model_property(QObject* parent):
-  QAbstractItemModel{parent}
+qml_model_property::qml_model_property(QObject* parent)
+    : QAbstractItemModel{parent}
 {
   setDevice(&qml_singleton_device::instance());
 }
 
-
 qml_model_property::~qml_model_property()
 {
-  if(m_device)
+  if (m_device)
   {
     m_device->remove(this);
   }
@@ -42,20 +41,24 @@ void qml_model_property::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
-  if(olddev != newdev)
+  if (olddev != newdev)
   {
     m_device = newdev;
 
-    if(olddev)
+    if (olddev)
     {
       olddev->remove(this);
-      disconnect(olddev, &QObject::destroyed, this, &qml_model_property::on_device_deleted);
+      disconnect(
+          olddev, &QObject::destroyed, this,
+          &qml_model_property::on_device_deleted);
     }
 
-    if(newdev)
+    if (newdev)
     {
       newdev->add(this);
-      connect(newdev, &QObject::destroyed, this, &qml_model_property::on_device_deleted);
+      connect(
+          newdev, &QObject::destroyed, this,
+          &qml_model_property::on_device_deleted);
     }
 
     emit deviceChanged(device);
@@ -83,9 +86,10 @@ void qml_model_property::setParentNode(qml_node_base* parentNode)
     return;
 
   m_parentNode = parentNode;
-  if(m_parentNode && m_parentNode->ossiaNode())
+  if (m_parentNode && m_parentNode->ossiaNode())
   {
-    ossia::net::set_instance_bounds(*m_parentNode->ossiaNode(), ossia::net::instance_bounds{0, 1000});
+    ossia::net::set_instance_bounds(
+        *m_parentNode->ossiaNode(), ossia::net::instance_bounds{0, 1000});
   }
 
   emit parentNodeChanged(parentNode);
@@ -96,7 +100,8 @@ void qml_model_property::on_node_deleted(const net::node_base&)
   m_parentNode = nullptr;
 }
 
-QModelIndex qml_model_property::index(int row, int column, const QModelIndex& parent) const
+QModelIndex
+qml_model_property::index(int row, int column, const QModelIndex& parent) const
 {
   return createIndex(row, column);
 }
@@ -149,22 +154,21 @@ void qml_model_property::updateCount()
 {
   int newCount = 0;
 
-  if(m_parentNode && !m_node.isEmpty())
+  if (m_parentNode && !m_node.isEmpty())
   {
-   if(auto on = m_parentNode->ossiaNode())
-   {
-     const std::string& instance_name = m_node.toStdString();
-     for(auto& cld : on->children())
-     {
-       const auto& name = cld->get_name();
-       if(is_instance(instance_name, name))
-         newCount++;
-     }
-   }
+    if (auto on = m_parentNode->ossiaNode())
+    {
+      const std::string& instance_name = m_node.toStdString();
+      for (auto& cld : on->children())
+      {
+        const auto& name = cld->get_name();
+        if (is_instance(instance_name, name))
+          newCount++;
+      }
+    }
   }
 
   setCount(newCount);
 }
-
 }
 }

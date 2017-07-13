@@ -1,13 +1,13 @@
 #include "json_reader_detail.hpp"
 #include "json_parser.hpp"
-#include <ossia/network/oscquery/detail/attributes.hpp>
-#include <ossia/network/oscquery/detail/value_to_json.hpp>
-#include <ossia/network/base/node_attributes.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <oscpack/osc/OscTypes.h>
+#include <ossia/network/oscquery/detail/attributes.hpp>
+#include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <brigand/algorithms/for_each.hpp>
+#include <oscpack/osc/OscTypes.h>
 #include <rapidjson/document.h>
 
 namespace ossia
@@ -20,7 +20,7 @@ namespace detail
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, int32_t& res)
 {
   bool b = val.IsInt();
-  if(b)
+  if (b)
     res = val.GetInt();
   return b;
 }
@@ -28,7 +28,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, int32_t& res)
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, float& res)
 {
   bool b = val.IsFloat();
-  if(b)
+  if (b)
     res = val.GetFloat();
   return b;
 }
@@ -36,7 +36,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, float& res)
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, double& res)
 {
   bool b = val.IsNumber();
-  if(b)
+  if (b)
     res = val.GetDouble();
   return b;
 }
@@ -44,7 +44,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, double& res)
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, std::string& res)
 {
   bool b = val.IsString();
-  if(b)
+  if (b)
     res = getString(val);
   return b;
 }
@@ -52,16 +52,18 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, std::string& res)
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, bool& res)
 {
   bool b = val.IsBool();
-  if(b)
+  if (b)
     res = val.GetBool();
   return b;
 }
 
-bool json_parser_impl::ReadValue(const rapidjson::Value& val, repetition_filter& res)
+bool json_parser_impl::ReadValue(
+    const rapidjson::Value& val, repetition_filter& res)
 {
   bool b = val.IsBool();
-  if(b)
-    res = val.GetBool() ? ossia::repetition_filter::ON : ossia::repetition_filter::OFF;
+  if (b)
+    res = val.GetBool() ? ossia::repetition_filter::ON
+                        : ossia::repetition_filter::OFF;
   return b;
 }
 
@@ -72,19 +74,31 @@ value json_parser_impl::ReadValue(const rapidjson::Value& val)
 static bool read_bounding(const rapidjson::Value& val, bounding_mode& res)
 {
   bool b = val.IsString() && val.GetStringLength() > 2;
-  if(b)
+  if (b)
   {
     const char* str = val.GetString();
 
     // we compare with the first unique letter
-    switch(str[2])
+    switch (str[2])
     {
-      case 'n': res = ossia::bounding_mode::FREE; break;
-      case 't': res = ossia::bounding_mode::CLIP; break;
-      case 'w': res = ossia::bounding_mode::LOW;  break;
-      case 'g': res = ossia::bounding_mode::HIGH; break;
-      case 'a': res = ossia::bounding_mode::WRAP; break;
-      case 'l': res = ossia::bounding_mode::FOLD; break;
+      case 'n':
+        res = ossia::bounding_mode::FREE;
+        break;
+      case 't':
+        res = ossia::bounding_mode::CLIP;
+        break;
+      case 'w':
+        res = ossia::bounding_mode::LOW;
+        break;
+      case 'g':
+        res = ossia::bounding_mode::HIGH;
+        break;
+      case 'a':
+        res = ossia::bounding_mode::WRAP;
+        break;
+      case 'l':
+        res = ossia::bounding_mode::FOLD;
+        break;
       default:
         b = false;
     }
@@ -92,17 +106,17 @@ static bool read_bounding(const rapidjson::Value& val, bounding_mode& res)
   return b;
 }
 
-
-bool json_parser_impl::ReadValue(const rapidjson::Value& val, bounding_mode& res)
+bool json_parser_impl::ReadValue(
+    const rapidjson::Value& val, bounding_mode& res)
 {
-  switch(val.GetType())
+  switch (val.GetType())
   {
     case rapidjson::kStringType:
       return read_bounding(val, res);
     case rapidjson::kArrayType:
     {
       const auto& arr = val.GetArray();
-      if(arr.Size() > 0)
+      if (arr.Size() > 0)
       {
         return read_bounding(arr[0], res);
       }
@@ -117,11 +131,17 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, bounding_mode& res
 
 static bool read_access(int res, ossia::access_mode& am)
 {
-  switch(res)
+  switch (res)
   {
-    case 1: am = ossia::access_mode::GET; break;
-    case 2: am = ossia::access_mode::SET; break;
-    case 3: am = ossia::access_mode::BI;  break;
+    case 1:
+      am = ossia::access_mode::GET;
+      break;
+    case 2:
+      am = ossia::access_mode::SET;
+      break;
+    case 3:
+      am = ossia::access_mode::BI;
+      break;
     default:
       return false;
   }
@@ -130,16 +150,16 @@ static bool read_access(int res, ossia::access_mode& am)
 
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, access_mode& am)
 {
-  switch(val.GetType())
+  switch (val.GetType())
   {
     case rapidjson::kNumberType:
       return read_access((int)val.GetDouble(), am);
     case rapidjson::kArrayType:
     {
       const auto& arr = val.GetArray();
-      if(arr.Size() > 0)
+      if (arr.Size() > 0)
       {
-        if(arr[0].IsInt())
+        if (arr[0].IsInt())
         {
           return read_access(arr[0].GetInt(), am);
         }
@@ -160,23 +180,24 @@ static bool ReadValueObject(const rapidjson::Value& val, domain& res)
 
   auto mem_end = val.MemberEnd();
 
-  if(values_it != mem_end)
+  if (values_it != mem_end)
   {
     // TODO
   }
-  else if(min_it != mem_end || max_it != mem_end)
+  else if (min_it != mem_end || max_it != mem_end)
   {
-    if(min_it != mem_end && max_it != mem_end)
+    if (min_it != mem_end && max_it != mem_end)
     {
-      res = ossia::make_domain(ReadValue(min_it->value), ReadValue(max_it->value));
+      res = ossia::make_domain(
+          ReadValue(min_it->value), ReadValue(max_it->value));
       return true;
     }
-    else if(min_it != mem_end)
+    else if (min_it != mem_end)
     {
       res = ossia::make_domain(ReadValue(min_it->value), {});
       return true;
     }
-    else if(max_it != mem_end)
+    else if (max_it != mem_end)
     {
       res = ossia::make_domain(ossia::value{}, ReadValue(max_it->value));
       return true;
@@ -188,11 +209,11 @@ static bool ReadValueObject(const rapidjson::Value& val, domain& res)
 
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
 {
-  if(val.IsObject())
+  if (val.IsObject())
   {
     return ReadValueObject(val, res);
   }
-  else if(val.IsArray())
+  else if (val.IsArray())
   {
     // TODO handle vecf domains.
     vector_domain dom;
@@ -201,9 +222,9 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
     dom.values.resize(val.GetArray().Size());
 
     int i = 0;
-    for(const rapidjson::Value& elt : val.GetArray())
+    for (const rapidjson::Value& elt : val.GetArray())
     {
-      if(elt.IsObject())
+      if (elt.IsObject())
       {
         auto min_it = elt.FindMember("MIN");
         auto max_it = elt.FindMember("MAX");
@@ -211,23 +232,23 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
 
         auto mem_end = elt.MemberEnd();
 
-        if(values_it != mem_end)
+        if (values_it != mem_end)
         {
-          if(values_it->value.IsArray())
+          if (values_it->value.IsArray())
           {
-            for(auto& val : values_it->value.GetArray())
+            for (auto& val : values_it->value.GetArray())
             {
               dom.values[i].insert(ReadValue(val));
             }
           }
         }
 
-        if(min_it != mem_end)
+        if (min_it != mem_end)
         {
           dom.min[i] = ReadValue(min_it->value);
         }
 
-        if(max_it != mem_end)
+        if (max_it != mem_end)
         {
           dom.max[i] = ReadValue(max_it->value);
         }
@@ -246,7 +267,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, unit_t& res)
 {
   bool b = val.IsString();
-  if(b)
+  if (b)
     res = parse_pretty_unit(getStringView(val));
   return b;
 }
@@ -254,12 +275,12 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, unit_t& res)
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::tags& res)
 {
   bool b = val.IsArray();
-  if(b)
+  if (b)
   {
     auto arr = val.GetArray();
-    for(auto& tag : arr)
+    for (auto& tag : arr)
     {
-      if(tag.IsString())
+      if (tag.IsString())
       {
         res.emplace_back(tag.GetString(), tag.GetStringLength());
       }
@@ -268,13 +289,14 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::tags& res)
   return b;
 }
 
-bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::instance_bounds& res)
+bool json_parser_impl::ReadValue(
+    const rapidjson::Value& val, net::instance_bounds& res)
 {
   bool b = val.IsArray();
-  if(b)
+  if (b)
   {
     auto arr = val.GetArray();
-    if(arr.Size() == 2 && arr[0].IsInt() && arr[1].IsInt())
+    if (arr.Size() == 2 && arr[0].IsInt() && arr[1].IsInt())
     {
       res.min_instances = arr[0].GetInt();
       res.max_instances = arr[1].GetInt();
@@ -287,35 +309,36 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, net::instance_boun
   return b;
 }
 
-using map_setter_fun = void(*)(const rapidjson::Value&, ossia::net::node_base&);
-template<typename Attr>
+using map_setter_fun
+    = void (*)(const rapidjson::Value&, ossia::net::node_base&);
+template <typename Attr>
 static auto make_setter_pair()
 {
-  return std::make_pair(metadata<Attr>::key(),
-                        [] (const rapidjson::Value& val, ossia::net::node_base& node) {
-    typename Attr::type res;
-    if(json_parser_impl::ReadValue(val, res))
-      Attr::setter(node, std::move(res));
-  });
+  return std::make_pair(
+      metadata<Attr>::key(),
+      [](const rapidjson::Value& val, ossia::net::node_base& node) {
+        typename Attr::type res;
+        if (json_parser_impl::ReadValue(val, res))
+          Attr::setter(node, std::move(res));
+      });
 }
 
 using reader_map_type = string_view_map<map_setter_fun>;
 
 static auto& namespaceSetterMap()
 {
-  static const reader_map_type map{
-    [] {
-      reader_map_type attr_impl;
-      using namespace ossia::net;
+  static const reader_map_type map{[] {
+    reader_map_type attr_impl;
+    using namespace ossia::net;
 
-      // Remaining metadata
-      brigand::for_each<attributes_when_reading>([&] (auto attr) {
-        using type = typename decltype(attr)::type;
-        attr_impl.insert(make_setter_pair<type>());
-      });
+    // Remaining metadata
+    brigand::for_each<attributes_when_reading>([&](auto attr) {
+      using type = typename decltype(attr)::type;
+      attr_impl.insert(make_setter_pair<type>());
+    });
 
-      return attr_impl;
-    }()};
+    return attr_impl;
+  }()};
 
   return map;
 }
@@ -325,89 +348,97 @@ static auto& attributesSetterMap()
   // This one has the missing attributes.
   // They are not in the previous map because we want to
   // handle them separately when parsing the namespace.
-  static const reader_map_type map{
-    [] {
-      using namespace ossia::net;
+  static const reader_map_type map{[] {
+    using namespace ossia::net;
 
-      reader_map_type attr_impl = namespaceSetterMap();
-      // Remaining metadata
-      brigand::for_each< brigand::list<
-          typetag_attribute,
-          extended_type_attribute,
-          unit_attribute
-          > >([&] (auto attr) {
-        using type = typename decltype(attr)::type;
-        attr_impl.insert(make_setter_pair<type>());
-      });
+    reader_map_type attr_impl = namespaceSetterMap();
+    // Remaining metadata
+    brigand::
+        for_each<brigand::
+                     list<typetag_attribute, extended_type_attribute, unit_attribute>>(
+            [&](auto attr) {
+              using type = typename decltype(attr)::type;
+              attr_impl.insert(make_setter_pair<type>());
+            });
 
-      return attr_impl;
-    }()};
+    return attr_impl;
+  }()};
 
   return map;
 }
 
 static ossia::val_type VecTypetag(ossia::string_view typetag)
 {
-  //! \todo Important : in the oscquery spec, find out if the given type shall be fixed or can vary.
+  //! \todo Important : in the oscquery spec, find out if the given type shall
+  //! be fixed or can vary.
   //! How to specify it ? wildcards ? TYPETAG='*' ? TYPETAG='???'
-  if     (typetag == "ff"   || typetag == "[ff]")   return ossia::val_type::VEC2F;
-  else if(typetag == "fff"  || typetag == "[fff]")  return ossia::val_type::VEC3F;
-  else if(typetag == "ffff" || typetag == "[ffff]") return ossia::val_type::VEC4F;
-  else                                              return ossia::val_type::TUPLE;
+  if (typetag == "ff" || typetag == "[ff]")
+    return ossia::val_type::VEC2F;
+  else if (typetag == "fff" || typetag == "[fff]")
+    return ossia::val_type::VEC3F;
+  else if (typetag == "ffff" || typetag == "[ffff]")
+    return ossia::val_type::VEC4F;
+  else
+    return ossia::val_type::TUPLE;
 }
 
 //! Used to check if an actual value with multiple elements,
 //! such as [ 1, 3, "foo" ] has a special typetag
 static ossia::val_type VecTypetag(const rapidjson::Value& val)
 {
-  if(val.IsArray())
+  if (val.IsArray())
   {
     const auto n = val.Size();
-    if(n >= 2 && n <= 4)
+    if (n >= 2 && n <= 4)
     {
-      bool ok = ossia::all_of(val.GetArray(), [] (const rapidjson::Value& v) {
+      bool ok = ossia::all_of(val.GetArray(), [](const rapidjson::Value& v) {
         return v.IsFloat();
       });
 
-      if(ok)
+      if (ok)
       {
-        switch(n)
+        switch (n)
         {
-          case 2: return ossia::val_type::VEC2F;
-          case 3: return ossia::val_type::VEC3F;
-          case 4: return ossia::val_type::VEC4F;
-          default: break;
+          case 2:
+            return ossia::val_type::VEC2F;
+          case 3:
+            return ossia::val_type::VEC3F;
+          case 4:
+            return ossia::val_type::VEC4F;
+          default:
+            break;
         }
       }
     }
-
   }
   return ossia::val_type::TUPLE;
 }
 
-void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& obj)
+void json_parser_impl::readObject(
+    net::node_base& node, const rapidjson::Value& obj)
 {
   auto& map = namespaceSetterMap();
 
   // If it's a real parameter
-  if(obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
+  if (obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
   {
     // Read all the attributes
     // First initialize the address if it's not an empty node
     ossia::string_view typetag;
 
     // Try to read all the attributes that could give us the concrete type.
-    complex_type val_type; // Implementation type
+    complex_type val_type;                      // Implementation type
     optional<ossia::unit_t> unit = ossia::none; // Unit
     optional<ossia::extended_type> ext_type = ossia::none; // Extended type
 
-    // TODO maybe read all the attributes and store their iterators, then do them in the order we want ?
+    // TODO maybe read all the attributes and store their iterators, then do
+    // them in the order we want ?
     auto value_it = obj.FindMember(detail::attribute_value());
     auto default_value_it = obj.FindMember(detail::attribute_default_value());
 
     // Look for the typetag
     auto type_it = obj.FindMember(detail::attribute_typetag());
-    if(type_it != obj.MemberEnd())
+    if (type_it != obj.MemberEnd())
     {
       typetag = getStringView(type_it->value);
       val_type = get_type_from_osc_typetag(typetag);
@@ -415,57 +446,60 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
 
     // Look for the unit
     auto unit_it = obj.FindMember(detail::attribute_unit());
-    if(unit_it != obj.MemberEnd())
+    if (unit_it != obj.MemberEnd())
     {
       ossia::unit_t u;
       ReadValue(unit_it->value, u);
-      if(u)
+      if (u)
         unit = std::move(u);
     }
 
     // Look for an extended type
     auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
-    if(ext_type_it != obj.MemberEnd() && ext_type_it->value.IsString())
+    if (ext_type_it != obj.MemberEnd() && ext_type_it->value.IsString())
     {
       ext_type = getString(ext_type_it->value);
     }
 
     // If any of these exist, we can create an address
-    if(val_type || unit || ext_type)
+    if (val_type || unit || ext_type)
     {
       ossia::net::address_base* addr = nullptr;
-      if(unit) // The unit enforces the value type
+      if (unit) // The unit enforces the value type
       {
         addr = node.create_address(ossia::matching_type(*unit));
 
         addr->set_unit(*unit);
         ossia::net::set_extended_type(node, ext_type);
       }
-      else if(ext_type)
+      else if (ext_type)
       {
-        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse case; also "tuple_type()"
+        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse
+                                                              // case; also
+                                                              // "tuple_type()"
         const auto& e_type = *ext_type;
-        if(e_type == generic_buffer_type() || e_type == filesystem_path_type())
+        if (e_type == generic_buffer_type()
+            || e_type == filesystem_path_type())
         {
           actual_type = ossia::val_type::STRING;
         }
-        else if(e_type == tuple_type())
+        else if (e_type == tuple_type())
         {
           // nothing to do, but don't remove so that
           // we don't go into the float_array case
         }
-        else if(e_type == float_array_type())
+        else if (e_type == float_array_type())
         {
           // Look for Vec2f, Vec3f, Vec4f
           actual_type = VecTypetag(typetag);
-          if(actual_type == ossia::val_type::TUPLE)
+          if (actual_type == ossia::val_type::TUPLE)
           {
             // We try to find through the actual values
-            if(value_it != obj.MemberEnd())
+            if (value_it != obj.MemberEnd())
             {
               actual_type = VecTypetag(value_it->value);
             }
-            else if(default_value_it != obj.MemberEnd())
+            else if (default_value_it != obj.MemberEnd())
             {
               actual_type = VecTypetag(default_value_it->value);
             }
@@ -475,45 +509,47 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
         addr = node.create_address(actual_type);
         ossia::net::set_extended_type(node, ext_type);
       }
-      else if(val_type)
+      else if (val_type)
       {
         addr = setup_address(val_type, node);
       }
 
       // We have a type. Now we read the value according to it.
-      if(value_it != obj.MemberEnd())
+      if (value_it != obj.MemberEnd())
       {
         ossia::value res = node.get_address()->value();
         int typetag_counter = 0;
-        bool ok = res.apply(oscquery::detail::json_to_value{value_it->value, typetag, typetag_counter});
-        if(ok)
+        bool ok = res.apply(oscquery::detail::json_to_value{
+            value_it->value, typetag, typetag_counter});
+        if (ok)
           node.get_address()->set_value(std::move(res));
       }
 
       // Same for default value
-      if(default_value_it != obj.MemberEnd())
+      if (default_value_it != obj.MemberEnd())
       {
         ossia::value res = node.get_address()->value();
         int typetag_counter = 0;
-        bool ok = res.apply(oscquery::detail::json_to_value{default_value_it->value, typetag, typetag_counter});
-        if(ok)
+        bool ok = res.apply(oscquery::detail::json_to_value{
+            default_value_it->value, typetag, typetag_counter});
+        if (ok)
           ossia::net::set_default_value(node, std::move(res));
       }
     }
     else
     {
       // We may be able to use the actual or default value
-      if(value_it != obj.MemberEnd())
+      if (value_it != obj.MemberEnd())
       {
         auto val = ReadValue(value_it->value);
         auto addr = node.create_address(val.getType());
         addr->set_value(std::move(val));
       }
 
-      if(default_value_it != obj.MemberEnd())
+      if (default_value_it != obj.MemberEnd())
       {
         auto val = ReadValue(default_value_it->value);
-        if(node.get_address())
+        if (node.get_address())
         {
           ossia::net::set_default_value(node, std::move(val));
         }
@@ -528,10 +564,10 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
 
     // Read all the members
     auto memb_end = obj.MemberEnd();
-    for(auto it = obj.MemberBegin(); it != memb_end; ++it)
+    for (auto it = obj.MemberBegin(); it != memb_end; ++it)
     {
       auto action = map.find(getStringView(it->name));
-      if(action != map.end())
+      if (action != map.end())
       {
         action.value()(it->value, node);
       }
@@ -540,22 +576,21 @@ void json_parser_impl::readObject(net::node_base& node, const rapidjson::Value& 
 
   // Recurse on the children
   auto contents_it = obj.FindMember(detail::contents());
-  if(contents_it != obj.MemberEnd() && contents_it->value.IsObject())
+  if (contents_it != obj.MemberEnd() && contents_it->value.IsObject())
   {
     auto& obj = contents_it->value;
-    for(auto child_it = obj.MemberBegin(); child_it != obj.MemberEnd(); ++child_it)
+    for (auto child_it = obj.MemberBegin(); child_it != obj.MemberEnd();
+         ++child_it)
     {
       auto cld = node.create_child(getString(child_it->name));
       readObject(*cld, child_it->value);
     }
   }
 }
-
 }
 
-
-
-std::shared_ptr<rapidjson::Document> json_parser::parse(const std::string& message)
+std::shared_ptr<rapidjson::Document>
+json_parser::parse(const std::string& message)
 {
   auto document = std::make_shared<rapidjson::Document>();
   document->Parse(message);
@@ -570,30 +605,31 @@ int json_parser::get_port(const rapidjson::Value& obj)
   return obj[detail::osc_port()].GetInt();
 }
 
-ossia::oscquery::message_type json_parser::message_type(const rapidjson::Value& obj)
+ossia::oscquery::message_type
+json_parser::message_type(const rapidjson::Value& obj)
 {
   static string_view_map<ossia::oscquery::message_type> map{
-    { detail::path_added(), ossia::oscquery::message_type::PathAdded },
-    { detail::path_changed(), ossia::oscquery::message_type::PathChanged },
-    { detail::path_removed(), ossia::oscquery::message_type::PathRemoved },
-    { detail::attributes_changed(), ossia::oscquery::message_type::AttributesChanged }
-  };
+      {detail::path_added(), ossia::oscquery::message_type::PathAdded},
+      {detail::path_changed(), ossia::oscquery::message_type::PathChanged},
+      {detail::path_removed(), ossia::oscquery::message_type::PathRemoved},
+      {detail::attributes_changed(),
+       ossia::oscquery::message_type::AttributesChanged}};
   using namespace detail;
   auto val_it = obj.FindMember(detail::attribute_value());
-  if(val_it != obj.MemberEnd())
+  if (val_it != obj.MemberEnd())
   {
     return ossia::oscquery::message_type::Value;
   }
 
   auto it = obj.FindMember(detail::command());
-  if(it != obj.MemberEnd())
+  if (it != obj.MemberEnd())
   {
     auto mt_it = map.find(getString(it->value)); // TODO string_view
-    if(mt_it != map.end())
+    if (mt_it != map.end())
       return mt_it.value();
   }
 
-  if(obj.FindMember(detail::osc_port()) != obj.MemberEnd())
+  if (obj.FindMember(detail::osc_port()) != obj.MemberEnd())
   {
     return ossia::oscquery::message_type::Device;
   }
@@ -601,15 +637,16 @@ ossia::oscquery::message_type json_parser::message_type(const rapidjson::Value& 
   return ossia::oscquery::message_type::Namespace; // TODO More checks needed
 }
 
-void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& obj)
+void json_parser::parse_namespace(
+    net::node_base& root, const rapidjson::Value& obj)
 {
   // Get the point from which we must update the namespace.
   auto path_it = obj.FindMember(detail::attribute_full_path());
-  if(path_it != obj.MemberEnd())
+  if (path_it != obj.MemberEnd())
   {
     auto str = getStringView(path_it->value);
     auto node = ossia::net::find_node(root, str);
-    if(node)
+    if (node)
     {
       node->clear_children();
       node->remove_address();
@@ -620,7 +657,6 @@ void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& 
     {
       throw ossia::node_not_found_error{std::string(str) + "not found"};
     }
-
   }
   else
   {
@@ -631,7 +667,8 @@ void json_parser::parse_namespace(net::node_base& root, const rapidjson::Value& 
   }
 }
 
-void json_parser::parse_value(net::address_base& addr, const rapidjson::Value& obj)
+void json_parser::parse_value(
+    net::address_base& addr, const rapidjson::Value& obj)
 {
   auto val = addr.value();
   val.apply(detail::json_to_value_unchecked{obj});
@@ -639,21 +676,20 @@ void json_parser::parse_value(net::address_base& addr, const rapidjson::Value& o
 }
 
 void json_parser::parse_address_value(
-    net::node_base& root,
-    const rapidjson::Value& obj)
+    net::node_base& root, const rapidjson::Value& obj)
 {
   auto path_it = obj.FindMember(detail::attribute_full_path());
-  if(path_it != obj.MemberEnd())
+  if (path_it != obj.MemberEnd())
   {
     auto val_it = obj.FindMember(detail::attribute_value());
-    if(val_it != obj.MemberEnd())
+    if (val_it != obj.MemberEnd())
     {
       auto path = getStringView(path_it->value);
       auto node = ossia::net::find_node(root, path);
-      if(node)
+      if (node)
       {
         auto addr = node->get_address();
-        if(addr)
+        if (addr)
         {
           auto val = addr->value();
           val.apply(detail::json_to_value_unchecked{val_it->value});
@@ -667,39 +703,37 @@ void json_parser::parse_address_value(
 }
 
 // Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
-static auto splitParentChild(ossia::string_view s) ->
-optional<
-std::pair<
-ossia::string_view, ossia::string_view
->
->
+static auto splitParentChild(ossia::string_view s)
+    -> optional<std::pair<ossia::string_view, ossia::string_view>>
 {
   auto last_slash_pos = s.rfind('/');
-  if(last_slash_pos != std::string::npos)
+  if (last_slash_pos != std::string::npos)
   {
-    return std::make_pair(s.substr(0, last_slash_pos), s.substr(last_slash_pos + 1));
+    return std::make_pair(
+        s.substr(0, last_slash_pos), s.substr(last_slash_pos + 1));
   }
   return ossia::none;
 }
 
-void json_parser::parse_path_added(net::node_base& root, const rapidjson::Value& obj)
+void json_parser::parse_path_added(
+    net::node_base& root, const rapidjson::Value& obj)
 {
   auto dat_it = obj.FindMember(detail::data());
-  if(dat_it != obj.MemberEnd())
+  if (dat_it != obj.MemberEnd())
   {
     auto& dat = dat_it->value;
     auto path_it = dat.FindMember(detail::attribute_full_path());
-    if(path_it != dat.MemberEnd())
+    if (path_it != dat.MemberEnd())
     {
       auto opt_str = splitParentChild(getStringView(path_it->value));
-      if(opt_str)
+      if (opt_str)
       {
         auto& str = *opt_str;
         auto node = ossia::net::find_node(root, str.first);
-        if(node)
+        if (node)
         {
           auto cld = node->find_child(std::string(str.second));
-          if(!cld)
+          if (!cld)
           {
             auto cld = node->create_child(std::string(str.second));
             detail::json_parser_impl::readObject(*cld, dat);
@@ -714,20 +748,22 @@ void json_parser::parse_path_added(net::node_base& root, const rapidjson::Value&
   }
 }
 
-void json_parser::parse_path_removed(net::node_base& root, const rapidjson::Value& obj)
+void json_parser::parse_path_removed(
+    net::node_base& root, const rapidjson::Value& obj)
 {
   auto dat_it = obj.FindMember(detail::data());
-  if(dat_it != obj.MemberEnd())
+  if (dat_it != obj.MemberEnd())
   {
     auto path = getStringView(dat_it->value);
-    if(auto node = ossia::net::find_node(root, path))
+    if (auto node = ossia::net::find_node(root, path))
     {
       ossia::net::set_zombie(*node, true);
     }
   }
 }
 
-void json_parser::parse_path_changed(net::node_base& map, const rapidjson::Value& mess)
+void json_parser::parse_path_changed(
+    net::node_base& map, const rapidjson::Value& mess)
 {
   // TODO
   /*
@@ -744,32 +780,33 @@ void json_parser::parse_path_changed(net::node_base& map, const rapidjson::Value
       */
 }
 
-void json_parser::parse_attributes_changed(net::node_base& root, const rapidjson::Value& obj)
+void json_parser::parse_attributes_changed(
+    net::node_base& root, const rapidjson::Value& obj)
 {
   auto dat_it = obj.FindMember(detail::data());
-  if(dat_it != obj.MemberEnd())
+  if (dat_it != obj.MemberEnd())
   {
     auto& dat = dat_it->value;
     auto path_it = dat.FindMember(detail::attribute_full_path());
-    if(path_it != dat.MemberEnd())
+    if (path_it != dat.MemberEnd())
     {
       auto path = getStringView(path_it->value);
       auto node = ossia::net::find_node(root, path);
-      if(node)
+      if (node)
       {
         auto& map = detail::attributesSetterMap();
         auto memb_end = dat.MemberEnd();
-        for(auto it = dat.MemberBegin(); it != memb_end; ++it)
+        for (auto it = dat.MemberBegin(); it != memb_end; ++it)
         {
           auto action = map.find(getStringView(it->name));
-          if(action != map.end())
+          if (action != map.end())
           {
             action.value()(it->value, *node);
           }
         }
       }
-      }
     }
   }
+}
 }
 }

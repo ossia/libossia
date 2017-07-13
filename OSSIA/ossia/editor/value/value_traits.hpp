@@ -129,5 +129,4 @@ bool is_numeric(const ossia::value& v);
  */
 OSSIA_EXPORT
 bool is_array(const ossia::value& v);
-
 }

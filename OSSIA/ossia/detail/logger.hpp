@@ -4,9 +4,9 @@
 
 // They have to be in this order
 #define SPDLOG_FINAL final
-#include <spdlog/logger.h>
-#include <fmt/ostream.h>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <spdlog/logger.h>
 
 #include <ossia_export.h>
 
@@ -20,5 +20,4 @@ namespace ossia
  * The logger is first created in ossia::context construction.
  */
 OSSIA_EXPORT spdlog::logger& logger();
-
 }

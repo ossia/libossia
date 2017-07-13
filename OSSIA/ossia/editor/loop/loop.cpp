@@ -1,7 +1,7 @@
-#include <ossia/editor/state/state_element.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/loop/loop.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
-#include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/state/state_element.hpp>
 namespace ossia
 {
 loop::loop(
@@ -25,7 +25,8 @@ loop::loop(
 
   // create a pattern TimeConstraint with all durations equal by default
   m_constraint = time_constraint::create(
-      [=](double position, time_value date, const ossia::state_element& state) {
+      [=](double position, time_value date,
+          const ossia::state_element& state) {
         return constraint_callback(position, date, state);
       },
       *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
@@ -43,17 +44,17 @@ state_element loop::offset(ossia::time_value offset, double pos)
   // reset internal mOffsetState
   m_offsetState.clear();
 
-  time_value patternOffset{std::fmod(
-      (double)offset, (double)m_constraint->get_nominal_duration())};
+  time_value patternOffset{
+      std::fmod((double)offset, (double)m_constraint->get_nominal_duration())};
   flatten_and_filter(m_offsetState, m_constraint->offset(patternOffset));
 
   // compile mOffsetState with all HAPPENED event's states
-  if(unmuted())
+  if (unmuted())
   {
     if (m_constraint->get_start_event().get_status()
         == time_event::status::HAPPENED)
       flatten_and_filter(
-            m_offsetState, m_constraint->get_start_event().get_state());
+          m_offsetState, m_constraint->get_start_event().get_state());
   }
 
   // TODO why is mOffsetState different from mCurrentState
@@ -76,7 +77,7 @@ state_element loop::state(ossia::time_value date, double pos)
     m_startNode->process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
-    if(unmuted())
+    if (unmuted())
     {
       for (const auto& timeEvent : statusChangedEvents)
         if (timeEvent->get_status() == time_event::status::HAPPENED)
@@ -87,11 +88,10 @@ state_element loop::state(ossia::time_value date, double pos)
     // don't tick if the pattern constraint is starting to avoid double
     // ticks
     auto& startEvent = m_constraint->get_start_event();
-    bool not_starting = none_of(
-                          statusChangedEvents, [&](time_event* ev) {
-                        return ev->get_status() == time_event::status::HAPPENED
-                        && ev == &startEvent;
-  });
+    bool not_starting = none_of(statusChangedEvents, [&](time_event* ev) {
+      return ev->get_status() == time_event::status::HAPPENED
+             && ev == &startEvent;
+    });
 
     if (not_starting)
     {
@@ -118,7 +118,7 @@ state_element loop::state(ossia::time_value date, double pos)
 
   //! \see mCurrentState is filled below in
   //! loop::PatternConstraintCallback
-  if(unmuted())
+  if (unmuted())
     return m_currentState;
   return ossia::state_element{};
 }
@@ -147,8 +147,7 @@ void loop::resume()
   m_constraint->resume();
 }
 
-const std::shared_ptr<time_constraint>
-loop::get_time_constraint() const
+const std::shared_ptr<time_constraint> loop::get_time_constraint() const
 {
   return m_constraint;
 }

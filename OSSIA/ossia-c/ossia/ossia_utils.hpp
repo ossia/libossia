@@ -1,13 +1,13 @@
 #pragma once
-#include <ossia-c/ossia-c.h>
 #include <ossia/ossia.hpp>
+#include <ossia-c/ossia-c.h>
 
 #include <algorithm>
-#include <cstring>
 #include <cstdio>
-#include <ossia-c/log/ossia_log.h>
+#include <cstring>
 #include <fmt/format.h>
-template<typename Str, typename... Args>
+#include <ossia-c/log/ossia_log.h>
+template <typename Str, typename... Args>
 void DEBUG_LOG_FMT(Str fmt, Args... args)
 {
   auto str = fmt::format(fmt, args...);
@@ -15,30 +15,31 @@ void DEBUG_LOG_FMT(Str fmt, Args... args)
 }
 struct ossia_protocol
 {
-    ossia_protocol(ossia::net::protocol_base* p): protocol{p} { }
-    ossia::net::protocol_base* protocol{};
+  ossia_protocol(ossia::net::protocol_base* p) : protocol{p}
+  {
+  }
+  ossia::net::protocol_base* protocol{};
 };
 
 struct ossia_device
 {
-    std::unique_ptr<ossia::net::device_base> device;
+  std::unique_ptr<ossia::net::device_base> device;
 };
 
 struct ossia_domain
 {
-    ossia::domain domain;
+  ossia::domain domain;
 };
 
 struct ossia_value_callback_index
 {
-    ossia::net::address_base::iterator it;
+  ossia::net::address_base::iterator it;
 };
 
 struct ossia_value
 {
-    ossia::value value;
+  ossia::value value;
 };
-
 
 inline auto convert(ossia_type t)
 {
@@ -105,24 +106,21 @@ inline auto convert(ossia_value_t v)
   return v->value;
 }
 
-
-template<typename Fun>
-auto safe_function(const char name[], Fun f)
--> decltype(f())
-try
+template <typename Fun>
+auto safe_function(const char name[], Fun f) -> decltype(f()) try
 {
   // DEBUG_LOG_FMT("Entering %s", name);
   return f();
 }
-catch(const std::exception& e)
+catch (const std::exception& e)
 {
   DEBUG_LOG_FMT("%s: %s", name, e.what());
   return decltype(f())();
 }
-catch(...)
+catch (...)
 {
-DEBUG_LOG_FMT("%s: Exception caught", name);
-return decltype(f())();
+  DEBUG_LOG_FMT("%s: Exception caught", name);
+  return decltype(f())();
 }
 
 inline const char* copy_string(const std::string& str)
@@ -133,4 +131,3 @@ inline const char* copy_string(const std::string& str)
   mbuffer[n] = 0;
   return mbuffer;
 }
-

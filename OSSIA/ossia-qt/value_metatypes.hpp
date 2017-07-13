@@ -1,6 +1,6 @@
 #pragma once
-#include <QMetaType>
 #include <ossia/editor/value/value.hpp>
+#include <QMetaType>
 
 Q_DECLARE_METATYPE(ossia::vec2f)
 Q_DECLARE_METATYPE(ossia::vec3f)

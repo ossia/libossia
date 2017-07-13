@@ -1,11 +1,11 @@
 #include "qml_logger.hpp"
 #include <ossia/network/common/websocket_log_sink.hpp>
-#include <spdlog/spdlog.h>
-#include <QFileInfo>
-#include <QDebug>
-#include <QQmlEngine>
 #include <QCoreApplication>
+#include <QDebug>
 #include <QFile>
+#include <QFileInfo>
+#include <QQmlEngine>
+#include <spdlog/spdlog.h>
 namespace ossia
 {
 namespace qt
@@ -13,10 +13,10 @@ namespace qt
 
 static std::shared_ptr<spdlog::logger> m_globalQtLogger;
 qml_logger::qml_logger()
-  : m_logger{spdlog::get("ossia")}
-  , m_appName{"The App"}
-  , m_loggerHost{"ws://127.0.0.1:1337"}
-  , m_heartbeatDur{5}
+    : m_logger{spdlog::get("ossia")}
+    , m_appName{"The App"}
+    , m_loggerHost{"ws://127.0.0.1:1337"}
+    , m_heartbeatDur{5}
 {
   m_globalQtLogger = m_logger;
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
@@ -24,7 +24,6 @@ qml_logger::qml_logger()
 
 qml_logger::~qml_logger()
 {
-
 }
 
 qml_logger& qml_logger::instance()
@@ -103,43 +102,55 @@ void qml_logger::connectLogger()
   m_logger.reset();
   m_globalQtLogger.reset();
   m_ws.reset();
-  if(m_loggerHost.isEmpty())
+  if (m_loggerHost.isEmpty())
     return;
-  if(m_appName.isEmpty())
+  if (m_appName.isEmpty())
     return;
 
   m_ws = std::make_shared<websocket_threaded_connection>(
-           m_loggerHost.toStdString());
+      m_loggerHost.toStdString());
   m_logger = std::make_shared<spdlog::logger>(
-               "qml-logger",
-               std::make_shared<websocket_log_sink>(m_ws,
-               m_appName.toStdString()));
+      "qml-logger",
+      std::make_shared<websocket_log_sink>(m_ws, m_appName.toStdString()));
   m_globalQtLogger = m_logger;
   m_logger->set_level((spdlog::level::level_enum)m_logLevel);
 
-  if(m_heartbeatDur > 0)
+  if (m_heartbeatDur > 0)
   {
-    m_heartbeat = std::make_shared<websocket_heartbeat>(m_ws, m_appName.toStdString(), std::chrono::seconds(m_heartbeatDur));
+    m_heartbeat = std::make_shared<websocket_heartbeat>(
+        m_ws, m_appName.toStdString(), std::chrono::seconds(m_heartbeatDur));
   }
 }
 
-void qml_logger::trace(const QString& s) {
-  if(m_logger) m_logger->trace("{}", s.toStdString());
+void qml_logger::trace(const QString& s)
+{
+  if (m_logger)
+    m_logger->trace("{}", s.toStdString());
 }
-void qml_logger::info(const QString& s) {
-  if(m_logger) m_logger->info("{}", s.toStdString());
+void qml_logger::info(const QString& s)
+{
+  if (m_logger)
+    m_logger->info("{}", s.toStdString());
 }
-void qml_logger::debug(const QString& s) {
-  if(m_logger) m_logger->debug("{}", s.toStdString());
+void qml_logger::debug(const QString& s)
+{
+  if (m_logger)
+    m_logger->debug("{}", s.toStdString());
 }
-void qml_logger::warning(const QString& s) {
-  if(m_logger) m_logger->warn("{}", s.toStdString());
+void qml_logger::warning(const QString& s)
+{
+  if (m_logger)
+    m_logger->warn("{}", s.toStdString());
 }
-void qml_logger::error(const QString& s) {
-  if(m_logger) m_logger->error("{}", s.toStdString());
+void qml_logger::error(const QString& s)
+{
+  if (m_logger)
+    m_logger->error("{}", s.toStdString());
 }
-void qml_logger::critical(const QString& s) {
-  if(m_logger) m_logger->critical("{}", s.toStdString());
+void qml_logger::critical(const QString& s)
+{
+  if (m_logger)
+    m_logger->critical("{}", s.toStdString());
 }
 
 void qml_logger::setLoggerHost(QString loggerHost)
@@ -155,7 +166,7 @@ void qml_logger::setLoggerHost(QString loggerHost)
 static void LogQtToOssia(
     QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
-  if(!m_globalQtLogger)
+  if (!m_globalQtLogger)
     return;
 
   auto basename_arr = QFileInfo(context.file).baseName().toUtf8();
@@ -165,34 +176,24 @@ static void LogQtToOssia(
   switch (type)
   {
     case QtDebugMsg:
-      m_globalQtLogger->info("{} ({}:{})",
-                              localMsg.constData(),
-                              filename,
-                              context.line);
+      m_globalQtLogger->info(
+          "{} ({}:{})", localMsg.constData(), filename, context.line);
       break;
     case QtInfoMsg:
-      m_globalQtLogger->info("{} ({}:{})",
-                              localMsg.constData(),
-                              filename,
-                              context.line);
+      m_globalQtLogger->info(
+          "{} ({}:{})", localMsg.constData(), filename, context.line);
       break;
     case QtWarningMsg:
-      m_globalQtLogger->warn("{} ({}:{})",
-                              localMsg.constData(),
-                              filename,
-                              context.line);
+      m_globalQtLogger->warn(
+          "{} ({}:{})", localMsg.constData(), filename, context.line);
       break;
     case QtCriticalMsg:
-      m_globalQtLogger->error("{} ({}:{})",
-                              localMsg.constData(),
-                              filename,
-                              context.line);
+      m_globalQtLogger->error(
+          "{} ({}:{})", localMsg.constData(), filename, context.line);
       break;
     case QtFatalMsg:
-      m_globalQtLogger->error("{} ({}:{})",
-                              localMsg.constData(),
-                              filename,
-                              context.line);
+      m_globalQtLogger->error(
+          "{} ({}:{})", localMsg.constData(), filename, context.line);
   }
 }
 
@@ -204,7 +205,7 @@ void qml_logger::setLogQtMessages(bool logQtMessages)
   m_logQtMessages = logQtMessages;
   emit logQtMessagesChanged(m_logQtMessages);
 
-  if(m_logQtMessages)
+  if (m_logQtMessages)
   {
     qInstallMessageHandler(LogQtToOssia);
   }
@@ -231,39 +232,40 @@ void qml_logger::setLogLevel(qml_logger::log_level l)
 
   m_logLevel = l;
   emit logLevelChanged(l);
-  if(m_logger)
-    m_logger->set_level((spdlog::level::level_enum) l);
+  if (m_logger)
+    m_logger->set_level((spdlog::level::level_enum)l);
 }
 
 void qml_logger::startHeartbeat(QVariantMap data)
 {
   std::map<std::string, eggs::variant<std::string, int>> m;
-  if(data.find("pid") == data.end())
+  if (data.find("pid") == data.end())
   {
     m.insert({"pid", QCoreApplication::applicationPid()});
   }
 
-  if(data.find("cmd") == data.end())
+  if (data.find("cmd") == data.end())
   {
     m.insert({"cmd", QCoreApplication::applicationFilePath().toStdString()});
   }
 
-  for(auto key : data.keys()) {
+  for (auto key : data.keys())
+  {
     auto v = data[key];
-    if(v.type() == QVariant::Type::String) {
+    if (v.type() == QVariant::Type::String)
+    {
       m.insert({key.toStdString(), v.toString().toStdString()});
     }
-    else {
+    else
+    {
       m.insert({key.toStdString(), v.toInt()});
     }
   }
 
-  if(m_heartbeat)
+  if (m_heartbeat)
   {
     m_heartbeat->send_init(m);
   }
 }
-
 }
-
 }

@@ -1,17 +1,17 @@
 #pragma once
-#include <boost/container/flat_set.hpp>
-#include <boost/functional/hash.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ModernMIDI/midi_message.h>
+#include <boost/container/flat_set.hpp>
+#include <boost/functional/hash.hpp>
 #include <eggs/variant.hpp>
 
-#include <vector>
 #include <array>
 #include <deque>
+#include <vector>
 namespace std
 {
-template<typename T>
+template <typename T>
 class hash<std::pair<T*, T*>>
 {
 public:
@@ -28,7 +28,7 @@ public:
 namespace ossia
 {
 
-template<typename T>
+template <typename T>
 using set = boost::container::flat_set<T>;
 
 using destination_t = eggs::variant<
@@ -44,10 +44,16 @@ struct outlet;
 struct inlet;
 using inlet_ptr = std::shared_ptr<inlet>;
 using outlet_ptr = std::shared_ptr<outlet>;
-struct base_pair { graph_edge* edge{}; };
+struct base_pair
+{
+  graph_edge* edge{};
+};
 using inlet_pair = base_pair;
 using outlet_pair = base_pair;
-inline bool operator==(base_pair lhs, base_pair rhs) { return lhs.edge == rhs.edge; }
+inline bool operator==(base_pair lhs, base_pair rhs)
+{
+  return lhs.edge == rhs.edge;
+}
 
 struct audio_port;
 struct midi_port;

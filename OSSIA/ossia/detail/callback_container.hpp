@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <list>
-#include <stdexcept>
 #include <mutex>
 #include <ossia_export.h>
+#include <stdexcept>
 namespace ossia
 {
 
@@ -12,29 +12,24 @@ namespace ossia
  *
  * Means that an invalid callback was passed
  */
-struct OSSIA_EXPORT invalid_callback_error :
-    public std::logic_error
+struct OSSIA_EXPORT invalid_callback_error : public std::logic_error
 {
-  invalid_callback_error(const char* e):
-    std::logic_error(e)
+  invalid_callback_error(const char* e) : std::logic_error(e)
   {
-
   }
 
-  invalid_callback_error():
-    std::logic_error("Bad callback")
+  invalid_callback_error() : std::logic_error("Bad callback")
   {
-
   }
 };
-
 
 template <typename T>
 /**
  * @brief The callback_container class
  *
  * Contains callbacks.
- * Classes that have network callbacks may want to derive from this and implement
+ * Classes that have network callbacks may want to derive from this and
+ * implement
  * on_first_callback_added, on_removing_last_callback.
  *
  * This allows to cleanly stop listening when there are no callbacks.
@@ -43,7 +38,9 @@ template <typename T>
 class callback_container
 {
 public:
-  callback_container() { }
+  callback_container()
+  {
+  }
   callback_container(const callback_container& other)
   {
     std::lock_guard<std::mutex> lck{other.m_mutx};
@@ -67,7 +64,9 @@ public:
     return *this;
   }
 
-  virtual ~callback_container() { }
+  virtual ~callback_container()
+  {
+  }
 
   /**
    * @brief impl How the callbackas are stored.
@@ -85,7 +84,7 @@ public:
   iterator add_callback(T callback)
   {
     T cb = callback;
-    if(cb)
+    if (cb)
     {
       std::lock_guard<std::mutex> lck{m_mutx};
       auto it = m_callbacks.insert(m_callbacks.begin(), std::move(cb));
@@ -141,7 +140,7 @@ public:
     std::lock_guard<std::mutex> lck{m_mutx};
     for (auto& callback : m_callbacks)
     {
-      if(callback)
+      if (callback)
         callback(std::forward<Args>(args)...);
     }
   }
@@ -152,7 +151,7 @@ public:
   void callbacks_clear()
   {
     std::lock_guard<std::mutex> lck{m_mutx};
-    if(!m_callbacks.empty())
+    if (!m_callbacks.empty())
       on_removing_last_callback();
     m_callbacks.clear();
   }
@@ -185,5 +184,4 @@ private:
   impl m_callbacks;
   mutable std::mutex m_mutx;
 };
-
 }

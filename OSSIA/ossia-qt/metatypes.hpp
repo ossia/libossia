@@ -1,11 +1,11 @@
 #pragma once
-#include <ossia-qt/value_metatypes.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/path.hpp>
+#include <ossia-qt/value_metatypes.hpp>
 
 Q_DECLARE_METATYPE(ossia::state)
 Q_DECLARE_METATYPE(ossia::custom_state)

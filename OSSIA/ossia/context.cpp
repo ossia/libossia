@@ -10,15 +10,15 @@ namespace ossia
 static void ossia_global_init()
 {
   static bool init = false;
-  if(!init)
+  if (!init)
   {
 
-  // Create a logger for the library.
-  logger();
+    // Create a logger for the library.
+    logger();
 
-  // Register QML types
+// Register QML types
 #if defined(QT_QML_LIB)
-  qt::qml_plugin::reg("Ossia");
+    qt::qml_plugin::reg("Ossia");
 #endif
   }
 }
@@ -38,13 +38,13 @@ context::~context() = default;
 
 spdlog::logger& logger()
 {
-  static spdlog::logger& init = [] () -> spdlog::logger& {
-                                auto logger = spdlog::get("ossia");
-                                if(logger)
-                                return *logger;
-                                else
-                                return *spdlog::stderr_logger_mt("ossia");
-}();
+  static spdlog::logger& init = []() -> spdlog::logger& {
+    auto logger = spdlog::get("ossia");
+    if (logger)
+      return *logger;
+    else
+      return *spdlog::stderr_logger_mt("ossia");
+  }();
 
   return init;
 }

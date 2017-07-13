@@ -1,10 +1,10 @@
 #pragma once
-#include <ossia/network/common/complex_type.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/detail/any_map.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/extended_types.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/detail/any_map.hpp>
 
 namespace ossia
 {
@@ -24,10 +24,8 @@ struct address_data
   address_data& operator=(const address_data&) = default;
   address_data& operator=(address_data&&) = default;
 
-  address_data(std::string n):
-    name{std::move(n)}
+  address_data(std::string n) : name{std::move(n)}
   {
-
   }
 
   std::string name;
@@ -44,9 +42,14 @@ struct address_data
 
   extended_attributes extended;
 
-  operator const ossia::extended_attributes&() const { return extended; }
-  operator ossia::extended_attributes&() { return extended; }
+  operator const ossia::extended_attributes&() const
+  {
+    return extended;
+  }
+  operator ossia::extended_attributes&()
+  {
+    return extended;
+  }
 };
-
 }
 }

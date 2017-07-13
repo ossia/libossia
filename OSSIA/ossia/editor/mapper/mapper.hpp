@@ -1,12 +1,12 @@
 #pragma once
+#include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/state/state.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/address.hpp>
-#include <ossia/editor/curve/behavior.hpp>
-#include <ossia/detail/optional.hpp>
 #include <ossia_export.h>
 
 #include <ossia/detail/mutex.hpp>
@@ -27,15 +27,11 @@ struct time_value;
  * The driver address is where the input value is taken from;
  * The driven address is where the output value is sent to.
  */
-class OSSIA_EXPORT mapper final :
-    public ossia::time_process
+class OSSIA_EXPORT mapper final : public ossia::time_process
 {
 public:
   mapper();
-  mapper(
-      ossia::Destination,
-      ossia::Destination,
-      ossia::behavior);
+  mapper(ossia::Destination, ossia::Destination, ossia::behavior);
 
   ~mapper();
 
@@ -55,7 +51,8 @@ private:
   void pause() override;
   void resume() override;
 
-  static ossia::value compute_value(const ossia::value&, const ossia::behavior&);
+  static ossia::value
+  compute_value(const ossia::value&, const ossia::behavior&);
 
   void driver_value_callback(ossia::value value);
 

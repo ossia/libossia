@@ -248,7 +248,8 @@ public:
   }
 };
 template <typename Fun>
-auto make_tuple_visitor(const std::vector<ossia::value>& lhs, const ossia::value& val, Fun f)
+auto make_tuple_visitor(
+    const std::vector<ossia::value>& lhs, const ossia::value& val, Fun f)
 {
   return TupleVisitor<Fun>{lhs, val, f};
 }
@@ -256,7 +257,8 @@ auto make_tuple_visitor(const std::vector<ossia::value>& lhs, const ossia::value
 struct TupleValue
 {
   template <typename Fun>
-  static bool apply(const std::vector<ossia::value>& lhs, const ossia::value& val, Fun fun)
+  static bool
+  apply(const std::vector<ossia::value>& lhs, const ossia::value& val, Fun fun)
   {
     auto vis = make_tuple_visitor(lhs, val, fun);
 

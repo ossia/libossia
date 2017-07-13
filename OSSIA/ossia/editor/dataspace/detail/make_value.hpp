@@ -5,14 +5,14 @@
 namespace ossia
 {
 
-template<typename U, typename V>
+template <typename U, typename V>
 struct make_value_helper;
 
-template<typename U>
+template <typename U>
 struct make_value_helper<U, float>
 {
 
-  template<typename T>
+  template <typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const T& t)
   {
     // TODO maybe return first value for tuple or vecNf ?
@@ -38,82 +38,84 @@ struct make_value_helper<U, float>
   }
 };
 
-template<typename U>
+template <typename U>
 struct make_value_helper<U, ossia::vec2f>
 {
 
-  template<typename T>
+  template <typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const T& t)
   {
     // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
+  OSSIA_INLINE ossia::value_with_unit
+  operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 2>>(t)};
   }
-/*
-  OSSIA_INLINE ossia::value_with_unit operator()(Float t)
-  {
-    return strong_value<U>{fill_vec<2>(t)};
-  }
-*/
+  /*
+    OSSIA_INLINE ossia::value_with_unit operator()(Float t)
+    {
+      return strong_value<U>{fill_vec<2>(t)};
+    }
+  */
   OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec2f t)
   {
     return strong_value<U>{t};
   }
 };
 
-template<typename U>
+template <typename U>
 struct make_value_helper<U, ossia::vec3f>
 {
 
-  template<typename T>
+  template <typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const T& t)
   {
     // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
+  OSSIA_INLINE ossia::value_with_unit
+  operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 3>>(t)};
   }
-/*
-  OSSIA_INLINE ossia::value_with_unit operator()(Float t)
-  {
-    return strong_value<U>{fill_vec<3>(t)};
-  }
-*/
+  /*
+    OSSIA_INLINE ossia::value_with_unit operator()(Float t)
+    {
+      return strong_value<U>{fill_vec<3>(t)};
+    }
+  */
   OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec3f t)
   {
     return strong_value<U>{t};
   }
 };
 
-
-template<typename U>
+template <typename U>
 struct make_value_helper<U, ossia::vec4f>
 {
 
-  template<typename T>
+  template <typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const T& t)
   {
     // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
+  OSSIA_INLINE ossia::value_with_unit
+  operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 4>>(t)};
   }
-/*
-  OSSIA_INLINE ossia::value_with_unit operator()(Float t)
-  {
-    return strong_value<U>{fill_vec<4>(t)};
-  }
-*/
+  /*
+    OSSIA_INLINE ossia::value_with_unit operator()(Float t)
+    {
+      return strong_value<U>{fill_vec<4>(t)};
+    }
+  */
   OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec4f t)
   {
     return strong_value<U>{t};
@@ -122,11 +124,10 @@ struct make_value_helper<U, ossia::vec4f>
 
 struct make_value_with_unit_visitor
 {
-  template<typename Val, typename Unit>
+  template <typename Val, typename Unit>
   OSSIA_INLINE ossia::value_with_unit operator()(const Val& v, const Unit& u)
   {
     return make_value_helper<Unit, typename Unit::value_type>{}(v);
   }
 };
-
 }

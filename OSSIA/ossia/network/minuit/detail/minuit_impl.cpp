@@ -54,8 +54,9 @@ ossia::string_view to_minuit_type_text(const ossia::value& val)
     }
     ossia::string_view operator()() const
     {
-      throw invalid_value_type_error("to_minuit_type_text: "
-                                     "Trying to send null value");
+      throw invalid_value_type_error(
+          "to_minuit_type_text: "
+          "Trying to send null value");
       return {};
     }
   };
@@ -63,27 +64,29 @@ ossia::string_view to_minuit_type_text(const ossia::value& val)
   return val.apply(ValueStringVisitor{});
 }
 
-static const auto& attribute_unordered_map() {
+static const auto& attribute_unordered_map()
+{
   static const string_view_map<minuit_attribute> attr{
-        {make_string_view("value"), minuit_attribute::Value},
-        {make_string_view("type"), minuit_attribute::Type},
-        {make_string_view("service"), minuit_attribute::Service},
-        {make_string_view("priority"), minuit_attribute::Priority},
-        {make_string_view("rangeBounds"), minuit_attribute::RangeBounds},
-        {make_string_view("rangeClipmode"), minuit_attribute::RangeClipMode},
-        {make_string_view("description"), minuit_attribute::Description},
-        {make_string_view("repetitionsFilter"), minuit_attribute::RepetitionFilter},
-        {make_string_view("tags"), minuit_attribute::Tags},
-        {make_string_view("active"), minuit_attribute::Active},
-        {make_string_view("valueDefault"), minuit_attribute::ValueDefault},
-        {make_string_view("priority"), minuit_attribute::Priority},
-        {make_string_view("dataspace"), minuit_attribute::Dataspace},
-        {make_string_view("dataspaceUnit"), minuit_attribute::DataspaceUnit},
-        {make_string_view("rampFunction"), minuit_attribute::RampFunction},
-        {make_string_view("rampDrive"), minuit_attribute::RampDrive},
-        {make_string_view("valueStepsize"), minuit_attribute::ValueStepSize},
-        {make_string_view("rampFunctionParameters"), minuit_attribute::RampFunctionParameters}
-    };
+      {make_string_view("value"), minuit_attribute::Value},
+      {make_string_view("type"), minuit_attribute::Type},
+      {make_string_view("service"), minuit_attribute::Service},
+      {make_string_view("priority"), minuit_attribute::Priority},
+      {make_string_view("rangeBounds"), minuit_attribute::RangeBounds},
+      {make_string_view("rangeClipmode"), minuit_attribute::RangeClipMode},
+      {make_string_view("description"), minuit_attribute::Description},
+      {make_string_view("repetitionsFilter"),
+       minuit_attribute::RepetitionFilter},
+      {make_string_view("tags"), minuit_attribute::Tags},
+      {make_string_view("active"), minuit_attribute::Active},
+      {make_string_view("valueDefault"), minuit_attribute::ValueDefault},
+      {make_string_view("priority"), minuit_attribute::Priority},
+      {make_string_view("dataspace"), minuit_attribute::Dataspace},
+      {make_string_view("dataspaceUnit"), minuit_attribute::DataspaceUnit},
+      {make_string_view("rampFunction"), minuit_attribute::RampFunction},
+      {make_string_view("rampDrive"), minuit_attribute::RampDrive},
+      {make_string_view("valueStepsize"), minuit_attribute::ValueStepSize},
+      {make_string_view("rampFunctionParameters"),
+       minuit_attribute::RampFunctionParameters}};
   return attr;
 }
 

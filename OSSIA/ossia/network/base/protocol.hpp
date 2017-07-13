@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <ossia/network/common/network_logger.hpp>
-#include <memory>
 #include <future>
+#include <memory>
 
 #include <ossia_export.h>
 
@@ -58,12 +58,15 @@ public:
   /**
    * @brief Notify the network that an address should be listened to.
    *
-   * In some protocols (Minuit, OSCQuery), this may send a message to the other client
+   * In some protocols (Minuit, OSCQuery), this may send a message to the other
+   * client
    * so that it regularly sends values of this address to the local computer.
    *
-   * If an address is listened to, when a message is received, address_base::setValue will be called,
+   * If an address is listened to, when a message is received,
+   * address_base::setValue will be called,
    * which will notify the local signals.
-   * Else, address_base::setValueQuiet will be called : the value will be updated but the signals
+   * Else, address_base::setValueQuiet will be called : the value will be
+   * updated but the signals
    * won't be notified.
    */
   virtual bool observe(address_base&, bool) = 0;
@@ -72,7 +75,9 @@ public:
    * @brief Begin observation without notifying the other computers.
    */
   virtual bool observe_quietly(address_base&, bool)
-  { return false; }
+  {
+    return false;
+  }
 
   /**
    * @brief If the protocol supports it, request the namespace corresponding
@@ -81,7 +86,8 @@ public:
   virtual bool update(node_base& node_base) = 0;
 
   /**
-   * @brief It is mandatory to call this function from device implementations, when
+   * @brief It is mandatory to call this function from device implementations,
+   * when
    * the protocol is set.
    */
   virtual void set_device(ossia::net::device_base& dev)
@@ -90,13 +96,16 @@ public:
 
   //! Replace the loggers used
   void set_logger(const network_logger& l)
-  { m_logger = l; }
+  {
+    m_logger = l;
+  }
   const network_logger& get_logger() const
-  { return m_logger; }
+  {
+    return m_logger;
+  }
 
 protected:
   network_logger m_logger;
 };
-
 }
 }

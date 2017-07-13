@@ -10,9 +10,11 @@ namespace net
 {
 class generic_device;
 /**
- * \brief A protocol used to expose a local application's data through multiple other protocols.
+ * \brief A protocol used to expose a local application's data through multiple
+ * other protocols.
  *
- * For instance use this when developing an artistic application with parameters
+ * For instance use this when developing an artistic application with
+ * parameters
  * that you want to be able to control from another software.
  */
 class OSSIA_EXPORT multiplex_protocol final : public ossia::net::protocol_base
@@ -33,7 +35,8 @@ public:
 
   void set_device(ossia::net::device_base& dev) override;
 
-  //! Use this to add protocols through which you will expose the device. For instance OSC, Minuit, etc.
+  //! Use this to add protocols through which you will expose the device. For
+  //! instance OSC, Minuit, etc.
   void expose_to(std::unique_ptr<ossia::net::protocol_base> p);
 
   //! Stop exposition to a protocol. It will be deleted.

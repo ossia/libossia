@@ -1,7 +1,8 @@
 /************************************************************************
 
         IMPORTANT NOTE : this file contains two clearly delimited sections :
-        the ARCHITECTURE section (in two parts) and the USER section. Each section
+        the ARCHITECTURE section (in two parts) and the USER section. Each
+section
         is governed by its own copyright and license. Please check individually
         each section for license and copyright information.
 *************************************************************************/
@@ -33,39 +34,39 @@
  ************************************************************************
  ************************************************************************/
 
-#include <libgen.h>
-#include <stdlib.h>
-#include <iostream>
-#include <list>
 #include <cmath>
+#include <iostream>
+#include <libgen.h>
+#include <list>
+#include <stdlib.h>
 
+#include "faust/audio/portaudio-dsp.h"
 #include "faust/gui/FUI.h"
-#include "faust/misc.h"
 #include "faust/gui/GUI.h"
 #include "faust/gui/console.h"
-#include "faust/audio/portaudio-dsp.h"
+#include "faust/misc.h"
 
 #include "OssiaUI.h"
-
 
 /**************************BEGIN USER SECTION **************************/
 /******************************************************************************
 *******************************************************************************
 
-                                                               VECTOR INTRINSICS
+                                                               VECTOR
+INTRINSICS
 
 *******************************************************************************
 *******************************************************************************/
 
-<<includeIntrinsic>>
+<< includeIntrinsic >>
 
-<<includeclass>>
+    << includeclass >>
 
-  /***************************END USER SECTION ***************************/
+    /***************************END USER SECTION ***************************/
 
-  /*******************BEGIN ARCHITECTURE SECTION (part 2/2)***************/
+    /*******************BEGIN ARCHITECTURE SECTION (part 2/2)***************/
 
-mydsp* DSP;
+    mydsp* DSP;
 
 std::list<GUI*> GUI::fGuiList;
 ztimedmap GUI::gTimedZoneMap;
@@ -73,28 +74,28 @@ ztimedmap GUI::gTimedZoneMap;
 //-------------------------------------------------------------------------
 // 									MAIN
 //-------------------------------------------------------------------------
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    char* appname = basename(argv[0]);
+  char* appname = basename(argv[0]);
 
-    DSP = new mydsp();
-    if (DSP==0) {
-        std::cerr << "Unable to allocate Faust DSP object" << std::endl;
-        exit(1);
-    }
+  DSP = new mydsp();
+  if (DSP == 0)
+  {
+    std::cerr << "Unable to allocate Faust DSP object" << std::endl;
+    exit(1);
+  }
 
-    OssiaUI ossia{1234, 5678};
-    DSP->buildUserInterface(&ossia);
+  OssiaUI ossia{1234, 5678};
+  DSP->buildUserInterface(&ossia);
 
-    portaudio audio (44100, 64);
-    audio.init(appname, DSP);
-    audio.start();
+  portaudio audio(44100, 64);
+  audio.init(appname, DSP);
+  audio.start();
 
-    ossia.run(50);
+  ossia.run(50);
 
-    audio.stop();
+  audio.stop();
 
-    return 0;
+  return 0;
 }
 /********************END ARCHITECTURE SECTION (part 2/2)****************/
-

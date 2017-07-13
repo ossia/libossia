@@ -7,11 +7,11 @@ namespace ossia
 template <typename T>
 struct domain_base;
 
-template<typename Domain>
+template <typename Domain>
 struct value_set_clamp
 {
   const Domain& domain;
-  template<typename U>
+  template <typename U>
   value operator()(bounding_mode b, U&& val)
   {
     const auto& values = domain.values;
@@ -22,11 +22,9 @@ struct value_set_clamp
     else
     {
       auto it = values.find(val);
-      return (it != values.end())
-          ? ossia::value{std::forward<U>(val)}
-          : ossia::value{};
+      return (it != values.end()) ? ossia::value{std::forward<U>(val)}
+                                  : ossia::value{};
     }
   }
 };
-
 }

@@ -1,19 +1,19 @@
 #pragma once
-#include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/base/name_validation.hpp>
+#include <ossia/network/common/address_properties.hpp>
 
-#include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/any_map.hpp>
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/locked_container.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/detail/locked_container.hpp>
 
 #include <ossia/detail/mutex.hpp>
 #include <functional>
 #include <memory>
-#include <string>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
+#include <string>
 #if defined(OSSIA_QT)
 class QString;
 OSSIA_EXPORT
@@ -71,7 +71,10 @@ public:
    *
    * \see ossia::net::address_string_from_node
    */
-  const std::string& get_name() const { return m_name; }
+  const std::string& get_name() const
+  {
+    return m_name;
+  }
   virtual node_base& set_name(std::string) = 0;
 
   //! Allows a node to carry a value
@@ -82,7 +85,8 @@ public:
   virtual address_base* get_address() const = 0;
 
   /** Allows to add arbitrary key-value metadata to nodes.
-   * There is a list of pre-defined attributes available in \ref node_attributes.hpp
+   * There is a list of pre-defined attributes available in \ref
+   * node_attributes.hpp
    */
   const extended_attributes& get_extended_attributes() const;
   void set_extended_attributes(const extended_attributes&);
@@ -101,24 +105,26 @@ public:
    */
   boost::any get_attribute(ossia::string_view str) const;
 
-  template<typename T>
+  template <typename T>
   void set(ossia::string_view str, const T& val);
-  template<typename T>
+  template <typename T>
   void set(ossia::string_view str, T&& val);
 
-  template<typename Attribute, typename T>
+  template <typename Attribute, typename T>
   void set(Attribute a, const T& value);
-  template<typename Attribute, typename T>
+  template <typename Attribute, typename T>
   void set(Attribute a, T& value);
-  template<typename Attribute, typename T>
+  template <typename Attribute, typename T>
   void set(Attribute a, T&& value);
 
   /**
    * @brief create_child Adds a sub-child of the given name.
    *
-   * @note The name of the child may be modified, so it should be checked after creation.
+   * @note The name of the child may be modified, so it should be checked after
+   * creation.
    *
-   * If you need to add multiple childs in one go (for instance `/foo/bar/baz/blop` if this node
+   * If you need to add multiple childs in one go (for instance
+   * `/foo/bar/baz/blop` if this node
    * is `foo`), see ossia::net::find_or_create_node.
    *
    * @return A pointer to the child if it could be created, else nullptr.
@@ -146,7 +152,6 @@ public:
   node_base* find_child(const QString& name);
 #endif
 
-
   //! Return true if this node is parent of this children
   bool has_child(ossia::net::node_base&);
 
@@ -156,8 +161,14 @@ public:
   //! Remove all the children.
   void clear_children();
 
-  operator const extended_attributes&() const { return m_extended; }
-  operator extended_attributes&() { return m_extended; }
+  operator const extended_attributes&() const
+  {
+    return m_extended;
+  }
+  operator extended_attributes&()
+  {
+    return m_extended;
+  }
 
   locked_container<const children_t> children() const
   {
@@ -165,7 +176,10 @@ public:
   }
 
   //! Non mutex-protected version. With great powers, yada yada etc etc
-  const auto& unsafe_children() const { return m_children; }
+  const auto& unsafe_children() const
+  {
+    return m_children;
+  }
 
   //! Return a copy of the children vector to iterate without deadlocking.
   std::vector<node_base*> children_copy() const;
@@ -222,9 +236,8 @@ find_or_create_node(node_base& dev, ossia::string_view address_base);
 /**
  * @brief Calls find_node or create_node according to the value `create`
  */
-OSSIA_EXPORT node_base*
-find_or_create_node(node_base& dev, ossia::string_view address_base, bool create);
-
+OSSIA_EXPORT node_base* find_or_create_node(
+    node_base& dev, ossia::string_view address_base, bool create);
 
 void sanitize_name(std::string& name, const node_base::children_t& brethren);
 }

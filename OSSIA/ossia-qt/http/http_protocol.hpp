@@ -2,9 +2,9 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia-qt/http/http_address.hpp>
 
-#include <QList>
 #include <QByteArray>
 #include <QJSValue>
+#include <QList>
 #include <QObject>
 
 class QQmlEngine;
@@ -20,9 +20,8 @@ class http_device;
 class http_node;
 class http_address;
 
-class OSSIA_EXPORT http_protocol final :
-    public QObject,
-    public ossia::net::protocol_base
+class OSSIA_EXPORT http_protocol final : public QObject,
+                                         public ossia::net::protocol_base
 {
   Q_OBJECT
 
@@ -46,7 +45,10 @@ public:
 
   void set_device(ossia::net::device_base& dev) override;
 
-  static http_address_data read_data(const QJSValue& js) { return js; }
+  static http_address_data read_data(const QJSValue& js)
+  {
+    return js;
+  }
 signals:
   void sig_push(const http_address*);
 
@@ -56,7 +58,7 @@ private slots:
 private:
   void apply_reply(QJSValue);
 
-  QQmlEngine *mEngine{};
+  QQmlEngine* mEngine{};
   QQmlComponent* mComponent{};
 
   QNetworkAccessManager* mAccessManager{};
@@ -65,7 +67,6 @@ private:
   http_device* mDevice{};
   QList<std::pair<QNetworkReply*, const http_address*>> mReplies;
 };
-
 }
 }
 

@@ -1,29 +1,30 @@
 
 #pragma once
+#include <ossia/network/base/address.hpp>
 #include <QAbstractItemModel>
 #include <QObject>
 #include <QQmlProperty>
 #include <QQmlPropertyValueSource>
-#include <ossia/network/base/address.hpp>
 #include <ossia-qt/device/qml_node_base.hpp>
 namespace ossia
 {
 namespace qt
 {
-class OSSIA_EXPORT qml_model_property :
-    public QAbstractItemModel
+class OSSIA_EXPORT qml_model_property : public QAbstractItemModel
 {
   Q_OBJECT
   Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged)
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
-  Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged)
+  Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode
+                 NOTIFY parentNodeChanged)
 public:
   qml_model_property(QObject* parent = nullptr);
   ~qml_model_property();
 
 public:
-  QModelIndex index(int row, int column, const QModelIndex& parent) const override;
+  QModelIndex
+  index(int row, int column, const QModelIndex& parent) const override;
   QModelIndex parent(const QModelIndex& child) const override;
   int rowCount(const QModelIndex& parent) const override;
   int columnCount(const QModelIndex& parent) const override;
@@ -56,8 +57,6 @@ private:
   qml_node_base* m_parentNode{};
   qml_device* m_device{};
   int m_count{};
-
 };
-
 }
 }

@@ -10,19 +10,19 @@ struct tuple_clamp
 {
   const vector_domain& domain;
 
-  ossia::value operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
-  ossia::value operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
+  ossia::value
+  operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
+  ossia::value
+  operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
   // TODO numeric_tuple_clamp that will be used instead
   // of the loops in domain_clamp_visitor
-
 };
 
-template<std::size_t N>
+template <std::size_t N>
 struct vec_clamp
 {
   const vecf_domain<N>& domain;
 
   ossia::value operator()(bounding_mode b, std::array<float, N> val) const;
 };
-
 }
