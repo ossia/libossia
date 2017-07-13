@@ -48,6 +48,11 @@ case "$TRAVIS_OS_NAME" in
         tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
         mkdir -p /tmp/rpi/root
         sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
+
+        # Copy boost to system path and image path
+        sudo ln -s /opt/boost /usr/include/
+        sudo rm -rf /tmp/root/usr/include/boost
+        sudo cp -R /opt/boost /tmp/root/usr/include/
     fi
   ;;
   osx)
