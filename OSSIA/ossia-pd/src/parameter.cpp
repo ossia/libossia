@@ -66,7 +66,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
   if (x_node->get_name() != std::string(x_name->s_name))
     renaming(this);
 
-  x_node->about_to_be_deleted.connect<t_param, &t_param::isDeleted>(this);
+  x_node->about_to_be_deleted.connect<t_param, &t_param::is_deleted>(this);
   ossia::net::address_base* local_address{};
   std::string type = x_type->s_name;
   ossia::transform(type, type.begin(), ::tolower);
@@ -260,9 +260,9 @@ ossia::safe_vector<t_param*>& t_param::quarantine()
   return quarantine;
 }
 
-void t_param::isDeleted(const net::node_base& n)
+void t_param::is_deleted(const net::node_base& n)
 {
-  x_node->about_to_be_deleted.disconnect<t_param, &t_param::isDeleted>(this);
+  x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
   x_node = nullptr;
   obj_quarantining<t_param>(this);
 }
@@ -271,22 +271,6 @@ ossia::safe_vector<t_param*>& t_param::rename()
 {
   static ossia::safe_vector<t_param*> rename;
   return rename;
-}
-
-bool t_param::isRenamed(t_param* x)
-{
-  return x->rename().contains(x);
-}
-
-void t_param::renaming(t_param* x)
-{
-  if (!isRenamed(x))
-    x->rename().push_back(x);
-}
-
-void t_param::derenaming(t_param* x)
-{
-  x->rename().remove_all(x);
 }
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)

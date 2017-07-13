@@ -11,6 +11,7 @@ namespace pd
 
 struct t_param : t_obj_base
 {
+  using is_model = std::true_type;
   bool register_node(ossia::net::node_base* node);
   bool do_registration(ossia::net::node_base* node);
   bool unregister();
@@ -30,16 +31,11 @@ struct t_param : t_obj_base
   bool x_hidden;
 
   static ossia::safe_vector<t_param*>& quarantine();
-
-  void isDeleted(const ossia::net::node_base& n);
-
   static ossia::safe_vector<t_param*>& rename();
 
-  bool isRenamed(t_param* x);
+  void is_deleted(const ossia::net::node_base& n);
 
-  void renaming(t_param* x);
 
-  void derenaming(t_param* x);
 };
 }
 } // namespace

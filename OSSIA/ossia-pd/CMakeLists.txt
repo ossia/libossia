@@ -53,6 +53,7 @@ set(PROJECT_SRCS
   src/view.cpp
   src/view.hpp
   src/utils.hpp
+  src/utils.cpp
   )
 
 include(GenerateExportHeader)

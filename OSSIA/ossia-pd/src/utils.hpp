@@ -8,15 +8,67 @@
 #include <ossia-pd/src/view.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <fmt/format.h>
+
 namespace ossia
 {
 namespace pd
 {
 
-template <typename T, typename Ostream>
-void get_absolute_path_view(
-    T* x, std::vector<std::string>& vs, Ostream& fullpath)
+std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
+std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath);
+
+/**
+ * @brief get_absolute_path
+ * @param t_obj_base
+ * @return std::string with full path to object from root device in an OSC
+ * style (with '/')
+ */
+
+template<typename T>
+std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
 {
+  fmt::MemoryWriter fullpath;
+  std::vector<std::string> vs;
+
+  t_model* model = nullptr;
+  int model_level = 0;
+
+  int start_level = 0;
+  if (std::is_same<T, t_model>::value)
+    start_level = 1;
+
+  model = find_parent_alive<t_model>(
+      &x->x_obj, "ossia.model", start_level, &model_level);
+  t_model* tmp = nullptr;
+
+  while (model)
+  {
+    vs.push_back(model->x_name->s_name);
+    tmp = model;
+    model = find_parent_alive<t_model>(
+        &tmp->x_obj, "ossia.model", 1, &model_level);
+  }
+
+  t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
+
+  if (obj)
+  {
+    int l = 0;
+    auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
+    if (device)
+      fullpath << device->x_name->s_name << ":";
+  }
+
+  return string_from_path(vs, fullpath);
+}
+
+template<typename T>
+std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
+{
+  fmt::MemoryWriter fullpath;
+  std::vector<std::string> vs;
+
   t_view* view = nullptr;
   int view_level = 0;
   int start_level = 0;
@@ -42,70 +94,8 @@ void get_absolute_path_view(
     fullpath << client->x_name->s_name << ":";
   else if (auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l))
     fullpath << device->x_name->s_name << ":";
-}
 
-template <typename T, typename Ostream>
-void get_absolute_path_model(
-    T* x, std::vector<std::string>& vs, Ostream& fullpath)
-{
-  t_model* model = nullptr;
-  int model_level = 0;
-  int start_level = 0;
-  if (std::is_same<T, t_model>::value)
-    start_level = 1;
-
-  model = find_parent_alive<t_model>(
-      &x->x_obj, "ossia.model", start_level, &model_level);
-  t_model* tmp = nullptr;
-
-  while (model)
-  {
-    vs.push_back(model->x_name->s_name);
-    tmp = model;
-    model = find_parent_alive<t_model>(
-        &tmp->x_obj, "ossia.model", 1, &model_level);
-  }
-
-  t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
-
-  int l = 0;
-  t_device* device = nullptr;
-  if (obj)
-    device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
-  if (device)
-    fullpath << device->x_name->s_name << ":";
-}
-
-/**
- * @brief get_absolute_path
- * @param t_obj_base
- * @return std::string with full path to object from root device in an OSC
- * style (with '/')
- */
-template <typename T>
-std::string get_absolute_path(T* x)
-{
-  std::vector<std::string> vs;
-
-  std::stringstream fullpath;
-
-  if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
-  {
-    get_absolute_path_view(x, vs, fullpath);
-  }
-  else
-  {
-    get_absolute_path_model(x, vs, fullpath);
-  }
-
-  auto rit = vs.rbegin();
-  for (; rit != vs.rend(); ++rit)
-  {
-    fullpath << "/" << *rit;
-  }
-  if (vs.empty())
-    fullpath << "/";
-  return fullpath.str();
+  return string_from_path(vs, fullpath);
 }
 
 // we can't have virtual methods with C linkage so we need a bunch a template
@@ -182,47 +172,22 @@ template <typename T>
 extern void obj_bang(T* x);
 
 template <typename T>
-extern bool obj_isQuarantined(T* x)
+bool obj_is_quarantined(T* x)
 {
   return x->quarantine().contains(x);
 }
+
 template <typename T>
-extern void obj_quarantining(T* x)
+void obj_quarantining(T* x)
 {
-  if (!obj_isQuarantined<T>(x))
+  if (!obj_is_quarantined(x))
     x->quarantine().push_back(x);
 }
+
 template <typename T>
-extern void obj_dequarantining(T* x)
+void obj_dequarantining(T* x)
 {
-
-  if (!obj_isQuarantined<T>(x))
-    x->quarantine().remove_all(x);
-}
-
-static std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
-{
-  std::vector<std::string> tags;
-
-  if (tags_symbol)
-  {
-    char* c = tags_symbol->s_name;
-    std::string tag = "";
-
-    while (*c != '\0')
-    {
-      if (*c == ' ')
-      {
-        tags.push_back(tag);
-        tag = std::string("");
-      }
-      else
-        tag += *c;
-      c++;
-    }
-    tags.push_back(tag);
-  }
-  return tags;
+  x->quarantine().remove_all(x);
 }
 
 template <typename T>
@@ -253,7 +218,7 @@ void obj_dump(T* x)
   }
   outlet_anything(x->x_dumpout, gensym("registered"), 1, &a);
 
-  SETFLOAT(&a, obj_isQuarantined<T>(x));
+  SETFLOAT(&a, obj_is_quarantined<T>(x));
   outlet_anything(x->x_dumpout, gensym("quarantined"), 1, &a);
 
   if (x->x_node)

@@ -11,6 +11,8 @@ namespace pd
 
 struct t_view : t_obj_base
 {
+  using is_view = std::true_type;
+
   bool register_node(ossia::net::node_base* node);
   bool do_registration(ossia::net::node_base* node);
   bool unregister();

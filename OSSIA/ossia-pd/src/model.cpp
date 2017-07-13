@@ -92,7 +92,7 @@ bool t_model::do_registration(ossia::net::node_base* node)
   }
 
   x_node = &ossia::net::create_node(*node, name);
-  x_node->about_to_be_deleted.connect<t_model, &t_model::isDeleted>(this);
+  x_node->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
 
   ossia::net::set_description(*x_node, std::string(x_description->s_name));
   ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
@@ -126,11 +126,11 @@ ossia::safe_vector<t_model*>& t_model::quarantine()
   return quarantine;
 }
 
-void t_model::isDeleted(const net::node_base& n)
+void t_model::is_deleted(const net::node_base& n)
 {
   if (!x_dead)
   {
-    x_node->about_to_be_deleted.disconnect<t_model, &t_model::isDeleted>(this);
+    x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
     x_node = nullptr;
     obj_quarantining<t_model>(this);
   }
@@ -140,22 +140,6 @@ ossia::safe_vector<t_model*>& t_model::rename()
 {
   static ossia::safe_vector<t_model*> rename;
   return rename;
-}
-
-bool t_model::isRenamed(t_model* x)
-{
-  return x->rename().contains(x);
-}
-
-void t_model::renaming(t_model* x)
-{
-  if (!isRenamed(x))
-    x->rename().push_back(x);
-}
-
-void t_model::derenaming(t_model* x)
-{
-  x->rename().remove_all(x);
 }
 
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
