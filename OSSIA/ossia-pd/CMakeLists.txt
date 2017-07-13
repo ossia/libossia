@@ -51,7 +51,9 @@ set(PROJECT_SRCS
   src/remote.cpp
   src/remote.hpp
   src/view.cpp
-  src/view.hpp)
+  src/view.hpp
+  src/utils.hpp
+  )
 
 include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})

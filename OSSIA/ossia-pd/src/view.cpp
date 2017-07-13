@@ -1,6 +1,7 @@
 // A starter for Pd objects
 #include "view.hpp"
 #include "remote.hpp"
+#include "utils.hpp"
 
 namespace ossia { namespace pd {
 

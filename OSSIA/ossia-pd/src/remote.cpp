@@ -1,6 +1,7 @@
 #include "remote.hpp"
 #include "device.hpp"
 #include "parameter.hpp"
+#include "utils.hpp"
 
 namespace ossia { namespace pd {
 
@@ -123,7 +124,7 @@ static void *remote_new(t_symbol *name, int argc, t_atom *argv)
 
 static void remote_free(t_remote *x)
 {
-	x->x_dead = true;
+  x->x_dead = true;
     x->unregister();
     obj_dequarantining<t_remote>(x);
     outlet_free(x->x_setout);

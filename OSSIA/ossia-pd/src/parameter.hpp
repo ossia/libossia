@@ -26,34 +26,17 @@ struct t_param : t_obj_base
     int x_priority;
     bool x_hidden;
 
-    static ossia::safe_vector<t_param*>& quarantine(){
-        static ossia::safe_vector<t_param*> quarantine;
-        return quarantine;
-    }
+    static ossia::safe_vector<t_param*>& quarantine();
 
-    void isDeleted(const ossia::net::node_base& n)
-    {
-        x_node->about_to_be_deleted.disconnect<t_param, &t_param::isDeleted>(this);
-        x_node = nullptr;
-        obj_quarantining<t_param>(this);
-    }
+    void isDeleted(const ossia::net::node_base& n);
 
-    static ossia::safe_vector<t_param*>& rename(){
-        static ossia::safe_vector<t_param*> rename;
-        return rename;
-    }
+    static ossia::safe_vector<t_param*>& rename();
 
-    bool isRenamed(t_param* x){
-      return x->rename().contains(x);
-    }
+    bool isRenamed(t_param* x);
 
-    void renaming(t_param* x){
-        if ( !isRenamed(x) ) x->rename().push_back(x);
-    }
+    void renaming(t_param* x);
 
-    void derenaming(t_param* x){
-        x->rename().remove_all(x);
-    }
+    void derenaming(t_param* x);
 };
 
 } } // namespace

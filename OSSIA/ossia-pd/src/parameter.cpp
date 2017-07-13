@@ -2,6 +2,7 @@
 #include "device.hpp"
 #include "model.hpp"
 #include "remote.hpp"
+#include "utils.hpp"
 #include "ossia/editor/dataspace/dataspace_visitors.hpp"
 #include <limits>
 
@@ -186,14 +187,43 @@ bool t_param :: unregister(){
     return true;
 }
 
+ossia::safe_vector<t_param*>&t_param::quarantine(){
+  static ossia::safe_vector<t_param*> quarantine;
+  return quarantine;
+}
+
+void t_param::isDeleted(const net::node_base& n)
+{
+  x_node->about_to_be_deleted.disconnect<t_param, &t_param::isDeleted>(this);
+  x_node = nullptr;
+  obj_quarantining<t_param>(this);
+}
+
+ossia::safe_vector<t_param*>&t_param::rename(){
+  static ossia::safe_vector<t_param*> rename;
+  return rename;
+}
+
+bool t_param::isRenamed(t_param* x){
+  return x->rename().contains(x);
+}
+
+void t_param::renaming(t_param* x){
+  if ( !isRenamed(x) ) x->rename().push_back(x);
+}
+
+void t_param::derenaming(t_param* x){
+  x->rename().remove_all(x);
+}
+
 static void *parameter_new(t_symbol *name, int argc, t_atom *argv)
 {
-    t_param *x = (t_param *)eobj_new(parameter_class);
+  t_param *x = (t_param *)eobj_new(parameter_class);
 
-    // TODO SANITIZE : memory leak
-    t_binbuf* d = binbuf_via_atoms(argc,argv);
+  // TODO SANITIZE : memory leak
+  t_binbuf* d = binbuf_via_atoms(argc,argv);
 
-    if(x && d)
+  if(x && d)
     {
         x->x_range[0] = 0.;
         x->x_range[1] = 1.;

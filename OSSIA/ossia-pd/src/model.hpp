@@ -12,38 +12,17 @@ struct t_model : t_obj_base
     bool do_registration(ossia::net::node_base*  node);
     bool unregister();
 
-    static ossia::safe_vector<t_model*>& quarantine(){
-        static ossia::safe_vector<t_model*> quarantine;
-        return quarantine;
-    }
+    static ossia::safe_vector<t_model*>& quarantine();
     t_symbol* x_tags;
     t_symbol* x_description;
 
-    void isDeleted(const ossia::net::node_base& n)
-    {
-        if (!x_dead){
-            x_node->about_to_be_deleted.disconnect<t_model, &t_model::isDeleted>(this);
-            x_node = nullptr;
-            obj_quarantining<t_model>(this);
-        }
-    }
+    void isDeleted(const ossia::net::node_base& n);
 
-    static ossia::safe_vector<t_model*>& rename(){
-        static ossia::safe_vector<t_model*> rename;
-        return rename;
-    }
+    static ossia::safe_vector<t_model*>& rename();
 
-    bool isRenamed(t_model* x){
-        return x->rename().contains(x);
-    }
-
-    void renaming(t_model* x){
-        if ( !isRenamed(x) ) x->rename().push_back(x);
-    }
-
-    void derenaming(t_model* x){
-        x->rename().remove_all(x);
-    }
+    bool isRenamed(t_model* x);
+    void renaming(t_model* x);
+    void derenaming(t_model* x);
 };
 
 } } // namespace

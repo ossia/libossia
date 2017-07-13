@@ -3,6 +3,7 @@
 #include "parameter.hpp"
 #include "view.hpp"
 #include "remote.hpp"
+#include "utils.hpp"
 #include <ossia/network/base/node_attributes.hpp>
 
 namespace ossia { namespace pd {
@@ -90,15 +91,46 @@ bool t_model :: unregister(){
     return true;
 }
 
+ossia::safe_vector<t_model*>&t_model::quarantine(){
+  static ossia::safe_vector<t_model*> quarantine;
+  return quarantine;
+}
+
+void t_model::isDeleted(const net::node_base& n)
+{
+  if (!x_dead){
+    x_node->about_to_be_deleted.disconnect<t_model, &t_model::isDeleted>(this);
+    x_node = nullptr;
+    obj_quarantining<t_model>(this);
+  }
+}
+
+ossia::safe_vector<t_model*>&t_model::rename(){
+  static ossia::safe_vector<t_model*> rename;
+  return rename;
+}
+
+bool t_model::isRenamed(t_model* x){
+  return x->rename().contains(x);
+}
+
+void t_model::renaming(t_model* x){
+  if ( !isRenamed(x) ) x->rename().push_back(x);
+}
+
+void t_model::derenaming(t_model* x){
+  x->rename().remove_all(x);
+}
+
 static void *model_new(t_symbol *name, int argc, t_atom *argv)
 {
-    t_model *x = (t_model *)eobj_new(model_class);
+  t_model *x = (t_model *)eobj_new(model_class);
 
-    t_binbuf* d = binbuf_via_atoms(argc,argv);
-    if(x && d)
-    {
-        x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-        x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
+  t_binbuf* d = binbuf_via_atoms(argc,argv);
+  if(x && d)
+  {
+    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
 
         if (argc != 0 && argv[0].a_type == A_SYMBOL) {
             x->x_name = atom_getsymbol(argv);
