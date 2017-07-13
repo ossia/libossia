@@ -14,9 +14,9 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      sudo wget https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
+      sudo wget -nv https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
 
-      wget https://cmake.org/files/v3.8/cmake-3.8.2-Linux-x86_64.tar.gz -O cmake-linux.tgz &
+      wget -nv https://cmake.org/files/v3.8/cmake-3.8.2-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
       echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-4.0 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
@@ -38,7 +38,7 @@ case "$TRAVIS_OS_NAME" in
     set +e
     brew install gnu-tar xz
     ARCHIVE=homebrew-cache.tar.xz
-    wget --quiet "https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/$ARCHIVE" -O "$ARCHIVE"
+    wget -nv "https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
     brew link --force boost cmake ninja qt5
 
@@ -46,7 +46,7 @@ case "$TRAVIS_OS_NAME" in
       mkdir -p "$HOME/Documents/Max 7/Packages"
       cd "$HOME/Documents/Max 7/Packages"
       MAXSDKARCHIVE=max-sdk-7.3.3.zip
-      wget --quiet "https://cycling74.s3.amazonaws.com/download/$MAXSDKARCHIVE"
+      wget -nv "https://cycling74.s3.amazonaws.com/download/$MAXSDKARCHIVE"
       tar xf "$MAXSDKARCHIVE"
       ls
     fi
