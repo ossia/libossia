@@ -13,14 +13,14 @@ class midi_address;
 struct midi_channel
 {
   // [ note, vel ]
-  std::pair<midi_size_t, midi_size_t> mNoteOn;
-  std::pair<midi_size_t, midi_size_t> mNoteOff;
+  std::pair<midi_size_t, midi_size_t> mNoteOn{};
+  std::pair<midi_size_t, midi_size_t> mNoteOff{};
 
   // [ CC, value ]
-  std::pair<midi_size_t, midi_size_t> mCC;
+  std::pair<midi_size_t, midi_size_t> mCC{};
 
   // PC
-  midi_size_t mPC;
+  midi_size_t mPC{};
 
   // velocity or value
   std::array<midi_size_t, 128> mNoteOn_N = {{64}};

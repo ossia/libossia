@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/json.hpp>
 #include <boost/algorithm/string.hpp>
 #include <cstdio>
@@ -1188,27 +1190,27 @@ static ossia_preset_result lippincott()
     {
       throw;
     }
-    catch (ossia::ossiaException_InvalidAddress b)
+    catch (const ossia::ossiaException_InvalidAddress& b)
     {
       ossia_log_error(b.what());
       return OSSIA_PRESETS_INVALID_ADDRESS;
     }
-    catch (ossia::ossiaException_InvalidJSON b)
+    catch (const ossia::ossiaException_InvalidJSON& b)
     {
       ossia_log_error(b.what());
       return OSSIA_PRESETS_INVALID_JSON;
     }
-    catch (ossia::ossiaException_InvalidXML b)
+    catch (const ossia::ossiaException_InvalidXML& b)
     {
       ossia_log_error(b.what());
       return OSSIA_PRESETS_INVALID_XML;
     }
-    catch (ossia::ossiaException b)
+    catch (const ossia::ossiaException& b)
     {
       ossia_log_error(b.what());
       return OSSIA_PRESETS_GENERIC_EXCEPTION;
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
       ossia_log_error(e.what());
       return OSSIA_PRESETS_STANDARD_EXCEPTION;

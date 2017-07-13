@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/generic/generic_address.hpp>

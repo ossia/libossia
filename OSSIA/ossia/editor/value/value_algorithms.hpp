@@ -223,8 +223,8 @@ struct value_merger
         {
           // We put the current value at cur[pos] at index 0 of the
           // newly-created sub-tuple.
-          std::vector<ossia::value> t{cur[pos]};
-          cur[pos] = std::move(t);
+          std::vector<ossia::value> sub{std::move(cur[pos])};
+          cur[pos] = std::move(sub);
 
           // And use it for the next iteration
           cur_ptr = cur[pos].target<std::vector<ossia::value>>();

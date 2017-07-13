@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
 #include <ossia/editor/value/value_conversion.hpp>

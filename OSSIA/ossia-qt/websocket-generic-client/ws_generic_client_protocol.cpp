@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ws_generic_client_protocol.hpp"
 #include <ossia-qt/js_utilities.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_address.hpp>

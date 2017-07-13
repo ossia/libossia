@@ -1,3 +1,5 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "client.hpp"
 #include "model.hpp"
 #include "ossia/network/osc/osc.hpp"
@@ -206,9 +208,9 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
         auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
         x->x_device = new ossia::net::generic_device{
             std::unique_ptr<ossia::net::protocol_base>(protocol), "Pd"};
-        if (x->x_device)
-          std::cout << "connected to device " << x->x_device->get_name()
-                    << " on " << wsurl << std::endl;
+
+        std::cout << "connected to device " << x->x_device->get_name()
+                  << " on " << wsurl << std::endl;
       }
       catch (const std::exception& e)
       {

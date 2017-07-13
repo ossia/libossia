@@ -52,13 +52,10 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
 
   t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
 
-  if (obj)
-  {
-    int l = 0;
-    auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
-    if (device)
-      fullpath << device->x_name->s_name << ":";
-  }
+  int l = 0;
+  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
+  if (device)
+    fullpath << device->x_name->s_name << ":";
 
   return string_from_path(vs, fullpath);
 }
