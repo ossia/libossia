@@ -10,7 +10,7 @@
 #ifdef __has_include
 #if __has_include(<optional>) && __cplusplus > 201402L
 #define OSSIA_USE_STD_OPTIONAL 1
-#elif __has_include(<experimental / optional>)
+#elif __has_include(<experimental/optional>)
 #define OSSIA_USE_STD_EXPERIMENTAL_OPTIONAL 1
 #else
 #define OSSIA_USE_BOOST_OPTIONAL 1

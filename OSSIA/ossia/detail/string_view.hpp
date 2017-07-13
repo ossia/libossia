@@ -10,7 +10,7 @@ namespace ossia
 {
 using string_view = std::string_view;
 }
-#elif __has_include(<experimental / string_view>)
+#elif __has_include(<experimental/string_view>)
 #define OSSIA_STRING_VIEW 1
 #include <experimental/string_view>
 namespace ossia
