@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project("ossia-max")
+project(ossia-max C CXX)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
@@ -58,7 +58,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE MAC_VERSION)
     target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++1z)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>)
 
     set_property(TARGET ${PROJECT_NAME} PROPERTY BUNDLE True)
     set_property(TARGET ${PROJECT_NAME} PROPERTY BUNDLE_EXTENSION "mxo")

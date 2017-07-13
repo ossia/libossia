@@ -22,17 +22,9 @@ namespace max {
         void renaming(t_model*);
         void derenaming(t_model*);
         
-        static std::vector<t_model*>& quarantine()
-        {
-            static std::vector<t_model*> quarantine;
-            return quarantine;
-        }
+        static ossia::safe_vector<t_model*>& quarantine();
         
-        static std::vector<t_model*>& rename()
-        {
-            static std::vector<t_model*> rename;
-            return rename;
-        }
+        static ossia::safe_vector<t_model*>& rename();
     };
 
 } // max namespace

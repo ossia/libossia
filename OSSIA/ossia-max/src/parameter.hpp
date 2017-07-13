@@ -39,17 +39,9 @@ namespace ossia {
             
             void derenaming(t_parameter* x);
             
-            static std::vector<t_parameter*>& quarantine()
-            {
-                static std::vector<t_parameter*> quarantine;
-                return quarantine;
-            }
+            static ossia::safe_vector<t_parameter*>& quarantine();
             
-            static std::vector<t_parameter*>& rename()
-            {
-                static std::vector<t_parameter*> rename;
-                return rename;
-            }
+            static ossia::safe_vector<t_parameter*>& rename();
         };
              
 # pragma mark -

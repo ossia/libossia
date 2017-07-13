@@ -44,7 +44,7 @@ void* ossia_model_new(t_symbol *name, long argc, t_atom *argv)
         x->m_tags = _sym_nothing;
         
 
-        x->m_regclock = clock_new(x, reinterpret_cast<method>(&static_cast<bool(*)(t_model*)>(object_register<t_model>)));
+        x->m_regclock = clock_new(x, reinterpret_cast<method>(static_cast<bool(*)(t_model*)>(&object_register<t_model>)));
         
         // parse arguments
         long attrstart = attr_args_offset(argc, argv);
@@ -137,13 +137,13 @@ namespace max {
                 }
             }
 
-            for (auto view : t_view::quarantine())
+            for (auto view : t_view::quarantine().copy())
             {
                 object_register<t_view>(static_cast<t_view*>(view));
             }
             
             // then try to register qurantinized remote
-            for (auto remote : t_remote::quarantine())
+            for (auto remote : t_remote::quarantine().copy())
             {
                 object_register<t_remote>(static_cast<t_remote*>(remote));
             }
@@ -227,17 +227,30 @@ namespace max {
     
     bool t_model :: is_renamed(t_model* x)
     {
-        return ossia::contains(x->rename(), x);
+        return x->rename().contains(x);
     }
     
     void t_model :: renaming(t_model* x)
     {
-        if (!is_renamed(x)) x->rename().push_back(x);
+        if (!is_renamed(x))
+            x->rename().push_back(x);
     }
     
     void t_model :: derenaming(t_model* x)
     {
-        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+        x->rename().remove_all(x);
+    }
+
+    ossia::safe_vector<t_model *> &t_model::quarantine()
+    {
+        static ossia::safe_vector<t_model*> quarantine;
+        return quarantine;
+    }
+
+    ossia::safe_vector<t_model *> &t_model::rename()
+    {
+        static ossia::safe_vector<t_model*> rename;
+        return rename;
     }
     
 } // max namespace

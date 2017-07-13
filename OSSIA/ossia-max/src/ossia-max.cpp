@@ -201,7 +201,7 @@ namespace max {
     template<typename T>
     void object_dequarantining(T* x)
     {
-        boost::remove_erase(x->quarantine(), x);
+        x->quarantine().remove_all(x);
     }
     
     template void object_dequarantining<t_parameter> (t_parameter*);
@@ -212,7 +212,7 @@ namespace max {
     template<typename T>
     bool object_is_quarantined(T* x)
     {
-        return ossia::contains(x->quarantine(), x);
+        return x->quarantine().contains(x);
     }
     
     template bool object_is_quarantined<t_parameter> (t_parameter*);
@@ -398,22 +398,22 @@ namespace max {
     
     void register_quarantinized()
     {
-        for (auto model : t_model::quarantine())
+        for (auto model : t_model::quarantine().copy())
         {
             object_register<t_model>(static_cast<t_model*>(model));
         }
         
-        for (auto parameter : t_parameter::quarantine())
+        for (auto parameter : t_parameter::quarantine().copy())
         {
             object_register<t_parameter>(static_cast<t_parameter*>(parameter));
         }
         
-        for (auto view : t_view::quarantine())
+        for (auto view : t_view::quarantine().copy())
         {
             object_register<t_view>(static_cast<t_view*>(view));
         }
         
-        for (auto remote : t_remote::quarantine())
+        for (auto remote : t_remote::quarantine().copy())
         {
             object_register<t_remote>(static_cast<t_remote*>(remote));
         }

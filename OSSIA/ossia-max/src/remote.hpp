@@ -24,9 +24,9 @@ namespace ossia
                     unregister();
             }
             
-            static std::vector<t_remote*> quarantine()
+            static ossia::safe_vector<t_remote*>& quarantine()
             {
-                static std::vector<t_remote*> quarantine;
+                static ossia::safe_vector<t_remote*> quarantine;
                 return quarantine;
             }
         };

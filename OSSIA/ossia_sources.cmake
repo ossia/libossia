@@ -15,6 +15,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/optional.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/locked_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.hpp"

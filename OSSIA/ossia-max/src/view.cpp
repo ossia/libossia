@@ -39,7 +39,7 @@ void *ossia_view_new(t_symbol *name, long argc, t_atom *argv)
         x->m_dump_out = outlet_new(x, NULL);						// anything outlet to dump view state
         
 //        x->m_clock = clock_new(x, (method)t_object_base::tick);
-        x->m_regclock = clock_new(x, reinterpret_cast<method>(&static_cast<bool(*)(t_view*)>(object_register<t_view>)));
+        x->m_regclock = clock_new(x, reinterpret_cast<method>(static_cast<bool(*)(t_view*)>(&object_register<t_view>)));
         
         // parse arguments
         long attrstart = attr_args_offset(argc, argv);

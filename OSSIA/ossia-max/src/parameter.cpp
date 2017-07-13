@@ -187,7 +187,7 @@ namespace ossia {
             {
                 object_dequarantining(this);
                 
-                for (auto remote : t_remote::quarantine())
+                for (auto remote : t_remote::quarantine().copy())
                     object_register<t_remote>(static_cast<t_remote*>(remote));
             }
             else
@@ -368,7 +368,7 @@ namespace ossia {
                 
                 m_node = nullptr;
                 
-                for (auto remote : t_remote::quarantine())
+                for (auto remote : t_remote::quarantine().copy())
                     object_register<t_remote>(static_cast<t_remote*>(remote));
                 
             }
@@ -376,7 +376,7 @@ namespace ossia {
             object_quarantining(this);
             derenaming(this);
             
-            for (auto parameter : t_parameter::rename())
+            for (auto parameter : t_parameter::rename().copy())
             {
                 if (strcmp(parameter->m_name->s_name, m_name->s_name) == 0)
                 {
@@ -397,7 +397,7 @@ namespace ossia {
         
         bool t_parameter :: is_renamed(t_parameter* x)
         {
-            return ossia::contains(x->rename(), x);
+            return x->rename().contains(x);
         }
         
         void t_parameter :: renaming(t_parameter* x)
@@ -407,7 +407,19 @@ namespace ossia {
         
         void t_parameter :: derenaming(t_parameter* x)
         {
-            x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
+            x->rename().remove_all(x);
+        }
+
+        ossia::safe_vector<t_parameter *> &t_parameter::quarantine()
+        {
+            static ossia::safe_vector<t_parameter*> quarantine;
+            return quarantine;
+        }
+
+        ossia::safe_vector<t_parameter *> &t_parameter::rename()
+        {
+            static ossia::safe_vector<t_parameter*> rename;
+            return rename;
         }
         
     } // max namespace
