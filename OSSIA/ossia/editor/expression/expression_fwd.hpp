@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/detail/config.hpp>
 #include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/config.hpp>
 
 #include <eggs/variant.hpp>
 #include <functional>
@@ -25,9 +25,8 @@ class expression_composition;
 class expression_not;
 class expression_pulse;
 class expression_generic;
-using expression_base
-    = eggs::variant<expression_atom, expression_bool, expression_composition,
-                    expression_not, expression_pulse, expression_generic>;
+using expression_base = eggs::
+    variant<expression_atom, expression_bool, expression_composition, expression_not, expression_pulse, expression_generic>;
 
 // concept expression_base :
 //    public callback_container<expression_result_callback>
@@ -60,13 +59,16 @@ using expression_ptr = std::unique_ptr<expressions::expression_base>;
  * Expressions are built with factories found in \ref expression.hpp :
  * * \ref make_expression_true : a constant "true" node.
  * * \ref make_expression_false : a constant "false" node.
- * * \ref make_expression_atom : a relational comparison node (==, <=, !=, etc...)
+ * * \ref make_expression_atom : a relational comparison node (==, <=, !=,
+ * etc...)
  *                               between two \ref ossia::value.
  * * \ref make_expression_pulse : a node that becomes true
- *                                if a message is received opn a given address since the last time
+ *                                if a message is received opn a given address
+ * since the last time
  *                                update() has been called on it.
  * * \ref make_expression_not : standard logical not operator.
- * * \ref make_expression_composition : standard logical and, or, xor, operators
+ * * \ref make_expression_composition : standard logical and, or, xor,
+ * operators
  *                                      between two expressions..
  *
  * \see expression_atom

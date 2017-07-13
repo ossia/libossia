@@ -1,56 +1,56 @@
 #include "serial_protocol.hpp"
+#include <QDebug>
+#include <QQmlComponent>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <iomanip>
 #include <ossia-qt/serial/serial_address.hpp>
 #include <ossia-qt/serial/serial_device.hpp>
 #include <ossia-qt/serial/serial_node.hpp>
 #include <sstream>
-#include <iomanip>
-#include <QDebug>
-#include <QQmlEngine>
-#include <QQmlComponent>
-#include <QQmlContext>
 
 namespace ossia
 {
 namespace net
 {
 serial_protocol::serial_protocol(
-    const QByteArray& code,
-    const QSerialPortInfo& bot):
-  mEngine{new QQmlEngine},
-  mComponent{new QQmlComponent{mEngine}},
-  mSerialPort{bot},
-  mCode{code}
+    const QByteArray& code, const QSerialPortInfo& bot)
+    : mEngine{new QQmlEngine}
+    , mComponent{new QQmlComponent{mEngine}}
+    , mSerialPort{bot}
+    , mCode{code}
 {
-  connect(mComponent, &QQmlComponent::statusChanged,
-          this, [=] (QQmlComponent::Status status)
-  {
-    qDebug() << status;
-    qDebug() << mComponent->errorString();
-    if(!mDevice)
-      return;
-
-    switch(status)
-    {
-      case QQmlComponent::Status::Ready:
-      {
-        auto item = mComponent->create();
-        item->setParent(mEngine->rootContext());
-
-        QVariant ret;
-        QMetaObject::invokeMethod(item, "createTree", Q_RETURN_ARG(QVariant, ret));
-        qt::create_device<serial_device, serial_node, serial_protocol>(*mDevice, ret.value<QJSValue>());
-
-        return;
-      }
-      case QQmlComponent::Status::Loading:
-        return;
-      case QQmlComponent::Status::Null:
-      case QQmlComponent::Status::Error:
+  connect(
+      mComponent, &QQmlComponent::statusChanged, this,
+      [=](QQmlComponent::Status status) {
+        qDebug() << status;
         qDebug() << mComponent->errorString();
-        return;
-    }
-  }
-  );
+        if (!mDevice)
+          return;
+
+        switch (status)
+        {
+          case QQmlComponent::Status::Ready:
+          {
+            auto item = mComponent->create();
+            item->setParent(mEngine->rootContext());
+
+            QVariant ret;
+            QMetaObject::invokeMethod(
+                item, "createTree", Q_RETURN_ARG(QVariant, ret));
+            qt::create_device<serial_device, serial_node, serial_protocol>(
+                *mDevice, ret.value<QJSValue>());
+
+            return;
+          }
+          case QQmlComponent::Status::Loading:
+            return;
+          case QQmlComponent::Status::Null:
+          case QQmlComponent::Status::Error:
+            qDebug() << mComponent->errorString();
+            return;
+        }
+      });
 }
 
 bool serial_protocol::pull(address_base&)
@@ -62,7 +62,7 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
 {
   auto& ad = dynamic_cast<const serial_address&>(addr);
   auto str = ad.data().request;
-  switch(addr.get_value_type())
+  switch (addr.get_value_type())
   {
     case ossia::val_type::FLOAT:
       str.replace("$val", QString::number(ad.getValue().get<float>(), 'g', 4));
@@ -94,7 +94,7 @@ bool serial_protocol::update(ossia::net::node_base& node_base)
 
 void serial_protocol::set_device(device_base& dev)
 {
-  if(auto htdev = dynamic_cast<serial_device*>(&dev))
+  if (auto htdev = dynamic_cast<serial_device*>(&dev))
   {
     mDevice = htdev;
     mComponent->setData(mCode, QUrl{});
@@ -102,12 +102,8 @@ void serial_protocol::set_device(device_base& dev)
   }
 }
 
-
 serial_protocol::~serial_protocol()
 {
-
 }
-
-
 }
 }

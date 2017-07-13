@@ -1,6 +1,5 @@
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
-
 namespace ossia
 {
 namespace oscquery
@@ -11,22 +10,42 @@ namespace oscquery
 struct osc_type_visitor
 {
   std::string& type;
-  void operator()()        { type += oscpack::TypeTagValues::NIL_TYPE_TAG; }
-  void operator()(impulse) { type += oscpack::TypeTagValues::INFINITUM_TYPE_TAG; }
-  void operator()(int v)   { type += oscpack::TypeTagValues::INT32_TYPE_TAG; }
-  void operator()(float v) { type += oscpack::TypeTagValues::FLOAT_TYPE_TAG; }
-  void operator()(bool v)  { type += v ? oscpack::TypeTagValues::TRUE_TYPE_TAG : oscpack::TypeTagValues::FALSE_TYPE_TAG;}
-  void operator()(char v)  { type += oscpack::TypeTagValues::CHAR_TYPE_TAG; }
-  void operator()(const std::string& v) {
+  void operator()()
+  {
+    type += oscpack::TypeTagValues::NIL_TYPE_TAG;
+  }
+  void operator()(impulse)
+  {
+    type += oscpack::TypeTagValues::INFINITUM_TYPE_TAG;
+  }
+  void operator()(int v)
+  {
+    type += oscpack::TypeTagValues::INT32_TYPE_TAG;
+  }
+  void operator()(float v)
+  {
+    type += oscpack::TypeTagValues::FLOAT_TYPE_TAG;
+  }
+  void operator()(bool v)
+  {
+    type += v ? oscpack::TypeTagValues::TRUE_TYPE_TAG
+              : oscpack::TypeTagValues::FALSE_TYPE_TAG;
+  }
+  void operator()(char v)
+  {
+    type += oscpack::TypeTagValues::CHAR_TYPE_TAG;
+  }
+  void operator()(const std::string& v)
+  {
     // TODO BLOB
     type += oscpack::TypeTagValues::STRING_TYPE_TAG;
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   void operator()(const std::array<float, N>& vec)
   {
     type += oscpack::TypeTagValues::ARRAY_BEGIN_TYPE_TAG;
-    for(std::size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
     {
       type += oscpack::TypeTagValues::FLOAT_TYPE_TAG;
     }
@@ -38,7 +57,7 @@ struct osc_type_visitor
     type.reserve(type.size() + vec.size() + 2);
 
     type += oscpack::TypeTagValues::ARRAY_BEGIN_TYPE_TAG;
-    for(const auto& sub : vec)
+    for (const auto& sub : vec)
     {
       sub.apply(*this);
     }
@@ -46,17 +65,16 @@ struct osc_type_visitor
   }
 };
 
-
 static std::string get_osc_typetag_impl(const net::address_base& addr)
 {
-  if(addr.get_unit() == ossia::rgba_u{})
+  if (addr.get_unit() == ossia::rgba_u{})
     return "r";
 
   std::string s;
   auto val = addr.value();
   val.apply(osc_type_visitor{s});
 
-  switch(val.getType())
+  switch (val.getType())
   {
     case ossia::val_type::TUPLE:
     case ossia::val_type::VEC2F:
@@ -75,7 +93,7 @@ static std::string get_osc_typetag_impl(const net::address_base& addr)
 
 optional<std::string> get_osc_typetag(const net::node_base& n)
 {
-  if(auto addr = n.get_address())
+  if (auto addr = n.get_address())
   {
     return get_osc_typetag_impl(*addr);
   }
@@ -87,12 +105,12 @@ optional<std::string> get_osc_typetag(const net::node_base& n)
 
 complex_type get_type_from_osc_typetag(ossia::string_view str)
 {
-  switch(str.size())
+  switch (str.size())
   {
     case 0:
       return {}; // maybe an impulse?
     case 1:
-      switch(str[0])
+      switch (str[0])
       {
         case oscpack::TypeTagValues::NIL_TYPE_TAG:
           return {};
@@ -106,7 +124,8 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
 
         case oscpack::TypeTagValues::FLOAT_TYPE_TAG:
         case oscpack::TypeTagValues::DOUBLE_TYPE_TAG:
-        case oscpack::TypeTagValues::TIME_TAG_TYPE_TAG: // maybe something else..
+        case oscpack::TypeTagValues::TIME_TAG_TYPE_TAG: // maybe something
+                                                        // else..
           return ossia::val_type::FLOAT;
 
         case oscpack::TypeTagValues::CHAR_TYPE_TAG:
@@ -138,12 +157,9 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
   return ossia::val_type::TUPLE;
 }
 
-
 void set_osc_typetag(net::node_base& n, ossia::string_view tag)
 {
   setup_address(get_type_from_osc_typetag(tag), n);
 }
-
-
 }
 }

@@ -1,11 +1,11 @@
 #pragma once
-#include <ossia/network/common/address_properties.hpp>
-#include <ossia/editor/value/vec.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/editor/value/vec.hpp>
+#include <ossia/network/common/address_properties.hpp>
 #include <bitset>
-#include <type_traits>
 #include <ossia_export.h>
+#include <type_traits>
 
 namespace ossia
 {
@@ -43,7 +43,6 @@ ossia::string_view get_unit_accessors(const ossia::unit_t&);
 OSSIA_EXPORT
 std::string get_pretty_unit_text(const ossia::unit_t&);
 
-
 /**
  * @brief get_unit_accessor Return the character corresponding to the accessor
  *
@@ -63,15 +62,16 @@ OSSIA_EXPORT
 ossia::unit_t parse_dataspace(ossia::string_view text);
 
 /**
- * @brief parse_unit Takes a text and a dataspace and gives a corresponding unit.
+ * @brief parse_unit Takes a text and a dataspace and gives a corresponding
+ * unit.
  * @param text The text to parse
  * @param dataspace A dataspace such as ossia::color_u, ossia::distance_u...
  *
  * @return Corresponding unit, or the same unit as input if it was not found.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_unit(ossia::string_view text, const ossia::unit_t& dataspace);
-
+ossia::unit_t
+parse_unit(ossia::string_view text, const ossia::unit_t& dataspace);
 
 /**
  * @brief parse_pretty_unit Create a unit from a valid unit in the format
@@ -80,16 +80,13 @@ ossia::unit_t parse_unit(ossia::string_view text, const ossia::unit_t& dataspace
 OSSIA_EXPORT
 ossia::unit_t parse_pretty_unit(ossia::string_view text);
 
-
 /**
  * @brief parse_unit Alternative if we already have a dataspace type at hand.
  * @note T should be a dataspace, such as ossia::color_u.
  * @todo In 2020 enforce this with concepts...
  */
-template<typename T>
-OSSIA_EXPORT
-ossia::unit_t parse_unit(ossia::string_view text, T dataspace);
-
+template <typename T>
+OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view text, T dataspace);
 
 /**
  * @brief make_value Create a value_with_unit
@@ -126,7 +123,9 @@ OSSIA_EXPORT
 ossia::val_type matching_type(const ossia::unit_t& u);
 
 inline ossia::val_type matching_type(ossia::unit_t&& u)
-{ return matching_type(static_cast<const ossia::unit_t&>(u)); }
+{
+  return matching_type(static_cast<const ossia::unit_t&>(u));
+}
 
 /**
  * @brief convert Convert a value to another unit in the same dataspace
@@ -139,7 +138,8 @@ inline ossia::val_type matching_type(ossia::unit_t&& u)
  * and convertible, else the input value
  */
 OSSIA_EXPORT
-ossia::value_with_unit convert(const ossia::value_with_unit& v, const ossia::unit_t& t);
+ossia::value_with_unit
+convert(const ossia::value_with_unit& v, const ossia::unit_t& t);
 
 /**
  * @brief convert Convert a value to another unit.
@@ -152,8 +152,9 @@ ossia::value_with_unit convert(const ossia::value_with_unit& v, const ossia::uni
  * @return Converted value, else the input value.
  */
 OSSIA_EXPORT
-ossia::value convert(const ossia::value& v, const ossia::unit_t& source_unit, const ossia::unit_t& destination_unit);
-
+ossia::value convert(
+    const ossia::value& v, const ossia::unit_t& source_unit,
+    const ossia::unit_t& destination_unit);
 
 /**
  * @brief convert Convert a value + unit to a simple value
@@ -162,7 +163,6 @@ ossia::value convert(const ossia::value& v, const ossia::unit_t& source_unit, co
  */
 OSSIA_EXPORT
 ossia::value to_value(const ossia::value_with_unit& v);
-
 
 /**
  * @brief to_unit Get the unit part of a value_with_unit
@@ -192,25 +192,18 @@ std::string to_pretty_string(const ossia::value_with_unit& v);
  */
 OSSIA_EXPORT
 ossia::value_with_unit merge(
-    const ossia::value_with_unit&,
-    const ossia::value&,
+    const ossia::value_with_unit&, const ossia::value&,
     ossia::destination_index);
 
 OSSIA_EXPORT
-ossia::value_with_unit merge(
-    const ossia::value_with_unit&,
-    const ossia::vec2f&,
-    std::bitset<2>);
+ossia::value_with_unit
+merge(const ossia::value_with_unit&, const ossia::vec2f&, std::bitset<2>);
 
 OSSIA_EXPORT
-ossia::value_with_unit merge(
-    const ossia::value_with_unit&,
-    const ossia::vec3f&,
-    std::bitset<3>);
+ossia::value_with_unit
+merge(const ossia::value_with_unit&, const ossia::vec3f&, std::bitset<3>);
 
 OSSIA_EXPORT
-ossia::value_with_unit merge(
-    const ossia::value_with_unit&,
-    const ossia::vec4f&,
-    std::bitset<4>);
+ossia::value_with_unit
+merge(const ossia::value_with_unit&, const ossia::vec4f&, std::bitset<4>);
 }

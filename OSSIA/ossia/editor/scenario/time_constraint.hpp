@@ -6,8 +6,8 @@
 
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/clock.hpp>
-#include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia_export.h>
 
 namespace ossia
@@ -19,7 +19,8 @@ struct time_value;
 /**
  * @brief The time_constraint class
  *
- * \brief #time_constraint is use to describe temporal structure precising which
+ * \brief #time_constraint is use to describe temporal structure precising
+ * which
  * amount of time (the duration) are between two #time_events.
  *
  * \details The duration can be fixed or between a minimal and a maximal
@@ -30,12 +31,30 @@ class OSSIA_EXPORT time_constraint
 {
 
 public:
-  auto get_date() const { return m_date; }
-  auto get_position() const { return m_position; }
-  auto get_offset() const { return m_offset; }
-  auto get_speed() const { return m_speed; }
-  void set_offset(ossia::time_value g) { m_offset = g; }
-  void set_speed(double g) { m_speed = g; }
+  auto get_date() const
+  {
+    return m_date;
+  }
+  auto get_position() const
+  {
+    return m_position;
+  }
+  auto get_offset() const
+  {
+    return m_offset;
+  }
+  auto get_speed() const
+  {
+    return m_speed;
+  }
+  void set_offset(ossia::time_value g)
+  {
+    m_offset = g;
+  }
+  void set_speed(double g)
+  {
+    m_speed = g;
+  }
   void tick(ossia::time_value usec);
   void tick(ossia::time_value usec, double ratio);
 
@@ -43,28 +62,27 @@ public:
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
-  using exec_callback
-      = std::function<void(double, ossia::time_value, const ossia::state_element&)>;
+  using exec_callback = std::function<void(
+      double, ossia::time_value, const ossia::state_element&)>;
 
   /*! constructor
    \details by default a #time_constraint has an infinite duration with no
    minimal duration and an infinite maximal duration.
-   \param #time_constraint::ExecutionCallback to use to be notified at each step
+   \param #time_constraint::ExecutionCallback to use to be notified at each
+   step
    \param #std::shared_ptr<TimeEvent> event where the #time_constraint starts
    \param #std::shared_ptr<TimeEvent> event where the #time_constraint ends
    \param const #TimeValue& nominal duration of the #time_constraint
    \param const #TimeValue& minimal duration of the #time_constraint
    \param const #TimeValue& maximal duration of the #time_constraint
    \return std::shared_ptr<#time_constraint> */
-   static std::shared_ptr<time_constraint> create(
-      time_constraint::exec_callback, time_event&,
-      time_event&, time_value = Infinite, time_value = Zero,
-      time_value = Infinite);
+  static std::shared_ptr<time_constraint> create(
+      time_constraint::exec_callback, time_event&, time_event&,
+      time_value = Infinite, time_value = Zero, time_value = Infinite);
 
-   time_constraint(
-       time_constraint::exec_callback, time_event&,
-       time_event&, time_value = Infinite, time_value = Zero,
-       time_value = Infinite);
+  time_constraint(
+      time_constraint::exec_callback, time_event&, time_event&,
+      time_value = Infinite, time_value = Zero, time_value = Infinite);
 
   /*! desctructor */
   ~time_constraint();
@@ -180,9 +198,8 @@ private:
   /// factor consideration)
   time_value m_date{};
 
-  time_value m_offset{};      /// the date (in ms) the clock will run from
-  double m_speed{1.};           /// the speed factor of the clock
+  time_value m_offset{}; /// the date (in ms) the clock will run from
+  double m_speed{1.};    /// the speed factor of the clock
   bool m_running{};
-
 };
 }

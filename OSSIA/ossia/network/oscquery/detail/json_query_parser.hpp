@@ -14,26 +14,27 @@ namespace oscquery
  */
 struct json_query_answerer
 {
-  template<typename Protocol>
+  template <typename Protocol>
   auto operator()(
-      Protocol& proto,
-      const typename Protocol::connection_handler&,
+      Protocol& proto, const typename Protocol::connection_handler&,
       const rapidjson::Document& doc)
   {
-      // [ { "/addr/val" : 123 } ] or { "/addr/val": 123 }
-      if(doc.IsArray())
+    // [ { "/addr/val" : 123 } ] or { "/addr/val": 123 }
+    if (doc.IsArray())
+    {
+      const auto& arr = doc.GetArray();
+      for (const auto& e : arr)
       {
-        const auto& arr = doc.GetArray();
-        for(const auto& e : arr)
-        {
-          json_parser::parse_address_value(proto.get_device().get_root_node(), e);
-        }
+        json_parser::parse_address_value(
+            proto.get_device().get_root_node(), e);
       }
-      else
-      {
-        json_parser::parse_address_value(proto.get_device().get_root_node(), doc);
-      }
-      return rapidjson::StringBuffer{};
+    }
+    else
+    {
+      json_parser::parse_address_value(
+          proto.get_device().get_root_node(), doc);
+    }
+    return rapidjson::StringBuffer{};
   }
 };
 }

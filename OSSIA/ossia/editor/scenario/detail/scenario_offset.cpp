@@ -1,21 +1,21 @@
 #include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_node.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
 
-#include <ossia/editor/exceptions.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
-#include <iostream>
-#include <hopscotch_map.h>
+#include <ossia/editor/exceptions.hpp>
 #include <cassert>
-#include <set>
+#include <hopscotch_map.h>
+#include <iostream>
 #include <map>
+#include <set>
 
 namespace ossia
 {
-using past_events_map = boost::container::flat_map<time_value, std::shared_ptr<time_event>>;
+using past_events_map
+    = boost::container::flat_map<time_value, std::shared_ptr<time_event>>;
 using DateMap = tsl::hopscotch_map<time_node*, time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using ConstraintPtr = std::shared_ptr<ossia::time_constraint>;
@@ -36,9 +36,8 @@ void process_offset(
     time_node& timenode, time_value offset, past_events_map& pastEvents)
 {
   time_value date = timenode.get_date();
-  auto get_event_status = [] (const time_event& event)
-  {
-    switch(event.get_offset_behavior())
+  auto get_event_status = [](const time_event& event) {
+    switch (event.get_offset_behavior())
     {
       case time_event::offset_behavior::EXPRESSION_TRUE:
         return time_event::status::HAPPENED;
@@ -46,8 +45,8 @@ void process_offset(
         return time_event::status::DISPOSED;
       case time_event::offset_behavior::EXPRESSION:
         return expressions::evaluate(event.get_expression())
-                          ? time_event::status::HAPPENED
-                          : time_event::status::DISPOSED;
+                   ? time_event::status::HAPPENED
+                   : time_event::status::DISPOSED;
       default:
         return time_event::status::NONE;
     }
@@ -76,14 +75,16 @@ void process_offset(
     for (const auto& timeConstraint : event.previous_time_constraints())
     {
       time_value constraintOffset
-          = offset - timeConstraint->get_start_event().get_time_node().get_date();
+          = offset
+            - timeConstraint->get_start_event().get_time_node().get_date();
 
       if (constraintOffset < Zero)
       {
         eventStatus = time_event::status::NONE;
       }
-      else if (constraintOffset >= Zero
-               && constraintOffset <= timeConstraint->get_max_duration())
+      else if (
+          constraintOffset >= Zero
+          && constraintOffset <= timeConstraint->get_max_duration())
       {
         eventStatus = constraintOffset > timeConstraint->get_min_duration()
                           ? time_event::status::PENDING
@@ -105,11 +106,11 @@ void process_offset(
     // propagate offset processing to setup all TimeEvents
     for (const auto& timeConstraint : event.next_time_constraints())
     {
-      process_offset(timeConstraint->get_end_event().get_time_node(), offset, pastEvents);
+      process_offset(
+          timeConstraint->get_end_event().get_time_node(), offset, pastEvents);
     }
   }
 }
-
 
 state_element scenario::offset(ossia::time_value offset, double pos)
 {
@@ -155,7 +156,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
           time_constraint& cst = *cst_ptr;
           auto& start_tn = cst.get_start_event().get_time_node();
           auto start_date_it = time_map.find(&start_tn);
-          if(start_date_it != time_map.end())
+          if (start_date_it != time_map.end())
           {
             auto start_date = start_date_it->second;
             if (start_date < offset)
@@ -175,7 +176,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   process_offset(*m_nodes[0], offset, pastEvents);
 
   // build offset state from all ordered past events
-  if(unmuted())
+  if (unmuted())
   {
     for (const auto& p : pastEvents)
     {
@@ -191,12 +192,11 @@ state_element scenario::offset(ossia::time_value offset, double pos)
     auto& sev = cst.get_start_event();
     auto& stn = sev.get_time_node();
     auto start_date = sev.get_time_node().get_date();
-    bool all_empty = ossia::all_of(stn.get_time_events(),
-                                    [] (const auto& ev) {
+    bool all_empty = ossia::all_of(stn.get_time_events(), [](const auto& ev) {
       return ev->previous_time_constraints().empty();
     });
 
-    if(all_empty && &stn != m_nodes[0].get())
+    if (all_empty && &stn != m_nodes[0].get())
       continue;
 
     // offset TimeConstraint's Clock

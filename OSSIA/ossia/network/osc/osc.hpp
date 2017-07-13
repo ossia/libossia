@@ -2,12 +2,12 @@
 
 #include <string>
 
+#include <ossia/detail/mutex.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <hopscotch_map.h>
-#include <ossia/detail/mutex.hpp>
-#include <atomic>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <atomic>
+#include <hopscotch_map.h>
 
 namespace oscpack
 {
@@ -16,7 +16,7 @@ class IpEndpointName;
 }
 namespace osc
 {
-template<typename T>
+template <typename T>
 class sender;
 class receiver;
 }
@@ -71,10 +71,12 @@ private:
   std::string m_ip;
 
   uint16_t m_remote_port{}; /// the port that a remote device opens
-  uint16_t m_local_port{};  /// the port where a remote device sends OSC messages
-                          /// to (opened in this library)
-  std::atomic_bool m_learning{};       /// if the device is currently learning from inbound
-                          /// messages.
+  uint16_t
+      m_local_port{}; /// the port where a remote device sends OSC messages
+                      /// to (opened in this library)
+  std::atomic_bool
+      m_learning{}; /// if the device is currently learning from inbound
+                    /// messages.
 };
 }
 }

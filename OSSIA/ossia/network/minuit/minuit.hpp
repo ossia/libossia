@@ -6,14 +6,14 @@
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
-#include <ossia/editor/value/value.hpp>
 #include <ossia/detail/mutex.hpp>
+#include <ossia/editor/value/value.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
+#include <atomic>
 #include <future>
+#include <hopscotch_map.h>
 #include <set>
 #include <string>
-#include <hopscotch_map.h>
-#include <atomic>
-#include <ossia/network/zeroconf/zeroconf.hpp>
 
 namespace oscpack
 {
@@ -22,7 +22,7 @@ class IpEndpointName;
 }
 namespace osc
 {
-template<typename T>
+template <typename T>
 class sender;
 class receiver;
 }
@@ -36,6 +36,7 @@ class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {
 private:
   using lock_type = lock_t;
+
 public:
   minuit_protocol(
       const std::string& local_name, const std::string& remote_ip,
@@ -68,7 +69,8 @@ public:
   bool push(const ossia::net::address_base& address_base) override;
 
   bool observe(ossia::net::address_base& address_base, bool enable) override;
-  bool observe_quietly(ossia::net::address_base& address_base, bool enable) override;
+  bool observe_quietly(
+      ossia::net::address_base& address_base, bool enable) override;
 
   void namespace_refresh(ossia::string_view req, const std::string& addr);
   void namespace_refreshed(ossia::string_view addr);
@@ -78,6 +80,7 @@ public:
 
   osc::sender<osc_outbound_visitor>& sender() const;
   ossia::minuit::name_table name_table;
+
 private:
   void on_received_message(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);

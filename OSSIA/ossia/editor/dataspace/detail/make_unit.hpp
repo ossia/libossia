@@ -8,11 +8,9 @@ namespace ossia
 class make_unit_helper
 {
 public:
-  make_unit_helper():
-    indices(make_dataspace_index_array()),
-    units(make_unit_array())
+  make_unit_helper()
+      : indices(make_dataspace_index_array()), units(make_unit_array())
   {
-
   }
 
   ossia::unit_t get_unit(uint64_t dataspace, uint64_t unit) const
@@ -20,11 +18,11 @@ public:
     // Position of the dataspace + position of the unit
     // position of the dataspace is the sum of the n first in unit_sizes
 
-    if(dataspace < indices.size())
+    if (dataspace < indices.size())
     {
       auto idx = indices[dataspace];
 
-      if(idx + unit < units.size())
+      if (idx + unit < units.size())
         return units[idx + unit];
     }
 
@@ -52,7 +50,7 @@ private:
 
     uint64_t i = 0;
     uint64_t sum = 0;
-    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_u_list>([&](auto t) {
       using dataspace_type = typename decltype(t)::type;
       arr[i] = sum;
       sum += brigand::size<dataspace_type>::value;
@@ -68,9 +66,9 @@ private:
     units_array arr;
 
     uint64_t i = 0;
-    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
+    brigand::for_each<ossia::dataspace_u_list>([&](auto t) {
       using dataspace_type = typename decltype(t)::type;
-      brigand::for_each<dataspace_type>([&] (auto u) {
+      brigand::for_each<dataspace_type>([&](auto u) {
         using unit_type = typename decltype(u)::type;
         arr[i] = unit_type{};
         i++;
@@ -79,5 +77,4 @@ private:
     return arr;
   }
 };
-
 }

@@ -10,7 +10,8 @@ class value;
  * @class Impulse impulse.hpp ossia/editor/value/value.hpp
  *
  * Any value can be converted to an impulse.
- * An impulse generally just means that we want to send a message to the address,
+ * An impulse generally just means that we want to send a message to the
+ * address,
  * and a value is not needed.
  *
  * For instance :
@@ -22,15 +23,27 @@ class value;
  */
 struct OSSIA_EXPORT impulse
 {
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse() noexcept { }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse(const impulse&) noexcept { }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse(impulse&&) noexcept { }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(const impulse&) noexcept { return *this; }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(impulse&&) noexcept { return *this; }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse() noexcept
+  {
+  }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse(const impulse&) noexcept
+  {
+  }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse(impulse&&) noexcept
+  {
+  }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(const impulse&) noexcept
+  {
+    return *this;
+  }
+  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(impulse&&) noexcept
+  {
+    return *this;
+  }
 
   OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const ossia::impulse&) const
   {
-      return true;
+    return true;
   }
 
   OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const ossia::impulse&) const
@@ -59,62 +72,62 @@ struct OSSIA_EXPORT impulse
   }
 };
 
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const T&, const ossia::impulse&)
 {
   return true;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const T&, const ossia::impulse&)
 {
   return false;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const T&, const ossia::impulse&)
 {
   return false;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const T&, const ossia::impulse&)
 {
   return true;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const T&, const ossia::impulse&)
 {
   return false;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const T&, const ossia::impulse&)
 {
   return true;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const ossia::impulse&, const T&)
 {
   return true;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const ossia::impulse&, const T&)
 {
   return false;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const ossia::impulse&, const T&)
 {
   return false;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const ossia::impulse&, const T&)
 {
   return true;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const ossia::impulse&, const T&)
 {
   return false;
 }
-template<typename T>
+template <typename T>
 OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const ossia::impulse&, const T&)
 {
   return true;

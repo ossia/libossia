@@ -1,7 +1,7 @@
 #pragma once
+#include <memory>
 #include <ossia_export.h>
 #include <utility>
-#include <memory>
 namespace ossia
 {
 /**

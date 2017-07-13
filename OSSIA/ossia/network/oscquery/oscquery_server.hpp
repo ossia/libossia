@@ -1,20 +1,20 @@
 #pragma once
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/server.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
-#include <ossia/network/osc/detail/sender.hpp>
 #include <readerwriterqueue.h>
 
-#include <hopscotch_map.h>
 #include <ossia/detail/mutex.hpp>
-#include <atomic>
-#include <nano_signal_slot.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+#include <atomic>
+#include <hopscotch_map.h>
+#include <nano_signal_slot.hpp>
 namespace osc
 {
 
-template<typename T>
+template <typename T>
 class sender;
 class receiver;
 }
@@ -30,11 +30,13 @@ namespace ossia
 namespace oscquery
 {
 //! Implementation of an oscquery server.
-class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_server_protocol final
+    : public ossia::net::protocol_base
 {
   friend class query_answerer;
   friend class get_query_answerer;
   friend struct json_query_answerer;
+
 public:
   using connection_handler = websocket_server::connection_handler;
   oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);
@@ -48,12 +50,19 @@ public:
   bool observe_quietly(net::address_base&, bool) override;
   bool update(net::node_base& b) override;
   void set_device(net::device_base& dev) override;
-  ossia::net::device_base& get_device() const { return *m_device; }
+  ossia::net::device_base& get_device() const
+  {
+    return *m_device;
+  }
 
-  int getOSCPort() const { return m_oscPort; }
+  int getOSCPort() const
+  {
+    return m_oscPort;
+  }
 
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
+
 private:
   // List of connected clients
   oscquery_client* findClient(const connection_handler& hdl);
@@ -64,13 +73,13 @@ private:
   // Called when a client is built (it gave its osc port)
   void enableClient(const connection_handler& hdl);
 
-  void add_node(ossia::string_view path, const string_map<std::string>& parameters);
+  void
+  add_node(ossia::string_view path, const string_map<std::string>& parameters);
   void remove_node(ossia::string_view path, const std::string& node);
 
   // OSC callback
   void on_OSCMessage(
-      const oscpack::ReceivedMessage& m,
-      const oscpack::IpEndpointName& ip);
+      const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
   // Websocket callbacks
   void on_connectionOpen(connection_handler hdl);
@@ -79,14 +88,14 @@ private:
   // Local device callback
   void on_nodeCreated(const ossia::net::node_base&);
   void on_nodeRemoved(const ossia::net::node_base&);
-  void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+  void
+  on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
 
   void update_zeroconf();
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
-  rapidjson::StringBuffer on_WSrequest(
-      connection_handler hdl,
-      const std::string& message);
+  rapidjson::StringBuffer
+  on_WSrequest(connection_handler hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;
   websocket_server m_websocketServer;
@@ -112,8 +121,6 @@ private:
   // The local ports
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
-
 };
-
 }
 }

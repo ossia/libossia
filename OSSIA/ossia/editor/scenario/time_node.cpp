@@ -1,11 +1,10 @@
-#include <ossia/editor/scenario/time_node.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_node.hpp>
 
 namespace ossia
 {
 
-time_node::time_node()
-    : m_expression(expressions::make_expression_true())
+time_node::time_node() : m_expression(expressions::make_expression_true())
 {
 }
 
@@ -60,7 +59,8 @@ time_value time_node::get_date() const
       {
         if (timeEvent->previous_time_constraints()[0]->get_nominal_duration()
             > Zero)
-          return timeEvent->previous_time_constraints()[0]->get_nominal_duration()
+          return timeEvent->previous_time_constraints()[0]
+                     ->get_nominal_duration()
                  + timeEvent->previous_time_constraints()[0]
                        ->get_start_event()
                        .get_time_node()
@@ -85,8 +85,7 @@ time_node& time_node::set_expression(expression_ptr exp)
 }
 
 time_node::iterator time_node::insert(
-    time_node::const_iterator pos,
-    std::shared_ptr<time_event> ev)
+    time_node::const_iterator pos, std::shared_ptr<time_event> ev)
 {
   return m_timeEvents.insert(pos, std::move(ev));
 }
@@ -102,8 +101,7 @@ time_node::iterator time_node::emplace(
     ossia::expression_ptr exp)
 {
   return insert(
-        pos,
-        std::make_shared<time_event>(callback, *this, std::move(exp)));
+      pos, std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
 void time_node::process(std::vector<time_event*>& statusChangedEvents)
@@ -178,10 +176,8 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
       {
         for (auto& timeConstraint : timeEvent->next_time_constraints())
         {
-          timeConstraint
-              ->get_end_event()
-              .get_time_node()
-              .process(statusChangedEvents);
+          timeConstraint->get_end_event().get_time_node().process(
+              statusChangedEvents);
         }
 
         break;
@@ -198,7 +194,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
   // if all TimeEvents are not PENDING
   if (m_pending.size() != m_timeEvents.size())
   {
-    if(m_evaluating)
+    if (m_evaluating)
     {
       m_evaluating = false;
       left_evaluation.send();
@@ -207,7 +203,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
     return;
   }
 
-  if(!m_evaluating)
+  if (!m_evaluating)
   {
     m_evaluating = true;
     entered_evaluation.send();
@@ -219,7 +215,8 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
   // update the expression one time
   // then observe and evaluate TimeNode's expression before to trig
   // only if no maximal duration have been reached
-  if (*m_expression != expressions::expression_true() && !maximalDurationReached)
+  if (*m_expression != expressions::expression_true()
+      && !maximalDurationReached)
   {
     if (!is_observing_expression())
       expressions::update(*m_expression);
@@ -235,9 +232,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
   {
     // former PENDING TimeEvents are now HAPPENED or DISPOSED
     statusChangedEvents.insert(
-          statusChangedEvents.end(),
-          m_pending.begin(),
-          m_pending.end());
+        statusChangedEvents.end(), m_pending.begin(), m_pending.end());
 
     m_evaluating = false;
     finished_evaluation.send(maximalDurationReached);
@@ -271,7 +266,7 @@ void time_node::observe_expression(bool observe)
 
       // start expression observation; dummy callback used.
       // Do not remove it : else the expressions will stop listening.
-      m_callback = expressions::add_callback(*m_expression, [] (bool) { });
+      m_callback = expressions::add_callback(*m_expression, [](bool) {});
     }
     else
     {
@@ -287,21 +282,20 @@ void time_node::observe_expression(bool observe)
 
 void time_node::reset()
 {
-    for(auto& timeEvent : m_timeEvents)
-    {
-        timeEvent->reset();
-    }
+  for (auto& timeEvent : m_timeEvents)
+  {
+    timeEvent->reset();
+  }
 
-    m_pending.clear();
+  m_pending.clear();
 }
 
 void time_node::cleanup()
 {
-  for(auto& timeevent : m_timeEvents)
+  for (auto& timeevent : m_timeEvents)
     timeevent->cleanup();
 
   m_pending.clear();
   m_timeEvents.clear();
 }
-
 }

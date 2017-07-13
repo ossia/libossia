@@ -17,6 +17,5 @@ std::future<void> protocol_base::pull_async(address_base&)
 {
   return {};
 }
-
 }
 }

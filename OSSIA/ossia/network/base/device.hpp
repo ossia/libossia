@@ -16,10 +16,10 @@ class protocol_base;
  */
 struct device_capabilities
 {
-        /**
-         * @brief change_tree : nodes can be added and removed externally.
-         */
-        bool change_tree = false;
+  /**
+   * @brief change_tree : nodes can be added and removed externally.
+   */
+  bool change_tree = false;
 };
 
 /**
@@ -70,7 +70,9 @@ public:
   virtual ossia::net::node_base& get_root_node() = 0;
 
   device_capabilities get_capabilities() const
-  { return m_capabilities; }
+  {
+    return m_capabilities;
+  }
 
   void set_name(const std::string& str)
   {
@@ -86,7 +88,8 @@ public:
   Nano::Signal<void(const node_base&)>
       on_node_removing; // The node being removed
   Nano::Signal<void(const node_base&, std::string)>
-      on_node_renamed; // Node has the new name, second argument is the old name
+      on_node_renamed; // Node has the new name, second argument is the old
+                       // name
   Nano::Signal<void(const node_base&, ossia::string_view)>
       on_attribute_modified; // Second argument is an identifier
   Nano::Signal<void(const address_base&)>
@@ -101,34 +104,35 @@ public:
   //! Called when a network client requests the removal of an instance.
   //! Argument is the path of the parent and the node to remove.
   Nano::Signal<void(std::string, std::string)> on_remove_node_requested;
+
 protected:
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
   device_capabilities m_capabilities;
 };
 
-template<typename T>
+template <typename T>
 void node_base::set(ossia::string_view str, const T& value)
 {
   auto opt = ossia::get_optional_attribute<T>(*this, str);
-  if(opt && *opt != value)
+  if (opt && *opt != value)
   {
     ossia::set_attribute(*this, str, value);
     get_device().on_attribute_modified(*this, str);
   }
 }
 
-template<typename T>
+template <typename T>
 void node_base::set(ossia::string_view str, T&& value)
 {
   auto opt = ossia::get_optional_attribute<T>(*this, str);
-  if(opt && *opt != value)
+  if (opt && *opt != value)
   {
     ossia::set_attribute(*this, str, std::move(value));
     get_device().on_attribute_modified(*this, str);
   }
 }
 
-template<typename Attribute, typename T>
+template <typename Attribute, typename T>
 void node_base::set(Attribute a, const T& value)
 {
   auto opt = a.getter(*this);
@@ -136,24 +140,24 @@ void node_base::set(Attribute a, const T& value)
   // We make a copy here to prevent a double conversion
   // for instance from std::vector<> to value. TODO do the same in the other.
   typename Attribute::type val = value;
-  if(compare_optional(opt, val))
+  if (compare_optional(opt, val))
   {
     a.setter(*this, val);
     get_device().on_attribute_modified(*this, a.text());
   }
 }
 
-template<typename Attribute, typename T>
+template <typename Attribute, typename T>
 void node_base::set(Attribute a, T& value)
 {
   set(a, const_cast<const T&>(value));
 }
 
-template<typename Attribute, typename T>
+template <typename Attribute, typename T>
 void node_base::set(Attribute a, T&& value)
 {
   auto opt = a.getter(*this);
-  if(compare_optional(opt, value))
+  if (compare_optional(opt, value))
   {
     a.setter(*this, std::move(value));
     get_device().on_attribute_modified(*this, a.text());

@@ -1,6 +1,6 @@
 #pragma once
-#include <stdexcept>
 #include <ossia_export.h>
+#include <stdexcept>
 namespace ossia
 {
 
@@ -10,13 +10,10 @@ namespace ossia
  * Means that there was a problem
  * during the execution of a score
  */
-struct OSSIA_EXPORT execution_error :
-    public std::runtime_error
+struct OSSIA_EXPORT execution_error : public std::runtime_error
 {
-  execution_error(const char* e):
-    std::runtime_error(e)
+  execution_error(const char* e) : std::runtime_error(e)
   {
-
   }
 };
 
@@ -26,13 +23,10 @@ struct OSSIA_EXPORT execution_error :
  * Means that an invalid value was passed.
  * For instance a Tuple where an Impulse is required.
  */
-struct OSSIA_EXPORT invalid_value_type_error :
-    public std::logic_error
+struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
 {
-  invalid_value_type_error(const char* e):
-    std::logic_error(e)
+  invalid_value_type_error(const char* e) : std::logic_error(e)
   {
-
   }
 };
 
@@ -42,14 +36,10 @@ struct OSSIA_EXPORT invalid_value_type_error :
  * Means that a destination_index could not
  * be applied to a value properly.
  */
-struct OSSIA_EXPORT invalid_access_error :
-    public std::runtime_error
+struct OSSIA_EXPORT invalid_access_error : public std::runtime_error
 {
-  invalid_access_error(const char* e):
-    std::runtime_error(e)
+  invalid_access_error(const char* e) : std::runtime_error(e)
   {
-
   }
 };
-
 }

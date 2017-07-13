@@ -1,8 +1,8 @@
 #pragma once
+#include <ossia/network/base/address.hpp>
 #include <ossia/network/osc/detail/string_view.hpp>
 #include <chobo/small_vector.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
-#include <ossia/network/base/address.hpp>
 
 #include <array>
 #include <iostream>
@@ -22,8 +22,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 }
 
 inline oscpack::OutboundPacketStream& operator<<(
-    oscpack::OutboundPacketStream& p,
-    const ossia::net::address_base& address)
+    oscpack::OutboundPacketStream& p, const ossia::net::address_base& address)
 {
   p << ossia::net::osc_address_string(address);
 
@@ -31,8 +30,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 }
 
 inline oscpack::OutboundPacketStream& operator<<(
-    oscpack::OutboundPacketStream& p,
-    const std::vector<std::string>& values)
+    oscpack::OutboundPacketStream& p, const std::vector<std::string>& values)
 {
   for (const auto& val : values)
   {
@@ -41,7 +39,6 @@ inline oscpack::OutboundPacketStream& operator<<(
 
   return p;
 }
-
 
 template <typename ValueWriter, int BufferSize = 2048>
 class MessageGenerator
@@ -131,18 +128,15 @@ private:
   oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
 };
 
-
 // TODO have a queue of dynamic messages
-template<typename ValueWriter>
+template <typename ValueWriter>
 class DynamicMessageGenerator
 {
 public:
   DynamicMessageGenerator() = default;
 
   template <typename... T>
-  DynamicMessageGenerator(
-      const std::string& name,
-      const T&... args)
+  DynamicMessageGenerator(const std::string& name, const T&... args)
   {
     operator()(name, args...);
   }
@@ -206,7 +200,7 @@ private:
     subfunc(args...);
   }
 
-  std::unique_ptr<char[]> buffer{std::make_unique<char[]>(1024*1024)};
+  std::unique_ptr<char[]> buffer{std::make_unique<char[]>(1024 * 1024)};
   oscpack::OutboundPacketStream p{buffer.get(), 1024 * 1024};
 };
 }

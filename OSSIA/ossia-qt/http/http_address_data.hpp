@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia-qt/js_utilities.hpp>
 #include <ossia/network/base/address_data.hpp>
+#include <ossia-qt/js_utilities.hpp>
 
 namespace ossia
 {
@@ -16,12 +16,12 @@ struct http_address_data_base
   http_address_data_base(const QJSValue& val)
   {
     auto r = val.property("request");
-    if(r.isString())
+    if (r.isString())
     {
       request = r.toString();
 
       auto a = val.property("answer");
-      if(a.isCallable())
+      if (a.isCallable())
       {
         answer = a;
       }
@@ -32,9 +32,7 @@ struct http_address_data_base
   QJSValue answer;
 };
 
-struct http_address_data :
-    public address_data,
-    public http_address_data_base
+struct http_address_data : public address_data, public http_address_data_base
 {
   http_address_data() = default;
   http_address_data(const http_address_data&) = default;
@@ -42,20 +40,15 @@ struct http_address_data :
   http_address_data& operator=(const http_address_data&) = default;
   http_address_data& operator=(http_address_data&&) = default;
 
-  http_address_data(const std::string& name):
-    address_data{name}
+  http_address_data(const std::string& name) : address_data{name}
   {
-
   }
 
-  http_address_data(const QJSValue& val):
-    address_data{ossia::qt::make_address_data(val)},
-    http_address_data_base{val}
+  http_address_data(const QJSValue& val)
+      : address_data{ossia::qt::make_address_data(val)}
+      , http_address_data_base{val}
   {
-
   }
-
 };
-
 }
 }

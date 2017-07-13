@@ -5,16 +5,16 @@
 #pragma clang system_header
 
 //
-#include <vector>
-#include <list>
-#include <memory>
-#include <functional>
-#include <hopscotch_map.h>
-#include <string>
-#include <ossia/detail/config.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#include <functional>
+#include <hopscotch_map.h>
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>

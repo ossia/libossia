@@ -18,23 +18,24 @@ struct time_value;
  * Then the main constraint executes.
  * Then the end time_node is checked.
  */
-class OSSIA_EXPORT loop final :
-    public time_process
+class OSSIA_EXPORT loop final : public time_process
 {
 public:
   /*! factory
    \param const #TimeValue& duration of the pattern #time_constraint
-   \param #time_constraint::ExecutionCallback to be notified at each step of the
+   \param #time_constraint::ExecutionCallback to be notified at each step of
+   the
    loop
    \param #time_event::ExecutionCallback to get start pattern #time_event's
    status
    back
-   \param #time_event::ExecutionCallback to get end pattern #time_event's status
+   \param #time_event::ExecutionCallback to get end pattern #time_event's
+   status
    back
    \return a new loop */
-    loop(
-        time_value, time_constraint::exec_callback,
-        time_event::exec_callback, time_event::exec_callback);
+  loop(
+      time_value, time_constraint::exec_callback, time_event::exec_callback,
+      time_event::exec_callback);
 
   /*! destructor */
   ~loop();
@@ -59,7 +60,7 @@ public:
    \return std::shared_ptr<TimeNode> */
   const std::shared_ptr<time_node> get_end_timenode() const;
 
-  private:
+private:
   void constraint_callback(double, time_value, const ossia::state_element&);
 
   void start_event_callback(time_event::status);
@@ -77,6 +78,5 @@ public:
 
   ossia::state m_currentState; // an internal State to return on state call
   ossia::state m_offsetState;  // an internal State built when offset is called
-
 };
 }

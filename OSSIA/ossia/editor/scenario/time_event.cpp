@@ -1,12 +1,11 @@
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
 
 namespace ossia
 {
 time_event::time_event(
-    time_event::exec_callback callback,
-    time_node& aTimeNode,
+    time_event::exec_callback callback, time_node& aTimeNode,
     expression_ptr anExpression)
     : m_callback(callback)
     , m_timenode(aTimeNode)
@@ -26,8 +25,9 @@ void time_event::happen()
 {
   if (m_status != time_event::status::PENDING)
   {
-    throw execution_error("time_event::happen: "
-                          "only PENDING event can happens");
+    throw execution_error(
+        "time_event::happen: "
+        "only PENDING event can happens");
     return;
   }
 
@@ -53,8 +53,9 @@ void time_event::dispose()
 {
   if (m_status == time_event::status::HAPPENED)
   {
-    throw execution_error("time_event::dispose: "
-                          "HAPPENED event cannot be disposed");
+    throw execution_error(
+        "time_event::dispose: "
+        "HAPPENED event cannot be disposed");
     return;
   }
 
@@ -71,7 +72,8 @@ void time_event::dispose()
   {
     bool dispose = true;
 
-    for (auto& previousTimeConstraint : nextTimeConstraint->get_end_event().previous_time_constraints())
+    for (auto& previousTimeConstraint :
+         nextTimeConstraint->get_end_event().previous_time_constraints())
     {
       if (previousTimeConstraint->get_start_event().get_status()
           != time_event::status::DISPOSED)
@@ -143,12 +145,12 @@ void time_event::set_status(status status)
 {
   m_status = status;
   if (m_callback)
-      (m_callback)(m_status);
+    (m_callback)(m_status);
 }
 
 void time_event::reset()
 {
-    set_status(status::NONE);
+  set_status(status::NONE);
 }
 
 void time_event::cleanup()

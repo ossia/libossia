@@ -7,27 +7,23 @@ namespace expressions
 {
 
 expression_composition::expression_composition(
-    expression_ptr expr1, binary_operator op,
-    expression_ptr expr2)
-    : m_first(std::move(expr1))
-    , m_second(std::move(expr2))
-    , m_operator(op)
+    expression_ptr expr1, binary_operator op, expression_ptr expr2)
+    : m_first(std::move(expr1)), m_second(std::move(expr2)), m_operator(op)
 {
-  if(!m_first || !m_second)
+  if (!m_first || !m_second)
     throw std::runtime_error("An argument to expression_composition is null");
 }
 
 expression_composition::~expression_composition()
 {
-  if(!expression_callback_container::callbacks_empty())
+  if (!expression_callback_container::callbacks_empty())
     expression_callback_container::callbacks_clear();
 }
 
 bool expression_composition::evaluate() const
 {
-    return do_evaluation(
-          expressions::evaluate(*m_first),
-          expressions::evaluate(*m_second));
+  return do_evaluation(
+      expressions::evaluate(*m_first), expressions::evaluate(*m_second));
 }
 
 void expression_composition::update() const
@@ -94,15 +90,13 @@ bool expression_composition::do_evaluation(bool first, bool second) const
 
 void expression_composition::first_callback(bool first_result)
 {
-  bool result
-      = do_evaluation(first_result, expressions::evaluate(*m_second));
+  bool result = do_evaluation(first_result, expressions::evaluate(*m_second));
   send(result);
 }
 
 void expression_composition::second_callback(bool second_result)
 {
-  bool result
-      = do_evaluation(expressions::evaluate(*m_first), second_result);
+  bool result = do_evaluation(expressions::evaluate(*m_first), second_result);
   send(result);
 }
 }

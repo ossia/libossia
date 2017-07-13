@@ -49,13 +49,12 @@ bool time_process::enabled() const
   return m_enabled;
 }
 
-time_constraint*time_process::parent() const
+time_constraint* time_process::parent() const
 {
   return m_parent;
 }
 
 void time_process::mute_impl(bool)
 {
-
 }
 }

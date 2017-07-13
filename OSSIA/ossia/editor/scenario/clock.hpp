@@ -1,12 +1,12 @@
 #pragma once
 
 #include <ossia/editor/scenario/time_value.hpp>
-#include <chrono>
-#include <thread>
 #include <atomic>
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <ossia_export.h>
+#include <thread>
 
 namespace ossia
 {
@@ -15,6 +15,7 @@ using clock_type = std::chrono::steady_clock;
 class OSSIA_EXPORT clock
 {
   friend class time_constraint;
+
 public:
   enum exec_status
   {
@@ -24,9 +25,7 @@ public:
   using exec_status_callback = std::function<void(exec_status)>;
 
   //! Ratio : the number of time units in one millisecond
-  clock(
-      ossia::time_constraint& cst,
-      double time_ratio = 1000.);
+  clock(ossia::time_constraint& cst, double time_ratio = 1000.);
 
   /*! destructor */
   ~clock();
@@ -87,7 +86,7 @@ public:
   void set_exec_status_callback(exec_status_callback);
   exec_status_callback get_exec_status_callback() const;
 
-  private:
+private:
   /*! to allow TimeConstraint to override setDuration accessor */
   void do_set_duration(ossia::time_value);
 
@@ -99,7 +98,7 @@ public:
 
   double m_ratio{};
 
-  time_value m_duration{};    /// the time (in ms) the clock will run at normal
+  time_value m_duration{}; /// the time (in ms) the clock will run at normal
 
   /// speed factor
   time_value m_granularity{}; /// the minimum time between each tick (in ms)
@@ -119,11 +118,10 @@ public:
   int64_t m_elapsedTime{};
 
   std::atomic_bool m_running{}; /// is the clock running right now ?
-  std::atomic_bool m_paused{}; /// is the clock paused right now ?
+  std::atomic_bool m_paused{};  /// is the clock paused right now ?
   std::atomic_bool m_shouldStop{};
 
   /*! called back by the internal thread */
   void threadCallback();
-
 };
 }

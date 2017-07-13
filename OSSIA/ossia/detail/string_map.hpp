@@ -21,10 +21,10 @@ struct string_hash
 #if !defined(_MSC_VER)
     return std::hash<ossia::string_view>{}(s);
 #else
-  return std::hash<std::string>{}(s.to_string()); // TODO fixme with VS2017
+    return std::hash<std::string>{}(s.to_string()); // TODO fixme with VS2017
 #endif
   }
-  template<std::size_t N>
+  template <std::size_t N>
   std::size_t operator()(const char (&str)[N]) const
   {
     return operator()(make_string_view<N>(str));
@@ -51,34 +51,35 @@ struct string_equal
     return s == s2;
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   bool operator()(const std::string& s, const char (&s2)[N]) const
   {
     return operator()(s, make_string_view<N>(s2));
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   bool operator()(ossia::string_view s, const char (&s2)[N]) const
   {
     return operator()(s, make_string_view<N>(s2));
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   bool operator()(const char (&s)[N], const std::string& s2) const
   {
     return operator()(make_string_view<N>(s), s2);
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   bool operator()(const char (&s)[N], ossia::string_view s2) const
   {
     return operator()(make_string_view<N>(s), s2);
   }
 };
 
-template<typename Value>
-using string_map = tsl::hopscotch_map<std::string, Value, string_hash, string_equal, std::allocator<std::pair<std::string, Value>>, 1>;
-template<typename Value>
-using string_view_map = tsl::hopscotch_map<ossia::string_view, Value, string_hash, string_equal, std::allocator<std::pair<ossia::string_view, Value>>, 1>;
-
+template <typename Value>
+using string_map = tsl::
+    hopscotch_map<std::string, Value, string_hash, string_equal, std::allocator<std::pair<std::string, Value>>, 1>;
+template <typename Value>
+using string_view_map = tsl::
+    hopscotch_map<ossia::string_view, Value, string_hash, string_equal, std::allocator<std::pair<ossia::string_view, Value>>, 1>;
 }

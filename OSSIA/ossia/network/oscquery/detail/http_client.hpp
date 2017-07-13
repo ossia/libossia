@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/logger.hpp>
 #include <asio.hpp>
 #include <asio/placeholders.hpp>
 #include <boost/bind.hpp>
-#include <ossia/detail/logger.hpp>
 #include <utility>
 
 namespace ossia
@@ -14,28 +14,27 @@ using tcp = asio::ip::tcp;
 class http_get_request
 {
   fmt::MemoryWriter m_request;
+
 public:
   http_get_request(
       std::function<void(http_get_request*, const std::string&)> f,
-      std::function<void(http_get_request*)> err,
-      asio::io_context& ctx,
-      const std::string& server,
-      const std::string& port,
+      std::function<void(http_get_request*)> err, asio::io_context& ctx,
+      const std::string& server, const std::string& port,
       const std::string& path)
-    : m_resolver(ctx),
-      m_socket(ctx),
-      m_fun{std::move(f)},
-      m_err{std::move(err)}
+      : m_resolver(ctx)
+      , m_socket(ctx)
+      , m_fun{std::move(f)}
+      , m_err{std::move(err)}
   {
     m_request << "GET " << path << " HTTP/1.1\r\n";
     m_request << "Host: " << server << "\r\n";
     m_request << "Accept: */*\r\n";
     m_request << "Connection: close\r\n\r\n";
 
-    m_resolver.async_resolve(server, port,
-        std::bind(&http_get_request::handle_resolve, this,
-          std::placeholders::_1,
-          std::placeholders::_2));
+    m_resolver.async_resolve(
+        server, port, std::bind(
+                          &http_get_request::handle_resolve, this,
+                          std::placeholders::_1, std::placeholders::_2));
   }
 
   void close()
@@ -44,16 +43,18 @@ public:
   }
 
 private:
-  void handle_resolve(const asio::error_code& err,
+  void handle_resolve(
+      const asio::error_code& err,
       const tcp::resolver::results_type& endpoints)
   {
     if (!err)
     {
       // Attempt a connection to each endpoint in the list until we
       // successfully establish a connection.
-      asio::async_connect(m_socket, endpoints,
-          std::bind(&http_get_request::handle_connect, this,
-            std::placeholders::_1));
+      asio::async_connect(
+          m_socket, endpoints,
+          std::bind(
+              &http_get_request::handle_connect, this, std::placeholders::_1));
     }
     else
     {
@@ -68,9 +69,10 @@ private:
     {
       asio::const_buffer request(m_request.data(), m_request.size());
       // The connection was successful. Send the request.
-      asio::async_write(m_socket, request,
-          std::bind(&http_get_request::handle_write_request, this,
-            std::placeholders::_1));
+      asio::async_write(
+          m_socket, request, std::bind(
+                                 &http_get_request::handle_write_request, this,
+                                 std::placeholders::_1));
     }
     else
     {
@@ -86,9 +88,11 @@ private:
       // Read the response status line. The response_ streambuf will
       // automatically grow to accommodate the entire line. The growth may be
       // limited by passing a maximum size to the streambuf constructor.
-      asio::async_read_until(m_socket, m_response, "\r\n",
-          std::bind(&http_get_request::handle_read_status_line, this,
-            std::placeholders::_1));
+      asio::async_read_until(
+          m_socket, m_response, "\r\n",
+          std::bind(
+              &http_get_request::handle_read_status_line, this,
+              std::placeholders::_1));
     }
     else
     {
@@ -121,9 +125,11 @@ private:
       }
 
       // Read the response headers, which are terminated by a blank line.
-      asio::async_read_until(m_socket, m_response, "\r\n\r\n",
-          std::bind(&http_get_request::handle_read_headers, this,
-            std::placeholders::_1));
+      asio::async_read_until(
+          m_socket, m_response, "\r\n\r\n",
+          std::bind(
+              &http_get_request::handle_read_headers, this,
+              std::placeholders::_1));
     }
     else
     {
@@ -143,10 +149,11 @@ private:
         ;
 
       // Start reading remaining data until EOF.
-      asio::async_read(m_socket, m_response,
-          asio::transfer_at_least(1),
-          std::bind(&http_get_request::handle_read_content, this,
-            std::placeholders::_1));
+      asio::async_read(
+          m_socket, m_response, asio::transfer_at_least(1),
+          std::bind(
+              &http_get_request::handle_read_content, this,
+              std::placeholders::_1));
     }
     else
     {
@@ -164,10 +171,11 @@ private:
       m_fun(this, s);
 
       // Continue reading remaining data until EOF.
-      asio::async_read(m_socket, m_response,
-          asio::transfer_at_least(1),
-          std::bind(&http_get_request::handle_read_content, this,
-            std::placeholders::_1));
+      asio::async_read(
+          m_socket, m_response, asio::transfer_at_least(1),
+          std::bind(
+              &http_get_request::handle_read_content, this,
+              std::placeholders::_1));
     }
     else if (err != asio::error::eof)
     {
@@ -178,9 +186,7 @@ private:
     {
       // Write all of the data that has been read so far.
       const auto& dat = m_response.data();
-      std::string str{
-            asio::buffers_begin(dat),
-            asio::buffers_end(dat)};
+      std::string str{asio::buffers_begin(dat), asio::buffers_end(dat)};
       m_fun(this, str);
     }
   }
@@ -192,6 +198,5 @@ private:
   std::function<void(http_get_request*, const std::string&)> m_fun;
   std::function<void(http_get_request*)> m_err;
 };
-
 }
 }

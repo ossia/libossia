@@ -1,59 +1,41 @@
 #pragma once
 
-#include "ossia_obj_base.hpp"
 #include "device.hpp"
 #include "model.hpp"
+#include "ossia_obj_base.hpp"
 
-namespace ossia { namespace pd {
+namespace ossia
+{
+namespace pd
+{
 
 struct t_param : t_obj_base
 {
-    bool register_node(ossia::net::node_base* node);
-    bool do_registration(ossia::net::node_base* node);
-    bool unregister();
+  using is_model = std::true_type;
+  bool register_node(ossia::net::node_base* node);
+  bool do_registration(ossia::net::node_base* node);
+  bool unregister();
 
-    t_symbol* x_type;
-    int x_type_size;
-    t_atom x_default[64];
-    // TODO use optional for range
-    float x_range[2];
-    t_symbol* x_bounding_mode;
-    t_symbol* x_access_mode;
-    t_float x_repetition_filter=0;
-    t_symbol* x_unit;
-    t_symbol* x_tags;
-    t_symbol* x_description;
-    int x_priority;
-    bool x_hidden;
+  t_symbol* x_type;
+  int x_type_size;
+  t_atom x_default[64];
+  // TODO use optional for range
+  float x_range[2];
+  t_symbol* x_bounding_mode;
+  t_symbol* x_access_mode;
+  t_float x_repetition_filter = 0;
+  t_symbol* x_unit;
+  t_symbol* x_tags;
+  t_symbol* x_description;
+  int x_priority;
+  bool x_hidden;
 
-    static std::vector<t_param*> quarantine(){
-        static std::vector<t_param*> quarantine;
-        return quarantine;
-    }
+  static ossia::safe_vector<t_param*>& quarantine();
+  static ossia::safe_vector<t_param*>& rename();
 
-    void isDeleted(const ossia::net::node_base& n)
-    {
-        x_node->about_to_be_deleted.disconnect<t_param, &t_param::isDeleted>(this);
-        x_node = nullptr;
-        obj_quarantining<t_param>(this);
-    }
+  void is_deleted(const ossia::net::node_base& n);
 
-    static std::vector<t_param*>& rename(){
-        static std::vector<t_param*> rename;
-        return rename;
-    }
 
-    bool isRenamed(t_param* x){
-      return ossia::contains(x->rename(),x);
-    }
-
-    void renaming(t_param* x){
-        if ( !isRenamed(x) ) x->rename().push_back(x);
-    }
-
-    void derenaming(t_param* x){
-        x->rename().erase(std::remove(x->rename().begin(), x->rename().end(), x), x->rename().end());
-    }
 };
-
-} } // namespace
+}
+} // namespace

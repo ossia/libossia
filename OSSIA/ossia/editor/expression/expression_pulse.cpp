@@ -10,13 +10,13 @@ expression_pulse::expression_pulse(const Destination& destination)
 {
   // start destination observation
   m_callback = m_destination.address().add_callback(
-        [&](const ossia::value& result) { destination_callback(result); });
+      [&](const ossia::value& result) { destination_callback(result); });
 }
 
 expression_pulse::~expression_pulse()
 {
   // stop destination observation
-    m_destination.address().remove_callback(m_callback);
+  m_destination.address().remove_callback(m_callback);
 }
 
 bool expression_pulse::evaluate() const

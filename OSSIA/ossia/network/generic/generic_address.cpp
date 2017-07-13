@@ -2,12 +2,12 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/generic/generic_address.hpp>
 
-#include <ossia/network/base/protocol.hpp>
-#include <ossia/network/exceptions.hpp>
-#include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/domain/domain_conversion.hpp>
+#include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/protocol.hpp>
+#include <ossia/network/domain/domain_conversion.hpp>
+#include <ossia/network/exceptions.hpp>
 
 namespace ossia
 {
@@ -15,26 +15,26 @@ namespace net
 {
 
 generic_address::generic_address(ossia::net::node_base& node)
-  : m_node{node}
-  , m_protocol{node.get_device().get_protocol()}
-  , m_valueType(ossia::val_type::IMPULSE)
-  , m_accessMode(ossia::access_mode::BI)
-  , m_boundingMode(ossia::bounding_mode::FREE)
-  , m_repetitionFilter(ossia::repetition_filter::OFF)
-  , m_value(ossia::impulse{})
+    : m_node{node}
+    , m_protocol{node.get_device().get_protocol()}
+    , m_valueType(ossia::val_type::IMPULSE)
+    , m_accessMode(ossia::access_mode::BI)
+    , m_boundingMode(ossia::bounding_mode::FREE)
+    , m_repetitionFilter(ossia::repetition_filter::OFF)
+    , m_value(ossia::impulse{})
 {
 }
 
 generic_address::generic_address(
-    const address_data& data,
-    ossia::net::node_base& node)
-  : m_node{node}
-  , m_protocol{node.get_device().get_protocol()}
-  , m_valueType(ossia::val_type::IMPULSE)
-  , m_accessMode(get_value_or(data.access, ossia::access_mode::BI))
-  , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
-  , m_repetitionFilter(get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
-  , m_value(init_value(m_valueType))
+    const address_data& data, ossia::net::node_base& node)
+    : m_node{node}
+    , m_protocol{node.get_device().get_protocol()}
+    , m_valueType(ossia::val_type::IMPULSE)
+    , m_accessMode(get_value_or(data.access, ossia::access_mode::BI))
+    , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
+    , m_repetitionFilter(
+          get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
+    , m_value(init_value(m_valueType))
 {
   update_address_type(data.type, *this);
 }
@@ -64,7 +64,8 @@ void generic_address::request_value()
   m_protocol.request(*this);
 }
 
-ossia::net::generic_address& generic_address::push_value(const ossia::value& value)
+ossia::net::generic_address&
+generic_address::push_value(const ossia::value& value)
 {
   set_value(value);
 
@@ -101,7 +102,8 @@ ossia::value generic_address::value() const
   return m_value;
 }
 
-ossia::net::generic_address& generic_address::set_value(const ossia::value& val)
+ossia::net::generic_address&
+generic_address::set_value(const ossia::value& val)
 {
   set_value_quiet(val);
   send(value());
@@ -118,7 +120,7 @@ ossia::net::generic_address& generic_address::set_value(ossia::value&& val)
 void generic_address::set_value_quiet(const ossia::value& val)
 {
   using namespace ossia;
-  if(!val.valid())
+  if (!val.valid())
     return;
 
   lock_t lock(m_valueMutex);
@@ -137,7 +139,7 @@ void generic_address::set_value_quiet(const ossia::value& val)
 void generic_address::set_value_quiet(ossia::value&& val)
 {
   using namespace ossia;
-  if(!val.valid())
+  if (!val.valid())
     return;
 
   lock_t lock(m_valueMutex);
@@ -164,9 +166,9 @@ void generic_address::set_value_quiet(const Destination& destination)
   else
   {
     throw invalid_node_error(
-          "generic_address::setValue: "
-          "setting an address value using a destination "
-          "with a bad type address");
+        "generic_address::setValue: "
+        "setting an address value using a destination "
+        "with a bad type address");
     return;
   }
 }
@@ -176,15 +178,17 @@ ossia::val_type generic_address::get_value_type() const
   return m_valueType;
 }
 
-ossia::net::generic_address& generic_address::set_value_type(ossia::val_type type)
+ossia::net::generic_address&
+generic_address::set_value_type(ossia::val_type type)
 {
   {
     lock_t lock(m_valueMutex);
-    // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " << (int) mValueType << " <=== " << (int) type << std::endl;
+    // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " <<
+    // (int) mValueType << " <=== " << (int) type << std::endl;
     m_valueType = type;
 
     m_value = init_value(type);
-    if(m_domain)
+    if (m_domain)
     {
       convert_compatible_domain(m_domain, m_valueType);
     }
@@ -201,7 +205,7 @@ ossia::access_mode generic_address::get_access() const
 ossia::net::generic_address&
 generic_address::set_access(ossia::access_mode accessMode)
 {
-  if(m_accessMode != accessMode)
+  if (m_accessMode != accessMode)
   {
     m_accessMode = accessMode;
     m_node.get_device().on_attribute_modified(m_node, text_access_mode());
@@ -217,7 +221,7 @@ const ossia::domain& generic_address::get_domain() const
 ossia::net::generic_address&
 generic_address::set_domain(const ossia::domain& domain)
 {
-  if(m_domain != domain)
+  if (m_domain != domain)
   {
     m_domain = domain;
     convert_compatible_domain(m_domain, m_valueType);
@@ -235,7 +239,7 @@ ossia::bounding_mode generic_address::get_bounding() const
 ossia::net::generic_address&
 generic_address::set_bounding(ossia::bounding_mode boundingMode)
 {
-  if(m_boundingMode != boundingMode)
+  if (m_boundingMode != boundingMode)
   {
     m_boundingMode = boundingMode;
     m_node.get_device().on_attribute_modified(m_node, text_bounding_mode());
@@ -248,13 +252,14 @@ ossia::repetition_filter generic_address::get_repetition_filter() const
   return m_repetitionFilter;
 }
 
-ossia::net::generic_address&
-generic_address::set_repetition_filter(ossia::repetition_filter repetitionFilter)
+ossia::net::generic_address& generic_address::set_repetition_filter(
+    ossia::repetition_filter repetitionFilter)
 {
-  if(m_repetitionFilter != repetitionFilter)
+  if (m_repetitionFilter != repetitionFilter)
   {
     m_repetitionFilter = repetitionFilter;
-    m_node.get_device().on_attribute_modified(m_node, text_repetition_filter());
+    m_node.get_device().on_attribute_modified(
+        m_node, text_repetition_filter());
   }
   return *this;
 }
@@ -262,7 +267,7 @@ generic_address::set_repetition_filter(ossia::repetition_filter repetitionFilter
 bool generic_address::filter_repetition(const ossia::value& val) const
 {
   return get_repetition_filter() == ossia::repetition_filter::ON
-      && val == m_previousValue;
+         && val == m_previousValue;
 }
 
 void generic_address::on_first_callback_added()
@@ -287,14 +292,14 @@ generic_address& generic_address::set_unit(const unit_t& v)
     m_unit = v;
 
     // update the type to match the unit.
-    if(v)
+    if (v)
     {
       auto vt = ossia::matching_type(v);
-      if(vt != ossia::val_type::IMPULSE)
+      if (vt != ossia::val_type::IMPULSE)
       {
         m_valueType = vt;
         m_value = ossia::convert(m_value, m_valueType);
-        if(m_domain)
+        if (m_domain)
         {
           convert_compatible_domain(m_domain, m_valueType);
         }
@@ -310,9 +315,9 @@ bool generic_address::get_muted() const
   return m_muted;
 }
 
-generic_address&generic_address::set_muted(bool v)
+generic_address& generic_address::set_muted(bool v)
 {
-  if(m_muted != v)
+  if (m_muted != v)
   {
     m_muted = v;
     m_node.get_device().on_attribute_modified(m_node, text_muted());
@@ -325,9 +330,9 @@ bool generic_address::get_critical() const
   return m_critical;
 }
 
-generic_address&generic_address::set_critical(bool v)
+generic_address& generic_address::set_critical(bool v)
 {
-  if(m_critical != v)
+  if (m_critical != v)
   {
     m_critical = v;
     m_node.get_device().on_attribute_modified(m_node, text_critical());

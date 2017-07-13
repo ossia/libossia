@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/detail/string_map.hpp>
+#include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/spirit/home/qi/directive/omit.hpp>
-#include <boost/fusion/include/std_pair.hpp>
 
 /**
  * \file http_query_parser.hpp
@@ -18,33 +18,35 @@ namespace ossia
 namespace oscquery
 {
 
-// query_grammar : taken from https://github.com/ssiloti/http/blob/master/http/parsers/request.hpp
+// query_grammar : taken from
+// https://github.com/ssiloti/http/blob/master/http/parsers/request.hpp
 // Copyright (c) 2010 Steven Siloti (ssiloti@gmail.com)
 // Distributed under the Boost Software License, Version 1.0.
 template <typename Iterator>
-struct query_grammar : public boost::spirit::qi::grammar<Iterator, string_map<std::string>()>
+struct query_grammar
+    : public boost::spirit::qi::grammar<Iterator, string_map<std::string>()>
 {
-    query_grammar() : query_grammar::base_type(query_string)
-    {
-        using namespace boost::spirit;
+  query_grammar() : query_grammar::base_type(query_string)
+  {
+    using namespace boost::spirit;
 
-        query_string = (+qchar >> -(qi::lit('=') >> +qchar)) % qi::lit("&:");
-        qchar = ~qi::char_("&:=");
-    }
+    query_string = (+qchar >> -(qi::lit('=') >> +qchar)) % qi::lit("&:");
+    qchar = ~qi::char_("&:=");
+  }
 
-    boost::spirit::qi::rule<Iterator, string_map<std::string>()> query_string;
-    boost::spirit::qi::rule<Iterator, char()> qchar;
+  boost::spirit::qi::rule<Iterator, string_map<std::string>()> query_string;
+  boost::spirit::qi::rule<Iterator, char()> qchar;
 };
 
-inline string_map<std::string> parse_http_methods_encoded(ossia::string_view str)
+inline string_map<std::string>
+parse_http_methods_encoded(ossia::string_view str)
 {
   // TODO a vector would be more efficient.
-   string_map<std::string> methods;
-   boost::spirit::qi::parse(
-         str.cbegin(), str.cend(),
-         query_grammar<ossia::string_view::const_iterator>(),
-         methods);
-   return methods;
+  string_map<std::string> methods;
+  boost::spirit::qi::parse(
+      str.cbegin(), str.cend(),
+      query_grammar<ossia::string_view::const_iterator>(), methods);
+  return methods;
 }
 
 //! url_decode taken from boost
@@ -57,7 +59,7 @@ inline bool url_decode(const std::string& in, std::string& out)
   const int N = in.size();
   for (int i = 0; i < N; ++i)
   {
-    switch(in[i])
+    switch (in[i])
     {
       case '%':
       {
@@ -90,7 +92,6 @@ inline bool url_decode(const std::string& in, std::string& out)
         out += in[i];
         break;
     }
-
   }
   return true;
 }

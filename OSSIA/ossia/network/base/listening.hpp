@@ -1,12 +1,12 @@
 #pragma once
+#include <ossia/detail/mutex.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <ossia/detail/mutex.hpp>
 
 namespace ossia
 {
 // MOVEME
-template<typename T>
+template <typename T>
 struct locked_map
 {
 public:

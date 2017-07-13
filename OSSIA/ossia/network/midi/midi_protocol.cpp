@@ -10,14 +10,13 @@ namespace net
 {
 namespace midi
 {
-midi_protocol::midi_protocol() :
-    m_input{std::make_unique<mm::MidiInput>("ossia-in")},
-    m_output{std::make_unique<mm::MidiOutput>("ossia-out")}
+midi_protocol::midi_protocol()
+    : m_input{std::make_unique<mm::MidiInput>("ossia-in")}
+    , m_output{std::make_unique<mm::MidiOutput>("ossia-out")}
 {
 }
 
-midi_protocol::midi_protocol(midi_info m):
-    midi_protocol()
+midi_protocol::midi_protocol(midi_info m) : midi_protocol()
 {
   setInfo(m);
 }
@@ -65,7 +64,7 @@ bool midi_protocol::setInfo(midi_info m)
             if (auto ptr = c.mCallbackNoteOn)
             {
               std::vector<ossia::value> t{int32_t{c.mNoteOn.first},
-                             int32_t{c.mNoteOn.second}};
+                                          int32_t{c.mNoteOn.second}};
               ptr->value_callback(t);
             }
             if (auto ptr = c.mCallbackNoteOn_N[c.mNoteOn.first])
@@ -81,7 +80,7 @@ bool midi_protocol::setInfo(midi_info m)
             if (auto ptr = c.mCallbackNoteOff)
             {
               std::vector<ossia::value> t{int32_t{c.mNoteOff.first},
-                             int32_t{c.mNoteOff.second}};
+                                          int32_t{c.mNoteOff.second}};
               ptr->value_callback(t);
             }
             if (auto ptr = c.mCallbackNoteOff_N[c.mNoteOff.first])
@@ -97,7 +96,7 @@ bool midi_protocol::setInfo(midi_info m)
             if (auto ptr = c.mCallbackCC)
             {
               std::vector<ossia::value> t{int32_t{c.mCC.first},
-                             int32_t{c.mCC.second}};
+                                          int32_t{c.mCC.second}};
               ptr->value_callback(t);
             }
             if (auto ptr = c.mCallbackCC_N[c.mCC.first])
@@ -161,7 +160,7 @@ bool midi_protocol::pull(address_base& address)
     case address_info::Type::NoteOn:
     {
       std::vector<ossia::value> val{int32_t{chan.mNoteOn.first},
-                       int32_t{chan.mNoteOn.second}};
+                                    int32_t{chan.mNoteOn.second}};
       address.set_value(val);
       return true;
     }
@@ -176,7 +175,7 @@ bool midi_protocol::pull(address_base& address)
     case address_info::Type::NoteOff:
     {
       std::vector<ossia::value> val{int32_t{chan.mNoteOff.first},
-                       int32_t{chan.mNoteOff.second}};
+                                    int32_t{chan.mNoteOff.second}};
       address.set_value(val);
       return true;
     }
@@ -191,7 +190,7 @@ bool midi_protocol::pull(address_base& address)
     case address_info::Type::CC:
     {
       std::vector<ossia::value> val{int32_t{chan.mCC.first},
-                       int32_t{chan.mCC.second}};
+                                    int32_t{chan.mCC.second}};
       address.set_value(val);
       return true;
     }
@@ -209,93 +208,85 @@ bool midi_protocol::pull(address_base& address)
 
 bool midi_protocol::push(const address_base& address)
 {
-  try {
-  const midi_address& adrs = dynamic_cast<const midi_address&>(address);
-  if (m_info.type != midi_info::Type::RemoteInput)
-    return false;
-
-  auto& adrinfo = adrs.info();
-  switch (adrinfo.type)
+  try
   {
-    case address_info::Type::NoteOn_N:
-    {
-      m_output->send(
-          mm::MakeNoteOn(
-              adrinfo.channel, adrinfo.note,
-              adrs.getValue().get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::NoteOn:
-    {
-      auto& val = adrs.getValue().get<std::vector<ossia::value>>();
-      m_output->send(
-          mm::MakeNoteOn(
-              adrinfo.channel, val[0].get<int32_t>(),
-              val[1].get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::NoteOff_N:
-    {
-      m_output->send(
-          mm::MakeNoteOff(
-              adrinfo.channel, adrinfo.note,
-              adrs.getValue().get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::NoteOff:
-    {
-      auto& val = adrs.getValue().get<std::vector<ossia::value>>();
-      m_output->send(
-          mm::MakeNoteOff(
-              adrinfo.channel, val[0].get<int32_t>(),
-              val[1].get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::CC_N:
-    {
-      m_output->send(
-          mm::MakeControlChange(
-              adrinfo.channel, adrinfo.note,
-              adrs.getValue().get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::CC:
-    {
-      auto& val = adrs.getValue().get<std::vector<ossia::value>>();
-      m_output->send(
-          mm::MakeControlChange(
-              adrinfo.channel, val[0].get<int32_t>(),
-              val[1].get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::PC:
-    {
-      m_output->send(
-          mm::MakeProgramChange(
-              adrinfo.channel, adrs.getValue().get<int32_t>()));
-      return true;
-    }
-
-    case address_info::Type::PC_N:
-    {
-      m_output->send(mm::MakeProgramChange(adrinfo.channel, adrinfo.note));
-      return true;
-    }
-    default:
+    const midi_address& adrs = dynamic_cast<const midi_address&>(address);
+    if (m_info.type != midi_info::Type::RemoteInput)
       return false;
-  }
 
-  return true;
-  } catch (const std::exception& e) {
+    auto& adrinfo = adrs.info();
+    switch (adrinfo.type)
+    {
+      case address_info::Type::NoteOn_N:
+      {
+        m_output->send(mm::MakeNoteOn(
+            adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::NoteOn:
+      {
+        auto& val = adrs.getValue().get<std::vector<ossia::value>>();
+        m_output->send(mm::MakeNoteOn(
+            adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::NoteOff_N:
+      {
+        m_output->send(mm::MakeNoteOff(
+            adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::NoteOff:
+      {
+        auto& val = adrs.getValue().get<std::vector<ossia::value>>();
+        m_output->send(mm::MakeNoteOff(
+            adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::CC_N:
+      {
+        m_output->send(mm::MakeControlChange(
+            adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::CC:
+      {
+        auto& val = adrs.getValue().get<std::vector<ossia::value>>();
+        m_output->send(mm::MakeControlChange(
+            adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::PC:
+      {
+        m_output->send(mm::MakeProgramChange(
+            adrinfo.channel, adrs.getValue().get<int32_t>()));
+        return true;
+      }
+
+      case address_info::Type::PC_N:
+      {
+        m_output->send(mm::MakeProgramChange(adrinfo.channel, adrinfo.note));
+        return true;
+      }
+      default:
+        return false;
+    }
+
+    return true;
+  }
+  catch (const std::exception& e)
+  {
     ossia::logger().error("Error when pushing midi message: {}", e.what());
     return false;
-  } catch (...) {
+  }
+  catch (...)
+  {
     ossia::logger().error("Error when pushing midi message");
     return false; // TODO log error.
   }

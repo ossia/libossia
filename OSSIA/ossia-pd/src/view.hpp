@@ -1,30 +1,35 @@
 #pragma once
 
+#include "device.hpp"
 #include "ossia-pd.hpp"
 #include "ossia_obj_base.hpp"
-#include "device.hpp"
 
-namespace ossia { namespace pd {
+namespace ossia
+{
+namespace pd
+{
 
 struct t_view : t_obj_base
 {
-    bool register_node(ossia::net::node_base*  node);
-    bool do_registration(ossia::net::node_base*  node);
-    bool unregister();
+  using is_view = std::true_type;
 
-    void isDeleted(const ossia::net::node_base& n){
-        if (!x_dead){
-            unregister();
-        }
-    }
+  bool register_node(ossia::net::node_base* node);
+  bool do_registration(ossia::net::node_base* node);
+  bool unregister();
 
-    static std::vector<t_view*> quarantine(){
-        static std::vector<t_view*> quarantine;
-        return quarantine;
+  void isDeleted(const ossia::net::node_base& n)
+  {
+    if (!x_dead)
+    {
+      unregister();
     }
+  }
+
+  static ossia::safe_vector<t_view*>& quarantine()
+  {
+    static ossia::safe_vector<t_view*> quarantine;
+    return quarantine;
+  }
 };
-
-} } // namespace
-
-
-
+}
+} // namespace

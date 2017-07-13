@@ -1,13 +1,13 @@
 #pragma once
+#include <ossia/detail/logger.hpp>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscDebug.h>
 #include <oscpack/osc/OscPacketListener.h>
-#include <ossia/detail/logger.hpp>
-#include <thread>
 #include <sstream>
+#include <thread>
 
 namespace oscpack
 {
@@ -15,56 +15,63 @@ namespace oscpack
 namespace detail
 {
 
-
-template<typename Impl_T>
+template <typename Impl_T>
 struct ClearListener : public oscpack::TimerListener
 {
-    ClearListener(UdpSocket<Impl_T>& s):
-      socket{s}
-    { }
-    UdpSocket<Impl_T>& socket;
+  ClearListener(UdpSocket<Impl_T>& s) : socket{s}
+  {
+  }
+  UdpSocket<Impl_T>& socket;
 
-    void TimerExpired() override
-    { socket.AsynchronousBreak(); }
+  void TimerExpired() override
+  {
+    socket.AsynchronousBreak();
+  }
 };
 
-template<typename Impl_T>
-class ReceiveSocket : public UdpSocket<Impl_T>{
-    SocketReceiveMultiplexer<Impl_T> mux_;
-    PacketListener *listener_;
-  public:
-    ReceiveSocket( const IpEndpointName& localEndpoint, PacketListener *listener )
-      : listener_( listener )
-    {
-      this->Bind( localEndpoint );
-      mux_.AttachSocketListener( &this->impl_, listener_ );
-    }
+template <typename Impl_T>
+class ReceiveSocket : public UdpSocket<Impl_T>
+{
+  SocketReceiveMultiplexer<Impl_T> mux_;
+  PacketListener* listener_;
 
-    ~ReceiveSocket()
-    { mux_.DetachSocketListener( &this->impl_, listener_ ); }
+public:
+  ReceiveSocket(const IpEndpointName& localEndpoint, PacketListener* listener)
+      : listener_(listener)
+  {
+    this->Bind(localEndpoint);
+    mux_.AttachSocketListener(&this->impl_, listener_);
+  }
 
-    // see SocketReceiveMultiplexer above for the behaviour of these methods...
-    void Run() { mux_.Run(); }
-    void Break()
-    {
-      ClearListener<Impl_T> l{*this};
-      mux_.AttachPeriodicTimerListener(0, &l);
-      mux_.Break();
-    }
-    void AsynchronousBreak()
-    {
-      ClearListener<Impl_T> l{*this};
-      mux_.AttachPeriodicTimerListener(0, &l);
-      mux_.AsynchronousBreak();
-    }
+  ~ReceiveSocket()
+  {
+    mux_.DetachSocketListener(&this->impl_, listener_);
+  }
+
+  // see SocketReceiveMultiplexer above for the behaviour of these methods...
+  void Run()
+  {
+    mux_.Run();
+  }
+  void Break()
+  {
+    ClearListener<Impl_T> l{*this};
+    mux_.AttachPeriodicTimerListener(0, &l);
+    mux_.Break();
+  }
+  void AsynchronousBreak()
+  {
+    ClearListener<Impl_T> l{*this};
+    mux_.AttachPeriodicTimerListener(0, &l);
+    mux_.AsynchronousBreak();
+  }
 };
 }
-using ReceiveSocket = detail::UdpListeningReceiveSocket<detail::Implementation>;
-
+using ReceiveSocket
+    = detail::UdpListeningReceiveSocket<detail::Implementation>;
 }
 namespace osc
 {
-
 
 template <typename MessageHandler>
 /**
@@ -93,32 +100,36 @@ protected:
       std::stringstream s;
       oscpack::debug(s, m);
 
-      ossia::logger().error("osc::listener::ProcessMessage error: '{}': {}", s.str(), e.what());
+      ossia::logger().error(
+          "osc::listener::ProcessMessage error: '{}': {}", s.str(), e.what());
     }
-    catch(...)
+    catch (...)
     {
       std::stringstream s;
       oscpack::debug(s, m);
-      ossia::logger().error("osc::listener::ProcessMessage error: '{}': {}", s.str());
+      ossia::logger().error(
+          "osc::listener::ProcessMessage error: '{}': {}", s.str());
     }
   }
 
-  void ProcessPacket( const char *data, int size,
-      const oscpack::IpEndpointName& remoteEndpoint ) override
+  void ProcessPacket(
+      const char* data, int size,
+      const oscpack::IpEndpointName& remoteEndpoint) override
   {
     try
     {
-      oscpack::ReceivedPacket p( data, size );
-      if( p.IsBundle() )
-        this->ProcessBundle( oscpack::ReceivedBundle(p), remoteEndpoint );
+      oscpack::ReceivedPacket p(data, size);
+      if (p.IsBundle())
+        this->ProcessBundle(oscpack::ReceivedBundle(p), remoteEndpoint);
       else
-        this->ProcessMessage( oscpack::ReceivedMessage(p), remoteEndpoint );
+        this->ProcessMessage(oscpack::ReceivedMessage(p), remoteEndpoint);
     }
     catch (std::exception& e)
     {
-      ossia::logger().error("osc::listener::ProcessPacket error: {}",  e.what());
+      ossia::logger().error(
+          "osc::listener::ProcessPacket error: {}", e.what());
     }
-    catch(...)
+    catch (...)
     {
       ossia::logger().error("osc::listener::ProcessPacket error");
     }
@@ -172,22 +183,21 @@ public:
 
   void run()
   {
-    if(m_runThread.joinable())
+    if (m_runThread.joinable())
       stop();
 
-    m_runThread = std::thread([this] () {
-      m_socket->Run();
-    });
+    m_runThread = std::thread([this]() { m_socket->Run(); });
   }
 
   void stop()
   {
     if (m_socket)
     {
-      if(m_runThread.joinable())
+      if (m_runThread.joinable())
       {
         {
-          oscpack::UdpTransmitSocket send_socket(oscpack::IpEndpointName("127.0.0.1", port()));
+          oscpack::UdpTransmitSocket send_socket(
+              oscpack::IpEndpointName("127.0.0.1", port()));
           send_socket.Send("__stop_", 8);
         }
 

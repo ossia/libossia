@@ -6,16 +6,15 @@ namespace ossia
 namespace qt
 {
 
-qt_object_node::qt_object_node(QObject& obj, net::device_base& device):
-  generic_node_base{{}, device}
-, mObject{obj}
+qt_object_node::qt_object_node(QObject& obj, net::device_base& device)
+    : generic_node_base{{}, device}, mObject{obj}
 {
   init(obj);
 }
 
-qt_object_node::qt_object_node(QObject& obj, net::device_base& device, net::node_base& aParent):
-  generic_node_base{{}, device, aParent}
-, mObject{obj}
+qt_object_node::qt_object_node(
+    QObject& obj, net::device_base& device, net::node_base& aParent)
+    : generic_node_base{{}, device, aParent}, mObject{obj}
 {
   init(obj);
 }
@@ -39,21 +38,21 @@ void qt_object_node::init(QObject& obj)
 {
   auto name = obj.objectName();
 
-  if(!name.isEmpty())
+  if (!name.isEmpty())
     set_name(obj.objectName().toStdString());
   else
   {
     std::string str;
     const QMetaObject* mo = obj.metaObject();
-    while(str.empty())
+    while (str.empty())
     {
       str = mo->className();
       mo = mo->superClass();
-      if(!mo)
+      if (!mo)
         break;
     }
 
-    if(!str.empty())
+    if (!str.empty())
     {
       set_name(std::move(str));
     }
@@ -64,48 +63,51 @@ void qt_object_node::init(QObject& obj)
   }
 
   // Note : we create the childrens, and then lock the vector
-  // because the children creation operation calls node_base::children() which causes
+  // because the children creation operation calls node_base::children() which
+  // causes
   // double locking.
   decltype(m_children) children_vect;
-  for(auto c : obj.children())
+  for (auto c : obj.children())
   {
     children_vect.push_back(
-          std::make_unique<qt_object_node>(*c, m_device, *this));
+        std::make_unique<qt_object_node>(*c, m_device, *this));
   }
 
-  for(int i = 0; i < obj.metaObject()->propertyCount(); i++)
+  for (int i = 0; i < obj.metaObject()->propertyCount(); i++)
   {
-    children_vect.push_back(
-          std::make_unique<qt_property_node>(obj, obj.metaObject()->property(i), m_device, *this));
+    children_vect.push_back(std::make_unique<qt_property_node>(
+        obj, obj.metaObject()->property(i), m_device, *this));
   }
 
   {
     write_lock_t lock{m_mutex};
-    std::move(children_vect.begin(), children_vect.end(), std::back_inserter(m_children));
+    std::move(
+        children_vect.begin(), children_vect.end(),
+        std::back_inserter(m_children));
   }
-
 }
 
 void qt_object_node::childEvent(QChildEvent* event)
 {
-  if(event->type() == QChildEvent::ChildAdded)
+  if (event->type() == QChildEvent::ChildAdded)
   {
-    add_child(std::make_unique<qt_object_node>(*event->child(), m_device, *this));
+    add_child(
+        std::make_unique<qt_object_node>(*event->child(), m_device, *this));
   }
-  else if(event->type() == QChildEvent::ChildRemoved)
+  else if (event->type() == QChildEvent::ChildRemoved)
   {
     write_lock_t write_lock{m_mutex};
-    auto it = ossia::find_if(m_children, [=] (const auto& ptr) {
+    auto it = ossia::find_if(m_children, [=](const auto& ptr) {
       auto p = ptr.get();
-      if(auto po = dynamic_cast<qt_object_node*>(p))
+      if (auto po = dynamic_cast<qt_object_node*>(p))
       {
-        if(&po->object() == event->child())
+        if (&po->object() == event->child())
           return true;
       }
       return false;
     });
 
-    if(it != m_children.end())
+    if (it != m_children.end())
     {
       m_device.on_node_removing(**it);
       m_children.erase(it);
@@ -113,7 +115,8 @@ void qt_object_node::childEvent(QChildEvent* event)
   }
 }
 
-std::unique_ptr<net::node_base> qt_object_node::make_child(const std::string& name)
+std::unique_ptr<net::node_base>
+qt_object_node::make_child(const std::string& name)
 {
   return nullptr;
 }
@@ -121,6 +124,5 @@ std::unique_ptr<net::node_base> qt_object_node::make_child(const std::string& na
 void qt_object_node::removing_child(net::node_base&)
 {
 }
-
 }
 }

@@ -13,8 +13,7 @@ namespace expressions
  * @brief expression_not : negation of an expression
  * @see expression.hpp
  */
-class OSSIA_EXPORT expression_not final :
-    public expression_callback_container
+class OSSIA_EXPORT expression_not final : public expression_callback_container
 {
 public:
   expression_not(expression_ptr);

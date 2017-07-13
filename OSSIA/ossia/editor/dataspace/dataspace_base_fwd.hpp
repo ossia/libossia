@@ -1,63 +1,77 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace_base_defs_fwd.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/dataspace/dataspace_base_defs_fwd.hpp>
 
 namespace ossia
 {
-template<>
+template <>
 struct dataspace_traits<angle_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("angle"); }
+  {
+    return ossia::make_string_array("angle");
+  }
 };
 
-template<>
+template <>
 struct dataspace_traits<color_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("color"); }
+  {
+    return ossia::make_string_array("color");
+  }
 };
 
-template<>
+template <>
 struct dataspace_traits<distance_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("distance"); }
+  {
+    return ossia::make_string_array("distance");
+  }
 };
 
-template<>
+template <>
 struct dataspace_traits<gain_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("gain"); }
+  {
+    return ossia::make_string_array("gain");
+  }
 };
 
-template<>
+template <>
 struct dataspace_traits<orientation_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("orientation"); }
+  {
+    return ossia::make_string_array("orientation");
+  }
 };
-template<>
+template <>
 struct dataspace_traits<position_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("position"); }
+  {
+    return ossia::make_string_array("position");
+  }
 };
 
-template<>
+template <>
 struct dataspace_traits<speed_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("speed"); }
+  {
+    return ossia::make_string_array("speed");
+  }
 };
 
-template<>
+template <>
 struct dataspace_traits<timing_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
-  { return ossia::make_string_array("time"); }
+  {
+    return ossia::make_string_array("time");
+  }
 };
-
-
 }

@@ -10,94 +10,153 @@ namespace ossia
 
 namespace detail
 {
-template<typename T>
+template <typename T>
 struct array_size;
-template<typename T, std::size_t N>
-struct array_size<std::array<T, N>> :
-    public std::integral_constant<std::size_t, N>
-{ };
+template <typename T, std::size_t N>
+struct array_size<std::array<T, N>>
+    : public std::integral_constant<std::size_t, N>
+{
+};
 
-template<typename Target, typename = void>
+template <typename Target, typename = void>
 struct value_converter
 {
-
 };
 
-template<>
+template <>
 struct value_converter<ossia::impulse>
 {
-  template<typename U>
-  ossia::impulse operator()(const U&) { return {}; }
+  template <typename U>
+  ossia::impulse operator()(const U&)
+  {
+    return {};
+  }
 
-  ossia::impulse operator()() { return {}; }
+  ossia::impulse operator()()
+  {
+    return {};
+  }
 };
 
-template<typename T>
+template <typename T>
 struct numeric_value_converter
 {
-  T operator()(impulse) const { return T{}; }
-  T operator()(int32_t v) { return v; }
-  T operator()(float v) { return v; }
-  T operator()(bool v) { return v; }
-  T operator()(char v) { return v; }
-  T operator()() const { return T{}; }
+  T operator()(impulse) const
+  {
+    return T{};
+  }
+  T operator()(int32_t v)
+  {
+    return v;
+  }
+  T operator()(float v)
+  {
+    return v;
+  }
+  T operator()(bool v)
+  {
+    return v;
+  }
+  T operator()(char v)
+  {
+    return v;
+  }
+  T operator()() const
+  {
+    return T{};
+  }
 
-  T operator()(const std::string& v) const {
-    try {
+  T operator()(const std::string& v) const
+  {
+    try
+    {
       return boost::lexical_cast<T>(v);
-    } catch( ... ) {
+    }
+    catch (...)
+    {
       return T{};
     }
   }
-  T operator()(const vec2f& v) const { return v[0]; }
-  T operator()(const vec3f& v) const { return v[0]; }
-  T operator()(const vec4f& v) const { return v[0]; }
+  T operator()(const vec2f& v) const
+  {
+    return v[0];
+  }
+  T operator()(const vec3f& v) const
+  {
+    return v[0];
+  }
+  T operator()(const vec4f& v) const
+  {
+    return v[0];
+  }
 
   T operator()(const std::vector<ossia::value>& v) const
-  { return !v.empty() ? convert<T>(v[0]) : T{}; }
+  {
+    return !v.empty() ? convert<T>(v[0]) : T{};
+  }
 };
 
-
-template<>
+template <>
 struct value_converter<int> : public numeric_value_converter<int>
 {
 };
-template<>
+template <>
 struct value_converter<float> : public numeric_value_converter<float>
 {
 };
-template<>
+template <>
 struct value_converter<double> : public numeric_value_converter<double>
 {
 };
-template<>
+template <>
 struct value_converter<bool> : public numeric_value_converter<bool>
 {
 };
-template<>
+template <>
 struct value_converter<char> : public numeric_value_converter<char>
 {
 };
 
-template<>
+template <>
 struct value_converter<std::string>
 {
   using T = std::string;
-  T operator()(impulse) const { return T{}; }
-  T operator()(int32_t v) { return boost::lexical_cast<std::string>(v); }
-  T operator()(float v) { return boost::lexical_cast<std::string>(v); }
-  T operator()(bool v) { return boost::lexical_cast<std::string>(v); }
-  T operator()(char v) { return boost::lexical_cast<std::string>(v); }
-  T operator()(const std::string& v) const { return v; }
+  T operator()(impulse) const
+  {
+    return T{};
+  }
+  T operator()(int32_t v)
+  {
+    return boost::lexical_cast<std::string>(v);
+  }
+  T operator()(float v)
+  {
+    return boost::lexical_cast<std::string>(v);
+  }
+  T operator()(bool v)
+  {
+    return boost::lexical_cast<std::string>(v);
+  }
+  T operator()(char v)
+  {
+    return boost::lexical_cast<std::string>(v);
+  }
+  T operator()(const std::string& v) const
+  {
+    return v;
+  }
 
-  T operator()() const { return T{}; }
+  T operator()() const
+  {
+    return T{};
+  }
 
-  template<std::size_t N>
+  template <std::size_t N>
   T operator()(std::array<float, N> v) const
   {
     std::string s = "[";
     s += boost::lexical_cast<std::string>(v[0]);
-    for(std::size_t i = 1; i < N; i++)
+    for (std::size_t i = 1; i < N; i++)
       s += ", " + boost::lexical_cast<std::string>(v[i]);
     s += "]";
     return s;
@@ -108,11 +167,11 @@ struct value_converter<std::string>
     using namespace std::literals;
     std::string s = "["s;
     const auto n = v.size();
-    if(n > 0)
+    if (n > 0)
     {
       s += convert<std::string>(v[0]);
 
-      for(std::size_t i = 1; i < n; i++)
+      for (std::size_t i = 1; i < n; i++)
         s += ", "s + convert<std::string>(v[i]);
     }
     s += "]"s;
@@ -120,20 +179,20 @@ struct value_converter<std::string>
   }
 };
 
-template<>
+template <>
 struct value_converter<std::vector<ossia::value>>
 {
-  template<typename U>
+  template <typename U>
   std::vector<ossia::value> operator()(const U& u)
   {
     return {u};
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   std::vector<ossia::value> operator()(const std::array<float, N>& u)
   {
     std::vector<ossia::value> v;
-    for(std::size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
     {
       v.push_back(float{u[i]});
     }
@@ -141,17 +200,24 @@ struct value_converter<std::vector<ossia::value>>
   }
 
   std::vector<ossia::value> operator()(const std::vector<ossia::value>& t)
-  { return t; }
+  {
+    return t;
+  }
   std::vector<ossia::value> operator()(std::vector<ossia::value>&& t)
-  { return std::move(t); }
+  {
+    return std::move(t);
+  }
 
-  std::vector<ossia::value> operator()() { return {}; }
+  std::vector<ossia::value> operator()()
+  {
+    return {};
+  }
 };
 
-template<std::size_t N>
+template <std::size_t N>
 struct value_converter<std::array<float, N>>
 {
-  template<typename U>
+  template <typename U>
   std::array<float, N> operator()(const U&)
   {
     return {};
@@ -195,18 +261,21 @@ struct value_converter<std::array<float, N>>
     return convert<std::array<float, N>>(t);
   }
 
-  std::array<float, N> operator()() { return {}; }
+  std::array<float, N> operator()()
+  {
+    return {};
+  }
 };
 }
 
-template<typename T>
+template <typename T>
 T convert(const ossia::value& val)
 {
   return val.apply(detail::value_converter<T>{});
 }
 
 // Used to convert Tuple in Vec2f, Vec3f, Vec4f...
-template<typename T>
+template <typename T>
 T convert(const std::vector<ossia::value>& val)
 {
   // TODO should we have an error if the Tuple does not
@@ -215,16 +284,15 @@ T convert(const std::vector<ossia::value>& val)
 
   T res{};
   const auto N = std::min(val.size(), detail::array_size<T>::value);
-  for(std::size_t i = 0; i < N; i++)
+  for (std::size_t i = 0; i < N; i++)
   {
     res[i] = convert<float>(val[i]);
   }
   return res;
 }
 
-
 // MOVEME
-template<typename Fun, typename... Args>
+template <typename Fun, typename... Args>
 auto lift(ossia::val_type type, Fun f, Args&&... args)
 {
   switch (type)
@@ -242,7 +310,9 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
     case val_type::STRING:
       return f(ossia::value_trait<std::string>{}, std::forward<Args>(args)...);
     case val_type::TUPLE:
-      return f(ossia::value_trait<std::vector<ossia::value>>{}, std::forward<Args>(args)...);
+      return f(
+          ossia::value_trait<std::vector<ossia::value>>{},
+          std::forward<Args>(args)...);
     case val_type::VEC2F:
       return f(ossia::value_trait<vec2f>{}, std::forward<Args>(args)...);
     case val_type::VEC3F:
@@ -254,7 +324,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
   }
 
   throw invalid_value_type_error("lift: Invalid type");
-  return decltype(f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
+  return decltype(
+      f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
 }
-
 }

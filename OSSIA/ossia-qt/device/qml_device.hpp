@@ -6,13 +6,22 @@
 #include <ossia_export.h>
 namespace ossia
 {
-namespace net { class device_base; }
-namespace net { class generic_device; }
-namespace net { class multiplex_protocol; }
+namespace net
+{
+class device_base;
+}
+namespace net
+{
+class generic_device;
+}
+namespace net
+{
+class multiplex_protocol;
+}
 namespace qt
 {
 
-template<typename T>
+template <typename T>
 using ptr_set = tsl::hopscotch_map<T*, QPointer<T>>;
 
 class qml_node;
@@ -25,11 +34,11 @@ class qml_model_property;
 class qml_node_base;
 class qml_binding;
 class qml_callback;
-class OSSIA_EXPORT qml_device :
-    public QObject
+class OSSIA_EXPORT qml_device : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged FINAL)
+  Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY
+                 readPresetChanged FINAL)
   Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
 
 public:
@@ -106,7 +115,6 @@ private:
   ptr_set<qml_callback> m_callbacks;
   bool m_readPreset{false};
 };
-
 
 class OSSIA_EXPORT qml_singleton_device : public qml_device
 {

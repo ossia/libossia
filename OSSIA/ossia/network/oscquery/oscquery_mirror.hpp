@@ -1,15 +1,15 @@
 #pragma once
 
+#include <ossia/detail/json.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/detail/json.hpp>
-#include <readerwriterqueue.h>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <readerwriterqueue.h>
 namespace osc
 {
-template<typename T>
+template <typename T>
 class sender;
 class receiver;
 }
@@ -22,12 +22,16 @@ class IpEndpointName;
 
 namespace ossia
 {
-namespace net { struct address_data; }
+namespace net
+{
+struct address_data;
+}
 namespace oscquery
 {
 class http_get_request;
 
-class OSSIA_EXPORT oscquery_mirror_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_mirror_protocol final
+    : public ossia::net::protocol_base
 {
 public:
   oscquery_mirror_protocol(std::string host, uint16_t local_osc_port = 10203);
@@ -41,16 +45,20 @@ public:
   bool observe_quietly(net::address_base&, bool) override;
   bool update(net::node_base& b) override;
   void set_device(net::device_base& dev) override;
-  ossia::net::device_base& get_device() const { return *m_device; }
-
+  ossia::net::device_base& get_device() const
+  {
+    return *m_device;
+  }
 
   /**
    * @brief Run the commands registered in th event queue
    *
    * The data structures are not protected by locks since it may hurt
    * the performance on a tree, and hard to get right.
-   * Instead, all the edition operations on a device should happen on a single thread.
-   * When edition operations are received from the network, they are put in a queue.
+   * Instead, all the edition operations on a device should happen on a single
+   * thread.
+   * When edition operations are received from the network, they are put in a
+   * queue.
    *
    * Run this function regularly in order to get the update of the device, for
    * instance in the event loop of your application.
@@ -82,10 +90,12 @@ public:
 
   void set_disconnect_callback(std::function<void()>);
   void set_fail_callback(std::function<void()>);
+
 private:
   using connection_handler = websocketpp::connection_hdl;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
-  void on_OSCMessage(const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
+  void on_OSCMessage(
+      const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
 
   void cleanup_connections();
 
@@ -121,7 +131,10 @@ private:
     get_ws_promise& operator=(const get_ws_promise&) = default;
     get_ws_promise& operator=(get_ws_promise&&) = default;
 
-    get_ws_promise(std::promise<void>&& p, const std::string& addr): promise{std::move(p)}, address{addr} {}
+    get_ws_promise(std::promise<void>&& p, const std::string& addr)
+        : promise{std::move(p)}, address{addr}
+    {
+    }
     std::promise<void> promise;
     std::string address{};
   };
@@ -142,8 +155,6 @@ private:
   asio::io_service m_httpContext;
   std::shared_ptr<asio::io_service::work> m_httpWorker;
   std::atomic_bool m_useHTTP{false};
-
 };
-
 }
 }

@@ -14,8 +14,8 @@ namespace expressions
  * @brief expression_composition : logical composition (and, or, xor)
  * @see expression.hpp
  */
-class OSSIA_EXPORT expression_composition final :
-    public expression_callback_container
+class OSSIA_EXPORT expression_composition final
+    : public expression_callback_container
 {
 public:
   expression_composition(

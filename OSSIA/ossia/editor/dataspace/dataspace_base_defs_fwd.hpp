@@ -1,11 +1,11 @@
 #pragma once
-#include <ratio>
 #include <ossia/detail/config.hpp>
+#include <ratio>
 
 namespace ossia
 {
 class value;
-template<typename Unit>
+template <typename Unit>
 struct strong_value;
 
 // 2
@@ -50,8 +50,7 @@ using hunter_lab = strong_value<hunter_lab_u>;
 using cie_lab = strong_value<cie_lab_u>;
 using cie_luv = strong_value<cie_luv_u>;
 
-
-template<typename T>
+template <typename T>
 struct distance_ratio;
 
 // 11
@@ -114,12 +113,13 @@ using polar = strong_value<polar_u>;
 using opengl = strong_value<opengl_u>;
 using cylindrical = strong_value<cylindrical_u>;
 
-template<typename T>
+template <typename T>
 struct speed_ratio;
 
 // 6
 using meter_per_second_u = speed_ratio<std::ratio<1>>;
-using miles_per_hour_u = speed_ratio<std::ratio<254 * 12 * 5280, 3600 * 10000>>;
+using miles_per_hour_u
+    = speed_ratio<std::ratio<254 * 12 * 5280, 3600 * 10000>>;
 using kilometer_per_hour_u = speed_ratio<std::ratio<1000, 3600>>;
 using knot_u = speed_ratio<std::ratio<1852, 3600>>;
 using foot_per_hour_u = speed_ratio<std::ratio<254 * 12, 3600 * 10000>>;
@@ -131,7 +131,6 @@ using kilometer_per_hour = strong_value<kilometer_per_hour_u>;
 using knot = strong_value<knot_u>;
 using foot_per_second = strong_value<foot_per_second_u>;
 using foot_per_hour = strong_value<foot_per_hour_u>;
-
 
 // 9
 struct second_u;
@@ -176,7 +175,8 @@ struct timing;
 struct unit_t;
 struct value_with_unit;
 
-template<typename T>
-struct dataspace_traits : public std::false_type {};
-
+template <typename T>
+struct dataspace_traits : public std::false_type
+{
+};
 }

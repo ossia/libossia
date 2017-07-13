@@ -15,12 +15,19 @@ struct OSSIA_EXPORT value_with_unit final
   value_with_unit(value_with_unit&& other) = default;
   value_with_unit& operator=(const value_with_unit& other) = default;
   value_with_unit& operator=(value_with_unit&& other) = default;
-  template<typename T>
-  value_with_unit(const T& arg) noexcept : v(arg) { }
+  template <typename T>
+  value_with_unit(const T& arg) noexcept : v(arg)
+  {
+  }
 
-
-  auto which() const { return v.which(); }
-  operator bool() const { return bool(v); }
+  auto which() const
+  {
+    return v.which();
+  }
+  operator bool() const
+  {
+    return bool(v);
+  }
 
   template <typename T>
   const T* target() const noexcept
@@ -29,10 +36,9 @@ struct OSSIA_EXPORT value_with_unit final
   }
 
   template <typename T>
-  T* target()  noexcept
+  T* target() noexcept
   {
     return v.target<T>();
   }
-
 };
 }

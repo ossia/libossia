@@ -10,7 +10,8 @@ namespace midi
 midi_address::midi_address(address_info info, node_base& parent)
     : m_info{info}
     , m_parent{parent}
-    , m_protocol{dynamic_cast<midi_protocol&>(parent.get_device().get_protocol())}
+    , m_protocol{dynamic_cast<midi_protocol&>(
+          parent.get_device().get_protocol())}
     , m_domain{m_info.defaultDomain()}
     , m_type{m_info.matchingType()}
     , m_value{m_info.defaultValue(64)}
@@ -64,7 +65,7 @@ ossia::value midi_address::value() const
 
 address_base& midi_address::set_value(const ossia::value& v)
 {
-  if(m_type == v.getType())
+  if (m_type == v.getType())
     m_value = v;
   else
     m_value = ossia::convert(v, m_type);
@@ -75,7 +76,7 @@ address_base& midi_address::set_value(const ossia::value& v)
 
 address_base& midi_address::set_value(ossia::value&& v)
 {
-  if(m_type == v.getType())
+  if (m_type == v.getType())
     m_value = std::move(v);
   else
     m_value = ossia::convert(std::move(v), m_type);
@@ -148,7 +149,6 @@ void midi_address::value_callback(const ossia::value& val)
 {
   this->set_value(val);
 }
-
 }
 }
 }

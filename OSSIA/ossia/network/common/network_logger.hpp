@@ -19,11 +19,10 @@ public:
   network_logger();
   ~network_logger();
 
-  network_logger(std::shared_ptr<spdlog::logger> i, std::shared_ptr<spdlog::logger> o):
-    inbound_logger{std::move(i)}
-  , outbound_logger{std::move(o)}
+  network_logger(
+      std::shared_ptr<spdlog::logger> i, std::shared_ptr<spdlog::logger> o)
+      : inbound_logger{std::move(i)}, outbound_logger{std::move(o)}
   {
-
   }
 
   /**
@@ -36,8 +35,6 @@ public:
    * @brief outbound_logger Set log function for messages going outside.
    */
   std::shared_ptr<spdlog::logger> outbound_logger;
-
 };
-
 }
 }

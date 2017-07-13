@@ -175,28 +175,35 @@ std::size_t callback_count(expression_base& e)
   return eggs::variants::apply(get_callback_count_visitor{}, e);
 }
 
-const expression_base& expression_true() {
-  static const expression_base e{eggs::variants::in_place<expression_bool>, true};
+const expression_base& expression_true()
+{
+  static const expression_base e{eggs::variants::in_place<expression_bool>,
+                                 true};
   return e;
 }
 
-const expression_base& expression_false() {
-  static const expression_base e{eggs::variants::in_place<expression_bool>, false};
+const expression_base& expression_false()
+{
+  static const expression_base e{eggs::variants::in_place<expression_bool>,
+                                 false};
   return e;
 }
 
-expression_ptr make_expression_atom(const expression_atom::val_t& lhs, comparator c, const expression_atom::val_t& rhs)
+expression_ptr make_expression_atom(
+    const expression_atom::val_t& lhs, comparator c,
+    const expression_atom::val_t& rhs)
 {
   return std::make_unique<expression_base>(
-        eggs::variants::in_place<expression_atom>, lhs, c, rhs, expression_atom::dummy_t{});
+      eggs::variants::in_place<expression_atom>, lhs, c, rhs,
+      expression_atom::dummy_t{});
 }
 
-
-expression_ptr make_expression_atom(expression_atom::val_t&& lhs, comparator c, expression_atom::val_t&& rhs)
+expression_ptr make_expression_atom(
+    expression_atom::val_t&& lhs, comparator c, expression_atom::val_t&& rhs)
 {
   return std::make_unique<expression_base>(
-        eggs::variants::in_place<expression_atom>, std::move(lhs), c, std::move(rhs), expression_atom::dummy_t{});
+      eggs::variants::in_place<expression_atom>, std::move(lhs), c,
+      std::move(rhs), expression_atom::dummy_t{});
 }
-
 }
 }

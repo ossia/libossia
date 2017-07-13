@@ -1,8 +1,8 @@
 #pragma once
 
+#include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
-#include <ossia/detail/string_view.hpp>
 namespace ossia
 {
 namespace net

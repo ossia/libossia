@@ -6,10 +6,8 @@ namespace net
 {
 
 http_address::http_address(
-    const http_address_data& data,
-    ossia::net::node_base& node_base):
-  generic_address{data, node_base},
-  mData{data}
+    const http_address_data& data, ossia::net::node_base& node_base)
+    : generic_address{data, node_base}, mData{data}
 {
 }
 
@@ -17,6 +15,5 @@ http_address::~http_address()
 {
   callback_container<value_callback>::callbacks_clear();
 }
-
 }
 }

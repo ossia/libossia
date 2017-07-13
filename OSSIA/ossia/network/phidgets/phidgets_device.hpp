@@ -6,7 +6,7 @@ namespace ossia
 {
 class phidget_protocol;
 class OSSIA_EXPORT phidget_device final : public ossia::net::device_base,
-                                       public phidget_node
+                                          public phidget_node
 {
   std::string m_name;
 

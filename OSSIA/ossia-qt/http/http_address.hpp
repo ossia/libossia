@@ -8,16 +8,14 @@ namespace ossia
 namespace net
 {
 
-class OSSIA_EXPORT http_address final :
-    public ossia::net::generic_address
+class OSSIA_EXPORT http_address final : public ossia::net::generic_address
 {
 private:
   http_address_data_base mData;
 
 public:
   http_address(
-      const http_address_data& data,
-      ossia::net::node_base& node_base);
+      const http_address_data& data, ossia::net::node_base& node_base);
 
   http_address() = delete;
   http_address(const http_address& other) = delete;
@@ -27,7 +25,9 @@ public:
   ~http_address();
 
   const http_address_data_base& data() const
-  { return mData; }
+  {
+    return mData;
+  }
 
 private:
 };

@@ -17,8 +17,7 @@ auto apply(Visitor&& v, Variant&& var) -> decltype(std::forward<Visitor>(v)())
   // Thanks K-Ballo (eggs-cpp/variant#21)
   if (var)
     return eggs::variants::apply(
-          std::forward<Visitor>(v),
-          std::forward<Variant>(var));
+        std::forward<Visitor>(v), std::forward<Variant>(var));
   else
     return std::forward<Visitor>(v)();
 }

@@ -1,13 +1,13 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 
+#include <ossia/detail/string_view.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/detail/minuit_parser.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
-#include <oscpack/osc/OscPrintReceivedElements.h>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/detail/string_view.hpp>
+#include <oscpack/osc/OscPrintReceivedElements.h>
 
 namespace ossia
 {
@@ -16,7 +16,9 @@ namespace net
 
 static auto get_time()
 {
-  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
 }
 
 minuit_protocol::minuit_protocol(
@@ -26,18 +28,23 @@ minuit_protocol::minuit_protocol(
     , mIp{remote_ip}
     , mRemotePort{remote_port}
     , mLocalPort{local_port}
-    , mSender{std::make_unique<osc::sender<osc_outbound_visitor>>(m_logger, remote_ip, remote_port)}
-    , mReceiver{std::make_unique<osc::receiver>(local_port, [=](const oscpack::ReceivedMessage& m,
-                                const oscpack::IpEndpointName& ip) {
-                  this->on_received_message(m, ip);
-                })}
+    , mSender{std::make_unique<osc::sender<osc_outbound_visitor>>(
+          m_logger, remote_ip, remote_port)}
+    , mReceiver{std::make_unique<osc::receiver>(
+          local_port,
+          [=](const oscpack::ReceivedMessage& m,
+              const oscpack::IpEndpointName& ip) {
+            this->on_received_message(m, ip);
+          })}
     , mLastSentMessage{get_time()}
     , mLastReceivedMessage{get_time()}
 {
-  if(mReceiver->port() != local_port)
+  if (mReceiver->port() != local_port)
   {
-    throw ossia::connection_error{"minuit_protocol::minuit_protocol: "
-                                  "Could not connect to port: " + boost::lexical_cast<std::string>(local_port)};
+    throw ossia::connection_error{
+        "minuit_protocol::minuit_protocol: "
+        "Could not connect to port: "
+        + boost::lexical_cast<std::string>(local_port)};
   }
 
   name_table.set_device_name(mLocalName);
@@ -64,7 +71,8 @@ const std::string& minuit_protocol::get_ip() const
 minuit_protocol& minuit_protocol::set_ip(std::string ip)
 {
   mIp = ip;
-  mSender = std::make_unique<osc::sender<osc_outbound_visitor>>(m_logger, mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender<osc_outbound_visitor>>(
+      m_logger, mIp, mRemotePort);
 
   update_zeroconf();
 
@@ -79,7 +87,8 @@ uint16_t minuit_protocol::get_remote_port() const
 minuit_protocol& minuit_protocol::set_remote_port(uint16_t in_port)
 {
   mRemotePort = in_port;
-  mSender = std::make_unique<osc::sender<osc_outbound_visitor>>(m_logger, mIp, mRemotePort);
+  mSender = std::make_unique<osc::sender<osc_outbound_visitor>>(
+      m_logger, mIp, mRemotePort);
 
   update_zeroconf();
 
@@ -94,10 +103,11 @@ uint16_t minuit_protocol::get_local_port() const
 minuit_protocol& minuit_protocol::set_local_port(uint16_t out_port)
 {
   mLocalPort = out_port;
-  mReceiver = std::make_unique<osc::receiver>(out_port, [=](const oscpack::ReceivedMessage& m,
-                                          const oscpack::IpEndpointName& ip) {
-                              this->on_received_message(m, ip);
-                            });
+  mReceiver = std::make_unique<osc::receiver>(
+      out_port, [=](const oscpack::ReceivedMessage& m,
+                    const oscpack::IpEndpointName& ip) {
+        this->on_received_message(m, ip);
+      });
 
   update_zeroconf();
 
@@ -122,11 +132,11 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   // Won't return as long as the tree exploration request haven't finished.
 
   // If there are still un-explored nodes, we go for a second round
-  if(status != std::future_status::ready)
+  if (status != std::future_status::ready)
   {
     auto req = name_table.get_action(minuit::minuit_action::NamespaceRequest);
     lock_type lock(mNamespaceRequestsMutex);
-    for(const auto& addr : mNamespaceRequests)
+    for (const auto& addr : mNamespaceRequests)
     {
       mSender->send(req, ossia::string_view(addr));
     }
@@ -136,10 +146,10 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   mLastReceivedMessage = get_time();
   auto prev_t = mLastReceivedMessage.load();
   bool ok = false;
-  while(!ok)
+  while (!ok)
   {
     status = fut.wait_for(std::chrono::milliseconds(100));
-    if(mLastReceivedMessage == prev_t)
+    if (mLastReceivedMessage == prev_t)
       ok = true;
     else
       prev_t = mLastReceivedMessage;
@@ -147,18 +157,19 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto check_unfinished = [&] {
     lock_type lock(mNamespaceRequestsMutex);
-    return mNamespaceRequests.size() > 0 || mPendingGetRequests > 0  || status != std::future_status::ready;
+    return mNamespaceRequests.size() > 0 || mPendingGetRequests > 0
+           || status != std::future_status::ready;
   };
 
-  if(check_unfinished())
+  if (check_unfinished())
   {
     std::vector<std::string> nreq, greq;
-    for(int i = 0; i < 100; i++)
+    for (int i = 0; i < 100; i++)
     {
       status = fut.wait_for(std::chrono::milliseconds(250));
-      if(!check_unfinished())
+      if (!check_unfinished())
       {
-          break;
+        break;
       }
       else
       {
@@ -167,9 +178,12 @@ bool minuit_protocol::update(ossia::net::node_base& node)
           nreq.clear();
           ossia::copy(mNamespaceRequests, nreq);
         }
-        for(const auto& req : nreq)
+        for (const auto& req : nreq)
         {
-          mSender->send(name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest), ossia::string_view(req));
+          mSender->send(
+              name_table.get_action(
+                  ossia::minuit::minuit_action::NamespaceRequest),
+              ossia::string_view(req));
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
@@ -178,21 +192,21 @@ bool minuit_protocol::update(ossia::net::node_base& node)
           greq.clear();
           ossia::copy(mGetRequests, greq);
         }
-        for(const auto& req : greq)
+        for (const auto& req : greq)
         {
-          mSender->send(name_table.get_action(ossia::minuit::minuit_action::GetRequest), ossia::string_view(req));
+          mSender->send(
+              name_table.get_action(ossia::minuit::minuit_action::GetRequest),
+              ossia::string_view(req));
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-
       }
     }
-
   }
 
   mPendingGetRequests = 0;
   {
     lock_type lock(mNamespaceRequestsMutex);
-    for(const auto& node : mNamespaceRequests)
+    for (const auto& node : mNamespaceRequests)
     {
       logger().error("Namespace request unmatched: {0}", node);
     }
@@ -200,7 +214,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   }
   {
     lock_type lock(mGetRequestsMutex);
-    for(const auto& node : mGetRequests)
+    for (const auto& node : mGetRequests)
     {
       logger().error("Namespace request unmatched: {0}", node);
     }
@@ -268,8 +282,7 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
   if (enable)
   {
     this->mSender->send(act, address, "enable");
-    mListening.insert(
-        std::make_pair(osc_address_string(address), &address));
+    mListening.insert(std::make_pair(osc_address_string(address), &address));
   }
   else
   {
@@ -285,16 +298,16 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 bool minuit_protocol::observe_quietly(
     ossia::net::address_base& address, bool enable)
 {
-  if(enable)
-    mListening.insert(
-          std::make_pair(osc_address_string(address), &address));
+  if (enable)
+    mListening.insert(std::make_pair(osc_address_string(address), &address));
   else
     mListening.erase(osc_address_string(address));
 
   return true;
 }
 
-void minuit_protocol::namespace_refresh(ossia::string_view req, const std::string& addr)
+void minuit_protocol::namespace_refresh(
+    ossia::string_view req, const std::string& addr)
 {
   lock_type lock(mNamespaceRequestsMutex);
   auto it = mNamespaceRequests.find(addr);
@@ -325,7 +338,8 @@ void minuit_protocol::namespace_refreshed(ossia::string_view addr)
   }
 }
 
-void minuit_protocol::get_refresh(ossia::string_view req, const std::string& addr)
+void minuit_protocol::get_refresh(
+    ossia::string_view req, const std::string& addr)
 {
   lock_type lock(mGetRequestsMutex);
   auto it = ossia::find(mGetRequests, addr);
@@ -351,59 +365,64 @@ void minuit_protocol::get_refreshed(ossia::string_view addr)
 
   if (mGetRequests.empty())
   {
-    try { mGetFinishedPromise.set_value(); } catch(...) { }
+    try
+    {
+      mGetFinishedPromise.set_value();
+    }
+    catch (...)
+    {
+    }
   }
 }
 
 osc::sender<osc_outbound_visitor>& minuit_protocol::sender() const
 {
-    return *mSender;
+  return *mSender;
 }
 
 void minuit_protocol::on_received_message(
-        const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
+    const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-    ossia::string_view address{m.AddressPattern()};
+  ossia::string_view address{m.AddressPattern()};
 
-    if (address.size() > 0 && address[0] == '/')
+  if (address.size() > 0 && address[0] == '/')
+  {
+    // Handle the OSC-like case where we receive a plain value.
+    auto addr = mListening.find(std::string(address)); // TODO string_set<>
+    if (addr && *addr)
     {
-      // Handle the OSC-like case where we receive a plain value.
-      auto addr = mListening.find(std::string(address)); // TODO string_set<>
-      if (addr && *addr)
-      {
-        update_value(**addr, m);
-      }
-      else
-      {
-        // We still want to save the value even if it is not listened to.
-        if(auto n = find_node(mDevice->get_root_node(), address))
-        {
-          if(auto base_addr = n->get_address())
-          {
-            update_value_quiet(*base_addr, m);
-          }
-        }
-      }
+      update_value(**addr, m);
     }
     else
     {
-      if (mDevice)
-        ossia::minuit::minuit_message_handler::handleMinuitMessage(
-              *this, *mDevice, address, m);
+      // We still want to save the value even if it is not listened to.
+      if (auto n = find_node(mDevice->get_root_node(), address))
+      {
+        if (auto base_addr = n->get_address())
+        {
+          update_value_quiet(*base_addr, m);
+        }
+      }
     }
+  }
+  else
+  {
+    if (mDevice)
+      ossia::minuit::minuit_message_handler::handleMinuitMessage(
+          *this, *mDevice, address, m);
+  }
 
-    if(m_logger.inbound_logger)
-      m_logger.inbound_logger->info("In: {0}", m);
+  if (m_logger.inbound_logger)
+    m_logger.inbound_logger->info("In: {0}", m);
 
-    mLastReceivedMessage = get_time();
+  mLastReceivedMessage = get_time();
 }
 
 void minuit_protocol::update_zeroconf()
 {
   mZeroconfServer = make_zeroconf_server(
-                      mLocalName + " Minuit server",
-                      "_minuit._tcp",
-                      mLocalName, mLocalPort, mRemotePort);
+      mLocalName + " Minuit server", "_minuit._tcp", mLocalName, mLocalPort,
+      mRemotePort);
 }
 }
 }

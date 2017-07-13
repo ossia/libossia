@@ -1,21 +1,19 @@
+#include <ossia/detail/logger.hpp>
+#include <ossia/detail/math.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
-#include <ossia/detail/math.hpp>
-#include <ossia/detail/logger.hpp>
-#include <ossia/detail/thread.hpp>
 #include <cassert>
 #include <iostream>
 
 namespace ossia
 {
-clock::clock(
-    ossia::time_constraint& cst,
-    double ratio)
+clock::clock(ossia::time_constraint& cst, double ratio)
     : m_constraint{cst}
     , m_ratio(ratio)
-    , m_duration(cst.get_max_duration().infinite()
-                 ? time_value::infinity
-                 : cst.get_max_duration() * ratio)
+    , m_duration(
+          cst.get_max_duration().infinite() ? time_value::infinity
+                                            : cst.get_max_duration() * ratio)
     , m_granularity(1)
     , m_running(false)
     , m_paused(false)
@@ -103,7 +101,6 @@ bool clock::tick()
   // how much ticks it represents ?
   droppedTicks = ossia::llround(std::floor(deltaInUs / granularityInUs));
 
-
   // adjust date and elapsed time considering the dropped ticks
   if (droppedTicks)
   {
@@ -122,10 +119,10 @@ bool clock::tick()
     }
   }
 
-
   // how many time to pause to reach the next tick ?
   int64_t pauseInUs = granularityInUs - m_elapsedTime % granularityInUs;
-  //std::cerr << m_granularity << " " << m_ratio << " " << deltaInUs << " "<< droppedTicks << " "  << granularityInUs << " " << pauseInUs << std::endl;
+  // std::cerr << m_granularity << " " << m_ratio << " " << deltaInUs << " "<<
+  // droppedTicks << " "  << granularityInUs << " " << pauseInUs << std::endl;
   // if too early: wait
   if (pauseInUs > 0)
   {
@@ -151,8 +148,7 @@ bool clock::tick()
           - droppedTicks * granularityInUs;
   }
 
-
-  //std::cerr << deltaInUs << std::endl;
+  // std::cerr << deltaInUs << std::endl;
   // how many time elapsed from the start ?
 
   m_date += deltaInUs;
@@ -177,7 +173,6 @@ bool clock::tick()
 
   return true;
 }
-
 
 time_value clock::get_duration() const
 {
@@ -230,12 +225,12 @@ void clock::request_stop()
 
 void clock::set_exec_status_callback(exec_status_callback e)
 {
-    m_statusCallback = e;
+  m_statusCallback = e;
 }
 
 clock::exec_status_callback clock::get_exec_status_callback() const
 {
-    return m_statusCallback;
+  return m_statusCallback;
 }
 
 void clock::do_set_duration(ossia::time_value duration)
@@ -253,21 +248,21 @@ void clock::threadCallback()
 
       while (m_running && !m_shouldStop)
       {
-        if(!m_paused)
-            tick();
+        if (!m_paused)
+          tick();
         else
-            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+          std::this_thread::sleep_for(std::chrono::milliseconds(30));
       }
     }
 
-    if(m_shouldStop)
+    if (m_shouldStop)
       m_running = false;
   }
-  catch(std::exception& e)
+  catch (std::exception& e)
   {
     logger().error("clock::threadCallback() catched: {}", e.what());
   }
-  catch(...)
+  catch (...)
   {
     logger().error("An error occured in clock::threadCallback()");
   }

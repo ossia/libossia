@@ -1,16 +1,16 @@
 #pragma once
-#include <ossia/editor/value/value_base.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/editor/exceptions.hpp>
+#include <ossia/editor/value/value_base.hpp>
 #include <ossia/network/common/address_properties.hpp>
-#include <vector>
 #include <limits>
-#include <string>
 #include <ossia_export.h>
+#include <string>
+#include <vector>
 
 namespace fmt
 {
-template<typename T>
+template <typename T>
 class BasicWriter;
 }
 
@@ -18,12 +18,15 @@ namespace ossia
 {
 namespace detail
 {
-template<typename T>
-struct dummy { using type = T; };
+template <typename T>
+struct dummy
+{
+  using type = T;
+};
 }
 
-
-OSSIA_EXPORT std::string to_pretty_string(const ossia::destination_index& index);
+OSSIA_EXPORT std::string
+to_pretty_string(const ossia::destination_index& index);
 
 class value;
 
@@ -40,9 +43,7 @@ class value;
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 
-
 #include <ossia/editor/value/value_variant_impl.hpp>
-
 
 using value_variant = value_variant_type;
 
@@ -80,41 +81,67 @@ public:
   // Construction
   template <typename T>
   value(T*) = delete;
-  value(const char* txt):
-    v{std::string(txt)}
+  value(const char* txt) : v{std::string(txt)}
   {
-
   }
 
-  value(impulse val) noexcept : v{val} { }
-
-  value(bool val) noexcept : v{val} { }
-  value(int val) noexcept : v{val} { }
-  value(long val) noexcept : v{(int)val} { }
-  value(char val) noexcept : v{val} { }
-  value(float val) noexcept : v{val} { }
-  value(double val) noexcept : v{(float)val} { }
-  value(const std::string& val) noexcept : v{val} { }
-  value(const std::vector<ossia::value>& val) noexcept : v{val} { }
-  value(std::array<float, 2> val) noexcept : v{val} { }
-  value(std::array<float, 3> val) noexcept : v{val} { }
-  value(std::array<float, 4> val) noexcept : v{val} { }
-
-  explicit value(std::string&& val) noexcept : v{std::move(val)} { }
-  explicit value(std::vector<ossia::value>&& val) noexcept : v{std::move(val)} { }
-
-
-  template<typename T, typename... Args>
-  value(detail::dummy<T> t, Args&&... args) noexcept :
-    v{T{std::forward<Args>(args)...}}
+  value(impulse val) noexcept : v{val}
   {
+  }
 
+  value(bool val) noexcept : v{val}
+  {
+  }
+  value(int val) noexcept : v{val}
+  {
+  }
+  value(long val) noexcept : v{(int)val}
+  {
+  }
+  value(char val) noexcept : v{val}
+  {
+  }
+  value(float val) noexcept : v{val}
+  {
+  }
+  value(double val) noexcept : v{(float)val}
+  {
+  }
+  value(const std::string& val) noexcept : v{val}
+  {
+  }
+  value(const std::vector<ossia::value>& val) noexcept : v{val}
+  {
+  }
+  value(std::array<float, 2> val) noexcept : v{val}
+  {
+  }
+  value(std::array<float, 3> val) noexcept : v{val}
+  {
+  }
+  value(std::array<float, 4> val) noexcept : v{val}
+  {
+  }
+
+  explicit value(std::string&& val) noexcept : v{std::move(val)}
+  {
+  }
+  explicit value(std::vector<ossia::value>&& val) noexcept : v{std::move(val)}
+  {
+  }
+
+  template <typename T, typename... Args>
+  value(detail::dummy<T> t, Args&&... args) noexcept
+      : v{T{std::forward<Args>(args)...}}
+  {
   }
 
   // To initialize a value directly with correct arguments
-  template<typename T, typename... Args>
+  template <typename T, typename... Args>
   static ossia::value make(Args&&... args) noexcept
-  { return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...}; }
+  {
+    return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...};
+  }
 
   // Assignment
   value& operator=(ossia::impulse val) noexcept
@@ -184,15 +211,35 @@ public:
     return *this;
   }
 
-  value() noexcept { }
+  value() noexcept
+  {
+  }
   ~value() noexcept;
-  value(const value& other) noexcept : v{other.v} { }
-  value(value&& other) noexcept : v{std::move(other.v)} {}
-  value& operator=(const value& other) noexcept { v = other.v; return *this; }
-  value& operator=(value&& other) noexcept { v = std::move(other.v); return *this; }
+  value(const value& other) noexcept : v{other.v}
+  {
+  }
+  value(value&& other) noexcept : v{std::move(other.v)}
+  {
+  }
+  value& operator=(const value& other) noexcept
+  {
+    v = other.v;
+    return *this;
+  }
+  value& operator=(value&& other) noexcept
+  {
+    v = std::move(other.v);
+    return *this;
+  }
 
-  operator value_type&() { return v; }
-  operator const value_type&() const { return v; }
+  operator value_type&()
+  {
+    return v;
+  }
+  operator const value_type&() const
+  {
+    return v;
+  }
 
   // Operations
   template <typename T>
@@ -228,8 +275,9 @@ public:
     auto t = v.which();
     if (t == v.npos)
     {
-      throw ossia::invalid_value_type_error{"value::getType: "
-                                            "called with no value"};
+      throw ossia::invalid_value_type_error{
+          "value::getType: "
+          "called with no value"};
       return {};
     }
 
@@ -265,7 +313,7 @@ public:
   friend OSSIA_EXPORT bool operator<(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<=(const value& lhs, const value& rhs);
 
-  template<typename ostream_t>
+  template <typename ostream_t>
   friend ostream_t& operator<<(ostream_t& os, const ossia::value& c)
   {
     // TODO OPTIMIZEME
@@ -322,24 +370,19 @@ inline ossia::value init_value(ossia::val_type type)
  * @return The value if it is found, else nothing.
  */
 ossia::value get_value_at_index(
-    const ossia::value& val,
-    const ossia::destination_index& idx);
+    const ossia::value& val, const ossia::destination_index& idx);
 }
 
-namespace std {
-OSSIA_EXPORT std::ostream& operator<<(
-    std::ostream& s,
-    const std::vector<ossia::value>& tuple);
-OSSIA_EXPORT std::ostream& operator<<(
-    std::ostream& s,
-    const std::array<float, 2ul>& vec);
-OSSIA_EXPORT std::ostream& operator<<(
-    std::ostream& s,
-    const std::array<float, 3ul>& vec);
-OSSIA_EXPORT std::ostream& operator<<(
-    std::ostream& s,
-    const std::array<float, 4ul>& vec);
-OSSIA_EXPORT std::ostream& operator<<(
-    std::ostream&,
-    const std::vector<std::string>& tuple);
+namespace std
+{
+OSSIA_EXPORT std::ostream&
+operator<<(std::ostream& s, const std::vector<ossia::value>& tuple);
+OSSIA_EXPORT std::ostream&
+operator<<(std::ostream& s, const std::array<float, 2ul>& vec);
+OSSIA_EXPORT std::ostream&
+operator<<(std::ostream& s, const std::array<float, 3ul>& vec);
+OSSIA_EXPORT std::ostream&
+operator<<(std::ostream& s, const std::array<float, 4ul>& vec);
+OSSIA_EXPORT std::ostream&
+operator<<(std::ostream&, const std::vector<std::string>& tuple);
 }

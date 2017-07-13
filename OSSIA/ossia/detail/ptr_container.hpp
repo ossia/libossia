@@ -1,7 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <memory>
 #include <vector>
-#include <ossia/detail/config.hpp>
 
 namespace ossia
 {

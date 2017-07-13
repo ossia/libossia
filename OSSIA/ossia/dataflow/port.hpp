@@ -9,7 +9,8 @@ struct port
 {
   data_type data;
 
-  enum scope_t {
+  enum scope_t
+  {
     none = 1 << 0,
     local = 1 << 1,
     global = 1 << 2,
@@ -19,8 +20,7 @@ struct port
   scope_t scope{scope_t::both};
 
 protected:
-  port(data_type d):
-    data{std::move(d)}
+  port(data_type d) : data{std::move(d)}
   {
   }
 
@@ -33,30 +33,28 @@ protected:
 
 struct inlet : public port
 {
-  inlet(data_type d): port{std::move(d)} { }
-  inlet(data_type d, destination_t dest):
-    port{std::move(d)},
-    address{std::move(dest)}
+  inlet(data_type d) : port{std::move(d)}
+  {
+  }
+  inlet(data_type d, destination_t dest)
+      : port{std::move(d)}, address{std::move(dest)}
   {
   }
 
-  inlet(data_type d, ossia::net::address_base& addr):
-    port{std::move(d)},
-    address{&addr}
+  inlet(data_type d, ossia::net::address_base& addr)
+      : port{std::move(d)}, address{&addr}
   {
   }
 
-  inlet(data_type d, graph_edge& edge):
-    port{std::move(d)}
+  inlet(data_type d, graph_edge& edge) : port{std::move(d)}
   {
     sources.push_back(&edge);
   }
 
-
   void connect(graph_edge* e)
   {
     auto it = ossia::find(sources, e);
-    if(it == sources.end())
+    if (it == sources.end())
       sources.push_back(e);
   }
 
@@ -71,21 +69,20 @@ struct inlet : public port
 
 struct outlet : public port
 {
-  outlet(data_type d): port{std::move(d)} { }
-  outlet(data_type d, destination_t dest):
-    port{std::move(d)},
-    address{std::move(dest)}
+  outlet(data_type d) : port{std::move(d)}
+  {
+  }
+  outlet(data_type d, destination_t dest)
+      : port{std::move(d)}, address{std::move(dest)}
   {
   }
 
-  outlet(data_type d, ossia::net::address_base& addr):
-    port{std::move(d)},
-    address{&addr}
+  outlet(data_type d, ossia::net::address_base& addr)
+      : port{std::move(d)}, address{&addr}
   {
   }
 
-  outlet(data_type d, graph_edge& edge):
-    port{std::move(d)}
+  outlet(data_type d, graph_edge& edge) : port{std::move(d)}
   {
     targets.push_back(&edge);
   }
@@ -93,7 +90,7 @@ struct outlet : public port
   void connect(graph_edge* e)
   {
     auto it = ossia::find(targets, e);
-    if(it == targets.end())
+    if (it == targets.end())
       targets.push_back(e);
   }
 
@@ -108,12 +105,12 @@ struct outlet : public port
   std::vector<graph_edge*> targets;
 };
 
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 auto make_inlet(Args&&... args)
 {
   return std::make_shared<inlet>(T{}, std::forward<Args>(args)...);
 }
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 auto make_outlet(Args&&... args)
 {
   return std::make_shared<outlet>(T{}, std::forward<Args>(args)...);

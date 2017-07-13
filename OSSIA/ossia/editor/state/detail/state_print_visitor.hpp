@@ -1,9 +1,9 @@
 #pragma once
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <iostream>
 #include <string>
 
@@ -31,9 +31,8 @@ struct state_print_visitor
 
   void operator()(const message& m)
   {
-    out << padding << "message: "
-        << ossia::to_pretty_string(m.destination) << " => "
-        << ossia::value_to_pretty_string(m.message_value);
+    out << padding << "message: " << ossia::to_pretty_string(m.destination)
+        << " => " << ossia::value_to_pretty_string(m.message_value);
 
     out << "\n";
   }
@@ -45,12 +44,12 @@ struct state_print_visitor
         << ossia::value_to_pretty_string(m.message_value) << "\n";
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   void operator()(const piecewise_vec_message<N>& m)
   {
-    out << padding << "piecewise_vec_message<" << N << ">: "
-        << ossia::net::address_string_from_node(m.address.get()) << " => "
-        << ossia::value_to_pretty_string(m.message_value) << "\n";
+    out << padding << "piecewise_vec_message<" << N
+        << ">: " << ossia::net::address_string_from_node(m.address.get())
+        << " => " << ossia::value_to_pretty_string(m.message_value) << "\n";
   }
 
   void operator()()

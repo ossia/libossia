@@ -13,19 +13,18 @@ namespace ossia
  * * ossia::val_type */
 enum class val_type : int8_t
 {
-  FLOAT, //! \see Float
-  INT, //! \see Int
-  VEC2F, //! \see Vec2f
-  VEC3F, //! \see Vec3f
-  VEC4F, //! \see Vec4f
+  FLOAT,   //! \see Float
+  INT,     //! \see Int
+  VEC2F,   //! \see Vec2f
+  VEC3F,   //! \see Vec3f
+  VEC4F,   //! \see Vec4f
   IMPULSE, //! \see Impulse
-  BOOL, //! \see Bool
-  STRING, //! \see String
-  TUPLE, //! \see Tuple
+  BOOL,    //! \see Bool
+  STRING,  //! \see String
+  TUPLE,   //! \see Tuple
   CHAR,
   NONE = std::numeric_limits<int8_t>::max()
 };
-
 
 /**
  * @brief Address behaviors at crossing domain boundaries time
@@ -34,7 +33,7 @@ enum class access_mode : int8_t
 {
   GET, //! The value can be retrieved
   SET, //! The value can be changed
-  BI //! The value can be retrieved and changed
+  BI   //! The value can be retrieved and changed
 };
 
 /**
@@ -46,12 +45,13 @@ enum class bounding_mode : int8_t
   CLIP, //! \see ossia::clamp
   WRAP, //! \see ossia::wrap
   FOLD, //! \see ossia::fold
-  LOW, //! \see ossia::clamp_min
+  LOW,  //! \see ossia::clamp_min
   HIGH, //! \see ossia::clamp_max
 };
 
 /**
- * @brief If enabled, sending twice the same value will only send it once by network
+ * @brief If enabled, sending twice the same value will only send it once by
+ * network
  */
 enum repetition_filter : bool
 {

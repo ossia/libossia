@@ -1,6 +1,6 @@
 #pragma once
-#include <fmt/format.h>
 #include <ossia/network/common/address_properties.hpp>
+#include <fmt/format.h>
 #include <ossia_export.h>
 
 /**
@@ -25,13 +25,17 @@ namespace net
 class node_base;
 
 OSSIA_EXPORT
-fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>&, ossia::access_mode);
+fmt::BasicWriter<char>&
+operator<<(fmt::BasicWriter<char>&, ossia::access_mode);
 OSSIA_EXPORT
-fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>&, const ossia::domain&);
+fmt::BasicWriter<char>&
+operator<<(fmt::BasicWriter<char>&, const ossia::domain&);
 OSSIA_EXPORT
-fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>&, ossia::bounding_mode);
+fmt::BasicWriter<char>&
+operator<<(fmt::BasicWriter<char>&, ossia::bounding_mode);
 OSSIA_EXPORT
-fmt::BasicWriter<char>& operator<<(fmt::BasicWriter<char>&, const ossia::net::node_base&);
+fmt::BasicWriter<char>&
+operator<<(fmt::BasicWriter<char>&, const ossia::net::node_base&);
 OSSIA_EXPORT
 void debug_recursively(fmt::MemoryWriter&, const ossia::net::node_base&);
 }

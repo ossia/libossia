@@ -1,13 +1,13 @@
 #pragma once
-#include <ossia/network/osc/detail/message_generator.hpp>
-#include <oscpack/ip/UdpSocket.h>
-#include <oscpack/osc/OscOutboundPacketStream.h>
-#include <ossia/network/base/address.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/network/base/address.hpp>
 #include <ossia/network/common/network_logger.hpp>
-#include <oscpack/osc/OscPrintReceivedElements.h>
+#include <ossia/network/osc/detail/message_generator.hpp>
 #include <iostream>
 #include <memory>
+#include <oscpack/ip/UdpSocket.h>
+#include <oscpack/osc/OscOutboundPacketStream.h>
+#include <oscpack/osc/OscPrintReceivedElements.h>
 #include <string>
 namespace osc
 {
@@ -17,11 +17,13 @@ namespace osc
  * Sends OSC packets to a given address on an UDP port.
  *
  */
-template<typename ValueWriter>
+template <typename ValueWriter>
 class sender
 {
 public:
-  sender(const ossia::net::network_logger& l, const std::string& ip, const int port)
+  sender(
+      const ossia::net::network_logger& l, const std::string& ip,
+      const int port)
       : m_logger{l}
       , m_socket{oscpack::IpEndpointName(ip.c_str(), port)}
       , m_ip(ip)
@@ -31,8 +33,8 @@ public:
   template <typename... Args>
   void send(const ossia::net::address_base& address, Args&&... args)
   {
-      send_base(ossia::net::osc_address_string(address),
-            std::forward<Args>(args)...);
+    send_base(
+        ossia::net::osc_address_string(address), std::forward<Args>(args)...);
   }
 
   template <typename... Args>
@@ -71,8 +73,7 @@ private:
     std::cerr << s << "\n";
   }
 
-
-  template<typename... Args>
+  template <typename... Args>
   void send_base(Args&&... args)
   {
     try
@@ -81,19 +82,19 @@ private:
 
       send_impl(m(args...));
     }
-    catch(const oscpack::OutOfBufferMemoryException&)
+    catch (const oscpack::OutOfBufferMemoryException&)
     {
       oscpack::DynamicMessageGenerator<ValueWriter> m;
 
       send_impl(m(args...));
     }
 
-    if(m_logger.outbound_logger)
+    if (m_logger.outbound_logger)
     {
       std::string format_string;
       format_string.reserve(5 + 3 * sizeof...(args));
       format_string += "Out: ";
-      for(std::size_t i = 0; i < sizeof...(args); i++)
+      for (std::size_t i = 0; i < sizeof...(args); i++)
         format_string += "{} ";
       m_logger.outbound_logger->info(format_string.c_str(), args...);
     }
@@ -101,11 +102,12 @@ private:
 
   void send_impl(const oscpack::OutboundPacketStream& m)
   {
-    try {
-      m_socket.Send(m.Data(), m.Size());
-    } catch(...)
+    try
     {
-
+      m_socket.Send(m.Data(), m.Size());
+    }
+    catch (...)
+    {
     }
   }
 
