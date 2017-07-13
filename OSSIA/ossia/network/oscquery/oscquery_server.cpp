@@ -317,9 +317,13 @@ void oscquery_server_protocol::on_connectionOpen(connection_handler hdl) try
     auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
     lock_t lock(m_buildingClientsMutex);
     m_buildingClients.emplace_back(hdl);
-    m_buildingClients.back().client_ip = con->get_host();
+    asio::ip::tcp::socket& sock = con->get_raw_socket();
+    auto ip = sock.remote_endpoint().address().to_string();
+    if(ip.substr(0, 7) == "::ffff:")
+        ip = ip.substr(7);
 
-    onClientConnected(con->get_host());
+    m_buildingClients.back().client_ip = ip;
+    onClientConnected(con->get_remote_endpoint());
   }
   // Send the client a message with the OSC port
   m_websocketServer.send_message(hdl, json_writer::device_info(m_oscPort));
@@ -343,7 +347,7 @@ void oscquery_server_protocol::on_connectionClosed(connection_handler hdl)
   }
 
   auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
-  onClientDisconnected(con->get_host());
+  onClientDisconnected(con->get_remote_endpoint());
 }
 
 void oscquery_server_protocol::on_nodeCreated(const net::node_base& n) try
