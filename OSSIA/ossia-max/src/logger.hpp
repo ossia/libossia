@@ -5,25 +5,26 @@ namespace ossia
 {
 namespace max
 {
-    
-# pragma mark -
-# pragma mark t_logger structure declaration
-    
-    struct t_logger
-    {
-        t_object m_object;                              // the Max object instance
-                                                        // !!! this member is handled by Max API : that's why there is no place in our code where it is initialized.
-        std::shared_ptr<spdlog::logger> m_log;
-    };
+
+#pragma mark -
+#pragma mark t_logger structure declaration
+
+struct t_logger
+{
+  t_object m_object; // the Max object instance
+  // !!! this member is handled by Max API : that's why there is no place in
+  // our code where it is initialized.
+  std::shared_ptr<spdlog::logger> m_log;
+};
 } // max namespace
 } // ossia namespace
 
-# pragma mark -
-# pragma mark ossia_logger class declaration
+#pragma mark -
+#pragma mark ossia_logger class declaration
 
-extern "C"
-{
-    void* ossia_logger_new(t_symbol *s, long argc, t_atom *argv);
-    void ossia_logger_in_anything(ossia::max::t_logger* x, t_symbol *s, long argc, t_atom *argv);
-    void ossia_logger_free(ossia::max::t_logger* x);
+extern "C" {
+void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv);
+void ossia_logger_in_anything(
+    ossia::max::t_logger* x, t_symbol* s, long argc, t_atom* argv);
+void ossia_logger_free(ossia::max::t_logger* x);
 }
