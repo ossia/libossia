@@ -169,7 +169,8 @@ static void view_click(
 
 static void* view_new(t_symbol* name, int argc, t_atom* argv)
 {
-  t_view* x = (t_view*)eobj_new(view_class);
+  auto& ossia_pd = ossia_pd::instance();
+  t_view* x = (t_view*)eobj_new(ossia_pd.view);
 
   if (x)
   {
@@ -251,7 +252,8 @@ extern "C" void setup_ossia0x2eview(void)
     eclass_addmethod(c, (method)view_bind, "bind", A_SYMBOL, 0);
   }
 
-  view_class = c;
+  auto& ossia_pd = ossia_pd::instance();
+  ossia_pd.view = c;
 }
-}
-}
+} // pd namespace
+} // ossia namespace

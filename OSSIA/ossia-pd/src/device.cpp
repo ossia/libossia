@@ -13,11 +13,10 @@ namespace ossia
 namespace pd
 {
 
-static t_eclass* device_class;
-
 static void* device_new(t_symbol* name, int argc, t_atom* argv)
 {
-  t_device* x = (t_device*)eobj_new(device_class);
+  auto& ossia_pd = ossia_pd::instance();
+  t_device* x = (t_device*)eobj_new(ossia_pd.device);
   // TODO SANITIZE : Direct leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
@@ -274,7 +273,8 @@ extern "C" void setup_ossia0x2edevice(void)
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
   }
 
-  device_class = c;
+  auto& ossia_pd = ossia_pd::instance();
+  ossia_pd.device = c;
 }
-}
-} // namespace
+} // pd namespace
+} // ossia namespace

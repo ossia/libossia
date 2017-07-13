@@ -52,6 +52,21 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eview();
 }
 
+// ossia-pd constructor
+ossia_pd::ossia_pd():
+  m_localProtocol{new ossia::net::local_protocol},
+  m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_device"}
+{
+  //m_localProtocol->exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
+}
+
+// ossia-pd library instance
+ossia_pd& ossia_pd::instance()
+{
+  static ossia_pd library_instance;
+  return library_instance;
+}
+
 void register_quarantinized()
 {
   for (auto model : t_model::quarantine().copy())

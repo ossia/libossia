@@ -13,7 +13,6 @@ namespace ossia
 namespace pd
 {
 
-static t_eclass* model_class;
 static void model_free(t_model* x);
 
 bool t_model::register_node(ossia::net::node_base* node)
@@ -146,7 +145,8 @@ ossia::safe_vector<t_model*>& t_model::rename()
 
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
-  t_model* x = (t_model*)eobj_new(model_class);
+  auto& ossia_pd = ossia_pd::instance();
+  t_model* x = (t_model*)eobj_new(ossia_pd.model);
   if(x)
   {
     t_binbuf* d = binbuf_via_atoms(argc, argv);
@@ -226,8 +226,9 @@ extern "C" void setup_ossia0x2emodel(void)
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy
-    model_class = c;
   }
+  auto& ossia_pd = ossia_pd::instance();
+  ossia_pd.model = c;
 }
-}
-} // namespace
+} // pd namespace
+} // ossia namespace

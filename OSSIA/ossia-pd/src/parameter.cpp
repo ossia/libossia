@@ -13,8 +13,6 @@ namespace ossia
 namespace pd
 {
 
-static t_eclass* parameter_class;
-
 static void parameter_free(t_param* x);
 
 bool t_param::register_node(ossia::net::node_base* node)
@@ -277,7 +275,8 @@ ossia::safe_vector<t_param*>& t_param::rename()
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
 {
-  t_param* x = (t_param*)eobj_new(parameter_class);
+  auto& ossia_pd = ossia_pd::instance();
+  t_param* x = (t_param*)eobj_new(ossia_pd.param);
 
   // TODO SANITIZE : memory leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
@@ -369,7 +368,8 @@ extern "C" void setup_ossia0x2eparam(void)
     // buggy
   }
 
-  parameter_class = c;
+  auto& ossia_pd = ossia_pd::instance();
+  ossia_pd.param = c;
 }
-}
-} // namespace
+} // pd namespace
+} // ossia namespace

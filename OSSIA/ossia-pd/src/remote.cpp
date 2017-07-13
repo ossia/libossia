@@ -10,8 +10,6 @@ namespace ossia
 namespace pd
 {
 
-static t_eclass* remote_class;
-
 static void remote_free(t_remote* x);
 
 bool t_remote::register_node(ossia::net::node_base* node)
@@ -129,7 +127,8 @@ static void remote_click(
 
 static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 {
-  t_remote* x = (t_remote*)eobj_new(remote_class);
+  auto& ossia_pd = ossia_pd::instance();
+  t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
 
   if (x)
   {
@@ -183,7 +182,8 @@ extern "C" void setup_ossia0x2eremote(void)
     eclass_addmethod(c, (method)remote_click, "click", A_NULL, 0);
   }
 
-  remote_class = c;
+  auto& ossia_pd = ossia_pd::instance();
+  ossia_pd.remote = c;
 }
-}
-} // namespace
+} // pd namespace
+} // ossia namespace
