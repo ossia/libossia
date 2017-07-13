@@ -168,14 +168,22 @@ static void view_free(t_view *x)
     clock_free(x->x_clock);
 }
 
+static void view_bind(t_view* x, t_symbol* address){
+    x->x_name = address;
+    if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/') x->x_absolute = true;
+    x->unregister();
+    obj_register(x);
+}
+
 extern "C" void setup_ossia0x2eview(void)
 {
     t_eclass *c = eclass_new("ossia.view", (method)view_new, (method)view_free, (short)sizeof(t_view), CLASS_DEFAULT, A_GIMME, 0);
 
     if(c)
     {
-        eclass_addmethod(c, (method) obj_dump<t_view>,       "dump",       A_NULL, 0);
-        eclass_addmethod(c, (method) view_click,    "click",      A_NULL,  0);
+        eclass_addmethod(c, (method) obj_dump<t_view>,    "dump",       A_NULL,   0);
+        eclass_addmethod(c, (method) view_click,          "click",      A_NULL,   0);
+        eclass_addmethod(c, (method) view_bind,           "bind",       A_SYMBOL, 0);
     }
 
     view_class = c;
