@@ -12,7 +12,7 @@ struct t_model : t_obj_base
     bool do_registration(ossia::net::node_base*  node);
     bool unregister();
 
-    static std::vector<t_model*> quarantine(){
+    static std::vector<t_model*>& quarantine(){
         static std::vector<t_model*> quarantine;
         return quarantine;
     }

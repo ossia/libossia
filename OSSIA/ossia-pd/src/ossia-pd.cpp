@@ -47,16 +47,16 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 }
 
 void register_quarantinized(){
-    for (auto model : t_model::quarantine()){
+    for (auto model : copy(t_model::quarantine())){
         obj_register<t_model>(static_cast<t_model*>(model));
     }
-    for (auto param : t_param::quarantine()){
+    for (auto param : copy(t_param::quarantine())){
         obj_register<t_param>(static_cast<t_param*>(param));
     }
-    for (auto view : t_view::quarantine()){
+    for (auto view : copy(t_view::quarantine())){
         obj_register<t_view>(static_cast<t_view*>(view));
     }
-    for (auto remote : t_remote::quarantine()){
+    for (auto remote : copy(t_remote::quarantine())){
         obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
 }
@@ -400,8 +400,8 @@ template void obj_quarantining<t_remote>(t_remote *x);
 template void obj_quarantining<t_view>  (t_view   *x);
 
 template<typename T> void obj_dequarantining(T* x){
-	std::vector<T*> vec = x->quarantine();
-	if (!obj_isQuarantined<T>(x)) vec.erase(std::remove(vec.begin(), vec.end(), x), vec.end());
+    std::vector<T*> vec = x->quarantine();
+    if (!obj_isQuarantined<T>(x)) vec.erase(std::remove(vec.begin(), vec.end(), x), vec.end());
 }
 template void obj_dequarantining<t_param> (t_param  *x);
 template void obj_dequarantining<t_model> (t_model  *x);

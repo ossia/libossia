@@ -26,7 +26,7 @@ struct t_param : t_obj_base
     int x_priority;
     bool x_hidden;
 
-    static std::vector<t_param*> quarantine(){
+    static std::vector<t_param*>& quarantine(){
         static std::vector<t_param*> quarantine;
         return quarantine;
     }
