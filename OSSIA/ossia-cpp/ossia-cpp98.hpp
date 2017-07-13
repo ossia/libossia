@@ -3,10 +3,9 @@
 #include <string>
 #include <vector>
 #include <ossia_export.h>
-#if (__cplusplus >= 201103L)
+#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
 #define OSSIA_CPP_CXX11
 #endif
-
 namespace ossia {
   class value;
   namespace net {

@@ -1,16 +1,19 @@
 #pragma once
 #include <ossia-config.hpp>
 #include <type_traits>
-#define BOOST_MATH_DISABLE_FLOAT128
 
-/// Constexpr support ///
-#if defined(_MSC_VER)
-#define OSSIA_DECL_RELAXED_CONSTEXPR
-#define EGGS_CXX11_NOEXCEPT_IF(...)
-#else
-#define OSSIA_DECL_RELAXED_CONSTEXPR constexpr
+#if defined(__cplusplus) && ((__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
+#define OSSIA_CXX11 1
+#endif
+#if defined(__cplusplus) && ((__cplusplus >= 201403L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
+#define OSSIA_CXX14 1
+#endif
+#if defined(__cplusplus) && ((__cplusplus >= 201703L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
+#define OSSIA_CXX17 1
 #endif
 
+/// Constexpr support ///
+#define OSSIA_DECL_RELAXED_CONSTEXPR constexpr
 
 /// Inline support ///
 #if defined(__GNUC__)
@@ -37,6 +40,8 @@ namespace ossia
   using void_t = void;
 }
 #endif
+
+#define BOOST_MATH_DISABLE_FLOAT128
 
 #define SPDLOG_NO_DATETIME
 #define SPDLOG_NO_THREAD_ID

@@ -1,8 +1,9 @@
 #pragma once
-
 #include <boost/version.hpp>
+#include <ossia/detail/config.hpp>
+
 #if defined(__has_include)
-  #if __has_include(<string_view>) &&  __cplusplus > 201402L
+  #if __has_include(<string_view>) && defined(OSSIA_CXX14)
     #define OSSIA_STRING_VIEW 1
     #include <string_view>
     namespace ossia
@@ -29,7 +30,7 @@
   #endif
 #endif
 
-#if __cplusplus <= 201402L || __clang__ || defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ < 7))
+#if (__cplusplus <= 201402L) || defined(__clang__) || defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ < 7))
     inline std::string& operator+=(std::string& s, const ossia::string_view& v) {
         s.append(v.data(), v.size());
         return s;

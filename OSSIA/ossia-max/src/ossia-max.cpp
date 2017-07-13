@@ -6,6 +6,8 @@
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
+#include <commonsyms.h>
+#include <boost/range/algorithm_ext/erase.hpp>
 
 # pragma mark -
 # pragma mark library
@@ -16,6 +18,7 @@ using namespace ossia::max;
 extern "C"
 void ext_main(void *r)
 {
+    common_symbols_init();
     ossia_client_setup();
     ossia_device_setup();
     ossia_logger_setup();
@@ -198,7 +201,7 @@ namespace max {
     template<typename T>
     void object_dequarantining(T* x)
     {
-        x->quarantine().erase(std::remove(x->quarantine().begin(), x->quarantine().end(), x), x->quarantine().end());
+        boost::remove_erase(x->quarantine(), x);
     }
     
     template void object_dequarantining<t_parameter> (t_parameter*);

@@ -43,7 +43,8 @@ void* ossia_model_new(t_symbol *name, long argc, t_atom *argv)
         x->m_description = _sym_nothing;
         x->m_tags = _sym_nothing;
         
-        x->m_regclock = clock_new(x, (method)object_register<t_model>);
+
+        x->m_regclock = clock_new(x, reinterpret_cast<method>(&static_cast<bool(*)(t_model*)>(object_register<t_model>)));
         
         // parse arguments
         long attrstart = attr_args_offset(argc, argv);

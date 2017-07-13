@@ -16,6 +16,7 @@
 #include <ossia_export.h>
 #if defined(OSSIA_QT)
 class QString;
+OSSIA_EXPORT
 bool latinCompare(const QString& qstr, const std::string& str);
 #endif
 

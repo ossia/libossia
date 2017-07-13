@@ -15,7 +15,7 @@
 #if defined(OSSIA_QT)
 #include <QString>
 // Taken from https://stackoverflow.com/a/18230916/1495627
-OSSIA_EXPORT bool latinCompare(const QString& qstr, const std::string& str)
+bool latinCompare(const QString& qstr, const std::string& str)
 {
   if( qstr.length() != (int) str.size() )
     return false;

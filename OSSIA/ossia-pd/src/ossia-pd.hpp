@@ -209,8 +209,9 @@ struct value_visitor
           b = v.apply(vm);
           std::move(b.begin(), b.end(), std::back_inserter(va));
       }
-      outlet_list(x->x_dataout, gensym("list"), va.size(), &va[0]);
-      if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),va.size(), &va[0]);
+      t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
+      outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+      if(x->x_setout) outlet_anything(x->x_setout,gensym("set"),va.size(), list_ptr);
 
     }
     void operator()() const

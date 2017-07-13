@@ -328,11 +328,11 @@ namespace ossia {
                     b = v.apply(vm);
                     std::move(b.begin(), b.end(), std::back_inserter(va));
                 }
-                
-                outlet_list(x->m_data_out, gensym("list"), va.size(), &va[0]);
-                
+                t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
+                outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
+
                 if (x->m_set_out)
-                    outlet_anything(x->m_set_out, gensym("set"), va.size(), &va[0]);
+                    outlet_anything(x->m_set_out, gensym("set"), va.size(), list_ptr);
                 
             }
             
