@@ -1,7 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <commonsyms.h>
 #include <ossia-max/src/client.hpp>
 #include <ossia-max/src/device.hpp>
 #include <ossia-max/src/logger.hpp>
@@ -10,7 +9,7 @@
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
-
+#include <commonsyms.h>
 #pragma mark -
 #pragma mark library
 
