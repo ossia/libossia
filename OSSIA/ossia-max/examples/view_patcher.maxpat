@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 545.0, 332.0, 298.0, 150.0 ],
+		"rect" : [ 545.0, 332.0, 267.0, 190.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -38,13 +38,26 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"comment" : "",
+					"id" : "obj-3",
+					"maxclass" : "inlet",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 18.0, 11.0, 30.0, 30.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-8",
 					"maxclass" : "number",
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 207.0, 121.0, 50.0, 22.0 ],
+					"patching_rect" : [ 201.0, 145.0, 50.0, 22.0 ],
 					"style" : ""
 				}
 
@@ -57,7 +70,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 141.0, 121.0, 50.0, 22.0 ],
+					"patching_rect" : [ 135.0, 145.0, 50.0, 22.0 ],
 					"style" : ""
 				}
 
@@ -70,7 +83,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 141.0, 61.0, 50.0, 22.0 ],
+					"patching_rect" : [ 135.0, 85.0, 50.0, 22.0 ],
 					"style" : ""
 				}
 
@@ -82,7 +95,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 141.0, 91.0, 99.0, 22.0 ],
+					"patching_rect" : [ 135.0, 115.0, 99.0, 22.0 ],
 					"style" : "",
 					"text" : "ossia.remote blu"
 				}
@@ -95,9 +108,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 24.0, 27.0, 119.0, 22.0 ],
+					"patching_rect" : [ 18.0, 51.0, 128.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.view sub_view"
+					"text" : "ossia.view sub_model"
 				}
 
 			}
@@ -117,6 +130,15 @@
 					"disabled" : 0,
 					"hidden" : 0,
 					"source" : [ "obj-2", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"source" : [ "obj-3", 0 ]
 				}
 
 			}
