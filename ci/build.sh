@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # Note : to make the tests work under travis, they have to be changed in order not to require QApplication but only QCoreApplication
 
 case "$TRAVIS_OS_NAME" in

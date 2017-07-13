@@ -44,7 +44,7 @@ case "$TRAVIS_OS_NAME" in
         popd
 
         # download, extract and mount raspberry pi image with gcc-6 installed
-        wget --quiet https://u3680458.dl.dropboxusercontent.com/u/3680458/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
+        wget -nv https://u3680458.dl.dropboxusercontent.com/u/3680458/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
         tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
         mkdir -p /tmp/rpi/root
         sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
