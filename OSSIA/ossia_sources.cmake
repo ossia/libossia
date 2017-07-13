@@ -2,6 +2,7 @@ set(API_HEADERS
     ## Editor ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
@@ -84,6 +85,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_convert.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/make_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/make_unit.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_strong_variants.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_variant_visitors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_base.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_parse.hpp"
@@ -108,6 +111,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/websocket_log_sink.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/misc_visitors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
@@ -116,6 +120,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base_variant.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/numeric_domain.hpp"
@@ -230,8 +235,8 @@ set(OSSIA_C_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia-c.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.h"
 
-  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.h"
-  #"${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/result.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/result.h"
     )
 
 set(OSSIA_C_SRCS
@@ -441,6 +446,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.hpp"
 )
 
 set(OSSIA_DATAFLOW_SRCS
