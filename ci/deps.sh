@@ -50,9 +50,7 @@ case "$TRAVIS_OS_NAME" in
         sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
 
         # Copy boost to system path and image path
-        sudo ln -s /opt/boost /usr/include/
-        sudo rm -rf /tmp/rpi/root/usr/include/boost
-        sudo cp -R /opt/boost /tmp/rpi/root/usr/include/
+        sudo ln -s /opt/boost/boost /usr/include/boost
     fi
   ;;
   osx)
