@@ -32,6 +32,26 @@ case "$TRAVIS_OS_NAME" in
       tar xaf cmake-linux.tgz
       mv cmake-*-x86_64 cmake
     fi
+
+    if [[ "$BUILD_TYPE" == "RpiPdRelease" ]]; then
+        # install arm-linux-gnueabihf-g++-6 from yaketty
+        pushd /etc/apt
+        sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
+        sudo sed -i -- 's/trusty/yakkety/g' sources.list
+        sudo apt-get update
+        sudo apt-get install -qq g++-6-arm-linux-gnueabihf
+        sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
+        popd
+
+        # download, extract and mount raspberry pi image with gcc-6 installed
+        wget -nv https://u3680458.dl.dropboxusercontent.com/u/3680458/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
+        tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
+        mkdir -p /tmp/rpi/root
+        sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
+
+        # Copy boost to system path and image path
+        sudo ln -s /opt/boost/boost /usr/include/boost
+    fi
   ;;
   osx)
     # work around a homebrew bug
