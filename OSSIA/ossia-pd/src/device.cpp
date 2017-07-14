@@ -47,6 +47,7 @@ static void device_free(t_device* x)
   x->unregister_children();
   if (x->x_device)
     delete (x->x_device);
+  register_quarantinized();
 }
 
 static void dump_child(t_device* x, const ossia::net::node_base& node)

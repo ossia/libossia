@@ -55,7 +55,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 // ossia-pd constructor
 ossia_pd::ossia_pd():
   m_localProtocol{new ossia::net::local_protocol},
-  m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_device"}
+  m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
   //m_localProtocol->exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
 }
@@ -106,7 +106,6 @@ std::vector<obj_hierachy> find_child_to_register(
       oh.hierarchy = 0;
       oh.x = (t_obj_base*)&list->g_pd;
       oh.classname = classname;
-      // TODO check if object is dying
       if (x != oh.x && !oh.x->x_dead)
       {
         t_obj_base* o = oh.x;

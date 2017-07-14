@@ -56,6 +56,8 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
   if (device)
     fullpath << device->x_name->s_name << ":";
+  else
+    fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
 
   return string_from_path(vs, fullpath);
 }
@@ -91,6 +93,8 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
     fullpath << client->x_name->s_name << ":";
   else if (auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l))
     fullpath << device->x_name->s_name << ":";
+  else
+    fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
 
   return string_from_path(vs, fullpath);
 }
@@ -110,13 +114,6 @@ bool obj_register(T* x)
   int l;
   t_device* device = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
   t_client* client = (t_client*)find_parent(&x->x_obj, "ossia.client", 0, &l);
-
-  // first try to locate a ossia.device in the parent hierarchy...
-  if (!device && !client)
-  {
-    return false; // not ready to register : if there is no device, nothing
-                  // could be registered
-  }
 
   t_model* model = nullptr;
   t_view* view = nullptr;
@@ -157,9 +154,13 @@ bool obj_register(T* x)
   {
     node = client->x_node;
   }
-  else
+  else if (device)
   {
     node = device->x_node;
+  }
+  else
+  {
+    node = ossia_pd::get_default_device();
   }
 
   return x->register_node(node);

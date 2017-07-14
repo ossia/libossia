@@ -23,7 +23,7 @@ class ossia_pd
 {
 public:
     static ossia_pd& instance();
-    static ossia::net::device_base& device_instance();
+    static ossia::net::generic_device* get_default_device(){ return &instance().m_device; }
 
     t_eclass* client{};
     t_eclass* device{};
