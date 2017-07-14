@@ -1,0 +1,14 @@
+#N canvas 363 323 619 244 10;
+#X msg 113 172 expose oscquery;
+#X msg 267 106 expose;
+#X text 30 49 The eponyme object of the library let you control the
+global features.;
+#X text 32 172 for example;
+#X text 227 174 will use oscquery portocol and default ports.;
+#X text 314 106 (click to get help in Pd's console);
+#X text 33 85 You can expose the global namespace over the network
+with :;
+#X obj 113 193 ossia;
+#X obj 267 128 ossia;
+#X connect 0 0 7 0;
+#X connect 1 0 8 0;
