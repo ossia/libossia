@@ -39,17 +39,20 @@ static void print_protocol_help()
       "Minuit <remoteip> <remoteport> <localport> :\n"
       "\tremoteip (symbol): ip of target device\n"
       "\tremoteport (float): port on which packet should be send\n"
-      "\tlocalport (float): port to which this device is listening");
+      "\tlocalport (float): port to which this device is listening\n"
+      "\tdefault sending on port 13579, listening on 9998");
   post(
       "oscquery <oscport> <wsport> :\n"
-      "\toscport (float) : post on which osc packet are sent\n"
+      "\toscport (float) : port on which osc packet are sent\n"
       "\twsport (float) : WebSocket port on which distant application will "
-      "connect.");
+      "connect.\n"
+      "\tdefault ports: OSC 9999, WebSocket 5678");
   post(
       "osc <remoteip> <remoteport> <localpoort>\n"
       "\tremoteip (symbol): ip of target device\n"
       "\tremoteport (float): port on which packet should be send\n"
-      "\tlocalport (port): port this device is listening.");
+      "\tlocalport (port): port this device is listening.\n"
+      "\tdefault sending on port 9997, listening on 9996");
 }
 };
 

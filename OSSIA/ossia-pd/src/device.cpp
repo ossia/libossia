@@ -265,13 +265,14 @@ extern "C" void setup_ossia0x2edevice(void)
 
   if (c)
   {
+      // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
-        c, (method)t_device::register_children, "register", A_NULL, 0);
+          c, (method)t_device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method)t_device::loadbang, "loadbang", A_NULL, 0);
     eclass_addmethod(c, (method)device_dump, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
-        c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
+          c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();

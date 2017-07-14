@@ -32,6 +32,7 @@ public:
     t_eclass* param{};
     t_eclass* remote{};
     t_eclass* view{};
+    t_eclass* ossia{};
 
 private:
     ossia_pd(); // constructor
