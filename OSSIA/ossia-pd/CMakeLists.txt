@@ -10,7 +10,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
     # On windows we have to create a .lib file for Pd since the original one is incomplete
 
     # First download Pd.
-    file(DOWNLOAD "https://ci.appveyor.com/api/projects/avilleret/pure-data/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+    file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/a0urdqx1xuve5fbh/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
 
     # Extract Pd.
     execute_process(
