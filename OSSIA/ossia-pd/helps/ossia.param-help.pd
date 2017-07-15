@@ -1,13 +1,13 @@
-#N canvas 634 367 1104 611 10;
+#N canvas 631 409 1104 611 10;
 #X text 628 27 Attributes :;
-#X text 664 228 int : integer value;
-#X text 664 248 bool : bollean value \, 0 or 1;
-#X text 664 268 symbol : string value;
-#X text 665 288 vec2f : list of 2 float values \, useful for 2d coordinates
+#X text 664 218 int : integer value;
+#X text 664 238 bool : bollean value \, 0 or 1;
+#X text 664 258 symbol : string value;
+#X text 665 278 vec2f : list of 2 float values \, useful for 2d coordinates
 ;
-#X text 664 306 vec3f : list of 3 float values \, useful for 3d coordinates
+#X text 664 296 vec3f : list of 3 float values \, useful for 3d coordinates
 \, RGB color;
-#X text 664 336 vec4f : list of 4 float values \, useful for RGBA color
+#X text 664 326 vec4f : list of 4 float values \, useful for RGBA color
 ;
 #X text 654 48 @min <float> / @max <float> define minimum and maximum
 values;
@@ -17,7 +17,7 @@ time;
 (like audio \, video \, synthesis \, effect...);
 #X text 654 147 @description <symbol> textual decription of the parameter
 ;
-#X text 654 188 @type <symbol> define value type \, could be one of
+#X text 654 178 @type <symbol> define value type \, could be one of
 :;
 #X text 654 98 @default <atoms> define default value \, fired at loading
 ;
@@ -93,7 +93,10 @@ in Pd.;
 #X obj 103 132 ossia.param foo;
 #X obj 221 549 ossia.model foo;
 #X obj 383 549 ossia.remote foo;
-#X text 664 208 float : most common \, simple float value;
+#X text 664 198 float : most common \, simple float value;
+#X text 664 346 tuple : (list of) anything;
+#X text 651 555 @hidden <float> enable/disable hidden attribute \,
+could be 0 or 1;
 #X connect 21 0 22 0;
 #X connect 21 1 23 0;
 #X connect 21 2 24 0;
