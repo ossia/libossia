@@ -46,8 +46,13 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       if (absolute_path != address_string)
         return false;
       x_node = ossia::net::find_node(*node, x_name->s_name);
+      if (x_node && !x_node->get_address()){
+        fmt::MemoryWriter path;
+        path << x_name->s_name << "/" << x_name->s_name;
+        x_node = ossia::net::find_node(*node, path.str());
+      }
     }
-    if (x_node)
+    if (x_node && x_node->get_address())
     {
       x_callbackit = x_node->get_address()->add_callback(
           [=](const ossia::value& v) { setValue(v); });
