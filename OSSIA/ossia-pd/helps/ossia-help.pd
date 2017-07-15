@@ -1,4 +1,4 @@
-#N canvas 363 323 619 244 10;
+#N canvas 357 465 849 481 10;
 #X msg 113 172 expose oscquery;
 #X msg 267 106 expose;
 #X text 30 49 The eponyme object of the library let you control the
@@ -10,5 +10,33 @@ global features.;
 with :;
 #X obj 113 193 ossia;
 #X obj 267 128 ossia;
+#X obj 116 325 ossia;
+#N canvas 0 93 450 300 some_nodes 0;
+#X obj 109 61 ossia.param dummy;
+#X obj 109 81 ossia.param foo;
+#X obj 109 101 ossia.param bar;
+#N canvas 0 93 450 300 model 0;
+#X obj 138 97 ossia.model fruh;
+#X obj 139 152 ossia.param stuck;
+#X restore 109 122 pd model;
+#X restore 445 365 pd some_nodes;
+#X text 63 264 You can get the namespace \, i.e. the list of the adresses
+in use.;
+#X msg 116 284 namespace;
+#X msg 204 284 name;
+#X obj 116 367 print;
+#X obj 116 347 route namespace name;
+#X symbolatom 184 399 15 0 0 2 name - -, f 15;
+#X obj 184 367 symbol;
+#X text 350 342 Look into that subpatch to see how nodes are declared
+;
+#X msg 253 284 name funny_name;
 #X connect 0 0 7 0;
 #X connect 1 0 8 0;
+#X connect 9 0 15 0;
+#X connect 12 0 9 0;
+#X connect 13 0 9 0;
+#X connect 15 0 14 0;
+#X connect 15 1 17 0;
+#X connect 17 0 16 0;
+#X connect 19 0 9 0;
