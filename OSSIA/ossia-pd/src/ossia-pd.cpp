@@ -149,6 +149,15 @@ static void ossia_expose(t_ossia* x, t_symbol*, int argc, t_atom* argv)
     Protocol_Settings::print_protocol_help();
 }
 
+static void ossia_dump(t_ossia *x){
+
+}
+
+static void ossia_name(t_ossia *x, t_symbol* s){
+  auto dev = ossia_pd::instance().get_default_device();
+  dev->set_name(s->s_name);
+}
+
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 {
   t_eclass* c = eclass_new(
@@ -163,6 +172,8 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eview();
 
   eclass_addmethod(c, (method)ossia_expose, "expose", A_GIMME, 0);
+  eclass_addmethod(c, (method)ossia_name, "name", A_SYMBOL, 0);
+  eclass_addmethod(c, (method)ossia_dump, "dump", A_GIMME, 0);
 
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.ossia = c;
