@@ -1,7 +1,6 @@
-#N canvas 634 222 1104 611 10;
+#N canvas 634 367 1104 611 10;
 #X text 628 27 Attributes :;
 #X text 664 228 int : integer value;
-#X text 664 208 float : most comment \, simple float value;
 #X text 664 248 bool : bollean value \, 0 or 1;
 #X text 664 268 symbol : string value;
 #X text 665 288 vec2f : list of 2 float values \, useful for 2d coordinates
@@ -24,7 +23,7 @@ time;
 ;
 #X text 651 366 @priority <int> defines recall order \, higher priority
 comes first;
-#N canvas 0 151 848 854 unit 0;
+#N canvas 0 180 848 854 unit 0;
 #X text 226 110 distance.m distance.km distance.dm distance.cm distance.mm
 distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
 position.cart3D position.cart2D position.spherical position.polar position.openGL
@@ -43,16 +42,15 @@ LOW \, HIGH;
 \, write or both \, could be : BI \, GET \, SET \, RW \, R \, W;
 #X text 651 525 @repetition_filter <float> enable/disable repetition
 filter \, could be 0 or 1;
-#X obj 103 132 ossia.param foo;
-#X text 30 111 Needed argument : parameter name with no special character
+#X text 30 81 Needed argument : parameter name with no special character
 ;
-#X obj 441 335 print bar-dumpout;
-#X obj 52 334 unpack 0 0 0 0;
-#X floatatom 43 367 5 0 0 0 - - -, f 5;
-#X floatatom 87 365 5 0 0 0 - - -, f 5;
-#X floatatom 130 362 5 0 0 0 - - -, f 5;
-#X floatatom 178 360 5 0 0 0 - - -, f 5;
-#X msg 80 225 dump;
+#X obj 441 425 print bar-dumpout;
+#X obj 52 424 unpack 0 0 0 0;
+#X floatatom 43 457 5 0 0 0 - - -, f 5;
+#X floatatom 87 455 5 0 0 0 - - -, f 5;
+#X floatatom 130 452 5 0 0 0 - - -, f 5;
+#X floatatom 178 450 5 0 0 0 - - -, f 5;
+#X msg 80 315 dump;
 #N canvas 0 151 450 300 set 0;
 #X obj 161 163 pack 0 0 0 0;
 #X floatatom 161 105 5 0 0 0 - - -, f 5;
@@ -75,25 +73,37 @@ filter \, could be 0 or 1;
 #X connect 7 0 1 0;
 #X connect 7 1 0 1;
 #X coords 0 -1 1 1 220 25 1 100 100;
-#X restore 52 191 pd set;
-#X obj 122 540 ossia.device dummy;
-#X text 119 224 send attribute values and parameter state through right
+#X restore 52 281 pd set;
+#X text 119 314 send attribute values and parameter state through right
 most output;
-#X obj 80 260 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+#X obj 80 350 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
-#X text 97 258 get current value;
+#X text 97 348 get current value;
 #X text 69 39 ossia.parameter defines a parameter with lots of attributes
 ;
-#X text 257 539 <-- need a device to register to;
-#X obj 52 286 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
+#X obj 52 376 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
 "My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
 bi @range 0 1;
-#X connect 23 0 24 0;
-#X connect 23 1 25 0;
-#X connect 23 2 26 0;
-#X connect 23 3 27 0;
-#X connect 28 0 36 0;
-#X connect 29 0 36 0;
-#X connect 32 0 36 0;
-#X connect 36 0 23 0;
-#X connect 36 1 22 0;
+#X text 40 180 this is the simplest form of creating an ossia parameter
+in Pd.;
+#X text 147 548 see also :;
+#X floatatom 340 549 5 0 0 0 - - -, f 5;
+#X floatatom 103 154 5 0 0 0 - - -, f 5;
+#X floatatom 103 112 5 0 0 0 - - -, f 5;
+#X obj 103 132 ossia.param foo;
+#X obj 221 549 ossia.model foo;
+#X obj 383 549 ossia.remote foo;
+#X text 664 208 float : most common \, simple float value;
+#X connect 21 0 22 0;
+#X connect 21 1 23 0;
+#X connect 21 2 24 0;
+#X connect 21 3 25 0;
+#X connect 26 0 32 0;
+#X connect 27 0 32 0;
+#X connect 29 0 32 0;
+#X connect 32 0 21 0;
+#X connect 32 1 20 0;
+#X connect 35 0 40 0;
+#X connect 37 0 38 0;
+#X connect 38 0 36 0;
+#X connect 40 0 35 0;
