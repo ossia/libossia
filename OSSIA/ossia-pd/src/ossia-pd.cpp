@@ -25,17 +25,21 @@ namespace ossia
 namespace pd
 {
 
-typedef struct t_ossia
-{
-  t_eobj x_obj; // pd object - always placed first in the object's struct
-
-} t_ossia;
+using t_ossia = t_obj_base;
 
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   t_ossia* x = (t_ossia*) eobj_new(ossia_pd.ossia);
+
+  x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+
   return (x);
+}
+
+static void ossia_free(t_ossia *x)
+{
+  outlet_free(x->x_dumpout);
 }
 
 static void ossia_expose(t_ossia* x, t_symbol*, int argc, t_atom* argv)
@@ -149,19 +153,30 @@ static void ossia_expose(t_ossia* x, t_symbol*, int argc, t_atom* argv)
     Protocol_Settings::print_protocol_help();
 }
 
-static void ossia_dump(t_ossia *x){
-
+static void ossia_get_namespace(t_ossia *x){
+  auto dev = ossia_pd::instance().get_default_device();
+  get_namespace(x,dev->get_root_node());
 }
 
-static void ossia_name(t_ossia *x, t_symbol* s){
+static void ossia_name(t_ossia *x, t_symbol* s, int argc, t_atom* argv){
   auto dev = ossia_pd::instance().get_default_device();
-  dev->set_name(s->s_name);
+  if( argc == 0 )
+  {
+    t_atom a;
+    SETSYMBOL(&a,gensym(dev->get_name().c_str()));
+    outlet_anything(x->x_dumpout,gensym("name"),1,&a);
+  } else if ( argv[0].a_type == A_SYMBOL ) {
+    t_symbol* name = argv[0].a_w.w_symbol;
+    dev->set_name(name->s_name);
+  } else {
+    pd_error(x,"bad argument to message 'name'");
+  }
 }
 
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 {
   t_eclass* c = eclass_new(
-      "ossia", (method)ossia_new, nullptr, sizeof(t_ossia),
+      "ossia", (method)ossia_new, (method)ossia_free, sizeof(t_ossia),
       CLASS_DEFAULT, A_GIMME, 0);
 
   setup_ossia0x2eclient();
@@ -172,13 +187,14 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eview();
 
   eclass_addmethod(c, (method)ossia_expose, "expose", A_GIMME, 0);
-  eclass_addmethod(c, (method)ossia_name, "name", A_SYMBOL, 0);
-  eclass_addmethod(c, (method)ossia_dump, "dump", A_GIMME, 0);
+  eclass_addmethod(c, (method)ossia_name, "name", A_GIMME, 0);
+  eclass_addmethod(c, (method)ossia_get_namespace, "namespace", A_GIMME, 0);
 
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.ossia = c;
 
   post("Welcome to ossia library");
+  post("build on %s at %s", __DATE__, __TIME__);
 }
 
 // ossia-pd constructor
@@ -186,7 +202,6 @@ ossia_pd::ossia_pd():
   m_localProtocol{new ossia::net::local_protocol},
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
-  //m_localProtocol->exposeTo(std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678));
 }
 
 // ossia-pd library instance

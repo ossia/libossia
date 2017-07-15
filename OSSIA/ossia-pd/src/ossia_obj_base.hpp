@@ -31,6 +31,7 @@ struct t_obj_base
 
 bool find_and_display_friend(t_obj_base* x, t_canvas* patcher);
 void obj_tick(t_obj_base* x);
+void get_namespace(t_obj_base* x, const ossia::net::node_base& node);
 
 template<typename T>
 void renaming(T* x)
