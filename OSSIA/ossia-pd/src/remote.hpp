@@ -18,7 +18,7 @@ struct t_remote : t_obj_base
   boost::optional<ossia::callback_container<ossia::value_callback>::iterator>
       x_callbackit;
 
-  void isDeleted(const ossia::net::node_base& n)
+  void is_deleted(const ossia::net::node_base& n)
   {
     if (!x_dead)
     {

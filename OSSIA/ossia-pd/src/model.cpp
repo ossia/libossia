@@ -108,6 +108,8 @@ bool t_model::unregister()
   if (!x_node)
     return true; // not registered
 
+  x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
+
   if (x_node && x_node->get_parent())
     x_node->get_parent()->remove_child(*x_node); // this calls isDeleted() on
                                                  // each registered child and

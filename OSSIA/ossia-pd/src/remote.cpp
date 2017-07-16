@@ -56,7 +56,8 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     {
       x_callbackit = x_node->get_address()->add_callback(
           [=](const ossia::value& v) { setValue(v); });
-      x_node->about_to_be_deleted.connect<t_remote, &t_remote::isDeleted>(
+
+      x_node->about_to_be_deleted.connect<t_remote, &t_remote::is_deleted>(
           this);
 
       clock_delay(x_regclock, 0);
@@ -69,10 +70,17 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
 bool t_remote::unregister()
 {
+  if (x_node)
+  {
+    x_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(
+        this);
+  }
+
   if (x_callbackit != boost::none)
   {
     if (x_node && x_node->get_address())
       x_node->get_address()->remove_callback(*x_callbackit);
+
     x_callbackit = boost::none;
   }
   obj_quarantining<t_remote>(this);

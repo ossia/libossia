@@ -66,7 +66,7 @@ bool t_view::do_registration(ossia::net::node_base* node)
     x_node = node->find_child(x_name->s_name);
     if (x_node)
     {
-      x_node->about_to_be_deleted.connect<t_view, &t_view::isDeleted>(this);
+      x_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
     }
     else
     {
@@ -106,6 +106,8 @@ bool t_view::unregister()
 {
   if (!x_node)
     return true; // not registered
+
+  x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(this);
 
   std::vector<obj_hierachy> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");

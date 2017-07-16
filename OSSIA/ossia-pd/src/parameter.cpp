@@ -232,17 +232,23 @@ bool t_param::unregister()
   clock_unset(x_clock);
   if (x_node)
   {
+    x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
+
     if (x_node->get_parent())
       x_node->get_parent()->remove_child(*x_node);
+
     x_node = nullptr;
+
     for (auto remote : t_remote::quarantine().copy())
     {
       obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
   }
+
   obj_quarantining<t_param>(this);
 
   derenaming(this);
+
   for (auto param : t_param::rename().copy())
   {
     if (strcmp(param->x_name->s_name, x_name->s_name) == 0)
@@ -251,6 +257,7 @@ bool t_param::unregister()
       obj_register<t_param>(param);
     }
   }
+
   return true;
 }
 
