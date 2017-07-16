@@ -1,0 +1,4 @@
+#N canvas 601 246 557 439 10;
+#X obj 156 201 ossia.client;
+#X text 76 33 [ossia.client] connect to a remote OSSIA device and let
+you access its nodes with [ossia.view] and [ossia.remote].;
