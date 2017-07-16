@@ -68,5 +68,8 @@ struct t_device : t_obj_base
   // void addressCreationHandler(const ossia::net::address_base& n);
   // void nodeCreationHandler(const ossia::net::node_base& n);
 };
+
+void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv);
+
 }
 } // namespace

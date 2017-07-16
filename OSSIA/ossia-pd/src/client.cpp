@@ -52,29 +52,10 @@ static void client_free(t_client* x)
   register_quarantinized();
 }
 
-static void dump_child(t_client* x, const ossia::net::node_base& node)
-{
-  for (const auto& child : node.children())
-  {
-    std::stringstream ss;
-    auto parent = child->get_parent();
-    while (parent != nullptr)
-    {
-      ss << "\t";
-      parent = parent->get_parent();
-    }
-    ss << child->get_name();
-    t_atom a;
-    SETSYMBOL(&a, gensym(ss.str().c_str()));
-    outlet_anything(x->x_dumpout, gensym("child"), 1, &a);
-    dump_child(x, *child);
-  }
-}
-
 static void client_dump(t_client* x)
 {
   if (x->x_device)
-    dump_child(x, x->x_device->get_root_node());
+    get_namespace(x, x->x_device->get_root_node());
 }
 
 void t_client::loadbang(t_client* x, t_float type)

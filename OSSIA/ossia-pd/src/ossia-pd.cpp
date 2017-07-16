@@ -25,7 +25,7 @@ namespace ossia
 namespace pd
 {
 
-using t_ossia = t_obj_base;
+using t_ossia = t_device;
 
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 {
@@ -33,6 +33,7 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   t_ossia* x = (t_ossia*) eobj_new(ossia_pd.ossia);
 
   x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+  x->x_device = ossia_pd.get_default_device();
 
   return (x);
 }
@@ -40,117 +41,6 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 static void ossia_free(t_ossia *x)
 {
   outlet_free(x->x_dumpout);
-}
-
-static void ossia_expose(t_ossia* x, t_symbol*, int argc, t_atom* argv)
-{
-
-  if (argc && argv->a_type == A_SYMBOL)
-  {
-    auto& proto = static_cast<ossia::net::local_protocol&>(
-        ossia_pd::instance().get_default_device()->get_protocol());
-    std::string name = ossia_pd::instance().get_default_device()->get_name();
-    std::string protocol = argv->a_w.w_symbol->s_name;
-    if (protocol == "Minuit")
-    {
-      Protocol_Settings::minuit settings{};
-      argc--;
-      argv++;
-      if (argc == 3
-          && argv[0].a_type == A_SYMBOL
-          && argv[1].a_type == A_FLOAT
-          && argv[2].a_type == A_FLOAT)
-      {
-        settings.remoteip = atom_getsymbol(argv++)->s_name;
-        settings.remoteport = atom_getfloat(argv++);
-        settings.localport = atom_getfloat(argv++);
-      }
-
-      try
-      {
-        proto.expose_to(std::make_unique<ossia::net::minuit_protocol>(
-            name, settings.remoteip, settings.remoteport,
-            settings.localport));
-      }
-      catch (const std::exception& e)
-      {
-        pd_error(x, "%s", e.what());
-        return;
-      }
-      logpost(
-          x, 3,
-          "New 'Minuit' protocol connected to %s on port %u and listening on "
-          "port %u",
-          settings.remoteip.c_str(), settings.remoteport, settings.localport);
-    }
-    else if (protocol == "oscquery")
-    {
-      Protocol_Settings::oscquery settings{};
-      argc--;
-      argv++;
-      if (argc == 2
-          && argv[0].a_type == A_FLOAT
-          && argv[1].a_type == A_FLOAT)
-      {
-        settings.oscport = atom_getfloat(argv++);
-        settings.wsport = atom_getfloat(argv++);
-      }
-
-      try
-      {
-        proto.expose_to(
-            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-                settings.oscport, settings.wsport));
-      }
-      catch (const std::exception& e)
-      {
-        pd_error(x, "%s", e.what());
-        return;
-      }
-      logpost(
-          x, 3,
-          "New 'oscquery' protocol with OSC port %u and WS port %u, listening "
-          "on port %u",
-          settings.oscport, settings.wsport, settings.oscport);
-    }
-    else if (protocol == "osc")
-    {
-      Protocol_Settings::osc settings{};
-      argc--;
-      argv++;
-      if (argc == 3
-          && argv[0].a_type == A_SYMBOL
-          && argv[1].a_type == A_FLOAT
-          && argv[2].a_type == A_FLOAT)
-      {
-        settings.remoteip = atom_getsymbol(argv)->s_name;
-        settings.remoteport = atom_getfloat(argv++);
-        settings.localport = atom_getfloat(argv++);
-      }
-
-      try
-      {
-        proto.expose_to(std::make_unique<ossia::net::osc_protocol>(
-            settings.remoteip, settings.remoteport, settings.localport));
-      }
-      catch (const std::exception& e)
-      {
-        pd_error(x, "%s", e.what());
-        return;
-      }
-      logpost(
-          x, 3,
-          "New 'OSC' protocol connect to %s on port %u and listening on port "
-          "%u",
-          settings.remoteip.c_str(), settings.remoteport, settings.localport);
-    }
-    else
-    {
-      pd_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
-    }
-  }
-  else
-    Protocol_Settings::print_protocol_help();
 }
 
 static void ossia_get_namespace(t_ossia *x){
@@ -186,7 +76,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eremote();
   setup_ossia0x2eview();
 
-  eclass_addmethod(c, (method)ossia_expose, "expose", A_GIMME, 0);
+  eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
   eclass_addmethod(c, (method)ossia_name, "name", A_GIMME, 0);
   eclass_addmethod(c, (method)ossia_get_namespace, "namespace", A_GIMME, 0);
 

@@ -50,28 +50,9 @@ static void device_free(t_device* x)
   register_quarantinized();
 }
 
-static void dump_child(t_device* x, const ossia::net::node_base& node)
-{
-  for (const auto& child : node.children())
-  {
-    std::stringstream ss;
-    auto parent = child->get_parent();
-    while (parent != nullptr)
-    {
-      ss << "\t";
-      parent = parent->get_parent();
-    }
-    ss << child->get_name();
-    t_atom a;
-    SETSYMBOL(&a, gensym(ss.str().c_str()));
-    outlet_anything(x->x_dumpout, gensym("child"), 1, &a);
-    dump_child(x, *child);
-  }
-}
-
 static void device_dump(t_device* x)
 {
-  dump_child(x, x->x_device->get_root_node());
+  get_namespace(x, x->x_device->get_root_node());
 }
 
 void t_device::loadbang(t_device* x, t_float type)
@@ -153,7 +134,7 @@ void t_device::unregister_children()
   }
 }
 
-static void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
+void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 {
 
   if (argc && argv->a_type == A_SYMBOL)
