@@ -49,6 +49,7 @@ static void client_free(t_client* x)
   if (x->x_device)
     delete (x->x_device);
   x->x_device = nullptr;
+  register_quarantinized();
 }
 
 static void dump_child(t_client* x, const ossia::net::node_base& node)
