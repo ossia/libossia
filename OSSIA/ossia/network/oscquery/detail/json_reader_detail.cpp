@@ -735,7 +735,7 @@ void json_parser::parse_path_added(
         auto node = ossia::net::find_node(root, str.first);
         if (node)
         {
-          auto cld = node->find_child(std::string(str.second));
+          auto cld = node->find_child(str.second);
           if (!cld)
           {
             auto cld = std::make_unique<ossia::net::generic_node>(std::string(str.second), node->get_device(), *node);
@@ -745,6 +745,9 @@ void json_parser::parse_path_added(
           else
           {
             ossia::net::set_zombie(*cld, false);
+
+            // Update the node:
+            detail::json_parser_impl::readObject(*cld, dat);
           }
         }
       }
