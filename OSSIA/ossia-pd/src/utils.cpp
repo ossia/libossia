@@ -44,5 +44,132 @@ std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWrit
   return fullpath.str();
 }
 
+void register_quarantinized()
+{
+  for (auto model : t_model::quarantine().copy())
+  {
+    obj_register<t_model>(model);
+  }
+  for (auto param : t_param::quarantine().copy())
+  {
+    obj_register<t_param>(param);
+  }
+  for (auto view : t_view::quarantine().copy())
+  {
+    obj_register<t_view>(view);
+  }
+  for (auto remote : t_remote::quarantine().copy())
+  {
+    obj_register<t_remote>(remote);
+  }
+}
+
+t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
+{
+  t_canvas* canvas = x->o_canvas;
+
+  *level = start_level;
+
+  while (canvas && start_level)
+  {
+    canvas = canvas->gl_owner; // gl_owner seems to be corrupted on the root
+                               // canvas : canvas has no value
+    start_level--;
+  }
+
+  if (start_level > 0)
+    return nullptr; // if we can't reach start level (because we reach the root
+                    // canvas before the start_level) then abort
+
+  while (canvas != 0)
+  {
+    t_gobj* list = canvas->gl_list;
+    while (list)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
+      { // check if type match and not the same intance...
+        return &(list->g_pd);
+      }
+      list = list->g_next;
+    }
+    canvas = canvas->gl_owner;
+    (*level)++;
+  }
+  return nullptr;
+}
+
+std::vector<t_obj_base*> find_child_to_register(
+    t_obj_base* x, t_gobj* start_list, const std::string& classname)
+{
+  std::string subclassname
+      = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
+
+  t_gobj* list = start_list;
+  std::vector<t_obj_base*> found;
+
+  // 1: iterate object list and look for ossia.model / ossia.view object
+  while (list && list->g_pd)
+  {
+    std::string current = list->g_pd->c_name->s_name;
+    if (current == classname)
+    {
+      t_obj_base* o;
+      o = (t_obj_base*)&list->g_pd;
+      if (x != o && !o->x_dead)
+      {
+        found.push_back(o);
+      }
+    }
+    list = list->g_next;
+  }
+
+  // 2: if there is no ossia.model / ossia.view in the current patch, look into
+  // the subpatches
+
+  if (found.empty())
+  {
+    list = start_list;
+    while (list && list->g_pd)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == "canvas")
+      {
+        t_canvas* canvas = (t_canvas*)&list->g_pd;
+        if (!canvas_istable(canvas))
+        {
+          t_gobj* _list = canvas->gl_list;
+          std::vector<t_obj_base*> found_tmp
+              = find_child_to_register(x, _list, classname);
+          for (auto obj : found_tmp)
+          {
+            found.push_back(obj);
+          }
+        }
+      }
+      list = list->g_next;
+    }
+
+    // 3: finally look for ossia.param / ossia.remote in the same pather
+    list = start_list;
+    while (list && list->g_pd)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == subclassname)
+      {
+        t_obj_base* o;
+        o = (t_obj_base*)&list->g_pd;
+        if (x != o)
+        {
+          found.push_back(o);
+        }
+      }
+      list = list->g_next;
+    }
+  }
+
+  return found;
+}
+
 }
 }

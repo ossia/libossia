@@ -2,10 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "client.hpp"
 #include "model.hpp"
-#include "ossia/network/osc/osc.hpp"
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
+
+#include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 #include <functional>
