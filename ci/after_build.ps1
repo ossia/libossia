@@ -3,7 +3,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
-  cd %APPVEYOR_BUILD_FOLDER%
+  cd ..
   mkdir ossia-pd-package
   mkdir ossia-pd-package\ossia
   mkdir ossia-pd-package\ossia\helps
@@ -18,7 +18,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
-  cd %APPVEYOR_BUILD_FOLDER%
+  cd ..
   mkdir ossia-max-package
   mkdir ossia-max-package\ossia
   mkdir ossia-max-package\ossia\help
