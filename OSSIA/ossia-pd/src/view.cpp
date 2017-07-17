@@ -4,6 +4,7 @@
 #include "view.hpp"
 #include "remote.hpp"
 #include "utils.hpp"
+#include "ossia-pd.hpp"
 
 namespace ossia
 {
@@ -176,8 +177,9 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
-    x->x_otype = Type::view;
+    ossia_pd::views().push_back(x);
 
+    x->x_otype = Type::view;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->x_clock = clock_new(x, (t_method)obj_tick);
     x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
@@ -230,6 +232,7 @@ static void view_free(t_view* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_view>(x);
+  ossia_pd::views().remove_all(x);
   clock_free(x->x_regclock);
   clock_free(x->x_clock);
 }

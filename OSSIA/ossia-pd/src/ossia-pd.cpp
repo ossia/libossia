@@ -96,6 +96,23 @@ ossia_pd::ossia_pd():
 {
 }
 
+ossia_pd::~ossia_pd()
+{
+  // FIXME this is never called
+  for (auto x : remotes().copy()){
+    x->unregister();
+  }
+  for (auto x : views().copy()){
+    x->unregister();
+  }
+  for (auto x : params().copy()){
+    x->unregister();
+  }
+  for (auto x : models().copy()){
+    x->unregister();
+  }
+}
+
 // ossia-pd library instance
 ossia_pd& ossia_pd::instance()
 {

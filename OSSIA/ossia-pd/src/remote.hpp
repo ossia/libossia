@@ -1,4 +1,5 @@
 #pragma once
+
 #include "device.hpp"
 #include "ossia_obj_base.hpp"
 #include <boost/optional.hpp>

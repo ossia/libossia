@@ -1,6 +1,10 @@
 #pragma once
-#include "ossia-pd.hpp"
 #include <ossia/detail/safe_vec.hpp>
+#include <ossia/ossia.hpp>
+
+extern "C" {
+#include <cicm_wrapper.h>
+}
 
 namespace ossia
 {

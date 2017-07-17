@@ -1,7 +1,12 @@
 #pragma once
 #include <ossia/ossia.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
-#include <sstream>
+#include <ossia/detail/safe_vec.hpp>
+
+#include "parameter.hpp"
+#include "model.hpp"
+#include "remote.hpp"
+#include "view.hpp"
 
 extern "C" {
 #include <cicm_wrapper.h>
@@ -34,8 +39,14 @@ public:
     t_eclass* view{};
     t_eclass* ossia{};
 
+    static ossia::safe_vector<t_param*>& params();
+    static ossia::safe_vector<t_remote*>& remotes();
+    static ossia::safe_vector<t_model*>& models();
+    static ossia::safe_vector<t_view*>& views();
+
 private:
     ossia_pd(); // constructor
+    ~ossia_pd(); // destructor
 
     ossia::net::local_protocol* m_localProtocol{};
     ossia::net::generic_device m_device;
