@@ -31,8 +31,8 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
     x->x_otype = Type::client;
 
     x->x_name = gensym("Pd");
-    x->x_device = 0;
-    x->x_node = 0;
+    x->x_device = nullptr;
+    x->x_node = nullptr;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)

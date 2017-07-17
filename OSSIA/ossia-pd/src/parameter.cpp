@@ -245,18 +245,18 @@ bool t_param::unregister()
     {
       obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
-  }
 
-  obj_quarantining<t_param>(this);
+    obj_quarantining<t_param>(this);
 
-  derenaming(this);
+    derenaming(this);
 
-  for (auto param : t_param::rename().copy())
-  {
-    if (strcmp(param->x_name->s_name, x_name->s_name) == 0)
+    for (auto param : t_param::rename().copy())
     {
-      param->unregister();
-      obj_register<t_param>(param);
+      if (strcmp(param->x_name->s_name, x_name->s_name) == 0)
+      {
+        param->unregister();
+        obj_register<t_param>(param);
+      }
     }
   }
 
