@@ -105,6 +105,14 @@ public:
   template <typename T>
   void set(ossia::string_view str, T&& val);
 
+  template <typename T>
+  void set(ossia::string_view str, const optional<T>& val);
+  template <typename T>
+  void set(ossia::string_view str, optional<T>&& val);
+
+  void set(ossia::string_view str, bool value);
+
+
   template <typename Attribute, typename T>
   void set(Attribute a, const T& value);
   template <typename Attribute, typename T>

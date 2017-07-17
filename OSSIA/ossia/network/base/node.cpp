@@ -278,6 +278,20 @@ boost::any node_base::get_attribute(ossia::string_view str) const
   return {};
 }
 
+void node_base::set(string_view str, bool value)
+{
+  auto opt = ossia::has_attribute(*this, str);
+  if (opt != value)
+  {
+    if(value)
+      ossia::set_attribute((extended_attributes&)*this, str);
+    else
+      ossia::unset_attribute((extended_attributes&)*this, str);
+
+    get_device().on_attribute_modified(*this, str);
+  }
+}
+
 node_base* node_base::create_child(std::string name)
 {
   auto& dev = get_device();
@@ -511,6 +525,10 @@ std::vector<node_base*> node_base::children_copy() const
   {                                                            \
     set_optional_attribute(n, String, std::move(i));           \
   }                                                            \
+  void set_##Name(ossia::net::node_base& n, optional<Type> i)  \
+  {                                                            \
+    n.set(ossia::string_view(String), std::move(i));           \
+  }                                                            \
   ossia::string_view text_##Name()                             \
   {                                                            \
     return make_string_view(String);                           \
@@ -533,6 +551,18 @@ std::vector<node_base*> node_base::children_copy() const
   {                                                              \
     set_attribute(n, String, std::move(i));                      \
   }                                                              \
+  void set_##Name(ossia::net::node_base& n, Type&& i)            \
+  {                                                              \
+    n.set(ossia::string_view(String), std::move(i));             \
+  }                                                              \
+  void set_##Name(ossia::net::node_base& n, const Type& i)       \
+  {                                                              \
+    n.set(ossia::string_view(String), std::move(i));             \
+  }                                                              \
+  void set_##Name(ossia::net::node_base& n, ossia::none_t i)     \
+  {                                                              \
+    n.set(ossia::string_view(String), optional<Type>{});         \
+  }                                                              \
   ossia::string_view text_##Name()                               \
   {                                                              \
     return make_string_view(String);                             \
@@ -550,6 +580,10 @@ std::vector<node_base*> node_base::children_copy() const
       set_attribute(n, String);                                     \
     else                                                            \
       set_attribute(n, String, ossia::none);                        \
+  }                                                                 \
+  void set_##Name(ossia::net::node_base& n, Type i)                 \
+  {                                                                 \
+    n.set(ossia::string_view(String), std::move(i));                \
   }                                                                 \
   ossia::string_view text_##Name()                                  \
   {                                                                 \
@@ -604,8 +638,20 @@ void set_extended_type(extended_attributes& n, optional<extended_type> i)
 {
   set_optional_attribute(n, text_extended_type(), std::move(i));
 }
+void set_extended_type(ossia::net::node_base& n, optional<extended_type> i)
+{
+  n.set(text_extended_type(), std::move(i));
+}
 
 void set_description(extended_attributes& n, const char* arg)
+{
+  if (arg)
+    set_description(n, std::string{arg});
+  else
+    set_description(n, ossia::none);
+}
+
+void set_description(ossia::net::node_base& n, const char* arg)
 {
   if (arg)
     set_description(n, std::string{arg});
@@ -638,6 +684,35 @@ void set_default_value(extended_attributes& n, double arg)
   set_default_value(n, ossia::value{arg});
 }
 void set_default_value(extended_attributes& n, const char* arg)
+{
+  set_default_value(n, ossia::value{std::string(arg)});
+}
+
+void set_default_value(ossia::net::node_base& n, int arg)
+{
+  set_default_value(n, ossia::value{arg});
+}
+void set_default_value(ossia::net::node_base& n, long arg)
+{
+  set_default_value(n, ossia::value{arg});
+}
+void set_default_value(ossia::net::node_base& n, bool arg)
+{
+  set_default_value(n, ossia::value{arg});
+}
+void set_default_value(ossia::net::node_base& n, char arg)
+{
+  set_default_value(n, ossia::value{arg});
+}
+void set_default_value(ossia::net::node_base& n, float arg)
+{
+  set_default_value(n, ossia::value{arg});
+}
+void set_default_value(ossia::net::node_base& n, double arg)
+{
+  set_default_value(n, ossia::value{arg});
+}
+void set_default_value(ossia::net::node_base& n, const char* arg)
 {
   set_default_value(n, ossia::value{std::string(arg)});
 }

@@ -116,7 +116,7 @@ void node_base::set(ossia::string_view str, const T& value)
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if (opt && *opt != value)
   {
-    ossia::set_attribute(*this, str, value);
+    ossia::set_attribute((extended_attributes&)*this, str, value);
     get_device().on_attribute_modified(*this, str);
   }
 }
@@ -127,7 +127,29 @@ void node_base::set(ossia::string_view str, T&& value)
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if (opt && *opt != value)
   {
-    ossia::set_attribute(*this, str, std::move(value));
+    ossia::set_attribute((extended_attributes&)*this, str, std::move(value));
+    get_device().on_attribute_modified(*this, str);
+  }
+}
+
+template <typename T>
+void node_base::set(ossia::string_view str, const optional<T>& value)
+{
+  auto opt = ossia::get_optional_attribute<T>(*this, str);
+  if (opt && opt != value)
+  {
+    ossia::set_attribute((extended_attributes&)*this, str, value);
+    get_device().on_attribute_modified(*this, str);
+  }
+}
+
+template <typename T>
+void node_base::set(ossia::string_view str, optional<T>&& value)
+{
+  auto opt = ossia::get_optional_attribute<T>(*this, str);
+  if (opt && opt != value)
+  {
+    ossia::set_attribute((extended_attributes&)*this, str, std::move(value));
     get_device().on_attribute_modified(*this, str);
   }
 }
