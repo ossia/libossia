@@ -50,7 +50,7 @@ public:
 
   ~generic_address();
 
-  ossia::net::node_base& getNode() const final override;
+  ossia::net::node_base& get_node() const final override;
 
   void pull_value() final override;
   std::future<void> pull_value_async() final override;

@@ -275,7 +275,7 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     // Push to server
-    auto critical = net::get_critical(addr.getNode());
+    auto critical = net::get_critical(addr.get_node());
     if (!critical)
     {
       m_oscSender->send(addr, val);

@@ -25,7 +25,7 @@ const address_info& midi_address::info() const
   return m_info;
 }
 
-node_base& midi_address::getNode() const
+node_base& midi_address::get_node() const
 {
   return m_parent;
 }

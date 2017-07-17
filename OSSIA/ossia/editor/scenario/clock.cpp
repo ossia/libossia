@@ -49,7 +49,7 @@ void clock::start()
     m_thread.join();
 
   // launch a new thread to run the clock execution
-  m_thread = std::thread(&clock::threadCallback, this);
+  m_thread = std::thread(&clock::thread_callback, this);
   set_thread_realtime(m_thread);
 }
 
@@ -240,7 +240,7 @@ void clock::do_set_duration(ossia::time_value duration)
   m_duration = duration;
 }
 
-void clock::threadCallback()
+void clock::thread_callback()
 {
   try
   {

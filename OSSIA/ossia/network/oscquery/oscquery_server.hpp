@@ -55,7 +55,7 @@ public:
     return *m_device;
   }
 
-  int getOSCPort() const
+  int get_osc_port() const
   {
     return m_oscPort;
   }
@@ -65,13 +65,13 @@ public:
 
 private:
   // List of connected clients
-  oscquery_client* findClient(const connection_handler& hdl);
+  oscquery_client* find_client(const connection_handler& hdl);
 
   // List of clients who connected but did not finish the connection procedure
-  oscquery_client* findBuildingClient(const connection_handler& hdl);
+  oscquery_client* find_building_client(const connection_handler& hdl);
 
   // Called when a client is built (it gave its osc port)
-  void enableClient(const connection_handler& hdl);
+  void enable_client(const connection_handler& hdl);
 
   void
   add_node(ossia::string_view path, const string_map<std::string>& parameters);

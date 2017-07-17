@@ -46,7 +46,7 @@ generic_address::~generic_address()
   callback_container<value_callback>::callbacks_clear();
 }
 
-ossia::net::node_base& generic_address::getNode() const
+ossia::net::node_base& generic_address::get_node() const
 {
   return m_node;
 }

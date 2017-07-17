@@ -5,11 +5,11 @@
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 
-inline std::string getString(const rapidjson::Value& val)
+inline std::string get_string(const rapidjson::Value& val)
 {
   return std::string{val.GetString(), val.GetStringLength()};
 }
-inline ossia::string_view getStringView(const rapidjson::Value& val)
+inline ossia::string_view get_string_view(const rapidjson::Value& val)
 {
   return ossia::string_view{val.GetString(), val.GetStringLength()};
 }

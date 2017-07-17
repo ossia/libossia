@@ -64,7 +64,7 @@ public:
     }
   }
 
-  net::node_base& getNode() const override
+  net::node_base& get_node() const override
   {
     return m_node;
   }
@@ -167,7 +167,7 @@ public:
     }
   }
 
-  net::node_base& getNode() const override
+  net::node_base& get_node() const override
   {
     return m_node;
   }
@@ -261,7 +261,7 @@ public:
   {
   }
 
-  net::node_base& getNode() const override
+  net::node_base& get_node() const override
   {
     return m_node;
   }

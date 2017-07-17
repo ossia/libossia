@@ -65,8 +65,8 @@ private:
   bool operator()(const val_t& first, const ossia::value& second) const;
   void on_first_callback_added() override;
   void on_removing_last_callback() override;
-  void firstValueCallback(const ossia::value& value);
-  void secondValueCallback(const ossia::value& value);
+  void first_value_callback(const ossia::value& value);
+  void second_value_callback(const ossia::value& value);
 
   val_t m_first;
   val_t m_second;

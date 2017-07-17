@@ -17,7 +17,7 @@
 #if defined(OSSIA_QT)
 #include <QString>
 // Taken from https://stackoverflow.com/a/18230916/1495627
-bool latinCompare(const QString& qstr, const std::string& str)
+bool latin_compare(const QString& qstr, const std::string& str)
 {
   if (qstr.length() != (int)str.size())
     return false;
@@ -396,7 +396,7 @@ node_base* node_base::find_child(const QString& name)
     SPDLOG_TRACE((&ossia::logger()), "locked(findChild)");
     for (auto& node : m_children)
     {
-      if (latinCompare(name, node->get_name()))
+      if (latin_compare(name, node->get_name()))
       {
         SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
         return node.get();

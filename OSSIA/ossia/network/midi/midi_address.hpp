@@ -130,7 +130,7 @@ public:
 
   const address_info& info() const;
 
-  ossia::net::node_base& getNode() const final override;
+  ossia::net::node_base& get_node() const final override;
 
   void pull_value() final override;
   address_base& push_value(const ossia::value& val) final override;

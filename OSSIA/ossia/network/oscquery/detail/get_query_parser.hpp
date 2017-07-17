@@ -29,7 +29,7 @@ public:
       const std::string& listen_text)
   {
     // First we find for a corresponding client
-    auto clt = proto.findClient(hdl);
+    auto clt = proto.find_client(hdl);
 
     if (clt)
     {
@@ -64,15 +64,15 @@ public:
       int port)
   {
     // First we find for a corresponding client
-    auto clt = proto.findBuildingClient(hdl);
+    auto clt = proto.find_building_client(hdl);
 
     if (!clt)
       throw bad_request_error{"Client not found"};
 
     // Then we set-up the sender
-    clt->openOSCSender(proto.get_logger(), port);
+    clt->open_osc_sender(proto.get_logger(), port);
 
-    proto.enableClient(hdl);
+    proto.enable_client(hdl);
     return {};
   }
 

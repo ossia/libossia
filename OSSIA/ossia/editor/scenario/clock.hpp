@@ -122,6 +122,6 @@ private:
   std::atomic_bool m_shouldStop{};
 
   /*! called back by the internal thread */
-  void threadCallback();
+  void thread_callback();
 };
 }

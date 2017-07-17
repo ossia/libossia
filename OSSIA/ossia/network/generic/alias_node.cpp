@@ -12,7 +12,7 @@ alias_node::~alias_node()
   if (m_origin)
   {
     m_origin->about_to_be_deleted
-        .disconnect<alias_node, &alias_node::onDeletion>(this);
+        .disconnect<alias_node, &alias_node::on_deletion>(this);
   }
 }
 
@@ -37,19 +37,19 @@ node_base* alias_node::get_origin() const
   return m_origin;
 }
 
-void alias_node::setOrigin(node_base* o)
+void alias_node::set_origin(node_base* o)
 {
   if (m_origin)
   {
     m_origin->about_to_be_deleted
-        .disconnect<alias_node, &alias_node::onDeletion>(this);
+        .disconnect<alias_node, &alias_node::on_deletion>(this);
   }
 
   m_origin = o;
 
   if (m_origin)
   {
-    m_origin->about_to_be_deleted.connect<alias_node, &alias_node::onDeletion>(
+    m_origin->about_to_be_deleted.connect<alias_node, &alias_node::on_deletion>(
         this);
   }
 }
@@ -63,7 +63,7 @@ void alias_node::removing_child(node_base&)
 {
 }
 
-void alias_node::onDeletion(const node_base& orig)
+void alias_node::on_deletion(const node_base& orig)
 {
   m_origin = nullptr;
 }

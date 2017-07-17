@@ -87,32 +87,32 @@ private:
 
   void update_zeroconf();
 
-  std::string mLocalName;
-  std::string mIp;
-  uint16_t mRemotePort{}; /// the port that a remote device opens
-  uint16_t mLocalPort{};  /// the port where a remote device sends OSC messages
+  std::string m_localName;
+  std::string m_ip;
+  uint16_t m_remotePort{}; /// the port that a remote device opens
+  uint16_t m_localPort{};  /// the port where a remote device sends OSC messages
                           /// to (opened in this library)
 
-  listened_addresses mListening;
+  listened_addresses m_listening;
 
-  std::promise<void> mNamespaceFinishedPromise;
-  ossia::net::device_base* mDevice{};
+  std::promise<void> m_namespaceFinishedPromise;
+  ossia::net::device_base* m_device{};
 
-  mutex_t mNamespaceRequestsMutex;
-  std::set<std::string, std::less<>> mNamespaceRequests;
+  mutex_t m_nsRequestMutex;
+  std::set<std::string, std::less<>> m_nsRequests;
 
-  mutex_t mGetRequestsMutex;
-  std::promise<void> mGetFinishedPromise;
-  std::vector<std::string> mGetRequests;
-  std::atomic_int mPendingGetRequests{};
+  mutex_t m_getRequestMutex;
+  std::promise<void> m_getFinishedPromise;
+  std::vector<std::string> m_getRequests;
+  std::atomic_int m_pendingGetRequests{};
 
-  std::unique_ptr<osc::sender<osc_outbound_visitor>> mSender;
-  std::unique_ptr<osc::receiver> mReceiver;
+  std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
+  std::unique_ptr<osc::receiver> m_receiver;
 
-  zeroconf_server mZeroconfServer;
+  zeroconf_server m_zcServer;
 
-  std::atomic<long long> mLastSentMessage;
-  std::atomic<long long> mLastReceivedMessage;
+  std::atomic<long long> m_lastSentMessage;
+  std::atomic<long long> m_lastRecvMessage;
 };
 }
 }

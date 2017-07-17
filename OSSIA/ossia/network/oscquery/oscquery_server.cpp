@@ -105,7 +105,7 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     // Push to all clients
-    auto critical = net::get_critical(addr.getNode());
+    auto critical = net::get_critical(addr.get_node());
     if (!critical)
     {
       lock_t lock(m_clientsMutex);
@@ -174,7 +174,7 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
 }
 
 oscquery_client*
-oscquery_server_protocol::findClient(const connection_handler& hdl)
+oscquery_server_protocol::find_client(const connection_handler& hdl)
 {
   lock_t lock(m_clientsMutex);
 
@@ -185,7 +185,7 @@ oscquery_server_protocol::findClient(const connection_handler& hdl)
 }
 
 oscquery_client*
-oscquery_server_protocol::findBuildingClient(const connection_handler& hdl)
+oscquery_server_protocol::find_building_client(const connection_handler& hdl)
 {
   lock_t lock(m_buildingClientsMutex);
 
@@ -195,7 +195,7 @@ oscquery_server_protocol::findBuildingClient(const connection_handler& hdl)
   return nullptr;
 }
 
-void oscquery_server_protocol::enableClient(
+void oscquery_server_protocol::enable_client(
     const oscquery_server_protocol::connection_handler& hdl)
 {
   lock_t l1(m_clientsMutex);

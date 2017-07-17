@@ -27,8 +27,8 @@ private Q_SLOTS:
         if(address == nullptr)
           return;
 
-        QVERIFY(&address->getNode() == device.children().front().get());
-        QVERIFY(&address->getNode().get_device() == &device);
+        QVERIFY(&address->get_node() == device.children().front().get());
+        QVERIFY(&address->get_node().get_device() == &device);
 
         QVERIFY(address->get_value_type() == val_type::IMPULSE);
 

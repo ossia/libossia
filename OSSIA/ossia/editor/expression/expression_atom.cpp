@@ -91,14 +91,14 @@ void expression_atom::on_first_callback_added()
   if (auto d = m_first.target<Destination>())
   {
     m_firstCallback = d->address().add_callback(
-        [&](const ossia::value& result) { firstValueCallback(result); });
+        [&](const ossia::value& result) { first_value_callback(result); });
   }
 
   // start second operand observation if it is a Destination
   if (auto d = m_second.target<Destination>())
   {
     m_secondCallback = d->address().add_callback(
-        [&](const ossia::value& result) { secondValueCallback(result); });
+        [&](const ossia::value& result) { second_value_callback(result); });
   }
 }
 
@@ -180,13 +180,13 @@ operator()(const val_t& first, const ossia::value& second) const
       [&](const auto& t) { return this->operator()(t, second); }, first);
 }
 
-void expression_atom::firstValueCallback(const ossia::value& value)
+void expression_atom::first_value_callback(const ossia::value& value)
 {
   if (value.valid())
     send((*this)(value, m_second));
 }
 
-void expression_atom::secondValueCallback(const ossia::value& value)
+void expression_atom::second_value_callback(const ossia::value& value)
 {
   if (value.valid())
     send((*this)(m_first, value));
