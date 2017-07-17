@@ -145,7 +145,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
-    ossia_pd::remotes().push_back(x);
+    ossia_pd.remotes.push_back(x);
 
     x->x_otype = Type::remote;
     x->x_setout = outlet_new((t_object*)x, nullptr);
@@ -179,7 +179,7 @@ static void remote_free(t_remote* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_remote>(x);
-  ossia_pd::remotes().remove_all(x);
+  ossia_pd::instance().remotes.remove_all(x);
   outlet_free(x->x_setout);
   outlet_free(x->x_dataout);
   outlet_free(x->x_dumpout);

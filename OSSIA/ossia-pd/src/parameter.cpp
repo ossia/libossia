@@ -292,7 +292,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
-    ossia_pd::params().push_back(x);
+    ossia_pd.params.push_back(x);
     x->x_otype = Type::param;
     x->x_range[0] = 0.;
     x->x_range[1] = 1.;
@@ -339,7 +339,7 @@ static void parameter_free(t_param* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_param>(x);
-  ossia_pd::params().remove_all(x);
+  ossia_pd::instance().params.remove_all(x);
   outlet_free(x->x_dataout);
   outlet_free(x->x_dumpout);
 }

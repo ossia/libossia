@@ -39,10 +39,10 @@ public:
     t_eclass* view{};
     t_eclass* ossia{};
 
-    static ossia::safe_vector<t_param*>& params();
-    static ossia::safe_vector<t_remote*>& remotes();
-    static ossia::safe_vector<t_model*>& models();
-    static ossia::safe_vector<t_view*>& views();
+    ossia::safe_vector<t_param*> params;
+    ossia::safe_vector<t_remote*> remotes;
+    ossia::safe_vector<t_model*> models;
+    ossia::safe_vector<t_view*> views;
 
 private:
     ossia_pd(); // constructor
@@ -52,8 +52,6 @@ private:
     ossia::net::generic_device m_device;
     string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
 };
-
-struct t_obj_base;
 
 }
 } // namespace

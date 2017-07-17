@@ -177,7 +177,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
-    ossia_pd::views().push_back(x);
+    ossia_pd.views.push_back(x);
 
     x->x_otype = Type::view;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
@@ -232,7 +232,7 @@ static void view_free(t_view* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_view>(x);
-  ossia_pd::views().remove_all(x);
+  ossia_pd::instance().views.remove_all(x);
   clock_free(x->x_regclock);
   clock_free(x->x_clock);
 }

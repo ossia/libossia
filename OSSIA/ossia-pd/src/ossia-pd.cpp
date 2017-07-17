@@ -98,18 +98,17 @@ ossia_pd::ossia_pd():
 
 ossia_pd::~ossia_pd()
 {
-  // FIXME this is never called
-  for (auto x : remotes().copy()){
-    x->unregister();
+  for (auto x : views.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
   }
-  for (auto x : views().copy()){
-    x->unregister();
+  for (auto x : remotes.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
   }
-  for (auto x : params().copy()){
-    x->unregister();
+  for (auto x : models.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
   }
-  for (auto x : models().copy()){
-    x->unregister();
+  for (auto x : params.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(x);
   }
 }
 

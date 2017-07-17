@@ -151,7 +151,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
   t_model* x = (t_model*)eobj_new(ossia_pd.model);
   if(x)
   {
-    ossia_pd::models().push_back(x);
+    ossia_pd.models.push_back(x);
 
     x->x_otype = Type::model;
 
@@ -214,7 +214,7 @@ static void model_free(t_model* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_model>(x);
-  ossia_pd::models().remove_all(x);
+  ossia_pd::instance().models.remove_all(x);
   clock_free(x->x_regclock);
 }
 
