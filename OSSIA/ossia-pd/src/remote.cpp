@@ -189,6 +189,8 @@ extern "C" void setup_ossia0x2eremote(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
+
     eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
     eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
     eclass_addmethod(c, (method)obj_dump<t_remote>, "dump", A_NULL, 0);

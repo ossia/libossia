@@ -2,25 +2,26 @@ language: cpp
 
 branches:
   except:
-    - gh-pages
-    - feature/appveyor_pd
+  - gh-pages
+  - feature/appveyor_pd
 
 env:
   global:
-    - GH_REPO_NAME: libossia
-    - GH_REPO_REF: github.com/OSSIA/libossia.git
+  - GH_REPO_NAME: libossia
+  - GH_REPO_REF: github.com/OSSIA/libossia.git
 
 osx_image: xcode8.3
 dist: trusty
 sudo: required
 
-service:
-  - docker
+# That was for RpiDocker build
+# service:
+# - docker
 
 matrix:
   exclude:
-    - os: linux
-    - os: osx
+  - os: linux
+  - os: osx
 
   include:
   - os: linux
@@ -70,3 +71,16 @@ before_install:
 
 script:
 - "./ci/build.sh"
+deploy:
+  provider: releases
+  api_key:
+    secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+  file:
+    - ossia-pd-linux_x86_64.tar.gz
+    - ossia-pd-linux_arm.tar.gz
+    - ossia-pd-osx.tar.gz
+    - ossia-max-osx.tar.gz
+  skip_cleanup: true
+  on:
+    repo: OSSIA/libossia
+    tags: true

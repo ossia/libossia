@@ -246,6 +246,8 @@ extern "C" void setup_ossia0x2edevice(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)device_new,gensym("ø.device"), A_GIMME, 0);
+
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)t_device::register_children,"register", A_NULL, 0);
