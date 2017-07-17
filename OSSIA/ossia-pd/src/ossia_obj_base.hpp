@@ -7,9 +7,20 @@ namespace ossia
 namespace pd
 {
 
+enum class Type {
+  root = 0,
+  param,
+  remote,
+  model,
+  view,
+  device,
+  client
+};
+
 struct t_obj_base
 {
   t_eobj x_obj;
+  Type x_otype{};
   t_symbol* x_name{};
   t_outlet* x_setout{};
   t_outlet* x_dataout{};

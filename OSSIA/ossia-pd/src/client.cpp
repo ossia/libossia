@@ -26,6 +26,8 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    x->x_otype = Type::client;
+
     x->x_name = gensym("Pd");
     x->x_device = 0;
     x->x_node = 0;
@@ -69,18 +71,18 @@ void t_client::loadbang(t_client* x, t_float type)
 void t_client::register_children(t_client* x)
 {
 
-  std::vector<obj_hierachy> viewnodes
+  std::vector<t_obj_base*> viewnodes
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->register_node(x->x_node);
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->register_node(x->x_node);
     }
   }
@@ -88,34 +90,18 @@ void t_client::register_children(t_client* x)
 
 void t_client::unregister_children()
 {
-  std::vector<obj_hierachy> node
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
-  for (auto v : node)
-  {
-    if (v.classname == "ossia.model")
-    {
-      t_model* model = (t_model*)v.x;
-      model->unregister();
-    }
-    else if (v.classname == "ossia.param")
-    {
-      t_param* param = (t_param*)v.x;
-      param->unregister();
-    }
-  }
-
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }

@@ -22,13 +22,13 @@ bool t_view::register_node(ossia::net::node_base* node)
   if (res)
   {
     obj_dequarantining<t_view>(this);
-    std::vector<obj_hierachy> viewnode
+    std::vector<t_obj_base*> viewnode
         = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnode)
     {
-      if (v.classname == "ossia.view")
+      if (v->x_otype == Type::view)
       {
-        t_view* view = (t_view*)v.x;
+        t_view* view = (t_view*)v;
         if (view == this)
         {
           // not registering itself
@@ -36,9 +36,9 @@ bool t_view::register_node(ossia::net::node_base* node)
         }
         view->register_node(x_node);
       }
-      else if (v.classname == "ossia.remote")
+      else if (v->x_otype == Type::remote)
       {
-        t_remote* remote = (t_remote*)v.x;
+        t_remote* remote = (t_remote*)v;
         remote->register_node(x_node);
       }
     }
@@ -83,20 +83,20 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
 static void register_children(t_view* x)
 {
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       if (view == x)
         continue;
       obj_register<t_view>(view);
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       obj_register<t_remote>(remote);
     }
   }
@@ -109,20 +109,20 @@ bool t_view::unregister()
 
   x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(this);
 
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       if (view == this)
         continue;
       view->unregister();
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }
@@ -176,6 +176,8 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
+    x->x_otype = Type::view;
+
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->x_clock = clock_new(x, (t_method)obj_tick);
     x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);

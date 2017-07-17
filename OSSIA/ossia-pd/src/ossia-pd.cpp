@@ -123,14 +123,14 @@ void register_quarantinized()
   }
 }
 
-std::vector<obj_hierachy> find_child_to_register(
+std::vector<t_obj_base*> find_child_to_register(
     t_obj_base* x, t_gobj* start_list, const std::string& classname)
 {
   std::string subclassname
       = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
 
   t_gobj* list = start_list;
-  std::vector<obj_hierachy> found;
+  std::vector<t_obj_base*> found;
 
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
@@ -138,14 +138,11 @@ std::vector<obj_hierachy> find_child_to_register(
     std::string current = list->g_pd->c_name->s_name;
     if (current == classname)
     {
-      obj_hierachy oh;
-      oh.hierarchy = 0;
-      oh.x = (t_obj_base*)&list->g_pd;
-      oh.classname = classname;
-      if (x != oh.x && !oh.x->x_dead)
+      t_obj_base* o;
+      o = (t_obj_base*)&list->g_pd;
+      if (x != o && !o->x_dead)
       {
-        t_obj_base* o = oh.x;
-        found.push_back(oh);
+        found.push_back(o);
       }
     }
     list = list->g_next;
@@ -166,12 +163,10 @@ std::vector<obj_hierachy> find_child_to_register(
         if (!canvas_istable(canvas))
         {
           t_gobj* _list = canvas->gl_list;
-          std::vector<obj_hierachy> found_tmp
+          std::vector<t_obj_base*> found_tmp
               = find_child_to_register(x, _list, classname);
           for (auto obj : found_tmp)
           {
-            obj.hierarchy++; // increase hierarchy of objects found in a
-                             // subpatcher
             found.push_back(obj);
           }
         }
@@ -186,13 +181,11 @@ std::vector<obj_hierachy> find_child_to_register(
       std::string current = list->g_pd->c_name->s_name;
       if (current == subclassname)
       {
-        obj_hierachy oh;
-        oh.hierarchy = 0;
-        oh.x = (t_obj_base*)&list->g_pd;
-        oh.classname = subclassname;
-        if (x != oh.x)
+        t_obj_base* o;
+        o = (t_obj_base*)&list->g_pd;
+        if (x != o)
         {
-          found.push_back(oh);
+          found.push_back(o);
         }
       }
       list = list->g_next;
