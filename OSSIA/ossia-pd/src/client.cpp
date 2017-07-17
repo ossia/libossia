@@ -222,6 +222,8 @@ extern "C" void setup_ossia0x2eclient(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)client_new,gensym("ø.client"), A_GIMME, 0);
+
     eclass_addmethod(
         c, (method)t_client::register_children, "register", A_NULL, 0);
     eclass_addmethod(c, (method)client_update, "update", A_NULL, 0);

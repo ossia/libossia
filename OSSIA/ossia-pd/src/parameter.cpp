@@ -347,6 +347,8 @@ extern "C" void setup_ossia0x2eparam(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
+
     eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
     eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
     eclass_addmethod(c, (method)obj_dump<t_param>, "dump", A_NULL, 0);

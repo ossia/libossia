@@ -76,6 +76,8 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eremote();
   setup_ossia0x2eview();
 
+  class_addcreator((t_newmethod)ossia_new,gensym("ø"), A_GIMME, 0);
+
   eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
   eclass_addmethod(c, (method)ossia_name, "name", A_GIMME, 0);
   eclass_addmethod(c, (method)ossia_get_namespace, "namespace", A_GIMME, 0);

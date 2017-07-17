@@ -249,6 +249,8 @@ extern "C" void setup_ossia0x2eview(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)view_new,gensym("ø.view"), A_GIMME, 0);
+
     eclass_addmethod(c, (method)obj_dump<t_view>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)view_click, "click", A_NULL, 0);
     eclass_addmethod(c, (method)view_bind, "bind", A_SYMBOL, 0);
