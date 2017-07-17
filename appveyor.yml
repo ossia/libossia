@@ -19,12 +19,19 @@ environment:
       CMAKE_OPTION: -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5"
     - platform: x64
       configuration: Release
-      APPVEYOR_BUILD_TYPE: pd
+      APPVEYOR_BUILD_TYPE: pd-max
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
       CMAKE_OPTION: -DOSSIA_PD=1 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%"
+    - platform: x64
+      configuration: Release
+      APPVEYOR_BUILD_TYPE: max
+      CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
+      CMAKE_OPTION: -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="%APPVEYOR_BUILD_FOLDER%\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%"
 
 before_build:
   - git submodule update --init --recursive
+  - curl --retry 10 -sO https://cycling74.s3.amazonaws.com/download/max-sdk-7.3.3.zip
+  - 7z x max-sdk-7.3.3.zip -y > nul
   - mkdir build
   - cd build
   - if exist "%QTDIR%\bin\" set PATH=%QTDIR%\bin;%PATH%
@@ -44,11 +51,15 @@ artifacts:
   - path: ossia-pd-package
     name: ossia-pd-windows-x86_64
     type: zip
+  - path: ossia-max-package
+    name: ossia-max-windows-x86_64
+    type: zip
+
 deploy:
   description: 'Release description'
   provider: GitHub
   auth_token:
-    secure: <your encrypted token> # your encrypted token from GitHub
+    secure: moePiJbJVxE0xx/iyPjZ4yAWJe+ZiJeVroktPbW6ybfamReA+oNojo3l23+/LtHt
   artifact: ossia-pd-windows-x86_64.zip, ossia-max-windows-x86_64.zip
   draft: false
   prerelease: true
