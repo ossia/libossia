@@ -290,6 +290,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    x->x_otype = Type::param;
     x->x_range[0] = 0.;
     x->x_range[1] = 1.;
 

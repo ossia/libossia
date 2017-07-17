@@ -22,6 +22,8 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    x->x_otype = Type::device;
+
     x->x_name = gensym("Pd");
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
@@ -66,34 +68,34 @@ void t_device::loadbang(t_device* x, t_float type)
 void t_device::register_children(t_device* x)
 {
 
-  std::vector<obj_hierachy> modelnodes
+  std::vector<t_obj_base*> modelnodes
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
   {
-    if (v.classname == "ossia.model")
+    if (v->x_otype == Type::model)
     {
-      t_model* model = (t_model*)v.x;
+      t_model* model = (t_model*)v;
       model->register_node(x->x_node);
     }
-    else if (v.classname == "ossia.param")
+    else if (v->x_otype == Type::param)
     {
-      t_param* param = (t_param*)v.x;
+      t_param* param = (t_param*)v;
       param->register_node(x->x_node);
     }
   }
 
-  std::vector<obj_hierachy> viewnodes
+  std::vector<t_obj_base*> viewnodes
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->register_node(x->x_node);
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->register_node(x->x_node);
     }
   }
@@ -101,34 +103,34 @@ void t_device::register_children(t_device* x)
 
 void t_device::unregister_children()
 {
-  std::vector<obj_hierachy> node
+  std::vector<t_obj_base*> node
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : node)
   {
-    if (v.classname == "ossia.model")
+    if (v->x_otype == Type::model)
     {
-      t_model* model = (t_model*)v.x;
+      t_model* model = (t_model*)v;
       model->unregister();
     }
-    else if (v.classname == "ossia.param")
+    else if (v->x_otype == Type::param)
     {
-      t_param* param = (t_param*)v.x;
+      t_param* param = (t_param*)v;
       param->unregister();
     }
   }
 
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }

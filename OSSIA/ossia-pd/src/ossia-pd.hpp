@@ -208,23 +208,6 @@ struct value_visitor
 };
 
 /**
- * @brief The obj_hierachy class
- * @details Little class to store object pointer and hierarchy level, useful
- * for iterating object from top to bottom.
- */
-class obj_hierachy
-{
-public:
-  t_obj_base* x;
-  int hierarchy;
-  std::string classname;
-  friend bool operator<(obj_hierachy a, obj_hierachy b)
-  {
-    return a.hierarchy < b.hierarchy;
-  }
-};
-
-/**
  * @brief register_quarantinized Try to register all quarantinized objects
  */
 void register_quarantinized();
@@ -310,7 +293,7 @@ static T* find_parent_alive(
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<obj_hierachy> find_child_to_register(
+std::vector<t_obj_base*> find_child_to_register(
     t_obj_base* x, t_gobj* start_list, const std::string& classname);
 }
 } // namespace

@@ -145,6 +145,8 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
+    x->x_otype = Type::remote;
+
     x->x_setout = outlet_new((t_object*)x, nullptr);
     x->x_dataout = outlet_new((t_object*)x, nullptr);
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
