@@ -294,6 +294,9 @@ bool midi_protocol::push(const address_base& address)
   }
 }
 
+bool midi_protocol::push_raw(const full_address_data& address_base)
+{ return false; }
+
 bool midi_protocol::observe(address_base& address, bool enable)
 {
   enable = true;

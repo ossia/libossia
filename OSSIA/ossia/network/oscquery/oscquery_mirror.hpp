@@ -41,6 +41,9 @@ public:
   std::future<void> pull_async(net::address_base&) override;
   void request(net::address_base&) override;
   bool push(const net::address_base&) override;
+  bool push_raw(const ossia::net::full_address_data& address_base) override;
+  bool push_bundle(const std::vector<const ossia::net::address_base*>&) override;
+  bool push_raw_bundle(const std::vector<ossia::net::full_address_data>&) override;
   bool observe(net::address_base&, bool) override;
   bool observe_quietly(net::address_base&, bool) override;
   bool update(net::node_base& b) override;

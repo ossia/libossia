@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/base/address_data.hpp>
 
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
@@ -257,6 +258,23 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
   fut.wait_for(std::chrono::milliseconds(25));
 
   return fut.valid();
+}
+
+bool minuit_protocol::push_raw(const full_address_data& addr)
+{
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  auto val = filter_value(addr);
+  if (val.valid())
+  {
+    m_sender->send(addr, val);
+    m_lastSentMessage = get_time();
+    return true;
+  }
+
+  return false;
+
 }
 
 bool minuit_protocol::push(const ossia::net::address_base& addr)

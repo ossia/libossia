@@ -59,9 +59,3 @@ OSSIA_EXPORT std::vector<std::string>
 address_parts(const ossia::string_view& src);
 }
 }
-
-#if defined(OSSIA_QT)
-class QString;
-OSSIA_EXPORT
-bool latin_compare(const QString& qstr, const std::string& str);
-#endif

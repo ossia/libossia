@@ -30,6 +30,15 @@ bool multiplex_protocol::push(const ossia::net::address_base& address)
   return b;
 }
 
+bool multiplex_protocol::push_raw(const full_address_data& dat)
+{
+  bool b = true;
+  for (auto& proto : m_protocols)
+    b &= proto->push_raw(dat);
+
+  return b;
+}
+
 bool multiplex_protocol::observe(
     ossia::net::address_base& address, bool enable)
 {

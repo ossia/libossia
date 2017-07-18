@@ -372,6 +372,17 @@ void json_writer::send_message_impl(
 
   wr.EndObject();
 }
+void json_writer::send_message_impl(
+    detail::json_writer_impl& p, const net::full_address_data& n, const value& val)
+{
+  auto& wr = p.writer;
+  wr.StartObject();
+
+  write_json_key(wr, ossia::net::osc_address_string(n));
+  p.writeValue(val);
+
+  wr.EndObject();
+}
 
 json_writer::string_t json_writer::device_info(int port)
 {
@@ -496,6 +507,19 @@ json_writer::string_t json_writer::attributes_changed(
 
 json_writer::string_t
 json_writer::send_message(const net::address_base& addr, const value& val)
+{
+  string_t buf;
+  writer_t wr(buf);
+
+  detail::json_writer_impl p{wr};
+
+  send_message_impl(p, addr, val);
+
+  return buf;
+}
+
+json_writer::string_t
+json_writer::send_message(const net::full_address_data& addr, const value& val)
 {
   string_t buf;
   writer_t wr(buf);

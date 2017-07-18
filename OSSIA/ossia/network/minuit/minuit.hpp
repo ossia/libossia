@@ -63,6 +63,7 @@ public:
   bool update(ossia::net::node_base& node_base) override;
 
   bool pull(ossia::net::address_base& address_base) override;
+  bool push_raw(const ossia::net::full_address_data& address_base) override;
   std::future<void> pull_async(address_base&) override;
   void request(ossia::net::address_base& address_base) override;
 

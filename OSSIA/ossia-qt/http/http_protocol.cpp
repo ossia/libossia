@@ -85,7 +85,10 @@ bool http_protocol::push(const ossia::net::address_base& address_base)
   return false;
 }
 
-bool http_protocol::observe(address_base& address_base, bool enable)
+bool http_protocol::push_raw(const full_address_data& address_base)
+{ return false; }
+
+bool http_protocol::observe(address_base&, bool enable)
 {
   return false;
 }

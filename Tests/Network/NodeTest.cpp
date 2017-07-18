@@ -335,7 +335,7 @@ private Q_SLOTS:
     generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
     ossia::net::node_base& n = find_or_create_node(dev, "/main");
 
-    auto a = n.create_address(ossia::val_type::INT);
+    n.create_address(ossia::val_type::INT);
 
     set_access_mode(n, access_mode::GET);
     QVERIFY((bool)get_access_mode(n));

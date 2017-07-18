@@ -105,7 +105,7 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     // Push to all clients
-    auto critical = net::get_critical(addr.get_node());
+    auto critical = addr.get_critical();
     if (!critical)
     {
       lock_t lock(m_clientsMutex);
@@ -127,6 +127,85 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
     return true;
   }
   return false;
+}
+
+bool oscquery_server_protocol::push_raw(const net::full_address_data& addr)
+{
+  auto val = net::filter_value(addr);
+  if (val.valid())
+  {
+    // Push to all clients
+    auto critical = addr.critical;
+    if (!critical)
+    {
+      lock_t lock(m_clientsMutex);
+      for (auto& client : m_clients)
+      {
+        client.sender->send(addr, val);
+      }
+    }
+    else
+    {
+      lock_t lock(m_clientsMutex);
+      for (auto& client : m_clients)
+      {
+        m_websocketServer.send_message(
+            client.connection, json_writer::send_message(addr, val));
+      }
+    }
+
+    return true;
+  }
+  return false;
+}
+
+bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::address_base*>& addresses)
+{
+  json_bundle_builder b;
+  for(auto a : addresses)
+  {
+    const ossia::net::address_base& addr = *a;
+    ossia::value val = net::filter_value(addr);
+    if (val.valid())
+    {
+      b.add_message(addr, val);
+    }
+  }
+
+  const auto str = b.finish();
+
+  {
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      m_websocketServer.send_message(client.connection, str);
+    }
+  }
+  return true;
+}
+
+bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+{
+  json_bundle_builder b;
+  for(const auto& addr : addresses)
+  {
+    ossia::value val = net::filter_value(addr);
+    if (val.valid())
+    {
+      b.add_message(addr, val);
+    }
+  }
+
+  const auto str = b.finish();
+
+  {
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      m_websocketServer.send_message(client.connection, str);
+    }
+  }
+  return true;
 }
 
 bool oscquery_server_protocol::observe(net::address_base& address, bool enable)

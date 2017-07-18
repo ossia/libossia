@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <iostream>
@@ -36,6 +37,12 @@ public:
     send_base(
         ossia::net::osc_address_string(address), std::forward<Args>(args)...);
   }
+  template <typename... Args>
+  void send(const ossia::net::full_address_data& address, Args&&... args)
+  {
+    send_base(
+          ossia::net::osc_address_string(address), std::forward<Args>(args)...);
+  }
 
   template <typename... Args>
   void send(const std::string& address, Args&&... args)
@@ -65,6 +72,7 @@ public:
     return m_port;
   }
 
+  oscpack::UdpTransmitSocket& socket() { return m_socket; }
 private:
   void debug(const oscpack::OutboundPacketStream& out)
   {

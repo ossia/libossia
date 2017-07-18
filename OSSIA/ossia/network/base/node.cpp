@@ -15,23 +15,7 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 #if defined(OSSIA_QT)
-#include <QString>
-// Taken from https://stackoverflow.com/a/18230916/1495627
-bool latin_compare(const QString& qstr, const std::string& str)
-{
-  if (qstr.length() != (int)str.size())
-    return false;
-
-  const QChar* qstrData = qstr.data();
-  const int N = qstr.length();
-  for (int i = 0; i < N; ++i)
-  {
-    if (qstrData[i].toLatin1() != str[i])
-      return false;
-  }
-  return true;
-}
-
+#include <ossia-qt/name_utils.hpp>
 #endif
 
 namespace ossia

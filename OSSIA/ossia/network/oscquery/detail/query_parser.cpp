@@ -128,7 +128,7 @@ void query_parser::parse(
   try
   {
     bool b = parse_bool(data);
-    res.repetition_filter
+    res.rep_filter
         = b ? ossia::repetition_filter::ON : ossia::repetition_filter::OFF;
   }
   catch (...)

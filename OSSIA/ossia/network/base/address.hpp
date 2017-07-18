@@ -20,6 +20,7 @@ class value;
 namespace net
 {
 class node_base;
+class full_address_data;
 
 /**
  * @brief The address_base class

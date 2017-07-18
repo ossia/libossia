@@ -30,6 +30,7 @@
 #include <ossia-c/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>
 #include <ossia-qt/qml_context.hpp>
+#include <ossia-qt/name_utils.hpp>
 
 namespace ossia
 {
@@ -560,13 +561,6 @@ QMetaObject::Connection connectSignalToMatchingMethod(
   }
   return {};
 }
-}
-
-namespace net
-{
-OSSIA_EXPORT void sanitize_name(QString& str);
-OSSIA_EXPORT QString
-sanitize_name(QString name_base, const std::vector<QString>& brethren);
 }
 }
 
