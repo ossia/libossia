@@ -1,4 +1,32 @@
-#N canvas 601 246 557 439 10;
-#X obj 156 201 ossia.client;
-#X text 76 33 [ossia.client] connect to a remote OSSIA device and let
-you access its nodes with [ossia.view] and [ossia.remote].;
+#N canvas 311 22 469 329 10;
+#X text 35 19 [ossia.client] connects to a remote OSSIA device and
+let you access its nodes with [ossia.view] and [ossia.remote].;
+#X floatatom 100 237 5 0 0 0 - - -, f 5;
+#X floatatom 100 285 5 0 0 0 - - -, f 5;
+#X obj 100 259 ø.remote /foo;
+#X obj 101 197 ossia.client;
+#X msg 101 74 connect oscquery;
+#X msg 148 161 connect;
+#X text 35 19 [ossia.client] connects to a remote OSSIA device and
+let you access its nodes with [ossia.view] and [ossia.remote].;
+#X floatatom 100 237 5 0 0 0 - - -, f 5;
+#X floatatom 100 285 5 0 0 0 - - -, f 5;
+#X obj 100 259 ø.remote /foo;
+#X obj 101 197 ossia.client;
+#X msg 148 161 connect;
+#X msg 128 110 connect oscquery ws://127.0.0.1:9876;
+#X text 212 73 connect if your device has default ports;
+#X text 368 109 connect;
+#X text 145 130 if the device has been exposed with specific ports
+;
+#X text 204 160 get some more info in the console;
+#X text 199 236 if there is a /foo param in your device \,;
+#X text 199 258 it should be accessible from here;
+#X connect 1 0 3 0;
+#X connect 3 0 2 0;
+#X connect 5 0 4 0;
+#X connect 6 0 4 0;
+#X connect 8 0 10 0;
+#X connect 10 0 9 0;
+#X connect 12 0 11 0;
+#X connect 13 0 11 0;
