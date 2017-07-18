@@ -51,9 +51,9 @@ enum ossia_type
 
 enum ossia_access_mode
 {
+  BI,
   GET,
-  SET,
-  BI
+  SET
 };
 
 enum ossia_bounding_mode

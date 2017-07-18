@@ -8,6 +8,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/common/path.hpp>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <ossia/detail/logger.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -1028,5 +1029,20 @@ find_or_create_node(node_base& dev, string_view address_base, bool create)
     return &ossia::net::create_node(dev, address_base);
   }
 }
+
+std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
+{
+  if(auto path = traversal::make_path(std::string(pattern)))
+  {
+    std::vector<node_base*> nodes{&dev};
+    traversal::apply(*path, nodes);
+    return nodes;
+  }
+  else
+  {
+    return {};
+  }
+}
+
 }
 }

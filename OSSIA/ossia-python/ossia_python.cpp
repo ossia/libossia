@@ -336,9 +336,9 @@ PYBIND11_PLUGIN(ossia_python)
       .export_values();
 
   py::enum_<ossia::access_mode>(m, "AccessMode", py::arithmetic())
+      .value("Bi", ossia::access_mode::BI)
       .value("Get", ossia::access_mode::GET)
       .value("Set", ossia::access_mode::SET)
-      .value("Bi", ossia::access_mode::BI)
       .export_values();
 
   py::enum_<ossia::bounding_mode>(m, "BoundingMode", py::arithmetic())

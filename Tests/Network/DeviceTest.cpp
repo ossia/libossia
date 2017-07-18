@@ -112,6 +112,63 @@ class DeviceTest : public QObject
   Q_OBJECT
 
 private Q_SLOTS:
+    void test_bundle()
+    {
+        ossia::net::generic_device osc_A{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
+        ossia::net::generic_device osc_B{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996), "test_osc"};
+
+        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
+        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
+        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
+        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+
+        auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
+
+        std::vector<ossia::net::full_address_data> vec(4);
+        vec[0].address = "/foo/bar.0";
+        vec[0].set_value(0.);
+        vec[1].address = "/foo/bar.1";
+        vec[1].set_value(1.);
+        vec[2].address = "/foo/bar.2";
+        vec[2].set_value(2.);
+        vec[3].address = "/foo/bar.3";
+        vec[3].set_value(3.);
+
+        b_proto.push_raw_bundle(vec);
+
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        QVERIFY(a1->value() == ossia::value{0.});
+        QVERIFY(a2->value() == ossia::value{1.});
+        QVERIFY(a3->value() == ossia::value{2.});
+        QVERIFY(a4->value() == ossia::value{3.});
+    }
+
+    void test_pattern_match()
+    {
+        ossia::net::generic_device osc_A{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
+        ossia::net::generic_device osc_B{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996), "test_osc"};
+
+        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
+        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
+        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
+        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+
+        auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
+
+        ossia::net::full_address_data dat{"/foo/bar.*"};
+        dat.set_value(2.3f);
+        b_proto.push_raw(dat);
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        QVERIFY(a1->value() == ossia::value{2.3});
+        QVERIFY(a2->value() == ossia::value{2.3});
+        QVERIFY(a3->value() == ossia::value{2.3});
+        QVERIFY(a4->value() == ossia::value{2.3});
+    }
+
 
   /*! test life cycle and accessors functions */
   void test_basic()
@@ -355,6 +412,7 @@ private:
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
+
 };
 
 

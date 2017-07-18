@@ -41,9 +41,9 @@ class qml_access_mode
 public:
   enum access_mode
   {
+    Bi,
     Get,
-    Set,
-    Bi
+    Set
   };
   Q_ENUM(access_mode)
 };

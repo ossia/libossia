@@ -221,6 +221,15 @@ OSSIA_EXPORT node_base*
 find_node(node_base& dev, ossia::string_view address_base);
 
 /**
+ * @brief Find all nodes matching a pattern in a device
+ *
+ * @note If the pattern is known beforehand and may be reused,
+ * prefer storing a traversal::path and using the functions in path.hpp.
+ */
+OSSIA_EXPORT std::vector<ossia::net::node_base*>
+find_nodes(node_base& dev, ossia::string_view pattern);
+
+/**
  * @brief Create a node in a device.
  *
  * If the node already exists, a new instance will be created.

@@ -234,6 +234,21 @@ void osc_protocol::on_received_message(
           update_value_quiet(*base_addr, m);
         }
       }
+      else
+      {
+        // Try to handle pattern matching
+        auto nodes = find_nodes(m_device->get_root_node(), addr_txt);
+        for(auto n : nodes)
+        {
+          if (auto addr = n->get_address())
+          {
+             if(m_listening.find(net::osc_address_string(*n)))
+               net::update_value(*addr, m);
+             else
+               net::update_value_quiet(*addr, m);
+          }
+        }
+      }
     }
   }
   else
