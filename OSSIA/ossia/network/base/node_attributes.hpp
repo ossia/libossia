@@ -227,6 +227,8 @@ OSSIA_EXPORT critical get_critical(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_critical(ossia::net::node_base& n, critical v);
 OSSIA_EXPORT void set_critical(ossia::net::address_data& n, critical v);
 
+template<typename T>
+struct is_address_attribute : public std::false_type { };
 // Some macros to have minimal reflection facilities...
 #define OSSIA_ATTRIBUTE(Type, Name)                               \
   struct OSSIA_EXPORT Name##_attribute                            \
@@ -247,6 +249,11 @@ OSSIA_EXPORT void set_critical(ossia::net::address_data& n, critical v);
       return ossia::net::set_##Name(std::forward<Args>(args)...); \
     }                                                             \
   };
+
+#define OSSIA_ADDRESS_ATTRIBUTE(Type, Name) \
+  OSSIA_ATTRIBUTE(Type, Name) \
+template<> \
+struct is_address_attribute<Name##_attribute> : public std::true_type { };
 
 #define OSSIA_ATTRIBUTE_2(Type, Name, Text, Get, Set) \
   struct OSSIA_EXPORT Name##_attribute                \
@@ -272,15 +279,19 @@ OSSIA_EXPORT void set_critical(ossia::net::address_data& n, critical v);
 OSSIA_ATTRIBUTE_2(
     ossia::value, value, ossia::net::text_value, ossia::net::clone_value,
     ossia::net::push_value)
-OSSIA_ATTRIBUTE(ossia::val_type, value_type)
-OSSIA_ATTRIBUTE(ossia::domain, domain)
-OSSIA_ATTRIBUTE(ossia::access_mode, access_mode)
-OSSIA_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
-OSSIA_ATTRIBUTE(ossia::unit_t, unit)
-OSSIA_ATTRIBUTE(ossia::net::muted, muted)
-OSSIA_ATTRIBUTE(ossia::net::critical, critical)
-OSSIA_ATTRIBUTE(ossia::net::hidden, hidden)
-OSSIA_ATTRIBUTE(ossia::value, default_value)
+
+template<> \
+struct is_address_attribute<value_attribute> : public std::true_type { };
+
+OSSIA_ADDRESS_ATTRIBUTE(ossia::val_type, value_type)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::domain, domain)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::access_mode, access_mode)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::unit_t, unit)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::net::muted, muted)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::net::critical, critical)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::net::hidden, hidden)
+OSSIA_ADDRESS_ATTRIBUTE(ossia::value, default_value)
 
 // Metadata attributes
 OSSIA_ATTRIBUTE(ossia::net::tags, tags)

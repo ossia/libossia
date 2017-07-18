@@ -212,7 +212,7 @@ private Q_SLOTS:
   void test_attributes()
   {
     generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
-    auto& n = find_or_create_node(dev, "/main");
+    ossia::net::node_base& n = find_or_create_node(dev, "/main");
 
     QVERIFY(!get_access_mode(n));
     QVERIFY(!get_bounding_mode(n));
@@ -255,22 +255,6 @@ private Q_SLOTS:
     QVERIFY((bool)get_domain(n));
     QCOMPARE(get_domain(n), make_domain(-10, 10));
 
-    ossia::net::set_default_value(n, 0);
-    QVERIFY((bool)get_default_value(n));
-    QCOMPARE(*get_default_value(n), ossia::value(0));
-
-    ossia::net::set_default_value(n, true);
-    QVERIFY((bool)get_default_value(n));
-    QCOMPARE(*get_default_value(n), ossia::value(true));
-
-    ossia::net::set_default_value(n, false);
-    QVERIFY((bool)get_default_value(n));
-    QCOMPARE(*get_default_value(n), ossia::value(false));
-
-    ossia::net::set_default_value(n, "foo");
-    QVERIFY((bool)get_default_value(n));
-    QCOMPARE(*get_default_value(n), ossia::value("foo"));
-
     n.set(default_value_attribute{}, 0);
     QVERIFY((bool)get_default_value(n));
     QCOMPARE(*get_default_value(n), ossia::value(0));
@@ -289,6 +273,15 @@ private Q_SLOTS:
 
     tags the_tags{"fancy", "wow", "1234"};
     n.set(tags_attribute{}, the_tags);
+    auto t = n.get_extended_attributes().find("tags");
+    auto tg = t != n.get_extended_attributes().end();
+    QVERIFY(tg);
+    qDebug() << ((boost::any)t.value()).type().name();
+    tags tgs = boost::any_cast<tags>(t.value());
+    QVERIFY(!tgs.empty());
+    QVERIFY((tgs == the_tags));
+
+
     QVERIFY((bool)get_tags(n));
     QCOMPARE(*get_tags(n), the_tags);
 
@@ -336,6 +329,90 @@ private Q_SLOTS:
     QCOMPARE(*get_app_creator(n), std::string("Lelouch vi Brittania"));
   }
 
+
+  void test_attributes_2()
+  {
+    generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
+    ossia::net::node_base& n = find_or_create_node(dev, "/main");
+
+    auto a = n.create_address(ossia::val_type::INT);
+
+    set_access_mode(n, access_mode::GET);
+    QVERIFY((bool)get_access_mode(n));
+    QCOMPARE(*get_access_mode(n), access_mode::GET);
+
+    set_bounding_mode(n, bounding_mode::FOLD);
+    QVERIFY((bool)get_bounding_mode(n));
+    QCOMPARE(*get_bounding_mode(n), bounding_mode::FOLD);
+
+    set_domain(n, make_domain(-10, 10));
+    QVERIFY((bool)get_domain(n));
+    QCOMPARE(get_domain(n), make_domain(-10, 10));
+
+    set_default_value(n, 0);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(0));
+
+    set_default_value(n, true);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(true));
+
+    set_default_value(n, false);
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value(false));
+
+    set_default_value(n, "foo");
+    QVERIFY((bool)get_default_value(n));
+    QCOMPARE(*get_default_value(n), ossia::value("foo"));
+
+    tags the_tags{"fancy", "wow", "1234"};
+    set_tags(n, the_tags);
+    QVERIFY((bool)get_tags(n));
+    QCOMPARE(*get_tags(n), the_tags);
+
+    set_refresh_rate(n, 100);
+    QVERIFY((bool)get_refresh_rate(n));
+    QCOMPARE(*get_refresh_rate(n), 100);
+
+    set_value_step_size(n, 0.5);
+    QVERIFY((bool)get_value_step_size(n));
+    QCOMPARE(*get_value_step_size(n), 0.5);
+
+    set_repetition_filter(n, repetition_filter::ON);
+    QVERIFY(get_repetition_filter(n));
+    QCOMPARE(get_repetition_filter(n), repetition_filter::ON);
+
+    set_critical(n, true);
+    QVERIFY(get_critical(n));
+
+    set_unit(n, meter_per_second_u{});
+    QVERIFY((bool)get_unit(n));
+    QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
+
+    set_priority(n, 50);
+    QVERIFY((bool)get_priority(n));
+    QCOMPARE(*get_priority(n), 50);
+
+    set_description(n, "Such a fancy node?! Incredible! すごい!!");
+    QVERIFY((bool)get_description(n));
+    QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));
+
+    set_extended_type(n, "custom");
+    QVERIFY((bool)get_extended_type(n));
+    QCOMPARE(*get_extended_type(n), std::string("custom"));
+
+    set_app_name(n, "AppName");
+    QVERIFY((bool)get_app_name(n));
+    QCOMPARE(*get_app_name(n), std::string("AppName"));
+
+    set_app_version(n, "1.0.0");
+    QVERIFY((bool)get_app_version(n));
+    QCOMPARE(*get_app_version(n), std::string("1.0.0"));
+
+    set_app_creator(n, "Lelouch vi Brittania");
+    QVERIFY((bool)get_app_creator(n));
+    QCOMPARE(*get_app_creator(n), std::string("Lelouch vi Brittania"));
+  }
 };
 
 QTEST_APPLESS_MAIN(NodeTest)
