@@ -45,7 +45,7 @@ static void ossia_free(t_ossia *x)
 
 static void ossia_get_namespace(t_ossia *x){
   auto dev = ossia_pd::instance().get_default_device();
-  get_namespace(x,dev->get_root_node());
+  obj_namespace(x,dev->get_root_node());
 }
 
 static void ossia_name(t_ossia *x, t_symbol* s, int argc, t_atom* argv){

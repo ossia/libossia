@@ -65,7 +65,7 @@ void t_obj_base::obj_bang(t_obj_base* x)
     x->setValue(x->x_node->get_address()->value());
 }
 
-void get_namespace(t_obj_base* x, const ossia::net::node_base& node)
+void obj_namespace(t_obj_base* x, const ossia::net::node_base& node)
 {
   t_symbol* prependsym = gensym("namespace");
   for (const auto& child : node.children_copy())
@@ -77,7 +77,7 @@ void get_namespace(t_obj_base* x, const ossia::net::node_base& node)
       SETSYMBOL(&a,gensym(s.c_str()));
       outlet_anything(x->x_dumpout, prependsym,1,&a);
     }
-    get_namespace(x, *child);
+    obj_namespace(x, *child);
   }
 }
 
