@@ -470,10 +470,6 @@ void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
   recreate(root);
-  fmt::MemoryWriter w;
-  ossia::net::debug_recursively(w, device().get_root_node());
-  qDebug() << w.str().c_str();
-
   try
   {
     QFile f;
