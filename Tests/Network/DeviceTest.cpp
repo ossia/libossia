@@ -124,6 +124,39 @@ private Q_SLOTS:
         auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
         auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
 
+        auto b1 = ossia::net::create_node(osc_B, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
+        auto b2 = ossia::net::create_node(osc_B, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
+        auto b3 = ossia::net::create_node(osc_B, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
+        auto b4 = ossia::net::create_node(osc_B, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+
+        for(auto b : {b1, b2, b3, b4})
+        {
+          b->set_value(1234.);
+        }
+
+        auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
+
+        b_proto.push_bundle({b1, b2, b3, b4});
+
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        QVERIFY(a1->value() == ossia::value{1234.});
+        QVERIFY(a2->value() == ossia::value{1234.});
+        QVERIFY(a3->value() == ossia::value{1234.});
+        QVERIFY(a4->value() == ossia::value{1234.});
+    }
+
+    void test_bundle_raw()
+    {
+        ossia::net::generic_device osc_A{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
+        ossia::net::generic_device osc_B{
+          std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996), "test_osc"};
+
+        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
+        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
+        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
+        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+
         auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
 
         std::vector<ossia::net::full_address_data> vec(4);
