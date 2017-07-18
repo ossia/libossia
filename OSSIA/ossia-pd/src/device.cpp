@@ -54,7 +54,7 @@ static void device_free(t_device* x)
   register_quarantinized();
 }
 
-static void device_dump(t_device* x)
+static void device_namespace(t_device* x)
 {
   get_namespace(x, x->x_device->get_root_node());
 }
@@ -256,7 +256,7 @@ extern "C" void setup_ossia0x2edevice(void)
     eclass_addmethod(
           c, (method)t_device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method)t_device::loadbang, "loadbang", A_NULL, 0);
-    eclass_addmethod(c, (method)device_dump, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)device_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
