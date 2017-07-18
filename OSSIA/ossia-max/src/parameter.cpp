@@ -272,7 +272,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
     if (m_default[0].a_type == A_FLOAT)
       ossia::net::set_default_value(
-          localAddress->getNode(), (float)m_default[0].a_w.w_float);
+          localAddress->get_node(), (float)m_default[0].a_w.w_float);
   }
   else if (m_type == gensym("string"))
   {
@@ -280,7 +280,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
     if (m_default[0].a_type == A_SYM)
       ossia::net::set_default_value(
-          localAddress->getNode(),
+          localAddress->get_node(),
           std::string(m_default[0].a_w.w_sym->s_name));
   }
   else if (m_type == gensym("int"))
@@ -289,7 +289,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
     if (m_default[0].a_type == A_LONG)
       ossia::net::set_default_value(
-          localAddress->getNode(), (int32_t)m_default[0].a_w.w_long);
+          localAddress->get_node(), (int32_t)m_default[0].a_w.w_long);
   }
   else if (m_type == gensym("vec2f"))
   {
@@ -299,7 +299,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT)
     {
       vec2f vec = make_vec(m_default[0].a_w.w_float, m_default[1].a_w.w_float);
-      ossia::net::set_default_value(localAddress->getNode(), vec);
+      ossia::net::set_default_value(localAddress->get_node(), vec);
     }
   }
   else if (m_type == gensym("vec3f"))
@@ -313,7 +313,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
       vec3f vec = make_vec(
           m_default[0].a_w.w_float, m_default[1].a_w.w_float,
           m_default[2].a_w.w_float);
-      ossia::net::set_default_value(localAddress->getNode(), vec);
+      ossia::net::set_default_value(localAddress->get_node(), vec);
     }
   }
   else if (m_type == gensym("vec4f"))
@@ -327,7 +327,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
       vec4f vec = make_vec(
           m_default[0].a_w.w_float, m_default[1].a_w.w_float,
           m_default[2].a_w.w_float, m_default[3].a_w.w_float);
-      ossia::net::set_default_value(localAddress->getNode(), vec);
+      ossia::net::set_default_value(localAddress->get_node(), vec);
     }
   }
   else if (m_type == gensym("impulse"))
@@ -341,7 +341,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
     if (m_default[0].a_type == A_LONG)
       ossia::net::set_default_value(
-          localAddress->getNode(), m_default[0].a_w.w_long > 0 ? true : false);
+          localAddress->get_node(), m_default[0].a_w.w_long > 0 ? true : false);
   }
   else if (m_type == gensym("tuple"))
   {
@@ -360,7 +360,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     }
 
     if (list.size() > 0)
-      ossia::net::set_default_value(localAddress->getNode(), list);
+      ossia::net::set_default_value(localAddress->get_node(), list);
   }
   else if (m_type == gensym("char"))
   {
@@ -368,7 +368,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
     if (m_default[0].a_type == A_LONG)
       ossia::net::set_default_value(
-          localAddress->getNode(), (char)m_default[0].a_w.w_long);
+          localAddress->get_node(), (char)m_default[0].a_w.w_long);
   }
   else
   {
@@ -412,10 +412,10 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
   localAddress->set_unit(unit);
 
-  ossia::net::set_description(localAddress->getNode(), m_description->s_name);
-  ossia::net::set_tags(localAddress->getNode(), parse_tags_symbol(m_tags));
+  ossia::net::set_description(localAddress->get_node(), m_description->s_name);
+  ossia::net::set_tags(localAddress->get_node(), parse_tags_symbol(m_tags));
 
-  ossia::net::set_priority(localAddress->getNode(), m_priority);
+  ossia::net::set_priority(localAddress->get_node(), m_priority);
 
   localAddress->add_callback(
       [=](const ossia::value& v) { apply_value_visitor(v); });

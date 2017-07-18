@@ -243,7 +243,7 @@ PYBIND11_PLUGIN(ossia_python)
 
   py::class_<ossia::net::address_base>(m, "Address")
       .def_property_readonly(
-          "node", &ossia::net::address_base::getNode,
+          "node", &ossia::net::address_base::get_node,
           py::return_value_policy::reference)
 
       .def_property(

@@ -545,7 +545,7 @@ std::vector<node_base*> node_base::children_copy() const
   }                                                              \
   void set_##Name(extended_attributes& n, const Type& i)         \
   {                                                              \
-    set_attribute(n, String, std::move(i));                      \
+    set_attribute(n, String, i);                      \
   }                                                              \
   void set_##Name(extended_attributes& n, ossia::none_t i)       \
   {                                                              \
@@ -557,7 +557,7 @@ std::vector<node_base*> node_base::children_copy() const
   }                                                              \
   void set_##Name(ossia::net::node_base& n, const Type& i)       \
   {                                                              \
-    n.set(ossia::string_view(String), std::move(i));             \
+    n.set(ossia::string_view(String), i);             \
   }                                                              \
   void set_##Name(ossia::net::node_base& n, ossia::none_t i)     \
   {                                                              \
@@ -583,7 +583,7 @@ std::vector<node_base*> node_base::children_copy() const
   }                                                                 \
   void set_##Name(ossia::net::node_base& n, Type i)                 \
   {                                                                 \
-    n.set(ossia::string_view(String), std::move(i));                \
+    n.set(ossia::string_view(String), i);                \
   }                                                                 \
   ossia::string_view text_##Name()                                  \
   {                                                                 \
