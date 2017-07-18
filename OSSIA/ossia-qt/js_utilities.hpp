@@ -5,6 +5,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/base/address_data.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <QDebug>
 #include <QHash>
