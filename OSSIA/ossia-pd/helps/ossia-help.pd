@@ -1,16 +1,14 @@
-#N canvas 357 465 849 481 10;
-#X msg 113 172 expose oscquery;
-#X msg 267 106 expose;
-#X text 30 49 The eponyme object of the library let you control the
-global features.;
-#X text 32 172 for example;
-#X text 227 174 will use oscquery portocol and default ports.;
-#X text 314 106 (click to get help in Pd's console);
-#X text 33 85 You can expose the global namespace over the network
+#N canvas 857 93 686 416 10;
+#X msg 108 147 expose oscquery;
+#X msg 262 82 expose;
+#X text 27 148 for example;
+#X text 215 147 will use oscquery portocol and default ports.;
+#X text 309 82 (click to get help in Pd's console);
+#X text 28 61 You can expose the global namespace over the network
 with :;
-#X obj 113 193 ossia;
-#X obj 267 128 ossia;
-#X obj 116 325 ossia;
+#X obj 108 175 ossia;
+#X obj 262 104 ossia;
+#X obj 111 301 ossia;
 #N canvas 0 93 450 300 some_nodes 0;
 #X obj 109 61 ossia.param dummy;
 #X obj 109 81 ossia.param foo;
@@ -19,24 +17,30 @@ with :;
 #X obj 138 97 ossia.model fruh;
 #X obj 139 152 ossia.param stuck;
 #X restore 109 122 pd model;
-#X restore 445 365 pd some_nodes;
-#X text 63 264 You can get the namespace \, i.e. the list of the adresses
+#X restore 440 341 pd some_nodes;
+#X text 72 238 You can get the namespace \, i.e. the list of the adresses
 in use.;
-#X msg 116 284 namespace;
-#X msg 204 284 name;
-#X obj 116 367 print;
-#X obj 116 347 route namespace name;
-#X symbolatom 184 399 15 0 0 2 name - -, f 15;
-#X obj 184 367 symbol;
-#X text 350 342 Look into that subpatch to see how nodes are declared
+#X msg 111 260 namespace;
+#X msg 199 260 name;
+#X obj 111 343 print;
+#X obj 111 323 route namespace name;
+#X symbolatom 169 376 15 0 0 2 name - -, f 15;
+#X obj 169 344 symbol;
+#X text 345 318 Look into that subpatch to see how nodes are declared
 ;
-#X msg 253 284 name funny_name;
-#X connect 0 0 7 0;
-#X connect 1 0 8 0;
-#X connect 9 0 15 0;
-#X connect 12 0 9 0;
-#X connect 13 0 9 0;
-#X connect 15 0 14 0;
-#X connect 15 1 17 0;
-#X connect 17 0 16 0;
-#X connect 19 0 9 0;
+#X msg 248 260 name funny_name;
+#X text 313 170 will use oscquery portocol with OSC port 1234 and WS
+port 5678, f 31;
+#X text 25 25 The eponyme object of the library lets you control the
+global features., f 79;
+#X msg 151 176 expose oscquery 1234 9876;
+#X connect 0 0 6 0;
+#X connect 1 0 7 0;
+#X connect 8 0 14 0;
+#X connect 11 0 8 0;
+#X connect 12 0 8 0;
+#X connect 14 0 13 0;
+#X connect 14 1 16 0;
+#X connect 16 0 15 0;
+#X connect 18 0 8 0;
+#X connect 21 0 6 0;

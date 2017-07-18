@@ -1,18 +1,22 @@
 #N canvas 0 93 824 342 10;
-#X obj 202 234 ossia.device;
+#X obj 201 255 ossia.device;
 #X text 48 26 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
 #X msg 202 150 dump;
-#X obj 202 256 print device_dump;
+#X obj 201 277 print device_dump;
 #X obj 521 81 ossia.param foo;
 #X obj 521 111 ossia.param bar;
 #X text 242 149 get namespace;
 #X msg 227 178 expose;
 #X text 279 177 get supported portocol and syntax;
-#X text 352 198 expose with oscquery and default ports (osc: 9999 \,
+#X text 374 200 expose with oscquery and default ports (osc: 9999 \,
 ws: 5678);
 #X msg 237 198 expose oscquery;
+#X text 418 224 expose with oscquery and specific ports (resp. osc
+& ws);
+#X msg 249 225 expose oscquery 1234 9876;
 #X connect 0 0 3 0;
 #X connect 2 0 0 0;
 #X connect 7 0 0 0;
 #X connect 10 0 0 0;
+#X connect 12 0 0 0;
