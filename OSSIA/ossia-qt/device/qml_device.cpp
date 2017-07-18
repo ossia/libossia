@@ -18,6 +18,7 @@
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_signal.hpp>
 #include <ossia-qt/qml_context.hpp>
+#include <ossia/network/common/debug.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/network/midi/midi.hpp>
 #endif
@@ -452,6 +453,12 @@ void qml_device::clearEmptyElements()
     else
       it = m_parameters.erase(it);
 
+  for (auto it = m_signals.begin(); it != m_signals.end();)
+    if (it->second)
+      ++it;
+    else
+      it = m_signals.erase(it);
+
   for (auto it = m_models.begin(); it != m_models.end();)
     if (it->second)
       ++it;
@@ -463,6 +470,10 @@ void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
   recreate(root);
+  fmt::MemoryWriter w;
+  ossia::net::debug_recursively(w, device().get_root_node());
+  qDebug() << w.str().c_str();
+
   try
   {
     QFile f;

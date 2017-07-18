@@ -1055,7 +1055,10 @@ void ossia::devices::apply_preset(
     boost::split(
         keys, itpp->first, [](char c) { return c == '/'; },
         boost::token_compress_on);
-    keys.erase(keys.begin()); // first subtring is empty
+    if(!keys.empty())
+      keys.erase(keys.begin()); // first subtring is empty
+    if(!keys.empty())
+      keys.erase(keys.begin()); // then we have to remove the "initial" key which is the device name
 
     apply_preset_node(
         ossiadev.get_root_node(), keys, itpp->second, keeparch, created_nodes);
