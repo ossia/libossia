@@ -65,8 +65,6 @@ bool t_param::do_registration(ossia::net::node_base* node)
   */
 
   x_node = &ossia::net::create_node(*node, x_name->s_name);
-  if (x_node->get_name() != std::string(x_name->s_name))
-    renaming(this);
 
   x_node->about_to_be_deleted.connect<t_param, &t_param::is_deleted>(this);
   ossia::net::address_base* local_address{};
@@ -248,16 +246,6 @@ bool t_param::unregister()
 
     obj_quarantining<t_param>(this);
 
-    derenaming(this);
-
-    for (auto param : t_param::rename().copy())
-    {
-      if (strcmp(param->x_name->s_name, x_name->s_name) == 0)
-      {
-        param->unregister();
-        obj_register<t_param>(param);
-      }
-    }
   }
 
   return true;
@@ -274,12 +262,6 @@ void t_param::is_deleted(const net::node_base& n)
   x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
   x_node = nullptr;
   obj_quarantining<t_param>(this);
-}
-
-ossia::safe_vector<t_param*>& t_param::rename()
-{
-  static ossia::safe_vector<t_param*> rename;
-  return rename;
 }
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)

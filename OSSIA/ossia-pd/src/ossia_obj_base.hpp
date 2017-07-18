@@ -48,19 +48,5 @@ bool find_and_display_friend(t_obj_base* x, t_canvas* patcher);
 void obj_tick(t_obj_base* x);
 void obj_namespace(t_obj_base* x, const ossia::net::node_base& node);
 
-template<typename T>
-void renaming(T* x)
-{
-  if (!T::rename().contains(x))
-    T::rename().push_back(x);
-}
-
-template<typename T>
-void derenaming(T* x)
-{
-  T::rename().remove_all(x);
-}
-
-
 }
 } // namespace

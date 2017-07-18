@@ -139,12 +139,6 @@ void t_model::is_deleted(const net::node_base& n)
   }
 }
 
-ossia::safe_vector<t_model*>& t_model::rename()
-{
-  static ossia::safe_vector<t_model*> rename;
-  return rename;
-}
-
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
