@@ -1,7 +1,4 @@
-#N canvas 699 296 696 428 10;
-#X text 94 27 [ossia.model] creates a node to which [ossia.param];
-#X text 94 47 This let you create hierarchy to sort param under relevant
-name.;
+#N canvas 794 381 696 428 10;
 #X obj 77 263 ossia.model my_model;
 #X obj 331 253 ossia;
 #X msg 331 186 namespace;
@@ -16,7 +13,7 @@ name.;
 #X obj 148 113 ossia.model my_subsubmodel;
 #X restore 78 225 pd submodel;
 #X restore 78 325 pd submodel;
-#X text 94 80 The namespace will reflect the patcher hierarchy.;
+#X text 93 101 The namespace will reflect the patcher hierarchy.;
 #N canvas 0 151 450 300 submodel 0;
 #X obj 148 113 ossia.model my_submodel;
 #X obj 151 168 ossia.param foo;
@@ -25,15 +22,19 @@ name.;
 #X obj 148 113 ossia.model my_subsubmodel;
 #X restore 78 225 pd submodel;
 #X restore 78 345 pd submodel;
-#X text 94 100 You can have only one [ossia.model] per patcher.;
-#X text 94 120 If 2 or more models have the same name at the same level
-\, they will be renamed automatically by adding 0.1 \, 0.2 \, 0.3 \,
-etc. at the end of the name.;
+#X text 94 79 You can have only one [ossia.model] per patcher.;
 #X text 402 186 to print namespace in Pd's console;
 #X text 287 186 click;
 #X text 45 210 Feel free to duplicate/remove;
 #X text 45 225 objects and see consequence on;
 #X text 45 240 namespace.;
-#X connect 3 0 5 0;
-#X connect 4 0 3 0;
-#X connect 5 0 6 0;
+#X text 94 47 This helpss creating complex and nested hierarchies to
+sort several parameters by functionnality., f 77;
+#X text 94 120 If 2 or more models have the same name at the same level
+\, they will be registered as the next available instance (instances
+are appended to the node name \, after a dot separator), f 73;
+#X text 94 27 [ossia.model] creates a node under which [ossia.param]s
+can subscribe, f 79;
+#X connect 1 0 3 0;
+#X connect 2 0 1 0;
+#X connect 3 0 4 0;

@@ -1,4 +1,4 @@
-#N canvas 37 169 1085 619 10;
+#N canvas 577 59 1085 619 10;
 #X text 628 27 Attributes :;
 #X text 668 91 int : integer value;
 #X text 668 111 bool : bollean value \, 0 or 1;
@@ -79,13 +79,8 @@ most output;
 bi @range 0 1;
 #X text 40 180 this is the simplest form of creating an ossia parameter
 in Pd., f 66;
-#X text 143 544 see also :;
-#X floatatom 336 545 5 0 0 0 - - -, f 5;
-#X floatatom 103 154 5 0 0 0 - - -, f 5;
-#X floatatom 103 112 5 0 0 0 - - -, f 5;
-#X obj 103 132 ossia.param foo;
-#X obj 217 545 ossia.model foo;
-#X obj 379 545 ossia.remote foo;
+#X text 58 544 see also :;
+#X floatatom 303 544 5 0 0 0 - - -, f 5;
 #X text 668 71 float : most common \, simple float value;
 #X text 653 482 @hidden <float> enable/disable hidden attribute \,
 could be 0 or 1, f 65;
@@ -99,9 +94,11 @@ R \, W;
 #X text 652 302 @bounding_mode <symbol> defines behavior when value
 go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
 \, FOLD \, LOW \, HIGH, f 68;
-#X floatatom 241 157 5 0 0 0 - - -, f 5;
-#X floatatom 241 115 5 0 0 0 - - -, f 5;
-#X obj 241 135 ossia.param foo;
+#X obj 132 545 ossia.model param-help;
+#X obj 346 544 ossia.remote param-help/foo;
+#X floatatom 103 154 5 0 0 0 - - -, f 5;
+#X floatatom 103 112 5 0 0 0 - - -, f 5;
+#X obj 103 132 ossia.param foo;
 #X connect 18 0 19 0;
 #X connect 18 1 20 0;
 #X connect 18 2 21 0;
@@ -111,9 +108,7 @@ go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
 #X connect 26 0 29 0;
 #X connect 29 0 18 0;
 #X connect 29 1 17 0;
-#X connect 32 0 37 0;
-#X connect 34 0 35 0;
-#X connect 35 0 33 0;
-#X connect 37 0 32 0;
-#X connect 45 0 46 0;
-#X connect 46 0 44 0;
+#X connect 32 0 40 0;
+#X connect 40 0 32 0;
+#X connect 42 0 43 0;
+#X connect 43 0 41 0;
