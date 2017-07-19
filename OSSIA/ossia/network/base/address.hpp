@@ -20,7 +20,7 @@ class value;
 namespace net
 {
 class node_base;
-class full_address_data;
+struct full_address_data;
 
 /**
  * @brief The address_base class
@@ -153,28 +153,5 @@ inline bool operator!=(const address_base& lhs, const address_base& rhs)
   return &lhs != &rhs;
 }
 
-/*!
- * \brief getAddressFromNode
- * \return the textual address of a node : aDevice:/an/address
- */
-OSSIA_EXPORT std::string
-address_string_from_node(const ossia::net::node_base&);
-OSSIA_EXPORT std::string
-address_string_from_node(const ossia::net::address_base&);
-
-//! Address without the 'device:' part.
-OSSIA_EXPORT std::string osc_address_string(const ossia::net::address_base&);
-OSSIA_EXPORT std::string osc_address_string(const ossia::net::node_base&);
-
-OSSIA_EXPORT std::string
-osc_address_string_with_device(const ossia::net::address_base&);
-OSSIA_EXPORT std::string
-osc_address_string_with_device(const ossia::net::node_base&);
-
-OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
-OSSIA_EXPORT void
-push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
-OSSIA_EXPORT std::ostream&
-operator<<(std::ostream&, const ossia::net::address_base&);
 }
 }

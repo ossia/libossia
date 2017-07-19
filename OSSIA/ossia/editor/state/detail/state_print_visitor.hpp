@@ -3,6 +3,7 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/node.hpp>
 #include <iostream>
 #include <string>

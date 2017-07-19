@@ -397,7 +397,7 @@ private Q_SLOTS:
     QVERIFY((bool)get_description(n));
     QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));
 
-    set_extended_type(n, "custom");
+    set_extended_type(n, ossia::filesystem_path_type());
     QVERIFY((bool)get_extended_type(n));
     QCOMPARE(*get_extended_type(n), std::string("custom"));
 

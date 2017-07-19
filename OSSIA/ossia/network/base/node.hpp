@@ -211,48 +211,5 @@ protected:
   extended_attributes m_extended{0};
 };
 
-// address : format /a/b/c
-/**
- * @brief Find a node in a device
- *
- * @return null if the node was not found.
- */
-OSSIA_EXPORT node_base*
-find_node(node_base& dev, ossia::string_view address_base);
-
-/**
- * @brief Find all nodes matching a pattern in a device
- *
- * @note If the pattern is known beforehand and may be reused,
- * prefer storing a traversal::path and using the functions in path.hpp.
- */
-OSSIA_EXPORT std::vector<ossia::net::node_base*>
-find_nodes(node_base& dev, ossia::string_view pattern);
-
-/**
- * @brief Create a node in a device.
- *
- * If the node already exists, a new instance will be created.
- * Hence there is no guarantee that the created node name is the same
- * than the one requested; the output should be checked.
- */
-OSSIA_EXPORT node_base&
-create_node(node_base& dev, ossia::string_view address_base);
-
-/**
- * @brief Find a node and create it if it does not exist.
- *
- * If the node exists, it will be returned, else a new node will be created.
- */
-OSSIA_EXPORT node_base&
-find_or_create_node(node_base& dev, ossia::string_view address_base);
-
-/**
- * @brief Calls find_node or create_node according to the value `create`
- */
-OSSIA_EXPORT node_base* find_or_create_node(
-    node_base& dev, ossia::string_view address_base, bool create);
-
-void sanitize_name(std::string& name, const node_base::children_t& brethren);
 }
 }

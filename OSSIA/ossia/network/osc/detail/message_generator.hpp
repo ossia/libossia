@@ -1,5 +1,7 @@
 #pragma once
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/osc/detail/string_view.hpp>
 #include <chobo/small_vector.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>

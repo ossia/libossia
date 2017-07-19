@@ -3,6 +3,7 @@
 #include <ossia/detail/optional.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/common/address_properties.hpp>
 #include <ossia/network/common/extended_types.hpp>
 #include <ossia_export.h>
@@ -148,16 +149,22 @@ OSSIA_EXPORT ossia::string_view text_app_name();
 OSSIA_EXPORT optional<app_name> get_app_name(const extended_attributes& n);
 OSSIA_EXPORT void set_app_name(extended_attributes& n, optional<app_name> v);
 OSSIA_EXPORT void set_app_name(ossia::net::node_base& n, optional<app_name> v);
+OSSIA_EXPORT void set_app_name(extended_attributes& n, const char* v); // to please clang
+OSSIA_EXPORT void set_app_name(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_app_version();
 OSSIA_EXPORT optional<app_version> get_app_version(const extended_attributes& n);
 OSSIA_EXPORT void set_app_version(extended_attributes& n, optional<app_version> v);
 OSSIA_EXPORT void set_app_version(ossia::net::node_base& n, optional<app_version> v);
+OSSIA_EXPORT void set_app_version(extended_attributes& n, const char* v); // to please clang
+OSSIA_EXPORT void set_app_version(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_app_creator();
 OSSIA_EXPORT optional<app_creator> get_app_creator(const extended_attributes& n);
 OSSIA_EXPORT void set_app_creator(extended_attributes& n, optional<app_creator> v);
 OSSIA_EXPORT void set_app_creator(ossia::net::node_base& n, optional<app_creator> v);
+OSSIA_EXPORT void set_app_creator(extended_attributes& n, const char* v); // to please clang
+OSSIA_EXPORT void set_app_creator(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_default_value();
 OSSIA_EXPORT optional<ossia::value> get_default_value(const extended_attributes& n);

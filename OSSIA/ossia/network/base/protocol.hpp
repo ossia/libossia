@@ -16,7 +16,7 @@ namespace net
 class address_base;
 class node_base;
 class device_base;
-class full_address_data;
+struct full_address_data;
 
 /**
  * @brief The protocol_base class
