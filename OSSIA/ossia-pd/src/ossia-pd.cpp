@@ -34,6 +34,7 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->x_device = ossia_pd.get_default_device();
+  x->x_node = &x->x_device->get_root_node();
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
       std::string name = argv[0].a_w.w_symbol->s_name;
