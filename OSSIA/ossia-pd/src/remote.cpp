@@ -64,6 +64,23 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
       return true;
     }
+    else
+    {
+      x_nodes = ossia::net::find_nodes(*node, x_name->s_name);
+      for (auto n : x_nodes){
+        if (n->get_address()){
+          auto callback = n->get_address()->add_callback(
+              [=](const ossia::value& v) { setValue(v); });
+          x_callbackits.push_back(callback);
+
+          n->about_to_be_deleted.connect<t_remote, &t_remote::is_deleted>(
+              this);
+
+          clock_delay(x_regclock, 0);
+        }
+      }
+      return !x_nodes.empty();
+    }
   }
   return false;
 }
@@ -74,6 +91,18 @@ bool t_remote::unregister()
   {
     x_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(
         this);
+  }
+  else if (!x_nodes.empty())
+  {
+    int i = 0;
+    for (auto n : x_nodes)
+    {
+      n->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(
+         this);
+      n->get_address()->remove_callback(*x_callbackits[i]);
+      i++;
+    }
+    x_callbackits.clear();
   }
 
   if (x_callbackit != boost::none)
