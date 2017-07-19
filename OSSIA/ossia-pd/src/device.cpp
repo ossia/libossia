@@ -73,11 +73,6 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-static void device_namespace(t_device* x)
-{
-  obj_namespace(x, x->x_device->get_root_node());
-}
-
 void t_device::loadbang(t_device* x, t_float type)
 {
   if (LB_LOAD == (int)type)
@@ -289,7 +284,7 @@ extern "C" void setup_ossia0x2edevice(void)
     eclass_addmethod(
           c, (method)t_device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method)t_device::loadbang, "loadbang", A_NULL, 0);
-    eclass_addmethod(c, (method)device_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);

@@ -65,19 +65,30 @@ void t_obj_base::obj_bang(t_obj_base* x)
     x->setValue(x->x_node->get_address()->value());
 }
 
-void obj_namespace(t_obj_base* x, const ossia::net::node_base& node)
-{
-  t_symbol* prependsym = gensym("namespace");
+void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
   for (const auto& child : node.children_copy())
   {
     if (auto addr = child->get_address())
     {
       std::string s = ossia::net::osc_address_string(*child);
-      t_atom a;
-      SETSYMBOL(&a,gensym(s.c_str()));
-      outlet_anything(x->x_dumpout, prependsym,1,&a);
+      list.push_back(s);
     }
-    obj_namespace(x, *child);
+    list_all_child(*child,list);
+  }
+}
+
+void obj_namespace(t_obj_base* x)
+{
+  t_symbol* prependsym = gensym("namespace");
+  std::vector<std::string> list;
+  list_all_child(*x->x_node, list);
+  int pos = ossia::net::osc_address_string(*x->x_node).length();
+  for (auto& addr : list)
+  {
+    std::string s = addr.substr(pos);
+    t_atom a;
+    SETSYMBOL(&a,gensym(s.c_str()));
+    outlet_anything(x->x_dumpout, prependsym,1,&a);
   }
 }
 

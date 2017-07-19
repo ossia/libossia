@@ -75,12 +75,6 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-static void client_dump(t_client* x)
-{
-  if (x->x_device)
-    obj_namespace(x, x->x_device->get_root_node());
-}
-
 void t_client::loadbang(t_client* x, t_float type)
 {
   if (LB_LOAD == (int)type)
@@ -235,7 +229,7 @@ extern "C" void setup_ossia0x2eclient(void)
         c, (method)t_client::register_children, "register", A_NULL, 0);
     eclass_addmethod(c, (method)client_update, "update", A_NULL, 0);
     eclass_addmethod(c, (method)t_client::loadbang, "loadbang", A_NULL, 0);
-    eclass_addmethod(c, (method)client_dump, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)client_connect, "connect", A_GIMME, 0);
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);

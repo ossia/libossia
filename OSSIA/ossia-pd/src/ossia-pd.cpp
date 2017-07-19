@@ -48,11 +48,6 @@ static void ossia_free(t_ossia *x)
   outlet_free(x->x_dumpout);
 }
 
-static void ossia_get_namespace(t_ossia *x){
-  auto dev = ossia_pd::instance().get_default_device();
-  obj_namespace(x,dev->get_root_node());
-}
-
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 {
   t_eclass* c = eclass_new(
@@ -70,7 +65,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
   eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
-  eclass_addmethod(c, (method)ossia_get_namespace, "namespace", A_GIMME, 0);
+  eclass_addmethod(c, (method)obj_namespace, "namespace", A_GIMME, 0);
 
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.ossia = c;

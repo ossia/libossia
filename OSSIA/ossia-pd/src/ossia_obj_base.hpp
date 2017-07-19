@@ -46,7 +46,7 @@ struct t_obj_base
 
 bool find_and_display_friend(t_obj_base* x, t_canvas* patcher);
 void obj_tick(t_obj_base* x);
-void obj_namespace(t_obj_base* x, const ossia::net::node_base& node);
+void obj_namespace(t_obj_base* x);
 
 }
 } // namespace
