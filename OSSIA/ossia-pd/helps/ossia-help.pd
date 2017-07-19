@@ -1,14 +1,9 @@
-#N canvas 857 93 686 416 10;
-#X msg 108 147 expose oscquery;
-#X msg 262 82 expose;
-#X text 27 148 for example;
-#X text 215 147 will use oscquery portocol and default ports.;
-#X text 309 82 (click to get help in Pd's console);
-#X text 28 61 You can expose the global namespace over the network
-with :;
-#X obj 108 175 ossia;
-#X obj 262 104 ossia;
-#X obj 111 301 ossia;
+#N canvas 312 374 684 450 10;
+#X msg 121 167 expose oscquery;
+#X msg 109 137 expose;
+#X text 26 169 for example;
+#X text 228 167 will use oscquery portocol and default ports.;
+#X text 164 136 (click to get help in Pd's console);
 #N canvas 0 93 450 300 some_nodes 0;
 #X obj 109 61 ossia.param dummy;
 #X obj 109 81 ossia.param foo;
@@ -17,30 +12,44 @@ with :;
 #X obj 138 97 ossia.model fruh;
 #X obj 139 152 ossia.param stuck;
 #X restore 109 122 pd model;
-#X restore 440 341 pd some_nodes;
-#X text 72 238 You can get the namespace \, i.e. the list of the adresses
-in use.;
-#X msg 111 260 namespace;
-#X msg 199 260 name;
-#X obj 111 343 print;
-#X obj 111 323 route namespace name;
-#X symbolatom 169 376 15 0 0 2 name - -, f 15;
-#X obj 169 344 symbol;
-#X text 345 318 Look into that subpatch to see how nodes are declared
+#X restore 551 409 pd some_nodes;
+#X text 173 256 You can get the namespace \, i.e. the list of the adresses
+in use., f 73;
+#X msg 108 257 namespace;
+#X msg 210 307 name;
+#X obj 108 370 print;
+#X obj 108 350 route namespace name;
+#X symbolatom 166 403 15 0 0 2 name - -, f 15;
+#X obj 166 371 symbol;
+#X text 343 385 Look into that subpatch to see how nodes are declared
 ;
-#X msg 248 260 name funny_name;
-#X text 313 170 will use oscquery portocol with OSC port 1234 and WS
+#X msg 143 284 name funny_name;
+#X text 310 191 will use oscquery portocol with OSC port 1234 and WS
 port 5678, f 31;
 #X text 25 25 The eponyme object of the library lets you control the
 global features., f 79;
-#X msg 151 176 expose oscquery 1234 9876;
-#X connect 0 0 6 0;
-#X connect 1 0 7 0;
-#X connect 8 0 14 0;
-#X connect 11 0 8 0;
-#X connect 12 0 8 0;
-#X connect 14 0 13 0;
-#X connect 14 1 16 0;
-#X connect 16 0 15 0;
-#X connect 18 0 8 0;
-#X connect 21 0 6 0;
+#X msg 148 197 expose oscquery 1234 9876;
+#X text 28 110 You can expose the global namespace over the network
+with :;
+#N canvas 307 374 473 124 ossia/ø 0;
+#X text 62 56 ossia.theNameOftheObject;
+#X text 47 28 all ossia-pd objects can indifferently be named:;
+#X text 63 76 ø.theNameOftheObject;
+#X restore 31 413 pd ossia/ø;
+#X obj 108 223 ø;
+#X obj 108 328 ossia;
+#X text 27 59 ossia allows to declare \, under a general device \,
+all the nodes (models \, params \, see below) in pd that haven't been
+explicially declared with an ossia.device object, f 100;
+#X text 249 283 the name can also be changed;
+#X text 248 307 or retrieved;
+#X connect 0 0 20 0;
+#X connect 1 0 20 0;
+#X connect 7 0 21 0;
+#X connect 8 0 21 0;
+#X connect 10 0 9 0;
+#X connect 10 1 12 0;
+#X connect 12 0 11 0;
+#X connect 14 0 21 0;
+#X connect 17 0 20 0;
+#X connect 21 0 10 0;

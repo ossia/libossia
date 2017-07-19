@@ -1,4 +1,4 @@
-#N canvas 577 59 1085 619 10;
+#N canvas 577 59 1091 598 10;
 #X text 628 27 Attributes :;
 #X text 668 91 int : integer value;
 #X text 668 111 bool : bollean value \, 0 or 1;
@@ -35,7 +35,7 @@ gain.db gain.db-raw time.second time.bark time.bpm time.cents time.fps
 time.mel time.midinote time.ms time.speed, f 23;
 #X restore 892 336 pd unit list;
 #X text 652 337 @unit <symbol> defines unit \, see list :;
-#X text 30 81 Needed argument : parameter name with no special character
+#X text 40 82 Needed argument : parameter name with no special character
 ;
 #X obj 367 427 print bar-dumpout;
 #X obj 52 424 unpack 0 0 0 0;
@@ -72,15 +72,13 @@ most output;
 #X obj 80 350 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
 #X text 97 348 get current value;
-#X text 69 39 ossia.parameter defines a parameter with lots of attributes
-;
 #X obj 52 376 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
 "My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
 bi @range 0 1;
 #X text 40 180 this is the simplest form of creating an ossia parameter
 in Pd., f 66;
-#X text 58 544 see also :;
-#X floatatom 303 544 5 0 0 0 - - -, f 5;
+#X text 58 504 see also :;
+#X floatatom 303 504 5 0 0 0 - - -, f 5;
 #X text 668 71 float : most common \, simple float value;
 #X text 653 482 @hidden <float> enable/disable hidden attribute \,
 could be 0 or 1, f 65;
@@ -94,21 +92,28 @@ R \, W;
 #X text 652 302 @bounding_mode <symbol> defines behavior when value
 go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
 \, FOLD \, LOW \, HIGH, f 68;
-#X obj 132 545 ossia.model param-help;
-#X obj 346 544 ossia.remote param-help/foo;
+#X obj 132 505 ossia.model param-help;
+#X obj 346 504 ossia.remote param-help/foo;
 #X floatatom 103 154 5 0 0 0 - - -, f 5;
 #X floatatom 103 112 5 0 0 0 - - -, f 5;
 #X obj 103 132 ossia.param foo;
+#N canvas 307 374 473 124 ossia/ø 0;
+#X text 62 56 ossia.theNameOftheObject;
+#X text 47 28 all ossia-pd objects can indifferently be named:;
+#X text 63 76 ø.theNameOftheObject;
+#X restore 44 553 pd ossia/ø;
+#X text 69 39 ossia.parameter defines a parameter with several attributes
+;
 #X connect 18 0 19 0;
 #X connect 18 1 20 0;
 #X connect 18 2 21 0;
 #X connect 18 3 22 0;
-#X connect 23 0 29 0;
-#X connect 24 0 29 0;
-#X connect 26 0 29 0;
-#X connect 29 0 18 0;
-#X connect 29 1 17 0;
-#X connect 32 0 40 0;
-#X connect 40 0 32 0;
-#X connect 42 0 43 0;
-#X connect 43 0 41 0;
+#X connect 23 0 28 0;
+#X connect 24 0 28 0;
+#X connect 26 0 28 0;
+#X connect 28 0 18 0;
+#X connect 28 1 17 0;
+#X connect 31 0 39 0;
+#X connect 39 0 31 0;
+#X connect 41 0 42 0;
+#X connect 42 0 40 0;

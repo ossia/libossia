@@ -1,27 +1,26 @@
-#N canvas 781 22 750 329 10;
+#N canvas 781 22 680 330 10;
 #X text 44 20 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
 #X obj 74 203 print device_dump;
 #X text 144 73 get namespace;
 #X msg 95 98 expose;
-#X text 152 103 get supported portocol and syntax;
-#X text 247 126 expose with oscquery and default ports (osc: 9999 \,
+#X text 217 123 expose with oscquery and default ports (osc: 9999 \,
 ws: 5678);
 #X msg 110 124 expose oscquery;
 #X text 291 150 expose with oscquery and specific ports (resp. osc
 & ws);
 #X msg 122 151 expose oscquery 1234 9876;
-#X floatatom 473 225 5 0 0 0 - - -, f 5;
-#X floatatom 473 269 5 0 0 0 - - -, f 5;
-#X obj 292 225 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X floatatom 472 218 5 0 0 0 - - -, f 5;
+#X floatatom 472 262 5 0 0 0 - - -, f 5;
+#X obj 291 218 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 292 269 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 291 262 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 74 73 namespace;
 #X obj 74 181 ø.device pd-device-help;
-#X obj 292 246 ø.param bar @type bool;
-#X obj 473 246 ø.param foo @type float;
-#X text 287 197 here are some parameters to expose in the device:;
+#X obj 291 239 ø.param bar @type bool;
+#X obj 472 239 ø.param foo @type float;
+#X text 286 190 here are some parameters to expose in the device:;
 #N canvas 828 374 341 265 model 0;
 #X floatatom 97 118 5 0 0 0 - - -, f 5;
 #X floatatom 97 161 5 0 0 0 - - -, f 5;
@@ -29,15 +28,21 @@ ws: 5678);
 #X obj 61 46 ø.model submodel;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
-#X restore 584 302 pd model;
-#X text 289 302 more can be exposed in subpatchers \, e.g. using models:
+#X restore 583 295 pd model;
+#X text 288 295 more can be exposed in subpatchers \, e.g. using models:
 ;
-#X connect 3 0 14 0;
-#X connect 6 0 14 0;
-#X connect 8 0 14 0;
-#X connect 9 0 16 0;
-#X connect 11 0 15 0;
-#X connect 13 0 14 0;
-#X connect 14 0 1 0;
-#X connect 15 0 12 0;
-#X connect 16 0 10 0;
+#N canvas 307 374 473 124 ossia/ø 0;
+#X text 62 56 ossia.theNameOftheObject;
+#X text 47 28 all ossia-pd objects can indifferently be named:;
+#X text 63 76 ø.theNameOftheObject;
+#X restore 33 291 pd ossia/ø;
+#X text 144 97 get supported protocols and syntax;
+#X connect 3 0 13 0;
+#X connect 5 0 13 0;
+#X connect 7 0 13 0;
+#X connect 8 0 15 0;
+#X connect 10 0 14 0;
+#X connect 12 0 13 0;
+#X connect 13 0 1 0;
+#X connect 14 0 11 0;
+#X connect 15 0 9 0;
