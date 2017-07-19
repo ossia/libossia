@@ -138,7 +138,7 @@ private Q_SLOTS:
 
         b_proto.push_bundle({b1, b2, b3, b4});
 
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        std::this_thread::sleep_for(std::chrono::microseconds(10000));
         QVERIFY(a1->value() == ossia::value{1234.});
         QVERIFY(a2->value() == ossia::value{1234.});
         QVERIFY(a3->value() == ossia::value{1234.});
@@ -171,7 +171,7 @@ private Q_SLOTS:
 
         b_proto.push_raw_bundle(vec);
 
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        std::this_thread::sleep_for(std::chrono::microseconds(10000));
         QVERIFY(a1->value() == ossia::value{0.});
         QVERIFY(a2->value() == ossia::value{1.});
         QVERIFY(a3->value() == ossia::value{2.});
@@ -195,7 +195,7 @@ private Q_SLOTS:
         ossia::net::full_address_data dat{"/foo/bar.*"};
         dat.set_value(2.3f);
         b_proto.push_raw(dat);
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        std::this_thread::sleep_for(std::chrono::microseconds(10000));
         QVERIFY(a1->value() == ossia::value{2.3});
         QVERIFY(a2->value() == ossia::value{2.3});
         QVERIFY(a3->value() == ossia::value{2.3});

@@ -399,7 +399,7 @@ private Q_SLOTS:
 
     set_extended_type(n, ossia::filesystem_path_type());
     QVERIFY((bool)get_extended_type(n));
-    QCOMPARE(*get_extended_type(n), std::string("custom"));
+    QCOMPARE(*get_extended_type(n), ossia::filesystem_path_type());
 
     set_app_name(n, "AppName");
     QVERIFY((bool)get_app_name(n));
