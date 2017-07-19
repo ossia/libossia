@@ -15,6 +15,15 @@ namespace ossia
 namespace pd
 {
 
+static void device_free(t_device* x)
+{
+  x->x_dead = true;
+  x->unregister_children();
+  if (x->x_device)
+    delete (x->x_device);
+  register_quarantinized();
+}
+
 static void* device_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -40,18 +49,28 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->x_node = &x->x_device->get_root_node();
 
     ebox_attrprocess_viabinbuf(x, d);
+
+    t_gobj* list = x->x_obj.o_canvas->gl_list;
+    while (list)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == "ossia.device")
+      {
+        if (x != (t_device*)&list->g_pd)
+        {
+          pd_error(
+                &list->g_pd,
+                "Only one [ossia.device] intance per patcher is allowed.");
+          device_free(x);
+          x = nullptr;
+          break;
+        }
+      }
+      list = list->g_next;
+    }
   }
 
   return (x);
-}
-
-static void device_free(t_device* x)
-{
-  x->x_dead = true;
-  x->unregister_children();
-  if (x->x_device)
-    delete (x->x_device);
-  register_quarantinized();
 }
 
 static void device_namespace(t_device* x)
@@ -242,6 +261,20 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
     Protocol_Settings::print_protocol_help();
 }
 
+void device_name(t_device *x, t_symbol* s, int argc, t_atom* argv){
+  if( argc == 0 )
+  {
+    t_atom a;
+    SETSYMBOL(&a,gensym(x->x_device->get_name().c_str()));
+    outlet_anything(x->x_dumpout,gensym("name"),1,&a);
+  } else if ( argv[0].a_type == A_SYMBOL ) {
+    t_symbol* name = argv[0].a_w.w_symbol;
+    x->x_device->set_name(name->s_name);
+  } else {
+    pd_error(x,"bad argument to message 'name'");
+  }
+}
+
 extern "C" void setup_ossia0x2edevice(void)
 {
   t_eclass* c = eclass_new(
@@ -260,6 +293,7 @@ extern "C" void setup_ossia0x2edevice(void)
     eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
+    eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();

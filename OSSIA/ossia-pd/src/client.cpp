@@ -19,6 +19,16 @@ namespace ossia
 namespace pd
 {
 
+static void client_free(t_client* x)
+{
+  x->x_dead = true;
+  x->unregister_children();
+  if (x->x_device)
+    delete (x->x_device);
+  x->x_device = nullptr;
+  register_quarantinized();
+}
+
 static void* client_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -41,19 +51,28 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
     }
 
     ebox_attrprocess_viabinbuf(x, d);
+
+    t_gobj* list = x->x_obj.o_canvas->gl_list;
+    while (list)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == "ossia.client")
+      {
+        if (x != (t_client*)&list->g_pd)
+        {
+          pd_error(
+                &list->g_pd,
+                "Only one [ossia.client] intance per patcher is allowed.");
+          client_free(x);
+          x = nullptr;
+          break;
+        }
+      }
+      list = list->g_next;
+    }
   }
 
   return (x);
-}
-
-static void client_free(t_client* x)
-{
-  x->x_dead = true;
-  x->unregister_children();
-  if (x->x_device)
-    delete (x->x_device);
-  x->x_device = nullptr;
-  register_quarantinized();
 }
 
 static void client_dump(t_client* x)
