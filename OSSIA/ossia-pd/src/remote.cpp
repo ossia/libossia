@@ -138,6 +138,20 @@ static void remote_click(
   }
 }
 
+static void remote_push(t_remote* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if(x->x_node) t_obj_base::obj_push(x,s,argc,argv);
+  else
+  {
+    for (auto n : x->x_nodes)
+    {
+        x->x_node = n;
+        t_obj_base::obj_push(x,s,argc,argv);
+    }
+    x->x_node = nullptr;
+  }
+}
+
 static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -195,7 +209,7 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method)remote_push, "anything", A_GIMME, 0);
     eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
     eclass_addmethod(c, (method)obj_dump<t_remote>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)remote_click, "click", A_NULL, 0);
