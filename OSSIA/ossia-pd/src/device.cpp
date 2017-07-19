@@ -56,7 +56,7 @@ static void device_free(t_device* x)
 
 static void device_namespace(t_device* x)
 {
-  get_namespace(x, x->x_device->get_root_node());
+  obj_namespace(x, x->x_device->get_root_node());
 }
 
 void t_device::loadbang(t_device* x, t_float type)

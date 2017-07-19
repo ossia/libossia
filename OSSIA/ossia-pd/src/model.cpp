@@ -139,12 +139,6 @@ void t_model::is_deleted(const net::node_base& n)
   }
 }
 
-ossia::safe_vector<t_model*>& t_model::rename()
-{
-  static ossia::safe_vector<t_model*> rename;
-  return rename;
-}
-
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -229,6 +223,7 @@ extern "C" void setup_ossia0x2emodel(void)
     class_addcreator((t_newmethod)model_new,gensym("ø.model"), A_GIMME, 0);
 
     eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
 
     CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
     CLASS_ATTR_SYMBOL(c, "tags", 0, t_model, x_tags);

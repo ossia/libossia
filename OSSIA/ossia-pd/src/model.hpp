@@ -17,7 +17,6 @@ struct t_model : t_obj_base
   bool unregister();
 
   static ossia::safe_vector<t_model*>& quarantine();
-  static ossia::safe_vector<t_model*>& rename();
 
   void is_deleted(const ossia::net::node_base& n);
 

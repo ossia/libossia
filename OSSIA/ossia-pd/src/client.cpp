@@ -59,7 +59,7 @@ static void client_free(t_client* x)
 static void client_dump(t_client* x)
 {
   if (x->x_device)
-    get_namespace(x, x->x_device->get_root_node());
+    obj_namespace(x, x->x_device->get_root_node());
 }
 
 void t_client::loadbang(t_client* x, t_float type)
