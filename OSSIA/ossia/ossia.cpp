@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 // C++17 tests
+/*
 #include <type_traits>
 namespace ossia::net
 {
@@ -14,3 +15,4 @@ int foo()
 }
 
 }
+*/
