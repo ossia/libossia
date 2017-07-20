@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/base/address.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -16,7 +17,7 @@ namespace traversal
 
 void apply(const path& p, std::vector<ossia::net::node_base*>& nodes)
 {
-  for (const auto& fun : p.functions)
+  for (const auto& fun : p.child_functions)
   {
     fun(nodes);
   }
@@ -108,11 +109,11 @@ void add_relative_path(
     boost::replace_all(part, "*", "[" + ossia_chars + "]*");
 
     std::regex r(part);
-    p.functions.push_back([=](auto& v) { match_with_regex(v, r); });
+    p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
   }
   else
   {
-    p.functions.push_back(get_parent);
+    p.child_functions.push_back(get_parent);
   }
 }
 
@@ -132,15 +133,14 @@ bool is_pattern(const std::string& address)
 
 ossia::optional<path> make_path(const std::string& address) try
 {
-  path p;
-  p.address = address;
+  path p{address, {}};
 
-  const bool starts_any = boost::starts_with(address, "//");
+  const bool starts_any = boost::starts_with(p.pattern, "//");
   const std::string ossia_chars = std::string(ossia::net::name_characters());
   if (!starts_any)
   {
     // Split on "/"
-    auto parts = ossia::net::address_parts(address);
+    auto parts = ossia::net::address_parts(p.pattern);
 
     // Potentially remove first ":".
     if (parts[0].back() == ':')
@@ -157,11 +157,11 @@ ossia::optional<path> make_path(const std::string& address) try
     //* means all the nodes.
     // We have to pass an array with all the devices ?
     // We can't just make a big regex because of '..'
-    p.functions.push_back(get_all_children);
+    p.child_functions.push_back(get_all_children);
 
     // Split on "/"
     auto parts
-        = ossia::net::address_parts(ossia::string_view(address).substr(2));
+        = ossia::net::address_parts(ossia::string_view(p.pattern).substr(2));
 
     for (auto part : parts)
     {
@@ -175,5 +175,18 @@ catch (...)
 {
   return ossia::none;
 }
+
+bool match(const path& p, const ossia::net::node_base& node)
+{
+  return match(p, node, node.get_device().get_root_node());
+}
+
+bool match(const path& p, const ossia::net::node_base& node, ossia::net::node_base& root)
+{
+  std::vector<ossia::net::node_base*> vec{&root};
+  apply(p, vec);
+  return ossia::find(vec, &node) != std::end(vec);
+}
+
 }
 }
