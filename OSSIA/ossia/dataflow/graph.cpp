@@ -6,7 +6,7 @@
 namespace ossia
 {
 
-struct active_node_sorter
+struct active_node_basic_sorter
 {
   edge_map_t& edge_map;
   execution_state& st;
@@ -307,15 +307,17 @@ void graph::state(execution_state& e)
   }
 
   // Start executing the nodes
-  boost::container::flat_set<graph_node*, active_node_sorter> next_nodes{
-      active_node_sorter{m_edge_map, e}};
+  boost::container::flat_set<graph_node*, active_node_basic_sorter> next_nodes{
+      active_node_basic_sorter{m_edge_map, e}};
   while (!active_nodes.empty())
   {
     next_nodes.clear();
-    std::size_t max_exec{};
-    for (; max_exec < active_nodes.size(); max_exec++)
-      if (active_nodes[max_exec]->can_execute(e))
-        next_nodes.insert(active_nodes[max_exec]);
+
+    // Find all the nodes for which the inlets have executed
+    // (or without cables on the inlets)
+    for(graph_node* node : active_nodes)
+      if(node->can_execute(e))
+        next_nodes.insert(node);
 
     if (!next_nodes.empty())
     {

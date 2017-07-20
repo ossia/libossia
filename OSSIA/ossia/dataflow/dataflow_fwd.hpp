@@ -5,6 +5,7 @@
 #include <boost/container/flat_set.hpp>
 #include <boost/functional/hash.hpp>
 #include <eggs/variant.hpp>
+#include <ossia/network/common/path.hpp>
 
 #include <array>
 #include <deque>
@@ -33,7 +34,7 @@ using set = boost::container::flat_set<T>;
 
 using destination_t = eggs::variant<
 ossia::net::address_base*,
-std::string // ossia::traversal::path
+ossia::traversal::path
 >;
 class graph_node;
 struct graph_edge;

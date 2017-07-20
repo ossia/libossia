@@ -46,6 +46,9 @@ public:
 
   void clear();
 
+  // incremented for each process
+  int64_t temporal_counter{};
+  std::vector<int64_t> temporal_priority;
 protected:
   // Note : pour QtQuick : Faire View et Model qui hérite de View,
   // puis faire binding automatique entre propriétés de la vue et du modèle
@@ -57,6 +60,7 @@ protected:
 
   ossia::time_value m_prev_date{};
   ossia::time_value m_date{};
+
 
   bool m_enabled{};
   bool m_executed{};
