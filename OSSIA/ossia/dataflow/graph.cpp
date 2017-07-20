@@ -5,28 +5,63 @@
 
 namespace ossia
 {
-
-struct active_node_basic_sorter
+struct topological_ordering
 {
-  edge_map_t& edge_map;
-  execution_state& st;
-  bool edge_order(graph_node* lhs, graph_node* rhs) const
+  const graph& gr;
+  const std::vector<graph_node*>& topo_order;
+  const execution_state& st;
+  bool operator()(const graph_node* lhs, const graph_node* rhs) const
   {
-    if (edge_map.find({lhs, rhs}) != edge_map.end())
+    // just return the nodes in their topological order
+    for(std::size_t i = 0, N = topo_order.size(); i < N; i++)
     {
-      return true;
+      if(topo_order[i] == lhs)
+        return true;
+      if(topo_order[i] == rhs)
+        return false;
     }
-    else
-    {
-      // Actually there are two cases here:
-      // There is an edge from rhs to lhs so rhs < lhs
-      // Or there is no edge and we do not define the behaviour
-      return false;
-    }
+    throw std::runtime_error("lhs and rhs have to be found");
   }
+};
 
-  bool operator()(graph_node* lhs, graph_node* rhs) const
+struct temporal_ordering
+{
+  const graph& gr;
+  const std::vector<graph_node*>& topo_order;
+  const execution_state& st;
+  bool operator()(const graph_node* lhs, const graph_node* rhs) const
   {
+    return std::lexicographical_compare(
+          lhs->temporal_priority.begin(), lhs->temporal_priority.end(),
+          rhs->temporal_priority.begin(), rhs->temporal_priority.end());
+  }
+};
+
+struct custom_ordering
+{
+  const graph& gr;
+  const std::vector<graph_node*>& topo_order;
+  const execution_state& st;
+  bool operator()(const graph_node* lhs, const graph_node* rhs) const
+  {
+    return std::lexicographical_compare(
+          lhs->custom_priority.begin(), lhs->custom_priority.end(),
+          rhs->custom_priority.begin(), rhs->custom_priority.end());
+  }
+};
+
+template<typename OrderingPolicy = topological_ordering>
+struct node_sorter
+{
+  const graph& gr;
+  const std::vector<graph_node*>& topo_order;
+  const execution_state& st;
+
+  bool operator()(const graph_node* lhs, const graph_node* rhs) const
+  {
+    // This sorting method ensures that if for instance
+    // node A produces "/a" and node B consumes "/a",
+    // A executes before B.
     bool c1 = lhs->has_port_inputs();
     bool c2 = rhs->has_port_inputs();
     if (c1 && !c2)
@@ -34,7 +69,9 @@ struct active_node_basic_sorter
     else if (!c1 && c2)
       return false;
     else if (c1 && c2)
-      return edge_order(lhs, rhs);
+      // the nodes are already sorted through the toposort
+      // so we can just keep their original order
+      return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
 
     bool l1 = lhs->has_local_inputs(st);
     bool l2 = rhs->has_local_inputs(st);
@@ -44,7 +81,7 @@ struct active_node_basic_sorter
     else if (!l1 && l2)
       return false;
     else if (l1 && l2)
-      return edge_order(lhs, rhs);
+      return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
 
     bool g1 = lhs->has_global_inputs();
     bool g2 = rhs->has_global_inputs();
@@ -53,9 +90,9 @@ struct active_node_basic_sorter
     else if (!g1 && g2)
       return false;
     else if (g1 && g2)
-      return edge_order(lhs, rhs);
+      return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
 
-    return true;
+    return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
   }
 };
 
@@ -276,6 +313,9 @@ void graph::state()
   e.commit();
 }
 
+template<typename Comparator>
+using node_set = boost::container::flat_set<graph_node*, Comparator>;
+
 void graph::state(execution_state& e)
 {
   // TODO in the future, temporal_graph, space_graph that can be used as
@@ -306,38 +346,57 @@ void graph::state(execution_state& e)
       active_nodes.push_back(n);
   }
 
+  // At this point, active_nodes contains
+  // all the nodes that will run at this tick.
+
   // Start executing the nodes
-  boost::container::flat_set<graph_node*, active_node_basic_sorter> next_nodes{
-      active_node_basic_sorter{m_edge_map, e}};
-  while (!active_nodes.empty())
+  auto tick = [&] (auto next_nodes) {
+    while (!active_nodes.empty())
+    {
+      next_nodes.clear();
+
+      // Find all the nodes for which the inlets have executed
+      // (or without cables on the inlets)
+      for(graph_node* node : active_nodes)
+        if(node->can_execute(e))
+          next_nodes.insert(node);
+
+      if (!next_nodes.empty())
+      {
+        // First look if there is a replacement or reduction relationship between
+        // the first n nodes
+        // If there is, we run all the nodes
+
+        // If there is not we just run the first node
+        auto& first_node = **next_nodes.begin();
+        init_node(first_node, e);
+        first_node.run(e);
+        first_node.set_executed(true);
+        teardown_node(first_node, e);
+        active_nodes.erase(ossia::find(active_nodes, &first_node));
+      }
+      else
+      {
+        break; // nothing more to execute
+      }
+    }
+  };
+
+  switch(m_ordering)
   {
-    next_nodes.clear();
-
-    // Find all the nodes for which the inlets have executed
-    // (or without cables on the inlets)
-    for(graph_node* node : active_nodes)
-      if(node->can_execute(e))
-        next_nodes.insert(node);
-
-    if (!next_nodes.empty())
-    {
-      // First look if there is a replacement or reduction relationship between
-      // the first n nodes
-      // If there is, we run all the nodes
-
-      // If there is not we just run the first node
-      auto& first_node = **next_nodes.begin();
-      init_node(first_node, e);
-      first_node.run(e);
-      first_node.set_executed(true);
-      teardown_node(first_node, e);
-      active_nodes.erase(ossia::find(active_nodes, &first_node));
-    }
-    else
-    {
-      break; // nothing more to execute
-    }
-  }
+    case node_ordering::topological:
+      tick(node_set<node_sorter<>>{
+             node_sorter<>{*this, active_nodes, e}});
+      break;
+    case node_ordering::temporal:
+      tick(node_set<node_sorter<temporal_ordering>>{
+             node_sorter<temporal_ordering>{*this, active_nodes, e}});
+      break;
+    case node_ordering::hierarchical:
+      tick(node_set<node_sorter<custom_ordering>>{
+             node_sorter<custom_ordering>{*this, active_nodes, e}});
+      break;
+  };
 
   for (auto& node : m_nodes.right)
   {
