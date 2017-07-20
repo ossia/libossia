@@ -20,6 +20,12 @@ void t_obj_base::setValue(const ossia::value& v)
   v.apply(vm);
 }
 
+/**
+ * @brief t_obj_base::obj_push : push a value to a node
+ * @param x : caller that holds the node to push to
+ * @param argc : number of value in the list
+ * @param argv :  list of t_atom value(s)
+ */
 void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
 {
   if (x->x_node && x->x_node->get_address())
@@ -50,6 +56,11 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
   }
 }
 
+/**
+ * @brief obj_tick deselect last selected object
+ * @details used by ø.remote and ø.view when displaying connected parent
+ * @param x
+ */
 void obj_tick(t_obj_base* x)
 {
   if (x->x_last_opened_canvas)
@@ -59,12 +70,21 @@ void obj_tick(t_obj_base* x)
   }
 }
 
+/**
+ * @brief t_obj_base::obj_bang send out the current value of the parameter
+ * @param x
+ */
 void t_obj_base::obj_bang(t_obj_base* x)
 {
   if (x->x_node && x->x_node->get_address())
     x->setValue(x->x_node->get_address()->value());
 }
 
+/**
+ * @brief list_all_child : list all node childs addresses recursively
+ * @param node : starting point
+ * @param list : reference to a string vector to store each address
+ */
 void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
   for (const auto& child : node.children_copy())
   {
@@ -77,6 +97,12 @@ void list_all_child(const ossia::net::node_base& node, std::vector<std::string>&
   }
 }
 
+/**
+ * @brief obj_namespace : send namespace trought dump output
+ * @details each message is prepend with "namespace"
+ * and adresses start with a '/' to make it each to parse with OSC tool
+ * @param x
+ */
 void obj_namespace(t_obj_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
@@ -92,6 +118,14 @@ void obj_namespace(t_obj_base* x)
   }
 }
 
+/**
+ * @brief find_and_display_friend : find the object that defined the node and display it
+ * @param x : object that hold the node we are looking for
+ * @param patcher : starting point to seach a friend
+ * @return true if we found a friend to display
+ */
+// TODO refactor this to use ossia_pd::instance().params|remotes
+// instead of going through all objects in all patchers.
 bool find_and_display_friend(t_obj_base* x, t_canvas* patcher)
 {
   t_gobj* list = patcher->gl_list;
