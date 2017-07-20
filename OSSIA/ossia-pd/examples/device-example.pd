@@ -1,17 +1,17 @@
-#N canvas 496 91 506 613 10;
-#X obj 4 318 osc~;
-#X obj 4 450 *~;
-#X obj 84 394 phasor~;
-#X floatatom 102 252 5 0 0 0 - - -, f 5;
-#X obj 289 463 print;
-#X obj 4 521 *~;
-#X obj 83 418 *~;
-#X text 196 266 convert dBFs to Pd's dB \, 100dB Pd = 0dBFS;
-#X obj 152 327 dbtorms;
-#X msg 152 349 \$1 10;
-#X obj 153 370 line~;
-#X obj 4 165 mtof;
-#X floatatom 4 194 5 0 0 0 - - -, f 5;
+#N canvas 496 91 523 620 10;
+#X obj 19 324 osc~;
+#X obj 19 456 *~;
+#X obj 99 400 phasor~;
+#X floatatom 117 258 5 0 0 0 - - -, f 5;
+#X obj 304 469 print;
+#X obj 19 527 *~;
+#X obj 98 424 *~;
+#X text 211 272 convert dBFs to Pd's dB \, 100dB Pd = 0dBFS;
+#X obj 167 333 dbtorms;
+#X msg 167 355 \$1 10;
+#X obj 168 376 line~;
+#X obj 19 171 mtof;
+#X floatatom 19 200 5 0 0 0 - - -, f 5;
 #N canvas 961 50 958 534 envelope 0;
 #X obj 106 0 inlet;
 #X floatatom 146 90 5 0 0 0 - - -, f 5;
@@ -66,13 +66,13 @@ time" @tags envelope @default 10, f 76;
 #X connect 22 0 10 0;
 #X connect 23 0 20 0;
 #X connect 24 0 11 0;
-#X restore 74 457 pd envelope;
-#X obj 5 579 dac~;
-#X obj 4 15 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
+#X restore 89 463 pd envelope;
+#X obj 20 585 dac~;
+#X obj 19 21 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
-#X floatatom 152 285 5 0 0 0 - - -, f 5;
-#X obj 152 305 + 100;
-#X obj 84 270 * 4;
+#X floatatom 167 291 5 0 0 0 - - -, f 5;
+#X obj 167 311 + 100;
+#X obj 99 276 * 4;
 #N canvas 0 132 450 300 randomtest 0;
 #X obj 126 214 makenote 64 200;
 #X obj 126 116 random 50;
@@ -104,25 +104,25 @@ time" @tags envelope @default 10, f 76;
 #X connect 10 1 8 0;
 #X connect 11 0 9 0;
 #X connect 12 0 9 0;
-#X restore 4 35 pd randomtest;
-#X obj 289 385 loadbang;
-#X text 97 513 A simple synth to demonstrate communiation between Ossia
-device and client.;
-#X text 97 543 You can use the patch "client-example.pd" or the QML
+#X restore 19 41 pd randomtest;
+#X obj 304 391 loadbang;
+#X text 112 519 A simple synth to demonstrate communiation between
+Ossia device and client.;
+#X text 112 549 You can use the patch "client-example.pd" or the QML
 application "client-example.qml" to control this device.;
-#X floatatom 118 176 5 0 0 0 - - -, f 5;
-#X obj 435 330 loadbang;
-#X msg 435 352 \; pd dsp 1;
-#X obj 4 103 t a a;
-#X msg 74 130 \$2;
-#X obj 4 131 stripnote;
-#X obj 102 200 ossia.param modratio @default 4 @type float @description
+#X floatatom 133 182 5 0 0 0 - - -, f 5;
+#X obj 450 336 loadbang;
+#X msg 450 358 \; pd dsp 1;
+#X obj 19 109 t a a;
+#X msg 89 136 \$2;
+#X obj 19 137 stripnote;
+#X obj 117 206 ossia.param modratio @default 4 @type float @description
 "Modulator frequency ratio";
-#X obj 152 236 ossia.param modgain @default 0 @type float @description
+#X obj 167 242 ossia.param modgain @default 0 @type float @description
 "Modulator frequency gain" @unit dB;
-#X obj 4 68 ossia.param note @type vec2f @description "Midi note and
+#X obj 19 74 ossia.param note @type vec2f @description "Midi note and
 velocity";
-#X msg 289 407 expose oscquery;
+#X msg 304 413 expose oscquery;
 #N canvas 961 50 958 1029 sub 0;
 #X obj 145 144 ossia.model tata;
 #X obj 157 318 phasor~;
@@ -145,10 +145,10 @@ velocity";
 #X connect 8 0 9 0;
 #X connect 9 0 6 0;
 #X connect 10 0 9 1;
-#X restore 43 519 pd sub;
-#X obj 14 552 *~ 0.2;
-#X obj 289 441 ossia.device Pd;
-#X msg 212 406 namespace;
+#X restore 58 525 pd sub;
+#X obj 29 558 *~ 0.2;
+#X obj 304 447 ossia.device Pd;
+#X msg 227 412 namespace;
 #X connect 0 0 1 0;
 #X connect 1 0 5 0;
 #X connect 2 0 6 0;

@@ -60,7 +60,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
         {
           pd_error(
                 &list->g_pd,
-                "Only one [ossia.device] intance per patcher is allowed.");
+                "Only one [ossia.device] instance per patcher is allowed.");
           device_free(x);
           x = nullptr;
           break;
