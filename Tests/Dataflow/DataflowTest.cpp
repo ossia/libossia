@@ -651,7 +651,7 @@ private slots:
       g.g.enable(*g.n1);
       g.g.disable(*g.n2);
       g.n1->set_date(0);
-      g.n2->temporal_priority = {0};
+      g.n1->temporal_priority = {0};
       g.n2->set_date(0);
 
       g.g.state(); // f1
@@ -684,7 +684,7 @@ private slots:
       g.g.enable(*g.n1);
       g.g.disable(*g.n2);
       g.n1->set_date(0);
-      g.n2->temporal_priority = {1};
+      g.n1->temporal_priority = {1};
       g.n2->set_date(0);
 
       g.g.state(); // f1

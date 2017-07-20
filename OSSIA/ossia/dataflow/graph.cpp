@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/audio_address.hpp>
 #include <ossia/dataflow/graph.hpp>
+#include <boost/range/algorithm/lexicographical_compare.hpp>
 
 namespace ossia
 {
@@ -31,9 +32,7 @@ struct temporal_ordering
   const execution_state& st;
   bool operator()(const graph_node* lhs, const graph_node* rhs) const
   {
-    return std::lexicographical_compare(
-          lhs->temporal_priority.begin(), lhs->temporal_priority.end(),
-          rhs->temporal_priority.begin(), rhs->temporal_priority.end());
+    return boost::range::lexicographical_compare(lhs->temporal_priority, rhs->temporal_priority);
   }
 };
 
@@ -44,9 +43,7 @@ struct custom_ordering
   const execution_state& st;
   bool operator()(const graph_node* lhs, const graph_node* rhs) const
   {
-    return std::lexicographical_compare(
-          lhs->custom_priority.begin(), lhs->custom_priority.end(),
-          rhs->custom_priority.begin(), rhs->custom_priority.end());
+    return boost::range::lexicographical_compare(lhs->custom_priority, rhs->custom_priority);
   }
 };
 

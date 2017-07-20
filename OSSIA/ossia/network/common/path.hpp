@@ -198,7 +198,7 @@ namespace traversal
 struct OSSIA_EXPORT path
 {
   // Used for hashing
-  const std::string pattern;
+  std::string pattern;
 
   /** A list of function for the location of elements.
    * Each function will be called on the next step.
