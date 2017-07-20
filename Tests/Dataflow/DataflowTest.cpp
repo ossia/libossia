@@ -640,6 +640,73 @@ private slots:
     // what if both happen at exact same time.
     // orders should superimperpose themselves so that there is always
     // a "default" ordering (this could be the hierarchical one)
+    using namespace ossia;
+
+    {
+      TestUtils test;
+      simple_implicit_graph g(test, immediate_glutton_connection{});
+      g.g.m_ordering = node_ordering::temporal;
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
+
+      g.g.enable(*g.n1);
+      g.g.disable(*g.n2);
+      g.n1->set_date(0);
+      g.n2->temporal_priority = {0};
+      g.n2->set_date(0);
+
+      g.g.state(); // f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(1);
+      g.n2->set_date(1);
+      g.n2->temporal_priority = {1};
+
+      g.g.state(); // f2 o f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(2);
+      g.n2->set_date(2);
+
+      g.g.state(); // f2 o f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 1 * 3, 10 * 3}));
+    }
+
+    {
+      TestUtils test;
+      simple_implicit_graph g(test, immediate_glutton_connection{});
+      g.g.m_ordering = node_ordering::temporal;
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
+
+      g.g.enable(*g.n1);
+      g.g.disable(*g.n2);
+      g.n1->set_date(0);
+      g.n2->temporal_priority = {1};
+      g.n2->set_date(0);
+
+      g.g.state(); // f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(1);
+      g.n2->set_date(1);
+      g.n2->temporal_priority = {0};
+
+      g.g.state(); // f1 o f2
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2, 1 * 2}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(2);
+      g.n2->set_date(2);
+
+      g.g.state(); // f1 o f2
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2, 1 * 2, 10 * 3, 1 * 3}));
+    }
 
   }
 

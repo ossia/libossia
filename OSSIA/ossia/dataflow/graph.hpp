@@ -26,10 +26,16 @@ using edge_bimap_v = edge_bimap::value_type;
 using edge_map_t
     = std::unordered_map<std::pair<graph_node*, graph_node*>, graph_edge*>;
 
+enum class node_ordering
+{
+  topological, temporal, hierarchical
+};
+
 class OSSIA_EXPORT graph
 {
 public:
   ~graph();
+
   void add_node(node_ptr n);
   void remove_node(const node_ptr& n);
 
@@ -72,6 +78,8 @@ public:
   edge_map_t m_edge_map;
 
   time_value m_time{};
+
+  node_ordering m_ordering{node_ordering::topological};
 
   friend struct init_node_visitor;
   friend struct inlet;

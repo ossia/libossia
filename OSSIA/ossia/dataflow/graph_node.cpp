@@ -81,12 +81,12 @@ bool graph_node::can_execute(const execution_state&) const
 bool graph_node::has_port_inputs() const
 {
   return ossia::any_of(
-      inputs(), [](const auto& inlet) { return !inlet->sources.empty(); });
+      inputs(), [](const inlet_ptr& inlet) { return !inlet->sources.empty(); });
 }
 
 bool graph_node::has_global_inputs() const
 {
-  return ossia::any_of(inputs(), [&](const auto& inlet) {
+  return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
     return (inlet->scope & port::scope_t::global) && bool(inlet->address);
   });
 }
