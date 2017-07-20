@@ -5,6 +5,7 @@
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <hopscotch_set.h>
 
 namespace ossia
@@ -15,7 +16,7 @@ namespace traversal
 
 void apply(const path& p, std::vector<ossia::net::node_base*>& nodes)
 {
-  for (auto fun : p.functions)
+  for (const auto& fun : p.functions)
   {
     fun(nodes);
   }
@@ -115,11 +116,26 @@ void add_relative_path(
   }
 }
 
+bool is_pattern(const std::string& address)
+{
+  if(boost::starts_with(address, "//"))
+    return true;
+  const auto pred = boost::is_any_of("?*[]{}");
+  for(char c : address)
+  {
+    if(pred(c))
+      return true;
+  }
+
+  return false;
+}
+
 ossia::optional<path> make_path(const std::string& address) try
 {
   path p;
+  p.address = address;
 
-  bool starts_any = boost::starts_with(address, "//");
+  const bool starts_any = boost::starts_with(address, "//");
   const std::string ossia_chars = std::string(ossia::net::name_characters());
   if (!starts_any)
   {

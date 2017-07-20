@@ -40,6 +40,13 @@ private Q_SLOTS:
     }
   }
 
+  void test_is_pattern()
+  {
+    QVERIFY(ossia::traversal::is_pattern("/foo*ba?r/"));
+    QVERIFY(ossia::traversal::is_pattern("//foo/bar"));
+    QVERIFY(!ossia::traversal::is_pattern("/foo/r/"));
+  }
+
   void test_traversal()
   {
     // Note : to allow access to character classes, we have to change :
