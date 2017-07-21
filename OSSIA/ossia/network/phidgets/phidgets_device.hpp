@@ -15,8 +15,6 @@ public:
   ~phidget_device();
 
   ossia::net::node_base* get_parent() const final override;
-  std::string get_name() const override;
-  ossia::net::node_base& set_name(std::string n) override;
 
   const ossia::net::node_base& get_root_node() const override;
   ossia::net::node_base& get_root_node() override;

@@ -25,17 +25,6 @@ net::node_base* phidget_device::get_parent() const
   return nullptr;
 }
 
-std::string phidget_device::get_name() const
-{
-  return m_name;
-}
-
-net::node_base& phidget_device::set_name(std::string n)
-{
-  m_name = n;
-  return *this;
-}
-
 const net::node_base& phidget_device::get_root_node() const
 {
   return *this;
