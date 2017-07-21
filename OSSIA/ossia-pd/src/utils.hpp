@@ -306,18 +306,14 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   return string_from_path(vs, fullpath);
 }
 
-// we can't have virtual methods with C linkage so we need a bunch a template
-// instead...
 
-// self registering (when creating the object)
 template <typename T>
-bool obj_register(T* x)
-{
-  if (x->x_node)
-    return true; // already registered
-  if (x->x_dead)
-    return false; // object will be removed soon
-
+/**
+ * @brief find_parent_node : find first active node above
+ * @param x : starting object object
+ * @return active node pointer if found or nullptr
+ */
+ossia::net::node_base* find_parent_node(T* x){
   int l;
   t_device* device = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
   t_client* client = (t_client*)find_parent(&x->x_obj, "ossia.client", 0, &l);
@@ -369,12 +365,26 @@ bool obj_register(T* x)
   {
     node = ossia_pd::get_default_device();
   }
+}
+
+// self registering (when creating the object)
+template <typename T>
+bool obj_register(T* x)
+{
+  if (x->x_node)
+    return true; // already registered
+  if (x->x_dead)
+    return false; // object will be removed soon
+
+  auto node = find_parent_node(x);
 
   return x->register_node(node);
 }
 
+/*
 template <typename T>
 extern void obj_bang(T* x);
+*/
 
 template <typename T>
 bool obj_is_quarantined(T* x)
