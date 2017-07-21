@@ -306,14 +306,12 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   return string_from_path(vs, fullpath);
 }
 
-
-template <typename T>
 /**
  * @brief find_parent_node : find first active node above
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-ossia::net::node_base* find_parent_node(T* x){
+ossia::net::node_base* find_parent_node(t_obj_base* x){
   int l;
   t_device* device = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
   t_client* client = (t_client*)find_parent(&x->x_obj, "ossia.client", 0, &l);
@@ -322,7 +320,7 @@ ossia::net::node_base* find_parent_node(T* x){
   t_view* view = nullptr;
   int view_level = 0, model_level = 0;
 
-  if (std::is_same<T, t_view>::value || std::is_same<T, t_model>::value)
+  if (x->x_otype == Type::view || x->x_otype == Type::model)
   {
     view_level = 1;
     model_level = 1;
@@ -331,7 +329,7 @@ ossia::net::node_base* find_parent_node(T* x){
   if (!x->x_absolute)
   {
     // then try to locate a parent view or model
-    if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+    if (x->x_otype == Type::view || x->x_otype == Type::remote)
     {
       view
           = find_parent_alive<t_view>(&x->x_obj, "ossia.view", 0, &view_level);
@@ -365,11 +363,12 @@ ossia::net::node_base* find_parent_node(T* x){
   {
     node = ossia_pd::get_default_device();
   }
+
+  return node;
 }
 
 // self registering (when creating the object)
-template <typename T>
-bool obj_register(T* x)
+bool obj_register(t_obj_base* x)
 {
   if (x->x_node)
     return true; // already registered
