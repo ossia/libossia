@@ -90,16 +90,6 @@ public:
   //! True if the process is enabled.
   bool enabled() const;
 
-  /**
-   * @brief parent The parent time_constraint of the process
-   *
-   * The time_constraint sets this pointer when a process is added to it.
-   * This has the obvious consequence that a time_process cannot be part
-   * of two different time_constraint.
-   *
-   * @return A pointer to the parent.
-   */
-  time_constraint* parent() const;
 
 protected:
   //! Reimplement this to have a special behaviour on mute
@@ -110,7 +100,6 @@ protected:
   // 0 in infinite duration case)
 
 private:
-  time_constraint* m_parent{};
   bool m_unmuted = true;
   bool m_enabled = true;
 };

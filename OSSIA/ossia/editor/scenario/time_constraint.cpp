@@ -253,7 +253,6 @@ void time_constraint::add_time_process(
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
   {
-    timeProcess->m_parent = this;
     m_processes.push_back(std::move(timeProcess));
   }
 }
