@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <chobo/small_vector.hpp>
 namespace ossia
 {
@@ -20,6 +21,7 @@ struct midi_port
 
 struct value_port
 {
+  ossia::complex_type type;
   value_vector<ossia::value> data;
 };
 
