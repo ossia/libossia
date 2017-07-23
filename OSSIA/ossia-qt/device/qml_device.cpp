@@ -468,9 +468,8 @@ void qml_device::clearEmptyElements()
 
 void qml_device::loadPreset(QObject* root, QString file)
 {
-
   m_readPreset = false;
-#if defined PRESET_DEBUG
+#if defined(PRESET_DEBUG)
   {
     // Before recreate
     fmt::MemoryWriter w;
@@ -481,7 +480,7 @@ void qml_device::loadPreset(QObject* root, QString file)
 
   recreate(root);
 
-#if defined PRESET_DEBUG
+#if defined(PRESET_DEBUG)
   {
     // After recreate
     fmt::MemoryWriter w;

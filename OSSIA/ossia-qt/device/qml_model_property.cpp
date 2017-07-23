@@ -21,7 +21,7 @@ qml_model_property::qml_model_property(QObject* parent)
 qml_model_property::~qml_model_property()
 {
   if(m_parentOssiaNode)
-    m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   if (m_device)
   {
     m_device->remove(this);
@@ -85,6 +85,43 @@ void qml_model_property::setNode(QString node)
   emit nodeChanged(node);
 }
 
+void qml_model_property::reloadParentNode()
+{
+    if (m_parentOssiaNode)
+    {
+      m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    }
+
+    if(m_parentNode)
+    {
+      auto pn = dynamic_cast<qml_node_base*>(m_parentNode);
+
+      if(pn)
+      {
+        m_parentOssiaNode = pn->ossiaNode();
+      }
+      else
+      {
+        auto dn = dynamic_cast<qml_device*>(m_parentNode);
+        if(dn)
+        {
+          m_parentOssiaNode = &dn->device().get_root_node();
+        }
+      }
+    }
+    else
+    {
+      m_parentOssiaNode = nullptr;
+    }
+
+    if (m_parentOssiaNode)
+    {
+      ossia::net::set_instance_bounds(
+          *m_parentOssiaNode, ossia::net::instance_bounds{0, 1000});
+      m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    }
+}
+
 void qml_model_property::setParentNode(QObject* parentNode)
 {
   if (m_parentNode == parentNode)
@@ -92,13 +129,17 @@ void qml_model_property::setParentNode(QObject* parentNode)
 
   m_parentNode = parentNode;
 
+  if (m_parentOssiaNode)
+  {
+    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+  }
+
   if(parentNode)
   {
     auto pn = dynamic_cast<qml_node_base*>(parentNode);
 
     if(pn)
     {
-      qDebug("=== node ===");
       m_parentOssiaNode = pn->ossiaNode();
     }
     else
@@ -106,7 +147,6 @@ void qml_model_property::setParentNode(QObject* parentNode)
       auto dn = dynamic_cast<qml_device*>(parentNode);
       if(dn)
       {
-        qDebug("=== device ===");
         m_parentOssiaNode = &dn->device().get_root_node();
       }
     }
@@ -132,7 +172,6 @@ void qml_model_property::on_node_deleted(const net::node_base&)
   {
     m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   }
-  m_parentNode = nullptr;
   m_parentOssiaNode = nullptr;
 }
 
@@ -188,6 +227,7 @@ static bool is_instance(const std::string& root, const std::string& child)
 
 void qml_model_property::updateCount()
 {
+  reloadParentNode();
   int newCount = 0;
 
   if (m_parentOssiaNode && !m_node.isEmpty())
