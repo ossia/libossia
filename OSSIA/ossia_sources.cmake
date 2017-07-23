@@ -455,6 +455,7 @@ set(OSSIA_DATAFLOW_HEADERS
 )
 
 set(OSSIA_DATAFLOW_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
