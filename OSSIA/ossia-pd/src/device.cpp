@@ -21,6 +21,7 @@ static void device_free(t_device* x)
   x->unregister_children();
   if (x->x_device)
     delete (x->x_device);
+  outlet_free(x->x_dumpout);
   register_quarantinized();
 }
 

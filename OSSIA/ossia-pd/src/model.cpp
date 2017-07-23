@@ -44,13 +44,13 @@ bool t_model::register_node(ossia::net::node_base* node)
 
     for (auto view : t_view::quarantine().copy())
     {
-      obj_register<t_view>(static_cast<t_view*>(view));
+      obj_register(static_cast<t_view*>(view));
     }
 
     // then try to register qurantinized remote
     for (auto remote : t_remote::quarantine().copy())
     {
-      obj_register<t_remote>(static_cast<t_remote*>(remote));
+      obj_register(static_cast<t_remote*>(remote));
     }
   }
   else

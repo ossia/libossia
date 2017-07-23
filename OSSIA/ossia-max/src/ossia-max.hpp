@@ -5,7 +5,11 @@
 #undef error
 #undef post
 
+#include "ossia_object_base.hpp"
+
 #include <ossia/ossia.hpp>
+#include <ossia/network/common/websocket_log_sink.hpp>
+
 
 namespace ossia
 {
@@ -22,11 +26,17 @@ extern "C" void ossia_model_setup(void);
 extern "C" void ossia_parameter_setup(void);
 extern "C" void ossia_remote_setup(void);
 extern "C" void ossia_view_setup(void);
+extern "C" void ossia_ossia_setup(void);
 
 class ossia_max
 {
 public:
   static ossia_max& instance();
+  static ossia::net::generic_device* get_default_device()
+  {
+    return &instance().m_device;
+  }
+
 
   t_class* ossia_client_class{};
   t_class* ossia_device_class{};
@@ -35,9 +45,15 @@ public:
   t_class* ossia_parameter_class{};
   t_class* ossia_remote_class{};
   t_class* ossia_view_class{};
+  t_class* ossia_ossia_class{};
 
 private:
   ossia_max();
+  ~ossia_max();
+
+  ossia::net::local_protocol* m_localProtocol{};
+  ossia::net::generic_device m_device;
+  string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
 };
 
 #pragma mark -
@@ -69,6 +85,10 @@ extern bool object_is_quarantined(T*);
 
 template <typename T>
 extern void object_dump(T*);
+
+struct t_object_base;
+
+void object_namespace(t_object_base* x);
 
 #pragma mark -
 #pragma mark Utilities
@@ -129,7 +149,7 @@ public:
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<box_hierachy> find_children_to_register(
+std::vector<t_object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname);
 
 /**

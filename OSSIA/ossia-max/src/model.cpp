@@ -24,6 +24,10 @@ extern "C" void ossia_model_setup()
       ossia_library.ossia_model_class, (method)ossia_model_assist, "assist",
       A_CANT, 0);
 
+  class_addmethod(
+      ossia_library.ossia_model_class, (method)t_object_base::relative_namespace,
+              "namespace", A_CANT, 0);
+
   CLASS_ATTR_SYM(
       ossia_library.ossia_model_class, "description", 0, t_model,
       m_description);
@@ -44,6 +48,8 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
 
     x->m_description = _sym_nothing;
     x->m_tags = _sym_nothing;
+
+    x->m_otype = Type::model;
 
     x->m_regclock = clock_new(
         x, reinterpret_cast<method>(
@@ -122,14 +128,14 @@ bool t_model::register_node(ossia::net::node_base* node)
   {
     object_dequarantining<t_model>(this);
 
-    std::vector<box_hierachy> children = find_children_to_register(
+    std::vector<t_object_base*> children = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
     for (auto child : children)
     {
-      if (child.classname == gensym("ossia.model"))
+      if (child->m_otype == Type::model)
       {
-        t_model* model = (t_model*)jbox_get_object(child.box);
+        t_model* model = (t_model*)child;
 
         // ignore itself
         if (model == this)
@@ -137,9 +143,9 @@ bool t_model::register_node(ossia::net::node_base* node)
 
         model->register_node(m_node);
       }
-      else if (child.classname == gensym("ossia.parameter"))
+      else if (child->m_otype == Type::param)
       {
-        t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+        t_parameter* parameter = (t_parameter*)child;
 
         parameter->register_node(m_node);
       }
@@ -179,14 +185,14 @@ bool t_model::do_registration(ossia::net::node_base* node)
   // auto-incrementing name
   if (node->find_child(m_name->s_name))
   {
-    std::vector<box_hierachy> children_model = find_children_to_register(
+    std::vector<t_object_base*> children_model = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
     for (auto child : children_model)
     {
-      if (child.classname == gensym("ossia.parameter"))
+      if (child->m_otype == Type::param)
       {
-        t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+        t_parameter* parameter = (t_parameter*)child;
 
         // if we already have a t_parameter node of that name, unregister it
         // we will register it again after node creation
@@ -210,9 +216,13 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
 bool t_model::unregister()
 {
+  clock_unset(m_regclock);
+
   // not registered
   if (!m_node)
     return true;
+
+  m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
 
   if (m_node && m_node->get_parent())
     m_node->get_parent()->remove_child(*m_node); // this calls isDeleted() on
@@ -239,32 +249,10 @@ void t_model::is_deleted(const ossia::net::node_base& n)
   }
 }
 
-bool t_model::is_renamed(t_model* x)
-{
-  return x->rename().contains(x);
-}
-
-void t_model::renaming(t_model* x)
-{
-  if (!is_renamed(x))
-    x->rename().push_back(x);
-}
-
-void t_model::derenaming(t_model* x)
-{
-  x->rename().remove_all(x);
-}
-
 ossia::safe_vector<t_model*>& t_model::quarantine()
 {
   static ossia::safe_vector<t_model*> quarantine;
   return quarantine;
-}
-
-ossia::safe_vector<t_model*>& t_model::rename()
-{
-  static ossia::safe_vector<t_model*> rename;
-  return rename;
 }
 
 } // max namespace

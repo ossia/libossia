@@ -1,6 +1,7 @@
 #pragma once
 #include "ossia-max.hpp"
 #include <ossia/detail/safe_vec.hpp>
+#include <ossia/ossia.hpp>
 
 namespace ossia
 {
@@ -9,6 +10,16 @@ namespace max
 
 #pragma mark -
 #pragma mark t_object_base structure declaration
+
+enum class Type {
+  root = 0,
+  param,
+  remote,
+  model,
+  view,
+  device,
+  client
+};
 
 struct t_object_base
 {
@@ -23,6 +34,7 @@ struct t_object_base
 
   ossia::net::node_base* m_node{};
 
+  Type m_otype{};
   t_symbol* m_name{};
   bool m_absolute = false;
   bool m_dead = false; // wether this object is being deleted or not;
@@ -37,6 +49,7 @@ struct t_object_base
   static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
   static void bang(t_object_base* x);
   //            static void tick(t_object_base* x);
+  static void relative_namespace(t_object_base* x);
 };
 
 #pragma mark -

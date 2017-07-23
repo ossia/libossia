@@ -26,13 +26,36 @@ extern "C" void ext_main(void* r)
   ossia_parameter_setup();
   ossia_remote_setup();
   ossia_view_setup();
+  ossia_ossia_setup();
 
   post("OSSIA library for Max is loaded");
+  post("build on %s at %s", __DATE__, __TIME__);
 }
 
 // ossia-max library constructor
-ossia_max::ossia_max()
+ossia_max::ossia_max():
+    m_localProtocol{new ossia::net::local_protocol},
+    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
+}
+
+// ossia-max library destructor
+ossia_max::~ossia_max()
+{
+    /*
+    for (auto x : views.copy()){
+      x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+    }
+    for (auto x : remotes.copy()){
+      x->x_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
+    }
+    for (auto x : models.copy()){
+      x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+    }
+    for (auto x : params.copy()){
+      x->x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(x);
+    }
+    */
 }
 
 // ossia-max library instance
@@ -59,41 +82,54 @@ bool object_register(T* x)
     return false; // object will be removed soon
 
   int l;
-  t_object* device_box
-      = find_parent_box(&x->m_object, gensym("ossia.device"), 0, &l);
-  t_object* client_box
-      = find_parent_box(&x->m_object, gensym("ossia.client"), 0, &l);
+  t_object* obj
+      = find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
+  t_device* device = nullptr;
+  if(obj) device = (t_device*) jbox_get_object(obj);
+  t_client* client = nullptr;
+  obj  = find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
+  if(obj) client = (t_client*) jbox_get_object(obj);
 
-  // first try to locate a ossia.device in the parent hierarchy...
-  if (!device_box && !client_box)
-    return false; // not ready to register : if there is no device, nothing
-                  // could be registered
 
-  t_object* model_box = nullptr;
-  t_object* view_box = nullptr;
+  t_model* model = nullptr;
+  t_view* view = nullptr;
   int view_level = 0, model_level = 0;
+
+  if (std::is_same<T, t_view>::value || std::is_same<T, t_model>::value)
+  {
+    view_level = 1;
+    model_level = 1;
+  }
 
   if (!x->m_absolute)
   {
     // then try to locate a parent view or model
     if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
-      view_box = find_parent_box_alive(
-          &x->m_object, gensym("ossia.view"), 0, &view_level);
+    {
+      obj = find_parent_box_alive(
+            &x->m_object, gensym("ossia.view"), 0, &view_level);
+      if(obj) view = (t_view*)jbox_get_object(obj);
+    }
     else
-      model_box = find_parent_box_alive(
+    {
+      obj = find_parent_box_alive(
           &x->m_object, gensym("ossia.model"), 0, &model_level);
+      if(obj) model = (t_model*)jbox_get_object(obj);
+    }
   }
 
   ossia::net::node_base* node = nullptr;
 
-  if (view_box)
-    node = ((t_view*)jbox_get_object(view_box))->m_node;
-  else if (model_box)
-    node = ((t_model*)jbox_get_object(model_box))->m_node;
-  else if (client_box)
-    node = ((t_client*)jbox_get_object(client_box))->m_node;
+  if (view)
+    node = view->m_node;
+  else if (model)
+    node = model->m_node;
+  else if (client)
+    node = client->m_node;
+  else if (device)
+    node = device->m_node;
   else
-    node = ((t_device*)jbox_get_object(device_box))->m_node;
+    node = &ossia_max::get_default_device()->get_root_node();
 
   return x->register_node(node);
 }
@@ -106,12 +142,12 @@ template bool object_register<t_view>(t_view*);
 template <typename T>
 std::string object_path_absolute(T* x)
 {
+  fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
 
   t_object* model_box = nullptr;
   t_object* view_box = nullptr;
   int view_level = 0, model_level = 0;
-  std::stringstream fullpath;
 
   if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
   {
@@ -495,7 +531,8 @@ t_object* find_parent_box_alive(
       {
         parent_box
             = find_parent_box_alive(&object->m_object, classname, 1, level);
-        object = (t_object_base*)jbox_get_object(parent_box);
+        if (parent_box) object = (t_object_base*)jbox_get_object(parent_box);
+        else object = nullptr;
       }
     }
   }
@@ -503,14 +540,14 @@ t_object* find_parent_box_alive(
   return parent_box;
 }
 
-std::vector<box_hierachy> find_children_to_register(
+std::vector<t_object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname)
 {
   t_symbol* subclassname = classname == gensym("ossia.model")
                                ? gensym("ossia.parameter")
                                : gensym("ossia.remote");
 
-  std::vector<box_hierachy> found;
+  std::vector<t_object_base*> found;
   t_object* next_box;
 
   // 1: look for [classname] objects into the patcher
@@ -526,15 +563,11 @@ std::vector<box_hierachy> find_children_to_register(
       // the object itself cannot be stored into the hierachy
       if (next_box != object_box)
       {
-        box_hierachy oh;
-
-        oh.box = next_box;
-        oh.hierarchy = 0;
-        oh.classname = classname;
+        t_object_base* o = (t_object_base*) next_box;
 
         // ignore dying object
-        if (!((t_object_base*)jbox_get_object(oh.box))->m_dead)
-          found.push_back(oh);
+        if (!o->m_dead)
+          found.push_back(o);
       }
     }
 
@@ -558,13 +591,11 @@ std::vector<box_hierachy> find_children_to_register(
       {
         t_object* patcher = jbox_get_object(next_box);
 
-        std::vector<box_hierachy> found_tmp
+        std::vector<t_object_base*> found_tmp
             = find_children_to_register(object, patcher, classname);
 
         for (auto obj : found_tmp)
         {
-          obj.hierarchy++; // increase hierarchy of objects found in a
-                           // subpatcher
           found.push_back(obj);
         }
       }
@@ -585,13 +616,8 @@ std::vector<box_hierachy> find_children_to_register(
         // the object itself cannot be stored into the hierachy
         if (next_box != object_box)
         {
-          box_hierachy oh;
-
-          oh.box = next_box;
-          oh.hierarchy = 0;
-          oh.classname = subclassname;
-
-          found.push_back(oh);
+          t_object_base* o = (t_object_base*)next_box;
+          found.push_back(o);
         }
       }
 

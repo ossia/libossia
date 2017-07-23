@@ -75,6 +75,8 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     //        x->m_clock = clock_new(x, (method)t_object_base::tick);
     x->m_regclock = clock_new(x, (method)t_object_base::bang);
 
+    x->m_otype = Type::remote;
+
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 
@@ -265,7 +267,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       m_node = ossia::net::find_node(*node, m_name->s_name);
     }
 
-    if (m_node)
+    if (m_node && m_node->get_address())
     {
       m_callbackit = m_node->get_address()->add_callback(
           [=](const ossia::value& v) { apply_value_visitor(v); });
@@ -283,6 +285,12 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
 bool t_remote::unregister()
 {
+  if (m_node)
+  {
+    m_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(
+          this);
+  }
+
   if (m_callbackit != boost::none)
   {
     if (m_node && m_node->get_address())

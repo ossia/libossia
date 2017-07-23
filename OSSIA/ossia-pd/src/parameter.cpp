@@ -67,9 +67,12 @@ bool t_param::do_registration(ossia::net::node_base* node)
   x_node = &ossia::net::create_node(*node, x_name->s_name);
 
   x_node->about_to_be_deleted.connect<t_param, &t_param::is_deleted>(this);
+
   ossia::net::address_base* local_address{};
+
   std::string type = x_type->s_name;
   ossia::transform(type, type.begin(), ::tolower);
+
   if (type == "float")
   {
     local_address = x_node->create_address(ossia::val_type::FLOAT);

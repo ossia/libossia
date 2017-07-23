@@ -112,6 +112,8 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
 
     x->m_clock = clock_new(x, (method)ossia::max::push_default_value);
 
+    x->m_otype = Type::param;
+
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 
@@ -147,7 +149,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
 extern "C" void ossia_parameter_free(t_parameter* x)
 {
   x->unregister();
-  object_dequarantining(x);
+  object_dequarantining<t_parameter>(x);
   object_free(x->m_clock);
   // TODO : free outlets
 }
@@ -229,7 +231,7 @@ bool t_parameter::register_node(ossia::net::node_base* node)
 
   if (res)
   {
-    object_dequarantining(this);
+    object_dequarantining<t_parameter>(this);
 
     for (auto remote : t_remote::quarantine().copy())
       object_register<t_remote>(static_cast<t_remote*>(remote));
@@ -251,20 +253,24 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   if (!node)
     return false;
 
+  /*
   std::string absolute_path = object_path_absolute<t_parameter>(this);
   std::string address_string = ossia::net::address_string_from_node(*node);
-
   if (absolute_path != address_string)
     return false;
+  */
 
   m_node = &ossia::net::create_node(*node, m_name->s_name);
-  if (m_node->get_name() != std::string(m_name->s_name))
-    renaming(this);
 
   m_node->about_to_be_deleted.connect<t_parameter, &t_parameter::is_deleted>(
       this);
 
   ossia::net::address_base* localAddress{};
+
+  // transform to lowercase
+  std::string type = m_type->s_name;
+  ossia::transform(type, type.begin(), ::tolower);
+  m_type = gensym(type.c_str());
 
   if (m_type == gensym("float"))
   {

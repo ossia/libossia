@@ -28,6 +28,8 @@ set(PROJECT_SRCS
     src/ossia-max.hpp
     src/ossia_object_base.cpp
     src/ossia_object_base.hpp
+    src/ossia_object.cpp
+    src/ossia_object.hpp
     src/parameter.hpp
     src/parameter.cpp
     src/client.hpp

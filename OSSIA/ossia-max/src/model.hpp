@@ -20,13 +20,8 @@ struct t_model : t_object_base
   bool unregister();
 
   void is_deleted(const ossia::net::node_base&);
-  bool is_renamed(t_model*);
-  void renaming(t_model*);
-  void derenaming(t_model*);
 
   static ossia::safe_vector<t_model*>& quarantine();
-
-  static ossia::safe_vector<t_model*>& rename();
 };
 
 } // max namespace

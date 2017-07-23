@@ -30,7 +30,7 @@ extern "C" void ossia_device_setup(void)
       ossia_library.ossia_device_class, (method)t_device::loadbang, "loadbang",
       A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_device_class, (method)ossia_device_dump, "dump",
+      ossia_library.ossia_device_class, (method)t_object_base::relative_namespace, "namespace",
       A_NOTHING, 0);
   class_addmethod(
       ossia_library.ossia_device_class, (method)ossia_device_expose, "expose",
@@ -58,6 +58,8 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = gensym("Max");
+    x->m_otype = Type::device;
+
     if (attrstart && argv)
     {
       if (atom_gettype(argv) == A_SYM)
@@ -88,32 +90,9 @@ extern "C" void ossia_device_free(t_device* x)
   x->unregister_children();
   if (x->m_device)
     delete (x->m_device);
-}
+  outlet_delete(x->m_dump_out);
+  register_quarantinized();
 
-static void dump_child(t_device* x, const ossia::net::node_base& node)
-{
-  for (const auto& child : node.children())
-  {
-    std::stringstream ss;
-    auto parent = child->get_parent();
-
-    while (parent != nullptr)
-    {
-      ss << "\t";
-      parent = parent->get_parent();
-    }
-    ss << child->get_name();
-
-    t_atom a;
-    atom_setsym(&a, gensym(ss.str().c_str()));
-    outlet_anything(x->m_dump_out, gensym("child"), 1, &a);
-    dump_child(x, *child);
-  }
-}
-
-extern "C" void ossia_device_dump(t_device* x)
-{
-  dump_child(x, x->m_device->get_root_node());
 }
 
 extern "C" void
@@ -240,36 +219,36 @@ namespace max
 
 void t_device::register_children(t_device* x)
 {
-  std::vector<box_hierachy> children_model = find_children_to_register(
+  std::vector<t_object_base*> children_model = find_children_to_register(
       &x->m_object, get_patcher(&x->m_object), gensym("ossia.model"));
 
   for (auto child : children_model)
   {
-    if (child.classname == gensym("ossia.model"))
+    if (child->m_otype == Type::model)
     {
-      t_model* model = (t_model*)jbox_get_object(child.box);
+      t_model* model = (t_model*)child;
       model->register_node(x->m_node);
     }
-    else if (child.classname == gensym("ossia.parameter"))
+    else if (child->m_otype == Type::param)
     {
-      t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+      t_parameter* parameter = (t_parameter*)child;
       parameter->register_node(x->m_node);
     }
   }
 
-  std::vector<box_hierachy> children_view = find_children_to_register(
+  std::vector<t_object_base*> children_view = find_children_to_register(
       &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
-    if (child.classname == gensym("ossia.view"))
+    if (child->m_otype == Type::view)
     {
-      t_view* view = (t_view*)jbox_get_object(child.box);
+      t_view* view = (t_view*)child;
       view->register_node(x->m_node);
     }
-    else if (child.classname == gensym("ossia.remote"))
+    else if (child->m_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)jbox_get_object(child.box);
+      t_remote* remote = (t_remote*)child;
       remote->register_node(x->m_node);
     }
   }
@@ -277,36 +256,36 @@ void t_device::register_children(t_device* x)
 
 void t_device::unregister_children()
 {
-  std::vector<box_hierachy> children_model = find_children_to_register(
+  std::vector<t_object_base*> children_model = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
   for (auto child : children_model)
   {
-    if (child.classname == gensym("ossia.model"))
+    if (child->m_otype == Type::model)
     {
-      t_model* model = (t_model*)jbox_get_object(child.box);
+      t_model* model = (t_model*)child;
       model->unregister();
     }
-    else if (child.classname == gensym("ossia.param"))
+    else if (child->m_otype == Type::param)
     {
-      t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+      t_parameter* parameter = (t_parameter*)child;
       parameter->unregister();
     }
   }
 
-  std::vector<box_hierachy> children_view = find_children_to_register(
+  std::vector<t_object_base*> children_view = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
-    if (child.classname == gensym("ossia.view"))
+    if (child->m_otype == Type::view)
     {
-      t_view* view = (t_view*)jbox_get_object(child.box);
+      t_view* view = (t_view*)child;
       view->unregister();
     }
-    else if (child.classname == gensym("ossia.remote"))
+    else if (child->m_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)jbox_get_object(child.box);
+      t_remote* remote = (t_remote*)child;
       remote->unregister();
     }
   }

@@ -26,6 +26,7 @@ static void client_free(t_client* x)
   if (x->x_device)
     delete (x->x_device);
   x->x_device = nullptr;
+  outlet_free(x->x_dumpout);
   register_quarantinized();
 }
 

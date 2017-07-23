@@ -200,7 +200,7 @@ struct value_visitor
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
+t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
 
 /**
  * @brief find_parent_alive
@@ -210,16 +210,15 @@ t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
  * @param start_level
  * @return
  */
-template <typename T>
-static T* find_parent_alive(
+static t_obj_base* find_parent_alive(
     t_eobj* x, std::string classname, int start_level, int* level)
 {
-  T* obj = (T*)find_parent(x, classname, start_level, level);
+  t_obj_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
   {
     while (obj && obj->x_dead)
     {
-      obj = find_parent_alive<T>(&obj->x_obj, classname, 1, level);
+      obj = find_parent_alive(&obj->x_obj, classname, 1, level);
     }
   }
   return obj;
@@ -245,7 +244,7 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   if (std::is_same<T, t_model>::value)
     start_level = 1;
 
-  model = find_parent_alive<t_model>(
+  model = (t_model*)find_parent_alive(
       &x->x_obj, "ossia.model", start_level, &model_level);
   t_model* tmp = nullptr;
 
@@ -253,13 +252,15 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   {
     vs.push_back(model->x_name->s_name);
     tmp = model;
-    model = find_parent_alive<t_model>(
+    model = (t_model*)find_parent_alive(
         &tmp->x_obj, "ossia.model", 1, &model_level);
   }
 
   t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
 
   int l = 0;
+
+  // FIXme TODO use get root device instead
   auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
   if (device)
     fullpath << device->x_name->s_name << ":";
@@ -281,7 +282,7 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   if (std::is_same<T, t_view>::value)
     start_level = 1;
 
-  view = find_parent_alive<t_view>(
+  view =  (t_view*)find_parent_alive(
       &x->x_obj, "ossia.view", start_level, &view_level);
   t_view* tmp = nullptr;
 
@@ -290,18 +291,22 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
     vs.push_back(view->x_name->s_name);
     tmp = view;
     view
-        = find_parent_alive<t_view>(&tmp->x_obj, "ossia.view", 1, &view_level);
+        = (t_view*) find_parent_alive(&tmp->x_obj, "ossia.view", 1, &view_level);
   }
 
   t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
 
-  int l = 0;
+  if (auto node = find_parent_node(x))
+    fullpath << node->get_name() << ":";
+
+  /**
   if (auto client = (t_client*)find_parent(obj, "ossia.client", 0, &l))
     fullpath << client->x_name->s_name << ":";
   else if (auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l))
     fullpath << device->x_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
+  **/
 
   return string_from_path(vs, fullpath);
 }
@@ -311,64 +316,11 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-ossia::net::node_base* find_parent_node(t_obj_base* x){
-  int l;
-  t_device* device = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
-  t_client* client = (t_client*)find_parent(&x->x_obj, "ossia.client", 0, &l);
-
-  t_model* model = nullptr;
-  t_view* view = nullptr;
-  int view_level = 0, model_level = 0;
-
-  if (x->x_otype == Type::view || x->x_otype == Type::model)
-  {
-    view_level = 1;
-    model_level = 1;
-  }
-
-  if (!x->x_absolute)
-  {
-    // then try to locate a parent view or model
-    if (x->x_otype == Type::view || x->x_otype == Type::remote)
-    {
-      view
-          = find_parent_alive<t_view>(&x->x_obj, "ossia.view", 0, &view_level);
-    }
-    else
-    {
-      model = find_parent_alive<t_model>(
-          &x->x_obj, "ossia.model", 0, &model_level);
-    }
-  }
-
-  ossia::net::node_base* node = nullptr;
-
-  if (view)
-  {
-    node = view->x_node;
-  }
-  else if (model)
-  {
-    node = model->x_node;
-  }
-  else if (client)
-  {
-    node = client->x_node;
-  }
-  else if (device)
-  {
-    node = device->x_node;
-  }
-  else
-  {
-    node = ossia_pd::get_default_device();
-  }
-
-  return node;
-}
+ossia::net::node_base* find_parent_node(t_obj_base* x);
 
 // self registering (when creating the object)
-bool obj_register(t_obj_base* x)
+template <typename T>
+bool obj_register(T* x)
 {
   if (x->x_node)
     return true; // already registered

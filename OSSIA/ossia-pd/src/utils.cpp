@@ -64,7 +64,7 @@ void register_quarantinized()
   }
 }
 
-t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
+t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
 {
   t_canvas* canvas = x->o_canvas;
 
@@ -89,7 +89,7 @@ t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
       std::string current = list->g_pd->c_name->s_name;
       if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
       { // check if type match and not the same intance...
-        return &(list->g_pd);
+        return (t_obj_base*) &(list->g_pd);
       }
       list = list->g_next;
     }
@@ -97,6 +97,61 @@ t_pd* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
     (*level)++;
   }
   return nullptr;
+}
+
+
+ossia::net::node_base* find_parent_node(t_obj_base* x){
+  int l;
+  t_device* device = (t_device*)find_parent_alive(&x->x_obj, "ossia.device", 0, &l);
+  t_client* client = (t_client*)find_parent_alive(&x->x_obj, "ossia.client", 0, &l);
+
+  t_model* model = nullptr;
+  t_view* view = nullptr;
+  int view_level = 0, model_level = 0;
+
+  if (x->x_otype == Type::view || x->x_otype == Type::model)
+  {
+    view_level = 1;
+    model_level = 1;
+  }
+
+  if (!x->x_absolute)
+  {
+    // then try to locate a parent view or model
+    if (x->x_otype == Type::view || x->x_otype == Type::remote)
+    {
+      view
+          = (t_view*)find_parent_alive(&x->x_obj, "ossia.view", 0, &view_level);
+    }
+    else
+    {
+      model = (t_model*)find_parent_alive(
+          &x->x_obj, "ossia.model", 0, &model_level);
+    }
+  }
+
+  ossia::net::node_base* node = nullptr;
+
+  if (view)
+  {
+    node = view->x_node;
+  }
+  else if (model)
+  {
+    node = model->x_node;
+  }
+  else if (client)
+  {
+    node = client->x_node;
+  }
+  else if (device)
+  {
+    node = device->x_node;
+  }
+  else
+  {
+    node = &ossia_pd::get_default_device()->get_root_node();
+  }
 }
 
 std::vector<t_obj_base*> find_child_to_register(
