@@ -35,6 +35,7 @@ public:
   QObject* device() const;
 
   void updateCount();
+  void reloadParentNode();
 signals:
   void setValue_sig(const value&);
   void countChanged(int count);
