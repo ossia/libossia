@@ -3,11 +3,26 @@
 #include "device.hpp"
 #include "ossia_obj_base.hpp"
 #include <boost/optional.hpp>
+#include "obj_pattern.hpp"
 
 namespace ossia
 {
 namespace pd
 {
+
+struct t_matcher
+{
+  ossia::net::node_base* node;
+  t_remote* parent;
+
+  boost::optional<ossia::callback_container<ossia::value_callback>::iterator>
+      callbackit = boost::none;
+
+  t_matcher(ossia::net::node_base* n, t_remote* p); // constructor
+  ~t_matcher();
+
+  void set_value(const ossia::value& v);
+};
 
 struct t_remote : t_obj_base
 {
@@ -17,20 +32,15 @@ struct t_remote : t_obj_base
   bool unregister();
 
   boost::optional<ossia::callback_container<ossia::value_callback>::iterator>
-      x_callbackit;
+      x_callbackit{};
 
   std::vector<boost::optional<ossia::callback_container<ossia::value_callback>::iterator> >
       x_callbackits;
 
-  std::vector<ossia::net::node_base*> x_nodes{};
+  std::vector<t_matcher> x_matchers{};
 
-  void is_deleted(const ossia::net::node_base& n)
-  {
-    if (!x_dead)
-    {
-      unregister();
-    }
-  }
+  void is_deleted(const ossia::net::node_base& n);
+  void on_address_created_callback(const ossia::net::address_base& addr);
 
   static ossia::safe_vector<t_remote*>& quarantine()
   {

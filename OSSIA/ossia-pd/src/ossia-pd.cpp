@@ -88,7 +88,7 @@ ossia_pd::~ossia_pd()
     x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
   }
   for (auto x : remotes.copy()){
-    x->x_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
+    x->x_matchers.clear();
   }
   for (auto x : models.copy()){
     x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);

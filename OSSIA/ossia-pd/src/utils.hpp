@@ -6,6 +6,7 @@
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
+#include <ossia-pd/src/ossia_obj_base.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <fmt/format.h>
@@ -227,7 +228,9 @@ static T* find_parent_alive(
 
 /**
  * @brief get_absolute_path
- * @param t_obj_base
+ * @param
+ *
+ *
  * @return std::string with full path to object from root device in an OSC
  * style (with '/')
  */
@@ -311,71 +314,25 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-ossia::net::node_base* find_parent_node(t_obj_base* x){
-  int l;
-  t_device* device = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
-  t_client* client = (t_client*)find_parent(&x->x_obj, "ossia.client", 0, &l);
+ossia::net::node_base* find_parent_node(t_obj_base* x);
 
-  t_model* model = nullptr;
-  t_view* view = nullptr;
-  int view_level = 0, model_level = 0;
+template<typename T>
+/**
+ * @brief copy : utility function to return a copy of an object
+ * @param v : object to copy
+ */
+auto copy(const T& v) { return v; }
 
-  if (x->x_otype == Type::view || x->x_otype == Type::model)
-  {
-    view_level = 1;
-    model_level = 1;
-  }
-
-  if (!x->x_absolute)
-  {
-    // then try to locate a parent view or model
-    if (x->x_otype == Type::view || x->x_otype == Type::remote)
-    {
-      view
-          = find_parent_alive<t_view>(&x->x_obj, "ossia.view", 0, &view_level);
-    }
-    else
-    {
-      model = find_parent_alive<t_model>(
-          &x->x_obj, "ossia.model", 0, &model_level);
-    }
-  }
-
-  ossia::net::node_base* node = nullptr;
-
-  if (view)
-  {
-    node = view->x_node;
-  }
-  else if (model)
-  {
-    node = model->x_node;
-  }
-  else if (client)
-  {
-    node = client->x_node;
-  }
-  else if (device)
-  {
-    node = device->x_node;
-  }
-  else
-  {
-    node = ossia_pd::get_default_device();
-  }
-
-  return node;
-}
-
+template<typename T>
 // self registering (when creating the object)
-bool obj_register(t_obj_base* x)
+bool obj_register(T* x)
 {
   if (x->x_node)
     return true; // already registered
   if (x->x_dead)
     return false; // object will be removed soon
 
-  auto node = find_parent_node(x);
+  auto node = find_parent_node((t_obj_base*)x);
 
   return x->register_node(node);
 }
