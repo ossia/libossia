@@ -621,7 +621,11 @@ t_object* get_patcher(t_object* object)
   // if the box is in a bpatcher, the patcher is NULL
   if (!patcher)
   {
-    patcher = object_attr_getobj(object, _sym_parentpatcher);
+    t_object* parentclass = object_attr_getobj(object, _sym_parentclass);
+    t_symbol *cls = object_classname(parentclass);
+    post("parentclasse name %s", cls->s_name);
+    // this crashes if box is in the root patcher
+    // patcher = object_attr_getobj(object, _sym_parentpatcher);
   }
 
   return patcher;
