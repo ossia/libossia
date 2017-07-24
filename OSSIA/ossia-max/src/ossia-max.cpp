@@ -35,7 +35,7 @@ extern "C" void ext_main(void* r)
 // ossia-max library constructor
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
-    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
+    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
 {
 }
 
@@ -82,14 +82,8 @@ bool object_register(T* x)
     return false; // object will be removed soon
 
   int l;
-  t_object* obj
-      = find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
-  t_device* device = nullptr;
-  if(obj) device = (t_device*) jbox_get_object(obj);
-  t_client* client = nullptr;
-  obj  = find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
-  if(obj) client = (t_client*) jbox_get_object(obj);
-
+  t_device* device = (t_device*) find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
+  t_client* client = (t_client*) find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
 
   t_model* model = nullptr;
   t_view* view = nullptr;
@@ -106,15 +100,13 @@ bool object_register(T* x)
     // then try to locate a parent view or model
     if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
     {
-      obj = find_parent_box_alive(
+      view = (t_view*) find_parent_box_alive(
             &x->m_object, gensym("ossia.view"), 0, &view_level);
-      if(obj) view = (t_view*)jbox_get_object(obj);
     }
     else
     {
-      obj = find_parent_box_alive(
+      model = (t_model*)find_parent_box_alive(
           &x->m_object, gensym("ossia.model"), 0, &model_level);
-      if(obj) model = (t_model*)jbox_get_object(obj);
     }
   }
 
@@ -145,27 +137,24 @@ std::string object_path_absolute(T* x)
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
 
-  t_object* model_box = nullptr;
-  t_object* view_box = nullptr;
-  int view_level = 0, model_level = 0;
-
   if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
   {
     int start_level = 0;
+    int view_level = 0;
+    t_view* view = nullptr;
 
     if (std::is_same<T, t_view>::value)
       start_level = 1;
 
-    view_box = find_parent_box_alive(
+    view = (t_view*)find_parent_box_alive(
         &x->m_object, gensym("ossia.view"), start_level, &view_level);
     t_view* tmp = nullptr;
 
-    while (view_box)
+    while (view)
     {
-      tmp = (t_view*)jbox_get_object(view_box);
-
+      tmp = view;
       vs.push_back(tmp->m_name->s_name);
-      view_box = find_parent_box_alive(
+      view = (t_view*)find_parent_box_alive(
           &tmp->m_object, gensym("ossia.view"), 1, &view_level);
     }
 
@@ -177,34 +166,41 @@ std::string object_path_absolute(T* x)
       object = &x->m_object;
 
     int l = 0;
-    t_object* device_box
-        = find_parent_box(object, gensym("ossia.device"), 0, &l);
-    t_object* client_box
-        = find_parent_box(object, gensym("ossia.client"), 0, &l);
+    t_device* device
+        = (t_device*) find_parent_box(object, gensym("ossia.device"), 0, &l);
+    t_client* client
+        = (t_client*) find_parent_box(object, gensym("ossia.client"), 0, &l);
 
-    if (client_box)
-      fullpath << ((t_client*)jbox_get_object(client_box))->m_name->s_name
+    if (client)
+      fullpath << client->m_name->s_name
                << ":";
-    else if (device_box)
-      fullpath << ((t_device*)jbox_get_object(device_box))->m_name->s_name
+    else if (device)
+      fullpath << device->m_name->s_name
+               << ":";
+    else
+      fullpath << ossia_max::get_default_device()->get_name()
                << ":";
   }
   else
   {
     int start_level = 0;
+    int model_level = 0;
+
+    t_model* model = nullptr;
+
     if (std::is_same<T, t_model>::value)
       start_level = 1;
 
-    model_box = find_parent_box_alive(
+    model = (t_model*) find_parent_box_alive(
         &x->m_object, gensym("ossia.model"), start_level, &model_level);
     t_model* tmp = nullptr;
 
-    while (model_box)
+    while (model)
     {
-      tmp = (t_model*)jbox_get_object(model_box);
+      tmp = model;
 
       vs.push_back(tmp->m_name->s_name);
-      model_box = find_parent_box_alive(
+      model = (t_model*) find_parent_box_alive(
           &tmp->m_object, gensym("ossia.model"), 1, &model_level);
     }
 
@@ -215,13 +211,13 @@ std::string object_path_absolute(T* x)
       object = &x->m_object;
 
     int l = 0;
-    t_object* device_box = nullptr;
+    t_device* device = (t_device*)find_parent_box(object, gensym("ossia.device"), 0, &l);
 
-    if (object)
-      device_box = find_parent_box(object, gensym("ossia.device"), 0, &l);
-
-    if (device_box)
-      fullpath << ((t_device*)jbox_get_object(device_box))->m_name->s_name
+    if (device)
+      fullpath << device->m_name->s_name
+               << ":";
+    else
+       fullpath << ossia_max::get_default_device()->get_name()
                << ":";
   }
 
@@ -475,20 +471,20 @@ void register_quarantinized()
   }
 }
 
-t_object* find_parent_box(
+t_object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level)
 {
-  t_object* parent_box = nullptr;
+
+  t_object* patcher = get_patcher(object);
+  t_object_base* parent = nullptr;
 
   // look upper if there is an upper level and if it is not the level where to
   // start the research
-  t_object* patcher = get_patcher(object);
-
-  if (patcher && start_level)
-    parent_box = find_parent_box(patcher, classname, start_level--, level);
+  while (patcher && start_level--)
+    t_object* patcher = get_patcher(patcher);
 
   // if no parent object have been found in upper patcher, look around
-  if (!parent_box)
+  while (patcher)
   {
     t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
 
@@ -502,7 +498,7 @@ t_object* find_parent_box(
         // the object itself cannot be its own parent
         if (next_box != object_box)
         {
-          parent_box = next_box;
+          parent = (t_object_base*)jbox_get_object(next_box);
           *level = start_level;
           break;
         }
@@ -510,34 +506,25 @@ t_object* find_parent_box(
 
       next_box = object_attr_getobj(next_box, _sym_nextobject);
     }
+    t_object* patcher = get_patcher(patcher);
   }
 
-  return parent_box;
+  return parent;
 }
 
-t_object* find_parent_box_alive(
+t_object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level)
 {
-  t_object* parent_box
+  t_object_base* parent
       = find_parent_box(object, classname, start_level, level);
 
-  if (parent_box)
+  while (parent && parent->m_dead)
   {
-    t_object_base* object = (t_object_base*)jbox_get_object(parent_box);
-
-    if (object)
-    {
-      while (object && object->m_dead)
-      {
-        parent_box
-            = find_parent_box_alive(&object->m_object, classname, 1, level);
-        if (parent_box) object = (t_object_base*)jbox_get_object(parent_box);
-        else object = nullptr;
-      }
-    }
+    parent
+        = find_parent_box_alive(&parent->m_object, classname, 1, level);
   }
 
-  return parent_box;
+  return parent;
 }
 
 std::vector<t_object_base*> find_children_to_register(
@@ -561,9 +548,9 @@ std::vector<t_object_base*> find_children_to_register(
       object_obex_lookup(object, gensym("#B"), &object_box);
 
       // the object itself cannot be stored into the hierachy
-      if (next_box != object_box)
+      if (next_box != object_box && next_box != nullptr)
       {
-        t_object_base* o = (t_object_base*) next_box;
+        t_object_base* o = (t_object_base*) jbox_get_object(next_box);
 
         // ignore dying object
         if (!o->m_dead)
@@ -613,10 +600,10 @@ std::vector<t_object_base*> find_children_to_register(
         t_object* object_box = NULL;
         object_obex_lookup(object, gensym("#B"), &object_box);
 
-        // the object itself cannot be stored into the hierachy
-        if (next_box != object_box)
+        // the object itself shouln't be stored
+        if (next_box != object_box && next_box != nullptr)
         {
-          t_object_base* o = (t_object_base*)next_box;
+          t_object_base* o = (t_object_base*) jbox_get_object(next_box);
           found.push_back(o);
         }
       }
@@ -630,13 +617,17 @@ std::vector<t_object_base*> find_children_to_register(
 
 t_object* get_patcher(t_object* object)
 {
+  return jpatcher_get_parentpatcher(object);
+
   t_object* patcher = NULL;
   object_obex_lookup(object, gensym("#P"), &patcher);
+
 
   // if the box is in a bpatcher, the patcher is NULL
   if (!patcher)
   {
-    patcher = object_attr_getobj(object, _sym_parentpatcher);
+    // FIXME that crashes
+  //  patcher = object_attr_getobj(object, _sym_parentpatcher);
   }
 
   return patcher;

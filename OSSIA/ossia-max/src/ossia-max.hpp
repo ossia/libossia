@@ -107,7 +107,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the parent box if exists. Otherwise returns nullptr.
  */
-t_object* find_parent_box(
+t_object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -118,7 +118,7 @@ t_object* find_parent_box(
  * @param start_level
  * @return
  */
-t_object* find_parent_box_alive(
+t_object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
