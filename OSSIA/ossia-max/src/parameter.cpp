@@ -141,7 +141,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
     // start registration
-    object_register<t_parameter>(x);
+    max_object_register<t_parameter>(x);
   }
 
   return x;
@@ -235,7 +235,7 @@ bool t_parameter::register_node(ossia::net::node_base* node)
     object_dequarantining<t_parameter>(this);
 
     for (auto remote : t_remote::quarantine().copy())
-      object_register<t_remote>(static_cast<t_remote*>(remote));
+      max_object_register<t_remote>(static_cast<t_remote*>(remote));
   }
   else
     object_quarantining(this);
@@ -442,7 +442,7 @@ bool t_parameter::unregister()
     m_node = nullptr;
 
     for (auto remote : t_remote::quarantine().copy())
-      object_register<t_remote>(static_cast<t_remote*>(remote));
+      max_object_register<t_remote>(static_cast<t_remote*>(remote));
   }
 
   object_quarantining(this);
@@ -453,7 +453,7 @@ bool t_parameter::unregister()
     if (strcmp(parameter->m_name->s_name, m_name->s_name) == 0)
     {
       parameter->unregister();
-      object_register<t_parameter>(parameter);
+      max_object_register<t_parameter>(parameter);
     }
   }
 

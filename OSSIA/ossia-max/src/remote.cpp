@@ -103,7 +103,7 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    object_register<t_remote>(x);
+    max_object_register<t_remote>(x);
   }
 
   return (x);

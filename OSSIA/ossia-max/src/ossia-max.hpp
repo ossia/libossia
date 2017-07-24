@@ -59,11 +59,8 @@ private:
 #pragma mark -
 #pragma mark Templates
 
-// we can't have virtual methods with C linkage so we need a bunch a template
-// instead...
-
 template <typename T>
-extern bool object_register(T*);
+extern bool max_object_register(T*);
 
 /**
  * @brief get absolute path to an object

@@ -54,7 +54,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
 
     x->m_regclock = clock_new(
         x, reinterpret_cast<method>(
-               static_cast<bool (*)(t_model*)>(&object_register<t_model>)));
+               static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)));
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -154,13 +154,13 @@ bool t_model::register_node(ossia::net::node_base* node)
 
     for (auto view : t_view::quarantine().copy())
     {
-      object_register<t_view>(static_cast<t_view*>(view));
+      max_object_register<t_view>(static_cast<t_view*>(view));
     }
 
     // then try to register qurantinized remote
     for (auto remote : t_remote::quarantine().copy())
     {
-      object_register<t_remote>(static_cast<t_remote*>(remote));
+      max_object_register<t_remote>(static_cast<t_remote*>(remote));
     }
   }
   else
