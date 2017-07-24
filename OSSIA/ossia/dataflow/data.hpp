@@ -7,7 +7,7 @@ namespace ossia
 template <typename T>
 using value_vector = chobo::small_vector<T, 4>;
 
-using audio_vector = std::array<double, 64>;
+using audio_vector = chobo::small_vector<double, 64>;
 
 struct audio_port
 {
@@ -55,7 +55,7 @@ struct clear_data
 
   void operator()(audio_port& p) const
   {
-    p.samples.fill(0);
+    p.samples.clear();
   }
 
   void operator()() const

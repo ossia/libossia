@@ -19,7 +19,7 @@ void audio_address::push_value(const audio_port& port)
 {
   std::copy_n(
         port.samples.begin(),
-        std::min((std::size_t)audio.size(), (std::size_t)port.samples.size()),
+        std::min(port.samples.size(), (std::size_t)audio.size()),
         audio.begin());
 }
 
