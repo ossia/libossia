@@ -27,9 +27,6 @@ extern "C" void ossia_device_setup(void)
       ossia_library.ossia_device_class, (method)t_device::register_children,
       "register", A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_device_class, (method)t_device::loadbang, "loadbang",
-      A_NOTHING, 0);
-  class_addmethod(
       ossia_library.ossia_device_class, (method)t_object_base::relative_namespace, "namespace",
       A_NOTHING, 0);
   class_addmethod(
@@ -77,6 +74,8 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
     x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->m_name->s_name};
     x->m_node = &x->m_device->get_root_node();
+
+    t_device::register_children(x);
   }
 
   return (x);
@@ -287,12 +286,6 @@ void t_device::unregister_children()
       remote->unregister();
     }
   }
-}
-
-void t_device::loadbang(t_device* x)
-{
-  // if (LB_LOAD == (int)type)
-  register_children(x);
 }
 
 } // max namespace
