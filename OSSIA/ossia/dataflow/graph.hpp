@@ -57,7 +57,7 @@ public:
   void disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node);
 
   static void copy_from_local(const data_type& out, inlet& in);
-  static void copy(const data_type& out, std::size_t pos, inlet& in);
+  static void copy(const delay_line_type& out, std::size_t pos, inlet& in);
   static void copy(const outlet& out, inlet& in);
   static void copy_to_local(
       const data_type& out, const Destination& d, execution_state& in);

@@ -268,41 +268,6 @@ void graph::clear()
   m_time = 0;
 }
 
-struct push_visitor
-{
-  const net::address_base& out;
-  void operator()(value_port& val)
-  {
-    val.data.push_back(out.value());
-  }
-
-  void operator()(audio_port& val)
-  {
-    auto aa = dynamic_cast<const audio_address*>(&out);
-    assert(aa);
-    val.samples.resize(val.samples.size() + 1);
-
-    auto& arr = val.samples.back();
-    const auto& src = aa->audio;
-    const auto N = std::min((int)src.size(), (int)arr.size());
-    for (int i = 0; i < N; i++)
-      arr[i] = src[i];
-  }
-
-  void operator()(midi_port& val)
-  {
-    auto ma = dynamic_cast<const midi_generic_address*>(&out);
-    assert(ma);
-
-    for (auto& m : ma->messages)
-      val.messages.push_back(m);
-  }
-
-  void operator()()
-  {
-  }
-};
-
 void graph::state()
 {
   execution_state e;
@@ -414,7 +379,7 @@ graph::disable_strict_nodes(const set<graph_node*>& enabled_nodes)
       {
         assert(edge->out_node);
 
-        if (auto sc = edge->con.target<immediate_strict_connection>())
+        if (immediate_strict_connection* sc = edge->con.target<immediate_strict_connection>())
         {
           if ((sc->required_sides
                & immediate_strict_connection::required_sides_t::outbound)
@@ -423,7 +388,7 @@ graph::disable_strict_nodes(const set<graph_node*>& enabled_nodes)
             ret.insert(node);
           }
         }
-        else if (auto delay = edge->con.target<delayed_strict_connection>())
+        else if (delayed_strict_connection* delay = edge->con.target<delayed_strict_connection>())
         {
           const auto n = ossia::apply(data_size{}, delay->buffer);
           if (n == 0 || delay->pos >= n)
@@ -485,7 +450,7 @@ void graph::copy_from_local(const data_type& out, inlet& in)
   }
 }
 
-void graph::copy(const data_type& out, std::size_t pos, inlet& in)
+void graph::copy(const delay_line_type& out, std::size_t pos, inlet& in)
 {
   if (out.which() == in.data.which() && out && in.data)
   {

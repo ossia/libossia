@@ -12,43 +12,15 @@ void audio_address::clone_value(audio_vector& res) const
 {
   const auto N = std::min((int)audio.size(), (int)res.size());
   for (int i = 0; i < N; i++)
-    res[i] = audio[i];
-
-  // Fill remaining with zeros.
-  const int M = res.size();
-  for (int i = N; i < M; i++)
-    res[i] = 0.;
+    res[i] += audio[i];
 }
 
 void audio_address::push_value(const audio_port& port)
 {
-  const int port_N = port.samples.size();
-
-  // The first buffer, if it exists, will fill with zeros
-  if (port_N > 0)
-  {
-    const int N = std::min((int)audio.size(), (int)port.samples[0].size());
-
-    // First buffer
-    for (int j = 0; j < N; j++)
-    {
-      audio[j] = port.samples[0][j];
-    }
-    // Following buffers are mixed
-    for (int i = 1; i < port_N; i++)
-    {
-      auto& v = port.samples[i];
-      const int N = std::min((int)audio.size(), (int)v.size());
-
-      for (int j = 0; j < N; j++)
-        audio[j] += v[j];
-    }
-  }
-  else
-  {
-    for (auto& v : audio)
-      v = 0.;
-  }
+  std::copy_n(
+        port.samples.begin(),
+        std::min((std::size_t)audio.size(), (std::size_t)port.samples.size()),
+        audio.begin());
 }
 
 net::node_base&audio_address::get_node() const

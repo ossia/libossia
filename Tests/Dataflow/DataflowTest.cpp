@@ -82,10 +82,12 @@ struct debug_mock
     if(auto n = node.lock())
     {
       qDebug() << factor << n->time();
+      messages.emplace_back(factor, n->time());
     }
   }
+  static std::vector<std::pair<int, int>> messages;
 };
-
+std::vector<std::pair<int, int>> debug_mock::messages;
 struct execution_mock
 {
   execution_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
@@ -161,19 +163,19 @@ struct simple_implicit_graph
   }
 };
 
-struct other_explicit_graph
+struct no_address_explicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2;
-  other_explicit_graph(ossia::TestUtils& test, ossia::connection c)
+  no_address_explicit_graph(ossia::TestUtils& test, ossia::connection c)
   {
     using namespace ossia;
-    auto n1_out = make_outlet<value_port>(*test.tuple_addr);
+    auto n1_out = make_outlet<value_port>();
     auto n1 = std::make_shared<node_mock>(inlets{}, outlets{n1_out});
     n1->fun = debug_mock{1, n1};
 
-    auto n2_in = make_inlet<value_port>(*test.tuple_addr);
-    auto n2_out = make_outlet<value_port>(*test.tuple_addr);
+    auto n2_in = make_inlet<value_port>();
+    auto n2_out = make_outlet<value_port>();
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = debug_mock{10, n2};
 
@@ -581,7 +583,8 @@ private slots:
     using namespace ossia;
     TestUtils test;
 
-    other_explicit_graph g(test, immediate_glutton_connection{});
+    no_address_explicit_graph g(test, immediate_glutton_connection{});
+    debug_mock::messages.clear();
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
@@ -591,6 +594,7 @@ private slots:
     qDebug("Start state");
     g.g.state(); // f1
     qDebug("End state");
+    QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 0}}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
@@ -598,7 +602,9 @@ private slots:
     g.n2->set_date(1, 0.5);
 
     qDebug("Start state");
+    debug_mock::messages.clear();
     g.g.state(); // f2 o f1
+    QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 1}, {10, 1}}));
     qDebug("End state");
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
@@ -606,7 +612,9 @@ private slots:
     g.n2->set_date(2, 1);
 
     qDebug("Start state");
+    debug_mock::messages.clear();
     g.g.state(); // f2
+    QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{10, 2}}));
     qDebug("End state");
 
   }
