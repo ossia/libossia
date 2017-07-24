@@ -54,6 +54,7 @@ extern "C" void ossia_remote_setup(void)
   }
 
   class_register(CLASS_BOX, ossia_library.ossia_remote_class);
+  class_alias(ossia_library.ossia_remote_class, gensym("ø.remote"));
 }
 
 extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)

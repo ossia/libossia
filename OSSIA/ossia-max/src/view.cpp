@@ -32,6 +32,7 @@ extern "C" void ossia_view_setup(void)
   }
 
   class_register(CLASS_BOX, ossia_library.ossia_view_class);
+  class_alias(ossia_library.ossia_view_class, gensym("ø.view"));
 }
 
 extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)

@@ -34,6 +34,7 @@ extern "C" void ossia_model_setup()
   CLASS_ATTR_SYM(ossia_library.ossia_model_class, "tags", 0, t_model, m_tags);
 
   class_register(CLASS_BOX, ossia_library.ossia_model_class);
+  class_alias(ossia_library.ossia_model_class, gensym("ø.model"));
 }
 
 extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)

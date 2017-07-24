@@ -45,6 +45,8 @@ extern "C" void ossia_client_setup(void)
       (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
 
   class_register(CLASS_BOX, ossia_library.ossia_client_class);
+  class_alias(ossia_library.ossia_client_class, gensym("ø.client"));
+
 }
 
 extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)

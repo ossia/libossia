@@ -40,6 +40,7 @@ extern "C" void ossia_device_setup(void)
       (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
 
   class_register(CLASS_BOX, ossia_library.ossia_device_class);
+  class_alias(ossia_library.ossia_device_class, gensym("ø.device"));
 }
 
 extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
@@ -71,9 +72,6 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    // TODO : move local protocol creation into ossia Library loading to do
-    // this only one time
-    // TODO : only allow local device renaming here
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
 
     x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
