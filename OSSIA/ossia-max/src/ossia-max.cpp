@@ -617,17 +617,13 @@ std::vector<t_object_base*> find_children_to_register(
 
 t_object* get_patcher(t_object* object)
 {
-  return jpatcher_get_parentpatcher(object);
-
   t_object* patcher = NULL;
   object_obex_lookup(object, gensym("#P"), &patcher);
-
 
   // if the box is in a bpatcher, the patcher is NULL
   if (!patcher)
   {
-    // FIXME that crashes
-  //  patcher = object_attr_getobj(object, _sym_parentpatcher);
+    patcher = object_attr_getobj(object, _sym_parentpatcher);
   }
 
   return patcher;
