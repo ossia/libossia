@@ -4,6 +4,8 @@
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
+
 #include <ossia/network/base/node_attributes.hpp>
 
 using namespace ossia::max;
@@ -41,6 +43,13 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
   t_model* x = (t_model*)object_alloc(ossia_library.ossia_model_class);
+
+  if(find_peers(x))
+  {
+    error("you can put only one [ossia.model] per patcher");
+    object_free(x);
+    return nullptr;
+  }
 
   if (x)
   {
@@ -97,8 +106,8 @@ extern "C" void ossia_model_free(t_model* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_model>(x);
-  object_free(x->m_regclock);
-  outlet_delete(x->m_dump_out);
+  if(x->m_regclock) object_free(x->m_regclock);
+  if(x->m_dump_out) outlet_delete(x->m_dump_out);
 }
 
 extern "C" void
@@ -218,7 +227,7 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
 bool t_model::unregister()
 {
-  clock_unset(m_regclock);
+  if (m_regclock) clock_unset(m_regclock);
 
   // not registered
   if (!m_node)
@@ -244,9 +253,12 @@ void t_model::is_deleted(const ossia::net::node_base& n)
 {
   if (!m_dead)
   {
-    m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(
+    if (m_node)
+    {
+      m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(
         this);
-    m_node = nullptr;
+      m_node = nullptr;
+    }
     object_quarantining<t_model>(this);
   }
 }

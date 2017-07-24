@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "view.hpp"
 #include "remote.hpp"
+#include "utils.hpp"
 
 using namespace ossia::max;
 
@@ -39,6 +40,13 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
   t_view* x = (t_view*)object_alloc(ossia_library.ossia_view_class);
+
+  if(find_peers(x))
+  {
+    error("you can put only one [ossia.view] per patcher");
+    object_free(x);
+    return nullptr;
+  }
 
   if (x)
   {
@@ -115,7 +123,7 @@ extern "C" void ossia_view_free(t_view* x)
   object_dequarantining<t_view>(x);
   object_free(x->m_regclock);
   object_free(x->m_clock);
-  outlet_delete(x->m_dump_out);
+  if(x->m_dump_out) outlet_delete(x->m_dump_out);
 }
 /*
 extern "C"

@@ -42,6 +42,8 @@ set(PROJECT_SRCS
     src/logger.cpp
     src/remote.hpp
     src/remote.cpp
+    src/utils.hpp
+    src/utils.cpp
     src/view.hpp
     src/view.cpp
     ${MAXSDK_MAINPATH}/c74support/max-includes/common/commonsyms.c
