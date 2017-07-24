@@ -68,7 +68,7 @@ bool graph_node::can_execute(const execution_state&) const
     bool previous_nodes_executed
         = ossia::all_of(inlet->sources, [&](graph_edge* edge) {
             return edge->out_node->executed()
-                   || (!edge->out_node->enabled() && bool(inlet->address)
+                   || (!edge->out_node->enabled() /* && bool(inlet->address) */
                        /* TODO check that it's in scope */);
           });
 
