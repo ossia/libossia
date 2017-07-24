@@ -9,12 +9,18 @@
 
 #include <ossia/ossia.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
-
+#include <ossia/detail/safe_vec.hpp>
 
 namespace ossia
 {
 namespace max
 {
+
+// TODO refactor headers to avoid that and include directly relevant headers
+struct t_parameter;
+struct t_remote;
+struct t_view;
+struct t_model;
 
 #pragma mark -
 #pragma mark Library
@@ -46,6 +52,11 @@ public:
   t_class* ossia_remote_class{};
   t_class* ossia_view_class{};
   t_class* ossia_ossia_class{};
+
+  ossia::safe_vector<t_parameter*> parameters;
+  ossia::safe_vector<t_remote*> remotes;
+  ossia::safe_vector<t_model*> models;
+  ossia::safe_vector<t_view*> views;
 
 private:
   ossia_max();

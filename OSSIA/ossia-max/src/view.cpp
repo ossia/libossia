@@ -92,27 +92,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
     attr_args_process(x, argc - attrstart, argv + attrstart);
   }
 
-  /* théo : what is this for ???
-
-      t_gobj* list = x->m_obj.o_canvas->gl_list;
-      while (list)
-      {
-          std::string current = list->g_pd->c_name->s_name;
-          if ( current == "ossia.view" )
-          {
-              if ( x != (t_view*) &list->g_pd )
-              {
-                  pd_error(&list->g_pd, "Only one [ossia.view] intance per
-     patcher is allowed.");
-                  view_free(x);
-                  x = nullptr;
-                  break;
-              }
-          }
-
-          list=list->g_next;
-      }
-  */
+  if (x) ossia_max::instance().views.push_back(x);
   return (x);
 }
 
@@ -121,6 +101,7 @@ extern "C" void ossia_view_free(t_view* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_view>(x);
+  ossia_max::instance().views.remove_all(x);
   object_free(x->m_regclock);
   object_free(x->m_clock);
   if(x->m_dump_out) outlet_delete(x->m_dump_out);

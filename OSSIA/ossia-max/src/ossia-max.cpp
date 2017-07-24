@@ -42,20 +42,18 @@ ossia_max::ossia_max():
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-    /*
     for (auto x : views.copy()){
-      x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+      x->m_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
     }
     for (auto x : remotes.copy()){
-      x->x_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
+      x->m_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
     }
     for (auto x : models.copy()){
-      x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+      x->m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
     }
-    for (auto x : params.copy()){
-      x->x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(x);
+    for (auto x : parameters.copy()){
+      x->m_node->about_to_be_deleted.disconnect<t_parameter, &t_parameter::is_deleted>(x);
     }
-    */
 }
 
 // ossia-max library instance

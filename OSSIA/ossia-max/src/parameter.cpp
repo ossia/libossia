@@ -100,8 +100,8 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     // initialize attributes
     atom_setfloat(&x->m_range[0], 0.);
     atom_setfloat(&x->m_range[1], 1.);
-    x->m_access_mode = gensym("BI");
-    x->m_bounding_mode = gensym("FREE");
+    x->m_access_mode = gensym("bi");
+    x->m_bounding_mode = gensym("free");
     x->m_unit = gensym("");
     x->m_type = gensym("tuple");
     x->m_type_size = 1;
@@ -140,6 +140,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
 
     // start registration
     max_object_register<t_parameter>(x);
+    ossia_max::instance().parameters.push_back(x);
   }
 
   return x;
@@ -149,6 +150,7 @@ extern "C" void ossia_parameter_free(t_parameter* x)
 {
   x->unregister();
   object_dequarantining<t_parameter>(x);
+  ossia_max::instance().parameters.remove_all(x);
   object_free(x->m_clock);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dump_out);

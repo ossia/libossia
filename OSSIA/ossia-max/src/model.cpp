@@ -96,6 +96,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     // after model_new() returns.
     // 0 ms delay means that it will be perform on next clock tick
     clock_delay(x->m_regclock, 0);
+    ossia_max::instance().models.push_back(x);
   }
 
   return (x);
@@ -106,6 +107,7 @@ extern "C" void ossia_model_free(t_model* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_model>(x);
+  ossia_max::instance().models.remove_all(x);
   if(x->m_regclock) object_free(x->m_regclock);
   if(x->m_dump_out) outlet_delete(x->m_dump_out);
 }

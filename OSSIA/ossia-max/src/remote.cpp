@@ -104,6 +104,7 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
     max_object_register<t_remote>(x);
+    ossia_max::instance().remotes.push_back(x);
   }
 
   return (x);
@@ -114,6 +115,7 @@ extern "C" void ossia_remote_free(t_remote* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_remote>(x);
+  ossia_max::instance().remotes.remove_all(x);
   outlet_delete(x->m_dump_out);
   outlet_delete(x->m_data_out);
 }
@@ -271,7 +273,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
           this);
 
       clock_delay(m_regclock, 0);
-
       return true;
     }
   }
