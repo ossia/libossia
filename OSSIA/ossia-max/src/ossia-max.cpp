@@ -74,7 +74,7 @@ namespace max
 #pragma mark Templates
 
 template <typename T>
-bool object_register(T* x)
+bool max_object_register(T* x)
 {
   if (x->m_node)
     return true; // already registered
@@ -126,10 +126,10 @@ bool object_register(T* x)
   return x->register_node(node);
 }
 
-template bool object_register<t_parameter>(t_parameter*);
-template bool object_register<t_model>(t_model*);
-template bool object_register<t_remote>(t_remote*);
-template bool object_register<t_view>(t_view*);
+template bool max_object_register<t_parameter>(t_parameter*);
+template bool max_object_register<t_model>(t_model*);
+template bool max_object_register<t_remote>(t_remote*);
+template bool max_object_register<t_view>(t_view*);
 
 template <typename T>
 std::string object_path_absolute(T* x)
@@ -452,22 +452,22 @@ void register_quarantinized()
 {
   for (auto model : t_model::quarantine().copy())
   {
-    object_register<t_model>(static_cast<t_model*>(model));
+    max_object_register<t_model>(static_cast<t_model*>(model));
   }
 
   for (auto parameter : t_parameter::quarantine().copy())
   {
-    object_register<t_parameter>(static_cast<t_parameter*>(parameter));
+    max_object_register<t_parameter>(static_cast<t_parameter*>(parameter));
   }
 
   for (auto view : t_view::quarantine().copy())
   {
-    object_register<t_view>(static_cast<t_view*>(view));
+    max_object_register<t_view>(static_cast<t_view*>(view));
   }
 
   for (auto remote : t_remote::quarantine().copy())
   {
-    object_register<t_remote>(static_cast<t_remote*>(remote));
+    max_object_register<t_remote>(static_cast<t_remote*>(remote));
   }
 }
 
