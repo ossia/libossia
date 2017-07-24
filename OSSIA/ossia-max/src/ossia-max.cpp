@@ -481,32 +481,32 @@ t_object_base* find_parent_box(
   // look upper if there is an upper level and if it is not the level where to
   // start the research
   while (patcher && start_level--)
-    t_object* patcher = get_patcher(patcher);
+    patcher = jpatcher_get_parentpatcher(patcher);
 
   // if no parent object have been found in upper patcher, look around
-  while (patcher)
+  while (patcher && !parent)
   {
-    t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
+    t_object* box =  jpatcher_get_firstobject(patcher);
 
-    while (next_box)
+    while (box)
     {
-      if (object_attr_getsym(next_box, _sym_maxclass) == classname)
+      if (object_attr_getsym(box, _sym_maxclass) == classname)
       {
         t_object* object_box = NULL;
         object_obex_lookup(object, gensym("#B"), &object_box);
 
         // the object itself cannot be its own parent
-        if (next_box != object_box)
+        if (box != object_box)
         {
-          parent = (t_object_base*)jbox_get_object(next_box);
+          parent = (t_object_base*)jbox_get_object(box);
           *level = start_level;
           break;
         }
       }
 
-      next_box = object_attr_getobj(next_box, _sym_nextobject);
+      box = jbox_get_nextobject(box);
     }
-    t_object* patcher = get_patcher(patcher);
+    patcher = jpatcher_get_parentpatcher(patcher);
   }
 
   return parent;

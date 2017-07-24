@@ -16,6 +16,7 @@ extern "C" void* ossia_object_new(t_symbol* name, int argc, t_atom* argv)
   x->m_dump_out
       = outlet_new(x, NULL); // anything outlet to dump device state
   x->m_device = ossia_library.get_default_device();
+  x->m_node = &ossia_library.get_default_device()->get_root_node();
 
   return (x);
 }
@@ -34,8 +35,8 @@ extern "C" void ossia_ossia_setup(void)
   post("setup method");
 
   class_addmethod(c, (method)ossia_device_expose, "expose", A_GIMME, 0);
-  //class_addmethod(c, (method)ossia_name, "name", A_GIMME, 0);
-  //class_addmethod(c, (method)ossia_get_namespace, "namespace", A_GIMME, 0);
+  //class_addmethod(c, (method)t_device::name, "name", A_GIMME, 0);
+  class_addmethod(c, (method)t_object_base::relative_namespace, "namespace", A_NOTHING, 0);
 
   class_register(CLASS_BOX, c);
   class_alias(c, gensym("ø"));

@@ -69,6 +69,7 @@ void t_object_base::bang(t_object_base* x)
 */
 
 void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
+  if (&node == nullptr) return;
   for (const auto& child : node.children_copy())
   {
     if (auto addr = child->get_address())
@@ -82,6 +83,7 @@ void list_all_child(const ossia::net::node_base& node, std::vector<std::string>&
 
 void t_object_base::relative_namespace(t_object_base* x)
 {
+  if (x->m_node == nullptr) return;
   t_symbol* prependsym = gensym("namespace");
   std::vector<std::string> list;
   list_all_child(*x->m_node, list);
