@@ -26,7 +26,7 @@ extern "C" void ossia_model_setup()
 
   class_addmethod(
       ossia_library.ossia_model_class, (method)t_object_base::relative_namespace,
-              "namespace", A_CANT, 0);
+              "namespace", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
       ossia_library.ossia_model_class, "description", 0, t_model,
@@ -98,6 +98,7 @@ extern "C" void ossia_model_free(t_model* x)
   x->unregister();
   object_dequarantining<t_model>(x);
   object_free(x->m_regclock);
+  outlet_delete(x->m_dump_out);
 }
 
 extern "C" void

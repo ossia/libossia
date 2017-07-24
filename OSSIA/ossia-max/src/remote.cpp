@@ -114,7 +114,8 @@ extern "C" void ossia_remote_free(t_remote* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_remote>(x);
-  // TODO : free outlets
+  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_data_out);
 }
 
 extern "C" void
@@ -259,12 +260,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     }
     else
     {
-      std::string absolute_path = object_path_absolute<t_remote>(this);
-      std::string address_string = ossia::net::address_string_from_node(*node);
-
-      if (absolute_path != address_string)
-        return false;
-
       m_node = ossia::net::find_node(*node, m_name->s_name);
     }
 

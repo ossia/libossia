@@ -69,7 +69,6 @@ void t_object_base::bang(t_object_base* x)
 */
 
 void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
-  if (&node == nullptr) return;
   for (const auto& child : node.children_copy())
   {
     if (auto addr = child->get_address())

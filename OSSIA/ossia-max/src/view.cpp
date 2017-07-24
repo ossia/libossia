@@ -24,7 +24,7 @@ extern "C" void ossia_view_setup(void)
         A_NOTHING, 0);
 
     class_addmethod(
-          ossia_library.ossia_client_class, (method)t_object_base::relative_namespace,
+          ossia_library.ossia_view_class, (method)t_object_base::relative_namespace,
                   "namespace", A_NOTHING, 0);
 
     //        class_addmethod(ossia_library.ossia_view_class,
@@ -115,6 +115,7 @@ extern "C" void ossia_view_free(t_view* x)
   object_dequarantining<t_view>(x);
   object_free(x->m_regclock);
   object_free(x->m_clock);
+  outlet_delete(x->m_dump_out);
 }
 /*
 extern "C"

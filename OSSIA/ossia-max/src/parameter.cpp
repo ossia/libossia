@@ -93,8 +93,6 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     // make outlets
     x->m_dump_out
         = outlet_new(x, NULL); // anything outlet to dump parameter state
-    x->m_set_out
-        = outlet_new(x, NULL); // anything outlet to output data for ui
     x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
 
     x->m_node = nullptr;
@@ -152,7 +150,8 @@ extern "C" void ossia_parameter_free(t_parameter* x)
   x->unregister();
   object_dequarantining<t_parameter>(x);
   object_free(x->m_clock);
-  // TODO : free outlets
+  outlet_delete(x->m_data_out);
+  outlet_delete(x->m_dump_out);
 }
 
 extern "C" void
