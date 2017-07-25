@@ -103,7 +103,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     x->m_access_mode = gensym("bi");
     x->m_bounding_mode = gensym("free");
     x->m_unit = gensym("");
-    x->m_type = gensym("tuple");
+    x->m_type = gensym("float");
     x->m_type_size = 1;
     x->m_tags = gensym("");
     x->m_description = gensym("");

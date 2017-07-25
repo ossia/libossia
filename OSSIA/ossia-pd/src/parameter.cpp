@@ -290,7 +290,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->x_access_mode = gensym("rw");
     x->x_bounding_mode = gensym("free");
     x->x_unit = gensym("");
-    x->x_type = gensym("tuple");
+    x->x_type = gensym("float");
     x->x_type_size = 1;
     x->x_tags = gensym("");
     x->x_description = gensym("");
