@@ -31,8 +31,12 @@ t_matcher::t_matcher(ossia::net::node_base* n, t_remote* p) :
 t_matcher::~t_matcher()
 {
   std::cout << "desctructor node: " << node << " t_remote: " << parent << std::endl;
-  if (callbackit) node->get_address()->remove_callback(*callbackit);
-  node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(parent);
+  if(node)
+  {
+    auto addr = node->get_address();
+    if (addr && callbackit) addr->remove_callback(*callbackit);
+    node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(parent);
+  }
 }
 
 void t_matcher::set_value(const ossia::value& v){
@@ -217,7 +221,7 @@ static void remote_push(t_remote* x, t_symbol* s, int argc, t_atom* argv)
 static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
+  t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);  
 
   if (x)
   {
@@ -227,6 +231,9 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->x_setout = outlet_new((t_object*)x, nullptr);
     x->x_dataout = outlet_new((t_object*)x, nullptr);
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    new (&x->x_callbackit) decltype(x->x_callbackit);
+    new (&x->x_callbackits) decltype(x->x_callbackits);
+    new (&x->x_matchers) decltype(x->x_matchers);
     x->x_callbackit = boost::none;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
