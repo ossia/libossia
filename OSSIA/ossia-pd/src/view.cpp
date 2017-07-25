@@ -59,12 +59,18 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    std::string absolute_path = get_absolute_path<t_view>(this);
-    std::string address_string = ossia::net::address_string_from_node(*node);
+    if(x_absolute)
+    {
+      x_node = ossia::net::find_node(
+            node->get_device().get_root_node(), x_name->s_name);
+    } else {
+      std::string absolute_path = get_absolute_path<t_view>(this);
+      std::string address_string = ossia::net::address_string_from_node(*node);
 
-    if (absolute_path != address_string)
-      return false;
-    x_node = node->find_child(x_name->s_name);
+      if (absolute_path != address_string)
+        return false;
+      x_node = node->find_child(x_name->s_name);
+    }
     if (x_node)
     {
       x_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);

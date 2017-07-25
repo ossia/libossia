@@ -37,7 +37,8 @@ bool t_remote::do_registration(ossia::net::node_base* node)
   {
     if (x_absolute)
     {
-      x_node = ossia::net::find_node(*node, x_name->s_name);
+      x_node = ossia::net::find_node(
+            node->get_device().get_root_node(), x_name->s_name);
     }
     else
     {
