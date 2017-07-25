@@ -394,8 +394,8 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
   // transform to lowercase
   std::string bounding_mode = m_bounding_mode->s_name;
-  ossia::transform(type, type.begin(), ::tolower);
-  m_bounding_mode = gensym(type.c_str());
+  ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
+  m_bounding_mode = gensym(bounding_mode.c_str());
 
   // FIXME : we need case insensitive comparison here
   if (m_bounding_mode == gensym("free"))
@@ -412,9 +412,9 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     localAddress->set_bounding(ossia::bounding_mode::HIGH);
 
   // transform to lowercase
-  std::string _acess_mode = m_access_mode->s_name;
-  ossia::transform(type, type.begin(), ::tolower);
-  m_access_mode = gensym(type.c_str());
+  std::string acess_mode = m_access_mode->s_name;
+  ossia::transform(acess_mode, acess_mode.begin(), ::tolower);
+  m_access_mode = gensym(acess_mode.c_str());
 
   if (m_access_mode == gensym("bi") || m_access_mode == gensym("rw"))
     localAddress->set_access(ossia::access_mode::BI);
