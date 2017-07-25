@@ -392,25 +392,35 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   localAddress->set_domain(ossia::make_domain(
       atom_getfloat(&m_range[0]), atom_getfloat(&m_range[1])));
 
+  // transform to lowercase
+  std::string bounding_mode = m_bounding_mode->s_name;
+  ossia::transform(type, type.begin(), ::tolower);
+  m_bounding_mode = gensym(type.c_str());
+
   // FIXME : we need case insensitive comparison here
-  if (m_bounding_mode == gensym("FREE"))
+  if (m_bounding_mode == gensym("free"))
     localAddress->set_bounding(ossia::bounding_mode::FREE);
-  else if (m_bounding_mode == gensym("CLIP"))
+  else if (m_bounding_mode == gensym("clip"))
     localAddress->set_bounding(ossia::bounding_mode::CLIP);
-  else if (m_bounding_mode == gensym("WRAP"))
+  else if (m_bounding_mode == gensym("wrap"))
     localAddress->set_bounding(ossia::bounding_mode::WRAP);
-  else if (m_bounding_mode == gensym("FOLD"))
+  else if (m_bounding_mode == gensym("fold"))
     localAddress->set_bounding(ossia::bounding_mode::FOLD);
-  else if (m_bounding_mode == gensym("LOW"))
+  else if (m_bounding_mode == gensym("low"))
     localAddress->set_bounding(ossia::bounding_mode::LOW);
-  else if (m_bounding_mode == gensym("HIGH"))
+  else if (m_bounding_mode == gensym("high"))
     localAddress->set_bounding(ossia::bounding_mode::HIGH);
 
-  if (m_access_mode == gensym("BI") || m_access_mode == gensym("RW"))
+  // transform to lowercase
+  std::string _acess_mode = m_access_mode->s_name;
+  ossia::transform(type, type.begin(), ::tolower);
+  m_access_mode = gensym(type.c_str());
+
+  if (m_access_mode == gensym("bi") || m_access_mode == gensym("rw"))
     localAddress->set_access(ossia::access_mode::BI);
-  else if (m_access_mode == gensym("GET") || m_access_mode == gensym("R"))
+  else if (m_access_mode == gensym("get") || m_access_mode == gensym("r"))
     localAddress->set_access(ossia::access_mode::GET);
-  else if (m_access_mode == gensym("SET") || m_access_mode == gensym("W"))
+  else if (m_access_mode == gensym("set") || m_access_mode == gensym("w"))
     localAddress->set_access(ossia::access_mode::SET);
 
   localAddress->set_repetition_filter(
