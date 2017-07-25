@@ -3,12 +3,13 @@
 #include "device.hpp"
 #include "ossia_obj_base.hpp"
 #include <boost/optional.hpp>
-#include "obj_pattern.hpp"
 
 namespace ossia
 {
 namespace pd
 {
+
+struct t_remote;
 
 struct t_matcher
 {

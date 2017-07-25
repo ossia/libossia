@@ -4,7 +4,6 @@
 #include "device.hpp"
 #include "parameter.hpp"
 #include "utils.hpp"
-#include "obj_pattern.hpp"
 
 #include <ossia/network/common/path.hpp>
 
@@ -82,6 +81,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       dev.on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
 
       auto nodes = ossia::net::find_nodes(*node, name);
+      x_matchers.reserve(nodes.size());
       for (auto n : nodes){
         if (n->get_address()){
           x_matchers.emplace_back(n,this);
