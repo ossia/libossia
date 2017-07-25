@@ -26,6 +26,8 @@ struct t_parameter : t_object_base
   t_symbol* m_tags{};
   t_symbol* m_description{};
   long m_priority{};
+  long m_hidden{};
+
 
   bool register_node(ossia::net::node_base* node);
 
