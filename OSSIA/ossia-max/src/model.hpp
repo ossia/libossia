@@ -18,6 +18,7 @@ struct t_model : t_object_base
   bool register_node(ossia::net::node_base*);
   bool do_registration(ossia::net::node_base*);
   bool unregister();
+  void register_children();
 
   void is_deleted(const ossia::net::node_base&);
 

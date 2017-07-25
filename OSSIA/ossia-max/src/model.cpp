@@ -139,41 +139,7 @@ bool t_model::register_node(ossia::net::node_base* node)
 
   if (res)
   {
-    object_dequarantining<t_model>(this);
-
-    std::vector<t_object_base*> children = find_children_to_register(
-        &m_object, get_patcher(&m_object), gensym("ossia.model"));
-
-    for (auto child : children)
-    {
-      if (child->m_otype == Type::model)
-      {
-        t_model* model = (t_model*)child;
-
-        // ignore itself
-        if (model == this)
-          continue;
-
-        model->register_node(m_node);
-      }
-      else if (child->m_otype == Type::param)
-      {
-        t_parameter* parameter = (t_parameter*)child;
-
-        parameter->register_node(m_node);
-      }
-    }
-
-    for (auto view : t_view::quarantine().copy())
-    {
-      max_object_register<t_view>(static_cast<t_view*>(view));
-    }
-
-    // then try to register qurantinized remote
-    for (auto remote : t_remote::quarantine().copy())
-    {
-      max_object_register<t_remote>(static_cast<t_remote*>(remote));
-    }
+    register_children();
   }
   else
     object_quarantining<t_model>(this);
@@ -227,6 +193,45 @@ bool t_model::do_registration(ossia::net::node_base* node)
   return true;
 }
 
+void t_model::register_children()
+{
+  object_dequarantining<t_model>(this);
+
+  std::vector<t_object_base*> children = find_children_to_register(
+      &m_object, get_patcher(&m_object), gensym("ossia.model"));
+
+  for (auto child : children)
+  {
+    if (child->m_otype == Type::model)
+    {
+      t_model* model = (t_model*)child;
+
+      // ignore itself
+      if (model == this)
+        continue;
+
+      model->register_node(m_node);
+    }
+    else if (child->m_otype == Type::param)
+    {
+      t_parameter* parameter = (t_parameter*)child;
+
+      parameter->register_node(m_node);
+    }
+  }
+
+  for (auto view : t_view::quarantine().copy())
+  {
+    max_object_register<t_view>(static_cast<t_view*>(view));
+  }
+
+  // then try to register qurantinized remote
+  for (auto remote : t_remote::quarantine().copy())
+  {
+    max_object_register<t_remote>(static_cast<t_remote*>(remote));
+  }
+}
+
 bool t_model::unregister()
 {
   if (m_regclock) clock_unset(m_regclock);
@@ -246,7 +251,7 @@ bool t_model::unregister()
 
   object_quarantining<t_model>(this);
 
-  register_quarantinized();
+  register_children();
 
   return true;
 }
