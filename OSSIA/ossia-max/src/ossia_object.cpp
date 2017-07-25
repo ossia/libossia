@@ -32,10 +32,8 @@ extern "C" void ossia_ossia_setup(void)
       "ossia", (method)ossia_object_new, (method)ossia_object_free,
       (short)sizeof(t_ossia), 0L, A_GIMME, 0);
 
-  post("setup method");
-
   class_addmethod(c, (method)ossia_device_expose, "expose", A_GIMME, 0);
-  //class_addmethod(c, (method)t_device::name, "name", A_GIMME, 0);
+  class_addmethod(c, (method)ossia_device_name, "name", A_GIMME, 0);
   class_addmethod(c, (method)t_object_base::relative_namespace, "namespace", A_NOTHING, 0);
 
   class_register(CLASS_BOX, c);

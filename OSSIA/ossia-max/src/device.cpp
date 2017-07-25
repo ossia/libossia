@@ -16,28 +16,31 @@ using namespace ossia::max;
 
 extern "C" void ossia_device_setup(void)
 {
-  auto& ossia_library = ossia_max::instance();
-
   // instantiate the ossia.client class
-  ossia_library.ossia_device_class = class_new(
+  t_class* c = class_new(
       "ossia.device", (method)ossia_device_new, (method)ossia_device_free,
       (short)sizeof(t_device), 0L, A_GIMME, 0);
 
   class_addmethod(
-      ossia_library.ossia_device_class, (method)t_device::register_children,
+      c, (method)t_device::register_children,
       "register", A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_device_class, (method)t_object_base::relative_namespace, "namespace",
+      c, (method)t_object_base::relative_namespace, "namespace",
       A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_device_class, (method)ossia_device_expose, "expose",
+      c, (method)ossia_device_expose, "expose",
       A_GIMME, 0);
   class_addmethod(
-      ossia_library.ossia_device_class,
+      c,
       (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
+  class_addmethod(c, (method)ossia_device_name, "name", A_GIMME, 0);
 
-  class_register(CLASS_BOX, ossia_library.ossia_device_class);
-  class_alias(ossia_library.ossia_device_class, gensym("ø.device"));
+
+  class_register(CLASS_BOX, c);
+  class_alias(c, gensym("ø.device"));
+
+  auto& ossia_library = ossia_max::instance();
+  ossia_library.ossia_device_class = c;
 }
 
 extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
@@ -204,6 +207,20 @@ ossia_device_expose(t_device* x, t_symbol*, long argc, t_atom* argv)
   }
   else
     protocol_settings::print_protocol_help();
+}
+
+extern "C" void ossia_device_name(t_device *x, t_symbol* s, long argc, t_atom* argv){
+  if( argc == 0 )
+  {
+    t_atom a;
+    atom_setsym(&a,gensym(x->m_device->get_name().c_str()));
+    outlet_anything(x->m_dump_out,gensym("name"),1,&a);
+  } else if ( argv[0].a_type == A_SYM ) {
+    x->m_name = argv[0].a_w.w_sym;
+    x->m_device->set_name(x->m_name->s_name);
+  } else {
+    object_error(&x->m_object,"bad argument to message 'name'");
+  }
 }
 
 namespace ossia
