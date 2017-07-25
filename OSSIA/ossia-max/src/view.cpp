@@ -282,7 +282,7 @@ bool t_view::unregister()
   return true;
 }
 
-static void view_bind(t_view* x, t_symbol* address)
+void t_view::view_bind(t_view* x, t_symbol* address)
 {
   x->m_name = address;
   if (std::string(x->m_name->s_name) != "" && x->m_name->s_name[0] == '/')
