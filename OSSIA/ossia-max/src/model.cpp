@@ -34,6 +34,9 @@ extern "C" void ossia_model_setup()
       ossia_library.ossia_model_class, "description", 0, t_model,
       m_description);
   CLASS_ATTR_SYM(ossia_library.ossia_model_class, "tags", 0, t_model, m_tags);
+  CLASS_ATTR_LONG(
+      ossia_library.ossia_model_class, "hidden", 0, t_model,
+      m_hidden);
 
   class_register(CLASS_BOX, ossia_library.ossia_model_class);
   class_alias(ossia_library.ossia_model_class, gensym("ø.model"));
@@ -189,6 +192,7 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
   ossia::net::set_description(*m_node, m_description->s_name);
   ossia::net::set_tags(*m_node, parse_tags_symbol(m_tags));
+  ossia::net::set_hidden(*m_node, m_hidden != 0);
 
   return true;
 }

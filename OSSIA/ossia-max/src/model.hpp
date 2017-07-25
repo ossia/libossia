@@ -14,6 +14,7 @@ struct t_model : t_object_base
 {
   t_symbol* m_tags;
   t_symbol* m_description;
+  long m_hidden;
 
   bool register_node(ossia::net::node_base*);
   bool do_registration(ossia::net::node_base*);
