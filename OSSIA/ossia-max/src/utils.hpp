@@ -19,5 +19,12 @@ namespace max
  */
 bool find_peers(t_object_base *x);
 
+/**
+ * @brief find_global_node: find node matching address with a 'device:' prefix
+ * @param addr : address string
+ * @return pointer to the node
+ */
+ossia::net::node_base* find_global_node(const std::string& addr);
+
 } // namespace max
 } // namespace ossia

@@ -21,6 +21,8 @@ struct t_parameter;
 struct t_remote;
 struct t_view;
 struct t_model;
+struct t_device;
+struct t_client;
 
 #pragma mark -
 #pragma mark Library
@@ -53,10 +55,13 @@ public:
   t_class* ossia_view_class{};
   t_class* ossia_ossia_class{};
 
+  // keep list of all objects
   ossia::safe_vector<t_parameter*> parameters;
   ossia::safe_vector<t_remote*> remotes;
   ossia::safe_vector<t_model*> models;
   ossia::safe_vector<t_view*> views;
+  ossia::safe_vector<t_device*> devices;
+  ossia::safe_vector<t_client*> clients;
 
 private:
   ossia_max();

@@ -7,6 +7,8 @@
 #include "model.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "device.hpp"
+#include "client.hpp"
 
 extern "C" {
 #include <cicm_wrapper.h>
@@ -46,6 +48,9 @@ public:
     ossia::safe_vector<t_remote*> remotes;
     ossia::safe_vector<t_model*> models;
     ossia::safe_vector<t_view*> views;
+    ossia::safe_vector<t_device*> devices;
+    ossia::safe_vector<t_client*> clients;
+
 
 private:
     ossia_pd(); // constructor
