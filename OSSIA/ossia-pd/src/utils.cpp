@@ -152,6 +152,8 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
   {
     node = &ossia_pd::get_default_device()->get_root_node();
   }
+
+  return node;
 }
 
 std::vector<t_obj_base*> find_child_to_register(

@@ -9,9 +9,14 @@ namespace max
 
 void t_object_base::apply_value_visitor(const ossia::value& v)
 {
+  auto local_address = m_node->get_address();
+  auto filtered = ossia::net::filter_value(
+        local_address->get_domain(),
+        v,
+        local_address->get_bounding());
   value_visitor<t_object_base> vm;
   vm.x = this;
-  v.apply(vm);
+  filtered.apply(vm);
 }
 
 void t_object_base::push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
