@@ -17,6 +17,7 @@ struct t_view : t_object_base
   bool unregister();
 
   void register_children(t_view* x);
+  static void view_bind(t_view* x, t_symbol* address);
 
   void is_deleted(const ossia::net::node_base& n)
   {

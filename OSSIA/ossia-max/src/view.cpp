@@ -11,29 +11,32 @@ using namespace ossia::max;
 
 extern "C" void ossia_view_setup(void)
 {
-  auto& ossia_library = ossia_max::instance();
-
   // instantiate the ossia.view class
-  ossia_library.ossia_view_class = class_new(
+  t_class* c = class_new(
       "ossia.view", (method)ossia_view_new, (method)ossia_view_free,
       (short)sizeof(t_view), 0L, A_GIMME, 0);
 
-  if (ossia_library.ossia_view_class)
+  if (c)
   {
     class_addmethod(
-        ossia_library.ossia_view_class, (method)object_dump<t_view>, "dump",
+        c, (method)object_dump<t_view>, "dump",
         A_NOTHING, 0);
 
     class_addmethod(
-          ossia_library.ossia_view_class, (method)t_object_base::relative_namespace,
+          c, (method)t_object_base::relative_namespace,
                   "namespace", A_NOTHING, 0);
+    class_addmethod(
+          c,(method)t_view::view_bind, "bind", A_SYM, 0);
 
-    //        class_addmethod(ossia_library.ossia_view_class,
+    //        class_addmethod(c,
     //        (method)ossia_view_click,       "click",      A_NOTHING,   0);
   }
 
-  class_register(CLASS_BOX, ossia_library.ossia_view_class);
-  class_alias(ossia_library.ossia_view_class, gensym("ø.view"));
+  class_register(CLASS_BOX, c);
+  class_alias(c, gensym("ø.view"));
+
+  auto& ossia_library = ossia_max::instance();
+  ossia_library.ossia_view_class = c;
 }
 
 extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
@@ -278,5 +281,15 @@ bool t_view::unregister()
 
   return true;
 }
+
+static void view_bind(t_view* x, t_symbol* address)
+{
+  x->m_name = address;
+  if (std::string(x->m_name->s_name) != "" && x->m_name->s_name[0] == '/')
+    x->m_absolute = true;
+  x->unregister();
+  max_object_register(x);
+}
+
 }
 }
