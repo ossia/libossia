@@ -463,16 +463,6 @@ bool t_parameter::unregister()
   }
 
   object_quarantining(this);
-  derenaming(this);
-
-  for (auto parameter : t_parameter::rename().copy())
-  {
-    if (strcmp(parameter->m_name->s_name, m_name->s_name) == 0)
-    {
-      parameter->unregister();
-      max_object_register<t_parameter>(parameter);
-    }
-  }
 
   return true;
 }
@@ -485,32 +475,10 @@ void t_parameter::is_deleted(const ossia::net::node_base& n)
   object_quarantining<t_parameter>(this);
 }
 
-bool t_parameter::is_renamed(t_parameter* x)
-{
-  return x->rename().contains(x);
-}
-
-void t_parameter::renaming(t_parameter* x)
-{
-  if (!is_renamed(x))
-    x->rename().push_back(x);
-}
-
-void t_parameter::derenaming(t_parameter* x)
-{
-  x->rename().remove_all(x);
-}
-
 ossia::safe_vector<t_parameter*>& t_parameter::quarantine()
 {
   static ossia::safe_vector<t_parameter*> quarantine;
   return quarantine;
-}
-
-ossia::safe_vector<t_parameter*>& t_parameter::rename()
-{
-  static ossia::safe_vector<t_parameter*> rename;
-  return rename;
 }
 
 } // max namespace
