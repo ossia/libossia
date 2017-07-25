@@ -48,6 +48,8 @@ bool t_model::register_node(ossia::net::node_base* node)
     }
 
     // then try to register qurantinized remote
+    // TODO why doing that ?
+    // quarantinized remote should have been registered by their ossia.view above
     for (auto remote : t_remote::quarantine().copy())
     {
       obj_register<t_remote>(static_cast<t_remote*>(remote));

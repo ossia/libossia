@@ -26,10 +26,10 @@ struct t_matcher
   {
       node = other.node;
       other.node = nullptr;
-      
+
       parent = other.parent;
       other.parent = nullptr;
-      
+
       callbackit = other.callbackit;
       other.callbackit = ossia::none;
   }
@@ -38,15 +38,18 @@ struct t_matcher
   {
       node = other.node;
       other.node = nullptr;
-      
+
       parent = other.parent;
       other.parent = nullptr;
-      
+
       callbackit = other.callbackit;
       other.callbackit = ossia::none;
-      
+
       return *this;
   }
+
+  inline bool operator==(const t_matcher& rhs)
+  { return (node == rhs.node); }
 
   void set_value(const ossia::value& v);
 };
@@ -58,13 +61,16 @@ struct t_remote : t_obj_base
   bool do_registration(ossia::net::node_base* node);
   bool unregister();
 
-  boost::optional<ossia::callback_container<ossia::value_callback>::iterator>
+  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
       x_callbackit{};
 
   std::vector<boost::optional<ossia::callback_container<ossia::value_callback>::iterator> >
       x_callbackits;
 
   std::vector<t_matcher> x_matchers{};
+
+  bool x_is_pattern{};
+  ossia::net::device_base* x_dev{};
 
   void is_deleted(const ossia::net::node_base& n);
   void on_address_created_callback(const ossia::net::address_base& addr);
