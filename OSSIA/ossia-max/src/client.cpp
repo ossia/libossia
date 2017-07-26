@@ -6,6 +6,7 @@
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
 
 #include "ossia/network/osc/osc.hpp"
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -64,6 +65,13 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
     x->m_node = 0;
 
     x->m_otype = Type::client;
+
+    if (ossia::max::find_peer(x))
+    {
+      error("You can have only one [ossia.device] or [ossia.client] per patcher.");
+      ossia_client_free(x);
+      return nullptr;
+    }
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);

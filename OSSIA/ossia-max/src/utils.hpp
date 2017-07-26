@@ -17,7 +17,7 @@ namespace max
  * @param x : object we are looking for friend
  * @return true if we find one, false otherwise
  */
-bool find_peers(t_object_base *x);
+bool find_peer(t_object_base *x);
 
 /**
  * @brief find_global_node: find node matching address with a 'device:' prefix
@@ -26,6 +26,11 @@ bool find_peers(t_object_base *x);
  */
 ossia::net::node_base* find_global_node(const std::string& addr);
 
+/**
+ * @brief get_address_type: return address type (relative, absolute or globale)
+ * @param addr: the address to process
+ * @return
+ */
 ossia::max::AddrType get_address_type(const std::string& addr);
 
 } // namespace max

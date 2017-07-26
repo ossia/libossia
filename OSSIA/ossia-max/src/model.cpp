@@ -47,13 +47,6 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
   auto& ossia_library = ossia_max::instance();
   t_model* x = (t_model*)object_alloc(ossia_library.ossia_model_class);
 
-  if(find_peers(x))
-  {
-    error("you can put only one [ossia.model] per patcher");
-    object_free(x);
-    return nullptr;
-  }
-
   if (x)
   {
     // make outlets
@@ -63,6 +56,13 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     x->m_tags = _sym_nothing;
 
     x->m_otype = Type::model;
+
+    if(find_peer(x))
+    {
+      error("You can put only one [ossia.model] or [ossia.view] per patcher");
+      ossia_model_free(x);
+      return nullptr;
+    }
 
     x->m_regclock = clock_new(
         x, reinterpret_cast<method>(

@@ -5,6 +5,7 @@
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
 
 #include "ossia/network/osc/osc.hpp"
 #include "ossia/network/oscquery/oscquery_server.hpp"
@@ -60,6 +61,13 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
     // check name argument
     x->m_name = gensym("Max");
     x->m_otype = Type::device;
+
+    if (ossia::max::find_peer(x))
+    {
+      error("You can have only one [ossia.device] or [ossia.client] per patcher.");
+      ossia_device_free(x);
+      return nullptr;
+    }
 
     if (attrstart && argv)
     {

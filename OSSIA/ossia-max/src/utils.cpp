@@ -7,17 +7,35 @@ namespace ossia
 namespace max
 {
 
-bool find_peers(t_object_base* x)
+bool find_peer(t_object_base* x)
 {
+    t_symbol* classname = object_classname(x);
+    t_symbol* derived_classname = nullptr;
+
+    if (x->m_otype == Type::view)
+      derived_classname = gensym("ossia.model");
+    else if (x->m_otype == Type::model)
+      derived_classname = gensym("ossia.view");
+    else if (x->m_otype == Type::device)
+      derived_classname = gensym("ossia.client");
+    else if (x->m_otype == Type::client)
+      derived_classname = gensym("ossia.device");
+
+
     t_object *patcher, *box, *obj;
     object_obex_lookup(x, gensym("#P"), &patcher);
     for (box = jpatcher_get_firstobject(patcher); box; box =
          jbox_get_nextobject(box)) {
-        obj = jbox_get_object(box);
-        if (obj
-            && object_classname(obj) == object_classname(x)
-            && (t_object_base*)obj != x)
-            return true;
+      obj = jbox_get_object(box);
+      if (obj)
+      {
+        t_symbol* current = object_classname(obj);
+        if(current == classname
+           && (t_object_base*)obj != x)
+          return true;
+        if (derived_classname && current == derived_classname)
+          return true;
+      }
     }
 }
 

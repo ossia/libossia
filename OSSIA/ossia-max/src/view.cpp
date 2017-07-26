@@ -44,13 +44,6 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
   auto& ossia_library = ossia_max::instance();
   t_view* x = (t_view*)object_alloc(ossia_library.ossia_view_class);
 
-  if(find_peers(x))
-  {
-    error("you can put only one [ossia.view] per patcher");
-    object_free(x);
-    return nullptr;
-  }
-
   if (x)
   {
     // make outlets
@@ -63,10 +56,17 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
+    x->m_otype = Type::view;
+
+    if(find_peer(x))
+    {
+      error("You can put only one [ossia.model] or [ossia.view] per patcher");
+      ossia_view_free(x);
+      return nullptr;
+    }
 
     // check name argument
     x->m_name = _sym_nothing;
-    x->m_otype = Type::view;
     if (attrstart && argv)
     {
       if (atom_gettype(argv) == A_SYM)
