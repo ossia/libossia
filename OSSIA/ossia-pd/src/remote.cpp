@@ -177,15 +177,11 @@ void t_remote::is_deleted(const ossia::net::node_base& n)
   std::cout << "node " << &n << " is deleted" << std::endl;
   if (!x_dead)
   {
-    // ossia::remove_one(x_matchers, t_matcher(&n,this));
-
-    for (auto it = x_matchers.begin() ; it != x_matchers.end(); ++it)
-    {
-      // if node-to-be-soon-deleted is registered in the vector, then remove it
-      if ( it->node == &n ){
-        x_matchers.erase(it);
-      }
-    }
+    ossia::remove_one_if(
+      x_matchers, 
+      [&] (const auto& m) { 
+        return m.node == &n;      
+    }); 
   }
 }
 
