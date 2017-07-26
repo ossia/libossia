@@ -65,6 +65,16 @@ void remove_one(Vector&& v, const Value& val)
   }
 }
 
+template <typename Vector, typename Function>
+void remove_one_if(Vector&& v, const Function& val)
+{
+  auto it = find_if(v, val);
+  if (it != v.end())
+  {
+    v.erase(it);
+  }
+}
+
 template <typename Vector, typename Fun>
 bool any_of(Vector&& v, Fun fun)
 {
