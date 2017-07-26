@@ -278,6 +278,44 @@ void graph::state()
 template<typename Comparator>
 using node_set = boost::container::flat_set<graph_node*, Comparator>;
 
+template<typename T>
+void tick(
+    graph& g,
+    execution_state& e,
+    std::vector<graph_node*>& active_nodes,
+    T next_nodes)
+{
+  while (!active_nodes.empty())
+  {
+    next_nodes.clear();
+
+    // Find all the nodes for which the inlets have executed
+    // (or without cables on the inlets)
+    for(graph_node* node : active_nodes)
+      if(node->can_execute(e))
+        next_nodes.insert(node);
+
+    if (!next_nodes.empty())
+    {
+      // First look if there is a replacement or reduction relationship between
+      // the first n nodes
+      // If there is, we run all the nodes
+
+      // If there is not we just run the first node
+      auto& first_node = **next_nodes.begin();
+      g.init_node(first_node, e);
+      first_node.run(e);
+      first_node.set_executed(true);
+      g.teardown_node(first_node, e);
+      active_nodes.erase(ossia::find(active_nodes, &first_node));
+    }
+    else
+    {
+      break; // nothing more to execute
+    }
+  }
+}
+
 void graph::state(execution_state& e)
 {
   // TODO in the future, temporal_graph, space_graph that can be used as
@@ -312,50 +350,19 @@ void graph::state(execution_state& e)
   // all the nodes that will run at this tick.
 
   // Start executing the nodes
-  auto tick = [&] (auto next_nodes) {
-    while (!active_nodes.empty())
-    {
-      next_nodes.clear();
-
-      // Find all the nodes for which the inlets have executed
-      // (or without cables on the inlets)
-      for(graph_node* node : active_nodes)
-        if(node->can_execute(e))
-          next_nodes.insert(node);
-
-      if (!next_nodes.empty())
-      {
-        // First look if there is a replacement or reduction relationship between
-        // the first n nodes
-        // If there is, we run all the nodes
-
-        // If there is not we just run the first node
-        auto& first_node = **next_nodes.begin();
-        init_node(first_node, e);
-        first_node.run(e);
-        first_node.set_executed(true);
-        teardown_node(first_node, e);
-        active_nodes.erase(ossia::find(active_nodes, &first_node));
-      }
-      else
-      {
-        break; // nothing more to execute
-      }
-    }
-  };
 
   switch(m_ordering)
   {
     case node_ordering::topological:
-      tick(node_set<node_sorter<>>{
+      tick(*this, e, active_nodes, node_set<node_sorter<>>{
              node_sorter<>{*this, active_nodes, e}});
       break;
     case node_ordering::temporal:
-      tick(node_set<node_sorter<temporal_ordering>>{
+      tick(*this, e, active_nodes, node_set<node_sorter<temporal_ordering>>{
              node_sorter<temporal_ordering>{*this, active_nodes, e}});
       break;
     case node_ordering::hierarchical:
-      tick(node_set<node_sorter<custom_ordering>>{
+      tick(*this, e, active_nodes, node_set<node_sorter<custom_ordering>>{
              node_sorter<custom_ordering>{*this, active_nodes, e}});
       break;
   };
