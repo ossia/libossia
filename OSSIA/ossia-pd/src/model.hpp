@@ -15,6 +15,7 @@ struct t_model : t_obj_base
   bool register_node(ossia::net::node_base* node);
   bool do_registration(ossia::net::node_base* node);
   bool unregister();
+  void register_children();
 
   static ossia::safe_vector<t_model*>& quarantine();
 

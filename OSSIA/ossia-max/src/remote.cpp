@@ -54,6 +54,7 @@ extern "C" void ossia_remote_setup(void)
   }
 
   class_register(CLASS_BOX, ossia_library.ossia_remote_class);
+  class_alias(ossia_library.ossia_remote_class, gensym("ø.remote"));
 }
 
 extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
@@ -66,14 +67,16 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     // make outlets
     x->m_dump_out
         = outlet_new(x, NULL); // anything outlet to dump remote state
+    x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
     x->m_set_out
         = outlet_new(x, NULL); // anything outlet to output data for ui
-    x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
 
     x->m_callbackit = boost::none;
 
     //        x->m_clock = clock_new(x, (method)t_object_base::tick);
     x->m_regclock = clock_new(x, (method)t_object_base::bang);
+
+    x->m_otype = Type::remote;
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -100,7 +103,8 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    object_register<t_remote>(x);
+    max_object_register<t_remote>(x);
+    ossia_max::instance().remotes.push_back(x);
   }
 
   return (x);
@@ -111,7 +115,9 @@ extern "C" void ossia_remote_free(t_remote* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_remote>(x);
-  // TODO : free outlets
+  ossia_max::instance().remotes.remove_all(x);
+  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_data_out);
 }
 
 extern "C" void
@@ -123,7 +129,20 @@ ossia_remote_assist(t_remote* x, void* b, long m, long a, char* s)
   }
   else
   {
-    sprintf(s, "I am outlet %ld", a);
+    switch(a)
+    {
+      case 0:
+        sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
+        break;
+      case 1:
+        sprintf(s, "raw outlet", a);
+        break;
+      case 2:
+        sprintf(s, "dump outlet", a);
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -252,20 +271,15 @@ bool t_remote::do_registration(ossia::net::node_base* node)
   {
     if (m_absolute)
     {
-      m_node = ossia::net::find_node(*node, m_name->s_name);
+      m_node = ossia::net::find_node(
+            node->get_device().get_root_node(), m_name->s_name);
     }
     else
     {
-      std::string absolute_path = object_path_absolute<t_remote>(this);
-      std::string address_string = ossia::net::address_string_from_node(*node);
-
-      if (absolute_path != address_string)
-        return false;
-
       m_node = ossia::net::find_node(*node, m_name->s_name);
     }
 
-    if (m_node)
+    if (m_node && m_node->get_address())
     {
       m_callbackit = m_node->get_address()->add_callback(
           [=](const ossia::value& v) { apply_value_visitor(v); });
@@ -273,7 +287,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
           this);
 
       clock_delay(m_regclock, 0);
-
       return true;
     }
   }
@@ -283,6 +296,12 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
 bool t_remote::unregister()
 {
+  if (m_node)
+  {
+    m_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(
+          this);
+  }
+
   if (m_callbackit != boost::none)
   {
     if (m_node && m_node->get_address())

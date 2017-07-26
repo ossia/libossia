@@ -5,12 +5,24 @@
 #undef error
 #undef post
 
+#include "ossia_object_base.hpp"
+
 #include <ossia/ossia.hpp>
+#include <ossia/network/common/websocket_log_sink.hpp>
+#include <ossia/detail/safe_vec.hpp>
 
 namespace ossia
 {
 namespace max
 {
+
+// TODO refactor headers to avoid that and include directly relevant headers
+struct t_parameter;
+struct t_remote;
+struct t_view;
+struct t_model;
+struct t_device;
+struct t_client;
 
 #pragma mark -
 #pragma mark Library
@@ -22,11 +34,17 @@ extern "C" void ossia_model_setup(void);
 extern "C" void ossia_parameter_setup(void);
 extern "C" void ossia_remote_setup(void);
 extern "C" void ossia_view_setup(void);
+extern "C" void ossia_ossia_setup(void);
 
 class ossia_max
 {
 public:
   static ossia_max& instance();
+  static ossia::net::generic_device* get_default_device()
+  {
+    return &instance().m_device;
+  }
+
 
   t_class* ossia_client_class{};
   t_class* ossia_device_class{};
@@ -35,19 +53,30 @@ public:
   t_class* ossia_parameter_class{};
   t_class* ossia_remote_class{};
   t_class* ossia_view_class{};
+  t_class* ossia_ossia_class{};
+
+  // keep list of all objects
+  ossia::safe_vector<t_parameter*> parameters;
+  ossia::safe_vector<t_remote*> remotes;
+  ossia::safe_vector<t_model*> models;
+  ossia::safe_vector<t_view*> views;
+  ossia::safe_vector<t_device*> devices;
+  ossia::safe_vector<t_client*> clients;
 
 private:
   ossia_max();
+  ~ossia_max();
+
+  ossia::net::local_protocol* m_localProtocol{};
+  ossia::net::generic_device m_device;
+  string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
 };
 
 #pragma mark -
 #pragma mark Templates
 
-// we can't have virtual methods with C linkage so we need a bunch a template
-// instead...
-
 template <typename T>
-extern bool object_register(T*);
+extern bool max_object_register(T*);
 
 /**
  * @brief get absolute path to an object
@@ -70,6 +99,10 @@ extern bool object_is_quarantined(T*);
 template <typename T>
 extern void object_dump(T*);
 
+struct t_object_base;
+
+void object_namespace(t_object_base* x);
+
 #pragma mark -
 #pragma mark Utilities
 
@@ -90,7 +123,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the parent box if exists. Otherwise returns nullptr.
  */
-t_object* find_parent_box(
+t_object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -101,7 +134,7 @@ t_object* find_parent_box(
  * @param start_level
  * @return
  */
-t_object* find_parent_box_alive(
+t_object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -129,7 +162,7 @@ public:
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<box_hierachy> find_children_to_register(
+std::vector<t_object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname);
 
 /**

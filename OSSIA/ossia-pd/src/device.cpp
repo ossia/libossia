@@ -21,6 +21,8 @@ static void device_free(t_device* x)
   x->unregister_children();
   if (x->x_device)
     delete (x->x_device);
+  ossia_pd::instance().devices.remove_all(x);
+  outlet_free(x->x_dumpout);
   register_quarantinized();
 }
 
@@ -33,6 +35,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    ossia_pd.devices.push_back(x);
     x->x_otype = Type::device;
 
     x->x_name = gensym("Pd");
@@ -50,6 +53,8 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 
     ebox_attrprocess_viabinbuf(x, d);
 
+    // check if there is another ossia.device in the same patcher
+    // TODO make a method to share with other objects
     t_gobj* list = x->x_obj.o_canvas->gl_list;
     while (list)
     {
@@ -60,7 +65,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
         {
           pd_error(
                 &list->g_pd,
-                "Only one [ossia.device] intance per patcher is allowed.");
+                "Only one [ossia.device] instance per patcher is allowed.");
           device_free(x);
           x = nullptr;
           break;

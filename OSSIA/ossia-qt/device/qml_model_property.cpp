@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "qml_model_property.hpp"
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 
@@ -19,6 +20,8 @@ qml_model_property::qml_model_property(QObject* parent)
 
 qml_model_property::~qml_model_property()
 {
+  if(m_parentOssiaNode)
+    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   if (m_device)
   {
     m_device->remove(this);
@@ -82,24 +85,94 @@ void qml_model_property::setNode(QString node)
   emit nodeChanged(node);
 }
 
-void qml_model_property::setParentNode(qml_node_base* parentNode)
+void qml_model_property::reloadParentNode()
+{
+    if (m_parentOssiaNode)
+    {
+      m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    }
+
+    if(m_parentNode)
+    {
+      auto pn = dynamic_cast<qml_node_base*>(m_parentNode);
+
+      if(pn)
+      {
+        m_parentOssiaNode = pn->ossiaNode();
+      }
+      else
+      {
+        auto dn = dynamic_cast<qml_device*>(m_parentNode);
+        if(dn)
+        {
+          m_parentOssiaNode = &dn->device().get_root_node();
+        }
+      }
+    }
+    else
+    {
+      m_parentOssiaNode = nullptr;
+    }
+
+    if (m_parentOssiaNode)
+    {
+      ossia::net::set_instance_bounds(
+          *m_parentOssiaNode, ossia::net::instance_bounds{0, 1000});
+      m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    }
+}
+
+void qml_model_property::setParentNode(QObject* parentNode)
 {
   if (m_parentNode == parentNode)
     return;
 
   m_parentNode = parentNode;
-  if (m_parentNode && m_parentNode->ossiaNode())
+
+  if (m_parentOssiaNode)
   {
-    ossia::net::set_instance_bounds(
-        *m_parentNode->ossiaNode(), ossia::net::instance_bounds{0, 1000});
+    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   }
 
-  emit parentNodeChanged(parentNode);
+  if(parentNode)
+  {
+    auto pn = dynamic_cast<qml_node_base*>(parentNode);
+
+    if(pn)
+    {
+      m_parentOssiaNode = pn->ossiaNode();
+    }
+    else
+    {
+      auto dn = dynamic_cast<qml_device*>(parentNode);
+      if(dn)
+      {
+        m_parentOssiaNode = &dn->device().get_root_node();
+      }
+    }
+  }
+  else
+  {
+    m_parentOssiaNode = nullptr;
+  }
+
+  if (m_parentOssiaNode)
+  {
+    ossia::net::set_instance_bounds(
+        *m_parentOssiaNode, ossia::net::instance_bounds{0, 1000});
+    m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+  }
+
+  emit parentNodeChanged(m_parentNode);
 }
 
 void qml_model_property::on_node_deleted(const net::node_base&)
 {
-  m_parentNode = nullptr;
+  if(m_parentOssiaNode)
+  {
+    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+  }
+  m_parentOssiaNode = nullptr;
 }
 
 QModelIndex
@@ -138,7 +211,7 @@ QString qml_model_property::node() const
   return m_node;
 }
 
-qml_node_base* qml_model_property::parentNode() const
+QObject* qml_model_property::parentNode() const
 {
   return m_parentNode;
 }
@@ -154,19 +227,17 @@ static bool is_instance(const std::string& root, const std::string& child)
 
 void qml_model_property::updateCount()
 {
+  reloadParentNode();
   int newCount = 0;
 
-  if (m_parentNode && !m_node.isEmpty())
+  if (m_parentOssiaNode && !m_node.isEmpty())
   {
-    if (auto on = m_parentNode->ossiaNode())
+    const std::string& instance_name = m_node.toStdString();
+    for (auto& cld : m_parentOssiaNode->children())
     {
-      const std::string& instance_name = m_node.toStdString();
-      for (auto& cld : on->children())
-      {
-        const auto& name = cld->get_name();
-        if (is_instance(instance_name, name))
-          newCount++;
-      }
+      const auto& name = cld->get_name();
+      if (is_instance(instance_name, name))
+        newCount++;
     }
   }
 

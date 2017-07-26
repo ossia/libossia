@@ -15,9 +15,14 @@ namespace pd
 
 void t_obj_base::setValue(const ossia::value& v)
 {
+  auto local_address = x_node->get_address();
+  auto filtered = ossia::net::filter_value(
+        local_address->get_domain(),
+        v,
+        local_address->get_bounding());
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)&x_obj;
-  v.apply(vm);
+  filtered.apply(vm);
 }
 
 /**

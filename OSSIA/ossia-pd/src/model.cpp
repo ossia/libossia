@@ -20,40 +20,7 @@ bool t_model::register_node(ossia::net::node_base* node)
   bool res = do_registration(node);
   if (res)
   {
-    obj_dequarantining<t_model>(this);
-    std::vector<t_obj_base*> obj
-        = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
-    for (auto v : obj)
-    {
-      if (v->x_otype == Type::model)
-      {
-        t_model* model = (t_model*)v;
-        if (model == this)
-        {
-          // not registering itself
-          continue;
-        }
-        model->register_node(x_node);
-      }
-      else if (v->x_otype == Type::param)
-      {
-        t_param* param = (t_param*)v;
-        param->register_node(x_node);
-      }
-    }
-
-    for (auto view : t_view::quarantine().copy())
-    {
-      obj_register<t_view>(static_cast<t_view*>(view));
-    }
-
-    // then try to register qurantinized remote
-    // TODO why doing that ?
-    // quarantinized remote should have been registered by their ossia.view above
-    for (auto remote : t_remote::quarantine().copy())
-    {
-      obj_register<t_remote>(static_cast<t_remote*>(remote));
-    }
+    register_children();
   }
   else
     obj_quarantining<t_model>(this);
@@ -103,6 +70,42 @@ bool t_model::do_registration(ossia::net::node_base* node)
   return true;
 }
 
+void t_model::register_children()
+{
+  obj_dequarantining<t_model>(this);
+  std::vector<t_obj_base*> obj
+      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
+  for (auto v : obj)
+  {
+    if (v->x_otype == Type::model)
+    {
+      t_model* model = (t_model*)v;
+      if (model == this)
+      {
+        // not registering itself
+        continue;
+      }
+      model->register_node(x_node);
+    }
+    else if (v->x_otype == Type::param)
+    {
+      t_param* param = (t_param*)v;
+      param->register_node(x_node);
+    }
+  }
+
+  for (auto view : t_view::quarantine().copy())
+  {
+    obj_register(static_cast<t_view*>(view));
+  }
+
+  // then try to register quarantinized remote
+  for (auto remote : t_remote::quarantine().copy())
+  {
+    obj_register(static_cast<t_remote*>(remote));
+  }
+}
+
 bool t_model::unregister()
 {
 
@@ -120,7 +123,7 @@ bool t_model::unregister()
 
   obj_quarantining<t_model>(this);
 
-  register_quarantinized();
+  register_children();
 
   return true;
 }

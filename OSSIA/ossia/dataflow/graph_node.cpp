@@ -53,10 +53,11 @@ void graph_node::run(execution_state&)
 {
 }
 
-void graph_node::set_date(ossia::time_value d)
+void graph_node::set_date(ossia::time_value d, double pos)
 {
   m_prev_date = m_date;
   m_date = d;
+  m_position = pos;
 }
 
 bool graph_node::can_execute(const execution_state&) const
@@ -67,7 +68,7 @@ bool graph_node::can_execute(const execution_state&) const
     bool previous_nodes_executed
         = ossia::all_of(inlet->sources, [&](graph_edge* edge) {
             return edge->out_node->executed()
-                   || (!edge->out_node->enabled() && bool(inlet->address)
+                   || (!edge->out_node->enabled() /* && bool(inlet->address) */
                        /* TODO check that it's in scope */);
           });
 
@@ -81,12 +82,12 @@ bool graph_node::can_execute(const execution_state&) const
 bool graph_node::has_port_inputs() const
 {
   return ossia::any_of(
-      inputs(), [](const auto& inlet) { return !inlet->sources.empty(); });
+      inputs(), [](const inlet_ptr& inlet) { return !inlet->sources.empty(); });
 }
 
 bool graph_node::has_global_inputs() const
 {
-  return ossia::any_of(inputs(), [&](const auto& inlet) {
+  return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
     return (inlet->scope & port::scope_t::global) && bool(inlet->address);
   });
 }

@@ -171,6 +171,7 @@ if(MSVC)
         "/wd4305" # argument : truncation from double to float
         "/MP"
         "/bigobj"
+#        "/std:c++latest"
         ${OSSIA_LINK_OPTIONS}
     )
 else()

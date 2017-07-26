@@ -117,6 +117,12 @@ auto sort(Vector&& v)
   return std::sort(std::begin(v), std::end(v));
 }
 
+template <typename Vector, typename T>
+auto fill(Vector&& v, const T& val)
+{
+  return std::fill(std::begin(v), std::end(v), val);
+}
+
 template <typename Vector>
 auto unique(Vector&& v)
 {

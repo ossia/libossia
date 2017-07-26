@@ -26,6 +26,8 @@ struct t_parameter : t_object_base
   t_symbol* m_tags{};
   t_symbol* m_description{};
   long m_priority{};
+  long m_hidden{};
+
 
   bool register_node(ossia::net::node_base* node);
 
@@ -35,15 +37,7 @@ struct t_parameter : t_object_base
 
   void is_deleted(const ossia::net::node_base& n);
 
-  bool is_renamed(t_parameter*);
-
-  void renaming(t_parameter* x);
-
-  void derenaming(t_parameter* x);
-
   static ossia::safe_vector<t_parameter*>& quarantine();
-
-  static ossia::safe_vector<t_parameter*>& rename();
 };
 
 #pragma mark -

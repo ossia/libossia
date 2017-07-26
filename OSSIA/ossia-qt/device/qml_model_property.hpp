@@ -16,7 +16,7 @@ class OSSIA_EXPORT qml_model_property : public QAbstractItemModel
   Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged)
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
-  Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode
+  Q_PROPERTY(QObject* parentNode READ parentNode WRITE setParentNode
                  NOTIFY parentNodeChanged)
 public:
   qml_model_property(QObject* parent = nullptr);
@@ -31,21 +31,22 @@ public:
   QVariant data(const QModelIndex& index, int role) const override;
   int count() const;
   QString node() const;
-  qml_node_base* parentNode() const;
+  QObject* parentNode() const;
   QObject* device() const;
 
   void updateCount();
+  void reloadParentNode();
 signals:
   void setValue_sig(const value&);
   void countChanged(int count);
   void nodeChanged(QString node);
-  void parentNodeChanged(qml_node_base* parentNode);
+  void parentNodeChanged(QObject* parentNode);
   void deviceChanged(QObject* device);
 
 public slots:
   void setCount(int count);
   void setNode(QString node);
-  void setParentNode(qml_node_base* parentNode);
+  void setParentNode(QObject* parentNode);
   void setDevice(QObject* device);
 
 private:
@@ -54,7 +55,8 @@ private:
 
   QString m_node;
 
-  qml_node_base* m_parentNode{};
+  QObject* m_parentNode{};
+  ossia::net::node_base* m_parentOssiaNode{};
   qml_device* m_device{};
   int m_count{};
 };

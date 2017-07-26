@@ -106,12 +106,12 @@ struct outlet : public port
 };
 
 template <typename T, typename... Args>
-auto make_inlet(Args&&... args)
+inlet_ptr make_inlet(Args&&... args)
 {
   return std::make_shared<inlet>(T{}, std::forward<Args>(args)...);
 }
 template <typename T, typename... Args>
-auto make_outlet(Args&&... args)
+outlet_ptr make_outlet(Args&&... args)
 {
   return std::make_shared<outlet>(T{}, std::forward<Args>(args)...);
 }

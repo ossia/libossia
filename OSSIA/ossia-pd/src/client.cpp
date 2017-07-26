@@ -26,6 +26,8 @@ static void client_free(t_client* x)
   if (x->x_device)
     delete (x->x_device);
   x->x_device = nullptr;
+  ossia_pd::instance().clients.remove_all(x);
+  outlet_free(x->x_dumpout);
   register_quarantinized();
 }
 
@@ -38,6 +40,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    ossia_pd.clients.push_back(x);
     x->x_otype = Type::client;
 
     x->x_name = gensym("Pd");
@@ -52,6 +55,8 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
     ebox_attrprocess_viabinbuf(x, d);
 
+    // check if there is another ossia.client in the same patcher
+    // TODO make a method to share with others
     t_gobj* list = x->x_obj.o_canvas->gl_list;
     while (list)
     {
@@ -135,7 +140,12 @@ static void client_update(t_client* x)
 static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 {
 
-  client_free(x); // uregister and delete x_device
+  // unregister and free x_device
+  x->unregister_children();
+  if (x->x_device)
+    delete (x->x_device);
+  x->x_device = nullptr;
+
   if (argc && argv->a_type == A_SYMBOL)
   {
     std::string protocol = argv->a_w.w_symbol->s_name;

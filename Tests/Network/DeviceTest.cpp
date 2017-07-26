@@ -157,6 +157,11 @@ private Q_SLOTS:
         auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
         auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
 
+        int recv = 0;
+        a1->add_callback([&] (const auto& v) { recv++; });
+        a2->add_callback([&] (const auto& v) { recv++; });
+        a3->add_callback([&] (const auto& v) { recv++; });
+        a4->add_callback([&] (const auto& v) { recv++; });
         auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
 
         std::vector<ossia::net::full_address_data> vec(4);
@@ -171,7 +176,9 @@ private Q_SLOTS:
 
         b_proto.push_raw_bundle(vec);
 
-        std::this_thread::sleep_for(std::chrono::microseconds(10000));
+        while(recv < 4)
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
         QVERIFY(a1->value() == ossia::value{0.});
         QVERIFY(a2->value() == ossia::value{1.});
         QVERIFY(a3->value() == ossia::value{2.});
@@ -190,12 +197,20 @@ private Q_SLOTS:
         auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
         auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
 
+        int recv = 0;
+        a1->add_callback([&] (const auto& v) { recv++; });
+        a2->add_callback([&] (const auto& v) { recv++; });
+        a3->add_callback([&] (const auto& v) { recv++; });
+        a4->add_callback([&] (const auto& v) { recv++; });
         auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
 
         ossia::net::full_address_data dat{"/foo/bar.*"};
         dat.set_value(2.3f);
         b_proto.push_raw(dat);
-        std::this_thread::sleep_for(std::chrono::microseconds(10000));
+
+        while(recv < 4)
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
         QVERIFY(a1->value() == ossia::value{2.3});
         QVERIFY(a2->value() == ossia::value{2.3});
         QVERIFY(a3->value() == ossia::value{2.3});

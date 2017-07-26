@@ -24,13 +24,13 @@ struct temporal_glutton_connection
 struct delayed_glutton_connection
 {
   // delayed at the source or at the target
-  data_type buffer;
+  delay_line_type buffer;
   std::size_t pos{};
 };
 struct delayed_strict_connection
 {
   // same
-  data_type buffer;
+  delay_line_type buffer;
   std::size_t pos{};
 };
 struct reduction_connection

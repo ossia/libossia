@@ -14,19 +14,16 @@ struct t_model : t_object_base
 {
   t_symbol* m_tags;
   t_symbol* m_description;
+  long m_hidden;
 
   bool register_node(ossia::net::node_base*);
   bool do_registration(ossia::net::node_base*);
   bool unregister();
+  void register_children();
 
   void is_deleted(const ossia::net::node_base&);
-  bool is_renamed(t_model*);
-  void renaming(t_model*);
-  void derenaming(t_model*);
 
   static ossia::safe_vector<t_model*>& quarantine();
-
-  static ossia::safe_vector<t_model*>& rename();
 };
 
 } // max namespace

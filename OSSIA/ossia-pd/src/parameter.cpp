@@ -67,9 +67,12 @@ bool t_param::do_registration(ossia::net::node_base* node)
   x_node = &ossia::net::create_node(*node, x_name->s_name);
 
   x_node->about_to_be_deleted.connect<t_param, &t_param::is_deleted>(this);
+
   ossia::net::address_base* local_address{};
+
   std::string type = x_type->s_name;
   ossia::transform(type, type.begin(), ::tolower);
+
   if (type == "float")
   {
     local_address = x_node->create_address(ossia::val_type::FLOAT);
@@ -287,7 +290,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->x_access_mode = gensym("rw");
     x->x_bounding_mode = gensym("free");
     x->x_unit = gensym("");
-    x->x_type = gensym("tuple");
+    x->x_type = gensym("float");
     x->x_type_size = 1;
     x->x_tags = gensym("");
     x->x_description = gensym("");
