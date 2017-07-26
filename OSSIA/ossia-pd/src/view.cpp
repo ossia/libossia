@@ -59,11 +59,8 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    if(x_absolute)
+    if (x_absolute == AddrType::relative)
     {
-      x_node = ossia::net::find_node(
-            node->get_device().get_root_node(), x_name->s_name);
-    } else {
       std::string absolute_path = get_absolute_path<t_view>(this);
       std::string address_string = ossia::net::address_string_from_node(*node);
 
@@ -71,6 +68,15 @@ bool t_view::do_registration(ossia::net::node_base* node)
         return false;
       x_node = node->find_child(x_name->s_name);
     }
+    else if(x_absolute == AddrType::absolute)
+    {
+      x_node = ossia::net::find_node(
+            node->get_device().get_root_node(), x_name->s_name);
+    } else {
+      x_node = ossia::pd::find_global_node(x_name->s_name);
+    }
+
+
     if (x_node)
     {
       x_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
@@ -193,8 +199,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-        x->x_absolute = true;
+      x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
@@ -246,8 +251,7 @@ static void view_free(t_view* x)
 static void view_bind(t_view* x, t_symbol* address)
 {
   x->x_name = address;
-  if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-    x->x_absolute = true;
+  x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }

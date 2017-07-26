@@ -112,12 +112,14 @@ bool t_remote::register_node(ossia::net::node_base* node)
   else
     obj_quarantining<t_remote>(this);
 
-  auto& dev = node->get_device();
-  if (&dev != x_dev)
-  {
-    if (x_dev) x_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
-    x_dev = &dev;
-    x_dev->on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
+  if (node){
+    auto& dev = node->get_device();
+    if (&dev != x_dev)
+    {
+      if (x_dev) x_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
+      x_dev = &dev;
+      x_dev->on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
+    }
   }
 
   return res;
@@ -150,25 +152,38 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     }
     else
     {
-      if (x_absolute)
+      if (x_absolute == AddrType::relative)
       {
-        x_node = ossia::net::find_node(node->get_device().get_root_node(), name);
+        /*
+      std::string absolute_path = get_absolute_path<t_remote>(this);
+      std::string address_string = ossia::net::address_string_from_node(*node);
+      if (absolute_path != address_string)
+        return false;
+      */
+        x_node = ossia::net::find_node(*node, x_name->s_name);
+        if (x_node && !x_node->get_address()){
+          fmt::MemoryWriter path;
+          path << x_name->s_name << "/" << x_name->s_name;
+          x_node = ossia::net::find_node(*node, path.str());
+        }
+      }
+      else if (x_absolute == AddrType::absolute)
+      {
+        x_node = ossia::net::find_node(
+              node->get_device().get_root_node(), x_name->s_name);
       }
       else
       {
-        std::string absolute_path = get_absolute_path<t_remote>(this);
-        std::string address_string = ossia::net::address_string_from_node(*node);
-        if (absolute_path != address_string)
-          return false;
-        x_node = ossia::net::find_node(*node, name);
+        x_node = ossia::pd::find_global_node(x_name->s_name);
+      }
 
-        // if there is a node without address it might be a model
-        // then look if that node have an eponyme child
-        if (x_node && !x_node->get_address()){
-          fmt::MemoryWriter path;
-          path << name << "/" << name;
-          x_node = ossia::net::find_node(*node, path.str());
-        }
+
+      // if there is a node without address it might be a model
+      // then look if that node have an eponyme child
+      if (x_node && !x_node->get_address()){
+        fmt::MemoryWriter path;
+        path << name << "/" << name;
+        x_node = ossia::net::find_node(*node, path.str());
       }
 
       if (x_node && x_node->get_address())
@@ -180,7 +195,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       clock_delay(x_regclock, 0);
     }
   }
-
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any node
   return (!x_matchers.empty() || x_is_pattern);
@@ -203,7 +217,7 @@ void t_remote::on_address_created_callback(const ossia::net::address_base& addr)
   auto path = ossia::traversal::make_path(x_name->s_name);
 
   // FIXME check for path validity
-  if ( path && ossia::traversal::match(path.value(), node) )
+  if ( path && ossia::traversal::match(*path, node) )
   {
     x_matchers.emplace_back(&node,this);
   }
@@ -293,8 +307,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-        x->x_absolute = true;
+      x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
     }
     else
     {

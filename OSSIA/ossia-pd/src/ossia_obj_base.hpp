@@ -21,6 +21,13 @@ enum class Type {
   client
 };
 
+enum class AddrType
+{
+  relative = 0,
+  absolute,
+  global
+};
+
 struct t_obj_base
 {
   t_eobj x_obj;
@@ -29,7 +36,7 @@ struct t_obj_base
   t_outlet* x_setout{};
   t_outlet* x_dataout{};
   t_outlet* x_dumpout{};
-  bool x_absolute = false;
+  AddrType x_absolute{};
   bool x_dead = false; // wether this object is being deleted or not;
 
   t_clock* x_clock{};

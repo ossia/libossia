@@ -547,5 +547,27 @@ void obj_dump(T* x)
 std::vector<t_obj_base*> find_child_to_register(
     t_obj_base* x, t_gobj* start_list, const std::string& classname);
 
+/**
+ * @brief find_peer: iterate through patcher's object list to find a peer
+ * @param x
+ * @return true if a peer have been found, false otherwise
+ */
+bool find_peer(t_obj_base* x);
+
+/**
+ * @brief find_global_node: find node matching address with a 'device:' prefix
+ * @param addr : address string
+ * @return pointer to the node
+ */
+ossia::net::node_base* find_global_node(const std::string& addr);
+
+
+/**
+ * @brief get_address_type: return address type (relative, absolute or globale)
+ * @param addr: the address to process
+ * @return
+ */
+ossia::pd::AddrType get_address_type(const std::string& addr);
+
 }
 }

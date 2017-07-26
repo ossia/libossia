@@ -163,8 +163,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
         x->x_name = atom_getsymbol(argv);
-        if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-          x->x_absolute = true;
+        x->x_absolute = get_address_type(x->x_name->s_name);
       }
       else
       {
