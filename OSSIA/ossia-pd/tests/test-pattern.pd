@@ -19,7 +19,7 @@
 #X floatatom 59 146 5 0 0 0 - - -, f 5;
 #X obj 279 47 ø.param baron;
 #X floatatom 325 215 5 0 0 0 - - -, f 5;
-#X obj 372 214 ø.remote foo.1/bar;
+#X obj 372 214 ø.remote /foo.1/bar;
 #X connect 4 0 8 0;
 #X connect 5 0 12 0;
 #X connect 6 0 7 0;
