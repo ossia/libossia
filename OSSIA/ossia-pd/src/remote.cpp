@@ -14,10 +14,60 @@ namespace pd
 
 #pragma mark t_obj_pattern
 
+t_matcher::t_matcher(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+  
+  if(node)
+  {
+    if(auto addr = node->get_address())
+    {
+      if (callbackit) 
+        addr->remove_callback(*callbackit);
+    
+      callbackit = addr->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+    }
+  }
+}
+
+t_matcher& t_matcher::operator=(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+  
+  if(node)
+  {
+    if(auto addr = node->get_address())
+    {
+      if (callbackit) 
+        addr->remove_callback(*callbackit);
+    
+      callbackit = addr->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+    }
+  }
+
+  return *this;
+}
+
 t_matcher::t_matcher(ossia::net::node_base* n, t_remote* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  std::cout << "x_matchers content (" << parent->x_matchers.size() << " items) :" << std::endl;
+  std::cout << this << " => x_matchers content (" << parent->x_matchers.size() << " items) :" << n << std::endl;
   for (auto& m : parent->x_matchers)
   {
     std::cout << m.node << "\t" << m.parent << std::endl;
@@ -42,12 +92,14 @@ t_matcher::~t_matcher()
     if (addr && callbackit) addr->remove_callback(*callbackit);
     node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(parent);
   }
+  node = nullptr;
 }
 
 void t_matcher::set_value(const ossia::value& v){
-  std::cout << "set value, node: " << node << " t_remote: " << parent << std::endl;
-  /*
+  std::cout << this << " => set value, node: " << node << " t_remote: " << parent << std::endl;
+  
   std::string addr = node->get_name();
+  std::cerr << addr << std::endl;
   t_atom a;
   SETSYMBOL(&a, gensym(addr.c_str()));
   outlet_anything(parent->x_dumpout,gensym("address"),1,&a);
@@ -55,7 +107,6 @@ void t_matcher::set_value(const ossia::value& v){
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)parent;
   v.apply(vm);
-  */
 }
 
 #pragma mark t_remote
@@ -180,7 +231,7 @@ void t_remote::is_deleted(const ossia::net::node_base& n)
     ossia::remove_one_if(
       x_matchers, 
       [&] (const auto& m) { 
-        return m.node == &n;      
+        return m.get_node() == &n;      
     }); 
   }
 }
@@ -228,7 +279,7 @@ static void remote_push(t_remote* x, t_symbol* s, int argc, t_atom* argv)
   {
     for (auto& m : x->x_matchers)
     {
-        x->x_node = m.node;
+        x->x_node = m.get_node();
         t_obj_base::obj_push(x,s,argc,argv);
     }
     x->x_node = nullptr;
