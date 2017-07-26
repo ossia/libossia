@@ -6,6 +6,7 @@
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
+#include <ossia-pd/src/ossia_obj_base.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <fmt/format.h>
@@ -226,7 +227,9 @@ static t_obj_base* find_parent_alive(
 
 /**
  * @brief get_absolute_path
- * @param t_obj_base
+ * @param
+ *
+ *
  * @return std::string with full path to object from root device in an OSC
  * style (with '/')
  */
@@ -318,8 +321,15 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  */
 ossia::net::node_base* find_parent_node(t_obj_base* x);
 
+template<typename T>
+/**
+ * @brief copy : utility function to return a copy of an object
+ * @param v : object to copy
+ */
+auto copy(const T& v) { return v; }
+
+template<typename T>
 // self registering (when creating the object)
-template <typename T>
 bool obj_register(T* x)
 {
   if (x->x_node)
