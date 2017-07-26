@@ -67,9 +67,9 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     // make outlets
     x->m_dump_out
         = outlet_new(x, NULL); // anything outlet to dump remote state
+    x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
     x->m_set_out
         = outlet_new(x, NULL); // anything outlet to output data for ui
-    x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
 
     x->m_callbackit = boost::none;
 
@@ -129,7 +129,20 @@ ossia_remote_assist(t_remote* x, void* b, long m, long a, char* s)
   }
   else
   {
-    sprintf(s, "I am outlet %ld", a);
+    switch(a)
+    {
+      case 0:
+        sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
+        break;
+      case 1:
+        sprintf(s, "raw outlet", a);
+        break;
+      case 2:
+        sprintf(s, "dump outlet", a);
+        break;
+      default:
+        break;
+    }
   }
 }
 

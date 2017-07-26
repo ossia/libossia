@@ -73,6 +73,10 @@ void t_object_base::bang(t_object_base* x)
     }
 */
 
+void t_object_base::defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_atom* argv){
+  outlet_anything(x->m_set_out, s, argc, argv);
+}
+
 void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
   for (const auto& child : node.children_copy())
   {
