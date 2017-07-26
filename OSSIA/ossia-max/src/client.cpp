@@ -88,6 +88,8 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
+
+    ossia_library.clients.push_back(x);
   }
 
   return (x);
@@ -102,6 +104,7 @@ extern "C" void ossia_client_free(t_client* x)
     delete (x->m_device);
   x->m_device = nullptr;
   outlet_delete(x->m_dump_out);
+  ossia_max::instance().clients.remove_all(x);
   register_quarantinized();
 }
 

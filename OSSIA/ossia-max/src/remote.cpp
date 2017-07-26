@@ -275,8 +275,10 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     }
     else if (m_address_type == AddrType::absolute)
     {
+      // remove starting '/'
+      std::string addr = std::string(m_name->s_name).substr(1);
       m_node = ossia::net::find_node(
-            node->get_device().get_root_node(), m_name->s_name);
+            node->get_device().get_root_node(), addr);
     }
     else
     {

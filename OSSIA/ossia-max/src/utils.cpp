@@ -46,10 +46,12 @@ ossia::net::node_base* find_global_node(const std::string& addr)
   {
     auto dev = device->m_device;
     std::string name = dev->get_name();
-    size_t pos = addr.find(name);
-    if (pos != std::string::npos)
+    size_t pos = addr.find(":");
+    std::string prefix = addr.substr(0,pos);
+    if (pos != std::string::npos && name == prefix)
     {
-      std::string osc_name = addr.substr(name.length());
+      // remove 'device_name:/' prefix
+      std::string osc_name = addr.substr(name.length()+2);
       auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
       if (node) return node;
     }
@@ -59,10 +61,12 @@ ossia::net::node_base* find_global_node(const std::string& addr)
   {
     auto dev = client->m_device;
     std::string name = dev->get_name();
-    size_t pos = addr.find(name);
-    if (pos != std::string::npos)
+    size_t pos = addr.find(":");
+    std::string prefix = addr.substr(0,pos);
+    if (pos != std::string::npos && name == prefix)
     {
-      std::string osc_name = addr.substr(name.length());
+      // remove 'device_name:/' prefix
+      std::string osc_name = addr.substr(name.length()+2);
       auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
       if (node) return node;
     }
@@ -76,9 +80,9 @@ ossia::max::AddrType get_address_type(const std::string& addr)
   if ( addr.length() > 0 )
   {
     if (addr[0] == '/')
-      type == AddrType::absolute;
+      type = AddrType::absolute;
     else if ( addr.find(":/") != std::string::npos )
-      type == AddrType::global;
+      type = AddrType::global;
   }
   return type;
 }

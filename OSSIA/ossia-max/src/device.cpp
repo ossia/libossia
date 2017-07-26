@@ -86,6 +86,7 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
                                                  x->m_name->s_name};
     x->m_node = &x->m_device->get_root_node();
 
+    ossia_library.devices.push_back(x);
     t_device::register_children(x);
   }
 
@@ -99,6 +100,7 @@ extern "C" void ossia_device_free(t_device* x)
   if (x->m_device)
     delete (x->m_device);
   outlet_delete(x->m_dump_out);
+  ossia_max::instance().devices.remove_all(x);
   register_quarantinized();
 
 }
