@@ -11,7 +11,8 @@ namespace max
 #pragma mark -
 #pragma mark t_object_base structure declaration
 
-enum class Type {
+enum class Type
+{
   root = 0,
   param,
   remote,
@@ -19,6 +20,13 @@ enum class Type {
   view,
   device,
   client
+};
+
+enum class AddrType
+{
+  relative = 0,
+  absolute,
+  global
 };
 
 struct t_object_base
@@ -36,7 +44,7 @@ struct t_object_base
 
   Type m_otype{};
   t_symbol* m_name{};
-  bool m_absolute = false;
+  AddrType m_address_type{};
   bool m_dead = false; // wether this object is being deleted or not;
                        //            t_canvas*   m_last_opened_canvas{};
 

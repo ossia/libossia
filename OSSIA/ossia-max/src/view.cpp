@@ -72,8 +72,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_absolute = std::string(x->m_name->s_name) != ""
-                        && x->m_name->s_name[0] == '/';
+        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
       }
 
       // we need to delay registration because object may use patcher hierarchy
@@ -170,13 +169,6 @@ bool t_view::register_node(ossia::net::node_base* node)
       if (child->m_otype == Type::view)
       {
         t_view* view = (t_view*)child;
-
-        if (view == this)
-        {
-          // not registering itself
-          continue;
-        }
-
         view->register_node(m_node);
       }
       else if (child->m_otype == Type::remote)
@@ -204,11 +196,8 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    if(m_absolute)
+    if(m_address_type == AddrType::relative)
     {
-      m_node = ossia::net::find_node(
-            node->get_device().get_root_node(), m_name->s_name);
-    } else {
       std::string absolute_path = object_path_absolute<t_view>(this);
       std::string address_string = ossia::net::address_string_from_node(*node);
 
@@ -217,6 +206,16 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
       m_node = node->find_child(m_name->s_name);
     }
+    else if(m_address_type == AddrType::absolute)
+    {
+      m_node = ossia::net::find_node(
+            node->get_device().get_root_node(), m_name->s_name);
+    }
+    else
+    {
+      m_node = ossia::max::find_global_node(m_name->s_name);
+    }
+
     if (m_node)
       m_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
     else
@@ -290,8 +289,7 @@ bool t_view::unregister()
 void t_view::view_bind(t_view* x, t_symbol* address)
 {
   x->m_name = address;
-  if (std::string(x->m_name->s_name) != "" && x->m_name->s_name[0] == '/')
-    x->m_absolute = true;
+  x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }

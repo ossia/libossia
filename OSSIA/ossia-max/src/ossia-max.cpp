@@ -9,6 +9,8 @@
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
+#include <ossia-max/src/utils.hpp>
+
 #include <commonsyms.h>
 #pragma mark -
 #pragma mark library
@@ -79,47 +81,55 @@ bool max_object_register(T* x)
   if (x->m_dead)
     return false; // object will be removed soon
 
-  int l;
-  t_device* device = (t_device*) find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
-  t_client* client = (t_client*) find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
-
-  t_model* model = nullptr;
-  t_view* view = nullptr;
-  int view_level = 0, model_level = 0;
-
-  if (std::is_same<T, t_view>::value || std::is_same<T, t_model>::value)
-  {
-    view_level = 1;
-    model_level = 1;
-  }
-
-  if (!x->m_absolute)
-  {
-    // then try to locate a parent view or model
-    if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
-    {
-      view = (t_view*) find_parent_box_alive(
-            &x->m_object, gensym("ossia.view"), 0, &view_level);
-    }
-    else
-    {
-      model = (t_model*)find_parent_box_alive(
-          &x->m_object, gensym("ossia.model"), 0, &model_level);
-    }
-  }
-
   ossia::net::node_base* node = nullptr;
 
-  if (view)
-    node = view->m_node;
-  else if (model)
-    node = model->m_node;
-  else if (client)
-    node = client->m_node;
-  else if (device)
-    node = device->m_node;
+  if (x->m_address_type == AddrType::global)
+  {
+    node = ossia::max::find_global_node(x->m_name->s_name);
+  }
   else
-    node = &ossia_max::get_default_device()->get_root_node();
+  {
+    int l;
+    t_device* device = (t_device*) find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
+    t_client* client = (t_client*) find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
+
+    t_model* model = nullptr;
+    t_view* view = nullptr;
+    int view_level = 0, model_level = 0;
+    int start_level = 0;
+
+    if (std::is_same<T, t_view>::value || std::is_same<T, t_model>::value)
+    {
+      start_level = 1;
+    }
+
+    if (x->m_address_type == AddrType::relative)
+    {
+      // then try to locate a parent view or model
+      if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+      {
+        view = (t_view*) find_parent_box_alive(
+              &x->m_object, gensym("ossia.view"), start_level, &view_level);
+      }
+
+      if (!view)
+      {
+        model = (t_model*)find_parent_box_alive(
+              &x->m_object, gensym("ossia.model"), start_level, &model_level);
+      }
+    }
+
+    if (view)
+      node = view->m_node;
+    else if (model)
+      node = model->m_node;
+    else if (client)
+      node = client->m_node;
+    else if (device)
+      node = device->m_node;
+    else
+      node = &ossia_max::get_default_device()->get_root_node();
+  }
 
   return x->register_node(node);
 }
@@ -599,7 +609,7 @@ std::vector<t_object_base*> find_children_to_register(
         object_obex_lookup(object, gensym("#B"), &object_box);
 
         // the object itself shouln't be stored
-        if (next_box != object_box && next_box != nullptr)
+        if (object_box)
         {
           t_object_base* o = (t_object_base*) jbox_get_object(next_box);
           found.push_back(o);

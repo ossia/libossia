@@ -3,6 +3,7 @@
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
+#include <ossia-max/src/utils.hpp>
 
 using namespace ossia::max;
 
@@ -127,8 +128,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_absolute = std::string(x->m_name->s_name) != ""
-                        && x->m_name->s_name[0] == '/';
+        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
       }
     }
 

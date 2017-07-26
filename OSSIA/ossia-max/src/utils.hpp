@@ -26,5 +26,7 @@ bool find_peers(t_object_base *x);
  */
 ossia::net::node_base* find_global_node(const std::string& addr);
 
+ossia::max::AddrType get_address_type(const std::string& addr);
+
 } // namespace max
 } // namespace ossia

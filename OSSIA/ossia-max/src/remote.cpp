@@ -3,6 +3,7 @@
 #include "remote.hpp"
 #include "device.hpp"
 #include "parameter.hpp"
+#include <ossia-max/src/utils.hpp>
 
 using namespace ossia::max;
 
@@ -88,8 +89,7 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_absolute = std::string(x->m_name->s_name) != ""
-                        && x->m_name->s_name[0] == '/';
+        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
       }
     }
 
@@ -269,14 +269,18 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    if (m_absolute)
+    if (m_address_type == AddrType::relative)
+    {
+      m_node = ossia::net::find_node(*node, m_name->s_name);
+    }
+    else if (m_address_type == AddrType::absolute)
     {
       m_node = ossia::net::find_node(
             node->get_device().get_root_node(), m_name->s_name);
     }
     else
     {
-      m_node = ossia::net::find_node(*node, m_name->s_name);
+      m_node = ossia::max::find_global_node(m_name->s_name);
     }
 
     if (m_node && m_node->get_address())
