@@ -24,14 +24,14 @@ t_matcher::t_matcher(t_matcher&& other)
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
-  
+
   if(node)
   {
     if(auto addr = node->get_address())
     {
-      if (callbackit) 
+      if (callbackit)
         addr->remove_callback(*callbackit);
-    
+
       callbackit = addr->add_callback(
         [=] (const ossia::value& v) { set_value(v); });
     }
@@ -48,14 +48,14 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
-  
+
   if(node)
   {
     if(auto addr = node->get_address())
     {
-      if (callbackit) 
+      if (callbackit)
         addr->remove_callback(*callbackit);
-    
+
       callbackit = addr->add_callback(
         [=] (const ossia::value& v) { set_value(v); });
     }
@@ -67,13 +67,6 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, t_remote* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  std::cout << this << " => x_matchers content (" << parent->x_matchers.size() << " items) :" << n << std::endl;
-  for (auto& m : parent->x_matchers)
-  {
-    std::cout << m.node << "\t" << m.parent << std::endl;
-  }
-  std::cout << node << "\t" << parent << std::endl;
-
   callbackit = node->get_address()->add_callback(
       [=](const ossia::value& v) { set_value(v); });
 
@@ -85,7 +78,6 @@ t_matcher::t_matcher(ossia::net::node_base* n, t_remote* p) :
 
 t_matcher::~t_matcher()
 {
-  std::cout << "desctructor node: " << node << " t_remote: " << parent << std::endl;
   if(node)
   {
     auto addr = node->get_address();
@@ -96,10 +88,7 @@ t_matcher::~t_matcher()
 }
 
 void t_matcher::set_value(const ossia::value& v){
-  std::cout << this << " => set value, node: " << node << " t_remote: " << parent << std::endl;
-  
   std::string addr = node->get_name();
-  std::cerr << addr << std::endl;
   t_atom a;
   SETSYMBOL(&a, gensym(addr.c_str()));
   outlet_anything(parent->x_dumpout,gensym("address"),1,&a);
@@ -142,9 +131,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     return true; // already registered to this node;
   }
 
-  std::cout << "size before unregister(): " << x_matchers.size() << std::endl;
   unregister();
-  std::cout << "size after unregister(): " << x_matchers.size() << std::endl;
 
   if (node)
   {
@@ -159,7 +146,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
           if (ossia::find(x_matchers,matcher) == x_matchers.end())
             x_matchers.push_back(std::move(matcher));
         }
-        std::cout << "size size after populate: " << x_matchers.size() << std::endl;
       }
     }
     else
@@ -225,14 +211,13 @@ void t_remote::on_address_created_callback(const ossia::net::address_base& addr)
 
 void t_remote::is_deleted(const ossia::net::node_base& n)
 {
-  std::cout << "node " << &n << " is deleted" << std::endl;
   if (!x_dead)
   {
     ossia::remove_one_if(
-      x_matchers, 
-      [&] (const auto& m) { 
-        return m.get_node() == &n;      
-    }); 
+      x_matchers,
+      [&] (const auto& m) {
+        return m.get_node() == &n;
+    });
   }
 }
 
