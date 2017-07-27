@@ -42,7 +42,7 @@ public:
     return {};
   }
 
-  void start() override
+  void start(ossia::state& st) override
   {
     // TODO reset all delay buffer positions
     if(m_node)

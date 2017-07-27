@@ -43,24 +43,31 @@ loop::~loop()
 
 state_element loop::offset(ossia::time_value offset, double pos)
 {
-  // reset internal mOffsetState
+    /*
+    std::cerr << "Offset: " << offset << std::endl;
+   // reset internal mOffsetState
+    m_offsetState.clear();
+    flatten_and_filter(
+        m_offsetState, m_constraint->get_start_event().get_state());
   m_offsetState.clear();
 
   time_value patternOffset{
       std::fmod((double)offset, (double)m_constraint->get_nominal_duration())};
   flatten_and_filter(m_offsetState, m_constraint->offset(patternOffset));
-
   // compile mOffsetState with all HAPPENED event's states
   if (unmuted())
   {
-    if (m_constraint->get_start_event().get_status()
-        == time_event::status::HAPPENED)
+    auto status = m_constraint->get_start_event().get_status();
+    if (status == time_event::status::HAPPENED)
+    {
       flatten_and_filter(
           m_offsetState, m_constraint->get_start_event().get_state());
+    }
   }
+  */
 
   // TODO why is mOffsetState different from mCurrentState
-  return m_offsetState;
+  return {};
 }
 
 state_element loop::state(ossia::time_value date, double pos)
@@ -76,14 +83,14 @@ state_element loop::state(ossia::time_value date, double pos)
 
     // process the loop from the pattern start TimeNode
     std::vector<time_event*> statusChangedEvents;
-    m_startNode->process(statusChangedEvents);
-
-    // add the state of each newly HAPPENED TimeEvent
-    if (unmuted())
+    if(unmuted())
     {
-      for (const auto& timeEvent : statusChangedEvents)
-        if (timeEvent->get_status() == time_event::status::HAPPENED)
-          flatten_and_filter(m_currentState, timeEvent->get_state());
+        m_startNode->process(statusChangedEvents, m_currentState);
+    }
+    else
+    {
+        ossia::state st;
+        m_startNode->process(statusChangedEvents, st);
     }
 
     // make time flow for the pattern constraint
@@ -110,7 +117,10 @@ state_element loop::state(ossia::time_value date, double pos)
     {
       // TODO we should advance the loop a bit at least.
     }
-    flatten_and_filter(m_currentState, m_constraint->state());
+
+    flatten_and_filter(
+                m_currentState,
+                m_constraint->state());
   }
 
   // if the pattern end event happened : stop and reset the loop
@@ -125,7 +135,7 @@ state_element loop::state(ossia::time_value date, double pos)
   return ossia::state_element{};
 }
 
-void loop::start()
+void loop::start(ossia::state& st)
 {
 }
 

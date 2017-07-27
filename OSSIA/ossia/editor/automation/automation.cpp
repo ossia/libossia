@@ -65,7 +65,7 @@ ossia::state_element automation::state(ossia::time_value date, double pos)
   return ossia::state_element{};
 }
 
-void automation::start()
+void automation::start(ossia::state& st)
 {
   m_drive.reset();
 }

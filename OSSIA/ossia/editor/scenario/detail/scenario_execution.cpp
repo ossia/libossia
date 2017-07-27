@@ -18,7 +18,7 @@
 namespace ossia
 {
 void scenario::make_happen(
-    time_event& event, constraint_set& started, constraint_set& stopped)
+    time_event& event, constraint_set& started, constraint_set& stopped, ossia::state& st)
 {
   event.m_status = time_event::status::HAPPENED;
 
@@ -31,7 +31,7 @@ void scenario::make_happen(
   // setup next TimeConstraints
   for (auto& timeConstraint : event.next_time_constraints())
   {
-    timeConstraint->start();
+    timeConstraint->start(st);
     started.insert(timeConstraint.get());
   }
 
@@ -83,7 +83,7 @@ void scenario::make_dispose(time_event& event, constraint_set& stopped)
 
 void scenario::process_this(
     time_node& node, std::vector<time_event*>& statusChangedEvents,
-    constraint_set& started, constraint_set& stopped)
+    constraint_set& started, constraint_set& stopped, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_node::trigger
@@ -209,7 +209,7 @@ void scenario::process_this(
     expressions::update(expr);
 
     if (expressions::evaluate(expr))
-      make_happen(ev, started, stopped);
+      make_happen(ev, started, stopped, st);
     else
       make_dispose(ev, stopped);
   }
@@ -316,11 +316,13 @@ state_element scenario::state(ossia::time_value date, double pos)
     // state at 0.5
     // * the ones we're finishing in : we take their state where we finish
 
+    ossia::state nullState;
+    auto& writeState = is_unmuted ? cur_state : nullState;
     std::vector<time_event*> statusChangedEvents;
     for (time_node* n : m_waitingNodes)
     {
       process_this(
-          *n, statusChangedEvents, m_runningConstraints, m_runningConstraints);
+          *n, statusChangedEvents, m_runningConstraints, m_runningConstraints, writeState);
       if (!statusChangedEvents.empty())
       {
         // TODO won't work if there are multiple waiting nodes
@@ -361,7 +363,7 @@ state_element scenario::state(ossia::time_value date, double pos)
     {
       process_this(
           *node, statusChangedEvents, constraints_started,
-          constraints_stopped);
+          constraints_stopped, writeState);
     }
 
     for (auto c : constraints_stopped)
@@ -440,7 +442,7 @@ state_element scenario::state(ossia::time_value date, double pos)
       {
         process_this(
             *node, statusChangedEvents, constraints_started,
-            constraints_stopped);
+            constraints_stopped, writeState);
       }
 
       for (auto c : constraints_stopped)

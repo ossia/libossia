@@ -18,7 +18,7 @@ public:
 
   ossia::state_element state(ossia::time_value date, double pos) override;
 
-  void start() override;
+  void start(ossia::state& st) override;
   void stop() override;
   void pause() override;
   void resume() override;

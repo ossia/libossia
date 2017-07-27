@@ -4,9 +4,11 @@
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/editor/scenario/clock.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <cassert>
 #include <iostream>
+#include <ossia/editor/state/state.hpp>
 
 namespace ossia
 {
@@ -27,7 +29,7 @@ clock::~clock()
   stop();
 }
 
-void clock::start()
+void clock::start(ossia::state& st)
 {
   if (m_running)
     return;
@@ -43,7 +45,7 @@ void clock::start()
   m_elapsedTime = 0.;
 
   // notify the owner
-  m_constraint.start();
+  m_constraint.start(st);
 
   if (m_thread.joinable())
     m_thread.join();

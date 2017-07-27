@@ -23,7 +23,7 @@ void time_event::set_callback(time_event::exec_callback callback)
   m_callback = callback;
 }
 
-void time_event::happen()
+void time_event::happen(ossia::state& st)
 {
   if (m_status != time_event::status::PENDING)
   {
@@ -41,10 +41,12 @@ void time_event::happen()
     timeConstraint->stop();
   }
 
+  ossia::flatten_and_filter(st, this->get_state());
+
   // setup next TimeConstraints
   for (auto& timeConstraint : next_time_constraints())
   {
-    timeConstraint->start();
+    timeConstraint->start(st);
   }
 
   if (m_callback)

@@ -40,7 +40,7 @@ public:
   /*! destructor */
   ~loop();
 
-  void start() override;
+  void start(ossia::state& st) override;
   void stop() override;
   void pause() override;
   void resume() override;

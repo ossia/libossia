@@ -43,7 +43,7 @@ public:
   * Will be called when
   * the parent time constraint is started.
   */
-  virtual void start();
+  virtual void start(ossia::state& st);
 
   /**
   * @brief stop

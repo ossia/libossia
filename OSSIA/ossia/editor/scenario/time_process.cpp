@@ -14,7 +14,7 @@ state_element time_process::offset(time_value date, double pos)
   return state(date, pos);
 }
 
-void time_process::start()
+void time_process::start(ossia::state& st)
 {
 }
 

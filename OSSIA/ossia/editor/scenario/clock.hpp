@@ -10,6 +10,7 @@
 
 namespace ossia
 {
+class state;
 class time_constraint;
 using clock_type = std::chrono::steady_clock;
 class OSSIA_EXPORT clock
@@ -31,7 +32,7 @@ public:
   ~clock();
 
   /*! start the clock */
-  void start();
+  void start(ossia::state& st);
 
   /*! halt the clock */
   void stop();

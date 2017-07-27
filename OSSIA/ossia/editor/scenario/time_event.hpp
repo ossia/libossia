@@ -75,7 +75,7 @@ public:
    it will raise a runtime_error
    \details turning the event' status into HAPPENED will call the callback to
    notify its owner */
-  void happen();
+  void happen(ossia::state& st);
 
   /*! dispose the event to not propagate the execution to next TimeConstraints
    \details the event have to be in PENDING status to call this method

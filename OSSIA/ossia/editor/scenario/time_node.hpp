@@ -43,7 +43,7 @@ public:
 
   /*! evaluate all #time_event's to make them to happen or to dispose them
  \return boolean true if the operation succeeded */
-  bool trigger();
+  bool trigger(ossia::state& st);
   std::atomic_bool trigger_request{};
 
   /*! get the date
@@ -93,7 +93,7 @@ public:
 
   // Interface to be used for set-up by other time processes
   /* process all TimeEvents to propagate execution */
-  void process(std::vector<time_event*>& statusChangedEvents);
+  void process(std::vector<time_event*>& statusChangedEvents, ossia::state& st);
 
   void process_this(std::vector<time_event*>& statusChangedEvents);
 

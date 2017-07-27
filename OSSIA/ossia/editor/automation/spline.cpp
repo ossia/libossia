@@ -42,7 +42,7 @@ spline_automation::state(ossia::time_value date, double pos)
   return {};
 }
 
-void spline_automation::start()
+void spline_automation::start(ossia::state& st)
 {
 }
 
