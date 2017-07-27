@@ -44,9 +44,6 @@ struct t_remote : t_obj_base
   bool do_registration(ossia::net::node_base* node);
   bool unregister();
 
-  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-      x_callbackit{};
-
   std::vector<boost::optional<ossia::callback_container<ossia::value_callback>::iterator> >
       x_callbackits;
 
@@ -64,5 +61,5 @@ struct t_remote : t_obj_base
     return quarantine;
   }
 };
-}
-} // namespace
+} // namespace pd
+} // namespace ossia

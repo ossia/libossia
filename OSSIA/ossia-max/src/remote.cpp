@@ -5,6 +5,8 @@
 #include "parameter.hpp"
 #include <ossia-max/src/utils.hpp>
 
+#include <ossia/network/common/path.hpp>
+
 using namespace ossia::max;
 
 #pragma mark -
@@ -37,6 +39,7 @@ extern "C" void ossia_remote_setup(void)
     class_addmethod(
         ossia_library.ossia_remote_class, (method)ossia_remote_assist,
         "assist", A_CANT, 0);
+
     class_addmethod(
         ossia_library.ossia_remote_class, (method)ossia_remote_in_bang, "bang",
         0);
@@ -52,6 +55,7 @@ extern "C" void ossia_remote_setup(void)
     class_addmethod(
         ossia_library.ossia_remote_class, (method)ossia_remote_in_anything,
         "anything", A_GIMME, 0);
+
   }
 
   class_register(CLASS_BOX, ossia_library.ossia_remote_class);
@@ -72,7 +76,9 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     x->m_set_out
         = outlet_new(x, NULL); // anything outlet to output data for ui
 
-    x->m_callbackit = boost::none;
+    new (&x->m_callbackits) decltype(x->m_callbackits);
+    new (&x->m_matchers) decltype(x->m_matchers);
+    x->m_dev = nullptr;
 
     //        x->m_clock = clock_new(x, (method)t_object_base::tick);
     x->m_regclock = clock_new(x, (method)t_object_base::bang);
@@ -103,6 +109,8 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
+    x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
+
     max_object_register<t_remote>(x);
     ossia_max::instance().remotes.push_back(x);
   }
@@ -116,8 +124,16 @@ extern "C" void ossia_remote_free(t_remote* x)
   x->unregister();
   object_dequarantining<t_remote>(x);
   ossia_max::instance().remotes.remove_all(x);
+
+  if(x->m_is_pattern && x->m_dev)
+  {
+    x->m_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(x);
+  }
+
   outlet_delete(x->m_dump_out);
-  outlet_delete(x->m_data_out);
+  outlet_delete(x->m_set_out);
+  outlet_delete(x->m_data_out);  
+  x->~t_remote();
 }
 
 extern "C" void
@@ -188,14 +204,13 @@ system_clock::now().time_since_epoch() );
 template <typename T>
 void ossia_remote_in(t_remote* x, T f)
 {
-  if (x && x->m_node)
+  for (auto& m : x->m_matchers)
   {
-    if (auto addr = x->m_node->get_address())
-    {
-      addr->push_value(f);
-    }
+    // a matcher already have valid node and address
+    m.get_node()->get_address()->push_value(f);
   }
-  else
+
+  if (x->m_matchers.empty())
   {
     object_error(
         (t_object*)x, "[ossia.remote %s] is not registered to any parameter",
@@ -231,20 +246,106 @@ extern "C" void ossia_remote_in_char(t_remote* x, char f)
 extern "C" void
 ossia_remote_in_anything(t_remote* x, t_symbol* s, long argc, t_atom* argv)
 {
-  if (argc == 0)
+  for (auto& m : x->m_matchers)
   {
-    ossia_remote_in(x, std::string(s->s_name));
+    x->m_node = m.get_node();
+    t_object_base::push(x,s,argc,argv);
   }
-  else
-  {
-    /* todo */
-  }
+  x->m_node = nullptr;
 }
 
 namespace ossia
 {
 namespace max
 {
+
+#pragma mark t_obj_pattern
+
+t_matcher::t_matcher(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+
+  if(node)
+  {
+    if(auto addr = node->get_address())
+    {
+      if (callbackit)
+        addr->remove_callback(*callbackit);
+
+      callbackit = addr->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+    }
+  }
+}
+
+t_matcher& t_matcher::operator=(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+
+  if(node)
+  {
+    if(auto addr = node->get_address())
+    {
+      if (callbackit)
+        addr->remove_callback(*callbackit);
+
+      callbackit = addr->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+    }
+  }
+
+  return *this;
+}
+
+t_matcher::t_matcher(ossia::net::node_base* n, t_remote* p) :
+  node{n}, parent{p}, callbackit{ossia::none}
+{
+  callbackit = node->get_address()->add_callback(
+      [=](const ossia::value& v) { set_value(v); });
+
+  node->about_to_be_deleted.connect<t_remote, &t_remote::is_deleted>(
+        parent);
+
+  //clock_delay(x_regclock, 0);
+}
+
+t_matcher::~t_matcher()
+{
+  if(node)
+  {
+    auto addr = node->get_address();
+    if (addr && callbackit) addr->remove_callback(*callbackit);
+    node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(parent);
+  }
+  node = nullptr;
+}
+
+void t_matcher::set_value(const ossia::value& v){
+  std::string addr = node->get_name();
+  t_atom a;
+  atom_setsym(&a, gensym(addr.c_str()));
+  outlet_anything(parent->m_dump_out,gensym("address"),1,&a);
+
+  value_visitor<t_object_base> vm;
+  vm.x = (t_object_base*)parent;
+  v.apply(vm);
+}
+
+#pragma mark t_remote
 
 bool t_remote::register_node(ossia::net::node_base* node)
 {
@@ -257,6 +358,16 @@ bool t_remote::register_node(ossia::net::node_base* node)
   else
     object_quarantining<t_remote>(this);
 
+  if (node){
+    auto& dev = node->get_device();
+    if (&dev != m_dev)
+    {
+      if (m_dev) m_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
+      m_dev = &dev;
+      m_dev->on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
+    }
+  }
+
   return res;
 }
 
@@ -267,59 +378,100 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     return true; // already registered to this node;
   }
 
+  unregister();
+
   if (node)
   {
-    if (m_address_type == AddrType::relative)
+    if (node)
     {
-      m_node = ossia::net::find_node(*node, m_name->s_name);
-    }
-    else if (m_address_type == AddrType::absolute)
-    {
-      // remove starting '/'
-      std::string addr = std::string(m_name->s_name).substr(1);
-      m_node = ossia::net::find_node(
-            node->get_device().get_root_node(), addr);
-    }
-    else
-    {
-      m_node = ossia::max::find_global_node(m_name->s_name);
-    }
+      std::string name = m_name->s_name;
 
-    if (m_node && m_node->get_address())
-    {
-      m_callbackit = m_node->get_address()->add_callback(
-          [=](const ossia::value& v) { apply_value_visitor(v); });
-      m_node->about_to_be_deleted.connect<t_remote, &t_remote::is_deleted>(
-          this);
+      if ( m_is_pattern )
+      {
+        auto nodes = ossia::net::find_nodes(*node, name);
+        for (auto n : nodes){
+          if (n->get_address()){
+            t_matcher matcher{n,this};
+            if (ossia::find(m_matchers,matcher) == m_matchers.end())
+              m_matchers.push_back(std::move(matcher));
+          }
+        }
+      }
+      else
+      {
+        if (m_address_type == AddrType::relative)
+        {
+          m_node = ossia::net::find_node(*node, m_name->s_name);
+        }
+        else if (m_address_type == AddrType::absolute)
+        {
+          // remove starting '/'
+          std::string addr = std::string(m_name->s_name).substr(1);
+          m_node = ossia::net::find_node(
+                node->get_device().get_root_node(), addr);
+        }
+        else
+        {
+          m_node = ossia::max::find_global_node(m_name->s_name);
+        }
 
-      clock_delay(m_regclock, 0);
-      return true;
+        // if there is a node without address it might be a model
+        // then look if that node have an eponyme child
+        if (m_node && !m_node->get_address()){
+          fmt::MemoryWriter path;
+          path << name << "/" << name;
+          m_node = ossia::net::find_node(*node, path.str());
+        }
+
+        if (m_node && m_node->get_address())
+        {
+          t_matcher matcher{m_node,this};
+          if (ossia::find(m_matchers,matcher) == m_matchers.end())
+            m_matchers.push_back(std::move(matcher));
+        }
+        clock_delay(m_regclock, 0);
+      }
     }
   }
 
-  return false;
+  // do not put it in quarantine if it's a pattern
+  // and even if it can't find any node
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 bool t_remote::unregister()
 {
-  if (m_node)
-  {
-    m_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(
-          this);
-  }
-
-  if (m_callbackit != boost::none)
-  {
-    if (m_node && m_node->get_address())
-      m_node->get_address()->remove_callback(*m_callbackit);
-
-    m_callbackit = boost::none;
-  }
+  m_matchers.clear();
 
   object_quarantining<t_remote>(this);
 
   m_node = nullptr;
   return true;
+}
+
+void t_remote::on_address_created_callback(const ossia::net::address_base& addr)
+{
+  auto& node = addr.get_node();
+  if (!m_name) return;
+  auto path = ossia::traversal::make_path(m_name->s_name);
+
+  // FIXME check for path validity
+  if ( path && ossia::traversal::match(*path, node) )
+  {
+    m_matchers.emplace_back(&node,this);
+  }
+}
+
+void t_remote::is_deleted(const ossia::net::node_base& n)
+{
+  if (!m_dead)
+  {
+    ossia::remove_one_if(
+      m_matchers,
+      [&] (const auto& m) {
+        return m.get_node() == &n;
+    });
+  }
 }
 
 } // max namespace

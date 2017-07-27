@@ -169,8 +169,10 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       }
       else if (x_absolute == AddrType::absolute)
       {
+        // remove starting '/'
+        std::string addr = std::string(x_name->s_name).substr(1);
         x_node = ossia::net::find_node(
-              node->get_device().get_root_node(), x_name->s_name);
+              node->get_device().get_root_node(), addr);
       }
       else
       {
@@ -273,16 +275,12 @@ static void remote_click(
 
 static void remote_push(t_remote* x, t_symbol* s, int argc, t_atom* argv)
 {
-  if(x->x_node) t_obj_base::obj_push(x,s,argc,argv);
-  else
+  for (auto& m : x->x_matchers)
   {
-    for (auto& m : x->x_matchers)
-    {
-        x->x_node = m.get_node();
-        t_obj_base::obj_push(x,s,argc,argv);
-    }
-    x->x_node = nullptr;
+    x->x_node = m.get_node();
+    t_obj_base::obj_push(x,s,argc,argv);
   }
+  x->x_node = nullptr;
 }
 
 static void* remote_new(t_symbol* name, int argc, t_atom* argv)
@@ -292,16 +290,12 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
-    ossia_pd.remotes.push_back(x);
-
     x->x_otype = Type::remote;
     x->x_setout = outlet_new((t_object*)x, nullptr);
     x->x_dataout = outlet_new((t_object*)x, nullptr);
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    new (&x->x_callbackit) decltype(x->x_callbackit);
     new (&x->x_callbackits) decltype(x->x_callbackits);
     new (&x->x_matchers) decltype(x->x_matchers);
-    x->x_callbackit = ossia::none;
     x->x_dev = nullptr;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
@@ -321,6 +315,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->x_regclock = clock_new(x, (t_method)t_obj_base::obj_bang);
 
     obj_register<t_remote>(x);
+    ossia_pd.remotes.push_back(x);
   }
 
   return (x);
@@ -333,11 +328,9 @@ static void remote_free(t_remote* x)
   obj_dequarantining<t_remote>(x);
   ossia_pd::instance().remotes.remove_all(x);
 
-  if(ossia::traversal::is_pattern(x->x_name->s_name)
-     && x->x_node)
+  if(x->x_is_pattern && x->x_dev)
   {
-    auto& dev = x->x_node->get_device();
-    dev.on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(x);
+    x->x_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(x);
   }
 
   outlet_free(x->x_setout);
