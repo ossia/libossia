@@ -112,7 +112,7 @@ bool t_remote::register_node(ossia::net::node_base* node)
   else
     obj_quarantining<t_remote>(this);
 
-  if (node){
+  if (node && x_is_pattern){
     auto& dev = node->get_device();
     if (&dev != x_dev)
     {

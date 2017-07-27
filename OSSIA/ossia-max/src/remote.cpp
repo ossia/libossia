@@ -358,13 +358,17 @@ bool t_remote::register_node(ossia::net::node_base* node)
   else
     object_quarantining<t_remote>(this);
 
-  if (node){
+  if (node && m_is_pattern){
     auto& dev = node->get_device();
     if (&dev != m_dev)
     {
-      if (m_dev) m_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
+      if (m_dev) {
+        std::cout << "disconnect " << this << " from " << m_dev << std::endl;
+        m_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
+      }
       m_dev = &dev;
       m_dev->on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
+      std::cout << "connecting " << this << " to " << m_dev << std::endl;
     }
   }
 
