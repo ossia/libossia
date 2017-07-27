@@ -21,7 +21,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   mkdir ossia-max-package\ossia\examples
   mkdir ossia-max-package\ossia\extensions
 
-  copy OSSIA\ossia-max\Release\ossia.mxe ossia-max-package\ossia\
+  copy OSSIA\ossia-max\Release\ossia-max.mxe ossia-max-package\ossia\
   copy ..\OSSIA\ossia-max\help\* ossia-max-package\ossia\help\
   copy ..\OSSIA\ossia-max\examples\* ossia-max-package\ossia\examples\
 }
