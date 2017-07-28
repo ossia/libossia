@@ -32,7 +32,7 @@ environment:
 before_build:
   - ps: C:\projects\libossia\ci\before_build.ps1
 
-build:
+build_script:
   - ps: C:\projects\libossia\ci\build.ps1
 
 after_build:
