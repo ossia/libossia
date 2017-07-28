@@ -81,7 +81,8 @@ private Q_SLOTS:
     using namespace std::literals;
 
     clck.set_granularity(10ms);
-    clck.start();
+    ossia::state st;
+    clck.start(st);
 
     while (clck.running())
       ;
