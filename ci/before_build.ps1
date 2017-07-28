@@ -6,20 +6,18 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
-  if (exist "%QTDIR%\bin\"){
-    set PATH=%QTDIR%\bin;%PATH%
-  }
+  if ( Test-Path ${env:QTDIR\bin\} ) set PATH=${env:QTDIR}\bin;%PATH%
 }
 
 mkdir build
 cd build
-cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_OPTION%  ..
+cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:configuration} ${env:CMAKE_OPTION}  ..
 
 
 if ($env:APPVEYOR_BUILD_TYPE -eq "max"){
   cd ..
   mkdir build-32bit
   cd build-32bit
-  cmake -G "%CMAKE_GENERATOR_NAME_32BIT%" -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_OPTION%  ..
+  cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:configuration} ${env:CMAKE_OPTION}  ..
   cd ../build
 }
