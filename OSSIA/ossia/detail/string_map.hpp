@@ -78,8 +78,8 @@ struct string_equal
 
 template <typename Value>
 using string_map = tsl::
-    hopscotch_map<std::string, Value, string_hash, string_equal, std::allocator<std::pair<std::string, Value>>, 1>;
+    hopscotch_map<std::string, Value, string_hash, string_equal, std::allocator<std::pair<std::string, Value>>, 4>;
 template <typename Value>
 using string_view_map = tsl::
-    hopscotch_map<ossia::string_view, Value, string_hash, string_equal, std::allocator<std::pair<ossia::string_view, Value>>, 1>;
+    hopscotch_map<ossia::string_view, Value, string_hash, string_equal, std::allocator<std::pair<ossia::string_view, Value>>, 4>;
 }
