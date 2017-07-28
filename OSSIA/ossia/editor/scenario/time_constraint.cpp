@@ -57,6 +57,13 @@ time_constraint::~time_constraint()
 {
 }
 
+void time_constraint::start()
+{
+  ossia::state st;
+  start(st);
+  ossia::launch(st);
+}
+
 void time_constraint::start(ossia::state& pstate)
 {
   if (!m_running)

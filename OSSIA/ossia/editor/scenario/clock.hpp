@@ -33,6 +33,7 @@ public:
 
   /*! start the clock */
   void start(ossia::state& st);
+  void start();
 
   /*! halt the clock */
   void stop();
