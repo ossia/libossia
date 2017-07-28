@@ -6,7 +6,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
-  if ( Test-Path ${env:QTDIR\bin\} ) set PATH=${env:QTDIR}\bin;%PATH%
+  if ( Test-Path ${env:QTDIR}\bin\ ) {
+    set PATH=${env:QTDIR}\bin;%PATH%
+  }
 }
 
 mkdir build
