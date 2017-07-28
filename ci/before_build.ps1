@@ -1,3 +1,5 @@
+Set-PSDebug -Trace 1
+
 git submodule update --init --recursive
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
@@ -13,13 +15,13 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 mkdir build
 cd build
-cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:configuration} ${env:CMAKE_OPTION}  ..
+cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:CONFIGURATION} ${env:CMAKE_OPTION}  .. > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}.log
 
 
 if ($env:APPVEYOR_BUILD_TYPE -eq "max"){
   cd ..
   mkdir build-32bit
   cd build-32bit
-  cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:configuration} ${env:CMAKE_OPTION}  ..
+  cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:CONFIGURATION} ${env:CMAKE_OPTION}  .. > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}-32bit.log
   cd ../build
 }

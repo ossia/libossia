@@ -48,6 +48,8 @@ artifacts:
   - path: ossia-max-package
     name: ossia-max-windows-x86_64
     type: zip
+  - name: Log files
+    path: '*.log'
 
 deploy:
   description: 'Release description'
