@@ -7,7 +7,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   if ( Test-Path ${env:QTDIR}\bin\ ) {
-    set PATH=${env:QTDIR}\bin;%PATH%
+    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
   }
 }
 
