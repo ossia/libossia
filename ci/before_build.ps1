@@ -1,6 +1,6 @@
 git submodule update --init --recursive
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "max" )
+if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   curl --retry 10 -sO https://cycling74.s3.amazonaws.com/download/max-sdk-7.3.3.zip
   7z x max-sdk-7.3.3.zip -y > nul
 }
