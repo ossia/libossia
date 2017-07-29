@@ -1,4 +1,4 @@
-#N canvas 522 47 788 748 10;
+#N canvas 351 122 778 808 10;
 #X msg 125 587 expose oscquery;
 #X msg 113 557 expose;
 #X text 30 589 for example;
@@ -76,6 +76,10 @@ e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE,
 f 116;
 #X text 128 309 allows to get the namespace \, i.e. the list of the
 adresses registered to the global device., f 96;
+#X text 26 729 ________________________________________________________________________________________________________________
+, f 122;
+#X text 29 761 Please report bugs on: https://github.com/OSSIA/libossia/issues
+, f 84;
 #X connect 0 0 13 0;
 #X connect 1 0 13 0;
 #X connect 5 0 14 0;
