@@ -3,7 +3,7 @@
 #include <boost/version.hpp>
 
 #if defined(__has_include)
-#if __has_include(<string_view>) && defined(OSSIA_CXX14) && (!defined(_MSVC_LANG) || (_MSVC_LANG > 201403))
+#if __has_include(<string_view>) && defined(OSSIA_CXX14) && (!defined(_MSVC_LANG) || (defined(_MSVC_LANG) && _HAS_CXX17))
 #define OSSIA_STRING_VIEW 1
 #include <string_view>
 namespace ossia
