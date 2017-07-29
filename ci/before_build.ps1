@@ -16,7 +16,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 mkdir build
 cd build
-Write-Host cmake -G "${env:CMAKE_GENERATOR_NAME}" -DCMAKE_BUILD_TYPE=${env:CONFIGURATION} ${env:CMAKE_OPTION}  .. ">" C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}.log
+Write-Host cmake -G "${env:CMAKE_GENERATOR_NAME}" ${env:CMAKE_OPTION}  .. ">" C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}.log
 cmake -G "${env:CMAKE_GENERATOR_NAME}" -DCMAKE_BUILD_TYPE=${env:configuration} ${env:CMAKE_OPTION}  .. > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}.log
 
 
@@ -24,7 +24,7 @@ if ("$env:APPVEYOR_BUILD_TYPE" -eq "max"){
   cd ..
   mkdir build-32bit
   cd build-32bit
-  Write-Host cmake -G ${env:CMAKE_GENERATOR_NAME_32BIT} -DCMAKE_BUILD_TYPE=${env:CONFIGURATION} ${env:CMAKE_OPTION}  .. > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}-32bit.log
+  Write-Host cmake -G ${env:CMAKE_GENERATOR_NAME_32BIT} ${env:CMAKE_OPTION}  .. > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}-32bit.log
   cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=${env:CONFIGURATION} ${env:CMAKE_OPTION}  .. > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}-32bit.log
   cd ../build
 }
