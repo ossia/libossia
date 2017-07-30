@@ -121,6 +121,7 @@ public:
     sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
         l, client_ip, port);
   }
+
 };
 }
 }

@@ -681,21 +681,19 @@ void json_parser::parse_value(
 void json_parser::parse_address_value(
     net::node_base& root, const rapidjson::Value& obj)
 {
-  auto path_it = obj.FindMember(detail::attribute_full_path());
-  if (path_it != obj.MemberEnd())
+  for(auto it = obj.MemberBegin(), end = obj.MemberEnd(); it != end; ++it)
   {
-    auto val_it = obj.FindMember(detail::attribute_value());
-    if (val_it != obj.MemberEnd())
+    auto path = get_string_view(it->name);
+    if(!path.empty() && path[0] == '/')
     {
-      auto path = get_string_view(path_it->value);
       auto node = ossia::net::find_node(root, path);
-      if (node)
+      if(node)
       {
         auto addr = node->get_address();
         if (addr)
         {
           auto val = addr->value();
-          val.apply(detail::json_to_value_unchecked{val_it->value});
+          val.apply(detail::json_to_value_unchecked{it->value});
 
           // TODO don't push it back to the sender
           addr->push_value(std::move(val));

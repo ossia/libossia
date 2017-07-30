@@ -1,0 +1,64 @@
+<html>
+<head>
+  <title>OSCQuery Remote example</title>
+</head>
+<script>
+    function init() { 
+      var ws = new WebSocket("ws://127.0.0.1:5678");
+      ws.onopen = function(mess) {
+          // This way the protocol will always try to send 
+          // data through websockets.
+          ws.send("/?SET_PORT=0");
+      }
+
+      var note = document.getElementById('note');
+      var velocity = document.getElementById('velocity');
+      var modratio = document.getElementById('modratio');
+      var modgain = document.getElementById('modgain');
+
+      ws.onmessage = function(mess) {
+          // An OSCQuery value json looks like 
+          // { "/the/addr" : 123 }
+          var json = JSON.parse(mess.data);
+          var keys = Object.keys(json);
+
+          var note_k = keys.findIndex(function(val) { return val == "/note"; });
+          var modratio_k = keys.findIndex(function(val) { return val == "/modratio"; });
+          var modgain_k = keys.findIndex(function(val) { return val == "/modgain"; });
+          
+          if(note_k != -1)
+          {
+            note.innerText = json["/note"][0];
+            velocity.innerText = json["/note"][1];
+          }
+          if(modratio_k != -1)
+          {
+              modratio.value = json["/modratio"];
+          }
+          if(modgain_k != -1)
+          {
+              modgain_k.value = json["/modgain"];
+          }
+      } 
+      modratio.oninput = function(ev) {
+              ws.send('{ "/modratio": ' + modratio.value + '}');
+              console.log('{ "/modratio": ' + modratio.value + '}');
+      };
+
+      modgain.oninput = function(ev) {
+              ws.send('{ "/modgain": ' + modgain.value + '}');
+              console.log('{ "/modgain": ' + modgain.value + '}');
+      };
+    }
+</script>
+
+<body onload="init()">
+<table>
+ <tr><td>Note</td><td id="note"></td></tr>
+ <tr><td>Velocity</td><td id="velocity"></td></tr>
+ <tr><td>Mod. ratio</td><td><input id="modratio" type="range"/></td></tr>
+ <tr><td>Mod. gain</td><td><input id="modgain" type="range"/></td></tr>
+</table>
+</body>
+
+</html>

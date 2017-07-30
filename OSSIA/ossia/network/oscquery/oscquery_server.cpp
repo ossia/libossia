@@ -99,7 +99,8 @@ void oscquery_server_protocol::request(net::address_base&)
   // Do nothing
 }
 
-bool oscquery_server_protocol::push(const net::address_base& addr)
+template<typename T>
+bool oscquery_server_protocol::push_impl(const T& addr)
 {
   auto val = net::filter_value(addr);
   if (val.valid())
@@ -111,7 +112,16 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
       lock_t lock(m_clientsMutex);
       for (auto& client : m_clients)
       {
-        client.sender->send(addr, val);
+        if(client.sender)
+        {
+          client.sender->send(addr, val);
+        }
+        else
+        {
+          m_websocketServer.send_message(
+                client.connection,
+                json_writer::send_message(addr, val));
+        }
       }
     }
     else
@@ -129,34 +139,14 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
   return false;
 }
 
+bool oscquery_server_protocol::push(const net::address_base& addr)
+{
+  return push_impl(addr);
+}
+
 bool oscquery_server_protocol::push_raw(const net::full_address_data& addr)
 {
-  auto val = net::filter_value(addr);
-  if (val.valid())
-  {
-    // Push to all clients
-    auto critical = addr.critical;
-    if (!critical)
-    {
-      lock_t lock(m_clientsMutex);
-      for (auto& client : m_clients)
-      {
-        client.sender->send(addr, val);
-      }
-    }
-    else
-    {
-      lock_t lock(m_clientsMutex);
-      for (auto& client : m_clients)
-      {
-        m_websocketServer.send_message(
-            client.connection, json_writer::send_message(addr, val));
-      }
-    }
-
-    return true;
-  }
-  return false;
+  return push_impl(addr);
 }
 
 bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::address_base*>& addresses)

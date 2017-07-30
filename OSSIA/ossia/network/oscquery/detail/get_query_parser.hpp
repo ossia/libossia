@@ -4,6 +4,7 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <chobo/small_vector.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 
 namespace ossia
 {
@@ -22,9 +23,9 @@ namespace oscquery
 class get_query_answerer
 {
 public:
-  template <typename Protocol>
   static json_writer::string_t handle_listen(
-      Protocol& proto, const typename Protocol::connection_handler& hdl,
+      oscquery_server_protocol& proto,
+      const oscquery_server_protocol::connection_handler& hdl,
       ossia::net::node_base& node, ossia::string_view path,
       const std::string& listen_text)
   {
@@ -58,9 +59,9 @@ public:
     }
   }
 
-  template <typename Protocol>
   static json_writer::string_t handle_osc_port(
-      Protocol& proto, const typename Protocol::connection_handler& hdl,
+      oscquery_server_protocol& proto,
+      const oscquery_server_protocol::connection_handler& hdl,
       int port)
   {
     // First we find for a corresponding client
@@ -69,16 +70,17 @@ public:
     if (!clt)
       throw bad_request_error{"Client not found"};
 
-    // Then we set-up the sender
-    clt->open_osc_sender(proto.get_logger(), port);
+    if(port != 0)
+    {
+      // Then we set-up the sender
+      clt->open_osc_sender(proto.get_logger(), port);
+    }
 
     proto.enable_client(hdl);
     return {};
   }
 
-  template <typename Protocol>
-  auto
-  operator()(Protocol& proto, const typename Protocol::connection_handler& hdl)
+  auto operator()(oscquery_server_protocol& proto, const oscquery_server_protocol::connection_handler& hdl)
   {
     return [&](ossia::string_view path, string_map<std::string>&& parameters) {
       // Here we handle the url elements relative to oscquery

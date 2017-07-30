@@ -76,13 +76,17 @@ private:
   // Called when a client is built (it gave its osc port)
   void enable_client(const connection_handler& hdl);
 
-  void
-  add_node(ossia::string_view path, const string_map<std::string>& parameters);
-  void remove_node(ossia::string_view path, const std::string& node);
+  void add_node(
+      ossia::string_view path,
+      const string_map<std::string>& parameters);
+  void remove_node(
+      ossia::string_view path,
+      const std::string& node);
 
   // OSC callback
   void on_OSCMessage(
-      const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
+      const oscpack::ReceivedMessage& m,
+      const oscpack::IpEndpointName& ip);
 
   // Websocket callbacks
   void on_connectionOpen(connection_handler hdl);
@@ -91,8 +95,10 @@ private:
   // Local device callback
   void on_nodeCreated(const ossia::net::node_base&);
   void on_nodeRemoved(const ossia::net::node_base&);
-  void
-  on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+  void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+
+  template<typename T>
+  bool push_impl(const T& addr);
 
   void update_zeroconf();
   // Exceptions here will be catched by the server
