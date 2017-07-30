@@ -65,6 +65,16 @@ void remove_one(Vector&& v, const Value& val)
   }
 }
 
+template <typename Vector, typename Function>
+void remove_one_if(Vector&& v, const Function& val)
+{
+  auto it = find_if(v, val);
+  if (it != v.end())
+  {
+    v.erase(it);
+  }
+}
+
 template <typename Vector, typename Fun>
 bool any_of(Vector&& v, Fun fun)
 {
@@ -105,6 +115,12 @@ template <typename Vector>
 auto sort(Vector&& v)
 {
   return std::sort(std::begin(v), std::end(v));
+}
+
+template <typename Vector, typename T>
+auto fill(Vector&& v, const T& val)
+{
+  return std::fill(std::begin(v), std::end(v), val);
 }
 
 template <typename Vector>

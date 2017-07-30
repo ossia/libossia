@@ -44,10 +44,10 @@ TEST_CASE ("Building device from preset") {
     std::make_unique<ossia::net::multiplex_protocol>(), "device"};
 
   ossia::presets::preset p;
-  p.emplace("/a.0/b.0/c.0", 1);
-  p.emplace("/a.0/b.0/c.1", 2);
-  p.emplace("/a.1/b.1/c", 3);
-  p.emplace("/a.1/b.1/d", 4);
+  p.emplace("/device/a.0/b.0/c.0", 1);
+  p.emplace("/device/a.0/b.0/c.1", 2);
+  p.emplace("/device/a.1/b.1/c", 3);
+  p.emplace("/device/a.1/b.1/d", 4);
 
   REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off));
 
@@ -122,10 +122,10 @@ TEST_CASE ("Functions on instances") {
   });
 
   ossia::presets::preset p;
-  p.emplace("/a.0/b.0/c.0", 1);
-  p.emplace("/a.0/b.0/c.1", 2);
-  p.emplace("/a.1/b.1/c", 3);
-  p.emplace("/a.1/b.1/d", 4);
+  p.emplace("/device/a.0/b.0/c.0", 1);
+  p.emplace("/device/a.0/b.0/c.1", 2);
+  p.emplace("/device/a.1/b.1/c", 3);
+  p.emplace("/device/a.1/b.1/d", 4);
 
   REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off, funcs));
 

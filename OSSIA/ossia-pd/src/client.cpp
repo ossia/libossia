@@ -2,10 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "client.hpp"
 #include "model.hpp"
-#include "ossia/network/osc/osc.hpp"
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
+
+#include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 #include <functional>
@@ -17,6 +19,18 @@ namespace ossia
 namespace pd
 {
 
+static void client_free(t_client* x)
+{
+  x->x_dead = true;
+  x->unregister_children();
+  if (x->x_device)
+    delete (x->x_device);
+  x->x_device = nullptr;
+  ossia_pd::instance().clients.remove_all(x);
+  outlet_free(x->x_dumpout);
+  register_quarantinized();
+}
+
 static void* client_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -26,9 +40,12 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    ossia_pd.clients.push_back(x);
+    x->x_otype = Type::client;
+
     x->x_name = gensym("Pd");
-    x->x_device = 0;
-    x->x_node = 0;
+    x->x_device = nullptr;
+    x->x_node = nullptr;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
@@ -37,25 +54,30 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
     }
 
     ebox_attrprocess_viabinbuf(x, d);
+
+    // check if there is another ossia.client in the same patcher
+    // TODO make a method to share with others
+    t_gobj* list = x->x_obj.o_canvas->gl_list;
+    while (list)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == "ossia.client")
+      {
+        if (x != (t_client*)&list->g_pd)
+        {
+          pd_error(
+                &list->g_pd,
+                "Only one [ossia.client] intance per patcher is allowed.");
+          client_free(x);
+          x = nullptr;
+          break;
+        }
+      }
+      list = list->g_next;
+    }
   }
 
   return (x);
-}
-
-static void client_free(t_client* x)
-{
-  x->x_dead = true;
-  x->unregister_children();
-  if (x->x_device)
-    delete (x->x_device);
-  x->x_device = nullptr;
-  register_quarantinized();
-}
-
-static void client_dump(t_client* x)
-{
-  if (x->x_device)
-    get_namespace(x, x->x_device->get_root_node());
 }
 
 void t_client::loadbang(t_client* x, t_float type)
@@ -69,18 +91,18 @@ void t_client::loadbang(t_client* x, t_float type)
 void t_client::register_children(t_client* x)
 {
 
-  std::vector<obj_hierachy> viewnodes
+  std::vector<t_obj_base*> viewnodes
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->register_node(x->x_node);
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->register_node(x->x_node);
     }
   }
@@ -88,34 +110,18 @@ void t_client::register_children(t_client* x)
 
 void t_client::unregister_children()
 {
-  std::vector<obj_hierachy> node
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
-  for (auto v : node)
-  {
-    if (v.classname == "ossia.model")
-    {
-      t_model* model = (t_model*)v.x;
-      model->unregister();
-    }
-    else if (v.classname == "ossia.param")
-    {
-      t_param* param = (t_param*)v.x;
-      param->unregister();
-    }
-  }
-
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }
@@ -134,7 +140,12 @@ static void client_update(t_client* x)
 static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 {
 
-  client_free(x); // uregister and delete x_device
+  // unregister and free x_device
+  x->unregister_children();
+  if (x->x_device)
+    delete (x->x_device);
+  x->x_device = nullptr;
+
   if (argc && argv->a_type == A_SYMBOL)
   {
     std::string protocol = argv->a_w.w_symbol->s_name;
@@ -222,11 +233,13 @@ extern "C" void setup_ossia0x2eclient(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)client_new,gensym("ø.client"), A_GIMME, 0);
+
     eclass_addmethod(
         c, (method)t_client::register_children, "register", A_NULL, 0);
     eclass_addmethod(c, (method)client_update, "update", A_NULL, 0);
     eclass_addmethod(c, (method)t_client::loadbang, "loadbang", A_NULL, 0);
-    eclass_addmethod(c, (method)client_dump, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)client_connect, "connect", A_GIMME, 0);
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);

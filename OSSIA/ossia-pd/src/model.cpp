@@ -20,38 +20,7 @@ bool t_model::register_node(ossia::net::node_base* node)
   bool res = do_registration(node);
   if (res)
   {
-    obj_dequarantining<t_model>(this);
-    std::vector<obj_hierachy> obj
-        = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
-    for (auto v : obj)
-    {
-      if (v.classname == "ossia.model")
-      {
-        t_model* model = (t_model*)v.x;
-        if (model == this)
-        {
-          // not registering itself
-          continue;
-        }
-        model->register_node(x_node);
-      }
-      else if (v.classname == "ossia.param")
-      {
-        t_param* param = (t_param*)v.x;
-        param->register_node(x_node);
-      }
-    }
-
-    for (auto view : t_view::quarantine().copy())
-    {
-      obj_register<t_view>(static_cast<t_view*>(view));
-    }
-
-    // then try to register qurantinized remote
-    for (auto remote : t_remote::quarantine().copy())
-    {
-      obj_register<t_remote>(static_cast<t_remote*>(remote));
-    }
+    register_children();
   }
   else
     obj_quarantining<t_model>(this);
@@ -74,13 +43,13 @@ bool t_model::do_registration(ossia::net::node_base* node)
   if (node->find_child(name))
   { // we have to check if a node with the same name already exists to avoid
     // auto-incrementing name
-    std::vector<obj_hierachy> obj
+    std::vector<t_obj_base*> obj
         = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
     for (auto v : obj)
     {
-      if (v.classname == "ossia.param")
+      if (v->x_otype == Type::param)
       {
-        t_param* param = (t_param*)v.x;
+        t_param* param = (t_param*)v;
         if (std::string(param->x_name->s_name) == name)
         {
           param->unregister(); // if we already have a t_param node of that
@@ -101,6 +70,42 @@ bool t_model::do_registration(ossia::net::node_base* node)
   return true;
 }
 
+void t_model::register_children()
+{
+  obj_dequarantining<t_model>(this);
+  std::vector<t_obj_base*> obj
+      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
+  for (auto v : obj)
+  {
+    if (v->x_otype == Type::model)
+    {
+      t_model* model = (t_model*)v;
+      if (model == this)
+      {
+        // not registering itself
+        continue;
+      }
+      model->register_node(x_node);
+    }
+    else if (v->x_otype == Type::param)
+    {
+      t_param* param = (t_param*)v;
+      param->register_node(x_node);
+    }
+  }
+
+  for (auto view : t_view::quarantine().copy())
+  {
+    obj_register(static_cast<t_view*>(view));
+  }
+
+  // then try to register quarantinized remote
+  for (auto remote : t_remote::quarantine().copy())
+  {
+    obj_register(static_cast<t_remote*>(remote));
+  }
+}
+
 bool t_model::unregister()
 {
 
@@ -118,7 +123,7 @@ bool t_model::unregister()
 
   obj_quarantining<t_model>(this);
 
-  register_quarantinized();
+  register_children();
 
   return true;
 }
@@ -139,18 +144,16 @@ void t_model::is_deleted(const net::node_base& n)
   }
 }
 
-ossia::safe_vector<t_model*>& t_model::rename()
-{
-  static ossia::safe_vector<t_model*> rename;
-  return rename;
-}
-
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   t_model* x = (t_model*)eobj_new(ossia_pd.model);
   if(x)
   {
+    ossia_pd.models.push_back(x);
+
+    x->x_otype = Type::model;
+
     t_binbuf* d = binbuf_via_atoms(argc, argv);
     if (d)
     {
@@ -160,8 +163,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
         x->x_name = atom_getsymbol(argv);
-        if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-          x->x_absolute = true;
+        x->x_absolute = get_address_type(x->x_name->s_name);
       }
       else
       {
@@ -210,6 +212,7 @@ static void model_free(t_model* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_model>(x);
+  ossia_pd::instance().models.remove_all(x);
   clock_free(x->x_regclock);
 }
 
@@ -221,7 +224,10 @@ extern "C" void setup_ossia0x2emodel(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)model_new,gensym("ø.model"), A_GIMME, 0);
+
     eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
 
     CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
     CLASS_ATTR_SYMBOL(c, "tags", 0, t_model, x_tags);

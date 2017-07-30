@@ -32,8 +32,6 @@ private Q_SLOTS:
 
         loop l(25._tv, constraint_callback, event_callback, event_callback);
 
-        QVERIFY(l.parent() == nullptr);
-
         QVERIFY(l.get_time_constraint() != nullptr);
         QVERIFY(l.get_start_timenode() != nullptr);
         QVERIFY(l.get_end_timenode() != nullptr);

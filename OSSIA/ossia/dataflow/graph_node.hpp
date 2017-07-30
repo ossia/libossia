@@ -25,14 +25,18 @@ public:
 
   virtual void run(execution_state&);
 
-  void set_date(ossia::time_value d);
-  void set_date(int64_t d)
+  void set_date(ossia::time_value d, double pos);
+  void set_date(int64_t d, double pos)
   {
-    set_date(ossia::time_value(d));
+    set_date(ossia::time_value(d), pos);
   }
   ossia::time_value time() const
   {
     return m_date;
+  }
+  double position() const
+  {
+    return m_position;
   }
 
   bool can_execute(const execution_state&) const;
@@ -46,15 +50,16 @@ public:
 
   void clear();
 
-protected:
-  // Note : pour QtQuick : Faire View et Model qui hérite de View,
-  // puis faire binding automatique entre propriétés de la vue et du modèle
-  // Utiliser... DSPatch ? Pd ?
-  // Ports : midi, audio, value
+  // incremented for each process
+  int64_t temporal_counter{};
+  std::vector<int64_t> temporal_priority;
+  std::vector<int64_t> custom_priority;
 
+protected:
   inlets m_inlets;
   outlets m_outlets;
 
+  double m_position{};
   ossia::time_value m_prev_date{};
   ossia::time_value m_date{};
 

@@ -85,4 +85,5 @@ void* ossia_device_new(t_symbol*, long, t_atom*);
 void ossia_device_free(ossia::max::t_device*);
 void ossia_device_dump(ossia::max::t_device*);
 void ossia_device_expose(ossia::max::t_device*, t_symbol*, long, t_atom*);
+void ossia_device_name(ossia::max::t_device*, t_symbol*, long, t_atom*);
 }

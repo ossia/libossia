@@ -5,6 +5,7 @@
 #include <boost/container/flat_set.hpp>
 #include <boost/functional/hash.hpp>
 #include <eggs/variant.hpp>
+#include <ossia/network/common/path.hpp>
 
 #include <array>
 #include <deque>
@@ -33,7 +34,7 @@ using set = boost::container::flat_set<T>;
 
 using destination_t = eggs::variant<
 ossia::net::address_base*,
-std::string // ossia::traversal::path
+ossia::traversal::path
 >;
 class graph_node;
 struct graph_edge;
@@ -59,5 +60,10 @@ struct audio_port;
 struct midi_port;
 struct value_port;
 
+struct audio_delay_line;
+struct midi_delay_line;
+struct value_delay_line;
+
 using data_type = eggs::variant<audio_port, midi_port, value_port>;
+using delay_line_type = eggs::variant<audio_delay_line, midi_delay_line, value_delay_line>;
 }

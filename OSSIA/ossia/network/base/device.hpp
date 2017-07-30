@@ -113,10 +113,11 @@ protected:
 template <typename T>
 void node_base::set(ossia::string_view str, const T& value)
 {
+  static_assert(!is_address_attribute<T>::value, "No address");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
-  if (opt && *opt != value)
+  if ((opt && *opt != value) || !opt)
   {
-    ossia::set_attribute(*this, str, value);
+    ossia::set_attribute((extended_attributes&)*this, str, value);
     get_device().on_attribute_modified(*this, str);
   }
 }
@@ -124,10 +125,35 @@ void node_base::set(ossia::string_view str, const T& value)
 template <typename T>
 void node_base::set(ossia::string_view str, T&& value)
 {
+  static_assert(!is_address_attribute<T>::value, "No address");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
-  if (opt && *opt != value)
+  if ((opt && *opt != value) || !opt)
   {
-    ossia::set_attribute(*this, str, std::move(value));
+    ossia::set_attribute((extended_attributes&)*this, str, std::move(value));
+    get_device().on_attribute_modified(*this, str);
+  }
+}
+
+template <typename T>
+void node_base::set(ossia::string_view str, const optional<T>& value)
+{
+  static_assert(!is_address_attribute<T>::value, "No address");
+  auto opt = ossia::get_optional_attribute<T>(*this, str);
+  if (opt != value)
+  {
+    ossia::set_optional_attribute((extended_attributes&)*this, str, value);
+    get_device().on_attribute_modified(*this, str);
+  }
+}
+
+template <typename T>
+void node_base::set(ossia::string_view str, optional<T>&& value)
+{
+  static_assert(!is_address_attribute<T>::value, "No address");
+  auto opt = ossia::get_optional_attribute<T>(*this, str);
+  if (opt != value)
+  {
+    ossia::set_optional_attribute((extended_attributes&)*this, str, std::move(value));
     get_device().on_attribute_modified(*this, str);
   }
 }
@@ -135,16 +161,10 @@ void node_base::set(ossia::string_view str, T&& value)
 template <typename Attribute, typename T>
 void node_base::set(Attribute a, const T& value)
 {
-  auto opt = a.getter(*this);
-
   // We make a copy here to prevent a double conversion
   // for instance from std::vector<> to value. TODO do the same in the other.
   typename Attribute::type val = value;
-  if (compare_optional(opt, val))
-  {
-    a.setter(*this, val);
-    get_device().on_attribute_modified(*this, a.text());
-  }
+  a.setter(*this, std::move(val));
 }
 
 template <typename Attribute, typename T>
@@ -156,12 +176,9 @@ void node_base::set(Attribute a, T& value)
 template <typename Attribute, typename T>
 void node_base::set(Attribute a, T&& value)
 {
-  auto opt = a.getter(*this);
-  if (compare_optional(opt, value))
-  {
-    a.setter(*this, std::move(value));
-    get_device().on_attribute_modified(*this, a.text());
-  }
+  typename Attribute::type val = std::move(value);
+  a.setter(*this, std::move(val));
 }
+
 }
 }

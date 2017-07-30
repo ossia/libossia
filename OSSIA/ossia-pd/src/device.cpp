@@ -2,16 +2,29 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "device.hpp"
 #include "model.hpp"
-#include "ossia/network/osc/osc.hpp"
-#include "ossia/network/oscquery/oscquery_server.hpp"
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
+
+#include <ossia/network/osc/osc.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 
 namespace ossia
 {
 namespace pd
 {
+
+static void device_free(t_device* x)
+{
+  x->x_dead = true;
+  x->unregister_children();
+  if (x->x_device)
+    delete (x->x_device);
+  ossia_pd::instance().devices.remove_all(x);
+  outlet_free(x->x_dumpout);
+  register_quarantinized();
+}
 
 static void* device_new(t_symbol* name, int argc, t_atom* argv)
 {
@@ -22,6 +35,9 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
+    ossia_pd.devices.push_back(x);
+    x->x_otype = Type::device;
+
     x->x_name = gensym("Pd");
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
@@ -36,23 +52,30 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->x_node = &x->x_device->get_root_node();
 
     ebox_attrprocess_viabinbuf(x, d);
+
+    // check if there is another ossia.device in the same patcher
+    // TODO make a method to share with other objects
+    t_gobj* list = x->x_obj.o_canvas->gl_list;
+    while (list)
+    {
+      std::string current = list->g_pd->c_name->s_name;
+      if (current == "ossia.device")
+      {
+        if (x != (t_device*)&list->g_pd)
+        {
+          pd_error(
+                &list->g_pd,
+                "Only one [ossia.device] instance per patcher is allowed.");
+          device_free(x);
+          x = nullptr;
+          break;
+        }
+      }
+      list = list->g_next;
+    }
   }
 
   return (x);
-}
-
-static void device_free(t_device* x)
-{
-  x->x_dead = true;
-  x->unregister_children();
-  if (x->x_device)
-    delete (x->x_device);
-  register_quarantinized();
-}
-
-static void device_dump(t_device* x)
-{
-  get_namespace(x, x->x_device->get_root_node());
 }
 
 void t_device::loadbang(t_device* x, t_float type)
@@ -66,34 +89,34 @@ void t_device::loadbang(t_device* x, t_float type)
 void t_device::register_children(t_device* x)
 {
 
-  std::vector<obj_hierachy> modelnodes
+  std::vector<t_obj_base*> modelnodes
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
   {
-    if (v.classname == "ossia.model")
+    if (v->x_otype == Type::model)
     {
-      t_model* model = (t_model*)v.x;
+      t_model* model = (t_model*)v;
       model->register_node(x->x_node);
     }
-    else if (v.classname == "ossia.param")
+    else if (v->x_otype == Type::param)
     {
-      t_param* param = (t_param*)v.x;
+      t_param* param = (t_param*)v;
       param->register_node(x->x_node);
     }
   }
 
-  std::vector<obj_hierachy> viewnodes
+  std::vector<t_obj_base*> viewnodes
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->register_node(x->x_node);
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->register_node(x->x_node);
     }
   }
@@ -101,34 +124,34 @@ void t_device::register_children(t_device* x)
 
 void t_device::unregister_children()
 {
-  std::vector<obj_hierachy> node
+  std::vector<t_obj_base*> node
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : node)
   {
-    if (v.classname == "ossia.model")
+    if (v->x_otype == Type::model)
     {
-      t_model* model = (t_model*)v.x;
+      t_model* model = (t_model*)v;
       model->unregister();
     }
-    else if (v.classname == "ossia.param")
+    else if (v->x_otype == Type::param)
     {
-      t_param* param = (t_param*)v.x;
+      t_param* param = (t_param*)v;
       param->unregister();
     }
   }
 
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }
@@ -238,6 +261,20 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
     Protocol_Settings::print_protocol_help();
 }
 
+void device_name(t_device *x, t_symbol* s, int argc, t_atom* argv){
+  if( argc == 0 )
+  {
+    t_atom a;
+    SETSYMBOL(&a,gensym(x->x_device->get_name().c_str()));
+    outlet_anything(x->x_dumpout,gensym("name"),1,&a);
+  } else if ( argv[0].a_type == A_SYMBOL ) {
+    t_symbol* name = argv[0].a_w.w_symbol;
+    x->x_device->set_name(name->s_name);
+  } else {
+    pd_error(x,"bad argument to message 'name'");
+  }
+}
+
 extern "C" void setup_ossia0x2edevice(void)
 {
   t_eclass* c = eclass_new(
@@ -246,14 +283,17 @@ extern "C" void setup_ossia0x2edevice(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)device_new,gensym("ø.device"), A_GIMME, 0);
+
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)t_device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method)t_device::loadbang, "loadbang", A_NULL, 0);
-    eclass_addmethod(c, (method)device_dump, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
+    eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();

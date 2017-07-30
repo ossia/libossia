@@ -442,7 +442,8 @@ inline ossia::value filter_value(
   }
 }
 
-inline ossia::value filter_value(const ossia::net::address_base& addr)
+template<typename Addr_T>
+inline ossia::value filter_value(const Addr_T& addr)
 {
   auto val = addr.value();
   if (addr.filter_repetition(val))

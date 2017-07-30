@@ -116,7 +116,7 @@ public:
     return !connection.expired() && connection.lock() == h.lock();
   }
 
-  void openOSCSender(const ossia::net::network_logger& l, uint16_t port)
+  void open_osc_sender(const ossia::net::network_logger& l, uint16_t port)
   {
     sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
         l, client_ip, port);

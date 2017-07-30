@@ -12,7 +12,7 @@ time_node::time_node() : m_expression(expressions::make_expression_true())
 
 time_node::~time_node() = default;
 
-bool time_node::trigger()
+bool time_node::trigger(ossia::state& st)
 {
   // if all TimeEvents are not PENDING
   if (m_pending.size() != get_time_events().size())
@@ -34,7 +34,7 @@ bool time_node::trigger()
     expressions::update(expr);
 
     if (expressions::evaluate(expr))
-      ev.happen();
+      ev.happen(st);
     else
       ev.dispose();
   }
@@ -106,7 +106,7 @@ time_node::iterator time_node::emplace(
       pos, std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
-void time_node::process(std::vector<time_event*>& statusChangedEvents)
+void time_node::process(std::vector<time_event*>& statusChangedEvents, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_node::trigger
@@ -179,7 +179,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
         for (auto& timeConstraint : timeEvent->next_time_constraints())
         {
           timeConstraint->get_end_event().get_time_node().process(
-              statusChangedEvents);
+              statusChangedEvents, st);
         }
 
         break;
@@ -230,7 +230,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents)
   }
 
   // trigger the time node
-  if (trigger())
+  if (trigger(st))
   {
     // former PENDING TimeEvents are now HAPPENED or DISPOSED
     statusChangedEvents.insert(

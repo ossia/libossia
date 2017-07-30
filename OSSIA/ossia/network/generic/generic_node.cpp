@@ -114,12 +114,12 @@ bool generic_node::remove_address()
   if (m_address)
   {
     // notify observers
-    m_device.on_address_removing(*m_address);
-
+    auto addr = std::move(m_address);
+    m_device.on_address_removing(*addr);
     auto& device = get_device();
-    device.get_protocol().observe(*m_address, false);
+    device.get_protocol().observe(*addr, false);
 
-    m_address.reset();
+    addr.reset();
 
     return true;
   }

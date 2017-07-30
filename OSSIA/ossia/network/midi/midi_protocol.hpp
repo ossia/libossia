@@ -54,11 +54,12 @@ public:
   midi_protocol(midi_info);
   ~midi_protocol();
 
-  bool setInfo(midi_info);
-  midi_info getInfo() const;
+  bool set_info(midi_info);
+  midi_info get_info() const;
 
   bool pull(ossia::net::address_base&) override;
   bool push(const ossia::net::address_base&) override;
+  bool push_raw(const ossia::net::full_address_data& address_base) override;
   bool observe(ossia::net::address_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 

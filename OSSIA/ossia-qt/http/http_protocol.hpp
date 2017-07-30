@@ -40,6 +40,7 @@ public:
   bool pull(ossia::net::address_base& address_base) override;
 
   bool push(const ossia::net::address_base& address_base) override;
+  bool push_raw(const ossia::net::full_address_data& address_base) override;
 
   bool observe(ossia::net::address_base& address_base, bool enable) override;
 

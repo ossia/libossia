@@ -30,7 +30,7 @@ public:
 
   state_element state(ossia::time_value date, double pos) override;
 
-  void start() override;
+  void start(ossia::state& st) override;
   void stop() override;
   void pause() override;
   void resume() override;
@@ -82,9 +82,9 @@ private:
 
   void process_this(
       time_node& node, std::vector<time_event*>& statusChangedEvents,
-      constraint_set& started, constraint_set& stopped);
+      constraint_set& started, constraint_set& stopped, ossia::state& st);
   void make_happen(
-      time_event& event, constraint_set& started, constraint_set& stopped);
+      time_event& event, constraint_set& started, constraint_set& stopped, ossia::state& st);
   void make_dispose(time_event& event, constraint_set& stopped);
   void tick_constraint(time_constraint& c, time_value tick);
 };

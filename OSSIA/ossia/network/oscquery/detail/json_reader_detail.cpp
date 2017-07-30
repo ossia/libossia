@@ -11,6 +11,7 @@
 #include <brigand/algorithms/for_each.hpp>
 #include <oscpack/osc/OscTypes.h>
 #include <rapidjson/document.h>
+#include <ossia/network/generic/generic_node.hpp>
 
 namespace ossia
 {
@@ -47,7 +48,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, std::string& res)
 {
   bool b = val.IsString();
   if (b)
-    res = getString(val);
+    res = get_string(val);
   return b;
 }
 
@@ -270,7 +271,7 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, unit_t& res)
 {
   bool b = val.IsString();
   if (b)
-    res = parse_pretty_unit(getStringView(val));
+    res = parse_pretty_unit(get_string_view(val));
   return b;
 }
 
@@ -442,7 +443,7 @@ void json_parser_impl::readObject(
     auto type_it = obj.FindMember(detail::attribute_typetag());
     if (type_it != obj.MemberEnd())
     {
-      typetag = getStringView(type_it->value);
+      typetag = get_string_view(type_it->value);
       val_type = get_type_from_osc_typetag(typetag);
     }
 
@@ -460,7 +461,7 @@ void json_parser_impl::readObject(
     auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
     if (ext_type_it != obj.MemberEnd() && ext_type_it->value.IsString())
     {
-      ext_type = getString(ext_type_it->value);
+      ext_type = get_string(ext_type_it->value);
     }
 
     // If any of these exist, we can create an address
@@ -568,7 +569,7 @@ void json_parser_impl::readObject(
     auto memb_end = obj.MemberEnd();
     for (auto it = obj.MemberBegin(); it != memb_end; ++it)
     {
-      auto action = map.find(getStringView(it->name));
+      auto action = map.find(get_string_view(it->name));
       if (action != map.end())
       {
         action.value()(it->value, node);
@@ -584,7 +585,7 @@ void json_parser_impl::readObject(
     for (auto child_it = obj.MemberBegin(); child_it != obj.MemberEnd();
          ++child_it)
     {
-      auto cld = node.create_child(getString(child_it->name));
+      auto cld = node.create_child(get_string(child_it->name));
       readObject(*cld, child_it->value);
     }
   }
@@ -626,7 +627,7 @@ json_parser::message_type(const rapidjson::Value& obj)
   auto it = obj.FindMember(detail::command());
   if (it != obj.MemberEnd())
   {
-    auto mt_it = map.find(getString(it->value)); // TODO string_view
+    auto mt_it = map.find(get_string(it->value)); // TODO string_view
     if (mt_it != map.end())
       return mt_it.value();
   }
@@ -646,7 +647,7 @@ void json_parser::parse_namespace(
   auto path_it = obj.FindMember(detail::attribute_full_path());
   if (path_it != obj.MemberEnd())
   {
-    auto str = getStringView(path_it->value);
+    auto str = get_string_view(path_it->value);
     auto node = ossia::net::find_node(root, str);
     if (node)
     {
@@ -686,7 +687,7 @@ void json_parser::parse_address_value(
     auto val_it = obj.FindMember(detail::attribute_value());
     if (val_it != obj.MemberEnd())
     {
-      auto path = getStringView(path_it->value);
+      auto path = get_string_view(path_it->value);
       auto node = ossia::net::find_node(root, path);
       if (node)
       {
@@ -727,22 +728,26 @@ void json_parser::parse_path_added(
     auto path_it = dat.FindMember(detail::attribute_full_path());
     if (path_it != dat.MemberEnd())
     {
-      auto opt_str = splitParentChild(getStringView(path_it->value));
+      auto opt_str = splitParentChild(get_string_view(path_it->value));
       if (opt_str)
       {
         auto& str = *opt_str;
         auto node = ossia::net::find_node(root, str.first);
         if (node)
         {
-          auto cld = node->find_child(std::string(str.second));
+          auto cld = node->find_child(str.second);
           if (!cld)
           {
-            auto cld = node->create_child(std::string(str.second));
+            auto cld = std::make_unique<ossia::net::generic_node>(std::string(str.second), node->get_device(), *node);
             detail::json_parser_impl::readObject(*cld, dat);
+            node->add_child(std::move(cld));
           }
           else
           {
             ossia::net::set_zombie(*cld, false);
+
+            // Update the node:
+            detail::json_parser_impl::readObject(*cld, dat);
           }
         }
       }
@@ -756,7 +761,7 @@ void json_parser::parse_path_removed(
   auto dat_it = obj.FindMember(detail::data());
   if (dat_it != obj.MemberEnd())
   {
-    auto path = getStringView(dat_it->value);
+    auto path = get_string_view(dat_it->value);
     if (auto node = ossia::net::find_node(root, path))
     {
       ossia::net::set_zombie(*node, true);
@@ -792,7 +797,7 @@ void json_parser::parse_attributes_changed(
     auto path_it = dat.FindMember(detail::attribute_full_path());
     if (path_it != dat.MemberEnd())
     {
-      auto path = getStringView(path_it->value);
+      auto path = get_string_view(path_it->value);
       auto node = ossia::net::find_node(root, path);
       if (node)
       {
@@ -800,7 +805,7 @@ void json_parser::parse_attributes_changed(
         auto memb_end = dat.MemberEnd();
         for (auto it = dat.MemberBegin(); it != memb_end; ++it)
         {
-          auto action = map.find(getStringView(it->name));
+          auto action = map.find(get_string_view(it->name));
           if (action != map.end())
           {
             action.value()(it->value, *node);

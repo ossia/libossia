@@ -20,7 +20,7 @@ phidget_address::~phidget_address()
   m_ik->set_sensor_change({});
 }
 
-net::node_base& phidget_address::getNode() const
+net::node_base& phidget_address::get_node() const
 {
   return m_parent;
 }

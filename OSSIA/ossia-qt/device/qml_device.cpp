@@ -18,6 +18,7 @@
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_signal.hpp>
 #include <ossia-qt/qml_context.hpp>
+#include <ossia/network/common/debug.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/network/midi/midi.hpp>
 #endif
@@ -452,6 +453,12 @@ void qml_device::clearEmptyElements()
     else
       it = m_parameters.erase(it);
 
+  for (auto it = m_signals.begin(); it != m_signals.end();)
+    if (it->second)
+      ++it;
+    else
+      it = m_signals.erase(it);
+
   for (auto it = m_models.begin(); it != m_models.end();)
     if (it->second)
       ++it;
@@ -462,7 +469,25 @@ void qml_device::clearEmptyElements()
 void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
+#if defined(PRESET_DEBUG)
+  {
+    // Before recreate
+    fmt::MemoryWriter w;
+    ossia::net::debug_recursively(w, this->device().get_root_node());
+    qDebug() << "1:\n\n" << w.str().c_str();
+  }
+#endif
+
   recreate(root);
+
+#if defined(PRESET_DEBUG)
+  {
+    // After recreate
+    fmt::MemoryWriter w;
+    ossia::net::debug_recursively(w, this->device().get_root_node());
+    qDebug() << "2:\n\n" << w.str().c_str();
+  }
+#endif
   try
   {
     QFile f;
@@ -494,6 +519,15 @@ void qml_device::loadPreset(QObject* root, QString file)
       // Clear empty elements that may have been removed
       clearEmptyElements();
 
+#if defined(PRESET_DEBUG)
+      {
+        // After preset
+        fmt::MemoryWriter w;
+        ossia::net::debug_recursively(w, this->device().get_root_node());
+        qDebug() << "3:\n\n" << w.str().c_str();
+      }
+#endif
+
       // Now as long as we are creating new models, update their count
       std::size_t cur_model_size = m_models.size();
       std::size_t prev_model_size;
@@ -504,7 +538,10 @@ void qml_device::loadPreset(QObject* root, QString file)
         for (auto model : mlist)
         {
           if (model.second)
-            model.first->updateCount();
+          {
+            qml_model_property* m = model.first;
+            m->updateCount();
+          }
           QCoreApplication::processEvents();
         }
         cur_model_size = m_models.size();

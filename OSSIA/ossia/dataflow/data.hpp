@@ -1,16 +1,17 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <chobo/small_vector.hpp>
 namespace ossia
 {
 template <typename T>
 using value_vector = chobo::small_vector<T, 4>;
 
-using audio_vector = std::array<double, 64>;
+using audio_vector = chobo::small_vector<double, 64>;
 
 struct audio_port
 {
-  value_vector<audio_vector> samples;
+  audio_vector samples;
 };
 
 struct midi_port
@@ -20,7 +21,24 @@ struct midi_port
 
 struct value_port
 {
+  ossia::complex_type type;
   value_vector<ossia::value> data;
+};
+
+struct audio_delay_line
+{
+  std::vector<audio_vector> samples;
+};
+
+struct midi_delay_line
+{
+  std::vector<value_vector<mm::MidiMessage>> messages;
+};
+
+struct value_delay_line
+{
+  ossia::complex_type type;
+  std::vector<value_vector<ossia::value>> data;
 };
 
 struct clear_data
@@ -47,17 +65,17 @@ struct clear_data
 
 struct data_size
 {
-  std::size_t operator()(const value_port& p) const
+  std::size_t operator()(const value_delay_line& p) const
   {
     return p.data.size();
   }
 
-  std::size_t operator()(const midi_port& p) const
+  std::size_t operator()(const midi_delay_line& p) const
   {
     return p.messages.size();
   }
 
-  std::size_t operator()(const audio_port& p) const
+  std::size_t operator()(const audio_delay_line& p) const
   {
     return p.samples.size();
   }
@@ -68,6 +86,29 @@ struct data_size
   }
 };
 
+
+struct mix
+{
+  void operator()(const value_vector<ossia::value>& out, value_vector<ossia::value>& in)
+  {
+    for(auto& data : out)
+      in.push_back(data);
+  }
+
+  void operator()(const audio_vector& out, audio_vector& in)
+  {
+    std::size_t N = std::min(in.size(), out.size());
+    for(std::size_t i = 0; i < N; i++)
+      in[i] += out[i];
+  }
+
+  void operator()(const value_vector<mm::MidiMessage>& out, value_vector<mm::MidiMessage>& in)
+  {
+    for (const auto& data : out)
+      in.push_back(data);
+  }
+};
+
 struct copy_data
 {
   template <typename T, typename U>
@@ -75,23 +116,34 @@ struct copy_data
   {
   }
 
+  void operator()(const value_port& out, value_delay_line& in)
+  {
+    in.data.push_back(out.data);
+  }
+
+  void operator()(const audio_port& out, audio_delay_line& in)
+  {
+    in.samples.push_back(out.samples);
+  }
+
+  void operator()(const midi_port& out, midi_delay_line& in)
+  {
+    in.messages.push_back(out.messages);
+  }
+
   void operator()(const value_port& out, value_port& in)
   {
-    for (const auto& v : out.data)
-      in.data.push_back(v);
+    mix{}(out.data, in.data);
   }
 
   void operator()(const audio_port& out, audio_port& in)
   {
-    in.samples.reserve(in.samples.size() + out.samples.size());
-    for (const auto& s : out.samples)
-      in.samples.push_back(s);
+    mix{}(out.samples, in.samples);
   }
 
   void operator()(const midi_port& out, midi_port& in)
   {
-    for (const auto& v : out.messages)
-      in.messages.push_back(v);
+    mix{}(out.messages, in.messages);
   }
 };
 
@@ -104,22 +156,28 @@ struct copy_data_pos
   {
   }
 
-  void operator()(const value_port& out, value_port& in)
+  void operator()(const value_delay_line& out, value_port& in)
   {
     if (pos < out.data.size())
-      in.data.push_back(out.data[pos]);
+    {
+      mix{}(out.data[pos], in.data);
+    }
   }
 
-  void operator()(const audio_port& out, audio_port& in)
+  void operator()(const audio_delay_line& out, audio_port& in)
   {
     if (pos < out.samples.size())
-      in.samples.push_back(out.samples[pos]);
+    {
+      mix{}(out.samples[pos], in.samples);
+    }
   }
 
-  void operator()(const midi_port& out, midi_port& in)
+  void operator()(const midi_delay_line& out, midi_port& in)
   {
     if (pos < out.messages.size())
-      in.messages.push_back(out.messages[pos]);
+    {
+      mix{}(out.messages[pos], in.messages);
+    }
   }
 };
 }

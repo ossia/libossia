@@ -31,7 +31,6 @@ struct t_param : t_obj_base
   bool x_hidden;
 
   static ossia::safe_vector<t_param*>& quarantine();
-  static ossia::safe_vector<t_param*>& rename();
 
   void is_deleted(const ossia::net::node_base& n);
 

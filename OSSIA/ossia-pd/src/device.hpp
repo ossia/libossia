@@ -1,6 +1,4 @@
 #pragma once
-
-#include "ossia-pd.hpp"
 #include "ossia_obj_base.hpp"
 
 namespace ossia
@@ -70,6 +68,7 @@ struct t_device : t_obj_base
 };
 
 void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv);
+void device_name(t_device* x, t_symbol*, int argc, t_atom* argv);
 
 }
 } // namespace

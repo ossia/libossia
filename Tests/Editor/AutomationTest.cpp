@@ -45,8 +45,6 @@ private Q_SLOTS:
     auto autom = std::make_shared<automation>(*address, b);
     QVERIFY(autom != nullptr);
 
-    QVERIFY(autom->parent() == nullptr);
-
     //! \todo test clone()
   }
 

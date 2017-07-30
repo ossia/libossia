@@ -34,6 +34,12 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->x_device = ossia_pd.get_default_device();
+  x->x_node = &x->x_device->get_root_node();
+
+  if (argc > 0 && argv[0].a_type == A_SYMBOL){
+      std::string name = argv[0].a_w.w_symbol->s_name;
+      x->x_device->set_name(name);
+    }
 
   return (x);
 }
@@ -41,26 +47,6 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 static void ossia_free(t_ossia *x)
 {
   outlet_free(x->x_dumpout);
-}
-
-static void ossia_get_namespace(t_ossia *x){
-  auto dev = ossia_pd::instance().get_default_device();
-  get_namespace(x,dev->get_root_node());
-}
-
-static void ossia_name(t_ossia *x, t_symbol* s, int argc, t_atom* argv){
-  auto dev = ossia_pd::instance().get_default_device();
-  if( argc == 0 )
-  {
-    t_atom a;
-    SETSYMBOL(&a,gensym(dev->get_name().c_str()));
-    outlet_anything(x->x_dumpout,gensym("name"),1,&a);
-  } else if ( argv[0].a_type == A_SYMBOL ) {
-    t_symbol* name = argv[0].a_w.w_symbol;
-    dev->set_name(name->s_name);
-  } else {
-    pd_error(x,"bad argument to message 'name'");
-  }
 }
 
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
@@ -76,9 +62,11 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eremote();
   setup_ossia0x2eview();
 
+  class_addcreator((t_newmethod)ossia_new,gensym("ø"), A_GIMME, 0);
+
   eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
-  eclass_addmethod(c, (method)ossia_name, "name", A_GIMME, 0);
-  eclass_addmethod(c, (method)ossia_get_namespace, "namespace", A_GIMME, 0);
+  eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
+  eclass_addmethod(c, (method)obj_namespace, "namespace", A_GIMME, 0);
 
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.ossia = c;
@@ -94,6 +82,22 @@ ossia_pd::ossia_pd():
 {
 }
 
+ossia_pd::~ossia_pd()
+{
+  for (auto x : views.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+  }
+  for (auto x : remotes.copy()){
+    x->x_matchers.clear();
+  }
+  for (auto x : models.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+  }
+  for (auto x : params.copy()){
+    x->x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(x);
+  }
+}
+
 // ossia-pd library instance
 ossia_pd& ossia_pd::instance()
 {
@@ -101,103 +105,5 @@ ossia_pd& ossia_pd::instance()
   return library_instance;
 }
 
-void register_quarantinized()
-{
-  for (auto model : t_model::quarantine().copy())
-  {
-    obj_register<t_model>(model);
-  }
-  for (auto param : t_param::quarantine().copy())
-  {
-    obj_register<t_param>(param);
-  }
-  for (auto view : t_view::quarantine().copy())
-  {
-    obj_register<t_view>(view);
-  }
-  for (auto remote : t_remote::quarantine().copy())
-  {
-    obj_register<t_remote>(remote);
-  }
-}
-
-std::vector<obj_hierachy> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname)
-{
-  std::string subclassname
-      = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
-
-  t_gobj* list = start_list;
-  std::vector<obj_hierachy> found;
-
-  // 1: iterate object list and look for ossia.model / ossia.view object
-  while (list && list->g_pd)
-  {
-    std::string current = list->g_pd->c_name->s_name;
-    if (current == classname)
-    {
-      obj_hierachy oh;
-      oh.hierarchy = 0;
-      oh.x = (t_obj_base*)&list->g_pd;
-      oh.classname = classname;
-      if (x != oh.x && !oh.x->x_dead)
-      {
-        t_obj_base* o = oh.x;
-        found.push_back(oh);
-      }
-    }
-    list = list->g_next;
-  }
-
-  // 2: if there is no ossia.model / ossia.view in the current patch, look into
-  // the subpatches
-
-  if (found.empty())
-  {
-    list = start_list;
-    while (list && list->g_pd)
-    {
-      std::string current = list->g_pd->c_name->s_name;
-      if (current == "canvas")
-      {
-        t_canvas* canvas = (t_canvas*)&list->g_pd;
-        if (!canvas_istable(canvas))
-        {
-          t_gobj* _list = canvas->gl_list;
-          std::vector<obj_hierachy> found_tmp
-              = find_child_to_register(x, _list, classname);
-          for (auto obj : found_tmp)
-          {
-            obj.hierarchy++; // increase hierarchy of objects found in a
-                             // subpatcher
-            found.push_back(obj);
-          }
-        }
-      }
-      list = list->g_next;
-    }
-
-    // 3: finally look for ossia.param / ossia.remote in the same pather
-    list = start_list;
-    while (list && list->g_pd)
-    {
-      std::string current = list->g_pd->c_name->s_name;
-      if (current == subclassname)
-      {
-        obj_hierachy oh;
-        oh.hierarchy = 0;
-        oh.x = (t_obj_base*)&list->g_pd;
-        oh.classname = subclassname;
-        if (x != oh.x)
-        {
-          found.push_back(oh);
-        }
-      }
-      list = list->g_next;
-    }
-  }
-
-  return found;
-}
 }
 } // namespace

@@ -4,6 +4,8 @@
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
+
 #include <ossia/network/base/node_attributes.hpp>
 
 using namespace ossia::max;
@@ -24,12 +26,20 @@ extern "C" void ossia_model_setup()
       ossia_library.ossia_model_class, (method)ossia_model_assist, "assist",
       A_CANT, 0);
 
+  class_addmethod(
+      ossia_library.ossia_model_class, (method)t_object_base::relative_namespace,
+              "namespace", A_NOTHING, 0);
+
   CLASS_ATTR_SYM(
       ossia_library.ossia_model_class, "description", 0, t_model,
       m_description);
   CLASS_ATTR_SYM(ossia_library.ossia_model_class, "tags", 0, t_model, m_tags);
+  CLASS_ATTR_LONG(
+      ossia_library.ossia_model_class, "hidden", 0, t_model,
+      m_hidden);
 
   class_register(CLASS_BOX, ossia_library.ossia_model_class);
+  class_alias(ossia_library.ossia_model_class, gensym("ø.model"));
 }
 
 extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
@@ -45,9 +55,18 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     x->m_description = _sym_nothing;
     x->m_tags = _sym_nothing;
 
+    x->m_otype = Type::model;
+
+    if(find_peer(x))
+    {
+      error("You can put only one [ossia.model] or [ossia.view] per patcher");
+      ossia_model_free(x);
+      return nullptr;
+    }
+
     x->m_regclock = clock_new(
         x, reinterpret_cast<method>(
-               static_cast<bool (*)(t_model*)>(&object_register<t_model>)));
+               static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)));
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -59,9 +78,8 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_absolute = std::string(x->m_name->s_name) != ""
-                        && x->m_name->s_name[0] == '/';
-      }
+        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+       }
     }
 
     if (x->m_name == _sym_nothing)
@@ -80,6 +98,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     // after model_new() returns.
     // 0 ms delay means that it will be perform on next clock tick
     clock_delay(x->m_regclock, 0);
+    ossia_max::instance().models.push_back(x);
   }
 
   return (x);
@@ -90,7 +109,9 @@ extern "C" void ossia_model_free(t_model* x)
   x->m_dead = true;
   x->unregister();
   object_dequarantining<t_model>(x);
-  object_free(x->m_regclock);
+  ossia_max::instance().models.remove_all(x);
+  if(x->m_regclock) object_free(x->m_regclock);
+  if(x->m_dump_out) outlet_delete(x->m_dump_out);
 }
 
 extern "C" void
@@ -120,41 +141,7 @@ bool t_model::register_node(ossia::net::node_base* node)
 
   if (res)
   {
-    object_dequarantining<t_model>(this);
-
-    std::vector<box_hierachy> children = find_children_to_register(
-        &m_object, get_patcher(&m_object), gensym("ossia.model"));
-
-    for (auto child : children)
-    {
-      if (child.classname == gensym("ossia.model"))
-      {
-        t_model* model = (t_model*)jbox_get_object(child.box);
-
-        // ignore itself
-        if (model == this)
-          continue;
-
-        model->register_node(m_node);
-      }
-      else if (child.classname == gensym("ossia.parameter"))
-      {
-        t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
-
-        parameter->register_node(m_node);
-      }
-    }
-
-    for (auto view : t_view::quarantine().copy())
-    {
-      object_register<t_view>(static_cast<t_view*>(view));
-    }
-
-    // then try to register qurantinized remote
-    for (auto remote : t_remote::quarantine().copy())
-    {
-      object_register<t_remote>(static_cast<t_remote*>(remote));
-    }
+    register_children();
   }
   else
     object_quarantining<t_model>(this);
@@ -179,14 +166,14 @@ bool t_model::do_registration(ossia::net::node_base* node)
   // auto-incrementing name
   if (node->find_child(m_name->s_name))
   {
-    std::vector<box_hierachy> children_model = find_children_to_register(
+    std::vector<t_object_base*> children_model = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
     for (auto child : children_model)
     {
-      if (child.classname == gensym("ossia.parameter"))
+      if (child->m_otype == Type::param)
       {
-        t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+        t_parameter* parameter = (t_parameter*)child;
 
         // if we already have a t_parameter node of that name, unregister it
         // we will register it again after node creation
@@ -204,15 +191,59 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
   ossia::net::set_description(*m_node, m_description->s_name);
   ossia::net::set_tags(*m_node, parse_tags_symbol(m_tags));
+  ossia::net::set_hidden(*m_node, m_hidden != 0);
 
   return true;
 }
 
+void t_model::register_children()
+{
+  object_dequarantining<t_model>(this);
+
+  std::vector<t_object_base*> children = find_children_to_register(
+      &m_object, get_patcher(&m_object), gensym("ossia.model"));
+
+  for (auto child : children)
+  {
+    if (child->m_otype == Type::model)
+    {
+      t_model* model = (t_model*)child;
+
+      // ignore itself
+      if (model == this)
+        continue;
+
+      model->register_node(m_node);
+    }
+    else if (child->m_otype == Type::param)
+    {
+      t_parameter* parameter = (t_parameter*)child;
+
+      parameter->register_node(m_node);
+    }
+  }
+
+  for (auto view : t_view::quarantine().copy())
+  {
+    max_object_register<t_view>(static_cast<t_view*>(view));
+  }
+
+  // then try to register qurantinized remote
+  for (auto remote : t_remote::quarantine().copy())
+  {
+    max_object_register<t_remote>(static_cast<t_remote*>(remote));
+  }
+}
+
 bool t_model::unregister()
 {
+  if (m_regclock) clock_unset(m_regclock);
+
   // not registered
   if (!m_node)
     return true;
+
+  m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
 
   if (m_node && m_node->get_parent())
     m_node->get_parent()->remove_child(*m_node); // this calls isDeleted() on
@@ -223,7 +254,7 @@ bool t_model::unregister()
 
   object_quarantining<t_model>(this);
 
-  register_quarantinized();
+  register_children();
 
   return true;
 }
@@ -232,39 +263,20 @@ void t_model::is_deleted(const ossia::net::node_base& n)
 {
   if (!m_dead)
   {
-    m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(
+    if (m_node)
+    {
+      m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(
         this);
-    m_node = nullptr;
+      m_node = nullptr;
+    }
     object_quarantining<t_model>(this);
   }
-}
-
-bool t_model::is_renamed(t_model* x)
-{
-  return x->rename().contains(x);
-}
-
-void t_model::renaming(t_model* x)
-{
-  if (!is_renamed(x))
-    x->rename().push_back(x);
-}
-
-void t_model::derenaming(t_model* x)
-{
-  x->rename().remove_all(x);
 }
 
 ossia::safe_vector<t_model*>& t_model::quarantine()
 {
   static ossia::safe_vector<t_model*> quarantine;
   return quarantine;
-}
-
-ossia::safe_vector<t_model*>& t_model::rename()
-{
-  static ossia::safe_vector<t_model*> rename;
-  return rename;
 }
 
 } // max namespace

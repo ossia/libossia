@@ -197,12 +197,27 @@ namespace traversal
 {
 struct OSSIA_EXPORT path
 {
+  // Used for hashing
+  std::string pattern;
+
   /** A list of function for the location of elements.
    * Each function will be called on the next step.
    */
-  std::vector<std::function<void(std::vector<ossia::net::node_base*>&)>>
-      functions;
+  using child_function = std::function<void(std::vector<ossia::net::node_base*>&)>;
+  std::vector<child_function> child_functions;
+
+  friend bool operator==(const path& lhs, const path& rhs)
+  {
+    return lhs.pattern == rhs.pattern;
+  }
+  friend bool operator!=(const path& lhs, const path& rhs)
+  {
+    return lhs.pattern != rhs.pattern;
+  }
 };
+
+//! True if this is a pattern match address
+OSSIA_EXPORT bool is_pattern(const std::string& address);
 
 /**
  * @brief Tries to parse an address into a path.
@@ -219,5 +234,25 @@ OSSIA_EXPORT ossia::optional<path> make_path(const std::string& address);
  */
 OSSIA_EXPORT void
 apply(const path& p, std::vector<ossia::net::node_base*>& nodes);
+
+//! Root is the device node
+OSSIA_EXPORT bool
+match(const path& p, const ossia::net::node_base& node);
+
+//! Try to match from the given root.
+OSSIA_EXPORT bool
+match(const path& p, const ossia::net::node_base& node, ossia::net::node_base& root);
 }
+}
+
+namespace std
+{
+template<>
+struct hash<ossia::traversal::path>
+{
+  std::size_t operator()(const ossia::traversal::path& p) const
+  {
+    return std::hash<std::string>{}(p.pattern);
+  }
+};
 }

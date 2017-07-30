@@ -65,8 +65,7 @@ struct global_pull_visitor
   {
     auto aa = dynamic_cast<const audio_address*>(&out);
     assert(aa);
-    val.samples.resize(val.samples.size() + 1);
-    aa->clone_value(val.samples.back());
+    aa->clone_value(val.samples);
   }
 
   void operator()(midi_port& val)

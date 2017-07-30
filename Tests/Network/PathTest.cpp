@@ -40,6 +40,13 @@ private Q_SLOTS:
     }
   }
 
+  void test_is_pattern()
+  {
+    QVERIFY(ossia::traversal::is_pattern("/foo*ba?r/"));
+    QVERIFY(ossia::traversal::is_pattern("//foo/bar"));
+    QVERIFY(!ossia::traversal::is_pattern("/foo/r/"));
+  }
+
   void test_traversal()
   {
     // Note : to allow access to character classes, we have to change :
@@ -96,6 +103,15 @@ private Q_SLOTS:
       QVERIFY(vec == expected);
     }
 
+    {
+      auto p = traversal::make_path("//bar/../war/waz");
+      QVERIFY(bool(p));
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+      traversal::apply(*p, vec);
+      std::vector<ossia::net::node_base*> expected{&n5};
+      QVERIFY(vec == expected);
+    }
+
 
     {
       auto p = traversal::make_path("foo/[bw]*/[bw]*");
@@ -106,6 +122,73 @@ private Q_SLOTS:
       std::vector<ossia::net::node_base*> expected{&n1, &n2, &n5, &n4};
       QVERIFY(vec == expected);
     }
+  }
+
+  void test_traversal_relative()
+  {
+    ossia::net::generic_device device1{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+
+    auto& foo = ossia::net::find_or_create_node(device1, "foo");
+    auto& bar= ossia::net::find_or_create_node(device1, "foo/bar");
+    auto& n1 = ossia::net::find_or_create_node(device1, "foo/bar/foo/bar.0");
+    auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/foo/bar.1");
+
+    {
+      auto p = traversal::make_path("//bar.*");
+      std::vector<ossia::net::node_base*> vec{&foo};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&n1, &n2};
+      QVERIFY(vec == expected);
+    }
+
+    {
+      auto p = traversal::make_path("//bar*");
+      std::vector<ossia::net::node_base*> vec{&foo};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&bar, &n1, &n2};
+      QVERIFY(vec == expected);
+    }
+
+    {
+      auto p = traversal::make_path("//bar*");
+      std::vector<ossia::net::node_base*> vec{&bar};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&n1, &n2};
+      QVERIFY(vec == expected);
+    }
+  }
+
+  void test_match()
+  {
+    ossia::net::generic_device device1{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+
+    auto& n1 = ossia::net::find_or_create_node(device1, "foo/bar/baz");
+    auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/blop");
+    auto& n4 = ossia::net::find_or_create_node(device1, "foo/baz.2/blop");
+    auto& n5 = ossia::net::find_or_create_node(device1, "foo/war/waz");
+    auto& n6 = ossia::net::find_or_create_node(device1, "foo/kar/kaz");
+
+    {
+      auto p = *traversal::make_path("foo/[bw]*/[bw]*");
+      QVERIFY(traversal::match(p, n1));
+      QVERIFY(traversal::match(p, n2));
+      QVERIFY(traversal::match(p, n4));
+      QVERIFY(traversal::match(p, n5));
+      QVERIFY(!traversal::match(p, n6));
+    }
+
+    {
+      auto p = *traversal::make_path("foo/bar/../?ar/?az");
+      QVERIFY(traversal::match(p, n1));
+      QVERIFY(!traversal::match(p, n2));
+      QVERIFY(!traversal::match(p, n4));
+      QVERIFY(traversal::match(p, n5));
+      QVERIFY(traversal::match(p, n6));
+    }
+
   }
 };
 

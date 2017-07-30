@@ -68,8 +68,6 @@ private Q_SLOTS:
     auto scenar = std::make_shared<scenario>();
     QVERIFY(scenar != nullptr);
 
-    QVERIFY(scenar->parent() == nullptr);
-
     QVERIFY(scenar->get_start_time_node() != nullptr);
 
     QVERIFY(scenar->get_time_nodes().size() == 1);

@@ -5,6 +5,15 @@
 
 namespace ossia
 {
+struct init_delay_line
+{
+  delay_line_type& delay_line;
+  void operator ()(const audio_port&) { delay_line = audio_delay_line{}; }
+  void operator ()(const value_port&) { delay_line = value_delay_line{}; }
+  void operator ()(const midi_port&) { delay_line = midi_delay_line{}; }
+  void operator ()() { }
+};
+
 // A pure dependency edge does not have in/out ports set
 struct graph_edge
 {
@@ -24,13 +33,11 @@ struct graph_edge
 
       if (auto delay = con.target<delayed_glutton_connection>())
       {
-        delay->buffer = out->data;
-        ossia::apply(clear_data{}, delay->buffer);
+        ossia::apply(init_delay_line{delay->buffer}, out->data);
       }
       else if (auto sdelay = con.target<delayed_strict_connection>())
       {
-        sdelay->buffer = out->data;
-        ossia::apply(clear_data{}, sdelay->buffer);
+        ossia::apply(init_delay_line{sdelay->buffer}, out->data);
       }
     }
   }

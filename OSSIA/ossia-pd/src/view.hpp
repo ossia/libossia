@@ -1,7 +1,6 @@
 #pragma once
 
 #include "device.hpp"
-#include "ossia-pd.hpp"
 #include "ossia_obj_base.hpp"
 
 namespace ossia

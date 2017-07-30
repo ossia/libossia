@@ -70,7 +70,7 @@ state_element color_automation::state(ossia::time_value, double pos)
   return {};
 }
 
-void color_automation::start()
+void color_automation::start(ossia::state& st)
 {
 }
 

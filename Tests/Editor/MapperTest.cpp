@@ -62,7 +62,6 @@ private Q_SLOTS:
     std::shared_ptr<mapper> mapping = std::make_shared<mapper>(*float_address, *int_address, b);
     QVERIFY(mapping != nullptr);
 
-    QVERIFY(mapping->parent() == nullptr);
     //! \todo test clone()
   }
 

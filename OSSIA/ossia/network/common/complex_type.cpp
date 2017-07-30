@@ -100,7 +100,7 @@ struct update_address_visitor
     {
       addr.set_value_type(t[0]);
     }
-    ossia::net::set_extended_type(addr.getNode(), v);
+    ossia::net::set_extended_type(addr.get_node(), v);
   }
 
   ret operator()()

@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_obj_base.hpp"
+#include "utils.hpp"
 
 extern void glist_noselect(t_glist* x);
 extern void canvas_vis(t_canvas* x, t_floatarg f);
@@ -14,11 +15,22 @@ namespace pd
 
 void t_obj_base::setValue(const ossia::value& v)
 {
+  auto local_address = x_node->get_address();
+  auto filtered = ossia::net::filter_value(
+        local_address->get_domain(),
+        v,
+        local_address->get_bounding());
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)&x_obj;
-  v.apply(vm);
+  filtered.apply(vm);
 }
 
+/**
+ * @brief t_obj_base::obj_push : push a value to a node
+ * @param x : caller that holds the node to push to
+ * @param argc : number of value in the list
+ * @param argv :  list of t_atom value(s)
+ */
 void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
 {
   if (x->x_node && x->x_node->get_address())
@@ -49,6 +61,11 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
   }
 }
 
+/**
+ * @brief obj_tick deselect last selected object
+ * @details used by ø.remote and ø.view when displaying connected parent
+ * @param x
+ */
 void obj_tick(t_obj_base* x)
 {
   if (x->x_last_opened_canvas)
@@ -58,28 +75,62 @@ void obj_tick(t_obj_base* x)
   }
 }
 
+/**
+ * @brief t_obj_base::obj_bang send out the current value of the parameter
+ * @param x
+ */
 void t_obj_base::obj_bang(t_obj_base* x)
 {
   if (x->x_node && x->x_node->get_address())
     x->setValue(x->x_node->get_address()->value());
 }
 
-void get_namespace(t_obj_base* x, const ossia::net::node_base& node)
-{
-  t_symbol* prependsym = gensym("namespace");
+/**
+ * @brief list_all_child : list all node childs addresses recursively
+ * @param node : starting point
+ * @param list : reference to a string vector to store each address
+ */
+void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
   for (const auto& child : node.children_copy())
   {
     if (auto addr = child->get_address())
     {
       std::string s = ossia::net::osc_address_string(*child);
-      t_atom a;
-      SETSYMBOL(&a,gensym(s.c_str()));
-      outlet_anything(x->x_dumpout, prependsym,1,&a);
+      list.push_back(s);
     }
-    get_namespace(x, *child);
+    list_all_child(*child,list);
   }
 }
 
+/**
+ * @brief obj_namespace : send namespace trought dump output
+ * @details each message is prepend with "namespace"
+ * and adresses start with a '/' to make it each to parse with OSC tool
+ * @param x
+ */
+void obj_namespace(t_obj_base* x)
+{
+  t_symbol* prependsym = gensym("namespace");
+  std::vector<std::string> list;
+  list_all_child(*x->x_node, list);
+  int pos = ossia::net::osc_address_string(*x->x_node).length();
+  for (auto& addr : list)
+  {
+    std::string s = addr.substr(pos);
+    t_atom a;
+    SETSYMBOL(&a,gensym(s.c_str()));
+    outlet_anything(x->x_dumpout, prependsym,1,&a);
+  }
+}
+
+/**
+ * @brief find_and_display_friend : find the object that defined the node and display it
+ * @param x : object that hold the node we are looking for
+ * @param patcher : starting point to seach a friend
+ * @return true if we found a friend to display
+ */
+// TODO refactor this to use ossia_pd::instance().params|remotes
+// instead of going through all objects in all patchers.
 bool find_and_display_friend(t_obj_base* x, t_canvas* patcher)
 {
   t_gobj* list = patcher->gl_list;

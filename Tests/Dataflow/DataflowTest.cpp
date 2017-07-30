@@ -71,6 +71,23 @@ auto pop_front(T& container)
   }
 }
 
+
+struct debug_mock
+{
+  debug_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
+  const int factor = 1;
+  std::weak_ptr<node_mock> node;
+  void operator()(const execution_state& )
+  {
+    if(auto n = node.lock())
+    {
+      qDebug() << factor << n->time();
+      messages.emplace_back(factor, n->time());
+    }
+  }
+  static std::vector<std::pair<int, int>> messages;
+};
+std::vector<std::pair<int, int>> debug_mock::messages;
 struct execution_mock
 {
   execution_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
@@ -146,6 +163,30 @@ struct simple_implicit_graph
   }
 };
 
+struct no_address_explicit_graph
+{
+  ossia::graph g;
+  ossia::node_mock* n1, *n2;
+  no_address_explicit_graph(ossia::TestUtils& test, ossia::connection c)
+  {
+    using namespace ossia;
+    auto n1_out = make_outlet<value_port>();
+    auto n1 = std::make_shared<node_mock>(inlets{}, outlets{n1_out});
+    n1->fun = debug_mock{1, n1};
+
+    auto n2_in = make_inlet<value_port>();
+    auto n2_out = make_outlet<value_port>();
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    n2->fun = debug_mock{10, n2};
+
+    g.add_node(n1);
+    g.add_node(n2);
+    g.connect(make_edge(c, n1_out, n2_in, n1, n2));
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
+  }
+};
 
 struct three_outputs_one_input_explicit_graph
 {
@@ -415,24 +456,24 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_date(0);
-    g.n2->set_date(0);
+    g.n1->set_date(0, 0);
+    g.n2->set_date(0, 0);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(1);
-    g.n2->set_date(1);
+    g.n1->set_date(1, 0.5);
+    g.n2->set_date(1, 0.5);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(2);
-    g.n2->set_date(2);
+    g.n1->set_date(2, 1);
+    g.n2->set_date(2, 1);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
@@ -451,9 +492,9 @@ private slots:
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
     g.g.enable(*g.n3);
-    g.n1->set_date(0);
-    g.n2->set_date(0);
-    g.n3->set_date(0);
+    g.n1->set_date(0, 0);
+    g.n2->set_date(0, 0);
+    g.n3->set_date(0, 0);
 
     g.g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
@@ -474,24 +515,24 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_date(0);
-    g.n2->set_date(0);
+    g.n1->set_date(0, 0);
+    g.n2->set_date(0, 0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(1);
-    g.n2->set_date(1);
+    g.n1->set_date(1, 0.5);
+    g.n2->set_date(1, 0.5);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(2);
-    g.n2->set_date(2);
+    g.n1->set_date(2, 1);
+    g.n2->set_date(2, 1);
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -510,27 +551,71 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_date(0);
-    g.n1->set_date(0);
+    g.n1->set_date(0, 0);
+    g.n1->set_date(0, 0);
 
     g.g.state(); // f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(1);
-    g.n2->set_date(1);
+    g.n1->set_date(1, 0.5);
+    g.n2->set_date(1, 0.5);
 
     g.g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(2);
-    g.n2->set_date(2);
+    g.n1->set_date(2, 1);
+    g.n2->set_date(2, 1);
 
     g.g.state(); // f2
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
+
+  }
+
+
+  void glutton_explicit_relationship_2()
+  {
+    // Does it make sense ??
+    // Cables : used to reduce "where" things go, so yeah, makes sense
+    using namespace ossia;
+    TestUtils test;
+
+    no_address_explicit_graph g(test, immediate_glutton_connection{});
+    debug_mock::messages.clear();
+
+    g.g.enable(*g.n1);
+    g.g.disable(*g.n2);
+    g.n1->set_date(0, 0);
+    g.n1->set_date(0, 0);
+
+    qDebug("Start state");
+    g.g.state(); // f1
+    qDebug("End state");
+    QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 0}}));
+
+    g.g.enable(*g.n1);
+    g.g.enable(*g.n2);
+    g.n1->set_date(1, 0.5);
+    g.n2->set_date(1, 0.5);
+
+    qDebug("Start state");
+    debug_mock::messages.clear();
+    g.g.state(); // f2 o f1
+    QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 1}, {10, 1}}));
+    qDebug("End state");
+    g.g.disable(*g.n1);
+    g.g.enable(*g.n2);
+    g.n1->set_date(2, 1);
+    g.n2->set_date(2, 1);
+
+    qDebug("Start state");
+    debug_mock::messages.clear();
+    g.g.state(); // f2
+    QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{10, 2}}));
+    qDebug("End state");
 
   }
 
@@ -544,7 +629,7 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.disable(*g.n2);
-    g.n1->set_date(0);
+    g.n1->set_date(0, 0);
 
     // f1 pushes 1 * 1 in its queue
     g.g.state();
@@ -552,8 +637,8 @@ private slots:
 
     g.g.enable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(1);
-    g.n2->set_date(0);
+    g.n1->set_date(1, 0.5);
+    g.n2->set_date(0, 0);
 
     // f1(0) = 1
     // f1(1) = 2
@@ -563,8 +648,8 @@ private slots:
 
     g.g.disable(*g.n1);
     g.g.enable(*g.n2);
-    g.n1->set_date(2);
-    g.n2->set_date(1);
+    g.n1->set_date(2, 1);
+    g.n2->set_date(1, 1);
 
     // f2(f1(1), 1) = [2, 20]
     g.g.state(); // f2 o f1(t-1)
@@ -640,6 +725,73 @@ private slots:
     // what if both happen at exact same time.
     // orders should superimperpose themselves so that there is always
     // a "default" ordering (this could be the hierarchical one)
+    using namespace ossia;
+
+    {
+      TestUtils test;
+      simple_implicit_graph g(test, immediate_glutton_connection{});
+      g.g.m_ordering = node_ordering::temporal;
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
+
+      g.g.enable(*g.n1);
+      g.g.disable(*g.n2);
+      g.n1->set_date(0, 0);
+      g.n1->temporal_priority = {0};
+      g.n2->set_date(0, 0);
+
+      g.g.state(); // f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(1, 0.5);
+      g.n2->set_date(1, 0.5);
+      g.n2->temporal_priority = {1};
+
+      g.g.state(); // f2 o f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(2, 1);
+      g.n2->set_date(2, 1);
+
+      g.g.state(); // f2 o f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 1 * 3, 10 * 3}));
+    }
+
+    {
+      TestUtils test;
+      simple_implicit_graph g(test, immediate_glutton_connection{});
+      g.g.m_ordering = node_ordering::temporal;
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
+
+      g.g.enable(*g.n1);
+      g.g.disable(*g.n2);
+      g.n1->set_date(0, 0);
+      g.n1->temporal_priority = {1};
+      g.n2->set_date(0, 0);
+
+      g.g.state(); // f1
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(1, 0.5);
+      g.n2->set_date(1, 0.5);
+      g.n2->temporal_priority = {0};
+
+      g.g.state(); // f1 o f2
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2, 1 * 2}));
+
+      g.g.enable(*g.n1);
+      g.g.enable(*g.n2);
+      g.n1->set_date(2, 1);
+      g.n2->set_date(2, 1);
+
+      g.g.state(); // f1 o f2
+      QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2, 1 * 2, 10 * 3, 1 * 3}));
+    }
 
   }
 

@@ -5,6 +5,23 @@
 #include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/network/base/address_data.hpp>
 #include <ossia/network/common/complex_type.hpp>
+
+// Taken from https://stackoverflow.com/a/18230916/1495627
+bool latin_compare(const QString& qstr, const std::string& str)
+{
+  if (qstr.length() != (int)str.size())
+    return false;
+
+  const QChar* qstrData = qstr.data();
+  const int N = qstr.length();
+  for (int i = 0; i < N; ++i)
+  {
+    if (qstrData[i].toLatin1() != str[i])
+      return false;
+  }
+  return true;
+}
+
 namespace ossia
 {
 namespace net
@@ -243,7 +260,7 @@ net::address_data make_address_data(const QJSValue& js)
     dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
-    dat.repetition_filter
+    dat.rep_filter
         = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
     dat.unit = ossia::parse_pretty_unit(
         js.property("unit").toString().toStdString());

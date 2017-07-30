@@ -275,7 +275,7 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     // Push to server
-    auto critical = net::get_critical(addr.getNode());
+    auto critical = addr.get_critical();
     if (!critical)
     {
       m_oscSender->send(addr, val);
@@ -288,6 +288,69 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   }
   return false;
 }
+
+bool oscquery_mirror_protocol::push_raw(const net::full_address_data& addr)
+{
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  auto val = net::filter_value(addr);
+  if (val.valid())
+  {
+    // Push to server
+    auto critical = addr.get_critical();
+    if (!critical)
+    {
+      m_oscSender->send(addr, val);
+    }
+    else
+    {
+      query_send_message(json_writer::send_message(addr, val));
+    }
+    return true;
+  }
+  return false;
+}
+
+bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::address_base*>& addresses)
+{
+  if (!m_useHTTP)
+  {
+    json_bundle_builder b;
+    for(auto a : addresses)
+    {
+      const ossia::net::address_base& addr = *a;
+      ossia::value val = net::filter_value(addr);
+      if (val.valid())
+      {
+        b.add_message(addr, val);
+      }
+    }
+
+    m_websocketClient.send_message(b.finish());
+  }
+  return false;
+}
+
+bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+{
+  if (!m_useHTTP)
+  {
+    json_bundle_builder b;
+    for(const auto& addr : addresses)
+    {
+      ossia::value val = net::filter_value(addr);
+      if (val.valid())
+      {
+        b.add_message(addr, val);
+      }
+    }
+
+    m_websocketClient.send_message(b.finish());
+  }
+  return false;
+}
+
 
 bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
 {
@@ -423,6 +486,21 @@ void oscquery_mirror_protocol::on_OSCMessage(
         if (base_addr)
         {
           net::update_value_quiet(*base_addr, m);
+        }
+      }
+      else
+      {
+        // Try to handle pattern matching
+        auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
+        for(auto n : nodes)
+        {
+          if (auto addr = n->get_address())
+          {
+            if(m_listening.find(net::osc_address_string(*n)))
+              net::update_value(*addr, m);
+            else
+              net::update_value_quiet(*addr, m);
+          }
         }
       }
     }

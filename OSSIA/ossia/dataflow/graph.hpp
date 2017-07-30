@@ -26,10 +26,16 @@ using edge_bimap_v = edge_bimap::value_type;
 using edge_map_t
     = std::unordered_map<std::pair<graph_node*, graph_node*>, graph_edge*>;
 
+enum class node_ordering
+{
+  topological, temporal, hierarchical
+};
+
 class OSSIA_EXPORT graph
 {
 public:
   ~graph();
+
   void add_node(node_ptr n);
   void remove_node(const node_ptr& n);
 
@@ -51,7 +57,7 @@ public:
   void disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node);
 
   static void copy_from_local(const data_type& out, inlet& in);
-  static void copy(const data_type& out, std::size_t pos, inlet& in);
+  static void copy(const delay_line_type& out, std::size_t pos, inlet& in);
   static void copy(const outlet& out, inlet& in);
   static void copy_to_local(
       const data_type& out, const Destination& d, execution_state& in);
@@ -72,6 +78,8 @@ public:
   edge_map_t m_edge_map;
 
   time_value m_time{};
+
+  node_ordering m_ordering{node_ordering::topological};
 
   friend struct init_node_visitor;
   friend struct inlet;

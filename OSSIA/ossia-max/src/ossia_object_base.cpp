@@ -9,9 +9,14 @@ namespace max
 
 void t_object_base::apply_value_visitor(const ossia::value& v)
 {
+  auto local_address = m_node->get_address();
+  auto filtered = ossia::net::filter_value(
+        local_address->get_domain(),
+        v,
+        local_address->get_bounding());
   value_visitor<t_object_base> vm;
   vm.x = this;
-  v.apply(vm);
+  filtered.apply(vm);
 }
 
 void t_object_base::push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
@@ -67,5 +72,38 @@ void t_object_base::bang(t_object_base* x)
         }
     }
 */
+
+void t_object_base::defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_atom* argv){
+  outlet_anything(x->m_set_out, s, argc, argv);
+}
+
+void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
+  for (const auto& child : node.children_copy())
+  {
+    if (auto addr = child->get_address())
+    {
+      std::string s = ossia::net::osc_address_string(*child);
+      list.push_back(s);
+    }
+    list_all_child(*child,list);
+  }
+}
+
+void t_object_base::relative_namespace(t_object_base* x)
+{
+  if (x->m_node == nullptr) return;
+  t_symbol* prependsym = gensym("namespace");
+  std::vector<std::string> list;
+  list_all_child(*x->m_node, list);
+  int pos = ossia::net::osc_address_string(*x->m_node).length();
+  for (auto& addr : list)
+  {
+    std::string s = addr.substr(pos);
+    t_atom a;
+    atom_setsym(&a,gensym(s.c_str()));
+    outlet_anything(x->m_dump_out, prependsym,1,&a);
+  }
+}
+
 } // max namespace
 } // ossia namespace

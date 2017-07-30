@@ -110,6 +110,9 @@ bool ws_generic_client_protocol::push(
   return false;
 }
 
+bool ws_generic_client_protocol::push_raw(const full_address_data& address_base)
+{ return false; }
+
 bool ws_generic_client_protocol::observe(
     ossia::net::address_base& addr_base, bool enable)
 {

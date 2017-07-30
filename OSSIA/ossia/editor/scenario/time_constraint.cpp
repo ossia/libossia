@@ -57,7 +57,7 @@ time_constraint::~time_constraint()
 {
 }
 
-void time_constraint::start()
+void time_constraint::start(ossia::state& pstate)
 {
   if (!m_running)
   {
@@ -66,7 +66,7 @@ void time_constraint::start()
     for (const auto& timeProcess : get_time_processes())
     {
       if (timeProcess->enabled())
-        timeProcess->start();
+        timeProcess->start(pstate);
     }
 
     // launch the clock
@@ -75,7 +75,13 @@ void time_constraint::start()
 
     // set clock at a tick
     m_date = m_offset;
-    tick(0_tv);
+    m_position = double(m_date) / double(m_nominal);
+
+    auto st = state();
+    if (m_callback)
+      (m_callback)(m_position, m_date, st);
+
+    flatten_and_filter(pstate, std::move(st));
   }
 }
 
@@ -253,7 +259,6 @@ void time_constraint::add_time_process(
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
   {
-    timeProcess->m_parent = this;
     m_processes.push_back(std::move(timeProcess));
   }
 }

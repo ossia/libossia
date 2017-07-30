@@ -360,7 +360,7 @@ inline ossia::value ReadValue(const rapidjson::Value& val)
     }
 
     case rapidjson::kStringType:
-      return getString(val);
+      return get_string(val);
 
     case rapidjson::kObjectType:
     case rapidjson::kNullType:
@@ -406,7 +406,7 @@ struct json_to_value_unchecked
     // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
 
     if (val.IsString())
-      res = getString(val);
+      res = get_string(val);
   }
 
   template <std::size_t N>

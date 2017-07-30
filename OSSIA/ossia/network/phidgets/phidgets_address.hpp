@@ -19,7 +19,7 @@ public:
       ppp::phidget_ptr p, phidget_protocol& proto, ossia::net::node_base& par);
   ~phidget_address();
 
-  net::node_base& getNode() const override;
+  net::node_base& get_node() const override;
   ppp::phidget_ptr phidget() const
   {
     return m_phidget;

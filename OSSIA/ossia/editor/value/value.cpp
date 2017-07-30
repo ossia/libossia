@@ -9,6 +9,7 @@
 #include <ossia/editor/value/value_comparison.hpp>
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <sstream>
 
 namespace ossia

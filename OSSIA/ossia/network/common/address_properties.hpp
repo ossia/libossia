@@ -31,9 +31,9 @@ enum class val_type : int8_t
  */
 enum class access_mode : int8_t
 {
+  BI,  //! The value can be retrieved and changed
   GET, //! The value can be retrieved
-  SET, //! The value can be changed
-  BI   //! The value can be retrieved and changed
+  SET //! The value can be changed
 };
 
 /**

@@ -84,6 +84,9 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
   return false;
 }
 
+bool serial_protocol::push_raw(const full_address_data& address_base)
+{ return false; }
+
 bool serial_protocol::observe(ossia::net::address_base&, bool)
 {
   return false;

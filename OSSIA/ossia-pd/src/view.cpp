@@ -4,6 +4,7 @@
 #include "view.hpp"
 #include "remote.hpp"
 #include "utils.hpp"
+#include "ossia-pd.hpp"
 
 namespace ossia
 {
@@ -22,13 +23,13 @@ bool t_view::register_node(ossia::net::node_base* node)
   if (res)
   {
     obj_dequarantining<t_view>(this);
-    std::vector<obj_hierachy> viewnode
+    std::vector<t_obj_base*> viewnode
         = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnode)
     {
-      if (v.classname == "ossia.view")
+      if (v->x_otype == Type::view)
       {
-        t_view* view = (t_view*)v.x;
+        t_view* view = (t_view*)v;
         if (view == this)
         {
           // not registering itself
@@ -36,9 +37,9 @@ bool t_view::register_node(ossia::net::node_base* node)
         }
         view->register_node(x_node);
       }
-      else if (v.classname == "ossia.remote")
+      else if (v->x_otype == Type::remote)
       {
-        t_remote* remote = (t_remote*)v.x;
+        t_remote* remote = (t_remote*)v;
         remote->register_node(x_node);
       }
     }
@@ -58,12 +59,24 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    std::string absolute_path = get_absolute_path<t_view>(this);
-    std::string address_string = ossia::net::address_string_from_node(*node);
+    if (x_absolute == AddrType::relative)
+    {
+      std::string absolute_path = get_absolute_path<t_view>(this);
+      std::string address_string = ossia::net::address_string_from_node(*node);
 
-    if (absolute_path != address_string)
-      return false;
-    x_node = node->find_child(x_name->s_name);
+      if (absolute_path != address_string)
+        return false;
+      x_node = node->find_child(x_name->s_name);
+    }
+    else if(x_absolute == AddrType::absolute)
+    {
+      x_node = ossia::net::find_node(
+            node->get_device().get_root_node(), x_name->s_name);
+    } else {
+      x_node = ossia::pd::find_global_node(x_name->s_name);
+    }
+
+
     if (x_node)
     {
       x_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
@@ -83,20 +96,20 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
 static void register_children(t_view* x)
 {
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       if (view == x)
         continue;
       obj_register<t_view>(view);
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       obj_register<t_remote>(remote);
     }
   }
@@ -109,20 +122,20 @@ bool t_view::unregister()
 
   x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(this);
 
-  std::vector<obj_hierachy> viewnode
+  std::vector<t_obj_base*> viewnode
       = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v.classname == "ossia.view")
+    if (v->x_otype == Type::view)
     {
-      t_view* view = (t_view*)v.x;
+      t_view* view = (t_view*)v;
       if (view == this)
         continue;
       view->unregister();
     }
-    else if (v.classname == "ossia.remote")
+    else if (v->x_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)v.x;
+      t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }
@@ -176,6 +189,9 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
+    ossia_pd.views.push_back(x);
+
+    x->x_otype = Type::view;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->x_clock = clock_new(x, (t_method)obj_tick);
     x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
@@ -183,8 +199,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-        x->x_absolute = true;
+      x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
@@ -228,6 +243,7 @@ static void view_free(t_view* x)
   x->x_dead = true;
   x->unregister();
   obj_dequarantining<t_view>(x);
+  ossia_pd::instance().views.remove_all(x);
   clock_free(x->x_regclock);
   clock_free(x->x_clock);
 }
@@ -235,8 +251,7 @@ static void view_free(t_view* x)
 static void view_bind(t_view* x, t_symbol* address)
 {
   x->x_name = address;
-  if (std::string(x->x_name->s_name) != "" && x->x_name->s_name[0] == '/')
-    x->x_absolute = true;
+  x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -249,9 +264,12 @@ extern "C" void setup_ossia0x2eview(void)
 
   if (c)
   {
+    class_addcreator((t_newmethod)view_new,gensym("ø.view"), A_GIMME, 0);
+
     eclass_addmethod(c, (method)obj_dump<t_view>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)view_click, "click", A_NULL, 0);
     eclass_addmethod(c, (method)view_bind, "bind", A_SYMBOL, 0);
+    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();

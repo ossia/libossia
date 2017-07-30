@@ -16,10 +16,7 @@
 #include <string>
 #if defined(OSSIA_QT)
 class QString;
-OSSIA_EXPORT
-bool latinCompare(const QString& qstr, const std::string& str);
 #endif
-
 namespace ossia
 {
 namespace net
@@ -109,6 +106,14 @@ public:
   void set(ossia::string_view str, const T& val);
   template <typename T>
   void set(ossia::string_view str, T&& val);
+
+  template <typename T>
+  void set(ossia::string_view str, const optional<T>& val);
+  template <typename T>
+  void set(ossia::string_view str, optional<T>&& val);
+
+  void set(ossia::string_view str, bool value);
+
 
   template <typename Attribute, typename T>
   void set(Attribute a, const T& value);
@@ -206,39 +211,5 @@ protected:
   extended_attributes m_extended{0};
 };
 
-// address : format /a/b/c
-/**
- * @brief Find a node in a device
- *
- * @return null if the node was not found.
- */
-OSSIA_EXPORT node_base*
-find_node(node_base& dev, ossia::string_view address_base);
-
-/**
- * @brief Create a node in a device.
- *
- * If the node already exists, a new instance will be created.
- * Hence there is no guarantee that the created node name is the same
- * than the one requested; the output should be checked.
- */
-OSSIA_EXPORT node_base&
-create_node(node_base& dev, ossia::string_view address_base);
-
-/**
- * @brief Find a node and create it if it does not exist.
- *
- * If the node exists, it will be returned, else a new node will be created.
- */
-OSSIA_EXPORT node_base&
-find_or_create_node(node_base& dev, ossia::string_view address_base);
-
-/**
- * @brief Calls find_node or create_node according to the value `create`
- */
-OSSIA_EXPORT node_base* find_or_create_node(
-    node_base& dev, ossia::string_view address_base, bool create);
-
-void sanitize_name(std::string& name, const node_base::children_t& brethren);
 }
 }

@@ -15,9 +15,7 @@ qml_node::qml_node(QQuickItem* parent) : qml_node_base{parent}
 {
   setDevice(&qml_singleton_device::instance());
   resetNode();
-  connect(this, &QQuickItem::parentChanged, this, [=](QQuickItem*) {
-    resetNode();
-  });
+  connect(this, &QQuickItem::parentChanged, this, &qml_node::resetNode);
 }
 
 void qml_node::reset_parent()
@@ -37,6 +35,7 @@ void qml_node::reset_parent()
 }
 qml_node::~qml_node()
 {
+  disconnect(this, &QQuickItem::parentChanged, this, &qml_node::resetNode);
   reset_parent();
 }
 

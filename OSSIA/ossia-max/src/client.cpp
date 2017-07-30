@@ -6,6 +6,7 @@
 #include "parameter.hpp"
 #include "remote.hpp"
 #include "view.hpp"
+#include "utils.hpp"
 
 #include "ossia/network/osc/osc.hpp"
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -35,8 +36,8 @@ extern "C" void ossia_client_setup(void)
       ossia_library.ossia_client_class, (method)t_client::loadbang, "loadbang",
       A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_client_class, (method)ossia_client_dump, "dump",
-      A_NOTHING, 0);
+      ossia_library.ossia_client_class, (method)t_object_base::relative_namespace,
+              "namespace", A_NOTHING, 0);
   class_addmethod(
       ossia_library.ossia_client_class, (method)ossia_client_connect,
       "connect", A_GIMME, 0);
@@ -45,6 +46,8 @@ extern "C" void ossia_client_setup(void)
       (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
 
   class_register(CLASS_BOX, ossia_library.ossia_client_class);
+  class_alias(ossia_library.ossia_client_class, gensym("ø.client"));
+
 }
 
 extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
@@ -61,6 +64,15 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
     x->m_device = 0;
     x->m_node = 0;
 
+    x->m_otype = Type::client;
+
+    if (ossia::max::find_peer(x))
+    {
+      error("You can have only one [ossia.device] or [ossia.client] per patcher.");
+      ossia_client_free(x);
+      return nullptr;
+    }
+
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 
@@ -76,6 +88,8 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
+
+    ossia_library.clients.push_back(x);
   }
 
   return (x);
@@ -88,8 +102,10 @@ extern "C" void ossia_client_free(t_client* x)
 
   if (x->m_device)
     delete (x->m_device);
-
   x->m_device = nullptr;
+  outlet_delete(x->m_dump_out);
+  ossia_max::instance().clients.remove_all(x);
+  register_quarantinized();
 }
 
 static void dump_child(t_client* x, const ossia::net::node_base& node)
@@ -228,19 +244,19 @@ namespace max
 
 void t_client::register_children(t_client* x)
 {
-  std::vector<box_hierachy> children_view = find_children_to_register(
+  std::vector<t_object_base*> children_view = find_children_to_register(
       &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
-    if (child.classname == gensym("ossia.view"))
+    if (child->m_otype == Type::view)
     {
-      t_view* view = (t_view*)jbox_get_object(child.box);
+      t_view* view = (t_view*)child;
       view->register_node(x->m_node);
     }
-    else if (child.classname == gensym("ossia.remote"))
+    else if (child->m_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)jbox_get_object(child.box);
+      t_remote* remote = (t_remote*)child;
       remote->register_node(x->m_node);
     }
   }
@@ -248,36 +264,36 @@ void t_client::register_children(t_client* x)
 
 void t_client::unregister_children()
 {
-  std::vector<box_hierachy> children_model = find_children_to_register(
+  std::vector<t_object_base*> children_model = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
   for (auto child : children_model)
   {
-    if (child.classname == gensym("ossia.model"))
+    if (child->m_otype == Type::model)
     {
-      t_model* model = (t_model*)jbox_get_object(child.box);
+      t_model* model = (t_model*)child;
       model->unregister();
     }
-    else if (child.classname == gensym("ossia.parameter"))
+    else if (child->m_otype == Type::param)
     {
-      t_parameter* parameter = (t_parameter*)jbox_get_object(child.box);
+      t_parameter* parameter = (t_parameter*)child;
       parameter->unregister();
     }
   }
 
-  std::vector<box_hierachy> children_view = find_children_to_register(
+  std::vector<t_object_base*> children_view = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
-    if (child.classname == gensym("ossia.view"))
+    if (child->m_otype == Type::view)
     {
-      t_view* view = (t_view*)jbox_get_object(child.box);
+      t_view* view = (t_view*)child;
       view->unregister();
     }
-    else if (child.classname == gensym("ossia.remote"))
+    else if (child->m_otype == Type::remote)
     {
-      t_remote* remote = (t_remote*)jbox_get_object(child.box);
+      t_remote* remote = (t_remote*)child;
       remote->unregister();
     }
   }

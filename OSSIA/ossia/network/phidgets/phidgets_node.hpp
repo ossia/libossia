@@ -9,8 +9,6 @@ protected:
   phidget_device& m_device;
   node_base& m_parent;
   std::unique_ptr<ossia::net::address_base> m_address;
-  std::string m_name;
-
 public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
   using const_iterator
@@ -28,10 +26,6 @@ public:
   ossia::net::device_base& get_device() const final override;
   ossia::net::node_base* get_parent() const override;
 
-  std::string get_name() const override
-  {
-    return m_name;
-  }
   ossia::net::node_base& set_name(std::string n) override;
 
   ossia::net::address_base* get_address() const final override;

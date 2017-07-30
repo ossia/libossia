@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <ossia/network/common/network_logger.hpp>
+#include <vector>
 #include <future>
 #include <memory>
 
@@ -15,6 +16,7 @@ namespace net
 class address_base;
 class node_base;
 class device_base;
+struct full_address_data;
 
 /**
  * @brief The protocol_base class
@@ -51,9 +53,23 @@ public:
 
   /**
    * @brief Send a value to the network.
-   * @return
    */
   virtual bool push(const address_base&) = 0;
+
+  /**
+   * @brief Send many values in one go if the protocol supports it
+   */
+  virtual bool push_bundle(const std::vector<const ossia::net::address_base*>&);
+
+   /**
+    * @brief Send a value to the network.
+    */
+  virtual bool push_raw(const full_address_data&) = 0;
+
+   /**
+    * @brief Send a value to the network.
+    */
+   virtual bool push_raw_bundle(const std::vector<full_address_data>&);
 
   /**
    * @brief Notify the network that an address should be listened to.

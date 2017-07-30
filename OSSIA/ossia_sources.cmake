@@ -137,6 +137,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address_data.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/listening.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
@@ -214,7 +215,10 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/fold.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/name_validation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.cpp"
@@ -398,6 +402,7 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/name_utils.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
@@ -450,6 +455,7 @@ set(OSSIA_DATAFLOW_HEADERS
 )
 
 set(OSSIA_DATAFLOW_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"

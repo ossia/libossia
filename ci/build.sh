@@ -16,8 +16,13 @@ cd build
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    export CC=/usr/bin/gcc-6
-    export CXX=/usr/bin/g++-6
+    if [[ -f /usr/bin/gcc-7 ]] ; then
+      export CC=/usr/bin/gcc-7
+      export CXX=/usr/bin/g++-7
+    else
+      export CC=/usr/bin/gcc-6
+      export CXX=/usr/bin/g++-6
+    fi
     export BOOST_ROOT=/opt/boost
 #    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')

@@ -20,7 +20,7 @@ midi_protocol::midi_protocol()
 
 midi_protocol::midi_protocol(midi_info m) : midi_protocol()
 {
-  setInfo(m);
+  set_info(m);
 }
 
 midi_protocol::~midi_protocol()
@@ -36,7 +36,7 @@ midi_protocol::~midi_protocol()
   }
 }
 
-bool midi_protocol::setInfo(midi_info m)
+bool midi_protocol::set_info(midi_info m)
 {
   try
   {
@@ -60,60 +60,60 @@ bool midi_protocol::setInfo(midi_info m)
         switch (mess.getMessageType())
         {
           case mm::MessageType::NOTE_ON:
-            c.mNoteOn.first = mess.data[1];
-            c.mNoteOn.second = mess.data[2];
-            c.mNoteOn_N[c.mNoteOn.first] = c.mNoteOn.second;
-            if (auto ptr = c.mCallbackNoteOn)
+            c.note_on.first = mess.data[1];
+            c.note_on.second = mess.data[2];
+            c.note_on_N[c.note_on.first] = c.note_on.second;
+            if (auto ptr = c.callback_note_on)
             {
-              std::vector<ossia::value> t{int32_t{c.mNoteOn.first},
-                                          int32_t{c.mNoteOn.second}};
+              std::vector<ossia::value> t{int32_t{c.note_on.first},
+                                          int32_t{c.note_on.second}};
               ptr->value_callback(t);
             }
-            if (auto ptr = c.mCallbackNoteOn_N[c.mNoteOn.first])
+            if (auto ptr = c.callback_note_on_N[c.note_on.first])
             {
-              int32_t val{c.mNoteOn_N[c.mNoteOn.first]};
+              int32_t val{c.note_on_N[c.note_on.first]};
               ptr->value_callback(val);
             }
             break;
           case mm::MessageType::NOTE_OFF:
-            c.mNoteOff.first = mess.data[1];
-            c.mNoteOff.second = mess.data[2];
-            c.mNoteOff_N[c.mNoteOff.first] = c.mNoteOff.second;
-            if (auto ptr = c.mCallbackNoteOff)
+            c.note_off.first = mess.data[1];
+            c.note_off.second = mess.data[2];
+            c.note_off_N[c.note_off.first] = c.note_off.second;
+            if (auto ptr = c.callback_note_off)
             {
-              std::vector<ossia::value> t{int32_t{c.mNoteOff.first},
-                                          int32_t{c.mNoteOff.second}};
+              std::vector<ossia::value> t{int32_t{c.note_off.first},
+                                          int32_t{c.note_off.second}};
               ptr->value_callback(t);
             }
-            if (auto ptr = c.mCallbackNoteOff_N[c.mNoteOff.first])
+            if (auto ptr = c.callback_note_off_N[c.note_off.first])
             {
-              int32_t val{c.mNoteOff_N[c.mNoteOff.first]};
+              int32_t val{c.note_off_N[c.note_off.first]};
               ptr->value_callback(val);
             }
             break;
           case mm::MessageType::CONTROL_CHANGE:
-            c.mCC.first = mess.data[1];
-            c.mCC.second = mess.data[2];
-            c.mCC_N[c.mCC.first] = c.mCC.second;
-            if (auto ptr = c.mCallbackCC)
+            c.cc.first = mess.data[1];
+            c.cc.second = mess.data[2];
+            c.cc_N[c.cc.first] = c.cc.second;
+            if (auto ptr = c.callback_cc)
             {
-              std::vector<ossia::value> t{int32_t{c.mCC.first},
-                                          int32_t{c.mCC.second}};
+              std::vector<ossia::value> t{int32_t{c.cc.first},
+                                          int32_t{c.cc.second}};
               ptr->value_callback(t);
             }
-            if (auto ptr = c.mCallbackCC_N[c.mCC.first])
+            if (auto ptr = c.callback_cc_N[c.cc.first])
             {
-              int32_t val{c.mCC_N[c.mCC.first]};
+              int32_t val{c.cc_N[c.cc.first]};
               ptr->value_callback(val);
             }
             break;
           case mm::MessageType::PROGRAM_CHANGE:
-            c.mPC = mess.data[1];
-            if (auto ptr = c.mCallbackPC)
+            c.pc = mess.data[1];
+            if (auto ptr = c.callback_pc)
             {
-              ptr->value_callback(int32_t{c.mPC});
+              ptr->value_callback(int32_t{c.pc});
             }
-            if (auto ptr = c.mCallbackPC_N[c.mPC])
+            if (auto ptr = c.callback_pc_N[c.pc])
             {
               ptr->value_callback(ossia::impulse{});
             }
@@ -137,7 +137,7 @@ bool midi_protocol::setInfo(midi_info m)
   }
 }
 
-midi_info midi_protocol::getInfo() const
+midi_info midi_protocol::get_info() const
 {
   return m_info;
 }
@@ -154,52 +154,52 @@ bool midi_protocol::pull(address_base& address)
   {
     case address_info::Type::NoteOn_N:
     {
-      int32_t val{chan.mNoteOn_N[adrinfo.note]};
+      int32_t val{chan.note_on_N[adrinfo.note]};
       address.set_value(val);
       return true;
     }
 
     case address_info::Type::NoteOn:
     {
-      std::vector<ossia::value> val{int32_t{chan.mNoteOn.first},
-                                    int32_t{chan.mNoteOn.second}};
+      std::vector<ossia::value> val{int32_t{chan.note_on.first},
+                                    int32_t{chan.note_on.second}};
       address.set_value(val);
       return true;
     }
 
     case address_info::Type::NoteOff_N:
     {
-      int32_t val{chan.mNoteOff_N[adrinfo.note]};
+      int32_t val{chan.note_off_N[adrinfo.note]};
       address.set_value(val);
       return true;
     }
 
     case address_info::Type::NoteOff:
     {
-      std::vector<ossia::value> val{int32_t{chan.mNoteOff.first},
-                                    int32_t{chan.mNoteOff.second}};
+      std::vector<ossia::value> val{int32_t{chan.note_off.first},
+                                    int32_t{chan.note_off.second}};
       address.set_value(val);
       return true;
     }
 
     case address_info::Type::CC_N:
     {
-      int32_t val{chan.mCC_N[adrinfo.note]};
+      int32_t val{chan.cc_N[adrinfo.note]};
       address.set_value(val);
       return true;
     }
 
     case address_info::Type::CC:
     {
-      std::vector<ossia::value> val{int32_t{chan.mCC.first},
-                                    int32_t{chan.mCC.second}};
+      std::vector<ossia::value> val{int32_t{chan.cc.first},
+                                    int32_t{chan.cc.second}};
       address.set_value(val);
       return true;
     }
 
     case address_info::Type::PC:
     {
-      int32_t val{chan.mPC};
+      int32_t val{chan.pc};
       address.set_value(val);
       return true;
     }
@@ -294,6 +294,9 @@ bool midi_protocol::push(const address_base& address)
   }
 }
 
+bool midi_protocol::push_raw(const full_address_data& address_base)
+{ return false; }
+
 bool midi_protocol::observe(address_base& address, bool enable)
 {
   enable = true;
@@ -308,25 +311,25 @@ bool midi_protocol::observe(address_base& address, bool enable)
   {
     case address_info::Type::NoteOn_N:
     {
-      chan.mCallbackNoteOn_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_note_on_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
     case address_info::Type::NoteOff_N:
     {
-      chan.mCallbackNoteOff_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_note_off_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
     case address_info::Type::CC_N:
     {
-      chan.mCallbackCC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_cc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
     case address_info::Type::PC_N:
     {
-      chan.mCallbackPC_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_pc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 

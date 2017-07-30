@@ -6,6 +6,7 @@
 #include <ossia/editor/state/message.hpp>
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/network/base/address.hpp>
+#include <ossia/network/base/node_functions.hpp>
 namespace ossia
 {
 void message::launch() const

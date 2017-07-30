@@ -31,7 +31,7 @@ scenario::~scenario()
   }
 }
 
-void scenario::start()
+void scenario::start(ossia::state& st)
 {
   m_waitingNodes.push_back(m_nodes[0].get());
   // start each TimeConstraint if possible
@@ -58,7 +58,7 @@ void scenario::start()
         && endStatus == time_event::status::NONE)
     {
       m_runningConstraints.insert(&cst);
-      cst.start();
+      cst.start(st);
     }
     // the constraint starts in the void and ends on a timenode that did
     // execute
@@ -73,7 +73,7 @@ void scenario::start()
         && endStatus == time_event::status::PENDING)
     {
       m_runningConstraints.insert(&cst);
-      cst.start();
+      cst.start(st);
     }
     // the constraint is in the future
     else if (

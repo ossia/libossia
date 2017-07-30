@@ -67,7 +67,7 @@ ossia::state_element mapper::state(ossia::time_value date, double pos)
   return ossia::state_element{};
 }
 
-void mapper::start()
+void mapper::start(ossia::state& st)
 {
   // start driver address value observation
   if (m_driverAddress && !m_callback)

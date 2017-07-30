@@ -20,9 +20,9 @@ TEST_CASE ("C API: Read JSON") {
                               "position": {"x":2, "y":0.5, "z":0},
                               "color": {"r":192, "g":255, "b":225, "alpha":255}
                              }
-                           ]
-                         },
-                         "name": "Une scène"
+                           ],
+                           "name": "Une scène"
+                         }
                        }
                        )_";
     ossia_preset_t p;
@@ -46,9 +46,9 @@ TEST_CASE ("C API: Apply preset") {
                               "position": {"x":2, "y":0.5, "z":0},
                               "color": {"r":192, "g":255, "b":225, "alpha":255}
                              }
-                           ]
-                         },
-                         "name": "Une scène"
+                           ],
+                            "name": "Une scène"
+                         }
                        }
                        )_";
     ossia_preset_t p;
@@ -59,7 +59,7 @@ TEST_CASE ("C API: Apply preset") {
     ossia_device dev_c{
       std::make_unique<ossia::net::generic_device>(
             std::make_unique<ossia::net::multiplex_protocol>(),
-            "test")};
+            "scene")};
 
     code = ossia_devices_apply_preset(&dev_c, p, false);
     REQUIRE(code == OSSIA_PRESETS_OK);

@@ -14,7 +14,7 @@ state_element time_process::offset(time_value date, double pos)
   return state(date, pos);
 }
 
-void time_process::start()
+void time_process::start(ossia::state& st)
 {
 }
 
@@ -49,11 +49,6 @@ void time_process::enable(bool m)
 bool time_process::enabled() const
 {
   return m_enabled;
-}
-
-time_constraint* time_process::parent() const
-{
-  return m_parent;
 }
 
 void time_process::mute_impl(bool)

@@ -35,7 +35,7 @@ generic_address::generic_address(
     , m_accessMode(get_value_or(data.access, ossia::access_mode::BI))
     , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
     , m_repetitionFilter(
-          get_value_or(data.repetition_filter, ossia::repetition_filter::OFF))
+          get_value_or(data.rep_filter, ossia::repetition_filter::OFF))
     , m_value(init_value(m_valueType))
 {
   update_address_type(data.type, *this);
@@ -46,7 +46,7 @@ generic_address::~generic_address()
   callback_container<value_callback>::callbacks_clear();
 }
 
-ossia::net::node_base& generic_address::getNode() const
+ossia::net::node_base& generic_address::get_node() const
 {
   return m_node;
 }

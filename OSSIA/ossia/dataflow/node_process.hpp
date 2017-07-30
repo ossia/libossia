@@ -11,8 +11,13 @@ class node_process : public ossia::time_process
 {
 public:
   node_process(
-      std::shared_ptr<ossia::graph> g, std::shared_ptr<ossia::graph_node> n)
+      std::shared_ptr<ossia::graph> g, ossia::node_ptr n)
       : m_graph{std::move(g)}, m_node{std::move(n)}
+  {
+  }
+  node_process(
+      std::shared_ptr<ossia::graph> g)
+    : m_graph{std::move(g)}
   {
   }
 
@@ -21,24 +26,37 @@ public:
     return {};
   }
 
+  void set_node(std::shared_ptr<ossia::graph_node> n)
+  {
+    m_node = std::move(n);
+  }
+
   ossia::state_element
   state(ossia::time_value parent_date, double relative_position) override
   {
-    std::cerr << parent_date;
-    m_node->set_date(parent_date);
-    m_graph->enable(*m_node);
+    if(m_node)
+    {
+      m_node->set_date(parent_date, relative_position);
+      m_graph.lock()->enable(*m_node);
+    }
     return {};
   }
 
-  void start() override
+  void start(ossia::state& st) override
   {
     // TODO reset all delay buffer positions
-    m_graph->enable(*m_node);
+    if(m_node)
+    {
+      m_graph.lock()->enable(*m_node);
+    }
   }
 
   void stop() override
   {
-    m_graph->disable(*m_node);
+    if(m_node)
+    {
+      m_graph.lock()->disable(*m_node);
+    }
   }
 
   void pause() override
@@ -54,7 +72,7 @@ public:
   }
 
 private:
-  std::shared_ptr<ossia::graph> m_graph;
-  std::shared_ptr<ossia::graph_node> m_node;
+  std::weak_ptr<ossia::graph> m_graph;
+  ossia::node_ptr m_node;
 };
 }

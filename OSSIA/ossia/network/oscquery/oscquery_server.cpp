@@ -105,7 +105,7 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
   if (val.valid())
   {
     // Push to all clients
-    auto critical = net::get_critical(addr.getNode());
+    auto critical = addr.get_critical();
     if (!critical)
     {
       lock_t lock(m_clientsMutex);
@@ -127,6 +127,85 @@ bool oscquery_server_protocol::push(const net::address_base& addr)
     return true;
   }
   return false;
+}
+
+bool oscquery_server_protocol::push_raw(const net::full_address_data& addr)
+{
+  auto val = net::filter_value(addr);
+  if (val.valid())
+  {
+    // Push to all clients
+    auto critical = addr.critical;
+    if (!critical)
+    {
+      lock_t lock(m_clientsMutex);
+      for (auto& client : m_clients)
+      {
+        client.sender->send(addr, val);
+      }
+    }
+    else
+    {
+      lock_t lock(m_clientsMutex);
+      for (auto& client : m_clients)
+      {
+        m_websocketServer.send_message(
+            client.connection, json_writer::send_message(addr, val));
+      }
+    }
+
+    return true;
+  }
+  return false;
+}
+
+bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::address_base*>& addresses)
+{
+  json_bundle_builder b;
+  for(auto a : addresses)
+  {
+    const ossia::net::address_base& addr = *a;
+    ossia::value val = net::filter_value(addr);
+    if (val.valid())
+    {
+      b.add_message(addr, val);
+    }
+  }
+
+  const auto str = b.finish();
+
+  {
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      m_websocketServer.send_message(client.connection, str);
+    }
+  }
+  return true;
+}
+
+bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+{
+  json_bundle_builder b;
+  for(const auto& addr : addresses)
+  {
+    ossia::value val = net::filter_value(addr);
+    if (val.valid())
+    {
+      b.add_message(addr, val);
+    }
+  }
+
+  const auto str = b.finish();
+
+  {
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      m_websocketServer.send_message(client.connection, str);
+    }
+  }
+  return true;
 }
 
 bool oscquery_server_protocol::observe(net::address_base& address, bool enable)
@@ -174,7 +253,7 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
 }
 
 oscquery_client*
-oscquery_server_protocol::findClient(const connection_handler& hdl)
+oscquery_server_protocol::find_client(const connection_handler& hdl)
 {
   lock_t lock(m_clientsMutex);
 
@@ -185,7 +264,7 @@ oscquery_server_protocol::findClient(const connection_handler& hdl)
 }
 
 oscquery_client*
-oscquery_server_protocol::findBuildingClient(const connection_handler& hdl)
+oscquery_server_protocol::find_building_client(const connection_handler& hdl)
 {
   lock_t lock(m_buildingClientsMutex);
 
@@ -195,7 +274,7 @@ oscquery_server_protocol::findBuildingClient(const connection_handler& hdl)
   return nullptr;
 }
 
-void oscquery_server_protocol::enableClient(
+void oscquery_server_protocol::enable_client(
     const oscquery_server_protocol::connection_handler& hdl)
 {
   lock_t l1(m_clientsMutex);
@@ -295,6 +374,21 @@ void oscquery_server_protocol::on_OSCMessage(
       if (auto base_addr = n->get_address())
       {
         net::update_value_quiet(*base_addr, m);
+      }
+    }
+    else
+    {
+      // Try to handle pattern matching
+      auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
+      for(auto n : nodes)
+      {
+        if (auto addr = n->get_address())
+        {
+          if(m_listening.find(net::osc_address_string(*n)))
+            net::update_value(*addr, m);
+          else
+            net::update_value_quiet(*addr, m);
+        }
       }
     }
   }
