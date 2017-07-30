@@ -42,7 +42,7 @@
           }
           if(play_k != -1)
           {
-              random.value = json["/play"];
+              play.checked = json["/play"];
           }
           
 
@@ -58,15 +58,15 @@
       };
 
       play.oninput = function(ev) {
-              ws.send('{ "/random": ' + play.value + '}');
-              console.log('{ "/random": ' + play.value + '}');
+              ws.send('{ "/play": ' + play.checked + '}');
+              console.log('{ "/play": ' + play.checked + '}');
       };
     }
 </script>
 
 <body onload="init()">
 <table>
- <tr><td>Random</td><td id="play" type="checkbox"/></td></tr>
+ <tr><td>Play</td><td><input id="play" type="checkbox"/></td></tr>
  <tr><td>Note</td><td id="note"></td></tr>
  <tr><td>Velocity</td><td id="velocity"></td></tr>
  <tr><td>Mod. ratio</td><td><input id="modratio" type="range"/></td></tr>

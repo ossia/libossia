@@ -1,17 +1,17 @@
 #N canvas 46 155 533 681 10;
-#X obj 27 398 osc~;
-#X obj 27 530 *~;
-#X obj 107 474 phasor~;
-#X floatatom 125 332 5 0 0 0 - - -, f 5;
-#X obj 394 646 print;
-#X obj 27 577 *~;
-#X obj 106 498 *~;
-#X text 218 385 convert dBFs to Pd's dB \, 100dB Pd = 0dBFS;
-#X obj 175 407 dbtorms;
-#X msg 175 429 \$1 10;
-#X obj 176 450 line~;
-#X obj 27 245 mtof;
-#X floatatom 27 274 5 0 0 0 - - -, f 5;
+#X obj 26 372 osc~;
+#X obj 26 504 *~;
+#X obj 106 448 phasor~;
+#X floatatom 124 306 5 0 0 0 - - -, f 5;
+#X obj 393 620 print;
+#X obj 26 551 *~;
+#X obj 105 472 *~;
+#X text 217 359 convert dBFs to Pd's dB \, 100dB Pd = 0dBFS;
+#X obj 174 381 dbtorms;
+#X msg 174 403 \$1 10;
+#X obj 175 424 line~;
+#X obj 26 219 mtof;
+#X floatatom 26 248 5 0 0 0 - - -, f 5;
 #N canvas 614 110 589 423 envelope 0;
 #X obj 105 15 inlet;
 #X floatatom 145 105 5 0 0 0 - - -, f 5;
@@ -66,11 +66,11 @@ time" @tags envelope @default 10, f 51;
 #X connect 22 0 10 0;
 #X connect 23 0 20 0;
 #X connect 24 0 11 0;
-#X restore 97 537 pd envelope;
-#X obj 27 634 dac~;
-#X floatatom 175 365 5 0 0 0 - - -, f 5;
-#X obj 175 385 + 100;
-#X obj 107 350 * 4;
+#X restore 96 511 pd envelope;
+#X obj 26 608 dac~;
+#X floatatom 174 339 5 0 0 0 - - -, f 5;
+#X obj 174 359 + 100;
+#X obj 106 324 * 4;
 #N canvas 0 132 450 300 randomtest 0;
 #X obj 126 214 makenote 64 200;
 #X obj 126 116 random 50;
@@ -102,36 +102,34 @@ time" @tags envelope @default 10, f 51;
 #X connect 10 1 8 0;
 #X connect 11 0 9 0;
 #X connect 12 0 9 0;
-#X restore 26 105 pd randomtest;
-#X obj 394 576 loadbang;
-#X text 219 51 A simple synth to demonstrate communiation between Ossia
+#X restore 25 79 pd randomtest;
+#X obj 393 550 loadbang;
+#X text 214 23 A simple synth to demonstrate communiation between Ossia
 device and client., f 42;
-#X floatatom 142 223 5 0 0 0 - - -, f 5;
-#X obj 146 602 loadbang;
-#X msg 146 624 \; pd dsp 1;
-#X obj 27 183 t a a;
-#X msg 97 210 \$2;
-#X obj 27 211 stripnote;
-#X obj 126 247 ossia.param modratio @default 4 @type float @description
+#X floatatom 141 197 5 0 0 0 - - -, f 5;
+#X obj 145 576 loadbang;
+#X msg 145 598 \; pd dsp 1;
+#X obj 26 157 t a a;
+#X msg 96 184 \$2;
+#X obj 26 185 stripnote;
+#X obj 125 221 ossia.param modratio @default 4 @type float @description
 "Modulator frequency ratio";
-#X obj 26 128 ossia.param note @type vec2f @description "Midi note
+#X obj 25 102 ossia.param note @type vec2f @description "Midi note
 and velocity", f 25;
-#X msg 394 598 expose oscquery;
-#X obj 27 604 *~ 0.2;
-#X obj 394 624 ossia.device Pd;
-#X msg 318 598 namespace;
-#X floatatom 175 292 5 0 0 0 - - -, f 5;
-#X obj 26 43 ossia.param play @description "Turn on/off random note
-generation" @type bool, f 25;
-#X text 215 112 You can use - the patch "client-example.pd" \, - the
+#X msg 393 572 expose oscquery;
+#X obj 26 578 *~ 0.2;
+#X obj 393 598 ossia.device Pd;
+#X msg 317 572 namespace;
+#X floatatom 174 266 5 0 0 0 - - -, f 5;
+#X text 212 95 You can use - the patch "client-example.pd" \, - the
 "client-example.html" web application - or the QML application "client-example.qml"
 to control this device., f 47;
-#X obj 26 17 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1 1
-;
-#X obj 175 314 ossia.param modgain @default -20 @type float @description
+#X obj 174 288 ossia.param modgain @default -20 @type float @description
 "Modulator frequency gain" @unit dB @range -100 6 @bounding_mode CLIP
 , f 44;
-#X text 181 538 <- open this for more parameters;
+#X text 180 512 <- open this for more parameters;
+#X obj 25 14 ossia.param play @description "Turn on/off random note
+generation" @type bool, f 25;
 #X connect 0 0 1 0;
 #X connect 1 0 5 0;
 #X connect 2 0 6 0;
@@ -163,7 +161,6 @@ to control this device., f 47;
 #X connect 30 0 14 1;
 #X connect 31 0 4 0;
 #X connect 32 0 31 0;
-#X connect 33 0 37 0;
-#X connect 34 0 18 0;
-#X connect 36 0 34 0;
-#X connect 37 0 15 0;
+#X connect 33 0 35 0;
+#X connect 35 0 15 0;
+#X connect 37 0 18 0;
