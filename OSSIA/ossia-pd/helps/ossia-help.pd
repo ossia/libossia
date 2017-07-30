@@ -1,55 +1,92 @@
-#N canvas 312 374 684 450 10;
-#X msg 121 167 expose oscquery;
-#X msg 109 137 expose;
-#X text 26 169 for example;
-#X text 228 167 will use oscquery portocol and default ports.;
-#X text 164 136 (click to get help in Pd's console);
-#N canvas 0 93 450 300 some_nodes 0;
+#N canvas 351 122 778 808 10;
+#X msg 125 587 expose oscquery;
+#X msg 113 557 expose;
+#X text 30 589 for example;
+#X text 168 556 (click to get help in Pd's console);
+#N canvas 150 42 356 200 some_nodes 0;
 #X obj 109 61 ossia.param dummy;
 #X obj 109 81 ossia.param foo;
 #X obj 109 101 ossia.param bar;
-#N canvas 0 93 450 300 model 0;
-#X obj 138 97 ossia.model fruh;
-#X obj 139 152 ossia.param stuck;
-#X restore 109 122 pd model;
-#X restore 551 409 pd some_nodes;
-#X text 173 256 You can get the namespace \, i.e. the list of the adresses
-in use., f 73;
-#X msg 108 257 namespace;
-#X msg 210 307 name;
-#X obj 108 370 print;
-#X obj 108 350 route namespace name;
-#X symbolatom 166 403 15 0 0 2 name - -, f 15;
-#X obj 166 371 symbol;
-#X text 343 385 Look into that subpatch to see how nodes are declared
+#N canvas 148 265 358 226 model 0;
+#X obj 101 109 ossia.model fruh;
+#X obj 102 164 ossia.param stuck;
+#X text 18 137 Here \, the stuck parameter is placed under the fruh
+node;
+#X text 20 22 The [ossia.model] object allows to nest (or group) parameters
+under a sub-node This can be done recursively with sub-models in further
+sub-patchers, f 53;
+#X restore 109 152 pd model;
+#X text 36 25 see [ossia.param] help for more info and options;
+#X restore 356 184 pd some_nodes;
+#X msg 63 310 namespace;
+#X msg 164 366 name;
+#X obj 63 438 print;
+#X obj 63 418 route namespace name;
+#X symbolatom 121 471 15 0 0 2 name - -, f 15;
+#X obj 121 439 symbol;
+#X msg 98 338 name funny_name;
+#X msg 152 617 expose oscquery 1234 9876;
+#X obj 112 653 ø;
+#X obj 63 396 ossia;
+#X text 202 366 or retrieved;
+#X text 29 19 ossia-pd is the implementation of libossia for pd - several
+other implementations of libossia are available for various environments
+\, such as openFrameworks \, C'74's Max \, python \, Qt \, plain C
+\, etc... for more info \, see: https://ossia.github.io, f 121;
+#X text 27 185 Look into that subpatch to see how nodes are declared:
 ;
-#X msg 143 284 name funny_name;
-#X text 310 191 will use oscquery portocol with OSC port 1234 and WS
-port 5678, f 31;
-#X text 25 25 The eponyme object of the library lets you control the
-global features., f 79;
-#X msg 148 197 expose oscquery 1234 9876;
-#X text 28 110 You can expose the global namespace over the network
-with :;
-#N canvas 307 374 473 124 ossia/ø 0;
-#X text 62 56 ossia.theNameOftheObject;
-#X text 47 28 all ossia-pd objects can indifferently be named:;
-#X text 63 76 ø.theNameOftheObject;
-#X restore 31 413 pd ossia/ø;
-#X obj 108 223 ø;
-#X obj 108 328 ossia;
-#X text 27 59 ossia allows to declare \, under a general device \,
-all the nodes (models \, params \, see below) in pd that haven't been
-explicially declared with an ossia.device object, f 100;
-#X text 249 283 the name can also be changed;
-#X text 248 307 or retrieved;
-#X connect 0 0 20 0;
-#X connect 1 0 20 0;
-#X connect 7 0 21 0;
-#X connect 8 0 21 0;
+#X text 204 337 its name can also be changed;
+#X text 474 415 NB: all ossia-pd objects can indifferently be named:
+;
+#X text 613 437 [ossia.theNameOftheObject];
+#X text 614 457 [ø.theNameOftheObject];
+#X text 27 280 The ossia object allows to manage this general device
+, f 100;
+#X text 26 213 ________________________________________________________________________________________________________________
+, f 122;
+#X text 25 151 ________________________________________________________________________________________________________________
+, f 122;
+#X text 31 496 ________________________________________________________________________________________________________________
+, f 122;
+#X text 32 530 The global namespace can be exposed over the network
+:;
+#X text 231 579 will use oscquery protocol and default ports (OSC port
+9999 and WS port 5678).;
+#X text 314 611 will use oscquery protocol with OSC port 1234 and WS
+port 9876, f 31;
+#X text 28 101 This tree-based architecture (coined "device" in the
+OSSIA terminology) can then be exposed under several protocols \, some
+of which allow this architecture \, and the properties and values of
+its nodes \, to be explored and queried. For now \, protocols available
+in pd are plain OSC \, OSCquery \, and Minuit - more are to come,
+f 122;
+#X text 27 244 All the nodes (models & params \, see subpatch above)
+in pd that haven't been explicitly registered under an [ossia.device]
+object \, are automatically declared under a general device, f 100
+;
+#X text 28 64 libossia allows to declare the architecture of a patcher's
+functions as a tree of nodes and parameters. These nodes/parameters
+can have attributes \, which allow to declare some of their properties
+\, such as their values \, types \, units \, ranges \, etc..., f 129
+;
+#X text 30 686 When exposed via OSCquery \, one can query the namespace
+and properties from a web browser \, e.g. http://localhost:5678 if
+you used the default ports More queries are possible in this way \,
+e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE,
+f 116;
+#X text 128 309 allows to get the namespace \, i.e. the list of the
+adresses registered to the global device., f 96;
+#X text 26 729 ________________________________________________________________________________________________________________
+, f 122;
+#X text 29 761 Please report bugs on: https://github.com/OSSIA/libossia/issues
+, f 84;
+#X connect 0 0 13 0;
+#X connect 1 0 13 0;
+#X connect 5 0 14 0;
+#X connect 6 0 14 0;
+#X connect 8 0 7 0;
+#X connect 8 1 10 0;
 #X connect 10 0 9 0;
-#X connect 10 1 12 0;
-#X connect 12 0 11 0;
-#X connect 14 0 21 0;
-#X connect 17 0 20 0;
-#X connect 21 0 10 0;
+#X connect 11 0 14 0;
+#X connect 12 0 13 0;
+#X connect 14 0 8 0;

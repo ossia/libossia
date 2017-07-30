@@ -29,6 +29,13 @@ clock::~clock()
   stop();
 }
 
+void clock::start()
+{
+  ossia::state st;
+  start(st);
+  ossia::launch(st);
+}
+
 void clock::start(ossia::state& st)
 {
   if (m_running)

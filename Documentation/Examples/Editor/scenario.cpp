@@ -223,7 +223,8 @@ int main()
 
     // play the main time_constraint
     //local_play_address->pushvalue(&True);
-    clk.start();
+    ossia::state st;
+    clk.start(st);
 
     // wait the main time_constraint end
     while (clk.running())
@@ -258,11 +259,12 @@ int main()
 
 void local_play_callback(const value& v)
 {
+    ossia::state st;
     if (v.getType() == val_type::BOOL)
     {
         auto b = v.get<bool>();
         if (b)
-            main_clock->start();
+            main_clock->start(st);
         else
             main_clock->stop();
     }

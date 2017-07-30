@@ -3,7 +3,7 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 cmake_minimum_required(VERSION 3.5)
-project(OSSIA)
+project(OSSIA CXX)
 
 # Configuration
 cmake_policy(SET CMP0020 NEW)

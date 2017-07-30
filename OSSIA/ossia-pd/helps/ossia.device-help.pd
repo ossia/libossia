@@ -22,12 +22,12 @@ ws: 5678);
 #X obj 472 239 ø.param foo @type float;
 #X text 286 190 here are some parameters to expose in the device:;
 #N canvas 828 374 341 265 model 0;
-#X floatatom 97 118 5 0 0 0 - - -, f 5;
+#X floatatom 97 117 5 0 0 0 - - -, f 5;
 #X floatatom 97 161 5 0 0 0 - - -, f 5;
+#X obj 61 46 ø.model sub;
 #X obj 97 137 ø.param aParam @type float;
-#X obj 61 46 ø.model submodel;
-#X connect 0 0 2 0;
-#X connect 2 0 1 0;
+#X connect 0 0 3 0;
+#X connect 3 0 1 0;
 #X restore 583 295 pd model;
 #X text 288 295 more can be exposed in subpatchers \, e.g. using models:
 ;
@@ -37,6 +37,8 @@ ws: 5678);
 #X text 63 76 ø.theNameOftheObject;
 #X restore 33 291 pd ossia/ø;
 #X text 144 97 get supported protocols and syntax;
+#X text 429 43 (open ossia-device-help.pd if you want to remote-control
+this patcher), f 36;
 #X connect 3 0 13 0;
 #X connect 5 0 13 0;
 #X connect 7 0 13 0;

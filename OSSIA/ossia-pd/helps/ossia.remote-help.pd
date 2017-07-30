@@ -1,10 +1,10 @@
-#N canvas 543 429 460 160 10;
-#N canvas 705 471 496 264 localDevice 0;
-#X obj 126 78 ossia.remote foo;
-#X floatatom 71 79 5 0 0 0 - - -, f 5;
-#X obj 123 140 ossia.param foo;
-#X floatatom 123 122 5 0 0 0 - - -, f 5;
-#X floatatom 123 162 5 0 0 0 - - -, f 5;
+#N canvas 357 61 460 160 10;
+#N canvas 357 244 461 352 localDevice 1;
+#X obj 80 90 ossia.remote foo;
+#X floatatom 45 91 5 0 0 0 - - -, f 5;
+#X obj 295 89 ossia.param foo;
+#X floatatom 262 89 5 0 0 0 - - -, f 5;
+#X floatatom 295 111 5 0 0 0 - - -, f 5;
 #N canvas 476 175 450 300 view 0;
 #X obj 154 103 ossia.remote bar;
 #X floatatom 114 104 5 0 0 0 - - -, f 5;
@@ -13,7 +13,7 @@
 osssia.param;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
-#X restore 311 80 pd view;
+#X restore 206 148 pd view;
 #N canvas 0 151 450 300 model 0;
 #X floatatom 161 58 5 0 0 0 - - -, f 5;
 #X floatatom 161 98 5 0 0 0 - - -, f 5;
@@ -21,15 +21,21 @@ osssia.param;
 #X obj 164 183 ossia.model sub;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
-#X restore 311 131 pd model;
-#X obj 315 181 ossia.remote /sub/bar;
-#X floatatom 270 182 5 0 0 0 - - -, f 5;
-#X text 269 162 you can use an absolute address;
+#X restore 354 147 pd model;
+#X obj 158 245 ossia.remote /sub/bar;
+#X floatatom 121 246 5 0 0 0 - - -, f 5;
 #X text 35 17 Here the remote connects to a local device and a local
 parameter \, it acts more or less like a send/receive pair.;
-#X text 39 219 There is no [ossia.device] here so all ossia objects
-register themselves to the default global device - see [ossia] for
-more on that, f 74;
+#X text 41 59 the name of the remote binds it to the smilarrly named
+param;
+#X text 44 149 remotes are also used in :;
+#X text 253 148 which works with;
+#X text 45 200 when there are several levels of hierarchies \, one
+can use absolute addresses \, refering to the current device's root
+\, and starting with a leading slash:;
+#X text 31 298 There is no [ossia.device] here so all ossia objects
+refer to the default global device - see [ossia] for more on that,
+f 61;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 4 0;
@@ -45,6 +51,6 @@ more on that, f 74;
 #X text 20 14 [ø.remote] allows to monitor and remote-control any
 OSSIA parameter:, f 69;
 #X text 22 39 - declared in Pd with [ø.param] and [ø.model];
-#X text 29 100 - but also on other OSSIA devices \, on the same computer
-or remotely - see ø.client for that., f 68;
 #X text 59 62 as in:;
+#X text 29 100 - but also on other OSSIA devices \, on the same computer
+or remotely -> see ossia.client-help.pd for that., f 68;

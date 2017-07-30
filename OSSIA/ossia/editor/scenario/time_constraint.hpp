@@ -88,6 +88,7 @@ public:
   ~time_constraint();
 
   /*! start #time_constraint's #Clock */
+  void start();
   void start(ossia::state&);
 
   /*! stop #time_constraint's #Clock */

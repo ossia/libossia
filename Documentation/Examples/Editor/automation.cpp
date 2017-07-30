@@ -49,14 +49,15 @@ int main()
 
   // Start the execution. It runs in its own separate thread.
   std::cerr << "Starting\n";
-  clk.start();
+  ossia::state st;
+  clk.start(st);
   while (clk.running())
       ;
   clk.stop();
 
   std::cerr << "Starting again\n";
   // The execution resets to zero:
-  clk.start();
+  clk.start(st);
   while (clk.running())
       ;
   clk.stop();
@@ -64,7 +65,7 @@ int main()
   std::cerr << "Starting manually\n";
   // We can have the execution perform manually, too,
   // for instance for use with an external clock source
-  constraint->start();
+  constraint->start(st);
   for(int i = 0; i < 500; i++)
   {
     // Tick every 100 units of time

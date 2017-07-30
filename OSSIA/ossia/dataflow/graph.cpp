@@ -328,7 +328,6 @@ void graph::state(execution_state& e)
 
   // Get a total order on nodes
   std::vector<graph_node*> active_nodes;
-
   std::deque<graph_vertex_t> topo_order;
   try
   {
