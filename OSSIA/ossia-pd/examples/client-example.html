@@ -10,7 +10,7 @@
           // data through websockets.
           ws.send("/?SET_PORT=0");
       }
-
+      var play = document.getElementById('play');
       var note = document.getElementById('note');
       var velocity = document.getElementById('velocity');
       var modratio = document.getElementById('modratio');
@@ -22,6 +22,7 @@
           var json = JSON.parse(mess.data);
           var keys = Object.keys(json);
 
+          var play_k = keys.findIndex(function(val) { return val == "/play"; });
           var note_k = keys.findIndex(function(val) { return val == "/note"; });
           var modratio_k = keys.findIndex(function(val) { return val == "/modratio"; });
           var modgain_k = keys.findIndex(function(val) { return val == "/modgain"; });
@@ -37,8 +38,14 @@
           }
           if(modgain_k != -1)
           {
-              modgain_k.value = json["/modgain"];
+              modgain.value = json["/modgain"];
           }
+          if(play_k != -1)
+          {
+              random.value = json["/play"];
+          }
+          
+
       } 
       modratio.oninput = function(ev) {
               ws.send('{ "/modratio": ' + modratio.value + '}');
@@ -49,15 +56,21 @@
               ws.send('{ "/modgain": ' + modgain.value + '}');
               console.log('{ "/modgain": ' + modgain.value + '}');
       };
+
+      play.oninput = function(ev) {
+              ws.send('{ "/random": ' + play.value + '}');
+              console.log('{ "/random": ' + play.value + '}');
+      };
     }
 </script>
 
 <body onload="init()">
 <table>
+ <tr><td>Random</td><td id="play" type="checkbox"/></td></tr>
  <tr><td>Note</td><td id="note"></td></tr>
  <tr><td>Velocity</td><td id="velocity"></td></tr>
  <tr><td>Mod. ratio</td><td><input id="modratio" type="range"/></td></tr>
- <tr><td>Mod. gain</td><td><input id="modgain" type="range"/></td></tr>
+ <tr><td>Mod. gain</td><td><input id="modgain" type="range" min="-40" max="6"/></td></tr>
 </table>
 </body>
 
