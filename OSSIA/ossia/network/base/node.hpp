@@ -94,13 +94,13 @@ public:
    * \code
    * node.setAttribute("my_int_attribute", 1234);
    * auto attr = node.getAttribute("my_int_attribute");
-   * if(int* int_attr = boost::any_cast<int>(&attr))
+   * if(int* int_attr = ossia::any_cast<int>(&attr))
    * {
    *   // The attribute exists and is an int.
    * }
    * \endcode
    */
-  boost::any get_attribute(ossia::string_view str) const;
+  ossia::any get_attribute(ossia::string_view str) const;
 
   template <typename T>
   void set(ossia::string_view str, const T& val);

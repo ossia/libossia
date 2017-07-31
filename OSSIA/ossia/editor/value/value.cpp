@@ -655,4 +655,11 @@ operator<<(std::ostream& s, const std::vector<std::string>& tuple)
 
   return s;
 }
+
+std::istream&
+operator>>(std::istream& s, std::vector<std::string>& tuple)
+{
+  // TODO
+  return s;
+}
 }

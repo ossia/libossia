@@ -319,6 +319,12 @@ public:
     // TODO OPTIMIZEME
     return os << value_to_pretty_string(c);
   }
+  template <typename istream_t>
+  friend istream_t& operator>>(istream_t& is, const ossia::value& c)
+  {
+    // TODO
+    return is;
+  }
 };
 
 inline ossia::value init_value(ossia::val_type type)
@@ -385,4 +391,6 @@ OSSIA_EXPORT std::ostream&
 operator<<(std::ostream& s, const std::array<float, 4ul>& vec);
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream&, const std::vector<std::string>& tuple);
+OSSIA_EXPORT std::istream&
+operator>>(std::istream&, std::vector<std::string>& tuple);
 }

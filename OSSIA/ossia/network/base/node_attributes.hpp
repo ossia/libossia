@@ -57,7 +57,18 @@ struct OSSIA_EXPORT instance_bounds
   {
     return !(lhs == rhs);
   }
+
+  // TODO, currently only here for ossia::any
+  friend std::ostream& operator<<(std::ostream& os, const instance_bounds& c)
+  {
+    return os;
+  }
+  friend std::istream& operator>>(std::istream& is, instance_bounds& c)
+  {
+    return is;
+  }
 };
+
 
 //! Tags applied to a node: {"model", "interesting", ...}
 using tags = std::vector<std::string>;
