@@ -1,9 +1,7 @@
 #pragma once
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/server.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
 #include <readerwriterqueue.h>
 
 #include <ossia/detail/mutex.hpp>
@@ -29,6 +27,7 @@ namespace ossia
 {
 namespace oscquery
 {
+class oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
     : public ossia::net::protocol_base

@@ -3,6 +3,7 @@
 #include <ossia/network/generic/generic_address.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/base/address_data.hpp>
+#include <ossia/network/osc/detail/osc.hpp>
 
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>

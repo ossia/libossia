@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_obj_base.hpp"
 #include "utils.hpp"
+#include <ossia/network/osc/detail/osc.hpp>
 
 extern void glist_noselect(t_glist* x);
 extern void canvas_vis(t_canvas* x, t_floatarg f);

@@ -3,9 +3,8 @@
 #include <ossia/detail/json.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <readerwriterqueue.h>
 namespace osc
 {

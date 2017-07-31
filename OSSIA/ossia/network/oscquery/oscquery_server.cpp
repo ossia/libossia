@@ -7,16 +7,23 @@
 
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
+#include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/network/common/network_logger.hpp>
 
 #include <ossia/network/oscquery/detail/get_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
+#include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
+
+#include <ossia/detail/mutex.hpp>
+#include <ossia/detail/string_map.hpp>
 namespace ossia
 {
 namespace oscquery
 {
-
 oscquery_server_protocol::oscquery_server_protocol(
     uint16_t osc_port, uint16_t ws_port)
     : m_oscServer{std::make_unique<osc::receiver>(

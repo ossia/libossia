@@ -2,7 +2,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_fwd.hpp>
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 

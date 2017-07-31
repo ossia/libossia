@@ -13,6 +13,7 @@
 #include <ossia/network/osc/osc.hpp>
 #include <boost/algorithm/string.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
+#include <ossia/network/osc/detail/osc.hpp>
 namespace ossia
 {
 namespace net

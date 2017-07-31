@@ -66,10 +66,6 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
         DESTINATION include
         COMPONENT Devel)
 
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack
-        DESTINATION include
-        COMPONENT Devel)
-
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/spdlog/include/
         DESTINATION include
         COMPONENT Devel)

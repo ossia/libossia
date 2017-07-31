@@ -10,6 +10,7 @@
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
 namespace ossia
