@@ -144,26 +144,40 @@ private Q_SLOTS:
           n.set(app_creator_attribute{}, "Lelouch vi Brittania");
         }
 
-
+        const int N = 20;
+        std::array<ossia::net::generic_device*, N * 2> devices;
+        devices.fill(nullptr);
+        int portnum = 10000;
+        for(int i = 0; i < N * 2; )
         {
-            // HTTP client
-            auto proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678");
-            generic_device clt{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
-            proto->update(clt.get_root_node());
-            net::full_address_data d; d.address = "/float"; d.set_value(123.f);
-            proto->push_raw(d);
+            {
+                // HTTP client
+                auto proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", portnum++);
+                auto clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
+                devices[i++] = clt;
+                proto->update(clt->get_root_node());
+
+                net::full_address_data d; d.address = "/float"; d.set_value(123.f);
+                proto->push_raw(d);
+            }
+
+            {
+                // WS client
+                auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", portnum++);
+                auto clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
+                devices[i++] = clt;
+                proto->update(clt->get_root_node());
+
+                net::full_address_data d; d.address = "/int"; d.set_value(546);
+                proto->push_raw(d);
+            }
         }
 
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        for(auto dev : devices)
         {
-            // WS client
-            auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678");
-            generic_device clt{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
-            proto->update(clt.get_root_node());
-
-            net::full_address_data d; d.address = "/int"; d.set_value(546);
-            proto->push_raw(d);
+            delete dev;
         }
-
 
     }
 };

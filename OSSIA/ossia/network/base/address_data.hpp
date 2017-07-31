@@ -84,9 +84,9 @@ struct full_address_data
   public:
     ossia::val_type type{};
     ossia::domain domain;
-    ossia::access_mode access;
-    ossia::bounding_mode bounding;
-    ossia::repetition_filter rep_filter;
+    ossia::access_mode access{};
+    ossia::bounding_mode bounding{};
+    ossia::repetition_filter rep_filter{};
     ossia::unit_t unit;
     bool muted{};
     bool critical{};

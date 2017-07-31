@@ -117,7 +117,9 @@ void oscquery_mirror_protocol::cleanup_connections()
   {
     logger().error("Error when stopping osc server");
   }
+
   if (query_connected())
+  {
     try
     {
       query_stop();
@@ -126,7 +128,10 @@ void oscquery_mirror_protocol::cleanup_connections()
     {
       logger().error("Error when stopping WS server");
     }
+  }
+
   if (m_wsThread.joinable())
+  {
     try
     {
       m_wsThread.join();
@@ -139,6 +144,8 @@ void oscquery_mirror_protocol::cleanup_connections()
     {
       logger().error("Error when stopping WS thread");
     }
+  }
+
   try
   {
     m_httpWorker.reset();
