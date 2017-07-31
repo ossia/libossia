@@ -1,32 +1,29 @@
 #pragma once
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/oscquery/detail/server.hpp>
-#include <readerwriterqueue.h>
-
 #include <ossia/detail/mutex.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
-#include <atomic>
+#include <ossia/detail/json_fwd.hpp>
 #include <hopscotch_map.h>
+#include <readerwriterqueue.h>
 #include <nano_signal_slot.hpp>
+#include <atomic>
 namespace osc
 {
-
 template <typename T>
 class sender;
 class receiver;
 }
-
 namespace oscpack
 {
 class ReceivedMessage;
 class IpEndpointName;
 }
-
 namespace ossia
 {
 namespace oscquery
 {
+class websocket_server;
 class oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
@@ -37,7 +34,7 @@ class OSSIA_EXPORT oscquery_server_protocol final
   friend struct json_query_answerer;
 
 public:
-  using connection_handler = websocket_server::connection_handler;
+  using connection_handler = std::weak_ptr<void>;
   oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);
   ~oscquery_server_protocol();
 
@@ -106,7 +103,7 @@ private:
   on_WSrequest(connection_handler hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;
-  websocket_server m_websocketServer;
+  std::unique_ptr<websocket_server> m_websocketServer;
 
   net::zeroconf_server m_zeroconfServer;
 

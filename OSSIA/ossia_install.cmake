@@ -48,6 +48,15 @@ if(OSSIA_QT)
       FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml
       DESTINATION lib)
 endif()
 # Install export header
@@ -97,23 +106,6 @@ install(
     COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
-        DESTINATION include
-        COMPONENT Devel)
-
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/asio
-        DESTINATION include
-        COMPONENT Devel)
-
-install(
-       FILES
-         ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/asio.hpp
-       DESTINATION include/
-        COMPONENT Devel)
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp
-        DESTINATION include
-        COMPONENT Devel)
-
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/rapidjson/include/rapidjson
         DESTINATION include
         COMPONENT Devel)
 

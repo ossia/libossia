@@ -7,6 +7,7 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/detail/logger.hpp>
 #include <QDebug>
 #include <QQmlContext>
 #include <QQmlEngine>
