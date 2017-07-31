@@ -299,7 +299,7 @@ private Q_SLOTS:
 
   void test_clamp_address()
   {
-    TestUtils t;
+    TestDevice t;
     test_clamp_numeric(*t.float_addr, float{0.}, float{1.});
     test_clamp_numeric(*t.vec2f_addr, float{0.}, float{1.});
     test_clamp_numeric(*t.int_addr, int{0}, int{100});

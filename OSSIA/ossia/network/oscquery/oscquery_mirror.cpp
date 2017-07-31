@@ -276,7 +276,7 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   {
     // Push to server
     auto critical = addr.get_critical();
-    if (!critical)
+    if (!critical && m_oscSender)
     {
       m_oscSender->send(addr, val);
     }
@@ -299,7 +299,7 @@ bool oscquery_mirror_protocol::push_raw(const net::full_address_data& addr)
   {
     // Push to server
     auto critical = addr.get_critical();
-    if (!critical)
+    if (!critical && m_oscSender)
     {
       m_oscSender->send(addr, val);
     }

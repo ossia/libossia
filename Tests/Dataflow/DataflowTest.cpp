@@ -114,7 +114,7 @@ struct simple_explicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2;
-  simple_explicit_graph(ossia::TestUtils& test, ossia::connection c)
+  simple_explicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
@@ -142,7 +142,7 @@ struct simple_implicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2;
-  simple_implicit_graph(ossia::TestUtils& test, ossia::connection c)
+  simple_implicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
     auto n1_in = make_inlet<value_port>(*test.tuple_addr);
@@ -167,7 +167,7 @@ struct no_address_explicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2;
-  no_address_explicit_graph(ossia::TestUtils& test, ossia::connection c)
+  no_address_explicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
     auto n1_out = make_outlet<value_port>();
@@ -192,7 +192,7 @@ struct three_outputs_one_input_explicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2, *n3, *nin;
-  three_outputs_one_input_explicit_graph(ossia::TestUtils& test, ossia::connection c)
+  three_outputs_one_input_explicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
 
@@ -240,7 +240,7 @@ struct three_serial_nodes_explicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2, *n3;
-  three_serial_nodes_explicit_graph(ossia::TestUtils& test, ossia::connection c)
+  three_serial_nodes_explicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
 
@@ -277,7 +277,7 @@ struct three_serial_nodes_implicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2, *n3;
-  three_serial_nodes_implicit_graph(ossia::TestUtils& test, ossia::connection c)
+  three_serial_nodes_implicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
 
@@ -448,7 +448,7 @@ private slots:
   void strict_explicit_relationship_simple()
   {
     using namespace ossia;
-    TestUtils test;
+    TestDevice test;
 
     // Functional dependency
     simple_explicit_graph g(test, immediate_strict_connection{});
@@ -483,7 +483,7 @@ private slots:
   void strict_explicit_relationship_serial()
   {
     using namespace ossia;
-    TestUtils test;
+    TestDevice test;
 
     // Functional dependency
     three_serial_nodes_explicit_graph g(test, immediate_strict_connection{});
@@ -508,7 +508,7 @@ private slots:
   void glutton_implicit_relationship()
   {
     using namespace ossia;
-    TestUtils test;
+    TestDevice test;
 
     simple_implicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
@@ -544,7 +544,7 @@ private slots:
     // Does it make sense ??
     // Cables : used to reduce "where" things go, so yeah, makes sense
     using namespace ossia;
-    TestUtils test;
+    TestDevice test;
 
     simple_explicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
@@ -581,7 +581,7 @@ private slots:
     // Does it make sense ??
     // Cables : used to reduce "where" things go, so yeah, makes sense
     using namespace ossia;
-    TestUtils test;
+    TestDevice test;
 
     no_address_explicit_graph g(test, immediate_glutton_connection{});
     debug_mock::messages.clear();
@@ -622,7 +622,7 @@ private slots:
   void delayed_relationship()
   {
     using namespace ossia;
-    TestUtils test;
+    TestDevice test;
 
     simple_explicit_graph g(test, delayed_strict_connection{});
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
@@ -728,7 +728,7 @@ private slots:
     using namespace ossia;
 
     {
-      TestUtils test;
+      TestDevice test;
       simple_implicit_graph g(test, immediate_glutton_connection{});
       g.g.m_ordering = node_ordering::temporal;
       QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
@@ -761,7 +761,7 @@ private slots:
     }
 
     {
-      TestUtils test;
+      TestDevice test;
       simple_implicit_graph g(test, immediate_glutton_connection{});
       g.g.m_ordering = node_ordering::temporal;
       QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));

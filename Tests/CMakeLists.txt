@@ -89,6 +89,9 @@ if(OSSIA_CPP)
     ossia_add_test(Cpp98Test                  "${CMAKE_CURRENT_SOURCE_DIR}/CPP/CPP98.cpp")
 endif()
 
+if(OSSIA_QT)
+    ossia_add_test(JSTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/JSTest.cpp")
+endif()
 if(OSSIA_BENCHMARKS)
 ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
 ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"

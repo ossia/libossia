@@ -234,7 +234,7 @@ class ScenarioAlgoTest : public QObject
       std::cerr << "\n\ntest_autom\n";
       using namespace ossia;
       root_scenario s;
-      TestUtils utils;
+      TestDevice utils;
 
       ossia::scenario& scenario = *s.scenario;
       std::shared_ptr<time_event> e0 = start_event(scenario);
@@ -270,7 +270,7 @@ class ScenarioAlgoTest : public QObject
       std::cerr << "\n\ntest_autom_and_state\n";
       using namespace ossia;
       root_scenario s;
-      TestUtils utils;
+      TestDevice utils;
 
       ossia::scenario& scenario = *s.scenario;
       std::shared_ptr<time_event> e0 = start_event(scenario);

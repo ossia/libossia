@@ -64,7 +64,7 @@ private Q_SLOTS:
 
   void convert_test()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
 
     // Cases :
     /////// Address float, no unit ///////
@@ -511,7 +511,7 @@ private Q_SLOTS:
 
   void flatten_same_vec_message_on_vec_address()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
     t.vec3f_addr->push_value(ossia::make_vec(0.5, 0.5, 0.5));
 
@@ -552,7 +552,7 @@ private Q_SLOTS:
 
   void flatten_different_vec_message_on_vec_address()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
     t.vec3f_addr->push_value(ossia::make_vec(0.5, 0.5, 0.5));
 
@@ -593,7 +593,7 @@ private Q_SLOTS:
 
   void flatten_different_float_message_on_vec_address_without_unit()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
     t.vec3f_addr->push_value(ossia::make_vec(0.5, 0.5, 0.5));
 
@@ -677,7 +677,7 @@ private Q_SLOTS:
 
   void flatten_different_float_message_on_vec_address_with_same_unit()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
     t.vec3f_addr->push_value(ossia::make_vec(0.5, 0.5, 0.5));
 
@@ -721,7 +721,7 @@ private Q_SLOTS:
 
   void flatten_different_float_message_on_vec_address_with_different_unit()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
     t.vec3f_addr->push_value(ossia::make_vec(0.5, 0.5, 0.5));
 
@@ -764,7 +764,7 @@ private Q_SLOTS:
 
   void flatten_same_tuple_message_on_tuple_address()
   {
-      ossia::TestUtils t;
+      ossia::TestDevice t;
       t.tuple_addr->set_unit({});
 
       { // cref
@@ -837,7 +837,7 @@ private Q_SLOTS:
 
   void test_merge_vec_in_tuple()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     ossia::state s;
 
     ossia::message m1{*t.tuple_addr, std::vector<ossia::value>{0., 0.5, 0.2}, {}};
@@ -857,7 +857,7 @@ private Q_SLOTS:
   }
   void test_merge_tuple_in_vec()
   {
-    ossia::TestUtils t;
+    ossia::TestDevice t;
     ossia::state s;
 
     ossia::message m1{*t.vec3f_addr, ossia::vec3f{0.f, 0.5f, 0.2f}, {}};

@@ -7,6 +7,8 @@
 #include <ossia/network/midi/midi.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #include "../Editor/TestUtils.hpp"
 
 using namespace ossia;
@@ -291,6 +293,13 @@ private Q_SLOTS:
         a->pull_value();
       }
     }
+  }
+
+  void test_comm_oscquery()
+  {
+    auto server = std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678);
+    test_comm_generic(std::move(server),
+                      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"));
   }
 
   void test_http()

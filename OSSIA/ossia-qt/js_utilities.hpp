@@ -93,7 +93,7 @@ struct matching_ossia_enum<ossia::repetition_filter>
  *
  * Converts a QJSValue to an ossia::value according to the current value's type
  */
-struct js_value_inbound_visitor
+struct OSSIA_EXPORT js_value_inbound_visitor
 {
   const QJSValue& val;
 
@@ -322,7 +322,7 @@ struct ossia_to_qvariant
  *
  * Creates a QJSValue from an ossia::value
  */
-struct js_value_outbound_visitor
+struct OSSIA_EXPORT js_value_outbound_visitor
 {
   QJSEngine& engine;
 
@@ -369,7 +369,7 @@ struct js_value_outbound_visitor
  * This is used for replacing value parameters by the actual value
  * in JSON messages for instance.
  */
-struct js_string_outbound_visitor
+struct OSSIA_EXPORT js_string_outbound_visitor
 {
   QString operator()(impulse) const;
 
@@ -405,9 +405,9 @@ struct js_string_outbound_visitor
   QString operator()() const;
 };
 
-ossia::value value_from_jsvalue(const QJSValue& v);
+OSSIA_EXPORT ossia::value value_from_js(const QJSValue& v);
 
-inline ossia::value value_from_jsvalue(ossia::value cur, const QJSValue& v)
+inline ossia::value value_from_js(ossia::value cur, const QJSValue& v)
 {
   return cur.apply(js_value_inbound_visitor{v});
 }

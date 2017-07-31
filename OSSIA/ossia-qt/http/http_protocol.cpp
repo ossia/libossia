@@ -156,7 +156,7 @@ void http_protocol::apply_reply(QJSValue arr)
 
     if (auto addr = n->get_address())
     {
-      addr->push_value(qt::value_from_jsvalue(addr->value(), v));
+      addr->push_value(qt::value_from_js(addr->value(), v));
     }
   }
 }

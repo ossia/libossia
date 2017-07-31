@@ -163,7 +163,7 @@ operator()(const std::vector<ossia::value>& v) const
     while (it.hasNext())
     {
       it.next();
-      t.push_back(value_from_jsvalue(it.value()));
+      t.push_back(value_from_js(it.value()));
     }
 
     return std::move(t);
@@ -254,8 +254,8 @@ net::address_data make_address_data(const QJSValue& js)
     ossia::val_type base = ossia::underlying_type(dat.type);
     auto base_v = init_value(base);
     auto domain = init_domain(base);
-    set_min(domain, value_from_jsvalue(base_v, js.property("min")));
-    set_max(domain, value_from_jsvalue(base_v, js.property("max")));
+    set_min(domain, value_from_js(base_v, js.property("min")));
+    set_max(domain, value_from_js(base_v, js.property("max")));
 
     dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
@@ -464,7 +464,7 @@ QString js_string_outbound_visitor::operator()() const
   return (*this)(impulse{});
 }
 
-value value_from_jsvalue(const QJSValue& v)
+value value_from_js(const QJSValue& v)
 {
   if (v.isNumber())
   {
@@ -485,7 +485,7 @@ value value_from_jsvalue(const QJSValue& v)
     std::vector<ossia::value> t;
     while (it.hasNext())
     {
-      t.push_back(value_from_jsvalue(it.value()));
+      t.push_back(value_from_js(it.value()));
     }
     return std::move(t);
   }

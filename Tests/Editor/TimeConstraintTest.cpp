@@ -94,7 +94,7 @@ private Q_SLOTS:
     /*! test execution functions */
     void test_execution()
     {
-      TestUtils t;
+      TestDevice t;
       auto start_node = std::make_shared<time_node>();
       auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
 
