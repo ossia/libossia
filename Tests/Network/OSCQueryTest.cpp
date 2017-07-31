@@ -144,7 +144,7 @@ private Q_SLOTS:
           n.set(app_creator_attribute{}, "Lelouch vi Brittania");
         }
 
-        const int N = 20;
+        const int N = 10;
         std::array<ossia::net::generic_device*, N * 2> devices;
         devices.fill(nullptr);
         int portnum = 10000;
@@ -173,9 +173,12 @@ private Q_SLOTS:
             }
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        for(int i = 0; i < 50; i++)
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         for(auto dev : devices)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             delete dev;
         }
 

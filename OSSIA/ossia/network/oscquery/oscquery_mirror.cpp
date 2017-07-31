@@ -148,8 +148,8 @@ void oscquery_mirror_protocol::cleanup_connections()
 
   try
   {
-    m_httpWorker.reset();
     m_httpContext.stop();
+    m_httpWorker.reset();
     if (m_httpThread.joinable())
       m_httpThread.join();
   }
