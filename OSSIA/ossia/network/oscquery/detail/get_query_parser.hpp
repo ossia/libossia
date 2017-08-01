@@ -63,7 +63,8 @@ public:
   static json_writer::string_t handle_osc_port(
       oscquery_server_protocol& proto,
       const oscquery_server_protocol::connection_handler& hdl,
-      int port)
+      int port,
+      int remotePort = 0)
   {
     // First we find for a corresponding client
     auto clt = proto.find_building_client(hdl);
@@ -75,6 +76,10 @@ public:
     {
       // Then we set-up the sender
       clt->open_osc_sender(proto.get_logger(), port);
+      if(remotePort != 0)
+      {
+        clt->remote_sender_port = remotePort;
+      }
     }
 
     proto.enable_client(hdl);
@@ -122,8 +127,21 @@ public:
           auto set_osc_port_it = parameters.find(detail::set_port());
           if (set_osc_port_it != parameters.end())
           {
-            return handle_osc_port(
-                proto, hdl, boost::lexical_cast<int>(set_osc_port_it->second));
+            auto remote_osc_port_it = parameters.find(detail::local_port());
+            if(remote_osc_port_it != parameters.end())
+            {
+              return handle_osc_port(
+                  proto,
+                    hdl,
+                    boost::lexical_cast<int>(set_osc_port_it->second),
+                    boost::lexical_cast<int>(remote_osc_port_it->second)
+                    );
+            }
+            else
+            {
+              return handle_osc_port(
+                  proto, hdl, boost::lexical_cast<int>(set_osc_port_it->second));
+            }
           }
 
           auto add_instance_it = parameters.find(detail::add_node());

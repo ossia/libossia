@@ -584,7 +584,9 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
           // Send to the server the local receiver port
           query_send_message(
-              fmt::format("/?{}={}", detail::set_port(), m_oscServer->port()));
+              fmt::format("/?{}={}&{}={}"
+                          , detail::set_port(), m_oscServer->port()
+                          , detail::local_port(), m_oscSender->localPort()));
           break;
         }
         case message_type::Namespace:

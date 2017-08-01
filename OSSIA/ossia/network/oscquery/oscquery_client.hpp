@@ -27,6 +27,7 @@ struct oscquery_client
 
   std::string client_ip;
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> sender;
+  int remote_sender_port{};
 
 public:
   oscquery_client() = default;

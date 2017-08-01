@@ -72,6 +72,11 @@ public:
     return m_port;
   }
 
+  int localPort() const
+  {
+    return m_socket.LocalPort();
+  }
+
   oscpack::UdpTransmitSocket& socket() { return m_socket; }
 private:
   void debug(const oscpack::OutboundPacketStream& out)

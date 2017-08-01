@@ -38,6 +38,14 @@ public:
   oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);
   ~oscquery_server_protocol();
 
+  /**
+   * When the server receives a message, it will propagate it to
+   * other clients. The implementation will try to prevent sending
+   * the message again to its source.
+   */
+  bool echo() const { return m_echo; }
+  void set_echo(bool b) { m_echo = b; }
+
   bool pull(net::address_base&) override;
   std::future<void> pull_async(net::address_base&) override;
   void request(net::address_base&) override;
@@ -127,6 +135,8 @@ private:
   // The local ports
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
+
+  bool m_echo{};
 };
 }
 }

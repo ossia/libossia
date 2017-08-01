@@ -163,6 +163,10 @@ constexpr auto set_port()
 {
   return make_string_view("SET_PORT");
 }
+constexpr auto local_port()
+{
+  return make_string_view("LOCAL_PORT");
+}
 constexpr auto listen()
 {
   return make_string_view("LISTEN");

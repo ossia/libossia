@@ -408,6 +408,17 @@ void oscquery_server_protocol::on_OSCMessage(
         }
       }
     }
+
+    if(m_echo)
+    {
+      for(auto& c : m_clients)
+      {
+        if(ip.port != c.remote_sender_port)
+        {
+          c.sender->socket().Send(m.data(), m.size());
+        }
+      }
+    }
   }
 
   if (m_logger.inbound_logger)
