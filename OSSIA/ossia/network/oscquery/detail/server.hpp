@@ -144,7 +144,8 @@ public:
 
   void stop()
   {
-    m_server.stop_listening();
+    if(m_server.is_listening())
+      m_server.stop_listening();
     m_server.stop();
   }
 

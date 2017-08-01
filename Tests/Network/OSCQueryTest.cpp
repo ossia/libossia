@@ -8,6 +8,7 @@
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/detail/http_query_parser.hpp>
 #include <Editor/TestUtils.hpp>
 
 using namespace ossia;
@@ -17,6 +18,24 @@ class OSCQueryTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void test_http()
+    {
+      {
+        auto res = ossia::oscquery::parse_http_methods_encoded("foo=bar");
+        QVERIFY(res.size() == 1);
+        QVERIFY(res.find("foo") != res.end());
+        QVERIFY(res.find("foo").value() == "bar");
+      }
+      {
+        auto res = ossia::oscquery::parse_http_methods_encoded("foo=bar&baz=blu");
+        QVERIFY(res.size() == 2);
+        QVERIFY(res.find("foo") != res.end());
+        QVERIFY(res.find("foo").value() == "bar");
+        QVERIFY(res.find("baz") != res.end());
+        QVERIFY(res.find("baz").value() == "blu");
+      }
+    }
+
     void test_parse()
     {
       generic_device dev{std::make_unique<multiplex_protocol>(), "A"};

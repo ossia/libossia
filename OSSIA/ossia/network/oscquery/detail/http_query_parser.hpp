@@ -3,6 +3,7 @@
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/spirit/home/qi/directive/omit.hpp>
+#include <boost/spirit/include/qi_repeat.hpp>
 
 /**
  * \file http_query_parser.hpp
@@ -26,15 +27,17 @@ template <typename Iterator>
 struct query_grammar
     : public boost::spirit::qi::grammar<Iterator, string_map<std::string>()>
 {
-  query_grammar() : query_grammar::base_type(query_string)
+  query_grammar() : query_grammar::base_type(query)
   {
     using namespace boost::spirit;
 
-    query_string = (+qchar >> -(qi::lit('=') >> +qchar)) % qi::lit("&:");
-    qchar = ~qi::char_("&:=");
+    query = pair >> *(qi::lit('&') >> pair);
+    pair = +qchar >> -(qi::lit('=') >> +qchar);
+    qchar = ~qi::char_("&=");
   }
 
-  boost::spirit::qi::rule<Iterator, string_map<std::string>()> query_string;
+  boost::spirit::qi::rule<Iterator, string_map<std::string>()> query;
+  boost::spirit::qi::rule<Iterator, string_map<std::string>::value_type()> pair;
   boost::spirit::qi::rule<Iterator, char()> qchar;
 };
 
