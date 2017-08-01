@@ -6,7 +6,7 @@ import Ossia 1.0 as Ossia
 
 /**
  * This file presents an example of usage of the controls
- * provided by the qml-creatove-controls library, with libossia and PureData.
+ * provided by the qml-creative-controls library, with libossia and PureData.
  *
  * In the current example, the application we are writing acts as a client:
  * that is, it connects to existing adresses / parameters of a remote

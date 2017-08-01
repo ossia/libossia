@@ -1,4 +1,4 @@
-#N canvas 781 22 680 330 10;
+#N canvas 521 50 680 330 10;
 #X text 44 20 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
 #X obj 74 203 print device_dump;
@@ -21,11 +21,11 @@ ws: 5678);
 #X obj 291 239 ø.param bar @type bool;
 #X obj 472 239 ø.param foo @type float;
 #X text 286 190 here are some parameters to expose in the device:;
-#N canvas 828 374 341 265 model 0;
-#X floatatom 97 117 5 0 0 0 - - -, f 5;
-#X floatatom 97 161 5 0 0 0 - - -, f 5;
-#X obj 61 46 ø.model sub;
-#X obj 97 137 ø.param aParam @type float;
+#N canvas 986 403 215 139 model 1;
+#X floatatom 26 65 5 0 0 0 - - -, f 5;
+#X floatatom 26 109 5 0 0 0 - - -, f 5;
+#X obj 25 28 ø.model sub;
+#X obj 26 85 ø.param aParam @type float;
 #X connect 0 0 3 0;
 #X connect 3 0 1 0;
 #X restore 583 295 pd model;
