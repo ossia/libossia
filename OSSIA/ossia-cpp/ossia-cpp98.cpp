@@ -117,7 +117,7 @@ value& value::operator=(std::vector<value> v)
 {
   std::vector<ossia::value> res;
   for (auto& val : v)
-    res.push_back(std::move(*val.impl));
+    res.push_back(std::move(*val.m_val));
   *m_val = std::move(res);
   return *this;
 }
@@ -595,7 +595,7 @@ node& node::set_accepted_values(std::vector<value> v)
 
     std::vector<ossia::value> vals;
     for (const auto& val : v)
-      vals.push_back(*val.impl);
+      vals.push_back(*val.m_val);
 
     ossia::set_values(dom, std::move(vals));
 

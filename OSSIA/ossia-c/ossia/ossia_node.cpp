@@ -130,6 +130,20 @@ ossia_address_t ossia_node_create_address(ossia_node_t node, ossia_type type)
   });
 }
 
+ossia_address_t ossia_node_get_address(ossia_node_t node)
+{
+  return safe_function(__func__, [=]() -> ossia_address_t {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_create_address: node is null");
+      return nullptr;
+    }
+
+    auto n = convert_node(node);
+    return convert(n->get_address());
+  });
+}
+
 void ossia_node_remove_address(ossia_node_t node)
 {
   return safe_function(__func__, [=] {

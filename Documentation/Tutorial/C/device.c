@@ -1,13 +1,26 @@
 #include <ossia-c/ossia-c.h>
 
-/* The C API wraps the C++14 API and follows the same concepts. */
+void test_callback(void* n, ossia_value_t v)
+{
+  int* count = (int*)n;
+  *count += 1;
+  const char* str = ossia_value_to_string(v);
+  printf("Received: %s", str);
+  ossia_value_free_string(str);
+}
+
 int main(int argc, char** argv)
 {
   /** ~ Welcome to the libossia C89 tutorial! ~ **/
 
+  /* The C API wraps the C++14 API and follows the same concepts. */
+
+
   /*************************************************/
   /** Step 1. Creating a device with a few nodes. **/
   /*************************************************/
+
+
   /* Setup our communication protocol */
   ossia_protocol_t proto = ossia_protocol_oscquery_server_create(1234, 5678);
 
@@ -18,17 +31,21 @@ int main(int argc, char** argv)
   ossia_node_t root = ossia_device_get_root_node(dev);
 
   /* Create a sub-child on it */
-  ossia_node_t my = ossia_node_create(root, "/foo/baz");
+  ossia_node_t n1 = ossia_node_create(root, "/foo/blu");
+  ossia_node_t n2 = ossia_node_create(root, "/foo/baz");
 
   /* This sub-child, /bort/bert, will have a float value. */
-  ossia_address_t addr = ossia_node_create_address(my, ossia_type::FLOAT_T);
+  ossia_address_t n2_addr = ossia_node_create_address(n2, ossia_type::FLOAT_T);
 
   /* Send a value through the network */
-  ossia_address_push_f(addr, 345.);
+  ossia_address_push_f(n2_addr, 345.);
+
 
   /********************************************************************/
   /** Step 2. Creating another device to connect with the first one. **/
   /********************************************************************/
+
+
   ossia_protocol_t remote_proto = ossia_protocol_oscquery_mirror_create("ws://127.0.0.1:5678");
   ossia_device_t remote_dev = ossia_device_create(remote_proto, "supersoftware");
   ossia_node_t remote_root = ossia_device_get_root_node(dev);
@@ -42,6 +59,21 @@ int main(int argc, char** argv)
   ossia_node_t remote_n2 = ossia_node_find(remote_root, "/foo/baz");
   if(!remote_n2)
     return -1;
+
+
+  /**************************************************/
+  /** Step 3. Receiving changes through callbacks. **/
+  /**************************************************/
+
+
+  ossia_address_t remote_n2_addr = ossia_node_get_address(remote_n2);
+
+  int count = 0;
+  ossia_address_add_callback(remote_n2_addr, test_callback, &count);
+
+  ossia_address_push_f(n2_addr, 3.4);
+  while(count != 2)
+    ;
 
   /* Enjoy manual memory management. */
   ossia_device_free(dev);

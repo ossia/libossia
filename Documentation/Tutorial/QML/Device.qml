@@ -6,13 +6,16 @@ Item
     id: root
     //// ~ Welcome to the libossia QML tutorial! ~ ////
 
-    /////////////////////////////////////////////////////
-    //// Step 1. Creating a device with a few nodes. ////
-    /////////////////////////////////////////////////////
     // QML is a declarative & reactive language,
     // mainly used for user interfaces.
     // The Ossia primitives are objects in QML, whose organization
     // in the code directly reflects the ossia device tree.
+
+
+    /////////////////////////////////////////////////////
+    //// Step 1. Creating a device with a few nodes. ////
+    /////////////////////////////////////////////////////
+
 
     // Create a device
     Ossia.OSCQueryServer {
@@ -40,6 +43,8 @@ Item
     ////////////////////////////////////////////////////////////////////////
     //// Step 2. Creating another device to connect with the first one. ////
     ////////////////////////////////////////////////////////////////////////
+
+
     Ossia.OSCQueryClient {
         id: remote_dev
         name: "supersoftware"

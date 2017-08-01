@@ -312,7 +312,7 @@ ossia_value_t ossia_address_pull_value(ossia_address_t address)
 }
 
 ossia_value_callback_index_t ossia_address_add_callback(
-    ossia_address_t address, ossia_value_callback_t callback)
+    ossia_address_t address, ossia_value_callback_t callback, void* ctx)
 {
   return safe_function(__func__, [=]() -> ossia_value_callback_index_t {
     if (!address)
@@ -329,7 +329,7 @@ ossia_value_callback_index_t ossia_address_add_callback(
     return new ossia_value_callback_index{
         convert_address(address)->add_callback([=](const ossia::value& val) {
           DEBUG_LOG_FMT("inside added callback");
-          callback(convert(val));
+          callback(ctx, convert(val));
         })};
   });
 }

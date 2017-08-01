@@ -31,7 +31,7 @@ typedef void* ossia_node_t;
 typedef void* ossia_address_t;
 
 
-typedef void (*ossia_value_callback_t)(ossia_value_t);
+typedef void (*ossia_value_callback_t)(void* ctx, ossia_value_t);
 struct ossia_value_callback_index;
 typedef ossia_value_callback_index* ossia_value_callback_index_t;
 
@@ -178,6 +178,9 @@ ossia_address_t ossia_node_create_address(
         ossia_node_t node,
         ossia_type type);
 OSSIA_EXPORT
+ossia_address_t ossia_node_get_address(
+        ossia_node_t node);
+OSSIA_EXPORT
 void ossia_node_remove_address(
         ossia_node_t node);
 
@@ -280,7 +283,8 @@ ossia_value_t ossia_address_pull_value(
 OSSIA_EXPORT
 ossia_value_callback_index_t ossia_address_add_callback(
         ossia_address_t address,
-        ossia_value_callback_t callback);
+        ossia_value_callback_t callback,
+        void* ctx);
 OSSIA_EXPORT
 void ossia_address_remove_callback(
         ossia_address_t address,

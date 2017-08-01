@@ -1,6 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_utils.hpp"
+
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 extern "C" {
 // MOVEME
 void ossia_string_free(char* str)
@@ -54,6 +57,25 @@ ossia_protocol_t ossia_protocol_minuit_create(
   return safe_function(__func__, [=] {
     return new ossia_protocol{
         new ossia::net::minuit_protocol(local_name, ip, in_port, out_port)};
+  });
+}
+
+ossia_protocol_t ossia_protocol_oscquery_server_create(
+        int osc_port,
+        int ws_port)
+{
+  return safe_function(__func__, [=] {
+    return new ossia_protocol{
+        new ossia::oscquery::oscquery_server_protocol(osc_port, ws_port)};
+  });
+}
+
+ossia_protocol_t ossia_protocol_oscquery_mirror_create(
+        const char* host)
+{
+  return safe_function(__func__, [=] {
+    return new ossia_protocol{
+        new ossia::oscquery::oscquery_mirror_protocol(host)};
   });
 }
 
