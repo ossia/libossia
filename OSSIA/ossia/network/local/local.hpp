@@ -34,6 +34,7 @@ public:
   bool observe(ossia::net::address_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
+  void stop() override;
   void set_device(ossia::net::device_base& dev) override;
 
   //! Use this to add protocols through which you will expose the device. For

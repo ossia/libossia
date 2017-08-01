@@ -49,6 +49,7 @@ public:
   bool observe_quietly(net::address_base&, bool) override;
   bool update(net::node_base& b) override;
   void set_device(net::device_base& dev) override;
+  void stop() override;
   ossia::net::device_base& get_device() const
   {
     return *m_device;

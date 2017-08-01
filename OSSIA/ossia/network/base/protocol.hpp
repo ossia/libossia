@@ -120,6 +120,8 @@ public:
     return m_logger;
   }
 
+  virtual void stop() { }
+
 protected:
   network_logger m_logger;
 };

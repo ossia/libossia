@@ -71,24 +71,7 @@ oscquery_server_protocol::oscquery_server_protocol(
 
 oscquery_server_protocol::~oscquery_server_protocol()
 {
-  try
-  {
-    m_oscServer->stop();
-  }
-  catch (...)
-  {
-    logger().error("Error when stopping osc server");
-  }
-  try
-  {
-    m_websocketServer->stop();
-  }
-  catch (...)
-  {
-    logger().error("Error when stopping WS server");
-  }
-  if (m_serverThread.joinable())
-    m_serverThread.join();
+  stop();
 }
 
 bool oscquery_server_protocol::pull(net::address_base&)
@@ -249,6 +232,41 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
           this);
 
   update_zeroconf();
+}
+
+void oscquery_server_protocol::stop()
+{
+  try
+  {
+    m_oscServer->stop();
+  }
+  catch (...)
+  {
+    logger().error("Error when stopping osc server");
+  }
+
+  try
+  {
+    {
+      lock_t lock(m_buildingClientsMutex);
+      for(auto& con : m_buildingClients)
+        m_websocketServer->close(con.connection);
+      m_buildingClients.clear();
+    }
+    {
+      lock_t lock(m_clientsMutex);
+      for(auto& con : m_clients)
+        m_websocketServer->close(con.connection);
+      m_clients.clear();
+    }
+    m_websocketServer->stop();
+  }
+  catch (...)
+  {
+    logger().error("Error when stopping WS server");
+  }
+  if (m_serverThread.joinable())
+    m_serverThread.join();
 }
 
 oscquery_client*
