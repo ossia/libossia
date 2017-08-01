@@ -137,6 +137,167 @@ void ossia_address_push_value(ossia_address_t address, ossia_value_t value)
   });
 }
 
+void ossia_address_push_impulse(ossia_address_t address)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(ossia::impulse{});
+  });
+}
+void ossia_address_push_i(ossia_address_t address, int i)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(i);
+  });
+}
+void ossia_address_push_b(ossia_address_t address, int i)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(bool(i != 0));
+  });
+}
+void ossia_address_push_f(ossia_address_t address, float f)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(f);
+  });
+}
+void ossia_address_push_2f(ossia_address_t address, float f1, float f2)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(ossia::make_vec(f1, f2));
+  });
+}
+void ossia_address_push_3f(ossia_address_t address, float f1, float f2, float f3)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(ossia::make_vec(f1, f2, f3));
+  });
+}
+void ossia_address_push_4f(ossia_address_t address, float f1, float f2, float f3, float f4)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(ossia::make_vec(f1, f2, f3, f4));
+  });
+}
+void ossia_address_push_c(ossia_address_t address, char c)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(c);
+  });
+}
+void ossia_address_push_s(ossia_address_t address, const char* s)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    if(s)
+      convert_address(address)->push_value(std::string(s));
+    else
+      convert_address(address)->push_value(std::string());
+  });
+}
+
+void ossia_address_push_in(ossia_address_t address, const int* in, int sz)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    std::vector<ossia::value> v;
+    v.resize(sz);
+    for(int i = 0; i < sz; i++)
+    {
+      v[i] = in[i];
+    }
+    convert_address(address)->push_value(std::move(v));
+  });
+}
+void ossia_address_push_fn(ossia_address_t address, const float* in, int sz)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    std::vector<ossia::value> v;
+    v.resize(sz);
+    for(int i = 0; i < sz; i++)
+    {
+      v[i] = in[i];
+    }
+    convert_address(address)->push_value(std::move(v));
+  });
+}
+void ossia_address_push_cn(ossia_address_t address, const char* in, int sz)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_push_value: address is null");
+      return;
+    }
+
+    convert_address(address)->push_value(std::string(in, sz));
+  });
+}
+
 ossia_value_t ossia_address_pull_value(ossia_address_t address)
 {
   return safe_function(__func__, [=]() -> ossia_value_t {

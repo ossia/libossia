@@ -96,6 +96,18 @@ ossia_protocol_t ossia_protocol_minuit_create(
         int out_port);
 
 OSSIA_EXPORT
+ossia_protocol_t ossia_protocol_oscquery_server_create(
+        int osc_port,
+        int ws_port);
+
+/**
+ * host may be something like ws://127.0.0.1:5678
+ */
+OSSIA_EXPORT
+ossia_protocol_t ossia_protocol_oscquery_mirror_create(
+        const char* host);
+
+OSSIA_EXPORT
 void ossia_protocol_free(
     ossia_protocol_t);
 
@@ -131,6 +143,14 @@ const char* ossia_device_get_name(
         ossia_device_t node);
 
 //// Node ////
+OSSIA_EXPORT ossia_node_t ossia_node_find(
+    ossia_node_t root,
+    const char* name);
+
+OSSIA_EXPORT ossia_node_t ossia_node_create(
+    ossia_node_t root,
+    const char* name);
+
 OSSIA_EXPORT
 ossia_node_t ossia_node_add_child(
         ossia_node_t node,
@@ -160,7 +180,6 @@ ossia_address_t ossia_node_create_address(
 OSSIA_EXPORT
 void ossia_node_remove_address(
         ossia_node_t node);
-
 
 //// Address ////
 OSSIA_EXPORT
@@ -201,6 +220,59 @@ OSSIA_EXPORT
 void ossia_address_push_value(
         ossia_address_t address,
         ossia_value_t value);
+
+OSSIA_EXPORT
+void ossia_address_push_impulse(
+        ossia_address_t address);
+OSSIA_EXPORT
+void ossia_address_push_i(
+        ossia_address_t address,
+        int value);
+OSSIA_EXPORT
+void ossia_address_push_b( // bool
+        ossia_address_t address,
+        int b);
+OSSIA_EXPORT
+void ossia_address_push_f(
+        ossia_address_t address,
+        float value);
+OSSIA_EXPORT
+void ossia_address_push_2f(
+    ossia_address_t address,
+    float v1, float v2);
+OSSIA_EXPORT
+void ossia_address_push_3f(
+    ossia_address_t address,
+    float v1, float v2, float v3);
+OSSIA_EXPORT
+void ossia_address_push_4f(
+    ossia_address_t address,
+    float v1, float v2, float v3, float v4);
+OSSIA_EXPORT
+void ossia_address_push_c(
+        ossia_address_t address,
+        char value);
+OSSIA_EXPORT
+void ossia_address_push_s(
+        ossia_address_t address,
+        const char* value);
+
+OSSIA_EXPORT
+void ossia_address_push_in(
+        ossia_address_t address,
+        const int* value,
+        int sz);
+OSSIA_EXPORT
+void ossia_address_push_fn(
+        ossia_address_t address,
+        const float* value,
+        int sz);
+OSSIA_EXPORT
+void ossia_address_push_cn( // pushed as a string
+        ossia_address_t address,
+        const char* value,
+        int sz);
+
 OSSIA_EXPORT
 ossia_value_t ossia_address_pull_value(
         ossia_address_t address);

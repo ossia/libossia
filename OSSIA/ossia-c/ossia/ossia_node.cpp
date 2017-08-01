@@ -39,6 +39,38 @@ const char* ossia_node_get_name(ossia_node_t node)
   });
 }
 
+ossia_node_t ossia_node_find(
+    ossia_node_t node,
+    const char* name)
+{
+  return safe_function(__func__, [=]() -> ossia_node_t {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_add_child: node is null");
+      return nullptr;
+    }
+
+    auto n = convert_node(node);
+    return convert(ossia::net::find_node(*n, name));
+  });
+}
+
+ossia_node_t ossia_node_create(
+    ossia_node_t node,
+    const char* name)
+{
+  return safe_function(__func__, [=]() -> ossia_node_t {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_add_child: node is null");
+      return nullptr;
+    }
+
+    auto n = convert_node(node);
+    return convert(&ossia::net::create_node(*n, name));
+  });
+}
+
 ossia_node_t ossia_node_add_child(ossia_node_t node, const char* name)
 {
   return safe_function(__func__, [=]() -> ossia_node_t {

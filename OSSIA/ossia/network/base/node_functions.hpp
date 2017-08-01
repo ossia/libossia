@@ -17,7 +17,7 @@ namespace net
  *
  * @return null if the node was not found.
  */
-OSSIA_EXPORT node_base*
+OSSIA_EXPORT ossia::net::node_base*
 find_node(node_base& dev, ossia::string_view address_base);
 
 /**

@@ -35,7 +35,7 @@ class OSSIA_EXPORT oscquery_server_protocol final
 
 public:
   using connection_handler = std::weak_ptr<void>;
-  oscquery_server_protocol(uint16_t osc_port, uint16_t ws_port);
+  oscquery_server_protocol(uint16_t osc_port = 1234, uint16_t ws_port = 5678);
   ~oscquery_server_protocol();
 
   /**

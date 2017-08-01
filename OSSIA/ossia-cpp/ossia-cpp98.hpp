@@ -84,7 +84,7 @@ public:
 private:
   friend class node;
   value(const ossia::value& v);
-  ossia::value* impl;
+  ossia::value* m_val;
 };
 
 typedef void (*value_callback)(void*, const opp::value&);
@@ -96,6 +96,8 @@ public:
   node(const node&);
   node& operator=(const node&);
   ~node();
+
+  bool valid() const;
 
   std::string get_name() const;
   void set_name(std::string s);
@@ -206,8 +208,8 @@ private:
   void cleanup(const ossia::net::node_base&);
   void cleanup_address(const ossia::net::address_base&);
 
-  ossia::net::node_base* node_impl;
-  ossia::net::address_base* addr_impl;
+  ossia::net::node_base* m_node;
+  ossia::net::address_base* m_addr;
 };
 
 class OSSIA_EXPORT oscquery_server
@@ -218,7 +220,7 @@ public:
   node get_root_node() const;
 
 private:
-  ossia::net::device_base* impl;
+  ossia::net::device_base* m_dev;
 };
 
 class OSSIA_EXPORT oscquery_mirror
@@ -232,7 +234,7 @@ public:
   void reconnect(std::string name, std::string host);
 
 private:
-  ossia::net::device_base* impl;
+  ossia::net::device_base* m_dev;
 };
 }
 #endif
