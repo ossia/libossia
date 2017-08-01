@@ -24,7 +24,7 @@ namespace ossia
 namespace oscquery
 {
 class websocket_server;
-class oscquery_client;
+struct oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
     : public ossia::net::protocol_base

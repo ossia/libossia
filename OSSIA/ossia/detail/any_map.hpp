@@ -102,7 +102,7 @@ void set_attribute(any_map& e, ossia::string_view str, const T& val)
     if (it != e.end())
       it.value() = val;
     else
-      e.insert(std::make_pair(std::string(str), val));
+      e.insert(std::make_pair(std::string(str), ossia::any{val}));
   }
   else
   {
@@ -135,7 +135,7 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
     if (it != e.end())
       it.value() = std::move(val);
     else
-      e.insert(std::make_pair(std::string(str), std::move(val)));
+      e.insert(std::make_pair(std::string(str), ossia::any{std::move(val)}));
   }
   else
   {
