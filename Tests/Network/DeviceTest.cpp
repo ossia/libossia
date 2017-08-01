@@ -77,11 +77,12 @@ ossia::domain make_domain(ossia::val_type t)
 
 struct remote_data
 {
+  template<typename FunProto1, typename FunProto2>
   remote_data(
-      std::unique_ptr<ossia::net::protocol_base> local_proto,
-      std::unique_ptr<ossia::net::protocol_base> remote_proto):
-    local_device{std::make_unique<ossia::net::multiplex_protocol>(), "i-score" },
-    remote_device{std::move(remote_proto), "i-score-remote"}
+      FunProto1 local_proto,
+      FunProto2 remote_proto):
+    local_device{local_proto(), "i-score" },
+    remote_device{remote_proto(), "i-score-remote"}
   {
     int N = 10;
 
@@ -90,9 +91,6 @@ struct remote_data
       auto cld = local_device.create_child(std::to_string(i));
       local_addr.push_back(cld->create_address((ossia::val_type) i));
     }
-
-    auto& proto_p = static_cast<ossia::net::multiplex_protocol&>(local_device.get_protocol());
-    proto_p.expose_to(std::move(local_proto));
 
     for(int i = 0; i < N; i++)
     {
@@ -106,7 +104,6 @@ struct remote_data
 
   std::vector<ossia::net::address_base*> local_addr;
   std::vector<ossia::net::address_base*> remote_addr;
-
 };
 
 class DeviceTest : public QObject
@@ -258,14 +255,14 @@ private Q_SLOTS:
 
   void test_comm_osc()
   {
-    test_comm_generic(std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997),
-                      std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996));
+    test_comm_generic([] { return std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997); },
+                      [] { return std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996); });
   }
 
   void test_comm_minuit()
   {
-    test_comm_generic(std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13579, 13580),
-                      std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13580, 13579));
+    test_comm_generic([] { return std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13579, 13580); },
+                      [] { return std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13580, 13579); });
 
 
     int N = 10;
@@ -297,9 +294,8 @@ private Q_SLOTS:
 
   void test_comm_oscquery()
   {
-    auto server = std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678);
-    test_comm_generic(std::move(server),
-                      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"));
+    test_comm_generic([] { return std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678); },
+                      [] { return std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"); });
   }
 
   void test_http()
@@ -366,9 +362,10 @@ private:
     ossia::vec4f{}
   };
 
+  template<typename FunProto1, typename FunProto2>
   void test_comm_generic(
-      std::unique_ptr<ossia::net::protocol_base> local_proto,
-      std::unique_ptr<ossia::net::protocol_base> remote_proto)
+      FunProto1 local_proto,
+      FunProto2 remote_proto)
   {
     int N = 10;
     remote_data rem{std::move(local_proto), std::move(remote_proto)};
