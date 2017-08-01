@@ -7,16 +7,24 @@
 
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
+#include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/network/common/network_logger.hpp>
 
+#include <ossia/network/oscquery/detail/server.hpp>
 #include <ossia/network/oscquery/detail/get_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
+#include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
+
+#include <ossia/detail/mutex.hpp>
+#include <ossia/detail/string_map.hpp>
 namespace ossia
 {
 namespace oscquery
 {
-
 oscquery_server_protocol::oscquery_server_protocol(
     uint16_t osc_port, uint16_t ws_port)
     : m_oscServer{std::make_unique<osc::receiver>(
@@ -25,14 +33,15 @@ oscquery_server_protocol::oscquery_server_protocol(
               const oscpack::IpEndpointName& ip) {
             this->on_OSCMessage(m, ip);
           })}
+    , m_websocketServer{std::make_unique<websocket_server>()}
     , m_oscPort{(uint16_t)m_oscServer->port()}
     , m_wsPort{ws_port}
 {
-  m_websocketServer.set_open_handler(
+  m_websocketServer->set_open_handler(
       [&](connection_handler hdl) { on_connectionOpen(hdl); });
-  m_websocketServer.set_close_handler(
+  m_websocketServer->set_close_handler(
       [&](connection_handler hdl) { on_connectionClosed(hdl); });
-  m_websocketServer.set_message_handler([&](
+  m_websocketServer->set_message_handler([&](
       connection_handler hdl, const std::string& str) {
     auto res = on_WSrequest(hdl, str);
 
@@ -42,11 +51,11 @@ oscquery_server_protocol::oscquery_server_protocol(
     return res;
   });
 
-  m_websocketServer.listen(m_wsPort);
+  m_websocketServer->listen(m_wsPort);
   m_serverThread = std::thread{[&] {
     try
     {
-      m_websocketServer.run();
+      m_websocketServer->run();
     }
     catch (const std::exception& e)
     {
@@ -62,24 +71,7 @@ oscquery_server_protocol::oscquery_server_protocol(
 
 oscquery_server_protocol::~oscquery_server_protocol()
 {
-  try
-  {
-    m_oscServer->stop();
-  }
-  catch (...)
-  {
-    logger().error("Error when stopping osc server");
-  }
-  try
-  {
-    m_websocketServer.stop();
-  }
-  catch (...)
-  {
-    logger().error("Error when stopping WS server");
-  }
-  if (m_serverThread.joinable())
-    m_serverThread.join();
+  stop();
 }
 
 bool oscquery_server_protocol::pull(net::address_base&)
@@ -118,7 +110,7 @@ bool oscquery_server_protocol::push_impl(const T& addr)
         }
         else
         {
-          m_websocketServer.send_message(
+          m_websocketServer->send_message(
                 client.connection,
                 json_writer::send_message(addr, val));
         }
@@ -129,7 +121,7 @@ bool oscquery_server_protocol::push_impl(const T& addr)
       lock_t lock(m_clientsMutex);
       for (auto& client : m_clients)
       {
-        m_websocketServer.send_message(
+        m_websocketServer->send_message(
             client.connection, json_writer::send_message(addr, val));
       }
     }
@@ -168,7 +160,7 @@ bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::a
     lock_t lock(m_clientsMutex);
     for (auto& client : m_clients)
     {
-      m_websocketServer.send_message(client.connection, str);
+      m_websocketServer->send_message(client.connection, str);
     }
   }
   return true;
@@ -192,7 +184,7 @@ bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::ful
     lock_t lock(m_clientsMutex);
     for (auto& client : m_clients)
     {
-      m_websocketServer.send_message(client.connection, str);
+      m_websocketServer->send_message(client.connection, str);
     }
   }
   return true;
@@ -240,6 +232,41 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
           this);
 
   update_zeroconf();
+}
+
+void oscquery_server_protocol::stop()
+{
+  try
+  {
+    m_oscServer->stop();
+  }
+  catch (...)
+  {
+    logger().error("Error when stopping osc server");
+  }
+
+  try
+  {
+    {
+      lock_t lock(m_buildingClientsMutex);
+      for(auto& con : m_buildingClients)
+        m_websocketServer->close(con.connection);
+      m_buildingClients.clear();
+    }
+    {
+      lock_t lock(m_clientsMutex);
+      for(auto& con : m_clients)
+        m_websocketServer->close(con.connection);
+      m_clients.clear();
+    }
+    m_websocketServer->stop();
+  }
+  catch (...)
+  {
+    logger().error("Error when stopping WS server");
+  }
+  if (m_serverThread.joinable())
+    m_serverThread.join();
 }
 
 oscquery_client*
@@ -398,7 +425,7 @@ catch (...)
 void oscquery_server_protocol::on_connectionOpen(connection_handler hdl) try
 {
   {
-    auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
+    auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
     lock_t lock(m_buildingClientsMutex);
     m_buildingClients.emplace_back(hdl);
     asio::ip::tcp::socket& sock = con->get_raw_socket();
@@ -410,7 +437,7 @@ void oscquery_server_protocol::on_connectionOpen(connection_handler hdl) try
     onClientConnected(con->get_remote_endpoint());
   }
   // Send the client a message with the OSC port
-  m_websocketServer.send_message(hdl, json_writer::device_info(m_oscPort));
+  m_websocketServer->send_message(hdl, json_writer::device_info(m_oscPort));
 }
 catch (const std::exception& e)
 {
@@ -430,7 +457,7 @@ void oscquery_server_protocol::on_connectionClosed(connection_handler hdl)
     m_clients.erase(it);
   }
 
-  auto con = m_websocketServer.impl().get_con_from_hdl(hdl);
+  auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
   onClientDisconnected(con->get_remote_endpoint());
 }
 
@@ -441,7 +468,7 @@ void oscquery_server_protocol::on_nodeCreated(const net::node_base& n) try
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer.send_message(client.connection, mess);
+    m_websocketServer->send_message(client.connection, mess);
   }
 }
 catch (const std::exception& e)
@@ -460,7 +487,7 @@ void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n) try
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer.send_message(client.connection, mess);
+    m_websocketServer->send_message(client.connection, mess);
   }
 }
 catch (const std::exception& e)
@@ -479,7 +506,7 @@ void oscquery_server_protocol::on_attributeChanged(
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer.send_message(client.connection, mess);
+    m_websocketServer->send_message(client.connection, mess);
   }
 }
 catch (const std::exception& e)

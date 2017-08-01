@@ -10,6 +10,8 @@
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
 namespace ossia
@@ -17,6 +19,14 @@ namespace ossia
 namespace oscquery
 {
 
+struct http_client_context
+{
+    std::thread thread;
+    std::vector<http_get_request*> requests;
+    std::vector<http_get_request*> cemetary;
+    asio::io_service context;
+    std::shared_ptr<asio::io_service::work> worker;
+};
 /*
 auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 {
@@ -47,10 +57,12 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(
               const oscpack::IpEndpointName& ip) {
             this->on_OSCMessage(m, ip);
           })}
-    , m_websocketClient{[=](connection_handler hdl, std::string& msg) {
+    , m_websocketClient{std::make_unique<websocket_client>(
+                          [=] (connection_handler hdl, std::string& msg) {
       this->on_WSMessage(hdl, msg);
-    }}
+    })}
     , m_websocketHost{std::move(host)}
+    , m_http{std::make_unique<http_client_context>()}
 {
   auto port_idx = m_websocketHost.find_last_of(':');
   if (port_idx != std::string::npos)
@@ -71,15 +83,15 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(
       m_websocketHost = "127.0.0.1";
     }
 
-    m_httpWorker = std::make_shared<asio::io_service::work>(m_httpContext);
-    m_httpThread = std::thread([=] { m_httpContext.run(); });
+    m_http->worker = std::make_shared<asio::io_service::work>(m_http->context);
+    m_http->thread = std::thread([=] { m_http->context.run(); });
   }
   else
   {
     m_wsThread = std::thread([=] {
       try
       {
-        m_websocketClient.connect(m_websocketHost);
+        m_websocketClient->connect(m_websocketHost);
       }
       catch (...)
       {
@@ -148,10 +160,10 @@ void oscquery_mirror_protocol::cleanup_connections()
 
   try
   {
-    m_httpWorker.reset();
-    m_httpContext.stop();
-    if (m_httpThread.joinable())
-      m_httpThread.join();
+    m_http->context.stop();
+    m_http->worker.reset();
+    if (m_http->thread.joinable())
+      m_http->thread.join();
   }
   catch (...)
   {
@@ -163,7 +175,7 @@ void oscquery_mirror_protocol::query_send_message(const std::string& str)
 {
   if (!m_useHTTP)
   {
-    m_websocketClient.send_message(str);
+    m_websocketClient->send_message(str);
   }
   else
   {
@@ -173,15 +185,15 @@ void oscquery_mirror_protocol::query_send_message(const std::string& str)
           if (res)
           {
             req->close();
-            m_cemetary.push_back(req);
+            m_http->cemetary.push_back(req);
           }
         },
         [=](auto req) {
           req->close();
-          m_cemetary.push_back(req);
+          m_http->cemetary.push_back(req);
         },
-        m_httpContext, m_websocketHost, m_websocketPort, str);
-    m_requests.push_back(hrq);
+        m_http->context, m_websocketHost, m_websocketPort, str);
+    m_http->requests.push_back(hrq);
   }
 }
 
@@ -190,7 +202,7 @@ void oscquery_mirror_protocol::query_send_message(
 {
   if (!m_useHTTP)
   {
-    m_websocketClient.send_message(str);
+    m_websocketClient->send_message(str);
   }
   else
   {
@@ -200,30 +212,30 @@ void oscquery_mirror_protocol::query_send_message(
           if (res)
           {
             req->close();
-            m_cemetary.push_back(req);
+            m_http->cemetary.push_back(req);
           }
         },
         [=](auto req) {
           req->close();
-          m_cemetary.push_back(req);
+          m_http->cemetary.push_back(req);
         },
-        m_httpContext, m_websocketHost, m_websocketPort, str.GetString());
+        m_http->context, m_websocketHost, m_websocketPort, str.GetString());
 
-    m_requests.push_back(hrq);
+    m_http->requests.push_back(hrq);
   }
 }
 
 bool oscquery_mirror_protocol::query_connected()
 {
   if (!m_useHTTP)
-    return m_websocketClient.connected();
+    return m_websocketClient->connected();
   return true;
 }
 
 void oscquery_mirror_protocol::query_stop()
 {
   if (!m_useHTTP)
-    m_websocketClient.stop();
+    m_websocketClient->stop();
 }
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()
@@ -334,7 +346,7 @@ bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::a
       }
     }
 
-    m_websocketClient.send_message(b.finish());
+    m_websocketClient->send_message(b.finish());
   }
   return false;
 }
@@ -353,7 +365,7 @@ bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::ful
       }
     }
 
-    m_websocketClient.send_message(b.finish());
+    m_websocketClient->send_message(b.finish());
   }
   return false;
 }
@@ -439,12 +451,12 @@ void oscquery_mirror_protocol::request_remove_node(net::node_base& self)
 
 void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
 {
-  m_websocketClient.onClose = std::move(f);
+  m_websocketClient->onClose = std::move(f);
 }
 
 void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
 {
-  m_websocketClient.onFail = std::move(f);
+  m_websocketClient->onFail = std::move(f);
 }
 
 void oscquery_mirror_protocol::request_add_node(

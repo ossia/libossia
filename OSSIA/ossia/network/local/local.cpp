@@ -54,6 +54,12 @@ bool multiplex_protocol::update(ossia::net::node_base& node)
   return false;
 }
 
+void multiplex_protocol::stop()
+{
+  for(auto& proto : m_protocols)
+    proto->stop();
+}
+
 void multiplex_protocol::set_device(device_base& dev)
 {
   m_device = &dev;

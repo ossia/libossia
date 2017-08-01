@@ -67,12 +67,12 @@ bool operator!=(const state& lhs, const state& rhs)
   return lhs.m_children != rhs.m_children;
 }
 
-void flatten_and_filter(state& state, const state_element& element)
+void flatten_and_filter(ossia::state& state, const state_element& element)
 {
   ossia::apply(state_flatten_visitor{state}, element);
 }
 
-void flatten_and_filter(state& state, state_element&& element)
+void flatten_and_filter(ossia::state& state, state_element&& element)
 {
   ossia::apply(state_flatten_visitor{state}, std::move(element));
 }

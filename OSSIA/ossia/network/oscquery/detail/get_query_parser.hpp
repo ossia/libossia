@@ -2,6 +2,7 @@
 #include <ossia/detail/string_map.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
 #include <boost/lexical_cast.hpp>
 #include <chobo/small_vector.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>

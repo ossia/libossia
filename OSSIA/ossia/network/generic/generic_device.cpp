@@ -29,8 +29,14 @@ generic_device::generic_device(
 generic_device::~generic_device()
 {
   remove_address();
-  write_lock_t lock{m_mutex};
-  m_children.clear();
+
+  m_protocol->stop();
+
+  {
+    write_lock_t lock{m_mutex};
+    m_children.clear();
+  }
+
   m_protocol.reset();
 }
 }

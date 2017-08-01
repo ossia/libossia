@@ -276,8 +276,8 @@ private Q_SLOTS:
     auto t = n.get_extended_attributes().find("tags");
     auto tg = t != n.get_extended_attributes().end();
     QVERIFY(tg);
-    qDebug() << ((boost::any)t.value()).type().name();
-    tags tgs = boost::any_cast<tags>(t.value());
+    qDebug() << ((ossia::any)t.value()).type().name();
+    tags tgs = ossia::any_cast<tags>(t.value());
     QVERIFY(!tgs.empty());
     QVERIFY((tgs == the_tags));
 

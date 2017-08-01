@@ -144,7 +144,14 @@ public:
 
   void stop()
   {
+    m_server.stop_listening();
     m_server.stop();
+  }
+
+  void close(connection_handler hdl)
+  {
+    auto con = m_server.get_con_from_hdl(hdl);
+    con->close(websocketpp::close::status::going_away, "Server shutdown");
   }
 
   void send_message(connection_handler hdl, const std::string& message)

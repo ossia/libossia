@@ -5,7 +5,7 @@
 #include <ossia/detail/mutex.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <atomic>
 #include <hopscotch_map.h>
 

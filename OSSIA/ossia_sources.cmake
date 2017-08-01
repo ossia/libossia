@@ -8,6 +8,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
@@ -165,6 +166,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
     )
 
@@ -289,6 +291,8 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/http_client.hpp"

@@ -144,41 +144,36 @@ private Q_SLOTS:
           n.set(app_creator_attribute{}, "Lelouch vi Brittania");
         }
 
-        const int N = 20;
-        std::array<ossia::net::generic_device*, N * 2> devices;
-        devices.fill(nullptr);
-        int portnum = 10000;
-        for(int i = 0; i < N * 2; )
-        {
-            {
-                // HTTP client
-                auto proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", portnum++);
-                auto clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
-                devices[i++] = clt;
-                proto->update(clt->get_root_node());
+        // HTTP client
+        auto http_proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", 10000);
+        auto http_clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(http_proto), "B"};
 
-                net::full_address_data d; d.address = "/float"; d.set_value(123.f);
-                proto->push_raw(d);
-            }
 
-            {
-                // WS client
-                auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", portnum++);
-                auto clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(proto), "B"};
-                devices[i++] = clt;
-                proto->update(clt->get_root_node());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-                net::full_address_data d; d.address = "/int"; d.set_value(546);
-                proto->push_raw(d);
-            }
-        }
+        http_proto->update(http_clt->get_root_node());
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        for(auto dev : devices)
-        {
-            delete dev;
-        }
+        net::full_address_data d; d.address = "/float"; d.set_value(123.f);
+        http_proto->push_raw(d);
 
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // WS client
+        auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+        auto ws_clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"};
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ws_proto->update(ws_clt->get_root_node());
+
+        net::full_address_data d2; d2.address = "/int"; d2.set_value(546);
+        ws_proto->push_raw(d2);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        delete ws_proto;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        delete http_proto;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 };
 

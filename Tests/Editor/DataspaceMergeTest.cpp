@@ -509,6 +509,91 @@ private Q_SLOTS:
     }
   }
 
+  void flatten_various()
+  {
+      ossia::TestDevice t;
+
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.float_addr, 123.f, {}};
+          ossia::message m2{*t.float_addr, 456.f, {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.int_addr, 123, {}};
+          ossia::message m2{*t.int_addr, 456, {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.char_addr, 'h', {}};
+          ossia::message m2{*t.char_addr, 'c', {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.string_addr, "bar", {}};
+          ossia::message m2{*t.string_addr, "foo", {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.impulse_addr, ossia::impulse{}, {}};
+          ossia::message m2{*t.impulse_addr, ossia::impulse{}, {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.bool_addr, true, {}};
+          ossia::message m2{*t.bool_addr, true, {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+      {
+          ossia::state s;
+
+          ossia::message m1{*t.bool_addr, true, {}};
+          ossia::message m2{*t.bool_addr, false, {}};
+
+          ossia::flatten_and_filter(s, m1);
+          QVERIFY(s.size() == 1);
+          ossia::flatten_and_filter(s, m2);
+          QVERIFY(s.size() == 2);
+      }
+
+
+  }
+
   void flatten_same_vec_message_on_vec_address()
   {
     ossia::TestDevice t;
@@ -779,7 +864,8 @@ private Q_SLOTS:
 
         ossia::flatten_and_filter(s, m1);
 
-        QVERIFY(s.size() == 1);
+        // No unit: no flattening
+        QVERIFY(s.size() == 2);
         QVERIFY(*s.begin() == m1);
       }
 
@@ -795,7 +881,7 @@ private Q_SLOTS:
 
         ossia::flatten_and_filter(s, ossia::message{m1});
 
-        QVERIFY(s.size() == 1);
+        QVERIFY(s.size() == 2);
         QVERIFY(*s.begin() == m1);
       }
 
@@ -846,14 +932,14 @@ private Q_SLOTS:
     ossia::message m2{*t.tuple_addr, ossia::vec3f{0., 0., 0.}, {}};
     ossia::flatten_and_filter(s, ossia::message{m2});
 
-    QVERIFY(s.size() == 1);
-
+    QVERIFY(s.size() == 2);
+/*
     ossia::message m3{*t.tuple_addr, std::vector<ossia::value>{0., 0., 0.}, {}};
     ossia::print(std::cerr, m3);
     std::cerr << std::endl;
     ossia::print(std::cerr, *s.begin());
-    QVERIFY(*s.begin() == m3);
-
+    QVERIFY(*s.begin() == m1);
+*/
   }
   void test_merge_tuple_in_vec()
   {

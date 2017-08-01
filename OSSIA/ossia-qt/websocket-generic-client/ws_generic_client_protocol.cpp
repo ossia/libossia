@@ -192,8 +192,8 @@ void ws_generic_client_protocol::apply_reply(QJSValue arr)
     {
       qDebug() << "Applied value"
                << QString::fromStdString(value_to_pretty_string(
-                      qt::value_from_jsvalue(addr->value(), v)));
-      addr->push_value(qt::value_from_jsvalue(addr->value(), v));
+                      qt::value_from_js(addr->value(), v)));
+      addr->push_value(qt::value_from_js(addr->value(), v));
     }
   }
 }

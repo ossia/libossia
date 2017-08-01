@@ -246,9 +246,14 @@ struct state_flatten_visitor_merger
     }
     else if (to_append_index_empty && source_index_empty)
     {
+      // Add the new message to the state
+      state.add(incoming);
+        /* For reference if someone wants to revert to merging...
       // Simple case : we just replace the values
+
       value_merger<true>::merge_value(
           existing.message_value, incoming.message_value);
+        */
     }
     else
     {
@@ -434,9 +439,13 @@ struct state_flatten_visitor_merger
     }
     else if (to_append_index_empty && source_index_empty)
     {
+      // Add the new message to the state
+      state.add(incoming);
+      /* For reference if someone wants to revert to merging...
       // Simple case : we just replace the values
-      value_merger<true>::merge_value(
+        value_merger<true>::merge_value(
           existing.message_value, std::move(incoming.message_value));
+      */
     }
     else
     {

@@ -37,7 +37,7 @@ void node_base::set_extended_attributes(const extended_attributes& e)
   m_extended = e;
 }
 
-boost::any node_base::get_attribute(ossia::string_view str) const
+ossia::any node_base::get_attribute(ossia::string_view str) const
 {
   auto it = m_extended.find(str);
   if (it != m_extended.end())

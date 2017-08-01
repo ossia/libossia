@@ -19,6 +19,7 @@ namespace py = pybind11;
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/detail/logger.hpp>
 
 namespace py = pybind11;
 

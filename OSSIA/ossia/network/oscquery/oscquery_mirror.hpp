@@ -1,11 +1,9 @@
 #pragma once
 
-#include <ossia/detail/json.hpp>
+#include <ossia/detail/json_fwd.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/osc/detail/osc.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <readerwriterqueue.h>
 namespace osc
 {
@@ -28,7 +26,9 @@ struct address_data;
 }
 namespace oscquery
 {
+class websocket_client;
 class http_get_request;
+struct http_client_context;
 
 class OSSIA_EXPORT oscquery_mirror_protocol final
     : public ossia::net::protocol_base
@@ -95,7 +95,7 @@ public:
   void set_fail_callback(std::function<void()>);
 
 private:
-  using connection_handler = websocketpp::connection_hdl;
+  using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
   void on_OSCMessage(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
@@ -111,8 +111,7 @@ private:
   void on_queryFail();
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
-
-  ossia::oscquery::websocket_client m_websocketClient;
+  std::unique_ptr<ossia::oscquery::websocket_client> m_websocketClient;
 
   // Listening status of the local software
   net::listened_addresses m_listening;
@@ -152,11 +151,7 @@ private:
   std::string m_websocketHost;
   std::string m_websocketPort;
 
-  std::thread m_httpThread;
-  std::vector<http_get_request*> m_requests;
-  std::vector<http_get_request*> m_cemetary;
-  asio::io_service m_httpContext;
-  std::shared_ptr<asio::io_service::work> m_httpWorker;
+  std::unique_ptr<http_client_context> m_http;
   std::atomic_bool m_useHTTP{false};
 };
 }

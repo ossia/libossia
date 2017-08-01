@@ -1,13 +1,15 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <boost/any.hpp>
+#include <boost/spirit/home/support/detail/hold_any.hpp>
 #include <ossia_export.h>
 
 namespace ossia
 {
+using any = boost::spirit::hold_any;
+using boost::spirit::any_cast;
 //! A container to store any kind of data indexed by a string
-using any_map = string_map<boost::any>;
+using any_map = string_map<ossia::any>;
 
 using extended_attributes = any_map;
 /**
@@ -27,7 +29,7 @@ auto get_attribute(const any_map& e, ossia::string_view name)
   auto it = e.find(name);
   if (it != e.cend())
   {
-    auto val = boost::any_cast<T>(&it.value());
+    auto val = ossia::any_cast<T>(&it.value());
     if (val)
       return *val;
   }
@@ -53,7 +55,7 @@ optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
   auto it = e.find(name);
   if (it != e.cend())
   {
-    auto val = boost::any_cast<T>(&it.value());
+    auto val = ossia::any_cast<T>(&it.value());
     if (val)
       return *val;
   }
@@ -100,7 +102,7 @@ void set_attribute(any_map& e, ossia::string_view str, const T& val)
     if (it != e.end())
       it.value() = val;
     else
-      e.insert(std::make_pair(std::string(str), val));
+      e.insert(std::make_pair(std::string(str), ossia::any{val}));
   }
   else
   {
@@ -119,7 +121,7 @@ inline void set_attribute(any_map& e, ossia::string_view str)
 {
   auto it = e.find(str);
   if (it == e.end())
-    e.insert(std::make_pair(std::string(str), boost::any{}));
+    e.insert(std::make_pair(std::string(str), ossia::any{}));
 }
 
 //! Sets an attribute in an any_map
@@ -133,7 +135,7 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
     if (it != e.end())
       it.value() = std::move(val);
     else
-      e.insert(std::make_pair(std::string(str), std::move(val)));
+      e.insert(std::make_pair(std::string(str), ossia::any{std::move(val)}));
   }
   else
   {

@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/address.hpp>
@@ -15,56 +16,64 @@ namespace ossia
 {
 namespace net
 {
-struct osc_outbound_visitor
+/// Declaration is in osc_fwd.hpp
+inline void osc_outbound_visitor::operator()(impulse) const
 {
-  oscpack::OutboundPacketStream& p;
-  void operator()(ossia::impulse) const
-  {
-  }
-  void operator()(int32_t i) const
-  {
-    p << int32_t(i);
-  }
-  void operator()(float f) const
-  {
-    p << float(f);
-  }
-  void operator()(bool b) const
-  {
-    p << int32_t(b);
-  }
-  void operator()(char c) const
-  {
-    p << int32_t(c);
-  }
-  void operator()(const std::string& str) const
-  {
-    p << (ossia::string_view)str;
-  }
-  void operator()(ossia::vec2f vec) const
-  {
-    p << vec[0] << vec[1];
-  }
-  void operator()(ossia::vec3f vec) const
-  {
-    p << vec[0] << vec[1] << vec[2];
-  }
-  void operator()(ossia::vec4f vec) const
-  {
-    p << vec[0] << vec[1] << vec[2] << vec[3];
-  }
-  void operator()(const std::vector<ossia::value>& t) const
-  {
-    for (const auto& val : t)
-    {
-      val.apply(*this);
-    }
-  }
+}
 
-  void operator()() const
+inline void osc_outbound_visitor::operator()(int32_t i) const
+{
+  p << int32_t(i);
+}
+
+inline void osc_outbound_visitor::operator()(float f) const
+{
+  p << float(f);
+}
+
+inline void osc_outbound_visitor::operator()(bool b) const
+{
+  p << int32_t(b);
+}
+
+inline void osc_outbound_visitor::operator()(char c) const
+{
+  p << int32_t(c);
+}
+
+inline void osc_outbound_visitor::operator()(const std::string& str) const
+{
+  p << (ossia::string_view)str;
+}
+
+inline void osc_outbound_visitor::operator()(vec2f vec) const
+{
+  p << vec[0] << vec[1];
+}
+
+inline void osc_outbound_visitor::operator()(vec3f vec) const
+{
+  p << vec[0] << vec[1] << vec[2];
+}
+
+inline void osc_outbound_visitor::operator()(vec4f vec) const
+{
+  p << vec[0] << vec[1] << vec[2] << vec[3];
+}
+
+inline void osc_outbound_visitor::operator()(const std::vector<value>& t) const
+{
+  for (const auto& val : t)
   {
+    val.apply(*this);
   }
-};
+}
+
+inline void osc_outbound_visitor::operator()() const
+{
+}
+
+
 
 struct osc_utilities
 {
