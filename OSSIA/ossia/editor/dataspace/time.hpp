@@ -100,7 +100,7 @@ struct frequency_u : public timing_unit<frequency_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
-    return ossia::make_string_array("fps", "Hz", "hz", "Hertz");
+    return ossia::make_string_array("Hz", "hz", "Hertz");
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit>
