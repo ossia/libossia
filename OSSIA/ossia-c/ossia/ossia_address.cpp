@@ -311,10 +311,10 @@ ossia_value_t ossia_address_pull_value(ossia_address_t address)
   });
 }
 
-ossia_value_callback_index_t ossia_address_add_callback(
+ossia_value_callback_idx_t ossia_address_add_callback(
     ossia_address_t address, ossia_value_callback_t callback, void* ctx)
 {
-  return safe_function(__func__, [=]() -> ossia_value_callback_index_t {
+  return safe_function(__func__, [=]() -> ossia_value_callback_idx_t {
     if (!address)
     {
       ossia_log_error("ossia_address_add_callback: address is null");
@@ -327,15 +327,43 @@ ossia_value_callback_index_t ossia_address_add_callback(
     }
 
     return new ossia_value_callback_index{
-        convert_address(address)->add_callback([=](const ossia::value& val) {
-          DEBUG_LOG_FMT("inside added callback");
+        convert_address(address)->add_callback(
+              [=] (const ossia::value& val) {
           callback(ctx, convert(val));
         })};
   });
 }
 
+void ossia_address_push_callback(
+    ossia_address_t address, ossia_value_callback_t callback, void* ctx)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_address_add_callback: address is null");
+      return;
+    }
+    if (!callback)
+    {
+      ossia_log_error("ossia_address_add_callback: callback is null");
+      return;
+    }
+
+    convert_address(address)->add_callback(
+          [=] (const ossia::value& val) {
+      callback(ctx, convert(val));
+    });
+  });
+}
+
+void ossia_address_free_callback_idx(
+        ossia_value_callback_idx_t cb)
+{
+  delete cb;
+}
+
 void ossia_address_remove_callback(
-    ossia_address_t address, ossia_value_callback_index_t index)
+    ossia_address_t address, ossia_value_callback_idx_t index)
 {
   return safe_function(__func__, [=] {
     if (!address)

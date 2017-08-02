@@ -26,19 +26,19 @@ int main()
 
 
   // Create a device
-  opp::oscquery_server dev{"supersoftware"};
+  opp::oscquery_server dev("supersoftware");
   opp::node root = dev.get_root_node();
 
   // Create a node /foo
   opp::node n1 = root.create_child("foo");
 
-  // Create a node /foo/bar/baz of type ARGB color
+  // Create a node /foo/bar/baz of type float
   // and make it read-only on the network.
-  opp::node n2 = n1.create_argb("bar/baz")
+  opp::node n2 = n1.create_float("bar/baz")
                    .set_access(opp::Get)
-                   .set_bounding(opp::bounding_mode::Clip);
-  n2.set_min(std::vector<opp::value>(0.5, 0.2, 0.2, 0.2));
-  n2.set_max(std::vector<opp::value>(0.7, 0.8, 0.8, 0.8));
+                   .set_bounding(opp::Clip);
+  n2.set_min(0.5);
+  n2.set_max(0.7);
 
 
   ////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ int main()
   ////////////////////////////////////////////////////////////////////////
 
 
-  opp::oscquery_mirror remote_dev{"supersoftware", "ws://127.0.0.1:5678"};
+  opp::oscquery_mirror remote_dev("remote", "ws://127.0.0.1:5678");
 
   // Request an update of the device.
   remote_dev.refresh();
@@ -58,7 +58,7 @@ int main()
     return 1;
 
   // After some time n2 wil get the value that we send here:
-  remote_n2.set_value(std::vector<opp::value>(0.1, 0.1, 0.5, 0.9));
+  remote_n2.set_value(0.1);
   // It will however be filtered according to the domain we set, e.g.
   // the result will be argb(0.5, 0.2, 0.5, 0.9).
 
@@ -71,8 +71,8 @@ int main()
   int count = 0;
   remote_n2.set_value_callback(test_callback, &count);
 
-  n2.set_value(std::vector<opp::value>(0.2, 0.4, 0.5, 0.6));
-  n2.set_value(std::vector<opp::value>(0.5, 0., 0.5, 0.));
+  n2.set_value(0.5);
+  n2.set_value(0.6);
   while(count < 2)
     ;
   return 0;

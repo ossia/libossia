@@ -247,18 +247,6 @@ void oscquery_server_protocol::stop()
 
   try
   {
-    {
-      lock_t lock(m_buildingClientsMutex);
-      for(auto& con : m_buildingClients)
-        m_websocketServer->close(con.connection);
-      m_buildingClients.clear();
-    }
-    {
-      lock_t lock(m_clientsMutex);
-      for(auto& con : m_clients)
-        m_websocketServer->close(con.connection);
-      m_clients.clear();
-    }
     m_websocketServer->stop();
   }
   catch (...)

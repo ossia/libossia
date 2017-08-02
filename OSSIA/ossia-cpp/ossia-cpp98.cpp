@@ -30,6 +30,12 @@ value::value(bool v) : m_val{new ossia::value(v)}
 value::value(float v) : m_val{new ossia::value(v)}
 {
 }
+value::value(double v) : m_val{new ossia::value(v)}
+{
+}
+value::value(const char* v) : m_val{new ossia::value(std::string(v))}
+{
+}
 value::value(std::vector<opp::value> v) : m_val{new ossia::value()}
 {
   *this = std::move(v);

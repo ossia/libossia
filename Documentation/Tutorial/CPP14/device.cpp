@@ -21,7 +21,9 @@ int main()
 
   // The class generic_device represents a tree of parameters that
   // you can build to match your application.
-  generic_device dev{ossia::oscquery::oscquery_server_protocol{}};
+  generic_device dev{
+    std::make_unique<ossia::oscquery::oscquery_server_protocol>(),
+    "supersoftware"};
 
   // Create some nodes in the tree. The device can be used as root.
   auto& n1 = create_node(dev, "/foo/bar");
@@ -40,8 +42,9 @@ int main()
   ////////////////////////////////////////////////////////////////////////
 
 
-  generic_device remote_dev{ossia::oscquery::oscquery_mirror_protocol{"ws://127.0.0.1:5678"},
-                            "supersoftware"};
+  generic_device remote_dev{
+    std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"),
+    "remote"};
 
   // Request an update of the root node.
   // dev will send all the information of the tree to remote_dev.
@@ -63,7 +66,7 @@ int main()
 
 
   int count = 0;
-  remote_n2.add_callback([&] (const auto& value) {
+  remote_n2->get_address()->add_callback([&] (const auto& value) {
     std::cerr << ossia::convert<std::string>(value) << std::endl;
     ++count;
   });
