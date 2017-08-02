@@ -1,9 +1,14 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_log.h"
-
+#include <cstdio>
 extern "C" {
-static ossia_log_fun_t log_fun = nullptr;
+void basic_log(const char* error)
+{
+  std::fprintf(stderr, "%s\n", error);
+}
+
+static ossia_log_fun_t log_fun = basic_log;
 void ossia_set_debug_logger(ossia_log_fun_t fp)
 {
   log_fun = fp;

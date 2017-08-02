@@ -1,12 +1,14 @@
 #include <ossia-c/ossia-c.h>
+#include <stdio.h>
 
 void test_callback(void* n, ossia_value_t v)
 {
   int* count = (int*)n;
   *count += 1;
-  const char* str = ossia_value_to_string(v);
-  printf("Received: %s", str);
+  const char* str = ossia_value_convert_string(v);
+  printf("Received: %s\n", str);
   ossia_value_free_string(str);
+  ossia_value_free(v);
 }
 
 int main(int argc, char** argv)
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
   ossia_node_t n2 = ossia_node_create(root, "/foo/baz");
 
   /* This sub-child, /bort/bert, will have a float value. */
-  ossia_address_t n2_addr = ossia_node_create_address(n2, ossia_type::FLOAT_T);
+  ossia_address_t n2_addr = ossia_node_create_address(n2, FLOAT_T);
 
   /* Send a value through the network */
   ossia_address_push_f(n2_addr, 345.);
@@ -47,7 +49,7 @@ int main(int argc, char** argv)
 
 
   ossia_protocol_t remote_proto = ossia_protocol_oscquery_mirror_create("ws://127.0.0.1:5678");
-  ossia_device_t remote_dev = ossia_device_create(remote_proto, "supersoftware");
+  ossia_device_t remote_dev = ossia_device_create(remote_proto, "remote");
   ossia_node_t remote_root = ossia_device_get_root_node(dev);
 
   /* Request an update of the root node.
@@ -69,12 +71,17 @@ int main(int argc, char** argv)
   ossia_address_t remote_n2_addr = ossia_node_get_address(remote_n2);
 
   int count = 0;
-  ossia_address_add_callback(remote_n2_addr, test_callback, &count);
+  ossia_address_push_callback(remote_n2_addr, test_callback, &count);
 
   ossia_address_push_f(n2_addr, 3.4);
+  ossia_address_push_f(n2_addr, 5.6);
   while(count != 2)
     ;
 
   /* Enjoy manual memory management. */
+  ossia_protocol_free(remote_proto);
+  ossia_device_free(remote_dev);
+
+  ossia_protocol_free(proto);
   ossia_device_free(dev);
 }

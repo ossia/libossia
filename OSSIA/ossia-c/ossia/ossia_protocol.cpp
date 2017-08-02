@@ -82,8 +82,7 @@ ossia_protocol_t ossia_protocol_oscquery_mirror_create(
 void ossia_protocol_free(ossia_protocol_t proto)
 {
   return safe_function(__func__, [=] {
-    if (proto)
-      delete proto;
+    delete proto;
   });
 }
 }

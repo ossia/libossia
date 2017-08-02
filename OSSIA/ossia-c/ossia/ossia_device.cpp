@@ -96,7 +96,7 @@ void ossia_device_reset_static()
   });
 }
 
-bool ossia_device_update_namespace(ossia_device_t device)
+int ossia_device_update_namespace(ossia_device_t device)
 {
   return safe_function(__func__, [=] {
     if (device)

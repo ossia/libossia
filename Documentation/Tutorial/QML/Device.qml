@@ -47,7 +47,7 @@ Item
 
     Ossia.OSCQueryClient {
         id: remote_dev
-        name: "supersoftware"
+        name: "remote"
         address: "ws://127.0.0.1:5678"
     }
 

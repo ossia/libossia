@@ -47,8 +47,10 @@ public:
   value(int v);
   value(bool v);
   value(float v);
+  value(double v);
   value(std::vector<opp::value> v);
   value(std::string v);
+  value(const char* v);
 
   bool is_impulse() const;
   bool is_int() const;
@@ -84,6 +86,8 @@ public:
 private:
   friend class node;
   value(const ossia::value& v);
+  template<typename T>
+  value(const T* v);
   ossia::value* m_val;
 };
 
