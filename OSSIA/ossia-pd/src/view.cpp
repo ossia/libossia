@@ -61,11 +61,6 @@ bool t_view::do_registration(ossia::net::node_base* node)
   {
     if (x_absolute == AddrType::relative)
     {
-      std::string absolute_path = get_absolute_path<t_view>(this);
-      std::string address_string = ossia::net::address_string_from_node(*node);
-
-      if (absolute_path != address_string)
-        return false;
       x_node = node->find_child(x_name->s_name);
     }
     else if(x_absolute == AddrType::absolute)
