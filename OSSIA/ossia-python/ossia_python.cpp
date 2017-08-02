@@ -170,9 +170,9 @@ struct to_python_value
 // to get children of a node
 PYBIND11_MAKE_OPAQUE(std::vector<ossia::net::node_base*>);
 
-PYBIND11_PLUGIN(ossia_python)
+PYBIND11_MODULE(ossia_python, m)
 {
-  py::module m("ossia_python", "python binding of ossia library");
+  m.doc() = "python binding of ossia library";
 
   py::class_<ossia_local_device>(m, "LocalDevice")
       .def(py::init<std::string>())
@@ -412,6 +412,4 @@ PYBIND11_PLUGIN(ossia_python)
       .def("__str__", [](const ossia::value& val) -> std::string {
         return ossia::value_to_pretty_string(val);
       });
-
-  return m.ptr();
 }
