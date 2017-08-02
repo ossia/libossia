@@ -53,25 +53,12 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 
     ebox_attrprocess_viabinbuf(x, d);
 
-    // check if there is another ossia.device in the same patcher
-    // TODO make a method to share with other objects
-    t_gobj* list = x->x_obj.o_canvas->gl_list;
-    while (list)
+    if (find_peer(x))
     {
-      std::string current = list->g_pd->c_name->s_name;
-      if (current == "ossia.device")
-      {
-        if (x != (t_device*)&list->g_pd)
-        {
-          pd_error(
-                &list->g_pd,
-                "Only one [ossia.device] instance per patcher is allowed.");
-          device_free(x);
-          x = nullptr;
-          break;
-        }
-      }
-      list = list->g_next;
+      error(
+            "Only one [ø.device]/[ø.client] instance per patcher is allowed.");
+      device_free(x);
+      x = nullptr;
     }
   }
 

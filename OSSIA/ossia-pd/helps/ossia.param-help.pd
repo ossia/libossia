@@ -1,4 +1,4 @@
-#N canvas 577 59 1091 598 10;
+#N canvas 151 22 1091 598 10;
 #X text 628 27 Attributes :;
 #X text 668 99 int : integer value;
 #X text 668 119 bool : bollean value \, 0 or 1;
@@ -72,13 +72,10 @@ most output;
 #X obj 86 323 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
 #X text 103 321 get current value;
-#X obj 58 349 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
-bi @range 0 1;
 #X text 52 192 this is the simplest form of creating an ossia parameter
 in Pd., f 66;
-#X text 279 510 see also :;
-#X floatatom 313 545 5 0 0 0 - - -, f 5;
+#X text 242 507 see also :;
+#X floatatom 343 554 5 0 0 0 - - -, f 5;
 #X text 653 482 @hidden <float> enable/disable hidden attribute \,
 could be 0 or 1, f 65;
 #X text 652 385 @repetition_filter <float> enable/disable repetition
@@ -89,7 +86,7 @@ R \, W;
 #X text 652 310 @bounding_mode <symbol> defines behavior when value
 go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
 \, FOLD \, LOW \, HIGH, f 68;
-#X obj 353 511 ossia.model param-help;
+#X obj 238 528 ossia.model param-help;
 #X floatatom 115 166 5 0 0 0 - - -, f 5;
 #X floatatom 115 124 5 0 0 0 - - -, f 5;
 #X obj 115 144 ossia.param foo;
@@ -100,20 +97,26 @@ go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
 #X restore 44 553 pd ossia/ø;
 #X text 37 25 ossia.parameter defines a parameter and allows to declare
 its properties as attributes, f 91;
-#X obj 351 544 ossia.remote foo;
+#X obj 238 552 ossia.remote foo;
 #X text 668 227 tuple : (list of) anything, f 61;
 #X text 668 71 float : most common \, simple float value - default
 type when none specified;
+#X obj 58 349 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
+"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
+bi @range 0 2;
+#X obj 388 553 ossia;
+#X msg 388 529 expose oscquery;
 #X connect 18 0 19 0;
 #X connect 18 1 20 0;
 #X connect 18 2 21 0;
 #X connect 18 3 22 0;
-#X connect 23 0 28 0;
-#X connect 24 0 28 0;
-#X connect 26 0 28 0;
-#X connect 28 0 18 0;
-#X connect 28 1 17 0;
-#X connect 31 0 42 0;
-#X connect 38 0 39 0;
-#X connect 39 0 37 0;
-#X connect 42 0 31 0;
+#X connect 23 0 44 0;
+#X connect 24 0 44 0;
+#X connect 26 0 44 0;
+#X connect 30 0 41 0;
+#X connect 37 0 38 0;
+#X connect 38 0 36 0;
+#X connect 41 0 30 0;
+#X connect 44 0 18 0;
+#X connect 44 1 17 0;
+#X connect 46 0 45 0;

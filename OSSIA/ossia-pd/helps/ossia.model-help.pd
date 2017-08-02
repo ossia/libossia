@@ -42,7 +42,7 @@ an [ø.model]) will subscribe under this model, f 99;
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
 #X text 63 76 ø.theNameOftheObject;
-#X restore 569 337 pd ossia/ø;
+#X restore 569 336 pd ossia/ø;
 #X text 39 232 More [ø.model]s can be added to subpatchers \, and
 they will subscribe in lower hierarchical levels., f 99;
 #X text 40 338 Feel free to duplicate/remove params and models and
