@@ -214,23 +214,12 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
       pd_error(x, "You have to pass a name as the first argument");
     }
 
-    t_gobj* list = x->x_obj.o_canvas->gl_list;
-    while (list)
+    if (find_peer(x))
     {
-      std::string current = list->g_pd->c_name->s_name;
-      if (current == "ossia.view")
-      {
-        if (x != (t_view*)&list->g_pd)
-        {
-          pd_error(
-              &list->g_pd,
-              "Only one [ossia.view] intance per patcher is allowed.");
-          view_free(x);
-          x = nullptr;
-          break;
-        }
-      }
-      list = list->g_next;
+      error(
+          "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
+      view_free(x);
+      x = nullptr;
     }
   }
 

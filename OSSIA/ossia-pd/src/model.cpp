@@ -184,23 +184,12 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       clock_delay(x->x_regclock, 0);
     }
 
-    t_gobj* list = x->x_obj.o_canvas->gl_list;
-    while (list)
+    if (find_peer(x))
     {
-      std::string current = list->g_pd->c_name->s_name;
-      if (current == "ossia.model")
-      {
-        if (x != (t_model*)&list->g_pd)
-        {
-          pd_error(
-                &list->g_pd,
-                "Only one [ossia.model] intance per patcher is allowed.");
-          model_free(x);
-          x = nullptr;
-          break;
-        }
-      }
-      list = list->g_next;
+      error(
+            "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
+      model_free(x);
+      x = nullptr;
     }
   }
 
