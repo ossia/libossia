@@ -204,22 +204,23 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
   }
 }
 
-std::vector<std::string> address_parts(const ossia::string_view& src)
+std::vector<std::string> address_parts(ossia::string_view src)
 {
   std::vector<std::string> sub;
 
   if (!src.empty())
   {
+    if(src.front() == '/')
+    {
+      src.remove_prefix(1);
+    }
+    if(src.back() == '/')
+    {
+      src.remove_suffix(1);
+    }
+
     sub.reserve(4);
-    if (src[0] != '/')
-    {
-      boost::split(sub, src, boost::is_any_of("/"));
-    }
-    else
-    {
-      ossia::string_view sv = src.substr(1);
-      boost::split(sub, sv, boost::is_any_of("/"));
-    }
+    boost::split(sub, src, boost::is_any_of("/"));
   }
 
   return sub;

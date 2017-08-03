@@ -23,6 +23,9 @@ extern "C" void ossia_remote_setup(void)
 
   if (ossia_library.ossia_remote_class)
   {
+    class_addmethod(ossia_library.ossia_remote_class, (method)t_remote::remote_bind,
+                    "bind", A_SYM, 0);
+    // TODO why there is 2 "anything" methods ?
     class_addmethod(
         ossia_library.ossia_remote_class, (method)t_object_base::push,
         "anything", A_GIMME, 0);
@@ -475,6 +478,14 @@ void t_remote::is_deleted(const ossia::net::node_base& n)
         return m.get_node() == &n;
     });
   }
+}
+
+void t_remote::remote_bind(t_remote* x, t_symbol* address)
+{
+  x->m_name = address;
+  x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+  x->unregister();
+  max_object_register(x);
 }
 
 } // max namespace

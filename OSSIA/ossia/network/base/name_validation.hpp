@@ -56,6 +56,6 @@ inline ossia::string_view pattern_match_characters() noexcept
  * Given bar/baz, returns {"bar, baz"}.
  */
 OSSIA_EXPORT std::vector<std::string>
-address_parts(const ossia::string_view& src);
+address_parts(ossia::string_view src);
 }
 }

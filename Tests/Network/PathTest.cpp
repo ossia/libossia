@@ -134,6 +134,33 @@ private Q_SLOTS:
     auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/foo/bar.1");
 
     {
+      auto p = traversal::make_path("..");
+      std::vector<ossia::net::node_base*> vec{&bar};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&foo};
+      QVERIFY(vec == expected);
+    }
+
+    {
+      auto p = traversal::make_path("../");
+      std::vector<ossia::net::node_base*> vec{&bar};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&foo};
+      QVERIFY(vec == expected);
+    }
+
+    {
+      auto p = traversal::make_path("../bar");
+      std::vector<ossia::net::node_base*> vec{&bar};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&bar};
+      QVERIFY(vec == expected);
+    }
+
+    {
       auto p = traversal::make_path("//bar.*");
       std::vector<ossia::net::node_base*> vec{&foo};
       traversal::apply(*p, vec);
@@ -159,6 +186,16 @@ private Q_SLOTS:
       std::vector<ossia::net::node_base*> expected{&n1, &n2};
       QVERIFY(vec == expected);
     }
+
+    {
+      auto p = traversal::make_path("//bar.*/..");
+      std::vector<ossia::net::node_base*> vec{&foo};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{n1.get_parent()};
+      QVERIFY(vec == expected);
+    }
+
   }
 
   void test_match()
