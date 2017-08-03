@@ -161,11 +161,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
         return false;
       */
         x_node = ossia::net::find_node(*node, x_name->s_name);
-        if (x_node && !x_node->get_address()){
-          fmt::MemoryWriter path;
-          path << x_name->s_name << "/" << x_name->s_name;
-          x_node = ossia::net::find_node(*node, path.str());
-        }
       }
       else if (x_absolute == AddrType::absolute)
       {

@@ -108,11 +108,11 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
   t_model* model = nullptr;
   t_view* view = nullptr;
   int view_level = 0, model_level = 0;
+  int start_level = 0;
 
   if (x->x_otype == Type::view || x->x_otype == Type::model)
   {
-    view_level = 1;
-    model_level = 1;
+    start_level = 1;
   }
 
   if (x->x_absolute == AddrType::relative)
@@ -121,7 +121,7 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
     if (x->x_otype == Type::view || x->x_otype == Type::remote)
     {
       view
-          = (t_view*)find_parent_alive(&x->x_obj, "ossia.view", 0, &view_level);
+          = (t_view*)find_parent_alive(&x->x_obj, "ossia.view", start_level, &view_level);
     }
 
     if (!view)

@@ -261,10 +261,15 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
 
   t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
 
-  int l = 0;
+  int device_level = 0;
+  int client_level = 0;
 
   // FIXme TODO use get root device instead
-  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l);
+  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
+
+  if (client)
+    fullpath << client->x_name->s_name << ":";
   if (device)
     fullpath << device->x_name->s_name << ":";
   else
@@ -281,6 +286,7 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
 
   t_view* view = nullptr;
   int view_level = 0;
+
   int start_level = 0;
   if (std::is_same<T, t_view>::value)
     start_level = 1;
@@ -299,17 +305,20 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
 
   t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
 
-  if (auto node = find_parent_node(x))
-    fullpath << node->get_name() << ":";
 
-  /**
-  if (auto client = (t_client*)find_parent(obj, "ossia.client", 0, &l))
+  int device_level = 0;
+  int client_level = 0;
+
+  // FIXme TODO use get root device instead
+  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
+
+  if (client)
     fullpath << client->x_name->s_name << ":";
-  else if (auto device = (t_device*)find_parent(obj, "ossia.device", 0, &l))
+  if (device)
     fullpath << device->x_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
-  **/
 
   return string_from_path(vs, fullpath);
 }
@@ -371,6 +380,13 @@ void obj_dump(T* x)
 {
   t_atom a;
   std::string fullpath;
+  if (x->x_otype == Type::remote)
+  {
+    t_remote* remote = (t_remote*) x;
+    if (remote->x_matchers.size() == 1)
+      x->x_node = remote->x_matchers[0].get_node();
+    else x->x_node = nullptr;
+  }
   if (x->x_node)
   {
     fullpath = ossia::net::address_string_from_node(*x->x_node);
