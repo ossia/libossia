@@ -1,3 +1,4 @@
+
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
@@ -85,6 +86,7 @@ extern "C" void ossia_parameter_setup()
 
   class_register(CLASS_BOX, ossia_library.ossia_parameter_class);
   class_alias(ossia_library.ossia_parameter_class, gensym("ø.param"));
+  class_alias(ossia_library.ossia_parameter_class, gensym("ø.parameter"));
 }
 
 extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
