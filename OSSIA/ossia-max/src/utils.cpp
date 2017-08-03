@@ -37,6 +37,7 @@ bool find_peer(t_object_base* x)
           return true;
       }
     }
+    return false;
 }
 
 ossia::net::node_base* find_global_node(const std::string& addr)
