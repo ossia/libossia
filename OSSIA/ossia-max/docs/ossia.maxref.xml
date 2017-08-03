@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <?xml-stylesheet href="./_c74_ref.xsl" type="text/xsl"?>
 
-<c74object name="ossia.parameter" module="max" category="Ossia">
+<c74object name="ossia" module="Ossia" category="Ossia">
 
 	<digest>
-		Parameter
+		Ossia
 	</digest>
 
 	<description>
-		Parameter
+		Ossia
 	</description>
 
 	
@@ -22,35 +22,21 @@
 	
 	<!--INLETS-->
 	<inletlist>
-		<inlet id="0" name="INLET_NAME">
-			<digest>Value to set the parameter to.</digest>
-		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
-		<outlet id="0" name="OUTLET_NAME">
-			<digest>Value the parameter was set to.</digest>
-		</outlet>
 	</outletlist>
 	
 	
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="accessmode" get="1" set="1" type="symbol" size="1">
-			<description>
-			Access
-			</description>
-		</attribute>
 	</attributelist>
 	
 
 	<!--SEEALSO-->
 	<seealsolist>
-		<seealso name="ossia.model"/>
-		<seealso name="ossia.view"/>
-		<seealso name="ossia.remote"/>
 	</seealsolist>
 
 	
