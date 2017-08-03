@@ -37,7 +37,6 @@ extern "C" void ossia_ossia_setup(void)
   class_addmethod(c, (method)t_object_base::relative_namespace, "namespace", A_NOTHING, 0);
 
   class_register(CLASS_BOX, c);
-  class_alias(c, gensym("ø"));
 
   auto& ossia_library = ossia_max::instance();
   ossia_library.ossia_ossia_class = c;

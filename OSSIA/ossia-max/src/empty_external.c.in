@@ -1,0 +1,7 @@
+#include <ossia_export.h>
+OSSIA_EXPORT void ${ossia_lib_name}_setup(void);
+
+void ext_main(void* r)
+{
+  ${ossia_lib_name}_setup();
+}

@@ -1,0 +1,66 @@
+{
+  "ossia.parameter": {
+    "digest": "Parameter",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+	    "Network"
+    ]
+  },
+  "ossia.model": {
+    "digest": "Model",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+  	  "Network"
+    ]
+  },
+  "ossia.view": {
+    "digest": "View",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
+  },
+  "ossia.client": {
+    "digest": "Client",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
+  },
+  "ossia.device": {
+    "digest": "Device",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
+  },
+  "ossia.remote": {
+    "digest": "Remote",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
+  },
+  "ossia.logger": {
+    "digest": "Logger",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
+  },
+  "ossia": {
+    "digest": "Ossia",
+    "module": "Ossia",
+    "category": [
+      "Ossia",
+      "Network"
+    ]
+  }
+}

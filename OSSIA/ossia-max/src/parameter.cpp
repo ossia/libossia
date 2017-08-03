@@ -84,7 +84,6 @@ extern "C" void ossia_parameter_setup()
       ossia_library.ossia_parameter_class, "repetition_filter", 0, "onoff");
 
   class_register(CLASS_BOX, ossia_library.ossia_parameter_class);
-  class_alias(ossia_library.ossia_parameter_class, gensym("ø.param"));
 }
 
 extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)

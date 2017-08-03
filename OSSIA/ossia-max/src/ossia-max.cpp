@@ -17,28 +17,14 @@
 
 using namespace ossia::max;
 
-// ossia-max library loading
-extern "C" void ext_main(void* r)
-{
-  common_symbols_init();
-  ossia_client_setup();
-  ossia_device_setup();
-  ossia_logger_setup();
-  ossia_model_setup();
-  ossia_parameter_setup();
-  ossia_remote_setup();
-  ossia_view_setup();
-  ossia_ossia_setup();
-
-  post("OSSIA library for Max is loaded");
-  post("build on %s at %s", __DATE__, __TIME__);
-}
-
 // ossia-max library constructor
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
     m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
 {
+  common_symbols_init();
+  post("OSSIA library for Max is loaded");
+  post("build on %s at %s", __DATE__, __TIME__);
 }
 
 // ossia-max library destructor

@@ -33,7 +33,6 @@ extern "C" void ossia_view_setup(void)
   }
 
   class_register(CLASS_BOX, c);
-  class_alias(c, gensym("ø.view"));
 
   auto& ossia_library = ossia_max::instance();
   ossia_library.ossia_view_class = c;

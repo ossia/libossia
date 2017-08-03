@@ -22,7 +22,6 @@ extern "C" void ossia_logger_setup()
       "anything", A_GIMME, 0);
 
   class_register(CLASS_BOX, ossia_library.ossia_logger_class);
-  class_alias(ossia_library.ossia_logger_class, gensym("ø.logger"));
 }
 
 extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)

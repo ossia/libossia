@@ -1,0 +1,22 @@
+{
+	"maxdb" : {
+		"externals" : {
+			"ossia.parameter" : {
+				"object" : "ossia-max",
+				"package" : "Ossia"
+			},
+			"ossia.model" : {
+				"object" : "ossia-max",
+				"package" : "Ossia"
+			},
+			"ossia.view" : {
+				"object" : "ossia-max",
+				"package" : "Ossia"
+			}
+		},
+
+		"aliases" : {
+			"o.parameter" : "ossia.parameter"
+		}
+	}
+}

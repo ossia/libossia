@@ -39,7 +39,6 @@ extern "C" void ossia_model_setup()
       m_hidden);
 
   class_register(CLASS_BOX, ossia_library.ossia_model_class);
-  class_alias(ossia_library.ossia_model_class, gensym("ø.model"));
 }
 
 extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)

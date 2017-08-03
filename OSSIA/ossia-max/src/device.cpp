@@ -38,7 +38,6 @@ extern "C" void ossia_device_setup(void)
 
 
   class_register(CLASS_BOX, c);
-  class_alias(c, gensym("ø.device"));
 
   auto& ossia_library = ossia_max::instance();
   ossia_library.ossia_device_class = c;

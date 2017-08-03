@@ -27,14 +27,14 @@ struct t_client;
 #pragma mark -
 #pragma mark Library
 
-extern "C" void ossia_client_setup(void);
-extern "C" void ossia_device_setup(void);
-extern "C" void ossia_logger_setup(void);
-extern "C" void ossia_model_setup(void);
-extern "C" void ossia_parameter_setup(void);
-extern "C" void ossia_remote_setup(void);
-extern "C" void ossia_view_setup(void);
-extern "C" void ossia_ossia_setup(void);
+extern "C" OSSIA_EXPORT void ossia_client_setup(void);
+extern "C" OSSIA_EXPORT void ossia_device_setup(void);
+extern "C" OSSIA_EXPORT void ossia_logger_setup(void);
+extern "C" OSSIA_EXPORT void ossia_model_setup(void);
+extern "C" OSSIA_EXPORT void ossia_parameter_setup(void);
+extern "C" OSSIA_EXPORT void ossia_remote_setup(void);
+extern "C" OSSIA_EXPORT void ossia_view_setup(void);
+extern "C" OSSIA_EXPORT void ossia_ossia_setup(void);
 
 class ossia_max
 {

@@ -2,8 +2,12 @@ cmake_minimum_required(VERSION 3.0)
 project(ossia-max C CXX)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
-set(CMAKE_MACOSX_RPATH Off)
-
+set(CMAKE_MACOSX_RPATH 1)
+if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path/../../../../support;@loader_path")
+elseif(WIN32)
+    set(CMAKE_INSTALL_RPATH  "\$ORIGIN/../support;\$ORIGIN")
+endif()
 find_package(MaxSDK REQUIRED)
 
 if(APPLE)
@@ -49,7 +53,7 @@ set(PROJECT_SRCS
     ${MAXSDK_MAINPATH}/c74support/max-includes/common/commonsyms.c
     )
 
-add_library(${PROJECT_NAME} MODULE ${PROJECT_SRCS})
+add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 
@@ -63,30 +67,68 @@ if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE MAC_VERSION)
     target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>)
-
-    set_property(TARGET ${PROJECT_NAME} PROPERTY BUNDLE True)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY BUNDLE_EXTENSION "mxo")
-    file(COPY resources/PkgInfo DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ossia-max.mxo/Contents/)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN_VERSION _CRT_SECURE_NO_WARNINGS)
-    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".mxe64")
-    else()
-        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".mxe")
-    endif()
 endif()
+
+function(setup_max_external theTarget)
+    if(APPLE)
+        set_property(TARGET ${theTarget} PROPERTY BUNDLE True)
+        set_property(TARGET ${theTarget} PROPERTY BUNDLE_EXTENSION "mxo")
+        file(COPY resources/PkgInfo DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${theTarget}.mxo/Contents/)
+    elseif(WIN32)
+        if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+            set_target_properties(${theTarget} PROPERTIES SUFFIX ".mxe64")
+        else()
+            set_target_properties(${theTarget} PROPERTIES SUFFIX ".mxe")
+        endif()
+    endif()
+endfunction()
+
+# Shim externals to allow objects to be found by Max search box
+set(OSSIA_EXT_LIST ossia.parameter ossia.model ossia.view ossia.remote ossia.device ossia.client ossia.logger ossia.ossia)
+foreach(ossiaExt ${OSSIA_EXT_LIST})
+    string(REPLACE "." "_" ossia_lib_name ${ossiaExt})
+    configure_file(src/empty_external.c.in ${CMAKE_CURRENT_BINARY_DIR}/${ossiaExt}.c)
+    add_library(${ossiaExt} MODULE ${CMAKE_CURRENT_BINARY_DIR}/${ossiaExt}.c)
+    target_link_libraries(${ossiaExt} PRIVATE ${PROJECT_NAME})
+    target_include_directories(${ossiaExt} PRIVATE ${CMAKE_BINARY_DIR}/OSSIA)
+    setup_max_external(${ossiaExt})
+endforeach()
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "ossia")
+set_target_properties(ossia.ossia PROPERTIES OUTPUT_NAME "ossia")
 
 set(OSSIA_MAX_INSTALL_FOLDER "ossia-max-package/ossia" CACHE STRING "Max Package Install folder")
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/help"
-        DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
-        COMPONENT ${PROJECT_NAME})
+install(
+    DIRECTORY
+        "${CMAKE_CURRENT_SOURCE_DIR}/help"
+        "${CMAKE_CURRENT_SOURCE_DIR}/examples"
+        "${CMAKE_CURRENT_SOURCE_DIR}/init"
+        "${CMAKE_CURRENT_SOURCE_DIR}/interfaces"
+        "${CMAKE_CURRENT_SOURCE_DIR}/docs"
+    DESTINATION
+        ${OSSIA_MAX_INSTALL_FOLDER}
+    COMPONENT
+        ${PROJECT_NAME}
+)
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/examples"
-        DESTINATION ${OSSIA_MAX_INSTALL_FOLDER}
-        COMPONENT ${PROJECT_NAME})
+install(
+    TARGETS
+        ${PROJECT_NAME}
+    BUNDLE RUNTIME LIBRARY
+    DESTINATION
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
+    COMPONENT
+        ${PROJECT_NAME}
+)
 
-install(TARGETS ${PROJECT_NAME}
-        BUNDLE RUNTIME LIBRARY
-        DESTINATION "${OSSIA_MAX_INSTALL_FOLDER}"
-        COMPONENT ${PROJECT_NAME})
+install(
+    TARGETS
+        ${OSSIA_EXT_LIST}
+    BUNDLE RUNTIME LIBRARY
+    DESTINATION
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
+    COMPONENT
+        ${PROJECT_NAME}
+)
