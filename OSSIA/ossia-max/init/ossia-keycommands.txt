@@ -1,0 +1,3 @@
+max definecommand l patcher inserttextobj ossia.;
+max definecommandinstructions patcher l ossia.;
+
