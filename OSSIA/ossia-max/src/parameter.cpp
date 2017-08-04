@@ -42,9 +42,6 @@ extern "C" void ossia_parameter_setup()
 
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
-  CLASS_ATTR_LONG(
-      ossia_library.ossia_parameter_class, "type_size", 0, t_parameter,
-      m_type_size);
   CLASS_ATTR_ATOM_ARRAY(
       ossia_library.ossia_parameter_class, "default", 0, t_parameter,
       m_default, 64);
