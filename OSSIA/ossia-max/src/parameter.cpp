@@ -39,6 +39,9 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       ossia_library.ossia_parameter_class, (method)ossia_parameter_in_anything,
       "anything", A_GIMME, 0);
+  class_addmethod(
+      ossia_library.ossia_remote_class, (method)object_dump<t_parameter>,
+      "dump", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
@@ -367,7 +370,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     m_type_size = 64;
     std::vector<ossia::value> list;
 
-    for (int i = 0; i < 64 && m_default[i].a_type != A_NOTHING; i++)
+    for (int i = 0; i < m_type_size && m_default[i].a_type != A_NOTHING; i++)
     {
       if (m_default[i].a_type == A_FLOAT)
         list.push_back(atom_getfloat(&m_default[i]));
