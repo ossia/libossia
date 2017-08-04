@@ -51,13 +51,12 @@ extern "C" void ossia_parameter_setup()
       ossia_library.ossia_parameter_class, "default", 0, t_parameter,
       m_default, 64);
   CLASS_ATTR_ATOM_ARRAY(
-      ossia_library.ossia_parameter_class, "range", 0, t_parameter, m_range,
-      2);
+      ossia_library.ossia_parameter_class, "range", 0, t_parameter, m_range, 2);
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "bounding_mode", 0, t_parameter,
       m_bounding_mode);
   CLASS_ATTR_ENUM ( 
-       ossia_library.ossia_parameter_class, "bounding_mode", 0, "free clip wrap fold low high");
+      ossia_library.ossia_parameter_class, "bounding_mode", 0, "free clip wrap fold low high");
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "access_mode", 0, t_parameter,
       m_access_mode);
