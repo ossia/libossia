@@ -89,12 +89,11 @@
 			</digest>
 			<description>
 				A list at the leftmost inlet sets and outputs the value. If the <at>@type</at> is <m>float</m>, <m>int</m> or <m>symbol</m>, only the first list member will be used to set the value, and the type of this list member might be converted to fit the specified <at>@type</at> of the parameter<br/>
-<!--       <br/>
-        If the <at>@type</at> is <m>float</m>, <m>int</m> or <m>tuple</m> and a dataspace is used (as specified by <at>@dataspace</at> and <at>@unit</at>), the new value can be set using alternative units. In this case the unit of new value is provided immediately following the numerical value, as either the last list member or as thre third last list member if a ramp is also being requested. If an alternative unit is requested as well as a ramp, the ramping will happen according to the dataspace unit being used temporarily
--->
+
 			</description>
 		</method>
-<!--		<method name="address">
+<!--		
+		<method name="address">
 			<arglist>
 				<arg name="address" type="symbol" optional="0"/>
 			</arglist>
@@ -115,7 +114,7 @@
 				The message <m>dump</m> outputs all attribute settings to rightmost outlet
 			</description>
 		</method>
-		</method>
+
 <!--
 		<method name="reset">
 			<arglist/>
@@ -153,7 +152,8 @@
 			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
 			</description>
 		</attribute>
-<!--		<attribute name="enable" get="1" set="1" type="int" size="1">
+		
+<!--	<attribute name="enable" get="1" set="1" type="int" size="1">
 			<digest>
 				Enable node
 			</digest>
@@ -176,8 +176,8 @@
 				Value type
 			</digest>
 			<description>
-				The <at>@type</at> attribute define the type of the value. Possible types are:
-				<li><m>float</m> (default)</li><li><m>int</m></li><li><ul><li><m>generic</m></li><li><m>bool</m></li><m>tuple</m></li><li><m>symbol</m></li></ul><li><m>none</m> (will not work with accessmode BI)</li><br/>
+				The <at>@type</at> attribute defines the type of the value. Possible types are:
+				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>generic</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>none</m> (will not work with accessmode BI).</li>
 			</description>
 		</attribute>
 
@@ -241,7 +241,7 @@
 				unit used by the node
 			</digest>
 			<description>
-				The <at>@unit</at> attribute defines the <unit used by this node. Values will get output according to this unit.
+				The <at>@unit</at> attribute defines the unit used by this node. Values will get output according to this unit.
 			</description>
 		</attribute>
 
