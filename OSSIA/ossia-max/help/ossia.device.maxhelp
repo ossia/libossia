@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 5.0, 60.0, 634.0, 469.0 ],
+		"rect" : [ 100.0, 100.0, 634.0, 469.0 ],
 		"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 		"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 		"bglocked" : 0,
@@ -54,7 +54,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 326.0, 552.0, 312.0, 111.0 ],
+						"rect" : [ 421.0, 592.0, 312.0, 111.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
@@ -83,7 +83,6 @@
 						"tags" : "",
 						"style" : "velvet",
 						"subpatcher_template" : "noTB_dark",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"format" : 6,
@@ -153,13 +152,11 @@
 								}
 
 							}
- ],
-						"accentcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+ ]
 					}
 ,
 					"patching_rect" : [ 558.0, 414.0, 53.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"accentcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
@@ -174,7 +171,6 @@
 			}
 , 			{
 				"box" : 				{
-					"bgcolor" : [ 0.156863, 0.156863, 0.196078, 1.0 ],
 					"id" : "obj-31",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -189,7 +185,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 5.0, 552.0, 320.0, 109.0 ],
+						"rect" : [ 100.0, 592.0, 320.0, 109.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"editing_bgcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ],
 						"bglocked" : 0,
@@ -218,7 +214,6 @@
 						"tags" : "",
 						"style" : "velvet",
 						"subpatcher_template" : "noTB_dark",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-6",
@@ -226,7 +221,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 126.0, 70.0, 134.0, 20.0 ],
-									"presentation_rect" : [ 88.0, 124.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "ø.theNameOftheObject"
 								}
@@ -239,7 +233,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 126.0, 45.0, 155.0, 20.0 ],
-									"presentation_rect" : [ 93.0, 102.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "ossia.theNameOftheObject"
 								}
@@ -258,13 +251,11 @@
 
 							}
  ],
-						"lines" : [  ],
-						"accentcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+						"lines" : [  ]
 					}
 ,
 					"patching_rect" : [ 41.0, 432.0, 59.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"accentcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
@@ -284,7 +275,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 232.5, 432.0, 337.0, 20.0 ],
-					"presentation_rect" : [ 286.0, 445.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "more can be exposed in subpatchers, e.g. using models:"
 				}
@@ -377,7 +367,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 247.0, 304.0, 337.0, 20.0 ],
-					"presentation_rect" : [ 296.5, 312.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "here are some parameters to expose in the device:"
 				}
@@ -402,7 +391,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 286.5, 241.0, 337.0, 20.0 ],
-					"presentation_rect" : [ 270.5, 240.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "expose with oscquery and specific ports (resp. osc & ws)"
 				}
@@ -416,7 +404,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 93.0, 198.0, 101.0, 22.0 ],
-					"presentation_rect" : [ 93.0, 198.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "expose oscquery"
 				}
@@ -429,7 +416,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 202.5, 198.0, 337.0, 20.0 ],
-					"presentation_rect" : [ 280.5, 196.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "expose with oscquery and default ports (osc: 9999, ws: 5678)"
 				}
@@ -442,7 +428,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 140.5, 155.0, 197.0, 20.0 ],
-					"presentation_rect" : [ 128.0, 151.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "get supported protocols and syntax"
 				}
@@ -455,7 +440,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 128.0, 119.0, 268.0, 20.0 ],
-					"presentation_rect" : [ 118.0, 86.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "get namespace (list of all registered parameters)"
 				}
@@ -468,7 +452,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 337.0, 69.0, 272.0, 20.0 ],
-					"presentation_rect" : [ 244.0, 72.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "(this will also work with ossia-client-help.pd in pd)"
 				}
@@ -481,7 +464,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 213.0, 47.0, 390.0, 20.0 ],
-					"presentation_rect" : [ 89.0, 66.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "open ossia-client-help.maxpat if you want to remote-control this patcher"
 				}
@@ -618,15 +600,15 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.device.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
  ],

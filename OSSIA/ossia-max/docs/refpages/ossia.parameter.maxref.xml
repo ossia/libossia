@@ -175,7 +175,7 @@
 			</digest>
 			<description>
 				The <at>@type</at> attribute defines the type of the value. Possible types are:
-				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>generic</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>none</m> (will not work with accessmode BI).</li>
+				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
 			</description>
 		</attribute>
 
@@ -187,7 +187,7 @@
 				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range.
 			</description>
 		</attribute>		
-
+<!--
 		<attribute name="min" get="1" set="1" type="list" size="2">
 			<digest>
 				Value range minimum
@@ -205,7 +205,7 @@
 				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
 			</description>
 		</attribute>	
-
+-->
 		<attribute name="bounding_mode" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Set how values exceeding range will be clipped
