@@ -23,7 +23,8 @@ struct t_parameter : t_object_base
   t_symbol* m_access_mode{};
   long m_repetition_filter{};
   t_symbol* m_unit{};
-  t_symbol* m_tags{};
+  t_symbol* m_tags[64];
+  long m_tags_size{};
   t_symbol* m_description{};
   long m_priority{};
   long m_hidden{};
