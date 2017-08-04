@@ -87,18 +87,14 @@ void t_obj_base::obj_bang(t_obj_base* x)
 }
 
 /**
- * @brief list_all_child : list all node childs addresses recursively
+ * @brief list_all_child : list all node childs recursively
  * @param node : starting point
- * @param list : reference to a string vector to store each address
+ * @param list : reference to a node_base vector to store each node
  */
-void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
+void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::node_base*>& list){
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->get_address())
-    {
-      std::string s = ossia::net::osc_address_string(*child);
-      list.push_back(s);
-    }
+    list.push_back(child);
     list_all_child(*child,list);
   }
 }
@@ -112,15 +108,24 @@ void list_all_child(const ossia::net::node_base& node, std::vector<std::string>&
 void obj_namespace(t_obj_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
-  std::vector<std::string> list;
+  std::vector<ossia::net::node_base*> list;
   list_all_child(*x->x_node, list);
   int pos = ossia::net::osc_address_string(*x->x_node).length();
-  for (auto& addr : list)
+  for (ossia::net::node_base* child : list)
   {
-    std::string s = addr.substr(pos);
-    t_atom a;
-    SETSYMBOL(&a,gensym(s.c_str()));
-    outlet_anything(x->x_dumpout, prependsym,1,&a);
+    if (child->get_address())
+    {
+      ossia::value name = ossia::net::osc_address_string(*child).substr(pos);
+      ossia::value val = child->get_address()->fetch_value();
+
+      std::vector<t_atom> va;
+      value2atom vm{va};
+
+      name.apply(vm);
+      val.apply(vm);
+
+      outlet_anything(x->x_dumpout, prependsym, va.size(), va.data());
+    }
   }
 }
 
