@@ -92,8 +92,7 @@
 
 			</description>
 		</method>
-<!--		
-		<method name="address">
+<!--		<method name="address">
 			<arglist>
 				<arg name="address" type="symbol" optional="0"/>
 			</arglist>
@@ -152,8 +151,7 @@
 			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
 			</description>
 		</attribute>
-		
-<!--	<attribute name="enable" get="1" set="1" type="int" size="1">
+<!--		<attribute name="enable" get="1" set="1" type="int" size="1">
 			<digest>
 				Enable node
 			</digest>
@@ -262,7 +260,7 @@
 				The <at>@hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
 			</description>
 		</attribute>
-
+	</attributelist>
 
 
 
