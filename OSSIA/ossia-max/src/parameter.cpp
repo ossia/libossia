@@ -42,6 +42,8 @@ extern "C" void ossia_parameter_setup()
 
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
+  CLASS_ATTR_ENUM ( 
+      ossia_library.ossia_parameter_class, "type", 0, "float int bool symbol vec2f vec3f vec4f tuple impulse");
   CLASS_ATTR_ATOM_ARRAY(
       ossia_library.ossia_parameter_class, "default", 0, t_parameter,
       m_default, 64);
@@ -51,14 +53,21 @@ extern "C" void ossia_parameter_setup()
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "bounding_mode", 0, t_parameter,
       m_bounding_mode);
+  CLASS_ATTR_ENUM ( 
+       ossia_library.ossia_parameter_class, "bounding_mode", 0, "free clip wrap fold low high");
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "access_mode", 0, t_parameter,
       m_access_mode);
+  CLASS_ATTR_ENUM ( 
+      ossia_library.ossia_parameter_class, "access_mode", 0, "bi get set");
   CLASS_ATTR_LONG(
       ossia_library.ossia_parameter_class, "repetition_filter", 0, t_parameter,
       m_repetition_filter);
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "unit", 0, t_parameter, m_unit);
+  CLASS_ATTR_ENUM ( 
+      ossia_library.ossia_parameter_class, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.fps time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h"); 
+  //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "tags", 0, t_parameter, m_tags);
   CLASS_ATTR_SYM(
