@@ -630,28 +630,13 @@ t_object* get_patcher(t_object* object)
   return patcher;
 }
 
-std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
+std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
 {
   std::vector<std::string> tags;
 
-  if (tags_symbol)
+  for(int i=0;i<size;i++)
   {
-    char* c = tags_symbol->s_name;
-    std::string tag = "";
-
-    while (*c != '\0')
-    {
-      if (*c == ' ')
-      {
-        tags.push_back(tag);
-        tag = std::string("");
-      }
-      else
-        tag += *c;
-
-      c++;
-    }
-    tags.push_back(tag);
+    tags.push_back(tags_symbol[i]->s_name);
   }
 
   return tags;

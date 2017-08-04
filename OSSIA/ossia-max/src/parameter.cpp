@@ -40,7 +40,7 @@ extern "C" void ossia_parameter_setup()
       ossia_library.ossia_parameter_class, (method)ossia_parameter_in_anything,
       "anything", A_GIMME, 0);
   class_addmethod(
-      ossia_library.ossia_remote_class, (method)object_dump<t_parameter>,
+      ossia_library.ossia_parameter_class, (method)object_dump<t_parameter>,
       "dump", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
@@ -70,8 +70,8 @@ extern "C" void ossia_parameter_setup()
   CLASS_ATTR_ENUM ( 
       ossia_library.ossia_parameter_class, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h"); 
   //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
-  CLASS_ATTR_SYM(
-      ossia_library.ossia_parameter_class, "tags", 0, t_parameter, m_tags);
+  CLASS_ATTR_SYM_VARSIZE(
+      ossia_library.ossia_parameter_class, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "description", 0, t_parameter,
       m_description);
@@ -118,7 +118,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     x->m_unit = gensym("");
     x->m_type = gensym("float");
     x->m_type_size = 1;
-    x->m_tags = gensym("");
+    x->m_tags_size = 0;
     x->m_description = gensym("");
     x->m_priority = 0;
 
@@ -443,7 +443,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   local_address->set_unit(unit);
 
   ossia::net::set_description(local_address->get_node(), m_description->s_name);
-  ossia::net::set_tags(local_address->get_node(), parse_tags_symbol(m_tags));
+  ossia::net::set_tags(local_address->get_node(), parse_tags_symbol(m_tags, m_tags_size));
 
   ossia::net::set_priority(local_address->get_node(), m_priority);
 
