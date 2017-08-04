@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 13.0, 44.0, 1091.0, 598.0 ],
+		"rect" : [ 0.0, 44.0, 1034.0, 599.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,36 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 10.0,
+					"id" : "obj-50",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 594.0, 241.0, 276.0, 18.0 ],
+					"presentation_rect" : [ 595.0, 237.0, 0.0, 0.0 ],
+					"style" : "",
+					"text" : "impulse : bang (only useful with SET or GET access_modes"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 10.0,
+					"id" : "obj-49",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 202.988831, 129.0, 303.0, 18.0 ],
+					"presentation_rect" : [ 215.0, 128.0, 0.0, 0.0 ],
+					"style" : "",
+					"text" : "this is a shortcut name for ossia.parameter (see [p ossia/ø] below)"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-64",
 					"maxclass" : "newobj",
@@ -462,7 +492,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 578.0, 290.0, 311.0, 18.0 ],
+					"patching_rect" : [ 575.0, 315.0, 311.0, 18.0 ],
 					"style" : "",
 					"text" : "@min <float> / @max <float> define minimum and maximum values"
 				}
@@ -476,7 +506,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 578.0, 270.0, 280.0, 18.0 ],
+					"patching_rect" : [ 575.0, 295.0, 280.0, 18.0 ],
 					"style" : "",
 					"text" : "@range <float> <float> define min and max at the same time"
 				}
@@ -490,7 +520,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 580.0, 525.0, 426.0, 18.0 ],
+					"patching_rect" : [ 575.0, 537.0, 426.0, 18.0 ],
 					"style" : "",
 					"text" : "@tags <symbol> string list to decribe some key features (like audio, video, synthesis, effect...)"
 				}
@@ -504,7 +534,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 580.0, 554.0, 270.0, 18.0 ],
+					"patching_rect" : [ 575.0, 566.0, 270.0, 18.0 ],
 					"style" : "",
 					"text" : "@description <symbol> textual decription of the parameter"
 				}
@@ -532,7 +562,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 578.0, 250.0, 253.0, 18.0 ],
+					"patching_rect" : [ 575.0, 275.0, 253.0, 18.0 ],
 					"style" : "",
 					"text" : "@default <atoms> define default value, fired at loading"
 				}
@@ -546,7 +576,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 579.0, 462.0, 280.0, 18.0 ],
+					"patching_rect" : [ 575.0, 487.0, 280.0, 18.0 ],
 					"style" : "",
 					"text" : "@priority <int> defines recall order, higher priority comes first"
 				}
@@ -570,7 +600,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 1105.0, 44.0, 181.0, 598.0 ],
+						"rect" : [ 1035.0, 44.0, 181.0, 598.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -597,6 +627,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
+						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -606,9 +637,9 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 38.0, 21.0, 111.0, 554.0 ],
+									"patching_rect" : [ 37.0, 21.0, 111.0, 554.0 ],
 									"style" : "",
-									"text" : "distance.m \ndistance.km \ndistance.dm \ndistance.cm \ndistance.mm \ndistance.um \ndistance.nm \ndistance.pm \ndistance.inches \ndistance.feet \ndistance.miles \nposition.cart3D \nposition.cart2D \nposition.spherical \nposition.polar \nposition.openGL \nposition.cylindrical \nspeed.m/s \nspeed.mph speed.km/h \nspeed.kn \nspeed.ft/s \nspeed.ft/h \norientation.quaternion \norientation.euler \norientation.axis \nangle.degree \nangle.radian \ncolor.argb \ncolor.rgba \ncolor.rgb \ncolor.bgr \ncolor.argb8 \ncolor.hsv \ncolor.cmy8 \ncolor.xyz \ngain.linear \ngain.midigain \ngain.db \ngain.db-raw \ntime.second \ntime.bark \ntime.bpm \ntime.cents \ntime.fps \ntime.mel \ntime.midinote \ntime.ms \ntime.speed"
+									"text" : "distance.m \ndistance.km \ndistance.dm \ndistance.cm \ndistance.mm \ndistance.um \ndistance.nm \ndistance.pm \ndistance.inches \ndistance.feet \ndistance.miles \nposition.cart3D \nposition.cart2D \nposition.spherical \nposition.polar \nposition.openGL \nposition.cylindrical \nspeed.m/s \nspeed.mph speed.km/h \nspeed.kn \nspeed.ft/s \nspeed.ft/h \norientation.quaternion \norientation.euler \norientation.axis \nangle.degree \nangle.radian \ncolor.argb \ncolor.rgba \ncolor.rgb \ncolor.bgr \ncolor.argb8 \ncolor.hsv \ncolor.cmy8 \ncolor.xyz \ngain.linear \ngain.midigain \ngain.db \ngain.db-raw \ntime.second \ntime.bark \ntime.hz \ntime.cents \ntime.hz \ntime.mel \ntime.midinote \ntime.ms \ntime.speed"
 								}
 
 							}
@@ -616,7 +647,7 @@
 						"lines" : [  ]
 					}
 ,
-					"patching_rect" : [ 818.0, 345.0, 50.0, 20.0 ],
+					"patching_rect" : [ 815.0, 370.0, 50.0, 20.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -638,7 +669,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 578.0, 346.0, 179.0, 18.0 ],
+					"patching_rect" : [ 575.0, 371.0, 179.0, 18.0 ],
 					"style" : "",
 					"text" : "@unit <symbol> defines unit, see list :"
 				}
@@ -783,7 +814,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 86.0, 323.0, 15.0, 15.0 ],
+					"patching_rect" : [ 115.5, 316.5, 20.5, 20.5 ],
 					"style" : ""
 				}
 
@@ -796,7 +827,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 103.0, 321.0, 150.0, 18.0 ],
+					"patching_rect" : [ 144.0, 316.5, 85.0, 18.0 ],
 					"style" : "",
 					"text" : "get current value"
 				}
@@ -870,7 +901,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 579.0, 483.0, 295.0, 18.0 ],
+					"patching_rect" : [ 575.0, 508.0, 295.0, 18.0 ],
 					"style" : "",
 					"text" : "@hidden <float> enable/disable hidden attribute, could be 0 or 1"
 				}
@@ -885,7 +916,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 578.0, 386.0, 428.0, 29.0 ],
+					"patching_rect" : [ 575.0, 411.0, 428.0, 29.0 ],
 					"style" : "",
 					"text" : "@repetition_filter <float> enable/disable repetition filter, could be 0 or 1 - default: 0 when none specified"
 				}
@@ -900,7 +931,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 579.0, 429.0, 437.0, 29.0 ],
+					"patching_rect" : [ 575.0, 454.0, 437.0, 29.0 ],
 					"style" : "",
 					"text" : "@access_mode <symbol> defines if the value can be read, write or both, could be : BI (default), GET, SET, RW, R, W"
 				}
@@ -915,9 +946,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 578.0, 311.0, 420.0, 29.0 ],
+					"patching_rect" : [ 575.0, 336.0, 420.0, 29.0 ],
 					"style" : "",
-					"text" : "@bounding_mode <symbol> defines behavior when value go out of range, could be one of : FREE (default), CLIP, WRAP, FOLD, LOW, HIGH"
+					"text" : "@bounding_mode <symbol> defines behavior when value go out of range, could be one of : free (default), clip, wrap, fold, low, high"
 				}
 
 			}
@@ -999,7 +1030,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 307.0, 374.0, 473.0, 124.0 ],
+						"rect" : [ 307.0, 374.0, 425.0, 138.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1030,12 +1061,26 @@
 								"box" : 								{
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
-									"id" : "obj-1",
-									"linecount" : 3,
+									"id" : "obj-4",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 62.0, 56.0, 50.0, 0.0 ],
+									"patching_rect" : [ 47.0, 93.0, 350.0, 18.0 ],
+									"presentation_rect" : [ 46.0, 91.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "in the case of ossia.parameter, it can even be further reduced to ø.param"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Arial",
+									"fontsize" : 10.0,
+									"id" : "obj-1",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 221.0, 53.0, 131.0, 18.0 ],
 									"style" : "",
 									"text" : "ossia.theNameOftheObject"
 								}
@@ -1049,7 +1094,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 47.0, 28.0, 350.0, 0.0 ],
+									"patching_rect" : [ 47.0, 28.0, 350.0, 18.0 ],
 									"style" : "",
 									"text" : "all ossia-pd objects can indifferently be named:"
 								}
@@ -1060,11 +1105,10 @@
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-3",
-									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 63.0, 76.0, 50.0, 0.0 ],
+									"patching_rect" : [ 222.0, 73.0, 113.0, 18.0 ],
 									"style" : "",
 									"text" : "ø.theNameOftheObject"
 								}
@@ -1074,7 +1118,7 @@
 						"lines" : [  ]
 					}
 ,
-					"patching_rect" : [ 44.0, 553.0, 50.0, 20.0 ],
+					"patching_rect" : [ 45.0, 553.0, 50.0, 20.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -1344,19 +1388,19 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.mxo",
 				"type" : "iLaX"
 			}
  ],
