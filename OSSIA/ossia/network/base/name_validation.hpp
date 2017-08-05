@@ -49,6 +49,16 @@ inline ossia::string_view pattern_match_characters() noexcept
 }
 
 /**
+ * @brief Checks if a given string has braces to expand
+ *
+ * e.g. foo[0-9]/{bar,b{aa,bb,cc}z}
+ *
+ * \see ossia::net::create_nodes
+ */
+OSSIA_EXPORT
+bool is_brace_expansion(ossia::string_view);
+
+/**
  * @brief address_parts Split an address
  *
  * Given foo:/bar/baz, returns {"foo:", "bar", "baz"}.
