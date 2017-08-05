@@ -152,7 +152,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
     }
     else
     {
-      if (x_absolute == AddrType::relative)
+      if (x_addr_scope == AddrScope::relative)
       {
         /*
       std::string absolute_path = get_absolute_path<t_remote>(this);
@@ -162,7 +162,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       */
         x_node = ossia::net::find_node(*node, x_name->s_name);
       }
-      else if (x_absolute == AddrType::absolute)
+      else if (x_addr_scope == AddrScope::absolute)
       {
         // remove starting '/'
         std::string addr = std::string(x_name->s_name).substr(1);
@@ -281,7 +281,7 @@ static void remote_push(t_remote* x, t_symbol* s, int argc, t_atom* argv)
 static void remote_bind(t_remote* x, t_symbol* address)
 {
   x->x_name = address;
-  x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
+  x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -304,7 +304,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
+      x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
     }
     else
     {

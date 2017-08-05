@@ -115,7 +115,7 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
     start_level = 1;
   }
 
-  if (x->x_absolute == AddrType::relative)
+  if (x->x_addr_scope == AddrScope::relative)
   {
     // then try to locate a parent view or model
     if (x->x_otype == Type::view || x->x_otype == Type::remote)
@@ -299,15 +299,15 @@ ossia::net::node_base* find_global_node(const std::string& addr)
   return nullptr;
 }
 
-ossia::pd::AddrType get_address_type(const std::string& addr)
+ossia::pd::AddrScope get_address_type(const std::string& addr)
 {
-  AddrType type = AddrType::relative;
+  AddrScope type = AddrScope::relative;
   if ( addr.length() > 0 )
   {
     if (addr[0] == '/')
-      type = AddrType::absolute;
+      type = AddrScope::absolute;
     else if ( addr.find(":/") != std::string::npos )
-      type = AddrType::global;
+      type = AddrScope::global;
   }
   return type;
 }

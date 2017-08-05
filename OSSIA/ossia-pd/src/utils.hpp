@@ -583,7 +583,7 @@ ossia::net::node_base* find_global_node(const std::string& addr);
  * @param addr: the address to process
  * @return
  */
-ossia::pd::AddrType get_address_type(const std::string& addr);
+ossia::pd::AddrScope get_address_type(const std::string& addr);
 
 }
 }
