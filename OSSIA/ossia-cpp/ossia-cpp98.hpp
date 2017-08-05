@@ -187,6 +187,9 @@ public:
   node& set_hidden(bool v);
   bool get_hidden() const;
 
+  node& set_disabled(bool v);
+  bool get_disabled() const;
+
   node& set_critical(bool v);
   bool get_critical() const;
 

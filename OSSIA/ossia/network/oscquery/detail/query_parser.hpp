@@ -67,6 +67,12 @@ public:
       net::critical_attribute attr, const std::string& data,
       net::address_data& res);
   static void parse(
+      net::hidden_attribute attr, const std::string& data,
+      net::address_data& res);
+  static void parse(
+      net::disabled_attribute attr, const std::string& data,
+      net::address_data& res);
+  static void parse(
       net::description_attribute attr, const std::string& data,
       net::address_data& res);
   static void parse(

@@ -4,7 +4,7 @@
 #include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/network/common/path.hpp>
-
+#include <boost/algorithm/string/replace.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std::placeholders;
@@ -38,7 +38,60 @@ private Q_SLOTS:
       // std::regex r("b[a-zA-Z0-9_~().-]?[a-zA-Z0-9_~().-]*?");
       // QVERIFY(std::regex_match("bar", r));
     }
+
+    {
+      std::regex reg{"\\[\\]"};
+      QVERIFY(std::regex_match("[]", reg));
+    }
+    {
+      std::regex reg{"\\[tata\\]"};
+      QVERIFY(std::regex_match("[tata]", reg));
+    }
+    {
+      std::regex reg{"\\[[a-z]*\\]"};
+      QVERIFY(std::regex_match("[tata]", reg));
+    }
+    {
+      std::regex reg{"\\[[a-zA-Z0-9-]+\\]"};
+      QVERIFY(std::regex_match("[ta-ta]", reg));
+    }
+    {
+      std::regex reg{"\\[[a-zA-Z0-9-]+\\]"};
+
+      std::string ex1 = "foo[0-9]b[a-b5-6]ar";
+      std::regex_iterator<std::string::iterator> rit ( ex1.begin(), ex1.end(), reg);
+      std::regex_iterator<std::string::iterator> rend;
+      QVERIFY(rit != rend);
+      QVERIFY(rit->str() == "[0-9]");
+      ++rit;
+      QVERIFY(rit->str() == "[a-b5-6]");
+      ++rit;
+      QVERIFY(rit == rend);
+    }
+    {
+      std::regex reg{"[a-zA-Z0-9]-[a-zA-Z0-9]"};
+      {
+        std::string ex = "[0-9]";
+        std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+        std::regex_iterator<std::string::iterator> rend;
+
+        QVERIFY(rit != rend);
+        QVERIFY(rit->str() == "0-9");
+      }
+      {
+        std::string ex = "[a-b5-6xyz]";
+        std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+        std::regex_iterator<std::string::iterator> rend;
+
+        QVERIFY(rit != rend);
+        QVERIFY(rit->str() == "a-b");
+        ++rit;
+        QVERIFY(rit->str() == "5-6");
+      }
+    }
+
   }
+
 
   void test_is_pattern()
   {
@@ -225,6 +278,38 @@ private Q_SLOTS:
       QVERIFY(traversal::match(p, n5));
       QVERIFY(traversal::match(p, n6));
     }
+
+  }
+
+  void test_create()
+  {
+    ossia::net::generic_device device1{};
+
+    auto created = ossia::net::create_nodes(device1, "/foo[0-9]/{bar,baz}/{a{b,c,d},e}[x-z]");
+
+    std::vector<std::string> addresses;
+    ossia::transform(
+          created,
+          std::back_inserter(addresses),
+          [] (auto n) { return ossia::net::osc_address_string(*n); });
+    QVERIFY(ossia::contains(addresses, "/foo0/bar/abx"));
+    QVERIFY(ossia::contains(addresses, "/foo0/bar/abz"));
+    QVERIFY(ossia::contains(addresses, "/foo0/bar/acz"));
+    QVERIFY(ossia::contains(addresses, "/foo0/bar/ez"));
+    QVERIFY(ossia::contains(addresses, "/foo0/baz/adx"));
+
+    QVERIFY(ossia::contains(addresses, "/foo5/bar/abx"));
+    QVERIFY(ossia::contains(addresses, "/foo5/bar/abz"));
+    QVERIFY(ossia::contains(addresses, "/foo5/bar/acz"));
+    QVERIFY(ossia::contains(addresses, "/foo5/bar/ez"));
+    QVERIFY(ossia::contains(addresses, "/foo5/baz/adx"));
+
+    QVERIFY(ossia::contains(addresses, "/foo9/bar/abx"));
+    QVERIFY(ossia::contains(addresses, "/foo9/bar/abz"));
+    QVERIFY(ossia::contains(addresses, "/foo9/bar/acz"));
+    QVERIFY(ossia::contains(addresses, "/foo9/bar/ez"));
+    QVERIFY(ossia::contains(addresses, "/foo9/baz/adx"));
+
 
   }
 };
