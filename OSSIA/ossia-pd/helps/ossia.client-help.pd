@@ -1,4 +1,4 @@
-#N canvas 552 22 467 415 10;
+#N canvas 1331 22 496 412 10;
 #X text 35 19 [ossia.client] connects to a remote OSSIA device and
 let you access its nodes with [ossia.view] and [ossia.remote].;
 #X msg 64 114 connect oscquery;
@@ -16,7 +16,6 @@ let you access its nodes with [ossia.view] and [ossia.remote].;
 #X text 168 200 get some more info in the console;
 #X text 160 302 if there is a /foo param in your device \,;
 #X text 158 320 it should be accessible from here;
-#X obj 64 237 ø.client;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
@@ -29,10 +28,11 @@ let you access its nodes with [ossia.view] and [ossia.remote].;
 , f 66;
 #X text 81 263 after properly connecting to the remote device \, the
 ø.remotes below should be connected;
-#X connect 1 0 14 0;
-#X connect 2 0 14 0;
+#X obj 64 237 ø.client max-device-help;
+#X connect 1 0 20 0;
+#X connect 2 0 20 0;
 #X connect 4 0 5 0;
 #X connect 5 0 4 0;
-#X connect 7 0 14 0;
-#X connect 16 0 17 0;
-#X connect 17 0 16 0;
+#X connect 7 0 20 0;
+#X connect 15 0 16 0;
+#X connect 16 0 15 0;

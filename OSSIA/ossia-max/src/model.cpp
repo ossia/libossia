@@ -33,7 +33,8 @@ extern "C" void ossia_model_setup()
   CLASS_ATTR_SYM(
       ossia_library.ossia_model_class, "description", 0, t_model,
       m_description);
-  CLASS_ATTR_SYM(ossia_library.ossia_model_class, "tags", 0, t_model, m_tags);
+  CLASS_ATTR_SYM_VARSIZE(
+      ossia_library.ossia_model_class, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
   CLASS_ATTR_LONG(
       ossia_library.ossia_model_class, "hidden", 0, t_model,
       m_hidden);
@@ -52,8 +53,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     x->m_dump_out = outlet_new(x, NULL); // anything outlet to dump model state
 
     x->m_description = _sym_nothing;
-    x->m_tags = _sym_nothing;
-
+    x->m_tags_size = 0;
     x->m_otype = Type::model;
 
     if(find_peer(x))
@@ -189,7 +189,7 @@ bool t_model::do_registration(ossia::net::node_base* node)
   m_node->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
 
   ossia::net::set_description(*m_node, m_description->s_name);
-  ossia::net::set_tags(*m_node, parse_tags_symbol(m_tags));
+  ossia::net::set_tags(*m_node, parse_tags_symbol(m_tags, m_tags_size));
   ossia::net::set_hidden(*m_node, m_hidden != 0);
 
   return true;

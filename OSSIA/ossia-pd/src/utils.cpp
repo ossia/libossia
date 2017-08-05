@@ -282,15 +282,18 @@ ossia::net::node_base* find_global_node(const std::string& addr)
   for (auto client : instance.clients.copy())
   {
     auto dev = client->x_device;
-    std::string name = dev->get_name();
-    size_t pos = addr.find(":");
-    std::string prefix = addr.substr(0,pos);
-    if (pos != std::string::npos && name == prefix)
+    if(dev)
     {
-      // remove 'device_name:/' prefix
-      std::string osc_name = addr.substr(name.length()+2);
-      auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-      if (node) return node;
+      std::string name = dev->get_name();
+      size_t pos = addr.find(":");
+      std::string prefix = addr.substr(0,pos);
+      if (pos != std::string::npos && name == prefix)
+      {
+        // remove 'device_name:/' prefix
+        std::string osc_name = addr.substr(name.length()+2);
+        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+        if (node) return node;
+      }
     }
   }
   return nullptr;

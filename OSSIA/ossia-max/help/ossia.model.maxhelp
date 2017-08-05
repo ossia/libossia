@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 248.0, 54.0, 662.0, 370.0 ],
+		"rect" : [ 100.0, 100.0, 662.0, 370.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -54,7 +54,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 421.0, 447.0, 172.0, 140.0 ],
+						"rect" : [ 271.0, 493.0, 172.0, 140.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -81,7 +81,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -130,7 +129,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 421.0, 610.0, 172.0, 99.0 ],
+										"rect" : [ 271.0, 656.0, 172.0, 99.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -157,7 +156,6 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
-										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
 													"fontname" : "Arial",
@@ -272,7 +270,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 248.0, 447.0, 172.0, 140.0 ],
+						"rect" : [ 98.0, 493.0, 172.0, 140.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -299,7 +297,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -348,7 +345,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 248.0, 610.0, 172.0, 99.0 ],
+										"rect" : [ 98.0, 656.0, 172.0, 99.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -375,7 +372,6 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
-										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
 													"fontname" : "Arial",
@@ -517,7 +513,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 594.0, 571.0, 181.0, 138.0 ],
+						"rect" : [ 440.0, 619.0, 181.0, 138.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -544,7 +540,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"comment" : "",
@@ -716,7 +711,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 594.0, 447.0, 316.0, 101.0 ],
+						"rect" : [ 444.0, 493.0, 316.0, 101.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -727,7 +722,7 @@
 						"gridsnaponopen" : 1,
 						"objectsnaponopen" : 1,
 						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
+						"toolbarvisible" : 0,
 						"lefttoolbarpinned" : 0,
 						"toptoolbarpinned" : 0,
 						"righttoolbarpinned" : 0,
@@ -743,7 +738,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -857,15 +851,15 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}
  ],

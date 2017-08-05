@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 660.0, 61.0, 517.0, 472.0 ],
+		"rect" : [ 100.0, 100.0, 517.0, 472.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -259,7 +259,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 307.0, 374.0, 473.0, 124.0 ],
+						"rect" : [ 96.0, 595.0, 285.0, 120.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -270,7 +270,7 @@
 						"gridsnaponopen" : 1,
 						"objectsnaponopen" : 1,
 						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
+						"toolbarvisible" : 0,
 						"lefttoolbarpinned" : 0,
 						"toptoolbarpinned" : 0,
 						"righttoolbarpinned" : 0,
@@ -291,11 +291,10 @@
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-1",
-									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 62.0, 56.0, 50.0, 0.0 ],
+									"patching_rect" : [ 62.0, 56.0, 131.0, 18.0 ],
 									"style" : "",
 									"text" : "ossia.theNameOftheObject"
 								}
@@ -309,7 +308,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 47.0, 28.0, 350.0, 0.0 ],
+									"patching_rect" : [ 47.0, 28.0, 350.0, 18.0 ],
 									"style" : "",
 									"text" : "all ossia-pd objects can indifferently be named:"
 								}
@@ -320,11 +319,10 @@
 									"fontname" : "Arial",
 									"fontsize" : 10.0,
 									"id" : "obj-3",
-									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 63.0, 76.0, 50.0, 0.0 ],
+									"patching_rect" : [ 63.0, 76.0, 113.0, 18.0 ],
 									"style" : "",
 									"text" : "ø.theNameOftheObject"
 								}
@@ -474,11 +472,11 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.client.mxo",
 				"type" : "iLaX"
 			}
  ],

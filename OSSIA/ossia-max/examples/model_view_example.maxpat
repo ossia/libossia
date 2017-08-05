@@ -392,7 +392,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 180.0, 192.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 179.0, 193.0, 0.0, 0.0 ],
 									"style" : "",
 									"tricolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
 								}

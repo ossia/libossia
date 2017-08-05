@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 687.0, 44.0, 778.0, 812.0 ],
+		"rect" : [ 100.0, 100.0, 778.0, 812.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -124,7 +124,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 873.0, 44.0, 356.0, 200.0 ],
+						"rect" : [ 1259.0, 100.0, 356.0, 200.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -151,7 +151,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -215,7 +214,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 873.0, 267.0, 358.0, 226.0 ],
+										"rect" : [ 1260.0, 323.0, 358.0, 226.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -242,7 +241,6 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
-										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
 													"fontname" : "Arial",
@@ -837,15 +835,15 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia-max.mxo",
+				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
  ],

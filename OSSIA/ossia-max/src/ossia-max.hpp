@@ -184,7 +184,7 @@ t_object* get_patcher(t_object* object);
 
 /**
  */
-std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
+std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
 
 } // max namespace
 } // ossia namespace
