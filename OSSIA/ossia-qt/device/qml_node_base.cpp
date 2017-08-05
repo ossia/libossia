@@ -153,6 +153,13 @@ bool qml_node_base::hidden() const
   return m_hidden;
 }
 
+bool qml_node_base::disabled() const
+{
+  if (m_ossia_node)
+    return ossia::net::get_disabled(*m_ossia_node);
+  return m_hidden;
+}
+
 bool qml_node_base::muted() const
 {
   if (m_ossia_node)
@@ -293,6 +300,19 @@ void qml_node_base::setHidden(bool hidden)
     ossia::net::set_hidden(*m_ossia_node, m_hidden);
 
   emit hiddenChanged(m_hidden);
+}
+
+void qml_node_base::setDisabled(bool disabled)
+{
+  if (m_disabled == disabled)
+    return;
+
+  m_disabled = disabled;
+
+  if (m_ossia_node)
+    ossia::net::set_disabled(*m_ossia_node, m_disabled);
+
+  emit disabledChanged(m_disabled);
 }
 
 void qml_node_base::setMuted(bool muted)

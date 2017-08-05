@@ -196,6 +196,34 @@ void query_parser::parse(
 }
 
 void query_parser::parse(
+    net::hidden_attribute attr, const std::string& data,
+    net::address_data& res)
+{
+  try
+  {
+    bool b = parse_bool(data);
+    attr.setter(res, b);
+  }
+  catch (...)
+  {
+  }
+}
+
+void query_parser::parse(
+    net::disabled_attribute attr, const std::string& data,
+    net::address_data& res)
+{
+  try
+  {
+    bool b = parse_bool(data);
+    attr.setter(res, b);
+  }
+  catch (...)
+  {
+  }
+}
+
+void query_parser::parse(
     net::description_attribute attr, const std::string& data,
     net::address_data& res)
 {

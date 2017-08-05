@@ -93,6 +93,7 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
     value_step_size, value_step_size, "valueStepsize")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(zombie, zombie, "zombie")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(hidden, hidden, "hidden")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(disabled, disabled, "disabled")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")

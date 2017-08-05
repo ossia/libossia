@@ -91,6 +91,9 @@ using default_value = ossia::value;
 //! Means that the node is very important, e.g. a "play" message
 using critical = bool;
 
+//! A disabled node
+using disabled = bool;
+
 //! Means that the node is not present on the "host" device
 using zombie = bool;
 
@@ -150,6 +153,11 @@ OSSIA_EXPORT ossia::string_view text_hidden();
 OSSIA_EXPORT hidden get_hidden(const extended_attributes& n);
 OSSIA_EXPORT void set_hidden(extended_attributes& n, hidden v);
 OSSIA_EXPORT void set_hidden(ossia::net::node_base& n, hidden v);
+
+OSSIA_EXPORT ossia::string_view text_disabled();
+OSSIA_EXPORT disabled get_disabled(const extended_attributes& n);
+OSSIA_EXPORT void set_disabled(extended_attributes& n, disabled v);
+OSSIA_EXPORT void set_disabled(ossia::net::node_base& n, disabled v);
 
 OSSIA_EXPORT ossia::string_view text_extended_type();
 OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);
@@ -308,7 +316,6 @@ OSSIA_ADDRESS_ATTRIBUTE(ossia::bounding_mode, bounding_mode)
 OSSIA_ADDRESS_ATTRIBUTE(ossia::unit_t, unit)
 OSSIA_ADDRESS_ATTRIBUTE(ossia::net::muted, muted)
 OSSIA_ADDRESS_ATTRIBUTE(ossia::net::critical, critical)
-OSSIA_ADDRESS_ATTRIBUTE(ossia::net::hidden, hidden)
 OSSIA_ADDRESS_ATTRIBUTE(ossia::value, default_value)
 
 // Metadata attributes
@@ -323,6 +330,8 @@ OSSIA_ATTRIBUTE(ossia::repetition_filter, repetition_filter)
 OSSIA_ATTRIBUTE(ossia::net::app_name, app_name)
 OSSIA_ATTRIBUTE(ossia::net::app_creator, app_creator)
 OSSIA_ATTRIBUTE(ossia::net::app_version, app_version)
+OSSIA_ATTRIBUTE(ossia::net::hidden, hidden)
+OSSIA_ATTRIBUTE(ossia::net::disabled, disabled)
 
 template <typename T, typename U>
 bool compare_optional(const T& t, const U& u)
