@@ -68,7 +68,9 @@ bool t_view::do_registration(ossia::net::node_base* node)
       x_node = ossia::net::find_node(
             node->get_device().get_root_node(), x_name->s_name);
     } else {
-      x_node = ossia::pd::find_global_node(x_name->s_name);
+      auto nodes = ossia::pd::find_global_nodes(x_name->s_name);
+      if (!nodes.empty()) x_node = nodes[0];
+      else x_node = nullptr;
     }
 
 
