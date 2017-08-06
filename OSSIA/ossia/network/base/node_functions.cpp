@@ -189,7 +189,11 @@ std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
   }
   else
   {
-    return {};
+    auto node = ossia::net::find_node(dev, pattern);
+    if(node)
+      return {node};
+    else
+      return {};
   }
 }
 
@@ -405,17 +409,24 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
 {
   std::vector<node_base*> v;
 
-  // 1. Replace all [ ] with { } form
-  auto str = canonicalize_str(std::string(pattern));
-
-  // 2. Expand
-  auto expanded = expand(str);
-
-  // 3. Create nodes
-  v.reserve(expanded.size());
-  for(const auto& addr : expanded)
+  if(is_brace_expansion(pattern))
   {
-    v.push_back(&ossia::net::create_node(dev, addr));
+    // 1. Replace all [ ] with { } form
+    auto str = canonicalize_str(std::string(pattern));
+
+    // 2. Expand
+    auto expanded = expand(str);
+
+    // 3. Create nodes
+    v.reserve(expanded.size());
+    for(const auto& addr : expanded)
+    {
+      v.push_back(&ossia::net::create_node(dev, addr));
+    }
+  }
+  else
+  {
+    v.push_back(&create_node(dev, pattern));
   }
 
   return v;
