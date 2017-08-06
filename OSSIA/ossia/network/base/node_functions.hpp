@@ -41,6 +41,18 @@ find_nodes(node_base& dev, ossia::string_view pattern);
 OSSIA_EXPORT node_base&
 create_node(node_base& dev, ossia::string_view address_base);
 
+
+/**
+ * @brief Create nodes according to a brace-expansion-like mechanism
+ *
+ * Only [] and { } are possible. e.g.
+ * /foo/{bar,baz}.[0-9][0-9].
+ *
+ * \see ossia::net::is_brace_expansion
+ */
+OSSIA_EXPORT std::vector<ossia::net::node_base*>
+create_nodes(node_base& dev, ossia::string_view pattern);
+
 /**
  * @brief Find a node and create it if it does not exist.
  *

@@ -16,7 +16,6 @@
 
 namespace ossia
 {
-
 scenario::scenario()
 {
   // create the start TimeNode
@@ -107,7 +106,11 @@ void scenario::stop()
   }
 
   m_runningConstraints.clear();
+  constraints_started.clear();
+  constraints_stopped.clear();
   m_waitingNodes.clear();
+  m_overticks.clear();
+  m_lastDate = time_value{};
 }
 
 void scenario::pause()

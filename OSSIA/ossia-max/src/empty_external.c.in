@@ -1,7 +1,11 @@
-#include <ossia_export.h>
-OSSIA_EXPORT void ${ossia_lib_name}_setup(void);
-
-void ext_main(void* r)
+#if defined(_MSC_VER)
+#define EXT_EXPORT __declspec(dllexport)
+#else
+#define EXT_EXPORT __attribute__((visibility("default")))
+#endif
+#include <ossia-max_export.h>
+OSSIA_MAX_EXPORT void ${ossia_lib_name}_setup(void);
+EXT_EXPORT void ext_main(void* r)
 {
   ${ossia_lib_name}_setup();
 }

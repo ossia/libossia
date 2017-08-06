@@ -2,6 +2,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/optional.hpp>
 #include <chobo/small_vector.hpp>
+#include <algorithm>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
 namespace ossia
@@ -225,5 +226,38 @@ std::vector<std::string> address_parts(ossia::string_view src)
 
   return sub;
 }
+
+bool is_brace_expansion(string_view s)
+{
+  int brace_count = 0;
+  int arr_count = 0;
+
+  for(int i = 0; i < s.size(); i++)
+  {
+    if(s[i] == '{')
+    {
+      brace_count++;
+    }
+    else if(s[i] == '[')
+    {
+      arr_count++;
+    }
+    else if(s[i] == '}')
+    {
+      brace_count--;
+      if(brace_count < 0)
+        return false;
+    }
+    else if(s[i] == ']')
+    {
+      arr_count--;
+      if(arr_count < 0)
+        return false;
+    }
+  }
+
+  return brace_count == 0 && arr_count == 0;
+}
+
 }
 }

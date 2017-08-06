@@ -335,10 +335,10 @@ state_element scenario::state(ossia::time_value date, double pos)
           }
         }
 
-        m_waitingNodes.clear();
         statusChangedEvents.clear();
       }
     }
+    m_waitingNodes.clear();
 
     for (time_constraint* constraint : m_runningConstraints)
     {

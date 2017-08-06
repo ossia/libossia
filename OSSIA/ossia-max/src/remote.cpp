@@ -12,7 +12,7 @@ using namespace ossia::max;
 #pragma mark -
 #pragma mark ossia_remote class methods
 
-extern "C" void ossia_remote_setup(void)
+extern "C" void ossia_remote_setup()
 {
   auto& ossia_library = ossia_max::instance();
 

@@ -290,6 +290,8 @@ void time_node::reset()
   }
 
   m_pending.clear();
+  m_observe = false;
+  m_evaluating = false;
 }
 
 void time_node::cleanup()

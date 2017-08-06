@@ -94,6 +94,10 @@ constexpr auto attribute_hidden()
 {
   return "HIDDEN";
 }
+constexpr auto attribute_disabled()
+{
+  return "DISABLED";
+}
 constexpr auto attribute_extended_type()
 {
   return "EXTENDED_TYPE";
@@ -349,6 +353,14 @@ struct metadata<net::hidden_attribute>
   }
 };
 template <>
+struct metadata<net::disabled_attribute>
+{
+  static constexpr auto key()
+  {
+    return detail::attribute_disabled();
+  }
+};
+template <>
 struct metadata<net::extended_type_attribute>
 {
   static constexpr auto key()
@@ -404,9 +416,9 @@ using base_attributes_without_type = brigand::
     list<net::value_attribute, net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute, net::repetition_filter_attribute, net::unit_attribute, net::default_value_attribute>;
 
 using extended_attributes = brigand::
-    list<net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute, net::value_step_size_attribute, net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute, net::extended_type_attribute, net::description_attribute, net::app_name_attribute, net::app_creator_attribute, net::app_version_attribute>;
+    list<net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute, net::value_step_size_attribute, net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute, net::disabled_attribute, net::extended_type_attribute, net::description_attribute, net::app_name_attribute, net::app_creator_attribute, net::app_version_attribute>;
 
-using attributes_when_reading = brigand::list<net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute, net::repetition_filter_attribute, net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute, net::value_step_size_attribute, net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute, net::description_attribute, net::app_name_attribute, net::app_creator_attribute, net::app_version_attribute>;
+using attributes_when_reading = brigand::list<net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute, net::repetition_filter_attribute, net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute, net::value_step_size_attribute, net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute, net::disabled_attribute, net::description_attribute, net::app_name_attribute, net::app_creator_attribute, net::app_version_attribute>;
 
 using all_attributes = brigand::list<
 typetag_attribute,
@@ -426,6 +438,8 @@ net::priority_attribute,
 net::value_step_size_attribute,
 net::instance_bounds_attribute,
 net::critical_attribute,
+net::hidden_attribute,
+net::disabled_attribute,
 net::description_attribute,
 net::app_name_attribute,
 net::app_creator_attribute,

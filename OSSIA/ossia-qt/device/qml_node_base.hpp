@@ -41,8 +41,8 @@ class OSSIA_EXPORT qml_node_base : public QQuickItem, public Nano::Observer
                  NOTIFY defaultValueChanged FINAL)
   Q_PROPERTY(bool critical READ critical WRITE setCritical NOTIFY
                  criticalChanged FINAL)
-  Q_PROPERTY(
-      bool hidden READ hidden WRITE setHidden NOTIFY hiddenChanged FINAL)
+  Q_PROPERTY(bool hidden READ hidden WRITE setHidden NOTIFY hiddenChanged FINAL)
+  Q_PROPERTY(bool disabled READ disabled WRITE setDisabled NOTIFY disabledChanged FINAL)
   Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY mutedChanged FINAL)
 
 public:
@@ -67,6 +67,7 @@ public:
   QVariant defaultValue() const;
   bool critical() const;
   bool hidden() const;
+  bool disabled() const;
   bool muted() const;
   QString extendedType() const;
 
@@ -84,6 +85,7 @@ public slots:
   void setDefaultValue(QVariant defaultValue);
   void setCritical(bool critical);
   void setHidden(bool hidden);
+  void setDisabled(bool disabled);
   void setMuted(bool muted);
 
 signals:
@@ -102,6 +104,7 @@ signals:
   void defaultValueChanged(QVariant defaultValue);
   void criticalChanged(bool critical);
   void hiddenChanged(bool hidden);
+  void disabledChanged(bool d);
   void mutedChanged(bool muted);
 
 protected:
@@ -129,6 +132,7 @@ protected:
   double m_stepSize{};
   bool m_critical{};
   bool m_hidden{};
+  bool m_disabled{};
   bool m_muted{};
 };
 

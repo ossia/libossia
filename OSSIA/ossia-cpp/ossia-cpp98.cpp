@@ -819,6 +819,24 @@ bool node::get_hidden() const
   return {};
 }
 
+node& node::set_disabled(bool v)
+{
+  if (m_node)
+  {
+    ossia::net::set_disabled(*m_node, v);
+  }
+  return *this;
+}
+
+bool node::get_disabled() const
+{
+  if (m_node)
+  {
+    return ossia::net::get_disabled(*m_node);
+  }
+  return {};
+}
+
 node& node::set_critical(bool v)
 {
   if (m_node)

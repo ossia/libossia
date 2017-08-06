@@ -3,6 +3,8 @@ project(ossia-max C CXX)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_INCLUDE_CURRENT_DIR 1)
+include(GenerateExportHeader)
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path/../../../../support;@loader_path")
 elseif(WIN32)
@@ -59,6 +61,8 @@ add_linker_warnings_external(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY})
 
+generate_export_header(${PROJECT_NAME})
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${MAXSDK_MAX_INCLUDE_DIR})
@@ -95,7 +99,7 @@ foreach(ossiaExt ${OSSIA_EXT_LIST})
     target_include_directories(${ossiaExt} PRIVATE ${CMAKE_BINARY_DIR}/OSSIA)
     setup_max_external(${ossiaExt})
 endforeach()
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "ossia")
+
 set_target_properties(ossia.ossia PROPERTIES OUTPUT_NAME "ossia")
 
 set(OSSIA_MAX_INSTALL_FOLDER "ossia-max-package/ossia" CACHE STRING "Max Package Install folder")
@@ -116,8 +120,11 @@ install(
 install(
     TARGETS
         ${PROJECT_NAME}
-    BUNDLE RUNTIME LIBRARY
-    DESTINATION
+    BUNDLE DESTINATION
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
+    RUNTIME DESTINATION
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
+    LIBRARY DESTINATION
         "${OSSIA_MAX_INSTALL_FOLDER}/support"
     COMPONENT
         ${PROJECT_NAME}
@@ -126,8 +133,11 @@ install(
 install(
     TARGETS
         ${OSSIA_EXT_LIST}
-    BUNDLE RUNTIME LIBRARY
-    DESTINATION
+    BUNDLE DESTINATION
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
+    RUNTIME DESTINATION
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
+    LIBRARY DESTINATION
         "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     COMPONENT
         ${PROJECT_NAME}
