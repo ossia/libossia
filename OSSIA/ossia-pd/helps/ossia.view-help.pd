@@ -1,13 +1,13 @@
-#N canvas 350 53 531 132 10;
+#N canvas 289 53 592 132 10;
 #X text 35 19 [ø.view] allows to connect a series of [ø.remote]s
-to an [ø.model] instance., f 80;
-#N canvas 351 208 530 312 view 1;
+to an [ø.model] instance., f 76;
+#N canvas 289 209 592 315 view 1;
 #X floatatom 20 56 5 0 0 0 - - -, f 5;
 #X obj 20 17 ossia.view my_model;
-#X text 147 15 the name of the model to connect to has to be put as
+#X text 163 17 the name of the model to connect to has to be put as
 argument, f 61;
-#X text 173 33 here we connect to the model in there:;
-#X text 142 54 move the connected number box and look into the patch
+#X text 189 35 here we connect to the model in there:;
+#X text 158 56 move the connected number box and look into the patch
 above;
 #X obj 61 54 ø.remote foo;
 #X text 17 264 Last but not least if you double click on [ossia.view]
@@ -31,14 +31,14 @@ leading slash), f 66;
 #X connect 1 0 0 0;
 #X connect 3 0 5 0;
 #X connect 4 0 5 0;
-#X restore 357 228 pd bind_to_views;
+#X restore 413 226 pd bind_to_views;
 #N canvas 882 423 222 96 subview 1;
 #X obj 16 14 ossia.view my_submodel;
 #X obj 68 45 ossia.remote foo;
 #X floatatom 19 46 5 0 0 0 - - -, f 5;
 #X connect 1 0 2 0;
 #X connect 2 0 1 0;
-#X restore 260 182 pd subview;
+#X restore 301 182 pd subview;
 #X text 29 129 Also \, models and views can coexist in the same patcher
 (because remotes would'nt know which one to refer to);
 #X connect 0 0 5 0;
@@ -73,11 +73,11 @@ leading slash), f 66;
 #X restore 47 150 pd submodel;
 #X floatatom 47 80 9 0 0 0 - - -, f 9;
 #X connect 1 0 4 0;
-#X restore 424 56 pd models;
-#X text 47 56 open this subpatcher:;
+#X restore 454 57 pd models;
+#X text 24 57 open this subpatcher:;
 #X text 234 57 which controls params in there:;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
 #X text 63 76 ø.theNameOftheObject;
-#X restore 19 92 pd ossia/ø;
+#X restore 34 92 pd ossia/ø;
