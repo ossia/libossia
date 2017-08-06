@@ -21,7 +21,7 @@ enum class Type {
   client
 };
 
-enum class AddrType
+enum class AddrScope
 {
   relative = 0,
   absolute,
@@ -36,7 +36,7 @@ struct t_obj_base
   t_outlet* x_setout{};
   t_outlet* x_dataout{};
   t_outlet* x_dumpout{};
-  AddrType x_absolute{};
+  AddrScope x_addr_scope{};
   bool x_dead = false; // wether this object is being deleted or not;
 
   t_clock* x_clock{};

@@ -1,6 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "utils.hpp"
+
+#include <ossia/network/common/path.hpp>
+
 namespace ossia
 {
 namespace pd
@@ -115,7 +118,7 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
     start_level = 1;
   }
 
-  if (x->x_absolute == AddrType::relative)
+  if (x->x_addr_scope == AddrScope::relative)
   {
     // then try to locate a parent view or model
     if (x->x_otype == Type::view || x->x_otype == Type::remote)
@@ -261,53 +264,98 @@ bool find_peer(t_obj_base* x)
   return false;
 }
 
-ossia::net::node_base* find_global_node(const std::string& addr)
+std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
 {
+  std::vector<ossia::net::node_base*> nodes{};
   auto& instance = ossia_pd::instance();
+  size_t pos = addr.find(":");
+  if (pos == std::string::npos) return nodes;
+
+  std::string prefix = addr.substr(0,pos);
+  // remove 'device_name:/' prefix
+  std::string osc_name = addr.substr(pos+2);
+
+  bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
+  bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
+  std::regex pattern(prefix.c_str());
+
   for (auto device : instance.devices.copy())
   {
     auto dev = device->x_device;
+    if (!dev) continue;
+
     std::string name = dev->get_name();
-    size_t pos = addr.find(":");
-    std::string prefix = addr.substr(0,pos);
-    if (pos != std::string::npos && name == prefix)
+
+    bool match;
+    if(is_prefix_pattern)
     {
-      // remove 'device_name:/' prefix
-      std::string osc_name = addr.substr(name.length()+2);
-      auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-      if (node) return node;
+      try {
+        match = std::regex_match(name, pattern);
+      } catch (std::exception& e) {
+        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        return nodes;
+      }
+    } else match = (name == prefix);
+
+    if (match)
+    {
+      if (is_osc_name_pattern)
+      {
+        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+        nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+      }
+      else
+      {
+        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+        if (node) nodes.push_back(node);
+      }
     }
   }
 
   for (auto client : instance.clients.copy())
   {
     auto dev = client->x_device;
-    if(dev)
+    if (!dev) continue;
+
+    std::string name = dev->get_name();
+
+    bool match;
+    if(is_prefix_pattern)
     {
-      std::string name = dev->get_name();
-      size_t pos = addr.find(":");
-      std::string prefix = addr.substr(0,pos);
-      if (pos != std::string::npos && name == prefix)
+      try {
+        match = std::regex_match(name, pattern);
+      } catch (std::exception& e) {
+        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        return nodes;
+      }
+    } else match = (name == prefix);
+
+    if (match)
+    {
+      if (is_osc_name_pattern)
       {
-        // remove 'device_name:/' prefix
-        std::string osc_name = addr.substr(name.length()+2);
+        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+        nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+      }
+      else
+      {
         auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-        if (node) return node;
+        if (node) nodes.push_back(node);
       }
     }
   }
-  return nullptr;
+  return nodes;
 }
 
-ossia::pd::AddrType get_address_type(const std::string& addr)
+ossia::pd::AddrScope get_address_type(const std::string& addr)
 {
-  AddrType type = AddrType::relative;
+  AddrScope type = AddrScope::relative;
   if ( addr.length() > 0 )
   {
     if (addr[0] == '/')
-      type = AddrType::absolute;
+      type = AddrScope::absolute;
     else if ( addr.find(":/") != std::string::npos )
-      type = AddrType::global;
+      type = AddrScope::global;
   }
   return type;
 }

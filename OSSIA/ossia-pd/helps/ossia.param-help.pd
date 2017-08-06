@@ -23,7 +23,7 @@ time;
 ;
 #X text 652 500 @priority <int> defines recall order \, higher priority
 comes first, f 66;
-#N canvas 1318 22 169 634 unit 1;
+#N canvas 1318 22 136 634 unit 1;
 #X text 4 1 distance.m distance.km distance.dm distance.cm distance.mm
 distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
 position.cart3D position.cart2D position.spherical position.polar position.openGL
@@ -32,7 +32,7 @@ speed.ft/h orientation.quaternion orientation.euler orientation.axis
 angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
 color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
 gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
-time.mel time.midinote time.ms time.speed;
+time.mel time.midinote time.ms time.speed, f 17;
 #X restore 932 383 pd unit list;
 #X text 651 384 @unit <symbol> defines unit \, see list :;
 #X text 52 94 Needed argument : parameter name with no special character

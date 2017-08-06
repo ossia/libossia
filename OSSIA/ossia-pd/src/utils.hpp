@@ -571,11 +571,11 @@ std::vector<t_obj_base*> find_child_to_register(
 bool find_peer(t_obj_base* x);
 
 /**
- * @brief find_global_node: find node matching address with a 'device:' prefix
+ * @brief find_global_node: find nodes matching address with a 'device:' prefix
  * @param addr : address string
- * @return pointer to the node
+ * @return vector of pointers to matching nodes
  */
-ossia::net::node_base* find_global_node(const std::string& addr);
+std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
 
 
 /**
@@ -583,7 +583,7 @@ ossia::net::node_base* find_global_node(const std::string& addr);
  * @param addr: the address to process
  * @return
  */
-ossia::pd::AddrType get_address_type(const std::string& addr);
+ossia::pd::AddrScope get_address_type(const std::string& addr);
 
 }
 }

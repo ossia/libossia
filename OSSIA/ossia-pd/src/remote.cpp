@@ -138,40 +138,58 @@ bool t_remote::do_registration(ossia::net::node_base* node)
   if (node)
   {
     std::string name = x_name->s_name;
+    // TODO refactor to reduce code verbosity
+    // x_addr_scope defines starting node
+    // x_is_pattern choose between find_node() and find_nodes()
 
-    if ( x_is_pattern )
-    {
-      auto nodes = ossia::net::find_nodes(*node, name);
-      for (auto n : nodes){
-        if (n->get_address()){
-          t_matcher matcher{n,this};
-          if (ossia::find(x_matchers,matcher) == x_matchers.end())
-            x_matchers.push_back(std::move(matcher));
+      if (x_addr_scope == AddrScope::relative)
+      {
+        if ( x_is_pattern )
+        {
+          auto nodes = ossia::net::find_nodes(*node, name);
+          for (auto n : nodes){
+            if (n->get_address()){
+              t_matcher matcher{n,this};
+              x_matchers.push_back(std::move(matcher));
+            }
+          }
+        } else {
+          /*
+          std::string absolute_path = get_absolute_path<t_remote>(this);
+          std::string address_string = ossia::net::address_string_from_node(*node);
+          if (absolute_path != address_string)
+            return false;
+          */
+          x_node = ossia::net::find_node(*node, x_name->s_name);
         }
       }
-    }
-    else
-    {
-      if (x_absolute == AddrType::relative)
+      else if (x_addr_scope == AddrScope::absolute)
       {
-        /*
-      std::string absolute_path = get_absolute_path<t_remote>(this);
-      std::string address_string = ossia::net::address_string_from_node(*node);
-      if (absolute_path != address_string)
-        return false;
-      */
-        x_node = ossia::net::find_node(*node, x_name->s_name);
-      }
-      else if (x_absolute == AddrType::absolute)
-      {
+        if ( x_is_pattern )
+        {
+          auto nodes = ossia::net::find_nodes(node->get_device().get_root_node(), name);
+          for (auto n : nodes){
+            if (n->get_address()){
+              t_matcher matcher{n,this};
+              x_matchers.push_back(std::move(matcher));
+            }
+          }
+        } else {
         // remove starting '/'
         std::string addr = std::string(x_name->s_name).substr(1);
         x_node = ossia::net::find_node(
               node->get_device().get_root_node(), addr);
+        }
       }
       else
       {
-        x_node = ossia::pd::find_global_node(x_name->s_name);
+        auto nodes = ossia::pd::find_global_nodes(x_name->s_name);
+        for (auto n : nodes){
+          if (n->get_address()){
+            t_matcher matcher{n,this};
+            x_matchers.push_back(std::move(matcher));
+          }
+        }
       }
 
 
@@ -190,7 +208,6 @@ bool t_remote::do_registration(ossia::net::node_base* node)
           x_matchers.push_back(std::move(matcher));
       }
       clock_delay(x_regclock, 0);
-    }
   }
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any node
@@ -281,7 +298,7 @@ static void remote_push(t_remote* x, t_symbol* s, int argc, t_atom* argv)
 static void remote_bind(t_remote* x, t_symbol* address)
 {
   x->x_name = address;
-  x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
+  x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -304,7 +321,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_absolute = ossia::pd::get_address_type(x->x_name->s_name);
+      x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
     }
     else
     {
