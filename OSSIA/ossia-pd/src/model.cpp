@@ -163,7 +163,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
         x->x_name = atom_getsymbol(argv);
-        x->x_absolute = get_address_type(x->x_name->s_name);
+        x->x_addr_scope = get_address_type(x->x_name->s_name);
       }
       else
       {
