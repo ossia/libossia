@@ -2,6 +2,7 @@
 
 #include "device.hpp"
 #include "model.hpp"
+#include "remote.hpp"
 #include "ossia_obj_base.hpp"
 
 namespace ossia
@@ -29,6 +30,8 @@ struct t_param : t_obj_base
   t_symbol* x_description;
   int x_priority;
   bool x_hidden;
+
+  std::vector<t_matcher> x_matchers{};
 
   static ossia::safe_vector<t_param*>& quarantine();
 

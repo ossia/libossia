@@ -94,7 +94,7 @@ ossia_pd::~ossia_pd()
     x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
   }
   for (auto x : params.copy()){
-    x->x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(x);
+    x->x_matchers.clear();
   }
 }
 

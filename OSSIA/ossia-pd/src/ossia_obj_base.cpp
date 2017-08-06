@@ -14,6 +14,95 @@ namespace ossia
 namespace pd
 {
 
+
+#pragma mark t_obj_pattern
+
+t_matcher::t_matcher(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+
+  if(node)
+  {
+    if(auto addr = node->get_address())
+    {
+      if (callbackit)
+        addr->remove_callback(*callbackit);
+
+      callbackit = addr->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+    }
+  }
+}
+
+t_matcher& t_matcher::operator=(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+
+  if(node)
+  {
+    if(auto addr = node->get_address())
+    {
+      if (callbackit)
+        addr->remove_callback(*callbackit);
+
+      callbackit = addr->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+    }
+  }
+
+  return *this;
+}
+
+t_matcher::t_matcher(ossia::net::node_base* n, t_obj_base* p) :
+  node{n}, parent{p}, callbackit{ossia::none}
+{
+  callbackit = node->get_address()->add_callback(
+      [=](const ossia::value& v) { set_value(v); });
+
+  node->about_to_be_deleted.connect<t_obj_base, &t_obj_base::is_deleted>(
+        parent);
+
+  //clock_delay(x_regclock, 0);
+}
+
+t_matcher::~t_matcher()
+{
+  if(node)
+  {
+    auto addr = node->get_address();
+    if (addr && callbackit) addr->remove_callback(*callbackit);
+    node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
+  }
+  node = nullptr;
+}
+
+void t_matcher::set_value(const ossia::value& v){
+  std::string addr = node->get_name();
+  t_atom a;
+  SETSYMBOL(&a, gensym(addr.c_str()));
+  outlet_anything(parent->x_dumpout,gensym("address"),1,&a);
+
+  value_visitor<t_obj_base> vm;
+  vm.x = (t_obj_base*)parent;
+  v.apply(vm);
+}
+
+#pragma mark t_obj_base
+
 void t_obj_base::setValue(const ossia::value& v)
 {
   auto local_address = x_node->get_address();
@@ -24,6 +113,18 @@ void t_obj_base::setValue(const ossia::value& v)
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)&x_obj;
   filtered.apply(vm);
+}
+
+void t_obj_base::is_deleted(const ossia::net::node_base& n)
+{
+  if (!x_dead)
+  {
+    ossia::remove_one_if(
+      x_matchers,
+      [&] (const auto& m) {
+        return m.get_node() == &n;
+    });
+  }
 }
 
 /**
