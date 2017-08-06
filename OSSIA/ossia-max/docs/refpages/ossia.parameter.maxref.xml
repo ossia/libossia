@@ -8,7 +8,7 @@
 	</digest>
 
 	<description>
-				ossia.parameter declares a parameter within a model or patch. ossia.parameter is somewhat similar to the pattr object, while enabling a number of additional features offered by libossia.
+				ossia.parameter declares a parameter in the ossia tree - it is somehow similar to the pattr object, while enabling a number of additional features offered by libossia.
 	</description>
 	<discussion>
     The parameter is an access point for controlling the processing of the patch. 
