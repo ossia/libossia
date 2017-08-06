@@ -15,7 +15,7 @@ using namespace ossia::max;
 #pragma mark -
 #pragma mark ossia_device class methods
 
-extern "C" void ossia_device_setup(void)
+extern "C" void ossia_device_setup()
 {
   // instantiate the ossia.client class
   t_class* c = class_new(

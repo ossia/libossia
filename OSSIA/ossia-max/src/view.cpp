@@ -9,7 +9,7 @@ using namespace ossia::max;
 #pragma mark -
 #pragma mark ossia_remote class methods
 
-extern "C" void ossia_view_setup(void)
+extern "C" void ossia_view_setup()
 {
   // instantiate the ossia.view class
   t_class* c = class_new(

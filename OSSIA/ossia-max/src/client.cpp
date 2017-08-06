@@ -20,7 +20,7 @@ using namespace ossia::max;
 #pragma mark -
 #pragma mark ossia_client class methods
 
-extern "C" void ossia_client_setup(void)
+extern "C" void ossia_client_setup()
 {
   auto& ossia_library = ossia_max::instance();
 

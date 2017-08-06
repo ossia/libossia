@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <bitset>
 
 #include <chobo/small_vector.hpp>
 
