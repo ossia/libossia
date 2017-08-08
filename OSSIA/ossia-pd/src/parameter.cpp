@@ -170,7 +170,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
     pd_error(
         this,
         "type should one of (case sensitive): float, symbol, int, vec2f, "
-        "vec3f, vec4f, bool, tuple, char");
+        "vec3f, vec4f, bool, tuple, impulse");
   }
   if (!local_address)
     return false;
