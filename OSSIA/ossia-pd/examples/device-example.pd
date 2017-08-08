@@ -1,4 +1,4 @@
-#N canvas 46 155 533 681 10;
+#N canvas 46 155 540 654 10;
 #X obj 26 372 osc~;
 #X obj 26 504 *~;
 #X obj 106 448 phasor~;
@@ -113,7 +113,7 @@ device and client., f 42;
 #X msg 96 184 \$2;
 #X obj 26 185 stripnote;
 #X obj 125 221 ossia.param modratio @default 4 @type float @description
-"Modulator frequency ratio";
+"Modulator frequency ratio", f 43;
 #X obj 25 102 ossia.param note @type vec2f @description "Midi note
 and velocity", f 25;
 #X msg 393 572 expose oscquery;
@@ -123,7 +123,7 @@ and velocity", f 25;
 #X floatatom 174 266 5 0 0 0 - - -, f 5;
 #X text 212 95 You can use - the patch "client-example.pd" \, - the
 "client-example.html" web application - or the QML application "client-example.qml"
-to control this device., f 47;
+to control this device., f 44;
 #X obj 174 288 ossia.param modgain @default -20 @type float @description
 "Modulator frequency gain" @unit dB @range -100 6 @bounding_mode CLIP
 , f 44;
