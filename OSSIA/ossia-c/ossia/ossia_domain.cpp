@@ -3,6 +3,22 @@
 #include "ossia_utils.hpp"
 
 extern "C" {
+
+ossia_domain_t ossia_domain_make_min_max(
+        ossia_value_t min,
+        ossia_value_t max)
+{
+    return safe_function(__func__, [=]() -> ossia_domain_t {
+        ossia::value vmin, vmax;
+      if (min)
+        vmin = convert(min);
+      if(max)
+        vmax = convert(max);
+
+      return convert(ossia::make_domain(vmin, vmax));
+    });
+}
+
 ossia_value_t ossia_domain_get_min(ossia_domain_t domain)
 {
   return safe_function(__func__, [=]() -> ossia_value_t {

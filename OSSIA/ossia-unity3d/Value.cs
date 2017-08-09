@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Runtime;
+﻿using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
@@ -31,11 +30,11 @@ namespace Ossia
 
 		static public Value createFromObject(object obj)
 		{
-			if (obj is int) 
+			if (obj is int)
 			{
 				return createInt ((int)obj);
-			} 
-			else if (obj is bool) 
+			}
+			else if (obj is bool)
 			{
 				return createBool ((bool)obj);
 			}
@@ -65,16 +64,53 @@ namespace Ossia
 			ossia_value = v;
 		}
 
+		public Value()
+		{
+			ossia_value = Network.ossia_value_create_impulse();
+		}
+		public Value(bool v)
+		{
+			ossia_value = Network.ossia_value_create_bool(v ? 1 : 0);
+		}
+		public Value(int v)
+		{
+			ossia_value = Network.ossia_value_create_int(v);
+		}
+		public Value(float v)
+		{
+			ossia_value = Network.ossia_value_create_float(v);
+		}
+		public Value(float v, float v2)
+		{
+			ossia_value = Network.ossia_value_create_2f(v, v2);
+		}
+		public Value(float v, float v2, float v3)
+		{
+			ossia_value = Network.ossia_value_create_3f(v, v2, v3);
+		}
+		public Value(float v, float v2, float v3, float v4)
+		{
+			ossia_value = Network.ossia_value_create_4f(v, v2, v3, v4);
+		}
+		public Value(char v)
+		{
+			ossia_value = Network.ossia_value_create_char(v);
+		}
+		public Value(string v)
+		{
+			ossia_value = Network.ossia_value_create_string(v);
+		}
+
 		public void Dispose()
-		{ 
+		{
 			Dispose(true);
-			GC.SuppressFinalize(this);           
+			GC.SuppressFinalize(this);
 		}
 
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposed)
-				return; 
+				return;
 
 			if (disposing) {
 				//Free(); TODO memleak
@@ -105,6 +141,21 @@ namespace Ossia
 		{
 			return Network.ossia_value_to_float(ossia_value);
 		}
+		public Tuple<float,float> GetVec2f()
+		{
+			vec2f v = Network.ossia_value_to_2f(ossia_value);
+			return new Tuple<float,float>(v.f1, v.f2);
+		}
+		public Tuple<float,float,float> GetVec3f()
+		{
+			vec3f v = Network.ossia_value_to_3f(ossia_value);
+			return new Tuple<float,float,float>(v.f1, v.f2, v.f3);
+		}
+		public Tuple<float,float,float,float> GetVec4f()
+		{
+			vec4f v = Network.ossia_value_to_4f(ossia_value);
+			return new Tuple<float,float,float,float>(v.f1, v.f2, v.f3, v.f4);
+		}
 		public char GetChar()
 		{
 			return Network.ossia_value_to_char(ossia_value);
@@ -120,11 +171,11 @@ namespace Ossia
 
 		static public ossia_type ObjectToOssiaType(object obj)
 		{
-			if (obj is int) 
+			if (obj is int)
 			{
 				return ossia_type.INT;
-			} 
-			else if (obj is bool) 
+			}
+			else if (obj is bool)
 			{
 				return ossia_type.BOOL;
 			}
@@ -146,11 +197,11 @@ namespace Ossia
 
 		static public ossia_type TypeToOssia<T>(T obj)
 		{
-			if (obj is int) 
+			if (obj is int)
 			{
 				return ossia_type.INT;
-			} 
-			else if (obj is bool) 
+			}
+			else if (obj is bool)
 			{
 				return ossia_type.BOOL;
 			}
@@ -173,11 +224,11 @@ namespace Ossia
 
 		static public ossia_type TypeToOssia2(Type obj)
 		{
-			if (obj == typeof(System.Int32)) 
+			if (obj == typeof(System.Int32))
 			{
 				return ossia_type.INT;
-			} 
-			else if (obj == typeof(System.Boolean)) 
+			}
+			else if (obj == typeof(System.Boolean))
 			{
 				return ossia_type.BOOL;
 			}

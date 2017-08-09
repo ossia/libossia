@@ -1,7 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Runtime;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
 using System;
 
 namespace Ossia
@@ -10,7 +9,7 @@ namespace Ossia
 	{
 		internal IntPtr ossia_address = IntPtr.Zero;
 		internal IntPtr ossia_callback_it = IntPtr.Zero;
-		List<ValueCallbackDelegate> callbacks; 
+		List<ValueCallbackDelegate> callbacks;
 
 		public Address(IntPtr address)
 		{
@@ -28,10 +27,15 @@ namespace Ossia
 		public ossia_bounding_mode GetBoundingMode()
 		{ return Network.ossia_address_get_bounding_mode (ossia_address); }
 
+
+        public Value FetchValue()
+        { return new Value (Network.ossia_address_fetch_value (ossia_address)); }
+		public Value GetValue()
+       { return new Value (Network.ossia_address_get_value (ossia_address)); }
+
 		public void SetValue(Value val)
 		{ Network.ossia_address_set_value (ossia_address, val.ossia_value); }
-		public Value GetValue()
-    { return new Value (Network.ossia_address_get_value (ossia_address)); }
+
 		public void PushValue(Value val)
 		{ Network.ossia_address_push_value (ossia_address, val.ossia_value); }
 		public void PushImpulse()
@@ -53,15 +57,9 @@ namespace Ossia
 		public void PushValue(string val)
 		{ Network.ossia_address_push_s (ossia_address, val); }
 
-    public Value FetchValue()
-    { return new Value (Network.ossia_address_fetch_value (ossia_address)); }
 
-    public Value GetValue()
-    { return new Value (Network.ossia_address_get_value (ossia_address)); }
-
-		private void DoNothing(Value v) 
+		private void DoNothing(Value v)
 		{
-			Debug.LogError ("Value received");
 		}
 
 
@@ -71,7 +69,7 @@ namespace Ossia
 				AddCallback (DoNothing);
 			} else {
 				RemoveCallback (DoNothing);
-			}				
+			}
 		}
 
 		public void AddCallback(ValueCallbackDelegate callback)
@@ -87,35 +85,57 @@ namespace Ossia
 
 		static public void CallbackWrapper(Address self, IntPtr value)
 		{
-			Debug.Log("OSSIA callback root");
 			Ossia.Value val = new Ossia.Value (value);
 			foreach(var cb in self.callbacks)
 			{
-				cb (val);				
+				cb (val);
 			}
 		}
 
 		public void RemoveCallback(ValueCallbackDelegate c)
 		{
-			Debug.Log ("remove");
 			callbacks.RemoveAll(x => x == c);
 			if (callbacks.Count == 0) {
 				Network.ossia_address_remove_callback (ossia_address, ossia_callback_it);
 			}
 		}
 
-		/* TODO
-
-		[DllImport ("ossia")]
-		public static extern void ossia_address_set_domain (
-			IntPtr address,
-			IntPtr domain);
-
-		[DllImport ("ossia")]
-		public static extern IntPtr ossia_address_get_domain (
-			IntPtr address);
-
-        */
+		public Value GetMin()
+		{
+			IntPtr dom = Network.ossia_address_get_domain(ossia_address);
+			var v = new Ossia.Value(Network.ossia_domain_get_min(dom));
+			Network.ossia_domain_free(dom);
+			return v;
+		}
+		public Value GetMax()
+		{
+			IntPtr dom = Network.ossia_address_get_domain(ossia_address);
+			var v = new Ossia.Value(Network.ossia_domain_get_min(dom));
+			Network.ossia_domain_free(dom);
+			return v;
+		}
+		public Domain GetDomain()
+		{
+			IntPtr dom = Network.ossia_address_get_domain(ossia_address);
+			var v = new Ossia.Value(Network.ossia_domain_get_min(dom));
+			var v2 = new Ossia.Value(Network.ossia_domain_get_max(dom));
+			Network.ossia_domain_free(dom);
+			return new Domain(v, v2);
+		}
+		public void SetMin(Value v)
+		{
+			IntPtr dom = Network.ossia_address_get_domain(ossia_address);
+			Network.ossia_domain_set_min(dom, v.ossia_value);
+			Network.ossia_address_set_domain(ossia_address, dom);
+			Network.ossia_domain_free(dom);
+		}
+		public void SetMax(Value v)
+		{
+			IntPtr dom = Network.ossia_address_get_domain(ossia_address);
+			Network.ossia_domain_set_max(dom, v.ossia_value);
+			Network.ossia_address_set_domain(ossia_address, dom);
+			Network.ossia_domain_free(dom);
+		}
 	}
 }
 

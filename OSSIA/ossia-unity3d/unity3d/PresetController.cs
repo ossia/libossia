@@ -8,7 +8,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-unsafe public class LoadPreset : MonoBehaviour {
+unsafe public class PresetController : MonoBehaviour {
 	
 	public string jsonname = "Assets/preset.json";
 	public Preset p;

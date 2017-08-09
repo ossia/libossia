@@ -115,6 +115,15 @@ inline auto convert(ossia_value_t v)
   return v->value;
 }
 
+inline auto convert(const ossia::domain& v)
+{
+  return new ossia_domain{v};
+}
+inline auto convert(ossia::domain&& v)
+{
+  return new ossia_domain{std::move(v)};
+}
+
 template <typename Fun>
 auto safe_function(const char name[], Fun f) -> decltype(f()) try
 {

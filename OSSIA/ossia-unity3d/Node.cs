@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Runtime;
+﻿using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
@@ -100,8 +99,6 @@ namespace Ossia {
 		}
 
 		public Ossia.Address GetAddress() {
-			Debug.LogError (GetName());
-			Debug.LogError (ossia_address);
 			return ossia_address;
 		}
 
@@ -126,12 +123,12 @@ namespace Ossia {
 
 		public static Node CreateNode(Node root, string s)
 		{
-			IntPtr p = ossia_node_create(root.ossia_node, s);
+			IntPtr p = Network.ossia_node_create(root.ossia_node, s);
 			return new Node(p);
 		}
 		public static Node Find(Node root, string s)
 		{
-			IntPtr p = ossia_node_find(root.ossia_node, s);
+			IntPtr p = Network.ossia_node_find(root.ossia_node, s);
 			return new Node(p);
 		}
 

@@ -38,6 +38,13 @@ typedef void (*ossia_value_callback_t)(void* ctx, ossia_value_t);
 struct ossia_value_callback_index;
 typedef struct ossia_value_callback_index* ossia_value_callback_idx_t;
 
+struct vec2f
+{ float val[2]; };
+struct vec3f
+{ float val[3]; };
+struct vec4f
+{ float val[4]; };
+
 typedef enum
 {
   FLOAT_T,
@@ -355,6 +362,11 @@ void ossia_address_free_callback_idx(
 /*** Domain ***/
 /**************/
 OSSIA_EXPORT
+ossia_domain_t ossia_domain_make_min_max(
+        ossia_value_t min,
+        ossia_value_t max);
+
+OSSIA_EXPORT
 ossia_value_t ossia_domain_get_min(
         ossia_domain_t domain);
 OSSIA_EXPORT
@@ -384,6 +396,12 @@ ossia_value_t ossia_value_create_int(int value);
 OSSIA_EXPORT
 ossia_value_t ossia_value_create_float(float value);
 OSSIA_EXPORT
+ossia_value_t ossia_value_create_2f(float v1, float v2);
+OSSIA_EXPORT
+ossia_value_t ossia_value_create_3f(float v1, float v2, float v3);
+OSSIA_EXPORT
+ossia_value_t ossia_value_create_4f(float v1, float v2, float v3, float v4);
+OSSIA_EXPORT
 ossia_value_t ossia_value_create_bool(int value);
 OSSIA_EXPORT
 ossia_value_t ossia_value_create_char(char value);
@@ -401,6 +419,12 @@ OSSIA_EXPORT
 int ossia_value_to_int(ossia_value_t val);
 OSSIA_EXPORT
 float ossia_value_to_float(ossia_value_t val);
+OSSIA_EXPORT
+vec2f ossia_value_to_2f(ossia_value_t val);
+OSSIA_EXPORT
+vec3f ossia_value_to_3f(ossia_value_t val);
+OSSIA_EXPORT
+vec4f ossia_value_to_4f(ossia_value_t val);
 OSSIA_EXPORT
 int ossia_value_to_bool(ossia_value_t val);
 OSSIA_EXPORT

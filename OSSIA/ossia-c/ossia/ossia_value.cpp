@@ -47,6 +47,19 @@ ossia_value_t ossia_value_create_float(float value)
   return convert(float{value});
 }
 
+ossia_value_t ossia_value_create_2f(float v1, float v2)
+{
+  return convert(ossia::make_vec(v1, v2));
+}
+ossia_value_t ossia_value_create_3f(float v1, float v2, float v3)
+{
+  return convert(ossia::make_vec(v1, v2, v3));
+}
+ossia_value_t ossia_value_create_4f(float v1, float v2, float v3, float v4)
+{
+  return convert(ossia::make_vec(v1, v2, v3, v4));
+}
+
 ossia_value_t ossia_value_create_bool(int value)
 {
   return convert(static_cast<bool>(value));
@@ -96,6 +109,22 @@ int ossia_value_to_int(ossia_value_t val)
 float ossia_value_to_float(ossia_value_t val)
 {
   return get_value<float>(val);
+}
+
+vec2f ossia_value_to_2f(ossia_value_t val)
+{
+  auto v = get_value<std::array<float, 2>>(val);
+  return {v[0], v[1]};
+}
+vec3f ossia_value_to_3f(ossia_value_t val)
+{
+  auto v = get_value<std::array<float, 3>>(val);
+  return {v[0], v[1], v[2]};
+}
+vec4f ossia_value_to_4f(ossia_value_t val)
+{
+  auto v = get_value<std::array<float, 4>>(val);
+  return {v[0], v[1], v[2], v[3]};
 }
 
 int ossia_value_to_bool(ossia_value_t val)
