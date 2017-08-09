@@ -158,7 +158,7 @@ namespace Ossia
 			IntPtr value);
 
 		[DllImport ("ossia")]
-		public static extern IntPtr ossia_address_clone_value (
+    public static extern IntPtr ossia_address_get_value (
 			IntPtr address);
 
 
@@ -222,7 +222,7 @@ namespace Ossia
 		
 
 		[DllImport ("ossia")]
-		public static extern IntPtr ossia_address_pull_value (
+    public static extern IntPtr ossia_address_fetch_value (
 			IntPtr address);
 
 

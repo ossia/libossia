@@ -106,12 +106,12 @@ void ossia_address_set_value(ossia_address_t address, ossia_value_t value)
   });
 }
 
-ossia_value_t ossia_address_clone_value(ossia_address_t address)
+ossia_value_t ossia_address_get_value(ossia_address_t address)
 {
   return safe_function(__func__, [=]() -> ossia_value_t {
     if (!address)
     {
-      ossia_log_error("ossia_address_clone_value: address is null");
+      ossia_log_error("ossia_address_get_value: address is null");
       return nullptr;
     }
 
@@ -298,12 +298,12 @@ void ossia_address_push_cn(ossia_address_t address, const char* in, int sz)
   });
 }
 
-ossia_value_t ossia_address_pull_value(ossia_address_t address)
+ossia_value_t ossia_address_fetch_value(ossia_address_t address)
 {
   return safe_function(__func__, [=]() -> ossia_value_t {
     if (!address)
     {
-      ossia_log_error("ossia_address_pull_value: address is null");
+      ossia_log_error("ossia_address_fetch_value: address is null");
       return nullptr;
     }
 

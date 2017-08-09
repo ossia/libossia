@@ -31,7 +31,7 @@ namespace Ossia
 		public void SetValue(Value val)
 		{ Network.ossia_address_set_value (ossia_address, val.ossia_value); }
 		public Value GetValue()
-		{ return new Value (Network.ossia_address_clone_value (ossia_address)); }
+    { return new Value (Network.ossia_address_get_value (ossia_address)); }
 		public void PushValue(Value val)
 		{ Network.ossia_address_push_value (ossia_address, val.ossia_value); }
 		public void PushImpulse()
@@ -53,8 +53,11 @@ namespace Ossia
 		public void PushValue(string val)
 		{ Network.ossia_address_push_s (ossia_address, val); }
 
-		public Value PullValue()
-		{ return new Value (Network.ossia_address_pull_value (ossia_address)); }
+    public Value FetchValue()
+    { return new Value (Network.ossia_address_fetch_value (ossia_address)); }
+
+    public Value GetValue()
+    { return new Value (Network.ossia_address_get_value (ossia_address)); }
 
 		private void DoNothing(Value v) 
 		{

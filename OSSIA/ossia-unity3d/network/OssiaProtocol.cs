@@ -11,13 +11,13 @@ namespace Ossia
 		internal IntPtr ossia_protocol;
 		protected Protocol(IntPtr impl)
 		{
-			ossia_protocol = impl;			
+			ossia_protocol = impl;
 		}
 	}
 
 	public class Local : Protocol
 	{
-		public Local() : 
+		public Local() :
 		base(Network.ossia_protocol_local_create())
 		{
 		}
@@ -30,7 +30,7 @@ namespace Ossia
 
 	public class Minuit : Protocol
 	{
-		public Minuit(string local_name, string ip, int in_port, int out_port) : 
+		public Minuit(string local_name, string ip, int in_port, int out_port) :
 		base(Network.ossia_protocol_minuit_create(local_name, ip, in_port, out_port))
 		{
 		}
@@ -38,7 +38,7 @@ namespace Ossia
 
 	public class OSCQuery : Protocol
 	{
-		public OSCQuery(int osc_port, int ws_port) : 
+		public OSCQuery(int osc_port, int ws_port) :
 		base(Network.ossia_protocol_oscquery_server_create(osc_port, ws_port))
 		{
 		}
@@ -46,7 +46,7 @@ namespace Ossia
 
 	public class OSC : Protocol
 	{
-		public OSC(string ip, int in_port, int out_port) : 
+		public OSC(string ip, int in_port, int out_port) :
 		base(Network.ossia_protocol_osc_create(ip, in_port, out_port))
 		{
 		}

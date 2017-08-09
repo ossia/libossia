@@ -56,7 +56,7 @@ int main()
         std::this_thread::sleep_for(1s);
         std::cerr << "in loop \n";
 
-        valueCallback(ossia_address_pull_value(x_a));
+        valueCallback(ossia_address_fetch_value(x_a));
     }
 
 

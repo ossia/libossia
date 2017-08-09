@@ -543,6 +543,13 @@ value node::get_value() const
   return {};
 }
 
+value node::fetch_value() const
+{
+  if (m_addr)
+    return m_addr->fetch_value();
+  return {};
+}
+
 void node::set_value_callback(value_callback c, void* context)
 {
   if (m_addr)

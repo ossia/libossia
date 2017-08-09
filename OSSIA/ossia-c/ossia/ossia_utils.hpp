@@ -86,6 +86,15 @@ inline ossia::net::node_base* convert_node(ossia_node_t v)
   return static_cast<ossia::net::node_base*>(v);
 }
 
+inline ossia::net::device_base* convert_device(ossia_device_t v)
+{
+  return v->device.get();
+}
+
+inline void* convert(const ossia::net::node_base* v)
+{
+    return static_cast<void*>(const_cast<ossia::net::node_base*>(v));
+}
 inline void* convert(ossia::net::node_base* v)
 {
   return static_cast<void*>(v);
@@ -131,3 +140,14 @@ inline const char* copy_string(const std::string& str)
   mbuffer[n] = 0;
   return mbuffer;
 }
+
+struct node_cb {
+    ossia_node_callback_t m_cb;
+    void* m_ctx;
+    void operator()(const ossia::net::node_base& node) {
+        m_cb(m_ctx, convert(&node));
+    }
+    void operator()(const ossia::net::address_base& addr) {
+        m_cb(m_ctx, convert(&addr.get_node()));
+    }
+};

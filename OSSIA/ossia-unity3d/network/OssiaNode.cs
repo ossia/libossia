@@ -19,15 +19,15 @@ namespace Ossia {
 		}
 
 		public void Dispose()
-		{ 
+		{
 			Dispose(true);
-			GC.SuppressFinalize(this);           
+			GC.SuppressFinalize(this);
 		}
 
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposed)
-				return; 
+				return;
 
 			if (disposing) {
 				Free();
@@ -63,7 +63,7 @@ namespace Ossia {
 			if (child != null) {
 				Network.ossia_node_remove_child (ossia_node, child.ossia_node);
 				children.Remove (child);
-				child.Free ();			
+				child.Free ();
 			}
 		}
 
@@ -122,6 +122,17 @@ namespace Ossia {
 			}
 
 			updating = b;
+		}
+
+		public static Node CreateNode(Node root, string s)
+		{
+			IntPtr p = ossia_node_create(root.ossia_node, s);
+			return new Node(p);
+		}
+		public static Node Find(Node root, string s)
+		{
+			IntPtr p = ossia_node_find(root.ossia_node, s);
+			return new Node(p);
 		}
 
 	}

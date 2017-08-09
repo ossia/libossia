@@ -22,8 +22,8 @@ namespace Ossia
 
 	public enum ossia_access_mode
 	{
-		BI, 
-		GET, 
+		BI,
+		GET,
 		SET
 	}
 
@@ -45,6 +45,10 @@ namespace Ossia
 	{
 		public string ExposedName;
 
+		public Expose()
+		{
+			this.ExposedName = String.Empty;
+		}
 		public Expose(string name)
 		{
 			this.ExposedName = name;

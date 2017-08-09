@@ -30,6 +30,9 @@ typedef struct ossia_value* ossia_value_t;
 typedef void* ossia_node_t;
 typedef void* ossia_address_t;
 
+typedef void (*ossia_node_callback_t)(void* ctx, ossia_node_t);
+struct ossia_node_callback_index;
+typedef struct ossia_node_callback_index* ossia_node_callback_idx_t;
 
 typedef void (*ossia_value_callback_t)(void* ctx, ossia_value_t);
 struct ossia_value_callback_index;
@@ -65,8 +68,10 @@ typedef enum
   LOW,
   HIGH
 } ossia_bounding_mode;
-//// Protocol ////
 
+/****************/
+/*** Protocol ***/
+/****************/
 
 /**
  * @brief ossia_protocol_local_create
@@ -111,7 +116,9 @@ OSSIA_EXPORT
 void ossia_protocol_free(
     ossia_protocol_t);
 
-//// Device ////
+/**************/
+/*** Device ***/
+/**************/
 /**
  * @brief ossia_device_create
  *
@@ -140,9 +147,40 @@ ossia_node_t ossia_device_get_root_node(
 
 OSSIA_EXPORT
 const char* ossia_device_get_name(
-        ossia_device_t node);
+        ossia_device_t device);
 
-//// Node ////
+OSSIA_EXPORT
+ossia_node_callback_idx_t ossia_device_add_node_created_callback(
+        ossia_device_t device,
+        ossia_node_callback_t callback,
+        void* ctx);
+OSSIA_EXPORT
+void ossia_device_remove_node_created_callback(
+        ossia_device_t device,
+        ossia_node_callback_idx_t index);
+
+OSSIA_EXPORT
+ossia_node_callback_idx_t ossia_device_add_node_removing_callback(
+        ossia_device_t device,
+        ossia_node_callback_t callback,
+        void* ctx);
+OSSIA_EXPORT
+void ossia_device_remove_node_removing_callback(
+        ossia_device_t device,
+        ossia_node_callback_idx_t index);
+
+OSSIA_EXPORT
+ossia_node_callback_idx_t ossia_device_add_address_deleting_callback(
+        ossia_device_t device,
+        ossia_node_callback_t callback,
+        void* ctx);
+OSSIA_EXPORT
+void ossia_device_remove_address_deleting_callback(
+        ossia_device_t device,
+        ossia_node_callback_idx_t index);
+/************/
+/*** Node ***/
+/************/
 OSSIA_EXPORT ossia_node_t ossia_node_find(
     ossia_node_t root,
     const char* name);
@@ -184,7 +222,19 @@ OSSIA_EXPORT
 void ossia_node_remove_address(
         ossia_node_t node);
 
-//// Address ////
+OSSIA_EXPORT
+ossia_node_callback_idx_t ossia_node_add_deleting_callback(
+        ossia_node_t node,
+        ossia_node_callback_t callback,
+        void* ctx);
+OSSIA_EXPORT
+void ossia_node_remove_deleting_callback(
+        ossia_node_t node,
+        ossia_node_callback_idx_t index);
+
+/***************/
+/*** Address ***/
+/***************/
 OSSIA_EXPORT
 void ossia_address_set_access_mode(
         ossia_address_t address,
@@ -215,7 +265,7 @@ void ossia_address_set_value(
         ossia_address_t address,
         ossia_value_t value);
 OSSIA_EXPORT
-ossia_value_t ossia_address_clone_value(
+ossia_value_t ossia_address_get_value(
         ossia_address_t address);
 
 
@@ -273,13 +323,13 @@ void ossia_address_push_fn(
         const float* value,
         int sz);
 OSSIA_EXPORT
-void ossia_address_push_cn( // pushed as a string
+void ossia_address_push_cn( /* pushed as a string */
         ossia_address_t address,
         const char* value,
         int sz);
 
 OSSIA_EXPORT
-ossia_value_t ossia_address_pull_value(
+ossia_value_t ossia_address_fetch_value(
         ossia_address_t address);
 
 OSSIA_EXPORT
@@ -301,7 +351,9 @@ void ossia_address_free_callback_idx(
         ossia_value_callback_idx_t);
 
 
-//// Domain ////
+/**************/
+/*** Domain ***/
+/**************/
 OSSIA_EXPORT
 ossia_value_t ossia_domain_get_min(
         ossia_domain_t domain);
@@ -322,7 +374,9 @@ OSSIA_EXPORT
 void ossia_domain_free(
         ossia_domain_t address);
 
-//// Value ////
+/*************/
+/*** Value ***/
+/*************/
 OSSIA_EXPORT
 ossia_value_t ossia_value_create_impulse();
 OSSIA_EXPORT
@@ -360,7 +414,6 @@ void ossia_value_to_tuple(ossia_value_t val_in, ossia_value_t** out, int* size);
 OSSIA_EXPORT
 void ossia_value_free_tuple(ossia_value_t* out);
 
-
 OSSIA_EXPORT
 int ossia_value_convert_int(ossia_value_t val);
 OSSIA_EXPORT
@@ -377,7 +430,6 @@ void ossia_value_convert_tuple(ossia_value_t val_in, ossia_value_t** out, int* s
 
 OSSIA_EXPORT
 void ossia_string_free(char*);
-
 
 #if defined(__cplusplus)
 }

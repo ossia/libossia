@@ -146,6 +146,7 @@ public:
 
   node& set_value(opp::value v);
   opp::value get_value() const;
+  opp::value fetch_value() const;
   void set_value_callback(value_callback c, void* context);
 
   node& set_min(opp::value min);
