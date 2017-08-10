@@ -215,6 +215,7 @@ struct vec_merger
   }
 };
 
+template<bool MergeSingleValues>
 struct state_flatten_visitor_merger
 {
   ossia::state& state;
@@ -246,14 +247,17 @@ struct state_flatten_visitor_merger
     }
     else if (to_append_index_empty && source_index_empty)
     {
-      // Add the new message to the state
-      state.add(incoming);
-        /* For reference if someone wants to revert to merging...
-      // Simple case : we just replace the values
-
-      value_merger<true>::merge_value(
-          existing.message_value, incoming.message_value);
-        */
+      if(MergeSingleValues)
+      {
+        // Replace existing values
+        value_merger<true>::merge_value(
+                    existing.message_value, incoming.message_value);
+      }
+      else
+      {
+        // Add the new message to the state
+        state.add(incoming);
+      }
     }
     else
     {
@@ -440,12 +444,15 @@ struct state_flatten_visitor_merger
     else if (to_append_index_empty && source_index_empty)
     {
       // Add the new message to the state
-      state.add(incoming);
-      /* For reference if someone wants to revert to merging...
-      // Simple case : we just replace the values
+      if(MergeSingleValues)
+      {
         value_merger<true>::merge_value(
-          existing.message_value, std::move(incoming.message_value));
-      */
+            existing.message_value, std::move(incoming.message_value));
+      }
+      else
+      {
+        state.add(incoming);
+      }
     }
     else
     {
@@ -600,6 +607,7 @@ struct state_flatten_visitor_merger
   }
 };
 
+template<bool MergeSingleValues>
 struct state_flatten_visitor
 {
   ossia::state& state;
@@ -659,7 +667,7 @@ struct state_flatten_visitor
     {
       using namespace eggs::variants;
       // Merge messages
-      state_flatten_visitor_merger merger{state};
+      state_flatten_visitor_merger<MergeSingleValues> merger{state};
       // Workaround for a GDB bug if we use a generic lambda
       // in a template function (operator() here)
       switch (it->which())

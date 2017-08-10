@@ -182,7 +182,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   {
     for (const auto& p : pastEvents)
     {
-      flatten_and_filter(cur_state, p.second->get_state());
+      merge_flatten_and_filter(cur_state, p.second->get_state());
     }
   }
 
