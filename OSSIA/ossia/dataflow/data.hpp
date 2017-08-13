@@ -7,7 +7,7 @@ namespace ossia
 template <typename T>
 using value_vector = chobo::small_vector<T, 4>;
 
-using audio_vector = chobo::small_vector<double, 64>;
+using audio_vector = std::vector<chobo::small_vector<double, 64>>;
 
 struct audio_port
 {
@@ -95,11 +95,19 @@ struct mix
       in.push_back(data);
   }
 
-  void operator()(const audio_vector& out, audio_vector& in)
+  void operator()(const audio_vector& src_vec, audio_vector& sink_vec)
   {
-    std::size_t N = std::min(in.size(), out.size());
-    for(std::size_t i = 0; i < N; i++)
-      in[i] += out[i];
+    if(sink_vec.size() < src_vec.size())
+      sink_vec.resize(src_vec.size());
+
+    for(std::size_t chan = 0; chan < src_vec.size(); chan++)
+    {
+      auto& src = src_vec[chan];
+      auto& sink = sink_vec[chan];
+      std::size_t N = std::min(sink.size(), src.size());
+      for(std::size_t i = 0; i < N; i++)
+        sink[i] += src[i];
+    }
   }
 
   void operator()(const value_vector<mm::MidiMessage>& out, value_vector<mm::MidiMessage>& in)

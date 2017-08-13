@@ -302,6 +302,79 @@ class ScenarioAlgoTest : public QObject
       s.constraint->tick(1000_tv);
       s.constraint->tick(999_tv);
       s.constraint->tick(1_tv);
+    }
+
+    void test_offset()
+    {
+        using namespace ossia;
+        root_scenario s;
+        TestDevice utils;
+
+        ossia::scenario& scenario = *s.scenario;
+        std::shared_ptr<time_event> e0 = start_event(scenario);
+        std::shared_ptr<time_event> e1 = create_event(scenario);
+        std::shared_ptr<time_event> e2 = create_event(scenario);
+        std::shared_ptr<time_event> e3 = create_event(scenario);
+
+        e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
+        e2->add_state(ossia::message{*utils.float_addr, ossia::value{31.}});
+
+        std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+        s.scenario->add_time_constraint(c0);
+        std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 5_tv, 5_tv, 5_tv);
+        s.scenario->add_time_constraint(c1);
+        std::shared_ptr<time_constraint> c2 = time_constraint::create([] (auto&&...) {}, *e2, *e3, 5_tv, 5_tv, 5_tv);
+        s.scenario->add_time_constraint(c1);
+
+        {
+            auto st = s.constraint->offset(7_tv);
+            ossia::print(std::cerr, st);
+
+            ossia::state expected;
+            {
+                ossia::state sub;
+                sub.add(ossia::message{*utils.float_addr, ossia::value{24.}});
+                expected.add(sub);
+            }
+            QVERIFY(st == expected);
+        }
+
+        {
+            ossia::state st;
+
+            ossia::state expected;
+
+            s.constraint->start(st);
+            ossia::print(std::cerr, st);
+
+            QVERIFY(st == expected);
+        }
+
+        s.constraint->stop();
+
+        {
+            auto st = s.constraint->offset(13_tv);
+            ossia::print(std::cerr, st);
+
+            ossia::state expected;
+            {
+                ossia::state sub;
+                sub.add(ossia::message{*utils.float_addr, ossia::value{31.}});
+                expected.add(sub);
+            }
+            QVERIFY(st == expected);
+        }
+
+        {
+            ossia::state st;
+
+            ossia::state expected;
+
+            s.constraint->start(st);
+            ossia::print(std::cerr, st);
+
+            QVERIFY(st == expected);
+        }
 
     }
 };

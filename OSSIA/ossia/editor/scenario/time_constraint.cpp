@@ -87,8 +87,6 @@ void time_constraint::start(ossia::state& pstate)
     auto st = state();
     if (m_callback)
       (m_callback)(m_position, m_date, st);
-
-    flatten_and_filter(pstate, std::move(st));
   }
 }
 

@@ -40,7 +40,6 @@ Item {
         Ossia.Property on width {
             node: "rect/width"
         }
-
     }
 
     id: root

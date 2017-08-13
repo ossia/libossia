@@ -69,11 +69,21 @@ bool operator!=(const state& lhs, const state& rhs)
 
 void flatten_and_filter(ossia::state& state, const state_element& element)
 {
-  ossia::apply(state_flatten_visitor{state}, element);
+  ossia::apply(state_flatten_visitor<false>{state}, element);
 }
 
 void flatten_and_filter(ossia::state& state, state_element&& element)
 {
-  ossia::apply(state_flatten_visitor{state}, std::move(element));
+  ossia::apply(state_flatten_visitor<false>{state}, std::move(element));
+}
+
+void merge_flatten_and_filter(ossia::state& state, const state_element& element)
+{
+  ossia::apply(state_flatten_visitor<true>{state}, element);
+}
+
+void merge_flatten_and_filter(ossia::state& state, state_element&& element)
+{
+  ossia::apply(state_flatten_visitor<true>{state}, std::move(element));
 }
 }

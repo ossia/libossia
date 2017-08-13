@@ -122,4 +122,146 @@ ossia_node_t ossia_device_get_root_node(ossia_device_t device)
     return convert(&device->device->get_root_node());
   });
 }
+
+
+ossia_node_callback_idx_t ossia_device_add_node_created_callback(
+        ossia_device_t device,
+        ossia_node_callback_t callback,
+        void* ctx)
+{
+  return safe_function(__func__, [=]() -> ossia_node_callback_idx_t {
+    if (!device)
+    {
+      ossia_log_error("ossia_device_add_node_created_callback: device is null");
+      return nullptr;
+    }
+    if (!callback)
+    {
+      ossia_log_error("ossia_device_add_node_created_callback: callback is null");
+      return nullptr;
+    }
+
+    auto the_cb = new node_cb{callback, ctx};
+
+    convert_device(device)->on_node_created.connect<node_cb>(the_cb);
+    return reinterpret_cast<ossia_node_callback_idx_t>(the_cb);
+  });
+}
+
+void ossia_device_remove_node_created_callback(
+        ossia_device_t device,
+        ossia_node_callback_idx_t index)
+{
+  return safe_function(__func__, [=] {
+    auto idx = (node_cb*) index;
+    if (!device)
+    {
+      ossia_log_error("ossia_device_remove_node_created_callback: device is null");
+      return;
+    }
+    if (!idx)
+    {
+      ossia_log_error("ossia_device_remove_node_created_callback: index is null");
+      return;
+    }
+
+    convert_device(device)->on_node_created.disconnect<node_cb>(idx);
+    delete idx;
+  });
+}
+
+
+ossia_node_callback_idx_t ossia_device_add_node_removing_callback(
+        ossia_device_t device,
+        ossia_node_callback_t callback,
+        void* ctx)
+{
+    return safe_function(__func__, [=]() -> ossia_node_callback_idx_t {
+      if (!device)
+      {
+        ossia_log_error("ossia_device_add_node_removing_callback: device is null");
+        return nullptr;
+      }
+      if (!callback)
+      {
+        ossia_log_error("ossia_device_add_node_removing_callback: callback is null");
+        return nullptr;
+      }
+
+      auto the_cb = new node_cb{callback, ctx};
+
+      convert_device(device)->on_node_removing.connect<node_cb>(the_cb);
+      return reinterpret_cast<ossia_node_callback_idx_t>(the_cb);
+    });
+}
+
+void ossia_device_remove_node_removing_callback(
+        ossia_device_t device,
+        ossia_node_callback_idx_t index)
+{
+    return safe_function(__func__, [=] {
+      auto idx = (node_cb*) index;
+      if (!device)
+      {
+        ossia_log_error("ossia_device_remove_node_created_callback: device is null");
+        return;
+      }
+      if (!idx)
+      {
+        ossia_log_error("ossia_device_remove_node_created_callback: index is null");
+        return;
+      }
+
+      convert_device(device)->on_node_removing.disconnect<node_cb>(idx);
+      delete idx;
+    });
+}
+
+
+ossia_node_callback_idx_t ossia_device_add_address_deleting_callback(
+        ossia_device_t device,
+        ossia_node_callback_t callback,
+        void* ctx)
+{
+    return safe_function(__func__, [=]() -> ossia_node_callback_idx_t {
+      if (!device)
+      {
+        ossia_log_error("ossia_device_add_address_deleting_callback: device is null");
+        return nullptr;
+      }
+      if (!callback)
+      {
+        ossia_log_error("ossia_device_add_address_deleting_callback: callback is null");
+        return nullptr;
+      }
+
+      auto the_cb = new node_cb{callback, ctx};
+
+      convert_device(device)->on_address_removing.connect<node_cb>(the_cb);
+      return reinterpret_cast<ossia_node_callback_idx_t>(the_cb);
+    });
+}
+
+void ossia_device_remove_address_deleting_callback(
+        ossia_device_t device,
+        ossia_node_callback_idx_t index)
+{
+    return safe_function(__func__, [=] {
+      auto idx = (node_cb*) index;
+      if (!device)
+      {
+        ossia_log_error("ossia_device_remove_address_deleting_callback: device is null");
+        return;
+      }
+      if (!idx)
+      {
+        ossia_log_error("ossia_device_remove_address_deleting_callback: index is null");
+        return;
+      }
+
+      convert_device(device)->on_address_removing.disconnect<node_cb>(idx);
+      delete idx;
+    });
+}
+
 }
