@@ -221,23 +221,24 @@ bool t_param::do_registration(ossia::net::node_base* node)
 bool t_param::unregister()
 {
   clock_unset(x_clock);
-  if (x_node)
-  {
-    x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
 
+  for (auto& matcher : x_matchers)
+  {
+    x_node = matcher.get_node();
     if (x_node->get_parent())
       x_node->get_parent()->remove_child(*x_node);
-
-    x_node = nullptr;
-
-    for (auto remote : t_remote::quarantine().copy())
-    {
-      obj_register<t_remote>(static_cast<t_remote*>(remote));
-    }
-
-    obj_quarantining<t_param>(this);
-
   }
+
+  x_matchers.clear();
+
+  x_node = nullptr;
+
+  for (auto remote : t_remote::quarantine().copy())
+  {
+    obj_register<t_remote>(static_cast<t_remote*>(remote));
+  }
+
+  obj_quarantining<t_param>(this);
 
   return true;
 }
@@ -345,8 +346,11 @@ static void parameter_free(t_param* x)
   x->unregister();
   obj_dequarantining<t_param>(x);
   ossia_pd::instance().params.remove_all(x);
+
   outlet_free(x->x_dataout);
   outlet_free(x->x_dumpout);
+
+  x->~t_param();
 }
 
 extern "C" void setup_ossia0x2eparam(void)
