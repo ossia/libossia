@@ -13,7 +13,7 @@ class OSSIA_EXPORT audio_address : public ossia::net::address_base
 {
 
 public:
-  gsl::span<float> audio;
+  std::vector<gsl::span<float>> audio;
 
   audio_address(ossia::net::node_base& n);
 

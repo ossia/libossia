@@ -8,19 +8,33 @@ audio_address::audio_address(net::node_base& n)
 {
 }
 
-void audio_address::clone_value(audio_vector& res) const
+void audio_address::clone_value(audio_vector& res_vec) const
 {
-  const auto N = std::min((int)audio.size(), (int)res.size());
-  for (int i = 0; i < N; i++)
-    res[i] += audio[i];
+  if(res_vec.size() < audio.size())
+    res_vec.resize(audio.size());
+
+  for(std::size_t chan = 0; chan < res_vec.size(); chan++)
+  {
+    auto& src = audio[chan];
+    auto& res = res_vec[chan];
+    const auto N = std::min((int)src.size(), (int)res.size());
+    for (int i = 0; i < N; i++)
+      res[i] += src[i];
+  }
 }
 
 void audio_address::push_value(const audio_port& port)
 {
-  std::copy_n(
-        port.samples.begin(),
-        std::min(port.samples.size(), (std::size_t)audio.size()),
-        audio.begin());
+  auto min_chan = std::min(port.samples.size(), (std::size_t)audio.size());
+  for(std::size_t chan = 0; chan < min_chan; chan++)
+  {
+    auto& src = port.samples[chan];
+    auto& dst = audio[chan];
+    std::copy_n(
+          src.begin(),
+          std::min(src.size(), (std::size_t)dst.size()),
+          dst.begin());
+  }
 }
 
 net::node_base&audio_address::get_node() const
