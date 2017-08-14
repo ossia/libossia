@@ -83,9 +83,18 @@ t_matcher::~t_matcher()
 {
   if(node)
   {
-    auto addr = node->get_address();
-    if (addr && callbackit) addr->remove_callback(*callbackit);
-    node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
+    if (parent->x_otype == Type::param)
+    {
+      if (!parent->x_is_deleted)
+      {
+        if (node->get_parent())
+          node->get_parent()->remove_child(*node);
+      }
+    } else {
+      auto addr = node->get_address();
+      if (addr && callbackit) addr->remove_callback(*callbackit);
+      node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
+    }
   }
   node = nullptr;
 }
@@ -119,11 +128,13 @@ void t_obj_base::is_deleted(const ossia::net::node_base& n)
 {
   if (!x_dead)
   {
+    x_is_deleted= true;
     ossia::remove_one_if(
       x_matchers,
       [&] (const auto& m) {
         return m.get_node() == &n;
     });
+    x_is_deleted = false;
   }
 }
 

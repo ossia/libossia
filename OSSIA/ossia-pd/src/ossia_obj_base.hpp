@@ -66,7 +66,8 @@ struct t_obj_base
   t_outlet* x_dumpout{};
   AddrScope x_addr_scope{};
   bool x_is_pattern{}; // whether the address is a pattern or not
-  bool x_dead = false; // whether this object is being deleted or not
+  bool x_dead{}; // whether this object is being deleted or not
+  bool x_is_deleted{}; // true during the is_deleted callback method
 
   t_clock* x_clock{};
   t_clock* x_regclock{};   // registration clock

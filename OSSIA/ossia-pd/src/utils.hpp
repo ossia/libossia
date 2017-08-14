@@ -380,9 +380,9 @@ void obj_dump(T* x)
 {
   t_atom a;
   std::string fullpath;
-  if (x->x_otype == Type::remote)
+  if (x->x_otype == Type::remote || x->x_otype == Type::param)
   {
-    t_remote* remote = (t_remote*) x;
+    t_obj_base* remote = (t_obj_base*) x;
     if (remote->x_matchers.size() == 1)
       x->x_node = remote->x_matchers[0].get_node();
     else x->x_node = nullptr;

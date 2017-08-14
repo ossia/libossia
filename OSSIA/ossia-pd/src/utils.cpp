@@ -220,7 +220,7 @@ std::vector<t_obj_base*> find_child_to_register(
       {
         t_obj_base* o;
         o = (t_obj_base*)&list->g_pd;
-        if (x != o)
+        if (x != o && !o->x_dead)
         {
           found.push_back(o);
         }
