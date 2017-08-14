@@ -341,8 +341,6 @@ template<typename T>
 // self registering (when creating the object)
 bool obj_register(T* x)
 {
-  if (x->x_node)
-    return true; // already registered
   if (x->x_dead)
     return false; // object will be removed soon
 

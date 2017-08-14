@@ -42,86 +42,44 @@ bool t_remote::register_node(ossia::net::node_base* node)
 bool t_remote::do_registration(ossia::net::node_base* node)
 {
 
-  if (x_node && x_node->get_parent() == node)
-  {
-    return true; // already registered to this node;
-  }
-
   unregister();
 
   if (node)
   {
     std::string name = x_name->s_name;
-    // TODO refactor to reduce code verbosity
-    // x_addr_scope defines starting node
-    // x_is_pattern choose between find_node() and find_nodes()
 
-      if (x_addr_scope == AddrScope::relative)
-      {
-        if ( x_is_pattern )
-        {
-          auto nodes = ossia::net::find_nodes(*node, name);
-          for (auto n : nodes){
-            if (n->get_address()){
-              t_matcher matcher{n,this};
-              x_matchers.push_back(std::move(matcher));
-            }
-          }
-        } else {
-          /*
-          std::string absolute_path = get_absolute_path<t_remote>(this);
-          std::string address_string = ossia::net::address_string_from_node(*node);
-          if (absolute_path != address_string)
-            return false;
-          */
-          x_node = ossia::net::find_node(*node, x_name->s_name);
-        }
-      }
-      else if (x_addr_scope == AddrScope::absolute)
-      {
-        if ( x_is_pattern )
-        {
-          auto nodes = ossia::net::find_nodes(node->get_device().get_root_node(), name);
-          for (auto n : nodes){
-            if (n->get_address()){
-              t_matcher matcher{n,this};
-              x_matchers.push_back(std::move(matcher));
-            }
-          }
-        } else {
-        // remove starting '/'
-        std::string addr = std::string(x_name->s_name).substr(1);
-        x_node = ossia::net::find_node(
-              node->get_device().get_root_node(), addr);
-        }
-      }
-      else
-      {
-        auto nodes = ossia::pd::find_global_nodes(x_name->s_name);
-        for (auto n : nodes){
-          if (n->get_address()){
-            t_matcher matcher{n,this};
-            x_matchers.push_back(std::move(matcher));
-          }
-        }
-      }
+    if (x_addr_scope == AddrScope::absolute)
+    {
+      // get root node
+      node = &node->get_device().get_root_node();
+      // and remove starting '/'
+      name = name.substr(1);
+    }
 
+    std::vector<ossia::net::node_base*> nodes{};
 
-      // if there is a node without address it might be a model
-      // then look if that node have an eponyme child
-      if (x_node && !x_node->get_address()){
+    if (x_addr_scope == AddrScope::global)
+      nodes = ossia::pd::find_global_nodes(name);
+    else
+      nodes = ossia::net::find_nodes(*node, name);
+
+    for (auto n : nodes){
+      if (n->get_address()){
+        t_matcher matcher{n,this};
+        x_matchers.push_back(std::move(matcher));
+      } else {
+        // if there is a node without address it might be a model
+        // then look if that node have an eponyme child
         fmt::MemoryWriter path;
         path << name << "/" << name;
-        x_node = ossia::net::find_node(*node, path.str());
-      }
-
-      if (x_node && x_node->get_address())
-      {
-        t_matcher matcher{x_node,this};
-        if (ossia::find(x_matchers,matcher) == x_matchers.end())
+        auto node = ossia::net::find_node(*n, path.str());
+        if (node){
+          t_matcher matcher{node,this};
           x_matchers.push_back(std::move(matcher));
+        }
       }
-      clock_delay(x_regclock, 0);
+    }
+    clock_delay(x_regclock, 0);
   }
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any node
