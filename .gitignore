@@ -7,6 +7,7 @@ CMake/common
 *.i386.o-*
 *.x64.o-*
 *.dylib
+*.exe
 
 # QtCreator files
 *.txt.user.*
