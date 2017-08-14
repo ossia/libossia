@@ -222,13 +222,6 @@ bool t_param::unregister()
 {
   clock_unset(x_clock);
 
-  for (auto& matcher : x_matchers)
-  {
-    x_node = matcher.get_node();
-    if (x_node->get_parent())
-      x_node->get_parent()->remove_child(*x_node);
-  }
-
   x_matchers.clear();
 
   x_node = nullptr;
@@ -256,17 +249,6 @@ void t_param::is_deleted(const net::node_base& n)
   obj_quarantining<t_param>(this);
 }
 
-// TODO put this in t_obj_base and update remote.cpp
-static void parameter_push(t_param* x, t_symbol* s, int argc, t_atom* argv)
-{
-  for (auto& m : x->x_matchers)
-  {
-    x->x_node = m.get_node();
-    t_obj_base::obj_push(x,s,argc,argv);
-  }
-  x->x_node = nullptr;
-}
-
 static void push_default_value(t_param* x)
 {
   int i = 0;
@@ -276,7 +258,7 @@ static void push_default_value(t_param* x)
       break;
   }
   if (i > 0)
-    parameter_push(x, nullptr, i, x->x_default);
+    t_obj_base::obj_push(x, nullptr, i, x->x_default);
 }
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
@@ -363,7 +345,7 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)parameter_push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
     eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
     eclass_addmethod(c, (method)obj_dump<t_param>, "dump", A_NULL, 0);
 
