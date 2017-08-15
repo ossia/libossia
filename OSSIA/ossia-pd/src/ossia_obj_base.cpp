@@ -301,53 +301,52 @@ void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
  */
 // TODO refactor this to use ossia_pd::instance().params|remotes
 // instead of going through all objects in all patchers.
-bool find_and_display_friend(t_obj_base* x, t_canvas* patcher)
+bool find_and_display_friend(t_obj_base* x)
 {
-  t_gobj* list = patcher->gl_list;
-
-  std::string target_str;
-  std::string canvas_str = "canvas";
-  std::string xclassname
-      = std::string(x->x_obj.o_obj.te_g.g_pd->c_name->s_name);
-  if (xclassname == "ossia.remote")
-    target_str = "ossia.param";
-  else if (xclassname == "ossia.view")
-    target_str = "ossia.model";
-
-  while (list && list->g_pd)
+  bool found = false;
+  if (x->x_otype == Type::remote)
   {
-    std::string classname = list->g_pd->c_name->s_name;
-    if (classname == target_str)
+    for (auto& rm_matcher : x->x_matchers)
     {
-      t_obj_base* p = (t_obj_base*)list;
-      if (p->x_node == x->x_node)
+      for (auto param : ossia_pd::instance().params.copy())
       {
-        if (x->x_last_opened_canvas)
-          glist_noselect(x->x_last_opened_canvas);
-        if (x->x_clock)
-          clock_unset(x->x_clock);
-        glist_noselect(patcher);
-        x->x_last_opened_canvas = patcher;
-        canvas_vis(glist_getcanvas(patcher), 1);
-        glist_select(patcher, &p->x_obj.o_obj.te_g);
-        if (x->x_clock)
-          clock_delay(x->x_clock, 1000);
-        return true;
+        for (auto& pa_matcher : param->x_matchers)
+        if ( rm_matcher == pa_matcher )
+        {
+          found = true;
+          // display it
+          t_obj_base* obj = pa_matcher.get_parent();
+          t_canvas* patcher = obj->x_obj.o_canvas;
+          if (x->x_last_opened_canvas)
+            glist_noselect(x->x_last_opened_canvas);
+          if (x->x_clock)
+            clock_unset(x->x_clock);
+          glist_noselect(patcher);
+          x->x_last_opened_canvas = patcher;
+          canvas_vis(glist_getcanvas(patcher), 1);
+          glist_select(patcher, (t_gobj*) obj);
+          if (x->x_clock)
+            clock_delay(x->x_clock, 1000);
+        }
       }
     }
-    else if (classname == canvas_str)
-    {
-      t_canvas* canvas = (t_canvas*)&list->g_pd;
-      if (!canvas_istable(canvas))
-      {
-        t_gobj* _list = canvas->gl_list;
-        if (find_and_display_friend(x, canvas))
-          return true;
-      }
-    }
-    list = list->g_next;
   }
-  return false;
+  else if (x->x_otype == Type::view)
+  {
+    for (auto& vw_matcher : x->x_matchers)
+    {
+      for (auto model : ossia_pd::instance().models.copy())
+      {
+        for (auto& md_matcher : model->x_matchers)
+        if ( vw_matcher == md_matcher )
+        {
+          // TODO display it
+          found = true;
+        }
+      }
+    }
+  }
+  return found;
 }
 
 }

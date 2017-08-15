@@ -167,10 +167,12 @@ static void view_click(
     }
     */
 
+    /*
     t_canvas* root = x->x_obj.o_canvas;
     while (root->gl_owner)
       root = root->gl_owner;
-    if (!find_and_display_friend(x, root))
+    */
+    if (!find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
   else

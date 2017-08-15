@@ -42,6 +42,7 @@ public:
 
   void set_value(const ossia::value& v);
   auto get_node() const { return node; }
+  auto get_parent() const { return parent; }
 
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
@@ -89,7 +90,7 @@ struct t_obj_base
   static void obj_bang(t_obj_base* x);
 };
 
-bool find_and_display_friend(t_obj_base* x, t_canvas* patcher);
+bool find_and_display_friend(t_obj_base* x);
 void obj_tick(t_obj_base* x);
 void obj_namespace(t_obj_base* x);
 void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv);
