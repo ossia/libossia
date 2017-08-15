@@ -85,13 +85,13 @@ ossia_pd::ossia_pd():
 ossia_pd::~ossia_pd()
 {
   for (auto x : views.copy()){
-    x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+    if (x->x_node) x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
   }
   for (auto x : remotes.copy()){
     x->x_matchers.clear();
   }
   for (auto x : models.copy()){
-    x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+    if (x->x_node) x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
   }
   for (auto x : params.copy()){
     x->x_matchers.clear();

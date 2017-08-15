@@ -168,6 +168,7 @@ std::vector<t_obj_base*> find_child_to_register(
 
   t_gobj* list = start_list;
   std::vector<t_obj_base*> found;
+  bool found_model = false;
 
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
@@ -182,13 +183,20 @@ std::vector<t_obj_base*> find_child_to_register(
         found.push_back(o);
       }
     }
+
+    // if we're looking for ossia.view but found a model, remind it
+    if ( classname == "ossia.view" && current == "ossia.model" )
+      found_model = true;
+
     list = list->g_next;
   }
 
   // 2: if there is no ossia.model / ossia.view in the current patch, look into
   // the subpatches
+  // if we found no ossia.view, but a ossia.model,
+  // then remote in subpatchers should have been already register to model
 
-  if (found.empty())
+  if (found.empty() && !found_model)
   {
     list = start_list;
     while (list && list->g_pd)

@@ -21,7 +21,9 @@ static void device_free(t_device* x)
   clock_unset(x->x_regclock);
   clock_free(x->x_regclock);
 
-  x->unregister_children();
+  // TODO why is this necessary since all children
+  // should have register to node.about_to_be_deleted() signal
+  // x->unregister_children();
 
   if (x->x_device)
     delete (x->x_device);

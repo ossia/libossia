@@ -36,10 +36,6 @@ bool t_param::register_node(ossia::net::node_base* node)
 
 bool t_param::do_registration(ossia::net::node_base* node)
 {
-
-  if (x_node && x_node->get_parent() == node)
-    return true; // already register to this node;
-
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 

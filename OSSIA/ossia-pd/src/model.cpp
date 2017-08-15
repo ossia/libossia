@@ -115,23 +115,22 @@ bool t_model::unregister()
 
   x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
 
-  obj_quarantining<t_model>(this);
-
   if (x_node && x_node->get_parent())
   {
-    auto parent = x_node->get_parent();
-
     x_node->get_parent()->remove_child(*x_node); // this calls isDeleted() on
                                                  // each registered child and
                                                  // put them into quarantine
-
-    // then registrer chidren with to parent node
-    x_node = parent;
-    register_children();
-
-  } else {
-    x_node = nullptr;
   }
+
+  // we can't register children to parent node
+  // because it might be deleted soon
+  // (when removing root device for example)
+
+  x_node = nullptr;
+
+  obj_quarantining<t_model>(this);
+
+  register_children();
 
   return true;
 }

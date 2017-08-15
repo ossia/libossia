@@ -90,10 +90,23 @@ t_matcher::~t_matcher()
         if (node->get_parent())
           node->get_parent()->remove_child(*node);
       }
+      // if there vector is empty
+      // remote should be quarantinized
+      if (parent->x_matchers.size() == 0)
+      {
+        obj_quarantining<t_param>((t_param*) parent);
+      }
     } else {
       auto addr = node->get_address();
       if (addr && callbackit) addr->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
+
+      // if there vector is empty
+      // remote should be quarantinized
+      if (parent->x_matchers.size() == 0)
+      {
+        obj_quarantining<t_remote>((t_remote*) parent);
+      }
     }
   }
   node = nullptr;
