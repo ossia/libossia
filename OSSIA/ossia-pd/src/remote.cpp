@@ -80,9 +80,12 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       }
     }
     clock_delay(x_regclock, 0);
+  } else {
+    return false;
   }
+
   // do not put it in quarantine if it's a pattern
-  // and even if it can't find any node
+  // and even if it can't find any matching node
   return (!x_matchers.empty() || x_is_pattern);
 }
 

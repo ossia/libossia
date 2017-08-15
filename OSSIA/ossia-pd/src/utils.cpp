@@ -169,6 +169,7 @@ std::vector<t_obj_base*> find_child_to_register(
   t_gobj* list = start_list;
   std::vector<t_obj_base*> found;
   bool found_model = false;
+  bool found_view = false;
 
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
@@ -187,6 +188,8 @@ std::vector<t_obj_base*> find_child_to_register(
     // if we're looking for ossia.view but found a model, remind it
     if ( classname == "ossia.view" && current == "ossia.model" )
       found_model = true;
+    else if ( classname == "ossia.model" && current == "ossia.view" )
+      found_view = true;
 
     list = list->g_next;
   }
@@ -224,7 +227,10 @@ std::vector<t_obj_base*> find_child_to_register(
     while (list && list->g_pd)
     {
       std::string current = list->g_pd->c_name->s_name;
-      if (current == subclassname)
+
+      // if there is no view next to model, then take also remote into account
+      if ( current == subclassname
+          || ( !found_view && current == "ossia.remote" ) )
       {
         t_obj_base* o;
         o = (t_obj_base*)&list->g_pd;

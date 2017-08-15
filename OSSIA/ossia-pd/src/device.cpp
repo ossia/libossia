@@ -108,6 +108,13 @@ void t_device::register_children(t_device* x)
       remote->register_node(x->x_node);
     }
   }
+
+  // then go through all remote objects with pattern matching name
+  // to register them to device's address creation callback
+  for (auto x : ossia_pd::instance().remotes.copy()){
+    if (x->x_is_pattern)
+      obj_register<t_remote>(x);
+  }
 }
 
 void t_device::unregister_children()

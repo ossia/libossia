@@ -92,6 +92,11 @@ void t_model::register_children()
       t_param* param = (t_param*)v;
       param->register_node(x_node);
     }
+    else if (v->x_otype == Type::remote)
+    {
+      t_remote* remote = (t_remote*)v;
+      remote->register_node(x_node);
+    }
   }
 
   for (auto view : t_view::quarantine().copy())
