@@ -82,7 +82,9 @@ struct t_obj_base
       x_callbackits;
   void is_deleted(const ossia::net::node_base& n);
 
+  // TODO remove setValue method
   void setValue(const ossia::value& val);
+  // TODO why some methods are inside t_obj_base class and other are outside ?
   static void obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv);
   static void obj_bang(t_obj_base* x);
 };
@@ -90,6 +92,7 @@ struct t_obj_base
 bool find_and_display_friend(t_obj_base* x, t_canvas* patcher);
 void obj_tick(t_obj_base* x);
 void obj_namespace(t_obj_base* x);
+void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv);
 
 }
 } // namespace

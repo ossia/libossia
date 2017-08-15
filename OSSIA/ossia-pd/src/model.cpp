@@ -229,6 +229,7 @@ extern "C" void setup_ossia0x2emodel(void)
 
     eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
 
     CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
     CLASS_ATTR_SYMBOL(c, "tags", 0, t_model, x_tags);

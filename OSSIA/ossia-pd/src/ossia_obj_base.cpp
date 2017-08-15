@@ -261,6 +261,39 @@ void obj_namespace(t_obj_base* x)
 }
 
 /**
+ * @brief obj_set send value to given address
+ * @details For view and model, used to send value to a given address
+ * @param x
+ * @param s
+ * @param argc
+ * @param argv
+ */
+void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if (argc > 0 && argv[0].a_type == A_SYMBOL)
+  {
+    std::string addr = argv[0].a_w.w_symbol->s_name;
+    argv++;
+    argc--;
+    if (x->x_node)
+    {
+      auto tmp = x->x_node;
+      auto nodes = ossia::net::find_nodes(*x->x_node, addr);
+      for (auto n : nodes)
+      {
+        if (n->get_address()){
+          t_matcher matcher{n,x};
+          x->x_matchers.push_back(std::move(matcher));
+        }
+      }
+      t_obj_base::obj_push(x,gensym(""),argc, argv);
+      x->x_matchers.clear();
+      x->x_node = tmp;
+    }
+  }
+}
+
+/**
  * @brief find_and_display_friend : find the object that defined the node and display it
  * @param x : object that hold the node we are looking for
  * @param patcher : starting point to seach a friend

@@ -256,6 +256,8 @@ extern "C" void setup_ossia0x2eview(void)
     eclass_addmethod(c, (method)view_click, "click", A_NULL, 0);
     eclass_addmethod(c, (method)view_bind, "bind", A_SYMBOL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
+
   }
 
   auto& ossia_pd = ossia_pd::instance();
