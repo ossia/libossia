@@ -106,7 +106,9 @@ struct value_visitor
     // message
     // and sending a bang to the bang object connected to the inlet of the
     // sender will lead to stack overflow...
-    outlet_bang(x->x_dataout);
+    if (x->x_dataout)
+      outlet_bang(x->x_dataout);
+
     if (x->x_setout)
       outlet_bang(x->x_setout);
   }
@@ -114,7 +116,9 @@ struct value_visitor
   {
     t_atom a;
     SETFLOAT(&a, (t_float)i);
-    outlet_float(x->x_dataout, (t_float)i);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, (t_float)i);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -122,7 +126,9 @@ struct value_visitor
   {
     t_atom a;
     SETFLOAT(&a, f);
-    outlet_float(x->x_dataout, (t_float)f);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, (t_float)f);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -131,7 +137,9 @@ struct value_visitor
     t_atom a;
     t_float f = b ? 1. : 0.;
     SETFLOAT(&a, f);
-    outlet_float(x->x_dataout, f);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, f);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -140,7 +148,9 @@ struct value_visitor
     t_symbol* s = gensym(str.c_str());
     t_atom a;
     SETSYMBOL(&a, s);
-    outlet_symbol(x->x_dataout, s);
+    if (x->x_dataout)
+      outlet_symbol(x->x_dataout, s);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -148,7 +158,9 @@ struct value_visitor
   {
     t_atom a;
     SETFLOAT(&a, (float)c);
-    outlet_float(x->x_dataout, (float)c);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, (float)c);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -163,7 +175,9 @@ struct value_visitor
       SETFLOAT(a + i, vec[i]);
     }
 
-    outlet_list(x->x_dataout, gensym("list"), N, a);
+    if (x->x_dataout)
+      outlet_list(x->x_dataout, gensym("list"), N, a);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), N, a);
   }
@@ -176,7 +190,9 @@ struct value_visitor
       v.apply(vm);
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
-    outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+    if (x->x_dataout)
+      outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), va.size(), list_ptr);
   }
