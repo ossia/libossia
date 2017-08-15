@@ -559,7 +559,7 @@ void obj_dump(T* x)
  * corresponding classname
  */
 std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname);
+    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
