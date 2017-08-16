@@ -210,6 +210,7 @@ endif()
 
 if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
+  target_link_libraries(ossia PRIVATE portaudio)
 endif()
 # Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")

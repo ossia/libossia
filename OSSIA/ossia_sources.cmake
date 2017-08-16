@@ -446,6 +446,7 @@ set(OSSIA_QML_SRCS
 
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.hpp"
@@ -460,6 +461,7 @@ set(OSSIA_DATAFLOW_HEADERS
 
 set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"

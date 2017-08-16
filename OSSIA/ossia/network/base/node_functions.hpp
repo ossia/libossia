@@ -106,5 +106,16 @@ OSSIA_EXPORT void
 push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
 
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::address_base&);
+
+
+template<typename Address>
+auto create_address(ossia::net::node_base& root, std::string name)
+{
+  auto& node = ossia::net::create_node(root, std::move(name));
+  auto addr = new Address(node);
+  node.set_address(std::unique_ptr<Address>(addr));
+  return addr;
+}
+
 }
 }
