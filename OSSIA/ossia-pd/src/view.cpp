@@ -192,7 +192,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
     x->x_otype = Type::view;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->x_clock = clock_new(x, (t_method)obj_tick);
+    x->x_clock = nullptr;
     x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)

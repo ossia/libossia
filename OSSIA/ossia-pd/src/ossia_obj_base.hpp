@@ -30,6 +30,20 @@ enum class AddrScope
 
 struct t_obj_base;
 
+class t_select_clock
+{
+public:
+  t_select_clock(t_canvas* canvas, t_obj_base* obj);
+  ~t_select_clock();
+
+  static void deselect(t_select_clock* x);
+private:
+  t_clock* m_clock{};
+  t_obj_base* m_obj{};
+  t_canvas* m_canvas{};
+
+};
+
 class t_matcher
 {
 public:
@@ -48,12 +62,12 @@ public:
   { return (get_node() == rhs.node); }
 
 
-  private:
-    ossia::net::node_base* node{};
-    t_obj_base* parent{};
+private:
+  ossia::net::node_base* node{};
+  t_obj_base* parent{};
 
-    ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-        callbackit = ossia::none;
+  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
+  callbackit = ossia::none;
 
 };
 
@@ -91,7 +105,6 @@ struct t_obj_base
 };
 
 bool find_and_display_friend(t_obj_base* x);
-void obj_tick(t_obj_base* x);
 void obj_namespace(t_obj_base* x);
 void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv);
 

@@ -186,7 +186,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     x->x_is_pattern = ossia::traversal::is_pattern(x->x_name->s_name);
 
-    x->x_clock = clock_new(x, (t_method)obj_tick);
+    x->x_clock = nullptr;
     x->x_regclock = clock_new(x, (t_method)t_obj_base::obj_bang);
 
     obj_register<t_remote>(x);
