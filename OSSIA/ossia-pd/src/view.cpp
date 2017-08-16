@@ -233,7 +233,6 @@ static void view_free(t_view* x)
   obj_dequarantining<t_view>(x);
   ossia_pd::instance().views.remove_all(x);
   clock_free(x->x_regclock);
-  clock_free(x->x_clock);
 }
 
 static void view_bind(t_view* x, t_symbol* address)
