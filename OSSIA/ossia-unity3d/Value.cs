@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
-
+using UnityEngine;
 namespace Ossia
 {
 	public class ValueFactory
@@ -157,9 +157,14 @@ namespace Ossia
 		{
 			return Network.ossia_value_to_char(ossia_value);
 		}
-		public string GetString()
+		public unsafe string GetString()
 		{
-			return Network.ossia_value_to_string(ossia_value);
+			IntPtr str = IntPtr.Zero;
+			UIntPtr sz = UIntPtr.Zero;
+			Network.ossia_value_to_byte_array(ossia_value, out str, out sz);
+			string s = Marshal.PtrToStringAnsi (str, (int) sz);
+			Network.ossia_string_free (str);
+			return s;
 		}
 
 		public IntPtr GetValue() {

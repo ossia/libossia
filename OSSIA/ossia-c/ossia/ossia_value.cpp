@@ -10,7 +10,7 @@ Requested_T get_value(ossia_value_t val)
     return {};
   }
 
-  if (auto casted_val = convert(val).target<Requested_T>())
+  if (auto casted_val = val->value.target<Requested_T>())
   {
     return *casted_val;
   }
@@ -27,7 +27,7 @@ Requested_T convert_value(ossia_value_t val)
     return {};
   }
 
-  return ossia::convert<Requested_T>(convert(val));
+  return ossia::convert<Requested_T>(val->value);
 }
 
 extern "C" {
@@ -80,7 +80,7 @@ ossia_value_t ossia_value_create_tuple(ossia_value_t* values, int size)
   std::vector<ossia::value> t;
   for (int i = 0; i < size; i++)
   {
-    t.push_back(convert(values[i]));
+    t.push_back(values[i]->value);
   }
   return convert(std::move(t));
 }
@@ -98,7 +98,7 @@ ossia_type ossia_value_get_type(ossia_value_t val)
     return static_cast<ossia_type>(-1);
   }
 
-  return convert(convert(val).getType());
+  return convert(val->value.getType());
 }
 
 int ossia_value_to_int(ossia_value_t val)
@@ -143,7 +143,7 @@ void ossia_value_to_byte_array(ossia_value_t val, char** out, size_t* size)
   {
     ossia_log_error("ossia_value_to_byte_array: val is null");
   }
-  else if (auto casted_val = convert(val).target<std::string>())
+  else if (auto casted_val = val->value.target<std::string>())
   {
     copy_bytes(*casted_val, out, size);
     return;
@@ -159,7 +159,7 @@ void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, int* size)
   {
     ossia_log_error("ossia_value_to_tuple: a parameter is null");
   }
-  else if (auto casted_val = convert(val).target<std::vector<ossia::value>>())
+  else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
   {
     int N = casted_val->size();
     *out = new ossia_value_t[N];
@@ -207,7 +207,7 @@ void ossia_value_convert_byte_array(ossia_value_t val, char** str, size_t* size)
     return;
   }
 
-  copy_bytes(ossia::convert<std::string>(convert(val)), str, size);
+  copy_bytes(ossia::convert<std::string>(val->value), str, size);
 }
 
 void ossia_value_convert_tuple(ossia_value_t val, ossia_value_t** out, int* size)
@@ -220,7 +220,7 @@ void ossia_value_convert_tuple(ossia_value_t val, ossia_value_t** out, int* size
     *size = 0;
     return;
   }
-  auto v = ossia::convert<std::vector<ossia::value>>(convert(val));
+  auto v = ossia::convert<std::vector<ossia::value>>(val->value);
 
   int N = v.size();
   *out = new ossia_value_t[N];

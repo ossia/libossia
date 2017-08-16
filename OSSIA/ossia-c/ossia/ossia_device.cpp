@@ -19,7 +19,6 @@ ossia_device_t ossia_device_create(ossia_protocol_t protocol, const char* name)
 
     // Look in our cache
     auto& devs = static_devices();
-    std::lock_guard<std::mutex> lock(devs.mutex);
     auto it = devs.devices.find(str_name);
     if (it != devs.devices.end())
     {
@@ -75,7 +74,6 @@ void ossia_device_free(ossia_device_t device)
     if (device && device->device)
     {
       auto& devs = static_devices();
-      std::lock_guard<std::mutex> lock(devs.mutex);
       auto it = devs.devices.find(device->device->get_name());
       if (it != devs.devices.end())
       {
@@ -92,7 +90,6 @@ void ossia_device_reset_static()
 {
   return safe_function(__func__, [=] {
     auto& devs = static_devices();
-    std::lock_guard<std::mutex> lock(devs.mutex);
     for (auto& dev : devs.devices)
     {
       delete dev.second;

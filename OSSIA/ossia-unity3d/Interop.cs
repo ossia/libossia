@@ -410,10 +410,10 @@ namespace Ossia
 		public static extern char ossia_value_to_char (IntPtr val);
 
 		[DllImport ("ossia")]
-		public static extern string ossia_value_to_byte_array (
+		public unsafe static extern void ossia_value_to_byte_array (
 			IntPtr val_in,
-			IntPtr val_out,
-			IntPtr size);
+			out IntPtr val_out,
+			out UIntPtr size);
 
 		[DllImport ("ossia")]
 		public static extern void ossia_value_to_tuple (

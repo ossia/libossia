@@ -11,9 +11,9 @@ ossia_domain_t ossia_domain_make_min_max(
     return safe_function(__func__, [=]() -> ossia_domain_t {
         ossia::value vmin, vmax;
       if (min)
-        vmin = convert(min);
+        vmin = min->value;
       if(max)
-        vmax = convert(max);
+        vmax = max->value;
 
       return convert(ossia::make_domain(vmin, vmax));
     });

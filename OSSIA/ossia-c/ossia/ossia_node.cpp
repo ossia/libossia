@@ -51,7 +51,6 @@ ossia_device_t ossia_node_get_device(
 
       auto n = convert_node(node);
       auto& devs = static_devices();
-      std::lock_guard<std::mutex> lock(devs.mutex);
       auto it = devs.devices.find(n->get_device().get_name());
       if(it != devs.devices.end())
           return it->second;

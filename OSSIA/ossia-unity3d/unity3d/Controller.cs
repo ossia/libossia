@@ -19,7 +19,7 @@ public class Controller : MonoBehaviour {
 	Ossia.Network main;
 
 	public delegate void debug_log_delegate(string str);
-        debug_log_delegate callback_delegate = null;
+    debug_log_delegate callback_delegate = null;
 	static void DebugLogCallback(string str)
 	{
 		Debug.Log("OSSIA : " + str);
@@ -30,9 +30,9 @@ public class Controller : MonoBehaviour {
 		if (!set) {
 				set = true;
 
-                                // Setup the log so that the errors in the C API are shown in the
-                                // Unity3D console
-                                callback_delegate = new debug_log_delegate (DebugLogCallback);
+                // Setup the log so that the errors in the C API are shown in the
+                // Unity3D console
+                callback_delegate = new debug_log_delegate (DebugLogCallback);
 
 				// Convert callback_delegate into a function pointer that can be
 				// used in unmanaged code.

@@ -118,7 +118,7 @@ void ossia_address_set_value(ossia_address_t address, ossia_value_t value)
       return;
     }
 
-    convert_address(address)->set_value(convert(value));
+    convert_address(address)->set_value(value->value);
   });
 }
 
@@ -149,7 +149,7 @@ void ossia_address_push_value(ossia_address_t address, ossia_value_t value)
       return;
     }
 
-    convert_address(address)->push_value(convert(value));
+    convert_address(address)->push_value(value->value);
   });
 }
 

@@ -110,11 +110,6 @@ inline auto convert(const ossia::value& v)
   return new ossia_value{v};
 }
 
-inline auto convert(ossia_value_t v)
-{
-  return v->value;
-}
-
 inline auto convert(const ossia::domain& v)
 {
   return new ossia_domain{v};
@@ -132,13 +127,13 @@ auto safe_function(const char name[], Fun f) -> decltype(f()) try
 }
 catch (const std::exception& e)
 {
-  auto str = fmt::format("%s: %s", name, e.what());
+  auto str = fmt::format("{}: {}", name, e.what());
   ossia_log_error(str.c_str());
   return decltype(f())();
 }
 catch (...)
 {
-  auto str = fmt::format("%s: Exception caught", name);
+  auto str = fmt::format("{}: Exception caught", name);
   ossia_log_error(str.c_str());
   return decltype(f())();
 }
@@ -157,7 +152,7 @@ inline void copy_bytes(const std::string& str, char** ptr, size_t* sz)
   const auto n = str.size();
   *sz = n;
   *ptr = (char*)std::malloc(sizeof(char) * (n + 1));
-  std::memcpy(*ptr, str.c_str(), n);
+  std::memcpy(*ptr, str.data(), n);
   (*ptr)[n] = 0;
 }
 
@@ -179,7 +174,6 @@ struct address_cb {
 struct global_devices
 {
     boost::container::flat_map<std::string, ossia_device_t> devices;
-    std::mutex mutex;
 
     global_devices() = default;
     global_devices(const global_devices&) = delete;

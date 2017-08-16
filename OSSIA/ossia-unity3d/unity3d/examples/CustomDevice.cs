@@ -17,8 +17,13 @@ public class CustomDevice : MonoBehaviour
 		Ossia.Network.ossia_device_reset_static ();
 	}
 
+	public delegate void debug_log_delegate(string str);
 	void Start ()
 	{
+		var callback_delegate = new debug_log_delegate ((string str) => Debug.Log("OSSIA : " + str));
+		IntPtr intptr_delegate =  Marshal.GetFunctionPointerForDelegate (callback_delegate);
+		Ossia.Network.ossia_set_debug_logger (intptr_delegate);
+
 		local = new Ossia.Device (new Ossia.OSCQuery (1234, 5678), "newDevice");
 
 		var root = local.GetRootNode ();
@@ -44,16 +49,25 @@ public class CustomDevice : MonoBehaviour
 		}
 
 		{
+			var str = Ossia.Node.CreateNode (root, "/my_string");
+			var addr = str.CreateAddress (Ossia.ossia_type.STRING);
+			addr.PushValue (Ossia.ValueFactory.createString ("some string !"));
+			Debug.Log(addr.GetValue ().GetString ());
+		}
+
+		{
 			var blu = Ossia.Node.CreateNode (root, "/foo/blu");
-			var addr = blu.CreateAddress (Ossia.ossia_type.VEC3F);
+			blu.CreateAddress (Ossia.ossia_type.VEC3F);
 		}
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		val += 0.1f;
-		var node = Ossia.Node.FindNode (local.GetRootNode (), "/foo/blu");
-		node.GetAddress ().PushValue (val, val, val);
+		if (local != null) {
+			val += 0.1f;
+			var node = Ossia.Node.FindNode (local.GetRootNode (), "/foo/blu");
+			node.GetAddress ().PushValue (val, val, val);
+		}
 	}
 }
