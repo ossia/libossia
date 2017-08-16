@@ -3,6 +3,21 @@
 #include "ossia_utils.hpp"
 
 extern "C" {
+
+ossia_node_t ossia_address_get_node(
+        ossia_address_t address)
+{
+    return safe_function(__func__, [=] () -> ossia_node_t {
+      if (!address)
+      {
+        ossia_log_error("ossia_address_get_node: address is null");
+        return nullptr;
+      }
+
+      return convert(&convert_address(address)->get_node());
+    });
+}
+
 void ossia_address_set_access_mode(
     ossia_address_t address, ossia_access_mode am)
 {

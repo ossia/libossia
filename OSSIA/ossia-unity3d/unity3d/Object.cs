@@ -2,11 +2,12 @@
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
-using Ossia;
 
-namespace AssemblyCSharp
+namespace Ossia
 {
-
+	//! Used to register the position and rotation transforms.
+	//! TODO: instead use vec3f & vec4f with relevant units.
+	//! This way we only need two addresses.
 	public class OssiaTransform
 	{
 		Ossia.Node pos_node;
@@ -157,6 +158,7 @@ namespace AssemblyCSharp
 		}
 	}
 
+	//! Used to register every field that has an [Ossia.Expose] attached.
 	internal class OssiaEnabledParameter
 	{
 		public OssiaEnabledComponent parent;
@@ -192,7 +194,7 @@ namespace AssemblyCSharp
 		}
 	}
 
-
+	//! A component whose fields have some [Ossia.Expose] attributes
 	internal class OssiaEnabledComponent
 	{
 		public MonoBehaviour component;
@@ -205,7 +207,6 @@ namespace AssemblyCSharp
 			component = comp;
 			component_node = node;
 		}
-
 
 		public void ReceiveUpdates(GameObject obj)
 		{
@@ -221,12 +222,13 @@ namespace AssemblyCSharp
 			}
 		}
 	}
-
-	public class OssiaObject : MonoBehaviour
+		
+	//! Expose an object through ossia.
+	//! Currently this shows only the transform and the fields with [Ossia.Expose].
+	public class Object : MonoBehaviour
 	{
-		public bool ReceiveUpdates;
-		public bool SendUpdates;
-
+		public bool ReceiveUpdates = false;
+		public bool SendUpdates = false;
 
 		Ossia.Node scene_node;
 		Ossia.Node child_node;
@@ -234,11 +236,6 @@ namespace AssemblyCSharp
 		OssiaTransform ossia_transform;
 
 		List<OssiaEnabledComponent> ossia_components = new List<OssiaEnabledComponent>();
-
-
-		public OssiaObject ()
-		{
-		}
 
 		void RegisterComponent(MonoBehaviour component)
 		{
@@ -263,7 +260,6 @@ namespace AssemblyCSharp
 				foreach (OssiaEnabledParameter oep in nodes) {
 					oep.parent = ossia_c;
 					oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute.ExposedName);
-					//Debug.Log (oep.field.MemberType.ToString () + " " + oep.field.FieldType.ToString () + " " + oep.field.ReflectedType.ToString ());
 					oep.ossia_address = oep.ossia_node.CreateAddress (Ossia.Value.TypeToOssia2 (oep.field.FieldType));
 					oep.SendUpdates (this.gameObject);
 				}
@@ -291,10 +287,8 @@ namespace AssemblyCSharp
 		{
 			var obj = GameObject.Find ("OssiaController");
 			if (obj != null) {
-				Debug.Log ("Found controller");
 				var comp = obj.GetComponent<Ossia.Controller> ();
 				if (comp != null) {
-					Debug.Log ("Found component");
 					scene_node = comp.SceneNode ();
 					RegisterObject (this.gameObject);
 
@@ -302,6 +296,8 @@ namespace AssemblyCSharp
 						child_node.SetValueUpdating (true);
 					}
 				}
+			} else {
+				Debug.Log("OssiaController was not found.");
 			}
 		}
 
@@ -323,14 +319,6 @@ namespace AssemblyCSharp
 					component.SendUpdates (this.gameObject);
 				}
 			}
-
-		}
-
-
-		static void XChangedCallback(Ossia.Value val)
-		{
-			Debug.Log("OSSIA callback");
-			//this.gameObject.transform.position.Set (0, 0, 0);
 		}
 	}
 }

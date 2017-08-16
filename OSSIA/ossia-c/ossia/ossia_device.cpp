@@ -4,7 +4,7 @@
 #include <iostream>
 #include <map>
 
-static std::map<std::string, ossia_device_t>& static_devices()
+std::map<std::string, ossia_device_t>& static_devices()
 {
   static std::map<std::string, ossia_device_t> devs;
   return devs;
@@ -76,6 +76,7 @@ void ossia_device_free(ossia_device_t device)
       auto it = devs.find(device->device->get_name());
       if (it != devs.end())
       {
+        device->device->get_root_node().clear_children();
         devs.erase(it);
       }
     }
@@ -218,12 +219,12 @@ void ossia_device_remove_node_removing_callback(
 }
 
 
-ossia_node_callback_idx_t ossia_device_add_address_deleting_callback(
+ossia_address_callback_idx_t ossia_device_add_address_deleting_callback(
         ossia_device_t device,
         ossia_node_callback_t callback,
         void* ctx)
 {
-    return safe_function(__func__, [=]() -> ossia_node_callback_idx_t {
+    return safe_function(__func__, [=]() -> ossia_address_callback_idx_t {
       if (!device)
       {
         ossia_log_error("ossia_device_add_address_deleting_callback: device is null");
@@ -235,19 +236,19 @@ ossia_node_callback_idx_t ossia_device_add_address_deleting_callback(
         return nullptr;
       }
 
-      auto the_cb = new node_cb{callback, ctx};
+      auto the_cb = new address_cb{callback, ctx};
 
-      convert_device(device)->on_address_removing.connect<node_cb>(the_cb);
-      return reinterpret_cast<ossia_node_callback_idx_t>(the_cb);
+      convert_device(device)->on_address_removing.connect<address_cb>(the_cb);
+      return reinterpret_cast<ossia_address_callback_idx_t>(the_cb);
     });
 }
 
 void ossia_device_remove_address_deleting_callback(
         ossia_device_t device,
-        ossia_node_callback_idx_t index)
+        ossia_address_callback_idx_t index)
 {
     return safe_function(__func__, [=] {
-      auto idx = (node_cb*) index;
+      auto idx = (address_cb*) index;
       if (!device)
       {
         ossia_log_error("ossia_device_remove_address_deleting_callback: device is null");
@@ -259,7 +260,7 @@ void ossia_device_remove_address_deleting_callback(
         return;
       }
 
-      convert_device(device)->on_address_removing.disconnect<node_cb>(idx);
+      convert_device(device)->on_address_removing.disconnect<address_cb>(idx);
       delete idx;
     });
 }

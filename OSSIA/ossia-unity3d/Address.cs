@@ -8,13 +8,43 @@ namespace Ossia
 	public class Address
 	{
 		internal IntPtr ossia_address = IntPtr.Zero;
-		internal IntPtr ossia_callback_it = IntPtr.Zero;
+
 		List<ValueCallbackDelegate> callbacks;
 
-		public Address(IntPtr address)
+		Network.ossia_value_callback value_cb;
+		internal IntPtr ossia_callback_it = IntPtr.Zero;
+
+		Network.ossia_address_callback addr_remove_callback;
+		IntPtr addr_ossia_remove_callback;
+
+		private void CleanupCallback(IntPtr addr)
+		{
+			if (ossia_address != IntPtr.Zero && ossia_address == addr && addr_ossia_remove_callback != IntPtr.Zero) {
+				IntPtr node = Network.ossia_address_get_node (ossia_address);
+				IntPtr dev = Network.ossia_node_get_device(node);
+				Network.ossia_device_remove_address_deleting_callback (dev, addr_ossia_remove_callback);
+
+				ossia_address = IntPtr.Zero;
+				addr_remove_callback = null;
+				ossia_callback_it = IntPtr.Zero;
+			}
+		}
+
+		~Address()
+		{
+			CleanupCallback (ossia_address);
+		}
+
+		internal Address(IntPtr address)
 		{
 			callbacks = new List<ValueCallbackDelegate> ();
 			ossia_address = address;
+
+			IntPtr node = Network.ossia_address_get_node (ossia_address);
+			IntPtr dev = Network.ossia_node_get_device(node);
+			addr_remove_callback = new Network.ossia_address_callback((IntPtr ctx, IntPtr addr) => CleanupCallback(addr));
+			IntPtr intptr_delegate = Marshal.GetFunctionPointerForDelegate (addr_remove_callback);
+			addr_ossia_remove_callback = Network.ossia_device_add_address_deleting_callback(dev, intptr_delegate, (IntPtr)0);
 		}
 
 		public void SetAccessMode(ossia_access_mode m)
@@ -76,8 +106,8 @@ namespace Ossia
 		{
 			if (callbacks.Count == 0) {
 				// We initialize the callback structure.
-				var real_cb = new Network.ossia_value_callback ((IntPtr p) => CallbackWrapper(this, p));
-				IntPtr intptr_delegate = Marshal.GetFunctionPointerForDelegate (real_cb);
+			    value_cb = new Network.ossia_value_callback ((IntPtr ctx, IntPtr p) => CallbackWrapper(this, p));
+				IntPtr intptr_delegate = Marshal.GetFunctionPointerForDelegate (value_cb);
 				ossia_callback_it = Network.ossia_address_add_callback(ossia_address, intptr_delegate, (IntPtr)0);
 			}
 			callbacks.Add (callback);

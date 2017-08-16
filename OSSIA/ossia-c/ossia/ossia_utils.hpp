@@ -23,7 +23,7 @@ struct ossia_protocol
 
 struct ossia_device
 {
-  std::unique_ptr<ossia::net::device_base> device;
+  std::shared_ptr<ossia::net::device_base> device;
 };
 
 struct ossia_domain
@@ -79,6 +79,10 @@ inline ossia::net::address_base* convert_address(ossia_address_t v)
 inline void* convert(ossia::net::address_base* v)
 {
   return static_cast<void*>(v);
+}
+inline void* convert(const ossia::net::address_base* v)
+{
+  return static_cast<void*>(const_cast<ossia::net::address_base*>(v));
 }
 
 inline ossia::net::node_base* convert_node(ossia_node_t v)
@@ -151,12 +155,18 @@ inline const char* copy_string(const std::string& str)
 }
 
 struct node_cb {
-    ossia_node_callback_t m_cb;
-    void* m_ctx;
+    ossia_node_callback_t m_cb{};
+    void* m_ctx{};
     void operator()(const ossia::net::node_base& node) {
         m_cb(m_ctx, convert(&node));
     }
+};
+struct address_cb {
+    ossia_address_callback_t m_cb{};
+    void* m_ctx{};
     void operator()(const ossia::net::address_base& addr) {
-        m_cb(m_ctx, convert(&addr.get_node()));
+        m_cb(m_ctx, convert(&addr));
     }
 };
+
+std::map<std::string, ossia_device_t>& static_devices();

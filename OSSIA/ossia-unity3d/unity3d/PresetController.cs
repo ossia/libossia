@@ -49,7 +49,7 @@ unsafe public class PresetController : MonoBehaviour {
 		Debug.Log ("Creating " + node.GetName ());
 		GameObject createdgo = GameObject.CreatePrimitive (PrimitiveType.Cube);
 		createdgo.name = node.GetName ();
-		createdgo.AddComponent<AssemblyCSharp.OssiaObject> ();
+		createdgo.AddComponent<Ossia.Object> ();
 
 		/// Import parameters \\\
 

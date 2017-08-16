@@ -34,6 +34,10 @@ typedef void (*ossia_node_callback_t)(void* ctx, ossia_node_t);
 struct ossia_node_callback_index;
 typedef struct ossia_node_callback_index* ossia_node_callback_idx_t;
 
+typedef void (*ossia_address_callback_t)(void* ctx, ossia_address_t);
+struct ossia_address_callback_index;
+typedef struct ossia_address_callback_index* ossia_address_callback_idx_t;
+
 typedef void (*ossia_value_callback_t)(void* ctx, ossia_value_t);
 struct ossia_value_callback_index;
 typedef struct ossia_value_callback_index* ossia_value_callback_idx_t;
@@ -177,14 +181,14 @@ void ossia_device_remove_node_removing_callback(
         ossia_node_callback_idx_t index);
 
 OSSIA_EXPORT
-ossia_node_callback_idx_t ossia_device_add_address_deleting_callback(
+ossia_address_callback_idx_t ossia_device_add_address_deleting_callback(
         ossia_device_t device,
-        ossia_node_callback_t callback,
+        ossia_address_callback_t callback,
         void* ctx);
 OSSIA_EXPORT
 void ossia_device_remove_address_deleting_callback(
         ossia_device_t device,
-        ossia_node_callback_idx_t index);
+        ossia_address_callback_idx_t index);
 /************/
 /*** Node ***/
 /************/
@@ -208,6 +212,11 @@ void ossia_node_remove_child(
 
 OSSIA_EXPORT
 const char* ossia_node_get_name(
+        ossia_node_t node);
+
+/* Don't free the device gotten from here */
+OSSIA_EXPORT
+ossia_device_t ossia_node_get_device(
         ossia_node_t node);
 
 OSSIA_EXPORT
@@ -242,6 +251,10 @@ void ossia_node_remove_deleting_callback(
 /***************/
 /*** Address ***/
 /***************/
+OSSIA_EXPORT
+ossia_node_t ossia_address_get_node(
+        ossia_address_t address);
+
 OSSIA_EXPORT
 void ossia_address_set_access_mode(
         ossia_address_t address,

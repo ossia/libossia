@@ -39,6 +39,25 @@ const char* ossia_node_get_name(ossia_node_t node)
   });
 }
 
+ossia_device_t ossia_node_get_device(
+        ossia_node_t node)
+{
+    return safe_function(__func__, [=]() -> ossia_device_t {
+      if (!node)
+      {
+        ossia_log_error("ossia_node_get_name: node is null");
+        return nullptr;
+      }
+
+      auto n = convert_node(node);
+      auto& devs = static_devices();
+      auto it = devs.find(n->get_device().get_name());
+      if(it != devs.end())
+          return it->second;
+      return nullptr;
+    });
+}
+
 ossia_node_t ossia_node_find(
     ossia_node_t node,
     const char* name)

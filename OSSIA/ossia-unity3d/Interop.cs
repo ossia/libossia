@@ -22,7 +22,9 @@ namespace Ossia
 	}
 	internal class Network
 	{
-		public delegate void ossia_value_callback(IntPtr t);
+		public delegate void ossia_value_callback(IntPtr ctx, IntPtr val);
+		public delegate void ossia_node_callback(IntPtr ctx, IntPtr node);
+		public delegate void ossia_address_callback(IntPtr ctx, IntPtr addr);
 
 		//// Protocol ////
 		[DllImport ("ossia")]
@@ -112,6 +114,11 @@ namespace Ossia
 		public static extern void ossia_device_remove_address_deleting_callback(
 		        IntPtr node,
 		        IntPtr index);
+
+		[DllImport ("ossia")]
+		public static extern void ossia_device_reset_static();
+
+
 		//// Node ////
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_node_find(
@@ -135,7 +142,11 @@ namespace Ossia
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_node_get_name (
-			IntPtr device);
+			IntPtr node);
+
+		[DllImport ("ossia")]
+		public static extern IntPtr ossia_node_get_device (
+			IntPtr node);
 
 		[DllImport ("ossia")]
 		public static extern int ossia_node_child_size (
@@ -171,8 +182,14 @@ namespace Ossia
 		public static extern void ossia_node_remove_deleting_callback(
 		        IntPtr node,
 		        IntPtr index);
-		//// Address ////
 
+
+
+		//// Address ////
+		[DllImport ("ossia")]
+		public static extern IntPtr ossia_address_get_node (
+			IntPtr address);
+		
 		[DllImport ("ossia")]
 		public static extern void ossia_address_set_access_mode (
 			IntPtr address,

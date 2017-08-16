@@ -55,7 +55,6 @@ public class Controller : MonoBehaviour {
 		return scene_node; 
 	}
 
-
 	void OnApplicationQuit() {
 		local_device.Free ();
 
