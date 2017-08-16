@@ -6,17 +6,17 @@ using System;
 namespace Ossia
 {
 	[StructLayout(LayoutKind.Sequential)]
-	struct vec2f
+	public struct vec2f
 	{
 		public float f1, f2;
 	}
 	[StructLayout(LayoutKind.Sequential)]
-	struct vec3f
+	public struct vec3f
 	{
 		public float f1, f2, f3;
 	}
 	[StructLayout(LayoutKind.Sequential)]
-	struct vec4f
+	public struct vec4f
 	{
 		public float f1, f2, f3, f4;
 	}

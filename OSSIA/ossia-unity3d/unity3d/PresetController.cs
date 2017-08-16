@@ -73,8 +73,8 @@ unsafe public class PresetController : MonoBehaviour {
 		/// Remove the node containing the parameters, now useless \\\
 
 		GameObject controller = GameObject.Find ("OssiaController");
-		OssiaDevices dev = controller.GetComponent<OssiaDevices> ();
-		Ossia.Device local_device = dev.GetDevice ();
+		var dev = controller.GetComponent<Ossia.Controller> ();
+		var local_device = dev.GetDevice ();
 		local_device.GetRootNode().GetChild(0).RemoveChild(node);
 	}
 
@@ -100,7 +100,7 @@ unsafe public class PresetController : MonoBehaviour {
 				throw new Exception("Controller not found");
 			}
 
-			OssiaDevices dev = controller.GetComponent<OssiaDevices> ();
+			var dev = controller.GetComponent<Ossia.Controller> ();
 			if (dev == null) {
 				throw new Exception("Device is null");
 			}
@@ -160,7 +160,7 @@ unsafe public class PresetController : MonoBehaviour {
 		/// Print device when Space bar is pressed \\\
 
 		GameObject controller = GameObject.Find ("OssiaController");
-		OssiaDevices dev = controller.GetComponent<OssiaDevices> ();
+		var dev = controller.GetComponent<Ossia.Controller> ();
 		Ossia.Device local_device = dev.GetDevice();
 		IntPtr dev_ptr = local_device.GetDevice();
 		if (Input.GetKeyDown(KeyCode.Space)) {

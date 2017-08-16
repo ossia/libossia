@@ -141,20 +141,17 @@ namespace Ossia
 		{
 			return Network.ossia_value_to_float(ossia_value);
 		}
-		public Tuple<float,float> GetVec2f()
+		public vec2f GetVec2f()
 		{
-			vec2f v = Network.ossia_value_to_2f(ossia_value);
-			return new Tuple<float,float>(v.f1, v.f2);
+			return Network.ossia_value_to_2f(ossia_value);
 		}
-		public Tuple<float,float,float> GetVec3f()
+		public vec3f GetVec3f()
 		{
-			vec3f v = Network.ossia_value_to_3f(ossia_value);
-			return new Tuple<float,float,float>(v.f1, v.f2, v.f3);
+			return Network.ossia_value_to_3f(ossia_value);
 		}
-		public Tuple<float,float,float,float> GetVec4f()
+		public vec4f GetVec4f()
 		{
-			vec4f v = Network.ossia_value_to_4f(ossia_value);
-			return new Tuple<float,float,float,float>(v.f1, v.f2, v.f3, v.f4);
+			return Network.ossia_value_to_4f(ossia_value);
 		}
 		public char GetChar()
 		{

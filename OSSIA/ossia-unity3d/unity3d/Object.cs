@@ -292,7 +292,7 @@ namespace AssemblyCSharp
 			var obj = GameObject.Find ("OssiaController");
 			if (obj != null) {
 				Debug.Log ("Found controller");
-				var comp = obj.GetComponent<OssiaDevices> ();
+				var comp = obj.GetComponent<Ossia.Controller> ();
 				if (comp != null) {
 					Debug.Log ("Found component");
 					scene_node = comp.SceneNode ();

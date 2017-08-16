@@ -5,8 +5,9 @@ using System;
 using System.Collections;
 using Ossia;
 
-
-public class OssiaDevices : MonoBehaviour {
+namespace Ossia
+{	
+public class Controller : MonoBehaviour {
 	static bool set = false;
 
 	static Ossia.Local local_protocol = null;
@@ -16,7 +17,6 @@ public class OssiaDevices : MonoBehaviour {
 
 	static Ossia.Node scene_node;
 	Ossia.Network main;
-
 
 	public delegate void debug_log_delegate(string str);
 	static void DebugLogCallback(string str)
@@ -70,4 +70,5 @@ public class OssiaDevices : MonoBehaviour {
 		return local_protocol;
 	}
 
+	}
 }
