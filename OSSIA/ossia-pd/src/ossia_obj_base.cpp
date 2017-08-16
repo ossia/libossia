@@ -139,24 +139,17 @@ void t_matcher::set_value(const ossia::value& v){
   SETSYMBOL(&a, gensym(addr.c_str()));
   outlet_anything(parent->x_dumpout,gensym("address"),1,&a);
 
-  value_visitor<t_obj_base> vm;
-  vm.x = (t_obj_base*)parent;
-  v.apply(vm);
-}
-
-#pragma mark t_obj_base
-
-void t_obj_base::setValue(const ossia::value& v)
-{
-  auto local_address = x_node->get_address();
+  auto local_address = node->get_address();
   auto filtered = ossia::net::filter_value(
         local_address->get_domain(),
         v,
         local_address->get_bounding());
   value_visitor<t_obj_base> vm;
-  vm.x = (t_obj_base*)&x_obj;
+  vm.x = (t_obj_base*)parent;
   filtered.apply(vm);
 }
+
+#pragma mark t_obj_base
 
 void t_obj_base::is_deleted(const ossia::net::node_base& n)
 {
@@ -220,8 +213,10 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
  */
 void t_obj_base::obj_bang(t_obj_base* x)
 {
-  if (x->x_node && x->x_node->get_address())
-    x->setValue(x->x_node->get_address()->value());
+  for (auto& matcher : x->x_matchers)
+  {
+    matcher.set_value(matcher.get_node()->get_address()->value());
+  }
 }
 
 /**

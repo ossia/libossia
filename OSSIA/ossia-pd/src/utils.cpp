@@ -387,5 +387,19 @@ ossia::pd::AddrScope get_address_type(const std::string& addr)
   return type;
 }
 
+std::vector<ossia::value> attribute2value(t_atom* atom)
+{
+  std::vector<ossia::value> list;
+
+  for (int i = 0; i < 64 && atom[i].a_type != A_NULL; i++)
+  {
+    if (atom[i].a_type == A_FLOAT)
+      list.push_back(atom_getfloat(&atom[i]));
+    else if (atom[i].a_type == A_SYMBOL)
+      list.push_back(std::string(atom_getsymbol(&atom[i])->s_name));
+  }
+  return list;
+}
+
 }
 }

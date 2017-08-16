@@ -20,7 +20,8 @@ struct t_param : t_obj_base
   t_symbol* x_type;
   int x_type_size;
   t_atom x_default[64];
-  // TODO use optional for range
+  t_atom x_min[64];
+  t_atom x_max[64];
   float x_range[2];
   t_symbol* x_bounding_mode;
   t_symbol* x_access_mode;

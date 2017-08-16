@@ -599,5 +599,12 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
  */
 ossia::pd::AddrScope get_address_type(const std::string& addr);
 
+/**
+ * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
+ * @param atom
+ * @return array of ossia::value
+ */
+std::vector<ossia::value> attribute2value(t_atom* atom);
+
 }
 }
