@@ -255,7 +255,6 @@ set(OSSIA_C_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_domain.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/tinyformat.h"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.cpp"

@@ -7,12 +7,7 @@
 #include <cstring>
 #include <fmt/format.h>
 #include <ossia-c/log/ossia_log.h>
-template <typename Str, typename... Args>
-void DEBUG_LOG_FMT(Str fmt, Args... args)
-{
-  auto str = fmt::format(fmt, args...);
-  ossia_log_error(str.c_str());
-}
+
 struct ossia_protocol
 {
   ossia_protocol(ossia::net::protocol_base* p) : protocol{p}
@@ -136,12 +131,14 @@ auto safe_function(const char name[], Fun f) -> decltype(f()) try
 }
 catch (const std::exception& e)
 {
-  DEBUG_LOG_FMT("%s: %s", name, e.what());
+  auto str = fmt::format("%s: %s", name, e.what());
+  ossia_log_error(str.c_str());
   return decltype(f())();
 }
 catch (...)
 {
-  DEBUG_LOG_FMT("%s: Exception caught", name);
+  auto str = fmt::format("%s: Exception caught", name);
+  ossia_log_error(str.c_str());
   return decltype(f())();
 }
 
