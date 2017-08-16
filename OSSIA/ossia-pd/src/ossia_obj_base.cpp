@@ -14,8 +14,29 @@ namespace ossia
 namespace pd
 {
 
+#pragma mark t_select_clock
 
-#pragma mark t_obj_pattern
+t_select_clock::t_select_clock(t_canvas* cnv, t_obj_base* obj) :
+  m_canvas(cnv), m_obj(obj)
+{
+  m_clock = clock_new(this, (t_method) t_select_clock::deselect);
+  ossia_pd::instance().select_clocks.push_back(this);
+  clock_delay(m_clock, 1000);
+}
+
+t_select_clock::~t_select_clock()
+{
+  clock_free(m_clock);
+}
+
+void t_select_clock::deselect(t_select_clock* x)
+{
+  glist_deselect(x->m_canvas, (t_gobj*) x->m_obj);
+  x->~t_select_clock();
+  ossia_pd::instance().select_clocks.remove_all(x);
+}
+
+#pragma mark t_matcher
 
 t_matcher::t_matcher(t_matcher&& other)
 {
@@ -194,20 +215,6 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
 }
 
 /**
- * @brief obj_tick deselect last selected object
- * @details used by ø.remote and ø.view when displaying connected parent
- * @param x
- */
-void obj_tick(t_obj_base* x)
-{
-  if (x->x_last_opened_canvas)
-  {
-    glist_noselect(x->x_last_opened_canvas);
-    x->x_last_opened_canvas = nullptr;
-  }
-}
-
-/**
  * @brief t_obj_base::obj_bang send out the current value of the parameter
  * @param x
  */
@@ -299,11 +306,9 @@ void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
  * @param patcher : starting point to seach a friend
  * @return true if we found a friend to display
  */
-// TODO refactor this to use ossia_pd::instance().params|remotes
-// instead of going through all objects in all patchers.
 bool find_and_display_friend(t_obj_base* x)
 {
-  bool found = false;
+  int found = 0;
   if (x->x_otype == Type::remote)
   {
     for (auto& rm_matcher : x->x_matchers)
@@ -311,22 +316,27 @@ bool find_and_display_friend(t_obj_base* x)
       for (auto param : ossia_pd::instance().params.copy())
       {
         for (auto& pa_matcher : param->x_matchers)
-        if ( rm_matcher == pa_matcher )
         {
-          found = true;
-          // display it
-          t_obj_base* obj = pa_matcher.get_parent();
-          t_canvas* patcher = obj->x_obj.o_canvas;
-          if (x->x_last_opened_canvas)
-            glist_noselect(x->x_last_opened_canvas);
-          if (x->x_clock)
-            clock_unset(x->x_clock);
-          glist_noselect(patcher);
-          x->x_last_opened_canvas = patcher;
-          canvas_vis(glist_getcanvas(patcher), 1);
-          glist_select(patcher, (t_gobj*) obj);
-          if (x->x_clock)
-            clock_delay(x->x_clock, 1000);
+          if ( rm_matcher == pa_matcher )
+          {
+            found++;
+
+            if (found > 10)
+            {
+              pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
+            } else {
+              // display it
+              t_obj_base* obj = pa_matcher.get_parent();
+              t_canvas* patcher = obj->x_obj.o_canvas;
+
+              canvas_vis(glist_getcanvas(patcher), 1);
+              glist_select(patcher, (t_gobj*) obj);
+
+              // clock will commit suicide after 1 sec.
+              t_select_clock* clock = new t_select_clock(patcher, obj);
+
+            }
+          }
         }
       }
     }
@@ -338,10 +348,27 @@ bool find_and_display_friend(t_obj_base* x)
       for (auto model : ossia_pd::instance().models.copy())
       {
         for (auto& md_matcher : model->x_matchers)
-        if ( vw_matcher == md_matcher )
         {
-          // TODO display it
-          found = true;
+          if ( vw_matcher == md_matcher )
+          {
+            found++;
+
+            if (found > 10)
+            {
+              pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
+            } else {
+              // display it
+              t_obj_base* obj = md_matcher.get_parent();
+              t_canvas* patcher = obj->x_obj.o_canvas;
+
+              canvas_vis(glist_getcanvas(patcher), 1);
+              glist_select(patcher, (t_gobj*) obj);
+
+              // clock will commit suicide after 1 sec.
+              t_select_clock* clock = new t_select_clock(patcher, obj);
+
+            }
+          }
         }
       }
     }
