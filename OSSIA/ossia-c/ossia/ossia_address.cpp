@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_utils.hpp"
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 
 extern "C" {
 
@@ -396,4 +397,68 @@ void ossia_address_remove_callback(
     delete index;
   });
 }
+
+void ossia_address_set_unit(
+    ossia_address_t address,
+    const char* unit)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_set_unit: address is null");
+      return;
+    }
+    
+    auto u = ossia::parse_pretty_unit(unit);
+    convert_address(address)->set_unit(u);
+  });
+}
+
+const char* ossia_address_get_unit(
+    ossia_address_t address)
+{
+  return safe_function(__func__, [=]() -> const char* {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_get_unit: address is null");
+      return nullptr;
+    }
+    
+    return copy_string(ossia::get_pretty_unit_text(convert_address(address)->get_unit()));
+  });
+}
+
+void ossia_address_set_repetition_filter(
+    ossia_address_t address,
+    int rf)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_set_hidden: node is null");
+      return;
+    }
+    
+    convert_address(address)->set_repetition_filter(
+          rf 
+          ? ossia::repetition_filter::ON 
+          : ossia::repetition_filter::OFF);
+  });
+}
+
+int ossia_address_get_repetition_filter(
+    ossia_address_t address)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_get_hidden: node is null");
+      return 0;
+    }
+    
+    auto rf =  convert_address(address)->get_repetition_filter();
+    return (rf == ossia::repetition_filter::ON) ? 1 : 0;
+  });
+}
+
 }

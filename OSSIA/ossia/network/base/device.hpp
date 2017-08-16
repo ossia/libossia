@@ -31,11 +31,11 @@ struct device_capabilities
  * It handles transformations of the node tree and allows
  * to add callbacks to be called :
  * - after a node has been created : device_base::on_node_created
- * - after a node has been renamed : device_base::onNodeRenamed
- * - before a node is removed : device_base::onNodeRemoving
+ * - after a node has been renamed : device_base::on_node_renamed
+ * - before a node is removed : device_base::on_node_removing
  *
- * - after an address has been created : device_base::onAddressCreated
- * - before an address is being removed : device_base::onAddressRemoving
+ * - after an address has been created : device_base::on_address_created
+ * - before an address is being removed : device_base::on_address_removing
  *
  * The root node of a device maps to the "/" address.
  *

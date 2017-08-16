@@ -169,7 +169,6 @@ if(MSVC)
         "/wd4996" # SCL_SECURE_NO_WARNINGS
         "/wd4503" # decorated name length exceeded
         "/wd4305" # argument : truncation from double to float
-        "/MP"
         "/bigobj"
 #        "/std:c++latest"
         ${OSSIA_LINK_OPTIONS}

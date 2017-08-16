@@ -87,33 +87,33 @@ namespace Ossia
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_device_add_node_created_callback(
-		        IntPtr device,
-		        IntPtr callback,
-		        IntPtr ctx);
+			IntPtr device,
+			IntPtr callback,
+			IntPtr ctx);
 		[DllImport ("ossia")]
 		public static extern void ossia_device_remove_node_created_callback(
-		        IntPtr device,
-		        IntPtr index);
+			IntPtr device,
+			IntPtr index);
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_device_add_node_removing_callback(
-		        IntPtr device,
-		        IntPtr callback,
-		        IntPtr ctx);
+			IntPtr device,
+			IntPtr callback,
+			IntPtr ctx);
 		[DllImport ("ossia")]
 		public static extern void ossia_device_remove_node_removing_callback(
-		        IntPtr device,
-		        IntPtr index);
+			IntPtr device,
+			IntPtr index);
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_device_add_address_deleting_callback(
-		        IntPtr node,
-		        IntPtr callback,
-		        IntPtr ctx);
+			IntPtr node,
+			IntPtr callback,
+			IntPtr ctx);
 		[DllImport ("ossia")]
 		public static extern void ossia_device_remove_address_deleting_callback(
-		        IntPtr node,
-		        IntPtr index);
+			IntPtr node,
+			IntPtr index);
 
 		[DllImport ("ossia")]
 		public static extern void ossia_device_reset_static();
@@ -156,6 +156,10 @@ namespace Ossia
 		public static extern IntPtr ossia_node_get_child (
 			IntPtr node,
 			int child_n);
+		[DllImport ("ossia")]
+		public static extern IntPtr ossia_node_find_child (
+			IntPtr node,
+			string name);
 
 
 		[DllImport ("ossia")]
@@ -175,13 +179,13 @@ namespace Ossia
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_node_add_deleting_callback(
-		        IntPtr node,
-		        IntPtr callback,
-		        IntPtr ctx);
+			IntPtr node,
+			IntPtr callback,
+			IntPtr ctx);
 		[DllImport ("ossia")]
 		public static extern void ossia_node_remove_deleting_callback(
-		        IntPtr node,
-		        IntPtr index);
+			IntPtr node,
+			IntPtr index);
 
 
 
@@ -290,7 +294,7 @@ namespace Ossia
 
 
 		[DllImport ("ossia")]
-    public static extern IntPtr ossia_address_fetch_value (
+		public static extern IntPtr ossia_address_fetch_value (
 			IntPtr address);
 
 
@@ -406,10 +410,10 @@ namespace Ossia
 		public static extern char ossia_value_to_char (IntPtr val);
 
 		[DllImport ("ossia")]
-		public static extern string ossia_value_to_string (IntPtr val);
-
-		[DllImport ("ossia")]
-		public static extern void ossia_value_free_string (string str);
+		public static extern string ossia_value_to_byte_array (
+			IntPtr val_in,
+			IntPtr val_out,
+			IntPtr size);
 
 		[DllImport ("ossia")]
 		public static extern void ossia_value_to_tuple (
@@ -434,7 +438,10 @@ namespace Ossia
 		public static extern char ossia_value_convert_char (IntPtr val);
 
 		[DllImport ("ossia")]
-		public static extern string ossia_value_convert_string (IntPtr val);
+		public static extern string ossia_value_convert_string (
+			IntPtr val_in,
+			IntPtr val_out,
+			IntPtr size);
 
 		[DllImport ("ossia")]
 		public static extern void ossia_value_convert_tuple (

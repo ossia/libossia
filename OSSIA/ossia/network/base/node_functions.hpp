@@ -23,7 +23,7 @@ find_node(node_base& dev, ossia::string_view address_base);
 /**
  * @brief Find all nodes matching a pattern in a device
  *
- * The address is in OSC pattern mtach format, e.g. /foo.[0-5/bar*
+ * The address is in OSC pattern match format, e.g. /foo.[0-5]/bar*
  *
  * @note If the pattern is known beforehand and may be reused,
  * prefer storing a traversal::path and using the functions in path.hpp.

@@ -3,10 +3,11 @@
 #include "ossia_utils.hpp"
 #include <iostream>
 #include <map>
+#include <boost/container/flat_map.hpp>
 
-std::map<std::string, ossia_device_t>& static_devices()
+global_devices& static_devices()
 {
-  static std::map<std::string, ossia_device_t> devs;
+  static global_devices devs;
   return devs;
 }
 
@@ -18,8 +19,9 @@ ossia_device_t ossia_device_create(ossia_protocol_t protocol, const char* name)
 
     // Look in our cache
     auto& devs = static_devices();
-    auto it = devs.find(str_name);
-    if (it != devs.end())
+    std::lock_guard<std::mutex> lock(devs.mutex);
+    auto it = devs.devices.find(str_name);
+    if (it != devs.devices.end())
     {
       // Found the device in the cache
       if (!it->second)
@@ -41,7 +43,7 @@ ossia_device_t ossia_device_create(ossia_protocol_t protocol, const char* name)
           std::unique_ptr<ossia::net::protocol_base>(protocol->protocol),
           str_name)};
 
-      devs.insert(std::make_pair(str_name, dev));
+      devs.devices.insert(std::make_pair(str_name, dev));
 
       return dev;
     }
@@ -73,11 +75,12 @@ void ossia_device_free(ossia_device_t device)
     if (device && device->device)
     {
       auto& devs = static_devices();
-      auto it = devs.find(device->device->get_name());
-      if (it != devs.end())
+      std::lock_guard<std::mutex> lock(devs.mutex);
+      auto it = devs.devices.find(device->device->get_name());
+      if (it != devs.devices.end())
       {
         device->device->get_root_node().clear_children();
-        devs.erase(it);
+        devs.devices.erase(it);
       }
     }
 
@@ -89,11 +92,12 @@ void ossia_device_reset_static()
 {
   return safe_function(__func__, [=] {
     auto& devs = static_devices();
-    for (auto& dev : devs)
+    std::lock_guard<std::mutex> lock(devs.mutex);
+    for (auto& dev : devs.devices)
     {
       delete dev.second;
     }
-    devs.clear();
+    devs.devices.clear();
   });
 }
 

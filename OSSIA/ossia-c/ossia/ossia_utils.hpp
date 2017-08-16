@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <mutex>
 #include <fmt/format.h>
 #include <ossia-c/log/ossia_log.h>
 
@@ -145,10 +146,19 @@ catch (...)
 inline const char* copy_string(const std::string& str)
 {
   const auto n = str.size();
-  auto mbuffer = new char[n + 1]();
+  auto mbuffer = new char[n + 1];
   std::sprintf(mbuffer, "%s", str.c_str());
   mbuffer[n] = 0;
   return mbuffer;
+}
+
+inline void copy_bytes(const std::string& str, char** ptr, size_t* sz)
+{
+  const auto n = str.size();
+  *sz = n;
+  *ptr = (char*)std::malloc(sizeof(char) * (n + 1));
+  std::memcpy(*ptr, str.c_str(), n);
+  (*ptr)[n] = 0;
 }
 
 struct node_cb {
@@ -166,4 +176,16 @@ struct address_cb {
     }
 };
 
-std::map<std::string, ossia_device_t>& static_devices();
+struct global_devices
+{
+    boost::container::flat_map<std::string, ossia_device_t> devices;
+    std::mutex mutex;
+
+    global_devices() = default;
+    global_devices(const global_devices&) = delete;
+    global_devices(global_devices&&) = delete;
+    global_devices& operator=(const global_devices&) = delete;
+    global_devices& operator=(global_devices&&) = delete;
+};
+
+global_devices& static_devices();

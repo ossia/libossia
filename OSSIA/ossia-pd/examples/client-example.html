@@ -9,6 +9,7 @@
           // This way the protocol will always try to send 
           // data through websockets.
           ws.send("/?SET_PORT=0");
+          ws.send("/");
       }
       var play = document.getElementById('play');
       var note = document.getElementById('note');
@@ -19,6 +20,7 @@
       ws.onmessage = function(mess) {
           // An OSCQuery value json looks like 
           // { "/the/addr" : 123 }
+          console.log(mess.data);
           var json = JSON.parse(mess.data);
           var keys = Object.keys(json);
 

@@ -8,17 +8,17 @@ extern "C" {
 // MOVEME
 void ossia_string_free(char* str)
 {
-  free(str); // Not delete because str has been allocated with strdup.
+  free(str);
 }
 
-ossia_protocol_t ossia_protocol_local_create()
+ossia_protocol_t ossia_protocol_multiplex_create()
 {
   return safe_function(__func__, [=] {
     return new ossia_protocol(new ossia::net::multiplex_protocol);
   });
 }
 
-void ossia_protocol_local_expose_to(
+void ossia_protocol_multiplex_expose_to(
     ossia_protocol_t local, ossia_protocol_t other)
 {
   if (!local)

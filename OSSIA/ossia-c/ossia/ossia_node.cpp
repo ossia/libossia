@@ -51,8 +51,9 @@ ossia_device_t ossia_node_get_device(
 
       auto n = convert_node(node);
       auto& devs = static_devices();
-      auto it = devs.find(n->get_device().get_name());
-      if(it != devs.end())
+      std::lock_guard<std::mutex> lock(devs.mutex);
+      auto it = devs.devices.find(n->get_device().get_name());
+      if(it != devs.devices.end())
           return it->second;
       return nullptr;
     });
@@ -74,6 +75,43 @@ ossia_node_t ossia_node_find(
   });
 }
 
+void ossia_node_find_pattern(
+        ossia_node_t node,
+        const char* pattern,
+        ossia_node_t* data,
+        size_t* size)
+{
+    return safe_function(__func__, [=] {
+      if (!node)
+      {
+        ossia_log_error("ossia_node_add_child: node is null");
+        return;
+      }
+
+      auto n = convert_node(node);
+      auto nodes = ossia::net::find_nodes(*n, pattern);
+      if(nodes.size() == 0)
+      {
+        *data = nullptr;
+        *size = 0;
+      }
+      else
+      {
+        *size = nodes.size();
+        *data = (ossia_node_t*)std::malloc(sizeof(ossia_node_t) * nodes.size());
+        for(std::size_t i = 0; i < nodes.size(); i++)
+          data[i] = convert(nodes[i]);
+      }
+  });
+}
+
+void ossia_node_array_free(
+    ossia_node_t* data)
+{
+    free(*data);
+    *data = nullptr;
+}
+
 ossia_node_t ossia_node_create(
     ossia_node_t node,
     const char* name)
@@ -90,6 +128,35 @@ ossia_node_t ossia_node_create(
   });
 }
 
+void ossia_node_create_pattern(
+        ossia_node_t node,
+        const char* pattern,
+        ossia_node_t* data,
+        size_t* size)
+{
+    return safe_function(__func__, [=] {
+      if (!node)
+      {
+        ossia_log_error("ossia_node_add_child: node is null");
+        return;
+      }
+
+      auto n = convert_node(node);
+      auto nodes = ossia::net::create_nodes(*n, pattern);
+      if(nodes.size() == 0)
+      {
+        *data = nullptr;
+        *size = 0;
+      }
+      else
+      {
+        *size = nodes.size();
+        *data = new ossia_node_t[nodes.size()];
+        for(std::size_t i = 0; i < nodes.size(); i++)
+          data[i] = convert(nodes[i]);
+      }
+  });
+}
 ossia_node_t ossia_node_add_child(ossia_node_t node, const char* name)
 {
   return safe_function(__func__, [=]() -> ossia_node_t {
@@ -132,6 +199,25 @@ ossia_node_t ossia_node_get_child(ossia_node_t node, int child_n)
       return nullptr;
 
     return convert(n->children()[child_n].get());
+  });
+}
+
+ossia_node_t ossia_node_find_child(ossia_node_t node, const char* child_n)
+{
+  return safe_function(__func__, [=]() -> ossia_node_t {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_find_child: node is null");
+      return nullptr;
+    }
+    if (!child_n)
+    {
+      ossia_log_error("ossia_node_find_child: child_n is null");
+      return nullptr;
+    }
+
+    auto n = convert_node(node);
+    return convert(n->find_child(child_n));
   });
 }
 
@@ -221,6 +307,70 @@ void ossia_node_remove_deleting_callback(
 
     convert_node(node)->about_to_be_deleted.disconnect<node_cb>(idx);
     delete idx;
+  });
+}
+
+
+void ossia_node_set_description(
+    ossia_node_t node,
+    const char* description)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_description: node is null");
+      return;
+    }
+
+    ossia::net::set_description(*convert_node(node), description);
+  });
+}
+
+const char* ossia_node_get_description(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=]() -> const char* {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_description: node is null");
+      return nullptr;
+    }
+
+    auto str = ossia::net::get_description(*convert_node(node));
+    if(!str)
+      return nullptr;
+    
+    return copy_string(*str);
+  });
+}
+
+
+void ossia_node_set_hidden(
+    ossia_node_t node,
+    int hidden)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_hidden: node is null");
+      return;
+    }
+
+    ossia::net::set_hidden(*convert_node(node), hidden);
+  });
+}
+
+int ossia_node_get_hidden(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_hidden: node is null");
+      return 0;
+    }
+
+    return int(ossia::net::get_hidden(*convert_node(node)));
   });
 }
 
