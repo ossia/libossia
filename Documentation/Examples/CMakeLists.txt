@@ -8,7 +8,6 @@ function(ossia_add_example TESTNAME TESTSRCS)
         sanitize_build(ossia_${TESTNAME}_example)
     endif()
     use_gold(ossia_${TESTNAME}_example)
-
 endFunction()
 
 ossia_add_example(editor_curve "${CMAKE_CURRENT_SOURCE_DIR}/Editor/curve.cpp")
@@ -29,3 +28,4 @@ ossia_add_example(network_oscquery_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Netw
 #ossia_add_example(preset_parsing_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/ParsingExample.cpp")
 ossia_add_example(preset_print_namespace "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PrintNamespace.cpp")
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
+ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
