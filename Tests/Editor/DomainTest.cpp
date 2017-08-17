@@ -269,6 +269,7 @@ class DomainTest : public QObject
   }
 private Q_SLOTS:
 
+
   /*! test life cycle and accessors functions */
   void test_basic()
   {
@@ -295,6 +296,15 @@ private Q_SLOTS:
     domain d3 = make_domain(1, 24);
     QVERIFY(d3 == domain_base<int>(1, 24));
     QVERIFY(d3 != dom);
+  }
+
+  void test_tuple()
+  {
+    std::vector<ossia::value> t1{0, 0, 0};
+    std::vector<ossia::value> t2{10, 10, 10};
+    auto d4 = ossia::make_domain(t1, t2);
+    auto res = d4.apply(ossia::bounding_mode::CLIP, std::vector<ossia::value>{-10, 5, 2000});
+    QVERIFY((res == std::vector<ossia::value>{0, 5, 10}));
   }
 
   void test_clamp_address()

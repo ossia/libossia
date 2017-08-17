@@ -140,16 +140,16 @@ struct OSSIA_EXPORT vector_domain
   {
   }
   vector_domain(const vector_domain& other) noexcept
-      : min{std::move(other.min)}
-      , max{std::move(other.max)}
-      , values{std::move(other.values)}
+      : min(other.min)
+      , max(other.max)
+      , values(other.values)
   {
   }
 
   vector_domain(vector_domain&& other) noexcept
-      : min{std::move(other.min)}
-      , max{std::move(other.max)}
-      , values{std::move(other.values)}
+      : min(std::move(other.min))
+      , max(std::move(other.max))
+      , values(std::move(other.values))
   {
   }
 
@@ -173,23 +173,23 @@ struct OSSIA_EXPORT vector_domain
   {
   }
 
-  vector_domain(const value_type& v1, const value_type& v2) : min{v1}, max{v2}
+  vector_domain(const value_type& v1, const value_type& v2) : min(v1), max(v2)
   {
   }
   vector_domain(value_type&& v1, value_type&& v2)
-      : min{std::move(v1)}, max{std::move(v2)}
+      : min(std::move(v1)), max(std::move(v2))
   {
   }
   vector_domain(
       const value_type& v1, const value_type& v2,
       const std::vector<boost::container::flat_set<ossia::value>>& vals)
-      : min{v1}, max{v2}, values{vals}
+      : min(v1), max(v2), values(vals)
   {
   }
   vector_domain(
       value_type&& v1, value_type&& v2,
       std::vector<boost::container::flat_set<ossia::value>>&& vals)
-      : min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)}
+      : min(std::move(v1)), max(std::move(v2)), values(std::move(vals))
   {
   }
 
