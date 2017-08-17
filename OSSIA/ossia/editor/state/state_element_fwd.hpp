@@ -1,6 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <eggs/variant.hpp>
+/**
+ * \file state_element_fwd.hpp
+ */
 namespace ossia
 {
 struct message;

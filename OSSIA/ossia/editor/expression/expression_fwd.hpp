@@ -6,6 +6,9 @@
 #include <functional>
 #include <ossia_export.h>
 
+/**
+ * \file expression_fwd.hpp
+ */
 namespace ossia
 {
 namespace expressions

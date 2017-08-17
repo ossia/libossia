@@ -3,7 +3,7 @@
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/value/destination.hpp>
 
-//! Courtesy of tinyspline library, MIT license.
+// Courtesy of tinyspline library, MIT license.
 #include <ossia/editor/automation/tinysplinecpp.h>
 
 namespace ossia

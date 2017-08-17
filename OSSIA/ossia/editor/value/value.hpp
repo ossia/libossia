@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * \file value.hpp
+ */
 namespace fmt
 {
 template <typename T>

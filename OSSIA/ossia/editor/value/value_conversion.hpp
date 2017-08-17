@@ -3,6 +3,9 @@
 #include <ossia_export.h>
 #include <vector>
 
+/**
+ * \file value_conversion.hpp
+ */
 namespace ossia
 {
 class value;

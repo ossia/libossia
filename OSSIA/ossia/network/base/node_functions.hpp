@@ -5,6 +5,11 @@
 
 #include <ossia/editor/value/destination.hpp>
 
+/**
+ * \file node_functions.hpp
+ *
+ * Various utilities to work with a node hierarchy.
+ */
 namespace ossia
 {
 namespace net

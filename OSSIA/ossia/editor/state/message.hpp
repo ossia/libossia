@@ -7,6 +7,9 @@
 #include <ossia_export.h>
 #include <utility>
 
+/**
+ * \file message.hpp
+ */
 namespace ossia
 {
 namespace net

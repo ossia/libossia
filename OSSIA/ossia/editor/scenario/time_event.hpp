@@ -9,6 +9,11 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <cstdint>
 #include <ossia_export.h>
+
+/**
+ * \file time_event.hpp
+ */
+
 namespace ossia
 {
 class state;

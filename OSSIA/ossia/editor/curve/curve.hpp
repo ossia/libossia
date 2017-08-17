@@ -16,6 +16,11 @@
 #include <ossia_export.h>
 #include <utility>
 #include <vector>
+
+/**
+ * \file curve.hpp
+ */
+
 namespace ossia
 {
 class Destination;

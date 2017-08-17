@@ -2,6 +2,9 @@
 #include <memory>
 #include <ossia_export.h>
 #include <utility>
+/**
+ * \file curve_abstract.hpp
+ */
 namespace ossia
 {
 /**

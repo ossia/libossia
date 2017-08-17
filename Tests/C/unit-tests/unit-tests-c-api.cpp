@@ -67,3 +67,22 @@ TEST_CASE ("C API: Apply preset") {
     code = ossia_presets_free(p);
     REQUIRE(code == OSSIA_PRESETS_OK);
 }
+
+
+TEST_CASE ("C API: create pattern") {
+  auto proto = ossia_protocol_multiplex_create();
+  auto dev = ossia_device_create(proto, "foo");
+  ossia_node_t* n{};
+  size_t sz;
+  ossia_node_create_pattern(ossia_device_get_root_node(dev), "/{foo,bar}/baz[1-5]", &n, &sz);
+  ossia_node_t* n2{};
+  size_t sz2;
+  ossia_node_find_pattern(ossia_device_get_root_node(dev), "/{foo,bar}/baz[1-5]", &n2, &sz2);
+  REQUIRE(n != nullptr);
+  REQUIRE(n2 != nullptr);
+  REQUIRE(sz == 10);
+  REQUIRE(sz == sz2);
+  ossia_node_array_free(n);
+  ossia_node_array_free(n2);
+
+}

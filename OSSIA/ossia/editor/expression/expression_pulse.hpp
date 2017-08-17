@@ -8,6 +8,9 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file expression_pulse.hpp
+ */
 namespace ossia
 {
 class Destination;

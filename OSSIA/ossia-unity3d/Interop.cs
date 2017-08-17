@@ -123,18 +123,29 @@ namespace Ossia
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_node_find(
 			IntPtr root,
-			string name);
+      string name);
+    [DllImport ("ossia")]
+    public static extern void ossia_node_find_pattern(
+      IntPtr root,
+      string pattern,
+      out IntPtr data,
+      out UIntPtr size);
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_node_create(
 			IntPtr root,
-			string name);
+      string name);
+    [DllImport ("ossia")]
+    public static extern void ossia_node_create_pattern(
+      IntPtr root,
+      string pattern,
+      out IntPtr data,
+      out UIntPtr size);
 
 		[DllImport ("ossia")]
 		public static extern IntPtr ossia_node_add_child (
 			IntPtr node,
 			string name);
-
 		[DllImport ("ossia")]
 		public static extern void ossia_node_remove_child (
 			IntPtr node,
@@ -187,7 +198,9 @@ namespace Ossia
 			IntPtr node,
 			IntPtr index);
 
-
+    [DllImport("ossia")]
+    public static extern void ossia_node_array_free (
+      IntPtr ar);    
 
 		//// Address ////
 		[DllImport ("ossia")]

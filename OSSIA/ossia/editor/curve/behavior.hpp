@@ -5,6 +5,9 @@
 #include <ossia_export.h>
 #include <vector>
 
+/**
+ * \file behavior.hpp
+ */
 namespace ossia
 {
 
@@ -15,7 +18,7 @@ struct behavior;
 #include <ossia/editor/curve/behavior_variant_impl.hpp>
 
 /**
- * @class behavior Contains either no curve, a single curve, or multiple curves
+ * @class Contains either no curve, a single curve, or multiple curves
  *
  * \see \ref curve_abstract
  * \see \ref curve

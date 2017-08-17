@@ -59,6 +59,9 @@ public class CustomDevice : MonoBehaviour
 			var blu = Ossia.Node.CreateNode (root, "/foo/blu");
 			blu.CreateAddress (Ossia.ossia_type.VEC3F);
 		}
+
+    Ossia.Node.CreatePattern (root, "/{boo,bzu}/zaza.[0-5]");
+    Ossia.Node.FindPattern (root, "/{boo,bzu}/zaza.[0-5]");
 	}
 	
 	// Update is called once per frame

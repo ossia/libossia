@@ -7,6 +7,9 @@
 #include <ossia_export.h>
 #include <type_traits>
 
+/**
+ * \file dataspace_visitors.hpp
+ */
 namespace ossia
 {
 struct unit_t;

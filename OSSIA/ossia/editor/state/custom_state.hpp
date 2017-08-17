@@ -2,6 +2,9 @@
 #include <functional>
 #include <ossia_export.h>
 
+/**
+ * \file custom_state.hpp
+ */
 namespace ossia
 {
 /**

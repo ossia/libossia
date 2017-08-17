@@ -4,9 +4,13 @@
 #include <mutex>
 #include <ossia_export.h>
 #include <stdexcept>
+
+/**
+ * \file callback_container.hpp
+ */
+
 namespace ossia
 {
-
 /**
  * @brief The invalid_callback_error class
  *

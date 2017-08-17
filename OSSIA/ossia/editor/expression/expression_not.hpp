@@ -5,6 +5,9 @@
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file expression_not.hpp
+ */
 namespace ossia
 {
 namespace expressions

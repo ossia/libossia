@@ -11,6 +11,9 @@
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file time_node.hpp
+ */
 namespace ossia
 {
 

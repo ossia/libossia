@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
-using UnityEngine;
+
 namespace Ossia {
 	public class Node 
 	{
@@ -151,6 +151,52 @@ namespace Ossia {
 					return new Node (p);
 			}
 		    return null;
+		}
+
+		//! Usage: Node.FindPattern(myRootNode, "/foo/baz.*");
+		public static unsafe Node[] FindPattern(Node root, string s)
+		{
+			if (root.ossia_node != IntPtr.Zero) {
+				IntPtr data;
+				UIntPtr size;
+
+				Network.ossia_node_find_pattern (root.ossia_node, s, out data, out size);
+				int sz = (int)size;
+				if (sz == 0)
+					return null;
+				
+				void** ptr = (void**)data.ToPointer();
+				Node[] arr = new Node[sz];
+				for (int i = 0; i < sz; i++) {
+					arr[i] = new Node(new IntPtr(ptr[i]));
+				}
+				Network.ossia_node_array_free (data);
+				return arr;
+			}
+			return null;
+		}
+
+		//! Usage: Node.FindPattern(myRootNode, "/foo/baz.*");
+		public static unsafe Node[] CreatePattern(Node root, string s)
+		{
+			if (root.ossia_node != IntPtr.Zero) {
+				IntPtr data;
+				UIntPtr size;
+
+				Network.ossia_node_create_pattern (root.ossia_node, s, out data, out size);
+				int sz = (int)size;
+				if (sz == 0)
+					return null;
+				
+				void** ptr = (void**)data.ToPointer();
+				Node[] arr = new Node[sz];
+				for (int i = 0; i < sz; i++) {
+					arr[i] = new Node(new IntPtr(ptr[i]));
+				}
+				Network.ossia_node_array_free (data);
+				return arr;
+			}
+			return null;
 		}
 	}
 }

@@ -1,5 +1,9 @@
 #ifndef OSSIA_H
 #define OSSIA_H
+
+/**
+ * @file ossia-c.h
+ */
 /**
  * ### API core concepts and ideas:
  *
@@ -132,7 +136,7 @@ typedef enum
 
 
 /**
- * @brief Instantiate a multiplexer protocol<
+ * @brief Instantiate a multiplexer protocol
  * @return An instance of a multiplexing protocol
  *
  * @see ossia::net::multiplex_protocol
@@ -410,7 +414,7 @@ OSSIA_EXPORT ossia_node_t ossia_node_find(
  *
  * Usage:
  * @code
- * ossia_node_t data;
+ * ossia_node_t* data;
  * size_t sz;
  * ossia_node_find_pattern(root, "/foo/bar.*", &data, &sz);
  * ...
@@ -423,7 +427,7 @@ OSSIA_EXPORT ossia_node_t ossia_node_find(
 OSSIA_EXPORT void ossia_node_find_pattern(
     ossia_node_t root,
     const char* pattern,
-    ossia_node_t* data,
+    ossia_node_t** data,
     size_t* size);
 
 /**
@@ -458,7 +462,7 @@ OSSIA_EXPORT ossia_node_t ossia_node_create(
  *
  * Usage:
  * @code
- * ossia_node_t data;
+ * ossia_node_t* data;
  * size_t sz;
  * ossia_node_create_pattern(root, "/foo.[0-5]/{bar,baz}", &data, &sz);
  * ...
@@ -471,7 +475,7 @@ OSSIA_EXPORT ossia_node_t ossia_node_create(
 OSSIA_EXPORT void ossia_node_create_pattern(
     ossia_node_t root,
     const char* pattern,
-    ossia_node_t* data,
+    ossia_node_t** data,
     size_t* size);
 
 /**
@@ -638,7 +642,7 @@ const char* ossia_node_get_description(
 /**
  * @see ossia::net::set_hidden
  * @note Multithread guarantees: Data-Safe.
- * 
+ *
  * hidden is a boolean value.
  */
 OSSIA_EXPORT
@@ -734,7 +738,7 @@ const char* ossia_address_get_unit(
 /**
  * @see ossia::net::set_repetition_filter
  * @note Multithread guarantees: Data-Safe.
- * 
+ *
  * repetition_filter is a boolean value.
  */
 OSSIA_EXPORT

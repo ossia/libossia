@@ -77,7 +77,7 @@ ossia_node_t ossia_node_find(
 void ossia_node_find_pattern(
         ossia_node_t node,
         const char* pattern,
-        ossia_node_t* data,
+        ossia_node_t** data,
         size_t* size)
 {
     return safe_function(__func__, [=] {
@@ -97,9 +97,10 @@ void ossia_node_find_pattern(
       else
       {
         *size = nodes.size();
-        *data = (ossia_node_t*)std::malloc(sizeof(ossia_node_t) * nodes.size());
+        auto ptr = (ossia_node_t*)std::malloc(sizeof(ossia_node_t) * nodes.size());
         for(std::size_t i = 0; i < nodes.size(); i++)
-          data[i] = convert(nodes[i]);
+          ptr[i] = convert(nodes[i]);
+        *data = ptr;
       }
   });
 }
@@ -107,8 +108,7 @@ void ossia_node_find_pattern(
 void ossia_node_array_free(
     ossia_node_t* data)
 {
-    free(*data);
-    *data = nullptr;
+    free(data);
 }
 
 ossia_node_t ossia_node_create(
@@ -130,7 +130,7 @@ ossia_node_t ossia_node_create(
 void ossia_node_create_pattern(
         ossia_node_t node,
         const char* pattern,
-        ossia_node_t* data,
+        ossia_node_t** data,
         size_t* size)
 {
     return safe_function(__func__, [=] {
@@ -150,9 +150,10 @@ void ossia_node_create_pattern(
       else
       {
         *size = nodes.size();
-        *data = new ossia_node_t[nodes.size()];
+        auto ptr = (ossia_node_t*)std::malloc(sizeof(ossia_node_t) * nodes.size());
         for(std::size_t i = 0; i < nodes.size(); i++)
-          data[i] = convert(nodes[i]);
+          ptr[i] = convert(nodes[i]);
+        *data = ptr;
       }
   });
 }
@@ -338,7 +339,7 @@ const char* ossia_node_get_description(
     auto str = ossia::net::get_description(*convert_node(node));
     if(!str)
       return nullptr;
-    
+
     return copy_string(*str);
   });
 }

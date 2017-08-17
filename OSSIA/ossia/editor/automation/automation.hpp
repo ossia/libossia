@@ -7,6 +7,9 @@
 #include <ossia/editor/value/destination.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file automation.hpp
+ */
 namespace ossia
 {
 class value;

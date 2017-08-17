@@ -1,9 +1,12 @@
 #pragma once
 #include <functional>
 
+/**
+ * \file curve_segment.hpp
+ */
+
 namespace ossia
 {
-
 template <typename Y>
 /**
  * \typedef curve_segment

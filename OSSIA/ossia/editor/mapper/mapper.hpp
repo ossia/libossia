@@ -11,6 +11,9 @@
 
 #include <ossia/detail/mutex.hpp>
 
+/**
+ * \file mapper.hpp
+ */
 namespace ossia
 {
 namespace net

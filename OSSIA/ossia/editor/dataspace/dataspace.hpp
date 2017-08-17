@@ -14,6 +14,7 @@
 namespace ossia
 {
 #include <ossia/editor/dataspace/dataspace_base_variants.hpp>
+//! A unit
 struct OSSIA_EXPORT unit_t final
 {
   unit_variant v;

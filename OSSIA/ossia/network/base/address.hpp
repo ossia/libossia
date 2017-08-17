@@ -25,8 +25,7 @@ struct full_address_data;
 /**
  * @brief The address_base class
  *
- * An address holds attributes and values.
- * One can subscribe to modification of the value.
+ * An address holds attributes and values. * One can subscribe to modification of the value.
  *
  * \see generic_address
  *

@@ -4,6 +4,10 @@
 #include <boost/spirit/home/support/detail/hold_any.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file any_map.hpp
+ */
+
 namespace ossia
 {
 using any = boost::spirit::hold_any;

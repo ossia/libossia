@@ -10,6 +10,10 @@
 
 #include <ossia_export.h>
 
+/**
+ * \file logger.hpp
+ */
+
 namespace ossia
 {
 /**

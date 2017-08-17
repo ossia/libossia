@@ -1,6 +1,10 @@
 #pragma once
 #include <eggs/variant.hpp>
 
+/**
+ * \file apply.hpp
+ */
+
 namespace ossia
 {
 /**

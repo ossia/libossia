@@ -10,6 +10,9 @@
 #include <eggs/variant.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file expression_atom.hpp
+ */
 namespace ossia
 {
 namespace expressions
