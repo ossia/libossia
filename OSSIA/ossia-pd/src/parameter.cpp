@@ -62,7 +62,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(
               local_address->get_node(), x_default[0].a_w.w_float);
 
-      float min = std::numeric_limits<float>::min();
+      float min = std::numeric_limits<float>::lowest();
       float max = std::numeric_limits<float>::max();
       if (x_min[0].a_type == A_FLOAT)
         min = x_min[0].a_w.w_float;
@@ -87,7 +87,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(
               local_address->get_node(), x_default[0].a_w.w_float);
 
-      int min = std::numeric_limits<int>::min();
+      int min = std::numeric_limits<int>::lowest();
       int max = std::numeric_limits<int>::max();
       if (x_min[0].a_type == A_FLOAT)
         min = x_min[0].a_w.w_float;
@@ -108,7 +108,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec2f min;
-      min.fill(std::numeric_limits<float>::min());
+      min.fill(std::numeric_limits<float>::lowest());
       vec2f max;
       max.fill(std::numeric_limits<float>::max());
       for (int i=0; i<2; i++){
@@ -133,7 +133,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec3f min;
-      min.fill(std::numeric_limits<float>::min());
+      min.fill(std::numeric_limits<float>::lowest());
       vec3f max;
       max.fill(std::numeric_limits<float>::max());
       for (int i=0; i<3; i++){
@@ -158,7 +158,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec4f min;
-      min.fill(std::numeric_limits<float>::min());
+      min.fill(std::numeric_limits<float>::lowest());
       vec4f max;
       max.fill(std::numeric_limits<float>::max());
       for (int i=0; i<4; i++){
