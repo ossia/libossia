@@ -28,179 +28,179 @@ struct OSSIA_EXPORT unit_t final
   unit_t(angle_u t) : v{t}
   {
   }
-  unit_t(degree_u) : v{angle_u{degree_u{}}}
+  unit_t(degree_u t) : v{angle_u{t}}
   {
   }
-  unit_t(radian_u) : v{angle_u{radian_u{}}}
+  unit_t(radian_u t) : v{angle_u{t}}
   {
   }
 
   unit_t(color_u t) : v{t}
   {
   }
-  unit_t(argb_u) : v{color_u{argb_u{}}}
+  unit_t(argb_u t) : v{color_u{t}}
   {
   }
-  unit_t(rgba_u) : v{color_u{rgba_u{}}}
+  unit_t(rgba_u t) : v{color_u{t}}
   {
   }
-  unit_t(rgb_u) : v{color_u{rgb_u{}}}
+  unit_t(rgb_u t) : v{color_u{t}}
   {
   }
-  unit_t(bgr_u) : v{color_u{bgr_u{}}}
+  unit_t(bgr_u t) : v{color_u{t}}
   {
   }
-  unit_t(argb8_u) : v{color_u{argb8_u{}}}
+  unit_t(argb8_u t) : v{color_u{t}}
   {
   }
-  unit_t(hsv_u) : v{color_u{hsv_u{}}}
+  unit_t(hsv_u t) : v{color_u{t}}
   {
   }
-  unit_t(cmy8_u) : v{color_u{cmy8_u{}}}
+  unit_t(cmy8_u t) : v{color_u{t}}
   {
   }
-  unit_t(xyz_u) : v{color_u{xyz_u{}}}
+  unit_t(xyz_u t) : v{color_u{t}}
   {
   }
 
   unit_t(distance_u t) : v{t}
   {
   }
-  unit_t(meter_u) : v{distance_u{meter_u{}}}
+  unit_t(meter_u t) : v{distance_u{t}}
   {
   }
-  unit_t(kilometer_u) : v{distance_u{kilometer_u{}}}
+  unit_t(kilometer_u t) : v{distance_u{t}}
   {
   }
-  unit_t(decimeter_u) : v{distance_u{decimeter_u{}}}
+  unit_t(decimeter_u t) : v{distance_u{t}}
   {
   }
-  unit_t(centimeter_u) : v{distance_u{centimeter_u{}}}
+  unit_t(centimeter_u t) : v{distance_u{t}}
   {
   }
-  unit_t(millimeter_u) : v{distance_u{millimeter_u{}}}
+  unit_t(millimeter_u t) : v{distance_u{t}}
   {
   }
-  unit_t(micrometer_u) : v{distance_u{micrometer_u{}}}
+  unit_t(micrometer_u t) : v{distance_u{t}}
   {
   }
-  unit_t(nanometer_u) : v{distance_u{nanometer_u{}}}
+  unit_t(nanometer_u t) : v{distance_u{t}}
   {
   }
-  unit_t(picometer_u) : v{distance_u{picometer_u{}}}
+  unit_t(picometer_u t) : v{distance_u{t}}
   {
   }
-  unit_t(inch_u) : v{distance_u{inch_u{}}}
+  unit_t(inch_u t) : v{distance_u{t}}
   {
   }
-  unit_t(foot_u) : v{distance_u{foot_u{}}}
+  unit_t(foot_u t) : v{distance_u{t}}
   {
   }
-  unit_t(mile_u) : v{distance_u{mile_u{}}}
+  unit_t(mile_u t) : v{distance_u{t}}
   {
   }
 
   unit_t(gain_u t) : v{t}
   {
   }
-  unit_t(linear_u) : v{gain_u{linear_u{}}}
+  unit_t(linear_u t) : v{gain_u{t}}
   {
   }
-  unit_t(midigain_u) : v{gain_u{midigain_u{}}}
+  unit_t(midigain_u t) : v{gain_u{t}}
   {
   }
-  unit_t(decibel_u) : v{gain_u{decibel_u{}}}
+  unit_t(decibel_u t) : v{gain_u{t}}
   {
   }
-  unit_t(decibel_raw_u) : v{gain_u{decibel_raw_u{}}}
+  unit_t(decibel_raw_u t) : v{gain_u{t}}
   {
   }
 
   unit_t(orientation_u t) : v{t}
   {
   }
-  unit_t(quaternion_u) : v{orientation_u{quaternion_u{}}}
+  unit_t(quaternion_u t) : v{orientation_u{t}}
   {
   }
-  unit_t(euler_u) : v{orientation_u{euler_u{}}}
+  unit_t(euler_u t) : v{orientation_u{t}}
   {
   }
-  unit_t(axis_u) : v{orientation_u{axis_u{}}}
+  unit_t(axis_u t) : v{orientation_u{t}}
   {
   }
 
   unit_t(position_u t) : v{t}
   {
   }
-  unit_t(cartesian_3d_u) : v{position_u{cartesian_3d_u{}}}
+  unit_t(cartesian_3d_u t) : v{position_u{t}}
   {
   }
-  unit_t(cartesian_2d_u) : v{position_u{cartesian_2d_u{}}}
+  unit_t(cartesian_2d_u t) : v{position_u{t}}
   {
   }
-  unit_t(spherical_u) : v{position_u{spherical_u{}}}
+  unit_t(spherical_u t) : v{position_u{t}}
   {
   }
-  unit_t(polar_u) : v{position_u{polar_u{}}}
+  unit_t(polar_u t) : v{position_u{t}}
   {
   }
-  unit_t(opengl_u) : v{position_u{opengl_u{}}}
+  unit_t(opengl_u t) : v{position_u{t}}
   {
   }
-  unit_t(cylindrical_u) : v{position_u{cylindrical_u{}}}
+  unit_t(cylindrical_u t) : v{position_u{t}}
   {
   }
 
   unit_t(speed_u t) : v{t}
   {
   }
-  unit_t(meter_per_second_u) : v{speed_u{meter_per_second_u{}}}
+  unit_t(meter_per_second_u t) : v{speed_u{t}}
   {
   }
-  unit_t(miles_per_hour_u) : v{speed_u{miles_per_hour_u{}}}
+  unit_t(miles_per_hour_u t) : v{speed_u{t}}
   {
   }
-  unit_t(kilometer_per_hour_u) : v{speed_u{kilometer_per_hour_u{}}}
+  unit_t(kilometer_per_hour_u t) : v{speed_u{t}}
   {
   }
-  unit_t(knot_u) : v{speed_u{knot_u{}}}
+  unit_t(knot_u t) : v{speed_u{t}}
   {
   }
-  unit_t(foot_per_hour_u) : v{speed_u{foot_per_hour_u{}}}
+  unit_t(foot_per_hour_u t) : v{speed_u{t}}
   {
   }
-  unit_t(foot_per_second_u) : v{speed_u{foot_per_second_u{}}}
+  unit_t(foot_per_second_u t) : v{speed_u{t}}
   {
   }
 
   unit_t(timing_u t) : v{t}
   {
   }
-  unit_t(second_u) : v{timing_u{second_u{}}}
+  unit_t(second_u t) : v{timing_u{t}}
   {
   }
-  unit_t(bark_u) : v{timing_u{bark_u{}}}
+  unit_t(bark_u t) : v{timing_u{t}}
   {
   }
-  unit_t(bpm_u) : v{timing_u{bpm_u{}}}
+  unit_t(bpm_u t) : v{timing_u{t}}
   {
   }
-  unit_t(cent_u) : v{timing_u{cent_u{}}}
+  unit_t(cent_u t) : v{timing_u{t}}
   {
   }
-  unit_t(frequency_u) : v{timing_u{frequency_u{}}}
+  unit_t(frequency_u t) : v{timing_u{t}}
   {
   }
-  unit_t(mel_u) : v{timing_u{mel_u{}}}
+  unit_t(mel_u t) : v{timing_u{t}}
   {
   }
-  unit_t(midi_pitch_u) : v{timing_u{midi_pitch_u{}}}
+  unit_t(midi_pitch_u t) : v{timing_u{t}}
   {
   }
-  unit_t(millisecond_u) : v{timing_u{millisecond_u{}}}
+  unit_t(millisecond_u t) : v{timing_u{t}}
   {
   }
-  unit_t(playback_speed_u) : v{timing_u{playback_speed_u{}}}
+  unit_t(playback_speed_u t) : v{timing_u{t}}
   {
   }
 

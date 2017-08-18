@@ -22,7 +22,7 @@ using enable_if_different_dataspace = std::enable_if_t<!std::is_same<
     typename T::dataspace_type, typename U::dataspace_type>::value>;
 
 template <typename Unit>
-struct strong_value
+struct strong_value : Unit
 {
   using unit_type = Unit;
   using value_type = typename Unit::value_type;
@@ -34,21 +34,25 @@ struct strong_value
   {
   }
   OSSIA_INLINE constexpr strong_value(const strong_value& other) noexcept
-      : dataspace_value{other.dataspace_value}
+      : Unit{other}
+      , dataspace_value{other.dataspace_value}
   {
   }
   OSSIA_INLINE constexpr strong_value(strong_value&& other) noexcept
-      : dataspace_value{std::move(other.dataspace_value)}
+    : Unit{other}
+    , dataspace_value{other.dataspace_value}
   {
   }
   OSSIA_INLINE strong_value& operator=(const strong_value& other) noexcept
   {
+    ((Unit&) *this) = other;
     dataspace_value = other.dataspace_value;
     return *this;
   }
   OSSIA_INLINE strong_value& operator=(strong_value&& other) noexcept
   {
-    dataspace_value = std::move(other.dataspace_value);
+    ((Unit&) *this) = other;
+    dataspace_value = other.dataspace_value;
     return *this;
   }
 
@@ -114,7 +118,7 @@ struct strong_value
   // Conversion constructor
   template <typename U>
   constexpr strong_value(strong_value<U> other) noexcept
-      : dataspace_value{unit_type::from_neutral(U::to_neutral(other))}
+      : dataspace_value{this->from_neutral(other.to_neutral(other))}
   {
     static_assert(
         std::is_same<dataspace_type, typename U::dataspace_type>::value,

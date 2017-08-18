@@ -36,6 +36,30 @@ struct distance_ratio : public linear_unit<distance_unit<distance_ratio<T>>, T>
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
 };
 
+struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
+{
+  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  {
+    return ossia::make_string_array("px", "pixels");
+  }
+  using value_type = float;
+  double ppm{}; // pixels per meter
+
+  void set_ppcm(double v) { ppm = v * 100.; }
+  void set_dpi(double v) { ppm = v / 254.; }
+  strong_value<neutral_unit>
+  to_neutral(strong_value<concrete_type> self)
+  {
+    return float(self.dataspace_value / ppm);
+  }
+
+  value_type from_neutral(strong_value<neutral_unit> self)
+  {
+    return float(self.dataspace_value * ppm);
+  }
+};
+
+
 template <>
 struct unit_traits<meter_u>
 {
