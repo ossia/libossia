@@ -7,14 +7,14 @@ namespace ossia
 namespace net
 {
 
-ws_generic_client_address::ws_generic_client_address(
+ws_generic_client_parameter::ws_generic_client_parameter(
     const ws_generic_client_parameter_data& data,
     ossia::net::node_base& node_base)
     : generic_parameter{data, node_base}, mData{data}
 {
 }
 
-ws_generic_client_address::~ws_generic_client_address()
+ws_generic_client_parameter::~ws_generic_client_parameter()
 {
   callback_container<value_callback>::callbacks_clear();
 }

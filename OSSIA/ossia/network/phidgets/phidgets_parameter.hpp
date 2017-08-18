@@ -6,7 +6,7 @@
 namespace ossia
 {
 class phidget_protocol;
-class phidget_address final : public ossia::net::parameter_base
+class phidget_parameter final : public ossia::net::parameter_base
 {
   ossia::net::node_base& m_parent;
   phidget_protocol& m_protocol;
@@ -15,9 +15,9 @@ class phidget_address final : public ossia::net::parameter_base
   ossia::domain m_domain;
 
 public:
-  phidget_address(
+  phidget_parameter(
       ppp::phidget_ptr p, phidget_protocol& proto, ossia::net::node_base& par);
-  ~phidget_address();
+  ~phidget_parameter();
 
   net::node_base& get_node() const override;
   ppp::phidget_ptr phidget() const

@@ -38,7 +38,7 @@ generic_parameter::generic_parameter(
           get_value_or(data.rep_filter, ossia::repetition_filter::OFF))
     , m_value(init_value(m_valueType))
 {
-  update_address_type(data.type, *this);
+  update_parameter_type(data.type, *this);
 }
 
 generic_parameter::~generic_parameter()
@@ -169,7 +169,7 @@ void generic_parameter::set_value_quiet(const Destination& destination)
   {
     throw invalid_node_error(
         "generic_parameter::setValue: "
-        "setting an address value using a destination "
+        "setting a parameter value using a destination "
         "with a bad type address");
     return;
   }

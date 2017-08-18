@@ -25,7 +25,7 @@ class parameter_base;
  * An automation is a time process that represents a curve of one
  * or multiple parameters.
  *
- * It drives (i.e. sends messages) to an address, according to a driving value.
+ * It drives (i.e. sends messages) to a parameter, according to a driving value.
  * Its driven \ref net::parameter_base can be either of numeric type (\ref
  * val_type::INT, \ref val_type::FLOAT...)
  * or of \ref val_type::TUPLE, if the tuple only has numeric elements (e.g.

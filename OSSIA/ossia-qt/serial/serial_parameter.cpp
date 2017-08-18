@@ -8,13 +8,13 @@ namespace ossia
 namespace net
 {
 
-serial_address::serial_address(
+serial_parameter::serial_parameter(
     const serial_parameter_data& p, serial_node& parent)
     : generic_parameter{p, parent}, mData{p}
 {
 }
 
-void serial_address::valueCallback(const ossia::value& val)
+void serial_parameter::valueCallback(const ossia::value& val)
 {
   this->set_value(val);
   send(m_value);

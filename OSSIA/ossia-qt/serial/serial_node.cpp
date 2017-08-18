@@ -16,7 +16,7 @@ serial_node::serial_node(
 {
   m_name = data.name;
   if (!data.request.isEmpty() || data.type)
-    m_address = std::make_unique<serial_address>(data, *this);
+    m_parameter = std::make_unique<serial_parameter>(data, *this);
 }
 
 serial_node::serial_node(
@@ -25,7 +25,7 @@ serial_node::serial_node(
 {
   m_name = data.name;
   if (!data.request.isEmpty() || data.type)
-    m_address = std::make_unique<serial_address>(data, *this);
+    m_parameter = std::make_unique<serial_parameter>(data, *this);
 }
 
 ossia::net::device_base& serial_node::get_device() const
@@ -43,17 +43,17 @@ ossia::net::node_base& serial_node::set_name(std::string)
   return *this;
 }
 
-ossia::net::parameter_base* serial_node::get_address() const
+ossia::net::parameter_base* serial_node::get_parameter() const
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-ossia::net::parameter_base* serial_node::create_address(ossia::val_type)
+ossia::net::parameter_base* serial_node::create_parameter(ossia::val_type)
 {
-  return get_address();
+  return get_parameter();
 }
 
-bool serial_node::remove_address()
+bool serial_node::remove_parameter()
 {
   return false;
 }

@@ -106,7 +106,7 @@ public:
   std::string get_name() const;
   void set_name(std::string s);
 
-  std::string get_address() const;
+  std::string get_parameter() const;
 
   std::vector<node> get_children() const;
 
@@ -214,7 +214,7 @@ private:
   node(ossia::net::node_base* b, ossia::net::parameter_base* addr);
   void init();
   void cleanup(const ossia::net::node_base&);
-  void cleanup_address(const ossia::net::parameter_base&);
+  void cleanup_parameter(const ossia::net::parameter_base&);
 
   ossia::net::node_base* m_node;
   ossia::net::parameter_base* m_addr;

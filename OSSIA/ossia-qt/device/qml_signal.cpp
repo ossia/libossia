@@ -18,8 +18,8 @@ qml_signal::qml_signal(QQuickItem* parent) : qml_property_base(parent)
   setDevice(&qml_singleton_device::instance());
   resetNode();
   connect(this, &qml_signal::trigger, this, [=] {
-    if (m_address)
-      m_address->push_value(ossia::impulse{});
+    if (m_param)
+      m_param->push_value(ossia::impulse{});
   });
 }
 
@@ -33,7 +33,7 @@ qml_signal::~qml_signal()
   }
   if (m_device)
     m_device->remove(this);
-  m_address = nullptr;
+  m_param = nullptr;
 }
 
 void qml_signal::setDevice(QObject* device)
@@ -61,15 +61,15 @@ void qml_signal::setupAddress(bool reading)
   if (reading)
     return;
 
-  m_address = nullptr;
+  m_param = nullptr;
   m_callback = ossia::none;
   if (m_ossia_node)
   {
-    m_ossia_node->remove_address();
-    m_address = m_ossia_node->create_address(ossia::val_type::IMPULSE);
-    if (m_address)
+    m_ossia_node->remove_parameter();
+    m_param = m_ossia_node->create_parameter(ossia::val_type::IMPULSE);
+    if (m_param)
     {
-      m_callback = m_address->add_callback(
+      m_callback = m_param->add_callback(
           [this](const ossia::value&) { triggered(); });
     }
   }
@@ -84,7 +84,7 @@ void qml_signal::resetNode()
   if (m_parentNode && !m_parentNode->ossiaNode())
   {
     setPath({});
-    m_address = nullptr;
+    m_param = nullptr;
     m_callback = ossia::none;
     return;
   }
@@ -117,7 +117,7 @@ void qml_signal::resetNode()
           .connect<qml_property_base, &qml_property_base::on_node_deleted>(
               this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
-      m_address = m_ossia_node->get_address();
+      m_param = m_ossia_node->get_parameter();
 
       setPath(QString::fromStdString(
           ossia::net::address_string_from_node(*m_ossia_node)));
@@ -129,7 +129,7 @@ void qml_signal::resetNode()
 
   // In case something went wrong...
   setPath({});
-  m_address = nullptr;
+  m_param = nullptr;
   m_callback = ossia::none;
 }
 }

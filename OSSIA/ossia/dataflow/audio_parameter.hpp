@@ -9,15 +9,15 @@
 
 namespace ossia
 {
-class OSSIA_EXPORT audio_address : public ossia::net::parameter_base
+class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
 {
 
 public:
   std::vector<gsl::span<float>> audio;
 
-  audio_address(ossia::net::node_base& n);
+  audio_parameter(ossia::net::node_base& n);
 
-  virtual ~audio_address();
+  virtual ~audio_parameter();
 
 
   void clone_value(audio_vector& res) const;

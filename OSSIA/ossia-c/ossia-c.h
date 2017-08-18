@@ -22,18 +22,18 @@
  *
  * While the following cases are safe:
  *
- * |          Thread 1                |               Thread 2              |
- * |----------------------------------|-------------------------------------|
- * | `ossia_node_find(my_dev, "/foo");` | `ossia_node_create(other, "/bar");`   |
- * |----------------------------------|-------------------------------------|
- * | `ossia_address_push_i(addr, 123);` | `ossia_address_get_value(addr);`      |
- * |----------------------------------|-------------------------------------|
+ * |          Thread 1                    |               Thread 2              |
+ * |--------------------------------------|-------------------------------------|
+ * | `ossia_node_find(my_dev, "/foo");`   | `ossia_node_create(other, "/bar");` |
+ * |--------------------------------------|-------------------------------------|
+ * | `ossia_parameter_push_i(addr, 123);` | `ossia_parameter_get_value(addr);`  |
+ * |--------------------------------------|-------------------------------------|
  *
  * * Unsafe: Cannot be safely called from multiple threads.
  * * Safe: Can be safely called from multiple threads, may block.
  * * MT-Safe: Can be safely called from multiple threads, won't block.
  * * Data-safe: Can be safely called from multiple threads with the same device.
- *              For instance, `ossia_address_set_value` and `ossia_address_get_value`.
+ *              For instance, `ossia_parameter_set_value` and `ossia_parameter_get_value`.
  *
  * Only functions marked as data-safe can be called in parallel on the same device,
  * and no function with weaker guarantees shall be called on the device at the same time
@@ -68,15 +68,15 @@ typedef struct ossia_device* ossia_device_t;
 typedef struct ossia_domain* ossia_domain_t;
 typedef struct ossia_value* ossia_value_t;
 typedef void* ossia_node_t;
-typedef void* ossia_address_t;
+typedef void* ossia_parameter_t;
 
 typedef void (*ossia_node_callback_t)(void* ctx, ossia_node_t);
 struct ossia_node_callback_index;
 typedef struct ossia_node_callback_index* ossia_node_callback_idx_t;
 
-typedef void (*ossia_address_callback_t)(void* ctx, ossia_address_t);
-struct ossia_address_callback_index;
-typedef struct ossia_address_callback_index* ossia_address_callback_idx_t;
+typedef void (*ossia_parameter_callback_t)(void* ctx, ossia_parameter_t);
+struct ossia_parameter_callback_index;
+typedef struct ossia_parameter_callback_index* ossia_parameter_callback_idx_t;
 
 typedef void (*ossia_value_callback_t)(void* ctx, ossia_value_t);
 struct ossia_value_callback_index;
@@ -357,34 +357,34 @@ void ossia_device_remove_node_removing_callback(
     ossia_node_callback_idx_t index);
 
 /**
- * @brief Add a callback called when an address is removed in a device.
+ * @brief Add a callback called when a parameter is removed in a device.
  * @param device Device on which the callback must be added.
  * @param callback Function to be called.
  * @param ctx Will be passed to the callback.
  * @return An identifier to be able to remove the callback on a later date.
  *
- * @see ossia::net::device_base::on_address_removing
+ * @see ossia::net::device_base::on_parameter_removing
  * @note Multithread guarantees: MT-Safe.
  *       The callback is called from the thread where the modification occured.
  */
 OSSIA_EXPORT
-ossia_address_callback_idx_t ossia_device_add_address_deleting_callback(
+ossia_parameter_callback_idx_t ossia_device_add_parameter_deleting_callback(
     ossia_device_t device,
-    ossia_address_callback_t callback,
+    ossia_parameter_callback_t callback,
     void* ctx);
 /**
- * @brief Remove a callback added with ossia_device_add_address_deleting_callback
+ * @brief Remove a callback added with ossia_device_add_parameter_deleting_callback
  * @param device Device on which the callback must be removed.
  * @param index Index of the callback to remove.
  *
- * @see ossia::net::device_base::on_address_removing
+ * @see ossia::net::device_base::on_parameter_removing
  * @note Multithread guarantees: MT-Safe.
  * @note The callback index must not be used afterwards
  */
 OSSIA_EXPORT
-void ossia_device_remove_address_deleting_callback(
+void ossia_device_remove_parameter_deleting_callback(
     ossia_device_t device,
-    ossia_address_callback_idx_t index);
+    ossia_parameter_callback_idx_t index);
 
 
 /************/
@@ -564,32 +564,32 @@ ossia_node_t ossia_node_find_child(
     const char* name);
 
 /**
- * @brief Create an address in a node.
+ * @brief Create a parameter in a node.
  * @param type Type of the address
  * @note Multithread guarantees: MT-Safe.
- * @see ossia::net::node_base::create_address
+ * @see ossia::net::node_base::create_parameter
  */
 OSSIA_EXPORT
-ossia_address_t ossia_node_create_address(
+ossia_parameter_t ossia_node_create_parameter(
     ossia_node_t node,
     ossia_type type);
 
 /**
  * @brief Get the address contained in a node if any.
  * @note Multithread guarantees: Data-Safe.
- * @see ossia::net::node_base::get_address
+ * @see ossia::net::node_base::get_parameter
  */
 OSSIA_EXPORT
-ossia_address_t ossia_node_get_address(
+ossia_parameter_t ossia_node_get_parameter(
     ossia_node_t node);
 
 /**
  * @brief Remove the address contained in a node if any.
  * @note Multithread guarantees: MT-Safe.
- * @see ossia::net::node_base::remove_address
+ * @see ossia::net::node_base::remove_parameter
  */
 OSSIA_EXPORT
-void ossia_node_remove_address(
+void ossia_node_remove_parameter(
     ossia_node_t node);
 
 /**
@@ -663,68 +663,68 @@ int ossia_node_get_hidden(
 /***************/
 
 /**
- * @brief Return the node an address is part of.
+ * @brief Return the node a parameter is part of.
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_node_t ossia_address_get_node(
-    ossia_address_t address);
+ossia_node_t ossia_parameter_get_node(
+    ossia_parameter_t address);
 
 /**
  * @see ossia::net::set_access_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_set_access_mode(
-    ossia_address_t address,
+void ossia_parameter_set_access_mode(
+    ossia_parameter_t address,
     ossia_access_mode am);
 /**
  * @see ossia::net::get_access_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_access_mode ossia_address_get_access_mode(
-    ossia_address_t address);
+ossia_access_mode ossia_parameter_get_access_mode(
+    ossia_parameter_t address);
 
 /**
  * @see ossia::net::set_bounding_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_set_bounding_mode(
-    ossia_address_t address,
+void ossia_parameter_set_bounding_mode(
+    ossia_parameter_t address,
     ossia_bounding_mode bm);
 /**
  * @see ossia::net::get_bounding_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_bounding_mode ossia_address_get_bounding_mode(
-    ossia_address_t address);
+ossia_bounding_mode ossia_parameter_get_bounding_mode(
+    ossia_parameter_t address);
 
 /**
  * @see ossia::net::set_domain
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_set_domain(
-    ossia_address_t address,
+void ossia_parameter_set_domain(
+    ossia_parameter_t address,
     ossia_domain_t domain);
 /**
  * @see ossia::net::get_domain
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_address_get_domain(
-    ossia_address_t address);
+ossia_domain_t ossia_parameter_get_domain(
+    ossia_parameter_t address);
 
 /**
  * @see ossia::net::set_unit
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_set_unit(
-    ossia_address_t address,
+void ossia_parameter_set_unit(
+    ossia_parameter_t address,
     const char* unit);
 /**
  * @see ossia::net::get_unit
@@ -732,8 +732,8 @@ void ossia_address_set_unit(
  * @note No need to free
  */
 OSSIA_EXPORT
-const char* ossia_address_get_unit(
-    ossia_address_t address);
+const char* ossia_parameter_get_unit(
+    ossia_parameter_t address);
 
 /**
  * @see ossia::net::set_repetition_filter
@@ -742,8 +742,8 @@ const char* ossia_address_get_unit(
  * repetition_filter is a boolean value.
  */
 OSSIA_EXPORT
-void ossia_address_set_repetition_filter(
-    ossia_address_t address,
+void ossia_parameter_set_repetition_filter(
+    ossia_parameter_t address,
     int repetition_filter);
 /**
  * @see ossia::net::get_repetition_filter
@@ -751,46 +751,46 @@ void ossia_address_set_repetition_filter(
  * @note No need to free
  */
 OSSIA_EXPORT
-int ossia_address_get_repetition_filter(
-    ossia_address_t address);
+int ossia_parameter_get_repetition_filter(
+    ossia_parameter_t address);
 
 /**
  * @see ossia::net::parameter_base::set_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_set_value(
-    ossia_address_t address,
+void ossia_parameter_set_value(
+    ossia_parameter_t address,
     ossia_value_t value);
 /**
  * @see ossia::net::parameter_base::value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_value_t ossia_address_get_value(
-    ossia_address_t address);
+ossia_value_t ossia_parameter_get_value(
+    ossia_parameter_t address);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_value(
-    ossia_address_t address,
+void ossia_parameter_push_value(
+    ossia_parameter_t address,
     ossia_value_t value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_impulse(
-    ossia_address_t address);
+void ossia_parameter_push_impulse(
+    ossia_parameter_t address);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_i(
-    ossia_address_t address,
+void ossia_parameter_push_i(
+    ossia_parameter_t address,
     int value);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -799,56 +799,56 @@ void ossia_address_push_i(
  * b is a boolean, 0 for false, 1 for true.
  */
 OSSIA_EXPORT
-void ossia_address_push_b(
-    ossia_address_t address,
+void ossia_parameter_push_b(
+    ossia_parameter_t address,
     int b);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_f(
-    ossia_address_t address,
+void ossia_parameter_push_f(
+    ossia_parameter_t address,
     float value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_2f(
-    ossia_address_t address,
+void ossia_parameter_push_2f(
+    ossia_parameter_t address,
     float v1, float v2);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_3f(
-    ossia_address_t address,
+void ossia_parameter_push_3f(
+    ossia_parameter_t address,
     float v1, float v2, float v3);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_4f(
-    ossia_address_t address,
+void ossia_parameter_push_4f(
+    ossia_parameter_t address,
     float v1, float v2, float v3, float v4);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_c(
-    ossia_address_t address,
+void ossia_parameter_push_c(
+    ossia_parameter_t address,
     char value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_s(
-    ossia_address_t address,
+void ossia_parameter_push_s(
+    ossia_parameter_t address,
     const char* value);
 
 /**
@@ -857,8 +857,8 @@ void ossia_address_push_s(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_in(
-    ossia_address_t address,
+void ossia_parameter_push_in(
+    ossia_parameter_t address,
     const int* value,
     int sz);
 /**
@@ -867,8 +867,8 @@ void ossia_address_push_in(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_fn(
-    ossia_address_t address,
+void ossia_parameter_push_fn(
+    ossia_parameter_t address,
     const float* value,
     int sz);
 /**
@@ -877,8 +877,8 @@ void ossia_address_push_fn(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_push_cn(
-    ossia_address_t address,
+void ossia_parameter_push_cn(
+    ossia_parameter_t address,
     const char* value,
     int sz);
 /**
@@ -886,11 +886,11 @@ void ossia_address_push_cn(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_value_t ossia_address_fetch_value(
-    ossia_address_t address);
+ossia_value_t ossia_parameter_fetch_value(
+    ossia_parameter_t address);
 
 /**
- * @brief Add a callback called when the value of an address changes.
+ * @brief Add a callback called when the value of a parameter changes.
  * @param address Address on which the callback must be added.
  * @param callback Function to be called.
  * @param ctx Will be passed to the callback.
@@ -901,13 +901,13 @@ ossia_value_t ossia_address_fetch_value(
  *       The callback is called from the thread where the value was changed.
  */
 OSSIA_EXPORT
-ossia_value_callback_idx_t ossia_address_add_callback(
-    ossia_address_t address,
+ossia_value_callback_idx_t ossia_parameter_add_callback(
+    ossia_parameter_t address,
     ossia_value_callback_t callback,
     void* ctx);
 
 /**
- * @brief Add a callback called when the value of an address changes.
+ * @brief Add a callback called when the value of a parameter changes.
  * @param address Address on which the callback must be added.
  * @param callback Function to be called.
  * @param ctx Will be passed to the callback.
@@ -917,13 +917,13 @@ ossia_value_callback_idx_t ossia_address_add_callback(
  *       The callback is called from the thread where the value was changed.
  */
 OSSIA_EXPORT
-void ossia_address_push_callback(
-    ossia_address_t address,
+void ossia_parameter_push_callback(
+    ossia_parameter_t address,
     ossia_value_callback_t callback,
     void* ctx);
 
 /**
- * @brief Remove a callback added with ossia_address_add_callback
+ * @brief Remove a callback added with ossia_parameter_add_callback
  * @param address Address on which the callback must be removed
  * @param index Identifier of the callback
  *
@@ -931,8 +931,8 @@ void ossia_address_push_callback(
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_remove_callback(
-    ossia_address_t address,
+void ossia_parameter_remove_callback(
+    ossia_parameter_t address,
     ossia_value_callback_idx_t index);
 
 /**
@@ -940,7 +940,7 @@ void ossia_address_remove_callback(
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_address_free_callback_idx(
+void ossia_parameter_free_callback_idx(
     ossia_value_callback_idx_t);
 
 

@@ -464,13 +464,13 @@ void json_parser_impl::readObject(
       ext_type = get_string(ext_type_it->value);
     }
 
-    // If any of these exist, we can create an address
+    // If any of these exist, we can create a parameter
     if (val_type || unit || ext_type)
     {
       ossia::net::parameter_base* addr = nullptr;
       if (unit) // The unit enforces the value type
       {
-        addr = node.create_address(ossia::matching_type(*unit));
+        addr = node.create_parameter(ossia::matching_type(*unit));
 
         addr->set_unit(*unit);
         ossia::net::set_extended_type(node, ext_type);
@@ -509,29 +509,29 @@ void json_parser_impl::readObject(
           }
         }
 
-        addr = node.create_address(actual_type);
+        addr = node.create_parameter(actual_type);
         ossia::net::set_extended_type(node, ext_type);
       }
       else if (val_type)
       {
-        addr = setup_address(val_type, node);
+        addr = setup_parameter(val_type, node);
       }
 
       // We have a type. Now we read the value according to it.
       if (value_it != obj.MemberEnd())
       {
-        ossia::value res = node.get_address()->value();
+        ossia::value res = node.get_parameter()->value();
         int typetag_counter = 0;
         bool ok = res.apply(oscquery::detail::json_to_value{
             value_it->value, typetag, typetag_counter});
         if (ok)
-          node.get_address()->set_value(std::move(res));
+          node.get_parameter()->set_value(std::move(res));
       }
 
       // Same for default value
       if (default_value_it != obj.MemberEnd())
       {
-        ossia::value res = node.get_address()->value();
+        ossia::value res = node.get_parameter()->value();
         int typetag_counter = 0;
         bool ok = res.apply(oscquery::detail::json_to_value{
             default_value_it->value, typetag, typetag_counter});
@@ -545,20 +545,20 @@ void json_parser_impl::readObject(
       if (value_it != obj.MemberEnd())
       {
         auto val = ReadValue(value_it->value);
-        auto addr = node.create_address(val.getType());
+        auto addr = node.create_parameter(val.getType());
         addr->set_value(std::move(val));
       }
 
       if (default_value_it != obj.MemberEnd())
       {
         auto val = ReadValue(default_value_it->value);
-        if (node.get_address())
+        if (node.get_parameter())
         {
           ossia::net::set_default_value(node, std::move(val));
         }
         else
         {
-          auto addr = node.create_address(val.getType());
+          auto addr = node.create_parameter(val.getType());
           addr->set_value(val);
           ossia::net::set_default_value(node, std::move(val));
         }
@@ -652,7 +652,7 @@ void json_parser::parse_namespace(
     if (node)
     {
       node->clear_children();
-      node->remove_address();
+      node->remove_parameter();
 
       detail::json_parser_impl::readObject(*node, obj);
     }
@@ -664,7 +664,7 @@ void json_parser::parse_namespace(
   else
   {
     root.clear_children();
-    root.remove_address();
+    root.remove_parameter();
 
     detail::json_parser_impl::readObject(root, obj);
   }
@@ -678,7 +678,7 @@ void json_parser::parse_value(
   addr.set_value(std::move(val));
 }
 
-void json_parser::parse_address_value(
+void json_parser::parse_parameter_value(
     net::node_base& root, const rapidjson::Value& obj)
 {
   for(auto it = obj.MemberBegin(), end = obj.MemberEnd(); it != end; ++it)
@@ -689,7 +689,7 @@ void json_parser::parse_address_value(
       auto node = ossia::net::find_node(root, path);
       if(node)
       {
-        auto addr = node->get_address();
+        auto addr = node->get_parameter();
         if (addr)
         {
           auto val = addr->value();

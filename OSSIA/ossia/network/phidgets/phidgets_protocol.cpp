@@ -13,8 +13,8 @@ phidget_protocol::phidget_protocol()
   m_mgr.onPhidgetCreated = [=](ppp::phidget_ptr phid) {
     m_functionQueue.enqueue([=] {
       auto phid_node = new phidget_node(*m_dev, *m_dev);
-      phid_node->set_address(
-          std::make_unique<phidget_address>(phid, *this, *phid_node));
+      phid_node->set_parameter(
+          std::make_unique<phidget_parameter>(phid, *this, *phid_node));
       m_dev->add_child(std::unique_ptr<phidget_node>(phid_node));
     });
 
@@ -28,7 +28,7 @@ phidget_protocol::phidget_protocol()
         auto phid_node = dynamic_cast<phidget_node*>(cld);
         if (phid_node)
         {
-          auto addr = dynamic_cast<phidget_address*>(phid_node->get_address());
+          auto addr = dynamic_cast<phidget_parameter*>(phid_node->get_parameter());
           if (addr && addr->phidget() == phid)
           {
             m_dev->remove_child(*phid_node);

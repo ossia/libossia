@@ -8,25 +8,25 @@ namespace ossia
 namespace net
 {
 
-class OSSIA_EXPORT ws_generic_client_address final
+class OSSIA_EXPORT ws_generic_client_parameter final
     : public ossia::net::generic_parameter
 {
 private:
   ws_generic_client_parameter_data_base mData;
 
 public:
-  ws_generic_client_address(
+  ws_generic_client_parameter(
       const ws_generic_client_parameter_data& data,
       ossia::net::node_base& node_base);
 
-  ws_generic_client_address() = delete;
-  ws_generic_client_address(const ws_generic_client_address& other) = delete;
-  ws_generic_client_address(ws_generic_client_address&& other) = delete;
-  ws_generic_client_address& operator=(const ws_generic_client_address& other)
+  ws_generic_client_parameter() = delete;
+  ws_generic_client_parameter(const ws_generic_client_parameter& other) = delete;
+  ws_generic_client_parameter(ws_generic_client_parameter&& other) = delete;
+  ws_generic_client_parameter& operator=(const ws_generic_client_parameter& other)
       = delete;
-  ws_generic_client_address& operator=(ws_generic_client_address&& other)
+  ws_generic_client_parameter& operator=(ws_generic_client_parameter&& other)
       = delete;
-  ~ws_generic_client_address();
+  ~ws_generic_client_parameter();
 
   const ws_generic_client_parameter_data_base& data() const
   {

@@ -52,7 +52,7 @@ int main()
         {
           cout << "/deg/bitdepth node found" << endl;
 
-          bitdepthAddress = parameter->get_address();
+          bitdepthAddress = parameter->get_parameter();
           bitdepthAddress->pull_value();
           bitdepthMessage = message{*bitdepthAddress, bitdepthAddress->value()};
 
@@ -66,7 +66,7 @@ int main()
         {
           cout << "/deg/samplerate_ratio node found" << endl;
 
-          samplerateAddress = parameter->get_address();
+          samplerateAddress = parameter->get_parameter();
           samplerateAddress->pull_value();
           samplerateMessage = message{*samplerateAddress, samplerateAddress->value()};
 

@@ -77,7 +77,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+        x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
        }
     }
 

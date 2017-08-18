@@ -27,7 +27,7 @@ qml_node_base::~qml_node_base()
       auto node = m_ossia_node;
       m_ossia_node = nullptr;
       par->remove_child(*node);
-      while (!par->get_address() && par->children().empty()
+      while (!par->get_parameter() && par->children().empty()
              && par->get_parent())
       {
         node = par;
@@ -427,7 +427,7 @@ void qml_node_base::setPath(QString path)
 
 void qml_property_base::on_node_deleted(const net::node_base& n)
 {
-  m_address = nullptr;
+  m_param = nullptr;
   m_ossia_node = nullptr;
   m_callback = ossia::none;
 }
@@ -441,7 +441,7 @@ void qml_property_base::clearNode(bool reading)
     if (par)
     {
       auto node = m_ossia_node;
-      m_address = nullptr;
+      m_param = nullptr;
       m_ossia_node = nullptr;
       m_callback = ossia::none;
       if (!reading)

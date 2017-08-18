@@ -113,7 +113,7 @@ struct OSSIA_EXPORT any_path
 {
 };
 
-//! Matches the end of an address
+//! Matches the end of a parameter
 struct OSSIA_EXPORT stop
 {
 };
@@ -220,7 +220,7 @@ struct OSSIA_EXPORT path
 OSSIA_EXPORT bool is_pattern(const std::string& address);
 
 /**
- * @brief Tries to parse an address into a path.
+ * @brief Tries to parse a parameter into a path.
  */
 OSSIA_EXPORT ossia::optional<path> make_path(const std::string& address);
 

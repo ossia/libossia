@@ -84,7 +84,7 @@ qt_property_node::qt_property_node(
     connectSignalToMatchingMethod(p.notifySignal(), methods(), &obj, this);
   }
 
-  set_address_type(p.type(), *this);
+  set_parameter_type(p.type(), *this);
   ossia::net::generic_parameter::set_value_quiet(qt_to_ossia{}(p.read(&obj)));
   ;
 
@@ -114,17 +114,17 @@ void qt_property_node::set_value_quiet(ossia::value&& ossia_val)
   emit setValue_sig(ossia_val);
 }
 
-net::parameter_base* qt_property_node::get_address() const
+net::parameter_base* qt_property_node::get_parameter() const
 {
   return const_cast<qt_property_node*>(this);
 }
 
-net::parameter_base* qt_property_node::create_address(val_type type)
+net::parameter_base* qt_property_node::create_parameter(val_type type)
 {
   return nullptr;
 }
 
-bool qt_property_node::remove_address()
+bool qt_property_node::remove_parameter()
 {
   return false;
 }

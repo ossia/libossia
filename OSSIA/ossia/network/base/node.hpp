@@ -33,7 +33,7 @@ class node_base;
  * The \ref node_base has ownership of its children.
  *
  * If a node is meant to send and receive data, an \ref parameter_base
- * should be created with node_base::create_address.
+ * should be created with node_base::create_parameter.
  *
  * Some device trees may provide immutable node hierarchies :
  * child nodes cannot be added nor removed.
@@ -75,11 +75,11 @@ public:
   virtual node_base& set_name(std::string) = 0;
 
   //! Allows a node to carry a value
-  virtual parameter_base* create_address(val_type = val_type::IMPULSE) = 0;
+  virtual parameter_base* create_parameter(val_type = val_type::IMPULSE) = 0;
   //! Default implementation does nothing
-  virtual void set_address(std::unique_ptr<ossia::net::parameter_base>);
-  virtual bool remove_address() = 0;
-  virtual parameter_base* get_address() const = 0;
+  virtual void set_parameter(std::unique_ptr<ossia::net::parameter_base>);
+  virtual bool remove_parameter() = 0;
+  virtual parameter_base* get_parameter() const = 0;
 
   /** Allows to add arbitrary key-value metadata to nodes.
    * There is a list of pre-defined attributes available in \ref

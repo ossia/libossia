@@ -63,7 +63,7 @@ struct global_pull_visitor
 
   void operator()(audio_port& val)
   {
-    auto aa = dynamic_cast<const audio_address*>(&out);
+    auto aa = dynamic_cast<const audio_parameter*>(&out);
     assert(aa);
     aa->clone_value(val.samples);
   }
@@ -105,7 +105,7 @@ void execution_state::commit()
   {
     if (auto base_addr = elt.first.target<ossia::net::parameter_base*>())
     {
-      auto addr = dynamic_cast<audio_address*>(*base_addr);
+      auto addr = dynamic_cast<audio_parameter*>(*base_addr);
       assert(addr);
       addr->push_value(elt.second);
     }

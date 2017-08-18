@@ -67,7 +67,7 @@ inline auto convert(ossia::bounding_mode t)
   return static_cast<ossia_bounding_mode>(t);
 }
 
-inline ossia::net::parameter_base* convert_address(ossia_address_t v)
+inline ossia::net::parameter_base* convert_parameter(ossia_parameter_t v)
 {
   return static_cast<ossia::net::parameter_base*>(v);
 }
@@ -164,7 +164,7 @@ struct node_cb {
     }
 };
 struct address_cb {
-    ossia_address_callback_t m_cb{};
+    ossia_parameter_callback_t m_cb{};
     void* m_ctx{};
     void operator()(const ossia::net::parameter_base& addr) {
         m_cb(m_ctx, convert(&addr));

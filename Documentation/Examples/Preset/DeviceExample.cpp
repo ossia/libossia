@@ -96,7 +96,7 @@ void printNode(std::shared_ptr<OSSIA::Node> node, int padding) {
     auto children = node->children();
     if (children.size() == 0) {
         std::cout << ": ";
-        printValue(node->get_address()->getValue());
+        printValue(node->get_parameter()->getValue());
     }
     std::cout << std::endl;
     for (auto child = children.begin(); child != children.end(); ++child) {
@@ -148,24 +148,24 @@ int main(int argc, char** argv) {
             auto cubeposnode = *(cubenode->emplace(cubenode->children().cend(), "position"));
 
             auto cubexpnode = *(cubeposnode->emplace(cubeposnode->children().cend(), "x"));
-            auto cubexpaddr = cubexpnode->create_address(OSSIA::Value::Type::INT);
+            auto cubexpaddr = cubexpnode->create_parameter(OSSIA::Value::Type::INT);
 
             auto cubeypnode = *(cubeposnode->emplace(cubeposnode->children().cend(), "y"));
-            auto cubeypaddr = cubeypnode->create_address(OSSIA::Value::Type::INT);
+            auto cubeypaddr = cubeypnode->create_parameter(OSSIA::Value::Type::INT);
 
             auto cubezpnode = *(cubeposnode->emplace(cubeposnode->children().cend(), "z"));
-            auto cubezpaddr = cubezpnode->create_address(OSSIA::Value::Type::INT);
+            auto cubezpaddr = cubezpnode->create_parameter(OSSIA::Value::Type::INT);
 
             auto cuberotnode = *(cubenode->emplace(cubenode->children().cend(), "rotation"));
 
             auto cubexrnode = *(cuberotnode->emplace(cuberotnode->children().cend(), "x"));
-            auto cubexraddr = cubexrnode->create_address(OSSIA::Value::Type::FLOAT);
+            auto cubexraddr = cubexrnode->create_parameter(OSSIA::Value::Type::FLOAT);
 
             auto cubeyrnode = *(cuberotnode->emplace(cuberotnode->children().cend(), "y"));
-            auto cubeyraddr = cubeyrnode->create_address(OSSIA::Value::Type::FLOAT);
+            auto cubeyraddr = cubeyrnode->create_parameter(OSSIA::Value::Type::FLOAT);
 
             auto cubezrnode = *(cuberotnode->emplace(cuberotnode->children().cend(), "z"));
-            auto cubezraddr = cubezrnode->create_address(OSSIA::Value::Type::FLOAT);
+            auto cubezraddr = cubezrnode->create_parameter(OSSIA::Value::Type::FLOAT);
 
             OSSIA::Int i (-1);
             cubexpaddr->push_value(&i);

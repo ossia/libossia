@@ -265,12 +265,12 @@ oscquery_mirror_protocol::pull_async(net::parameter_base& address)
 {
   std::promise<void> promise;
   auto fut = promise.get_future();
-  auto text = net::osc_address_string(address);
+  auto text = net::osc_parameter_string(address);
   m_getWSPromises.enqueue(get_ws_promise{std::move(promise), text});
   /*
   m_getOSCPromises.insert(
         std::make_pair(
-          ossia::net::osc_address_string(address),
+          ossia::net::osc_parameter_string(address),
           get_promise{std::move(promise), &address}));
   */
   text += detail::query_value();
@@ -280,7 +280,7 @@ oscquery_mirror_protocol::pull_async(net::parameter_base& address)
 
 void oscquery_mirror_protocol::request(net::parameter_base& address)
 {
-  auto text = net::osc_address_string(address);
+  auto text = net::osc_parameter_string(address);
   text += detail::query_value();
   query_send_message(text);
 }
@@ -375,13 +375,13 @@ bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable
 {
   if (enable)
   {
-    auto str = net::osc_address_string(address);
+    auto str = net::osc_parameter_string(address);
     query_send_message(str + std::string(detail::query_listen_true()));
     m_listening.insert(std::make_pair(str, &address));
   }
   else
   {
-    auto str = net::osc_address_string(address);
+    auto str = net::osc_parameter_string(address);
     // TODO for minuit when disconnecting, disable listening for everything.
     query_send_message(str + std::string(detail::query_listen_false()));
     m_listening.erase(str);
@@ -394,9 +394,9 @@ bool oscquery_mirror_protocol::observe_quietly(
 {
   if (enable)
     m_listening.insert(
-        std::make_pair(net::osc_address_string(address), &address));
+        std::make_pair(net::osc_parameter_string(address), &address));
   else
-    m_listening.erase(net::osc_address_string(address));
+    m_listening.erase(net::osc_parameter_string(address));
 
   return true;
 }
@@ -405,7 +405,7 @@ bool oscquery_mirror_protocol::update(net::node_base& b)
 {
   m_namespacePromise = std::promise<void>{};
   auto fut = m_namespacePromise.get_future();
-  query_send_message(ossia::net::osc_address_string(b));
+  query_send_message(ossia::net::osc_parameter_string(b));
 
   auto status = fut.wait_for(std::chrono::seconds(3));
   return status == std::future_status::ready;
@@ -439,7 +439,7 @@ void oscquery_mirror_protocol::request_remove_node(net::node_base& self)
   {
     std::string req;
     req.reserve(64);
-    req = net::osc_address_string(*parent);
+    req = net::osc_parameter_string(*parent);
     req += '?';
     req += detail::remove_node();
     req += '=';
@@ -464,7 +464,7 @@ void oscquery_mirror_protocol::request_add_node(
 {
   std::string req;
   req.reserve(64);
-  req += net::osc_address_string(parent);
+  req += net::osc_parameter_string(parent);
   req += '?';
   req += detail::add_node();
   req += '=';
@@ -501,7 +501,7 @@ void oscquery_mirror_protocol::on_OSCMessage(
       auto node = find_node(m_device->get_root_node(), addr_txt);
       if (node)
       {
-        auto base_addr = node->get_address();
+        auto base_addr = node->get_parameter();
         if (base_addr)
         {
           net::update_value_quiet(*base_addr, m);
@@ -513,9 +513,9 @@ void oscquery_mirror_protocol::on_OSCMessage(
         auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
         for(auto n : nodes)
         {
-          if (auto addr = n->get_address())
+          if (auto addr = n->get_parameter())
           {
-            if(m_listening.find(net::osc_address_string(*n)))
+            if(m_listening.find(net::osc_parameter_string(*n)))
               net::update_value(*addr, m);
             else
               net::update_value_quiet(*addr, m);
@@ -606,7 +606,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
             if (node)
             {
-              auto addr = node->get_address();
+              auto addr = node->get_parameter();
               if (addr)
               {
                 json_parser::parse_value(*addr, *data);

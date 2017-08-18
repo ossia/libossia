@@ -95,7 +95,7 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
 
 optional<std::string> get_osc_typetag(const net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
   {
     return get_osc_typetag_impl(*addr);
   }
@@ -161,7 +161,7 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
 
 void set_osc_typetag(net::node_base& n, ossia::string_view tag)
 {
-  setup_address(get_type_from_osc_typetag(tag), n);
+  setup_parameter(get_type_from_osc_typetag(tag), n);
 }
 }
 }

@@ -42,21 +42,21 @@ int main()
     auto y = ossia_node_add_child(sphere, "y");
     auto z = ossia_node_add_child(sphere, "z");
 
-    auto x_a = ossia_node_create_address(x, ossia_type::FLOAT);
-    auto y_a = ossia_node_create_address(y, ossia_type::FLOAT);
-    auto z_a = ossia_node_create_address(z, ossia_type::FLOAT);
+    auto x_a = ossia_node_create_parameter(x, ossia_type::FLOAT);
+    auto y_a = ossia_node_create_parameter(y, ossia_type::FLOAT);
+    auto z_a = ossia_node_create_parameter(z, ossia_type::FLOAT);
 
-    ossia_address_push_value(x_a, ossia_value_create_float(1.3));
-    ossia_address_push_value(y_a, ossia_value_create_float(2));
-    ossia_address_push_value(z_a, ossia_value_create_float(3.3));
+    ossia_parameter_push_value(x_a, ossia_value_create_float(1.3));
+    ossia_parameter_push_value(y_a, ossia_value_create_float(2));
+    ossia_parameter_push_value(z_a, ossia_value_create_float(3.3));
 
-    //ossia_address_add_callback(x_a, valueCallback);
+    //ossia_parameter_add_callback(x_a, valueCallback);
     while(1)
     {
         std::this_thread::sleep_for(1s);
         std::cerr << "in loop \n";
 
-        valueCallback(ossia_address_fetch_value(x_a));
+        valueCallback(ossia_parameter_fetch_value(x_a));
     }
 
 

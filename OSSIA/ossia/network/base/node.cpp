@@ -23,7 +23,7 @@ namespace net
 {
 node_base::~node_base() = default;
 
-void node_base::set_address(std::unique_ptr<parameter_base>)
+void node_base::set_parameter(std::unique_ptr<parameter_base>)
 {
 }
 

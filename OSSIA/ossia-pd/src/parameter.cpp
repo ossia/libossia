@@ -52,15 +52,15 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
   for (auto n : nodes)
   {
-    ossia::net::parameter_base* local_address{};
+    ossia::net::parameter_base* local_param{};
     std::string type = x_type->s_name;
 
     if (type == "float")
     {
-      local_address = n->create_address(ossia::val_type::FLOAT);
+      local_param = n->create_parameter(ossia::val_type::FLOAT);
       if (x_default[0].a_type == A_FLOAT)
         ossia::net::set_default_value(
-              local_address->get_node(), x_default[0].a_w.w_float);
+              local_param->get_node(), x_default[0].a_w.w_float);
 
       float min = std::numeric_limits<float>::lowest();
       float max = std::numeric_limits<float>::max();
@@ -70,22 +70,22 @@ bool t_param::do_registration(ossia::net::node_base* node)
       if (x_max[0].a_type == A_FLOAT)
         max = x_max[0].a_w.w_float;
 
-      local_address->set_domain(ossia::make_domain(min, max));
+      local_param->set_domain(ossia::make_domain(min, max));
     }
     else if (type == "symbol" || type == "string")
     {
-      local_address = n->create_address(ossia::val_type::STRING);
+      local_param = n->create_parameter(ossia::val_type::STRING);
       if (x_default[0].a_type == A_SYMBOL)
         ossia::net::set_default_value(
-              local_address->get_node(),
+              local_param->get_node(),
               std::string(x_default[0].a_w.w_symbol->s_name));
     }
     else if (type == "int")
     {
-      local_address = n->create_address(ossia::val_type::INT);
+      local_param = n->create_parameter(ossia::val_type::INT);
       if (x_default[0].a_type == A_FLOAT)
         ossia::net::set_default_value(
-              local_address->get_node(), x_default[0].a_w.w_float);
+              local_param->get_node(), x_default[0].a_w.w_float);
 
       int min = std::numeric_limits<int>::lowest();
       int max = std::numeric_limits<int>::max();
@@ -95,16 +95,16 @@ bool t_param::do_registration(ossia::net::node_base* node)
       if (x_max[0].a_type == A_FLOAT)
         max = x_max[0].a_w.w_float;
 
-      local_address->set_domain(ossia::make_domain(min, max));
+      local_param->set_domain(ossia::make_domain(min, max));
     }
     else if (type == "vec2f")
     {
-      local_address = n->create_address(ossia::val_type::VEC2F);
+      local_param = n->create_parameter(ossia::val_type::VEC2F);
       x_type_size = 2;
       if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT)
       {
         vec2f vec = make_vec(x_default[0].a_w.w_float, x_default[1].a_w.w_float);
-        ossia::net::set_default_value(local_address->get_node(), vec);
+        ossia::net::set_default_value(local_param->get_node(), vec);
       }
 
       vec2f min;
@@ -117,11 +117,11 @@ bool t_param::do_registration(ossia::net::node_base* node)
         if (x_max[i].a_type == A_FLOAT)
           max[i] = x_max[i].a_w.w_float;
       }
-      local_address->set_domain(ossia::make_domain(min, max));
+      local_param->set_domain(ossia::make_domain(min, max));
     }
     else if (type == "vec3f")
     {
-      local_address = n->create_address(ossia::val_type::VEC3F);
+      local_param = n->create_parameter(ossia::val_type::VEC3F);
       x_type_size = 3;
       if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT
           && x_default[2].a_type == A_FLOAT)
@@ -129,7 +129,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
         vec3f vec = make_vec(
               x_default[0].a_w.w_float, x_default[1].a_w.w_float,
             x_default[2].a_w.w_float);
-        ossia::net::set_default_value(local_address->get_node(), vec);
+        ossia::net::set_default_value(local_param->get_node(), vec);
       }
 
       vec3f min;
@@ -142,11 +142,11 @@ bool t_param::do_registration(ossia::net::node_base* node)
         if (x_max[i].a_type == A_FLOAT)
           max[i] = x_max[i].a_w.w_float;
       }
-      local_address->set_domain(ossia::make_domain(min, max));
+      local_param->set_domain(ossia::make_domain(min, max));
     }
     else if (type == "vec4f")
     {
-      local_address = n->create_address(ossia::val_type::VEC4F);
+      local_param = n->create_parameter(ossia::val_type::VEC4F);
       x_type_size = 4;
       if (x_default[0].a_type == A_FLOAT && x_default[1].a_type == A_FLOAT
           && x_default[2].a_type == A_FLOAT && x_default[3].a_type == A_FLOAT)
@@ -154,7 +154,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
         vec4f vec = make_vec(
               x_default[0].a_w.w_float, x_default[1].a_w.w_float,
             x_default[2].a_w.w_float, x_default[3].a_w.w_float);
-        ossia::net::set_default_value(local_address->get_node(), vec);
+        ossia::net::set_default_value(local_param->get_node(), vec);
       }
 
       vec4f min;
@@ -167,41 +167,41 @@ bool t_param::do_registration(ossia::net::node_base* node)
         if (x_max[i].a_type == A_FLOAT)
           max[i] = x_max[i].a_w.w_float;
       }
-      local_address->set_domain(ossia::make_domain(min, max));
+      local_param->set_domain(ossia::make_domain(min, max));
 
     }
     else if (type == "impulse")
     {
-      local_address = n->create_address(ossia::val_type::IMPULSE);
+      local_param = n->create_parameter(ossia::val_type::IMPULSE);
       x_type_size = 0;
     }
     else if (type == "bool")
     {
-      local_address = n->create_address(ossia::val_type::BOOL);
+      local_param = n->create_parameter(ossia::val_type::BOOL);
       if (x_default[0].a_type == A_FLOAT)
         ossia::net::set_default_value(
-              local_address->get_node(), x_default[0].a_w.w_float);
+              local_param->get_node(), x_default[0].a_w.w_float);
     }
     else if (type == "tuple")
     {
-      local_address = n->create_address(ossia::val_type::TUPLE);
+      local_param = n->create_parameter(ossia::val_type::TUPLE);
       x_type_size = 64;
 
       auto list = attribute2value(x_default);
       if (list.size() > 0)
-        ossia::net::set_default_value(local_address->get_node(), list);
+        ossia::net::set_default_value(local_param->get_node(), list);
 
       std::vector<ossia::value> min = attribute2value(x_min);
       std::vector<ossia::value> max = attribute2value(x_max);
 
-      local_address->set_domain(ossia::make_domain(min, max));
+      local_param->set_domain(ossia::make_domain(min, max));
     }
     else if (type == "char")
     {
-      local_address = n->create_address(ossia::val_type::CHAR);
+      local_param = n->create_parameter(ossia::val_type::CHAR);
       if (x_default[0].a_type == A_FLOAT)
         ossia::net::set_default_value(
-              local_address->get_node(), x_default[0].a_w.w_float);
+              local_param->get_node(), x_default[0].a_w.w_float);
     }
     else
     {
@@ -210,23 +210,23 @@ bool t_param::do_registration(ossia::net::node_base* node)
             "type should one of: float, symbol, int, vec2f, "
             "vec3f, vec4f, bool, tuple, char");
     }
-    if (!local_address)
+    if (!local_param)
       return false;
 
     std::string bounding_mode = x_bounding_mode->s_name;
 
     if (bounding_mode == "free")
-      local_address->set_bounding(ossia::bounding_mode::FREE);
+      local_param->set_bounding(ossia::bounding_mode::FREE);
     else if (bounding_mode == "clip")
-      local_address->set_bounding(ossia::bounding_mode::CLIP);
+      local_param->set_bounding(ossia::bounding_mode::CLIP);
     else if (bounding_mode == "wrap")
-      local_address->set_bounding(ossia::bounding_mode::WRAP);
+      local_param->set_bounding(ossia::bounding_mode::WRAP);
     else if (bounding_mode == "fold")
-      local_address->set_bounding(ossia::bounding_mode::FOLD);
+      local_param->set_bounding(ossia::bounding_mode::FOLD);
     else if (bounding_mode == "low")
-      local_address->set_bounding(ossia::bounding_mode::LOW);
+      local_param->set_bounding(ossia::bounding_mode::LOW);
     else if (bounding_mode == "high")
-      local_address->set_bounding(ossia::bounding_mode::HIGH);
+      local_param->set_bounding(ossia::bounding_mode::HIGH);
     else
     {
       pd_error(this, "unknown bounding mode: %s", bounding_mode.c_str());
@@ -235,29 +235,29 @@ bool t_param::do_registration(ossia::net::node_base* node)
     std::string access_mode = x_access_mode->s_name;
 
     if (access_mode == "bi" || access_mode == "rw")
-      local_address->set_access(ossia::access_mode::BI);
+      local_param->set_access(ossia::access_mode::BI);
     else if (access_mode == "get" || access_mode == "r")
-      local_address->set_access(ossia::access_mode::GET);
+      local_param->set_access(ossia::access_mode::GET);
     else if (access_mode == "set" || access_mode == "w")
-      local_address->set_access(ossia::access_mode::SET);
+      local_param->set_access(ossia::access_mode::SET);
     else
     {
       pd_error(this, "unknown access mode: %s", access_mode.c_str());
     }
 
-    local_address->set_repetition_filter(
+    local_param->set_repetition_filter(
           x_repetition_filter ? ossia::repetition_filter::ON
                               : ossia::repetition_filter::OFF);
 
     ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
-    local_address->set_unit(unit);
+    local_param->set_unit(unit);
 
-    ossia::net::set_description(local_address->get_node(), x_description->s_name);
-    ossia::net::set_tags(local_address->get_node(), parse_tags_symbol(x_tags));
+    ossia::net::set_description(local_param->get_node(), x_description->s_name);
+    ossia::net::set_tags(local_param->get_node(), parse_tags_symbol(x_tags));
 
-    ossia::net::set_priority(local_address->get_node(), x_priority);
+    ossia::net::set_priority(local_param->get_node(), x_priority);
 
-    ossia::net::set_hidden(local_address->get_node(), x_hidden);
+    ossia::net::set_hidden(local_param->get_node(), x_hidden);
 
     t_matcher matcher{n,this};
     x_matchers.push_back(std::move(matcher));
@@ -346,7 +346,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = get_address_type(x->x_name->s_name);
+      x->x_addr_scope = get_parameter_type(x->x_name->s_name);
     }
     else
     {

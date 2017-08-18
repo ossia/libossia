@@ -35,7 +35,7 @@ private Q_SLOTS:
           auto node = ossia::net::find_node(ws_device, "/tata/tutu");
           if(node)
           {
-            node->get_address()->push_value(32.325);
+            node->get_parameter()->push_value(32.325);
           }
         });
         t.setInterval(1000);

@@ -12,7 +12,7 @@ class AutomationTest : public QObject
 {
   Q_OBJECT
 
-  std::vector<value> m_address_values;
+  std::vector<value> m_parameter_values;
 
   void constraint_callback(double position, time_value date, const state_element& element)
   {
@@ -28,7 +28,7 @@ class AutomationTest : public QObject
 
   void address_callback(const value& v)
   {
-    m_address_values.push_back(v);
+    m_parameter_values.push_back(v);
   }
 
 private Q_SLOTS:
@@ -38,7 +38,7 @@ private Q_SLOTS:
   {
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
     auto cld = device.create_child("child");
-    auto address = cld->create_address(val_type::FLOAT);
+    auto address = cld->create_parameter(val_type::FLOAT);
 
     behavior b;
 
@@ -54,7 +54,7 @@ private Q_SLOTS:
   {
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
     auto cld = device.create_child("child");
-    auto address = cld->create_address(val_type::FLOAT);
+    auto address = cld->create_parameter(val_type::FLOAT);
     address->add_callback([&] (const value&v) { address_callback(v); });
 
     auto c = std::make_shared<curve<double, float>>();
@@ -76,7 +76,7 @@ private Q_SLOTS:
     constraint->add_time_process(std::make_unique<automation>(*address, curve_ptr{c}));
 
     ossia::clock clck{*constraint};
-    m_address_values.clear();
+    m_parameter_values.clear();
 
     using namespace std::literals;
 
@@ -89,16 +89,16 @@ private Q_SLOTS:
     // Let the time for callbacks to happen...
     //std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    qDebug() << "Received: " << m_address_values.size() << "values";
+    qDebug() << "Received: " << m_parameter_values.size() << "values";
 
     float zero(0);
-    QVERIFY(m_address_values.front() == zero);
-    QVERIFY(m_address_values.back() == zero);
+    QVERIFY(m_parameter_values.front() == zero);
+    QVERIFY(m_parameter_values.back() == zero);
 
     // check if all values are differents from the previous value
     float previous(-1);
     bool different_from_previous = true;
-    for (auto v : m_address_values)
+    for (auto v : m_parameter_values)
     {
       qDebug() << ossia::convert<float>(v) << previous;
       different_from_previous = (v != previous);
@@ -107,7 +107,7 @@ private Q_SLOTS:
       previous = v.get<float>();
     }
     QVERIFY(different_from_previous);
-    m_address_values.clear();
+    m_parameter_values.clear();
   }
 
   void test_dataspace()
@@ -115,7 +115,7 @@ private Q_SLOTS:
 
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
     auto cld = device.create_child("child");
-    auto address = cld->create_address(val_type::VEC3F);
+    auto address = cld->create_parameter(val_type::VEC3F);
     address->set_unit(ossia::rgb_u{});
     address->push_value(make_vec(0.1, 0.1, 0.1));
 

@@ -38,7 +38,7 @@ public:
       // Then we enable / disable listening
       if (listen_text == detail::text_true())
       {
-        clt->start_listen(std::string(path), node.get_address());
+        clt->start_listen(std::string(path), node.get_parameter());
         return {};
       }
       else if (listen_text == detail::text_false())

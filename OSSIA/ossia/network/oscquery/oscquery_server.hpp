@@ -117,7 +117,7 @@ private:
   net::zeroconf_server m_zeroconfServer;
 
   // Listening status of the local software
-  net::listened_addresses m_listening;
+  net::listened_parameters m_listening;
 
   // The clients connected to this server
   std::vector<oscquery_client> m_buildingClients;

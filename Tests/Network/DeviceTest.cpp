@@ -89,13 +89,13 @@ struct remote_data
     for(int i = 0; i < N; i++)
     {
       auto cld = local_device.create_child(std::to_string(i));
-      local_addr.push_back(cld->create_address((ossia::val_type) i));
+      local_addr.push_back(cld->create_parameter((ossia::val_type) i));
     }
 
     for(int i = 0; i < N; i++)
     {
       auto cld = remote_device.create_child(std::to_string(i));
-      remote_addr.push_back(cld->create_address((ossia::val_type) i));
+      remote_addr.push_back(cld->create_parameter((ossia::val_type) i));
     }
   }
 
@@ -118,15 +118,15 @@ private Q_SLOTS:
         ossia::net::generic_device osc_B{
           std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996), "test_osc"};
 
-        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
-        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
-        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
-        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_parameter(ossia::val_type::FLOAT);
+        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_parameter(ossia::val_type::FLOAT);
+        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_parameter(ossia::val_type::FLOAT);
+        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_parameter(ossia::val_type::FLOAT);
 
-        auto b1 = ossia::net::create_node(osc_B, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
-        auto b2 = ossia::net::create_node(osc_B, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
-        auto b3 = ossia::net::create_node(osc_B, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
-        auto b4 = ossia::net::create_node(osc_B, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+        auto b1 = ossia::net::create_node(osc_B, "/foo/bar.0").create_parameter(ossia::val_type::FLOAT);
+        auto b2 = ossia::net::create_node(osc_B, "/foo/bar.1").create_parameter(ossia::val_type::FLOAT);
+        auto b3 = ossia::net::create_node(osc_B, "/foo/bar.2").create_parameter(ossia::val_type::FLOAT);
+        auto b4 = ossia::net::create_node(osc_B, "/foo/bar.3").create_parameter(ossia::val_type::FLOAT);
 
         for(auto b : {b1, b2, b3, b4})
         {
@@ -151,10 +151,10 @@ private Q_SLOTS:
         ossia::net::generic_device osc_B{
           std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996), "test_osc"};
 
-        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
-        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
-        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
-        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_parameter(ossia::val_type::FLOAT);
+        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_parameter(ossia::val_type::FLOAT);
+        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_parameter(ossia::val_type::FLOAT);
+        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_parameter(ossia::val_type::FLOAT);
 
         int recv = 0;
         a1->add_callback([&] (const auto& v) { recv++; });
@@ -191,10 +191,10 @@ private Q_SLOTS:
         ossia::net::generic_device osc_B{
           std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996), "test_osc"};
 
-        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_address(ossia::val_type::FLOAT);
-        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_address(ossia::val_type::FLOAT);
-        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_address(ossia::val_type::FLOAT);
-        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_address(ossia::val_type::FLOAT);
+        auto a1 = ossia::net::create_node(osc_A, "/foo/bar.0").create_parameter(ossia::val_type::FLOAT);
+        auto a2 = ossia::net::create_node(osc_A, "/foo/bar.1").create_parameter(ossia::val_type::FLOAT);
+        auto a3 = ossia::net::create_node(osc_A, "/foo/bar.2").create_parameter(ossia::val_type::FLOAT);
+        auto a4 = ossia::net::create_node(osc_A, "/foo/bar.3").create_parameter(ossia::val_type::FLOAT);
 
         int recv = 0;
         a1->add_callback([&] (const auto& v) { recv++; });
@@ -273,7 +273,7 @@ private Q_SLOTS:
     for(int i = 0; i < N; i++)
     {
       auto cld = local_device.create_child(std::to_string(i));
-      cld->create_address((ossia::val_type) i);
+      cld->create_parameter((ossia::val_type) i);
     }
 
     proto_p->expose_to(
@@ -285,7 +285,7 @@ private Q_SLOTS:
 
     for(auto n : remote_device.children_copy())
     {
-      if(auto a = n->get_address())
+      if(auto a = n->get_parameter())
       {
         a->pull_value();
       }
@@ -323,7 +323,7 @@ private Q_SLOTS:
       auto node = ossia::net::find_node(http_device, "/tata/tutu");
       if(node)
       {
-        node->get_address()->push_value(ossia::impulse{});
+        node->get_parameter()->push_value(ossia::impulse{});
       }
     });
     t.setInterval(1000);

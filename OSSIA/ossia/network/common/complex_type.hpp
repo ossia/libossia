@@ -30,13 +30,13 @@ using complex_type
 OSSIA_EXPORT
 ossia::val_type underlying_type(const complex_type& t);
 
-//! Creates an address in a node according to a complex type.
+//! Creates a parameter in a node according to a complex type.
 OSSIA_EXPORT
 ossia::net::parameter_base*
-setup_address(const complex_type& t, ossia::net::node_base& node);
+setup_parameter(const complex_type& t, ossia::net::node_base& node);
 
-//! Change the type of an address according to a complex type.
+//! Change the type of a parameter according to a complex type.
 OSSIA_EXPORT
-void update_address_type(
+void update_parameter_type(
     const complex_type& t, ossia::net::parameter_base& node);
 }

@@ -8,12 +8,12 @@ namespace ossia
 namespace net
 {
 class http_device;
-class http_address;
+class http_parameter;
 class OSSIA_EXPORT http_node : public ossia::net::node_base
 {
   ossia::net::http_device& m_device;
   ossia::net::http_node* m_parent{};
-  std::unique_ptr<ossia::net::http_address> m_address;
+  std::unique_ptr<ossia::net::http_parameter> m_parameter;
 
   friend class http_protocol;
 
@@ -31,9 +31,9 @@ public:
 
   node_base& set_name(std::string) override;
 
-  parameter_base* get_address() const override;
-  parameter_base* create_address(val_type = val_type::IMPULSE) override;
-  bool remove_address() override;
+  parameter_base* get_parameter() const override;
+  parameter_base* create_parameter(val_type = val_type::IMPULSE) override;
+  bool remove_parameter() override;
 
   void add_child(std::unique_ptr<ossia::net::node_base>);
 

@@ -30,9 +30,9 @@ bool t_remote::register_node(ossia::net::node_base* node)
     auto& dev = node->get_device();
     if (&dev != x_dev)
     {
-      if (x_dev) x_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
+      if (x_dev) x_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
       x_dev = &dev;
-      x_dev->on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
+      x_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
     }
   }
 
@@ -64,7 +64,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       nodes = ossia::net::find_nodes(*node, name);
 
     for (auto n : nodes){
-      if (n->get_address()){
+      if (n->get_parameter()){
         t_matcher matcher{n,this};
         x_matchers.push_back(std::move(matcher));
       } else {
@@ -100,7 +100,7 @@ bool t_remote::unregister()
 }
 
 
-void t_remote::on_address_created_callback(const ossia::net::parameter_base& addr)
+void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
   auto path = ossia::traversal::make_path(x_name->s_name);
@@ -153,7 +153,7 @@ static void remote_click(
 static void remote_bind(t_remote* x, t_symbol* address)
 {
   x->x_name = address;
-  x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
+  x->x_addr_scope = ossia::pd::get_parameter_type(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -176,7 +176,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
+      x->x_addr_scope = ossia::pd::get_parameter_type(x->x_name->s_name);
     }
     else
     {
@@ -205,7 +205,7 @@ static void remote_free(t_remote* x)
 
   if(x->x_is_pattern && x->x_dev)
   {
-    x->x_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(x);
+    x->x_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
   }
 
   outlet_free(x->x_setout);

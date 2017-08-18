@@ -115,7 +115,7 @@ struct address_info
   midi_size_t note{};
 };
 
-class midi_address : public ossia::net::parameter_base
+class midi_parameter : public ossia::net::parameter_base
 {
   address_info m_info;
   ossia::net::node_base& m_parent;
@@ -126,7 +126,7 @@ class midi_address : public ossia::net::parameter_base
   ossia::value m_value;
 
 public:
-  midi_address(address_info info, ossia::net::node_base& parent);
+  midi_parameter(address_info info, ossia::net::node_base& parent);
 
   const address_info& info() const;
 

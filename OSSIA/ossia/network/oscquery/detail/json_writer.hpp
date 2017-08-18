@@ -20,13 +20,13 @@ class json_bundle_builder
 
     void add_message(const ossia::net::parameter_base& n, const ossia::value& val)
     {
-      write_json_key(m_writer, ossia::net::osc_address_string(n));
+      write_json_key(m_writer, ossia::net::osc_parameter_string(n));
       m_impl.writeValue(val);
     }
 
     void add_message(const ossia::net::full_parameter_data& n, const ossia::value& val)
     {
-      write_json_key(m_writer, ossia::net::osc_address_string(n));
+      write_json_key(m_writer, ossia::net::osc_parameter_string(n));
       m_impl.writeValue(val);
     }
 

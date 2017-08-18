@@ -40,10 +40,10 @@ void constraint_callback(ossia::time_value position, time_value date, std::share
 void event_callback(TimeEvent::Status newStatus)
 {}
 
-void float_address_callback(const value& v)
+void float_parameter_callback(const value& v)
 {}
 
-void int_address_callback(const value& v)
+void int_parameter_callback(const value& v)
 {}
 
 int main()
@@ -52,11 +52,11 @@ int main()
     auto local_device = Device::create(local_protocol, "test");
     
     local_device->emplace(local_device->children().begin(), "float");
-    auto float_address = local_device->children().front()->create_address(Type::FLOAT);
-    float_address->addCallback([&] (const value& v) { float_address_callback(v); });
+    auto float_address = local_device->children().front()->create_parameter(Type::FLOAT);
+    float_address->addCallback([&] (const value& v) { float_parameter_callback(v); });
     
-    auto int_address = local_device->children().front()->create_address(Type::INT);
-    int_address->addCallback([&] (const value& v) { int_address_callback(v); });
+    auto int_address = local_device->children().front()->create_parameter(Type::INT);
+    int_address->addCallback([&] (const value& v) { int_parameter_callback(v); });
     
     auto curve = Curve<float, int>::create();
     auto linearSegment = CurveSegmentLinear<int>::create(curve);

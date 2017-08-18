@@ -14,7 +14,7 @@ color_automation::color_automation()
 void color_automation::set_destination(Destination a)
 {
   a.unit = ossia::argb_u{};
-  m_address = std::move(a);
+  m_parameter = std::move(a);
 }
 
 void color_automation::set_gradient(color_automation::grad_type t)
@@ -24,9 +24,9 @@ void color_automation::set_gradient(color_automation::grad_type t)
 
 state_element color_automation::state(ossia::time_value, double pos)
 {
-  if (m_address)
+  if (m_parameter)
   {
-    auto& addr = *m_address;
+    auto& addr = *m_parameter;
 
     switch (m_data.size())
     {

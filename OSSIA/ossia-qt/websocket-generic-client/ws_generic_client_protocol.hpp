@@ -18,7 +18,7 @@ namespace net
 {
 class ws_generic_client_device;
 class ws_generic_client_node;
-class ws_generic_client_address;
+class ws_generic_client_parameter;
 
 class OSSIA_EXPORT ws_generic_client_protocol final
     : public QObject,
@@ -53,10 +53,10 @@ public:
     return js;
   }
 signals:
-  void sig_push(const ws_generic_client_address*);
+  void sig_push(const ws_generic_client_parameter*);
 
 private slots:
-  void slot_push(const ws_generic_client_address*);
+  void slot_push(const ws_generic_client_parameter*);
 
 private:
   void apply_reply(QJSValue);
@@ -69,9 +69,9 @@ private:
 
   QByteArray mCode;
   ws_generic_client_device* mDevice{};
-  QList<std::pair<QNetworkReply*, const ws_generic_client_address*>> mReplies;
+  QList<std::pair<QNetworkReply*, const ws_generic_client_parameter*>> mReplies;
 };
 }
 }
 
-Q_DECLARE_METATYPE(ossia::net::ws_generic_client_address*)
+Q_DECLARE_METATYPE(ossia::net::ws_generic_client_parameter*)

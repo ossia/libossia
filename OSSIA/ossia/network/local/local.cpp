@@ -69,7 +69,7 @@ static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
 {
   for (auto& cld : n.children())
   {
-    if (auto addr = cld->get_address())
+    if (auto addr = cld->get_parameter())
     {
       if (!addr->callbacks_empty())
       {

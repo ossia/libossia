@@ -7,13 +7,13 @@ namespace ossia
 namespace net
 {
 
-http_address::http_address(
+http_parameter::http_parameter(
     const http_parameter_data& data, ossia::net::node_base& node_base)
     : generic_parameter{data, node_base}, mData{data}
 {
 }
 
-http_address::~http_address()
+http_parameter::~http_parameter()
 {
   callback_container<value_callback>::callbacks_clear();
 }

@@ -26,10 +26,10 @@ public:
 
   void set_value_quiet(const ossia::value&) final override;
   void set_value_quiet(ossia::value&&) final override;
-  ossia::net::parameter_base* get_address() const final override;
+  ossia::net::parameter_base* get_parameter() const final override;
   ossia::net::parameter_base*
-  create_address(ossia::val_type type) final override;
-  bool remove_address() final override;
+  create_parameter(ossia::val_type type) final override;
+  bool remove_parameter() final override;
 
   template <typename T>
   void qtValueChanged(const T& val)

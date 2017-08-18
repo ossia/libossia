@@ -43,15 +43,15 @@ public:
 
   ~generic_node();
 
-  ossia::net::parameter_base* get_address() const final override;
+  ossia::net::parameter_base* get_parameter() const final override;
   ossia::net::parameter_base*
-  create_address(ossia::val_type type) final override;
+  create_parameter(ossia::val_type type) final override;
   void
-  set_address(std::unique_ptr<ossia::net::parameter_base> addr) final override;
-  bool remove_address() final override;
+  set_parameter(std::unique_ptr<ossia::net::parameter_base> addr) final override;
+  bool remove_parameter() final override;
 
 protected:
-  std::unique_ptr<ossia::net::parameter_base> m_address;
+  std::unique_ptr<ossia::net::parameter_base> m_parameter;
 
 private:
   std::unique_ptr<node_base>

@@ -110,7 +110,7 @@ optional<extended_type> get_extended_type(const ossia::net::node_base& n)
   auto opt = get_optional_attribute<extended_type>(n, text_extended_type());
   if (!opt)
   {
-    if (parameter_base* addr = n.get_address())
+    if (parameter_base* addr = n.get_parameter())
     {
       switch (addr->get_value_type())
       {
@@ -267,13 +267,13 @@ ossia::string_view text_value()
 }
 value clone_value(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->value();
   return {};
 }
 void set_value(ossia::net::node_base& n, value v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_value(std::move(v));
 }
 void set_value(ossia::net::parameter_data& n, value v)
@@ -287,13 +287,13 @@ ossia::string_view text_value_type()
 }
 optional<val_type> get_value_type(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_value_type();
   return ossia::none;
 }
 void set_value_type(ossia::net::node_base& n, val_type v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_value_type(std::move(v));
 }
 
@@ -303,13 +303,13 @@ ossia::string_view text_domain()
 }
 domain get_domain(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_domain();
   return {};
 }
 void set_domain(ossia::net::node_base& n, domain v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_domain(std::move(v));
 }
 void set_domain(ossia::net::parameter_data& n, domain v)
@@ -323,13 +323,13 @@ ossia::string_view text_access_mode()
 }
 optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_access();
   return ossia::none;
 }
 void set_access_mode(ossia::net::node_base& n, access_mode v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_access(std::move(v));
 }
 void set_access_mode(ossia::net::parameter_data& n, access_mode v)
@@ -343,13 +343,13 @@ ossia::string_view text_bounding_mode()
 }
 optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_bounding();
   return ossia::none;
 }
 void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_bounding(std::move(v));
 }
 void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v)
@@ -363,13 +363,13 @@ ossia::string_view text_muted()
 }
 muted get_muted(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_muted();
   return false;
 }
 void set_muted(ossia::net::node_base& n, muted v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_muted(v);
 }
 void set_muted(ossia::net::parameter_data& n, muted v)
@@ -383,13 +383,13 @@ ossia::string_view text_critical()
 }
 critical get_critical(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_critical();
   return false;
 }
 void set_critical(ossia::net::node_base& n, critical v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_critical(v);
 }
 void set_critical(ossia::net::parameter_data& n, critical v)
@@ -403,13 +403,13 @@ ossia::string_view text_repetition_filter()
 }
 repetition_filter get_repetition_filter(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_repetition_filter();
   return repetition_filter::OFF;
 }
 void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_repetition_filter(std::move(v));
 }
 
@@ -419,13 +419,13 @@ ossia::string_view text_unit()
 }
 unit_t get_unit(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     return addr->get_unit();
   return {};
 }
 void set_unit(ossia::net::node_base& n, unit_t v)
 {
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
     addr->set_unit(std::move(v));
 }
 }

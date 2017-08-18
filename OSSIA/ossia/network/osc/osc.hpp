@@ -65,7 +65,7 @@ private:
   void on_learn(const oscpack::ReceivedMessage& m);
   void set_device(ossia::net::device_base& dev) override;
 
-  listened_addresses m_listening;
+  listened_parameters m_listening;
 
   std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;

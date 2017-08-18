@@ -17,7 +17,7 @@ struct t_remote : t_obj_base
 
   ossia::net::device_base* x_dev{};
 
-  void on_address_created_callback(const ossia::net::parameter_base& addr);
+  void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
   static ossia::safe_vector<t_remote*>& quarantine()
   {

@@ -69,9 +69,9 @@ private Q_SLOTS:
         ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
         auto localIntNode1 = device.create_child("my_int.1");
-        auto localIntAddress1 = localIntNode1->create_address(val_type::INT);
+        auto localIntAddress1 = localIntNode1->create_parameter(val_type::INT);
         auto localIntNode2 = device.create_child("my_int.2");
-        auto localIntAddress2 = localIntNode2->create_address(val_type::INT);
+        auto localIntAddress2 = localIntNode2->create_parameter(val_type::INT);
 
         auto testDestinationExpr = make_expression_atom(Destination(*localIntAddress1),
                                                           comparator::DIFFERENT,

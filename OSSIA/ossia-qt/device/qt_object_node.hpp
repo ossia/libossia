@@ -24,10 +24,10 @@ public:
   qt_object_node(
       QObject& obj, ossia::net::device_base& device, node_base& aParent);
 
-  ossia::net::parameter_base* get_address() const final override;
+  ossia::net::parameter_base* get_parameter() const final override;
   ossia::net::parameter_base*
-  create_address(ossia::val_type type) final override;
-  bool remove_address() final override;
+  create_parameter(ossia::val_type type) final override;
+  bool remove_parameter() final override;
 
   QObject& object() const
   {

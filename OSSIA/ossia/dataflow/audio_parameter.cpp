@@ -3,12 +3,12 @@
 namespace ossia
 {
 
-audio_address::audio_address(net::node_base& n)
+audio_parameter::audio_parameter(net::node_base& n)
   : m_node{n}
 {
 }
 
-void audio_address::clone_value(audio_vector& res_vec) const
+void audio_parameter::clone_value(audio_vector& res_vec) const
 {
   if(res_vec.size() < audio.size())
     res_vec.resize(audio.size());
@@ -23,7 +23,7 @@ void audio_address::clone_value(audio_vector& res_vec) const
   }
 }
 
-void audio_address::push_value(const audio_port& port)
+void audio_parameter::push_value(const audio_port& port)
 {
   auto min_chan = std::min(port.samples.size(), (std::size_t)audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
@@ -37,92 +37,92 @@ void audio_address::push_value(const audio_port& port)
   }
 }
 
-net::node_base&audio_address::get_node() const
+net::node_base&audio_parameter::get_node() const
 {
   return m_node;
 }
 
-void audio_address::pull_value()
+void audio_parameter::pull_value()
 {
 }
 
-ossia::net::parameter_base& audio_address::push_value(const ossia::value&)
-{
-  return *this;
-}
-
-ossia::net::parameter_base& audio_address::push_value(ossia::value&&)
+ossia::net::parameter_base& audio_parameter::push_value(const ossia::value&)
 {
   return *this;
 }
 
-net::parameter_base&audio_address::push_value()
+ossia::net::parameter_base& audio_parameter::push_value(ossia::value&&)
 {
   return *this;
 }
 
-value audio_address::value() const
+net::parameter_base&audio_parameter::push_value()
+{
+  return *this;
+}
+
+value audio_parameter::value() const
 {
   return {};
 }
 
-net::parameter_base&audio_address::set_value(const ossia::value&)
+net::parameter_base&audio_parameter::set_value(const ossia::value&)
 {
   return *this;
 }
 
-net::parameter_base&audio_address::set_value(ossia::value&&)
+net::parameter_base&audio_parameter::set_value(ossia::value&&)
 {
   return *this;
 }
 
-val_type audio_address::get_value_type() const
+val_type audio_parameter::get_value_type() const
 {
   return {};
 }
 
-net::parameter_base&audio_address::set_value_type(val_type)
+net::parameter_base&audio_parameter::set_value_type(val_type)
 {
   return *this;
 }
 
-access_mode audio_address::get_access() const
+access_mode audio_parameter::get_access() const
 {
   return {};
 }
 
-net::parameter_base&audio_address::set_access(access_mode)
+net::parameter_base&audio_parameter::set_access(access_mode)
 {
   return *this;
 }
 
-const domain&audio_address::get_domain() const
+const domain&audio_parameter::get_domain() const
 {
   static ossia::domain d;
   return d;
 }
 
-net::parameter_base&audio_address::set_domain(const domain&)
+net::parameter_base&audio_parameter::set_domain(const domain&)
 {
   return *this;
 }
 
-bounding_mode audio_address::get_bounding() const
+bounding_mode audio_parameter::get_bounding() const
 {
   return {};
 }
 
-net::parameter_base&audio_address::set_bounding(bounding_mode)
+net::parameter_base&audio_parameter::set_bounding(bounding_mode)
 {
   return *this;
 }
 
-repetition_filter audio_address::get_repetition_filter() const
+repetition_filter audio_parameter::get_repetition_filter() const
 {
   return {};
 }
 
-net::parameter_base&audio_address::set_repetition_filter(repetition_filter)
+net::parameter_base&audio_parameter::set_repetition_filter(repetition_filter)
 {
   return *this;
 }

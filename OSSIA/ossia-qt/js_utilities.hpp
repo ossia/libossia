@@ -444,12 +444,12 @@ ossia::optional<T> get_enum(const QJSValue& val)
 }
 
 /**
- * @brief make_parameter_data Extracts all the data required to build an address
+ * @brief make_parameter_data Extracts all the data required to build a parameter
  * from a QJSValue
  */
 ossia::net::parameter_data make_parameter_data(const QJSValue& js);
 
-void set_address_type(QVariant::Type type, ossia::net::parameter_base& addr);
+void set_parameter_type(QVariant::Type type, ossia::net::parameter_base& addr);
 
 /**
  * @defgroup JSTreeCreation

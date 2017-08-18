@@ -16,7 +16,7 @@ int main(int argc, char** argv)
       for(int i = 0; i < k; i++)
       {
           auto n2 = n1->create_child(std::to_string(k));
-          auto addr = n2->create_address(ossia::val_type::INT);
+          auto addr = n2->create_parameter(ossia::val_type::INT);
           addr->push_value(i);
       }
   }
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   for(int k = 1; k <= 9; k++)
   {
       auto node = localTestNode->create_child(std::string(k, k + '0'));
-      auto addr = node->create_address(ossia::val_type::INT);
+      auto addr = node->create_parameter(ossia::val_type::INT);
       addr->push_value(k);
   }
   // declare a distant program as a Minuit device

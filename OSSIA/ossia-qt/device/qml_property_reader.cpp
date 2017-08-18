@@ -38,7 +38,7 @@ qml_property_reader::~qml_property_reader()
 {
   if (m_device)
     m_device->remove(this);
-  m_address = nullptr;
+  m_param = nullptr;
 }
 
 void qml_property_reader::setTarget(const QQmlProperty& prop)
@@ -81,13 +81,13 @@ void qml_property_reader::resetNode()
       m_ossia_node->about_to_be_deleted
           .connect<qml_property_reader, &qml_property_reader::on_node_deleted>(
               this);
-      m_address = m_ossia_node->get_address();
+      m_param = m_ossia_node->get_parameter();
 
-      if (m_address)
+      if (m_param)
       {
         m_propCtx
-            = new qml_property_context{m_targetProperty, *m_address, this};
-        m_address->push_value(qt_to_ossia{}(m_targetProperty.read()));
+            = new qml_property_context{m_targetProperty, *m_param, this};
+        m_param->push_value(qt_to_ossia{}(m_targetProperty.read()));
       }
     }
   }
@@ -101,7 +101,7 @@ void qml_property_reader::on_node_deleted(const net::node_base&)
 void qml_property_reader::clearNode()
 {
   m_node.clear();
-  m_address = nullptr;
+  m_param = nullptr;
   m_ossia_node = nullptr;
 
   if (m_propCtx)
@@ -124,7 +124,7 @@ qml_property_writer::~qml_property_writer()
 {
   if (m_device)
     m_device->remove(this);
-  m_address = nullptr;
+  m_param = nullptr;
 }
 
 void qml_property_writer::setTarget(const QQmlProperty& prop)
@@ -167,12 +167,12 @@ void qml_property_writer::resetNode()
       m_ossia_node->about_to_be_deleted
           .connect<qml_property_writer, &qml_property_writer::on_node_deleted>(
               this);
-      m_address = m_ossia_node->get_address();
-      if (m_address)
+      m_param = m_ossia_node->get_parameter();
+      if (m_param)
       {
-        m_cb = m_address->add_callback(
+        m_cb = m_param->add_callback(
             [=](const ossia::value& v) { setValue_sig(v); });
-        setValue_slot(m_address->value());
+        setValue_slot(m_param->value());
       }
     }
   }
@@ -186,10 +186,10 @@ void qml_property_writer::on_node_deleted(const net::node_base&)
 void qml_property_writer::clearNode()
 {
   m_node.clear();
-  if (m_address)
-    m_address->remove_callback(m_cb);
+  if (m_param)
+    m_param->remove_callback(m_cb);
   m_cb = {};
-  m_address = nullptr;
+  m_param = nullptr;
   m_ossia_node = nullptr;
 }
 
@@ -212,7 +212,7 @@ qml_binding::~qml_binding()
 {
   if (m_device)
     m_device->remove(this);
-  m_address = nullptr;
+  m_param = nullptr;
 }
 
 void qml_binding::setDevice(QObject* device)
@@ -248,16 +248,16 @@ void qml_binding::resetNode()
     {
       m_ossia_node->about_to_be_deleted
           .connect<qml_binding, &qml_binding::on_node_deleted>(this);
-      m_address = m_ossia_node->get_address();
+      m_param = m_ossia_node->get_parameter();
 
-      if (m_address)
+      if (m_param)
       {
         m_expr = std::make_unique<QQmlExpression>(m_on);
         m_expr->setNotifyOnValueChanged(true);
         m_expr->evaluate(); // TODO QTBUG-60305
 
         connect(m_expr.get(), &QQmlExpression::valueChanged, this, [=]() {
-          m_address->push_value(qt_to_ossia{}(m_expr->evaluate()));
+          m_param->push_value(qt_to_ossia{}(m_expr->evaluate()));
         });
       }
     }
@@ -286,7 +286,7 @@ void qml_binding::on_node_deleted(const net::node_base&)
 void qml_binding::clearNode()
 {
   m_node.clear();
-  m_address = nullptr;
+  m_param = nullptr;
   m_ossia_node = nullptr;
   m_expr.reset();
 }
@@ -305,7 +305,7 @@ qml_callback::~qml_callback()
 {
   if (m_device)
     m_device->remove(this);
-  m_address = nullptr;
+  m_param = nullptr;
 }
 
 void qml_callback::setDevice(QObject* device)
@@ -341,12 +341,12 @@ void qml_callback::resetNode()
     {
       m_ossia_node->about_to_be_deleted
           .connect<qml_callback, &qml_callback::on_node_deleted>(this);
-      m_address = m_ossia_node->get_address();
-      if (m_address)
+      m_param = m_ossia_node->get_parameter();
+      if (m_param)
       {
-        m_cb = m_address->add_callback(
+        m_cb = m_param->add_callback(
             [=](const ossia::value& v) { setValue_sig(v); });
-        setValue_slot(m_address->value());
+        setValue_slot(m_param->value());
       }
     }
   }
@@ -360,10 +360,10 @@ void qml_callback::on_node_deleted(const net::node_base&)
 void qml_callback::clearNode()
 {
   m_node.clear();
-  if (m_address)
-    m_address->remove_callback(m_cb);
+  if (m_param)
+    m_param->remove_callback(m_cb);
   m_cb = {};
-  m_address = nullptr;
+  m_param = nullptr;
   m_ossia_node = nullptr;
 }
 

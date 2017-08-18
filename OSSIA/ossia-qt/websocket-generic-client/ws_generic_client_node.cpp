@@ -16,7 +16,7 @@ ws_generic_client_node::ws_generic_client_node(
 {
   m_name = data.name;
   if (!data.request.isNull() || data.type)
-    m_address = std::make_unique<ws_generic_client_address>(data, *this);
+    m_parameter = std::make_unique<ws_generic_client_parameter>(data, *this);
 }
 
 ws_generic_client_node::ws_generic_client_node(
@@ -26,7 +26,7 @@ ws_generic_client_node::ws_generic_client_node(
 {
   m_name = data.name;
   if (!data.request.isNull() || data.type)
-    m_address = std::make_unique<ws_generic_client_address>(data, *this);
+    m_parameter = std::make_unique<ws_generic_client_parameter>(data, *this);
 }
 
 ws_generic_client_node::~ws_generic_client_node()
@@ -35,7 +35,7 @@ ws_generic_client_node::~ws_generic_client_node()
 
   write_lock_t lock{m_mutex};
   m_children.clear();
-  m_address.reset();
+  m_parameter.reset();
 }
 
 device_base& ws_generic_client_node::get_device() const
@@ -53,17 +53,17 @@ node_base& ws_generic_client_node::set_name(std::string)
   return *this;
 }
 
-parameter_base* ws_generic_client_node::get_address() const
+parameter_base* ws_generic_client_node::get_parameter() const
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-parameter_base* ws_generic_client_node::create_address(val_type)
+parameter_base* ws_generic_client_node::create_parameter(val_type)
 {
   return nullptr;
 }
 
-bool ws_generic_client_node::remove_address()
+bool ws_generic_client_node::remove_parameter()
 {
   return false;
 }

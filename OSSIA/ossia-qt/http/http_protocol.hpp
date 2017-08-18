@@ -18,7 +18,7 @@ namespace net
 {
 class http_device;
 class http_node;
-class http_address;
+class http_parameter;
 
 class OSSIA_EXPORT http_protocol final : public QObject,
                                          public ossia::net::protocol_base
@@ -51,10 +51,10 @@ public:
     return js;
   }
 signals:
-  void sig_push(const http_address*);
+  void sig_push(const http_parameter*);
 
 private slots:
-  void slot_push(const http_address*);
+  void slot_push(const http_parameter*);
 
 private:
   void apply_reply(QJSValue);
@@ -66,9 +66,9 @@ private:
 
   QByteArray mCode;
   http_device* mDevice{};
-  QList<std::pair<QNetworkReply*, const http_address*>> mReplies;
+  QList<std::pair<QNetworkReply*, const http_parameter*>> mReplies;
 };
 }
 }
 
-Q_DECLARE_METATYPE(ossia::net::http_address*)
+Q_DECLARE_METATYPE(ossia::net::http_parameter*)

@@ -16,10 +16,10 @@ class MapperTest : public QObject
   Q_OBJECT
 
   parameter_base* m_float_address{};
-  std::vector<value> m_float_address_values;
+  std::vector<value> m_float_parameter_values;
 
   parameter_base* m_int_address{};
-  std::vector<value> m_int_address_values;
+  std::vector<value> m_int_parameter_values;
 
   void constraint_callback(double position, time_value date, const state_element& st)
   {
@@ -31,13 +31,13 @@ class MapperTest : public QObject
     std::cout << "Event : " << "new status received" << std::endl;
   }
 
-  void int_address_callback(const value& v)
+  void int_parameter_callback(const value& v)
   {
     // store mapping result
-    m_int_address_values.push_back(v);
+    m_int_parameter_values.push_back(v);
 
     // store current float value
-    m_float_address_values.push_back(m_float_address->value());
+    m_float_parameter_values.push_back(m_float_address->value());
 
     // prepare next float value
     const float current = m_float_address->value().get<float>();
@@ -52,10 +52,10 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     auto float_n = device.create_child("float");
-    ossia::net::parameter_base* float_address = float_n->create_address(val_type::FLOAT);
+    ossia::net::parameter_base* float_address = float_n->create_parameter(val_type::FLOAT);
 
     auto int_n = device.create_child("int");
-    auto int_address = int_n->create_address(val_type::INT);
+    auto int_address = int_n->create_parameter(val_type::INT);
 
     behavior b;
 
@@ -72,12 +72,12 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     auto float_n = device.create_child("float");
-    m_float_address = float_n->create_address(val_type::FLOAT);
+    m_float_address = float_n->create_parameter(val_type::FLOAT);
 
     auto int_n = device.create_child("int");
-    m_int_address = int_n->create_address(val_type::INT);
-    auto int_address_callback = std::bind(&MapperTest::int_address_callback, this, _1);
-    m_int_address->add_callback(int_address_callback);
+    m_int_address = int_n->create_parameter(val_type::INT);
+    auto int_parameter_callback = std::bind(&MapperTest::int_parameter_callback, this, _1);
+    m_int_address->add_callback(int_parameter_callback);
 
     auto c = std::make_shared<curve<float, int>>();
     curve_segment_linear<int> linearSegment;
@@ -95,8 +95,8 @@ private Q_SLOTS:
     constraint->add_time_process(
           std::make_unique<mapper>(Destination{*m_float_address}, Destination{*m_int_address}, curve_ptr{c}));
     ossia::clock clck{*constraint};
-    m_float_address_values.clear();
-    m_int_address_values.clear();
+    m_float_parameter_values.clear();
+    m_int_parameter_values.clear();
 
     float f(-10.);
     m_float_address->push_value(f);
@@ -111,11 +111,11 @@ private Q_SLOTS:
       std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
-    QVERIFY(m_float_address_values.size() == m_int_address_values.size());
+    QVERIFY(m_float_parameter_values.size() == m_int_parameter_values.size());
 
     // check if each value produced by the mapping is correct
-    auto it = m_int_address_values.begin();
-    for (auto v : m_float_address_values)
+    auto it = m_int_parameter_values.begin();
+    for (auto v : m_float_parameter_values)
     {
       float f = v.get<float>();
       int i = it->get<int>();

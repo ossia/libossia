@@ -71,6 +71,6 @@ private:
 namespace net
 {
 class parameter_base;
-using listened_addresses = locked_map<string_map<ossia::net::parameter_base*>>;
+using listened_parameters = locked_map<string_map<ossia::net::parameter_base*>>;
 }
 }

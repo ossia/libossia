@@ -495,7 +495,7 @@ value value_from_js(const QJSValue& v)
   }
 }
 
-void set_address_type(QVariant::Type type, net::parameter_base& addr)
+void set_parameter_type(QVariant::Type type, net::parameter_base& addr)
 {
   switch (type)
   {

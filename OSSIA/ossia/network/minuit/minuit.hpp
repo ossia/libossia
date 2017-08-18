@@ -94,7 +94,7 @@ private:
   uint16_t m_localPort{};  /// the port where a remote device sends OSC messages
                           /// to (opened in this library)
 
-  listened_addresses m_listening;
+  listened_parameters m_listening;
 
   std::promise<void> m_namespaceFinishedPromise;
   ossia::net::device_base* m_device{};

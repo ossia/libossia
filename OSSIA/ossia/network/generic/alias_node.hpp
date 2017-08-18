@@ -24,9 +24,9 @@ public:
   ossia::net::node_base* get_origin() const;
   void set_origin(ossia::net::node_base* o);
 
-  parameter_base* create_address(val_type v) override;
-  bool remove_address() override;
-  parameter_base* get_address() const override;
+  parameter_base* create_parameter(val_type v) override;
+  bool remove_parameter() override;
+  parameter_base* get_parameter() const override;
 
 protected:
   std::unique_ptr<node_base> make_child(const std::string& name) override;
@@ -61,9 +61,9 @@ public:
   void set_path(traversal::path o);
 
 private:
-  parameter_base* create_address(val_type v) override { return this; }
-  bool remove_address() override { return false; }
-  parameter_base* get_address() const override { return (ossia::net::parameter_base*)(this); }
+  parameter_base* create_parameter(val_type v) override { return this; }
+  bool remove_parameter() override { return false; }
+  parameter_base* get_parameter() const override { return (ossia::net::parameter_base*)(this); }
 
   std::unique_ptr<node_base> make_child(const std::string& name) override { return {}; }
   void removing_child(node_base&) override { }

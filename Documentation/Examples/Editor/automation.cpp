@@ -9,7 +9,7 @@ int main()
 
   // Create a device with a single address
   ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "app"};
-  auto address = ossia::net::create_node(device, "/the_float").create_address(ossia::val_type::FLOAT);
+  auto address = ossia::net::create_node(device, "/the_float").create_parameter(ossia::val_type::FLOAT);
 
   // Log a message when something is pushed on the address
   address->add_callback([] (const auto& value) {

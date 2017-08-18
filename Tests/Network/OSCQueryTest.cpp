@@ -43,7 +43,7 @@ private Q_SLOTS:
       // Create a node
       {
         auto& n = find_or_create_node(dev, "/main");
-        auto a = n.create_address(ossia::val_type::FLOAT);
+        auto a = n.create_parameter(ossia::val_type::FLOAT);
 
         a->push_value(6);
 
@@ -141,7 +141,7 @@ private Q_SLOTS:
         TestDeviceRef dev{serv};
         {
           auto& n = find_or_create_node(serv, "/main");
-          auto a = n.create_address(ossia::val_type::FLOAT);
+          auto a = n.create_parameter(ossia::val_type::FLOAT);
 
           a->push_value(6);
 

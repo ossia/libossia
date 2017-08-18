@@ -195,11 +195,11 @@ bool oscquery_server_protocol::observe(net::parameter_base& address, bool enable
   if (enable)
   {
     m_listening.insert(
-        std::make_pair(net::osc_address_string(address), &address));
+        std::make_pair(net::osc_parameter_string(address), &address));
   }
   else
   {
-    m_listening.erase(net::osc_address_string(address));
+    m_listening.erase(net::osc_parameter_string(address));
   }
 
   return true;
@@ -376,7 +376,7 @@ void oscquery_server_protocol::on_OSCMessage(
     // We still want to save the value even if it is not listened to.
     if (auto n = net::find_node(m_device->get_root_node(), addr_txt))
     {
-      if (auto base_addr = n->get_address())
+      if (auto base_addr = n->get_parameter())
       {
         net::update_value_quiet(*base_addr, m);
       }
@@ -387,9 +387,9 @@ void oscquery_server_protocol::on_OSCMessage(
       auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
       for(auto n : nodes)
       {
-        if (auto addr = n->get_address())
+        if (auto addr = n->get_parameter())
         {
-          if(m_listening.find(net::osc_address_string(*n)))
+          if(m_listening.find(net::osc_parameter_string(*n)))
             net::update_value(*addr, m);
           else
             net::update_value_quiet(*addr, m);
@@ -481,7 +481,7 @@ catch (...)
 
 void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n) try
 {
-  const auto mess = json_writer::path_removed(net::osc_address_string(n));
+  const auto mess = json_writer::path_removed(net::osc_parameter_string(n));
 
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)

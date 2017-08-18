@@ -37,7 +37,7 @@ int main()
   auto onAddNode = [&] (std::string parent, parameter_data dat) {
     auto& p_node = ossia::net::find_or_create_node(device, parent);
     auto cld = p_node.create_child(dat.name);
-    cld->create_address(ossia::val_type::INT);
+    cld->create_parameter(ossia::val_type::INT);
   };
   device.on_add_node_requested.connect(&onAddNode);
 
@@ -55,7 +55,7 @@ int main()
     auto& node = find_or_create_node(device, "/test/my_impulse");
 
     // Addresses allow nodes to have values.
-    auto address = node.create_address(val_type::IMPULSE);
+    auto address = node.create_parameter(val_type::IMPULSE);
 
     // Called whenver the value is changed
     address->add_callback(printValueCallback);
@@ -66,13 +66,13 @@ int main()
 
   {
     auto& node = find_or_create_node(device, "/test/my_bool");
-    auto address = node.create_address(val_type::BOOL);
+    auto address = node.create_parameter(val_type::BOOL);
     address->add_callback(printValueCallback);
     address->push_value(true);
   }
   {
     auto& node = find_or_create_node(device, "/test/my_float");
-    auto address = node.create_address(val_type::FLOAT);
+    auto address = node.create_parameter(val_type::FLOAT);
     address->add_callback(printValueCallback);
     address->push_value(1234.);
 
@@ -86,7 +86,7 @@ int main()
   }
   {
     auto& node = find_or_create_node(device, "/test/my_int");
-    auto address = node.create_address(val_type::INT);
+    auto address = node.create_parameter(val_type::INT);
 
     // Set some metadata
     node.set(access_mode_attribute{}, access_mode::GET);
@@ -100,14 +100,14 @@ int main()
 
   {
     auto& node = find_or_create_node(device, "/test/my_char");
-    auto address = node.create_address(val_type::CHAR);
+    auto address = node.create_parameter(val_type::CHAR);
     address->add_callback(printValueCallback);
     address->push_value('c');
   }
 
   {
     auto& node = find_or_create_node(device, "/test/my_string");
-    auto address = node.create_address(val_type::STRING);
+    auto address = node.create_parameter(val_type::STRING);
     address->add_callback(printValueCallback);
     address->push_value("hello world"s);
   }
@@ -115,7 +115,7 @@ int main()
   {
     // tuple is a std::vector<value>
     auto& node = find_or_create_node(device, "/test/my_tuple");
-    auto address = node.create_address(val_type::TUPLE);
+    auto address = node.create_parameter(val_type::TUPLE);
     address->add_callback(printValueCallback);
 
     using tuple = std::vector<ossia::value>;
@@ -134,20 +134,20 @@ int main()
   {
     // fixed-length arrays
     auto& node = find_or_create_node(device, "/test/my_vec3f");
-    auto address = node.create_address(val_type::VEC3F);
+    auto address = node.create_parameter(val_type::VEC3F);
     address->add_callback(printValueCallback);
     address->push_value(ossia::make_vec(0., 1., 2.));
   }
   {
     auto& node = find_or_create_node(device, "/units/vec2");
-    auto address = node.create_address(val_type::VEC2F);
+    auto address = node.create_parameter(val_type::VEC2F);
     node.set(unit_attribute{}, ossia::cartesian_2d_u{});
     address->add_callback(printValueCallback);
     address->push_value(ossia::make_vec(5., 6.));
   }
   {
     auto& node = find_or_create_node(device, "/units/float");
-    auto address = node.create_address(val_type::INT);
+    auto address = node.create_parameter(val_type::INT);
     node.set(unit_attribute{}, ossia::decibel_u{});
     address->add_callback(printValueCallback);
   }

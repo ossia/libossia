@@ -46,7 +46,7 @@ private:
   void clearNode();
 
   QQmlProperty m_targetProperty;
-  ossia::net::parameter_base* m_address{};
+  ossia::net::parameter_base* m_param{};
   qml_property_context* m_propCtx{};
 };
 
@@ -76,7 +76,7 @@ private:
   void clearNode();
 
   QQmlProperty m_targetProperty;
-  ossia::net::parameter_base* m_address{};
+  ossia::net::parameter_base* m_param{};
   ossia::net::parameter_base::iterator m_cb;
 };
 
@@ -104,7 +104,7 @@ private:
   void clearNode();
 
   std::unique_ptr<QQmlExpression> m_expr;
-  ossia::net::parameter_base* m_address{};
+  ossia::net::parameter_base* m_param{};
   QQmlScriptString m_on;
 };
 
@@ -133,7 +133,7 @@ private:
   void on_node_deleted(const ossia::net::node_base&);
   void clearNode();
 
-  ossia::net::parameter_base* m_address{};
+  ossia::net::parameter_base* m_param{};
   QVariant m_value;
   ossia::net::parameter_base::iterator m_cb;
 };

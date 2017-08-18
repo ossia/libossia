@@ -221,7 +221,7 @@ PYBIND11_MODULE(ossia_python, m)
 
   py::class_<ossia::net::node_base>(m, "Node")
       .def_property_readonly(
-          "address", &ossia::net::node_base::get_address,
+          "address", &ossia::net::node_base::get_parameter,
           py::return_value_policy::reference)
 
       .def(
@@ -232,14 +232,14 @@ PYBIND11_MODULE(ossia_python, m)
           },
           py::return_value_policy::reference)
       .def(
-          "create_address",
+          "create_parameter",
           [](ossia::net::node_base& node, int type) {
-            return node.create_address((ossia::val_type)type);
+            return node.create_parameter((ossia::val_type)type);
           },
           py::return_value_policy::reference)
       .def("children", &ossia::net::node_base::children_copy)
       .def("__str__", [](ossia::net::node_base& node) -> std::string {
-        return ossia::net::osc_address_string(node);
+        return ossia::net::osc_parameter_string(node);
       });
 
   py::class_<ossia::net::parameter_base>(m, "Address")

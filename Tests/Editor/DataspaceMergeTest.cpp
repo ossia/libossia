@@ -676,7 +676,7 @@ private Q_SLOTS:
     }
   }
 
-  void flatten_different_float_message_on_vec_address_without_unit()
+  void flatten_different_float_message_on_vec_parameter_without_unit()
   {
     ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
@@ -760,7 +760,7 @@ private Q_SLOTS:
   }
 
 
-  void flatten_different_float_message_on_vec_address_with_same_unit()
+  void flatten_different_float_message_on_vec_parameter_with_same_unit()
   {
     ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});
@@ -804,7 +804,7 @@ private Q_SLOTS:
 
   }
 
-  void flatten_different_float_message_on_vec_address_with_different_unit()
+  void flatten_different_float_message_on_vec_parameter_with_different_unit()
   {
     ossia::TestDevice t;
     t.vec3f_addr->set_unit(ossia::rgb_u{});

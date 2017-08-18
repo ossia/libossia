@@ -101,7 +101,7 @@ public:
   void on_removing_last_callback() final override;
 
 private:
-  friend struct update_address_visitor;
+  friend struct update_parameter_visitor;
 };
 }
 }

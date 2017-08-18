@@ -86,8 +86,8 @@ address_string_from_node(const ossia::net::parameter_base&);
 /**
  * @brief Get the OSC address of a node: /an/address
  */
-OSSIA_EXPORT std::string osc_address_string(const ossia::net::parameter_base&);
-OSSIA_EXPORT std::string osc_address_string(const ossia::net::node_base&);
+OSSIA_EXPORT std::string osc_parameter_string(const ossia::net::parameter_base&);
+OSSIA_EXPORT std::string osc_parameter_string(const ossia::net::node_base&);
 
 /**
  * @brief Get the OSC address of a node with the leading device
@@ -95,9 +95,9 @@ OSSIA_EXPORT std::string osc_address_string(const ossia::net::node_base&);
  * e.g. /aDevice/an/address
  */
 OSSIA_EXPORT std::string
-osc_address_string_with_device(const ossia::net::parameter_base&);
+osc_parameter_string_with_device(const ossia::net::parameter_base&);
 OSSIA_EXPORT std::string
-osc_address_string_with_device(const ossia::net::node_base&);
+osc_parameter_string_with_device(const ossia::net::node_base&);
 
 /**
  * @brief Get the value associated with a destination

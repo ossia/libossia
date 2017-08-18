@@ -37,7 +37,7 @@ private Q_SLOTS:
     node->set_name("foo");
     QVERIFY(node->get_name() == "foo");
 
-    QVERIFY(node->get_address() == nullptr);
+    QVERIFY(node->get_parameter() == nullptr);
 
     auto brother = device.create_child("foo");
 
@@ -77,12 +77,12 @@ private Q_SLOTS:
     {
       auto node = device.create_child("child");
 
-      auto address = node->create_address();
-      QVERIFY(node->get_address() != nullptr);
-      QVERIFY(address == node->get_address());
+      auto address = node->create_parameter();
+      QVERIFY(node->get_parameter() != nullptr);
+      QVERIFY(address == node->get_parameter());
 
-      QVERIFY(node->remove_address());
-      QVERIFY(node->get_address() == nullptr);
+      QVERIFY(node->remove_parameter());
+      QVERIFY(node->get_parameter() == nullptr);
 
       device.remove_child("child");
       QVERIFY(device.children().size() == 0);
@@ -232,7 +232,7 @@ private Q_SLOTS:
     QVERIFY(!get_app_version(n));
     QVERIFY(!get_app_creator(n));
 
-    auto a = n.create_address(ossia::val_type::INT);
+    auto a = n.create_parameter(ossia::val_type::INT);
 
     QVERIFY((bool)get_access_mode(n));
     QVERIFY((bool)get_bounding_mode(n));
@@ -335,7 +335,7 @@ private Q_SLOTS:
     generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
     ossia::net::node_base& n = find_or_create_node(dev, "/main");
 
-    n.create_address(ossia::val_type::INT);
+    n.create_parameter(ossia::val_type::INT);
 
     set_access_mode(n, access_mode::GET);
     QVERIFY((bool)get_access_mode(n));

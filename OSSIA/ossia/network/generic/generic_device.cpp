@@ -28,7 +28,7 @@ generic_device::generic_device(
 
 generic_device::~generic_device()
 {
-  remove_address();
+  remove_parameter();
 
   m_protocol->stop();
 

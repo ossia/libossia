@@ -113,7 +113,7 @@ class QmlApiTest : public QObject
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/foo/bar/float");
           QVERIFY(node);
-          auto addr = node->get_address();
+          auto addr = node->get_parameter();
           QVERIFY(addr);
           QVERIFY(addr->get_value_type() == ossia::val_type::FLOAT);
           QVERIFY(addr->value() == 12.);
@@ -171,8 +171,8 @@ class QmlApiTest : public QObject
                                           dev.device().get_root_node(),
                                           "/foo." + std::to_string(i) + "/x");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
         }
 
         item->setParent(&app);
@@ -236,8 +236,8 @@ class QmlApiTest : public QObject
                                           dev.device().get_root_node(),
                                           "/foo." + std::to_string(i) + "/x");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
         }
 
         cleanup(item);
@@ -285,72 +285,72 @@ class QmlApiTest : public QObject
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/x");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/y");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theInt");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::INT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::INT);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theFloat");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theDouble");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::FLOAT);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theString");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::STRING);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::STRING);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theBool");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::BOOL);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::BOOL);
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theColor");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::VEC4F);
-          QVERIFY(node->get_address()->get_unit() == ossia::argb_u{});
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::VEC4F);
+          QVERIFY(node->get_parameter()->get_unit() == ossia::argb_u{});
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/thePoint");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::VEC2F);
-          QVERIFY(node->get_address()->get_unit() == ossia::cartesian_2d_u{});
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::VEC2F);
+          QVERIFY(node->get_parameter()->get_unit() == ossia::cartesian_2d_u{});
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theVector2D");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::VEC2F);
-          QVERIFY(node->get_address()->get_unit() == ossia::cartesian_2d_u{});
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::VEC2F);
+          QVERIFY(node->get_parameter()->get_unit() == ossia::cartesian_2d_u{});
         }
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theVector3D");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::VEC3F);
-          QVERIFY(node->get_address()->get_unit() == ossia::cartesian_3d_u{});
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::VEC3F);
+          QVERIFY(node->get_parameter()->get_unit() == ossia::cartesian_3d_u{});
         }
         cleanup(item);
       }
@@ -392,8 +392,8 @@ class QmlApiTest : public QObject
         {
           auto node = ossia::net::find_node(dev.device().get_root_node(), "/buzz");
           QVERIFY(node);
-          QVERIFY(node->get_address());
-          QVERIFY(node->get_address()->get_value_type() == ossia::val_type::IMPULSE);
+          QVERIFY(node->get_parameter());
+          QVERIFY(node->get_parameter()->get_value_type() == ossia::val_type::IMPULSE);
         }
         cleanup(item);
       }

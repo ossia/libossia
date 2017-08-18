@@ -221,45 +221,45 @@ ossia_node_t ossia_node_find_child(ossia_node_t node, const char* child_n)
   });
 }
 
-ossia_address_t ossia_node_create_address(ossia_node_t node, ossia_type type)
+ossia_parameter_t ossia_node_create_parameter(ossia_node_t node, ossia_type type)
 {
-  return safe_function(__func__, [=]() -> ossia_address_t {
+  return safe_function(__func__, [=]() -> ossia_parameter_t {
     if (!node)
     {
-      ossia_log_error("ossia_node_create_address: node is null");
+      ossia_log_error("ossia_node_create_parameter: node is null");
       return nullptr;
     }
 
     auto n = convert_node(node);
-    return convert(n->create_address(convert(type)));
+    return convert(n->create_parameter(convert(type)));
   });
 }
 
-ossia_address_t ossia_node_get_address(ossia_node_t node)
+ossia_parameter_t ossia_node_get_parameter(ossia_node_t node)
 {
-  return safe_function(__func__, [=]() -> ossia_address_t {
+  return safe_function(__func__, [=]() -> ossia_parameter_t {
     if (!node)
     {
-      ossia_log_error("ossia_node_create_address: node is null");
+      ossia_log_error("ossia_node_create_parameter: node is null");
       return nullptr;
     }
 
     auto n = convert_node(node);
-    return convert(n->get_address());
+    return convert(n->get_parameter());
   });
 }
 
-void ossia_node_remove_address(ossia_node_t node)
+void ossia_node_remove_parameter(ossia_node_t node)
 {
   return safe_function(__func__, [=] {
     if (!node)
     {
-      ossia_log_error("ossia_node_remove_address: node is null");
+      ossia_log_error("ossia_node_remove_parameter: node is null");
       return;
     }
 
     auto n = convert_node(node);
-    n->remove_address();
+    n->remove_parameter();
   });
 }
 

@@ -72,13 +72,13 @@ public:
    virtual bool push_raw_bundle(const std::vector<full_parameter_data>&);
 
   /**
-   * @brief Notify the network that an address should be listened to.
+   * @brief Notify the network that a parameter should be listened to.
    *
    * In some protocols (Minuit, OSCQuery), this may send a message to the other
    * client
-   * so that it regularly sends values of this address to the local computer.
+   * so that it regularly sends values of this parameter to the local computer.
    *
-   * If an address is listened to, when a message is received,
+   * If a parameter is listened to, when a message is received,
    * parameter_base::setValue will be called,
    * which will notify the local signals.
    * Else, parameter_base::setValueQuiet will be called : the value will be

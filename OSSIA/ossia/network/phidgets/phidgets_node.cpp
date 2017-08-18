@@ -31,17 +31,17 @@ net::node_base& phidget_node::set_name(std::string n)
   return *this;
 }
 
-net::parameter_base* phidget_node::get_address() const
+net::parameter_base* phidget_node::get_parameter() const
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-net::parameter_base* phidget_node::create_address(val_type)
+net::parameter_base* phidget_node::create_parameter(val_type)
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-bool phidget_node::remove_address()
+bool phidget_node::remove_parameter()
 {
   return false;
 }

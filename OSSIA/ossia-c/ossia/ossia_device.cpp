@@ -220,48 +220,48 @@ void ossia_device_remove_node_removing_callback(
 }
 
 
-ossia_address_callback_idx_t ossia_device_add_address_deleting_callback(
+ossia_parameter_callback_idx_t ossia_device_add_parameter_deleting_callback(
         ossia_device_t device,
         ossia_node_callback_t callback,
         void* ctx)
 {
-    return safe_function(__func__, [=]() -> ossia_address_callback_idx_t {
+    return safe_function(__func__, [=]() -> ossia_parameter_callback_idx_t {
       if (!device)
       {
-        ossia_log_error("ossia_device_add_address_deleting_callback: device is null");
+        ossia_log_error("ossia_device_add_parameter_deleting_callback: device is null");
         return nullptr;
       }
       if (!callback)
       {
-        ossia_log_error("ossia_device_add_address_deleting_callback: callback is null");
+        ossia_log_error("ossia_device_add_parameter_deleting_callback: callback is null");
         return nullptr;
       }
 
       auto the_cb = new address_cb{callback, ctx};
 
-      convert_device(device)->on_address_removing.connect<address_cb>(the_cb);
-      return reinterpret_cast<ossia_address_callback_idx_t>(the_cb);
+      convert_device(device)->on_parameter_removing.connect<address_cb>(the_cb);
+      return reinterpret_cast<ossia_parameter_callback_idx_t>(the_cb);
     });
 }
 
-void ossia_device_remove_address_deleting_callback(
+void ossia_device_remove_parameter_deleting_callback(
         ossia_device_t device,
-        ossia_address_callback_idx_t index)
+        ossia_parameter_callback_idx_t index)
 {
     return safe_function(__func__, [=] {
       auto idx = (address_cb*) index;
       if (!device)
       {
-        ossia_log_error("ossia_device_remove_address_deleting_callback: device is null");
+        ossia_log_error("ossia_device_remove_parameter_deleting_callback: device is null");
         return;
       }
       if (!idx)
       {
-        ossia_log_error("ossia_device_remove_address_deleting_callback: index is null");
+        ossia_log_error("ossia_device_remove_parameter_deleting_callback: index is null");
         return;
       }
 
-      convert_device(device)->on_address_removing.disconnect<address_cb>(idx);
+      convert_device(device)->on_parameter_removing.disconnect<address_cb>(idx);
       delete idx;
     });
 }

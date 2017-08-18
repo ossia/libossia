@@ -27,11 +27,11 @@ bool find_peer(t_object_base *x);
 ossia::net::node_base* find_global_node(const std::string& addr);
 
 /**
- * @brief get_address_type: return address type (relative, absolute or globale)
+ * @brief get_parameter_type: return address type (relative, absolute or globale)
  * @param addr: the address to process
  * @return
  */
-ossia::max::AddrType get_address_type(const std::string& addr);
+ossia::max::AddrType get_parameter_type(const std::string& addr);
 
 } // namespace max
 } // namespace ossia

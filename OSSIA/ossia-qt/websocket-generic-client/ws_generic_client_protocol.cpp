@@ -99,7 +99,7 @@ bool ws_generic_client_protocol::pull(ossia::net::parameter_base& parameter_base
 bool ws_generic_client_protocol::push(
     const ossia::net::parameter_base& parameter_base)
 {
-  auto& addr = static_cast<const ws_generic_client_address&>(parameter_base);
+  auto& addr = static_cast<const ws_generic_client_parameter&>(parameter_base);
 
   if (!addr.data().request.isNull())
   {
@@ -116,7 +116,7 @@ bool ws_generic_client_protocol::push_raw(const full_parameter_data& parameter_b
 bool ws_generic_client_protocol::observe(
     ossia::net::parameter_base& addr_base, bool enable)
 {
-  auto& addr = static_cast<ws_generic_client_address&>(addr_base);
+  auto& addr = static_cast<ws_generic_client_parameter&>(addr_base);
   if (enable)
   {
     auto& fun = addr.data().openListening;
@@ -142,7 +142,7 @@ void ws_generic_client_protocol::set_device(device_base& dev)
 }
 
 void ws_generic_client_protocol::slot_push(
-    const ws_generic_client_address* addr_p)
+    const ws_generic_client_parameter* addr_p)
 {
   auto& addr = *addr_p;
   auto dat = addr.data().request;
@@ -188,7 +188,7 @@ void ws_generic_client_protocol::apply_reply(QJSValue arr)
     if (v.isNull())
       continue;
 
-    if (auto addr = n->get_address())
+    if (auto addr = n->get_parameter())
     {
       qDebug() << "Applied value"
                << QString::fromStdString(value_to_pretty_string(

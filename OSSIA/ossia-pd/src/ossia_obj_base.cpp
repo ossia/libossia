@@ -51,7 +51,7 @@ t_matcher::t_matcher(t_matcher&& other)
 
   if(node)
   {
-    if(auto addr = node->get_address())
+    if(auto addr = node->get_parameter())
     {
       if (callbackit)
         addr->remove_callback(*callbackit);
@@ -75,7 +75,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   if(node)
   {
-    if(auto addr = node->get_address())
+    if(auto addr = node->get_parameter())
     {
       if (callbackit)
         addr->remove_callback(*callbackit);
@@ -91,7 +91,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, t_obj_base* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  callbackit = node->get_address()->add_callback(
+  callbackit = node->get_parameter()->add_callback(
       [=](const ossia::value& v) { set_value(v); });
 
   node->about_to_be_deleted.connect<t_obj_base, &t_obj_base::is_deleted>(
@@ -118,7 +118,7 @@ t_matcher::~t_matcher()
         obj_quarantining<t_param>((t_param*) parent);
       }
     } else {
-      auto addr = node->get_address();
+      auto addr = node->get_parameter();
       if (addr && callbackit) addr->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
 
@@ -139,11 +139,11 @@ void t_matcher::set_value(const ossia::value& v){
   SETSYMBOL(&a, gensym(addr.c_str()));
   outlet_anything(parent->x_dumpout,gensym("address"),1,&a);
 
-  auto local_address = node->get_address();
+  auto local_param = node->get_parameter();
   auto filtered = ossia::net::filter_value(
-        local_address->get_domain(),
+        local_param->get_domain(),
         v,
-        local_address->get_bounding());
+        local_param->get_bounding());
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)parent;
   filtered.apply(vm);
@@ -177,16 +177,16 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
   {
     x->x_node = m.get_node();
 
-    if (x->x_node && x->x_node->get_address())
+    if (x->x_node && x->x_node->get_parameter())
     {
       if (argc == 1)
       {
         // convert one element array to single element
         if (argv->a_type == A_SYMBOL)
-          x->x_node->get_address()->push_value(
+          x->x_node->get_parameter()->push_value(
                 std::string(atom_getsymbol(argv)->s_name));
         else if (argv->a_type == A_FLOAT)
-          x->x_node->get_address()->push_value(atom_getfloat(argv));
+          x->x_node->get_parameter()->push_value(atom_getfloat(argv));
       }
       else
       {
@@ -200,7 +200,7 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
           else
             pd_error(x, "value type not handled");
         }
-        x->x_node->get_address()->push_value(list);
+        x->x_node->get_parameter()->push_value(list);
       }
     }
   }
@@ -215,7 +215,7 @@ void t_obj_base::obj_bang(t_obj_base* x)
 {
   for (auto& matcher : x->x_matchers)
   {
-    matcher.set_value(matcher.get_node()->get_address()->value());
+    matcher.set_value(matcher.get_node()->get_parameter()->value());
   }
 }
 
@@ -243,13 +243,13 @@ void obj_namespace(t_obj_base* x)
   t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
   list_all_child(*x->x_node, list);
-  int pos = ossia::net::osc_address_string(*x->x_node).length();
+  int pos = ossia::net::osc_parameter_string(*x->x_node).length();
   for (ossia::net::node_base* child : list)
   {
-    if (child->get_address())
+    if (child->get_parameter())
     {
-      ossia::value name = ossia::net::osc_address_string(*child).substr(pos);
-      ossia::value val = child->get_address()->fetch_value();
+      ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
+      ossia::value val = child->get_parameter()->fetch_value();
 
       std::vector<t_atom> va;
       value2atom vm{va};
@@ -283,7 +283,7 @@ void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
       auto nodes = ossia::net::find_nodes(*x->x_node, addr);
       for (auto n : nodes)
       {
-        if (n->get_address()){
+        if (n->get_parameter()){
           t_matcher matcher{n,x};
           x->x_matchers.push_back(std::move(matcher));
         }

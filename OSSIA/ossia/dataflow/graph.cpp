@@ -140,7 +140,7 @@ struct init_node_visitor
     else
     {
       // todo delay, etc
-      graph::pull_from_address(in, e);
+      graph::pull_from_parameter(in, e);
     }
   }
 };
@@ -481,7 +481,7 @@ void graph::copy_to_global(
   // TODO
 }
 
-void graph::pull_from_address(inlet& in, execution_state& e)
+void graph::pull_from_parameter(inlet& in, execution_state& e)
 {
   if (auto addr_ptr = in.address.target<ossia::net::parameter_base*>())
   {
@@ -522,7 +522,7 @@ void graph::init_node(graph_node& n, execution_state& e)
     }
     else
     {
-      pull_from_address(*in, e);
+      pull_from_parameter(*in, e);
     }
   }
 }
@@ -553,7 +553,7 @@ void graph::teardown_node(graph_node& n, execution_state& e)
   }
 }
 
-audio_address::~audio_address()
+audio_parameter::~audio_parameter()
 {
 }
 midi_generic_parameter::~midi_generic_parameter()

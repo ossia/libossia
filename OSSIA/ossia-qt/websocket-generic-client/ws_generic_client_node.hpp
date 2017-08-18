@@ -8,12 +8,12 @@ namespace ossia
 namespace net
 {
 class ws_generic_client_device;
-class ws_generic_client_address;
+class ws_generic_client_parameter;
 class OSSIA_EXPORT ws_generic_client_node : public ossia::net::node_base
 {
   ossia::net::ws_generic_client_device& m_device;
   ossia::net::ws_generic_client_node* m_parent{};
-  std::unique_ptr<ossia::net::ws_generic_client_address> m_address;
+  std::unique_ptr<ossia::net::ws_generic_client_parameter> m_parameter;
 
   friend class ws_generic_client_protocol;
 
@@ -34,9 +34,9 @@ public:
 
   node_base& set_name(std::string) override;
 
-  parameter_base* get_address() const override;
-  parameter_base* create_address(val_type = val_type::IMPULSE) override;
-  bool remove_address() override;
+  parameter_base* get_parameter() const override;
+  parameter_base* create_parameter(val_type = val_type::IMPULSE) override;
+  bool remove_parameter() override;
 
   void add_child(std::unique_ptr<ossia::net::node_base>);
 

@@ -41,17 +41,17 @@ ossia::val_type underlying_type(const complex_type& t)
   return ossia::apply(val_type_visitor{}, t);
 }
 
-struct setup_address_visitor
+struct setup_parameter_visitor
 {
   using ret = ossia::net::parameter_base*;
   ossia::net::node_base& n;
   ret operator()(ossia::val_type v) const
   {
-    return n.create_address(v);
+    return n.create_parameter(v);
   }
   ret operator()(const ossia::unit_t& v) const
   {
-    auto addr = n.create_address(ossia::matching_type(v));
+    auto addr = n.create_parameter(ossia::matching_type(v));
     addr->set_unit(v);
     return addr;
   }
@@ -60,7 +60,7 @@ struct setup_address_visitor
     auto t = ossia::underlying_type(v);
     if (!t.empty())
     {
-      auto addr = n.create_address(t[0]);
+      auto addr = n.create_parameter(t[0]);
       ossia::net::set_extended_type(n, v);
       return addr;
     }
@@ -73,15 +73,15 @@ struct setup_address_visitor
   }
 };
 
-net::parameter_base* setup_address(const complex_type& t, net::node_base& node)
+net::parameter_base* setup_parameter(const complex_type& t, net::node_base& node)
 {
   if (!t)
     return nullptr;
 
-  return ossia::apply(setup_address_visitor{node}, t);
+  return ossia::apply(setup_parameter_visitor{node}, t);
 }
 
-struct update_address_visitor
+struct update_parameter_visitor
 {
   using ret = void;
   ossia::net::parameter_base& addr;
@@ -108,8 +108,8 @@ struct update_address_visitor
   }
 };
 
-void update_address_type(const complex_type& t, net::parameter_base& addr)
+void update_parameter_type(const complex_type& t, net::parameter_base& addr)
 {
-  ossia::apply(update_address_visitor{addr}, t);
+  ossia::apply(update_parameter_visitor{addr}, t);
 }
 }

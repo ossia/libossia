@@ -429,7 +429,7 @@ void obj_dump(T* x)
 
   if (x->x_node)
   {
-    ossia::net::parameter_base* address = x->x_node->get_address();
+    ossia::net::parameter_base* address = x->x_node->get_parameter();
     if (address)
     {
       // type
@@ -593,11 +593,11 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
 
 
 /**
- * @brief get_address_type: return address type (relative, absolute or globale)
+ * @brief get_parameter_type: return address type (relative, absolute or globale)
  * @param addr: the address to process
  * @return
  */
-ossia::pd::AddrScope get_address_type(const std::string& addr);
+ossia::pd::AddrScope get_parameter_type(const std::string& addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

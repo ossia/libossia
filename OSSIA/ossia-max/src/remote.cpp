@@ -97,7 +97,7 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+        x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
       }
     }
 
@@ -129,7 +129,7 @@ extern "C" void ossia_remote_free(t_remote* x)
 
   if(x->m_is_pattern && x->m_dev)
   {
-    x->m_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(x);
+    x->m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
   }
 
   outlet_delete(x->m_dump_out);
@@ -209,7 +209,7 @@ void ossia_remote_in(t_remote* x, T f)
   for (auto& m : x->m_matchers)
   {
     // a matcher already have valid node and address
-    m.get_node()->get_address()->push_value(f);
+    m.get_node()->get_parameter()->push_value(f);
   }
 
   if (x->m_matchers.empty())
@@ -276,7 +276,7 @@ t_matcher::t_matcher(t_matcher&& other)
 
   if(node)
   {
-    if(auto addr = node->get_address())
+    if(auto addr = node->get_parameter())
     {
       if (callbackit)
         addr->remove_callback(*callbackit);
@@ -300,7 +300,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   if(node)
   {
-    if(auto addr = node->get_address())
+    if(auto addr = node->get_parameter())
     {
       if (callbackit)
         addr->remove_callback(*callbackit);
@@ -316,7 +316,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, t_remote* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  callbackit = node->get_address()->add_callback(
+  callbackit = node->get_parameter()->add_callback(
       [=](const ossia::value& v) { set_value(v); });
 
   node->about_to_be_deleted.connect<t_remote, &t_remote::is_deleted>(
@@ -329,7 +329,7 @@ t_matcher::~t_matcher()
 {
   if(node)
   {
-    auto addr = node->get_address();
+    auto addr = node->get_parameter();
     if (addr && callbackit) addr->remove_callback(*callbackit);
     node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(parent);
   }
@@ -366,10 +366,10 @@ bool t_remote::register_node(ossia::net::node_base* node)
     {
       if (m_dev) {
         std::cout << "disconnect " << this << " from " << m_dev << std::endl;
-        m_dev->on_address_created.disconnect<t_remote, &t_remote::on_address_created_callback>(this);
+        m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
       }
       m_dev = &dev;
-      m_dev->on_address_created.connect<t_remote, &t_remote::on_address_created_callback>(this);
+      m_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
       std::cout << "connecting " << this << " to " << m_dev << std::endl;
     }
   }
@@ -396,7 +396,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       {
         auto nodes = ossia::net::find_nodes(*node, name);
         for (auto n : nodes){
-          if (n->get_address()){
+          if (n->get_parameter()){
             t_matcher matcher{n,this};
             if (ossia::find(m_matchers,matcher) == m_matchers.end())
               m_matchers.push_back(std::move(matcher));
@@ -405,11 +405,11 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       }
       else
       {
-        if (m_address_type == AddrType::relative)
+        if (m_parameter_type == AddrType::relative)
         {
           m_node = ossia::net::find_node(*node, m_name->s_name);
         }
-        else if (m_address_type == AddrType::absolute)
+        else if (m_parameter_type == AddrType::absolute)
         {
           // remove starting '/'
           std::string addr = std::string(m_name->s_name).substr(1);
@@ -423,13 +423,13 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
-        if (m_node && !m_node->get_address()){
+        if (m_node && !m_node->get_parameter()){
           fmt::MemoryWriter path;
           path << name << "/" << name;
           m_node = ossia::net::find_node(*node, path.str());
         }
 
-        if (m_node && m_node->get_address())
+        if (m_node && m_node->get_parameter())
         {
           t_matcher matcher{m_node,this};
           if (ossia::find(m_matchers,matcher) == m_matchers.end())
@@ -455,7 +455,7 @@ bool t_remote::unregister()
   return true;
 }
 
-void t_remote::on_address_created_callback(const ossia::net::parameter_base& addr)
+void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
   if (!m_name) return;
@@ -483,7 +483,7 @@ void t_remote::is_deleted(const ossia::net::node_base& n)
 void t_remote::remote_bind(t_remote* x, t_symbol* address)
 {
   x->m_name = address;
-  x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+  x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }

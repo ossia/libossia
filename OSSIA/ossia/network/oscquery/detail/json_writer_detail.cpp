@@ -190,18 +190,18 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   using namespace boost;
   using namespace eggs::variants;
 
-  auto addr = n.get_address();
+  auto addr = n.get_parameter();
 
   // We are already in an object
   // These attributes are always here
   writeKey(detail::attribute_full_path());
 
-  writer.String(ossia::net::osc_address_string(n));
+  writer.String(ossia::net::osc_parameter_string(n));
 
   // Handling of the types / values
   if (addr)
   {
-    // TODO it could be nice to have versions that take an address or a value
+    // TODO it could be nice to have versions that take a parameter or a value
     // directly
     brigand::for_each<base_attributes>([&](auto attr) {
       using Attr = typename decltype(attr)::type;
@@ -312,7 +312,7 @@ void json_writer::attribute_changed_impl(
     wr.StartObject();
 
     write_json_key(wr, detail::attribute_full_path());
-    wr.String(ossia::net::osc_address_string(n));
+    wr.String(ossia::net::osc_parameter_string(n));
 
     auto& map = ossia_to_oscquery_key();
     auto it = map.find(attr);
@@ -344,7 +344,7 @@ void json_writer::attributes_changed_impl(
     wr.StartObject();
 
     write_json_key(wr, detail::attribute_full_path());
-    wr.String(ossia::net::osc_address_string(n));
+    wr.String(ossia::net::osc_parameter_string(n));
 
     for (auto& attr : attributes)
     {
@@ -367,7 +367,7 @@ void json_writer::send_message_impl(
   auto& wr = p.writer;
   wr.StartObject();
 
-  write_json_key(wr, ossia::net::osc_address_string(n));
+  write_json_key(wr, ossia::net::osc_parameter_string(n));
   p.writeValue(val);
 
   wr.EndObject();
@@ -378,7 +378,7 @@ void json_writer::send_message_impl(
   auto& wr = p.writer;
   wr.StartObject();
 
-  write_json_key(wr, ossia::net::osc_address_string(n));
+  write_json_key(wr, ossia::net::osc_parameter_string(n));
   p.writeValue(val);
 
   wr.EndObject();

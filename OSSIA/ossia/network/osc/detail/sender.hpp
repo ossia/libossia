@@ -35,13 +35,13 @@ public:
   void send(const ossia::net::parameter_base& address, Args&&... args)
   {
     send_base(
-        ossia::net::osc_address_string(address), std::forward<Args>(args)...);
+        ossia::net::osc_parameter_string(address), std::forward<Args>(args)...);
   }
   template <typename... Args>
   void send(const ossia::net::full_parameter_data& address, Args&&... args)
   {
     send_base(
-          ossia::net::osc_address_string(address), std::forward<Args>(args)...);
+          ossia::net::osc_parameter_string(address), std::forward<Args>(args)...);
   }
 
   template <typename... Args>

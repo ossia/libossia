@@ -114,7 +114,7 @@ private:
   std::unique_ptr<ossia::oscquery::websocket_client> m_websocketClient;
 
   // Listening status of the local software
-  net::listened_addresses m_listening;
+  net::listened_parameters m_listening;
 
   ossia::net::device_base* m_device{};
 

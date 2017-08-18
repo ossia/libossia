@@ -11,7 +11,7 @@ namespace ossia
 namespace net
 {
 /**
- * @brief The data that can be found inside an address
+ * @brief The data that can be found inside a parameter
  *
  * Used to create a new address / node.
  * Unlike parameter_base and its child classes, can be copied, moved, etc.
@@ -54,7 +54,7 @@ struct parameter_data
 };
 
 /**
- * @brief Full information about an address.
+ * @brief Full information about a parameter.
  *
  * address is an osc-like address, e.g.
  *
@@ -131,7 +131,7 @@ struct full_parameter_data
 };
 
 OSSIA_EXPORT
-inline const std::string& osc_address_string(const ossia::net::full_parameter_data& d)
+inline const std::string& osc_parameter_string(const ossia::net::full_parameter_data& d)
 {
   return d.address;
 }

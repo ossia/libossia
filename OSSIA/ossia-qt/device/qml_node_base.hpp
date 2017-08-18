@@ -145,7 +145,7 @@ protected:
   using qml_node_base::qml_node_base;
   void clearNode(bool reading);
 
-  ossia::net::parameter_base* m_address{};
+  ossia::net::parameter_base* m_param{};
   ossia::optional<ossia::net::parameter_base::iterator> m_callback;
 };
 }

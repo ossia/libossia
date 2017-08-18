@@ -29,8 +29,8 @@ int main()
   auto& n1 = create_node(dev, "/foo/bar");
   auto& n2 = create_node(n1, "baz");
 
-  // An address allows storing values & such.
-  auto addr = n2.create_address(val_type::FLOAT);
+  // A parameter allows storing values & such.
+  auto addr = n2.create_parameter(val_type::FLOAT);
   addr->set_domain(make_domain(-10, 10));
 
   // The value will be send over the network.
@@ -57,7 +57,7 @@ int main()
     return 1;
 
   // After some time "n2" wil get the value that we send here:
-  remote_n2->get_address()->push_value(6.);
+  remote_n2->get_parameter()->push_value(6.);
 
 
   //////////////////////////////////////////////////////
@@ -66,13 +66,13 @@ int main()
 
 
   int count = 0;
-  remote_n2->get_address()->add_callback([&] (const auto& value) {
+  remote_n2->get_parameter()->add_callback([&] (const auto& value) {
     std::cerr << ossia::convert<std::string>(value) << std::endl;
     ++count;
   });
 
-  n2.get_address()->push_value(123);
-  n2.get_address()->push_value(3456);
+  n2.get_parameter()->push_value(123);
+  n2.get_parameter()->push_value(3456);
 
   while(count != 2)
     ;

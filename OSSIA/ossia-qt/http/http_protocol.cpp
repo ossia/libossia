@@ -74,7 +74,7 @@ bool http_protocol::pull(ossia::net::parameter_base& parameter_base)
 
 bool http_protocol::push(const ossia::net::parameter_base& parameter_base)
 {
-  auto& addr = static_cast<const http_address&>(parameter_base);
+  auto& addr = static_cast<const http_parameter&>(parameter_base);
 
   if (!addr.data().request.isEmpty())
   {
@@ -102,7 +102,7 @@ void http_protocol::set_device(device_base& dev)
   }
 }
 
-void http_protocol::slot_push(const http_address* addr_p)
+void http_protocol::slot_push(const http_parameter* addr_p)
 {
   auto& addr = *addr_p;
   auto dat = addr.data().request;
@@ -117,7 +117,7 @@ void http_protocol::slot_push(const http_address* addr_p)
       rep, &QNetworkReply::readyRead, this,
       [=]() {
         QNetworkReply& rep = *pair.first;
-        const http_address& addr = *pair.second;
+        const http_parameter& addr = *pair.second;
 
         auto ans = addr.data().answer;
         if (ans.isCallable())
@@ -154,7 +154,7 @@ void http_protocol::apply_reply(QJSValue arr)
     if (v.isNull())
       continue;
 
-    if (auto addr = n->get_address())
+    if (auto addr = n->get_parameter())
     {
       addr->push_value(qt::value_from_js(addr->value(), v));
     }

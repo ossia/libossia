@@ -122,7 +122,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 {
   // Reset node
   node.clear_children();
-  node.remove_address();
+  node.remove_parameter();
 
   // Send "namespace" request
   m_namespaceFinishedPromise = std::promise<void>{};
@@ -130,7 +130,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest);
-  namespace_refresh(act, ossia::net::osc_address_string(node));
+  namespace_refresh(act, ossia::net::osc_parameter_string(node));
 
   auto status = fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the tree exploration request haven't finished.
@@ -231,7 +231,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 void minuit_protocol::request(ossia::net::parameter_base& address)
 {
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::osc_address_string(address);
+  auto addr = ossia::net::osc_parameter_string(address);
   addr += ":value";
   this->m_sender->send(act, ossia::string_view(addr));
   m_lastSentMessage = get_time();
@@ -244,7 +244,7 @@ std::future<void> minuit_protocol::pull_async(parameter_base& address)
   auto fut = m_getFinishedPromise.get_future();
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::osc_address_string(address);
+  auto addr = ossia::net::osc_parameter_string(address);
   addr += ":value";
 
   get_refresh(act, addr);
@@ -303,12 +303,12 @@ bool minuit_protocol::observe(ossia::net::parameter_base& address, bool enable)
   if (enable)
   {
     this->m_sender->send(act, address, "enable");
-    m_listening.insert(std::make_pair(osc_address_string(address), &address));
+    m_listening.insert(std::make_pair(osc_parameter_string(address), &address));
   }
   else
   {
     this->m_sender->send(act, address, "disable");
-    m_listening.erase(osc_address_string(address));
+    m_listening.erase(osc_parameter_string(address));
   }
 
   m_lastSentMessage = get_time();
@@ -320,9 +320,9 @@ bool minuit_protocol::observe_quietly(
     ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
-    m_listening.insert(std::make_pair(osc_address_string(address), &address));
+    m_listening.insert(std::make_pair(osc_parameter_string(address), &address));
   else
-    m_listening.erase(osc_address_string(address));
+    m_listening.erase(osc_parameter_string(address));
 
   return true;
 }
@@ -419,7 +419,7 @@ void minuit_protocol::on_received_message(
       // We still want to save the value even if it is not listened to.
       if (auto n = find_node(m_device->get_root_node(), address))
       {
-        if (auto base_addr = n->get_address())
+        if (auto base_addr = n->get_parameter())
         {
           update_value_quiet(*base_addr, m);
         }

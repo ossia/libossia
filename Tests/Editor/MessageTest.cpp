@@ -20,7 +20,7 @@ private Q_SLOTS:
 
         // Local tree building
         auto localIntNode = device.create_child("my_int");
-        auto localIntAddress = localIntNode->create_address(val_type::INT);
+        auto localIntAddress = localIntNode->create_parameter(val_type::INT);
 
         message message{*localIntAddress, 10};
 

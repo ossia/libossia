@@ -74,7 +74,7 @@ std::string address_string_from_node(const ossia::net::parameter_base& addr)
   return address_string_from_node(addr.get_node());
 }
 
-std::string osc_address_string(const node_base& n)
+std::string osc_parameter_string(const node_base& n)
 {
   if (n.get_parent())
   {
@@ -90,7 +90,7 @@ std::string osc_address_string(const node_base& n)
   }
 }
 
-std::string osc_address_string_with_device(const node_base& n)
+std::string osc_parameter_string_with_device(const node_base& n)
 {
   if (n.get_parent())
   {
@@ -106,14 +106,14 @@ std::string osc_address_string_with_device(const node_base& n)
   }
 }
 
-std::string osc_address_string(const parameter_base& addr)
+std::string osc_parameter_string(const parameter_base& addr)
 {
-  return osc_address_string(addr.get_node());
+  return osc_parameter_string(addr.get_node());
 }
 
-std::string osc_address_string_with_device(const parameter_base& addr)
+std::string osc_parameter_string_with_device(const parameter_base& addr)
 {
-  return osc_address_string_with_device(addr.get_node());
+  return osc_parameter_string_with_device(addr.get_node());
 }
 
 std::future<void> parameter_base::pull_value_async()
