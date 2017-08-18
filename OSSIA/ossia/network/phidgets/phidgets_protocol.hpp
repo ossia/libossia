@@ -15,12 +15,12 @@ class OSSIA_EXPORT phidget_protocol : public ossia::net::protocol_base
 public:
   phidget_protocol();
 
-  bool pull(net::address_base&) override;
-  std::future<void> pull_async(net::address_base&) override;
-  void request(net::address_base&) override;
-  bool push(const net::address_base&) override;
-  bool observe(net::address_base&, bool) override;
-  bool observe_quietly(net::address_base&, bool) override;
+  bool pull(net::parameter_base&) override;
+  std::future<void> pull_async(net::parameter_base&) override;
+  void request(net::parameter_base&) override;
+  bool push(const net::parameter_base&) override;
+  bool observe(net::parameter_base&, bool) override;
+  bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& node_base) override;
 
   void set_device(net::device_base& dev) override;

@@ -429,7 +429,7 @@ void obj_dump(T* x)
 
   if (x->x_node)
   {
-    ossia::net::address_base* address = x->x_node->get_address();
+    ossia::net::parameter_base* address = x->x_node->get_address();
     if (address)
     {
       // type

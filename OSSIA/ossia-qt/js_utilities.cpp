@@ -3,7 +3,7 @@
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
 #include <ossia/editor/value/value_conversion.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/complex_type.hpp>
 
 // Taken from https://stackoverflow.com/a/18230916/1495627
@@ -233,10 +233,10 @@ ossia::complex_type get_type(const QJSValue& val)
   return complex_type{};
 }
 
-net::address_data make_address_data(const QJSValue& js)
+net::parameter_data make_parameter_data(const QJSValue& js)
 {
   using namespace ossia::net;
-  address_data dat;
+  parameter_data dat;
 
   QJSValue name = js.property("name");
   if (name.isString())
@@ -495,7 +495,7 @@ value value_from_js(const QJSValue& v)
   }
 }
 
-void set_address_type(QVariant::Type type, net::address_base& addr)
+void set_address_type(QVariant::Type type, net::parameter_base& addr)
 {
   switch (type)
   {

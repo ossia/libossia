@@ -21,7 +21,7 @@ struct OSSIA_EXPORT json_parser
   static void
   parse_namespace(ossia::net::node_base& root, const rapidjson::Value& obj);
   static void
-  parse_value(ossia::net::address_base& addr, const rapidjson::Value& obj);
+  parse_value(ossia::net::parameter_base& addr, const rapidjson::Value& obj);
   static void parse_address_value(
       ossia::net::node_base& root, const rapidjson::Value& obj);
   static void

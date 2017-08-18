@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ModernMIDI/midi_message.h>
 #include <boost/container/flat_set.hpp>
 #include <boost/functional/hash.hpp>
@@ -33,7 +33,7 @@ template <typename T>
 using set = boost::container::flat_set<T>;
 
 using destination_t = eggs::variant<
-ossia::net::address_base*,
+ossia::net::parameter_base*,
 ossia::traversal::path
 >;
 class graph_node;

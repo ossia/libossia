@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -914,7 +914,7 @@ node::node(ossia::net::node_base* b)
   init();
 }
 
-node::node(ossia::net::node_base* b, ossia::net::address_base* a)
+node::node(ossia::net::node_base* b, ossia::net::parameter_base* a)
     : m_node{b}, m_addr{a}
 {
   init();
@@ -933,7 +933,7 @@ void node::cleanup(const ossia::net::node_base&)
   m_node = nullptr;
   m_addr = nullptr;
 }
-void node::cleanup_address(const ossia::net::address_base&)
+void node::cleanup_address(const ossia::net::parameter_base&)
 {
   if (m_addr)
     m_node->get_device()

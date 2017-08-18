@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/name_validation.hpp>
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/callback_container.hpp>
@@ -22,7 +22,7 @@ namespace ossia
 namespace net
 {
 class device_base;
-class address_base;
+class parameter_base;
 class node_base;
 /**
  * @brief The node_base class
@@ -32,7 +32,7 @@ class node_base;
  *
  * The \ref node_base has ownership of its children.
  *
- * If a node is meant to send and receive data, an \ref address_base
+ * If a node is meant to send and receive data, an \ref parameter_base
  * should be created with node_base::create_address.
  *
  * Some device trees may provide immutable node hierarchies :
@@ -43,7 +43,7 @@ class node_base;
  *
  * \see generic_node
  * \see device_base
- * \see address_base
+ * \see parameter_base
  */
 class OSSIA_EXPORT node_base
 {
@@ -75,11 +75,11 @@ public:
   virtual node_base& set_name(std::string) = 0;
 
   //! Allows a node to carry a value
-  virtual address_base* create_address(val_type = val_type::IMPULSE) = 0;
+  virtual parameter_base* create_address(val_type = val_type::IMPULSE) = 0;
   //! Default implementation does nothing
-  virtual void set_address(std::unique_ptr<ossia::net::address_base>);
+  virtual void set_address(std::unique_ptr<ossia::net::parameter_base>);
   virtual bool remove_address() = 0;
-  virtual address_base* get_address() const = 0;
+  virtual parameter_base* get_address() const = 0;
 
   /** Allows to add arbitrary key-value metadata to nodes.
    * There is a list of pre-defined attributes available in \ref

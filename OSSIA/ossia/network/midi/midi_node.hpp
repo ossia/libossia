@@ -15,7 +15,7 @@ class OSSIA_EXPORT midi_node : public ossia::net::node_base
 protected:
   midi_device& m_device;
   node_base& m_parent;
-  std::unique_ptr<address_base> m_address;
+  std::unique_ptr<parameter_base> m_address;
 
 public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
@@ -29,8 +29,8 @@ public:
 
   node_base& set_name(std::string) override;
 
-  address_base* get_address() const final override;
-  address_base* create_address(val_type) final override;
+  parameter_base* get_address() const final override;
+  parameter_base* create_address(val_type) final override;
   bool remove_address() final override;
 
   std::unique_ptr<node_base>

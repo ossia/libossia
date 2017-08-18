@@ -6,7 +6,7 @@
 #include <ossia/editor/expression/operators.hpp>
 #include <ossia/editor/value/value.hpp>
 
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <eggs/variant.hpp>
 #include <ossia_export.h>
 
@@ -74,8 +74,8 @@ private:
   val_t m_first;
   val_t m_second;
 
-  net::address_base::callback_index m_firstCallback;
-  net::address_base::callback_index m_secondCallback;
+  net::parameter_base::callback_index m_firstCallback;
+  net::parameter_base::callback_index m_secondCallback;
 
   comparator m_operator{};
 };

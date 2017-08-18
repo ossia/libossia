@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
 
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 
 namespace ossia

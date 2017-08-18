@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/base/address.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <iostream>
@@ -32,13 +32,13 @@ public:
   {
   }
   template <typename... Args>
-  void send(const ossia::net::address_base& address, Args&&... args)
+  void send(const ossia::net::parameter_base& address, Args&&... args)
   {
     send_base(
         ossia::net::osc_address_string(address), std::forward<Args>(args)...);
   }
   template <typename... Args>
-  void send(const ossia::net::full_address_data& address, Args&&... args)
+  void send(const ossia::net::full_parameter_data& address, Args&&... args)
   {
     send_base(
           ossia::net::osc_address_string(address), std::forward<Args>(args)...);

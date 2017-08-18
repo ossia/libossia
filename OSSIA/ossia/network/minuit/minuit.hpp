@@ -62,16 +62,16 @@ public:
 
   bool update(ossia::net::node_base& node_base) override;
 
-  bool pull(ossia::net::address_base& address_base) override;
-  bool push_raw(const ossia::net::full_address_data& address_base) override;
-  std::future<void> pull_async(address_base&) override;
-  void request(ossia::net::address_base& address_base) override;
+  bool pull(ossia::net::parameter_base& parameter_base) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  std::future<void> pull_async(parameter_base&) override;
+  void request(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::address_base& address_base) override;
+  bool push(const ossia::net::parameter_base& parameter_base) override;
 
-  bool observe(ossia::net::address_base& address_base, bool enable) override;
+  bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
   bool observe_quietly(
-      ossia::net::address_base& address_base, bool enable) override;
+      ossia::net::parameter_base& parameter_base, bool enable) override;
 
   void namespace_refresh(ossia::string_view req, const std::string& addr);
   void namespace_refreshed(ossia::string_view addr);

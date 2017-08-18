@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <array>
@@ -57,10 +57,10 @@ public:
   bool set_info(midi_info);
   midi_info get_info() const;
 
-  bool pull(ossia::net::address_base&) override;
-  bool push(const ossia::net::address_base&) override;
-  bool push_raw(const ossia::net::full_address_data& address_base) override;
-  bool observe(ossia::net::address_base&, bool) override;
+  bool pull(ossia::net::parameter_base&) override;
+  bool push(const ossia::net::parameter_base&) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
   std::vector<midi_info> scan();

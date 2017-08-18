@@ -102,8 +102,8 @@ struct remote_data
   ossia::net::generic_device local_device;
   ossia::net::generic_device remote_device;
 
-  std::vector<ossia::net::address_base*> local_addr;
-  std::vector<ossia::net::address_base*> remote_addr;
+  std::vector<ossia::net::parameter_base*> local_addr;
+  std::vector<ossia::net::parameter_base*> remote_addr;
 };
 
 class DeviceTest : public QObject
@@ -163,7 +163,7 @@ private Q_SLOTS:
         a4->add_callback([&] (const auto& v) { recv++; });
         auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
 
-        std::vector<ossia::net::full_address_data> vec(4);
+        std::vector<ossia::net::full_parameter_data> vec(4);
         vec[0].address = "/foo/bar.0";
         vec[0].set_value(0.);
         vec[1].address = "/foo/bar.1";
@@ -203,7 +203,7 @@ private Q_SLOTS:
         a4->add_callback([&] (const auto& v) { recv++; });
         auto& b_proto = (ossia::net::osc_protocol&) osc_B.get_protocol();
 
-        ossia::net::full_address_data dat{"/foo/bar.*"};
+        ossia::net::full_parameter_data dat{"/foo/bar.*"};
         dat.set_value(2.3f);
         b_proto.push_raw(dat);
 
@@ -422,7 +422,7 @@ private:
     push_all_values();
 
 
-    auto test_all_values = [&] (std::vector<ossia::net::address_base*>& vec)
+    auto test_all_values = [&] (std::vector<ossia::net::parameter_base*>& vec)
     {
       for(int access_i = 0; access_i < 3; access_i++)
       {

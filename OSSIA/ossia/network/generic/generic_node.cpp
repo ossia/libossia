@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -76,12 +76,12 @@ generic_node::~generic_node()
   remove_address();
 }
 
-ossia::net::address_base* generic_node::get_address() const
+ossia::net::parameter_base* generic_node::get_address() const
 {
   return m_address.get();
 }
 
-void generic_node::set_address(std::unique_ptr<ossia::net::address_base> addr)
+void generic_node::set_address(std::unique_ptr<ossia::net::parameter_base> addr)
 {
   remove_address();
   if (addr)
@@ -91,13 +91,13 @@ void generic_node::set_address(std::unique_ptr<ossia::net::address_base> addr)
   }
 }
 
-ossia::net::address_base* generic_node::create_address(ossia::val_type type)
+ossia::net::parameter_base* generic_node::create_address(ossia::val_type type)
 {
   // clear former address
   remove_address();
 
   // edit new address
-  m_address = std::make_unique<ossia::net::generic_address>(*this);
+  m_address = std::make_unique<ossia::net::generic_parameter>(*this);
 
   // set type
   m_address->set_value_type(type);

@@ -5,13 +5,13 @@
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/message.hpp>
 #include <ossia/editor/value/value_traits.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_functions.hpp>
 namespace ossia
 {
 void message::launch() const
 {
-  ossia::net::address_base& addr = destination.value.get();
+  ossia::net::parameter_base& addr = destination.value.get();
   const auto& unit = destination.unit;
   auto addr_unit = addr.get_unit();
   if (destination.index.empty())
@@ -122,7 +122,7 @@ void piecewise_message::launch() const
 template <std::size_t N>
 void piecewise_vec_message<N>::launch() const
 {
-  ossia::net::address_base& addr = address.get();
+  ossia::net::parameter_base& addr = address.get();
   auto addr_unit = addr.get_unit();
   if (!unit || !addr_unit || unit == addr_unit)
   {

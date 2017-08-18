@@ -13,7 +13,7 @@ namespace ossia
 namespace qt
 {
 qml_property_context::qml_property_context(
-    QQmlProperty& p, net::address_base& addr, QObject* parent)
+    QQmlProperty& p, net::parameter_base& addr, QObject* parent)
     : QObject{parent}, targetProperty{p}, address{addr}
 {
   if (targetProperty.hasNotifySignal())

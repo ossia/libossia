@@ -2,10 +2,10 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
@@ -108,26 +108,12 @@ bool osc_protocol::update(ossia::net::node_base& node)
   return false;
 }
 
-bool osc_protocol::pull(ossia::net::address_base& address)
+bool osc_protocol::pull(ossia::net::parameter_base& address)
 {
   return false;
 }
 
-bool osc_protocol::push(const ossia::net::address_base& addr)
-{
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
-
-  auto val = filter_value(addr);
-  if (val.valid())
-  {
-    m_sender->send(addr, val);
-    return true;
-  }
-  return false;
-}
-
-bool osc_protocol::push_raw(const ossia::net::full_address_data& addr)
+bool osc_protocol::push(const ossia::net::parameter_base& addr)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
@@ -141,7 +127,21 @@ bool osc_protocol::push_raw(const ossia::net::full_address_data& addr)
   return false;
 }
 
-bool osc_protocol::push_bundle(const std::vector<const address_base*>& addresses)
+bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
+{
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  auto val = filter_value(addr);
+  if (val.valid())
+  {
+    m_sender->send(addr, val);
+    return true;
+  }
+  return false;
+}
+
+bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& addresses)
 {
   int N = 1024*1024;
 
@@ -151,7 +151,7 @@ bool osc_protocol::push_bundle(const std::vector<const address_base*>& addresses
     str << oscpack::BeginBundleImmediate();
     for(auto a : addresses)
     {
-      const ossia::net::address_base& addr = *a;
+      const ossia::net::parameter_base& addr = *a;
       if (addr.get_access() == ossia::access_mode::GET)
         continue;
 
@@ -173,7 +173,7 @@ bool osc_protocol::push_bundle(const std::vector<const address_base*>& addresses
   return true;
 }
 
-bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
 {
   int N = 1024*1024;
 
@@ -204,7 +204,7 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_da
   return true;
 }
 
-bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
+bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
     m_listening.insert(std::make_pair(osc_address_string(address), &address));

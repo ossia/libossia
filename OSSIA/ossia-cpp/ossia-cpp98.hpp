@@ -12,7 +12,7 @@ class value;
 namespace net
 {
 class node_base;
-class address_base;
+class parameter_base;
 class device_base;
 }
 }
@@ -211,13 +211,13 @@ private:
   friend class oscquery_mirror;
   friend class oscquery_server;
   node(ossia::net::node_base* b);
-  node(ossia::net::node_base* b, ossia::net::address_base* addr);
+  node(ossia::net::node_base* b, ossia::net::parameter_base* addr);
   void init();
   void cleanup(const ossia::net::node_base&);
-  void cleanup_address(const ossia::net::address_base&);
+  void cleanup_address(const ossia::net::parameter_base&);
 
   ossia::net::node_base* m_node;
-  ossia::net::address_base* m_addr;
+  ossia::net::parameter_base* m_addr;
 };
 
 class OSSIA_EXPORT oscquery_server

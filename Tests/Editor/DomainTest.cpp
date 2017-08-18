@@ -14,7 +14,7 @@ class DomainTest : public QObject
   Q_OBJECT
 
   template<typename T>
-  void push_all(ossia::net::address_base& addr, T min, T max)
+  void push_all(ossia::net::parameter_base& addr, T min, T max)
   {
     using val_t = decltype(T{});
     for(int i = 0; i < 6; i++)
@@ -29,7 +29,7 @@ class DomainTest : public QObject
   }
 
   template<typename T>
-  void test_clamp_numeric(ossia::net::address_base& addr, T min, T max)
+  void test_clamp_numeric(ossia::net::parameter_base& addr, T min, T max)
   {
     auto dom = ossia::make_domain(min, max);
     addr.set_domain(dom);
@@ -53,7 +53,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void push_all_vec(ossia::net::address_base& addr, float min, float max)
+  void push_all_vec(ossia::net::parameter_base& addr, float min, float max)
   {
     using val_t = std::array<float, N>;
     std::vector<std::array<float, N>> test_vecs;
@@ -73,7 +73,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void push_all_vec(ossia::net::address_base& addr, std::array<float, N> min, std::array<float, N> max)
+  void push_all_vec(ossia::net::parameter_base& addr, std::array<float, N> min, std::array<float, N> max)
   {
     using val_t = std::array<float, N>;
     std::vector<std::array<float, N>> test_vecs;
@@ -93,7 +93,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void test_clamp_vec(ossia::net::address_base& addr, float min, float max)
+  void test_clamp_vec(ossia::net::parameter_base& addr, float min, float max)
   {
     auto dom = ossia::make_domain(min, max);
     addr.set_domain(dom);
@@ -117,7 +117,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void test_clamp_vec(ossia::net::address_base& addr, std::array<float, N> min, std::array<float, N> max)
+  void test_clamp_vec(ossia::net::parameter_base& addr, std::array<float, N> min, std::array<float, N> max)
   {
     auto dom = ossia::make_domain(min, max);
     addr.set_domain(dom);
@@ -142,7 +142,7 @@ class DomainTest : public QObject
 
 
   template<typename T>
-  void push_tuple(ossia::net::address_base& addr, T min, T max)
+  void push_tuple(ossia::net::parameter_base& addr, T min, T max)
   {
     using val_t = T;
     // TODO why couldn't domain operate on dataspaces ?
@@ -164,7 +164,7 @@ class DomainTest : public QObject
   }
 
   template<typename T>
-  void test_clamp_tuple(ossia::net::address_base& addr, T min, T max)
+  void test_clamp_tuple(ossia::net::parameter_base& addr, T min, T max)
   {
     domain_base<T> dom{min, max};
 

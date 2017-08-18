@@ -11,7 +11,7 @@ namespace ossia
 {
 namespace net
 {
-struct address_data;
+struct parameter_data;
 }
 namespace oscquery
 {

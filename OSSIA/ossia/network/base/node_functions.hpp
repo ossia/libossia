@@ -23,7 +23,7 @@ namespace net
  * @return null if the node was not found.
  */
 OSSIA_EXPORT ossia::net::node_base*
-find_node(node_base& dev, ossia::string_view address_base);
+find_node(node_base& dev, ossia::string_view parameter_base);
 
 /**
  * @brief Find all nodes matching a pattern in a device
@@ -44,7 +44,7 @@ find_nodes(node_base& dev, ossia::string_view pattern);
  * than the one requested; the output should be checked.
  */
 OSSIA_EXPORT node_base&
-create_node(node_base& dev, ossia::string_view address_base);
+create_node(node_base& dev, ossia::string_view parameter_base);
 
 
 /**
@@ -64,13 +64,13 @@ create_nodes(node_base& dev, ossia::string_view pattern);
  * If the node exists, it will be returned, else a new node will be created.
  */
 OSSIA_EXPORT node_base&
-find_or_create_node(node_base& dev, ossia::string_view address_base);
+find_or_create_node(node_base& dev, ossia::string_view parameter_base);
 
 /**
  * @brief Calls find_node or create_node according to the value `create`
  */
 OSSIA_EXPORT node_base* find_or_create_node(
-    node_base& dev, ossia::string_view address_base, bool create);
+    node_base& dev, ossia::string_view parameter_base, bool create);
 
 //! Get a valid name for a given node
 void sanitize_name(std::string& name, const node_base::children_t& brethren);
@@ -81,12 +81,12 @@ void sanitize_name(std::string& name, const node_base::children_t& brethren);
 OSSIA_EXPORT std::string
 address_string_from_node(const ossia::net::node_base&);
 OSSIA_EXPORT std::string
-address_string_from_node(const ossia::net::address_base&);
+address_string_from_node(const ossia::net::parameter_base&);
 
 /**
  * @brief Get the OSC address of a node: /an/address
  */
-OSSIA_EXPORT std::string osc_address_string(const ossia::net::address_base&);
+OSSIA_EXPORT std::string osc_address_string(const ossia::net::parameter_base&);
 OSSIA_EXPORT std::string osc_address_string(const ossia::net::node_base&);
 
 /**
@@ -95,7 +95,7 @@ OSSIA_EXPORT std::string osc_address_string(const ossia::net::node_base&);
  * e.g. /aDevice/an/address
  */
 OSSIA_EXPORT std::string
-osc_address_string_with_device(const ossia::net::address_base&);
+osc_address_string_with_device(const ossia::net::parameter_base&);
 OSSIA_EXPORT std::string
 osc_address_string_with_device(const ossia::net::node_base&);
 
@@ -110,6 +110,6 @@ OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
 OSSIA_EXPORT void
 push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
 
-OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::address_base&);
+OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
 }
 }

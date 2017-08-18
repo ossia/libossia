@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "phidgets_protocol.hpp"
-#include "phidgets_address.hpp"
+#include "phidgets_parameter.hpp"
 #include "phidgets_device.hpp"
 #include "phidgets_node.hpp"
 
@@ -46,31 +46,31 @@ phidget_protocol::phidget_protocol()
   m_mgr.open();
 }
 
-bool phidget_protocol::pull(net::address_base&)
+bool phidget_protocol::pull(net::parameter_base&)
 {
   return true;
 }
 
-std::future<void> phidget_protocol::pull_async(net::address_base&)
+std::future<void> phidget_protocol::pull_async(net::parameter_base&)
 {
   return {};
 }
 
-void phidget_protocol::request(net::address_base&)
+void phidget_protocol::request(net::parameter_base&)
 {
 }
 
-bool phidget_protocol::push(const net::address_base&)
-{
-  return true;
-}
-
-bool phidget_protocol::observe(net::address_base&, bool)
+bool phidget_protocol::push(const net::parameter_base&)
 {
   return true;
 }
 
-bool phidget_protocol::observe_quietly(net::address_base&, bool)
+bool phidget_protocol::observe(net::parameter_base&, bool)
+{
+  return true;
+}
+
+bool phidget_protocol::observe_quietly(net::parameter_base&, bool)
 {
   return true;
 }

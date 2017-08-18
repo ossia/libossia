@@ -15,10 +15,10 @@ class MapperTest : public QObject
 {
   Q_OBJECT
 
-  address_base* m_float_address{};
+  parameter_base* m_float_address{};
   std::vector<value> m_float_address_values;
 
-  address_base* m_int_address{};
+  parameter_base* m_int_address{};
   std::vector<value> m_int_address_values;
 
   void constraint_callback(double position, time_value date, const state_element& st)
@@ -52,7 +52,7 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     auto float_n = device.create_child("float");
-    ossia::net::address_base* float_address = float_n->create_address(val_type::FLOAT);
+    ossia::net::parameter_base* float_address = float_n->create_address(val_type::FLOAT);
 
     auto int_n = device.create_child("int");
     auto int_address = int_n->create_address(val_type::INT);

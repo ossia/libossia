@@ -4,7 +4,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 
-#include <ossia/network/midi/midi_address.hpp>
+#include <ossia/network/midi/midi_parameter.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_node.hpp>
 

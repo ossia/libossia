@@ -267,7 +267,7 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Namespace>
 };
 
 inline ossia::domain get_domain(
-    ossia::net::address_base& addr,
+    ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it)
 {

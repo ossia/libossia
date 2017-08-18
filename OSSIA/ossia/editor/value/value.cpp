@@ -51,24 +51,24 @@ value Destination::pull() const
   return value.get().value(index);
 }
 
-Destination::Destination(ossia::net::address_base& v) : value(v)
+Destination::Destination(ossia::net::parameter_base& v) : value(v)
 {
   // TODO should we also copy the unit of the address ?
 }
 
-Destination::Destination(ossia::net::address_base& v, destination_index idx)
+Destination::Destination(ossia::net::parameter_base& v, destination_index idx)
     : value(v), index(std::move(idx))
 {
   // TODO should we also copy the unit of the address ?
 }
 
 Destination::Destination(
-    ossia::net::address_base& v, destination_index idx, const ossia::unit_t& u)
+    ossia::net::parameter_base& v, destination_index idx, const ossia::unit_t& u)
     : value(v), index(std::move(idx)), unit{u}
 {
 }
 
-Destination::Destination(net::address_base& v, const unit_t& u)
+Destination::Destination(net::parameter_base& v, const unit_t& u)
     : value(v), unit{u}
 {
 }
@@ -114,12 +114,12 @@ bool operator!=(const Destination& lhs, const Destination& rhs)
   return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
-bool operator==(const Destination& lhs, const ossia::net::address_base& rhs)
+bool operator==(const Destination& lhs, const ossia::net::parameter_base& rhs)
 {
   return lhs.value == rhs && lhs.index.empty();
 }
 
-bool operator!=(const Destination& lhs, const ossia::net::address_base& rhs)
+bool operator!=(const Destination& lhs, const ossia::net::parameter_base& rhs)
 {
   return lhs.value != rhs || !lhs.index.empty();
 }

@@ -50,14 +50,14 @@ public:
 
   bool update(ossia::net::node_base& node_base) override;
 
-  bool pull(ossia::net::address_base& address_base) override;
+  bool pull(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::address_base& address_base) override;
-  bool push_raw(const ossia::net::full_address_data& address_base) override;
-  bool push_bundle(const std::vector<const ossia::net::address_base*>&) override;
-  bool push_raw_bundle(const std::vector<full_address_data>&) override;
+  bool push(const ossia::net::parameter_base& parameter_base) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
 
-  bool observe(ossia::net::address_base& address_base, bool enable) override;
+  bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
 
 private:
   void on_received_message(

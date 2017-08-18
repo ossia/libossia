@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/dataflow/audio_address.hpp>
+#include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/apply.hpp>
@@ -55,7 +55,7 @@ struct local_pull_visitor
 // Else how to create a custom address
 struct global_pull_visitor
 {
-  const net::address_base& out;
+  const net::parameter_base& out;
   void operator()(value_port& val)
   {
     val.data.push_back(out.value());
@@ -70,7 +70,7 @@ struct global_pull_visitor
 
   void operator()(midi_port& val)
   {
-    auto ma = dynamic_cast<const midi_generic_address*>(&out);
+    auto ma = dynamic_cast<const midi_generic_parameter*>(&out);
     assert(ma);
     ma->clone_value(val.messages);
   }
@@ -92,7 +92,7 @@ void execution_state::commit()
   // TODO pattern matching
   for (auto& elt : valueState)
   {
-    if (auto addr = elt.first.target<ossia::net::address_base*>())
+    if (auto addr = elt.first.target<ossia::net::parameter_base*>())
     {
       for (auto v : elt.second.data)
       {
@@ -103,7 +103,7 @@ void execution_state::commit()
 
   for (auto& elt : audioState)
   {
-    if (auto base_addr = elt.first.target<ossia::net::address_base*>())
+    if (auto base_addr = elt.first.target<ossia::net::parameter_base*>())
     {
       auto addr = dynamic_cast<audio_address*>(*base_addr);
       assert(addr);
@@ -113,9 +113,9 @@ void execution_state::commit()
 
   for (auto& elt : midiState)
   {
-    if (auto base_addr = elt.first.target<ossia::net::address_base*>())
+    if (auto base_addr = elt.first.target<ossia::net::parameter_base*>())
     {
-      auto addr = dynamic_cast<midi_generic_address*>(*base_addr);
+      auto addr = dynamic_cast<midi_generic_parameter*>(*base_addr);
       assert(addr);
 
       for (auto v : elt.second.messages)
@@ -126,7 +126,7 @@ void execution_state::commit()
   }
 }
 
-void execution_state::find_and_copy(net::address_base& addr, inlet& in)
+void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
 {
   if (!ossia::apply(local_pull_visitor{*this, &addr}, in.data))
   {
@@ -134,7 +134,7 @@ void execution_state::find_and_copy(net::address_base& addr, inlet& in)
   }
 }
 
-void execution_state::copy_from_global(net::address_base& addr, inlet& in)
+void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
 {
   if (in.scope & port::scope_t::global)
   {
@@ -163,7 +163,7 @@ void execution_state::insert(const destination_t& dest, data_type v)
   // std::move(val)); }, std::move(v));
 }
 
-bool execution_state::in_local_scope(net::address_base& other) const
+bool execution_state::in_local_scope(net::parameter_base& other) const
 {
   destination_t dest{&other};
   bool ok = (valueState.find(dest) != valueState.end())

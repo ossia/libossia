@@ -55,7 +55,7 @@ struct t_remote : t_object_base
   void is_deleted(const ossia::net::node_base& n);
   static void remote_bind(t_remote* x, t_symbol* address);
 
-  void on_address_created_callback(const ossia::net::address_base& addr);
+  void on_address_created_callback(const ossia::net::parameter_base& addr);
 
   static ossia::safe_vector<t_remote*>& quarantine()
   {

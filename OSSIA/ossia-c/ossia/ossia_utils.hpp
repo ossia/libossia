@@ -29,7 +29,7 @@ struct ossia_domain
 
 struct ossia_value_callback_index
 {
-  ossia::net::address_base::iterator it;
+  ossia::net::parameter_base::iterator it;
 };
 
 struct ossia_value
@@ -67,18 +67,18 @@ inline auto convert(ossia::bounding_mode t)
   return static_cast<ossia_bounding_mode>(t);
 }
 
-inline ossia::net::address_base* convert_address(ossia_address_t v)
+inline ossia::net::parameter_base* convert_address(ossia_address_t v)
 {
-  return static_cast<ossia::net::address_base*>(v);
+  return static_cast<ossia::net::parameter_base*>(v);
 }
 
-inline void* convert(ossia::net::address_base* v)
+inline void* convert(ossia::net::parameter_base* v)
 {
   return static_cast<void*>(v);
 }
-inline void* convert(const ossia::net::address_base* v)
+inline void* convert(const ossia::net::parameter_base* v)
 {
-  return static_cast<void*>(const_cast<ossia::net::address_base*>(v));
+  return static_cast<void*>(const_cast<ossia::net::parameter_base*>(v));
 }
 
 inline ossia::net::node_base* convert_node(ossia_node_t v)
@@ -166,7 +166,7 @@ struct node_cb {
 struct address_cb {
     ossia_address_callback_t m_cb{};
     void* m_ctx{};
-    void operator()(const ossia::net::address_base& addr) {
+    void operator()(const ossia::net::parameter_base& addr) {
         m_cb(m_ctx, convert(&addr));
     }
 };

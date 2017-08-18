@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "phidgets_device.hpp"
-#include "phidgets_address.hpp"
+#include "phidgets_parameter.hpp"
 #include "phidgets_node.hpp"
 #include "phidgets_protocol.hpp"
 namespace ossia

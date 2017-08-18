@@ -1,4 +1,4 @@
-#include "audio_address.hpp"
+#include "audio_parameter.hpp"
 
 namespace ossia
 {
@@ -46,17 +46,17 @@ void audio_address::pull_value()
 {
 }
 
-ossia::net::address_base& audio_address::push_value(const ossia::value&)
+ossia::net::parameter_base& audio_address::push_value(const ossia::value&)
 {
   return *this;
 }
 
-ossia::net::address_base& audio_address::push_value(ossia::value&&)
+ossia::net::parameter_base& audio_address::push_value(ossia::value&&)
 {
   return *this;
 }
 
-net::address_base&audio_address::push_value()
+net::parameter_base&audio_address::push_value()
 {
   return *this;
 }
@@ -66,12 +66,12 @@ value audio_address::value() const
   return {};
 }
 
-net::address_base&audio_address::set_value(const ossia::value&)
+net::parameter_base&audio_address::set_value(const ossia::value&)
 {
   return *this;
 }
 
-net::address_base&audio_address::set_value(ossia::value&&)
+net::parameter_base&audio_address::set_value(ossia::value&&)
 {
   return *this;
 }
@@ -81,7 +81,7 @@ val_type audio_address::get_value_type() const
   return {};
 }
 
-net::address_base&audio_address::set_value_type(val_type)
+net::parameter_base&audio_address::set_value_type(val_type)
 {
   return *this;
 }
@@ -91,7 +91,7 @@ access_mode audio_address::get_access() const
   return {};
 }
 
-net::address_base&audio_address::set_access(access_mode)
+net::parameter_base&audio_address::set_access(access_mode)
 {
   return *this;
 }
@@ -102,7 +102,7 @@ const domain&audio_address::get_domain() const
   return d;
 }
 
-net::address_base&audio_address::set_domain(const domain&)
+net::parameter_base&audio_address::set_domain(const domain&)
 {
   return *this;
 }
@@ -112,7 +112,7 @@ bounding_mode audio_address::get_bounding() const
   return {};
 }
 
-net::address_base&audio_address::set_bounding(bounding_mode)
+net::parameter_base&audio_address::set_bounding(bounding_mode)
 {
   return *this;
 }
@@ -122,7 +122,7 @@ repetition_filter audio_address::get_repetition_filter() const
   return {};
 }
 
-net::address_base&audio_address::set_repetition_filter(repetition_filter)
+net::parameter_base&audio_address::set_repetition_filter(repetition_filter)
 {
   return *this;
 }

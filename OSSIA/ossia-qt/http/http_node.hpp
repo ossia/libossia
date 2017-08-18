@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
 #include <QString>
-#include <ossia-qt/http/http_address_data.hpp>
+#include <ossia-qt/http/http_parameter_data.hpp>
 
 namespace ossia
 {
@@ -19,10 +19,10 @@ class OSSIA_EXPORT http_node : public ossia::net::node_base
 
 public:
   http_node(
-      const http_address_data& dat, ossia::net::http_device& aDevice,
+      const http_parameter_data& dat, ossia::net::http_device& aDevice,
       http_node& aParent);
 
-  http_node(const http_address_data& dat, ossia::net::http_device& aDevice);
+  http_node(const http_parameter_data& dat, ossia::net::http_device& aDevice);
 
   ~http_node();
 
@@ -31,8 +31,8 @@ public:
 
   node_base& set_name(std::string) override;
 
-  address_base* get_address() const override;
-  address_base* create_address(val_type = val_type::IMPULSE) override;
+  parameter_base* get_address() const override;
+  parameter_base* create_address(val_type = val_type::IMPULSE) override;
   bool remove_address() override;
 
   void add_child(std::unique_ptr<ossia::net::node_base>);

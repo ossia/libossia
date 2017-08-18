@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <QMetaObject>
@@ -24,8 +24,8 @@ public:
   qt_object_node(
       QObject& obj, ossia::net::device_base& device, node_base& aParent);
 
-  ossia::net::address_base* get_address() const final override;
-  ossia::net::address_base*
+  ossia::net::parameter_base* get_address() const final override;
+  ossia::net::parameter_base*
   create_address(ossia::val_type type) final override;
   bool remove_address() final override;
 
@@ -42,7 +42,7 @@ private:
   make_child(const std::string& name) final override;
   void removing_child(node_base&) final override;
 
-  std::unique_ptr<ossia::net::address_base> mAddress;
+  std::unique_ptr<ossia::net::parameter_base> mAddress;
   QObject& mObject;
 };
 }

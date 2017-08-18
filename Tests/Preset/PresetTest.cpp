@@ -5,7 +5,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia-c/preset/preset.hpp>
 #include <QQmlEngine>

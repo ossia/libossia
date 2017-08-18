@@ -100,7 +100,7 @@ bool t_remote::unregister()
 }
 
 
-void t_remote::on_address_created_callback(const ossia::net::address_base& addr)
+void t_remote::on_address_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
   auto path = ossia::traversal::make_path(x_name->s_name);

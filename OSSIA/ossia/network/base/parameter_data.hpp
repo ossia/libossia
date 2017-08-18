@@ -14,19 +14,19 @@ namespace net
  * @brief The data that can be found inside an address
  *
  * Used to create a new address / node.
- * Unlike address_base and its child classes, can be copied, moved, etc.
+ * Unlike parameter_base and its child classes, can be copied, moved, etc.
  *
  * Name is the name of the node only.
  */
-struct address_data
+struct parameter_data
 {
-  address_data() = default;
-  address_data(const address_data&) = default;
-  address_data(address_data&&) = default;
-  address_data& operator=(const address_data&) = default;
-  address_data& operator=(address_data&&) = default;
+  parameter_data() = default;
+  parameter_data(const parameter_data&) = default;
+  parameter_data(parameter_data&&) = default;
+  parameter_data& operator=(const parameter_data&) = default;
+  parameter_data& operator=(parameter_data&&) = default;
 
-  address_data(std::string n) : name{std::move(n)}
+  parameter_data(std::string n) : name{std::move(n)}
   {
   }
 
@@ -60,18 +60,18 @@ struct address_data
  *
  * `/foo/bar/baz.3/fib`
  *
- * in address_data, name would be `fib`
+ * in parameter_data, name would be `fib`
  */
-struct full_address_data
+struct full_parameter_data
 {
   public:
-    full_address_data() = default;
-    full_address_data(const full_address_data&) = default;
-    full_address_data(full_address_data&&) = default;
-    full_address_data& operator=(const full_address_data&) = default;
-    full_address_data& operator=(full_address_data&&) = default;
+    full_parameter_data() = default;
+    full_parameter_data(const full_parameter_data&) = default;
+    full_parameter_data(full_parameter_data&&) = default;
+    full_parameter_data& operator=(const full_parameter_data&) = default;
+    full_parameter_data& operator=(full_parameter_data&&) = default;
 
-    full_address_data(std::string n) : address{std::move(n)}
+    full_parameter_data(std::string n) : address{std::move(n)}
     {
     }
 
@@ -131,7 +131,7 @@ struct full_address_data
 };
 
 OSSIA_EXPORT
-inline const std::string& osc_address_string(const ossia::net::full_address_data& d)
+inline const std::string& osc_address_string(const ossia::net::full_parameter_data& d)
 {
   return d.address;
 }

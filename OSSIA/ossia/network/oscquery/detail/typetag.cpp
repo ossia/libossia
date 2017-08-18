@@ -67,7 +67,7 @@ struct osc_type_visitor
   }
 };
 
-static std::string get_osc_typetag_impl(const net::address_base& addr)
+static std::string get_osc_typetag_impl(const net::parameter_base& addr)
 {
   if (addr.get_unit() == ossia::rgba_u{})
     return "r";

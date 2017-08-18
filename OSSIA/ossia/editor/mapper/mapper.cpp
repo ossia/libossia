@@ -72,7 +72,7 @@ void mapper::start(ossia::state& st)
   // start driver address value observation
   if (m_driverAddress && !m_callback)
   {
-    ossia::net::address_base& addr = m_driverAddress->address();
+    ossia::net::parameter_base& addr = m_driverAddress->address();
     m_callback = addr.add_callback(
         [this](const ossia::value& val) { driver_value_callback(val); });
 
@@ -112,7 +112,7 @@ void mapper::set_driver(ossia::Destination d)
 
   if (active)
   {
-    ossia::net::address_base& addr = m_driverAddress->address();
+    ossia::net::parameter_base& addr = m_driverAddress->address();
     m_callback = addr.add_callback(
         [this](const ossia::value& val) { driver_value_callback(val); });
   }

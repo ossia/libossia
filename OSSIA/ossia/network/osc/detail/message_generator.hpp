@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/network/base/address.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/osc/detail/string_view.hpp>
 #include <chobo/small_vector.hpp>
@@ -24,7 +24,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 }
 
 inline oscpack::OutboundPacketStream& operator<<(
-    oscpack::OutboundPacketStream& p, const ossia::net::address_base& address)
+    oscpack::OutboundPacketStream& p, const ossia::net::parameter_base& address)
 {
   p << ossia::net::osc_address_string(address);
 

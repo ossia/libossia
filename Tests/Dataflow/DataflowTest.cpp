@@ -3,7 +3,7 @@
 #include <QtTest/QTest>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/network/local/local.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <Editor/TestUtils.hpp>
 
 namespace ossia

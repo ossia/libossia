@@ -16,9 +16,9 @@ struct OSSIA_EXPORT execution_state
 
   void commit();
 
-  void find_and_copy(ossia::net::address_base& addr, inlet& in);
+  void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
 
-  void copy_from_global(ossia::net::address_base& addr, inlet& in);
+  void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
 
   // todo separate rvalue & cref
   void insert(const destination_t& dest, data_type v);
@@ -35,6 +35,6 @@ struct OSSIA_EXPORT execution_state
     midiState[dest] = std::move(v);
   }
 
-  bool in_local_scope(ossia::net::address_base& other) const;
+  bool in_local_scope(ossia::net::parameter_base& other) const;
 };
 }

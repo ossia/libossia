@@ -14,7 +14,7 @@ namespace ossia
 {
 namespace net
 {
-class address_base;
+class parameter_base;
 }
 /**
  * @brief The message struct
@@ -73,7 +73,7 @@ struct OSSIA_EXPORT message
 
 struct OSSIA_EXPORT piecewise_message
 {
-  std::reference_wrapper<ossia::net::address_base> address;
+  std::reference_wrapper<ossia::net::parameter_base> address;
   std::vector<ossia::value> message_value;
   ossia::unit_t unit;
 
@@ -101,7 +101,7 @@ struct OSSIA_EXPORT piecewise_message
 template <std::size_t N>
 struct piecewise_vec_message
 {
-  std::reference_wrapper<ossia::net::address_base> address;
+  std::reference_wrapper<ossia::net::parameter_base> address;
   std::array<float, N> message_value;
   ossia::unit_t unit;
   std::bitset<N> used_values; // True for each value that has been set.

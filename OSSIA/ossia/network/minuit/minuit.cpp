@@ -1,8 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/minuit/minuit.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 
 #include <ossia/detail/string_view.hpp>
@@ -228,7 +228,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
   return status == std::future_status::ready || node.children().size() != 0;
 }
 
-void minuit_protocol::request(ossia::net::address_base& address)
+void minuit_protocol::request(ossia::net::parameter_base& address)
 {
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = ossia::net::osc_address_string(address);
@@ -237,7 +237,7 @@ void minuit_protocol::request(ossia::net::address_base& address)
   m_lastSentMessage = get_time();
 }
 
-std::future<void> minuit_protocol::pull_async(address_base& address)
+std::future<void> minuit_protocol::pull_async(parameter_base& address)
 {
   // Send "get" request
   m_getFinishedPromise = std::promise<void>();
@@ -252,7 +252,7 @@ std::future<void> minuit_protocol::pull_async(address_base& address)
   return fut;
 }
 
-bool minuit_protocol::pull(ossia::net::address_base& address)
+bool minuit_protocol::pull(ossia::net::parameter_base& address)
 {
   auto fut = pull_async(address);
 
@@ -261,7 +261,7 @@ bool minuit_protocol::pull(ossia::net::address_base& address)
   return fut.valid();
 }
 
-bool minuit_protocol::push_raw(const full_address_data& addr)
+bool minuit_protocol::push_raw(const full_parameter_data& addr)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
@@ -278,7 +278,7 @@ bool minuit_protocol::push_raw(const full_address_data& addr)
 
 }
 
-bool minuit_protocol::push(const ossia::net::address_base& addr)
+bool minuit_protocol::push(const ossia::net::parameter_base& addr)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
@@ -294,7 +294,7 @@ bool minuit_protocol::push(const ossia::net::address_base& addr)
   return false;
 }
 
-bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
+bool minuit_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
 
   auto act
@@ -317,7 +317,7 @@ bool minuit_protocol::observe(ossia::net::address_base& address, bool enable)
 }
 
 bool minuit_protocol::observe_quietly(
-    ossia::net::address_base& address, bool enable)
+    ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
     m_listening.insert(std::make_pair(osc_address_string(address), &address));

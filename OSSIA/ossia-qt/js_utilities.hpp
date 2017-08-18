@@ -4,8 +4,8 @@
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/node.hpp>
-#include <ossia/network/common/address_properties.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <QDebug>
 #include <QHash>
 #include <QJSEngine>
@@ -444,12 +444,12 @@ ossia::optional<T> get_enum(const QJSValue& val)
 }
 
 /**
- * @brief make_address_data Extracts all the data required to build an address
+ * @brief make_parameter_data Extracts all the data required to build an address
  * from a QJSValue
  */
-ossia::net::address_data make_address_data(const QJSValue& js);
+ossia::net::parameter_data make_parameter_data(const QJSValue& js);
 
-void set_address_type(QVariant::Type type, ossia::net::address_base& addr);
+void set_address_type(QVariant::Type type, ossia::net::parameter_base& addr);
 
 /**
  * @defgroup JSTreeCreation

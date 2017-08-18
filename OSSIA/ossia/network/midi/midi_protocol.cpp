@@ -142,7 +142,7 @@ midi_info midi_protocol::get_info() const
   return m_info;
 }
 
-bool midi_protocol::pull(address_base& address)
+bool midi_protocol::pull(parameter_base& address)
 {
   midi_address& adrs = dynamic_cast<midi_address&>(address);
   if (m_info.type != midi_info::Type::RemoteOutput)
@@ -208,7 +208,7 @@ bool midi_protocol::pull(address_base& address)
   }
 }
 
-bool midi_protocol::push(const address_base& address)
+bool midi_protocol::push(const parameter_base& address)
 {
   try
   {
@@ -294,10 +294,10 @@ bool midi_protocol::push(const address_base& address)
   }
 }
 
-bool midi_protocol::push_raw(const full_address_data& address_base)
+bool midi_protocol::push_raw(const full_parameter_data& parameter_base)
 { return false; }
 
-bool midi_protocol::observe(address_base& address, bool enable)
+bool midi_protocol::observe(parameter_base& address, bool enable)
 {
   enable = true;
   midi_address& adrs = dynamic_cast<midi_address&>(address);

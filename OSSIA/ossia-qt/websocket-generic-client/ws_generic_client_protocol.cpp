@@ -2,8 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ws_generic_client_protocol.hpp"
 #include <ossia-qt/js_utilities.hpp>
-#include <ossia-qt/websocket-generic-client/ws_generic_client_address.hpp>
-#include <ossia-qt/websocket-generic-client/ws_generic_client_address_data.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client_parameter.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client_parameter_data.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_device.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_node.hpp>
 
@@ -91,15 +91,15 @@ bool ws_generic_client_protocol::update(ossia::net::node_base& node_base)
   return true;
 }
 
-bool ws_generic_client_protocol::pull(ossia::net::address_base& address_base)
+bool ws_generic_client_protocol::pull(ossia::net::parameter_base& parameter_base)
 {
   return true;
 }
 
 bool ws_generic_client_protocol::push(
-    const ossia::net::address_base& address_base)
+    const ossia::net::parameter_base& parameter_base)
 {
-  auto& addr = static_cast<const ws_generic_client_address&>(address_base);
+  auto& addr = static_cast<const ws_generic_client_address&>(parameter_base);
 
   if (!addr.data().request.isNull())
   {
@@ -110,11 +110,11 @@ bool ws_generic_client_protocol::push(
   return false;
 }
 
-bool ws_generic_client_protocol::push_raw(const full_address_data& address_base)
+bool ws_generic_client_protocol::push_raw(const full_parameter_data& parameter_base)
 { return false; }
 
 bool ws_generic_client_protocol::observe(
-    ossia::net::address_base& addr_base, bool enable)
+    ossia::net::parameter_base& addr_base, bool enable)
 {
   auto& addr = static_cast<ws_generic_client_address&>(addr_base);
   if (enable)

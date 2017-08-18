@@ -35,7 +35,7 @@
 #include "faust/gui/PathBuilder.h"
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/domain/domain.hpp>
 
@@ -44,7 +44,7 @@ class OssiaUI final : public PathBuilder, public UI
     ossia::net::generic_device m_dev;
     ossia::net::node_base* m_curNode{};
 
-    std::vector<std::pair<ossia::net::address_base*, FAUSTFLOAT*>> m_values;
+    std::vector<std::pair<ossia::net::parameter_base*, FAUSTFLOAT*>> m_values;
     std::atomic_bool m_running;
 
 public:

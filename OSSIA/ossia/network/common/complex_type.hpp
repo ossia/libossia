@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <eggs/variant.hpp>
 #include <ossia_export.h>
 namespace ossia
@@ -10,7 +10,7 @@ using extended_type = std::string;
 namespace net
 {
 class node_base;
-class address_base;
+class parameter_base;
 }
 
 /**
@@ -32,11 +32,11 @@ ossia::val_type underlying_type(const complex_type& t);
 
 //! Creates an address in a node according to a complex type.
 OSSIA_EXPORT
-ossia::net::address_base*
+ossia::net::parameter_base*
 setup_address(const complex_type& t, ossia::net::node_base& node);
 
 //! Change the type of an address according to a complex type.
 OSSIA_EXPORT
 void update_address_type(
-    const complex_type& t, ossia::net::address_base& node);
+    const complex_type& t, ossia::net::parameter_base& node);
 }

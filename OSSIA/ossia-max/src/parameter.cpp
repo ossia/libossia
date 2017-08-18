@@ -279,7 +279,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   m_node->about_to_be_deleted.connect<t_parameter, &t_parameter::is_deleted>(
       this);
 
-  ossia::net::address_base* local_address{};
+  ossia::net::parameter_base* local_address{};
 
   // transform to lowercase
   std::string type = m_type->s_name;

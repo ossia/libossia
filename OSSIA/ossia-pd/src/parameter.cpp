@@ -52,7 +52,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
   for (auto n : nodes)
   {
-    ossia::net::address_base* local_address{};
+    ossia::net::parameter_base* local_address{};
     std::string type = x_type->s_name;
 
     if (type == "float")

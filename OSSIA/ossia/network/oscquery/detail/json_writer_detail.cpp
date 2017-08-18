@@ -362,7 +362,7 @@ void json_writer::attributes_changed_impl(
 }
 
 void json_writer::send_message_impl(
-    detail::json_writer_impl& p, const net::address_base& n, const value& val)
+    detail::json_writer_impl& p, const net::parameter_base& n, const value& val)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -373,7 +373,7 @@ void json_writer::send_message_impl(
   wr.EndObject();
 }
 void json_writer::send_message_impl(
-    detail::json_writer_impl& p, const net::full_address_data& n, const value& val)
+    detail::json_writer_impl& p, const net::full_parameter_data& n, const value& val)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -506,7 +506,7 @@ json_writer::string_t json_writer::attributes_changed(
 }
 
 json_writer::string_t
-json_writer::send_message(const net::address_base& addr, const value& val)
+json_writer::send_message(const net::parameter_base& addr, const value& val)
 {
   string_t buf;
   writer_t wr(buf);
@@ -519,7 +519,7 @@ json_writer::send_message(const net::address_base& addr, const value& val)
 }
 
 json_writer::string_t
-json_writer::send_message(const net::full_address_data& addr, const value& val)
+json_writer::send_message(const net::full_parameter_data& addr, const value& val)
 {
   string_t buf;
   writer_t wr(buf);

@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/midi/midi.hpp>
-#include <ossia/network/midi/midi_address.hpp>
+#include <ossia/network/midi/midi_parameter.hpp>
 
 namespace ossia
 {
@@ -35,21 +35,21 @@ void midi_address::pull_value()
   m_protocol.pull(*this);
 }
 
-address_base& midi_address::push_value(const ossia::value& val)
+parameter_base& midi_address::push_value(const ossia::value& val)
 {
   m_value = val;
   m_protocol.push(*this);
   return *this;
 }
 
-address_base& midi_address::push_value(ossia::value&& val)
+parameter_base& midi_address::push_value(ossia::value&& val)
 {
   m_value = std::move(val);
   m_protocol.push(*this);
   return *this;
 }
 
-address_base& midi_address::push_value()
+parameter_base& midi_address::push_value()
 {
   m_protocol.push(*this);
   return *this;
@@ -65,7 +65,7 @@ ossia::value midi_address::value() const
   return m_value;
 }
 
-address_base& midi_address::set_value(const ossia::value& v)
+parameter_base& midi_address::set_value(const ossia::value& v)
 {
   if (m_type == v.getType())
     m_value = v;
@@ -76,7 +76,7 @@ address_base& midi_address::set_value(const ossia::value& v)
   return *this;
 }
 
-address_base& midi_address::set_value(ossia::value&& v)
+parameter_base& midi_address::set_value(ossia::value&& v)
 {
   if (m_type == v.getType())
     m_value = std::move(v);
@@ -92,7 +92,7 @@ val_type midi_address::get_value_type() const
   return m_type;
 }
 
-address_base& midi_address::set_value_type(val_type)
+parameter_base& midi_address::set_value_type(val_type)
 {
   return *this;
 }
@@ -102,7 +102,7 @@ access_mode midi_address::get_access() const
   return ossia::access_mode::BI;
 }
 
-address_base& midi_address::set_access(access_mode)
+parameter_base& midi_address::set_access(access_mode)
 {
   return *this;
 }
@@ -112,7 +112,7 @@ const ossia::domain& midi_address::get_domain() const
   return m_domain;
 }
 
-address_base& midi_address::set_domain(const ossia::domain&)
+parameter_base& midi_address::set_domain(const ossia::domain&)
 {
   return *this;
 }
@@ -122,7 +122,7 @@ bounding_mode midi_address::get_bounding() const
   return ossia::bounding_mode::CLIP;
 }
 
-address_base& midi_address::set_bounding(bounding_mode)
+parameter_base& midi_address::set_bounding(bounding_mode)
 {
   return *this;
 }
@@ -132,7 +132,7 @@ repetition_filter midi_address::get_repetition_filter() const
   return ossia::repetition_filter::OFF;
 }
 
-address_base& midi_address::set_repetition_filter(repetition_filter)
+parameter_base& midi_address::set_repetition_filter(repetition_filter)
 {
   return *this;
 }

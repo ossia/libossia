@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <QObject>
 #include <QQuickItem>
 #include <QString>
@@ -12,7 +12,7 @@ namespace ossia
 namespace net
 {
 class node_base;
-class address_base;
+class parameter_base;
 }
 namespace qt
 {
@@ -145,8 +145,8 @@ protected:
   using qml_node_base::qml_node_base;
   void clearNode(bool reading);
 
-  ossia::net::address_base* m_address{};
-  ossia::optional<ossia::net::address_base::iterator> m_callback;
+  ossia::net::parameter_base* m_address{};
+  ossia::optional<ossia::net::parameter_base::iterator> m_callback;
 };
 }
 }

@@ -75,7 +75,7 @@ qt_property_node::qt_property_node(
     QObject& obj, QMetaProperty p, net::device_base& device,
     net::node_base& parent)
     : generic_node_base{p.name(), device, parent}
-    , generic_address{parent}
+    , generic_parameter{parent}
     , m_obj{obj}
     , m_prop{p}
 {
@@ -85,7 +85,7 @@ qt_property_node::qt_property_node(
   }
 
   set_address_type(p.type(), *this);
-  ossia::net::generic_address::set_value_quiet(qt_to_ossia{}(p.read(&obj)));
+  ossia::net::generic_parameter::set_value_quiet(qt_to_ossia{}(p.read(&obj)));
   ;
 
   connect(
@@ -103,23 +103,23 @@ void qt_property_node::setValue_slot(const ossia::value& ossia_val)
 
 void qt_property_node::set_value_quiet(const ossia::value& ossia_val)
 {
-  ossia::net::generic_address::set_value_quiet(ossia_val);
+  ossia::net::generic_parameter::set_value_quiet(ossia_val);
 
   emit setValue_sig(ossia_val);
 }
 void qt_property_node::set_value_quiet(ossia::value&& ossia_val)
 {
-  ossia::net::generic_address::set_value_quiet(std::move(ossia_val));
+  ossia::net::generic_parameter::set_value_quiet(std::move(ossia_val));
 
   emit setValue_sig(ossia_val);
 }
 
-net::address_base* qt_property_node::get_address() const
+net::parameter_base* qt_property_node::get_address() const
 {
   return const_cast<qt_property_node*>(this);
 }
 
-net::address_base* qt_property_node::create_address(val_type type)
+net::parameter_base* qt_property_node::create_address(val_type type)
 {
   return nullptr;
 }

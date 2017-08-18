@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-qt/http/http_address.hpp>
+#include <ossia-qt/http/http_parameter.hpp>
 #include <ossia-qt/http/http_device.hpp>
 #include <ossia-qt/http/http_node.hpp>
 
@@ -10,7 +10,7 @@ namespace net
 {
 
 http_node::http_node(
-    const http_address_data& data, http_device& aDevice, http_node& aParent)
+    const http_parameter_data& data, http_device& aDevice, http_node& aParent)
     : m_device{aDevice}, m_parent{&aParent}
 {
   m_name = data.name;
@@ -18,7 +18,7 @@ http_node::http_node(
     m_address = std::make_unique<http_address>(data, *this);
 }
 
-http_node::http_node(const http_address_data& data, http_device& aDevice)
+http_node::http_node(const http_parameter_data& data, http_device& aDevice)
     : m_device{aDevice}
 {
   m_name = data.name;
@@ -50,12 +50,12 @@ node_base& http_node::set_name(std::string)
   return *this;
 }
 
-address_base* http_node::get_address() const
+parameter_base* http_node::get_address() const
 {
   return m_address.get();
 }
 
-address_base* http_node::create_address(val_type)
+parameter_base* http_node::create_address(val_type)
 {
   return nullptr;
 }

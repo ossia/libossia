@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/apply.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/common/complex_type.hpp>
@@ -43,7 +43,7 @@ ossia::val_type underlying_type(const complex_type& t)
 
 struct setup_address_visitor
 {
-  using ret = ossia::net::address_base*;
+  using ret = ossia::net::parameter_base*;
   ossia::net::node_base& n;
   ret operator()(ossia::val_type v) const
   {
@@ -73,7 +73,7 @@ struct setup_address_visitor
   }
 };
 
-net::address_base* setup_address(const complex_type& t, net::node_base& node)
+net::parameter_base* setup_address(const complex_type& t, net::node_base& node)
 {
   if (!t)
     return nullptr;
@@ -84,7 +84,7 @@ net::address_base* setup_address(const complex_type& t, net::node_base& node)
 struct update_address_visitor
 {
   using ret = void;
-  ossia::net::address_base& addr;
+  ossia::net::parameter_base& addr;
   ret operator()(ossia::val_type v) const
   {
     addr.set_value_type(v);
@@ -108,7 +108,7 @@ struct update_address_visitor
   }
 };
 
-void update_address_type(const complex_type& t, net::address_base& addr)
+void update_address_type(const complex_type& t, net::parameter_base& addr)
 {
   ossia::apply(update_address_visitor{addr}, t);
 }

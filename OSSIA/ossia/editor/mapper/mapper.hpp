@@ -6,7 +6,7 @@
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia_export.h>
 
 #include <ossia/detail/mutex.hpp>
@@ -18,7 +18,7 @@ namespace ossia
 {
 namespace net
 {
-class address_base;
+class parameter_base;
 }
 class value;
 struct time_value;
@@ -67,7 +67,7 @@ private:
   mutable mutex_t m_valueToMapMutex;
   mutable mutex_t m_driverAddressMutex;
 
-  optional<ossia::net::address_base::callback_index> m_callback;
+  optional<ossia::net::parameter_base::callback_index> m_callback;
 
   friend struct mapper_compute_visitor;
 };

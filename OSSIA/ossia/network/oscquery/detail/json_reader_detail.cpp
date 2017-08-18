@@ -467,7 +467,7 @@ void json_parser_impl::readObject(
     // If any of these exist, we can create an address
     if (val_type || unit || ext_type)
     {
-      ossia::net::address_base* addr = nullptr;
+      ossia::net::parameter_base* addr = nullptr;
       if (unit) // The unit enforces the value type
       {
         addr = node.create_address(ossia::matching_type(*unit));
@@ -671,7 +671,7 @@ void json_parser::parse_namespace(
 }
 
 void json_parser::parse_value(
-    net::address_base& addr, const rapidjson::Value& obj)
+    net::parameter_base& addr, const rapidjson::Value& obj)
 {
   auto val = addr.value();
   val.apply(detail::json_to_value_unchecked{obj});

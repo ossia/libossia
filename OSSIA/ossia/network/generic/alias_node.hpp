@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/generic/generic_node.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/network/domain/domain_base.hpp>
 
@@ -24,9 +24,9 @@ public:
   ossia::net::node_base* get_origin() const;
   void set_origin(ossia::net::node_base* o);
 
-  address_base* create_address(val_type v) override;
+  parameter_base* create_address(val_type v) override;
   bool remove_address() override;
-  address_base* get_address() const override;
+  parameter_base* get_address() const override;
 
 protected:
   std::unique_ptr<node_base> make_child(const std::string& name) override;
@@ -40,7 +40,7 @@ private:
 
 struct alias_path final :
     public generic_node_base,
-    public ossia::net::address_base
+    public ossia::net::parameter_base
 {
 public:
   using generic_node_base::generic_node_base;
@@ -61,9 +61,9 @@ public:
   void set_path(traversal::path o);
 
 private:
-  address_base* create_address(val_type v) override { return this; }
+  parameter_base* create_address(val_type v) override { return this; }
   bool remove_address() override { return false; }
-  address_base* get_address() const override { return (ossia::net::address_base*)(this); }
+  parameter_base* get_address() const override { return (ossia::net::parameter_base*)(this); }
 
   std::unique_ptr<node_base> make_child(const std::string& name) override { return {}; }
   void removing_child(node_base&) override { }
@@ -88,23 +88,23 @@ private:
   {
     return {};
   }
-  address_base&push_value(const ossia::value&) override
+  parameter_base&push_value(const ossia::value&) override
   {
     return *this;
   }
-  address_base&push_value(ossia::value&&) override
+  parameter_base&push_value(ossia::value&&) override
   {
     return *this;
   }
-  address_base&push_value() override
+  parameter_base&push_value() override
   {
     return *this;
   }
-  address_base&set_value(const ossia::value&) override
+  parameter_base&set_value(const ossia::value&) override
   {
     return *this;
   }
-  address_base&set_value(ossia::value&&) override
+  parameter_base&set_value(ossia::value&&) override
   {
     return *this;
   }
@@ -118,7 +118,7 @@ private:
   {
     return {};
   }
-  address_base&set_value_type(val_type) override
+  parameter_base&set_value_type(val_type) override
   {
     return *this;
   }
@@ -126,7 +126,7 @@ private:
   {
     return {};
   }
-  address_base&set_access(access_mode) override
+  parameter_base&set_access(access_mode) override
   {
     return *this;
   }
@@ -135,7 +135,7 @@ private:
     static ossia::domain d;
     return d;
   }
-  address_base&set_domain(const domain&) override
+  parameter_base&set_domain(const domain&) override
   {
     return *this;
   }
@@ -143,7 +143,7 @@ private:
   {
     return {};
   }
-  address_base&set_bounding(bounding_mode) override
+  parameter_base&set_bounding(bounding_mode) override
   {
     return *this;
   }
@@ -151,7 +151,7 @@ private:
   {
     return {};
   }
-  address_base&set_repetition_filter(repetition_filter) override
+  parameter_base&set_repetition_filter(repetition_filter) override
   {
     return *this;
   }
@@ -163,7 +163,7 @@ private:
   {
     return {};
   }
-  address_base&set_unit(const unit_t& v) override
+  parameter_base&set_unit(const unit_t& v) override
   {
     return *this;
   }
@@ -171,7 +171,7 @@ private:
   {
     return {};
   }
-  address_base&set_muted(bool) override
+  parameter_base&set_muted(bool) override
   {
     return *this;
   }
@@ -179,7 +179,7 @@ private:
   {
     return {};
   }
-  address_base&set_critical(bool) override
+  parameter_base&set_critical(bool) override
   {
     return *this;
   }

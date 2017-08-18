@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <QObject>
 #include <QQmlExpression>
 #include <QQmlProperty>
@@ -18,10 +18,10 @@ class qml_property_context : public QObject
   Q_OBJECT
 public:
   qml_property_context(
-      QQmlProperty& p, ossia::net::address_base& addr, QObject* parent);
+      QQmlProperty& p, ossia::net::parameter_base& addr, QObject* parent);
 
   QQmlProperty& targetProperty;
-  ossia::net::address_base& address;
+  ossia::net::parameter_base& address;
 public slots:
   void qtVariantChanged();
 };
@@ -46,7 +46,7 @@ private:
   void clearNode();
 
   QQmlProperty m_targetProperty;
-  ossia::net::address_base* m_address{};
+  ossia::net::parameter_base* m_address{};
   qml_property_context* m_propCtx{};
 };
 
@@ -76,8 +76,8 @@ private:
   void clearNode();
 
   QQmlProperty m_targetProperty;
-  ossia::net::address_base* m_address{};
-  ossia::net::address_base::iterator m_cb;
+  ossia::net::parameter_base* m_address{};
+  ossia::net::parameter_base::iterator m_cb;
 };
 
 class qml_binding : public qml_node_base
@@ -104,7 +104,7 @@ private:
   void clearNode();
 
   std::unique_ptr<QQmlExpression> m_expr;
-  ossia::net::address_base* m_address{};
+  ossia::net::parameter_base* m_address{};
   QQmlScriptString m_on;
 };
 
@@ -133,9 +133,9 @@ private:
   void on_node_deleted(const ossia::net::node_base&);
   void clearNode();
 
-  ossia::net::address_base* m_address{};
+  ossia::net::parameter_base* m_address{};
   QVariant m_value;
-  ossia::net::address_base::iterator m_cb;
+  ossia::net::parameter_base::iterator m_cb;
 };
 }
 }

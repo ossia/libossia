@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
-#include <ossia-qt/serial/serial_address.hpp>
+#include <ossia-qt/serial/serial_parameter.hpp>
 
 namespace ossia
 {
@@ -17,10 +17,10 @@ protected:
   std::unique_ptr<serial_address> m_address;
 
 public:
-  serial_node(const serial_address_data& dat, serial_device& aDevice);
+  serial_node(const serial_parameter_data& dat, serial_device& aDevice);
 
   serial_node(
-      const serial_address_data& dat, serial_device& aDevice,
+      const serial_parameter_data& dat, serial_device& aDevice,
       serial_node& aParent);
 
   ossia::net::device_base& get_device() const final override;
@@ -29,9 +29,9 @@ public:
 
   ossia::net::node_base& set_name(std::string) override;
 
-  ossia::net::address_base* get_address() const final override;
+  ossia::net::parameter_base* get_address() const final override;
 
-  ossia::net::address_base* create_address(ossia::val_type) final override;
+  ossia::net::parameter_base* create_address(ossia::val_type) final override;
 
   bool remove_address() final override;
 

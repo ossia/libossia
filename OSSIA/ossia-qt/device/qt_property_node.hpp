@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <QMetaObject>
@@ -16,7 +16,7 @@ namespace qt
 class OSSIA_EXPORT qt_property_node final
     : public QObject,
       public ossia::net::generic_node_base,
-      public ossia::net::generic_address
+      public ossia::net::generic_parameter
 {
   Q_OBJECT
 public:
@@ -26,15 +26,15 @@ public:
 
   void set_value_quiet(const ossia::value&) final override;
   void set_value_quiet(ossia::value&&) final override;
-  ossia::net::address_base* get_address() const final override;
-  ossia::net::address_base*
+  ossia::net::parameter_base* get_address() const final override;
+  ossia::net::parameter_base*
   create_address(ossia::val_type type) final override;
   bool remove_address() final override;
 
   template <typename T>
   void qtValueChanged(const T& val)
   {
-    ossia::net::generic_address::set_value_quiet(qt_to_ossia{}(val));
+    ossia::net::generic_parameter::set_value_quiet(qt_to_ossia{}(val));
 
     m_protocol.push(*this);
   }

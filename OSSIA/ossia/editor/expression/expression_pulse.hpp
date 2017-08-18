@@ -4,7 +4,7 @@
 
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia_export.h>
 
@@ -52,7 +52,7 @@ private:
 
   Destination m_destination;
 
-  net::address_base::callback_index m_callback;
+  net::parameter_base::callback_index m_callback;
   mutable bool m_result{};
 };
 }

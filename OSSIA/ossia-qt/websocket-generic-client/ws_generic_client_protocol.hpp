@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <ossia-qt/websocket-generic-client/ws_generic_client_address.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client_parameter.hpp>
 
 #include <QByteArray>
 #include <QJSValue>
@@ -39,16 +39,16 @@ public:
 
   bool update(ossia::net::node_base& node_base) override;
 
-  bool pull(ossia::net::address_base& address_base) override;
+  bool pull(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::address_base& address_base) override;
-  bool push_raw(const ossia::net::full_address_data& address_base) override;
+  bool push(const ossia::net::parameter_base& parameter_base) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
 
-  bool observe(ossia::net::address_base& address_base, bool enable) override;
+  bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
 
   void set_device(ossia::net::device_base& dev) override;
 
-  static ws_generic_client_address_data read_data(const QJSValue& js)
+  static ws_generic_client_parameter_data read_data(const QJSValue& js)
   {
     return js;
   }

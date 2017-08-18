@@ -5,7 +5,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <iostream>
 
 namespace ossia

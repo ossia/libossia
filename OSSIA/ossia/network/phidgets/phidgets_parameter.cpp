@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "phidgets_address.hpp"
+#include "phidgets_parameter.hpp"
 #include "phidgets_device.hpp"
 #include "phidgets_node.hpp"
 #include "phidgets_protocol.hpp"
@@ -40,27 +40,27 @@ value phidget_address::value() const
   return v;
 }
 
-net::address_base& phidget_address::push_value(const ossia::value&)
+net::parameter_base& phidget_address::push_value(const ossia::value&)
 {
   return *this;
 }
 
-net::address_base& phidget_address::push_value(ossia::value&&)
+net::parameter_base& phidget_address::push_value(ossia::value&&)
 {
   return *this;
 }
 
-net::address_base& phidget_address::push_value()
+net::parameter_base& phidget_address::push_value()
 {
   return *this;
 }
 
-net::address_base& phidget_address::set_value(const ossia::value&)
+net::parameter_base& phidget_address::set_value(const ossia::value&)
 {
   return *this;
 }
 
-net::address_base& phidget_address::set_value(ossia::value&&)
+net::parameter_base& phidget_address::set_value(ossia::value&&)
 {
   return *this;
 }
@@ -70,7 +70,7 @@ val_type phidget_address::get_value_type() const
   return ossia::val_type::TUPLE;
 }
 
-net::address_base& phidget_address::set_value_type(val_type)
+net::parameter_base& phidget_address::set_value_type(val_type)
 {
   return *this;
 }
@@ -80,7 +80,7 @@ access_mode phidget_address::get_access() const
   return ossia::access_mode::GET;
 }
 
-net::address_base& phidget_address::set_access(access_mode)
+net::parameter_base& phidget_address::set_access(access_mode)
 {
   return *this;
 }
@@ -90,7 +90,7 @@ const domain& phidget_address::get_domain() const
   return m_domain;
 }
 
-net::address_base& phidget_address::set_domain(const domain&)
+net::parameter_base& phidget_address::set_domain(const domain&)
 {
   return *this;
 }
@@ -100,7 +100,7 @@ bounding_mode phidget_address::get_bounding() const
   return ossia::bounding_mode::FREE;
 }
 
-net::address_base& phidget_address::set_bounding(bounding_mode)
+net::parameter_base& phidget_address::set_bounding(bounding_mode)
 {
   return *this;
 }
@@ -110,7 +110,7 @@ repetition_filter phidget_address::get_repetition_filter() const
   return ossia::repetition_filter::OFF;
 }
 
-net::address_base& phidget_address::set_repetition_filter(repetition_filter)
+net::parameter_base& phidget_address::set_repetition_filter(repetition_filter)
 {
   return *this;
 }

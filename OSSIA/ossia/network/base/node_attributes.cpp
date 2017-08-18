@@ -1,8 +1,8 @@
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/node.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 
 namespace ossia
 {
@@ -110,7 +110,7 @@ optional<extended_type> get_extended_type(const ossia::net::node_base& n)
   auto opt = get_optional_attribute<extended_type>(n, text_extended_type());
   if (!opt)
   {
-    if (address_base* addr = n.get_address())
+    if (parameter_base* addr = n.get_address())
     {
       switch (addr->get_value_type())
       {
@@ -276,7 +276,7 @@ void set_value(ossia::net::node_base& n, value v)
   if (auto addr = n.get_address())
     addr->set_value(std::move(v));
 }
-void set_value(ossia::net::address_data& n, value v)
+void set_value(ossia::net::parameter_data& n, value v)
 {
   n.value = std::move(v);
 }
@@ -312,7 +312,7 @@ void set_domain(ossia::net::node_base& n, domain v)
   if (auto addr = n.get_address())
     addr->set_domain(std::move(v));
 }
-void set_domain(ossia::net::address_data& n, domain v)
+void set_domain(ossia::net::parameter_data& n, domain v)
 {
   n.domain = std::move(v);
 }
@@ -332,7 +332,7 @@ void set_access_mode(ossia::net::node_base& n, access_mode v)
   if (auto addr = n.get_address())
     addr->set_access(std::move(v));
 }
-void set_access_mode(ossia::net::address_data& n, access_mode v)
+void set_access_mode(ossia::net::parameter_data& n, access_mode v)
 {
   n.access = v;
 }
@@ -352,7 +352,7 @@ void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
   if (auto addr = n.get_address())
     addr->set_bounding(std::move(v));
 }
-void set_bounding_mode(ossia::net::address_data& n, bounding_mode v)
+void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v)
 {
   n.bounding = v;
 }
@@ -372,7 +372,7 @@ void set_muted(ossia::net::node_base& n, muted v)
   if (auto addr = n.get_address())
     addr->set_muted(v);
 }
-void set_muted(ossia::net::address_data& n, muted v)
+void set_muted(ossia::net::parameter_data& n, muted v)
 {
   n.muted = v;
 }
@@ -392,7 +392,7 @@ void set_critical(ossia::net::node_base& n, critical v)
   if (auto addr = n.get_address())
     addr->set_critical(v);
 }
-void set_critical(ossia::net::address_data& n, critical v)
+void set_critical(ossia::net::parameter_data& n, critical v)
 {
   n.critical = v;
 }

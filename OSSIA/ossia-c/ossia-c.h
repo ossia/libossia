@@ -755,7 +755,7 @@ int ossia_address_get_repetition_filter(
     ossia_address_t address);
 
 /**
- * @see ossia::net::address_base::set_value
+ * @see ossia::net::parameter_base::set_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -763,14 +763,14 @@ void ossia_address_set_value(
     ossia_address_t address,
     ossia_value_t value);
 /**
- * @see ossia::net::address_base::value
+ * @see ossia::net::parameter_base::value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
 ossia_value_t ossia_address_get_value(
     ossia_address_t address);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -778,14 +778,14 @@ void ossia_address_push_value(
     ossia_address_t address,
     ossia_value_t value);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
 void ossia_address_push_impulse(
     ossia_address_t address);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -793,7 +793,7 @@ void ossia_address_push_i(
     ossia_address_t address,
     int value);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  *
  * b is a boolean, 0 for false, 1 for true.
@@ -803,7 +803,7 @@ void ossia_address_push_b(
     ossia_address_t address,
     int b);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -811,7 +811,7 @@ void ossia_address_push_f(
     ossia_address_t address,
     float value);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -819,7 +819,7 @@ void ossia_address_push_2f(
     ossia_address_t address,
     float v1, float v2);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -827,7 +827,7 @@ void ossia_address_push_3f(
     ossia_address_t address,
     float v1, float v2, float v3);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -835,7 +835,7 @@ void ossia_address_push_4f(
     ossia_address_t address,
     float v1, float v2, float v3, float v4);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -843,7 +843,7 @@ void ossia_address_push_c(
     ossia_address_t address,
     char value);
 /**
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -853,7 +853,7 @@ void ossia_address_push_s(
 
 /**
  * @brief Push an array of integers.
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -863,7 +863,7 @@ void ossia_address_push_in(
     int sz);
 /**
  * @brief Push an array of floats.
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -873,7 +873,7 @@ void ossia_address_push_fn(
     int sz);
 /**
  * @brief Push a string with known length.
- * @see ossia::net::address_base::push_value
+ * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -882,7 +882,7 @@ void ossia_address_push_cn(
     const char* value,
     int sz);
 /**
- * @see ossia::net::address_base::fetch_value
+ * @see ossia::net::parameter_base::fetch_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -896,7 +896,7 @@ ossia_value_t ossia_address_fetch_value(
  * @param ctx Will be passed to the callback.
  * @return An identifier to be able to remove the callback on a later date.
  *
- * @see ossia::net::address_base::add_callback
+ * @see ossia::net::parameter_base::add_callback
  * @note Multithread guarantees: MT-Safe.
  *       The callback is called from the thread where the value was changed.
  */
@@ -912,7 +912,7 @@ ossia_value_callback_idx_t ossia_address_add_callback(
  * @param callback Function to be called.
  * @param ctx Will be passed to the callback.
  *
- * @see ossia::net::address_base::add_callback
+ * @see ossia::net::parameter_base::add_callback
  * @note Multithread guarantees: MT-Safe.
  *       The callback is called from the thread where the value was changed.
  */

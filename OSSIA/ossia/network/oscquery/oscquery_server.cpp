@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_server.hpp"
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 
@@ -74,19 +74,19 @@ oscquery_server_protocol::~oscquery_server_protocol()
   stop();
 }
 
-bool oscquery_server_protocol::pull(net::address_base&)
+bool oscquery_server_protocol::pull(net::parameter_base&)
 {
   //! The server cannot pull because it can have multiple clients.
   return false;
 }
 
-std::future<void> oscquery_server_protocol::pull_async(net::address_base&)
+std::future<void> oscquery_server_protocol::pull_async(net::parameter_base&)
 {
   // Do nothing
   return {};
 }
 
-void oscquery_server_protocol::request(net::address_base&)
+void oscquery_server_protocol::request(net::parameter_base&)
 {
   // Do nothing
 }
@@ -131,22 +131,22 @@ bool oscquery_server_protocol::push_impl(const T& addr)
   return false;
 }
 
-bool oscquery_server_protocol::push(const net::address_base& addr)
+bool oscquery_server_protocol::push(const net::parameter_base& addr)
 {
   return push_impl(addr);
 }
 
-bool oscquery_server_protocol::push_raw(const net::full_address_data& addr)
+bool oscquery_server_protocol::push_raw(const net::full_parameter_data& addr)
 {
   return push_impl(addr);
 }
 
-bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::address_base*>& addresses)
+bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::parameter_base*>& addresses)
 {
   json_bundle_builder b;
   for(auto a : addresses)
   {
-    const ossia::net::address_base& addr = *a;
+    const ossia::net::parameter_base& addr = *a;
     ossia::value val = net::filter_value(addr);
     if (val.valid())
     {
@@ -166,7 +166,7 @@ bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::a
   return true;
 }
 
-bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
 {
   json_bundle_builder b;
   for(const auto& addr : addresses)
@@ -190,7 +190,7 @@ bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::ful
   return true;
 }
 
-bool oscquery_server_protocol::observe(net::address_base& address, bool enable)
+bool oscquery_server_protocol::observe(net::parameter_base& address, bool enable)
 {
   if (enable)
   {
@@ -205,7 +205,7 @@ bool oscquery_server_protocol::observe(net::address_base& address, bool enable)
   return true;
 }
 
-bool oscquery_server_protocol::observe_quietly(net::address_base& addr, bool b)
+bool oscquery_server_protocol::observe_quietly(net::parameter_base& addr, bool b)
 {
   return observe(addr, b);
 }
@@ -294,14 +294,14 @@ void oscquery_server_protocol::enable_client(
 
 using map_setter_fun = void (*)(
     const std::pair<const std::string, std::string>& str,
-    ossia::net::address_data&);
+    ossia::net::parameter_data&);
 template <typename Attr>
 static auto make_setter_pair(Attr)
 {
   return std::make_pair(
       detail::metadata<Attr>::key(),
       [](const std::pair<const std::string, std::string>& str,
-         ossia::net::address_data& addr) {
+         ossia::net::parameter_data& addr) {
         query_parser::parse(Attr{}, str.second, addr);
       });
 }
@@ -330,7 +330,7 @@ void oscquery_server_protocol::add_node(
     ossia::string_view parent_path, const string_map<std::string>& parameters)
 {
   // /foo/bar/baz?ADD_NODE=tutu&VALUE="[hi]"
-  net::address_data address;
+  net::parameter_data address;
   auto& map = querySetterMap();
 
   const auto& name_it = parameters.find(detail::add_node());

@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-qt/websocket-generic-client/ws_generic_client_address.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client_parameter.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_device.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_node.hpp>
 
@@ -10,7 +10,7 @@ namespace net
 {
 
 ws_generic_client_node::ws_generic_client_node(
-    const ws_generic_client_address_data& data,
+    const ws_generic_client_parameter_data& data,
     ws_generic_client_device& aDevice, ws_generic_client_node& aParent)
     : m_device{aDevice}, m_parent{&aParent}
 {
@@ -20,7 +20,7 @@ ws_generic_client_node::ws_generic_client_node(
 }
 
 ws_generic_client_node::ws_generic_client_node(
-    const ws_generic_client_address_data& data,
+    const ws_generic_client_parameter_data& data,
     ws_generic_client_device& aDevice)
     : m_device{aDevice}
 {
@@ -53,12 +53,12 @@ node_base& ws_generic_client_node::set_name(std::string)
   return *this;
 }
 
-address_base* ws_generic_client_node::get_address() const
+parameter_base* ws_generic_client_node::get_address() const
 {
   return m_address.get();
 }
 
-address_base* ws_generic_client_node::create_address(val_type)
+parameter_base* ws_generic_client_node::create_address(val_type)
 {
   return nullptr;
 }

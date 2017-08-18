@@ -1,8 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "http_protocol.hpp"
-#include <ossia-qt/http/http_address.hpp>
-#include <ossia-qt/http/http_address_data.hpp>
+#include <ossia-qt/http/http_parameter.hpp>
+#include <ossia-qt/http/http_parameter_data.hpp>
 #include <ossia-qt/http/http_device.hpp>
 #include <ossia-qt/http/http_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
@@ -67,14 +67,14 @@ bool http_protocol::update(ossia::net::node_base& node_base)
   return true;
 }
 
-bool http_protocol::pull(ossia::net::address_base& address_base)
+bool http_protocol::pull(ossia::net::parameter_base& parameter_base)
 {
   return true;
 }
 
-bool http_protocol::push(const ossia::net::address_base& address_base)
+bool http_protocol::push(const ossia::net::parameter_base& parameter_base)
 {
-  auto& addr = static_cast<const http_address&>(address_base);
+  auto& addr = static_cast<const http_address&>(parameter_base);
 
   if (!addr.data().request.isEmpty())
   {
@@ -85,10 +85,10 @@ bool http_protocol::push(const ossia::net::address_base& address_base)
   return false;
 }
 
-bool http_protocol::push_raw(const full_address_data& address_base)
+bool http_protocol::push_raw(const full_parameter_data& parameter_base)
 { return false; }
 
-bool http_protocol::observe(address_base&, bool enable)
+bool http_protocol::observe(parameter_base&, bool enable)
 {
   return false;
 }

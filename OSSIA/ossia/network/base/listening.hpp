@@ -70,7 +70,7 @@ private:
 
 namespace net
 {
-class address_base;
-using listened_addresses = locked_map<string_map<ossia::net::address_base*>>;
+class parameter_base;
+using listened_addresses = locked_map<string_map<ossia::net::parameter_base*>>;
 }
 }

@@ -16,7 +16,7 @@ alias_node::~alias_node()
   }
 }
 
-address_base* alias_node::create_address(val_type v)
+parameter_base* alias_node::create_address(val_type v)
 {
   return m_origin ? m_origin->create_address(v) : nullptr;
 }
@@ -26,7 +26,7 @@ bool alias_node::remove_address()
   return m_origin ? m_origin->remove_address() : false;
 }
 
-address_base* alias_node::get_address() const
+parameter_base* alias_node::get_address() const
 {
   // TODO thread_local rec_count = 0;
   return m_origin ? m_origin->get_address() : nullptr;

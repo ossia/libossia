@@ -3,7 +3,7 @@
 #include <QtTest>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>

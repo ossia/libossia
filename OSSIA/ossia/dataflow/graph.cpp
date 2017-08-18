@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/dataflow/audio_address.hpp>
+#include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/graph.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
 
@@ -483,9 +483,9 @@ void graph::copy_to_global(
 
 void graph::pull_from_address(inlet& in, execution_state& e)
 {
-  if (auto addr_ptr = in.address.target<ossia::net::address_base*>())
+  if (auto addr_ptr = in.address.target<ossia::net::parameter_base*>())
   {
-    ossia::net::address_base* addr = *addr_ptr;
+    ossia::net::parameter_base* addr = *addr_ptr;
     if (in.scope & port::scope_t::local)
     {
       e.find_and_copy(*addr, in);
@@ -556,10 +556,10 @@ void graph::teardown_node(graph_node& n, execution_state& e)
 audio_address::~audio_address()
 {
 }
-midi_generic_address::~midi_generic_address()
+midi_generic_parameter::~midi_generic_parameter()
 {
 }
-texture_generic_address::~texture_generic_address()
+texture_generic_parameter::~texture_generic_parameter()
 {
 }
 }

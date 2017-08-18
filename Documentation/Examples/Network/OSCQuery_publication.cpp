@@ -15,7 +15,7 @@
 #include <functional>
 
 #include <ossia/ossia.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <spdlog/spdlog.h>
 
@@ -34,7 +34,7 @@ int main()
   // declare this program "B" as Local device
   generic_device device{std::move(local_proto_ptr), "B"};
 
-  auto onAddNode = [&] (std::string parent, address_data dat) {
+  auto onAddNode = [&] (std::string parent, parameter_data dat) {
     auto& p_node = ossia::net::find_or_create_node(device, parent);
     auto cld = p_node.create_child(dat.name);
     cld->create_address(ossia::val_type::INT);
