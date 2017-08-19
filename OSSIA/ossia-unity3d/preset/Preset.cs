@@ -206,16 +206,16 @@ namespace Namespace {
 		public static extern ossia_preset_result_enum ossia_preset_free_string (IntPtr str);
 
 		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_devices_get_node_address (IntPtr node, IntPtr* addr);
+		public static extern ossia_preset_result_enum ossia_devices_get_node_parameter (IntPtr node, IntPtr* addr);
 
-		public static Ossia.Address GetNodeAddress(Ossia.Node node) {
+		public static Ossia.Parameter GetNodeParameter(Ossia.Node node) {
 			IntPtr addr;
 			ossia_preset_result_enum code;
-			code = ossia_devices_get_node_address (node.GetNode (), &addr);
+			code = ossia_devices_get_node_parameter (node.GetNode (), &addr);
 			if (code != ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 				throw new Exception ("Error code " + code);
 			}
-			return new Ossia.Address (addr);
+			return new Ossia.Parameter (addr);
 		}
 	}
 

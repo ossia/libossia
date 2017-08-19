@@ -75,15 +75,39 @@ ossia_value_t ossia_value_create_string(const char* value)
   return convert(std::string{value});
 }
 
-ossia_value_t ossia_value_create_tuple(ossia_value_t* values, int size)
+ossia_value_t ossia_value_create_tuple(const ossia_value_t* values, size_t size)
 {
   std::vector<ossia::value> t;
+  t.reserve(size);
   for (int i = 0; i < size; i++)
   {
     t.push_back(values[i]->value);
   }
   return convert(std::move(t));
 }
+
+ossia_value_t ossia_value_create_fn(const float* values, size_t size)
+{
+  std::vector<ossia::value> t;
+  t.reserve(size);
+  for (int i = 0; i < size; i++)
+  {
+    t.push_back(values[i]);
+  }
+  return convert(std::move(t));
+}
+
+ossia_value_t ossia_value_create_in(const int* values, size_t size)
+{
+  std::vector<ossia::value> t;
+  t.reserve(size);
+  for (size_t i = 0; i < size; i++)
+  {
+    t.push_back(values[i]);
+  }
+  return convert(std::move(t));
+}
+
 
 void ossia_value_free(ossia_value_t value)
 {
@@ -153,7 +177,7 @@ void ossia_value_to_byte_array(ossia_value_t val, char** out, size_t* size)
   *size = 0;
 }
 
-void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, int* size)
+void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, size_t* size)
 {
   if (!val || !out || !size)
   {
@@ -161,10 +185,10 @@ void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, int* size)
   }
   else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
   {
-    int N = casted_val->size();
+    size_t N = casted_val->size();
     *out = new ossia_value_t[N];
     *size = N;
-    for(int i = 0; i < N; i++)
+    for(size_t i = 0; i < N; i++)
     {
       *out[i] = convert((*casted_val)[i]);
     }
@@ -175,6 +199,59 @@ void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, int* size)
   *size = 0;
 }
 void ossia_value_free_tuple(ossia_value_t* out)
+{
+  delete[] out;
+}
+
+
+void ossia_value_to_fn(ossia_value_t val, float** out, size_t* size)
+{
+  if (!val || !out || !size)
+  {
+    ossia_log_error("ossia_value_to_fn: a parameter is null");
+  }
+  else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
+  {
+    const size_t N = casted_val->size();
+    *out = new float[N];
+    *size = N;
+    for(size_t i = 0; i < N; i++)
+    {
+      *out[i] = (*casted_val)[i].get<float>();
+    }
+    return;
+  }
+
+  *out = nullptr;
+  *size = 0;
+}
+void ossia_value_free_fn(float* out)
+{
+  delete[] out;
+}
+
+void ossia_value_to_in(ossia_value_t val, int** out, size_t* size)
+{
+  if (!val || !out || !size)
+  {
+    ossia_log_error("ossia_value_to_fn: a parameter is null");
+  }
+  else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
+  {
+    const size_t N = casted_val->size();
+    *out = new int[N];
+    *size = N;
+    for(size_t i = 0; i < N; i++)
+    {
+      *out[i] = (*casted_val)[i].get<int>();
+    }
+    return;
+  }
+
+  *out = nullptr;
+  *size = 0;
+}
+void ossia_value_free_in(int* out)
 {
   delete[] out;
 }
@@ -210,7 +287,7 @@ void ossia_value_convert_byte_array(ossia_value_t val, char** str, size_t* size)
   copy_bytes(ossia::convert<std::string>(val->value), str, size);
 }
 
-void ossia_value_convert_tuple(ossia_value_t val, ossia_value_t** out, int* size)
+void ossia_value_convert_tuple(ossia_value_t val, ossia_value_t** out, size_t* size)
 {
   if (!val || !out || !size)
   {
@@ -222,11 +299,11 @@ void ossia_value_convert_tuple(ossia_value_t val, ossia_value_t** out, int* size
   }
   auto v = ossia::convert<std::vector<ossia::value>>(val->value);
 
-  int N = v.size();
+  size_t N = v.size();
   *out = new ossia_value_t[N];
   *size = N;
 
-  for(int i = 0; i < N; i++)
+  for(size_t i = 0; i < N; i++)
   {
     *out[i] = convert(v[i]);
   }

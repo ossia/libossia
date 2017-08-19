@@ -7,7 +7,7 @@ namespace Ossia {
 	public class Node 
 	{
 		internal IntPtr ossia_node = IntPtr.Zero;
-		Address ossia_address = null;
+		Parameter ossia_parameter = null;
 		bool updating = false;
 		Network.ossia_node_callback node_remove_callback = null;
 		IntPtr node_ossia_remove_callback = IntPtr.Zero;
@@ -18,7 +18,7 @@ namespace Ossia {
 				Network.ossia_node_remove_deleting_callback (ossia_node, node_ossia_remove_callback);
 
 				ossia_node = IntPtr.Zero;
-				ossia_address = null;
+				ossia_parameter = null;
 				node_remove_callback = null;
 				node_ossia_remove_callback = IntPtr.Zero;
 			}
@@ -32,9 +32,9 @@ namespace Ossia {
 			IntPtr intptr_delegate = Marshal.GetFunctionPointerForDelegate (node_remove_callback);
 			node_ossia_remove_callback = Network.ossia_node_add_deleting_callback(ossia_node, intptr_delegate, (IntPtr)0);
 
-			var addr = Network.ossia_node_get_address (ossia_node);
+			var addr = Network.ossia_node_get_parameter (ossia_node);
 			if (addr != IntPtr.Zero) {
-				ossia_address = new Ossia.Address (addr);
+				ossia_parameter = new Ossia.Parameter (addr);
 			}
 		}
 
@@ -92,26 +92,26 @@ namespace Ossia {
 			return null;
 		}
 
-		public Address CreateAddress(ossia_type type)
+		public Parameter CreateParameter(ossia_type type)
 		{
-			if(ossia_node != IntPtr.Zero && ossia_address == null)
-				ossia_address = new Address (Network.ossia_node_create_address (ossia_node, type));
-			return ossia_address;
+			if(ossia_node != IntPtr.Zero && ossia_parameter == null)
+				ossia_parameter = new Parameter (Network.ossia_node_create_parameter (ossia_node, type));
+			return ossia_parameter;
 		}
 
-		public void RemoveAddress()
+		public void RemoveParameter()
 		{
 			if (ossia_node != IntPtr.Zero) {
-				Network.ossia_node_remove_address (ossia_node, ossia_address.ossia_address);
+				Network.ossia_node_remove_parameter (ossia_node, ossia_parameter.ossia_parameter);
 			}
-			ossia_address = null;
+			ossia_parameter = null;
 		}
 
 		public IntPtr GetNode() {
 			return ossia_node;
 		}
-		public Ossia.Address GetAddress() {
-			return ossia_address;
+		public Ossia.Parameter GetParameter() {
+			return ossia_parameter;
 		}
 
 		public bool GetValueUpdating() {
@@ -120,8 +120,8 @@ namespace Ossia {
 		public void SetValueUpdating(bool b)
 		{
 			if (ossia_node != IntPtr.Zero) {
-				if (ossia_address != null) {
-					ossia_address.SetValueUpdating (b);
+				if (ossia_parameter != null) {
+					ossia_parameter.SetValueUpdating (b);
 				}
 
 				for (int i = 0; i < ChildSize (); i++) {

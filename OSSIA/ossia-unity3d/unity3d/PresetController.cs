@@ -20,22 +20,22 @@ unsafe public class PresetController : MonoBehaviour {
 		IntPtr leafptr;
 		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/x", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_address(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Address addr = new Ossia.Address(addrptr);
+			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
 				result.x = addr.GetValue ().GetFloat ();
 			}
 		}
 		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/y", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_address(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Address addr = new Ossia.Address(addrptr);
+			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
 				result.y = addr.GetValue ().GetFloat ();
 			}
 		}
 		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/z", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_address(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Address addr = new Ossia.Address(addrptr);
+			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
 				result.z = addr.GetValue ().GetFloat ();
 			}
 		}

@@ -1069,13 +1069,29 @@ ossia_value_t ossia_value_create_char(char value);
 OSSIA_EXPORT
 ossia_value_t ossia_value_create_string(const char* value);
 /**
- * @brief Create a value of type typle
+ * @brief Create a value of type tuple
  * @note Multithread guarantees: Data-Safe.
- * @note The array will be copied
+ * @note The passed array will be copied
  * @see ossia::value
  */
 OSSIA_EXPORT
-ossia_value_t ossia_value_create_tuple(ossia_value_t* values, int size);
+ossia_value_t ossia_value_create_tuple(const ossia_value_t* values, size_t size);
+/**
+ * @brief Create a value of type tuple with only ints
+ * @note Multithread guarantees: Data-Safe.
+ * @note The passed array will be copied
+ * @see ossia::value
+ */
+OSSIA_EXPORT
+ossia_value_t ossia_value_create_in(const int* values, size_t size);
+/**
+ * @brief Create a value of type tuple with only floats
+ * @note Multithread guarantees: Data-Safe.
+ * @note The passed array will be copied
+ * @see ossia::value
+ */
+OSSIA_EXPORT
+ossia_value_t ossia_value_create_fn(const float* values, size_t size);
 
 /**
  * @brief Free the value.
@@ -1159,18 +1175,46 @@ char ossia_value_to_char(ossia_value_t val);
 OSSIA_EXPORT
 void ossia_value_to_byte_array(ossia_value_t val, char** str, size_t* sz);
 /**
- * @brief Get the value if it is a byte array.
+ * @brief Get the value if it is a tuple.
  * @return Undefined if ossia_value_get_type(val) != TUPLE_T
  * @note Multithread guarantees: Data-Safe.
  * @see ossia_value_free_tuple
  */
 OSSIA_EXPORT
-void ossia_value_to_tuple(ossia_value_t val_in, ossia_value_t** out, int* size);
+void ossia_value_to_tuple(ossia_value_t val_in, ossia_value_t** out, size_t* size);
 /**
  * @brief Free an array of values
  */
 OSSIA_EXPORT
 void ossia_value_free_tuple(ossia_value_t* out);
+
+/**
+ * @brief Get the value if it is a tuple of floats.
+ * @return Undefined if ossia_value_get_type(val) != TUPLE_T or any of the values are not FLOAT_T.
+ * @note Multithread guarantees: Data-Safe.
+ * @see ossia_value_free_tuple
+ */
+OSSIA_EXPORT
+void ossia_value_to_fn(ossia_value_t val_in, float** out, size_t* size);
+/**
+ * @brief Free an array of float
+ */
+OSSIA_EXPORT
+void ossia_value_free_fn(float* out);
+
+/**
+ * @brief Get the value if it is a tuple of ints.
+ * @return Undefined if ossia_value_get_type(val) != TUPLE_T or any of the values are not INT_T.
+ * @note Multithread guarantees: Data-Safe.
+ * @see ossia_value_free_tuple
+ */
+OSSIA_EXPORT
+void ossia_value_to_in(ossia_value_t val_in, int** out, size_t* size);
+/**
+ * @brief Free an array of int
+ */
+OSSIA_EXPORT
+void ossia_value_free_in(int* out);
 
 /**
  * @brief Get the value as an int
@@ -1225,7 +1269,7 @@ void ossia_value_convert_byte_array(ossia_value_t val, char** str, size_t* sz);
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_value_convert_tuple(ossia_value_t val_in, ossia_value_t** out, int* size);
+void ossia_value_convert_tuple(ossia_value_t val_in, ossia_value_t** out, size_t* size);
 
 
 OSSIA_EXPORT
