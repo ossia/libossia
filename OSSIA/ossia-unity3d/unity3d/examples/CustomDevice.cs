@@ -60,8 +60,18 @@ public class CustomDevice : MonoBehaviour
       blu.CreateParameter (Ossia.ossia_type.VEC3F);
     }
 
-    Ossia.Node.CreatePattern (root, "/{boo,bzu}/zaza.[0-5]");
-    Ossia.Node.FindPattern (root, "/{boo,bzu}/zaza.[0-5]");
+    {
+      Ossia.Node.CreatePattern (root, "/{boo,bzu}/zaza.[0-5]");
+      Ossia.Node.FindPattern (root, "/{boo,bzu}/zaza.[0-5]");
+    }
+
+    {
+      var array = Ossia.Node.CreateNode (root, "/my_array");
+      Ossia.Parameter addr2 = array.CreateParameter (Ossia.ossia_type.TUPLE);
+      addr2.PushValue (new int[]{ 1, 2, 4, 65 });
+      for(int i = 0; i < 4; i++)
+        Debug.Log(addr2.GetValue().GetIntArray()[i]);
+    }
   }
 
   // Update is called once per frame

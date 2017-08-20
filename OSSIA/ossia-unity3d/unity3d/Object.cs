@@ -164,7 +164,7 @@ namespace Ossia
     public void ReceiveUpdates(GameObject obj)
     {
         try {
-          field.SetValue (parent, ossia_parameter.GetValue ().ToObject());
+          field.SetValue (parent, ossia_parameter.GetValue ().Get());
         }
         catch(Exception) {
         }
@@ -242,7 +242,7 @@ namespace Ossia
         foreach (OssiaEnabledParameter oep in nodes) {
           oep.parent = ossia_c;
           oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute.ExposedName);
-          oep.ossia_parameter = oep.ossia_node.CreateParameter (Ossia.Value.TypeToOssia2 (oep.field.FieldType));
+          oep.ossia_parameter = oep.ossia_node.CreateParameter (Ossia.Value.GetOssiaType (oep.field.FieldType));
           oep.SendUpdates (this.gameObject);
         }
 

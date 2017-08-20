@@ -186,12 +186,13 @@ void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, size_t* size)
   else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
   {
     size_t N = casted_val->size();
-    *out = new ossia_value_t[N];
+    auto ptr = new ossia_value_t[N];
     *size = N;
     for(size_t i = 0; i < N; i++)
     {
-      *out[i] = convert((*casted_val)[i]);
+      ptr[i] = convert((*casted_val)[i]);
     }
+    *out = ptr;
     return;
   }
 
@@ -213,12 +214,13 @@ void ossia_value_to_fn(ossia_value_t val, float** out, size_t* size)
   else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
   {
     const size_t N = casted_val->size();
-    *out = new float[N];
+    auto ptr = new float[N];
     *size = N;
     for(size_t i = 0; i < N; i++)
     {
-      *out[i] = (*casted_val)[i].get<float>();
+      ptr[i] = (*casted_val)[i].get<float>();
     }
+    *out = ptr;
     return;
   }
 
@@ -239,12 +241,13 @@ void ossia_value_to_in(ossia_value_t val, int** out, size_t* size)
   else if (auto casted_val = val->value.target<std::vector<ossia::value>>())
   {
     const size_t N = casted_val->size();
-    *out = new int[N];
+    auto ptr = new int[N];
     *size = N;
     for(size_t i = 0; i < N; i++)
     {
-      *out[i] = (*casted_val)[i].get<int>();
+      ptr[i] = (*casted_val)[i].get<int>();
     }
+    *out = ptr;
     return;
   }
 
