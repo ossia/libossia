@@ -3,6 +3,7 @@
 #include "ossia_obj_base.hpp"
 #include "utils.hpp"
 #include <ossia/network/osc/detail/osc.hpp>
+#include <regex>
 
 extern void glist_noselect(t_glist* x);
 extern void canvas_vis(t_canvas* x, t_floatarg f);
@@ -58,6 +59,8 @@ t_matcher::t_matcher(t_matcher&& other)
 
       callbackit = addr->add_callback(
         [=] (const ossia::value& v) { set_value(v); });
+
+      set_parent_addr();
     }
   }
 }
@@ -82,6 +85,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
       callbackit = addr->add_callback(
         [=] (const ossia::value& v) { set_value(v); });
+
+      set_parent_addr();
     }
   }
 
@@ -96,6 +101,8 @@ t_matcher::t_matcher(ossia::net::node_base* n, t_obj_base* p) :
 
   node->about_to_be_deleted.connect<t_obj_base, &t_obj_base::is_deleted>(
         parent);
+
+  set_parent_addr();
 
   //clock_delay(x_regclock, 0);
 }
@@ -133,11 +140,9 @@ t_matcher::~t_matcher()
   node = nullptr;
 }
 
-void t_matcher::set_value(const ossia::value& v){
-  std::string addr = node->get_name();
-  t_atom a;
-  SETSYMBOL(&a, gensym(addr.c_str()));
-  outlet_anything(parent->x_dumpout,gensym("address"),1,&a);
+void t_matcher::set_value(const ossia::value& v)
+{
+  outlet_anything(parent->x_dumpout,gensym("address"),1,&m_addr);
 
   auto local_param = node->get_parameter();
   auto filtered = ossia::net::filter_value(
@@ -147,6 +152,28 @@ void t_matcher::set_value(const ossia::value& v){
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)parent;
   filtered.apply(vm);
+}
+
+void t_matcher::set_parent_addr()
+{
+  if (parent->x_parent_node){
+    std::string addr = ossia::net::address_string_from_node(*node);
+    std::string parent_addr = ossia::net::address_string_from_node(*parent->x_parent_node);
+
+    std::regex addr_regex(parent_addr);
+    std::smatch addr_match;
+
+    if (std::regex_search(addr, addr_match, addr_regex))
+    {
+      SETSYMBOL(&m_addr, gensym(addr_match.suffix().str().c_str()));
+    } else {
+      SETSYMBOL(&m_addr, gensym(node->get_name().c_str()));
+    }
+  }
+  else
+  {
+    SETSYMBOL(&m_addr, gensym("."));
+  }
 }
 
 #pragma mark t_obj_base

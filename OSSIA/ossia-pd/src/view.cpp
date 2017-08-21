@@ -59,6 +59,8 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
+    x_parent_node = node;
+
     if (x_addr_scope == AddrScope::relative)
     {
       x_node = node->find_child(x_name->s_name);
@@ -195,6 +197,9 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     x->x_clock = nullptr;
     x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
 
+    x->x_node = nullptr;
+    x->x_parent_node = nullptr;
+
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
@@ -221,7 +226,6 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
       x = nullptr;
     }
   }
-
 
   return x;
 }

@@ -379,7 +379,8 @@ ossia::pd::AddrScope get_parameter_type(const std::string& addr)
   AddrScope type = AddrScope::relative;
   if ( addr.length() > 0 )
   {
-    if (addr[0] == '/')
+    if (addr[0] == '/'
+        && addr.length() > 1 && addr[1] != '/') // escape the '//' special combinaison
       type = AddrScope::absolute;
     else if ( addr.find(":/") != std::string::npos )
       type = AddrScope::global;

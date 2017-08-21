@@ -40,6 +40,8 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
   std::string name(x_name->s_name);
 
+  x_parent_node = node;
+
   if (node->find_child(name))
   { // we have to check if a node with the same name already exists to avoid
     // auto-incrementing name
@@ -185,6 +187,8 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
 
       x->x_description = gensym("");
       x->x_tags = gensym("");
+      x->x_node = nullptr;
+      x->x_parent_node = nullptr;
 
       ebox_attrprocess_viabinbuf(x, d);
 

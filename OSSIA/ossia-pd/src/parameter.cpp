@@ -48,6 +48,8 @@ bool t_param::do_registration(ossia::net::node_base* node)
   if (absolute_path != address_string) return false;
   */
 
+  x_parent_node = node;
+
   auto nodes = ossia::net::create_nodes(*node, x_name->s_name);
 
   for (auto n : nodes)
@@ -355,6 +357,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->x_dataout = outlet_new((t_object*)x, nullptr);
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->x_node = nullptr;
+    x->x_parent_node = nullptr;
 
     x->x_access_mode = gensym("rw");
     x->x_bounding_mode = gensym("free");

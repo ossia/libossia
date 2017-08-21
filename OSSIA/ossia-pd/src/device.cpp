@@ -57,6 +57,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->x_name->s_name};
     x->x_node = &x->x_device->get_root_node();
+    x->x_parent_node = nullptr;
     x->x_regclock = clock_new(x, (t_method)t_device::register_children);
     clock_delay(x->x_regclock, 0);
 

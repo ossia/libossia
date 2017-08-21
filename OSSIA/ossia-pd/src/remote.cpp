@@ -56,6 +56,8 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       name = name.substr(1);
     }
 
+    x_parent_node = node;
+
     std::vector<ossia::net::node_base*> nodes{};
 
     if (x_addr_scope == AddrScope::global)
@@ -80,6 +82,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       }
     }
     clock_delay(x_regclock, 0);
+
   } else {
     return false;
   }
@@ -96,6 +99,7 @@ bool t_remote::unregister()
   obj_quarantining<t_remote>(this);
 
   x_node = nullptr;
+  x_parent_node = nullptr;
   return true;
 }
 
@@ -129,18 +133,7 @@ static void remote_click(
 
     t_device* device
         = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
-    /*
-    if (!device || !x->x_node || obj_isQuarantined<t_remote>(x)){
-      pd_error(x, "sorry no device found, or not connected or quarantined...");
-      return;
-    }
-    */
 
-    /*
-    t_canvas* root = x->x_obj.o_canvas;
-    while (root->gl_owner)
-      root = root->gl_owner;
-    */
     if (!find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
@@ -188,6 +181,9 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     x->x_clock = nullptr;
     x->x_regclock = clock_new(x, (t_method)t_obj_base::obj_bang);
+
+    x->x_parent_node = nullptr;
+    x->x_node = nullptr;
 
     obj_register<t_remote>(x);
     ossia_pd.remotes.push_back(x);

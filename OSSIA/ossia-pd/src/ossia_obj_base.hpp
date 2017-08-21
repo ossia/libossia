@@ -57,6 +57,7 @@ public:
   void set_value(const ossia::value& v);
   auto get_node() const { return node; }
   auto get_parent() const { return parent; }
+  void set_parent_addr();
 
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
@@ -68,6 +69,8 @@ private:
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
   callbackit = ossia::none;
+
+  t_atom m_addr;
 
 };
 
@@ -91,6 +94,7 @@ struct t_obj_base
   std::chrono::milliseconds x_last_click;
 
   ossia::net::node_base* x_node{};
+  ossia::net::node_base* x_parent_node{};
   std::vector<t_matcher> x_matchers{};
 
   std::vector<ossia::optional<ossia::callback_container<ossia::value_callback>::iterator> >
