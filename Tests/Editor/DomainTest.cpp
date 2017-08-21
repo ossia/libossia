@@ -575,6 +575,33 @@ private Q_SLOTS:
       QVERIFY(get_max(d) == (std::vector<ossia::value>{float{2}, int{3}}));
     }
   }
+
+  void test_string()
+  {
+    {
+      domain d = domain_base<std::string>();
+      ossia::set_values(d, {"foo", "bar", "baz"});
+
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});
+    }
+
+    {
+      domain d = make_domain({"foo", "bar", "baz"});
+
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});
+    }
+
+    {
+      domain d = make_domain(std::vector<std::string>{"foo", "bar", "baz"});
+
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});
+    }
+
+
+  }
 };
 
 QTEST_APPLESS_MAIN(DomainTest)

@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/editor/value/value_base.hpp>
 #include <chobo/small_vector.hpp>
+#include <vector>
 #include <ossia_export.h>
 namespace ossia
 {
@@ -26,8 +27,10 @@ OSSIA_EXPORT void set_max(domain& dom, const ossia::value& val);
 OSSIA_EXPORT void
 set_values(domain& dom, const std::vector<ossia::value>& val);
 
-OSSIA_EXPORT domain
-make_domain(const ossia::value& min, const ossia::value& max);
+OSSIA_EXPORT domain make_domain(
+    const ossia::value& min,
+    const ossia::value& max);
+OSSIA_EXPORT domain make_domain(const std::vector<std::string>& s);
 OSSIA_EXPORT domain make_domain(
     const chobo::small_vector<ossia::value, 2>& val, const ossia::value& cur);
 OSSIA_EXPORT domain make_domain(

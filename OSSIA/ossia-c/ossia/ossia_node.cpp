@@ -217,7 +217,7 @@ ossia_node_t ossia_node_find_child(ossia_node_t node, const char* child_n)
     }
 
     auto n = convert_node(node);
-    return convert(n->find_child(child_n));
+    return convert(n->find_child(ossia::string_view(child_n)));
   });
 }
 
