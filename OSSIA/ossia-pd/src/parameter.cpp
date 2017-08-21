@@ -62,13 +62,17 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(
               local_param->get_node(), x_default[0].a_w.w_float);
 
-      float min = std::numeric_limits<float>::lowest();
-      float max = std::numeric_limits<float>::max();
+      float min = 0.;
+      float max = 1.;
       if (x_min[0].a_type == A_FLOAT)
         min = x_min[0].a_w.w_float;
+      else
+        min = std::numeric_limits<float>::lowest();
 
       if (x_max[0].a_type == A_FLOAT)
         max = x_max[0].a_w.w_float;
+      else
+        max = std::numeric_limits<float>::max();
 
       local_param->set_domain(ossia::make_domain(min, max));
     }
@@ -87,13 +91,17 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(
               local_param->get_node(), x_default[0].a_w.w_float);
 
-      int min = std::numeric_limits<int>::lowest();
-      int max = std::numeric_limits<int>::max();
+      int min = 0.;
+      int max = 1.;
       if (x_min[0].a_type == A_FLOAT)
         min = x_min[0].a_w.w_float;
+      else
+        min = std::numeric_limits<int>::lowest();
 
       if (x_max[0].a_type == A_FLOAT)
         max = x_max[0].a_w.w_float;
+      else
+        max = std::numeric_limits<int>::max();
 
       local_param->set_domain(ossia::make_domain(min, max));
     }
@@ -108,14 +116,19 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec2f min;
-      min.fill(std::numeric_limits<float>::lowest());
+      min.fill(0.);
       vec2f max;
-      max.fill(std::numeric_limits<float>::max());
+      max.fill(1.);
       for (int i=0; i<2; i++){
         if (x_min[i].a_type == A_FLOAT)
           min[i] = x_min[i].a_w.w_float;
+        else
+          min[i] = std::numeric_limits<float>::lowest();
+
         if (x_max[i].a_type == A_FLOAT)
           max[i] = x_max[i].a_w.w_float;
+        else
+          max[i] = std::numeric_limits<float>::max();
       }
       local_param->set_domain(ossia::make_domain(min, max));
     }
@@ -133,14 +146,19 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec3f min;
-      min.fill(std::numeric_limits<float>::lowest());
+      min.fill(0.);
       vec3f max;
-      max.fill(std::numeric_limits<float>::max());
+      max.fill(1.);
       for (int i=0; i<3; i++){
         if (x_min[i].a_type == A_FLOAT)
           min[i] = x_min[i].a_w.w_float;
+        else
+          min[i] = std::numeric_limits<float>::lowest();
+
         if (x_max[i].a_type == A_FLOAT)
           max[i] = x_max[i].a_w.w_float;
+        else
+          max[i] = std::numeric_limits<float>::max();
       }
       local_param->set_domain(ossia::make_domain(min, max));
     }
@@ -158,14 +176,19 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec4f min;
-      min.fill(std::numeric_limits<float>::lowest());
+      min.fill(0.);
       vec4f max;
-      max.fill(std::numeric_limits<float>::max());
+      max.fill(1.);
       for (int i=0; i<4; i++){
         if (x_min[i].a_type == A_FLOAT)
           min[i] = x_min[i].a_w.w_float;
+        else
+          min[i] = std::numeric_limits<float>::lowest();
+
         if (x_max[i].a_type == A_FLOAT)
           max[i] = x_max[i].a_w.w_float;
+        else
+          max[i] = std::numeric_limits<float>::max();
       }
       local_param->set_domain(ossia::make_domain(min, max));
 
