@@ -66,6 +66,13 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
       float min = 0.;
       float max = 1.;
+
+      if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
+      {
+        min = x_range[0].a_w.w_float;
+        max = x_range[1].a_w.w_float;
+      }
+
       if (x_min[0].a_type == A_FLOAT)
         min = x_min[0].a_w.w_float;
       else
@@ -85,6 +92,23 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(
               local_param->get_node(),
               std::string(x_default[0].a_w.w_symbol->s_name));
+
+      std::vector<std::string> senum;
+      for ( int i = 0; i < OSSIA_PD_MAX_ATTR_SIZE; i++)
+      {
+        if (x_range[i].a_type == A_SYMBOL)
+          senum.push_back(x_range[i].a_w.w_symbol->s_name);
+        else if (x_range[i].a_type == A_FLOAT)
+        {
+          std::stringstream ss;
+          ss << x_range[i].a_w.w_float;
+          senum.push_back(ss.str());
+        }
+        else
+          break;
+      }
+      if (!senum.empty())
+        local_param->set_domain(make_domain(senum));
     }
     else if (type == "int")
     {
@@ -95,6 +119,13 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
       int min = 0.;
       int max = 1.;
+
+      if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
+      {
+        min = x_range[0].a_w.w_float;
+        max = x_range[1].a_w.w_float;
+      }
+
       if (x_min[0].a_type == A_FLOAT)
         min = x_min[0].a_w.w_float;
       else
@@ -118,9 +149,17 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec2f min;
-      min.fill(0.);
       vec2f max;
-      max.fill(1.);
+
+      if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
+      {
+        min.fill(x_range[0].a_w.w_float);
+        max.fill(x_range[1].a_w.w_float);
+      } else {
+        min.fill(0.);
+        max.fill(1.);
+      }
+
       for (int i=0; i<2; i++){
         if (x_min[i].a_type == A_FLOAT)
           min[i] = x_min[i].a_w.w_float;
@@ -148,9 +187,17 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec3f min;
-      min.fill(0.);
       vec3f max;
-      max.fill(1.);
+
+      if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
+      {
+        min.fill(x_range[0].a_w.w_float);
+        max.fill(x_range[1].a_w.w_float);
+      } else {
+        min.fill(0.);
+        max.fill(1.);
+      }
+
       for (int i=0; i<3; i++){
         if (x_min[i].a_type == A_FLOAT)
           min[i] = x_min[i].a_w.w_float;
@@ -178,9 +225,17 @@ bool t_param::do_registration(ossia::net::node_base* node)
       }
 
       vec4f min;
-      min.fill(0.);
       vec4f max;
-      max.fill(1.);
+
+      if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
+      {
+        min.fill(x_range[0].a_w.w_float);
+        max.fill(x_range[1].a_w.w_float);
+      } else {
+        min.fill(0.);
+        max.fill(1.);
+      }
+
       for (int i=0; i<4; i++){
         if (x_min[i].a_type == A_FLOAT)
           min[i] = x_min[i].a_w.w_float;
@@ -210,7 +265,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
     else if (type == "list")
     {
       local_param = n->create_parameter(ossia::val_type::TUPLE);
-      x_type_size = 64;
+      x_type_size = OSSIA_PD_MAX_ATTR_SIZE;
 
       auto list = attribute2value(x_default);
       if (list.size() > 0)
@@ -219,7 +274,21 @@ bool t_param::do_registration(ossia::net::node_base* node)
       std::vector<ossia::value> min = attribute2value(x_min);
       std::vector<ossia::value> max = attribute2value(x_max);
 
-      local_param->set_domain(ossia::make_domain(min, max));
+      if (!min.empty() && !max.empty())
+        local_param->set_domain(ossia::make_domain(min, max));
+      else
+      {
+        if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
+        {
+          std::vector<ossia::value> omin, omax;
+          std::array<float, OSSIA_PD_MAX_ATTR_SIZE> min, max;
+          min.fill(x_range[0].a_w.w_float);
+          max.fill(x_range[1].a_w.w_float);
+          omin.assign(min.begin(), min.end());
+          omax.assign(max.begin(), max.end());
+          local_param->set_domain(ossia::make_domain(omin,omax));
+        }
+      }
     }
     else if (type == "char")
     {
@@ -350,8 +419,6 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
   {
     ossia_pd.params.push_back(x);
     x->x_otype = Type::param;
-    x->x_range[0] = 0.;
-    x->x_range[1] = 1.;
 
     x->x_setout = nullptr;
     x->x_dataout = outlet_new((t_object*)x, nullptr);
@@ -437,10 +504,10 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_SYMBOL(c, "description", 0, t_param, x_description);
     CLASS_ATTR_SYMBOL(c, "tags", 0, t_param, x_tags);
 
-    CLASS_ATTR_ATOM_ARRAY(c, "default", 0, t_param, x_default, 64);
-    CLASS_ATTR_FLOAT_ARRAY(c, "range", 0, t_param, x_range, 2);
-    CLASS_ATTR_ATOM_ARRAY(c, "min", 0, t_param, x_min, 64);
-    CLASS_ATTR_ATOM_ARRAY(c, "max", 0, t_param, x_max, 64);
+    CLASS_ATTR_ATOM_ARRAY(c, "default", 0, t_param, x_default, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_ARRAY(c, "range", 0, t_param, x_range, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_ARRAY(c, "min", 0, t_param, x_min, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_ARRAY(c, "max", 0, t_param, x_max, OSSIA_PD_MAX_ATTR_SIZE);
     CLASS_ATTR_FLOAT(c, "repetition_filter", 0, t_param, x_repetition_filter);
     CLASS_ATTR_INT(c, "priority", 0, t_param, x_priority);
     CLASS_ATTR_INT(c, "hidden", 0, t_param, x_hidden);

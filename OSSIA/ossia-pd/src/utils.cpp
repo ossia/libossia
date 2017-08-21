@@ -392,7 +392,7 @@ std::vector<ossia::value> attribute2value(t_atom* atom)
 {
   std::vector<ossia::value> list;
 
-  for (int i = 0; i < 64 && atom[i].a_type != A_NULL; i++)
+  for (int i = 0; i < OSSIA_PD_MAX_ATTR_SIZE && atom[i].a_type != A_NULL; i++)
   {
     if (atom[i].a_type == A_FLOAT)
       list.push_back(atom_getfloat(&atom[i]));

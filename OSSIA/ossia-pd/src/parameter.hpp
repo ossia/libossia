@@ -5,6 +5,8 @@
 #include "remote.hpp"
 #include "ossia_obj_base.hpp"
 
+#define OSSIA_PD_MAX_ATTR_SIZE 64
+
 namespace ossia
 {
 namespace pd
@@ -19,10 +21,10 @@ struct t_param : t_obj_base
 
   t_symbol* x_type;
   int x_type_size;
-  t_atom x_default[64];
-  t_atom x_min[64];
-  t_atom x_max[64];
-  float x_range[2];
+  t_atom x_default[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom x_min[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom x_max[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom x_range[OSSIA_PD_MAX_ATTR_SIZE];
   t_symbol* x_bounding_mode;
   t_symbol* x_access_mode;
   t_float x_repetition_filter = 0;
