@@ -282,7 +282,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
     ossia::net::set_hidden(local_param->get_node(), x_hidden);
 
-    ossia:net::set_disabled(local_address->get_node(), !x_enable);
+    ossia::net::set_disabled(local_param->get_node(), !x_enable);
 
     t_matcher matcher{n,this};
     x_matchers.push_back(std::move(matcher));
