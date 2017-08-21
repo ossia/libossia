@@ -31,7 +31,7 @@ struct t_param : t_obj_base
   t_symbol* x_description;
   int x_priority;
   bool x_hidden;
-  bool x_disable;
+  bool x_enable;
 
   static ossia::safe_vector<t_param*>& quarantine();
 
