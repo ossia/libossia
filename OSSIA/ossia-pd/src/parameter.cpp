@@ -205,7 +205,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(
               local_param->get_node(), x_default[0].a_w.w_float);
     }
-    else if (type == "tuple")
+    else if (type == "list")
     {
       local_param = n->create_parameter(ossia::val_type::TUPLE);
       x_type_size = 64;
@@ -231,7 +231,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
       pd_error(
             this,
             "type should one of: float, symbol, int, vec2f, "
-            "vec3f, vec4f, bool, tuple, char");
+            "vec3f, vec4f, bool, list, char");
     }
     if (!local_param)
       return false;
@@ -384,12 +384,15 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     // change some attributes names to lower case
     std::string type = x->x_type->s_name;
     ossia::transform(type, type.begin(), ::tolower);
+    x->x_type = gensym(type.c_str());
 
     std::string bounding_mode = x->x_bounding_mode->s_name;
     ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
+    x->x_bounding_mode = gensym(bounding_mode.c_str());
 
     std::string access_mode = x->x_access_mode->s_name;
     ossia::transform(access_mode, access_mode.begin(), ::tolower);
+    x->x_access_mode = gensym(access_mode.c_str());
 
     obj_register<t_param>(x);
   }

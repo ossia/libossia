@@ -461,7 +461,7 @@ void obj_dump(T* x)
           type = "string";
           break;
         case ossia::val_type::TUPLE:
-          type = "tuple";
+          type = "list";
           break;
         case ossia::val_type::CHAR:
           type = "char";
