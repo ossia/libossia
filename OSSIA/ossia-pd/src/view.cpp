@@ -203,7 +203,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = ossia::pd::get_parameter_type(x->x_name->s_name);
+      x->x_addr_scope = ossia::pd::get_address_scope(x->x_name->s_name);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
@@ -242,7 +242,7 @@ static void view_free(t_view* x)
 static void view_bind(t_view* x, t_symbol* address)
 {
   x->x_name = address;
-  x->x_addr_scope = ossia::pd::get_parameter_type(x->x_name->s_name);
+  x->x_addr_scope = ossia::pd::get_address_scope(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }

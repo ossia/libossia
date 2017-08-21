@@ -429,12 +429,12 @@ void obj_dump(T* x)
 
   if (x->x_node)
   {
-    ossia::net::parameter_base* address = x->x_node->get_parameter();
-    if (address)
+    ossia::net::parameter_base* param = x->x_node->get_parameter();
+    if (param)
     {
       // type
       std::string type = "unknown";
-      switch (address->get_value_type())
+      switch (param->get_value_type())
       {
         case ossia::val_type::FLOAT:
           type = "float";
@@ -474,13 +474,13 @@ void obj_dump(T* x)
       outlet_anything(x->x_dumpout, gensym("type"), 1, &a);
 
       // domain
-      ossia::domain domain = address->get_domain();
+      ossia::domain domain = param->get_domain();
       SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
       outlet_anything(x->x_dumpout, gensym("domain"), 1, &a);
 
       // bounding mode
       std::string bounding_mode;
-      switch (address->get_bounding())
+      switch (param->get_bounding())
       {
         case ossia::bounding_mode::FREE:
           bounding_mode = "free";
@@ -508,7 +508,7 @@ void obj_dump(T* x)
 
       // access mode
       std::string access_mode;
-      switch (address->get_access())
+      switch (param->get_access())
       {
         case ossia::access_mode::BI:
           access_mode = "bi";
@@ -526,13 +526,13 @@ void obj_dump(T* x)
       outlet_anything(x->x_dumpout, gensym("access_mode"), 1, &a);
 
       // repetition filter
-      bool rep = address->get_repetition_filter();
+      bool rep = param->get_repetition_filter();
       SETFLOAT(&a, rep);
       outlet_anything(x->x_dumpout, gensym("repetition_filter"), 1, &a);
 
       // unit
       std::string pretty_unit
-          = ossia::get_pretty_unit_text(address->get_unit());
+          = ossia::get_pretty_unit_text(param->get_unit());
       SETSYMBOL(&a, gensym(pretty_unit.c_str()));
       outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
     }
@@ -593,11 +593,11 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
 
 
 /**
- * @brief get_parameter_type: return address type (relative, absolute or globale)
+ * @brief get_address_scope: return address scope (relative, absolute or globale)
  * @param addr: the address to process
- * @return
+ * @return the scope
  */
-ossia::pd::AddrScope get_parameter_type(const std::string& addr);
+ossia::pd::AddrScope get_address_scope(const std::string& addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

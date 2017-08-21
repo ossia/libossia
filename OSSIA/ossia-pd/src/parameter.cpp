@@ -374,7 +374,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = get_parameter_type(x->x_name->s_name);
+      x->x_addr_scope = get_address_scope(x->x_name->s_name);
     }
     else
     {

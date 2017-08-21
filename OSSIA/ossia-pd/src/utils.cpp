@@ -374,7 +374,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
   return nodes;
 }
 
-ossia::pd::AddrScope get_parameter_type(const std::string& addr)
+ossia::pd::AddrScope get_address_scope(const std::string& addr)
 {
   AddrScope type = AddrScope::relative;
   if ( addr.length() > 0 )

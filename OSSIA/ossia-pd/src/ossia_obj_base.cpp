@@ -52,12 +52,12 @@ t_matcher::t_matcher(t_matcher&& other)
 
   if(node)
   {
-    if(auto addr = node->get_parameter())
+    if(auto param = node->get_parameter())
     {
       if (callbackit)
-        addr->remove_callback(*callbackit);
+        param->remove_callback(*callbackit);
 
-      callbackit = addr->add_callback(
+      callbackit = param->add_callback(
         [=] (const ossia::value& v) { set_value(v); });
 
       set_parent_addr();
@@ -78,12 +78,12 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   if(node)
   {
-    if(auto addr = node->get_parameter())
+    if(auto param = node->get_parameter())
     {
       if (callbackit)
-        addr->remove_callback(*callbackit);
+        param->remove_callback(*callbackit);
 
-      callbackit = addr->add_callback(
+      callbackit = param->add_callback(
         [=] (const ossia::value& v) { set_value(v); });
 
       set_parent_addr();
@@ -125,8 +125,8 @@ t_matcher::~t_matcher()
         obj_quarantining<t_param>((t_param*) parent);
       }
     } else {
-      auto addr = node->get_parameter();
-      if (addr && callbackit) addr->remove_callback(*callbackit);
+      auto param = node->get_parameter();
+      if (param && callbackit) param->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
 
       // if there vector is empty
