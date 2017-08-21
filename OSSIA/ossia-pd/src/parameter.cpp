@@ -282,6 +282,8 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
     ossia::net::set_hidden(local_param->get_node(), x_hidden);
 
+    ossia:net::set_disabled(local_address->get_node(), x_disable);
+
     t_matcher matcher{n,this};
     x_matchers.push_back(std::move(matcher));
   }
@@ -436,6 +438,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_FLOAT(c, "repetition_filter", 0, t_param, x_repetition_filter);
     CLASS_ATTR_INT(c, "priority", 0, t_param, x_priority);
     CLASS_ATTR_INT(c, "hidden", 0, t_param, x_hidden);
+    CLASS_ATTR_INT(c, "disable", 0, t_param, x_disable);
 
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");
 
