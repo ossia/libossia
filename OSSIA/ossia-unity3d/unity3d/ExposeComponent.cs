@@ -28,12 +28,24 @@ namespace Ossia
 			// Find the fields that are marked for exposition
 			foreach (FieldInfo field in fields) {
 				nodes.Add(new OssiaEnabledField(field, field.Name));
-			}
+      }
+      // Same for components
+      foreach (PropertyInfo prop in component.GetType().GetProperties ()) {
+        prop_nodes.Add(new OssiaEnabledProperty(prop, prop.Name));
+      }
+
+      OssiaEnabledComponent ossia_c;
+      if(nodes.Count > 0 || prop_nodes.Count > 0)
+      {
+        // Create a node for the component
+        ossia_c = new OssiaEnabledComponent(
+          component, 
+          node.AddChild(component.GetType().ToString()));
+        
+        ossia_components.Add (ossia_c);
+      }
+
 			if (nodes.Count > 0) {
-				// Create a node for the component
-				OssiaEnabledComponent ossia_c = new OssiaEnabledComponent(
-					component, 
-					node.AddChild(component.GetType().ToString()));
 				// Create nodes for all the fields that were exposed
 				foreach (OssiaEnabledField oep in nodes) {
 					oep.parent = ossia_c;
@@ -43,19 +55,9 @@ namespace Ossia
 				}
 
         ossia_c.fields = nodes;
-				ossia_components.Add (ossia_c);
 			}
 
-      // Same for components
-			foreach (PropertyInfo prop in component.GetType().GetProperties ()) {
-				prop_nodes.Add(new OssiaEnabledProperty(prop, prop.Name));
-			}
 			if (prop_nodes.Count > 0) {
-				// Create a node for the component
-				OssiaEnabledComponent ossia_c = new OssiaEnabledComponent(
-					component, 
-					node.AddChild(component.GetType().ToString()));
-        
 				// Create nodes for all the fields that were exposed
 				foreach (OssiaEnabledProperty oep in prop_nodes) {
           if(oep.field.PropertyType == typeof(UnityEngine.Transform)) { 
@@ -81,7 +83,6 @@ namespace Ossia
 				}
 
 				ossia_c.properties = prop_nodes;
-				ossia_components.Add (ossia_c);
 			}
 
 		}

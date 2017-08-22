@@ -20,6 +20,8 @@ public class CustomDevice : MonoBehaviour
   public delegate void debug_log_delegate(string str);
   void Start ()
   {
+    Application.runInBackground = true;
+
     var callback_delegate = new debug_log_delegate ((string str) => Debug.Log("OSSIA : " + str));
     IntPtr intptr_delegate =  Marshal.GetFunctionPointerForDelegate (callback_delegate);
     Ossia.Network.ossia_set_debug_logger (intptr_delegate);

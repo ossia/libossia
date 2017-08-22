@@ -11,59 +11,24 @@ namespace Ossia
   public class OssiaTransform
   {
     Ossia.Node pos_node;
-    Ossia.Node orient_node;
+    Ossia.Node rot_node;
 
-    Ossia.Node pos_x_node;
-    Ossia.Node pos_y_node;
-    Ossia.Node pos_z_node;
 
-    Ossia.Parameter pos_x_addr;
-    Ossia.Parameter pos_y_addr;
-    Ossia.Parameter pos_z_addr;
-
-    Ossia.Node rot_w_node;
-    Ossia.Node rot_x_node;
-    Ossia.Node rot_y_node;
-    Ossia.Node rot_z_node;
-
-    Ossia.Parameter rot_w_addr;
-    Ossia.Parameter rot_x_addr;
-    Ossia.Parameter rot_y_addr;
-    Ossia.Parameter rot_z_addr;
-
+    Ossia.Parameter pos_addr;
+    Ossia.Parameter rot_addr;
     public OssiaTransform(GameObject obj, Ossia.Node object_node)
     {
       {
         pos_node = object_node.AddChild ("position");
-        pos_x_node = pos_node.AddChild ("x");
-        pos_y_node = pos_node.AddChild ("y");
-        pos_z_node = pos_node.AddChild ("z");
-
-        pos_x_addr = pos_x_node.CreateParameter (Ossia.ossia_type.FLOAT);
-        pos_y_addr = pos_y_node.CreateParameter (Ossia.ossia_type.FLOAT);
-        pos_z_addr = pos_z_node.CreateParameter (Ossia.ossia_type.FLOAT);
-
-        pos_x_addr.PushValue (new Value(obj.transform.position.x));
-        pos_y_addr.PushValue (new Value(obj.transform.position.y));
-        pos_z_addr.PushValue (new Value(obj.transform.position.z));
+        pos_addr = pos_node.CreateParameter (Ossia.ossia_type.VEC3F);
+        pos_addr.PushValue (obj.transform.position.x, obj.transform.position.y, obj.transform.position.z);
       }
 
       {
-        orient_node = object_node.AddChild ("rotation");
-        rot_w_node = orient_node.AddChild ("w");
-        rot_x_node = orient_node.AddChild ("x");
-        rot_y_node = orient_node.AddChild ("y");
-        rot_z_node = orient_node.AddChild ("z");
+        rot_node = object_node.AddChild ("rotation");
+        rot_addr = rot_node.CreateParameter (Ossia.ossia_type.VEC4F);
+        rot_addr.PushValue (obj.transform.rotation.w, obj.transform.rotation.x, obj.transform.rotation.y, obj.transform.rotation.z);
 
-        rot_w_addr = rot_w_node.CreateParameter (Ossia.ossia_type.FLOAT);
-        rot_x_addr = rot_x_node.CreateParameter (Ossia.ossia_type.FLOAT);
-        rot_y_addr = rot_y_node.CreateParameter (Ossia.ossia_type.FLOAT);
-        rot_z_addr = rot_z_node.CreateParameter (Ossia.ossia_type.FLOAT);
-
-        rot_w_addr.PushValue (new Value(obj.transform.rotation.w));
-        rot_x_addr.PushValue (new Value(obj.transform.position.x));
-        rot_y_addr.PushValue (new Value(obj.transform.position.y));
-        rot_z_addr.PushValue (new Value(obj.transform.position.z));
       }
     }
 
@@ -73,73 +38,40 @@ namespace Ossia
       {
         var pos = obj.transform.position;
 
-        { var x_val = pos_x_addr.GetValue ();
-          if (x_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            pos.x = x_val.GetFloat ();
-          }
-        }
-
-        { var y_val = pos_y_addr.GetValue ();
-          if (y_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            pos.y = y_val.GetFloat ();
-          }
-        }
-
-        { var z_val = pos_z_addr.GetValue ();
-          if (z_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            pos.z = z_val.GetFloat ();
+        { var val = pos_addr.GetValue ();
+          if (val.GetOssiaType () == Ossia.ossia_type.VEC3F) {
+            var vec3 = val.GetVec3f ();
+            pos = new Vector3(vec3.f1, vec3.f2, vec3.f3);
           }
         }
 
         obj.transform.position = pos;
       }
-
       {
         var rot = obj.transform.rotation;
-        { var w_val = rot_w_addr.GetValue ();
-          if (w_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            rot.w = w_val.GetFloat ();
-          }
-        }
 
-        { var x_val = rot_x_addr.GetValue ();
-          if (x_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            rot.x = x_val.GetFloat ();
-          }
-        }
-
-        { var y_val = rot_y_addr.GetValue ();
-          if (y_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            rot.y = y_val.GetFloat ();
-          }
-        }
-
-        { var z_val = rot_z_addr.GetValue ();
-          if (z_val.GetOssiaType () == Ossia.ossia_type.FLOAT) {
-            rot.z = z_val.GetFloat ();
+        { var val = pos_addr.GetValue ();
+          if (val.GetOssiaType () == Ossia.ossia_type.VEC4F) {
+            var vec3 = val.GetVec4f ();
+            rot = new Quaternion(vec3.f1, vec3.f2, vec3.f3, vec3.f4);
           }
         }
 
         obj.transform.rotation = rot;
       }
-
     }
 
     public void SendUpdates(GameObject obj)
     {
       {
         var pos = obj.transform.position;
-        pos_x_addr.PushValue (new Value (pos.x));
-        pos_y_addr.PushValue (new Value (pos.y));
-        pos_z_addr.PushValue (new Value (pos.z));
+        Debug.Log ("pushing " + pos.x + ", " + pos.y + ", " + pos.z);
+        pos_addr.PushValue (pos.x, pos.y, pos.z);
       }
 
       {
         var rot = obj.transform.rotation;
-        rot_w_addr.PushValue (new Value (rot.w));
-        rot_x_addr.PushValue (new Value (rot.x));
-        rot_y_addr.PushValue (new Value (rot.y));
-        rot_z_addr.PushValue (new Value (rot.z));
+        rot_addr.PushValue (rot.w, rot.x, rot.y, rot.z);
       }
     }
   }
