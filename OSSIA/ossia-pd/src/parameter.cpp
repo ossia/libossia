@@ -224,6 +224,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
         ossia::net::set_default_value(local_param->get_node(), vec);
       }
 
+      /*
       vec4f min;
       vec4f max;
 
@@ -247,6 +248,14 @@ bool t_param::do_registration(ossia::net::node_base* node)
         else
           max[i] = std::numeric_limits<float>::max();
       }
+      */
+
+      std::vector<ossia::value> min = attribute2value(x_min);
+      std::vector<ossia::value> max = attribute2value(x_max);
+
+      if (!min.empty() && !max.empty())
+        local_param->set_domain(ossia::make_domain(min, max));
+
       local_param->set_domain(ossia::make_domain(min, max));
 
     }
@@ -533,7 +542,12 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_INT(c, "hidden", 0, t_param, x_hidden);
     CLASS_ATTR_INT(c, "enable", 0, t_param, x_enable);
 
-    CLASS_ATTR_DEFAULT(c, "type", 0, "float");
+    CLASS_ATTR_DEFAULT(c, "type",          0, "float");
+    CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
+    CLASS_ATTR_DEFAULT(c, "access_mode",   0, "bi");
+    CLASS_ATTR_DEFAULT(c, "description",   0, "");
+    CLASS_ATTR_DEFAULT(c, "tags",          0, "");
+
 
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy
