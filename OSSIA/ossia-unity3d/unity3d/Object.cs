@@ -145,17 +145,17 @@ namespace Ossia
   }
 
   //! Used to register every field that has an [Ossia.Expose] attached.
-  internal class OssiaEnabledParameter
+  internal class OssiaEnabledField
   {
     public OssiaEnabledComponent parent;
 
     public FieldInfo field;
-    public Ossia.Expose attribute;
+    public string attribute;
 
     public Ossia.Node ossia_node;
     public Ossia.Parameter ossia_parameter;
 
-    public OssiaEnabledParameter(FieldInfo f, Ossia.Expose attr)
+    public OssiaEnabledField(FieldInfo f, string attr)
     {
       field = f;
       attribute = attr;
@@ -164,7 +164,7 @@ namespace Ossia
     public void ReceiveUpdates(GameObject obj)
     {
         try {
-          field.SetValue (parent, ossia_parameter.GetValue ().Get());
+          field.SetValue (parent.component, ossia_parameter.GetValue ().Get());
         }
         catch(Exception) {
         }
@@ -176,15 +176,50 @@ namespace Ossia
     }
   }
 
+
+	internal class OssiaEnabledProperty
+	{
+		public OssiaEnabledComponent parent;
+
+		public PropertyInfo field;
+		public string attribute;
+
+		public Ossia.Node ossia_node;
+		public Ossia.Parameter ossia_parameter;
+
+		public OssiaEnabledProperty(PropertyInfo f, string attr)
+		{
+			field = f;
+			attribute = attr;
+		}
+
+		public void ReceiveUpdates(GameObject obj)
+		{
+			try {
+				var value = ossia_parameter.GetValue().Get();
+				var conv = Convert.ChangeType(value, field.PropertyType);
+        field.SetValue (parent.component, conv, null);
+			}
+			catch(Exception) {
+			}
+		}
+
+		public void SendUpdates(GameObject obj)
+		{
+			ossia_parameter.PushValue (new Value(field.GetValue(parent.component, null)));
+		}
+	}
+
   //! A component whose fields have some [Ossia.Expose] attributes
   internal class OssiaEnabledComponent
   {
-    public MonoBehaviour component;
+    public Component component;
     public Ossia.Node component_node;
 
-    public List<OssiaEnabledParameter> parameters;
+    public List<OssiaEnabledField> fields = new List<OssiaEnabledField>();
+    public List<OssiaEnabledProperty> properties = new List<OssiaEnabledProperty>();
 
-    public OssiaEnabledComponent(MonoBehaviour comp, Ossia.Node node)
+    public OssiaEnabledComponent(Component comp, Ossia.Node node)
     {
       component = comp;
       component_node = node;
@@ -192,15 +227,21 @@ namespace Ossia
 
     public void ReceiveUpdates(GameObject obj)
     {
-      foreach (var parameter in parameters) {
-        parameter.ReceiveUpdates (obj);
+      foreach (var field in fields) {
+        field.ReceiveUpdates (obj);
+      }
+      foreach (var property in properties) {
+        property.ReceiveUpdates (obj);
       }
     }
 
     public void SendUpdates(GameObject obj)
     {
-      foreach (var parameter in parameters) {
-        parameter.SendUpdates (obj);
+      foreach (var field in fields) {
+        field.SendUpdates (obj);
+      }
+      foreach (var property in properties) {
+        property.ReceiveUpdates (obj);
       }
     }
   }
@@ -221,7 +262,7 @@ namespace Ossia
 
     void RegisterComponent(MonoBehaviour component)
     {
-      List<OssiaEnabledParameter> nodes = new List<OssiaEnabledParameter>();
+      List<OssiaEnabledField> nodes = new List<OssiaEnabledField>();
       Debug.Log ("Registering component" + component.GetType().ToString());
       const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
       FieldInfo[] fields = component.GetType().GetFields(flags);
@@ -230,7 +271,7 @@ namespace Ossia
       foreach (FieldInfo field in fields) {
         if(Attribute.IsDefined(field, typeof(Ossia.Expose))) {
           var attr = (Ossia.Expose) Attribute.GetCustomAttribute(field, typeof(Ossia.Expose));
-          nodes.Add(new OssiaEnabledParameter(field, attr));
+		  nodes.Add(new OssiaEnabledField(field, attr.ExposedName));
         }
       }
 
@@ -239,14 +280,14 @@ namespace Ossia
         OssiaEnabledComponent ossia_c = new OssiaEnabledComponent(component, child_node.AddChild(component.GetType().ToString()));
 
         // Create nodes for all the fields that were exposed
-        foreach (OssiaEnabledParameter oep in nodes) {
+        foreach (OssiaEnabledField oep in nodes) {
           oep.parent = ossia_c;
-          oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute.ExposedName);
+          oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute);
           oep.ossia_parameter = oep.ossia_node.CreateParameter (Ossia.Value.GetOssiaType (oep.field.FieldType));
           oep.SendUpdates (this.gameObject);
         }
 
-        ossia_c.parameters = nodes;
+        ossia_c.fields = nodes;
         ossia_components.Add (ossia_c);
       }
     }

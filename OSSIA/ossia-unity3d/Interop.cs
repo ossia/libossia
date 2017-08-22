@@ -28,10 +28,10 @@ namespace Ossia
 
     //// Protocol ////
     [DllImport ("ossia")]
-    public static extern IntPtr ossia_protocol_local_create ();
+    public static extern IntPtr ossia_protocol_multiplex_create ();
 
     [DllImport ("ossia")]
-    public static extern void ossia_protocol_local_expose_to (
+    public static extern void ossia_protocol_multiplex_expose_to (
       IntPtr local_protocol,
       IntPtr remote_protocol);
 
