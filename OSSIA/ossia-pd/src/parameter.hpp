@@ -25,6 +25,7 @@ struct t_param : t_obj_base
   t_atom x_min[OSSIA_PD_MAX_ATTR_SIZE];
   t_atom x_max[OSSIA_PD_MAX_ATTR_SIZE];
   t_atom x_range[OSSIA_PD_MAX_ATTR_SIZE];
+  int x_default_size, x_range_size, x_min_size, x_max_size;
   t_symbol* x_bounding_mode;
   t_symbol* x_access_mode;
   t_float x_repetition_filter = 0;

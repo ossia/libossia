@@ -470,6 +470,24 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
+t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+{
+  logpost(x, 2, "received notification !");
+  if (msg == gensym("attr_modified"))
+  {
+    if( s == gensym("range") )
+    {
+      logpost(x, 2, "please update range");
+      outlet_anything(x->x_dumpout, gensym("range"), x->x_range_size, x->x_range);
+    }
+    else if ( s == gensym("bounding_mode") )
+    {
+      logpost(x, 2, "please update bounding_mode");
+    }
+  }
+  return 0;
+}
+
 static void parameter_free(t_param* x)
 {
   x->x_dead = true;
@@ -493,9 +511,10 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_dump<t_param>, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method) t_obj_base::obj_push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) t_obj_base::obj_bang, "bang",     A_NULL,  0);
+    eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",     A_NULL,  0);
+    eclass_addmethod(c, (method) parameter_notify,     "notify",   A_NULL,  0);
 
     CLASS_ATTR_SYMBOL(c, "type", 0, t_param, x_type);
     CLASS_ATTR_SYMBOL(c, "unit", 0, t_param, x_unit);
@@ -504,10 +523,11 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_SYMBOL(c, "description", 0, t_param, x_description);
     CLASS_ATTR_SYMBOL(c, "tags", 0, t_param, x_tags);
 
-    CLASS_ATTR_ATOM_ARRAY(c, "default", 0, t_param, x_default, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_ARRAY(c, "range", 0, t_param, x_range, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_ARRAY(c, "min", 0, t_param, x_min, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_ARRAY(c, "max", 0, t_param, x_max, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "default", 0, t_param, x_default, x_default_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "range",   0, t_param, x_range,   x_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "min",     0, t_param, x_min,     x_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "max",     0, t_param, x_max,     x_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
+
     CLASS_ATTR_FLOAT(c, "repetition_filter", 0, t_param, x_repetition_filter);
     CLASS_ATTR_INT(c, "priority", 0, t_param, x_priority);
     CLASS_ATTR_INT(c, "hidden", 0, t_param, x_hidden);
