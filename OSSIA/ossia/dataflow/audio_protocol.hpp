@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/dataflow/audio_address.hpp>
+#include <ossia/dataflow/audio_parameter.hpp>
 #include <portaudio.h>
 
 namespace ossia
@@ -27,12 +27,12 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     ~audio_protocol();
 
-    bool pull(ossia::net::address_base&) override;
-    bool push(const ossia::net::address_base&) override;
-    bool push_bundle(const std::vector<const ossia::net::address_base*>&) override;
-    bool push_raw(const ossia::net::full_address_data&) override;
-    bool push_raw_bundle(const std::vector<ossia::net::full_address_data>&) override;
-    bool observe(ossia::net::address_base&, bool) override;
+    bool pull(ossia::net::parameter_base&) override;
+    bool push(const ossia::net::parameter_base&) override;
+    bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+    bool push_raw(const ossia::net::full_parameter_data&) override;
+    bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
+    bool observe(ossia::net::parameter_base&, bool) override;
     bool update(ossia::net::node_base& node_base) override;
     void set_device(ossia::net::device_base& dev) override;
 
@@ -45,10 +45,10 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     ossia::net::device_base* m_dev{};
     PaStream* m_stream{};
 
-    ossia::audio_address* main_audio_in{};
-    ossia::audio_address* main_audio_out{};
-    std::vector<ossia::audio_address*> audio_ins;
-    std::vector<ossia::audio_address*> audio_outs;
+    ossia::audio_parameter* main_audio_in{};
+    ossia::audio_parameter* main_audio_out{};
+    std::vector<ossia::audio_parameter*> audio_ins;
+    std::vector<ossia::audio_parameter*> audio_outs;
 };
 
 }

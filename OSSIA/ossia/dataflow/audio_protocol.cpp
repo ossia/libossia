@@ -14,32 +14,32 @@ audio_protocol::~audio_protocol()
   Pa_Terminate();
 }
 
-bool audio_protocol::pull(ossia::net::address_base&)
+bool audio_protocol::pull(ossia::net::parameter_base&)
 {
   return false;
 }
 
-bool audio_protocol::push(const ossia::net::address_base&)
+bool audio_protocol::push(const ossia::net::parameter_base&)
 {
   return false;
 }
 
-bool audio_protocol::push_bundle(const std::vector<const ossia::net::address_base*>&)
+bool audio_protocol::push_bundle(const std::vector<const ossia::net::parameter_base*>&)
 {
   return false;
 }
 
-bool audio_protocol::push_raw(const ossia::net::full_address_data&)
+bool audio_protocol::push_raw(const ossia::net::full_parameter_data&)
 {
   return false;
 }
 
-bool audio_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>&)
+bool audio_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&)
 {
   return false;
 }
 
-bool audio_protocol::observe(ossia::net::address_base&, bool)
+bool audio_protocol::observe(ossia::net::parameter_base&, bool)
 {
   return false;
 }
@@ -76,15 +76,15 @@ void audio_protocol::reload()
   audio_outs.clear();
   m_dev->get_root_node().clear_children();
 
-  main_audio_in = ossia::net::create_address<ossia::audio_address>(m_dev->get_root_node(), "/in/main");
-  main_audio_out = ossia::net::create_address<ossia::audio_address>(m_dev->get_root_node(), "/out/main");
+  main_audio_in = ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/main");
+  main_audio_out = ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/main");
   for(int i = 0; i < inputs; i++)
   {
-    audio_ins.push_back(ossia::net::create_address<ossia::audio_address>(m_dev->get_root_node(), "/in/" + std::to_string(i)));
+    audio_ins.push_back(ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/" + std::to_string(i)));
   }
   for(int i = 0; i < outputs; i++)
   {
-    audio_outs.push_back(ossia::net::create_address<ossia::audio_address>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
+    audio_outs.push_back(ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
   }
 
   PaStreamParameters inputParameters;

@@ -462,12 +462,8 @@ set(OSSIA_DATAFLOW_HEADERS
 )
 
 set(OSSIA_DATAFLOW_SRCS
-<<<<<<< HEAD
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_address.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.cpp"
-=======
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_parameter.cpp"
->>>>>>> master
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
