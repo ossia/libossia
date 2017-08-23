@@ -388,11 +388,11 @@ ossia::pd::AddrScope get_address_scope(const std::string& addr)
   return type;
 }
 
-std::vector<ossia::value> attribute2value(t_atom* atom)
+std::vector<ossia::value> attribute2value(t_atom* atom, long size)
 {
   std::vector<ossia::value> list;
 
-  for (int i = 0; i < OSSIA_PD_MAX_ATTR_SIZE && atom[i].a_type != A_NULL; i++)
+  for (int i = 0; i < size; i++)
   {
     if (atom[i].a_type == A_FLOAT)
       list.push_back(atom_getfloat(&atom[i]));

@@ -475,8 +475,14 @@ void obj_dump(T* x)
 
       // domain
       ossia::domain domain = param->get_domain();
-      SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
-      outlet_anything(x->x_dumpout, gensym("domain"), 1, &a);
+      int i = 0;
+      if (domain)
+      {
+       SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
+       i++;
+      }
+      outlet_anything(x->x_dumpout, gensym("domain"), i, &a);
+
 
       // bounding mode
       std::string bounding_mode;
@@ -601,10 +607,11 @@ ossia::pd::AddrScope get_address_scope(const std::string& addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
- * @param atom
+ * @param atom : array of atom
+ * @param size : number of value to take
  * @return array of ossia::value
  */
-std::vector<ossia::value> attribute2value(t_atom* atom);
+std::vector<ossia::value> attribute2value(t_atom* atom, long size);
 
 }
 }
