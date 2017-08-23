@@ -2,9 +2,9 @@
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_functions.hpp>
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/common/extended_types.hpp>
 #include <ossia_export.h>
 
@@ -29,7 +29,7 @@ namespace ossia
 namespace net
 {
 class node_base;
-struct address_data;
+struct parameter_data;
 
 //! How many instances a node can have
 struct OSSIA_EXPORT instance_bounds
@@ -208,11 +208,11 @@ OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, double v);
 OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, const char* v);
 OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, ossia::none_t v);
 
-// These attributes require an address
+// These attributes require a parameter
 OSSIA_EXPORT ossia::string_view text_value();
 OSSIA_EXPORT value clone_value(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_value(ossia::net::node_base& n, value v);
-OSSIA_EXPORT void set_value(ossia::net::address_data& n, value v);
+OSSIA_EXPORT void set_value(ossia::net::parameter_data& n, value v);
 
 OSSIA_EXPORT ossia::string_view text_value_type();
 OSSIA_EXPORT optional<val_type> get_value_type(const ossia::net::node_base& n);
@@ -221,40 +221,40 @@ OSSIA_EXPORT void set_value_type(ossia::net::node_base& n, val_type v);
 OSSIA_EXPORT ossia::string_view text_domain();
 OSSIA_EXPORT domain get_domain(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
-OSSIA_EXPORT void set_domain(ossia::net::address_data& n, domain v);
+OSSIA_EXPORT void set_domain(ossia::net::parameter_data& n, domain v);
 
 OSSIA_EXPORT ossia::string_view text_access_mode();
 OSSIA_EXPORT optional<access_mode> get_access_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_access_mode(ossia::net::node_base& n, access_mode v);
-OSSIA_EXPORT void set_access_mode(ossia::net::address_data& n, access_mode v);
+OSSIA_EXPORT void set_access_mode(ossia::net::parameter_data& n, access_mode v);
 
 OSSIA_EXPORT ossia::string_view text_bounding_mode();
 OSSIA_EXPORT optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_bounding_mode(ossia::net::node_base& n, bounding_mode v);
-OSSIA_EXPORT void set_bounding_mode(ossia::net::address_data& n, bounding_mode v);
+OSSIA_EXPORT void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v);
 
 OSSIA_EXPORT ossia::string_view text_repetition_filter();
 OSSIA_EXPORT repetition_filter get_repetition_filter(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
-OSSIA_EXPORT void set_repetition_filter(ossia::net::address_data& n, repetition_filter v);
+OSSIA_EXPORT void set_repetition_filter(ossia::net::parameter_data& n, repetition_filter v);
 
 OSSIA_EXPORT ossia::string_view text_unit();
 OSSIA_EXPORT unit_t get_unit(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_unit(ossia::net::node_base& n, unit_t v);
-OSSIA_EXPORT void set_unit(ossia::net::address_data& n, unit_t v);
+OSSIA_EXPORT void set_unit(ossia::net::parameter_data& n, unit_t v);
 
 OSSIA_EXPORT ossia::string_view text_muted();
 OSSIA_EXPORT muted get_muted(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_muted(ossia::net::node_base& n, muted v);
-OSSIA_EXPORT void set_muted(ossia::net::address_data& n, muted v);
+OSSIA_EXPORT void set_muted(ossia::net::parameter_data& n, muted v);
 
 OSSIA_EXPORT ossia::string_view text_critical();
 OSSIA_EXPORT critical get_critical(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_critical(ossia::net::node_base& n, critical v);
-OSSIA_EXPORT void set_critical(ossia::net::address_data& n, critical v);
+OSSIA_EXPORT void set_critical(ossia::net::parameter_data& n, critical v);
 
 template<typename T>
-struct is_address_attribute : public std::false_type { };
+struct is_parameter_attribute : public std::false_type { };
 // Some macros to have minimal reflection facilities...
 #define OSSIA_ATTRIBUTE(Type, Name)                               \
   struct OSSIA_EXPORT Name##_attribute                            \
@@ -279,7 +279,7 @@ struct is_address_attribute : public std::false_type { };
 #define OSSIA_ADDRESS_ATTRIBUTE(Type, Name) \
   OSSIA_ATTRIBUTE(Type, Name) \
 template<> \
-struct is_address_attribute<Name##_attribute> : public std::true_type { };
+struct is_parameter_attribute<Name##_attribute> : public std::true_type { };
 
 #define OSSIA_ATTRIBUTE_2(Type, Name, Text, Get, Set) \
   struct OSSIA_EXPORT Name##_attribute                \
@@ -301,13 +301,13 @@ struct is_address_attribute<Name##_attribute> : public std::true_type { };
     }                                                 \
   };
 
-// Attributes of an address
+// Attributes of a parameter
 OSSIA_ATTRIBUTE_2(
     ossia::value, value, ossia::net::text_value, ossia::net::clone_value,
     ossia::net::push_value)
 
 template<> \
-struct is_address_attribute<value_attribute> : public std::true_type { };
+struct is_parameter_attribute<value_attribute> : public std::true_type { };
 
 OSSIA_ADDRESS_ATTRIBUTE(ossia::val_type, value_type)
 OSSIA_ADDRESS_ATTRIBUTE(ossia::domain, domain)

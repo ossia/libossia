@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -22,7 +22,7 @@ operator<<(fmt::BasicWriter<char>& w, const node_base& n)
     parent = parent->get_parent();
   }
   w << n.get_name();
-  if (auto addr = n.get_address())
+  if (auto addr = n.get_parameter())
   {
     w << " : " << value_to_pretty_string(addr->value()) << ", AccessMode("
       << addr->get_access() << ")"

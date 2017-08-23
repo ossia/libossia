@@ -1,28 +1,28 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
 #include <QString>
-#include <ossia-qt/http/http_address_data.hpp>
+#include <ossia-qt/http/http_parameter_data.hpp>
 
 namespace ossia
 {
 namespace net
 {
 class http_device;
-class http_address;
+class http_parameter;
 class OSSIA_EXPORT http_node : public ossia::net::node_base
 {
   ossia::net::http_device& m_device;
   ossia::net::http_node* m_parent{};
-  std::unique_ptr<ossia::net::http_address> m_address;
+  std::unique_ptr<ossia::net::http_parameter> m_parameter;
 
   friend class http_protocol;
 
 public:
   http_node(
-      const http_address_data& dat, ossia::net::http_device& aDevice,
+      const http_parameter_data& dat, ossia::net::http_device& aDevice,
       http_node& aParent);
 
-  http_node(const http_address_data& dat, ossia::net::http_device& aDevice);
+  http_node(const http_parameter_data& dat, ossia::net::http_device& aDevice);
 
   ~http_node();
 
@@ -31,9 +31,9 @@ public:
 
   node_base& set_name(std::string) override;
 
-  address_base* get_address() const override;
-  address_base* create_address(val_type = val_type::IMPULSE) override;
-  bool remove_address() override;
+  parameter_base* get_parameter() const override;
+  parameter_base* create_parameter(val_type = val_type::IMPULSE) override;
+  bool remove_parameter() override;
 
   void add_child(std::unique_ptr<ossia::net::node_base>);
 

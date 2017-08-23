@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <fmt/format.h>
 #include <ossia_export.h>
 

@@ -5,7 +5,7 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
 #include <ossia/editor/value/value_traits.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <iostream>
 namespace ossia
 {
@@ -612,28 +612,28 @@ struct state_flatten_visitor
 {
   ossia::state& state;
 
-  static ossia::net::address_base* address_ptr(const message& m)
+  static ossia::net::parameter_base* param_ptr(const message& m)
   {
     return &m.destination.value.get();
   }
 
-  static ossia::net::address_base* address_ptr(const piecewise_message& m)
+  static ossia::net::parameter_base* param_ptr(const piecewise_message& m)
   {
     return &m.address.get();
   }
 
   template <std::size_t N>
-  static ossia::net::address_base*
-  address_ptr(const piecewise_vec_message<N>& m)
+  static ossia::net::parameter_base*
+  param_ptr(const piecewise_vec_message<N>& m)
   {
     return &m.address.get();
   }
 
   template <typename T>
-  auto find_same_address(const T& incoming)
+  auto find_same_param(const T& incoming)
   {
     return find_if(state, [&](const state_element& e) {
-      auto address = address_ptr(incoming);
+      auto address = param_ptr(incoming);
       if (auto m = e.target<message>())
         return &m->destination.value.get() == address
                && incoming.get_unit() == m->get_unit();
@@ -658,7 +658,7 @@ struct state_flatten_visitor
   void operator()(Message_T&& incoming)
   {
     // find message with the same address to replace it
-    auto it = find_same_address(incoming);
+    auto it = find_same_param(incoming);
     if (it == state.end())
     {
       state.add(std::forward<Message_T>(incoming));

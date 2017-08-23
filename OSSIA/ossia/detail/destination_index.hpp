@@ -2,6 +2,11 @@
 #include <ossia/detail/config.hpp>
 #include <chobo/static_vector.hpp>
 #include <iterator>
+
+/**
+ * \file destination_index.hpp
+ */
+
 namespace ossia
 {
 /**

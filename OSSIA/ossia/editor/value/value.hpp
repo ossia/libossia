@@ -2,12 +2,15 @@
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/value/value_base.hpp>
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <limits>
 #include <ossia_export.h>
 #include <string>
 #include <vector>
 
+/**
+ * \file value.hpp
+ */
 namespace fmt
 {
 template <typename T>

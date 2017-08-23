@@ -1,3 +1,5 @@
+*.bundle
+*.meta
 *.qmlc
 CMake/common
 *.pd_*

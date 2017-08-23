@@ -3,6 +3,9 @@
 #include <memory>
 #include <vector>
 
+/**
+ * \file ptr_container.hpp
+ */
 namespace ossia
 {
 /**

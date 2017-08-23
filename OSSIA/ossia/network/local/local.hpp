@@ -28,10 +28,10 @@ public:
 
   virtual ~multiplex_protocol();
 
-  bool pull(ossia::net::address_base&) override;
-  bool push(const ossia::net::address_base& addr) override;
-  bool push_raw(const full_address_data&) override;
-  bool observe(ossia::net::address_base&, bool) override;
+  bool pull(ossia::net::parameter_base&) override;
+  bool push(const ossia::net::parameter_base& addr) override;
+  bool push_raw(const full_parameter_data&) override;
+  bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
   void stop() override;

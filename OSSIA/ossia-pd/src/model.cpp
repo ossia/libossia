@@ -40,6 +40,8 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
   std::string name(x_name->s_name);
 
+  x_parent_node = node;
+
   if (node->find_child(name))
   { // we have to check if a node with the same name already exists to avoid
     // auto-incrementing name
@@ -92,6 +94,11 @@ void t_model::register_children()
       t_param* param = (t_param*)v;
       param->register_node(x_node);
     }
+    else if (v->x_otype == Type::remote)
+    {
+      t_remote* remote = (t_remote*)v;
+      remote->register_node(x_node);
+    }
   }
 
   for (auto view : t_view::quarantine().copy())
@@ -116,9 +123,16 @@ bool t_model::unregister()
   x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
 
   if (x_node && x_node->get_parent())
+  {
     x_node->get_parent()->remove_child(*x_node); // this calls isDeleted() on
                                                  // each registered child and
                                                  // put them into quarantine
+  }
+
+  // we can't register children to parent node
+  // because it might be deleted soon
+  // (when removing root device for example)
+
   x_node = nullptr;
 
   obj_quarantining<t_model>(this);
@@ -163,7 +177,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
         x->x_name = atom_getsymbol(argv);
-        x->x_addr_scope = get_address_type(x->x_name->s_name);
+        x->x_addr_scope = get_address_scope(x->x_name->s_name);
       }
       else
       {
@@ -173,6 +187,8 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
 
       x->x_description = gensym("");
       x->x_tags = gensym("");
+      x->x_node = nullptr;
+      x->x_parent_node = nullptr;
 
       ebox_attrprocess_viabinbuf(x, d);
 
@@ -217,6 +233,7 @@ extern "C" void setup_ossia0x2emodel(void)
 
     eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
 
     CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
     CLASS_ATTR_SYMBOL(c, "tags", 0, t_model, x_tags);

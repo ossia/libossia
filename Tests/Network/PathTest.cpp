@@ -291,7 +291,7 @@ private Q_SLOTS:
     ossia::transform(
           created,
           std::back_inserter(addresses),
-          [] (auto n) { return ossia::net::osc_address_string(*n); });
+          [] (auto n) { return ossia::net::osc_parameter_string(*n); });
     QVERIFY(ossia::contains(addresses, "/foo0/bar/abx"));
     QVERIFY(ossia::contains(addresses, "/foo0/bar/abz"));
     QVERIFY(ossia::contains(addresses, "/foo0/bar/acz"));

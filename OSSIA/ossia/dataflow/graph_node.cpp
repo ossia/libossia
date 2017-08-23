@@ -97,7 +97,7 @@ bool graph_node::has_local_inputs(const execution_state& st) const
   return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
     if (inlet->scope & port::scope_t::local)
     {
-      if (auto dest = inlet->address.target<ossia::net::address_base*>())
+      if (auto dest = inlet->address.target<ossia::net::parameter_base*>())
       {
         if (st.in_local_scope(**dest))
           return true;

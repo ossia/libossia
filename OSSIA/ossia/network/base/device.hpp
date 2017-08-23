@@ -8,7 +8,7 @@ namespace ossia
 {
 namespace net
 {
-struct address_data;
+struct parameter_data;
 class protocol_base;
 
 /**
@@ -31,11 +31,11 @@ struct device_capabilities
  * It handles transformations of the node tree and allows
  * to add callbacks to be called :
  * - after a node has been created : device_base::on_node_created
- * - after a node has been renamed : device_base::onNodeRenamed
- * - before a node is removed : device_base::onNodeRemoving
+ * - after a node has been renamed : device_base::on_node_renamed
+ * - before a node is removed : device_base::on_node_removing
  *
- * - after an address has been created : device_base::onAddressCreated
- * - before an address is being removed : device_base::onAddressRemoving
+ * - after a parameter has been created : device_base::on_parameter_created
+ * - before a parameter is being removed : device_base::on_parameter_removing
  *
  * The root node of a device maps to the "/" address.
  *
@@ -92,14 +92,14 @@ public:
                        // name
   Nano::Signal<void(const node_base&, ossia::string_view)>
       on_attribute_modified; // Second argument is an identifier
-  Nano::Signal<void(const address_base&)>
-      on_address_created; // The address being created
-  Nano::Signal<void(const address_base&)>
-      on_address_removing; // The node whose address was removed
+  Nano::Signal<void(const parameter_base&)>
+      on_parameter_created; // The parameter being created
+  Nano::Signal<void(const parameter_base&)>
+      on_parameter_removing; // The node whose parameter was removed
 
   //! Called when a network client requests the creation of an instance.
   //!  First argument is the path to the parent.
-  Nano::Signal<void(std::string, const address_data&)> on_add_node_requested;
+  Nano::Signal<void(std::string, const parameter_data&)> on_add_node_requested;
 
   //! Called when a network client requests the removal of an instance.
   //! Argument is the path of the parent and the node to remove.
@@ -113,7 +113,7 @@ protected:
 template <typename T>
 void node_base::set(ossia::string_view str, const T& value)
 {
-  static_assert(!is_address_attribute<T>::value, "No address");
+  static_assert(!is_parameter_attribute<T>::value, "No parameter");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if ((opt && *opt != value) || !opt)
   {
@@ -125,7 +125,7 @@ void node_base::set(ossia::string_view str, const T& value)
 template <typename T>
 void node_base::set(ossia::string_view str, T&& value)
 {
-  static_assert(!is_address_attribute<T>::value, "No address");
+  static_assert(!is_parameter_attribute<T>::value, "No parameter");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if ((opt && *opt != value) || !opt)
   {
@@ -137,7 +137,7 @@ void node_base::set(ossia::string_view str, T&& value)
 template <typename T>
 void node_base::set(ossia::string_view str, const optional<T>& value)
 {
-  static_assert(!is_address_attribute<T>::value, "No address");
+  static_assert(!is_parameter_attribute<T>::value, "No parameter");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if (opt != value)
   {
@@ -149,7 +149,7 @@ void node_base::set(ossia::string_view str, const optional<T>& value)
 template <typename T>
 void node_base::set(ossia::string_view str, optional<T>&& value)
 {
-  static_assert(!is_address_attribute<T>::value, "No address");
+  static_assert(!is_parameter_attribute<T>::value, "No parameter");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if (opt != value)
   {

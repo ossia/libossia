@@ -9,7 +9,7 @@ namespace net
 namespace midi
 {
 using midi_size_t = uint8_t;
-class midi_address;
+class midi_parameter;
 struct midi_channel
 {
   // [ note, vel ]
@@ -29,14 +29,14 @@ struct midi_channel
   // No need to store PC since they are only impulses
 
   // Callbacks
-  midi_address* callback_note_on{};
-  midi_address* callback_note_off{};
-  midi_address* callback_cc{};
-  midi_address* callback_pc{};
-  std::array<midi_address*, 128> callback_note_on_N = {{}};
-  std::array<midi_address*, 128> callback_note_off_N = {{}};
-  std::array<midi_address*, 128> callback_cc_N = {{}};
-  std::array<midi_address*, 128> callback_pc_N = {{}};
+  midi_parameter* callback_note_on{};
+  midi_parameter* callback_note_off{};
+  midi_parameter* callback_cc{};
+  midi_parameter* callback_pc{};
+  std::array<midi_parameter*, 128> callback_note_on_N = {{}};
+  std::array<midi_parameter*, 128> callback_note_off_N = {{}};
+  std::array<midi_parameter*, 128> callback_cc_N = {{}};
+  std::array<midi_parameter*, 128> callback_pc_N = {{}};
 };
 }
 }

@@ -1,6 +1,10 @@
 #pragma once
 #include <ossia_export.h>
 #include <stdexcept>
+
+/**
+ * \file exceptions.hpp
+ */
 namespace ossia
 {
 

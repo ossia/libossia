@@ -18,15 +18,15 @@ class json_bundle_builder
       m_writer.StartObject();
     }
 
-    void add_message(const ossia::net::address_base& n, const ossia::value& val)
+    void add_message(const ossia::net::parameter_base& n, const ossia::value& val)
     {
-      write_json_key(m_writer, ossia::net::osc_address_string(n));
+      write_json_key(m_writer, ossia::net::osc_parameter_string(n));
       m_impl.writeValue(val);
     }
 
-    void add_message(const ossia::net::full_address_data& n, const ossia::value& val)
+    void add_message(const ossia::net::full_parameter_data& n, const ossia::value& val)
     {
-      write_json_key(m_writer, ossia::net::osc_address_string(n));
+      write_json_key(m_writer, ossia::net::osc_parameter_string(n));
       m_impl.writeValue(val);
     }
 
@@ -98,9 +98,9 @@ public:
       const ossia::net::node_base& n, ossia::string_view attribute);
 
   static string_t
-  send_message(const ossia::net::address_base&, const ossia::value&);
+  send_message(const ossia::net::parameter_base&, const ossia::value&);
   static string_t
-  send_message(const ossia::net::full_address_data&, const ossia::value&);
+  send_message(const ossia::net::full_parameter_data&, const ossia::value&);
 
   static string_t attributes_changed(
       const ossia::net::node_base& n,
@@ -134,10 +134,10 @@ private:
       const std::vector<ossia::string_view>& attributes);
 
   static void send_message_impl(
-      detail::json_writer_impl& p, const ossia::net::address_base&,
+      detail::json_writer_impl& p, const ossia::net::parameter_base&,
       const ossia::value&);
   static void send_message_impl(
-      detail::json_writer_impl& p, const ossia::net::full_address_data&,
+      detail::json_writer_impl& p, const ossia::net::full_parameter_data&,
       const ossia::value&);
 };
 }

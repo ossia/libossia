@@ -13,10 +13,10 @@ class state;
 
 namespace net
 {
-class address_base;
+class parameter_base;
 class node_base;
 class device_base;
-struct full_address_data;
+struct full_parameter_data;
 
 /**
  * @brief The protocol_base class
@@ -38,59 +38,59 @@ public:
    * @brief Pulls a value from the server synchronously.
    * @return True if the value was correctly retrieved.
    */
-  virtual bool pull(address_base&) = 0;
+  virtual bool pull(parameter_base&) = 0;
 
   /**
    * @brief Pulls a value from the server asynchronously.
    * @return A future that will be set when the value is received.
    */
-  virtual std::future<void> pull_async(address_base&);
+  virtual std::future<void> pull_async(parameter_base&);
 
   /**
    * @brief Request an update on a value.
    */
-  virtual void request(address_base&);
+  virtual void request(parameter_base&);
 
   /**
    * @brief Send a value to the network.
    */
-  virtual bool push(const address_base&) = 0;
+  virtual bool push(const parameter_base&) = 0;
 
   /**
    * @brief Send many values in one go if the protocol supports it
    */
-  virtual bool push_bundle(const std::vector<const ossia::net::address_base*>&);
+  virtual bool push_bundle(const std::vector<const ossia::net::parameter_base*>&);
 
    /**
     * @brief Send a value to the network.
     */
-  virtual bool push_raw(const full_address_data&) = 0;
+  virtual bool push_raw(const full_parameter_data&) = 0;
 
    /**
     * @brief Send a value to the network.
     */
-   virtual bool push_raw_bundle(const std::vector<full_address_data>&);
+   virtual bool push_raw_bundle(const std::vector<full_parameter_data>&);
 
   /**
-   * @brief Notify the network that an address should be listened to.
+   * @brief Notify the network that a parameter should be listened to.
    *
    * In some protocols (Minuit, OSCQuery), this may send a message to the other
    * client
-   * so that it regularly sends values of this address to the local computer.
+   * so that it regularly sends values of this parameter to the local computer.
    *
-   * If an address is listened to, when a message is received,
-   * address_base::setValue will be called,
+   * If a parameter is listened to, when a message is received,
+   * parameter_base::setValue will be called,
    * which will notify the local signals.
-   * Else, address_base::setValueQuiet will be called : the value will be
+   * Else, parameter_base::setValueQuiet will be called : the value will be
    * updated but the signals
    * won't be notified.
    */
-  virtual bool observe(address_base&, bool) = 0;
+  virtual bool observe(parameter_base&, bool) = 0;
 
   /**
    * @brief Begin observation without notifying the other computers.
    */
-  virtual bool observe_quietly(address_base&, bool)
+  virtual bool observe_quietly(parameter_base&, bool)
   {
     return false;
   }

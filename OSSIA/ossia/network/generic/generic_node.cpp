@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -73,49 +73,49 @@ generic_node::~generic_node()
   about_to_be_deleted(*this);
 
   m_children.clear();
-  remove_address();
+  remove_parameter();
 }
 
-ossia::net::address_base* generic_node::get_address() const
+ossia::net::parameter_base* generic_node::get_parameter() const
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-void generic_node::set_address(std::unique_ptr<ossia::net::address_base> addr)
+void generic_node::set_parameter(std::unique_ptr<ossia::net::parameter_base> addr)
 {
-  remove_address();
+  remove_parameter();
   if (addr)
   {
-    m_address = std::move(addr);
-    m_device.on_address_created(*m_address);
+    m_parameter = std::move(addr);
+    m_device.on_parameter_created(*m_parameter);
   }
 }
 
-ossia::net::address_base* generic_node::create_address(ossia::val_type type)
+ossia::net::parameter_base* generic_node::create_parameter(ossia::val_type type)
 {
   // clear former address
-  remove_address();
+  remove_parameter();
 
   // edit new address
-  m_address = std::make_unique<ossia::net::generic_address>(*this);
+  m_parameter = std::make_unique<ossia::net::generic_parameter>(*this);
 
   // set type
-  m_address->set_value_type(type);
+  m_parameter->set_value_type(type);
 
   // notify observers
-  m_device.on_address_created(*m_address);
+  m_device.on_parameter_created(*m_parameter);
 
-  return m_address.get();
+  return m_parameter.get();
 }
 
-bool generic_node::remove_address()
+bool generic_node::remove_parameter()
 {
   // use the device protocol to stop address value observation
-  if (m_address)
+  if (m_parameter)
   {
     // notify observers
-    auto addr = std::move(m_address);
-    m_device.on_address_removing(*addr);
+    auto addr = std::move(m_parameter);
+    m_device.on_parameter_removing(*addr);
     auto& device = get_device();
     device.get_protocol().observe(*addr, false);
 

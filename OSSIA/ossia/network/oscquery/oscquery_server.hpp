@@ -46,15 +46,15 @@ public:
   bool echo() const { return m_echo; }
   void set_echo(bool b) { m_echo = b; }
 
-  bool pull(net::address_base&) override;
-  std::future<void> pull_async(net::address_base&) override;
-  void request(net::address_base&) override;
-  bool push(const net::address_base&) override;
-  bool push_raw(const ossia::net::full_address_data& address_base) override;
-  bool push_bundle(const std::vector<const ossia::net::address_base*>&) override;
-  bool push_raw_bundle(const std::vector<ossia::net::full_address_data>&) override;
-  bool observe(net::address_base&, bool) override;
-  bool observe_quietly(net::address_base&, bool) override;
+  bool pull(net::parameter_base&) override;
+  std::future<void> pull_async(net::parameter_base&) override;
+  void request(net::parameter_base&) override;
+  bool push(const net::parameter_base&) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
+  bool observe(net::parameter_base&, bool) override;
+  bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
   void set_device(net::device_base& dev) override;
   void stop() override;
@@ -117,7 +117,7 @@ private:
   net::zeroconf_server m_zeroconfServer;
 
   // Listening status of the local software
-  net::listened_addresses m_listening;
+  net::listened_parameters m_listening;
 
   // The clients connected to this server
   std::vector<oscquery_client> m_buildingClients;

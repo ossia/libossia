@@ -18,7 +18,7 @@ TEST_CASE ("Device exceptions") {
 
   auto rootnode = localDevice.get_root_node().create_child("root");
   auto childnode = rootnode->create_child("child");
-  auto childaddr = childnode->create_address(ossia::val_type::BOOL);
+  auto childaddr = childnode->create_parameter(ossia::val_type::BOOL);
 
   SECTION("Invalid address: target node has children") {
     ossia::presets::preset preset;
@@ -66,11 +66,11 @@ TEST_CASE ("Building device from preset") {
     REQUIRE(get_node(localDevice, "/device")->children().size() == 2);
     REQUIRE(get_node(localDevice, "/device/a.0")->children().size() == 1);
     REQUIRE(get_node(localDevice, "/device/a.0/b.0")->children().size() == 2);
-    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.0")->get_address()->value().get<int32_t>() == 1);
-    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.1")->get_address()->value().get<int32_t>() == 2);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.0")->get_parameter()->value().get<int32_t>() == 1);
+    REQUIRE(get_node(localDevice, "/device/a.0/b.0/c.1")->get_parameter()->value().get<int32_t>() == 2);
     REQUIRE(get_node(localDevice, "/device/a.1/b.1")->children().size() == 2);
-    REQUIRE(get_node(localDevice, "/device/a.1/b.1/c")->get_address()->value().get<int32_t>() == 3);
-    REQUIRE(get_node(localDevice, "/device/a.1/b.1/d")->get_address()->value().get<int32_t>() == 4);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1/c")->get_parameter()->value().get<int32_t>() == 3);
+    REQUIRE(get_node(localDevice, "/device/a.1/b.1/d")->get_parameter()->value().get<int32_t>() == 4);
   }
 }
 

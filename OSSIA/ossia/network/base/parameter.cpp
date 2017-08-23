@@ -2,14 +2,14 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/dataspace/value_with_unit.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 
 namespace ossia
 {
 namespace net
 {
-address_base::~address_base()
+parameter_base::~parameter_base()
 {
 }
 
@@ -69,12 +69,12 @@ std::string address_string_from_node(const ossia::net::node_base& node)
   return s;
 }
 
-std::string address_string_from_node(const ossia::net::address_base& addr)
+std::string address_string_from_node(const ossia::net::parameter_base& addr)
 {
   return address_string_from_node(addr.get_node());
 }
 
-std::string osc_address_string(const node_base& n)
+std::string osc_parameter_string(const node_base& n)
 {
   if (n.get_parent())
   {
@@ -90,7 +90,7 @@ std::string osc_address_string(const node_base& n)
   }
 }
 
-std::string osc_address_string_with_device(const node_base& n)
+std::string osc_parameter_string_with_device(const node_base& n)
 {
   if (n.get_parent())
   {
@@ -106,32 +106,32 @@ std::string osc_address_string_with_device(const node_base& n)
   }
 }
 
-std::string osc_address_string(const address_base& addr)
+std::string osc_parameter_string(const parameter_base& addr)
 {
-  return osc_address_string(addr.get_node());
+  return osc_parameter_string(addr.get_node());
 }
 
-std::string osc_address_string_with_device(const address_base& addr)
+std::string osc_parameter_string_with_device(const parameter_base& addr)
 {
-  return osc_address_string_with_device(addr.get_node());
+  return osc_parameter_string_with_device(addr.get_node());
 }
 
-std::future<void> address_base::pull_value_async()
+std::future<void> parameter_base::pull_value_async()
 {
   return {};
 }
 
-void address_base::request_value()
+void parameter_base::request_value()
 {
 }
 
-value address_base::value(destination_index idx) const
+value parameter_base::value(destination_index idx) const
 {
   return get_value_at_index(value(), idx);
 }
 
 std::vector<ossia::value>
-address_base::value(const std::vector<destination_index>& indices) const
+parameter_base::value(const std::vector<destination_index>& indices) const
 {
   std::vector<ossia::value> t;
   t.reserve(indices.size());
@@ -145,56 +145,56 @@ address_base::value(const std::vector<destination_index>& indices) const
   return t;
 }
 
-value address_base::fetch_value()
+value parameter_base::fetch_value()
 {
   pull_value();
   return value();
 }
 
-unit_t address_base::get_unit() const
+unit_t parameter_base::get_unit() const
 {
   return {};
 }
 
-address_base& address_base::set_unit(const unit_t& v)
+parameter_base& parameter_base::set_unit(const unit_t& v)
 {
   return *this;
 }
 
-bool address_base::get_muted() const
+bool parameter_base::get_muted() const
 {
   return {};
 }
 
-address_base& address_base::set_muted(bool v)
+parameter_base& parameter_base::set_muted(bool v)
 {
   return *this;
 }
 
-bool address_base::get_critical() const
+bool parameter_base::get_critical() const
 {
   return {};
 }
 
-address_base& address_base::set_critical(bool v)
+parameter_base& parameter_base::set_critical(bool v)
 {
   return *this;
 }
 
 value_with_unit get_value(const ossia::Destination& d)
 {
-  ossia::net::address_base& addr = d.value.get();
+  ossia::net::parameter_base& addr = d.value.get();
 
   return make_value(addr.value(d.index), addr.get_unit());
 }
 
 void push_value(const Destination& d, const value_with_unit& v)
 {
-  ossia::net::address_base& addr = d.value.get();
+  ossia::net::parameter_base& addr = d.value.get();
   addr.push_value(ossia::to_value(v)); // TODO what about destination_index ??
 }
 
-std::ostream& operator<<(std::ostream& s, const ossia::net::address_base& addr)
+std::ostream& operator<<(std::ostream& s, const ossia::net::parameter_base& addr)
 {
   return s << ossia::net::address_string_from_node(addr);
 }

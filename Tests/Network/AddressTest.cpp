@@ -22,7 +22,7 @@ private Q_SLOTS:
     {
         ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
         auto cld = device.create_child("child");
-        auto address = cld->create_address();
+        auto address = cld->create_parameter();
         QVERIFY(address != nullptr);
         if(address == nullptr)
           return;

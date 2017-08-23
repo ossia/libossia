@@ -14,13 +14,13 @@ namespace Ossia
 	public class Local : Protocol
 	{
 		public Local() :
-		base(Network.ossia_protocol_local_create())
+		base(Network.ossia_protocol_multiplex_create())
 		{
 		}
 
 		public void ExposeTo(Protocol other)
 		{
-			Network.ossia_protocol_local_expose_to (ossia_protocol, other.ossia_protocol);
+			Network.ossia_protocol_multiplex_expose_to (ossia_protocol, other.ossia_protocol);
 		}
 	}
 

@@ -10,6 +10,9 @@
 #include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file time_constraint.hpp
+ */
 namespace ossia
 {
 class time_event;

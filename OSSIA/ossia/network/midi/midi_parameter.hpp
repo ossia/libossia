@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
 
@@ -115,7 +115,7 @@ struct address_info
   midi_size_t note{};
 };
 
-class midi_address : public ossia::net::address_base
+class midi_parameter : public ossia::net::parameter_base
 {
   address_info m_info;
   ossia::net::node_base& m_parent;
@@ -126,36 +126,36 @@ class midi_address : public ossia::net::address_base
   ossia::value m_value;
 
 public:
-  midi_address(address_info info, ossia::net::node_base& parent);
+  midi_parameter(address_info info, ossia::net::node_base& parent);
 
   const address_info& info() const;
 
   ossia::net::node_base& get_node() const final override;
 
   void pull_value() final override;
-  address_base& push_value(const ossia::value& val) final override;
-  address_base& push_value(ossia::value&& val) final override;
-  address_base& push_value() final override;
+  parameter_base& push_value(const ossia::value& val) final override;
+  parameter_base& push_value(ossia::value&& val) final override;
+  parameter_base& push_value() final override;
   const ossia::value& getValue() const;
 
   ossia::value value() const final override;
-  address_base& set_value(const ossia::value& v) final override;
-  address_base& set_value(ossia::value&& v) final override;
+  parameter_base& set_value(const ossia::value& v) final override;
+  parameter_base& set_value(ossia::value&& v) final override;
 
   ossia::val_type get_value_type() const final override;
-  address_base& set_value_type(ossia::val_type) final override;
+  parameter_base& set_value_type(ossia::val_type) final override;
 
   ossia::access_mode get_access() const final override;
-  address_base& set_access(ossia::access_mode) final override;
+  parameter_base& set_access(ossia::access_mode) final override;
 
   const ossia::domain& get_domain() const final override;
-  address_base& set_domain(const ossia::domain&) final override;
+  parameter_base& set_domain(const ossia::domain&) final override;
 
   ossia::bounding_mode get_bounding() const final override;
-  address_base& set_bounding(ossia::bounding_mode) final override;
+  parameter_base& set_bounding(ossia::bounding_mode) final override;
 
   ossia::repetition_filter get_repetition_filter() const final override;
-  address_base& set_repetition_filter(ossia::repetition_filter) final override;
+  parameter_base& set_repetition_filter(ossia::repetition_filter) final override;
 
   void on_first_callback_added() final override;
   void on_removing_last_callback() final override;

@@ -174,26 +174,25 @@ struct millisecond_u : public timing_unit<millisecond_u>
   }
 };
 
-/*
-template<int N>
-struct sample_u : public timing_unit<sample_u<N>>
+struct sample_u : public timing_unit<sample_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   { return ossia::make_string_array("sample"); }
+  int rate = 44100;
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit>
+  OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit>
 to_neutral(strong_value<concrete_type> self)
   {
-    return self.value.value / N;
+    return self.dataspace_value / rate;
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type
+  OSSIA_DECL_RELAXED_CONSTEXPR value_type
 from_neutral(strong_value<neutral_unit> self)
   {
-    return self.value.value * N;
+    return self.dataspace_value * rate;
   }
 };
-*/
+
 
 static const double exp_69_12 = ossia::exp2(69. / 12.);
 struct playback_speed_u : public timing_unit<playback_speed_u>

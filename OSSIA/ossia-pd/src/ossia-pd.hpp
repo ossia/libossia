@@ -51,6 +51,7 @@ public:
     ossia::safe_vector<t_device*> devices;
     ossia::safe_vector<t_client*> clients;
 
+    ossia::safe_vector<t_select_clock*> select_clocks;
 
 private:
     ossia_pd(); // constructor

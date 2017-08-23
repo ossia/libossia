@@ -32,4 +32,6 @@
 	}
 
 	public delegate void ValueCallbackDelegate(Ossia.Value t);
+	public delegate void NodeCallbackDelegate(Ossia.Node t);
+	public delegate void ParameterCallbackDelegate(Ossia.Parameter t);
 }

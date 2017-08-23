@@ -44,7 +44,7 @@ struct t_object_base
 
   Type m_otype{};
   t_symbol* m_name{};
-  AddrType m_address_type{};
+  AddrType m_parameter_type{};
   bool m_dead = false; // wether this object is being deleted or not;
                        //            t_canvas*   m_last_opened_canvas{};
 

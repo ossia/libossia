@@ -8,7 +8,7 @@ class phidget_node : public ossia::net::node_base
 protected:
   phidget_device& m_device;
   node_base& m_parent;
-  std::unique_ptr<ossia::net::address_base> m_address;
+  std::unique_ptr<ossia::net::parameter_base> m_parameter;
 public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
   using const_iterator
@@ -16,9 +16,9 @@ public:
 
   ~phidget_node();
 
-  void set_address(std::unique_ptr<ossia::net::address_base> a)
+  void set_parameter(std::unique_ptr<ossia::net::parameter_base> a)
   {
-    m_address = std::move(a);
+    m_parameter = std::move(a);
   }
 
   phidget_node(phidget_device& d, ossia::net::node_base& p);
@@ -28,9 +28,9 @@ public:
 
   ossia::net::node_base& set_name(std::string n) override;
 
-  ossia::net::address_base* get_address() const final override;
-  ossia::net::address_base* create_address(val_type) final override;
-  bool remove_address() final override;
+  ossia::net::parameter_base* get_parameter() const final override;
+  ossia::net::parameter_base* create_parameter(val_type) final override;
+  bool remove_parameter() final override;
 
   std::unique_ptr<ossia::net::node_base>
   make_child(const std::string& name) final override;

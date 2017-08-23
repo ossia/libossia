@@ -5,7 +5,7 @@
 #include <ossia/editor/dataspace/dataspace_fwd.hpp>
 #include <ossia/editor/value/destination.hpp>
 #include <ossia/network/base/value_callback.hpp>
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
 #include <functional>
 #include <future>
@@ -20,28 +20,28 @@ class value;
 namespace net
 {
 class node_base;
-struct full_address_data;
+struct full_parameter_data;
 
 /**
- * @brief The address_base class
+ * @brief The parameter_base class
  *
- * An address holds attributes and values.
+ * A parameter holds attributes and values.
  * One can subscribe to modification of the value.
  *
- * \see generic_address
+ * \see generic_parameter
  *
  */
-class OSSIA_EXPORT address_base : public callback_container<value_callback>
+class OSSIA_EXPORT parameter_base : public callback_container<value_callback>
 {
 public:
-  address_base() = default;
-  address_base(const address_base&) = delete;
-  address_base(address_base&&) = delete;
-  address_base& operator=(const address_base&) = delete;
-  address_base& operator=(address_base&&) = delete;
+  parameter_base() = default;
+  parameter_base(const parameter_base&) = delete;
+  parameter_base(parameter_base&&) = delete;
+  parameter_base& operator=(const parameter_base&) = delete;
+  parameter_base& operator=(parameter_base&&) = delete;
 
   using callback_index = callback_container<value_callback>::iterator;
-  virtual ~address_base();
+  virtual ~parameter_base();
 
   virtual ossia::net::node_base& get_node() const = 0;
 
@@ -87,12 +87,12 @@ public:
   ossia::value fetch_value();
 
   //! Sets the value locally, and sends it to the network.
-  virtual address_base& push_value(const ossia::value&) = 0;
-  virtual address_base& push_value(ossia::value&&) = 0;
+  virtual parameter_base& push_value(const ossia::value&) = 0;
+  virtual parameter_base& push_value(ossia::value&&) = 0;
 
   /// Value setters ///
   //! Sends the local value to the network
-  virtual address_base& push_value() = 0;
+  virtual parameter_base& push_value() = 0;
 
   //! Returns the sub-value at the index given by destination_index
   ossia::value value(ossia::destination_index) const;
@@ -101,8 +101,8 @@ public:
   std::vector<ossia::value>
   value(const std::vector<ossia::destination_index>&) const;
 
-  virtual address_base& set_value(const ossia::value&) = 0;
-  virtual address_base& set_value(ossia::value&&) = 0;
+  virtual parameter_base& set_value(const ossia::value&) = 0;
+  virtual parameter_base& set_value(ossia::value&&) = 0;
 
   //! Reimplement to provide a way that does not call the observers.
   virtual void set_value_quiet(const ossia::value& v)
@@ -115,19 +115,19 @@ public:
   }
 
   virtual val_type get_value_type() const = 0;
-  virtual address_base& set_value_type(val_type) = 0;
+  virtual parameter_base& set_value_type(val_type) = 0;
 
   virtual access_mode get_access() const = 0;
-  virtual address_base& set_access(access_mode) = 0;
+  virtual parameter_base& set_access(access_mode) = 0;
 
   virtual const domain& get_domain() const = 0;
-  virtual address_base& set_domain(const domain&) = 0;
+  virtual parameter_base& set_domain(const domain&) = 0;
 
   virtual bounding_mode get_bounding() const = 0;
-  virtual address_base& set_bounding(bounding_mode) = 0;
+  virtual parameter_base& set_bounding(bounding_mode) = 0;
 
   virtual repetition_filter get_repetition_filter() const = 0;
-  virtual address_base&
+  virtual parameter_base&
       set_repetition_filter(repetition_filter = repetition_filter::ON)
       = 0;
   virtual bool filter_repetition(const ossia::value& val) const
@@ -136,19 +136,19 @@ public:
   } //! by default there is no filter
 
   virtual ossia::unit_t get_unit() const;
-  virtual address_base& set_unit(const ossia::unit_t& v);
+  virtual parameter_base& set_unit(const ossia::unit_t& v);
 
   virtual bool get_muted() const;
-  virtual address_base& set_muted(bool);
+  virtual parameter_base& set_muted(bool);
   virtual bool get_critical() const;
-  virtual address_base& set_critical(bool);
+  virtual parameter_base& set_critical(bool);
 };
 
-inline bool operator==(const address_base& lhs, const address_base& rhs)
+inline bool operator==(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs == &rhs;
 }
-inline bool operator!=(const address_base& lhs, const address_base& rhs)
+inline bool operator!=(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs != &rhs;
 }

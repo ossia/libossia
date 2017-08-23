@@ -20,22 +20,22 @@ unsafe public class PresetController : MonoBehaviour {
 		IntPtr leafptr;
 		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/x", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_address(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Address addr = new Ossia.Address(addrptr);
+			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
 				result.x = addr.GetValue ().GetFloat ();
 			}
 		}
 		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/y", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_address(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Address addr = new Ossia.Address(addrptr);
+			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
 				result.y = addr.GetValue ().GetFloat ();
 			}
 		}
 		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/z", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_address(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Address addr = new Ossia.Address(addrptr);
+			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
 				result.z = addr.GetValue ().GetFloat ();
 			}
 		}
@@ -49,7 +49,7 @@ unsafe public class PresetController : MonoBehaviour {
 		Debug.Log ("Creating " + node.GetName ());
 		GameObject createdgo = GameObject.CreatePrimitive (PrimitiveType.Cube);
 		createdgo.name = node.GetName ();
-		createdgo.AddComponent<AssemblyCSharp.OssiaObject> ();
+		createdgo.AddComponent<Ossia.Object> ();
 
 		/// Import parameters \\\
 
@@ -73,8 +73,8 @@ unsafe public class PresetController : MonoBehaviour {
 		/// Remove the node containing the parameters, now useless \\\
 
 		GameObject controller = GameObject.Find ("OssiaController");
-		OssiaDevices dev = controller.GetComponent<OssiaDevices> ();
-		Ossia.Device local_device = dev.GetDevice ();
+		var dev = controller.GetComponent<Ossia.Controller> ();
+		var local_device = dev.GetDevice ();
 		local_device.GetRootNode().GetChild(0).RemoveChild(node);
 	}
 
@@ -100,7 +100,7 @@ unsafe public class PresetController : MonoBehaviour {
 				throw new Exception("Controller not found");
 			}
 
-			OssiaDevices dev = controller.GetComponent<OssiaDevices> ();
+			var dev = controller.GetComponent<Ossia.Controller> ();
 			if (dev == null) {
 				throw new Exception("Device is null");
 			}
@@ -160,7 +160,7 @@ unsafe public class PresetController : MonoBehaviour {
 		/// Print device when Space bar is pressed \\\
 
 		GameObject controller = GameObject.Find ("OssiaController");
-		OssiaDevices dev = controller.GetComponent<OssiaDevices> ();
+		var dev = controller.GetComponent<Ossia.Controller> ();
 		Ossia.Device local_device = dev.GetDevice();
 		IntPtr dev_ptr = local_device.GetDevice();
 		if (Input.GetKeyDown(KeyCode.Space)) {

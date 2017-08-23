@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -203,7 +203,7 @@ node::~node()
   {
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
     m_node->get_device()
-        .on_address_removing.disconnect<node, &node::cleanup_address>(*this);
+        .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
   }
 }
 
@@ -223,10 +223,10 @@ void node::set_name(std::string s)
     m_node->set_name(std::move(s));
 }
 
-std::string node::get_address() const
+std::string node::get_parameter() const
 {
   if(m_addr)
-    return ossia::net::osc_address_string(*m_addr);
+    return ossia::net::osc_parameter_string(*m_addr);
   return "";
 }
 
@@ -270,7 +270,7 @@ node node::create_impulse(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_address(ossia::val_type::IMPULSE)};
+    return node{n, n->create_parameter(ossia::val_type::IMPULSE)};
   }
 
   return {};
@@ -281,7 +281,7 @@ node node::create_int(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_address(ossia::val_type::INT)};
+    return node{n, n->create_parameter(ossia::val_type::INT)};
   }
 
   return {};
@@ -292,7 +292,7 @@ node node::create_float(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_address(ossia::val_type::FLOAT)};
+    return node{n, n->create_parameter(ossia::val_type::FLOAT)};
   }
 
   return {};
@@ -303,7 +303,7 @@ node node::create_bool(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_address(ossia::val_type::BOOL)};
+    return node{n, n->create_parameter(ossia::val_type::BOOL)};
   }
 
   return {};
@@ -314,7 +314,7 @@ node node::create_list(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_address(ossia::val_type::TUPLE)};
+    return node{n, n->create_parameter(ossia::val_type::TUPLE)};
   }
 
   return {};
@@ -325,7 +325,7 @@ node node::create_string(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_address(ossia::val_type::STRING)};
+    return node{n, n->create_parameter(ossia::val_type::STRING)};
   }
 
   return {};
@@ -336,7 +336,7 @@ node node::create_buffer(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::generic_buffer_type(), *n)};
+    return node{n, ossia::setup_parameter(ossia::generic_buffer_type(), *n)};
   }
 
   return {};
@@ -347,7 +347,7 @@ node node::create_filepath(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::filesystem_path_type(), *n)};
+    return node{n, ossia::setup_parameter(ossia::filesystem_path_type(), *n)};
   }
 
   return {};
@@ -358,7 +358,7 @@ node node::create_rgb(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::rgb_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::rgb_u{}, *n)};
   }
 
   return {};
@@ -369,7 +369,7 @@ node node::create_rgba(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::rgba_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::rgba_u{}, *n)};
   }
 
   return {};
@@ -380,7 +380,7 @@ node node::create_argb(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::argb_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::argb_u{}, *n)};
   }
 
   return {};
@@ -391,7 +391,7 @@ node node::create_argb8(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::argb8_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::argb8_u{}, *n)};
   }
 
   return {};
@@ -402,7 +402,7 @@ node node::create_hsv(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::hsv_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::hsv_u{}, *n)};
   }
 
   return {};
@@ -413,7 +413,7 @@ node node::create_cart2D(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::cartesian_2d_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::cartesian_2d_u{}, *n)};
   }
 
   return {};
@@ -424,7 +424,7 @@ node node::create_cart3D(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::cartesian_3d_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::cartesian_3d_u{}, *n)};
   }
 
   return {};
@@ -435,7 +435,7 @@ node node::create_polar(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::polar_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::polar_u{}, *n)};
   }
 
   return {};
@@ -446,7 +446,7 @@ node node::create_spherical(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::spherical_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::spherical_u{}, *n)};
   }
 
   return {};
@@ -457,7 +457,7 @@ node node::create_opengl(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::opengl_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::opengl_u{}, *n)};
   }
 
   return {};
@@ -468,7 +468,7 @@ node node::create_cylindrical(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::cylindrical_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::cylindrical_u{}, *n)};
   }
 
   return {};
@@ -479,7 +479,7 @@ node node::create_quaternion(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::quaternion_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::quaternion_u{}, *n)};
   }
 
   return {};
@@ -490,7 +490,7 @@ node node::create_euler(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::euler_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::euler_u{}, *n)};
   }
 
   return {};
@@ -501,7 +501,7 @@ node node::create_axis(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::axis_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::axis_u{}, *n)};
   }
 
   return {};
@@ -512,7 +512,7 @@ node node::create_decibel(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::decibel_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::decibel_u{}, *n)};
   }
 
   return {};
@@ -523,7 +523,7 @@ node node::create_midigain(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_address(ossia::midigain_u{}, *n)};
+    return node{n, ossia::setup_parameter(ossia::midigain_u{}, *n)};
   }
 
   return {};
@@ -909,12 +909,12 @@ bool node::get_repetition_filter() const
 }
 
 node::node(ossia::net::node_base* b)
-    : m_node{b}, m_addr{b->get_address()}
+    : m_node{b}, m_addr{b->get_parameter()}
 {
   init();
 }
 
-node::node(ossia::net::node_base* b, ossia::net::address_base* a)
+node::node(ossia::net::node_base* b, ossia::net::parameter_base* a)
     : m_node{b}, m_addr{a}
 {
   init();
@@ -925,7 +925,7 @@ void node::init()
   assert(m_node);
   m_node->about_to_be_deleted.connect<node, &node::cleanup>(*this);
   m_node->get_device()
-      .on_address_removing.connect<node, &node::cleanup_address>(*this);
+      .on_parameter_removing.connect<node, &node::cleanup_parameter>(*this);
 }
 
 void node::cleanup(const ossia::net::node_base&)
@@ -933,11 +933,11 @@ void node::cleanup(const ossia::net::node_base&)
   m_node = nullptr;
   m_addr = nullptr;
 }
-void node::cleanup_address(const ossia::net::address_base&)
+void node::cleanup_parameter(const ossia::net::parameter_base&)
 {
   if (m_addr)
     m_node->get_device()
-        .on_address_removing.disconnect<node, &node::cleanup_address>(*this);
+        .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
   m_addr = nullptr;
 }
 

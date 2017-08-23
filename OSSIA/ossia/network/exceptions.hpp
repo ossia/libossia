@@ -34,8 +34,8 @@ struct OSSIA_EXPORT connection_error : public std::runtime_error
  *
  * Means that there an incorrect node
  * was passed.
- * For instance a node without an address
- * when an address was required.
+ * For instance a node without a parameter
+ * when a parameter was required.
  */
 struct OSSIA_EXPORT invalid_node_error : public std::logic_error
 {

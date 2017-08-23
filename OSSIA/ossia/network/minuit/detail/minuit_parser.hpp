@@ -67,7 +67,7 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Get>
       auto node = ossia::net::find_node(dev.get_root_node(), full_address);
       if (!node)
         return;
-      auto addr = node->get_address();
+      auto addr = node->get_parameter();
       if (!addr)
         return;
 
@@ -86,7 +86,7 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Get>
       auto node = ossia::net::find_node(dev.get_root_node(), address);
       if (!node)
         return;
-      auto addr = node->get_address();
+      auto addr = node->get_parameter();
       if (!addr)
         return;
 
@@ -252,7 +252,7 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Namespace>
       }
       else
       {
-        if (node->get_address())
+        if (node->get_parameter())
         {
           handle_data_container(
               proto, address, get_children_names(dev, address));
@@ -267,7 +267,7 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Namespace>
 };
 
 inline ossia::domain get_domain(
-    ossia::net::address_base& addr,
+    ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it)
 {
@@ -321,7 +321,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Listen>
       auto node = ossia::net::find_node(dev.get_root_node(), full_address);
       if (node)
       {
-        if (auto addr = node->get_address())
+        if (auto addr = node->get_parameter())
         {
           ossia::net::update_value(
               *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
@@ -342,7 +342,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Listen>
       // mess_it is now at the first argument after the address:attribute
 
       if (auto node = ossia::net::find_node(dev.get_root_node(), address))
-        if (auto addr = node->get_address())
+        if (auto addr = node->get_parameter())
           switch (attr)
           {
             case minuit_attribute::Value:
@@ -509,11 +509,11 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Namespace>
     std::string child_address{address};
     if (child_address.back() != '/')
       child_address += '/';
-    const auto child_address_size = child_address.size();
+    const auto child_parameter_size = child_address.size();
 
     for (auto child : get_nodes(beg_it, end_it))
     {
-      child_address.resize(child_address_size);
+      child_address.resize(child_parameter_size);
 
       // Address of the node to create
       child_address.append(child.begin(), child.end());
@@ -536,7 +536,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Namespace>
 
     // Find or create the node
     auto& n = ossia::net::find_or_create_node(dev.get_root_node(), address);
-    n.create_address(ossia::val_type::IMPULSE);
+    n.create_parameter(ossia::val_type::IMPULSE);
 
     // A data can also have child nodes :
     handle_container(proto, dev, address, beg_it, end_it);

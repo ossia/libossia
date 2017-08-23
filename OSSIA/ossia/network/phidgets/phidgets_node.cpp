@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "phidgets_node.hpp"
-#include "phidgets_address.hpp"
+#include "phidgets_parameter.hpp"
 #include "phidgets_device.hpp"
 #include "phidgets_protocol.hpp"
 namespace ossia
@@ -31,17 +31,17 @@ net::node_base& phidget_node::set_name(std::string n)
   return *this;
 }
 
-net::address_base* phidget_node::get_address() const
+net::parameter_base* phidget_node::get_parameter() const
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-net::address_base* phidget_node::create_address(val_type)
+net::parameter_base* phidget_node::create_parameter(val_type)
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-bool phidget_node::remove_address()
+bool phidget_node::remove_parameter()
 {
   return false;
 }

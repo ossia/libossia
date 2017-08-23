@@ -43,27 +43,27 @@ int main()
   auto oscTestNode = device.create_child("test");
 
   auto oscImpulseNode = oscTestNode->create_child("my_impulse");
-  auto oscImpulseAddress = oscImpulseNode->create_address(val_type::IMPULSE);
+  auto oscImpulseAddress = oscImpulseNode->create_parameter(val_type::IMPULSE);
   oscImpulseAddress->add_callback(printValueCallback);
 
   auto oscBoolNode = oscTestNode->create_child("my_bool");
-  auto oscBoolAddress = oscBoolNode->create_address(val_type::BOOL);
+  auto oscBoolAddress = oscBoolNode->create_parameter(val_type::BOOL);
   oscBoolAddress->add_callback(printValueCallback);
 
   auto oscIntNode = oscTestNode->create_child("my_int");
-  auto oscIntAddress = oscIntNode->create_address(val_type::INT);
+  auto oscIntAddress = oscIntNode->create_parameter(val_type::INT);
   oscIntAddress->add_callback(printValueCallback);
 
   auto oscFloatNode = oscTestNode->create_child("my_float");
-  auto oscFloatAddress = oscFloatNode->create_address(val_type::FLOAT);
+  auto oscFloatAddress = oscFloatNode->create_parameter(val_type::FLOAT);
   oscFloatAddress->add_callback(printValueCallback);
 
   auto oscStringNode = oscTestNode->create_child("my_string");
-  auto oscStringAddress = oscStringNode->create_address(val_type::STRING);
+  auto oscStringAddress = oscStringNode->create_parameter(val_type::STRING);
   oscStringAddress->add_callback(printValueCallback);
 
   auto oscTupleNode = oscTestNode->create_child("my_tuple");
-  auto oscTupleAddress = oscTupleNode->create_address(val_type::TUPLE);
+  auto oscTupleAddress = oscTupleNode->create_parameter(val_type::TUPLE);
   oscTupleAddress->add_callback(printValueCallback);
 
   // update tree value

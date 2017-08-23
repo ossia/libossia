@@ -57,9 +57,9 @@ private Q_SLOTS:
         for(const auto& node : minuitDevice->children())
         {
             if(node->getName() == "startTick")
-                start_addr = node->get_address();
+                start_addr = node->get_parameter();
             if(node->getName() == "stopTick")
-                stop_addr = node->get_address();
+                stop_addr = node->get_parameter();
             if(start_addr && stop_addr)
                 break;
         }
@@ -78,10 +78,10 @@ private Q_SLOTS:
             const auto& name = n->getName();
             if(name != "startTick" && name != "stopTick")
             {
-                if(n->get_address())
+                if(n->get_parameter())
                 {
                     auto start = std::chrono::steady_clock::now();
-                    n->get_address()->push_value(&f);
+                    n->get_parameter()->push_value(&f);
                     auto end = std::chrono::steady_clock::now();
 
                     total_dur += end - start;

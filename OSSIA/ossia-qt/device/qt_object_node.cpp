@@ -21,17 +21,17 @@ qt_object_node::qt_object_node(
   init(obj);
 }
 
-net::address_base* qt_object_node::get_address() const
+net::parameter_base* qt_object_node::get_parameter() const
 {
   return mAddress.get();
 }
 
-net::address_base* qt_object_node::create_address(val_type type)
+net::parameter_base* qt_object_node::create_parameter(val_type type)
 {
   return nullptr;
 }
 
-bool qt_object_node::remove_address()
+bool qt_object_node::remove_parameter()
 {
   return false;
 }

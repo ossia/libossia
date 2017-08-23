@@ -44,31 +44,31 @@ int main()
   auto localTestNode = device.create_child("test");
 
   auto localImpulseNode = localTestNode->create_child("my_impulse");
-  auto localImpulseAddress = localImpulseNode->create_address(val_type::IMPULSE);
+  auto localImpulseAddress = localImpulseNode->create_parameter(val_type::IMPULSE);
   localImpulseAddress->add_callback(printValueCallback);
 
   auto localBoolNode = localTestNode->create_child("my_bool");
-  auto localBoolAddress = localBoolNode->create_address(val_type::BOOL);
+  auto localBoolAddress = localBoolNode->create_parameter(val_type::BOOL);
   localBoolAddress->add_callback(printValueCallback);
 
   auto localIntNode = localTestNode->create_child("my_int");
-  auto localIntAddress = localIntNode->create_address(val_type::INT);
+  auto localIntAddress = localIntNode->create_parameter(val_type::INT);
   localIntAddress->add_callback(printValueCallback);
 
   auto localFloatNode = localTestNode->create_child("my_float");
-  auto localFloatAddress = localFloatNode->create_address(val_type::FLOAT);
+  auto localFloatAddress = localFloatNode->create_parameter(val_type::FLOAT);
   localFloatAddress->add_callback(printValueCallback);
 
   auto localStringNode = localTestNode->create_child("my_string");
-  auto localStringAddress = localStringNode->create_address(val_type::STRING);
+  auto localStringAddress = localStringNode->create_parameter(val_type::STRING);
   localStringAddress->add_callback(printValueCallback);
 
   // auto localDestinationNode = localTestNode->create_child("my_destination");
-  // auto localDestinationAddress = localDestinationNode->create_address(val_type::DESTINATION);
+  // auto localDestinationAddress = localDestinationNode->create_parameter(val_type::DESTINATION);
   // localDestinationAddress->addCallback(printValueCallback);
 
   auto localTupleNode = localTestNode->create_child("my_tuple");
-  auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
+  auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
   localTupleAddress->add_callback(printValueCallback);
 
   // update tree value

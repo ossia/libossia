@@ -1,8 +1,11 @@
 #pragma once
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia_export.h>
 #include <vector>
 
+/**
+ * \file value_conversion.hpp
+ */
 namespace ossia
 {
 class value;

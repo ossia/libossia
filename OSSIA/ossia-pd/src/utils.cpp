@@ -161,13 +161,15 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
 }
 
 std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname)
+    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev)
 {
   std::string subclassname
       = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
 
   t_gobj* list = start_list;
   std::vector<t_obj_base*> found;
+  bool found_model = false;
+  bool found_view = false;
 
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
@@ -182,13 +184,34 @@ std::vector<t_obj_base*> find_child_to_register(
         found.push_back(o);
       }
     }
+
+    // if we're looking for ossia.view but found a model, remind it
+    if ( classname == "ossia.view" && current == "ossia.model" )
+      found_model = true;
+    else if ( classname == "ossia.model" && current == "ossia.view" )
+      found_view = true;
+
+    // if there is a client or device in the current patcher
+    // don't register anything
+    if ( found_dev && (current == "ossia.device" || current == "ossia.client") )
+    {
+      t_obj_base* o;
+      o = (t_obj_base*)&list->g_pd;
+      if (x != o && !o->x_dead)
+      {
+        *found_dev = true;
+      }
+    }
+
     list = list->g_next;
   }
 
   // 2: if there is no ossia.model / ossia.view in the current patch, look into
   // the subpatches
+  // if we found no ossia.view, but a ossia.model,
+  // then remote in subpatchers should have been already register to model
 
-  if (found.empty())
+  if (found.empty() && !found_model)
   {
     list = start_list;
     while (list && list->g_pd)
@@ -200,11 +223,12 @@ std::vector<t_obj_base*> find_child_to_register(
         if (!canvas_istable(canvas))
         {
           t_gobj* _list = canvas->gl_list;
+          bool _found_dev = false;
           std::vector<t_obj_base*> found_tmp
-              = find_child_to_register(x, _list, classname);
-          for (auto obj : found_tmp)
+              = find_child_to_register(x, _list, classname, &_found_dev);
+          if (!_found_dev)
           {
-            found.push_back(obj);
+            found.insert(found.end(),found_tmp.begin(), found_tmp.end());
           }
         }
       }
@@ -216,11 +240,14 @@ std::vector<t_obj_base*> find_child_to_register(
     while (list && list->g_pd)
     {
       std::string current = list->g_pd->c_name->s_name;
-      if (current == subclassname)
+
+      // if there is no view next to model, then take also remote into account
+      if ( current == subclassname
+          || ( !found_view && current == "ossia.remote" ) )
       {
         t_obj_base* o;
         o = (t_obj_base*)&list->g_pd;
-        if (x != o)
+        if (x != o && !o->x_dead)
         {
           found.push_back(o);
         }
@@ -347,17 +374,32 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
   return nodes;
 }
 
-ossia::pd::AddrScope get_address_type(const std::string& addr)
+ossia::pd::AddrScope get_address_scope(const std::string& addr)
 {
   AddrScope type = AddrScope::relative;
   if ( addr.length() > 0 )
   {
-    if (addr[0] == '/')
+    if (addr[0] == '/'
+        && addr.length() > 1 && addr[1] != '/') // escape the '//' special combinaison
       type = AddrScope::absolute;
     else if ( addr.find(":/") != std::string::npos )
       type = AddrScope::global;
   }
   return type;
+}
+
+std::vector<ossia::value> attribute2value(t_atom* atom, long size)
+{
+  std::vector<ossia::value> list;
+
+  for (int i = 0; i < size; i++)
+  {
+    if (atom[i].a_type == A_FLOAT)
+      list.push_back(atom_getfloat(&atom[i]));
+    else if (atom[i].a_type == A_SYMBOL)
+      list.push_back(std::string(atom_getsymbol(&atom[i])->s_name));
+  }
+  return list;
 }
 
 }

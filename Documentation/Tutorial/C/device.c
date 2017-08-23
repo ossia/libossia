@@ -37,10 +37,10 @@ int main(int argc, char** argv)
   ossia_node_t n2 = ossia_node_create(root, "/foo/baz");
 
   /* This sub-child, /bort/bert, will have a float value. */
-  ossia_address_t n2_addr = ossia_node_create_address(n2, FLOAT_T);
+  ossia_parameter_t n2_addr = ossia_node_create_parameter(n2, FLOAT_T);
 
   /* Send a value through the network */
-  ossia_address_push_f(n2_addr, 345.);
+  ossia_parameter_push_f(n2_addr, 345.);
 
 
   /********************************************************************/
@@ -68,13 +68,13 @@ int main(int argc, char** argv)
   /**************************************************/
 
 
-  ossia_address_t remote_n2_addr = ossia_node_get_address(remote_n2);
+  ossia_parameter_t remote_n2_addr = ossia_node_get_parameter(remote_n2);
 
   int count = 0;
-  ossia_address_push_callback(remote_n2_addr, test_callback, &count);
+  ossia_parameter_push_callback(remote_n2_addr, test_callback, &count);
 
-  ossia_address_push_f(n2_addr, 3.4);
-  ossia_address_push_f(n2_addr, 5.6);
+  ossia_parameter_push_f(n2_addr, 3.4);
+  ossia_parameter_push_f(n2_addr, 5.6);
   while(count != 2)
     ;
 

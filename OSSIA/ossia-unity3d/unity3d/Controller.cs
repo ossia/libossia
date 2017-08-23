@@ -5,8 +5,9 @@ using System;
 using System.Collections;
 using Ossia;
 
-
-public class OssiaDevices : MonoBehaviour {
+namespace Ossia
+{	
+public class Controller : MonoBehaviour {
 	static bool set = false;
 
 	static Ossia.Local local_protocol = null;
@@ -17,8 +18,8 @@ public class OssiaDevices : MonoBehaviour {
 	static Ossia.Node scene_node;
 	Ossia.Network main;
 
-
 	public delegate void debug_log_delegate(string str);
+    debug_log_delegate callback_delegate = null;
 	static void DebugLogCallback(string str)
 	{
 		Debug.Log("OSSIA : " + str);
@@ -28,7 +29,10 @@ public class OssiaDevices : MonoBehaviour {
 	{
 		if (!set) {
 				set = true;
-				debug_log_delegate callback_delegate = new debug_log_delegate (DebugLogCallback);
+
+                // Setup the log so that the errors in the C API are shown in the
+                // Unity3D console
+                callback_delegate = new debug_log_delegate (DebugLogCallback);
 
 				// Convert callback_delegate into a function pointer that can be
 				// used in unmanaged code.
@@ -55,7 +59,6 @@ public class OssiaDevices : MonoBehaviour {
 		return scene_node; 
 	}
 
-
 	void OnApplicationQuit() {
 		local_device.Free ();
 
@@ -70,4 +73,5 @@ public class OssiaDevices : MonoBehaviour {
 		return local_protocol;
 	}
 
+	}
 }

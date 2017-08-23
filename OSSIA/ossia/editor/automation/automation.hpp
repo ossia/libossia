@@ -7,13 +7,16 @@
 #include <ossia/editor/value/destination.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file automation.hpp
+ */
 namespace ossia
 {
 class value;
 struct time_value;
 namespace net
 {
-class address_base;
+class parameter_base;
 }
 
 /**
@@ -22,19 +25,19 @@ class address_base;
  * An automation is a time process that represents a curve of one
  * or multiple parameters.
  *
- * It drives (i.e. sends messages) to an address, according to a driving value.
- * Its driven \ref net::address_base can be either of numeric type (\ref
+ * It drives (i.e. sends messages) to a parameter, according to a driving value.
+ * Its driven \ref net::parameter_base can be either of numeric type (\ref
  * val_type::INT, \ref val_type::FLOAT...)
  * or of \ref val_type::TUPLE, if the tuple only has numeric elements (e.g.
  * Tuple{Float, Float}).
  *
  * The driving \ref value can either be a single \ref Behavior or a \ref Tuple
  * of \ref Behavior,
- * in accordance to the type of the driven \ref net::address_base.
+ * in accordance to the type of the driven \ref net::parameter_base.
  *
  * The automation has a "source" domain, i.e. the data space in which the
  * transformation
- * happens. The target domain is taken from the driven address_base.
+ * happens. The target domain is taken from the driven parameter_base.
  * The unit is stored in m_lastMessage.unit.
  *
  *

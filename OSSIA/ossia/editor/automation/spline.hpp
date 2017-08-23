@@ -3,7 +3,7 @@
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/value/destination.hpp>
 
-//! Courtesy of tinyspline library, MIT license.
+// Courtesy of tinyspline library, MIT license.
 #include <ossia/editor/automation/tinysplinecpp.h>
 
 namespace ossia
@@ -64,7 +64,7 @@ public:
   void resume() override;
 
 private:
-  ossia::optional<ossia::Destination> m_address;
+  ossia::optional<ossia::Destination> m_parameter;
   tinyspline::BSpline m_spline;
   double m_x{}, m_y{}, m_scaleX{1.}, m_scaleY{1.};
 };

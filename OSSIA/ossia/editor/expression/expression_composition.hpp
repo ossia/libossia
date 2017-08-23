@@ -6,6 +6,9 @@
 #include <ossia/editor/expression/operators.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file expression_composition.hpp
+ */
 namespace ossia
 {
 namespace expressions

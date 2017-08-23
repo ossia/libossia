@@ -45,7 +45,7 @@ extern "C" void ossia_parameter_setup()
 
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
-  CLASS_ATTR_ENUM ( 
+  CLASS_ATTR_ENUM (
       ossia_library.ossia_parameter_class, "type", 0, "float int bool symbol vec2f vec3f vec4f tuple impulse");
   CLASS_ATTR_ATOM_ARRAY(
       ossia_library.ossia_parameter_class, "default", 0, t_parameter,
@@ -55,20 +55,20 @@ extern "C" void ossia_parameter_setup()
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "bounding_mode", 0, t_parameter,
       m_bounding_mode);
-  CLASS_ATTR_ENUM ( 
+  CLASS_ATTR_ENUM (
       ossia_library.ossia_parameter_class, "bounding_mode", 0, "free clip wrap fold low high");
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "access_mode", 0, t_parameter,
       m_access_mode);
-  CLASS_ATTR_ENUM ( 
+  CLASS_ATTR_ENUM (
       ossia_library.ossia_parameter_class, "access_mode", 0, "bi get set");
   CLASS_ATTR_LONG(
       ossia_library.ossia_parameter_class, "repetition_filter", 0, t_parameter,
       m_repetition_filter);
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "unit", 0, t_parameter, m_unit);
-  CLASS_ATTR_ENUM ( 
-      ossia_library.ossia_parameter_class, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h"); 
+  CLASS_ATTR_ENUM (
+      ossia_library.ossia_parameter_class, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h");
   //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
   CLASS_ATTR_SYM_VARSIZE(
       ossia_library.ossia_parameter_class, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
@@ -136,7 +136,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+        x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
       }
     }
 
@@ -186,7 +186,7 @@ void ossia_parameter_in(t_parameter* x, T f)
 {
   if (x && x->m_node)
   {
-    if (auto addr = x->m_node->get_address())
+    if (auto addr = x->m_node->get_parameter())
     {
       addr->push_value(f);
     }
@@ -279,7 +279,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   m_node->about_to_be_deleted.connect<t_parameter, &t_parameter::is_deleted>(
       this);
 
-  ossia::net::address_base* local_address{};
+  ossia::net::parameter_base* local_param{};
 
   // transform to lowercase
   std::string type = m_type->s_name;
@@ -288,43 +288,43 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
   if (m_type == gensym("float"))
   {
-    local_address = m_node->create_address(ossia::val_type::FLOAT);
+    local_param = m_node->create_parameter(ossia::val_type::FLOAT);
 
     if (m_default[0].a_type == A_FLOAT)
       ossia::net::set_default_value(
-          local_address->get_node(), (float)m_default[0].a_w.w_float);
+          local_param->get_node(), (float)m_default[0].a_w.w_float);
   }
   else if (m_type == gensym("string"))
   {
-    local_address = m_node->create_address(ossia::val_type::STRING);
+    local_param = m_node->create_parameter(ossia::val_type::STRING);
 
     if (m_default[0].a_type == A_SYM)
       ossia::net::set_default_value(
-          local_address->get_node(),
+          local_param->get_node(),
           std::string(m_default[0].a_w.w_sym->s_name));
   }
   else if (m_type == gensym("int"))
   {
-    local_address = m_node->create_address(ossia::val_type::INT);
+    local_param = m_node->create_parameter(ossia::val_type::INT);
 
     if (m_default[0].a_type == A_LONG)
       ossia::net::set_default_value(
-          local_address->get_node(), (int32_t)m_default[0].a_w.w_long);
+          local_param->get_node(), (int32_t)m_default[0].a_w.w_long);
   }
   else if (m_type == gensym("vec2f"))
   {
-    local_address = m_node->create_address(ossia::val_type::VEC2F);
+    local_param = m_node->create_parameter(ossia::val_type::VEC2F);
     m_type_size = 2;
 
     if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT)
     {
       vec2f vec = make_vec(m_default[0].a_w.w_float, m_default[1].a_w.w_float);
-      ossia::net::set_default_value(local_address->get_node(), vec);
+      ossia::net::set_default_value(local_param->get_node(), vec);
     }
   }
   else if (m_type == gensym("vec3f"))
   {
-    local_address = m_node->create_address(ossia::val_type::VEC3F);
+    local_param = m_node->create_parameter(ossia::val_type::VEC3F);
     m_type_size = 3;
 
     if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
@@ -333,12 +333,12 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
       vec3f vec = make_vec(
           m_default[0].a_w.w_float, m_default[1].a_w.w_float,
           m_default[2].a_w.w_float);
-      ossia::net::set_default_value(local_address->get_node(), vec);
+      ossia::net::set_default_value(local_param->get_node(), vec);
     }
   }
   else if (m_type == gensym("vec4f"))
   {
-    local_address = m_node->create_address(ossia::val_type::VEC4F);
+    local_param = m_node->create_parameter(ossia::val_type::VEC4F);
     m_type_size = 4;
 
     if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
@@ -347,25 +347,25 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
       vec4f vec = make_vec(
           m_default[0].a_w.w_float, m_default[1].a_w.w_float,
           m_default[2].a_w.w_float, m_default[3].a_w.w_float);
-      ossia::net::set_default_value(local_address->get_node(), vec);
+      ossia::net::set_default_value(local_param->get_node(), vec);
     }
   }
   else if (m_type == gensym("impulse"))
   {
-    local_address = m_node->create_address(ossia::val_type::IMPULSE);
+    local_param = m_node->create_parameter(ossia::val_type::IMPULSE);
     m_type_size = 0;
   }
   else if (m_type == gensym("bool"))
   {
-    local_address = m_node->create_address(ossia::val_type::BOOL);
+    local_param = m_node->create_parameter(ossia::val_type::BOOL);
 
     if (m_default[0].a_type == A_LONG)
       ossia::net::set_default_value(
-          local_address->get_node(), m_default[0].a_w.w_long > 0 ? true : false);
+          local_param->get_node(), m_default[0].a_w.w_long > 0 ? true : false);
   }
   else if (m_type == gensym("tuple"))
   {
-    local_address = m_node->create_address(ossia::val_type::TUPLE);
+    local_param = m_node->create_parameter(ossia::val_type::TUPLE);
     m_type_size = 64;
     std::vector<ossia::value> list;
 
@@ -380,15 +380,15 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     }
 
     if (list.size() > 0)
-      ossia::net::set_default_value(local_address->get_node(), list);
+      ossia::net::set_default_value(local_param->get_node(), list);
   }
   else if (m_type == gensym("char"))
   {
-    local_address = m_node->create_address(ossia::val_type::CHAR);
+    local_param = m_node->create_parameter(ossia::val_type::CHAR);
 
     if (m_default[0].a_type == A_LONG)
       ossia::net::set_default_value(
-          local_address->get_node(), (char)m_default[0].a_w.w_long);
+          local_param->get_node(), (char)m_default[0].a_w.w_long);
   }
   else
   {
@@ -398,10 +398,10 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
         "vec3f, vec4f, bool, tuple, char, impulse");
   }
 
-  if (!local_address)
+  if (!local_param)
     return false;
 
-  local_address->set_domain(ossia::make_domain(
+  local_param->set_domain(ossia::make_domain(
       atom_getfloat(&m_range[0]), atom_getfloat(&m_range[1])));
 
   // transform to lowercase
@@ -411,17 +411,17 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
   // FIXME : we need case insensitive comparison here
   if (m_bounding_mode == gensym("free"))
-    local_address->set_bounding(ossia::bounding_mode::FREE);
+    local_param->set_bounding(ossia::bounding_mode::FREE);
   else if (m_bounding_mode == gensym("clip"))
-    local_address->set_bounding(ossia::bounding_mode::CLIP);
+    local_param->set_bounding(ossia::bounding_mode::CLIP);
   else if (m_bounding_mode == gensym("wrap"))
-    local_address->set_bounding(ossia::bounding_mode::WRAP);
+    local_param->set_bounding(ossia::bounding_mode::WRAP);
   else if (m_bounding_mode == gensym("fold"))
-    local_address->set_bounding(ossia::bounding_mode::FOLD);
+    local_param->set_bounding(ossia::bounding_mode::FOLD);
   else if (m_bounding_mode == gensym("low"))
-    local_address->set_bounding(ossia::bounding_mode::LOW);
+    local_param->set_bounding(ossia::bounding_mode::LOW);
   else if (m_bounding_mode == gensym("high"))
-    local_address->set_bounding(ossia::bounding_mode::HIGH);
+    local_param->set_bounding(ossia::bounding_mode::HIGH);
 
   // transform to lowercase
   std::string acess_mode = m_access_mode->s_name;
@@ -429,27 +429,27 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   m_access_mode = gensym(acess_mode.c_str());
 
   if (m_access_mode == gensym("bi") || m_access_mode == gensym("rw"))
-    local_address->set_access(ossia::access_mode::BI);
+    local_param->set_access(ossia::access_mode::BI);
   else if (m_access_mode == gensym("get") || m_access_mode == gensym("r"))
-    local_address->set_access(ossia::access_mode::GET);
+    local_param->set_access(ossia::access_mode::GET);
   else if (m_access_mode == gensym("set") || m_access_mode == gensym("w"))
-    local_address->set_access(ossia::access_mode::SET);
+    local_param->set_access(ossia::access_mode::SET);
 
-  local_address->set_repetition_filter(
+  local_param->set_repetition_filter(
       m_repetition_filter ? ossia::repetition_filter::ON
                           : ossia::repetition_filter::OFF);
 
   ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
-  local_address->set_unit(unit);
+  local_param->set_unit(unit);
 
-  ossia::net::set_description(local_address->get_node(), m_description->s_name);
-  ossia::net::set_tags(local_address->get_node(), parse_tags_symbol(m_tags, m_tags_size));
+  ossia::net::set_description(local_param->get_node(), m_description->s_name);
+  ossia::net::set_tags(local_param->get_node(), parse_tags_symbol(m_tags, m_tags_size));
 
-  ossia::net::set_priority(local_address->get_node(), m_priority);
+  ossia::net::set_priority(local_param->get_node(), m_priority);
 
-  ossia::net::set_hidden(local_address->get_node(), m_hidden != 0);
+  ossia::net::set_hidden(local_param->get_node(), m_hidden != 0);
 
-  local_address->add_callback(
+  local_param->add_callback(
       [=](const ossia::value& v) { apply_value_visitor(v); });
 
   clock_delay(m_clock, 0);

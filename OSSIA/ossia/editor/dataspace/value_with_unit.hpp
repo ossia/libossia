@@ -7,6 +7,7 @@ namespace ossia
 {
 
 #include <ossia/editor/dataspace/dataspace_strong_variants.hpp>
+//! Unit attached with a corresponding value. e.g. a specific color, or position.
 struct OSSIA_EXPORT value_with_unit final
 {
   strong_value_variant v;

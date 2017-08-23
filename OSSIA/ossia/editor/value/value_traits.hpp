@@ -1,6 +1,9 @@
 #pragma once
 #include <ossia/editor/value/value.hpp>
 
+/**
+ * \file value_traits.hpp
+ */
 namespace ossia
 {
 

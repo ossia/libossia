@@ -69,7 +69,7 @@ bool max_object_register(T* x)
 
   ossia::net::node_base* node = nullptr;
 
-  if (x->m_address_type == AddrType::global)
+  if (x->m_parameter_type == AddrType::global)
   {
     node = ossia::max::find_global_node(x->m_name->s_name);
   }
@@ -89,7 +89,7 @@ bool max_object_register(T* x)
       start_level = 1;
     }
 
-    if (x->m_address_type == AddrType::relative)
+    if (x->m_parameter_type == AddrType::relative)
     {
       // then try to locate a parent view or model
       if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
@@ -299,7 +299,7 @@ void object_dump(T* x)
 
   if (x->m_node)
   {
-    ossia::net::address_base* address = x->m_node->get_address();
+    ossia::net::parameter_base* address = x->m_node->get_parameter();
     if (address)
     {
       // type

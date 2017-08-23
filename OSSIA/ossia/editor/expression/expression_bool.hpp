@@ -2,6 +2,9 @@
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file expression_bool.hpp
+ */
 namespace ossia
 {
 namespace expressions

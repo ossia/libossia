@@ -5,7 +5,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia-c/preset/preset.hpp>
 #include <QQmlEngine>
@@ -31,10 +31,10 @@ private slots:
     auto& n3 = ossia::net::find_or_create_node(root, "/bim/boum");
     auto& n4 = ossia::net::find_or_create_node(root, "/bim/boum.1");
 
-    auto a1 = n1.create_address(ossia::val_type::INT);
-    auto a2 = n2.create_address(ossia::val_type::FLOAT);
-    auto a3 = n3.create_address(ossia::val_type::STRING);
-    auto a4 = n4.create_address(ossia::val_type::STRING);
+    auto a1 = n1.create_parameter(ossia::val_type::INT);
+    auto a2 = n2.create_parameter(ossia::val_type::FLOAT);
+    auto a3 = n3.create_parameter(ossia::val_type::STRING);
+    auto a4 = n4.create_parameter(ossia::val_type::STRING);
 
     ossia::net::set_default_value(n1, 1234);
     ossia::net::set_default_value(n2, 5678.);

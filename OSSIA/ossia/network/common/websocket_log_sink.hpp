@@ -9,10 +9,6 @@ namespace ossia
 {
 struct websocket_threaded_connection
 {
-  ossia::oscquery::websocket_client socket;
-  std::atomic_bool running{};
-  std::thread thread;
-
   websocket_threaded_connection(const std::string& ip)
       : socket([](auto&&...) {})
   {
@@ -56,18 +52,16 @@ struct websocket_threaded_connection
     if (thread.joinable())
       thread.join();
   }
+
+  ossia::oscquery::websocket_client socket;
+  std::atomic_bool running{};
+  std::thread thread;
 };
 
 //! A sink to use with spdlog, that will send its log messages over websockets.
 struct websocket_log_sink final : public spdlog::sinks::sink,
                                   public Nano::Observer
 {
-  rapidjson::StringBuffer buffer;
-  std::shared_ptr<websocket_threaded_connection> socket;
-  std::string sender;
-
-  moodycamel::ReaderWriterQueue<std::string> logs;
-
   websocket_log_sink(
       std::shared_ptr<websocket_threaded_connection> s, std::string send)
       : socket{std::move(s)}, sender{std::move(send)}
@@ -160,19 +154,19 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
   void flush() override
   {
   }
+
+private:
+  rapidjson::StringBuffer buffer;
+  std::shared_ptr<websocket_threaded_connection> socket;
+  std::string sender;
+
+  moodycamel::ReaderWriterQueue<std::string> logs;
 };
 
 //! Sends websocket "alive" messages at regular intervals.
 struct websocket_heartbeat : public Nano::Observer
 {
-  rapidjson::StringBuffer buffer;
-  std::thread thread;
-  std::chrono::seconds interval;
-  std::string sender;
-  std::string init_msg;
-  std::shared_ptr<websocket_threaded_connection> conn;
-  std::atomic_bool running{true};
-  std::atomic_bool init{false};
+public:
   websocket_heartbeat(
       std::shared_ptr<websocket_threaded_connection> t, std::string s,
       std::chrono::seconds dur)
@@ -278,5 +272,15 @@ struct websocket_heartbeat : public Nano::Observer
       init_msg = std::string(buffer.GetString(), buffer.GetSize());
     }
   }
+
+private:
+  rapidjson::StringBuffer buffer;
+  std::thread thread;
+  std::chrono::seconds interval;
+  std::string sender;
+  std::string init_msg;
+  std::shared_ptr<websocket_threaded_connection> conn;
+  std::atomic_bool running{true};
+  std::atomic_bool init{false};
 };
 }

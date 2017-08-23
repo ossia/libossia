@@ -3,10 +3,11 @@
 #include "ossia_utils.hpp"
 #include <iostream>
 #include <map>
+#include <boost/container/flat_map.hpp>
 
-static std::map<std::string, ossia_device_t>& static_devices()
+global_devices& static_devices()
 {
-  static std::map<std::string, ossia_device_t> devs;
+  static global_devices devs;
   return devs;
 }
 
@@ -18,8 +19,8 @@ ossia_device_t ossia_device_create(ossia_protocol_t protocol, const char* name)
 
     // Look in our cache
     auto& devs = static_devices();
-    auto it = devs.find(str_name);
-    if (it != devs.end())
+    auto it = devs.devices.find(str_name);
+    if (it != devs.devices.end())
     {
       // Found the device in the cache
       if (!it->second)
@@ -41,7 +42,7 @@ ossia_device_t ossia_device_create(ossia_protocol_t protocol, const char* name)
           std::unique_ptr<ossia::net::protocol_base>(protocol->protocol),
           str_name)};
 
-      devs.insert(std::make_pair(str_name, dev));
+      devs.devices.insert(std::make_pair(str_name, dev));
 
       return dev;
     }
@@ -73,10 +74,11 @@ void ossia_device_free(ossia_device_t device)
     if (device && device->device)
     {
       auto& devs = static_devices();
-      auto it = devs.find(device->device->get_name());
-      if (it != devs.end())
+      auto it = devs.devices.find(device->device->get_name());
+      if (it != devs.devices.end())
       {
-        devs.erase(it);
+        device->device->get_root_node().clear_children();
+        devs.devices.erase(it);
       }
     }
 
@@ -88,11 +90,11 @@ void ossia_device_reset_static()
 {
   return safe_function(__func__, [=] {
     auto& devs = static_devices();
-    for (auto& dev : devs)
+    for (auto& dev : devs.devices)
     {
       delete dev.second;
     }
-    devs.clear();
+    devs.devices.clear();
   });
 }
 
@@ -218,48 +220,48 @@ void ossia_device_remove_node_removing_callback(
 }
 
 
-ossia_node_callback_idx_t ossia_device_add_address_deleting_callback(
+ossia_parameter_callback_idx_t ossia_device_add_parameter_deleting_callback(
         ossia_device_t device,
         ossia_node_callback_t callback,
         void* ctx)
 {
-    return safe_function(__func__, [=]() -> ossia_node_callback_idx_t {
+    return safe_function(__func__, [=]() -> ossia_parameter_callback_idx_t {
       if (!device)
       {
-        ossia_log_error("ossia_device_add_address_deleting_callback: device is null");
+        ossia_log_error("ossia_device_add_parameter_deleting_callback: device is null");
         return nullptr;
       }
       if (!callback)
       {
-        ossia_log_error("ossia_device_add_address_deleting_callback: callback is null");
+        ossia_log_error("ossia_device_add_parameter_deleting_callback: callback is null");
         return nullptr;
       }
 
-      auto the_cb = new node_cb{callback, ctx};
+      auto the_cb = new address_cb{callback, ctx};
 
-      convert_device(device)->on_address_removing.connect<node_cb>(the_cb);
-      return reinterpret_cast<ossia_node_callback_idx_t>(the_cb);
+      convert_device(device)->on_parameter_removing.connect<address_cb>(the_cb);
+      return reinterpret_cast<ossia_parameter_callback_idx_t>(the_cb);
     });
 }
 
-void ossia_device_remove_address_deleting_callback(
+void ossia_device_remove_parameter_deleting_callback(
         ossia_device_t device,
-        ossia_node_callback_idx_t index)
+        ossia_parameter_callback_idx_t index)
 {
     return safe_function(__func__, [=] {
-      auto idx = (node_cb*) index;
+      auto idx = (address_cb*) index;
       if (!device)
       {
-        ossia_log_error("ossia_device_remove_address_deleting_callback: device is null");
+        ossia_log_error("ossia_device_remove_parameter_deleting_callback: device is null");
         return;
       }
       if (!idx)
       {
-        ossia_log_error("ossia_device_remove_address_deleting_callback: index is null");
+        ossia_log_error("ossia_device_remove_parameter_deleting_callback: index is null");
         return;
       }
 
-      convert_device(device)->on_address_removing.disconnect<node_cb>(idx);
+      convert_device(device)->on_parameter_removing.disconnect<address_cb>(idx);
       delete idx;
     });
 }

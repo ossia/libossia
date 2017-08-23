@@ -2,10 +2,10 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
@@ -108,26 +108,12 @@ bool osc_protocol::update(ossia::net::node_base& node)
   return false;
 }
 
-bool osc_protocol::pull(ossia::net::address_base& address)
+bool osc_protocol::pull(ossia::net::parameter_base& address)
 {
   return false;
 }
 
-bool osc_protocol::push(const ossia::net::address_base& addr)
-{
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
-
-  auto val = filter_value(addr);
-  if (val.valid())
-  {
-    m_sender->send(addr, val);
-    return true;
-  }
-  return false;
-}
-
-bool osc_protocol::push_raw(const ossia::net::full_address_data& addr)
+bool osc_protocol::push(const ossia::net::parameter_base& addr)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
@@ -141,7 +127,21 @@ bool osc_protocol::push_raw(const ossia::net::full_address_data& addr)
   return false;
 }
 
-bool osc_protocol::push_bundle(const std::vector<const address_base*>& addresses)
+bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
+{
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  auto val = filter_value(addr);
+  if (val.valid())
+  {
+    m_sender->send(addr, val);
+    return true;
+  }
+  return false;
+}
+
+bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& addresses)
 {
   int N = 1024*1024;
 
@@ -151,14 +151,14 @@ bool osc_protocol::push_bundle(const std::vector<const address_base*>& addresses
     str << oscpack::BeginBundleImmediate();
     for(auto a : addresses)
     {
-      const ossia::net::address_base& addr = *a;
+      const ossia::net::parameter_base& addr = *a;
       if (addr.get_access() == ossia::access_mode::GET)
         continue;
 
       ossia::value val = filter_value(addr);
       if (val.valid())
       {
-        str << oscpack::BeginMessageN(ossia::net::osc_address_string(addr));
+        str << oscpack::BeginMessageN(ossia::net::osc_parameter_string(addr));
         val.apply(osc_outbound_visitor{str});
         str << oscpack::EndMessage();
       }
@@ -173,7 +173,7 @@ bool osc_protocol::push_bundle(const std::vector<const address_base*>& addresses
   return true;
 }
 
-bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
 {
   int N = 1024*1024;
 
@@ -189,7 +189,7 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_da
       ossia::value val = filter_value(addr);
       if (val.valid())
       {
-        str << oscpack::BeginMessageN(ossia::net::osc_address_string(addr));
+        str << oscpack::BeginMessageN(ossia::net::osc_parameter_string(addr));
         val.apply(osc_outbound_visitor{str});
         str << oscpack::EndMessage();
       }
@@ -204,12 +204,12 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_da
   return true;
 }
 
-bool osc_protocol::observe(ossia::net::address_base& address, bool enable)
+bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
-    m_listening.insert(std::make_pair(osc_address_string(address), &address));
+    m_listening.insert(std::make_pair(osc_parameter_string(address), &address));
   else
-    m_listening.erase(osc_address_string(address));
+    m_listening.erase(osc_parameter_string(address));
 
   return true;
 }
@@ -230,7 +230,7 @@ void osc_protocol::on_received_message(
       // We still want to save the value even if it is not listened to.
       if (auto n = find_node(m_device->get_root_node(), addr_txt))
       {
-        if (auto base_addr = n->get_address())
+        if (auto base_addr = n->get_parameter())
         {
           update_value_quiet(*base_addr, m);
         }
@@ -241,9 +241,9 @@ void osc_protocol::on_received_message(
         auto nodes = find_nodes(m_device->get_root_node(), addr_txt);
         for(auto n : nodes)
         {
-          if (auto addr = n->get_address())
+          if (auto addr = n->get_parameter())
           {
-             if(m_listening.find(net::osc_address_string(*n)))
+             if(m_listening.find(net::osc_parameter_string(*n)))
                net::update_value(*addr, m);
              else
                net::update_value_quiet(*addr, m);
@@ -301,13 +301,13 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
   {
     case 0:
     {
-      n->create_address();
+      n->create_parameter();
       break;
     }
     case 1:
     {
       auto val = osc_utilities::create_value(m.ArgumentsBegin());
-      auto addr = n->create_address(val.getType());
+      auto addr = n->create_parameter(val.getType());
       addr->set_value(val);
       break;
     }
@@ -317,12 +317,12 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
           = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
       if (is_vec<2>(val))
       {
-        auto addr = n->create_address(ossia::val_type::VEC2F);
+        auto addr = n->create_parameter(ossia::val_type::VEC2F);
         addr->set_value(convert<ossia::vec2f>(val));
       }
       else
       {
-        auto addr = n->create_address(ossia::val_type::TUPLE);
+        auto addr = n->create_parameter(ossia::val_type::TUPLE);
         addr->set_value(osc_utilities::create_tuple(
             m.ArgumentsBegin(), m.ArgumentCount()));
       }
@@ -334,12 +334,12 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
           = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
       if (is_vec<3>(val))
       {
-        auto addr = n->create_address(ossia::val_type::VEC3F);
+        auto addr = n->create_parameter(ossia::val_type::VEC3F);
         addr->set_value(convert<ossia::vec2f>(val));
       }
       else
       {
-        auto addr = n->create_address(ossia::val_type::TUPLE);
+        auto addr = n->create_parameter(ossia::val_type::TUPLE);
         addr->set_value(osc_utilities::create_tuple(
             m.ArgumentsBegin(), m.ArgumentCount()));
       }
@@ -351,12 +351,12 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
           = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
       if (is_vec<4>(val))
       {
-        auto addr = n->create_address(ossia::val_type::VEC4F);
+        auto addr = n->create_parameter(ossia::val_type::VEC4F);
         addr->set_value(convert<ossia::vec2f>(val));
       }
       else
       {
-        auto addr = n->create_address(ossia::val_type::TUPLE);
+        auto addr = n->create_parameter(ossia::val_type::TUPLE);
         addr->set_value(osc_utilities::create_tuple(
             m.ArgumentsBegin(), m.ArgumentCount()));
       }
@@ -364,7 +364,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
     }
     default:
     {
-      auto addr = n->create_address(ossia::val_type::TUPLE);
+      auto addr = n->create_parameter(ossia::val_type::TUPLE);
       addr->set_value(
           osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
       break;

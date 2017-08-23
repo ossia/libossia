@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "query_parser.hpp"
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/http_query_parser.hpp>
@@ -43,7 +43,7 @@ query_parser::parse_http_methods(ossia::string_view str)
 
 void query_parser::parse(
     net::access_mode_attribute, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -70,7 +70,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::bounding_mode_attribute, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   if (data.size() > 2)
   {
@@ -123,7 +123,7 @@ bool query_parser::parse_bool(const std::string& data)
 
 void query_parser::parse(
     net::repetition_filter_attribute, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -138,7 +138,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::refresh_rate_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -153,7 +153,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::priority_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -168,7 +168,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::value_step_size_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -183,7 +183,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::critical_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -197,7 +197,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::hidden_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -211,7 +211,7 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::disabled_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   try
   {
@@ -225,34 +225,34 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::description_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   attr.setter(res, data);
 }
 
 void query_parser::parse(
     net::app_name_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   attr.setter(res, data);
 }
 
 void query_parser::parse(
     net::app_version_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   attr.setter(res, data);
 }
 
 void query_parser::parse(
     net::app_creator_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   attr.setter(res, data);
 }
 
 void query_parser::parse(
-    net::value_attribute attr, const std::string& data, net::address_data& res)
+    net::value_attribute attr, const std::string& data, net::parameter_data& res)
 {
   // attr.setter(res, data);
   // Note : we can leverage the fact that this is called after the unit, type,
@@ -261,47 +261,47 @@ void query_parser::parse(
 
 void query_parser::parse(
     net::domain_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   // attr.setter(res, data);
 }
 
 void query_parser::parse(
-    net::tags_attribute, const std::string& data, net::address_data& res)
+    net::tags_attribute, const std::string& data, net::parameter_data& res)
 {
   // TODO
 }
 
 void query_parser::parse(
     net::instance_bounds_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   // attr.setter(res, data);
 }
 
 void query_parser::parse(
-    net::unit_attribute attr, const std::string& data, net::address_data& res)
+    net::unit_attribute attr, const std::string& data, net::parameter_data& res)
 {
   res.unit = parse_pretty_unit(data);
 }
 
 void query_parser::parse(
     net::extended_type_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   attr.setter(res, data);
 }
 
 void query_parser::parse(
     net::default_value_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   attr.setter(res, data);
 }
 
 void query_parser::parse(
     detail::typetag_attribute attr, const std::string& data,
-    net::address_data& res)
+    net::parameter_data& res)
 {
   res.type = get_type_from_osc_typetag(data);
 }

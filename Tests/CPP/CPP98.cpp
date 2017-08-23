@@ -19,7 +19,7 @@ private Q_SLOTS:
           ;
 
       // creates /foo/bar/baz of type argb in get
-      QCOMPARE(argb.get_address(), "/foo/bar/baz"s);
+      QCOMPARE(argb.get_parameter(), "/foo/bar/baz"s);
       QCOMPARE(argb.get_unit(), "color.argb"s);
 
       auto blob = root.create_buffer("/foo/my/buffer");

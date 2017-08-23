@@ -75,7 +75,7 @@ ossia::net::node_base* find_global_node(const std::string& addr)
   return nullptr;
 }
 
-ossia::max::AddrType get_address_type(const std::string& addr)
+ossia::max::AddrType get_parameter_type(const std::string& addr)
 {
   AddrType type = AddrType::relative;
   if ( addr.length() > 0 )

@@ -2,7 +2,7 @@
 #include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
@@ -485,7 +485,7 @@ inline ossia::value to_numeric_value(
 }
 
 inline bool update_value(
-    ossia::net::address_base& addr,
+    ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
@@ -502,14 +502,14 @@ inline bool update_value(
 }
 
 inline bool update_value(
-    ossia::net::address_base& addr, const oscpack::ReceivedMessage& mess)
+    ossia::net::parameter_base& addr, const oscpack::ReceivedMessage& mess)
 {
   return update_value(
       addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
 }
 
 inline bool update_value_quiet(
-    ossia::net::address_base& addr,
+    ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
@@ -526,7 +526,7 @@ inline bool update_value_quiet(
 }
 
 inline bool update_value_quiet(
-    ossia::net::address_base& addr, const oscpack::ReceivedMessage& mess)
+    ossia::net::parameter_base& addr, const oscpack::ReceivedMessage& mess)
 {
   return update_value_quiet(
       addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());

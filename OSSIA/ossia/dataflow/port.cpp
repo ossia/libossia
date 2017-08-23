@@ -8,9 +8,9 @@ namespace ossia
 
 void outlet::write(execution_state& e)
 {
-  if (auto addr_ptr = address.target<ossia::net::address_base*>())
+  if (auto addr_ptr = address.target<ossia::net::parameter_base*>())
   {
-    ossia::net::address_base* addr = *addr_ptr;
+    ossia::net::parameter_base* addr = *addr_ptr;
     if (scope & port::scope_t::local)
     {
       graph::copy_to_local(data, *addr, e);

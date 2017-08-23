@@ -15,7 +15,7 @@ namespace ossia
 {
 namespace net
 {
-class address_base;
+class parameter_base;
 }
 namespace oscquery
 {
@@ -23,7 +23,7 @@ struct oscquery_client
 {
   websocket_server::connection_handler connection;
   mutex_t listeningMutex;
-  string_map<ossia::net::address_base*> listening;
+  string_map<ossia::net::parameter_base*> listening;
 
   std::string client_ip;
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> sender;
@@ -54,7 +54,7 @@ public:
   {
   }
 
-  void start_listen(std::string path, ossia::net::address_base* addr)
+  void start_listen(std::string path, ossia::net::parameter_base* addr)
   {
     if (addr)
     {

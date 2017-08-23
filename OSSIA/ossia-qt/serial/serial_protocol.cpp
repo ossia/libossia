@@ -6,7 +6,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <iomanip>
-#include <ossia-qt/serial/serial_address.hpp>
+#include <ossia-qt/serial/serial_parameter.hpp>
 #include <ossia-qt/serial/serial_device.hpp>
 #include <ossia-qt/serial/serial_node.hpp>
 #include <sstream>
@@ -55,14 +55,14 @@ serial_protocol::serial_protocol(
       });
 }
 
-bool serial_protocol::pull(address_base&)
+bool serial_protocol::pull(parameter_base&)
 {
   return false;
 }
 
-bool serial_protocol::push(const ossia::net::address_base& addr)
+bool serial_protocol::push(const ossia::net::parameter_base& addr)
 {
-  auto& ad = dynamic_cast<const serial_address&>(addr);
+  auto& ad = dynamic_cast<const serial_parameter&>(addr);
   auto str = ad.data().request;
   switch (addr.get_value_type())
   {
@@ -84,10 +84,10 @@ bool serial_protocol::push(const ossia::net::address_base& addr)
   return false;
 }
 
-bool serial_protocol::push_raw(const full_address_data& address_base)
+bool serial_protocol::push_raw(const full_parameter_data& parameter_base)
 { return false; }
 
-bool serial_protocol::observe(ossia::net::address_base&, bool)
+bool serial_protocol::observe(ossia::net::parameter_base&, bool)
 {
   return false;
 }

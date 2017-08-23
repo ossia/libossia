@@ -3,6 +3,9 @@
 #include <ossia_export.h>
 #include <vector>
 
+/**
+ * \file context.hpp
+ */
 namespace spdlog
 {
 namespace sinks

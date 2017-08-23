@@ -243,7 +243,7 @@ oscquery_mirror_protocol::~oscquery_mirror_protocol()
   cleanup_connections();
 }
 
-bool oscquery_mirror_protocol::pull(net::address_base& address)
+bool oscquery_mirror_protocol::pull(net::parameter_base& address)
 {
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
@@ -261,16 +261,16 @@ bool oscquery_mirror_protocol::pull(net::address_base& address)
 }
 
 std::future<void>
-oscquery_mirror_protocol::pull_async(net::address_base& address)
+oscquery_mirror_protocol::pull_async(net::parameter_base& address)
 {
   std::promise<void> promise;
   auto fut = promise.get_future();
-  auto text = net::osc_address_string(address);
+  auto text = net::osc_parameter_string(address);
   m_getWSPromises.enqueue(get_ws_promise{std::move(promise), text});
   /*
   m_getOSCPromises.insert(
         std::make_pair(
-          ossia::net::osc_address_string(address),
+          ossia::net::osc_parameter_string(address),
           get_promise{std::move(promise), &address}));
   */
   text += detail::query_value();
@@ -278,14 +278,14 @@ oscquery_mirror_protocol::pull_async(net::address_base& address)
   return fut;
 }
 
-void oscquery_mirror_protocol::request(net::address_base& address)
+void oscquery_mirror_protocol::request(net::parameter_base& address)
 {
-  auto text = net::osc_address_string(address);
+  auto text = net::osc_parameter_string(address);
   text += detail::query_value();
   query_send_message(text);
 }
 
-bool oscquery_mirror_protocol::push(const net::address_base& addr)
+bool oscquery_mirror_protocol::push(const net::parameter_base& addr)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
@@ -308,7 +308,7 @@ bool oscquery_mirror_protocol::push(const net::address_base& addr)
   return false;
 }
 
-bool oscquery_mirror_protocol::push_raw(const net::full_address_data& addr)
+bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
@@ -331,14 +331,14 @@ bool oscquery_mirror_protocol::push_raw(const net::full_address_data& addr)
   return false;
 }
 
-bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::address_base*>& addresses)
+bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::parameter_base*>& addresses)
 {
   if (!m_useHTTP)
   {
     json_bundle_builder b;
     for(auto a : addresses)
     {
-      const ossia::net::address_base& addr = *a;
+      const ossia::net::parameter_base& addr = *a;
       ossia::value val = net::filter_value(addr);
       if (val.valid())
       {
@@ -351,7 +351,7 @@ bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::a
   return false;
 }
 
-bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::full_address_data>& addresses)
+bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
 {
   if (!m_useHTTP)
   {
@@ -371,17 +371,17 @@ bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::ful
 }
 
 
-bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
+bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable)
 {
   if (enable)
   {
-    auto str = net::osc_address_string(address);
+    auto str = net::osc_parameter_string(address);
     query_send_message(str + std::string(detail::query_listen_true()));
     m_listening.insert(std::make_pair(str, &address));
   }
   else
   {
-    auto str = net::osc_address_string(address);
+    auto str = net::osc_parameter_string(address);
     // TODO for minuit when disconnecting, disable listening for everything.
     query_send_message(str + std::string(detail::query_listen_false()));
     m_listening.erase(str);
@@ -390,13 +390,13 @@ bool oscquery_mirror_protocol::observe(net::address_base& address, bool enable)
 }
 
 bool oscquery_mirror_protocol::observe_quietly(
-    net::address_base& address, bool enable)
+    net::parameter_base& address, bool enable)
 {
   if (enable)
     m_listening.insert(
-        std::make_pair(net::osc_address_string(address), &address));
+        std::make_pair(net::osc_parameter_string(address), &address));
   else
-    m_listening.erase(net::osc_address_string(address));
+    m_listening.erase(net::osc_parameter_string(address));
 
   return true;
 }
@@ -405,7 +405,7 @@ bool oscquery_mirror_protocol::update(net::node_base& b)
 {
   m_namespacePromise = std::promise<void>{};
   auto fut = m_namespacePromise.get_future();
-  query_send_message(ossia::net::osc_address_string(b));
+  query_send_message(ossia::net::osc_parameter_string(b));
 
   auto status = fut.wait_for(std::chrono::seconds(3));
   return status == std::future_status::ready;
@@ -439,7 +439,7 @@ void oscquery_mirror_protocol::request_remove_node(net::node_base& self)
   {
     std::string req;
     req.reserve(64);
-    req = net::osc_address_string(*parent);
+    req = net::osc_parameter_string(*parent);
     req += '?';
     req += detail::remove_node();
     req += '=';
@@ -460,11 +460,11 @@ void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
 }
 
 void oscquery_mirror_protocol::request_add_node(
-    net::node_base& parent, const net::address_data& dat)
+    net::node_base& parent, const net::parameter_data& dat)
 {
   std::string req;
   req.reserve(64);
-  req += net::osc_address_string(parent);
+  req += net::osc_parameter_string(parent);
   req += '?';
   req += detail::add_node();
   req += '=';
@@ -501,7 +501,7 @@ void oscquery_mirror_protocol::on_OSCMessage(
       auto node = find_node(m_device->get_root_node(), addr_txt);
       if (node)
       {
-        auto base_addr = node->get_address();
+        auto base_addr = node->get_parameter();
         if (base_addr)
         {
           net::update_value_quiet(*base_addr, m);
@@ -513,9 +513,9 @@ void oscquery_mirror_protocol::on_OSCMessage(
         auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
         for(auto n : nodes)
         {
-          if (auto addr = n->get_address())
+          if (auto addr = n->get_parameter())
           {
-            if(m_listening.find(net::osc_address_string(*n)))
+            if(m_listening.find(net::osc_parameter_string(*n)))
               net::update_value(*addr, m);
             else
               net::update_value_quiet(*addr, m);
@@ -606,7 +606,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
             if (node)
             {
-              auto addr = node->get_address();
+              auto addr = node->get_parameter();
               if (addr)
               {
                 json_parser::parse_value(*addr, *data);

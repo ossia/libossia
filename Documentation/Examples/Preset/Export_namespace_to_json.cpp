@@ -46,33 +46,33 @@ int main()
     auto TestNode = device.create_child("parameter");
 
     auto ImpulseNode = TestNode->create_child("my_impulse");
-    auto ImpulseAddress = ImpulseNode->create_address(val_type::IMPULSE);
+    auto ImpulseAddress = ImpulseNode->create_parameter(val_type::IMPULSE);
 
     auto BoolNode = TestNode->create_child("my_bool");
-    auto BoolAddress = BoolNode->create_address(val_type::BOOL);
+    auto BoolAddress = BoolNode->create_parameter(val_type::BOOL);
     BoolNode->set(default_value_attribute{}, true);
     BoolNode->set(description_attribute{}, "test description"s);
 
     auto IntNode = TestNode->create_child("my_int");
-    auto IntAddress = IntNode->create_address(val_type::INT);
+    auto IntAddress = IntNode->create_parameter(val_type::INT);
     IntNode->set(default_value_attribute{}, 3);
     IntNode->set(domain_attribute{}, make_domain(0, 10));
     IntNode->set(value_step_size_attribute{}, 1);
 
     auto FloatNode = TestNode->create_child("my_float");
-    auto FloatAddress = FloatNode->create_address(val_type::FLOAT);
+    auto FloatAddress = FloatNode->create_parameter(val_type::FLOAT);
     FloatNode->set(default_value_attribute{}, 0.5);
     FloatNode->set(domain_attribute{}, make_domain(0.0, 1.0));
     FloatNode->set(value_step_size_attribute{}, 0.1);
 
 
     auto StringNode1 = TestNode->create_child("my_string");
-    auto StringAddress1 = StringNode1->create_address(val_type::STRING);
+    auto StringAddress1 = StringNode1->create_parameter(val_type::STRING);
     StringNode1->set(default_value_attribute{}, "test"s);
 
 
     auto StringNode2 = TestNode->create_child("my_string");
-    auto StringAddress2 = StringNode2->create_address(val_type::STRING);
+    auto StringAddress2 = StringNode2->create_parameter(val_type::STRING);
     StringNode2->set(default_value_attribute{}, "test"s);
 
 

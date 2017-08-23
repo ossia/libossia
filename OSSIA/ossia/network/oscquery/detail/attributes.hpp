@@ -1,8 +1,8 @@
 #pragma once
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
-#include <ossia/network/common/address_properties.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
 #include <ossia/detail/string_view.hpp>
@@ -205,7 +205,7 @@ struct OSSIA_EXPORT full_path_attribute
   }
   static auto getter(const ossia::net::node_base& n)
   {
-    return ossia::net::osc_address_string(n);
+    return ossia::net::osc_parameter_string(n);
   }
 };
 

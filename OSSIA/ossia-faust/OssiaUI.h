@@ -35,7 +35,7 @@
 #include "faust/gui/PathBuilder.h"
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/domain/domain.hpp>
 
@@ -44,7 +44,7 @@ class OssiaUI final : public PathBuilder, public UI
     ossia::net::generic_device m_dev;
     ossia::net::node_base* m_curNode{};
 
-    std::vector<std::pair<ossia::net::address_base*, FAUSTFLOAT*>> m_values;
+    std::vector<std::pair<ossia::net::parameter_base*, FAUSTFLOAT*>> m_values;
     std::atomic_bool m_running;
 
 public:
@@ -90,7 +90,7 @@ private:
     void addButton(const char* label, FAUSTFLOAT* zone) override
     {
         auto n = m_curNode->create_child(label);
-        auto a = n->create_address(ossia::val_type::BOOL);
+        auto a = n->create_parameter(ossia::val_type::BOOL);
         a->add_callback([zone] (const ossia::value& val) {
             *zone = val.get<bool>() ? 1.0 : 0.0;
         });
@@ -99,7 +99,7 @@ private:
     void addCheckButton(const char* label, FAUSTFLOAT* zone) override
     {
         auto n = m_curNode->create_child(label);
-        auto a = n->create_address(ossia::val_type::BOOL);
+        auto a = n->create_parameter(ossia::val_type::BOOL);
         a->add_callback([zone] (const ossia::value& val) {
             *zone = val.get<bool>() ? 1.0 : 0.0;
         });
@@ -108,7 +108,7 @@ private:
     void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) override
     {
         auto n = m_curNode->create_child(label);
-        auto a = n->create_address(ossia::val_type::FLOAT);
+        auto a = n->create_parameter(ossia::val_type::FLOAT);
         ossia::net::set_default_value(*n, init);
         ossia::net::set_domain(*n, ossia::make_domain(min, max));
         ossia::net::set_value_step_size(*n, step);
@@ -132,7 +132,7 @@ private:
     void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
     {
         auto n = m_curNode->create_child(label);
-        auto a = n->create_address(ossia::val_type::FLOAT);
+        auto a = n->create_parameter(ossia::val_type::FLOAT);
         ossia::net::set_domain(*n, ossia::make_domain(min, max));
         ossia::net::set_access_mode(*n, ossia::access_mode::GET);
 
@@ -141,7 +141,7 @@ private:
     void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
     {
         auto n = m_curNode->create_child(label);
-        auto a = n->create_address(ossia::val_type::FLOAT);
+        auto a = n->create_parameter(ossia::val_type::FLOAT);
         ossia::net::set_domain(*n, ossia::make_domain(min, max));
         ossia::net::set_access_mode(*n, ossia::access_mode::GET);
 

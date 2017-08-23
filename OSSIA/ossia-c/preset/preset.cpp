@@ -697,7 +697,7 @@ export_nodes_to_json(const ossia::net::node_base& node, rapidjson::Document& d)
   v.SetObject();
   auto& alloc = d.GetAllocator();
 
-  auto address = node.get_address();
+  auto address = node.get_parameter();
   if (address)
   {
     auto default_value = ossia::net::get_default_value(node);
@@ -957,7 +957,7 @@ void apply_preset_node(
     }
     else
     {
-      root.get_address()->push_value(val);
+      root.get_parameter()->push_value(val);
     }
   }
   else
@@ -1016,7 +1016,7 @@ void apply_preset_node(
           // addresses only on leaf nodes... maybe we should not have this
           // restriction.
           if (keys.empty())
-            newchild->create_address(val.getType());
+            newchild->create_parameter(val.getType());
 
           apply_preset_node(*newchild, keys, val, keeparch, created_nodes);
         }
@@ -1087,7 +1087,7 @@ void make_preset_node(
 
   if (children.size() == 0)
   {
-    if (auto addr = node.get_address())
+    if (auto addr = node.get_parameter())
       preset.insert(std::make_pair(currentkey, addr->value()));
   }
   else
@@ -1160,9 +1160,9 @@ void to_string_node(
     to_string_node(*child, strnodes, newkeys);
   }
 
-  if (root.get_address() != nullptr && root.children().size() == 0)
+  if (root.get_parameter() != nullptr && root.children().size() == 0)
   {
-    auto v = root.get_address()->value();
+    auto v = root.get_parameter()->value();
     if (v.valid())
     {
       keys.push_back(root.get_name());

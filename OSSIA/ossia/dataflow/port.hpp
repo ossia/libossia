@@ -41,7 +41,7 @@ struct inlet : public port
   {
   }
 
-  inlet(data_type d, ossia::net::address_base& addr)
+  inlet(data_type d, ossia::net::parameter_base& addr)
       : port{std::move(d)}, address{&addr}
   {
   }
@@ -77,7 +77,7 @@ struct outlet : public port
   {
   }
 
-  outlet(data_type d, ossia::net::address_base& addr)
+  outlet(data_type d, ossia::net::parameter_base& addr)
       : port{std::move(d)}, address{&addr}
   {
   }

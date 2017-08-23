@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/midi/midi_address.hpp>
+#include <ossia/network/midi/midi_parameter.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_node.hpp>
 
@@ -52,17 +52,17 @@ node_base& midi_node::set_name(std::string)
   return *this;
 }
 
-address_base* midi_node::get_address() const
+parameter_base* midi_node::get_parameter() const
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-address_base* midi_node::create_address(val_type)
+parameter_base* midi_node::create_parameter(val_type)
 {
-  return m_address.get();
+  return m_parameter.get();
 }
 
-bool midi_node::remove_address()
+bool midi_node::remove_parameter()
 {
   return false;
 }

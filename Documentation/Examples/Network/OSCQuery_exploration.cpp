@@ -17,7 +17,7 @@
 #include <memory>
 #include <functional>
 #include <ossia/network/oscquery/detail/http_client.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -41,10 +41,10 @@ int main()
 
   auto node = ossia::net::find_node(device, "/test/my_float");
   // Request to add an instance :
-  protocol->request_add_node(*node, address_data{"layer"});
+  protocol->request_add_node(*node, parameter_data{"layer"});
 
   // Again : (will become layer.1)
-  protocol->request_add_node(*node, address_data{"layer"});
+  protocol->request_add_node(*node, parameter_data{"layer"});
 
   // Wait a bit to get a reply
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -63,11 +63,11 @@ void explore(const ossia::net::node_base& node)
 {
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->get_address())
+    if (auto addr = child->get_parameter())
     {
       // attach to callback to display value update
       addr->add_callback([=] (const value& v) { /*
-        std::cerr << "[message] " << osc_address_string(*addr)
+        std::cerr << "[message] " << osc_parameter_string(*addr)
                   << " <- " <<  value_to_pretty_string(v) << std::endl;
                   */
       });

@@ -71,7 +71,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+        x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
       }
 
       // we need to delay registration because object may use patcher hierarchy
@@ -195,7 +195,7 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    if(m_address_type == AddrType::relative)
+    if(m_parameter_type == AddrType::relative)
     {
       std::string absolute_path = object_path_absolute<t_view>(this);
       std::string address_string = ossia::net::address_string_from_node(*node);
@@ -205,7 +205,7 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
       m_node = node->find_child(m_name->s_name);
     }
-    else if(m_address_type == AddrType::absolute)
+    else if(m_parameter_type == AddrType::absolute)
     {
       m_node = ossia::net::find_node(
             node->get_device().get_root_node(), m_name->s_name);
@@ -288,7 +288,7 @@ bool t_view::unregister()
 void t_view::view_bind(t_view* x, t_symbol* address)
 {
   x->m_name = address;
-  x->m_address_type = ossia::max::get_address_type(x->m_name->s_name);
+  x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }

@@ -46,7 +46,7 @@ int main()
   ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
   auto localTupleNode = device.create_child("my_tuple");
-  auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
+  auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
 
   localTupleAddress->set_value(std::vector<ossia::value>{-1., 0., 1.});
 

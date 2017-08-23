@@ -308,11 +308,11 @@ void t_client::explore(const ossia::net::node_base& node)
 {
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->get_address())
+    if (auto addr = child->get_parameter())
     {
       // attach to callback to display value update
       addr->add_callback([=](const value& v) {
-        std::cerr << "[message] " << osc_address_string(*addr) << " <- "
+        std::cerr << "[message] " << osc_parameter_string(*addr) << " <- "
                   << value_to_pretty_string(v) << std::endl;
       });
 

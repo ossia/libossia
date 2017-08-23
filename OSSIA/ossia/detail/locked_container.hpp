@@ -1,5 +1,9 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
+
+/**
+ * \file locked_container.hpp
+ */
 // #include <ossia/detail/logger.hpp>
 namespace ossia
 {

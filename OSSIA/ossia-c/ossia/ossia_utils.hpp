@@ -5,14 +5,10 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <mutex>
 #include <fmt/format.h>
 #include <ossia-c/log/ossia_log.h>
-template <typename Str, typename... Args>
-void DEBUG_LOG_FMT(Str fmt, Args... args)
-{
-  auto str = fmt::format(fmt, args...);
-  ossia_log_error(str.c_str());
-}
+
 struct ossia_protocol
 {
   ossia_protocol(ossia::net::protocol_base* p) : protocol{p}
@@ -23,7 +19,7 @@ struct ossia_protocol
 
 struct ossia_device
 {
-  std::unique_ptr<ossia::net::device_base> device;
+  std::shared_ptr<ossia::net::device_base> device;
 };
 
 struct ossia_domain
@@ -33,7 +29,7 @@ struct ossia_domain
 
 struct ossia_value_callback_index
 {
-  ossia::net::address_base::iterator it;
+  ossia::net::parameter_base::iterator it;
 };
 
 struct ossia_value
@@ -71,14 +67,18 @@ inline auto convert(ossia::bounding_mode t)
   return static_cast<ossia_bounding_mode>(t);
 }
 
-inline ossia::net::address_base* convert_address(ossia_address_t v)
+inline ossia::net::parameter_base* convert_parameter(ossia_parameter_t v)
 {
-  return static_cast<ossia::net::address_base*>(v);
+  return static_cast<ossia::net::parameter_base*>(v);
 }
 
-inline void* convert(ossia::net::address_base* v)
+inline void* convert(ossia::net::parameter_base* v)
 {
   return static_cast<void*>(v);
+}
+inline void* convert(const ossia::net::parameter_base* v)
+{
+  return static_cast<void*>(const_cast<ossia::net::parameter_base*>(v));
 }
 
 inline ossia::net::node_base* convert_node(ossia_node_t v)
@@ -110,11 +110,6 @@ inline auto convert(const ossia::value& v)
   return new ossia_value{v};
 }
 
-inline auto convert(ossia_value_t v)
-{
-  return v->value;
-}
-
 inline auto convert(const ossia::domain& v)
 {
   return new ossia_domain{v};
@@ -132,31 +127,59 @@ auto safe_function(const char name[], Fun f) -> decltype(f()) try
 }
 catch (const std::exception& e)
 {
-  DEBUG_LOG_FMT("%s: %s", name, e.what());
+  auto str = fmt::format("{}: {}", name, e.what());
+  ossia_log_error(str.c_str());
   return decltype(f())();
 }
 catch (...)
 {
-  DEBUG_LOG_FMT("%s: Exception caught", name);
+  auto str = fmt::format("{}: Exception caught", name);
+  ossia_log_error(str.c_str());
   return decltype(f())();
 }
 
 inline const char* copy_string(const std::string& str)
 {
   const auto n = str.size();
-  auto mbuffer = new char[n + 1]();
+  auto mbuffer = new char[n + 1];
   std::sprintf(mbuffer, "%s", str.c_str());
   mbuffer[n] = 0;
   return mbuffer;
 }
 
+inline void copy_bytes(const std::string& str, char** ptr, size_t* sz)
+{
+  const auto n = str.size();
+  *sz = n;
+  *ptr = (char*)std::malloc(sizeof(char) * (n + 1));
+  std::memcpy(*ptr, str.data(), n);
+  (*ptr)[n] = 0;
+}
+
 struct node_cb {
-    ossia_node_callback_t m_cb;
-    void* m_ctx;
+    ossia_node_callback_t m_cb{};
+    void* m_ctx{};
     void operator()(const ossia::net::node_base& node) {
         m_cb(m_ctx, convert(&node));
     }
-    void operator()(const ossia::net::address_base& addr) {
-        m_cb(m_ctx, convert(&addr.get_node()));
+};
+struct address_cb {
+    ossia_parameter_callback_t m_cb{};
+    void* m_ctx{};
+    void operator()(const ossia::net::parameter_base& addr) {
+        m_cb(m_ctx, convert(&addr));
     }
 };
+
+struct global_devices
+{
+    boost::container::flat_map<std::string, ossia_device_t> devices;
+
+    global_devices() = default;
+    global_devices(const global_devices&) = delete;
+    global_devices(global_devices&&) = delete;
+    global_devices& operator=(const global_devices&) = delete;
+    global_devices& operator=(global_devices&&) = delete;
+};
+
+global_devices& static_devices();

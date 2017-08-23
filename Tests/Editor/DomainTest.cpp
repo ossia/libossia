@@ -14,7 +14,7 @@ class DomainTest : public QObject
   Q_OBJECT
 
   template<typename T>
-  void push_all(ossia::net::address_base& addr, T min, T max)
+  void push_all(ossia::net::parameter_base& addr, T min, T max)
   {
     using val_t = decltype(T{});
     for(int i = 0; i < 6; i++)
@@ -29,7 +29,7 @@ class DomainTest : public QObject
   }
 
   template<typename T>
-  void test_clamp_numeric(ossia::net::address_base& addr, T min, T max)
+  void test_clamp_numeric(ossia::net::parameter_base& addr, T min, T max)
   {
     auto dom = ossia::make_domain(min, max);
     addr.set_domain(dom);
@@ -53,7 +53,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void push_all_vec(ossia::net::address_base& addr, float min, float max)
+  void push_all_vec(ossia::net::parameter_base& addr, float min, float max)
   {
     using val_t = std::array<float, N>;
     std::vector<std::array<float, N>> test_vecs;
@@ -73,7 +73,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void push_all_vec(ossia::net::address_base& addr, std::array<float, N> min, std::array<float, N> max)
+  void push_all_vec(ossia::net::parameter_base& addr, std::array<float, N> min, std::array<float, N> max)
   {
     using val_t = std::array<float, N>;
     std::vector<std::array<float, N>> test_vecs;
@@ -93,7 +93,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void test_clamp_vec(ossia::net::address_base& addr, float min, float max)
+  void test_clamp_vec(ossia::net::parameter_base& addr, float min, float max)
   {
     auto dom = ossia::make_domain(min, max);
     addr.set_domain(dom);
@@ -117,7 +117,7 @@ class DomainTest : public QObject
   }
 
   template<std::size_t N>
-  void test_clamp_vec(ossia::net::address_base& addr, std::array<float, N> min, std::array<float, N> max)
+  void test_clamp_vec(ossia::net::parameter_base& addr, std::array<float, N> min, std::array<float, N> max)
   {
     auto dom = ossia::make_domain(min, max);
     addr.set_domain(dom);
@@ -142,7 +142,7 @@ class DomainTest : public QObject
 
 
   template<typename T>
-  void push_tuple(ossia::net::address_base& addr, T min, T max)
+  void push_tuple(ossia::net::parameter_base& addr, T min, T max)
   {
     using val_t = T;
     // TODO why couldn't domain operate on dataspaces ?
@@ -164,7 +164,7 @@ class DomainTest : public QObject
   }
 
   template<typename T>
-  void test_clamp_tuple(ossia::net::address_base& addr, T min, T max)
+  void test_clamp_tuple(ossia::net::parameter_base& addr, T min, T max)
   {
     domain_base<T> dom{min, max};
 
@@ -269,6 +269,7 @@ class DomainTest : public QObject
   }
 private Q_SLOTS:
 
+
   /*! test life cycle and accessors functions */
   void test_basic()
   {
@@ -295,6 +296,15 @@ private Q_SLOTS:
     domain d3 = make_domain(1, 24);
     QVERIFY(d3 == domain_base<int>(1, 24));
     QVERIFY(d3 != dom);
+  }
+
+  void test_tuple()
+  {
+    std::vector<ossia::value> t1{0, 0, 0};
+    std::vector<ossia::value> t2{10, 10, 10};
+    auto d4 = ossia::make_domain(t1, t2);
+    auto res = d4.apply(ossia::bounding_mode::CLIP, std::vector<ossia::value>{-10, 5, 2000});
+    QVERIFY((res == std::vector<ossia::value>{0, 5, 10}));
   }
 
   void test_clamp_address()
@@ -564,6 +574,33 @@ private Q_SLOTS:
       set_max(d, std::vector<ossia::value>{float{2}, int{3}});
       QVERIFY(get_max(d) == (std::vector<ossia::value>{float{2}, int{3}}));
     }
+  }
+
+  void test_string()
+  {
+    {
+      domain d = domain_base<std::string>();
+      ossia::set_values(d, {"foo", "bar", "baz"});
+
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});
+    }
+
+    {
+      domain d = make_domain({"foo", "bar", "baz"});
+
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});
+    }
+
+    {
+      domain d = make_domain(std::vector<std::string>{"foo", "bar", "baz"});
+
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
+      QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});
+    }
+
+
   }
 };
 

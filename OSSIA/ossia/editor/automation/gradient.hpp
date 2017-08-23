@@ -24,7 +24,7 @@ public:
   void resume() override;
 
 private:
-  optional<ossia::Destination> m_address;
+  optional<ossia::Destination> m_parameter;
   grad_type m_data;
 };
 }

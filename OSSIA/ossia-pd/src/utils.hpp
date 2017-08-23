@@ -106,7 +106,9 @@ struct value_visitor
     // message
     // and sending a bang to the bang object connected to the inlet of the
     // sender will lead to stack overflow...
-    outlet_bang(x->x_dataout);
+    if (x->x_dataout)
+      outlet_bang(x->x_dataout);
+
     if (x->x_setout)
       outlet_bang(x->x_setout);
   }
@@ -114,7 +116,9 @@ struct value_visitor
   {
     t_atom a;
     SETFLOAT(&a, (t_float)i);
-    outlet_float(x->x_dataout, (t_float)i);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, (t_float)i);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -122,7 +126,9 @@ struct value_visitor
   {
     t_atom a;
     SETFLOAT(&a, f);
-    outlet_float(x->x_dataout, (t_float)f);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, (t_float)f);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -131,7 +137,9 @@ struct value_visitor
     t_atom a;
     t_float f = b ? 1. : 0.;
     SETFLOAT(&a, f);
-    outlet_float(x->x_dataout, f);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, f);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -140,7 +148,9 @@ struct value_visitor
     t_symbol* s = gensym(str.c_str());
     t_atom a;
     SETSYMBOL(&a, s);
-    outlet_symbol(x->x_dataout, s);
+    if (x->x_dataout)
+      outlet_symbol(x->x_dataout, s);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -148,7 +158,9 @@ struct value_visitor
   {
     t_atom a;
     SETFLOAT(&a, (float)c);
-    outlet_float(x->x_dataout, (float)c);
+    if (x->x_dataout)
+      outlet_float(x->x_dataout, (float)c);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), 1, &a);
   }
@@ -163,7 +175,9 @@ struct value_visitor
       SETFLOAT(a + i, vec[i]);
     }
 
-    outlet_list(x->x_dataout, gensym("list"), N, a);
+    if (x->x_dataout)
+      outlet_list(x->x_dataout, gensym("list"), N, a);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), N, a);
   }
@@ -176,7 +190,9 @@ struct value_visitor
       v.apply(vm);
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
-    outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+    if (x->x_dataout)
+      outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+
     if (x->x_setout)
       outlet_anything(x->x_setout, gensym("set"), va.size(), list_ptr);
   }
@@ -341,8 +357,6 @@ template<typename T>
 // self registering (when creating the object)
 bool obj_register(T* x)
 {
-  if (x->x_node)
-    return true; // already registered
   if (x->x_dead)
     return false; // object will be removed soon
 
@@ -380,9 +394,9 @@ void obj_dump(T* x)
 {
   t_atom a;
   std::string fullpath;
-  if (x->x_otype == Type::remote)
+  if (x->x_otype == Type::remote || x->x_otype == Type::param)
   {
-    t_remote* remote = (t_remote*) x;
+    t_obj_base* remote = (t_obj_base*) x;
     if (remote->x_matchers.size() == 1)
       x->x_node = remote->x_matchers[0].get_node();
     else x->x_node = nullptr;
@@ -415,12 +429,12 @@ void obj_dump(T* x)
 
   if (x->x_node)
   {
-    ossia::net::address_base* address = x->x_node->get_address();
-    if (address)
+    ossia::net::parameter_base* param = x->x_node->get_parameter();
+    if (param)
     {
       // type
       std::string type = "unknown";
-      switch (address->get_value_type())
+      switch (param->get_value_type())
       {
         case ossia::val_type::FLOAT:
           type = "float";
@@ -447,7 +461,7 @@ void obj_dump(T* x)
           type = "string";
           break;
         case ossia::val_type::TUPLE:
-          type = "tuple";
+          type = "list";
           break;
         case ossia::val_type::CHAR:
           type = "char";
@@ -460,13 +474,19 @@ void obj_dump(T* x)
       outlet_anything(x->x_dumpout, gensym("type"), 1, &a);
 
       // domain
-      ossia::domain domain = address->get_domain();
-      SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
-      outlet_anything(x->x_dumpout, gensym("domain"), 1, &a);
+      ossia::domain domain = param->get_domain();
+      int i = 0;
+      if (domain)
+      {
+       SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
+       i++;
+      }
+      outlet_anything(x->x_dumpout, gensym("domain"), i, &a);
+
 
       // bounding mode
       std::string bounding_mode;
-      switch (address->get_bounding())
+      switch (param->get_bounding())
       {
         case ossia::bounding_mode::FREE:
           bounding_mode = "free";
@@ -494,7 +514,7 @@ void obj_dump(T* x)
 
       // access mode
       std::string access_mode;
-      switch (address->get_access())
+      switch (param->get_access())
       {
         case ossia::access_mode::BI:
           access_mode = "bi";
@@ -512,13 +532,13 @@ void obj_dump(T* x)
       outlet_anything(x->x_dumpout, gensym("access_mode"), 1, &a);
 
       // repetition filter
-      bool rep = address->get_repetition_filter();
+      bool rep = param->get_repetition_filter();
       SETFLOAT(&a, rep);
       outlet_anything(x->x_dumpout, gensym("repetition_filter"), 1, &a);
 
       // unit
       std::string pretty_unit
-          = ossia::get_pretty_unit_text(address->get_unit());
+          = ossia::get_pretty_unit_text(param->get_unit());
       SETSYMBOL(&a, gensym(pretty_unit.c_str()));
       outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
     }
@@ -561,7 +581,7 @@ void obj_dump(T* x)
  * corresponding classname
  */
 std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname);
+    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
@@ -579,11 +599,19 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
 
 
 /**
- * @brief get_address_type: return address type (relative, absolute or globale)
+ * @brief get_address_scope: return address scope (relative, absolute or globale)
  * @param addr: the address to process
- * @return
+ * @return the scope
  */
-ossia::pd::AddrScope get_address_type(const std::string& addr);
+ossia::pd::AddrScope get_address_scope(const std::string& addr);
+
+/**
+ * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
+ * @param atom : array of atom
+ * @param size : number of value to take
+ * @return array of ossia::value
+ */
+std::vector<ossia::value> attribute2value(t_atom* atom, long size);
 
 }
 }

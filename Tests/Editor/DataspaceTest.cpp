@@ -12,7 +12,7 @@
 
 namespace ossia
 {
-struct address_data
+struct parameter_data
 {
   unit_t unit;
   ossia::value value;

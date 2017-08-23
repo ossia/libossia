@@ -3,7 +3,7 @@
 #include <QtTest/QTest>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/network/local/local.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <Editor/TestUtils.hpp>
 
 namespace ossia
@@ -163,11 +163,11 @@ struct simple_implicit_graph
   }
 };
 
-struct no_address_explicit_graph
+struct no_parameter_explicit_graph
 {
   ossia::graph g;
   ossia::node_mock* n1, *n2;
-  no_address_explicit_graph(ossia::TestDevice& test, ossia::connection c)
+  no_parameter_explicit_graph(ossia::TestDevice& test, ossia::connection c)
   {
     using namespace ossia;
     auto n1_out = make_outlet<value_port>();
@@ -583,7 +583,7 @@ private slots:
     using namespace ossia;
     TestDevice test;
 
-    no_address_explicit_graph g(test, immediate_glutton_connection{});
+    no_parameter_explicit_graph g(test, immediate_glutton_connection{});
     debug_mock::messages.clear();
 
     g.g.enable(*g.n1);

@@ -23,34 +23,34 @@ int main()
 
     // Local tree building
     auto localImpulseNode1 = device.create_child("my_impulse.1");
-    localImpulseNode1->create_address(val_type::IMPULSE);
+    localImpulseNode1->create_parameter(val_type::IMPULSE);
     auto localImpulseNode2 = device.create_child("my_impulse.2");
-    localImpulseNode2->create_address(val_type::IMPULSE);
+    localImpulseNode2->create_parameter(val_type::IMPULSE);
 
     auto localBoolNode1 = device.create_child("my_bool.1");
-    auto localBoolAddress1 = localBoolNode1->create_address(val_type::BOOL);
+    auto localBoolAddress1 = localBoolNode1->create_parameter(val_type::BOOL);
     auto localBoolNode2 = device.create_child("my_bool.2");
-    auto localBoolAddress2 = localBoolNode2->create_address(val_type::BOOL);
+    auto localBoolAddress2 = localBoolNode2->create_parameter(val_type::BOOL);
 
     auto localIntNode1 = device.create_child("my_int.1");
-    auto localIntAddress1 = localIntNode1->create_address(val_type::INT);
+    auto localIntAddress1 = localIntNode1->create_parameter(val_type::INT);
     auto localIntNode2 = device.create_child("my_int.2");
-    auto localIntAddress2 = localIntNode2->create_address(val_type::INT);
+    auto localIntAddress2 = localIntNode2->create_parameter(val_type::INT);
 
     auto localFloatNode1 = device.create_child("my_float.1");
-    auto localFloatAddress1 = localFloatNode1->create_address(val_type::FLOAT);
+    auto localFloatAddress1 = localFloatNode1->create_parameter(val_type::FLOAT);
     auto localFloatNode2 = device.create_child("my_float.2");
-    auto localFloatAddress2 = localFloatNode2->create_address(val_type::FLOAT);
+    auto localFloatAddress2 = localFloatNode2->create_parameter(val_type::FLOAT);
 
     auto localStringNode1 = device.create_child("my_string.1");
-    auto localStringAddress1 = localStringNode1->create_address(val_type::STRING);
+    auto localStringAddress1 = localStringNode1->create_parameter(val_type::STRING);
     auto localStringNode2 = device.create_child("my_string.2");
-    auto localStringAddress2 = localStringNode2->create_address(val_type::STRING);
+    auto localStringAddress2 = localStringNode2->create_parameter(val_type::STRING);
 
     auto localTupleNode1 = device.create_child("my_tuple.1");
-    auto localTupleAddress1 = localTupleNode1->create_address(val_type::TUPLE);
+    auto localTupleAddress1 = localTupleNode1->create_parameter(val_type::TUPLE);
     auto localTupleNode2 = device.create_child("my_tuple.2");
-    auto localTupleAddress2 = localTupleNode2->create_address(val_type::TUPLE);
+    auto localTupleAddress2 = localTupleNode2->create_parameter(val_type::TUPLE);
 
     // evaluate expression with Impulse
     auto testImpulseExprA = make_expression_atom(impulse(),

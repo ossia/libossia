@@ -5,6 +5,9 @@
 #include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file state_element.hpp
+ */
 namespace ossia
 {
 /**

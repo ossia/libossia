@@ -38,14 +38,14 @@ int main()
 
     // add a /play address
     auto local_play_node = device.create_child("play");
-    auto local_play_address = local_play_node->create_address(val_type::BOOL);
+    auto local_play_address = local_play_node->create_parameter(val_type::BOOL);
 
     // attach /play address to a callback
     local_play_address->add_callback(local_play_callback);
 
     // add a /test address
     auto local_test_node = device.create_child("test");
-    auto local_test_address = local_test_node->create_address(val_type::TUPLE);
+    auto local_test_address = local_test_node->create_parameter(val_type::TUPLE);
 
     // attach /test address to their callback
     local_test_address->add_callback(local_test_callback);

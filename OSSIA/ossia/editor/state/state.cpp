@@ -5,7 +5,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <iostream>
 

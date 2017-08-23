@@ -18,9 +18,16 @@ namespace pd
 static void device_free(t_device* x)
 {
   x->x_dead = true;
-  x->unregister_children();
+  clock_unset(x->x_regclock);
+  clock_free(x->x_regclock);
+
+  // TODO why is this necessary since all children
+  // should have register to node.about_to_be_deleted() signal
+  // x->unregister_children();
+
   if (x->x_device)
     delete (x->x_device);
+
   ossia_pd::instance().devices.remove_all(x);
   outlet_free(x->x_dumpout);
   register_quarantinized();
@@ -50,6 +57,9 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->x_name->s_name};
     x->x_node = &x->x_device->get_root_node();
+    x->x_parent_node = nullptr;
+    x->x_regclock = clock_new(x, (t_method)t_device::register_children);
+    clock_delay(x->x_regclock, 0);
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -63,14 +73,6 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
   }
 
   return (x);
-}
-
-void t_device::loadbang(t_device* x, t_float type)
-{
-  if (LB_LOAD == (int)type)
-  {
-    register_children(x);
-  }
 }
 
 void t_device::register_children(t_device* x)
@@ -106,6 +108,13 @@ void t_device::register_children(t_device* x)
       t_remote* remote = (t_remote*)v;
       remote->register_node(x->x_node);
     }
+  }
+
+  // then go through all remote objects with pattern matching name
+  // to register them to device's address creation callback
+  for (auto x : ossia_pd::instance().remotes.copy()){
+    if (x->x_is_pattern)
+      obj_register<t_remote>(x);
   }
 }
 
@@ -275,7 +284,6 @@ extern "C" void setup_ossia0x2edevice(void)
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)t_device::register_children,"register", A_NULL, 0);
-    eclass_addmethod(c, (method)t_device::loadbang, "loadbang", A_NULL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(

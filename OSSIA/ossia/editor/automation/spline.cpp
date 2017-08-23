@@ -13,7 +13,7 @@ spline_automation::spline_automation()
 
 void spline_automation::set_destination(Destination a)
 {
-  m_address = std::move(a);
+  m_parameter = std::move(a);
 }
 
 void spline_automation::set_spline(const spline_data& t)
@@ -29,9 +29,9 @@ void spline_automation::set_spline(const spline_data& t)
 ossia::state_element
 spline_automation::state(ossia::time_value date, double pos)
 {
-  if (m_address)
+  if (m_parameter)
   {
-    auto& addr = *m_address;
+    auto& addr = *m_parameter;
 
     auto p = m_spline.evaluate(pos);
     auto d = p.data();

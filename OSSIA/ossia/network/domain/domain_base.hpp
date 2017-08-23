@@ -1,5 +1,8 @@
 #pragma once
 #include <ossia/network/domain/domain_base_impl.hpp>
+/**
+ * \file domain_base.hpp
+ */
 namespace ossia
 {
 #include <ossia/network/domain/domain_variant_impl.hpp>

@@ -4,7 +4,7 @@
 #include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 using namespace ossia;
 
 /*
@@ -68,7 +68,7 @@ struct mock_autom2
   void test_functional()
   {
     generic_device dev{std::make_unique<local_protocol>(), "test"};
-    auto n1 = dev.create_child("n1")->create_address(val_type::TUPLE);
+    auto n1 = dev.create_child("n1")->create_parameter(val_type::TUPLE);
 
     ossia::Destination d{*n1};
 
@@ -141,7 +141,7 @@ private Q_SLOTS:
   void test_compare()
   {
     generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
-    auto n1 = dev.create_child("n1")->create_address(val_type::TUPLE);
+    auto n1 = dev.create_child("n1")->create_parameter(val_type::TUPLE);
 
     message m0{{*n1, ossia::destination_index{0}}, 5.};
     message m1{{*n1, ossia::destination_index{0}}, 5.};
@@ -163,7 +163,7 @@ private Q_SLOTS:
   void test_remove()
   {
     generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
-    auto n1 = dev.create_child("n1")->create_address(val_type::TUPLE);
+    auto n1 = dev.create_child("n1")->create_parameter(val_type::TUPLE);
 
     state s;
 
@@ -176,7 +176,7 @@ private Q_SLOTS:
   void test_flatten()
   {
     generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
-    auto n1 = dev.create_child("n1")->create_address(val_type::TUPLE);
+    auto n1 = dev.create_child("n1")->create_parameter(val_type::TUPLE);
 
     message m0{{*n1, ossia::destination_index{0}}, float{5.}};
     message m1{{*n1, ossia::destination_index{1}}, float{10.}};
@@ -227,7 +227,7 @@ private Q_SLOTS:
   void test_flatten_move()
   {
     generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
-    auto n1 = dev.create_child("n1")->create_address(val_type::TUPLE);
+    auto n1 = dev.create_child("n1")->create_parameter(val_type::TUPLE);
 
     state_element m0 = message{{*n1, ossia::destination_index{0}}, float{5.}};
     state_element m1 = message{{*n1, ossia::destination_index{1}}, float{10.}};

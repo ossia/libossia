@@ -31,26 +31,26 @@ private Q_SLOTS:
 
     // Local tree building
     auto localImpulseNode = device.create_child("my_impulse");
-    auto localImpulseAddress = localImpulseNode->create_address(val_type::IMPULSE);
+    auto localImpulseAddress = localImpulseNode->create_parameter(val_type::IMPULSE);
 
     auto localBoolNode = device.create_child("my_bool");
-    auto localBoolAddress = localBoolNode->create_address(val_type::BOOL);
+    auto localBoolAddress = localBoolNode->create_parameter(val_type::BOOL);
 
     auto localIntNode = device.create_child("my_int");
-    auto localIntAddress = localIntNode->create_address(val_type::INT);
+    auto localIntAddress = localIntNode->create_parameter(val_type::INT);
 
     auto localFloatNode = device.create_child("my_float");
-    auto localFloatAddress = localFloatNode->create_address(val_type::FLOAT);
+    auto localFloatAddress = localFloatNode->create_parameter(val_type::FLOAT);
 
     auto localStringNode = device.create_child("my_string");
-    auto localStringAddress = localStringNode->create_address(val_type::STRING);
+    auto localStringAddress = localStringNode->create_parameter(val_type::STRING);
 
     auto localTupleNode = device.create_child("my_tuple");
-    auto localTupleAddress = localTupleNode->create_address(val_type::TUPLE);
+    auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
 
     //! \todo what about Destination address ? do we observe the address ? how to do that ?
     //! auto localDestinationNode = device.create_child("my_destination"));
-    //! auto localDestinationAddress = localDestinationNode->create_address(Type::DESTINATION);
+    //! auto localDestinationAddress = localDestinationNode->create_parameter(Type::DESTINATION);
 
     // evaluate expressions before Destination value updates
     auto testExprA = make_expression_pulse(Destination(*localImpulseAddress));
@@ -158,9 +158,9 @@ private Q_SLOTS:
 
     // Local tree building
     auto localNode1 = device.create_child("my_node.1");
-    auto lcalAddr1 = localNode1->create_address(ossia::val_type::IMPULSE);
+    auto lcalAddr1 = localNode1->create_parameter(ossia::val_type::IMPULSE);
     auto localNode2 = device.create_child("my_node.2");
-    auto lcalAddr2 = localNode2->create_address(ossia::val_type::IMPULSE);
+    auto lcalAddr2 = localNode2->create_parameter(ossia::val_type::IMPULSE);
 
     auto testExprA = make_expression_pulse(Destination(*lcalAddr1));
     auto testExprB = make_expression_pulse(Destination(*lcalAddr2));
@@ -181,7 +181,7 @@ private Q_SLOTS:
     impl::BasicDevice device{std::make_unique<ossia::net::Local2>(), "test"};
 
     auto localIntNode = device.create_child("my_int.1");
-    auto localIntAddress = localIntNode->create_address(Type::INT);
+    auto localIntAddress = localIntNode->create_parameter(Type::INT);
 
     auto testExpr = make_expression_pulse(Destination(*localIntNode));
 

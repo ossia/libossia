@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/generic/generic_address.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/local/local.hpp>
 
@@ -16,12 +16,12 @@ multiplex_protocol::~multiplex_protocol()
 {
 }
 
-bool multiplex_protocol::pull(ossia::net::address_base& address)
+bool multiplex_protocol::pull(ossia::net::parameter_base& address)
 {
   return false;
 }
 
-bool multiplex_protocol::push(const ossia::net::address_base& address)
+bool multiplex_protocol::push(const ossia::net::parameter_base& address)
 {
   bool b = true;
   for (auto& proto : m_protocols)
@@ -30,7 +30,7 @@ bool multiplex_protocol::push(const ossia::net::address_base& address)
   return b;
 }
 
-bool multiplex_protocol::push_raw(const full_address_data& dat)
+bool multiplex_protocol::push_raw(const full_parameter_data& dat)
 {
   bool b = true;
   for (auto& proto : m_protocols)
@@ -40,7 +40,7 @@ bool multiplex_protocol::push_raw(const full_address_data& dat)
 }
 
 bool multiplex_protocol::observe(
-    ossia::net::address_base& address, bool enable)
+    ossia::net::parameter_base& address, bool enable)
 {
   bool b = true;
   for (auto& proto : m_protocols)
@@ -69,7 +69,7 @@ static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
 {
   for (auto& cld : n.children())
   {
-    if (auto addr = cld->get_address())
+    if (auto addr = cld->get_parameter())
     {
       if (!addr->callbacks_empty())
       {

@@ -6,6 +6,9 @@
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia_export.h>
 
+/**
+ * \file loop.hpp
+ */
 namespace ossia
 {
 

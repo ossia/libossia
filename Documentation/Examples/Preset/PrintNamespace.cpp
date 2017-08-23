@@ -42,7 +42,7 @@ rapidjson::Value explore(
     rapidjson::Value v;
     v.SetObject();
 
-    auto address = node.get_address();
+    auto address = node.get_parameter();
 
     if(address)
     {

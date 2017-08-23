@@ -15,7 +15,7 @@ namespace net
 {
 class device_base;
 class node_base;
-class address_base;
+class parameter_base;
 }
 class value;
 }

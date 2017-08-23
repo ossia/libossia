@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/network/base/address.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <QObject>
 #include <QQmlProperty>
 #include <QQmlPropertyValueSource>

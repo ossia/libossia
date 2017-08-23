@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QSerialPort>
 #include <ossia-qt/js_utilities.hpp>
-#include <ossia-qt/serial/serial_address_data.hpp>
+#include <ossia-qt/serial/serial_parameter_data.hpp>
 
 class QQmlEngine;
 class QQmlComponent;
@@ -56,15 +56,15 @@ public:
   serial_protocol(const QByteArray& code, const QSerialPortInfo& bot);
   virtual ~serial_protocol();
 
-  bool pull(ossia::net::address_base&) override;
-  bool push(const ossia::net::address_base&) override;
-  bool push_raw(const ossia::net::full_address_data& address_base) override;
-  bool observe(ossia::net::address_base&, bool) override;
+  bool pull(ossia::net::parameter_base&) override;
+  bool push(const ossia::net::parameter_base&) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
   void set_device(ossia::net::device_base& dev) override;
 
-  static serial_address_data read_data(const QJSValue& js)
+  static serial_parameter_data read_data(const QJSValue& js)
   {
     return js;
   }

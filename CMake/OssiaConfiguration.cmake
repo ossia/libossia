@@ -91,7 +91,7 @@ endif()
 
 if(OSSIA_SPLIT_DEBUG)
   set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
-  if(NOT APPLE)
+  if(NOT APPLE AND NOT MINGW)
   set(GOLD_FLAGS
     -Wa,--compress-debug-sections
     -Wl,--compress-debug-sections=zlib
@@ -169,7 +169,6 @@ if(MSVC)
         "/wd4996" # SCL_SECURE_NO_WARNINGS
         "/wd4503" # decorated name length exceeded
         "/wd4305" # argument : truncation from double to float
-        "/MP"
         "/bigobj"
 #        "/std:c++latest"
         ${OSSIA_LINK_OPTIONS}

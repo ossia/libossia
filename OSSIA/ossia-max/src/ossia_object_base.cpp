@@ -10,11 +10,11 @@ namespace max
 
 void t_object_base::apply_value_visitor(const ossia::value& v)
 {
-  auto local_address = m_node->get_address();
+  auto local_param = m_node->get_parameter();
   auto filtered = ossia::net::filter_value(
-        local_address->get_domain(),
+        local_param->get_domain(),
         v,
-        local_address->get_bounding());
+        local_param->get_bounding());
   value_visitor<t_object_base> vm;
   vm.x = this;
   filtered.apply(vm);
@@ -22,20 +22,20 @@ void t_object_base::apply_value_visitor(const ossia::value& v)
 
 void t_object_base::push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
 {
-  if (x->m_node && x->m_node->get_address())
+  if (x->m_node && x->m_node->get_parameter())
   {
     if (argc == 1)
     {
       // convert one element array to single element
       if (argv->a_type == A_SYM)
-        x->m_node->get_address()->push_value(
+        x->m_node->get_parameter()->push_value(
             std::string(atom_getsym(argv)->s_name));
 
       else if (argv->a_type == A_LONG)
-        x->m_node->get_address()->push_value((int32_t)atom_getlong(argv));
+        x->m_node->get_parameter()->push_value((int32_t)atom_getlong(argv));
 
       else if (argv->a_type == A_FLOAT)
-        x->m_node->get_address()->push_value(atom_getfloat(argv));
+        x->m_node->get_parameter()->push_value(atom_getfloat(argv));
     }
     else
     {
@@ -53,15 +53,15 @@ void t_object_base::push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
           object_error((t_object*)x, "value type not handled");
       }
 
-      x->m_node->get_address()->push_value(list);
+      x->m_node->get_parameter()->push_value(list);
     }
   }
 }
 
 void t_object_base::bang(t_object_base* x)
 {
-  if (x->m_node && x->m_node->get_address())
-    x->apply_value_visitor(x->m_node->get_address()->value());
+  if (x->m_node && x->m_node->get_parameter())
+    x->apply_value_visitor(x->m_node->get_parameter()->value());
 }
 /*
     void t_object_base :: tick(t_object_base* x)
@@ -81,9 +81,9 @@ void t_object_base::defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_at
 void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
   for (const auto& child : node.children_copy())
   {
-    if (auto addr = child->get_address())
+    if (auto addr = child->get_parameter())
     {
-      std::string s = ossia::net::osc_address_string(*child);
+      std::string s = ossia::net::osc_parameter_string(*child);
       list.push_back(s);
     }
     list_all_child(*child,list);
@@ -96,7 +96,7 @@ void t_object_base::relative_namespace(t_object_base* x)
   t_symbol* prependsym = gensym("namespace");
   std::vector<std::string> list;
   list_all_child(*x->m_node, list);
-  int pos = ossia::net::osc_address_string(*x->m_node).length();
+  int pos = ossia::net::osc_parameter_string(*x->m_node).length();
   for (auto& addr : list)
   {
     std::string s = addr.substr(pos);

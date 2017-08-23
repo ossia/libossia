@@ -2,8 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/base/address.hpp>
-#include <ossia/network/base/address_data.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
@@ -23,7 +23,7 @@ namespace net
 {
 node_base::~node_base() = default;
 
-void node_base::set_address(std::unique_ptr<address_base>)
+void node_base::set_parameter(std::unique_ptr<parameter_base>)
 {
 }
 

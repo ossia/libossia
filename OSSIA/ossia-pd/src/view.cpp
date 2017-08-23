@@ -59,6 +59,8 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
+    x_parent_node = node;
+
     if (x_addr_scope == AddrScope::relative)
     {
       x_node = node->find_child(x_name->s_name);
@@ -167,10 +169,12 @@ static void view_click(
     }
     */
 
+    /*
     t_canvas* root = x->x_obj.o_canvas;
     while (root->gl_owner)
       root = root->gl_owner;
-    if (!find_and_display_friend(x, root))
+    */
+    if (!find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
   else
@@ -190,13 +194,16 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
     x->x_otype = Type::view;
     x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->x_clock = clock_new(x, (t_method)obj_tick);
+    x->x_clock = nullptr;
     x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
+
+    x->x_node = nullptr;
+    x->x_parent_node = nullptr;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
+      x->x_addr_scope = ossia::pd::get_address_scope(x->x_name->s_name);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
@@ -220,7 +227,6 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     }
   }
 
-
   return x;
 }
 
@@ -231,13 +237,12 @@ static void view_free(t_view* x)
   obj_dequarantining<t_view>(x);
   ossia_pd::instance().views.remove_all(x);
   clock_free(x->x_regclock);
-  clock_free(x->x_clock);
 }
 
 static void view_bind(t_view* x, t_symbol* address)
 {
   x->x_name = address;
-  x->x_addr_scope = ossia::pd::get_address_type(x->x_name->s_name);
+  x->x_addr_scope = ossia::pd::get_address_scope(x->x_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -256,6 +261,8 @@ extern "C" void setup_ossia0x2eview(void)
     eclass_addmethod(c, (method)view_click, "click", A_NULL, 0);
     eclass_addmethod(c, (method)view_bind, "bind", A_SYMBOL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
+
   }
 
   auto& ossia_pd = ossia_pd::instance();

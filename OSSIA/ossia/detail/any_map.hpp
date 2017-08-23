@@ -1,13 +1,15 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <boost/spirit/home/support/detail/hold_any.hpp>
+#include <ossia/detail/any.hpp>
 #include <ossia_export.h>
+
+/**
+ * \file any_map.hpp
+ */
 
 namespace ossia
 {
-using any = boost::spirit::hold_any;
-using boost::spirit::any_cast;
 //! A container to store any kind of data indexed by a string
 using any_map = string_map<ossia::any>;
 

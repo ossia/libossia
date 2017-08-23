@@ -43,7 +43,7 @@ private Q_SLOTS:
       // Create a node
       {
         auto& n = find_or_create_node(dev, "/main");
-        auto a = n.create_address(ossia::val_type::FLOAT);
+        auto a = n.create_parameter(ossia::val_type::FLOAT);
 
         a->push_value(6);
 
@@ -141,7 +141,7 @@ private Q_SLOTS:
         TestDeviceRef dev{serv};
         {
           auto& n = find_or_create_node(serv, "/main");
-          auto a = n.create_address(ossia::val_type::FLOAT);
+          auto a = n.create_parameter(ossia::val_type::FLOAT);
 
           a->push_value(6);
 
@@ -172,7 +172,7 @@ private Q_SLOTS:
 
         http_proto->update(http_clt->get_root_node());
 
-        net::full_address_data d; d.address = "/float"; d.set_value(123.f);
+        net::full_parameter_data d; d.address = "/float"; d.set_value(123.f);
         http_proto->push_raw(d);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -185,7 +185,7 @@ private Q_SLOTS:
 
         ws_proto->update(ws_clt->get_root_node());
 
-        net::full_address_data d2; d2.address = "/int"; d2.set_value(546);
+        net::full_parameter_data d2; d2.address = "/int"; d2.set_value(546);
         ws_proto->push_raw(d2);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
