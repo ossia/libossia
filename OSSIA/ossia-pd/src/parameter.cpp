@@ -85,14 +85,14 @@ bool t_param::do_registration(ossia::net::node_base* node)
     x_matchers.push_back(std::move(matcher));
   }
 
-  parameter_set_description();
-  parameter_set_tags();
-  parameter_set_access_mode();
-  parameter_set_unit();
-  parameter_set_bounding_mode();
-  parameter_set_range();
-  parameter_set_minmax();
-  parameter_set_default();
+  set_description();
+  set_tags();
+  set_access_mode();
+  set_unit();
+  set_bounding_mode();
+  set_range();
+  set_minmax();
+  set_default();
 
   clock_delay(x_clock, 0);
 
@@ -187,7 +187,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-void t_param::parameter_set_access_mode()
+void t_param::set_access_mode()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -211,7 +211,7 @@ void t_param::parameter_set_access_mode()
   }
 }
 
-void t_param::parameter_set_repetition_filter()
+void t_param::set_repetition_filter()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -223,7 +223,7 @@ void t_param::parameter_set_repetition_filter()
   }
 }
 
-void t_param::parameter_set_description()
+void t_param::set_description()
 {
   std::stringstream description;
   for (int i = 0; i < x_description_size; i++)
@@ -250,7 +250,7 @@ void t_param::parameter_set_description()
   }
 }
 
-void t_param::parameter_set_tags()
+void t_param::set_tags()
 {
   std::vector<std::string> tags;
   for (int i = 0; i < x_tags_size; i++)
@@ -276,7 +276,7 @@ void t_param::parameter_set_tags()
     ossia::net::set_tags(*m.get_node(), tags);
 }
 
-void t_param::parameter_set_priority()
+void t_param::set_priority()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -285,7 +285,7 @@ void t_param::parameter_set_priority()
   }
 }
 
-void t_param::parameter_set_enable()
+void t_param::set_enable()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -294,7 +294,7 @@ void t_param::parameter_set_enable()
   }
 }
 
-void t_param::parameter_set_type()
+void t_param::set_type()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -304,7 +304,7 @@ void t_param::parameter_set_type()
   }
 }
 
-void t_param::parameter_set_hidden()
+void t_param::set_hidden()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -313,7 +313,7 @@ void t_param::parameter_set_hidden()
   }
 }
 
-void t_param::parameter_set_unit()
+void t_param::set_unit()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -336,7 +336,7 @@ void t_param::parameter_set_unit()
   }
 }
 
-void t_param::parameter_set_minmax(){
+void t_param::set_minmax(){
   for (t_matcher& m : x_matchers)
   {
     ossia::net::node_base* node = m.get_node();
@@ -400,7 +400,7 @@ void t_param::parameter_set_minmax(){
   }
 }
 
-void t_param::parameter_set_range()
+void t_param::set_range()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -439,7 +439,7 @@ void t_param::parameter_set_range()
   }
 }
 
-void t_param::parameter_set_bounding_mode()
+void t_param::set_bounding_mode()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -469,7 +469,7 @@ void t_param::parameter_set_bounding_mode()
   }
 }
 
-void t_param::parameter_set_default()
+void t_param::set_default()
 {
   for (t_matcher& m : x_matchers)
   {
@@ -637,31 +637,31 @@ t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, vo
   if (msg == gensym("attr_modified"))
   {
       if( s == gensym("range") )
-        x->parameter_set_range();
+        x->set_range();
       else if ( s == gensym("bounding_mode") )
-        x->parameter_set_bounding_mode();
+        x->set_bounding_mode();
       else if ( s == gensym("min") || s == gensym("max") )
-        x->parameter_set_minmax();
+        x->set_minmax();
       else if ( s == gensym("default") )
-        x->parameter_set_default();
+        x->set_default();
       else if ( s == gensym("unit") )
-        x->parameter_set_unit();
+        x->set_unit();
       else if ( s == gensym("hidden") )
-        x->parameter_set_hidden();
+        x->set_hidden();
       else if ( s == gensym("priority") )
-        x->parameter_set_priority();
+        x->set_priority();
       else if ( s == gensym("access_mode") )
-        x->parameter_set_access_mode();
+        x->set_access_mode();
       else if ( s == gensym("repetition_filter") )
-        x->parameter_set_repetition_filter();
+        x->set_repetition_filter();
       else if ( s == gensym("tags") )
-        x->parameter_set_tags();
+        x->set_tags();
       else if ( s == gensym("description") )
-        x->parameter_set_description();
+        x->set_description();
       else if ( s == gensym("enable") )
-        x->parameter_set_enable();
+        x->set_enable();
       else if ( s == gensym("type") )
-        x->parameter_set_type();
+        x->set_type();
   }
   return 0;
 }
@@ -693,6 +693,8 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) t_obj_base::obj_bang, "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",     A_NULL,  0);
     eclass_addmethod(c, (method) parameter_notify,     "notify",   A_NULL,  0);
+    // TODO should we do something else with reset (like resetting all attributes)
+    eclass_addmethod(c, (method) push_default_value,   "reset",    A_NULL,  0);
 
     CLASS_ATTR_SYMBOL(c, "type", 0, t_param, x_type);
     CLASS_ATTR_SYMBOL(c, "unit", 0, t_param, x_unit);
@@ -713,8 +715,6 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
     CLASS_ATTR_DEFAULT(c, "access_mode",   0, "bi");
-    CLASS_ATTR_DEFAULT(c, "description",   0, "");
-    CLASS_ATTR_DEFAULT(c, "tags",          0, "");
 
     eclass_addmethod(c, (method) parameter_get_range,             "getrange",             A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_min,               "getmin",               A_NULL, 0);

@@ -6,6 +6,8 @@ extern "C" {
 #include <cicm_wrapper.h>
 }
 
+#define OSSIA_PD_MAX_ATTR_SIZE 64
+
 namespace ossia
 {
 namespace pd

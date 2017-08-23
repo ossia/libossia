@@ -571,7 +571,7 @@ void obj_dump(T* x)
       outlet_anything(x->x_dumpout, gensym("description"), 1, &a);
     }
     else
-      outlet_anything(x->x_dumpout, gensym("tags"), 0, nullptr);
+      outlet_anything(x->x_dumpout, gensym("description"), 0, nullptr);
 
     // tags
     auto tags = ossia::net::get_tags(*x->x_node);
@@ -588,6 +588,14 @@ void obj_dump(T* x)
     else
     {
       outlet_anything(x->x_dumpout, gensym("tags"), 0, nullptr);
+    }
+
+    auto priority = ossia::net::get_priority(*x->x_node);
+    if (priority)
+    {
+      t_atom a;
+      SETFLOAT(&a, priority.value());
+      outlet_anything(x->x_dumpout, gensym("priority"), 1, &a);
     }
   }
 }

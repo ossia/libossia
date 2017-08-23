@@ -430,7 +430,7 @@ ossia::val_type symbol2val_type(t_symbol* s)
     return ossia::val_type::NONE;
 }
 
-t_symbol* symbol2val_type(ossia::val_type type)
+t_symbol* val_type2symbol(ossia::val_type type)
 {
   switch (type)
   {

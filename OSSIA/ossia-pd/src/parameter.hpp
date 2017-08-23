@@ -5,8 +5,6 @@
 #include "remote.hpp"
 #include "ossia_obj_base.hpp"
 
-#define OSSIA_PD_MAX_ATTR_SIZE 64
-
 namespace ossia
 {
 namespace pd
@@ -20,19 +18,19 @@ struct t_param : t_obj_base
   bool unregister();
 
   // attribute setting method
-  void parameter_set_access_mode();
-  void parameter_set_repetition_filter();
-  void parameter_set_description();
-  void parameter_set_tags();
-  void parameter_set_priority();
-  void parameter_set_enable();
-  void parameter_set_hidden();
-  void parameter_set_minmax();
-  void parameter_set_range();
-  void parameter_set_bounding_mode();
-  void parameter_set_default();
-  void parameter_set_unit();
-  void parameter_set_type();
+  void set_access_mode();
+  void set_repetition_filter();
+  void set_description();
+  void set_tags();
+  void set_priority();
+  void set_enable();
+  void set_hidden();
+  void set_minmax();
+  void set_range();
+  void set_bounding_mode();
+  void set_default();
+  void set_unit();
+  void set_type();
 
   // attributes
   t_symbol* x_type;

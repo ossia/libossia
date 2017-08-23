@@ -66,8 +66,9 @@ bool t_model::do_registration(ossia::net::node_base* node)
   x_node = &ossia::net::create_node(*node, name);
   x_node->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
 
-  ossia::net::set_description(*x_node, std::string(x_description->s_name));
-  ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
+  set_priority();
+  set_description();
+  set_tags();
 
   return true;
 }
@@ -142,6 +143,94 @@ bool t_model::unregister()
   return true;
 }
 
+void t_model::set_priority()
+{
+  // TODO why this doesn't work
+  if (x_node) ossia::net::set_priority(*x_node, x_priority);
+}
+
+void t_model::set_description()
+{
+  std::stringstream description;
+  for (int i = 0; i < x_description_size; i++)
+  {
+    switch(x_description[i].a_type)
+    {
+      case A_SYMBOL:
+        description << x_description[i].a_w.w_symbol->s_name << " ";
+        break;
+      case A_FLOAT:
+        {
+          description << x_description[i].a_w.w_float << " ";
+          break;
+        }
+      default:
+        ;
+    }
+  }
+
+  if(x_node) ossia::net::set_description(*x_node, description.str());
+}
+
+void t_model::set_tags()
+{
+  std::vector<std::string> tags;
+  for (int i = 0; i < x_tags_size; i++)
+  {
+    switch(x_tags[i].a_type)
+    {
+      case A_SYMBOL:
+        tags.push_back(x_tags[i].a_w.w_symbol->s_name);
+        break;
+      case A_FLOAT:
+        {
+          std::stringstream ss;
+          ss << x_tags[i].a_w.w_float;
+          tags.push_back(ss.str());
+          break;
+        }
+      default:
+        ;
+    }
+  }
+
+  if (x_node) ossia::net::set_tags(*x_node, tags);
+}
+
+
+t_pd_err model_notify(t_model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+{
+  if (msg == gensym("attr_modified"))
+  {
+      if ( s == gensym("priority") )
+        x->set_priority();
+      else if ( s == gensym("tags") )
+        x->set_tags();
+      else if ( s == gensym("description") )
+        x->set_description();
+  }
+  return 0;
+}
+
+void model_get_priority(t_model*x)
+{
+  t_atom a;
+  SETFLOAT(&a, x->x_priority);
+  outlet_anything(x->x_dumpout, gensym("priority"), 1, &a);
+}
+
+void model_get_tags(t_model*x)
+{
+  outlet_anything(x->x_dumpout, gensym("tags"),
+                  x->x_tags_size, x->x_tags);
+}
+
+void model_get_description(t_model*x)
+{
+  outlet_anything(x->x_dumpout, gensym("description"),
+                  x->x_description_size, x->x_description);
+}
+
 ossia::safe_vector<t_model*>& t_model::quarantine()
 {
   static ossia::safe_vector<t_model*> quarantine;
@@ -185,8 +274,6 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
         pd_error(x, "You have to pass a name as the first argument");
       }
 
-      x->x_description = gensym("");
-      x->x_tags = gensym("");
       x->x_node = nullptr;
       x->x_parent_node = nullptr;
 
@@ -234,9 +321,15 @@ extern "C" void setup_ossia0x2emodel(void)
     eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
+    eclass_addmethod(c, (method) model_notify,     "notify",   A_NULL,  0);
 
-    CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
-    CLASS_ATTR_SYMBOL(c, "tags", 0, t_model, x_tags);
+    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, t_model, x_description, x_description_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, t_model, x_tags, x_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_INT(c, "priority", 0, t_param, x_priority);
+
+    eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL, 0);
+    eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL, 0);
+    eclass_addmethod(c, (method) model_get_description,       "getdescription",       A_NULL, 0);
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy

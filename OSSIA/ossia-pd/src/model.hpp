@@ -21,8 +21,16 @@ struct t_model : t_obj_base
 
   void is_deleted(const ossia::net::node_base& n);
 
-  t_symbol* x_tags;
-  t_symbol* x_description;
+  void set_tags();
+  void set_description();
+  void set_priority();
+
+  t_atom x_tags[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom x_description[OSSIA_PD_MAX_ATTR_SIZE];
+  int x_priority;
+
+  long x_tags_size;
+  long x_description_size;
 };
 }
 } // namespace
