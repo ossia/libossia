@@ -16,13 +16,7 @@ namespace ossia
 namespace pd
 {
 
-std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
-std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath);
-
-/**
- * @brief register_quarantinized Try to register all quarantinized objects
- */
-void register_quarantinized();
+#pragma mark Value type convertion helper
 
 struct value2atom
 {
@@ -203,6 +197,16 @@ struct value_visitor
   }
 };
 
+#pragma mark Prototype
+
+std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
+std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath);
+
+/**
+ * @brief register_quarantinized Try to register all quarantinized objects
+ */
+void register_quarantinized();
+
 /**
  * @fn                static t_class* find_parent(t_eobj* x, t_symbol*
  * classname)
@@ -346,6 +350,57 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  */
 ossia::net::node_base* find_parent_node(t_obj_base* x);
 
+/**
+ * @brief Find all objects [classname] in the current patcher starting at
+ * specified level.
+ * @param list : list in which we are looking for objecfts
+ * @param classname : name of the object to search (ossia.model or ossia.view)
+ * @return std::vector<t_pd*> containing pointer to t_pd struct of the
+ * corresponding classname
+ */
+std::vector<t_obj_base*> find_child_to_register(
+    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
+
+/**
+ * @brief find_peer: iterate through patcher's object list to find a peer
+ * @param x
+ * @return true if a peer have been found, false otherwise
+ */
+bool find_peer(t_obj_base* x);
+
+/**
+ * @brief find_global_node: find nodes matching address with a 'device:' prefix
+ * @param addr : address string
+ * @return vector of pointers to matching nodes
+ */
+std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
+
+
+/**
+ * @brief get_address_scope: return address scope (relative, absolute or globale)
+ * @param addr: the address to process
+ * @return the scope
+ */
+ossia::pd::AddrScope get_address_scope(const std::string& addr);
+
+/**
+ * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
+ * @param atom : array of atom
+ * @param size : number of value to take
+ * @return array of ossia::value
+ */
+std::vector<ossia::value> attribute2value(t_atom* atom, long size);
+
+/**
+ * @brief symbol2val_type Convert a t_symbol into ossia::val_type
+ * @param s
+ * @return ossia::val_type
+ */
+ossia::val_type symbol2val_type(t_symbol* s);
+t_symbol* val_type2symbol(ossia::val_type t);
+
+#pragma mark Templates
+
 template<typename T>
 /**
  * @brief copy : utility function to return a copy of an object
@@ -433,44 +488,9 @@ void obj_dump(T* x)
     if (param)
     {
       // type
-      std::string type = "unknown";
-      switch (param->get_value_type())
-      {
-        case ossia::val_type::FLOAT:
-          type = "float";
-          break;
-        case ossia::val_type::INT:
-          type = "int";
-          break;
-        case ossia::val_type::VEC2F:
-          type = "vec2f";
-          break;
-        case ossia::val_type::VEC3F:
-          type = "vec3f";
-          break;
-        case ossia::val_type::VEC4F:
-          type = "vec4f";
-          break;
-        case ossia::val_type::IMPULSE:
-          type = "impulse";
-          break;
-        case ossia::val_type::BOOL:
-          type = "bool";
-          break;
-        case ossia::val_type::STRING:
-          type = "string";
-          break;
-        case ossia::val_type::TUPLE:
-          type = "list";
-          break;
-        case ossia::val_type::CHAR:
-          type = "char";
-          break;
-        default:
-          type = "unknown";
-      }
+      t_symbol* type = val_type2symbol(param->get_value_type());
 
-      SETSYMBOL(&a, gensym(type.c_str()));
+      SETSYMBOL(&a, type);
       outlet_anything(x->x_dumpout, gensym("type"), 1, &a);
 
       // domain
@@ -572,46 +592,5 @@ void obj_dump(T* x)
   }
 }
 
-/**
- * @brief Find all objects [classname] in the current patcher starting at
- * specified level.
- * @param list : list in which we are looking for objecfts
- * @param classname : name of the object to search (ossia.model or ossia.view)
- * @return std::vector<t_pd*> containing pointer to t_pd struct of the
- * corresponding classname
- */
-std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
-
-/**
- * @brief find_peer: iterate through patcher's object list to find a peer
- * @param x
- * @return true if a peer have been found, false otherwise
- */
-bool find_peer(t_obj_base* x);
-
-/**
- * @brief find_global_node: find nodes matching address with a 'device:' prefix
- * @param addr : address string
- * @return vector of pointers to matching nodes
- */
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
-
-
-/**
- * @brief get_address_scope: return address scope (relative, absolute or globale)
- * @param addr: the address to process
- * @return the scope
- */
-ossia::pd::AddrScope get_address_scope(const std::string& addr);
-
-/**
- * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
- * @param atom : array of atom
- * @param size : number of value to take
- * @return array of ossia::value
- */
-std::vector<ossia::value> attribute2value(t_atom* atom, long size);
-
-}
-}
+} // namespace pd
+} // namespace ossia

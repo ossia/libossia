@@ -56,28 +56,11 @@ bool t_param::do_registration(ossia::net::node_base* node)
   for (auto n : nodes)
   {
     ossia::net::parameter_base* local_param{};
-    std::string type = x_type->s_name;
 
-    if (type == "float")
-      local_param = n->create_parameter(ossia::val_type::FLOAT);
-    else if (type == "symbol" || type == "string")
-      local_param = n->create_parameter(ossia::val_type::STRING);
-    else if (type == "int")
-      local_param = n->create_parameter(ossia::val_type::INT);
-    else if (type == "vec2f")
-      local_param = n->create_parameter(ossia::val_type::VEC2F);
-    else if (type == "vec3f")
-      local_param = n->create_parameter(ossia::val_type::VEC3F);
-    else if (type == "vec4f")
-      local_param = n->create_parameter(ossia::val_type::VEC4F);
-    else if (type == "impulse")
-      local_param = n->create_parameter(ossia::val_type::IMPULSE);
-    else if (type == "bool")
-      local_param = n->create_parameter(ossia::val_type::BOOL);
-    else if (type == "list")
-      local_param = n->create_parameter(ossia::val_type::TUPLE);
-    else if (type == "char")
-      local_param = n->create_parameter(ossia::val_type::CHAR);
+    auto type = symbol2val_type(x_type);
+
+    if ( type != ossia::val_type::NONE )
+      local_param = n->create_parameter(type);
     else
     {
       pd_error(
@@ -311,6 +294,16 @@ void t_param::parameter_set_enable()
   }
 }
 
+void t_param::parameter_set_type()
+{
+  for (t_matcher& m : x_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+    param->set_value_type(symbol2val_type(x_type));
+  }
+}
+
 void t_param::parameter_set_hidden()
 {
   for (t_matcher& m : x_matchers)
@@ -330,7 +323,13 @@ void t_param::parameter_set_unit()
     if ( x_unit !=  gensym("") )
     {
       ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
-      if (unit) param->set_unit(unit);
+      if (unit)
+      {
+        param->set_unit(unit);
+        // update x_type since set_unit() may have changed it
+        auto val_type = param->get_value_type();
+        x_type = val_type2symbol(val_type);
+      }
       else
         pd_error(this, "wrong unit: %s", x_unit->s_name);
     }
@@ -661,6 +660,8 @@ t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, vo
         x->parameter_set_description();
       else if ( s == gensym("enable") )
         x->parameter_set_enable();
+      else if ( s == gensym("type") )
+        x->parameter_set_type();
   }
   return 0;
 }

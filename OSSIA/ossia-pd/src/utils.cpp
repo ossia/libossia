@@ -402,5 +402,73 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
   return list;
 }
 
+ossia::val_type symbol2val_type(t_symbol* s)
+{
+  std::string type = s->s_name;
+
+  if (type == "float")
+    return ossia::val_type::FLOAT;
+  else if (type == "symbol" || type == "string")
+    return ossia::val_type::STRING;
+  else if (type == "int")
+    return ossia::val_type::INT;
+  else if (type == "vec2f")
+    return ossia::val_type::VEC2F;
+  else if (type == "vec3f")
+    return ossia::val_type::VEC3F;
+  else if (type == "vec4f")
+    return ossia::val_type::VEC4F;
+  else if (type == "impulse")
+    return ossia::val_type::IMPULSE;
+  else if (type == "bool")
+    return ossia::val_type::BOOL;
+  else if (type == "list")
+    return ossia::val_type::TUPLE;
+  else if (type == "char")
+    return ossia::val_type::CHAR;
+  else
+    return ossia::val_type::NONE;
+}
+
+t_symbol* symbol2val_type(ossia::val_type type)
+{
+  switch (type)
+  {
+    case ossia::val_type::FLOAT:
+      return gensym("float");
+      break;
+    case ossia::val_type::INT:
+      return gensym("int");
+      break;
+    case ossia::val_type::VEC2F:
+      return gensym("vec2f");
+      break;
+    case ossia::val_type::VEC3F:
+      return gensym("vec3f");
+      break;
+    case ossia::val_type::VEC4F:
+      return gensym("vec4f");
+      break;
+    case ossia::val_type::IMPULSE:
+      return gensym("impulse");
+      break;
+    case ossia::val_type::BOOL:
+      return gensym("bool");
+      break;
+    case ossia::val_type::STRING:
+      return gensym("string");
+      break;
+    case ossia::val_type::TUPLE:
+      return gensym("list");
+      break;
+    case ossia::val_type::CHAR:
+      return gensym("char");
+      break;
+    case ossia::val_type::NONE:
+    default:
+      return gensym("none");
+  }
+}
+
 }
 }

@@ -32,6 +32,7 @@ struct t_param : t_obj_base
   void parameter_set_bounding_mode();
   void parameter_set_default();
   void parameter_set_unit();
+  void parameter_set_type();
 
   // attributes
   t_symbol* x_type;
