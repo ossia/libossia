@@ -6,16 +6,8 @@ using UnityEngine;
 namespace Ossia
 {
   //! Used to register the position and rotation transforms.
-  //! TODO: instead use vec3f & vec4f with relevant units.
-  //! This way we only need two addresses.
   public class OssiaTransform
   {
-    Ossia.Node pos_node;
-    Ossia.Node rot_node;
-
-
-    Ossia.Parameter pos_addr;
-    Ossia.Parameter rot_addr;
     public OssiaTransform(GameObject obj, Ossia.Node object_node)
     {
       {
@@ -65,7 +57,6 @@ namespace Ossia
     {
       {
         var pos = obj.transform.position;
-        Debug.Log ("pushing " + pos.x + ", " + pos.y + ", " + pos.z);
         pos_addr.PushValue (pos.x, pos.y, pos.z);
       }
 
@@ -74,6 +65,12 @@ namespace Ossia
         rot_addr.PushValue (rot.w, rot.x, rot.y, rot.z);
       }
     }
+
+    Ossia.Node pos_node;
+    Ossia.Node rot_node;
+
+    Ossia.Parameter pos_addr;
+    Ossia.Parameter rot_addr;
   }
 
   //! Used to register every field that has an [Ossia.Expose] attached.
@@ -173,7 +170,7 @@ namespace Ossia
         field.SendUpdates (obj);
       }
       foreach (var property in properties) {
-        property.ReceiveUpdates (obj);
+        property.SendUpdates (obj);
       }
     }
   }

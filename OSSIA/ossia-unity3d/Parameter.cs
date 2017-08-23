@@ -2,6 +2,7 @@
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System;
+using UnityEngine;
 
 namespace Ossia
 {
@@ -94,6 +95,7 @@ namespace Ossia
 
     private void DoNothing(Value v)
     {
+      Debug.Log (v.ConvertString());
     }
 
 

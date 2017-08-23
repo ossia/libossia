@@ -35,14 +35,15 @@ namespace Ossia
       }
 
       OssiaEnabledComponent ossia_c;
-      if(nodes.Count > 0 || prop_nodes.Count > 0)
-      {
+      if (nodes.Count > 0 || prop_nodes.Count > 0) {
         // Create a node for the component
-        ossia_c = new OssiaEnabledComponent(
+        ossia_c = new OssiaEnabledComponent (
           component, 
-          node.AddChild(component.GetType().ToString()));
+          node.AddChild (component.GetType ().ToString ()));
         
         ossia_components.Add (ossia_c);
+      } else {
+        return;
       }
 
 			if (nodes.Count > 0) {

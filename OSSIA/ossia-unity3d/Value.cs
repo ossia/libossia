@@ -249,6 +249,7 @@ namespace Ossia
       Network.ossia_string_free (str);
       return s;
     }
+
     public object Get()
     {
       ossia_type t = GetOssiaType ();
@@ -276,6 +277,33 @@ namespace Ossia
     }
 
 
+    public int ConvertInt()
+    {
+      return Network.ossia_value_convert_int(ossia_value);
+    }
+    public bool ConvertBool()
+    {
+      return Network.ossia_value_convert_bool(ossia_value);
+    }
+    public float ConvertFloat()
+    {
+      return Network.ossia_value_convert_float(ossia_value);
+    }
+    public char ConvertChar()
+    {
+      return Network.ossia_value_convert_char(ossia_value);
+    }
+    public string ConvertString()
+    {
+      IntPtr str = IntPtr.Zero;
+      UIntPtr sz = UIntPtr.Zero;
+      Network.ossia_value_convert_byte_array(ossia_value, out str, out sz);
+
+      string s = Marshal.PtrToStringAnsi (str, (int) sz);
+
+      Network.ossia_string_free (str);
+      return s;
+    }
 
     internal readonly IntPtr ossia_value = IntPtr.Zero;
     internal protected Value(IntPtr v)

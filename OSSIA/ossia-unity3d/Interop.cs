@@ -465,16 +465,16 @@ namespace Ossia
     public static extern float ossia_value_convert_float (IntPtr val);
 
     [DllImport ("ossia")]
-    public static extern int ossia_value_convert_bool (IntPtr val);
+    public static extern bool ossia_value_convert_bool (IntPtr val);
 
     [DllImport ("ossia")]
     public static extern char ossia_value_convert_char (IntPtr val);
 
     [DllImport ("ossia")]
-    public static extern string ossia_value_convert_string (
+    public static extern string ossia_value_convert_byte_array (
       IntPtr val_in,
-      IntPtr val_out,
-      IntPtr size);
+      out IntPtr val_out,
+      out UIntPtr size);
 
     [DllImport ("ossia")]
     public static extern void ossia_value_convert_tuple (
