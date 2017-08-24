@@ -17,9 +17,9 @@ struct time_value;
  * @brief The loop class
  *
  * A time process that allows looping around a time_constraint.
- * First the start time_node is checked.
+ * First the start time_sync is checked.
  * Then the main constraint executes.
- * Then the end time_node is checked.
+ * Then the end time_sync is checked.
  */
 class OSSIA_EXPORT loop final : public time_process
 {
@@ -55,13 +55,13 @@ public:
    \return std::shared_ptr<TimeConstraint> */
   const std::shared_ptr<time_constraint> get_time_constraint() const;
 
-  /*! get the pattern start #time_node
-   \return std::shared_ptr<TimeNode> */
-  const std::shared_ptr<time_node> get_start_timenode() const;
+  /*! get the pattern start #time_sync
+   \return std::shared_ptr<TimeSync> */
+  const std::shared_ptr<time_sync> get_start_timesync() const;
 
-  /*! get the pattern end #time_node
-   \return std::shared_ptr<TimeNode> */
-  const std::shared_ptr<time_node> get_end_timenode() const;
+  /*! get the pattern end #time_sync
+   \return std::shared_ptr<TimeSync> */
+  const std::shared_ptr<time_sync> get_end_timesync() const;
 
 private:
   void constraint_callback(double, time_value, const ossia::state_element&);
@@ -70,10 +70,10 @@ private:
 
   void end_event_callback(time_event::status);
 
-  std::shared_ptr<time_node> m_startNode;
+  std::shared_ptr<time_sync> m_startNode;
   time_event::exec_callback m_startCallback;
 
-  std::shared_ptr<time_node> m_endNode;
+  std::shared_ptr<time_sync> m_endNode;
   time_event::exec_callback m_endCallback;
 
   std::shared_ptr<time_constraint> m_constraint;

@@ -45,8 +45,8 @@ inline char* toString(const ossia::value &point)
 
 struct root_scenario
 {
-  std::shared_ptr<ossia::time_node> start_node{std::make_shared<ossia::time_node>()};
-  std::shared_ptr<ossia::time_node> end_node{std::make_shared<ossia::time_node>()};
+  std::shared_ptr<ossia::time_sync> start_node{std::make_shared<ossia::time_sync>()};
+  std::shared_ptr<ossia::time_sync> end_node{std::make_shared<ossia::time_sync>()};
 
   std::shared_ptr<ossia::time_event> start_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *start_node, ossia::expressions::make_expression_true())};
   std::shared_ptr<ossia::time_event> end_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *end_node, ossia::expressions::make_expression_true())};
@@ -68,7 +68,7 @@ struct root_scenario
     clck.set_granularity(50ms);
 
     constraint->add_time_process(scenario);
-    auto scen_sn = scenario->get_start_time_node();
+    auto scen_sn = scenario->get_start_time_sync();
     auto scen_se = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *scen_sn, ossia::expressions::make_expression_true());
     scen_sn->insert(scen_sn->get_time_events().end(), scen_se);
   }

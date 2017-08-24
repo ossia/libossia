@@ -25,11 +25,11 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto node = std::make_shared<time_node>();
+        auto node = std::make_shared<time_sync>();
         auto event = *(node->emplace(node->get_time_events().begin(), &event_callback));
         QVERIFY(event != nullptr);
 
-        QVERIFY(&event->get_time_node() == node.get());
+        QVERIFY(&event->get_time_sync() == node.get());
         QVERIFY(event->get_expression() == expressions::expression_true());
         QVERIFY(event->get_status() == time_event::status::NONE);
 
@@ -49,13 +49,13 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto nodeA = std::make_shared<time_node>();
+        auto nodeA = std::make_shared<time_sync>();
         auto eventA = *(nodeA->emplace(nodeA->get_time_events().begin(), &event_callback));
 
-        auto nodeB = std::make_shared<time_node>();
+        auto nodeB = std::make_shared<time_sync>();
         auto eventB = *(nodeB->emplace(nodeB->get_time_events().begin(), &event_callback));
 
-        auto nodeC = std::make_shared<time_node>();
+        auto nodeC = std::make_shared<time_sync>();
         auto eventC = *(nodeC->emplace(nodeC->get_time_events().begin(), &event_callback));
 
         auto constraint1 = time_constraint::create(&constraint_callback, *eventA, *eventB, 1000._tv);

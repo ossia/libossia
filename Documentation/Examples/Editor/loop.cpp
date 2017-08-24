@@ -16,7 +16,7 @@
 #include "Editor/Loop.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
-#include "Editor/TimeNode.h"
+#include "Editor/TimeSync.h"
 
 using namespace ossia;
 using namespace std;
@@ -33,9 +33,9 @@ void print_event_status(TimeEvent::Status newStatus, std::string name);
 
 int main()
 {
-    // create start and the end TimeNodes
-    auto start_node = TimeNode::create();
-    auto end_node = TimeNode::create();
+    // create start and the end TimeSyncs
+    auto start_node = TimeSync::create();
+    auto end_node = TimeSync::create();
     
     /*
      Main Constraint setup
@@ -58,13 +58,13 @@ int main()
     main_constraint->add_time_process(loop);
 
     /*
-     Display TimeNode's date
+     Display TimeSync's date
      */
     
     cout << "start node date = " << start_node->get_date() << endl;
     cout << "end node date = " << end_node->get_date() << endl;
-    cout << "loop start node date = " << loop->getPatternStartTimeNode()->get_date() << endl;
-    cout << "loop end node date = " << loop->getPatternEndTimeNode()->get_date() << endl;
+    cout << "loop start node date = " << loop->getPatternStartTimeSync()->get_date() << endl;
+    cout << "loop end node date = " << loop->getPatternEndTimeSync()->get_date() << endl;
     
     /*
      Execute

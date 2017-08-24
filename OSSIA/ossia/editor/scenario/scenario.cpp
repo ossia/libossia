@@ -3,7 +3,7 @@
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
@@ -18,15 +18,15 @@ namespace ossia
 {
 scenario::scenario()
 {
-  // create the start TimeNode
-  m_nodes.push_back(std::make_shared<time_node>());
+  // create the start TimeSync
+  m_nodes.push_back(std::make_shared<time_sync>());
 }
 
 scenario::~scenario()
 {
-  for (auto& timenode : m_nodes)
+  for (auto& timesync : m_nodes)
   {
-    timenode->cleanup();
+    timesync->cleanup();
   }
 }
 
@@ -59,7 +59,7 @@ void scenario::start(ossia::state& st)
       m_runningConstraints.insert(&cst);
       cst.start(st);
     }
-    // the constraint starts in the void and ends on a timenode that did
+    // the constraint starts in the void and ends on a timesync that did
     // execute
     else if (
         startStatus == time_event::status::NONE
@@ -145,10 +145,10 @@ void scenario::add_time_constraint(
   }
 
   // store TimeConstraint's start node if it is not already stored
-  add_time_node(cst.get_start_event().get_time_node().shared_from_this());
+  add_time_sync(cst.get_start_event().get_time_sync().shared_from_this());
 
   // store TimeConstraint's end node if it is not already stored
-  add_time_node(cst.get_end_event().get_time_node().shared_from_this());
+  add_time_sync(cst.get_end_event().get_time_sync().shared_from_this());
 }
 
 void scenario::remove_time_constraint(
@@ -157,26 +157,26 @@ void scenario::remove_time_constraint(
   remove_one(m_constraints, timeConstraint);
 }
 
-void scenario::add_time_node(std::shared_ptr<time_node> timeNode)
+void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
 {
-  // store a TimeNode if it is not already stored
-  if (!contains(m_nodes, timeNode))
+  // store a TimeSync if it is not already stored
+  if (!contains(m_nodes, timeSync))
   {
-    m_nodes.push_back(std::move(timeNode));
+    m_nodes.push_back(std::move(timeSync));
   }
 }
 
-void scenario::remove_time_node(const std::shared_ptr<time_node>& timeNode)
+void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
-  remove_one(m_nodes, timeNode);
+  remove_one(m_nodes, timeSync);
 }
 
-const std::shared_ptr<time_node>& scenario::get_start_time_node() const
+const std::shared_ptr<time_sync>& scenario::get_start_time_sync() const
 {
   return m_nodes[0];
 }
 
-const ptr_container<time_node>& scenario::get_time_nodes() const
+const ptr_container<time_sync>& scenario::get_time_syncs() const
 {
   return m_nodes;
 }

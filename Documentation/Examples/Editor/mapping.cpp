@@ -17,7 +17,7 @@
 #include "Editor/State.h"
 #include "Editor/TimeConstraint.h"
 #include "Editor/TimeEvent.h"
-#include "Editor/TimeNode.h"
+#include "Editor/TimeSync.h"
 #include "Editor/value.h"
 
 #include "Network/Address.h"
@@ -66,8 +66,8 @@ int main()
     Behavior b(curve);
     auto mapper = Mapper::create(float_address, int_address, &b);
     
-    auto start_node = TimeNode::create();
-    auto end_node = TimeNode::create();
+    auto start_node = TimeSync::create();
+    auto end_node = TimeSync::create();
     auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
     auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 100.);

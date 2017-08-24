@@ -11,7 +11,7 @@ void event_callback(time_event::status newStatus)
     ;
 }
 
-class TimeNodeTest : public QObject
+class TimeSyncTest : public QObject
 {
     Q_OBJECT
 
@@ -20,7 +20,7 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto node = std::make_shared<time_node>();
+        auto node = std::make_shared<time_sync>();
         QVERIFY(node != nullptr);
 
         time_value date = node->get_date();
@@ -42,7 +42,7 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto node = std::make_shared<time_node>();
+        auto node = std::make_shared<time_sync>();
         QVERIFY(node != nullptr);
 
         auto event = *(node->emplace(
@@ -55,6 +55,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_APPLESS_MAIN(TimeNodeTest)
+QTEST_APPLESS_MAIN(TimeSyncTest)
 
-#include "TimeNodeTest.moc"
+#include "TimeSyncTest.moc"

@@ -17,17 +17,17 @@ class ScenarioAlgoTest : public QObject
 
     auto create_event(ossia::scenario& s)
     {
-      auto en = std::make_shared<ossia::time_node>();
+      auto en = std::make_shared<ossia::time_sync>();
       en->set_expression(ossia::expressions::make_expression_true());
       auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
       en->insert(en->get_time_events().end(), ee);
-      s.add_time_node(std::move(en));
+      s.add_time_sync(std::move(en));
       return ee;
     }
 
     auto start_event(ossia::scenario& s)
     {
-      auto sn = s.get_start_time_node();
+      auto sn = s.get_start_time_sync();
       return *sn->get_time_events().begin();
     }
 
@@ -174,7 +174,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e0 = start_event(scenario);
       std::shared_ptr<time_event> e1 = create_event(scenario);
       std::shared_ptr<time_event> e2 = create_event(scenario);
-      e1->get_time_node().set_expression(ossia::expressions::make_expression_false());
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
       std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);

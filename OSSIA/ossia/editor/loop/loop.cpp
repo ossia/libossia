@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/loop/loop.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/state/state_element.hpp>
 namespace ossia
 {
@@ -15,12 +15,12 @@ loop::loop(
     , m_endCallback(std::move(patternEndEventCallback))
     , m_constraintCallback(std::move(patternConstraintCallback))
 {
-  m_startNode = std::make_shared<time_node>();
+  m_startNode = std::make_shared<time_sync>();
   m_startNode->emplace(
       m_startNode->get_time_events().begin(),
       [&](time_event::status result) { start_event_callback(result); });
 
-  m_endNode = std::make_shared<time_node>();
+  m_endNode = std::make_shared<time_sync>();
   m_endNode->emplace(
       m_endNode->get_time_events().begin(),
       [&](time_event::status result) { end_event_callback(result); });
@@ -81,7 +81,7 @@ state_element loop::state(ossia::time_value date, double pos)
     // reset internal State
     m_currentState.clear();
 
-    // process the loop from the pattern start TimeNode
+    // process the loop from the pattern start TimeSync
     std::vector<time_event*> statusChangedEvents;
     if(unmuted())
     {
@@ -164,12 +164,12 @@ const std::shared_ptr<time_constraint> loop::get_time_constraint() const
   return m_constraint;
 }
 
-const std::shared_ptr<time_node> loop::get_start_timenode() const
+const std::shared_ptr<time_sync> loop::get_start_timesync() const
 {
   return m_startNode;
 }
 
-const std::shared_ptr<time_node> loop::get_end_timenode() const
+const std::shared_ptr<time_sync> loop::get_end_timesync() const
 {
   return m_endNode;
 }

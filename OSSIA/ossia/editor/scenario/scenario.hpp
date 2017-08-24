@@ -11,14 +11,14 @@ namespace ossia
 {
 class time_event;
 class time_constraint;
-class time_node;
+class time_sync;
 using constraint_set = boost::container::flat_set<time_constraint*>;
 struct overtick
 {
   ossia::time_value min;
   ossia::time_value max;
 };
-using overtick_map = boost::container::flat_map<time_node*, overtick>;
+using overtick_map = boost::container::flat_map<time_sync*, overtick>;
 class OSSIA_EXPORT scenario final : public time_process
 {
 public:
@@ -35,32 +35,32 @@ public:
   void pause() override;
   void resume() override;
 
-  /*! add a #time_constraint and its #time_nodes into the scenario if they
+  /*! add a #time_constraint and its #time_syncs into the scenario if they
    don't
    already be added
    \param std::shared_ptr<#time_constraint> to add */
   void add_time_constraint(std::shared_ptr<time_constraint>);
 
   /*! remove a #time_constraint from the scenario without removing any
-   #time_node
+   #time_sync
    \param std::shared_ptr<#time_constraint> to remove */
   void remove_time_constraint(const std::shared_ptr<time_constraint>&);
 
-  /*! add a #time_node into the scenario if it is not already added
-   \param std::shared_ptr<#time_node> to add */
-  void add_time_node(std::shared_ptr<time_node>);
+  /*! add a #time_sync into the scenario if it is not already added
+   \param std::shared_ptr<#time_sync> to add */
+  void add_time_sync(std::shared_ptr<time_sync>);
 
-  /*! remove a #time_node from the scenario
-   \param std::shared_ptr<#time_node> to remove */
-  void remove_time_node(const std::shared_ptr<time_node>&);
+  /*! remove a #time_sync from the scenario
+   \param std::shared_ptr<#time_sync> to remove */
+  void remove_time_sync(const std::shared_ptr<time_sync>&);
 
   /*! get the node from where the scenario starts
-   \return std::shared_ptr<#time_node> start node */
-  const std::shared_ptr<time_node>& get_start_time_node() const;
+   \return std::shared_ptr<#time_sync> start node */
+  const std::shared_ptr<time_sync>& get_start_time_sync() const;
 
-  /*! get all TimeNodes of the scenario
-   \return #Container<#time_node> */
-  const ptr_container<time_node>& get_time_nodes() const;
+  /*! get all TimeSyncs of the scenario
+   \return #Container<#time_sync> */
+  const ptr_container<time_sync>& get_time_syncs() const;
 
   /*! get all TimeConstraints of the scenario
    \return #Container<#time_constraint> */
@@ -68,7 +68,7 @@ public:
 
 private:
   ptr_container<time_constraint> m_constraints;
-  ptr_container<time_node> m_nodes; // list of all TimeNodes of the scenario
+  ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
                                     // (the first is the start node, the
                                     // second is the end node)
 
@@ -76,12 +76,12 @@ private:
 
   constraint_set m_runningConstraints;
   constraint_set constraints_started, constraints_stopped;
-  std::vector<time_node*> m_waitingNodes;
+  std::vector<time_sync*> m_waitingNodes;
   overtick_map m_overticks;
-  boost::container::flat_set<time_node*> m_endNodes;
+  boost::container::flat_set<time_sync*> m_endNodes;
 
   void process_this(
-      time_node& node, std::vector<time_event*>& statusChangedEvents,
+      time_sync& node, std::vector<time_event*>& statusChangedEvents,
       constraint_set& started, constraint_set& stopped, ossia::state& st);
   void make_happen(
       time_event& event, constraint_set& started, constraint_set& stopped, ossia::state& st);

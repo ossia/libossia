@@ -18,7 +18,7 @@ namespace ossia
 {
 class state;
 class time_constraint;
-class time_node;
+class time_sync;
 class scenario;
 /**
  * @brief The time_event class
@@ -63,7 +63,7 @@ public:
 
 public:
   time_event(
-      time_event::exec_callback, time_node& aTimeNode,
+      time_event::exec_callback, time_sync& aTimeSync,
       expression_ptr anExpression);
 
   /*! destructor */
@@ -98,9 +98,9 @@ public:
    \param std::shared_ptr<#State> to remove */
   void remove_state(const state_element&);
 
-  /*! get the #time_node where the event is
-   \return std::shared_ptr<#time_node> */
-  time_node& get_time_node() const;
+  /*! get the #time_sync where the event is
+   \return std::shared_ptr<#time_sync> */
+  time_sync& get_time_sync() const;
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
@@ -169,7 +169,7 @@ public:
 private:
   time_event::exec_callback m_callback;
 
-  time_node& m_timenode;
+  time_sync& m_timesync;
   state m_state;
   status m_status;
   offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};

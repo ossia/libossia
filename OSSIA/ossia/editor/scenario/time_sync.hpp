@@ -12,7 +12,7 @@
 #include <ossia_export.h>
 
 /**
- * \file time_node.hpp
+ * \file time_sync.hpp
  */
 namespace ossia
 {
@@ -23,16 +23,16 @@ class time_event;
 struct time_value;
 class scenario;
 /**
- * \brief #time_node is use to describe temporal structure to synchronize each
+ * \brief #time_sync is use to describe temporal structure to synchronize each
  * attached #time_event evaluation.
  *
- * \details #time_node is also a #time_event container.
+ * \details #time_sync is also a #time_event container.
  * \todo the shared_from_this is used at a single point, maybe it should be
  * removed ?
  * or replaced with intrusive_ptr ?
  */
-class OSSIA_EXPORT time_node final
-    : public std::enable_shared_from_this<time_node>
+class OSSIA_EXPORT time_sync final
+    : public std::enable_shared_from_this<time_sync>
 {
   friend class ossia::scenario;
 
@@ -40,9 +40,9 @@ public:
   using iterator = ptr_container<time_event>::iterator;
   using const_iterator = ptr_container<time_event>::const_iterator;
 
-  time_node();
+  time_sync();
 
-  ~time_node();
+  ~time_sync();
 
   /*! evaluate all #time_event's to make them to happen or to dispose them
  \return boolean true if the operation succeeded */
@@ -51,22 +51,22 @@ public:
 
   /*! get the date
  \details the date is the sum of its previous #time_constraint durations
- \details a #time_node with na previous #time_constraints have a date equals to
+ \details a #time_sync with na previous #time_constraints have a date equals to
  0.
  \return #TimeValue the date */
   time_value get_date() const;
 
-  /*! get the expression of the #time_node */
+  /*! get the expression of the #time_sync */
   const expression& get_expression() const;
 
-  /*! set the expression of the #time_node
+  /*! set the expression of the #time_sync
  \details setting the expression to ExpressionTrue will defer the evaluation
  on #time_event's expression
- \details setting the expression to ExpressionFalse will mute TimeNode
+ \details setting the expression to ExpressionFalse will mute TimeSync
  execution
  \param expression_ptr
- \return #time_node the time node */
-  time_node& set_expression(expression_ptr);
+ \return #time_sync the time_sync */
+  time_sync& set_expression(expression_ptr);
 
   /*! create and store a #time_event
  \param #Container<#time_event>::const_iterator where to store the #time_event
@@ -80,14 +80,14 @@ public:
   iterator insert(const_iterator, std::shared_ptr<time_event>);
   void remove(const std::shared_ptr<time_event>&);
 
-  /*! get the #time_events of the #time_node
+  /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
   ptr_container<time_event>& get_time_events()
   {
     return m_timeEvents;
   }
 
-  /*! get the #time_events of the #time_node
+  /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
   const ptr_container<time_event>& get_time_events() const
   {
@@ -100,7 +100,7 @@ public:
 
   void process_this(std::vector<time_event*>& statusChangedEvents);
 
-  /* is the TimeNode observing its Expression ? */
+  /* is the TimeSync observing its Expression ? */
   bool is_observing_expression() const;
 
   bool is_evaluating() const;
@@ -116,16 +116,16 @@ public:
 
   /*! Execution callbacks
    *
-   * Used to be notified when the #time_node is triggered.
+   * Used to be notified when the #time_sync is triggered.
    * \todo why no nano-signal-slot ?
    * \details This is not thread-safe
    */
   callback_container<std::function<void()>> triggered;
 
-  //! Called when the time node starts evaluating
+  //! Called when the time_sync starts evaluating
   callback_container<std::function<void()>> entered_evaluation;
 
-  //! Called if the time node stops evaluating due to a changing duration
+  //! Called if the time_sync stops evaluating due to a changing duration
   callback_container<std::function<void()>> left_evaluation;
 
   //! Boolean : true if the evaluation was finished due to the max bound

@@ -1,23 +1,23 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/scenario/time_constraint.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 
 namespace ossia
 {
 
-time_node::time_node() : m_expression(expressions::make_expression_true())
+time_sync::time_sync() : m_expression(expressions::make_expression_true())
 {
 }
 
-time_node::~time_node() = default;
+time_sync::~time_sync() = default;
 
-bool time_node::trigger(ossia::state& st)
+bool time_sync::trigger(ossia::state& st)
 {
   // if all TimeEvents are not PENDING
   if (m_pending.size() != get_time_events().size())
   {
-    // stop expression observation because the TimeNode is not ready to be
+    // stop expression observation because the TimeSync is not ready to be
     // processed
     observe_expression(false);
 
@@ -39,7 +39,7 @@ bool time_node::trigger(ossia::state& st)
       ev.dispose();
   }
 
-  // stop expression observation now the TimeNode has been processed
+  // stop expression observation now the TimeSync has been processed
   observe_expression(false);
 
   // notify observers
@@ -49,7 +49,7 @@ bool time_node::trigger(ossia::state& st)
   return true;
 }
 
-time_value time_node::get_date() const
+time_value time_sync::get_date() const
 {
   // compute the date from each first previous time constraint
   // ignoring zero duration time constraint
@@ -65,7 +65,7 @@ time_value time_node::get_date() const
                      ->get_nominal_duration()
                  + timeEvent->previous_time_constraints()[0]
                        ->get_start_event()
-                       .get_time_node()
+                       .get_time_sync()
                        .get_date();
       }
     }
@@ -74,31 +74,31 @@ time_value time_node::get_date() const
   return Zero;
 }
 
-const expression& time_node::get_expression() const
+const expression& time_sync::get_expression() const
 {
   return *m_expression;
 }
 
-time_node& time_node::set_expression(expression_ptr exp)
+time_sync& time_sync::set_expression(expression_ptr exp)
 {
   assert(exp);
   m_expression = std::move(exp);
   return *this;
 }
 
-time_node::iterator time_node::insert(
-    time_node::const_iterator pos, std::shared_ptr<time_event> ev)
+time_sync::iterator time_sync::insert(
+    time_sync::const_iterator pos, std::shared_ptr<time_event> ev)
 {
   return m_timeEvents.insert(pos, std::move(ev));
 }
 
-void time_node::remove(const std::shared_ptr<time_event>& e)
+void time_sync::remove(const std::shared_ptr<time_event>& e)
 {
   remove_one(m_pending, e.get());
   remove_one(m_timeEvents, e);
 }
 
-time_node::iterator time_node::emplace(
+time_sync::iterator time_sync::emplace(
     const_iterator pos, time_event::exec_callback callback,
     ossia::expression_ptr exp)
 {
@@ -106,10 +106,10 @@ time_node::iterator time_node::emplace(
       pos, std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
-void time_node::process(std::vector<time_event*>& statusChangedEvents, ossia::state& st)
+void time_sync::process(std::vector<time_event*>& statusChangedEvents, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
-  // because it is needed in time_node::trigger
+  // because it is needed in time_sync::trigger
   m_pending.clear();
 
   bool maximalDurationReached = false;
@@ -178,7 +178,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents, ossia::st
       {
         for (auto& timeConstraint : timeEvent->next_time_constraints())
         {
-          timeConstraint->get_end_event().get_time_node().process(
+          timeConstraint->get_end_event().get_time_sync().process(
               statusChangedEvents, st);
         }
 
@@ -215,7 +215,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents, ossia::st
   // at least one TimeConstraint over its maximal duration
 
   // update the expression one time
-  // then observe and evaluate TimeNode's expression before to trig
+  // then observe and evaluate TimeSync's expression before to trig
   // only if no maximal duration have been reached
   if (*m_expression != expressions::expression_true()
       && !maximalDurationReached)
@@ -229,7 +229,7 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents, ossia::st
       return;
   }
 
-  // trigger the time node
+  // trigger the time sync
   if (trigger(st))
   {
     // former PENDING TimeEvents are now HAPPENED or DISPOSED
@@ -241,17 +241,17 @@ void time_node::process(std::vector<time_event*>& statusChangedEvents, ossia::st
   }
 }
 
-bool time_node::is_evaluating() const
+bool time_sync::is_evaluating() const
 {
   return m_evaluating;
 }
 
-bool time_node::is_observing_expression() const
+bool time_sync::is_observing_expression() const
 {
   return m_observe;
 }
 
-void time_node::observe_expression(bool observe)
+void time_sync::observe_expression(bool observe)
 {
   if (!m_expression || *m_expression == expressions::expression_true()
       || *m_expression == expressions::expression_false())
@@ -282,7 +282,7 @@ void time_node::observe_expression(bool observe)
   }
 }
 
-void time_node::reset()
+void time_sync::reset()
 {
   for (auto& timeEvent : m_timeEvents)
   {
@@ -294,7 +294,7 @@ void time_node::reset()
   m_evaluating = false;
 }
 
-void time_node::cleanup()
+void time_sync::cleanup()
 {
   for (auto& timeevent : m_timeEvents)
     timeevent->cleanup();

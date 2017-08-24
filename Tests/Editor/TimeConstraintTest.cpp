@@ -27,10 +27,10 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto start_node = std::make_shared<time_node>();
+        auto start_node = std::make_shared<time_sync>();
         auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
 
-        auto end_node = std::make_shared<time_node>();
+        auto end_node = std::make_shared<time_sync>();
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
         auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);
@@ -74,10 +74,10 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto start_node = std::make_shared<time_node>();
+        auto start_node = std::make_shared<time_sync>();
         auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
 
-        auto end_node = std::make_shared<time_node>();
+        auto end_node = std::make_shared<time_sync>();
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
         auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);
@@ -95,10 +95,10 @@ private Q_SLOTS:
     void test_execution()
     {
       TestDevice t;
-      auto start_node = std::make_shared<time_node>();
+      auto start_node = std::make_shared<time_sync>();
       auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
 
-      auto end_node = std::make_shared<time_node>();
+      auto end_node = std::make_shared<time_sync>();
       auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
       auto constraint = time_constraint::create(&constraint_callback, *start_event, *end_event, 1000._tv);

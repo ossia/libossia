@@ -6,7 +6,7 @@
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_constraint.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <cassert>
@@ -82,11 +82,11 @@ void scenario::make_dispose(time_event& event, constraint_set& stopped)
 }
 
 void scenario::process_this(
-    time_node& node, std::vector<time_event*>& statusChangedEvents,
+    time_sync& node, std::vector<time_event*>& statusChangedEvents,
     constraint_set& started, constraint_set& stopped, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
-  // because it is needed in time_node::trigger
+  // because it is needed in time_sync::trigger
   node.m_pending.clear();
 
   bool maximalDurationReached = false;
@@ -182,7 +182,7 @@ void scenario::process_this(
   // at least one TimeConstraint over its maximal duration
 
   // update the expression one time
-  // then observe and evaluate TimeNode's expression before to trig
+  // then observe and evaluate TimeSync's expression before to trig
   // only if no maximal duration have been reached
   if (*node.m_expression != expressions::expression_true()
       && !maximalDurationReached)
@@ -198,7 +198,7 @@ void scenario::process_this(
       return;
   }
 
-  // trigger the time node
+  // trigger the time sync
 
   // now TimeEvents will happen or be disposed
   for (auto& timeEvent : node.m_pending)
@@ -214,7 +214,7 @@ void scenario::process_this(
       make_dispose(ev, stopped);
   }
 
-  // stop expression observation now the TimeNode has been processed
+  // stop expression observation now the TimeSync has been processed
   node.observe_expression(false);
 
   // notify observers
@@ -229,9 +229,9 @@ void scenario::process_this(
   node.m_evaluating = false;
   node.finished_evaluation.send(maximalDurationReached);
   if (maximalDurationReached)
-    node.m_status = time_node::DONE_MAX_REACHED;
+    node.m_status = time_sync::DONE_MAX_REACHED;
   else
-    node.m_status = time_node::DONE_TRIGGERED;
+    node.m_status = time_sync::DONE_TRIGGERED;
 }
 
 enum progress_mode
@@ -242,7 +242,7 @@ enum progress_mode
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void update_overtick(
-    time_constraint& constraint, time_node* end_node,
+    time_constraint& constraint, time_sync* end_node,
     ossia::time_value tick_us, ossia::time_value cst_old_date,
     overtick_map& node_tick_dur)
 {
@@ -319,7 +319,7 @@ state_element scenario::state(ossia::time_value date, double pos)
     ossia::state nullState;
     auto& writeState = is_unmuted ? cur_state : nullState;
     std::vector<time_event*> statusChangedEvents;
-    for (time_node* n : m_waitingNodes)
+    for (time_sync* n : m_waitingNodes)
     {
       process_this(
           *n, statusChangedEvents, m_runningConstraints, m_runningConstraints, writeState);
@@ -348,18 +348,18 @@ state_element scenario::state(ossia::time_value date, double pos)
       // ossia::logger().info("scenario::state tick {}: {}", (void*)constraint,
       // tick_us);
 
-      auto end_node = &constraint->get_end_event().get_time_node();
+      auto end_node = &constraint->get_end_event().get_time_sync();
       m_endNodes.insert(end_node);
 
       update_overtick(
           *constraint, end_node, tick_ms, cst_old_date, m_overticks);
     }
 
-    // Handle time nodes / events... if they are not finished, constraints in
+    // Handle time syncs / events... if they are not finished, constraints in
     // running_constraint are in cur_cst
     // else, add the next constraints
 
-    for (time_node* node : m_endNodes)
+    for (time_sync* node : m_endNodes)
     {
       process_this(
           *node, statusChangedEvents, constraints_started,
@@ -396,8 +396,8 @@ state_element scenario::state(ossia::time_value date, double pos)
               flatten_and_filter(cur_state, ev.get_state());
             }
 
-            auto& tn = ev.get_time_node();
-            if (tn.get_status() == time_node::status::DONE_MAX_REACHED)
+            auto& tn = ev.get_time_sync();
+            if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
             {
               // Propagate the remaining tick to the next constraints
               auto it = m_overticks.find(&tn);
@@ -418,7 +418,7 @@ state_element scenario::state(ossia::time_value date, double pos)
                 // (void*)constraint, tick_dur);
                 tick_constraint(*constraint, remaining_tick);
 
-                auto end_node = &constraint->get_end_event().get_time_node();
+                auto end_node = &constraint->get_end_event().get_time_sync();
                 m_endNodes.insert(end_node);
 
                 update_overtick(
@@ -480,9 +480,9 @@ state_element scenario::state(ossia::time_value date, double pos)
     ossia::state cur_state;
     // reset internal mCurrentState
 
-    // process the scenario from the first TimeNode to the running constraints
+    // process the scenario from the first TimeSync to the running constraints
     std::vector<time_event*> statusChangedEvents;
-    time_node& n = *m_nodes[0];
+    time_sync& n = *m_nodes[0];
     n.process(statusChangedEvents);
 
     // add the state of each newly HAPPENED TimeEvent
@@ -537,7 +537,7 @@ state_element scenario::state(ossia::time_value date, double pos)
 //              cst.tick();
 //          else
 //              cst.tick(((date -
-cst.get_start_event().get_time_node()->get_date())*
+cst.get_start_event().get_time_sync()->get_date())*
 //          1000.));
 
         }
@@ -552,7 +552,7 @@ cst.get_start_event().get_time_node()->get_date())*
     m_lastState = cur_state;
 
     // if all the TimeEvents are not NONE : the Scenario is done
-    bool done = !any_of(m_nodes, [](const std::shared_ptr<time_node>& tn) {
+    bool done = !any_of(m_nodes, [](const std::shared_ptr<time_sync>& tn) {
       return any_of(
           tn->get_time_events(), [](const std::shared_ptr<time_event>& ev) {
             return ev->get_status() == time_event::status::NONE;

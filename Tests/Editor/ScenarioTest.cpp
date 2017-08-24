@@ -68,20 +68,20 @@ private Q_SLOTS:
     auto scenar = std::make_shared<scenario>();
     QVERIFY(scenar != nullptr);
 
-    QVERIFY(scenar->get_start_time_node() != nullptr);
+    QVERIFY(scenar->get_start_time_sync() != nullptr);
 
-    QVERIFY(scenar->get_time_nodes().size() == 1);
+    QVERIFY(scenar->get_time_syncs().size() == 1);
     QVERIFY(scenar->get_time_constraints().size() == 0);
 
-    QVERIFY(scenar->get_start_time_node()->get_date() == 0.);
+    QVERIFY(scenar->get_start_time_sync()->get_date() == 0.);
 
     auto mc_callback = std::bind(&ScenarioTest::main_constraint_callback, this, _1, _2, _3);
     auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
-    auto start_event = *(scenar->get_start_time_node()->emplace(
-                           scenar->get_start_time_node()->get_time_events().begin(),
+    auto start_event = *(scenar->get_start_time_sync()->emplace(
+                           scenar->get_start_time_sync()->get_time_events().begin(),
                            e_callback));
 
-    auto end_node = std::make_shared<time_node>();
+    auto end_node = std::make_shared<time_sync>();
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), e_callback));
     auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
 
@@ -96,29 +96,29 @@ private Q_SLOTS:
 
     auto scenar = std::make_shared<scenario>();
 
-    auto start_node = scenar->get_start_time_node();
+    auto start_node = scenar->get_start_time_sync();
     auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), e_callback));
 
-    auto end_node = std::make_shared<time_node>();
+    auto end_node = std::make_shared<time_sync>();
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), e_callback));
 
     auto constraint = time_constraint::create(mc_callback, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
 
     scenar->add_time_constraint(constraint);
     QVERIFY(scenar->get_time_constraints().size() == 1);
-    QVERIFY(scenar->get_time_nodes().size() == 2);
+    QVERIFY(scenar->get_time_syncs().size() == 2);
 
     scenar->remove_time_constraint(constraint);
     QVERIFY(scenar->get_time_constraints().size() == 0);
-    QVERIFY(scenar->get_time_nodes().size() == 2);
+    QVERIFY(scenar->get_time_syncs().size() == 2);
 
-    auto lonely_node = std::make_shared<time_node>();
+    auto lonely_node = std::make_shared<time_sync>();
 
-    scenar->add_time_node(lonely_node);
-    QVERIFY(scenar->get_time_nodes().size() == 3);
+    scenar->add_time_sync(lonely_node);
+    QVERIFY(scenar->get_time_syncs().size() == 3);
 
-    scenar->remove_time_node(lonely_node);
-    QVERIFY(scenar->get_time_nodes().size() == 2);
+    scenar->remove_time_sync(lonely_node);
+    QVERIFY(scenar->get_time_syncs().size() == 2);
   }
 
   /*! test execution functions */
@@ -131,8 +131,8 @@ private Q_SLOTS:
     auto sc_callback = std::bind(&ScenarioTest::second_constraint_callback, this, _1, _2, _3);
     auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
 
-    auto main_start_node = std::make_shared<time_node>();
-    auto main_end_node = std::make_shared<time_node>();
+    auto main_start_node = std::make_shared<time_sync>();
+    auto main_end_node = std::make_shared<time_sync>();
     auto main_start_event = *(main_start_node->emplace(main_start_node->get_time_events().begin(), e_callback));
     auto main_end_event = *(main_end_node->emplace(main_end_node->get_time_events().begin(), e_callback));
     main_constraint = time_constraint::create(mc_callback, *main_start_event, *main_end_event, 5000._tv, 5000._tv, 5000._tv);
@@ -142,16 +142,16 @@ private Q_SLOTS:
 
     auto main_scenario = std::make_unique<scenario>();
 
-    auto scenario_start_node = main_scenario->get_start_time_node();
+    auto scenario_start_node = main_scenario->get_start_time_sync();
 
-    auto first_end_node = std::make_shared<time_node>();
+    auto first_end_node = std::make_shared<time_sync>();
     auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->get_time_events().begin(), e_callback));
     auto first_end_event = *(first_end_node->emplace(first_end_node->get_time_events().begin(), e_callback));
     auto first_constraint = time_constraint::create(fc_callback, *first_start_event, *first_end_event, 1500._tv, 1500._tv, 1500._tv);
 
     main_scenario->add_time_constraint(first_constraint);
 
-    auto second_end_node = std::make_shared<time_node>();
+    auto second_end_node = std::make_shared<time_sync>();
     auto second_end_event = *(second_end_node->emplace(second_end_node->get_time_events().begin(), e_callback));
     auto second_constraint = time_constraint::create(sc_callback, *first_end_event, *second_end_event, 2000._tv, 2000._tv, 2000._tv);
 

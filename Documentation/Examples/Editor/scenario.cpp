@@ -57,11 +57,11 @@ int main()
      Main scenario setup
      */
 
-    // create the start and the end TimeNodes
-    auto main_start_node = std::make_shared<time_node>();
-    auto main_end_node = std::make_shared<time_node>();
+    // create the start and the end TimeSyncs
+    auto main_start_node = std::make_shared<time_sync>();
+    auto main_end_node = std::make_shared<time_sync>();
 
-    // create time_events inside TimeNodes and make them interactive to the /play address
+    // create time_events inside TimeSyncs and make them interactive to the /play address
     auto main_start_event = *(main_start_node->emplace(main_start_node->get_time_events().begin(), &event_callback));
     auto main_end_event = *(main_end_node->emplace(main_end_node->get_time_events().begin(), &event_callback));
 
@@ -87,10 +87,10 @@ int main()
      */
 
     // get the start node of the main scenario
-    auto scenario_start_node = main_scenario->get_start_time_node();
+    auto scenario_start_node = main_scenario->get_start_time_sync();
 
-    // create a TimeNode
-    auto first_end_node = std::make_shared<time_node>();
+    // create a TimeSync
+    auto first_end_node = std::make_shared<time_sync>();
 
     // create a time_event inside the scenario start node without Expression
     auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->get_time_events().begin(), &event_callback));
@@ -111,8 +111,8 @@ int main()
     // add the first time_constraint to the main scenario
     main_scenario->add_time_constraint(first_constraint);
 
-    // create a TimeNode
-    auto second_end_node = std::make_shared<time_node>();
+    // create a TimeSync
+    auto second_end_node = std::make_shared<time_sync>();
 
     // create a time_event inside the end node without Expression
     auto second_end_event = *(second_end_node->emplace(second_end_node->get_time_events().begin(), &event_callback));
@@ -198,7 +198,7 @@ int main()
      Main scenario operation : miscellaneous
      */
 
-    // display TimeNode's date
+    // display TimeSync's date
     cout << "first_start_node date = " << scenario_start_node->get_date() << endl;
     cout << "first_end_node date = " << first_end_node->get_date() << endl;
     cout << "second_end_node date = " << second_end_node->get_date() << endl;
@@ -235,7 +235,7 @@ int main()
     // set minimal duration of the first constraint to 500 ms
     first_constraint->set_min_duration(750._tv);
 
-    // set first end time node expression to make it interactive
+    // set first end time sync expression to make it interactive
     // (instead of first end event)
     first_end_node->set_expression(make_expr());
     first_end_event->set_expression(expressions::make_expression_true());

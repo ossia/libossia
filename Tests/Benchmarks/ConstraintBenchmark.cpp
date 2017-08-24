@@ -16,7 +16,7 @@ class ConstraintBenchmark : public QObject
     void print_states(const ossia::scenario& s)
     {
       int i = 0;
-      for(const auto& node : s.get_time_nodes())
+      for(const auto& node : s.get_time_syncs())
       {
         std::cout << "Node " << i << "(" << node->is_evaluating() << ")";
         int j = 0;
@@ -36,9 +36,9 @@ class ConstraintBenchmark : public QObject
       ossia::time_value max = 100._tv)
   {
     using namespace ossia;
-    auto sn = s.get_start_time_node();
+    auto sn = s.get_start_time_sync();
     auto se = *sn->get_time_events().begin();
-    auto en = std::make_shared<ossia::time_node>();
+    auto en = std::make_shared<ossia::time_sync>();
     en->set_expression(ossia::expressions::make_expression_false());
     auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
     en->insert(en->get_time_events().end(), ee);
@@ -54,7 +54,7 @@ class ConstraintBenchmark : public QObject
       ossia::time_value max = 100._tv)
   {
     using namespace ossia;
-    auto en = std::make_shared<ossia::time_node>();
+    auto en = std::make_shared<ossia::time_sync>();
     en->set_expression(ossia::expressions::make_expression_false());
     auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
     en->insert(en->get_time_events().end(), ee);
@@ -305,8 +305,8 @@ private Q_SLOTS:
             add_constraint_parallel(*root.scenario);
         else
         {
-            auto N = root.scenario->get_time_nodes().size();
-            auto e = root.scenario->get_time_nodes()[rand() % N]->get_time_events()[0];
+            auto N = root.scenario->get_time_syncs().size();
+            auto e = root.scenario->get_time_syncs()[rand() % N]->get_time_events()[0];
 
             add_constraint_serial(*root.scenario, *e);
         }

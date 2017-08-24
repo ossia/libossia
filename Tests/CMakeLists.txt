@@ -57,7 +57,7 @@ ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/S
 ossia_add_test(StateTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/StateTest.cpp")
 ossia_add_test(TimeConstraintTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeConstraintTest.cpp")
 ossia_add_test(TimeEventTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
-ossia_add_test(TimeNodeTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeNodeTest.cpp")
+ossia_add_test(TimeSyncTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeSyncTest.cpp")
 ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
 ossia_add_test(DataspaceTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceTest.cpp")
 ossia_add_test(DataspaceMergeTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceMergeTest.cpp")

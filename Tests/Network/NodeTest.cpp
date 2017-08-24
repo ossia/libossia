@@ -202,7 +202,7 @@ private Q_SLOTS:
       const char state1[]{'S', 't', 'a', 't', 'e', '.', '1'};
       QVERIFY((ossia::net::sanitize_name(
                    QString("State.1"),
-                    {"TimeNode.0", "Event.0", "State.0", "TimeNode.1", "bogs3tone68", "State.1"})) == "State.2");
+                    {"TimeSync.0", "Event.0", "State.0", "TimeSync.1", "bogs3tone68", "State.1"})) == "State.2");
       QVERIFY((ossia::net::sanitize_name(
                    QString::fromLatin1(state1, 7),
       {QString::fromLatin1(state1, 7)})) == "State.2");

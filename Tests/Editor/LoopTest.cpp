@@ -33,8 +33,8 @@ private Q_SLOTS:
         loop l(25._tv, constraint_callback, event_callback, event_callback);
 
         QVERIFY(l.get_time_constraint() != nullptr);
-        QVERIFY(l.get_start_timenode() != nullptr);
-        QVERIFY(l.get_end_timenode() != nullptr);
+        QVERIFY(l.get_start_timesync() != nullptr);
+        QVERIFY(l.get_end_timesync() != nullptr);
 
         //! \todo test clone()
     }
@@ -46,8 +46,8 @@ private Q_SLOTS:
         auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
         auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
 
-        auto start_node = std::make_shared<time_node>();
-        auto end_node = std::make_shared<time_node>();
+        auto start_node = std::make_shared<time_sync>();
+        auto end_node = std::make_shared<time_sync>();
 
         auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
