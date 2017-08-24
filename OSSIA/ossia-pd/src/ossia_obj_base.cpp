@@ -159,6 +159,7 @@ void t_matcher::set_parent_addr()
   if (parent->x_parent_node){
     std::string addr = ossia::net::address_string_from_node(*node);
     std::string parent_addr = ossia::net::address_string_from_node(*parent->x_parent_node);
+    if ( parent_addr.back() != '/' ) parent_addr += "/";
 
     std::regex addr_regex(parent_addr);
     std::smatch addr_match;

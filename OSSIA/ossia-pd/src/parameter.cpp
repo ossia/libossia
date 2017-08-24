@@ -132,6 +132,7 @@ void t_param::is_deleted(const net::node_base& n)
 
 static void push_default_value(t_param* x)
 {
+  if ( x->x_default_size > 0 )
     t_obj_base::obj_push(x, nullptr, x->x_default_size, x->x_default);
 }
 
@@ -716,6 +717,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
     CLASS_ATTR_DEFAULT(c, "access_mode",   0, "bi");
 
+    // attributes getter
     eclass_addmethod(c, (method) parameter_get_range,             "getrange",             A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_min,               "getmin",               A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_max,               "getmax",               A_NULL, 0);
