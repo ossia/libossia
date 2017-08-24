@@ -330,6 +330,7 @@ extern "C" void setup_ossia0x2emodel(void)
     eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL, 0);
     eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL, 0);
     eclass_addmethod(c, (method) model_get_description,       "getdescription",       A_NULL, 0);
+    eclass_addmethod(c, (method) obj_get_address,             "getaddress",           A_NULL, 0);
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy

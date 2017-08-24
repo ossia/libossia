@@ -220,11 +220,13 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_dump<t_remote>, "dump", A_NULL, 0);
-    eclass_addmethod(c, (method)remote_click, "click", A_NULL, 0);
-    eclass_addmethod(c, (method)remote_bind, "bind", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) t_obj_base::obj_push,   "anything",    A_GIMME,  0);
+    eclass_addmethod(c, (method) t_obj_base::obj_bang,   "bang",        A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<t_remote>,     "dump",        A_NULL,   0);
+    eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
+    eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
+    eclass_addmethod(c, (method) obj_get_address,        "getaddress",   A_NULL,   0);
+
   }
 
   auto& ossia_pd = ossia_pd::instance();

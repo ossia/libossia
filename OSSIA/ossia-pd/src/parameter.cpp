@@ -731,6 +731,8 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter_get_description,       "getdescription",       A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_enable,            "getenable",            A_NULL, 0);
 
+    eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
+
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy
   }

@@ -323,6 +323,34 @@ void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
 }
 
 /**
+ * @brief obj_get_address send the global address through dump outlet
+ * @param x
+ */
+void obj_get_address(t_obj_base *x)
+{
+  if (!x->x_matchers.empty())
+  {
+    t_symbol* sym_address = gensym("global_address");
+    for (auto& m : x->x_matchers)
+    {
+      std::string addr = ossia::net::address_string_from_node(*m.get_node());
+      t_atom a;
+      SETSYMBOL(&a, gensym(addr.c_str()));
+      outlet_anything(x->x_dumpout, sym_address, 1, &a);
+    }
+  }
+  else if (x->x_node)
+  {
+    std::string addr = ossia::net::address_string_from_node(*x->x_node);
+    t_atom a;
+    SETSYMBOL(&a, gensym(addr.c_str()));
+    outlet_anything(x->x_dumpout, gensym("address"), 1, &a);
+  }
+  else
+    outlet_anything(x->x_dumpout, gensym("address"), 0, NULL);
+}
+
+/**
  * @brief find_and_display_friend : find the object that defined the node and display it
  * @param x : object that hold the node we are looking for
  * @param patcher : starting point to seach a friend
