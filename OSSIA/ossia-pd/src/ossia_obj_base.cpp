@@ -144,11 +144,18 @@ void t_matcher::set_value(const ossia::value& v)
 {
   outlet_anything(parent->x_dumpout,gensym("address"),1,&m_addr);
 
-  auto local_param = node->get_parameter();
+  auto param = node->get_parameter();
+
+  ossia::value vv;
+  if ( parent->x_ounit != ossia::none )
+    vv = ossia::convert(v, param->get_unit(), parent->x_ounit.value());
+  else
+    vv = v;
+
   auto filtered = ossia::net::filter_value(
-        local_param->get_domain(),
-        v,
-        local_param->get_bounding());
+        param->get_domain(),
+        vv,
+        param->get_bounding());
   value_visitor<t_obj_base> vm;
   vm.x = (t_obj_base*)parent;
   filtered.apply(vm);
@@ -204,17 +211,32 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
   for (auto& m : x->x_matchers)
   {
     x->x_node = m.get_node();
+    auto parent = m.get_parent();
+    auto param = x->x_node->get_parameter();
 
-    if (x->x_node && x->x_node->get_parameter())
+    if (x->x_node && param)
     {
       if (argc == 1)
       {
+        ossia::value v;
         // convert one element array to single element
         if (argv->a_type == A_SYMBOL)
-          x->x_node->get_parameter()->push_value(
-                std::string(atom_getsymbol(argv)->s_name));
+          v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
         else if (argv->a_type == A_FLOAT)
-          x->x_node->get_parameter()->push_value(atom_getfloat(argv));
+          v = ossia::value(atom_getfloat(argv));
+
+        ossia::value vv;
+
+        if ( parent->x_ounit != ossia::none )
+        {
+          auto src_unit = parent->x_ounit.value();
+          auto dst_unit = param->get_unit();
+
+          vv = ossia::convert(v, src_unit, dst_unit);
+        } else
+          vv = v;
+
+        x->x_node->get_parameter()->push_value(vv);
       }
       else
       {
@@ -228,6 +250,11 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
           else
             pd_error(x, "value type not handled");
         }
+        auto src_unit = parent->x_ounit.value();
+        auto dst_unit = param->get_unit();
+
+        ossia::convert(list, src_unit, dst_unit);
+
         x->x_node->get_parameter()->push_value(list);
       }
     }

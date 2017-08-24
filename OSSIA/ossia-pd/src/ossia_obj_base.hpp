@@ -95,6 +95,8 @@ struct t_obj_base
   t_canvas* x_last_opened_canvas{};
   std::chrono::milliseconds x_last_click;
 
+  ossia::optional<ossia::unit_t> x_ounit;
+
   ossia::net::node_base* x_node{};
   ossia::net::node_base* x_parent_node{};
   std::vector<t_matcher> x_matchers{};

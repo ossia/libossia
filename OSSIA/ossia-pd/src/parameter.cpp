@@ -161,6 +161,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->x_type = gensym("float");
     x->x_priority = 0;
     x->x_hidden = false;
+    x->x_ounit = ossia::none;
 
     x->x_clock = clock_new(x, (t_method)push_default_value);
 
