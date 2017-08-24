@@ -1,5 +1,5 @@
 #N canvas 421 166 1176 364 10;
-#N canvas 823 595 649 300 device 1;
+#N canvas 823 595 649 300 device 0;
 #X floatatom 109 150 5 0 0 0 - - -, f 5;
 #X msg 168 139 dump;
 #X obj 99 249 ø;
@@ -100,7 +100,7 @@
 #X connect 21 0 20 0;
 #X connect 21 2 18 0;
 #X restore 127 29 pd device;
-#N canvas 336 615 347 297 client 1;
+#N canvas 336 642 347 297 client 0;
 #X floatatom 32 49 5 0 0 0 - - -, f 5;
 #X msg 82 43 dump;
 #X obj 31 72 ø.remote foo.[0-5]/bar*;
@@ -127,10 +127,10 @@
 #X floatatom 627 30 5 0 0 0 - - -, f 5;
 #X msg 677 24 dump;
 #X floatatom 626 75 5 0 0 0 - - -, f 5;
-#N canvas 336 693 457 319 device2 1;
+#N canvas 336 693 457 319 device2 0;
 #X floatatom 118 145 5 0 0 0 - - -, f 5;
 #X msg 168 139 dump;
-#N canvas 798 694 556 300 model 1;
+#N canvas 798 694 556 300 model 0;
 #X obj 192 117 ø.model foo.1;
 #X floatatom 107 80 5 0 0 0 - - -, f 5;
 #X floatatom 307 80 5 0 0 0 - - -, f 5;
@@ -146,7 +146,7 @@
 #X obj 279 47 ø.param baron;
 #X floatatom 325 215 5 0 0 0 - - -, f 5;
 #X obj 372 214 ø.remote /foo.1/bar;
-#N canvas 646 256 799 491 submodel 1;
+#N canvas 646 256 799 491 submodel 0;
 #X obj 267 84 ø.model sub;
 #X obj 84 160 ø.param foo;
 #X floatatom 33 114 5 0 0 0 - - -, f 5;
