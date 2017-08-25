@@ -396,15 +396,15 @@ void oscquery_server_protocol::on_OSCMessage(
         }
       }
     }
+  }
 
-    if(m_echo)
+  if(m_echo)
+  {
+    for(auto& c : m_clients)
     {
-      for(auto& c : m_clients)
+      if(ip.port != c.remote_sender_port)
       {
-        if(ip.port != c.remote_sender_port)
-        {
-          c.sender->socket().Send(m.data(), m.size());
-        }
+        c.sender->socket().Send(m.data(), m.size());
       }
     }
   }
