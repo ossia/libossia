@@ -158,7 +158,7 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
   if (argc && argv->a_type == A_SYMBOL)
   {
-    auto& proto = static_cast<ossia::net::local_protocol&>(
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
         x->x_device->get_protocol());
     std::string protocol = argv->a_w.w_symbol->s_name;
     if (protocol == "Minuit")
@@ -176,7 +176,7 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::minuit_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
             x->x_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
       }
@@ -204,9 +204,11 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(
-            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-                settings.oscport, settings.wsport));
+        auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+              settings.oscport, settings.wsport);
+        oscq_proto->set_echo(true);
+
+        multiplex.expose_to(std::move(oscq_proto));
       }
       catch (const std::exception& e)
       {
@@ -234,7 +236,7 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::osc_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport));
       }
       catch (const std::exception& e)
@@ -271,6 +273,30 @@ void device_name(t_device *x, t_symbol* s, int argc, t_atom* argv){
   }
 }
 
+void device_getprotocols(t_device* x)
+{
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+      x->x_device->get_protocol());
+  auto& protos = multiplex.get_protocols();
+
+  t_atom a;
+  SETFLOAT(&a,protos.size());
+  outlet_anything(x->x_dumpout,gensym("protocols"),1,&a);
+
+}
+
+void device_stop_expose(t_device*x, int index)
+{
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+      x->x_device->get_protocol());
+  auto& protos = multiplex.get_protocols();
+
+  if ( index < protos.size() )
+    multiplex.stop_expose_to(*protos[index]);
+  else
+    pd_error(x, "Index %d out of bound.", index);
+}
+
 extern "C" void setup_ossia0x2edevice(void)
 {
   t_eclass* c = eclass_new(
@@ -284,11 +310,14 @@ extern "C" void setup_ossia0x2edevice(void)
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)t_device::register_children,"register", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
+    eclass_addmethod(c, (method) obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
-    eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
+    eclass_addmethod(c, (method) device_name, "name", A_GIMME, 0);
+
+    eclass_addmethod(c, (method) device_getprotocols, "getprotocols", A_NULL, 0);
+    eclass_addmethod(c, (method) device_stop_expose, "stop", A_FLOAT, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();
