@@ -429,14 +429,26 @@ void t_param::set_range()
     }
     else if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
     {
-      std::vector<ossia::value> omin, omax;
-      // TODO check param size
-      std::array<float, OSSIA_PD_MAX_ATTR_SIZE> min, max;
-      min.fill(x_range[0].a_w.w_float);
-      max.fill(x_range[1].a_w.w_float);
-      omin.assign(min.begin(), min.end());
-      omax.assign(max.begin(), max.end());
-      param->set_domain(ossia::make_domain(omin,omax));
+      switch( param->get_value_type() )
+      {
+        case ossia::val_type::INT:
+        case ossia::val_type::FLOAT:
+        case ossia::val_type::CHAR:
+          param->set_domain(
+                ossia::make_domain(x_range[0].a_w.w_float,x_range[1].a_w.w_float));
+          break;
+        default:
+          {
+            std::vector<ossia::value> omin, omax;
+            // TODO check param size
+            std::array<float, OSSIA_PD_MAX_ATTR_SIZE> min, max;
+            min.fill(x_range[0].a_w.w_float);
+            max.fill(x_range[1].a_w.w_float);
+            omin.assign(min.begin(), min.end());
+            omax.assign(max.begin(), max.end());
+            param->set_domain(ossia::make_domain(omin,omax));
+          }
+      }
     }
   }
 }
