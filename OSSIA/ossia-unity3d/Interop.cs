@@ -2,6 +2,7 @@
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System;
+using UnityEngine;
 
 namespace Ossia
 {
@@ -218,6 +219,14 @@ namespace Ossia
       IntPtr property);
 
 
+    [DllImport ("ossia")]
+    public static extern void ossia_parameter_set_unit(
+      IntPtr address,
+      string unit);
+    [DllImport ("ossia")]
+    public static extern string ossia_parameter_get_unit(
+      IntPtr address);
+    
     [DllImport ("ossia")]
     public static extern void ossia_parameter_set_bounding_mode (
       IntPtr property,
@@ -492,6 +501,8 @@ namespace Ossia
     [DllImport ("ossia")]
     public static extern void ossia_string_free( IntPtr str );
 
+    /// LOG /// 
+
     [DllImport ("ossia")]
     public static extern void ossia_set_debug_logger( IntPtr fp );
 
@@ -506,6 +517,68 @@ namespace Ossia
     public static extern void ossia_log(IntPtr log, log_level lvl, string message);
     [DllImport ("ossia")]
     public static extern void ossia_logger_free(IntPtr log);
+
+    /// MESSAGE QUEUE /// 
+
+    [DllImport ("ossia")]
+    public static extern
+    IntPtr ossia_mq_create(IntPtr device);
+    [DllImport ("ossia")]
+    public static extern void ossia_mq_register(IntPtr mq, IntPtr param);
+    [DllImport ("ossia")]
+    public static extern void ossia_mq_unregister(IntPtr mq, IntPtr param);
+    [DllImport ("ossia")]
+    public static extern int ossia_mq_pop(IntPtr mq, out IntPtr address, out IntPtr value);
+    [DllImport ("ossia")]
+    public static extern void ossia_mq_free(IntPtr mq);
+
+  }
+
+  public class Message
+  {
+    public IntPtr Address;
+    public Ossia.Value Value;
+  }
+
+  public class MessageQueue
+  {
+    IntPtr ossia_mq;
+    public MessageQueue(Ossia.Device dev)
+    {
+      ossia_mq = Network.ossia_mq_create (dev.GetDevice ());
+    }
+
+    ~MessageQueue()
+    {
+      Network.ossia_mq_free (ossia_mq);
+    }
+
+    public void Register(Ossia.Parameter p)
+    {
+      Network.ossia_mq_register (ossia_mq, p.ossia_parameter);
+    }
+
+    public void Unregister(Ossia.Parameter p)
+    {
+      Network.ossia_mq_unregister (ossia_mq, p.ossia_parameter);
+    }
+
+    public bool Pop(out Message m)
+    {
+      IntPtr c_addr;
+      IntPtr c_val;
+
+      int res = Network.ossia_mq_pop (ossia_mq, out c_addr, out c_val);
+      if (res != 0) {
+        m = new Message ();
+        m.Address = c_addr;
+        m.Value = new Ossia.Value (c_val);
+        return true;
+      } else {
+        m = null;
+        return false;
+      }
+    }
   }
 }
 

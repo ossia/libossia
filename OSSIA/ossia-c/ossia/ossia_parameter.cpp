@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_utils.hpp"
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <readerwriterqueue.h>
+#include <ossia/network/base/node_functions.hpp>
 
 extern "C" {
 
@@ -492,4 +494,86 @@ int ossia_parameter_get_repetition_filter(
   });
 }
 
+struct ossia_mq_message
+{
+    ossia::net::parameter_base* address{};
+    ossia::value value;
+};
+struct ossia_mq : public Nano::Observer
+{
+    moodycamel::ReaderWriterQueue<ossia_mq_message> msgs;
+    std::unordered_map<
+      ossia::net::parameter_base*,
+      ossia::net::parameter_base::callback_index> registered;
+
+    ossia_mq(ossia::net::device_base& dev)
+    {
+      dev.on_parameter_removing.connect<ossia_mq, &ossia_mq::on_param_removed>(*this);
+    }
+
+    void reg(ossia::net::parameter_base& p)
+    {
+      auto it = p.add_callback([=,ptr=&p] (const auto& val) {
+        msgs.enqueue({ptr, val});
+      });
+      registered.insert({&p, it});
+    }
+
+    void unreg(ossia::net::parameter_base& p)
+    {
+      auto it = registered.find(&p);
+      if(it != registered.end())
+      {
+        p.remove_callback(it->second);
+        registered.erase(it);
+      }
+    }
+
+    void on_param_removed(const ossia::net::parameter_base& p)
+    {
+      auto it = registered.find(const_cast<ossia::net::parameter_base*>(&p));
+      if(it != registered.end())
+        registered.erase(it);
+    }
+
+    ~ossia_mq()
+    {
+      for(auto reg : registered)
+      {
+        reg.first->remove_callback(reg.second);
+      }
+    }
+};
+
+ossia_mq_t ossia_mq_create(ossia_device_t dev)
+{
+  return new ossia_mq{*convert_device(dev)};
+}
+
+void ossia_mq_register(ossia_mq_t mq, ossia_parameter_t p)
+{
+  mq->reg(*convert_parameter(p));
+}
+
+void ossia_mq_unregister(ossia_mq_t mq, ossia_parameter_t p)
+{
+  mq->unreg(*convert_parameter(p));
+}
+
+int ossia_mq_pop(ossia_mq_t mq, ossia_parameter_t* address, ossia_value_t* val)
+{
+  ossia_mq_message m;
+  bool res = mq->msgs.try_dequeue(m);
+  if(res)
+  {
+    *address = convert(m.address);
+    *val = new ossia_value{std::move(m.value)};
+  }
+  return (int)res;
+}
+
+void ossia_mq_free(ossia_mq_t mq)
+{
+  delete mq;
+}
 }

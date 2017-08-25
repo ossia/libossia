@@ -3,6 +3,7 @@ using System.Runtime;
 using System.Runtime.InteropServices;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Ossia;
 
 namespace Ossia
@@ -10,38 +11,6 @@ namespace Ossia
   public class Controller : MonoBehaviour
   {
     public string appName = "Unity";
-
-    bool set = false;
-
-    Ossia.Local local_protocol = null;
-    Ossia.Device local_device = null;
-    Ossia.OSCQuery oscq_protocol = null;
-
-    Ossia.Node scene_node;
-    Ossia.Network main;
-
-    public delegate void debug_log_delegate (string str);
-
-    debug_log_delegate callback_delegate = null;
-
-    static void DebugLogCallback (string str)
-    {
-      Debug.Log ("OSSIA : " + str);
-    }
-
-    public static Controller Get()
-    {
-      GameObject controller = GameObject.Find ("OssiaController");
-      if (controller == null) {
-        throw new Exception ("Controller GameObject not found");
-      }
-      var dev = controller.GetComponent<Ossia.Controller> ();
-      if (dev == null) {
-        throw new Exception ("Controller component not found");
-      }
-      return dev;
-    }
-
     void Awake ()
     {
       Debug.Log ("OSSIA: Starting");
@@ -50,7 +19,7 @@ namespace Ossia
 
         // Setup the log so that the errors in the C API are shown in the
         // Unity3D console
-        callback_delegate = new debug_log_delegate (DebugLogCallback);
+        callback_delegate = new DebugLogDelegate (DebugLogCallback);
 
         // Convert callback_delegate into a function pointer that can be
         // used in unmanaged code.
@@ -64,8 +33,20 @@ namespace Ossia
         local_device = new Ossia.Device (local_protocol, "unity");
         scene_node = local_device.GetRootNode ().AddChild ("scene");
 
+        Queue = new Ossia.MessageQueue (local_device);
+
         oscq_protocol = new Ossia.OSCQuery (1234, 5678);
         local_protocol.ExposeTo (oscq_protocol);
+      }
+    }
+
+    void Update()
+    {
+      Ossia.Message m;
+      while (Queue.Pop (out m)) {
+        if (Hash.ContainsKey (m.Address)) {
+          Hash [m.Address].ReceiveUpdates ();
+        }
       }
     }
 
@@ -84,5 +65,62 @@ namespace Ossia
     {
       return local_device;
     }
+
+    static void DebugLogCallback (string str)
+    {
+      Debug.Log ("OSSIA : " + str);
+    }
+
+    internal void Register(Ossia.OssiaEnabledField p)
+    {
+      Queue.Register (p.ossia_parameter);
+      Hash.Add (p.ossia_parameter.ossia_parameter, p);
+    }
+    internal void Register(Ossia.OssiaEnabledProperty p)
+    {
+      Queue.Register (p.ossia_parameter);
+      Hash.Add (p.ossia_parameter.ossia_parameter, p);
+    }
+    internal void Unregister(Ossia.OssiaEnabledField p)
+    {
+      Queue.Unregister (p.ossia_parameter);
+      Hash.Remove (p.ossia_parameter.ossia_parameter);
+    }
+    internal void Unregister(Ossia.OssiaEnabledProperty p)
+    {
+      Queue.Unregister (p.ossia_parameter);
+      Hash.Remove (p.ossia_parameter.ossia_parameter);
+    }
+
+
+    internal static Controller Get()
+    {
+      GameObject controller = GameObject.Find ("OssiaController");
+      if (controller == null) {
+        throw new Exception ("Controller GameObject not found");
+      }
+      var dev = controller.GetComponent<Ossia.Controller> ();
+      if (dev == null) {
+        throw new Exception ("Controller component not found");
+      }
+      return dev;
+    }
+
+
+
+    bool set = false;
+
+    Ossia.Local local_protocol = null;
+    Ossia.Device local_device = null;
+    Ossia.OSCQuery oscq_protocol = null;
+
+    Ossia.Node scene_node;
+    Ossia.Network main;
+    Ossia.MessageQueue Queue;
+    Dictionary<IntPtr, Ossia.OssiaEnabledElement> Hash = new Dictionary<IntPtr, Ossia.OssiaEnabledElement>();
+
+    public delegate void DebugLogDelegate (string str);
+
+    DebugLogDelegate callback_delegate = null;
   }
 }

@@ -92,14 +92,14 @@ unsafe public class PresetController : MonoBehaviour
     p.ApplyToDevice (dev, true);
 
     {
-      var objects = UnityEngine.Object.FindObjectsOfType<Ossia.Object> ();
-      foreach (Ossia.Object obj in objects) {
+      var objects = UnityEngine.Object.FindObjectsOfType<Ossia.ExposeAttributes> ();
+      foreach (Ossia.ExposeAttributes obj in objects) {
         obj.ReceiveUpdates ();
       }
     }
     {
-      var exposed = UnityEngine.Object.FindObjectsOfType<Ossia.ExposeComponent> ();
-      foreach (Ossia.ExposeComponent obj in exposed) {
+      var exposed = UnityEngine.Object.FindObjectsOfType<Ossia.ExposeComponents> ();
+      foreach (Ossia.ExposeComponents obj in exposed) {
         obj.ReceiveUpdates ();
       }
     }

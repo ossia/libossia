@@ -1302,6 +1302,23 @@ void ossia_log(ossia_logger_t log, log_level lvl, const char* message);
 OSSIA_EXPORT
 void ossia_logger_free(ossia_logger_t log);
 
+/*************************/
+/*** Message-queue API ***/
+/*************************/
+
+struct ossia_mq;
+typedef struct ossia_mq* ossia_mq_t;
+OSSIA_EXPORT
+ossia_mq_t ossia_mq_create(ossia_device_t);
+OSSIA_EXPORT
+void ossia_mq_register(ossia_mq_t, ossia_parameter_t);
+OSSIA_EXPORT
+void ossia_mq_unregister(ossia_mq_t, ossia_parameter_t);
+OSSIA_EXPORT
+int ossia_mq_pop(ossia_mq_t mq, ossia_parameter_t* address, ossia_value_t* val);
+OSSIA_EXPORT
+void ossia_mq_free(ossia_mq_t);
+
 #if defined(__cplusplus)
 }
 #endif

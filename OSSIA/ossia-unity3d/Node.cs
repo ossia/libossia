@@ -99,6 +99,31 @@ namespace Ossia {
 			return ossia_parameter;
 		}
 
+    public Parameter CreateParameter(Type t, ossia_type ossia_t)
+    {
+      if (ossia_node != IntPtr.Zero && ossia_parameter == null) {
+
+        IntPtr p = Network.ossia_node_create_parameter (ossia_node, ossia_t);
+        ossia_parameter = new Parameter (p);
+
+        if (t == typeof(UnityEngine.Vector2)) {
+          Network.ossia_parameter_set_unit (p, "position.cart2D");
+        } else if (t == typeof(UnityEngine.Vector3)) {
+          Network.ossia_parameter_set_unit (p, "position.cart3D");
+        } else if (t == typeof(UnityEngine.Vector4)) {
+          Network.ossia_parameter_set_unit (p, "position.cart2D");
+        } else if (t == typeof(UnityEngine.Quaternion)) {
+          Network.ossia_parameter_set_unit (p, "orientation.quaternion");
+        } else if (t == typeof(UnityEngine.Color)) {
+          Network.ossia_parameter_set_unit (p, "color.rgba");
+        } else if (t == typeof(UnityEngine.Color32)) {
+          Network.ossia_parameter_set_unit (p, "color.rgba8");
+        }
+      }
+
+      return ossia_parameter;
+    }
+
 		public void RemoveParameter()
 		{
 			if (ossia_node != IntPtr.Zero) {

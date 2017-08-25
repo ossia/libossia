@@ -2,11 +2,14 @@
 using System.Collections;
 using Ossia;
 
-public class OssiaAttribute : MonoBehaviour {
+public class ExampleAttribute : MonoBehaviour {
 
 	// Attributes in libossia can be exposed this way : 
 	[Ossia.Expose("sympa")]
 	public int Sympa;
+
+  [Ossia.Expose("test")]
+  public Vector3 MyProperty { get; set; }
 
 	// Use this for initialization
 	void Start () {

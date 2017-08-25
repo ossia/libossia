@@ -79,7 +79,7 @@ ossia_value_t ossia_value_create_tuple(const ossia_value_t* values, size_t size)
 {
   std::vector<ossia::value> t;
   t.reserve(size);
-  for (int i = 0; i < size; i++)
+  for (std::size_t i = 0; i < size; i++)
   {
     t.push_back(values[i]->value);
   }
@@ -90,7 +90,7 @@ ossia_value_t ossia_value_create_fn(const float* values, size_t size)
 {
   std::vector<ossia::value> t;
   t.reserve(size);
-  for (int i = 0; i < size; i++)
+  for (std::size_t i = 0; i < size; i++)
   {
     t.push_back(values[i]);
   }
