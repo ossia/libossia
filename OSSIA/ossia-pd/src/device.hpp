@@ -56,8 +56,6 @@ static void print_protocol_help()
 
 struct t_device : t_obj_base
 {
-  ossia::net::generic_device* x_device{};
-
   static void register_children(t_device* x);
   void unregister_children();
   static void loadbang(t_device* x, t_float type);

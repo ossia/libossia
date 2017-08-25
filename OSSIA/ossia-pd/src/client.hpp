@@ -8,7 +8,6 @@ namespace pd
 
 struct t_client : t_obj_base
 {
-  ossia::net::generic_device* x_device{};
   ossia::net::local_protocol x_local_proto;
 
   static void register_children(t_client* x);

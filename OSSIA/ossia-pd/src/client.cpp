@@ -259,6 +259,8 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(c, (method)client_connect, "connect", A_GIMME, 0);
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
+    eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
+
   }
 
   auto& ossia_pd = ossia_pd::instance();

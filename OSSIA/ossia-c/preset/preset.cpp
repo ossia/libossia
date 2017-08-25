@@ -13,6 +13,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -906,6 +907,20 @@ void ossia::devices::write_file(
       std::fclose(fp);
     }
   }
+}
+
+const std::string ossia::devices::read_file(
+    const std::string& filename)
+{
+  std::stringstream buffer;
+  // output json file if needed
+  if (!filename.empty())
+  {
+    std::ifstream file;
+    file.open(filename);
+    buffer << file.rdbuf();
+  }
+  return buffer.str();
 }
 
 std::string preset_to_device_key(const std::string& presetkey)

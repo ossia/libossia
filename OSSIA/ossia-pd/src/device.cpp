@@ -321,6 +321,7 @@ void device_stop_expose(t_device*x, int index)
     pd_error(x, "Index %d out of bound.", index);
 }
 
+
 extern "C" void setup_ossia0x2edevice(void)
 {
   t_eclass* c = eclass_new(
@@ -342,6 +343,7 @@ extern "C" void setup_ossia0x2edevice(void)
 
     eclass_addmethod(c, (method) device_getprotocols, "getprotocols", A_NULL, 0);
     eclass_addmethod(c, (method) device_stop_expose, "stop", A_FLOAT, 0);
+    eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();
