@@ -146,7 +146,7 @@ ossia_devices_write_json(const ossia_device_t odev, const char** buffer)
     try
     {
       assert(odev->device);
-      *buffer = copy_string(ossia::devices::write_json(*(odev->device)));
+      *buffer = copy_string(ossia::presets::write_json(*(odev->device)));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -170,19 +170,19 @@ ossia_preset_result ossia_devices_apply_preset(
   }
   try
   {
-    ossia::devices::keep_arch_type keep_arch_token;
+    ossia::presets::keep_arch_type keep_arch_token;
     if (keep_arch)
-      keep_arch_token = ossia::devices::keep_arch_on;
+      keep_arch_token = ossia::presets::keep_arch_on;
     else
-      keep_arch_token = ossia::devices::keep_arch_off;
+      keep_arch_token = ossia::presets::keep_arch_off;
 
     if (!odevptr->device)
     {
       return OSSIA_PRESETS_NULL_DEVICE;
     }
 
-    ossia::devices::apply_preset(
-        *odevptr->device, preset->impl, keep_arch_token);
+    ossia::presets::apply_preset(
+        odevptr->device->get_root_node(), preset->impl, keep_arch_token);
   }
   catch (...)
   {
@@ -206,7 +206,7 @@ ossia_devices_make_preset(ossia_device_t odev, ossia_preset_t* presetptr)
     {
       assert(odev->device);
       *presetptr
-          = new ossia_preset(ossia::devices::make_preset(*(odev->device)));
+          = new ossia_preset(ossia::presets::make_preset(odev->device->get_root_node()));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -225,7 +225,7 @@ ossia_devices_to_string(ossia_device_t odev, const char** buffer)
     try
     {
       assert(odev->device);
-      *buffer = copy_string(ossia::devices::to_string(*(odev->device)));
+      *buffer = copy_string(ossia::presets::to_string(*(odev->device)));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -253,7 +253,7 @@ ossia_preset_result ossia_devices_get_node(
     {
       assert(odev->device);
       auto gotnode
-          = ossia::devices::get_node(odev->device->get_root_node(), addr);
+          = ossia::presets::get_node(odev->device->get_root_node(), addr);
       if (gotnode == nullptr)
       {
         return OSSIA_PRESETS_INVALID_ADDRESS;
@@ -286,7 +286,7 @@ ossia_preset_result ossia_devices_get_child(
   }
   try
   {
-    auto gotnode = ossia::devices::get_node(*convert_node(root), childname);
+    auto gotnode = ossia::presets::get_node(*convert_node(root), childname);
     if (gotnode == nullptr)
     {
       return OSSIA_PRESETS_INVALID_ADDRESS;
@@ -843,7 +843,7 @@ export_nodes_to_json(const ossia::net::node_base& node, rapidjson::Document& d)
 }
 
 std::string
-ossia::devices::write_json(const ossia::net::device_base& deviceBase)
+ossia::presets::write_json(const ossia::net::device_base& deviceBase)
 {
   rapidjson::Document d;
   d.SetObject();
@@ -894,7 +894,7 @@ ossia::devices::write_json(const ossia::net::device_base& deviceBase)
   return output;
 }
 
-void ossia::devices::write_file(
+void ossia::presets::write_file(
     ossia::string_view content, ossia::string_view filename)
 {
   // output json file if needed
@@ -909,7 +909,7 @@ void ossia::devices::write_file(
   }
 }
 
-const std::string ossia::devices::read_file(
+const std::string ossia::presets::read_file(
     const std::string& filename)
 {
   std::stringstream buffer;
@@ -960,7 +960,7 @@ bool instance_string_compare(
 
 void apply_preset_node(
     ossia::net::node_base& root, std::vector<std::string> keys,
-    const ossia::value& val, ossia::devices::keep_arch_type keeparch,
+    const ossia::value& val, ossia::presets::keep_arch_type keeparch,
     std::vector<ossia::net::node_base*>& created_nodes)
 {
   if (keys.size() == 0)
@@ -1007,7 +1007,7 @@ void apply_preset_node(
 
     if (!child_exists)
     {
-      if (keeparch == ossia::devices::keep_arch_on)
+      if (keeparch == ossia::presets::keep_arch_on)
       {
         ossia::logger().warn("{}:{}  {}", __LINE__, __FILE__, "Can't change device architecture");
       }
@@ -1049,9 +1049,9 @@ void on_instance_creation(
   }
 }
 
-void ossia::devices::apply_preset(
-    ossia::net::device_base& ossiadev, const ossia::presets::preset& preset,
-    ossia::devices::keep_arch_type keeparch,
+void ossia::presets::apply_preset(
+    ossia::net::node_base& node, const ossia::presets::preset& preset,
+    ossia::presets::keep_arch_type keeparch,
     presets::instance_functions functions)
 {
   std::vector<ossia::net::node_base*> created_nodes;
@@ -1068,7 +1068,7 @@ void ossia::devices::apply_preset(
       keys.erase(keys.begin()); // then we have to remove the "initial" key which is the device name
 
     apply_preset_node(
-        ossiadev.get_root_node(), keys, itpp->second, keeparch, created_nodes);
+        node, keys, itpp->second, keeparch, created_nodes);
   }
 
   for (auto node : created_nodes)
@@ -1107,10 +1107,10 @@ void make_preset_node(
 }
 
 ossia::presets::preset
-ossia::devices::make_preset(ossia::net::device_base& ossiadev)
+ossia::presets::make_preset(ossia::net::node_base& node)
 {
   presets::preset preset;
-  make_preset_node(ossiadev.get_root_node(), preset, "");
+  make_preset_node(node, preset, "");
   return preset;
 }
 
@@ -1146,7 +1146,7 @@ get_node_node(ossia::net::node_base& root, std::vector<std::string>& keys)
   return res;
 }
 
-ossia::net::node_base* ossia::devices::get_node(
+ossia::net::node_base* ossia::presets::get_node(
     ossia::net::node_base& root, const std::string& nodeaddr)
 {
   std::vector<std::string> keys;
@@ -1179,7 +1179,7 @@ void to_string_node(
   }
 }
 
-std::string ossia::devices::to_string(const ossia::net::device_base& ossiadev)
+std::string ossia::presets::to_string(const ossia::net::device_base& ossiadev)
 {
   auto& root = ossiadev.get_root_node();
   std::stringstream ss;

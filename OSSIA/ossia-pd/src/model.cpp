@@ -327,10 +327,12 @@ extern "C" void setup_ossia0x2emodel(void)
     CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, t_model, x_tags, x_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
     CLASS_ATTR_INT(c, "priority", 0, t_param, x_priority);
 
-    eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL, 0);
-    eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL, 0);
-    eclass_addmethod(c, (method) model_get_description,       "getdescription",       A_NULL, 0);
-    eclass_addmethod(c, (method) obj_get_address,             "getaddress",           A_NULL, 0);
+    eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL,  0);
+    eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL,  0);
+    eclass_addmethod(c, (method) model_get_description,       "getdescription",       A_NULL,  0);
+    eclass_addmethod(c, (method) obj_get_address,             "getaddress",           A_NULL,  0);
+    eclass_addmethod(c, (method) obj_preset,                  "preset",               A_GIMME, 0);
+
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy

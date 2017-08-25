@@ -435,32 +435,54 @@ bool find_and_display_friend(t_obj_base* x)
 
 void obj_preset(t_obj_base *x, t_symbol*s, int argc, t_atom* argv)
 {
-  if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+  ossia::net::node_base* node{};
+  switch (x->x_otype)
   {
-    if ( argv[0].a_w.w_symbol == gensym("save") )
+    case Type::client:
+    case Type::device:
+      node = &x->x_device->get_root_node();
+      break;
+    case Type::model:
+    case Type::view:
+      node = x->x_node;
+      break;
+    default:
+      node = nullptr;
+  }
+
+  if (node)
+  {
+    if ( argc > 0 && argv[0].a_type == A_SYMBOL )
     {
-      argc--;
-      argv++;
-      if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+      if ( argv[0].a_w.w_symbol == gensym("save") )
       {
-        auto preset = ossia::devices::make_preset(*x->x_device);
-        auto json = ossia::presets::write_json(x->x_device->get_name(), preset);
-        ossia::devices::write_file(json, argv[0].a_w.w_symbol->s_name);
+        argc--;
+        argv++;
+        if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+        {
+          auto preset = ossia::presets::make_preset(*node);
+          auto json = ossia::presets::write_json(x->x_name->s_name, preset);
+          ossia::presets::write_file(json, argv[0].a_w.w_symbol->s_name);
+        }
       }
-    }
-    else if ( argv[0].a_w.w_symbol == gensym("load") )
-    {
-      argc--;
-      argv++;
-      if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+      else if ( argv[0].a_w.w_symbol == gensym("load") )
       {
-        auto json = ossia::devices::read_file(argv[0].a_w.w_symbol->s_name);
-        auto preset = ossia::presets::read_json(json);
-        ossia::devices::apply_preset(*x->x_device, preset);
+        argc--;
+        argv++;
+        if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+        {
+          auto json = ossia::presets::read_file(argv[0].a_w.w_symbol->s_name);
+          auto preset = ossia::presets::read_json(json);
+          ossia::presets::apply_preset(*node, preset);
+        }
       }
+      else
+        pd_error(x, "unknown preset command '%s'", argv[0].a_w.w_symbol->s_name);
     }
-    else
-      pd_error(x, "unknown preset command '%s'", argv[0].a_w.w_symbol->s_name);
+  }
+  else
+  {
+    pd_error(x, "No node to save or to load into.");
   }
 }
 
