@@ -20,6 +20,7 @@ namespace Ossia
   {
     public float f1, f2, f3, f4;
   }
+  enum log_level { trace, debug, info, warn, error, critical, off };
   internal class Network
   {
     public delegate void ossia_value_callback(IntPtr ctx, IntPtr val);
@@ -310,7 +311,11 @@ namespace Ossia
     public static extern IntPtr ossia_parameter_fetch_value (
       IntPtr property);
 
-
+    [DllImport("ossia")]
+    public static extern void ossia_parameter_set_listening (
+      IntPtr address,
+      int listening);
+    
     [DllImport ("ossia")]
     public static extern IntPtr ossia_parameter_add_callback (
       IntPtr property,
@@ -489,6 +494,18 @@ namespace Ossia
 
     [DllImport ("ossia")]
     public static extern void ossia_set_debug_logger( IntPtr fp );
+
+
+    [DllImport ("ossia")]
+    public static extern IntPtr ossia_logger_create(string host, string app);
+    [DllImport ("ossia")]
+    public static extern void ossia_logger_init_heartbeat(IntPtr log, int pid, string cmdline);
+    [DllImport ("ossia")]
+    public static extern void ossia_logger_set_level(IntPtr log, Ossia.log_level lvl);
+    [DllImport ("ossia")]
+    public static extern void ossia_log(IntPtr log, log_level lvl, string message);
+    [DllImport ("ossia")]
+    public static extern void ossia_logger_free(IntPtr log);
   }
 }
 

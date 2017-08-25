@@ -20,10 +20,8 @@ namespace Ossia
         rot_node = object_node.AddChild ("rotation");
         rot_addr = rot_node.CreateParameter (Ossia.ossia_type.VEC4F);
         rot_addr.PushValue (obj.transform.rotation.w, obj.transform.rotation.x, obj.transform.rotation.y, obj.transform.rotation.z);
-
       }
     }
-
 
     public void ReceiveUpdates(GameObject obj)
     {
@@ -90,7 +88,7 @@ namespace Ossia
       attribute = attr;
     }
 
-    public void ReceiveUpdates(GameObject obj)
+    public void ReceiveUpdates()
     {
         try {
           field.SetValue (parent.component, ossia_parameter.GetValue ().Get());
@@ -99,7 +97,7 @@ namespace Ossia
         }
     }
 
-    public void SendUpdates(GameObject obj)
+    public void SendUpdates()
     {
       ossia_parameter.PushValue (new Value(field.GetValue(parent.component)));
     }
@@ -122,7 +120,7 @@ namespace Ossia
 			attribute = attr;
 		}
 
-		public void ReceiveUpdates(GameObject obj)
+		public void ReceiveUpdates()
 		{
 			try {
 				var value = ossia_parameter.GetValue().Get();
@@ -133,7 +131,7 @@ namespace Ossia
 			}
 		}
 
-		public void SendUpdates(GameObject obj)
+    public void SendUpdates()
 		{
 			ossia_parameter.PushValue (new Value(field.GetValue(parent.component, null)));
 		}
@@ -154,23 +152,23 @@ namespace Ossia
       component_node = node;
     }
 
-    public void ReceiveUpdates(GameObject obj)
+    public void ReceiveUpdates()
     {
       foreach (var field in fields) {
-        field.ReceiveUpdates (obj);
+        field.ReceiveUpdates ();
       }
       foreach (var property in properties) {
-        property.ReceiveUpdates (obj);
+        property.ReceiveUpdates ();
       }
     }
 
-    public void SendUpdates(GameObject obj)
+    public void SendUpdates()
     {
       foreach (var field in fields) {
-        field.SendUpdates (obj);
+        field.SendUpdates ();
       }
       foreach (var property in properties) {
-        property.SendUpdates (obj);
+        property.SendUpdates ();
       }
     }
   }
@@ -179,8 +177,7 @@ namespace Ossia
   //! Currently this shows only the transform and the fields with [Ossia.Expose].
   public class Object : MonoBehaviour
   {
-    public bool ReceiveUpdates = false;
-    public bool SendUpdates = false;
+    public UpdateMode mode = UpdateMode.ReceiveUpdates;
 
     Ossia.Node scene_node;
     Ossia.Node child_node;
@@ -192,7 +189,6 @@ namespace Ossia
     void RegisterComponent(MonoBehaviour component)
     {
       List<OssiaEnabledField> nodes = new List<OssiaEnabledField>();
-      Debug.Log ("Registering component" + component.GetType().ToString());
       const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
       FieldInfo[] fields = component.GetType().GetFields(flags);
 
@@ -200,7 +196,7 @@ namespace Ossia
       foreach (FieldInfo field in fields) {
         if(Attribute.IsDefined(field, typeof(Ossia.Expose))) {
           var attr = (Ossia.Expose) Attribute.GetCustomAttribute(field, typeof(Ossia.Expose));
-		  nodes.Add(new OssiaEnabledField(field, attr.ExposedName));
+		      nodes.Add(new OssiaEnabledField(field, attr.ExposedName));
         }
       }
 
@@ -213,7 +209,7 @@ namespace Ossia
           oep.parent = ossia_c;
           oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute);
           oep.ossia_parameter = oep.ossia_node.CreateParameter (Ossia.Value.GetOssiaType (oep.field.FieldType));
-          oep.SendUpdates (this.gameObject);
+          oep.SendUpdates ();
         }
 
         ossia_c.fields = nodes;
@@ -237,39 +233,65 @@ namespace Ossia
 
     public void Start()
     {
-      var obj = GameObject.Find ("OssiaController");
-      if (obj != null) {
-        var comp = obj.GetComponent<Ossia.Controller> ();
-        if (comp != null) {
-          scene_node = comp.SceneNode ();
-          RegisterObject (this.gameObject);
+      if (child_node != null) {
+        Debug.Log("Object already registered.");        
+        return;
+      }
+      var comp = Controller.Get ();
+      scene_node = comp.SceneNode ();
+      if (scene_node == null) {
+        Debug.Log("scene_node == null");  
+        return;
+      }
+      RegisterObject (this.gameObject);
 
-          if (ReceiveUpdates) {
-            child_node.SetValueUpdating (true);
-          }
-        }
-      } else {
-        Debug.Log("OssiaController was not found.");
+      child_node.SetValueUpdating (mode == UpdateMode.ReceiveUpdates);
+    }
+
+
+    public void ReceiveUpdates()
+    {
+      if (child_node == null) {
+        Start ();
+      }
+
+      if (!child_node.GetValueUpdating ()) 
+        child_node.SetValueUpdating (true);
+
+      ossia_transform.ReceiveUpdates (this.gameObject);
+      foreach (var component in ossia_components) {
+        component.ReceiveUpdates ();
+      }
+    }
+
+    public void SendUpdates()
+    {
+      if (child_node == null) {
+        Start ();
+      }
+
+      if(child_node.GetValueUpdating())
+        child_node.SetValueUpdating (false);
+
+      ossia_transform.SendUpdates (this.gameObject);
+      foreach (var component in ossia_components) {
+        component.SendUpdates ();
       }
     }
 
     public void Update()
     {
-      if (ReceiveUpdates) {
-        if (!child_node.GetValueUpdating ()) {
-          child_node.SetValueUpdating (true);
-        }
-
-        ossia_transform.ReceiveUpdates (this.gameObject);
-        foreach (var component in ossia_components) {
-          component.ReceiveUpdates (this.gameObject);
-        }
+      if (child_node == null) {
+        Debug.Log("Object not registered.");  
+        Start ();
+        return;
       }
-      if (SendUpdates) {
-        ossia_transform.SendUpdates (this.gameObject);
-        foreach (var component in ossia_components) {
-          component.SendUpdates (this.gameObject);
-        }
+
+      if (mode == UpdateMode.ReceiveUpdates) {
+        ReceiveUpdates ();
+      }
+      else if (mode == UpdateMode.SendUpdates) {
+        SendUpdates ();
       }
     }
   }

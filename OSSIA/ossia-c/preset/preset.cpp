@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include <ossia/detail/logger.hpp>
 #include <ossia-c/log/ossia_log.h>
 #include <ossia-c/preset/exception.hpp>
 #include <ossia-c/preset/preset.h>
@@ -993,8 +994,7 @@ void apply_preset_node(
     {
       if (keeparch == ossia::devices::keep_arch_on)
       {
-        throw ossia::ossiaException_InvalidAddress(
-            __LINE__, __FILE__, "Can't change device architecture");
+        ossia::logger().warn("{}:{}  {}", __LINE__, __FILE__, "Can't change device architecture");
       }
       else
       {

@@ -5,23 +5,50 @@ using UnityEngine;
 
 namespace Ossia
 {
-	public class ExposeComponent : MonoBehaviour
+  public class ExposeComponent : MonoBehaviour
 	{
+    public UpdateMode mode = UpdateMode.ReceiveUpdates;
 		public string NodeName;
-		public bool ReceiveUpdates = false;
-		public bool SendUpdates = false;
 		public List<Component> components;
 
 		Ossia.Node scene_node;
-		Ossia.Node child_node;
-		List<OssiaEnabledComponent> ossia_components = new List<OssiaEnabledComponent>();
+
+    public Ossia.Node child_node;
+    List<OssiaEnabledComponent> ossia_components = new List<OssiaEnabledComponent>();
+
+    public void ReceiveUpdates()
+    {
+      if (child_node == null) {
+        Start ();
+      }
+
+      if (!child_node.GetValueUpdating ()) 
+        child_node.SetValueUpdating (true);
+
+      foreach (var component in ossia_components) {
+        component.ReceiveUpdates ();
+      }
+    }
+
+    public void SendUpdates()
+    {
+      if (child_node == null) {
+        Start ();
+      }
+
+      if(child_node.GetValueUpdating())
+        child_node.SetValueUpdating (false);
+
+      foreach (var component in ossia_components) {
+        component.SendUpdates ();
+      }
+    }
 
     void RegisterComponent(Component component, Ossia.Node node)
 		{
 			List<OssiaEnabledField> nodes = new List<OssiaEnabledField>();
 			List<OssiaEnabledProperty> prop_nodes = new List<OssiaEnabledProperty>();
 
-			Debug.Log ("Registering component" + component.GetType().ToString());
 			const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 			FieldInfo[] fields = component.GetType().GetFields(flags);
 
@@ -52,7 +79,7 @@ namespace Ossia
 					oep.parent = ossia_c;
 					oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute);
 					oep.ossia_parameter = oep.ossia_node.CreateParameter (Ossia.Value.GetOssiaType (oep.field.FieldType));
-					oep.SendUpdates (this.gameObject);
+					oep.SendUpdates ();
 				}
 
         ossia_c.fields = nodes;
@@ -65,7 +92,6 @@ namespace Ossia
             // TODO
           } else if(oep.field.PropertyType == typeof(UnityEngine.Component)) { 
             var subnode = node.AddChild (oep.field.Name);
-            Debug.Log("Adding node" + oep.field.Name + " to " + node.GetName());
             try { 
               var subcomp = (Component)oep.field.GetValue (component, null);
               RegisterComponent (subcomp, subnode);
@@ -75,7 +101,7 @@ namespace Ossia
             oep.ossia_node = ossia_c.component_node.AddChild (oep.attribute);
             try {
               oep.ossia_parameter = oep.ossia_node.CreateParameter (Ossia.Value.GetOssiaType (oep.field.PropertyType));
-              oep.SendUpdates (this.gameObject);
+              oep.SendUpdates ();
             } catch { 
               Debug.Log("parameter not ok" + oep.field.Name + " => " + oep.field.PropertyType);
               ossia_c.component_node.RemoveChild(oep.ossia_node);
@@ -85,49 +111,40 @@ namespace Ossia
 
 				ossia_c.properties = prop_nodes;
 			}
-
 		}
 
-
 		public void Start()
-		{
-			var obj = GameObject.Find ("OssiaController");
-			if (obj != null) {
-				var comp = obj.GetComponent<Ossia.Controller> ();
-				if (comp != null) {
-					scene_node = comp.SceneNode ();
+    {
+      if (child_node != null) {
+        Debug.Log("Object already registered.");        
+        return;
+      }
 
-					child_node = scene_node.AddChild(NodeName);
-					foreach(var c in components)
-					{
-            var subnode = child_node.AddChild (c.GetType().Name);
-						RegisterComponent(c, subnode);
-					}
+      var comp = Controller.Get ();
+      scene_node = comp.SceneNode ();
 
-					if (ReceiveUpdates) {
-						child_node.SetValueUpdating (true);
-					}
-				}
-			} else {
-				Debug.Log("OssiaController was not found.");
-			}
+      child_node = scene_node.AddChild(NodeName);
+      foreach(var c in components)
+      {
+        var subnode = child_node.AddChild (c.GetType().Name);
+        RegisterComponent(c, subnode);
+      }
+
+      child_node.SetValueUpdating (mode == UpdateMode.ReceiveUpdates);
 		}
 
 		public void Update()
-		{
-			if (ReceiveUpdates) {
-				if (!child_node.GetValueUpdating ()) {
-					child_node.SetValueUpdating (true);
-				}
+    {
+      if (child_node == null) {
+        Debug.Log("Object not registered.");  
+        Start ();
+      }
 
-				foreach (var component in ossia_components) {
-					component.ReceiveUpdates (this.gameObject);
-				}
+      if (mode == UpdateMode.ReceiveUpdates) {
+        ReceiveUpdates ();
 			}
-			if (SendUpdates) {
-				foreach (var component in ossia_components) {
-					component.SendUpdates (this.gameObject);
-				}
+      else if (mode == UpdateMode.SendUpdates) {
+        SendUpdates ();
 			}
 		}
 	}

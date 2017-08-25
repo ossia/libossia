@@ -8,37 +8,8 @@ namespace Ossia
 {
   public class Parameter
   {
-    internal IntPtr ossia_parameter = IntPtr.Zero;
-
-    List<ValueCallbackDelegate> callbacks;
-
-    Network.ossia_value_callback value_cb;
-    internal IntPtr ossia_callback_it = IntPtr.Zero;
-
-    Network.ossia_parameter_callback addr_remove_callback;
-    IntPtr addr_ossia_remove_callback;
-
-    private void CleanupCallback(IntPtr addr)
-    {
-      if (ossia_parameter != IntPtr.Zero && ossia_parameter == addr && addr_ossia_remove_callback != IntPtr.Zero) {
-        IntPtr node = Network.ossia_parameter_get_node (ossia_parameter);
-        IntPtr dev = Network.ossia_node_get_device(node);
-        Network.ossia_device_remove_parameter_deleting_callback (dev, addr_ossia_remove_callback);
-
-        ossia_parameter = IntPtr.Zero;
-        addr_remove_callback = null;
-        ossia_callback_it = IntPtr.Zero;
-      }
-    }
-
-    ~Parameter()
-    {
-      CleanupCallback (ossia_parameter);
-    }
-
     internal Parameter(IntPtr address)
     {
-      callbacks = new List<ValueCallbackDelegate> ();
       ossia_parameter = address;
 
       IntPtr node = Network.ossia_parameter_get_node (ossia_parameter);
@@ -92,48 +63,9 @@ namespace Ossia
     public void PushValue(int[] val)
     { Network.ossia_parameter_push_in (ossia_parameter, val, val.Length); }
 
-
-    private void DoNothing(Value v)
-    {
-      Debug.Log (v.ConvertString());
-    }
-
-
     public void SetValueUpdating(bool b)
     {
-      if (b) {
-        AddCallback (DoNothing);
-      } else {
-        RemoveCallback (DoNothing);
-      }
-    }
-
-    public void AddCallback(ValueCallbackDelegate callback)
-    {
-      if (callbacks.Count == 0) {
-        // We initialize the callback structure.
-          value_cb = new Network.ossia_value_callback ((IntPtr ctx, IntPtr p) => CallbackWrapper(this, p));
-        IntPtr intptr_delegate = Marshal.GetFunctionPointerForDelegate (value_cb);
-        ossia_callback_it = Network.ossia_parameter_add_callback(ossia_parameter, intptr_delegate, (IntPtr)0);
-      }
-      callbacks.Add (callback);
-    }
-
-    static public void CallbackWrapper(Parameter self, IntPtr value)
-    {
-      Ossia.Value val = new Ossia.Value (value);
-      foreach(var cb in self.callbacks)
-      {
-        cb (val);
-      }
-    }
-
-    public void RemoveCallback(ValueCallbackDelegate c)
-    {
-      callbacks.RemoveAll(x => x == c);
-      if (callbacks.Count == 0) {
-        Network.ossia_parameter_remove_callback (ossia_parameter, ossia_callback_it);
-      }
+      Network.ossia_parameter_set_listening (ossia_parameter, b ? 1 : 0);
     }
 
     public Value GetMin()
@@ -172,6 +104,28 @@ namespace Ossia
       Network.ossia_parameter_set_domain(ossia_parameter, dom);
       Network.ossia_domain_free(dom);
     }
+      
+    private void CleanupCallback(IntPtr addr)
+    {
+      if (ossia_parameter != IntPtr.Zero && ossia_parameter == addr && addr_ossia_remove_callback != IntPtr.Zero) {
+        IntPtr node = Network.ossia_parameter_get_node (ossia_parameter);
+        IntPtr dev = Network.ossia_node_get_device(node);
+        Network.ossia_device_remove_parameter_deleting_callback (dev, addr_ossia_remove_callback);
+
+        ossia_parameter = IntPtr.Zero;
+        addr_remove_callback = null;
+      }
+    }
+
+    ~Parameter()
+    {
+      CleanupCallback (ossia_parameter);
+    }
+
+    internal IntPtr ossia_parameter = IntPtr.Zero;
+    Network.ossia_parameter_callback addr_remove_callback;
+    IntPtr addr_ossia_remove_callback;
+
   }
 }
 

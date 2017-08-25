@@ -1,5 +1,6 @@
 #ifndef OSSIA_H
 #define OSSIA_H
+#include <stddef.h>
 
 /**
  * @file ossia-c.h
@@ -62,11 +63,13 @@ struct ossia_protocol;
 struct ossia_device;
 struct ossia_domain;
 struct ossia_value;
+struct ossia_logger;
 
 typedef struct ossia_protocol* ossia_protocol_t;
 typedef struct ossia_device* ossia_device_t;
 typedef struct ossia_domain* ossia_domain_t;
 typedef struct ossia_value* ossia_value_t;
+typedef struct ossia_logger* ossia_logger_t;
 typedef void* ossia_node_t;
 typedef void* ossia_parameter_t;
 
@@ -890,6 +893,15 @@ ossia_value_t ossia_parameter_fetch_value(
     ossia_parameter_t address);
 
 /**
+ * @brief Enable or disable remote updates for a given address
+ * @note Multithread guarantees: Safe.
+ */
+OSSIA_EXPORT
+void ossia_parameter_set_listening(
+    ossia_parameter_t address,
+    int listening);
+
+/**
  * @brief Add a callback called when the value of a parameter changes.
  * @param address Address on which the callback must be added.
  * @param callback Function to be called.
@@ -1274,6 +1286,21 @@ void ossia_value_convert_tuple(ossia_value_t val_in, ossia_value_t** out, size_t
 
 OSSIA_EXPORT
 void ossia_string_free(char*);
+
+/***************/
+/*** Logging ***/
+/***************/
+enum log_level { trace, debug, info, warn, error, critical, off };
+OSSIA_EXPORT
+ossia_logger_t ossia_logger_create(const char* host, const char* app);
+OSSIA_EXPORT
+void ossia_logger_init_heartbeat(ossia_logger_t log, int pid, const char* cmdline);
+OSSIA_EXPORT
+void ossia_logger_set_level(ossia_logger_t log, log_level lvl);
+OSSIA_EXPORT
+void ossia_log(ossia_logger_t log, log_level lvl, const char* message);
+OSSIA_EXPORT
+void ossia_logger_free(ossia_logger_t log);
 
 #if defined(__cplusplus)
 }

@@ -327,6 +327,37 @@ ossia_value_t ossia_parameter_fetch_value(ossia_parameter_t address)
   });
 }
 
+void ossia_parameter_set_listening(
+    ossia_parameter_t address,
+    int listening)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_set_listening: address is null");
+      return;
+    }
+
+    auto addr = convert_parameter(address);
+    if(listening)
+    {
+      auto cb_it = addr->get_node().get_attribute(ossia::string_view("_impl_callback"));
+      auto cb_ptr = ossia::any_cast<ossia::net::parameter_base::callback_index>(&cb_it);
+      if(cb_ptr)
+      {
+        addr->remove_callback(*cb_ptr);
+      }
+    }
+    else
+    {
+      auto it = addr->add_callback([] (const ossia::value&) { });
+      ossia::set_attribute(
+            (ossia::extended_attributes&)addr->get_node(),
+            ossia::string_view("_impl_callback"),
+            it);
+    }
+  });
+}
 ossia_value_callback_idx_t ossia_parameter_add_callback(
     ossia_parameter_t address, ossia_value_callback_t callback, void* ctx)
 {
