@@ -97,6 +97,7 @@ struct t_obj_base
 
   ossia::optional<ossia::unit_t> x_ounit;
 
+  ossia::net::generic_device* x_device{};
   ossia::net::node_base* x_node{};
   ossia::net::node_base* x_parent_node{};
   std::vector<t_matcher> x_matchers{};
@@ -110,10 +111,35 @@ struct t_obj_base
   static void obj_bang(t_obj_base* x);
 };
 
+/**
+ * @brief find_and_display_friend go through all registered parameters to find the ones that matches current remote
+ * @param x the remote
+ * @return false if nothing have been found
+ */
 bool find_and_display_friend(t_obj_base* x);
+
+/**
+ * @brief obj_namespace send the namespace through dump outlet
+ * @note only relevant for client, device, model and view objects.
+ * @param x
+ */
 void obj_namespace(t_obj_base* x);
+
+/**
+ * @brief obj_set
+ * @param x
+ * @param s
+ * @param argc
+ * @param argv
+ */
 void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv);
+
+/**
+ * @brief obj_get_address return global address through dump outlet
+ * @param x
+ */
 void obj_get_address(t_obj_base *x);
 
+void obj_preset(t_obj_base *x, t_symbol* s, int argc, t_atom* argv);
 }
 } // namespace

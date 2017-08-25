@@ -34,6 +34,10 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->x_device = ossia_pd.get_default_device();
+
+  x->x_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
+  x->x_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+
   x->x_node = &x->x_device->get_root_node();
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
@@ -47,6 +51,9 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 static void ossia_free(t_ossia *x)
 {
   outlet_free(x->x_dumpout);
+
+  x->x_device->on_parameter_created.disconnect<t_device, &t_device::on_parameter_created_callback>(x);
+  x->x_device->on_parameter_removing.disconnect<t_device, &t_device::on_parameter_deleted_callback>(x);
 }
 
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)

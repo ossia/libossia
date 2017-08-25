@@ -179,10 +179,10 @@ int main(int argc, char** argv) {
 
             printDevice(localDevice);
             std::cout << "Applying preset" << std::endl;
-            ossia::devices::apply_preset(localDevice, p);
+            ossia::presets::apply_preset(localDevice, p);
             printDevice(localDevice);
 
-            ossia::presets::Preset preset = ossia::devices::make_preset(*localDevice);
+            ossia::preset::make_preset(*localDevice);
             printPreset(preset);
             std::string outjson = ossia::presets::write_json(preset);
             std::cout << outjson << std::endl;
@@ -212,7 +212,7 @@ int main(int argc, char** argv) {
             std::cout << "done." << std::endl;
             printPreset(preset);
             std::cout << "Building device from preset...";
-            ossia::devices::apply_preset(localDevice, preset, ossia::devices::keep_arch_off);
+            ossia::presets::keep_arch_off);
             std::cout << "done." <<std::endl;
         }
         catch (ossia::ossiaException_InvalidJSON prexc) {
@@ -229,7 +229,7 @@ int main(int argc, char** argv) {
         ossia::presets::Preset buildpreset;
 
         try {
-            buildpreset = ossia::devices::make_preset(*localDevice);
+            buildpreset = ossia::presets::make_preset(*localDevice);
             std::cout << "done." << std::endl;
         }
         catch (std::exception e) {

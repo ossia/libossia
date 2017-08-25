@@ -86,15 +86,15 @@ int main()
 
     // display json tree in console
     std::cerr << "== DEVICE ==\n";
-    auto json = ossia::devices::write_json(device);
+    auto json = ossia::presets::write_json(device);
     std::cerr << json << "\n";
 
     // write it as a file
-    ossia::devices::write_file(json, "namespace.json");
+    ossia::presets::write_file(json, "namespace.json");
 
     // Preset
     std::cerr << "\n\n== PRESET ==\n";
-    auto preset = ossia::devices::make_preset(device);
+    auto preset = ossia::presets::make_preset(device);
     for(auto& p : preset)
     {
       std::cerr << p.first << " => " << p.second << "\n";
@@ -115,7 +115,7 @@ int main()
 
     // Reapply the preset
     auto new_preset = ossia::presets::read_json(json_preset);
-    ossia::devices::apply_preset(device, new_preset);
+    ossia::presets::apply_preset(device, new_preset);
 
     std::cerr << IntAddress->value() << "\n";
     std::cerr << StringAddress1->value() << "\n";

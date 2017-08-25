@@ -56,14 +56,13 @@ static void print_protocol_help()
 
 struct t_device : t_obj_base
 {
-  ossia::net::generic_device* x_device{};
-
   static void register_children(t_device* x);
   void unregister_children();
   static void loadbang(t_device* x, t_float type);
 
-  // void parameterCreationHandler(const ossia::net::parameter_base& n);
-  // void nodeCreationHandler(const ossia::net::node_base& n);
+  void on_parameter_created_callback(const ossia::net::parameter_base& param);
+  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
+
 };
 
 void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv);

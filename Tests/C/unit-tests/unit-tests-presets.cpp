@@ -251,7 +251,7 @@ TEST_CASE ("Device") {
     ossia::net::create_node(r, "/leText.2/font.pointSize").create_parameter(ossia::val_type::INT);
     ossia::net::create_node(r, "/leText.3/font.pointSize").create_parameter(ossia::val_type::INT);
 
-    auto p = ossia::devices::make_preset(dev);
+    auto p = ossia::presets::make_preset(dev);
     REQUIRE(p.size() == 13);
 
     for(auto& preset : p)

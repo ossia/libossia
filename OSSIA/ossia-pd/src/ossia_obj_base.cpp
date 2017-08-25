@@ -5,6 +5,8 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <regex>
 
+#include <ossia-c/preset/preset.hpp>
+
 extern void glist_noselect(t_glist* x);
 extern void canvas_vis(t_canvas* x, t_floatarg f);
 extern void canvas_editmode(t_canvas* x, t_floatarg state);
@@ -287,12 +289,6 @@ void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::n
   }
 }
 
-/**
- * @brief obj_namespace : send namespace trought dump output
- * @details each message is prepend with "namespace"
- * and adresses start with a '/' to make it each to parse with OSC tool
- * @param x
- */
 void obj_namespace(t_obj_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
@@ -317,14 +313,6 @@ void obj_namespace(t_obj_base* x)
   }
 }
 
-/**
- * @brief obj_set send value to given address
- * @details For view and model, used to send value to a given address
- * @param x
- * @param s
- * @param argc
- * @param argv
- */
 void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYMBOL)
@@ -350,10 +338,6 @@ void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
   }
 }
 
-/**
- * @brief obj_get_address send the global address through dump outlet
- * @param x
- */
 void obj_get_address(t_obj_base *x)
 {
   if (!x->x_matchers.empty())
@@ -378,12 +362,6 @@ void obj_get_address(t_obj_base *x)
     outlet_anything(x->x_dumpout, gensym("address"), 0, NULL);
 }
 
-/**
- * @brief find_and_display_friend : find the object that defined the node and display it
- * @param x : object that hold the node we are looking for
- * @param patcher : starting point to seach a friend
- * @return true if we found a friend to display
- */
 bool find_and_display_friend(t_obj_base* x)
 {
   int found = 0;
@@ -452,6 +430,60 @@ bool find_and_display_friend(t_obj_base* x)
     }
   }
   return found;
+}
+
+
+void obj_preset(t_obj_base *x, t_symbol*s, int argc, t_atom* argv)
+{
+  ossia::net::node_base* node{};
+  switch (x->x_otype)
+  {
+    case Type::client:
+    case Type::device:
+      node = &x->x_device->get_root_node();
+      break;
+    case Type::model:
+    case Type::view:
+      node = x->x_node;
+      break;
+    default:
+      node = nullptr;
+  }
+
+  if (node)
+  {
+    if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+    {
+      if ( argv[0].a_w.w_symbol == gensym("save") )
+      {
+        argc--;
+        argv++;
+        if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+        {
+          auto preset = ossia::presets::make_preset(*node);
+          auto json = ossia::presets::write_json(x->x_name->s_name, preset);
+          ossia::presets::write_file(json, argv[0].a_w.w_symbol->s_name);
+        }
+      }
+      else if ( argv[0].a_w.w_symbol == gensym("load") )
+      {
+        argc--;
+        argv++;
+        if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+        {
+          auto json = ossia::presets::read_file(argv[0].a_w.w_symbol->s_name);
+          auto preset = ossia::presets::read_json(json);
+          ossia::presets::apply_preset(*node, preset);
+        }
+      }
+      else
+        pd_error(x, "unknown preset command '%s'", argv[0].a_w.w_symbol->s_name);
+    }
+  }
+  else
+  {
+    pd_error(x, "No node to save or to load into.");
+  }
 }
 
 }

@@ -37,10 +37,6 @@ OSSIA_EXPORT std::string
 write_json(const std::string& devicename, const preset&);
 
 OSSIA_EXPORT std::string to_string(const preset&);
-}
-
-namespace devices
-{
 
 enum keep_arch_type
 {
@@ -63,14 +59,18 @@ OSSIA_EXPORT std::string write_json(const ossia::net::device_base& deviceBase);
 OSSIA_EXPORT void
 write_file(ossia::string_view string, ossia::string_view filename);
 
+OSSIA_EXPORT const std::string
+read_file(const std::string& filename);
+
 OSSIA_EXPORT void apply_preset(
-    ossia::net::device_base&, const presets::preset&,
+    ossia::net::node_base&, const presets::preset&,
     keep_arch_type t = keep_arch_on, presets::instance_functions = {});
 
-OSSIA_EXPORT presets::preset make_preset(ossia::net::device_base&);
+OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&);
 
 OSSIA_EXPORT ossia::net::node_base*
 get_node(ossia::net::node_base&, const std::string&);
 OSSIA_EXPORT std::string to_string(const ossia::net::device_base& ossiadev);
-}
-}
+
+} // namespace presets
+} // namespace ossia
