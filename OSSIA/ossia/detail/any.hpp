@@ -21,11 +21,11 @@
 #endif
 
 #if defined(OSSIA_USE_BOOST_ANY)
-#include <boost/spirit/home/support/detail/hold_any.hpp>
+#include <boost/any.hpp>
 namespace ossia
 {
-using any = boost::spirit::hold_any;
-using boost::spirit::any_cast;
+using any = boost::any;
+using boost::any_cast;
 }
 
 #elif defined(OSSIA_USE_STD_ANY)

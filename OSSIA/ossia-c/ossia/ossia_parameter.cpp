@@ -3,7 +3,60 @@
 #include "ossia_utils.hpp"
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <readerwriterqueue.h>
+#include <unordered_map>
 #include <ossia/network/base/node_functions.hpp>
+
+struct ossia_mq_message
+{
+    ossia::net::parameter_base* address{};
+    ossia::value value;
+};
+struct ossia_mq : public Nano::Observer
+{
+    moodycamel::ReaderWriterQueue<ossia_mq_message> msgs;
+    std::unordered_map<
+      ossia::net::parameter_base*,
+      ossia::net::parameter_base::callback_index> registered;
+
+    ossia_mq(ossia::net::device_base& dev)
+    {
+      dev.on_parameter_removing.connect<ossia_mq, &ossia_mq::on_param_removed>(*this);
+    }
+
+    void reg(ossia::net::parameter_base& p)
+    {
+      auto it = p.add_callback([=,ptr=&p] (const auto& val) {
+        msgs.enqueue({ptr, val});
+      });
+      registered.insert({&p, it});
+    }
+
+    void unreg(ossia::net::parameter_base& p)
+    {
+      auto it = registered.find(&p);
+      if(it != registered.end())
+      {
+        p.remove_callback(it->second);
+        registered.erase(it);
+      }
+    }
+
+    void on_param_removed(const ossia::net::parameter_base& p)
+    {
+      auto it = registered.find(const_cast<ossia::net::parameter_base*>(&p));
+      if(it != registered.end())
+        registered.erase(it);
+    }
+
+    ~ossia_mq()
+    {
+      for(auto reg : registered)
+      {
+        reg.first->remove_callback(reg.second);
+      }
+    }
+};
+
 
 extern "C" {
 
@@ -493,57 +546,6 @@ int ossia_parameter_get_repetition_filter(
     return (rf == ossia::repetition_filter::ON) ? 1 : 0;
   });
 }
-
-struct ossia_mq_message
-{
-    ossia::net::parameter_base* address{};
-    ossia::value value;
-};
-struct ossia_mq : public Nano::Observer
-{
-    moodycamel::ReaderWriterQueue<ossia_mq_message> msgs;
-    std::unordered_map<
-      ossia::net::parameter_base*,
-      ossia::net::parameter_base::callback_index> registered;
-
-    ossia_mq(ossia::net::device_base& dev)
-    {
-      dev.on_parameter_removing.connect<ossia_mq, &ossia_mq::on_param_removed>(*this);
-    }
-
-    void reg(ossia::net::parameter_base& p)
-    {
-      auto it = p.add_callback([=,ptr=&p] (const auto& val) {
-        msgs.enqueue({ptr, val});
-      });
-      registered.insert({&p, it});
-    }
-
-    void unreg(ossia::net::parameter_base& p)
-    {
-      auto it = registered.find(&p);
-      if(it != registered.end())
-      {
-        p.remove_callback(it->second);
-        registered.erase(it);
-      }
-    }
-
-    void on_param_removed(const ossia::net::parameter_base& p)
-    {
-      auto it = registered.find(const_cast<ossia::net::parameter_base*>(&p));
-      if(it != registered.end())
-        registered.erase(it);
-    }
-
-    ~ossia_mq()
-    {
-      for(auto reg : registered)
-      {
-        reg.first->remove_callback(reg.second);
-      }
-    }
-};
 
 ossia_mq_t ossia_mq_create(ossia_device_t dev)
 {
