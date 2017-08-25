@@ -15,8 +15,8 @@ struct t_client : t_obj_base
   void unregister_children();
   static void loadbang(t_client* x, t_float type);
 
-  // void parameterCreationHandler(const ossia::net::parameter_base& n);
-  // void nodeCreationHandler(const ossia::net::node_base& n);
+  void on_parameter_created_callback(const ossia::net::parameter_base& param);
+  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
 
   static void print_protocol_help()
   {

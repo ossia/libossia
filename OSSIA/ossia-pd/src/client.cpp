@@ -115,12 +115,33 @@ void t_client::unregister_children()
   }
 }
 
+void t_client::on_parameter_created_callback(const ossia::net::parameter_base& param)
+{
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("create"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+}
+
+void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
+{
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("delete"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+}
+
 static void client_update(t_client* x)
 {
   if (x->x_device)
   {
     x->x_device->get_protocol().update(*x->x_device);
     x->x_node = &x->x_device->get_root_node();
+
     t_client::register_children(x);
   }
 }
@@ -210,6 +231,13 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
     t_client::print_protocol_help();
     return;
   }
+
+  if (x->x_device)
+  {
+    x->x_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
+    x->x_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
+  }
+
   client_update(x);
 }
 

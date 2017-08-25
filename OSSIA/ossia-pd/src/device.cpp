@@ -56,6 +56,10 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
     x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->x_name->s_name};
+
+    x->x_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
+    x->x_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+
     x->x_node = &x->x_device->get_root_node();
     x->x_parent_node = nullptr;
     x->x_regclock = clock_new(x, (t_method)t_device::register_children);
@@ -151,6 +155,26 @@ void t_device::unregister_children()
       remote->unregister();
     }
   }
+}
+
+void t_device::on_parameter_created_callback(const ossia::net::parameter_base& param)
+{
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("create"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+}
+
+void t_device::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
+{
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("delete"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
 }
 
 void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
