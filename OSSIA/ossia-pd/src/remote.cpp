@@ -94,6 +94,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
 bool t_remote::unregister()
 {
+  clock_unset(x_regclock);
   x_matchers.clear();
 
   obj_quarantining<t_remote>(this);
@@ -113,6 +114,39 @@ void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& p
   if ( path && ossia::traversal::match(*path, node) )
   {
     x_matchers.emplace_back(&node,this);
+  }
+}
+
+void t_remote::set_unit()
+{
+  if ( x_unit !=  gensym("") )
+  {
+    // TODO check for unit compatibility with parameter
+    ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
+    if (unit)
+      x_ounit = unit;
+    else
+      pd_error(this, "wrong unit: %s", x_unit->s_name);
+  }
+}
+
+void remote_get_unit(t_remote*x)
+{
+  t_atom a;
+  if (x->x_unit)
+  {
+    SETSYMBOL(&a,x->x_unit);
+    outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
+  } else
+    outlet_anything(x->x_dumpout, gensym("unit"), 0, NULL);
+}
+
+t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+{
+  if (msg == gensym("attr_modified"))
+  {
+    if ( s == gensym("unit") )
+      x->set_unit();
   }
 }
 
@@ -156,7 +190,9 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
   auto& ossia_pd = ossia_pd::instance();
   t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
 
-  if (x)
+  t_binbuf* d = binbuf_via_atoms(argc, argv);
+
+  if (x && d)
   {
     x->x_otype = Type::remote;
     x->x_setout = outlet_new((t_object*)x, nullptr);
@@ -165,6 +201,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     new (&x->x_callbackits) decltype(x->x_callbackits);
     new (&x->x_matchers) decltype(x->x_matchers);
     x->x_dev = nullptr;
+    x->x_ounit = ossia::none;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -184,6 +221,8 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     x->x_parent_node = nullptr;
     x->x_node = nullptr;
+
+    ebox_attrprocess_viabinbuf(x, d);
 
     obj_register<t_remote>(x);
     ossia_pd.remotes.push_back(x);
@@ -220,11 +259,18 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)t_obj_base::obj_push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method)t_obj_base::obj_bang, "bang", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_dump<t_remote>, "dump", A_NULL, 0);
-    eclass_addmethod(c, (method)remote_click, "click", A_NULL, 0);
-    eclass_addmethod(c, (method)remote_bind, "bind", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) t_obj_base::obj_push,   "anything",    A_GIMME,  0);
+    eclass_addmethod(c, (method) t_obj_base::obj_bang,   "bang",        A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<t_remote>,     "dump",        A_NULL,   0);
+    eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
+    eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,  0);
+    eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
+    eclass_addmethod(c, (method) obj_get_address,        "getaddress",  A_NULL,   0);
+
+    CLASS_ATTR_SYMBOL(c, "unit", 0, t_remote, x_unit);
+    CLASS_ATTR_DEFAULT(c, "unit", 0, "");
+
+    eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
   }
 
   auto& ossia_pd = ossia_pd::instance();

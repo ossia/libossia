@@ -132,6 +132,7 @@ void t_param::is_deleted(const net::node_base& n)
 
 static void push_default_value(t_param* x)
 {
+  if ( x->x_default_size > 0 )
     t_obj_base::obj_push(x, nullptr, x->x_default_size, x->x_default);
 }
 
@@ -160,6 +161,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->x_type = gensym("float");
     x->x_priority = 0;
     x->x_hidden = false;
+    x->x_ounit = ossia::none;
 
     x->x_clock = clock_new(x, (t_method)push_default_value);
 
@@ -427,14 +429,26 @@ void t_param::set_range()
     }
     else if (x_range[0].a_type == A_FLOAT && x_range[1].a_type == A_FLOAT)
     {
-      std::vector<ossia::value> omin, omax;
-      // TODO check param size
-      std::array<float, OSSIA_PD_MAX_ATTR_SIZE> min, max;
-      min.fill(x_range[0].a_w.w_float);
-      max.fill(x_range[1].a_w.w_float);
-      omin.assign(min.begin(), min.end());
-      omax.assign(max.begin(), max.end());
-      param->set_domain(ossia::make_domain(omin,omax));
+      switch( param->get_value_type() )
+      {
+        case ossia::val_type::INT:
+        case ossia::val_type::FLOAT:
+        case ossia::val_type::CHAR:
+          param->set_domain(
+                ossia::make_domain(x_range[0].a_w.w_float,x_range[1].a_w.w_float));
+          break;
+        default:
+          {
+            std::vector<ossia::value> omin, omax;
+            // TODO check param size
+            std::array<float, OSSIA_PD_MAX_ATTR_SIZE> min, max;
+            min.fill(x_range[0].a_w.w_float);
+            max.fill(x_range[1].a_w.w_float);
+            omin.assign(min.begin(), min.end());
+            omax.assign(max.begin(), max.end());
+            param->set_domain(ossia::make_domain(omin,omax));
+          }
+      }
     }
   }
 }
@@ -716,6 +730,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
     CLASS_ATTR_DEFAULT(c, "access_mode",   0, "bi");
 
+    // attributes getter
     eclass_addmethod(c, (method) parameter_get_range,             "getrange",             A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_min,               "getmin",               A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_max,               "getmax",               A_NULL, 0);
@@ -730,6 +745,8 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter_get_tags,              "gettags",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_description,       "getdescription",       A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_enable,            "getenable",            A_NULL, 0);
+
+    eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
 
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy

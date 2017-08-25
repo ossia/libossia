@@ -16,6 +16,9 @@ struct t_remote : t_obj_base
   bool unregister();
 
   ossia::net::device_base* x_dev{};
+  t_symbol* x_unit;
+
+  void set_unit();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 

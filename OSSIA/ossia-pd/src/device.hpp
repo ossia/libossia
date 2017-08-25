@@ -57,7 +57,6 @@ static void print_protocol_help()
 struct t_device : t_obj_base
 {
   ossia::net::generic_device* x_device{};
-  ossia::net::local_protocol x_local_proto;
 
   static void register_children(t_device* x);
   void unregister_children();

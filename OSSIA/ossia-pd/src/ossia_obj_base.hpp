@@ -95,6 +95,8 @@ struct t_obj_base
   t_canvas* x_last_opened_canvas{};
   std::chrono::milliseconds x_last_click;
 
+  ossia::optional<ossia::unit_t> x_ounit;
+
   ossia::net::node_base* x_node{};
   ossia::net::node_base* x_parent_node{};
   std::vector<t_matcher> x_matchers{};
@@ -111,6 +113,7 @@ struct t_obj_base
 bool find_and_display_friend(t_obj_base* x);
 void obj_namespace(t_obj_base* x);
 void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv);
+void obj_get_address(t_obj_base *x);
 
 }
 } // namespace
