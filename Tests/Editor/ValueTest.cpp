@@ -22,6 +22,7 @@ private Q_SLOTS:
       QVERIFY(ossia::parse_pretty_value("int: 123") == ossia::value{123});
       QVERIFY(ossia::parse_pretty_value("char: 'x'") == ossia::value{'x'});
       QVERIFY(ossia::parse_pretty_value("string: \"foo bar baz\"") == ossia::value{"foo bar baz"});
+      QVERIFY(ossia::parse_pretty_value("string: \"foo \\\"bar\\\" baz\"") == ossia::value{"foo \"bar\" baz"});
       QVERIFY(ossia::parse_pretty_value("vec2f: [1.2, 3.4]") == ossia::make_vec(1.2, 3.4));
       QVERIFY(ossia::parse_pretty_value("vec3f: [1.2, 3.4, 5.6]") == ossia::make_vec(1.2, 3.4, 5.6));
       QCOMPARE(ossia::parse_pretty_value("tuple: []"), ossia::value(std::vector<ossia::value>{}));

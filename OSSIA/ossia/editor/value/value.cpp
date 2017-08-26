@@ -11,6 +11,7 @@
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <sstream>
 
 namespace ossia
@@ -501,8 +502,9 @@ struct value_prettyprint_visitor
   {
     s << "char: " << c;
   }
-  void operator()(const std::string& str) const
+  void operator()(std::string str) const
   {
+    boost::algorithm::replace_all(str, "\"", "\\\"");
     s << "string: " << str;
   }
   void operator()(vec2f vec) const

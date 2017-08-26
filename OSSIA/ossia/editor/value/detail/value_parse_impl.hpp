@@ -54,11 +54,18 @@ const x3::rule<class o_vec3_, array_parser<3>> o_vec3_ = "vec3";
 const x3::rule<class o_vec4_, array_parser<4>> o_vec4_ = "vec4";
 const x3::rule<class o_tuple_, std::vector<ossia::value>> o_tuple_ = "tuple";
 
+struct EscapedChar : x3::symbols<const char>
+{
+  EscapedChar()
+  {
+    add("\\\"", '\"');
 
+  }
+};
 using float_p = real_parser<float, x3::strict_real_policies<float>>;
 
 const auto o_impulse__def = x3::lit("impulse") [ ([] (auto&){ return ossia::impulse{}; }) ];
-const auto o_str__def = "string: \"" >> (x3::lexeme[ *(char_  - '"') ]) >> "\"";
+const auto o_str__def = "string: \"" >> (x3::lexeme[ *(EscapedChar() | (char_  - '"')) ]) >> '"';
 const auto o_vec2__def = "vec2f: [" >> float_p() >> ", " >> float_p() >> "]";
 const auto o_vec3__def = "vec3f: [" >> float_p() >> ", " >> float_p() >> ", " >> float_p() >> "]";
 const auto o_vec4__def = "vec4f: [" >> float_p() >> ", " >> float_p() >> ", " >> float_p() >> ", " >> float_p() >> "]";
