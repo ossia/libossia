@@ -1,9 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
-
+#include <ossia/editor/value/value.hpp>
+#include <ossia/editor/value/detail/value_parse_impl.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
+#include "TestUtils.hpp"
 using namespace ossia;
 
 class ValueTest : public QObject
@@ -12,6 +15,19 @@ class ValueTest : public QObject
 
 private Q_SLOTS:
 
+    void test_parse()
+    {
+      QVERIFY(ossia::parse_pretty_value("impulse") == ossia::impulse{});
+      QVERIFY(ossia::parse_pretty_value("float: 12.3") == ossia::value{12.3});
+      QVERIFY(ossia::parse_pretty_value("int: 123") == ossia::value{123});
+      QVERIFY(ossia::parse_pretty_value("char: 'x'") == ossia::value{'x'});
+      QVERIFY(ossia::parse_pretty_value("string: \"foo bar baz\"") == ossia::value{"foo bar baz"});
+      QVERIFY(ossia::parse_pretty_value("vec2f: [1.2, 3.4]") == ossia::make_vec(1.2, 3.4));
+      QVERIFY(ossia::parse_pretty_value("vec3f: [1.2, 3.4, 5.6]") == ossia::make_vec(1.2, 3.4, 5.6));
+      QCOMPARE(ossia::parse_pretty_value("tuple: []"), ossia::value(std::vector<ossia::value>{}));
+      QCOMPARE(ossia::parse_pretty_value("tuple: [int: 123]"), ossia::value(std::vector<ossia::value>{123}));
+      QCOMPARE(ossia::parse_pretty_value("tuple: [float: 1.2, char: 'c', string: \"foo\"]"), ossia::value(std::vector<ossia::value>{1.2, 'c', "foo"}));
+    }
   void test_wrapped()
   {
     QVERIFY(impulse() == true);

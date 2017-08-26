@@ -23,6 +23,7 @@ class value;
  */
 struct OSSIA_EXPORT impulse
 {
+  using value_type = impulse;
   OSSIA_DECL_RELAXED_CONSTEXPR impulse() noexcept
   {
   }

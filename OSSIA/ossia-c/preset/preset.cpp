@@ -27,6 +27,7 @@
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/ossia.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
+#include <ossia/editor/value/detail/value_parse_impl.hpp>
 
 struct ossia_preset
 {
@@ -656,27 +657,31 @@ std::string ossia_value_to_std_string(const ossia::value& val)
   return ss.str();
 }
 
-static std::string to_string(const ossia::presets::preset_pair& pp)
+std::string ossia::presets::to_string(const preset& pr)
 {
-  std::stringstream ss;
-  ss << pp.first << ": ";
-  auto& val = pp.second;
-  ss << ossia_value_to_std_string(val);
-  return std::string(ss.str());
+  std::string str;
+  str.reserve(pr.size() * 32); // totally empirical
+  for (const preset_pair& pp : pr)
+  {
+    str.append(pp.first);
+    str += '\t';
+    str.append(value_to_pretty_string(pp.second));
+    str += '\n';
+  }
+  return str;
 }
 
-std::string ossia::presets::to_string(const preset& preset)
+ossia::presets::preset ossia::presets::from_string(const ossia::string_view& str)
 {
-  std::string str = "[";
-  std::vector<std::string> substrings;
-  substrings.reserve(preset.size());
-  for (const preset_pair& pp : preset)
-  {
-    substrings.push_back(::to_string(pp));
-  }
-  str += boost::join(substrings, ", ");
-  str += "]";
-  return str;
+  preset ps;
+
+  using boost::spirit::x3::parse;
+  using ossia::detail::parse::preset_;
+  auto first = str.cbegin(), last = str.cend();
+  bool r = parse(first, last, preset_, ps);
+  if(!r)
+    ossia::logger().error("ossia::presetss::from_string error: {}", str);
+  return ps;
 }
 
 std::string domain_to_string(const ossia::domain& domain)

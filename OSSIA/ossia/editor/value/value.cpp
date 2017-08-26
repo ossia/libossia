@@ -4,6 +4,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/detail/value_conversion_impl.hpp>
+#include <ossia/editor/value/detail/value_parse_impl.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
@@ -534,6 +535,19 @@ std::string value_to_pretty_string(const ossia::value& val)
   return s.str();
 }
 
+ossia::value parse_pretty_value(ossia::string_view str)
+{
+  ossia::value val;
+
+  using boost::spirit::x3::parse;
+  using ossia::detail::parse::value_;
+  auto first = str.cbegin(), last = str.cend();
+  bool r = parse(first, last, value_, val);
+  if(!r)
+    ossia::logger().error("ossia::parse_pretty_value error: {}", str);
+  return val;
+}
+
 ossia::value get_value_at_index(
     const ossia::value& val, const ossia::destination_index& idx)
 {
@@ -621,19 +635,19 @@ operator<<(std::ostream& s, const std::vector<ossia::value>& tuple)
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 2>& vec)
 {
-  s << "[" << vec[0] << " " << vec[1] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << "]";
   return s;
 }
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 3>& vec)
 {
-  s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << "]";
   return s;
 }
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 4>& vec)
 {
-  s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << "]";
   return s;
 }
 

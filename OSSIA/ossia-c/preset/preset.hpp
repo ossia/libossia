@@ -37,6 +37,7 @@ OSSIA_EXPORT std::string
 write_json(const std::string& devicename, const preset&);
 
 OSSIA_EXPORT std::string to_string(const preset&);
+OSSIA_EXPORT preset from_string(const ossia::string_view& str);
 
 enum keep_arch_type
 {

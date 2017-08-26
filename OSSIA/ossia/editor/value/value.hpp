@@ -3,6 +3,7 @@
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/value/value_base.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <limits>
 #include <ossia_export.h>
 #include <string>
@@ -45,6 +46,7 @@ class value;
  *
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
+OSSIA_EXPORT ossia::value parse_pretty_value(ossia::string_view str);
 
 #include <ossia/editor/value/value_variant_impl.hpp>
 
