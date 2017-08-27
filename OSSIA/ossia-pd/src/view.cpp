@@ -24,10 +24,10 @@ bool t_view::register_node(ossia::net::node_base* node)
   {
     obj_dequarantining<t_view>(this);
     std::vector<t_obj_base*> viewnode
-        = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
+        = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnode)
     {
-      if (v->x_otype == Type::view)
+      if (v->m_otype == Type::view)
       {
         t_view* view = (t_view*)v;
         if (view == this)
@@ -35,12 +35,12 @@ bool t_view::register_node(ossia::net::node_base* node)
           // not registering itself
           continue;
         }
-        view->register_node(x_node);
+        view->register_node(m_node);
       }
-      else if (v->x_otype == Type::remote)
+      else if (v->m_otype == Type::remote)
       {
         t_remote* remote = (t_remote*)v;
-        remote->register_node(x_node);
+        remote->register_node(m_node);
       }
     }
   }
@@ -52,33 +52,33 @@ bool t_view::register_node(ossia::net::node_base* node)
 
 bool t_view::do_registration(ossia::net::node_base* node)
 {
-  if (x_node && x_node->get_parent() == node)
+  if (m_node && m_node->get_parent() == node)
     return true; // already register to this node;
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the remote
 
   if (node)
   {
-    x_parent_node = node;
+    m_parent_node = node;
 
-    if (x_addr_scope == AddrScope::relative)
+    if (m_addr_scope == AddrScope::relative)
     {
-      x_node = node->find_child(x_name->s_name);
+      m_node = node->find_child(m_name->s_name);
     }
-    else if(x_addr_scope == AddrScope::absolute)
+    else if(m_addr_scope == AddrScope::absolute)
     {
-      x_node = ossia::net::find_node(
-            node->get_device().get_root_node(), x_name->s_name);
+      m_node = ossia::net::find_node(
+            node->get_device().get_root_node(), m_name->s_name);
     } else {
-      auto nodes = ossia::pd::find_global_nodes(x_name->s_name);
-      if (!nodes.empty()) x_node = nodes[0];
-      else x_node = nullptr;
+      auto nodes = ossia::pd::find_global_nodes(m_name->s_name);
+      if (!nodes.empty()) m_node = nodes[0];
+      else m_node = nullptr;
     }
 
 
-    if (x_node)
+    if (m_node)
     {
-      x_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
+      m_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
     }
     else
     {
@@ -96,17 +96,17 @@ bool t_view::do_registration(ossia::net::node_base* node)
 static void register_children(t_view* x)
 {
   std::vector<t_obj_base*> viewnode
-      = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == Type::view)
     {
       t_view* view = (t_view*)v;
       if (view == x)
         continue;
       obj_register<t_view>(view);
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == Type::remote)
     {
       t_remote* remote = (t_remote*)v;
       obj_register<t_remote>(remote);
@@ -116,29 +116,29 @@ static void register_children(t_view* x)
 
 bool t_view::unregister()
 {
-  if (!x_node)
+  if (!m_node)
     return true; // not registered
 
-  x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(this);
+  m_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(this);
 
   std::vector<t_obj_base*> viewnode
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == Type::view)
     {
       t_view* view = (t_view*)v;
       if (view == this)
         continue;
       view->unregister();
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == Type::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->unregister();
     }
   }
-  x_node = nullptr;
+  m_node = nullptr;
   obj_quarantining<t_view>(this);
 
   register_children(this);
@@ -154,14 +154,14 @@ static void view_click(
   using namespace std::chrono;
   milliseconds ms
       = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-  milliseconds diff = (ms - x->x_last_click);
+  milliseconds diff = (ms - x->m_last_click);
   if (diff.count() < 200)
   { // 200 ms double click
-    x->x_last_click = milliseconds(0);
+    x->m_last_click = milliseconds(0);
 
     int l;
     t_device* device
-        = (t_device*)find_parent(&x->x_obj, "ossia.device", 0, &l);
+        = (t_device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
     /*
     if (!device || !x->x_node || obj_isQuarantined<t_remote>(x)){
       pd_error(x, "sorry no device found, or not connected or quarantined...");
@@ -179,7 +179,7 @@ static void view_click(
   }
   else
   {
-    x->x_last_click = ms;
+    x->m_last_click = ms;
   }
 }
 
@@ -192,29 +192,29 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
   {
     ossia_pd.views.push_back(x);
 
-    x->x_otype = Type::view;
-    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->x_clock = nullptr;
-    x->x_regclock = clock_new(x, (t_method)obj_register<t_view>);
+    x->m_otype = Type::view;
+    x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_clock = nullptr;
+    x->m_regclock = clock_new(x, (t_method)obj_register<t_view>);
 
-    x->x_node = nullptr;
-    x->x_parent_node = nullptr;
+    x->m_node = nullptr;
+    x->m_parent_node = nullptr;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
-      x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = ossia::pd::get_address_scope(x->x_name->s_name);
+      x->m_name = atom_getsymbol(argv);
+      x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
       // and object will be added to patcher's objects list (aka canvas g_list)
       // after model_new() returns.
       // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->x_regclock, 0);
+      clock_delay(x->m_regclock, 0);
     }
     else
     {
-      x->x_name = gensym("untitledModel");
+      x->m_name = gensym("untitledModel");
       pd_error(x, "You have to pass a name as the first argument");
     }
 
@@ -232,17 +232,17 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
 static void view_free(t_view* x)
 {
-  x->x_dead = true;
+  x->m_dead = true;
   x->unregister();
   obj_dequarantining<t_view>(x);
   ossia_pd::instance().views.remove_all(x);
-  clock_free(x->x_regclock);
+  clock_free(x->m_regclock);
 }
 
 static void view_bind(t_view* x, t_symbol* address)
 {
-  x->x_name = address;
-  x->x_addr_scope = ossia::pd::get_address_scope(x->x_name->s_name);
+  x->m_name = address;
+  x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);
 }

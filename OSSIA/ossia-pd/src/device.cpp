@@ -17,19 +17,19 @@ namespace pd
 
 static void device_free(t_device* x)
 {
-  x->x_dead = true;
-  clock_unset(x->x_regclock);
-  clock_free(x->x_regclock);
+  x->m_dead = true;
+  clock_unset(x->m_regclock);
+  clock_free(x->m_regclock);
 
   // TODO why is this necessary since all children
   // should have register to node.about_to_be_deleted() signal
   // x->unregister_children();
 
-  if (x->x_device)
-    delete (x->x_device);
+  if (x->m_device)
+    delete (x->m_device);
 
   ossia_pd::instance().devices.remove_all(x);
-  outlet_free(x->x_dumpout);
+  outlet_free(x->m_dumpout);
   register_quarantinized();
 }
 
@@ -43,27 +43,27 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.devices.push_back(x);
-    x->x_otype = Type::device;
+    x->m_otype = Type::device;
 
-    x->x_name = gensym("Pd");
-    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_name = gensym("Pd");
+    x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
-      x->x_name = atom_getsymbol(argv);
+      x->m_name = atom_getsymbol(argv);
     }
 
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-    x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr),
-                                                 x->x_name->s_name};
+    x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
+                                                 x->m_name->s_name};
 
-    x->x_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
-    x->x_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+    x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
+    x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
 
-    x->x_node = &x->x_device->get_root_node();
-    x->x_parent_node = nullptr;
-    x->x_regclock = clock_new(x, (t_method)t_device::register_children);
-    clock_delay(x->x_regclock, 0);
+    x->m_node = &x->m_device->get_root_node();
+    x->m_parent_node = nullptr;
+    x->m_regclock = clock_new(x, (t_method)t_device::register_children);
+    clock_delay(x->m_regclock, 0);
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -83,41 +83,41 @@ void t_device::register_children(t_device* x)
 {
 
   std::vector<t_obj_base*> modelnodes
-      = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
   {
-    if (v->x_otype == Type::model)
+    if (v->m_otype == Type::model)
     {
       t_model* model = (t_model*)v;
-      model->register_node(x->x_node);
+      model->register_node(x->m_node);
     }
-    else if (v->x_otype == Type::param)
+    else if (v->m_otype == Type::param)
     {
       t_param* param = (t_param*)v;
-      param->register_node(x->x_node);
+      param->register_node(x->m_node);
     }
   }
 
   std::vector<t_obj_base*> viewnodes
-      = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == Type::view)
     {
       t_view* view = (t_view*)v;
-      view->register_node(x->x_node);
+      view->register_node(x->m_node);
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == Type::remote)
     {
       t_remote* remote = (t_remote*)v;
-      remote->register_node(x->x_node);
+      remote->register_node(x->m_node);
     }
   }
 
   // then go through all remote objects with pattern matching name
   // to register them to device's address creation callback
   for (auto x : ossia_pd::instance().remotes.copy()){
-    if (x->x_is_pattern)
+    if (x->m_is_pattern)
       obj_register<t_remote>(x);
   }
 }
@@ -125,15 +125,15 @@ void t_device::register_children(t_device* x)
 void t_device::unregister_children()
 {
   std::vector<t_obj_base*> node
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : node)
   {
-    if (v->x_otype == Type::model)
+    if (v->m_otype == Type::model)
     {
       t_model* model = (t_model*)v;
       model->unregister();
     }
-    else if (v->x_otype == Type::param)
+    else if (v->m_otype == Type::param)
     {
       t_param* param = (t_param*)v;
       param->unregister();
@@ -141,15 +141,15 @@ void t_device::unregister_children()
   }
 
   std::vector<t_obj_base*> viewnode
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == Type::view)
     {
       t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == Type::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->unregister();
@@ -164,7 +164,7 @@ void t_device::on_parameter_created_callback(const ossia::net::parameter_base& p
   t_atom a[2];
   SETSYMBOL(a, gensym("create"));
   SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
 void t_device::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
@@ -174,7 +174,7 @@ void t_device::on_parameter_deleted_callback(const ossia::net::parameter_base& p
   t_atom a[2];
   SETSYMBOL(a, gensym("delete"));
   SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
 void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
@@ -183,7 +183,7 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
   if (argc && argv->a_type == A_SYMBOL)
   {
     auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-        x->x_device->get_protocol());
+        x->m_device->get_protocol());
     std::string protocol = argv->a_w.w_symbol->s_name;
     if (protocol == "Minuit")
     {
@@ -201,7 +201,7 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
       try
       {
         multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
-            x->x_name->s_name, settings.remoteip, settings.remoteport,
+            x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
       }
       catch (const std::exception& e)
@@ -287,11 +287,11 @@ void device_name(t_device *x, t_symbol* s, int argc, t_atom* argv){
   if( argc == 0 )
   {
     t_atom a;
-    SETSYMBOL(&a,gensym(x->x_device->get_name().c_str()));
-    outlet_anything(x->x_dumpout,gensym("name"),1,&a);
+    SETSYMBOL(&a,gensym(x->m_device->get_name().c_str()));
+    outlet_anything(x->m_dumpout,gensym("name"),1,&a);
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* name = argv[0].a_w.w_symbol;
-    x->x_device->set_name(name->s_name);
+    x->m_device->set_name(name->s_name);
   } else {
     pd_error(x,"bad argument to message 'name'");
   }
@@ -300,19 +300,19 @@ void device_name(t_device *x, t_symbol* s, int argc, t_atom* argv){
 void device_getprotocols(t_device* x)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-      x->x_device->get_protocol());
+      x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
   t_atom a;
   SETFLOAT(&a,protos.size());
-  outlet_anything(x->x_dumpout,gensym("protocols"),1,&a);
+  outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
 
 }
 
 void device_stop_expose(t_device*x, int index)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-      x->x_device->get_protocol());
+      x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
   if ( index < protos.size() )

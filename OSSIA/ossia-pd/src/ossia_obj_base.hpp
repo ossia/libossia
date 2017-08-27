@@ -6,7 +6,7 @@ extern "C" {
 #include <cicm_wrapper.h>
 }
 
-#define OSSIA_PD_MAX_ATTR_SIZE 64
+#define OSSIA_PD_MAX_ATTR_SIZE 256
 
 namespace ossia
 {
@@ -78,32 +78,32 @@ private:
 
 struct t_obj_base
 {
-  t_eobj x_obj;
-  Type x_otype{};
-  t_symbol* x_name{};
-  t_outlet* x_setout{};
-  t_outlet* x_dataout{};
-  t_outlet* x_dumpout{};
-  AddrScope x_addr_scope{};
-  bool x_is_pattern{}; // whether the address is a pattern or not
-  bool x_dead{}; // whether this object is being deleted or not
-  bool x_is_deleted{}; // true during the is_deleted callback method
+  t_eobj m_obj;
+  Type m_otype{};
+  t_symbol* m_name{};
+  t_outlet* m_setout{};
+  t_outlet* m_dataout{};
+  t_outlet* m_dumpout{};
+  AddrScope m_addr_scope{};
+  bool m_is_pattern{}; // whether the address is a pattern or not
+  bool m_dead{}; // whether this object is being deleted or not
+  bool m_is_deleted{}; // true during the is_deleted callback method
 
-  t_clock* x_clock{};
-  t_clock* x_regclock{};   // registration clock
-  t_clock* x_unregclock{}; // unregistration clock
-  t_canvas* x_last_opened_canvas{};
-  std::chrono::milliseconds x_last_click;
+  t_clock* m_clock{};
+  t_clock* m_regclock{};   // registration clock
+  t_clock* m_unregclock{}; // unregistration clock
+  t_canvas* m_last_opened_canvas{};
+  std::chrono::milliseconds m_last_click;
 
-  ossia::optional<ossia::unit_t> x_ounit;
+  ossia::optional<ossia::unit_t> m_ounit;
 
-  ossia::net::generic_device* x_device{};
-  ossia::net::node_base* x_node{};
-  ossia::net::node_base* x_parent_node{};
-  std::vector<t_matcher> x_matchers{};
+  ossia::net::generic_device* m_device{};
+  ossia::net::node_base* m_node{};
+  ossia::net::node_base* m_parent_node{};
+  std::vector<t_matcher> m_matchers{};
 
   std::vector<ossia::optional<ossia::callback_container<ossia::value_callback>::iterator> >
-      x_callbackits;
+      m_callbackits;
   void is_deleted(const ossia::net::node_base& n);
 
   // TODO why some methods are inside t_obj_base class and other are outside ?

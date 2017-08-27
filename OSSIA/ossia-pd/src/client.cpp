@@ -21,13 +21,13 @@ namespace pd
 
 static void client_free(t_client* x)
 {
-  x->x_dead = true;
+  x->m_dead = true;
   x->unregister_children();
-  if (x->x_device)
-    delete (x->x_device);
-  x->x_device = nullptr;
+  if (x->m_device)
+    delete (x->m_device);
+  x->m_device = nullptr;
   ossia_pd::instance().clients.remove_all(x);
-  outlet_free(x->x_dumpout);
+  outlet_free(x->m_dumpout);
   register_quarantinized();
 }
 
@@ -41,17 +41,17 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.clients.push_back(x);
-    x->x_otype = Type::client;
+    x->m_otype = Type::client;
 
-    x->x_name = gensym("Pd");
-    x->x_device = nullptr;
-    x->x_node = nullptr;
-    x->x_parent_node = nullptr;
-    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_name = gensym("Pd");
+    x->m_device = nullptr;
+    x->m_node = nullptr;
+    x->m_parent_node = nullptr;
+    x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
-      x->x_name = atom_getsymbol(argv);
+      x->m_name = atom_getsymbol(argv);
     }
 
     ebox_attrprocess_viabinbuf(x, d);
@@ -80,18 +80,18 @@ void t_client::register_children(t_client* x)
 {
 
   std::vector<t_obj_base*> viewnodes
-      = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == Type::view)
     {
       t_view* view = (t_view*)v;
-      view->register_node(x->x_node);
+      view->register_node(x->m_node);
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == Type::remote)
     {
       t_remote* remote = (t_remote*)v;
-      remote->register_node(x->x_node);
+      remote->register_node(x->m_node);
     }
   }
 }
@@ -99,15 +99,15 @@ void t_client::register_children(t_client* x)
 void t_client::unregister_children()
 {
   std::vector<t_obj_base*> viewnode
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == Type::view)
     {
       t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == Type::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->unregister();
@@ -122,7 +122,7 @@ void t_client::on_parameter_created_callback(const ossia::net::parameter_base& p
   t_atom a[2];
   SETSYMBOL(a, gensym("create"));
   SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
 void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
@@ -132,15 +132,15 @@ void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& p
   t_atom a[2];
   SETSYMBOL(a, gensym("delete"));
   SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(x_dumpout, gensym("parameter"), 2, a);
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
 static void client_update(t_client* x)
 {
-  if (x->x_device)
+  if (x->m_device)
   {
-    x->x_device->get_protocol().update(*x->x_device);
-    x->x_node = &x->x_device->get_root_node();
+    x->m_device->get_protocol().update(*x->m_device);
+    x->m_node = &x->m_device->get_root_node();
 
     t_client::register_children(x);
   }
@@ -151,9 +151,9 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 
   // unregister and free x_device
   x->unregister_children();
-  if (x->x_device)
-    delete (x->x_device);
-  x->x_device = nullptr;
+  if (x->m_device)
+    delete (x->m_device);
+  x->m_device = nullptr;
 
   if (argc && argv->a_type == A_SYMBOL)
   {
@@ -178,10 +178,10 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        x->x_device = new ossia::net::generic_device{
+        x->m_device = new ossia::net::generic_device{
             std::make_unique<ossia::net::minuit_protocol>(
                 device_name, remoteip, remoteport, localport),
-            x->x_name->s_name};
+            x->m_name->s_name};
       }
       catch (const std::exception& e)
       {
@@ -207,10 +207,10 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
       try
       {
         auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
-        x->x_device = new ossia::net::generic_device{
+        x->m_device = new ossia::net::generic_device{
             std::unique_ptr<ossia::net::protocol_base>(protocol), "Pd"};
 
-        std::cout << "connected to device " << x->x_device->get_name()
+        std::cout << "connected to device " << x->m_device->get_name()
                   << " on " << wsurl << std::endl;
       }
       catch (const std::exception& e)
@@ -232,10 +232,10 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
     return;
   }
 
-  if (x->x_device)
+  if (x->m_device)
   {
-    x->x_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
-    x->x_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
+    x->m_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
+    x->m_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
   }
 
   client_update(x);

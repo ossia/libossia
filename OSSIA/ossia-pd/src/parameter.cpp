@@ -49,9 +49,9 @@ bool t_param::do_registration(ossia::net::node_base* node)
   if (absolute_path != address_string) return false;
   */
 
-  x_parent_node = node;
+  m_parent_node = node;
 
-  auto nodes = ossia::net::create_nodes(*node, x_name->s_name);
+  auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
 
   for (auto n : nodes)
   {
@@ -82,7 +82,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
     ossia::net::set_hidden(local_param->get_node(), x_hidden);
 
     t_matcher matcher{n,this};
-    x_matchers.push_back(std::move(matcher));
+    m_matchers.push_back(std::move(matcher));
   }
 
   set_description();
@@ -94,18 +94,18 @@ bool t_param::do_registration(ossia::net::node_base* node)
   set_minmax();
   set_default();
 
-  clock_delay(x_clock, 0);
+  clock_delay(m_clock, 0);
 
   return true;
 }
 
 bool t_param::unregister()
 {
-  clock_unset(x_clock);
+  clock_unset(m_clock);
 
-  x_matchers.clear();
+  m_matchers.clear();
 
-  x_node = nullptr;
+  m_node = nullptr;
 
   for (auto remote : t_remote::quarantine().copy())
   {
@@ -125,8 +125,8 @@ ossia::safe_vector<t_param*>& t_param::quarantine()
 
 void t_param::is_deleted(const net::node_base& n)
 {
-  x_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
-  x_node = nullptr;
+  m_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
+  m_node = nullptr;
   obj_quarantining<t_param>(this);
 }
 
@@ -147,13 +147,13 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.params.push_back(x);
-    x->x_otype = Type::param;
+    x->m_otype = Type::param;
 
-    x->x_setout = nullptr;
-    x->x_dataout = outlet_new((t_object*)x, nullptr);
-    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->x_node = nullptr;
-    x->x_parent_node = nullptr;
+    x->m_setout = nullptr;
+    x->m_dataout = outlet_new((t_object*)x, nullptr);
+    x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_node = nullptr;
+    x->m_parent_node = nullptr;
 
     x->x_access_mode = gensym("rw");
     x->x_bounding_mode = gensym("free");
@@ -161,19 +161,19 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->x_type = gensym("float");
     x->x_priority = 0;
     x->x_hidden = false;
-    x->x_ounit = ossia::none;
+    x->m_ounit = ossia::none;
 
-    x->x_clock = clock_new(x, (t_method)push_default_value);
+    x->m_clock = clock_new(x, (t_method)push_default_value);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
-      x->x_name = atom_getsymbol(argv);
-      x->x_addr_scope = get_address_scope(x->x_name->s_name);
+      x->m_name = atom_getsymbol(argv);
+      x->m_addr_scope = get_address_scope(x->m_name->s_name);
     }
     else
     {
       pd_error(x, "You have to pass a name as the first argument");
-      x->x_name = gensym("untitledParam");
+      x->m_name = gensym("untitledParam");
     }
 
     ebox_attrprocess_viabinbuf(x, d);
@@ -191,7 +191,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
 
 void t_param::set_access_mode()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
@@ -215,7 +215,7 @@ void t_param::set_access_mode()
 
 void t_param::set_repetition_filter()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
@@ -245,7 +245,7 @@ void t_param::set_description()
     }
   }
 
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_description(*node, description.str());
@@ -274,13 +274,13 @@ void t_param::set_tags()
     }
   }
 
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
     ossia::net::set_tags(*m.get_node(), tags);
 }
 
 void t_param::set_priority()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_priority(*node, x_priority);
@@ -289,7 +289,7 @@ void t_param::set_priority()
 
 void t_param::set_enable()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_disabled(*node, !x_enable);
@@ -298,7 +298,7 @@ void t_param::set_enable()
 
 void t_param::set_type()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -308,7 +308,7 @@ void t_param::set_type()
 
 void t_param::set_hidden()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_hidden(*node, x_hidden);
@@ -317,7 +317,7 @@ void t_param::set_hidden()
 
 void t_param::set_unit()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -339,7 +339,7 @@ void t_param::set_unit()
 }
 
 void t_param::set_minmax(){
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -404,7 +404,7 @@ void t_param::set_minmax(){
 
 void t_param::set_range()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -455,7 +455,7 @@ void t_param::set_range()
 
 void t_param::set_bounding_mode()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -485,7 +485,7 @@ void t_param::set_bounding_mode()
 
 void t_param::set_default()
 {
-  for (t_matcher& m : x_matchers)
+  for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -559,29 +559,29 @@ void t_param::set_default()
 
 void parameter_get_range(t_param*x)
 {
-  outlet_anything(x->x_dumpout, gensym("range"), x->x_range_size, x->x_range);
+  outlet_anything(x->m_dumpout, gensym("range"), x->x_range_size, x->x_range);
 }
 
 void parameter_get_min(t_param*x)
 {
-  outlet_anything(x->x_dumpout, gensym("min"), x->x_min_size, x->x_min);
+  outlet_anything(x->m_dumpout, gensym("min"), x->x_min_size, x->x_min);
 }
 
 void parameter_get_max(t_param*x)
 {
-  outlet_anything(x->x_dumpout, gensym("max"), x->x_max_size, x->x_max);
+  outlet_anything(x->m_dumpout, gensym("max"), x->x_max_size, x->x_max);
 }
 
 void parameter_get_bounding_mode(t_param*x)
 {
   t_atom a;
   SETSYMBOL(&a,x->x_bounding_mode);
-  outlet_anything(x->x_dumpout, gensym("bounding_mode"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
 }
 
 void parameter_get_default(t_param*x)
 {
-  outlet_anything(x->x_dumpout, gensym("default"),
+  outlet_anything(x->m_dumpout, gensym("default"),
                   x->x_default_size, x->x_default);
 }
 
@@ -589,53 +589,53 @@ void parameter_get_unit(t_param*x)
 {
   t_atom a;
   SETSYMBOL(&a,x->x_unit);
-  outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
 }
 
 void parameter_get_type(t_param*x)
 {
   t_atom a;
   SETSYMBOL(&a,x->x_type);
-  outlet_anything(x->x_dumpout, gensym("type"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
 }
 
 void parameter_get_hidden(t_param*x)
 {
   t_atom a;
   SETFLOAT(&a, x->x_hidden);
-  outlet_anything(x->x_dumpout, gensym("hidden"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
 }
 
 void parameter_get_priority(t_param*x)
 {
   t_atom a;
   SETFLOAT(&a, x->x_priority);
-  outlet_anything(x->x_dumpout, gensym("priority"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
 }
 
 void parameter_get_access_mode(t_param*x)
 {
   t_atom a;
   SETSYMBOL(&a, x->x_access_mode);
-  outlet_anything(x->x_dumpout, gensym("access_mode"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
 }
 
 void parameter_get_repetition_filter(t_param*x)
 {
   t_atom a;
   SETFLOAT(&a, x->x_repetition_filter);
-  outlet_anything(x->x_dumpout, gensym("repetition_filter"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
 }
 
 void parameter_get_tags(t_param*x)
 {
-  outlet_anything(x->x_dumpout, gensym("tags"),
+  outlet_anything(x->m_dumpout, gensym("tags"),
                   x->x_tags_size, x->x_tags);
 }
 
 void parameter_get_description(t_param*x)
 {
-  outlet_anything(x->x_dumpout, gensym("description"),
+  outlet_anything(x->m_dumpout, gensym("description"),
                   x->x_description_size, x->x_description);
 }
 
@@ -643,7 +643,7 @@ void parameter_get_enable(t_param*x)
 {
   t_atom a;
   SETFLOAT(&a,x->x_enable);
-  outlet_anything(x->x_dumpout, gensym("enable"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
 t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
@@ -682,13 +682,13 @@ t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, vo
 
 static void parameter_free(t_param* x)
 {
-  x->x_dead = true;
+  x->m_dead = true;
   x->unregister();
   obj_dequarantining<t_param>(x);
   ossia_pd::instance().params.remove_all(x);
 
-  outlet_free(x->x_dataout);
-  outlet_free(x->x_dumpout);
+  outlet_free(x->m_dataout);
+  outlet_free(x->m_dumpout);
 
   x->~t_param();
 }

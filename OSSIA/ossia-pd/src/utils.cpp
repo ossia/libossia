@@ -105,32 +105,32 @@ t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* 
 
 ossia::net::node_base* find_parent_node(t_obj_base* x){
   int l;
-  t_device* device = (t_device*)find_parent_alive(&x->x_obj, "ossia.device", 0, &l);
-  t_client* client = (t_client*)find_parent_alive(&x->x_obj, "ossia.client", 0, &l);
+  t_device* device = (t_device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
+  t_client* client = (t_client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
 
   t_model* model = nullptr;
   t_view* view = nullptr;
   int view_level = 0, model_level = 0;
   int start_level = 0;
 
-  if (x->x_otype == Type::view || x->x_otype == Type::model)
+  if (x->m_otype == Type::view || x->m_otype == Type::model)
   {
     start_level = 1;
   }
 
-  if (x->x_addr_scope == AddrScope::relative)
+  if (x->m_addr_scope == AddrScope::relative)
   {
     // then try to locate a parent view or model
-    if (x->x_otype == Type::view || x->x_otype == Type::remote)
+    if (x->m_otype == Type::view || x->m_otype == Type::remote)
     {
       view
-          = (t_view*)find_parent_alive(&x->x_obj, "ossia.view", start_level, &view_level);
+          = (t_view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
     }
 
     if (!view)
     {
       model = (t_model*)find_parent_alive(
-          &x->x_obj, "ossia.model", 0, &model_level);
+          &x->m_obj, "ossia.model", 0, &model_level);
     }
   }
 
@@ -138,19 +138,19 @@ ossia::net::node_base* find_parent_node(t_obj_base* x){
 
   if (view)
   {
-    node = view->x_node;
+    node = view->m_node;
   }
   else if (model)
   {
-    node = model->x_node;
+    node = model->m_node;
   }
   else if (client)
   {
-    node = client->x_node;
+    node = client->m_node;
   }
   else if (device)
   {
-    node = device->x_node;
+    node = device->m_node;
   }
   else
   {
@@ -179,7 +179,7 @@ std::vector<t_obj_base*> find_child_to_register(
     {
       t_obj_base* o;
       o = (t_obj_base*)&list->g_pd;
-      if (x != o && !o->x_dead)
+      if (x != o && !o->m_dead)
       {
         found.push_back(o);
       }
@@ -197,7 +197,7 @@ std::vector<t_obj_base*> find_child_to_register(
     {
       t_obj_base* o;
       o = (t_obj_base*)&list->g_pd;
-      if (x != o && !o->x_dead)
+      if (x != o && !o->m_dead)
       {
         *found_dev = true;
       }
@@ -247,7 +247,7 @@ std::vector<t_obj_base*> find_child_to_register(
       {
         t_obj_base* o;
         o = (t_obj_base*)&list->g_pd;
-        if (x != o && !o->x_dead)
+        if (x != o && !o->m_dead)
         {
           found.push_back(o);
         }
@@ -261,19 +261,19 @@ std::vector<t_obj_base*> find_child_to_register(
 
 bool find_peer(t_obj_base* x)
 {
-  t_symbol* classname = x->x_obj.o_obj.te_g.g_pd->c_name;
+  t_symbol* classname = x->m_obj.o_obj.te_g.g_pd->c_name;
   t_symbol* derived_classname = nullptr;
 
-  if (x->x_otype == Type::view)
+  if (x->m_otype == Type::view)
     derived_classname = gensym("ossia.model");
-  else if (x->x_otype == Type::model)
+  else if (x->m_otype == Type::model)
     derived_classname = gensym("ossia.view");
-  else if (x->x_otype == Type::device)
+  else if (x->m_otype == Type::device)
     derived_classname = gensym("ossia.client");
-  else if (x->x_otype == Type::client)
+  else if (x->m_otype == Type::client)
     derived_classname = gensym("ossia.device");
 
-  t_gobj* list = x->x_obj.o_canvas->gl_list;
+  t_gobj* list = x->m_obj.o_canvas->gl_list;
   while (list)
   {
     t_symbol* current = list->g_pd->c_name;
@@ -308,7 +308,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
 
   for (auto device : instance.devices.copy())
   {
-    auto dev = device->x_device;
+    auto dev = device->m_device;
     if (!dev) continue;
 
     std::string name = dev->get_name();
@@ -341,7 +341,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
 
   for (auto client : instance.clients.copy())
   {
-    auto dev = client->x_device;
+    auto dev = client->m_device;
     if (!dev) continue;
 
     std::string name = dev->get_name();

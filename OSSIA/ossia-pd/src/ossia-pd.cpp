@@ -32,17 +32,17 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   auto& ossia_pd = ossia_pd::instance();
   t_ossia* x = (t_ossia*) eobj_new(ossia_pd.ossia);
 
-  x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-  x->x_device = ossia_pd.get_default_device();
+  x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+  x->m_device = ossia_pd.get_default_device();
 
-  x->x_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
-  x->x_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
 
-  x->x_node = &x->x_device->get_root_node();
+  x->m_node = &x->m_device->get_root_node();
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
       std::string name = argv[0].a_w.w_symbol->s_name;
-      x->x_device->set_name(name);
+      x->m_device->set_name(name);
     }
 
   return (x);
@@ -50,10 +50,10 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
 static void ossia_free(t_ossia *x)
 {
-  outlet_free(x->x_dumpout);
+  outlet_free(x->m_dumpout);
 
-  x->x_device->on_parameter_created.disconnect<t_device, &t_device::on_parameter_created_callback>(x);
-  x->x_device->on_parameter_removing.disconnect<t_device, &t_device::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.disconnect<t_device, &t_device::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.disconnect<t_device, &t_device::on_parameter_deleted_callback>(x);
 }
 
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
@@ -92,16 +92,16 @@ ossia_pd::ossia_pd():
 ossia_pd::~ossia_pd()
 {
   for (auto x : views.copy()){
-    if (x->x_node) x->x_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+    if (x->m_node) x->m_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
   }
   for (auto x : remotes.copy()){
-    x->x_matchers.clear();
+    x->m_matchers.clear();
   }
   for (auto x : models.copy()){
-    if (x->x_node) x->x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+    if (x->m_node) x->m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
   }
   for (auto x : params.copy()){
-    x->x_matchers.clear();
+    x->m_matchers.clear();
   }
 }
 

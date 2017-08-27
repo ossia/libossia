@@ -100,63 +100,63 @@ struct value_visitor
     // message
     // and sending a bang to the bang object connected to the inlet of the
     // sender will lead to stack overflow...
-    if (x->x_dataout)
-      outlet_bang(x->x_dataout);
+    if (x->m_dataout)
+      outlet_bang(x->m_dataout);
 
-    if (x->x_setout)
-      outlet_bang(x->x_setout);
+    if (x->m_setout)
+      outlet_bang(x->m_setout);
   }
   void operator()(int32_t i) const
   {
     t_atom a;
     SETFLOAT(&a, (t_float)i);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, (t_float)i);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, (t_float)i);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), 1, &a);
   }
   void operator()(float f) const
   {
     t_atom a;
     SETFLOAT(&a, f);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, (t_float)f);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, (t_float)f);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), 1, &a);
   }
   void operator()(bool b) const
   {
     t_atom a;
     t_float f = b ? 1. : 0.;
     SETFLOAT(&a, f);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, f);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, f);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), 1, &a);
   }
   void operator()(const std::string& str) const
   {
     t_symbol* s = gensym(str.c_str());
     t_atom a;
     SETSYMBOL(&a, s);
-    if (x->x_dataout)
-      outlet_symbol(x->x_dataout, s);
+    if (x->m_dataout)
+      outlet_symbol(x->m_dataout, s);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), 1, &a);
   }
   void operator()(char c) const
   {
     t_atom a;
     SETFLOAT(&a, (float)c);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, (float)c);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, (float)c);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), 1, &a);
   }
 
   template <std::size_t N>
@@ -169,11 +169,11 @@ struct value_visitor
       SETFLOAT(a + i, vec[i]);
     }
 
-    if (x->x_dataout)
-      outlet_list(x->x_dataout, gensym("list"), N, a);
+    if (x->m_dataout)
+      outlet_list(x->m_dataout, gensym("list"), N, a);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), N, a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), N, a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
@@ -184,16 +184,16 @@ struct value_visitor
       v.apply(vm);
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
-    if (x->x_dataout)
-      outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+    if (x->m_dataout)
+      outlet_list(x->m_dataout, gensym("list"), va.size(), list_ptr);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), va.size(), list_ptr);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, gensym("set"), va.size(), list_ptr);
   }
 
   void operator()() const
   {
-    pd_error(x, "%s receive an invalid data", x->x_name->s_name);
+    pd_error(x, "%s receive an invalid data", x->m_name->s_name);
   }
 };
 
@@ -237,9 +237,9 @@ static t_obj_base* find_parent_alive(
   t_obj_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
   {
-    while (obj && obj->x_dead)
+    while (obj && obj->m_dead)
     {
-      obj = find_parent_alive(&obj->x_obj, classname, 1, level);
+      obj = find_parent_alive(&obj->m_obj, classname, 1, level);
     }
   }
   return obj;
@@ -268,18 +268,18 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
     start_level = 1;
 
   model = (t_model*)find_parent_alive(
-      &x->x_obj, "ossia.model", start_level, &model_level);
+      &x->m_obj, "ossia.model", start_level, &model_level);
   t_model* tmp = nullptr;
 
   while (model)
   {
-    vs.push_back(model->x_name->s_name);
+    vs.push_back(model->m_name->s_name);
     tmp = model;
     model = (t_model*)find_parent_alive(
-        &tmp->x_obj, "ossia.model", 1, &model_level);
+        &tmp->m_obj, "ossia.model", 1, &model_level);
   }
 
-  t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
+  t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
 
   int device_level = 0;
   int client_level = 0;
@@ -289,9 +289,9 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
 
   if (client)
-    fullpath << client->x_name->s_name << ":";
+    fullpath << client->m_name->s_name << ":";
   if (device)
-    fullpath << device->x_name->s_name << ":";
+    fullpath << device->m_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
 
@@ -312,18 +312,18 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
     start_level = 1;
 
   view =  (t_view*)find_parent_alive(
-      &x->x_obj, "ossia.view", start_level, &view_level);
+      &x->m_obj, "ossia.view", start_level, &view_level);
   t_view* tmp = nullptr;
 
   while (view)
   {
-    vs.push_back(view->x_name->s_name);
+    vs.push_back(view->m_name->s_name);
     tmp = view;
     view
-        = (t_view*) find_parent_alive(&tmp->x_obj, "ossia.view", 1, &view_level);
+        = (t_view*) find_parent_alive(&tmp->m_obj, "ossia.view", 1, &view_level);
   }
 
-  t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
+  t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
 
 
   int device_level = 0;
@@ -334,9 +334,9 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
 
   if (client)
-    fullpath << client->x_name->s_name << ":";
+    fullpath << client->m_name->s_name << ":";
   if (device)
-    fullpath << device->x_name->s_name << ":";
+    fullpath << device->m_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
 
@@ -412,7 +412,7 @@ template<typename T>
 // self registering (when creating the object)
 bool obj_register(T* x)
 {
-  if (x->x_dead)
+  if (x->m_dead)
     return false; // object will be removed soon
 
   auto node = find_parent_node(x);
@@ -449,27 +449,27 @@ void obj_dump(T* x)
 {
   t_atom a;
   std::string fullpath;
-  if (x->x_otype == Type::remote || x->x_otype == Type::param)
+  if (x->m_otype == Type::remote || x->m_otype == Type::param)
   {
     t_obj_base* remote = (t_obj_base*) x;
-    if (remote->x_matchers.size() == 1)
-      x->x_node = remote->x_matchers[0].get_node();
-    else x->x_node = nullptr;
+    if (remote->m_matchers.size() == 1)
+      x->m_node = remote->m_matchers[0].get_node();
+    else x->m_node = nullptr;
   }
-  if (x->x_node)
+  if (x->m_node)
   {
-    fullpath = ossia::net::address_string_from_node(*x->x_node);
+    fullpath = ossia::net::address_string_from_node(*x->m_node);
     SETSYMBOL(&a, gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout, gensym("fullpath"), 1, &a);
+    outlet_anything(x->m_dumpout, gensym("fullpath"), 1, &a);
   }
   fullpath = get_absolute_path<T>(x);
   if (fullpath.back() != '/')
     fullpath += "/";
-  fullpath += x->x_name->s_name;
+  fullpath += x->m_name->s_name;
   SETSYMBOL(&a, gensym(fullpath.c_str()));
-  outlet_anything(x->x_dumpout, gensym("pdpath"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("pdpath"), 1, &a);
 
-  if (x->x_node)
+  if (x->m_node)
   {
     SETFLOAT(&a, 1.);
   }
@@ -477,21 +477,21 @@ void obj_dump(T* x)
   {
     SETFLOAT(&a, 0.);
   }
-  outlet_anything(x->x_dumpout, gensym("registered"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("registered"), 1, &a);
 
   SETFLOAT(&a, obj_is_quarantined<T>(x));
-  outlet_anything(x->x_dumpout, gensym("quarantined"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("quarantined"), 1, &a);
 
-  if (x->x_node)
+  if (x->m_node)
   {
-    ossia::net::parameter_base* param = x->x_node->get_parameter();
+    ossia::net::parameter_base* param = x->m_node->get_parameter();
     if (param)
     {
       // type
       t_symbol* type = val_type2symbol(param->get_value_type());
 
       SETSYMBOL(&a, type);
-      outlet_anything(x->x_dumpout, gensym("type"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
 
       // domain
       ossia::domain domain = param->get_domain();
@@ -501,7 +501,7 @@ void obj_dump(T* x)
        SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
        i++;
       }
-      outlet_anything(x->x_dumpout, gensym("domain"), i, &a);
+      outlet_anything(x->m_dumpout, gensym("domain"), i, &a);
 
 
       // bounding mode
@@ -530,7 +530,7 @@ void obj_dump(T* x)
           bounding_mode = "unknown";
       }
       SETSYMBOL(&a, gensym(bounding_mode.c_str()));
-      outlet_anything(x->x_dumpout, gensym("bounding_mode"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
 
       // access mode
       std::string access_mode;
@@ -549,32 +549,32 @@ void obj_dump(T* x)
           access_mode = "unknown";
       }
       SETSYMBOL(&a, gensym(access_mode.c_str()));
-      outlet_anything(x->x_dumpout, gensym("access_mode"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
 
       // repetition filter
       bool rep = param->get_repetition_filter();
       SETFLOAT(&a, rep);
-      outlet_anything(x->x_dumpout, gensym("repetition_filter"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
 
       // unit
       std::string pretty_unit
           = ossia::get_pretty_unit_text(param->get_unit());
       SETSYMBOL(&a, gensym(pretty_unit.c_str()));
-      outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
     }
 
     // description
-    auto description = ossia::net::get_description(*(x->x_node));
+    auto description = ossia::net::get_description(*(x->m_node));
     if (description)
     {
       SETSYMBOL(&a, gensym((*description).c_str()));
-      outlet_anything(x->x_dumpout, gensym("description"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("description"), 1, &a);
     }
     else
-      outlet_anything(x->x_dumpout, gensym("description"), 0, nullptr);
+      outlet_anything(x->m_dumpout, gensym("description"), 0, nullptr);
 
     // tags
-    auto tags = ossia::net::get_tags(*x->x_node);
+    auto tags = ossia::net::get_tags(*x->m_node);
     if (tags)
     {
       std::size_t N = (*tags).size();
@@ -583,19 +583,19 @@ void obj_dump(T* x)
       {
         SETSYMBOL(&l[i], gensym((*tags)[i].c_str()));
       }
-      outlet_anything(x->x_dumpout, gensym("tags"), N, l.data());
+      outlet_anything(x->m_dumpout, gensym("tags"), N, l.data());
     }
     else
     {
-      outlet_anything(x->x_dumpout, gensym("tags"), 0, nullptr);
+      outlet_anything(x->m_dumpout, gensym("tags"), 0, nullptr);
     }
 
-    auto priority = ossia::net::get_priority(*x->x_node);
+    auto priority = ossia::net::get_priority(*x->m_node);
     if (priority)
     {
       t_atom a;
       SETFLOAT(&a, *priority);
-      outlet_anything(x->x_dumpout, gensym("priority"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
     }
   }
 }
