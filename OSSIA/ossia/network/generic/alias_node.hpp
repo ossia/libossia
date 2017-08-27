@@ -43,7 +43,15 @@ struct alias_path final :
     public ossia::net::parameter_base
 {
 public:
-  using generic_node_base::generic_node_base;
+    alias_path(
+        std::string name,
+        ossia::net::device_base& aDevice,
+        ossia::net::node_base& parent)
+      : ossia::net::generic_node_base{name, aDevice, parent}
+      , ossia::net::parameter_base{(ossia::net::node_base&)*this}
+    {
+
+    }
 
   ~alias_path();
 
@@ -67,11 +75,6 @@ private:
 
   std::unique_ptr<node_base> make_child(const std::string& name) override { return {}; }
   void removing_child(node_base&) override { }
-
-  node_base& get_node() const override
-  {
-    return *(ossia::net::node_base*)this;
-  }
 
   void pull_value() override
   {
@@ -147,43 +150,6 @@ private:
   {
     return *this;
   }
-  repetition_filter get_repetition_filter() const override
-  {
-    return {};
-  }
-  parameter_base&set_repetition_filter(repetition_filter) override
-  {
-    return *this;
-  }
-  bool filter_repetition(const ossia::value& val) const override
-  {
-    return {};
-  }
-  unit_t get_unit() const override
-  {
-    return {};
-  }
-  parameter_base&set_unit(const unit_t& v) override
-  {
-    return *this;
-  }
-  bool get_muted() const override
-  {
-    return {};
-  }
-  parameter_base&set_muted(bool) override
-  {
-    return *this;
-  }
-  bool get_critical() const override
-  {
-    return {};
-  }
-  parameter_base&set_critical(bool) override
-  {
-    return *this;
-  }
-
 
   std::vector<ossia::net::node_base*> m_roots;
   traversal::path m_path;

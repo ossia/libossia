@@ -260,6 +260,8 @@ net::parameter_data make_parameter_data(const QJSValue& js)
     dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
+    dat.muted = js.property("muted").toBool();
+    dat.disabled = js.property("disabled").toBool();
     dat.rep_filter
         = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
     dat.unit = ossia::parse_pretty_unit(

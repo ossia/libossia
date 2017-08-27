@@ -93,7 +93,6 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
     value_step_size, value_step_size, "valueStepsize")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(zombie, zombie, "zombie")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(hidden, hidden, "hidden")
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(disabled, disabled, "disabled")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
@@ -376,6 +375,27 @@ void set_muted(ossia::net::parameter_data& n, muted v)
 {
   n.muted = v;
 }
+
+ossia::string_view text_disabled()
+{
+  return make_string_view("disabled");
+}
+disabled get_disabled(const ossia::net::node_base& n)
+{
+  if (auto addr = n.get_parameter())
+    return addr->get_disabled();
+  return false;
+}
+void set_disabled(ossia::net::node_base& n, disabled v)
+{
+  if (auto addr = n.get_parameter())
+    addr->set_disabled(v);
+}
+void set_disabled(ossia::net::parameter_data& n, disabled v)
+{
+  n.disabled = v;
+}
+
 
 ossia::string_view text_critical()
 {

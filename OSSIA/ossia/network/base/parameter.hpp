@@ -29,12 +29,12 @@ struct full_parameter_data;
  * One can subscribe to modification of the value.
  *
  * \see generic_parameter
- *
+ * \see node_attributes.hpp for description of the attributes.
  */
 class OSSIA_EXPORT parameter_base : public callback_container<value_callback>
 {
 public:
-  parameter_base() = default;
+  parameter_base(ossia::net::node_base& n): m_node{n} { }
   parameter_base(const parameter_base&) = delete;
   parameter_base(parameter_base&&) = delete;
   parameter_base& operator=(const parameter_base&) = delete;
@@ -43,7 +43,7 @@ public:
   using callback_index = callback_container<value_callback>::iterator;
   virtual ~parameter_base();
 
-  virtual ossia::net::node_base& get_node() const = 0;
+  ossia::net::node_base& get_node() const { return m_node; }
 
   /// Value getters ///
   /**
@@ -126,22 +126,35 @@ public:
   virtual bounding_mode get_bounding() const = 0;
   virtual parameter_base& set_bounding(bounding_mode) = 0;
 
-  virtual repetition_filter get_repetition_filter() const = 0;
-  virtual parameter_base&
-      set_repetition_filter(repetition_filter = repetition_filter::ON)
-      = 0;
-  virtual bool filter_repetition(const ossia::value& val) const
+  repetition_filter get_repetition_filter() const;
+  parameter_base&
+      set_repetition_filter(repetition_filter = repetition_filter::ON);
+  virtual bool filter_value(const ossia::value& val) const
   {
-    return false;
+    return m_disabled || m_muted;
   } //! by default there is no filter
 
-  virtual ossia::unit_t get_unit() const;
+  ossia::unit_t get_unit() const;
   virtual parameter_base& set_unit(const ossia::unit_t& v);
 
-  virtual bool get_muted() const;
-  virtual parameter_base& set_muted(bool);
-  virtual bool get_critical() const;
-  virtual parameter_base& set_critical(bool);
+  // Shared across the network
+  bool get_disabled() const;
+  parameter_base& set_disabled(bool);
+
+  // Local only
+  bool get_muted() const;
+  parameter_base& set_muted(bool);
+
+  bool get_critical() const;
+  parameter_base& set_critical(bool v);
+
+protected:
+  ossia::net::node_base& m_node;
+  unit_t m_unit;
+  bool m_critical{};
+  bool m_disabled{};
+  bool m_muted{};
+  ossia::repetition_filter m_repetitionFilter{ossia::repetition_filter::OFF};
 };
 
 inline bool operator==(const parameter_base& lhs, const parameter_base& rhs)

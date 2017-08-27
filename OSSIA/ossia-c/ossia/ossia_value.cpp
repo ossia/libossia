@@ -74,6 +74,10 @@ ossia_value_t ossia_value_create_string(const char* value)
 {
   return convert(std::string{value});
 }
+ossia_value_t ossia_value_create_byte_array(const char* value, size_t size)
+{
+  return convert(std::string(value, size));
+}
 
 ossia_value_t ossia_value_create_tuple(const ossia_value_t* values, size_t size)
 {
@@ -165,7 +169,7 @@ void ossia_value_to_byte_array(ossia_value_t val, char** out, size_t* size)
 {
   if (!val || !out || !size)
   {
-    ossia_log_error("ossia_value_to_byte_array: val is null");
+    ossia_log_error("ossia_value_to_byte_array: a parameter is null");
   }
   else if (auto casted_val = val->value.target<std::string>())
   {
@@ -177,6 +181,18 @@ void ossia_value_to_byte_array(ossia_value_t val, char** out, size_t* size)
   *size = 0;
 }
 
+const char* ossia_value_to_string(ossia_value_t val)
+{
+  if (!val)
+  {
+    ossia_log_error("ossia_value_to_string: val is null");
+  }
+  else if (auto casted_val = val->value.target<std::string>())
+  {
+    return copy_string(*casted_val);
+  }
+  return nullptr;
+}
 void ossia_value_to_tuple(ossia_value_t val, ossia_value_t** out, size_t* size)
 {
   if (!val || !out || !size)

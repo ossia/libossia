@@ -37,8 +37,16 @@ void set_max(domain& dom, const ossia::value& val)
 void set_values(domain& dom, const std::vector<ossia::value>& val)
 {
   if (dom)
-    return ossia::apply_nonnull(domain_value_set_update_visitor{val}, dom.v);
+    return ossia::apply_nonnull(value_set_update_visitor{val}, dom.v);
 }
+
+std::vector<ossia::value> get_values(const domain& dom)
+{
+  if (dom)
+    return ossia::apply_nonnull(value_set_get_visitor{}, dom.v);
+  return {};
+}
+
 
 domain make_domain(const ossia::value& min, const ossia::value& max)
 {
@@ -98,7 +106,7 @@ domain make_domain(
     if (vals.size() > 0)
     {
       auto dom = init_domain(vals[0].getType());
-      ossia::apply_nonnull(domain_value_set_update_visitor{vals}, dom.v);
+      ossia::apply_nonnull(value_set_update_visitor{vals}, dom.v);
       return dom;
     }
   }

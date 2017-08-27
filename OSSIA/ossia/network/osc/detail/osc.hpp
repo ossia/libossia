@@ -455,7 +455,7 @@ template<typename Addr_T>
 inline ossia::value filter_value(const Addr_T& addr)
 {
   auto val = addr.value();
-  if (addr.filter_repetition(val))
+  if (addr.filter_value(val))
     return {};
 
   return filter_value(addr.get_domain(), std::move(val), addr.get_bounding());
