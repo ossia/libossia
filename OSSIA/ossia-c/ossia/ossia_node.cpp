@@ -344,6 +344,73 @@ const char* ossia_node_get_description(
   });
 }
 
+OSSIA_EXPORT
+void ossia_node_set_tags(
+    ossia_node_t node,
+    const char** tags,
+    size_t sz)
+{
+  if (!node)
+  {
+    ossia_log_error("ossia_node_set_tags: a parameter is null");
+  }
+  else
+  {
+    auto& n = *convert_node(node);
+
+    if(tags == nullptr || sz == 0)
+    {
+      ossia::net::set_tags(n, {});
+    }
+    else
+    {
+      std::vector<std::string> vec(sz);
+      for(size_t i = 0; i < sz; ++i)
+      {
+        vec[i] = tags[i];
+      }
+      ossia::net::set_tags(n, std::move(vec));
+    }
+  }
+}
+
+OSSIA_EXPORT
+void ossia_node_get_tags(
+    ossia_node_t node,
+    char*** tags,
+    size_t* size)
+{
+  if (!node || !tags || !size)
+  {
+    ossia_log_error("ossia_node_get_tags: a parameter is null");
+  }
+  else
+  {
+    auto t = ossia::net::get_tags(*convert_node(node));
+    if(t && !t->empty())
+    {
+      auto& vtags = *t;
+      auto ptr = new char*[vtags.size()];
+      for(size_t i = 0; i < vtags.size(); ++i)
+      {
+        ptr[i] = copy_string(vtags[i]);
+      }
+      *tags = ptr;
+      return;
+    }
+  }
+
+  *tags = nullptr;
+  *size = 0;
+}
+
+void ossia_tags_free(char** tags, size_t size)
+{
+  for(size_t i = 0; i < size; i++)
+    free(tags[i]);
+  delete[] tags;
+}
+
 
 void ossia_node_set_hidden(
     ossia_node_t node,
@@ -374,4 +441,247 @@ int ossia_node_get_hidden(
   });
 }
 
+void ossia_node_set_priority(
+    ossia_node_t node,
+    float priority)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_priority: node is null");
+      return;
+    }
+
+    ossia::net::set_priority(*convert_node(node), priority);
+  });
+}
+void ossia_node_unset_priority(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_unset_priority: node is null");
+      return;
+    }
+
+    ossia::net::set_priority(*convert_node(node), ossia::none);
+  });
+}
+float ossia_node_get_priority(
+    ossia_node_t node,
+    int* b)
+{
+  return safe_function(__func__, [=]() -> float {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_priority: node is null");
+      if(b) *b = 0;
+      return 0;
+    }
+
+    auto p = ossia::net::get_priority(*convert_node(node));
+    if(p) {
+      if(b) *b = 1;
+      return *p;
+    } else {
+      if(b) *b = 0;
+      return 0.f;
+    }
+  });
+}
+
+void ossia_node_set_refresh_rate(
+    ossia_node_t node,
+    int refresh_rate)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_refresh_rate: node is null");
+      return;
+    }
+
+    ossia::net::set_refresh_rate(*convert_node(node), refresh_rate);
+  });
+}
+void ossia_node_unset_refresh_rate(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_unset_refresh_rate: node is null");
+      return;
+    }
+
+    ossia::net::set_refresh_rate(*convert_node(node), ossia::none);
+  });
+}
+int ossia_node_get_refresh_rate(
+    ossia_node_t node,
+    int* b)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_refresh_rate: node is null");
+      if(b) *b = 0;
+      return 0;
+    }
+
+    auto p = ossia::net::get_refresh_rate(*convert_node(node));
+    if(p) {
+      if(b) *b = 1;
+      return *p;
+    } else {
+      if(b) *b = 0;
+      return 0;
+    }
+  });
+}
+
+void ossia_node_set_value_step_size(
+    ossia_node_t node,
+    double value_step_size)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_value_step_size: node is null");
+      return;
+    }
+
+    ossia::net::set_value_step_size(*convert_node(node), value_step_size);
+  });
+}
+void ossia_node_unset_value_step_size(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_unset_value_step_size: node is null");
+      return;
+    }
+
+    ossia::net::set_value_step_size(*convert_node(node), ossia::none);
+  });
+}
+double ossia_node_get_value_step_size(
+    ossia_node_t node,
+    int* b)
+{
+  return safe_function(__func__, [=]() -> double {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_value_step_size: node is null");
+      if(b) *b = 0;
+      return 0;
+    }
+
+    auto p = ossia::net::get_value_step_size(*convert_node(node));
+    if(p) {
+      if(b) *b = 1;
+      return *p;
+    } else {
+      if(b) *b = 0;
+      return 0.;
+    }
+  });
+}
+
+
+void ossia_node_set_instance_bounds(
+    ossia_node_t node,
+    int min, int max)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_instance_bounds: node is null");
+      return;
+    }
+
+    ossia::net::set_instance_bounds(
+          *convert_node(node),
+          ossia::net::instance_bounds{min, max});
+  });
+}
+void ossia_node_unset_instance_bounds(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_unset_instance_bounds: node is null");
+      return;
+    }
+
+    ossia::net::set_instance_bounds(*convert_node(node), ossia::none);
+  });
+}
+void ossia_node_get_instance_bounds(
+    ossia_node_t node,
+    int* min, int *max,
+    int* ok)
+{
+  return safe_function(__func__, [=] {
+    if (!node || !min || !max)
+    {
+      ossia_log_error("ossia_node_get_instance_bounds: an argument is null");
+      if(ok) *ok = 0;
+      return;
+    }
+
+    auto p = ossia::net::get_instance_bounds(*convert_node(node));
+    if(p) {
+      *min = p->min_instances;
+      *max = p->max_instances;
+      if(ok) *ok = 1;
+      return;
+    } else {
+      if(ok) *ok = 0;
+      return;
+    }
+  });
+}
+
+
+
+void ossia_node_set_default_value(
+    ossia_node_t node,
+    ossia_value_t default_value)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_default_value: node is null");
+      return;
+    }
+
+    auto& n = *convert_node(node);
+    if(!default_value)
+      ossia::net::set_default_value(n, ossia::none);
+    else
+      ossia::net::set_default_value(n, convert(default_value->value));
+  });
+}
+ossia_value_t ossia_node_get_default_value(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=]() -> ossia_value_t {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_default_value: node is null");
+      return 0;
+    }
+
+    auto val = ossia::net::get_default_value(*convert_node(node));
+    if(val)
+      return convert(*val);
+    else
+      return nullptr;
+  });
+}
 }

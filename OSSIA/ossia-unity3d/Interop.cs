@@ -204,6 +204,93 @@ namespace Ossia
     public static extern void ossia_node_array_free (
       IntPtr ar);
 
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_description(
+        IntPtr node,
+        string description);
+    [DllImport("ossia")]
+    public static extern IntPtr ossia_node_get_description(
+        IntPtr node);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_tags(
+        IntPtr node,
+        IntPtr tags,
+        UIntPtr sz);
+    [DllImport("ossia")]
+    public static extern void ossia_node_get_tags(
+        ossia_node_t node,
+        out IntPtr tags,
+        out UIntPtr sz);
+    [DllImport("ossia")]
+    public static extern void ossia_tags_free(
+        IntPtr tags,
+        UIntPtr sz);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_hidden(
+        IntPtr node,
+        int hidden);
+    [DllImport("ossia")]
+    public static extern int ossia_node_get_hidden(
+        IntPtr node);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_refresh_rate(
+        IntPtr node,
+        int refresh_rate);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_refresh_rate(
+        IntPtr node);
+    int ossia_node_get_refresh_rate(
+        IntPtr node,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_priority(
+        IntPtr node,
+        float priority);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_priority(
+        IntPtr node);
+    float ossia_node_get_priority(
+        IntPtr node,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_value_step_size(
+        IntPtr node,
+        double value_step_size);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_value_step_size(
+        IntPtr node);
+    double ossia_node_get_value_step_size(
+        IntPtr node,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_instance_bounds(
+        IntPtr node,
+        int min, int max);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_instance_bounds(
+        IntPtr node);
+    [DllImport("ossia")]
+    public static extern void ossia_node_get_instance_bounds(
+        IntPtr node,
+        out int min, out int max,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_default_value(
+        IntPtr node,
+        IntPtr default_value);
+    [DllImport("ossia")]
+    public static extern IntPtr ossia_node_get_default_value(
+        IntPtr node);
+
+
     //// Parameter ////
     [DllImport ("ossia")]
     public static extern IntPtr ossia_parameter_get_node (
@@ -226,7 +313,7 @@ namespace Ossia
     [DllImport ("ossia")]
     public static extern string ossia_parameter_get_unit(
       IntPtr address);
-    
+
     [DllImport ("ossia")]
     public static extern void ossia_parameter_set_bounding_mode (
       IntPtr property,
@@ -324,7 +411,7 @@ namespace Ossia
     public static extern void ossia_parameter_set_listening (
       IntPtr address,
       int listening);
-    
+
     [DllImport ("ossia")]
     public static extern IntPtr ossia_parameter_add_callback (
       IntPtr property,
@@ -501,7 +588,7 @@ namespace Ossia
     [DllImport ("ossia")]
     public static extern void ossia_string_free( IntPtr str );
 
-    /// LOG /// 
+    /// LOG ///
 
     [DllImport ("ossia")]
     public static extern void ossia_set_debug_logger( IntPtr fp );
@@ -518,7 +605,7 @@ namespace Ossia
     [DllImport ("ossia")]
     public static extern void ossia_logger_free(IntPtr log);
 
-    /// MESSAGE QUEUE /// 
+    /// MESSAGE QUEUE ///
 
     [DllImport ("ossia")]
     public static extern

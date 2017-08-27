@@ -115,7 +115,7 @@ private Q_SLOTS:
         QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
         QVERIFY((bool)get_priority(n));
-        QCOMPARE(*get_priority(n), 50);
+        QCOMPARE(*get_priority(n), 50.f);
 
         QVERIFY((bool)get_description(n));
         QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));

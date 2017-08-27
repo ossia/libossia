@@ -1000,7 +1000,7 @@ void ossia_node_remove_deleting_callback(
 
 /**
  * @see ossia::net::set_description
- * @note Multithread guarantees: Data-Safe.
+ * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
 void ossia_node_set_description(
@@ -1015,8 +1015,33 @@ const char* ossia_node_get_description(
     ossia_node_t node);
 
 /**
- * @see ossia::net::set_hidden
+ * @see ossia::net::set_tags
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_tags(
+    ossia_node_t node,
+    const char** tags,
+    size_t sz);
+/**
+ * @see ossia::net::get_tags, ossia_tags_free
  * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_get_tags(
+    ossia_node_t node,
+    char*** tags,
+    size_t* sz);
+
+/**
+ * @brief Free tags allocated with ossia_node_get_tags
+ */
+OSSIA_EXPORT
+void ossia_tags_free(char** tags, size_t sz);
+
+/**
+ * @see ossia::net::set_hidden
+ * @note Multithread guarantees: MT-Safe.
  *
  * hidden is a boolean value.
  */
@@ -1027,10 +1052,123 @@ void ossia_node_set_hidden(
 /**
  * @see ossia::net::get_hidden
  * @note Multithread guarantees: Data-Safe.
- * @note No need to free
  */
 OSSIA_EXPORT
 int ossia_node_get_hidden(
+    ossia_node_t node);
+
+/**
+ * @see ossia::net::set_refresh_rate
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_refresh_rate(
+    ossia_node_t node,
+    int refresh_rate);
+/**
+ * @see ossia::net::set_refresh_rate
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_unset_refresh_rate(
+    ossia_node_t node);
+/**
+ * @see ossia::net::get_refresh_rate
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+int ossia_node_get_refresh_rate(
+    ossia_node_t node,
+    int* ok = NULL);
+
+/**
+ * @see ossia::net::set_priority
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_priority(
+    ossia_node_t node,
+    float priority);
+/**
+ * @see ossia::net::set_priority
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_unset_priority(
+    ossia_node_t node);
+/**
+ * @see ossia::net::get_priority
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+float ossia_node_get_priority(
+    ossia_node_t node,
+    int* ok = NULL);
+
+/**
+ * @see ossia::net::set_value_step_size
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_value_step_size(
+    ossia_node_t node,
+    double value_step_size);
+/**
+ * @see ossia::net::set_value_step_size
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_unset_value_step_size(
+    ossia_node_t node);
+/**
+ * @see ossia::net::get_value_step_size
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+double ossia_node_get_value_step_size(
+    ossia_node_t node,
+    int* ok = NULL);
+
+
+/**
+ * @see ossia::net::set_instance_bounds
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_instance_bounds(
+    ossia_node_t node,
+    int min, int max);
+/**
+ * @see ossia::net::set_instance_bounds
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_unset_instance_bounds(
+    ossia_node_t node);
+/**
+ * @see ossia::net::get_instance_bounds
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_get_instance_bounds(
+    ossia_node_t node,
+    int* min, int* max,
+    int* ok = NULL);
+
+/**
+ * @see ossia::net::set_default_value
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_default_value(
+    ossia_node_t node,
+    ossia_value_t default_value);
+/**
+ * @see ossia::net::get_default_value
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+ossia_value_t ossia_node_get_default_value(
     ossia_node_t node);
 
 /** @}*/

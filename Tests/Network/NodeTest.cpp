@@ -304,9 +304,9 @@ private Q_SLOTS:
     QVERIFY((bool)get_unit(n));
     QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
-    n.set(priority_attribute{}, 50);
+    n.set(priority_attribute{}, 50.f);
     QVERIFY((bool)get_priority(n));
-    QCOMPARE(*get_priority(n), 50);
+    QCOMPARE(*get_priority(n), 50.f);
 
     n.set(description_attribute{}, "Such a fancy node?! Incredible! すごい!!");
     QVERIFY((bool)get_description(n));
@@ -389,9 +389,9 @@ private Q_SLOTS:
     QVERIFY((bool)get_unit(n));
     QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
-    set_priority(n, 50);
+    set_priority(n, 50.f);
     QVERIFY((bool)get_priority(n));
-    QCOMPARE(*get_priority(n), 50);
+    QCOMPARE(*get_priority(n), 50.f);
 
     set_description(n, "Such a fancy node?! Incredible! すごい!!");
     QVERIFY((bool)get_description(n));

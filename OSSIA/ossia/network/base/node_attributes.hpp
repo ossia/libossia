@@ -77,7 +77,7 @@ using tags = std::vector<std::string>;
 using description = std::string;
 
 //! When a node must be sent before other
-using priority = int32_t;
+using priority = float;
 
 //! How often a node is refreshed
 using refresh_rate = int32_t;

@@ -52,7 +52,7 @@ static void print_protocol_help()
       "\tlocalport (port): port this device is listening.\n"
       "\tdefault sending on port 9997, listening on 9996");
 }
-};
+}
 
 struct t_device : t_obj_base
 {
