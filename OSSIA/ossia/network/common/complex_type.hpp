@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/common/parameter_properties.hpp>
 #include <eggs/variant.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <ossia_export.h>
 namespace ossia
 {
@@ -34,6 +35,10 @@ ossia::val_type underlying_type(const complex_type& t);
 OSSIA_EXPORT
 ossia::net::parameter_base*
 setup_parameter(const complex_type& t, ossia::net::node_base& node);
+//! Creates a parameter in a node according to heuristics
+OSSIA_EXPORT
+ossia::net::parameter_base*
+try_setup_parameter(std::string t, ossia::net::node_base& node);
 
 //! Change the type of a parameter according to a complex type.
 OSSIA_EXPORT

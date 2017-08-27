@@ -486,7 +486,7 @@ void json_parser_impl::readObject(
         {
           actual_type = ossia::val_type::STRING;
         }
-        else if (e_type == tuple_type())
+        else if (e_type == list_type())
         {
           // nothing to do, but don't remove so that
           // we don't go into the float_array case

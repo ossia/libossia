@@ -235,6 +235,7 @@ struct matching_unit_list<time_list>
 template <>
 struct dataspace_traits<angle_u_list>
 {
+    using neutral_unit = radian_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("angle");
@@ -244,6 +245,7 @@ struct dataspace_traits<angle_u_list>
 template <>
 struct dataspace_traits<color_u_list>
 {
+  using neutral_unit = argb_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("color");
@@ -253,6 +255,7 @@ struct dataspace_traits<color_u_list>
 template <>
 struct dataspace_traits<distance_u_list>
 {
+  using neutral_unit = meter_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("distance");
@@ -262,6 +265,7 @@ struct dataspace_traits<distance_u_list>
 template <>
 struct dataspace_traits<gain_u_list>
 {
+  using neutral_unit = linear_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("gain");
@@ -271,6 +275,7 @@ struct dataspace_traits<gain_u_list>
 template <>
 struct dataspace_traits<orientation_u_list>
 {
+  using neutral_unit = quaternion_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("orientation");
@@ -279,6 +284,7 @@ struct dataspace_traits<orientation_u_list>
 template <>
 struct dataspace_traits<position_u_list>
 {
+  using neutral_unit = cartesian_3d_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("position");
@@ -288,6 +294,7 @@ struct dataspace_traits<position_u_list>
 template <>
 struct dataspace_traits<speed_u_list>
 {
+  using neutral_unit = meter_per_second_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("speed");
@@ -297,6 +304,7 @@ struct dataspace_traits<speed_u_list>
 template <>
 struct dataspace_traits<timing_u_list>
 {
+  using neutral_unit = second_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("time");

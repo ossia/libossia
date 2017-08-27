@@ -118,7 +118,7 @@ optional<extended_type> get_extended_type(const ossia::net::node_base& n)
         case ossia::val_type::VEC4F:
           return float_array_type();
         case ossia::val_type::TUPLE:
-          return tuple_type();
+          return list_type();
         default:
           break;
       }
