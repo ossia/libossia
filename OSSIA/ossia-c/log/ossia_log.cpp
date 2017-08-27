@@ -44,6 +44,7 @@ ossia_logger_t ossia_logger_create(const char* host, const char* app)
 {
   return new ossia_logger{host, app};
 }
+
 void ossia_logger_init_heartbeat(ossia_logger_t log, int pid, const char* cmdline)
 {
   log->heartbeat.send_init({

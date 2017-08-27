@@ -10,7 +10,10 @@ namespace ossia
 
 phidget_parameter::phidget_parameter(
     ppp::phidget_ptr p, phidget_protocol& proto, net::node_base& par)
-    : m_parent{par}, m_protocol{proto}, m_phidget{p}, m_ik{m_phidget->impl()}
+    : ossia::net::parameter_base{par}
+    , m_protocol{proto}
+    , m_phidget{p}
+    , m_ik{m_phidget->impl()}
 {
   m_ik->set_sensor_change([=](int s, int v) { send(value()); });
 }

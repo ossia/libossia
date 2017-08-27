@@ -23,8 +23,6 @@ public:
   void clone_value(audio_vector& res) const;
   void push_value(const audio_port& port);
 
-  net::node_base& get_node() const override;
-
   void pull_value() override;
   net::parameter_base& push_value(const ossia::value&) override;
   net::parameter_base& push_value(ossia::value&&) override;
@@ -40,21 +38,17 @@ public:
   net::parameter_base& set_domain(const domain&) override;
   bounding_mode get_bounding() const override;
   net::parameter_base& set_bounding(bounding_mode) override;
-  repetition_filter get_repetition_filter() const override;
-  net::parameter_base& set_repetition_filter(repetition_filter) override;
 
-  private:
-    ossia::net::node_base& m_node;
 };
 
 class OSSIA_EXPORT midi_generic_parameter : public ossia::net::parameter_base
 {
-  ossia::net::node_base& m_node;
   std::unique_ptr<mm::MidiInput> m_input;
   std::unique_ptr<mm::MidiOutput> m_output;
 
 public:
-  midi_generic_parameter(ossia::net::node_base& n) : m_node{n}
+  midi_generic_parameter(ossia::net::node_base& n)
+    : ossia::net::parameter_base{n}
   {
   }
 
@@ -75,11 +69,6 @@ public:
     }
   }
 
-  net::node_base& get_node() const override
-  {
-    return m_node;
-  }
-
   void pull_value() override
   {
   }
@@ -139,23 +128,15 @@ public:
   {
     return *this;
   }
-  repetition_filter get_repetition_filter() const override
-  {
-    return {};
-  }
-  net::parameter_base& set_repetition_filter(repetition_filter) override
-  {
-    return *this;
-  }
 };
 
 class OSSIA_EXPORT texture_generic_parameter : public ossia::net::parameter_base
 {
-  ossia::net::node_base& m_node;
   int32_t m_tex{};
 
 public:
-  texture_generic_parameter(ossia::net::node_base& n) : m_node{n}
+  texture_generic_parameter(ossia::net::node_base& n)
+    : ossia::net::parameter_base{n}
   {
   }
 
@@ -169,11 +150,6 @@ public:
   {
   }
 
-  net::node_base& get_node() const override
-  {
-    return m_node;
-  }
-
   void pull_value() override
   {
   }
@@ -230,14 +206,6 @@ public:
     return {};
   }
   net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
-  repetition_filter get_repetition_filter() const override
-  {
-    return {};
-  }
-  net::parameter_base& set_repetition_filter(repetition_filter) override
   {
     return *this;
   }

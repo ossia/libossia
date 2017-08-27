@@ -118,7 +118,6 @@ struct address_info
 class midi_parameter : public ossia::net::parameter_base
 {
   address_info m_info;
-  ossia::net::node_base& m_parent;
   midi_protocol& m_protocol;
   ossia::domain m_domain;
 
@@ -129,8 +128,6 @@ public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
 
   const address_info& info() const;
-
-  ossia::net::node_base& get_node() const final override;
 
   void pull_value() final override;
   parameter_base& push_value(const ossia::value& val) final override;
@@ -153,9 +150,6 @@ public:
 
   ossia::bounding_mode get_bounding() const final override;
   parameter_base& set_bounding(ossia::bounding_mode) final override;
-
-  ossia::repetition_filter get_repetition_filter() const final override;
-  parameter_base& set_repetition_filter(ossia::repetition_filter) final override;
 
   void on_first_callback_added() final override;
   void on_removing_last_callback() final override;

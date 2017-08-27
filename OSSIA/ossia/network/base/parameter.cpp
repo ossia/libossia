@@ -151,33 +151,83 @@ value parameter_base::fetch_value()
   return value();
 }
 
-unit_t parameter_base::get_unit() const
+
+ossia::repetition_filter parameter_base::get_repetition_filter() const
 {
-  return {};
+  return m_repetitionFilter;
 }
 
-parameter_base& parameter_base::set_unit(const unit_t& v)
+ossia::net::parameter_base& parameter_base::set_repetition_filter(
+    ossia::repetition_filter repetitionFilter)
 {
+  if (m_repetitionFilter != repetitionFilter)
+  {
+    m_repetitionFilter = repetitionFilter;
+    m_node.get_device().on_attribute_modified(
+        m_node, text_repetition_filter());
+  }
+  return *this;
+}
+
+
+unit_t parameter_base::get_unit() const
+{
+  return m_unit;
+}
+
+parameter_base& parameter_base::set_unit(const unit_t& u)
+{
+  if (m_unit != u)
+  {
+    m_unit = u;
+    m_node.get_device().on_attribute_modified(
+        m_node, text_unit());
+  }
+  return *this;
+}
+
+bool parameter_base::get_disabled() const
+{
+  return m_disabled;
+}
+
+parameter_base& parameter_base::set_disabled(bool v)
+{
+  if (m_disabled != v)
+  {
+    m_disabled = v;
+    m_node.get_device().on_attribute_modified(m_node, text_disabled());
+  }
   return *this;
 }
 
 bool parameter_base::get_muted() const
 {
-  return {};
+  return m_muted;
 }
 
 parameter_base& parameter_base::set_muted(bool v)
 {
+  if (m_muted != v)
+  {
+    m_muted = v;
+    m_node.get_device().on_attribute_modified(m_node, text_muted());
+  }
   return *this;
 }
 
 bool parameter_base::get_critical() const
 {
-  return {};
+  return m_critical;
 }
 
 parameter_base& parameter_base::set_critical(bool v)
 {
+  if (m_critical != v)
+  {
+    m_critical = v;
+    m_node.get_device().on_attribute_modified(m_node, text_critical());
+  }
   return *this;
 }
 

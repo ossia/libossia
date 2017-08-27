@@ -4,7 +4,7 @@ namespace ossia
 {
 
 audio_parameter::audio_parameter(net::node_base& n)
-  : m_node{n}
+  : ossia::net::parameter_base{n}
 {
 }
 
@@ -35,11 +35,6 @@ void audio_parameter::push_value(const audio_port& port)
           std::min(src.size(), (std::size_t)dst.size()),
           dst.begin());
   }
-}
-
-net::node_base&audio_parameter::get_node() const
-{
-  return m_node;
 }
 
 void audio_parameter::pull_value()
@@ -117,14 +112,5 @@ net::parameter_base&audio_parameter::set_bounding(bounding_mode)
   return *this;
 }
 
-repetition_filter audio_parameter::get_repetition_filter() const
-{
-  return {};
-}
-
-net::parameter_base&audio_parameter::set_repetition_filter(repetition_filter)
-{
-  return *this;
-}
 
 }

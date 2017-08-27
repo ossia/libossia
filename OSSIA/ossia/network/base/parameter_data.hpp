@@ -37,6 +37,7 @@ struct parameter_data
   ossia::optional<ossia::access_mode> access;
   ossia::optional<ossia::bounding_mode> bounding;
   ossia::optional<ossia::repetition_filter> rep_filter;
+  ossia::optional<bool> disabled{};
   ossia::optional<bool> muted{};
   ossia::optional<bool> critical{};
   unit_t unit;
@@ -88,6 +89,7 @@ struct full_parameter_data
     ossia::bounding_mode bounding{};
     ossia::repetition_filter rep_filter{};
     ossia::unit_t unit;
+    bool disabled{};
     bool muted{};
     bool critical{};
 
@@ -111,12 +113,11 @@ struct full_parameter_data
       val = std::move(v);
     }
 
-    bool filter_repetition(const ossia::value& v) const
+    bool filter_value(const ossia::value& v) const
     {
-      return get_repetition_filter() == ossia::repetition_filter::ON
-             && v == previous_val;
+      return disabled || muted ||
+          (get_repetition_filter() == ossia::repetition_filter::ON && v == previous_val);
     }
-
 
     const ossia::value& value() const { return this->val; }
     ossia::val_type get_value_type() const { return type; }
@@ -125,9 +126,9 @@ struct full_parameter_data
     bounding_mode get_bounding() const { return bounding; }
     repetition_filter get_repetition_filter() const { return rep_filter; }
     const ossia::unit_t& get_unit() const { return unit; }
+    bool get_disabled() const { return muted; }
     bool get_muted() const { return muted; }
     bool get_critical() const { return critical; }
-
 };
 
 OSSIA_EXPORT

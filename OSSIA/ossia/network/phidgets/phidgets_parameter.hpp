@@ -8,7 +8,6 @@ namespace ossia
 class phidget_protocol;
 class phidget_parameter final : public ossia::net::parameter_base
 {
-  ossia::net::node_base& m_parent;
   phidget_protocol& m_protocol;
   ppp::phidget_ptr m_phidget;
   ppp::interface_kit* m_ik{};
@@ -19,7 +18,6 @@ public:
       ppp::phidget_ptr p, phidget_protocol& proto, ossia::net::node_base& par);
   ~phidget_parameter();
 
-  net::node_base& get_node() const override;
   ppp::phidget_ptr phidget() const
   {
     return m_phidget;
