@@ -220,7 +220,7 @@ namespace Ossia
         UIntPtr sz);
     [DllImport("ossia")]
     public static extern void ossia_node_get_tags(
-        ossia_node_t node,
+        IntPtr node,
         out IntPtr tags,
         out UIntPtr sz);
     [DllImport("ossia")]
@@ -243,7 +243,8 @@ namespace Ossia
     [DllImport("ossia")]
     public static extern void ossia_node_unset_refresh_rate(
         IntPtr node);
-    int ossia_node_get_refresh_rate(
+    [DllImport("ossia")]
+    public static extern int ossia_node_get_refresh_rate(
         IntPtr node,
         out int ok);
 
@@ -254,7 +255,8 @@ namespace Ossia
     [DllImport("ossia")]
     public static extern void ossia_node_unset_priority(
         IntPtr node);
-    float ossia_node_get_priority(
+    [DllImport("ossia")]
+    public static extern float ossia_node_get_priority(
         IntPtr node,
         out int ok);
 
@@ -265,7 +267,8 @@ namespace Ossia
     [DllImport("ossia")]
     public static extern void ossia_node_unset_value_step_size(
         IntPtr node);
-    double ossia_node_get_value_step_size(
+    [DllImport("ossia")]
+    public static extern double ossia_node_get_value_step_size(
         IntPtr node,
         out int ok);
 
