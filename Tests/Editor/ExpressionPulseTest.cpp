@@ -46,7 +46,7 @@ private Q_SLOTS:
     auto localStringAddress = localStringNode->create_parameter(val_type::STRING);
 
     auto localTupleNode = device.create_child("my_tuple");
-    auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
+    auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);
 
     //! \todo what about Destination address ? do we observe the address ? how to do that ?
     //! auto localDestinationNode = device.create_child("my_destination"));

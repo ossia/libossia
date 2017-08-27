@@ -73,62 +73,62 @@ vec3f_address = vec3f_node.create_address(ossia.ValueType.Vec3f)
 vec3f_address.value = ossia.Value([100, 127, 255])						### TODO : vec3f_address.value = [100, 127, 255]
 
 
-# create a node, create a tuple address and initialize it
-tuple_node = local_device.add_node("/test/value/tuple")
-tuple_address = tuple_node.create_address(ossia.ValueType.Tuple)
+# create a node, create a list address and initialize it
+list_node = local_device.add_node("/test/value/list")
+list_address = list_node.create_address(ossia.ValueType.List)
 
-tuple_address.value = ossia.Value([ossia.Value(44100), ossia.Value("test.wav"), ossia.Value(0.9)]) ### TODO : tuple_address.value = [44100, "test.wav", 0.9]
+list_address.value = ossia.Value([ossia.Value(44100), ossia.Value("test.wav"), ossia.Value(0.9)]) ### TODO : list_address.value = [44100, "test.wav", 0.9]
 
 
 # attach a callback function to the boolean address
 def bool_value_callback(v):
-	print(v)
+  print(v)
 bool_address.add_callback(bool_value_callback)
 
 # attach a callback function to the integer address
 def int_value_callback(v):
-	print(v)
+  print(v)
 int_address.add_callback(int_value_callback)
 
 # attach a callback function to the float address
 def float_value_callback(v):
-	print(v)
+  print(v)
 float_address.add_callback(float_value_callback)
 
 # attach a callback function to the char address
 def char_value_callback(v):
-	print(v)
+  print(v)
 char_address.add_callback(char_value_callback)
 
 # attach a callback function to the string address
 def string_value_callback(v):
-	print(v)
+  print(v)
 string_address.add_callback(string_value_callback)
 
 # attach a callback function to the 3 floats vector address
 def vec3f_value_callback(v):
-	print(v)
+  print(v)
 vec3f_address.add_callback(vec3f_value_callback)
 
-# attach a callback function to the tuple address
-def tuple_value_callback(v):
-	print(v)
-tuple_address.add_callback(tuple_value_callback)
+# attach a callback function to the list address
+def list_value_callback(v):
+  print(v)
+list_address.add_callback(list_value_callback)
 
 ### LOCAL DEVICE EXPLORATION
 
 # a function to iterate on node's tree recursively
 def iterate_on_children(node):
 
-	for child in node.children():
-		if child.address:
-			print(str(child) + " " + str(child.address) + " <" + str(child.address.value_type) + ", " + str(child.address.access_mode) + ">")
-			if child.address.have_domain():
-				print("min : " + str(child.address.domain.min) + ", max : " + str(child.address.domain.max))
-			else:
-				print(child)
+  for child in node.children():
+    if child.address:
+      print(str(child) + " " + str(child.address) + " <" + str(child.address.value_type) + ", " + str(child.address.access_mode) + ">")
+      if child.address.have_domain():
+        print("min : " + str(child.address.domain.min) + ", max : " + str(child.address.domain.max))
+      else:
+        print(child)
 
-		iterate_on_children(child)
+    iterate_on_children(child)
 
 # iterate on our device
 print("\nLOCAL DEVICE NAMESPACE\n")
@@ -137,28 +137,28 @@ iterate_on_children(local_device.root_node)
 ### REMOTE DEVICE SETUP
 
 try:
-	# try to connect to a remote device using OSCQuery protocol
-	oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://127.0.0.1:5678", 9998)
+  # try to connect to a remote device using OSCQuery protocol
+  oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://127.0.0.1:5678", 9998)
 
-	# explore the remote device
-	oscquery_device.update()
+  # explore the remote device
+  oscquery_device.update()
 
-	# iterate on our device
-	print("\nREMOTE DEVICE NAMESPACE\n")
-	iterate_on_children(oscquery_device.get_root_node())
+  # iterate on our device
+  print("\nREMOTE DEVICE NAMESPACE\n")
+  iterate_on_children(oscquery_device.get_root_node())
 
 except:
-	print("\nfail to connect\n")
+  print("\nfail to connect\n")
 
 # MAIN LOOP
 
 # wait and use i-score to change the value remotely
 while True:
-	time.sleep(1)
+  time.sleep(1)
 
 ### TODO ###
 
 # ADDRESS VALUE OPERATIONS
-#  
+#
 
 #print(address.__dict__)

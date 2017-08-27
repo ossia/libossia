@@ -25,7 +25,7 @@ struct OSSIA_EXPORT execution_error : public std::runtime_error
  * @brief The invalid_value_type_error class
  *
  * Means that an invalid value was passed.
- * For instance a Tuple where an Impulse is required.
+ * For instance a List where an Impulse is required.
  */
 struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
 {

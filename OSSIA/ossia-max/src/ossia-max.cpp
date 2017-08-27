@@ -310,7 +310,7 @@ void object_dump(T* x)
           type = "float";
           break;
         case ossia::val_type::INT:
-          type = " int";
+          type = "int";
           break;
         case ossia::val_type::VEC2F:
           type = "vec2f";
@@ -330,8 +330,8 @@ void object_dump(T* x)
         case ossia::val_type::STRING:
           type = "string";
           break;
-        case ossia::val_type::TUPLE:
-          type = "tuple";
+        case ossia::val_type::LIST:
+          type = "list";
           break;
         case ossia::val_type::CHAR:
           type = "char";

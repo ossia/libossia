@@ -346,7 +346,7 @@ QJSValue js_value_outbound_visitor::operator()(const std::string& val) const
 }
 
 QJSValue
-js_value_outbound_visitor::make_tuple(const std::vector<value>& arr) const
+js_value_outbound_visitor::make_list(const std::vector<value>& arr) const
 {
   auto array = engine.newArray(arr.size());
   int i = 0;
@@ -363,8 +363,8 @@ QJSValue js_value_outbound_visitor::
 operator()(const std::vector<ossia::value>& val) const
 {
   QJSValue v;
-  v.setProperty("type", to_enum(qml_val_type::val_type::Tuple));
-  v.setProperty("value", make_tuple(val));
+  v.setProperty("type", to_enum(qml_val_type::val_type::List));
+  v.setProperty("value", make_list(val));
   return v;
 }
 
@@ -549,7 +549,7 @@ void set_parameter_type(QVariant::Type type, net::parameter_base& addr)
     case QVariant::StringList:
     case QVariant::Date:
     default:
-      addr.set_value_type(ossia::val_type::TUPLE);
+      addr.set_value_type(ossia::val_type::LIST);
       break;
   }
 }
@@ -652,7 +652,7 @@ operator()(QVariant::Type type, const value& ossia_val)
     }
     case QVariant::StringList:
     {
-      // TODO tuple of string
+      // TODO list of string
     }
     case QVariant::Date:
     // TODO double ?

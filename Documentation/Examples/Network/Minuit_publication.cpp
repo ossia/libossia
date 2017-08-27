@@ -68,7 +68,7 @@ int main()
   // localDestinationAddress->addCallback(printValueCallback);
 
   auto localTupleNode = localTestNode->create_child("my_tuple");
-  auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
+  auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);
   localTupleAddress->add_callback(printValueCallback);
 
   // update tree value

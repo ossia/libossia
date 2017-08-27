@@ -160,7 +160,7 @@ domain init_domain(ossia::val_type type)
       return domain_base<char>{};
     case val_type::STRING:
       return domain_base<std::string>();
-    case val_type::TUPLE:
+    case val_type::LIST:
       return vector_domain();
     case val_type::VEC2F:
       return vecf_domain<2>();

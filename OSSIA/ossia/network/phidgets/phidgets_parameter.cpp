@@ -70,7 +70,7 @@ net::parameter_base& phidget_parameter::set_value(ossia::value&&)
 
 val_type phidget_parameter::get_value_type() const
 {
-  return ossia::val_type::TUPLE;
+  return ossia::val_type::LIST;
 }
 
 net::parameter_base& phidget_parameter::set_value_type(val_type)

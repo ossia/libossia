@@ -15,7 +15,7 @@ struct make_value_helper<U, float>
   template <typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const T& t)
   {
-    // TODO maybe return first value for tuple or vecNf ?
+    // TODO maybe return first value for list or vecNf ?
     // throw std::runtime_error("mismatching value type and unit");
     return {};
   }

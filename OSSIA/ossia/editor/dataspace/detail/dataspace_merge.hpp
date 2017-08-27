@@ -50,7 +50,7 @@ using enable_if_second_iterable = std::enable_if_t<second_iterable<T, U>>;
 template <typename T, typename U>
 using enable_if_neither_iterable = std::enable_if_t<neither_iterable<T, U>>;
 
-// Case where both T and U are array types, e.g. RGB && Tuple, or CMYK &&
+// Case where both T and U are array types, e.g. RGB && List, or CMYK &&
 // Vec2f...
 template <typename T, typename U>
 struct whole_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
@@ -79,7 +79,7 @@ struct whole_value_merger_helper<T, U, enable_if_first_iterable<T, U>>
   }
 };
 
-// Case "centimeter" and "tuple" -> does not make sense, we return the input
+// Case "centimeter" and "list" -> does not make sense, we return the input
 template <typename T, typename U>
 struct whole_value_merger_helper<T, U, enable_if_second_iterable<T, U>>
 {

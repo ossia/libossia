@@ -175,11 +175,11 @@ private:
  * A curve that always return a same single value.
  *
  * It is useful if for instance one wants to automate on the
- * first value of the following tuple :
+ * first value of the following list :
  *
  * [ 1, "a string", [ "another", 'c' ] ]
  *
- * while keeping the reste of the tuple intact.
+ * while keeping the reste of the list intact.
  */
 class constant_curve final : public curve_abstract
 {

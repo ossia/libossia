@@ -28,10 +28,10 @@ class parameter_base;
  * It drives (i.e. sends messages) to a parameter, according to a driving value.
  * Its driven \ref net::parameter_base can be either of numeric type (\ref
  * val_type::INT, \ref val_type::FLOAT...)
- * or of \ref val_type::TUPLE, if the tuple only has numeric elements (e.g.
- * Tuple{Float, Float}).
+ * or of \ref val_type::LIST, if the list only has numeric elements (e.g.
+ * List{Float, Float}).
  *
- * The driving \ref value can either be a single \ref Behavior or a \ref Tuple
+ * The driving \ref value can either be a single \ref Behavior or a \ref List
  * of \ref Behavior,
  * in accordance to the type of the driven \ref net::parameter_base.
  *

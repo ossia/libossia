@@ -264,7 +264,7 @@ struct value_comparison_visitor2
     return Comparator{}(v, comparisons::String_T{});
   }
 
-  // Tuple
+  // List
   template <typename T>
   bool operator()(const T& lhs, const std::vector<ossia::value>& v) const
   {
@@ -521,7 +521,7 @@ struct value_prettyprint_visitor
   }
   void operator()(const std::vector<ossia::value>& t) const
   {
-    s.write("tuple: {}", t);
+    s.write("list: {}", t);
   }
   void operator()() const
   {
@@ -609,15 +609,15 @@ value::~value() noexcept
 namespace std
 {
 std::ostream&
-operator<<(std::ostream& s, const std::vector<ossia::value>& tuple)
+operator<<(std::ostream& s, const std::vector<ossia::value>& list)
 {
 
-  const int n = tuple.size();
+  const int n = list.size();
 
   s << "[";
   for (int i = 0; i < n; i++)
   {
-    const auto& val = tuple[i];
+    const auto& val = list[i];
 
     if (val.valid())
     {
@@ -654,17 +654,17 @@ std::ostream& operator<<(std::ostream& s, const std::array<float, 4>& vec)
 }
 
 std::ostream&
-operator<<(std::ostream& s, const std::vector<std::string>& tuple)
+operator<<(std::ostream& s, const std::vector<std::string>& list)
 {
-  const int n = tuple.size();
+  const int n = list.size();
 
   s << "[";
-  if (!tuple.empty())
+  if (!list.empty())
   {
-    s << tuple[0];
+    s << list[0];
     for (int i = 1; i < n; i++)
     {
-      s << ", " << tuple[i];
+      s << ", " << list[i];
     }
   }
   s << "]";
@@ -673,7 +673,7 @@ operator<<(std::ostream& s, const std::vector<std::string>& tuple)
 }
 
 std::istream&
-operator>>(std::istream& s, std::vector<std::string>& tuple)
+operator>>(std::istream& s, std::vector<std::string>& list)
 {
   // TODO
   return s;

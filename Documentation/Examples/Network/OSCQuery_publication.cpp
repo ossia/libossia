@@ -115,7 +115,7 @@ int main()
   {
     // tuple is a std::vector<value>
     auto& node = find_or_create_node(device, "/test/my_tuple");
-    auto address = node.create_parameter(val_type::TUPLE);
+    auto address = node.create_parameter(val_type::LIST);
     address->add_callback(printValueCallback);
 
     using tuple = std::vector<ossia::value>;

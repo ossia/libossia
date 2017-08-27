@@ -46,7 +46,7 @@ extern "C" void ossia_parameter_setup()
   CLASS_ATTR_SYM(
       ossia_library.ossia_parameter_class, "type", 0, t_parameter, m_type);
   CLASS_ATTR_ENUM (
-      ossia_library.ossia_parameter_class, "type", 0, "float int bool symbol vec2f vec3f vec4f tuple impulse");
+      ossia_library.ossia_parameter_class, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
   CLASS_ATTR_ATOM_ARRAY(
       ossia_library.ossia_parameter_class, "default", 0, t_parameter,
       m_default, 64);
@@ -363,9 +363,9 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
       ossia::net::set_default_value(
           local_param->get_node(), m_default[0].a_w.w_long > 0 ? true : false);
   }
-  else if (m_type == gensym("tuple"))
+  else if (m_type == gensym("list"))
   {
-    local_param = m_node->create_parameter(ossia::val_type::TUPLE);
+    local_param = m_node->create_parameter(ossia::val_type::LIST);
     m_type_size = 64;
     std::vector<ossia::value> list;
 
@@ -395,7 +395,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     object_error(
         (t_object*)this,
         "type should one of (case sensitive): float, string, int, vec2f, "
-        "vec3f, vec4f, bool, tuple, char, impulse");
+        "vec3f, vec4f, bool, list, char, impulse");
   }
 
   if (!local_param)

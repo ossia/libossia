@@ -33,7 +33,7 @@ struct address_info
       case Type::NoteOn:
       case Type::NoteOff:
       case Type::CC:
-        return ossia::val_type::TUPLE;
+        return ossia::val_type::LIST;
       case Type::NoteOn_N:
       case Type::NoteOff_N:
       case Type::CC_N:

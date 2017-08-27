@@ -74,7 +74,7 @@ static ossia::val_type name_to_type(ossia::string_view name)
   if (name == "numeric")
     return ossia::val_type::FLOAT;
   if (name == "array")
-    return ossia::val_type::TUPLE;
+    return ossia::val_type::LIST;
   if (name == "impulse")
     return ossia::val_type::IMPULSE;
   if (name == "bool")

@@ -274,11 +274,11 @@ T convert(const ossia::value& val)
   return val.apply(detail::value_converter<T>{});
 }
 
-// Used to convert Tuple in Vec2f, Vec3f, Vec4f...
+// Used to convert List in Vec2f, Vec3f, Vec4f...
 template <typename T>
 T convert(const std::vector<ossia::value>& val)
 {
-  // TODO should we have an error if the Tuple does not
+  // TODO should we have an error if the List does not
   // have the correct number of arguments ? Or just silently fill
   // with zeros ?
 
@@ -309,7 +309,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       return f(ossia::value_trait<char>{}, std::forward<Args>(args)...);
     case val_type::STRING:
       return f(ossia::value_trait<std::string>{}, std::forward<Args>(args)...);
-    case val_type::TUPLE:
+    case val_type::LIST:
       return f(
           ossia::value_trait<std::vector<ossia::value>>{},
           std::forward<Args>(args)...);

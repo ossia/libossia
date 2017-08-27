@@ -41,7 +41,7 @@ class value;
  *
  * ex. "int: 3"
  *     "string: tutu"
- *     "tuple: [ int: 2, float: 3 ]"
+ *     "list: [ int: 2, float: 3 ]"
  * etc...
  *
  */
@@ -348,7 +348,7 @@ inline ossia::value init_value(ossia::val_type type)
       return char{};
     case val_type::STRING:
       return std::string{};
-    case val_type::TUPLE:
+    case val_type::LIST:
       return std::vector<ossia::value>{};
     case val_type::VEC2F:
       return vec2f{};
@@ -368,14 +368,14 @@ inline ossia::value init_value(ossia::val_type type)
 /**
  * @brief get_value_at_index
  *
- * for ossia::tuple{{1, 2}, 3} and index {}, return {{1, 2}, 3}.
- * for ossia::tuple{{1, 2}, 3} and index {0}, return {1, 2}.
- * for ossia::tuple{{1, 2}, 3} and index {0, 0}, return 1.
- * for ossia::tuple{{1, 2}, 3} and index {0, 1}, return 2.
- * for ossia::tuple{{1, 2}, 3} and index {0, 2}, return {}.
- * for ossia::tuple{{1, 2}, 3} and index {1}, return 3.
- * for ossia::tuple{{1, 2}, 3} and index {1, 0}, return {}.
- * for ossia::tuple{{1, 2}, 3} and index {2}, return {}.
+ * for ossia::list{{1, 2}, 3} and index {}, return {{1, 2}, 3}.
+ * for ossia::list{{1, 2}, 3} and index {0}, return {1, 2}.
+ * for ossia::list{{1, 2}, 3} and index {0, 0}, return 1.
+ * for ossia::list{{1, 2}, 3} and index {0, 1}, return 2.
+ * for ossia::list{{1, 2}, 3} and index {0, 2}, return {}.
+ * for ossia::list{{1, 2}, 3} and index {1}, return 3.
+ * for ossia::list{{1, 2}, 3} and index {1, 0}, return {}.
+ * for ossia::list{{1, 2}, 3} and index {2}, return {}.
  *
  * @see @ref destination_index
  * @return The value if it is found, else nothing.
@@ -387,7 +387,7 @@ ossia::value get_value_at_index(
 namespace std
 {
 OSSIA_EXPORT std::ostream&
-operator<<(std::ostream& s, const std::vector<ossia::value>& tuple);
+operator<<(std::ostream& s, const std::vector<ossia::value>& list);
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream& s, const std::array<float, 2ul>& vec);
 OSSIA_EXPORT std::ostream&
@@ -395,7 +395,7 @@ operator<<(std::ostream& s, const std::array<float, 3ul>& vec);
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream& s, const std::array<float, 4ul>& vec);
 OSSIA_EXPORT std::ostream&
-operator<<(std::ostream&, const std::vector<std::string>& tuple);
+operator<<(std::ostream&, const std::vector<std::string>& list);
 OSSIA_EXPORT std::istream&
-operator>>(std::istream&, std::vector<std::string>& tuple);
+operator>>(std::istream&, std::vector<std::string>& list);
 }

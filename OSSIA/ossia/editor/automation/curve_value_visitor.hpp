@@ -10,7 +10,7 @@ namespace detail
 
 using vec_behavior = chobo::static_vector<curve<double, float>*, 4>;
 static vec_behavior
-tuple_convertible_to_vec(const std::vector<ossia::behavior>& t)
+list_convertible_to_vec(const std::vector<ossia::behavior>& t)
 {
   const auto n = t.size();
 
@@ -142,7 +142,7 @@ struct compute_value_uninformed_visitor
 
   ossia::value operator()(const std::vector<ossia::behavior>& b)
   {
-    vec_behavior arr = tuple_convertible_to_vec(b);
+    vec_behavior arr = list_convertible_to_vec(b);
 
     // VecNf case.
     switch (arr.size())
@@ -162,7 +162,7 @@ struct compute_value_uninformed_visitor
         break;
     }
 
-    // General tuple case
+    // General list case
     std::vector<ossia::value> t;
     t.reserve(b.size());
 
@@ -247,7 +247,7 @@ struct compute_value_visitor
           return make_filled_vec<3>(base_curve, t.second, position);
         case ossia::val_type::VEC4F:
           return make_filled_vec<4>(base_curve, t.second, position);
-        case ossia::val_type::TUPLE:
+        case ossia::val_type::LIST:
         {
           return {}; // TODO
         }
@@ -265,7 +265,7 @@ struct compute_value_visitor
 
   ossia::value operator()(const std::vector<ossia::behavior>& b)
   {
-    vec_behavior arr = tuple_convertible_to_vec(b);
+    vec_behavior arr = list_convertible_to_vec(b);
 
     // VecNf case.
     switch (arr.size())
@@ -285,7 +285,7 @@ struct compute_value_visitor
         break;
     }
 
-    // General tuple case
+    // General list case
     std::vector<ossia::value> t;
     t.reserve(b.size());
 

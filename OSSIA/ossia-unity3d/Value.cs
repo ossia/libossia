@@ -42,43 +42,43 @@ namespace Ossia
       int i = 0;
       foreach(Value val in v)
         arr[i++] = val.ossia_value;
-      ossia_value = Network.ossia_value_create_tuple(arr, new UIntPtr((ulong)arr.Length));
+      ossia_value = Network.ossia_value_create_list(arr, new UIntPtr((ulong)arr.Length));
     }
     public Value(object obj)
     {
-			if (obj is int) {
-				ossia_value = Network.ossia_value_create_int ((int)obj);
-			} else if (obj is bool) {
-				ossia_value = Network.ossia_value_create_bool (((bool)obj) ? 1 : 0);
-			} else if (obj is float) {
-				ossia_value = Network.ossia_value_create_float ((float)obj);
-			} else if (obj is double) {
-				ossia_value = Network.ossia_value_create_float ((float)((double)obj));
-			} else if (obj is char) {
-				ossia_value = Network.ossia_value_create_char ((char)obj);
-			} else if (obj is string) {
-				ossia_value = Network.ossia_value_create_string ((string)obj);
-			} else if (obj is IList<float>) {
-				var lst = (IList<float>)obj;
-				var arr = lst as float[] ?? lst.ToArray ();
-				ossia_value = Network.ossia_value_create_fn (arr, new UIntPtr ((ulong)arr.Length));
-			} else if (obj is IList<int>) {
-				var lst = (IList<int>)obj;
-				var arr = lst as int[] ?? lst.ToArray ();
-				ossia_value = Network.ossia_value_create_in (arr, new UIntPtr ((ulong)arr.Length));
-			} else if (obj is IList<Value>) {
-				var lst = (IList<Value>)obj;
-				IntPtr[] arr = new IntPtr[lst.Count ()];
-				int i = 0;
-				foreach (Value val in lst)
-					arr [i++] = val.ossia_value;
-				ossia_value = Network.ossia_value_create_tuple (arr, new UIntPtr ((ulong)arr.Length));
-			} else if (obj is System.Int32) {
-				ossia_value = Network.ossia_value_create_int ((int)obj);
-			} else if (obj is System.Boolean) {
-				ossia_value = Network.ossia_value_create_bool (((bool)obj) ? 1 : 0);
-			} else if (obj is System.Single) {
-				ossia_value = Network.ossia_value_create_float ((float)obj);
+      if (obj is int) {
+        ossia_value = Network.ossia_value_create_int ((int)obj);
+      } else if (obj is bool) {
+        ossia_value = Network.ossia_value_create_bool (((bool)obj) ? 1 : 0);
+      } else if (obj is float) {
+        ossia_value = Network.ossia_value_create_float ((float)obj);
+      } else if (obj is double) {
+        ossia_value = Network.ossia_value_create_float ((float)((double)obj));
+      } else if (obj is char) {
+        ossia_value = Network.ossia_value_create_char ((char)obj);
+      } else if (obj is string) {
+        ossia_value = Network.ossia_value_create_string ((string)obj);
+      } else if (obj is IList<float>) {
+        var lst = (IList<float>)obj;
+        var arr = lst as float[] ?? lst.ToArray ();
+        ossia_value = Network.ossia_value_create_fn (arr, new UIntPtr ((ulong)arr.Length));
+      } else if (obj is IList<int>) {
+        var lst = (IList<int>)obj;
+        var arr = lst as int[] ?? lst.ToArray ();
+        ossia_value = Network.ossia_value_create_in (arr, new UIntPtr ((ulong)arr.Length));
+      } else if (obj is IList<Value>) {
+        var lst = (IList<Value>)obj;
+        IntPtr[] arr = new IntPtr[lst.Count ()];
+        int i = 0;
+        foreach (Value val in lst)
+          arr [i++] = val.ossia_value;
+        ossia_value = Network.ossia_value_create_list (arr, new UIntPtr ((ulong)arr.Length));
+      } else if (obj is System.Int32) {
+        ossia_value = Network.ossia_value_create_int ((int)obj);
+      } else if (obj is System.Boolean) {
+        ossia_value = Network.ossia_value_create_bool (((bool)obj) ? 1 : 0);
+      } else if (obj is System.Single) {
+        ossia_value = Network.ossia_value_create_float ((float)obj);
       } else if (obj is System.Double) {
         ossia_value = Network.ossia_value_create_float ((float)obj);
       } else if (obj is UnityEngine.Vector2) {
@@ -100,10 +100,10 @@ namespace Ossia
         var vec = (Color)obj;
         ossia_value = Network.ossia_value_create_4f (vec.r, vec.g, vec.b, vec.a);
       } else if (obj is System.String) {
-				ossia_value = Network.ossia_value_create_string ((string)obj);
-			} else {
-				throw new Exception("unimplemented type: " + obj.GetType());
-			}
+        ossia_value = Network.ossia_value_create_string ((string)obj);
+      } else {
+        throw new Exception("unimplemented type: " + obj.GetType());
+      }
 
     }
 
@@ -135,11 +135,11 @@ namespace Ossia
       }
       else if (obj == typeof(float[]))
       {
-        return ossia_type.TUPLE;
+        return ossia_type.LIST;
       }
       else if (obj == typeof(int[]))
       {
-        return ossia_type.TUPLE;
+        return ossia_type.LIST;
       }
       else if (obj == typeof(vec2f))
       {
@@ -185,7 +185,7 @@ namespace Ossia
     public object Get(Type obj)
     {
       ossia_type t = GetOssiaType ();
-      switch (t) { 
+      switch (t) {
       case ossia_type.FLOAT:
         {
           if (obj == typeof(float))
@@ -241,8 +241,8 @@ namespace Ossia
         return GetBool ();
       case ossia_type.STRING:
         return GetString ();
-      case ossia_type.TUPLE:
-        return GetTuple ();
+      case ossia_type.LIST:
+        return GetList ();
       case ossia_type.CHAR:
         return GetChar ();
       }
@@ -313,7 +313,7 @@ namespace Ossia
       return v;
     }
 
-    public unsafe Value[] GetTuple()
+    public unsafe Value[] GetList()
     {
       IntPtr data = IntPtr.Zero;
       UIntPtr sz = UIntPtr.Zero;
@@ -346,7 +346,7 @@ namespace Ossia
     public object Get()
     {
       ossia_type t = GetOssiaType ();
-      switch (t) { 
+      switch (t) {
       case ossia_type.FLOAT:
         return GetFloat ();
       case ossia_type.INT:
@@ -361,8 +361,8 @@ namespace Ossia
         return GetBool ();
       case ossia_type.STRING:
         return GetString ();
-      case ossia_type.TUPLE:
-        return GetTuple ();
+      case ossia_type.LIST:
+        return GetList ();
       case ossia_type.CHAR:
         return GetChar ();
       }

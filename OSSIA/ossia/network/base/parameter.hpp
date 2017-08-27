@@ -97,7 +97,7 @@ public:
   //! Returns the sub-value at the index given by destination_index
   ossia::value value(ossia::destination_index) const;
 
-  //! Returns a tuple of sub-values matching the indexes
+  //! Returns a list of sub-values matching the indexes
   std::vector<ossia::value>
   value(const std::vector<ossia::destination_index>&) const;
 

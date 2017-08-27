@@ -45,7 +45,7 @@ int main()
 
     // add a /test address
     auto local_test_node = device.create_child("test");
-    auto local_test_address = local_test_node->create_parameter(val_type::TUPLE);
+    auto local_test_address = local_test_node->create_parameter(val_type::LIST);
 
     // attach /test address to their callback
     local_test_address->add_callback(local_test_callback);
@@ -274,7 +274,7 @@ void local_test_callback(const value& v)
 {
     cout << "/i-score/test = ";
 
-    if (v.getType() == val_type::TUPLE)
+    if (v.getType() == val_type::LIST)
     {
       auto t = v.get<std::vector<ossia::value>>();
 

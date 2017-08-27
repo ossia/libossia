@@ -52,7 +52,7 @@ const x3::rule<class o_str_, std::string> o_str_ = "str";
 const x3::rule<class o_vec2_, array_parser<2>> o_vec2_ = "vec2";
 const x3::rule<class o_vec3_, array_parser<3>> o_vec3_ = "vec3";
 const x3::rule<class o_vec4_, array_parser<4>> o_vec4_ = "vec4";
-const x3::rule<class o_tuple_, std::vector<ossia::value>> o_tuple_ = "tuple";
+const x3::rule<class o_list_, std::vector<ossia::value>> o_list_ = "list";
 
 struct EscapedChar : x3::symbols<const char>
 {
@@ -69,14 +69,14 @@ const auto o_str__def = "string: \"" >> (x3::lexeme[ *(EscapedChar() | (char_  -
 const auto o_vec2__def = "vec2f: [" >> float_p() >> ", " >> float_p() >> "]";
 const auto o_vec3__def = "vec3f: [" >> float_p() >> ", " >> float_p() >> ", " >> float_p() >> "]";
 const auto o_vec4__def = "vec4f: [" >> float_p() >> ", " >> float_p() >> ", " >> float_p() >> ", " >> float_p() >> "]";
-const auto o_tuple__def = "tuple: [" >> *(value_ % x3::lit(", ")) >> "]";
+const auto o_list__def = "list: [" >> *(value_ % x3::lit(", ")) >> "]";
 
 BOOST_SPIRIT_DEFINE(o_impulse_)
 BOOST_SPIRIT_DEFINE(o_str_)
 BOOST_SPIRIT_DEFINE(o_vec2_)
 BOOST_SPIRIT_DEFINE(o_vec3_)
 BOOST_SPIRIT_DEFINE(o_vec4_)
-BOOST_SPIRIT_DEFINE(o_tuple_)
+BOOST_SPIRIT_DEFINE(o_list_)
 
 
 const auto value__def
@@ -89,7 +89,7 @@ const auto value__def
     | o_vec2_
     | o_vec3_
     | o_vec4_
-    | o_tuple_
+    | o_list_
     ;
 
 BOOST_SPIRIT_DEFINE(value_)

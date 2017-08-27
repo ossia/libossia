@@ -82,9 +82,9 @@ struct apply_domain_visitor
         b, std::move(value));
   }
 
-  // Tuples
-  // First case : tuple with another domain : we try to filter all the values
-  // of the tuple that are filterable by this domain.
+  // Lists
+  // First case : list with another domain : we try to filter all the values
+  // of the list that are filterable by this domain.
   // They are defined outside the class to handle a GCC bug...
   template <typename T>
   ossia::value operator()(
@@ -101,7 +101,7 @@ struct apply_domain_visitor
       std::vector<ossia::value>&& value,
       const domain_base<ossia::value>& domain) const;
 
-  // Second case : we filter a whole tuple.
+  // Second case : we filter a whole list.
   ossia::value operator()(
       const std::vector<ossia::value>& value,
       const vector_domain& domain) const;
@@ -162,7 +162,7 @@ struct apply_domain_visitor
 };
 
 template <typename Domain_T>
-struct tuple_apply_domain_helper
+struct list_apply_domain_helper
 {
   const apply_domain_visitor& vis;
   const Domain_T& dom;
@@ -183,7 +183,7 @@ ossia::value apply_domain_visitor::operator()(
   {
     if (val.getType() == ossia::value_trait<T>::ossia_enum)
       val = ossia::apply_nonnull(
-          tuple_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
+          list_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
   }
   return res;
 }
@@ -196,7 +196,7 @@ ossia::value apply_domain_visitor::operator()(
   {
     if (val.getType() == ossia::value_trait<T>::ossia_enum)
       val = ossia::apply_nonnull(
-          tuple_apply_domain_helper<domain_base<T>>{*this, domain},
+          list_apply_domain_helper<domain_base<T>>{*this, domain},
           std::move(val.v));
   }
   // TODO currently other values (strings, etc...) are ignored; what should we

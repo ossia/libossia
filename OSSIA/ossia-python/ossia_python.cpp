@@ -332,7 +332,7 @@ PYBIND11_MODULE(ossia_python, m)
       .value("Impulse", ossia::val_type::IMPULSE)
       .value("Bool", ossia::val_type::BOOL)
       .value("String", ossia::val_type::STRING)
-      .value("Tuple", ossia::val_type::TUPLE)
+      .value("List", ossia::val_type::LIST)
       .value("Char", ossia::val_type::CHAR)
       .export_values();
 

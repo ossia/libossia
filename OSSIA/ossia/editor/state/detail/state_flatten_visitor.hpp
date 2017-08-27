@@ -185,7 +185,7 @@ struct vec_merger
     auto& incoming_index = incoming_dest.index;
     if (incoming_index.empty())
     {
-      value_merger<true>::merge_tuple(orig, incoming);
+      value_merger<true>::merge_list(orig, incoming);
       return {};
     }
     else
@@ -265,11 +265,11 @@ struct state_flatten_visitor_merger
           incoming.destination.value, {}, incoming.destination.unit};
       if (!to_append_index_empty && !source_index_empty)
       {
-        // Most complex case : we create a tuple big enough to host both values
-        value_merger<true>::insert_in_tuple(
+        // Most complex case : we create a list big enough to host both values
+        value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
             existing.destination.index);
-        value_merger<true>::insert_in_tuple(
+        value_merger<true>::insert_in_list(
             pw.message_value, incoming.message_value,
             incoming.destination.index);
       }
@@ -278,13 +278,13 @@ struct state_flatten_visitor_merger
       else if (!to_append_index_empty)
       {
         pw.message_value.push_back(existing.message_value);
-        value_merger<true>::insert_in_tuple(
+        value_merger<true>::insert_in_list(
             pw.message_value, incoming.message_value,
             incoming.destination.index);
       }
       else if (!source_index_empty)
       {
-        value_merger<true>::insert_in_tuple(
+        value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
             existing.destination.index);
         value_merger<true>::set_first_value(
@@ -305,8 +305,8 @@ struct state_flatten_visitor_merger
     }
     else
     {
-      // add it wherever possible, by extending the tuple as required
-      value_merger<true>::insert_in_tuple(
+      // add it wherever possible, by extending the list as required
+      value_merger<true>::insert_in_list(
           existing.message_value, incoming.message_value,
           incoming.destination.index);
     }
@@ -376,8 +376,8 @@ struct state_flatten_visitor_merger
     }
     else
     {
-      // add it wherever possible, by extending the tuple as required
-      value_merger<false>::insert_in_tuple(
+      // add it wherever possible, by extending the list as required
+      value_merger<false>::insert_in_list(
           other.message_value, existing.message_value,
           existing.destination.index);
     }
@@ -391,7 +391,7 @@ struct state_flatten_visitor_merger
   operator()(piecewise_message& existing, const piecewise_message& incoming)
   {
     // merge the new piecewise into the existing one
-    value_merger<true>::merge_tuple(
+    value_merger<true>::merge_list(
         existing.message_value, incoming.message_value);
   }
 
@@ -460,11 +460,11 @@ struct state_flatten_visitor_merger
           incoming.destination.value, {}, incoming.destination.unit};
       if (!to_append_index_empty && !source_index_empty)
       {
-        // Most complex case : we create a tuple big enough to host both values
-        value_merger<true>::insert_in_tuple(
+        // Most complex case : we create a list big enough to host both values
+        value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
             existing.destination.index);
-        value_merger<true>::insert_in_tuple(
+        value_merger<true>::insert_in_list(
             pw.message_value, std::move(incoming.message_value),
             incoming.destination.index);
       }
@@ -473,13 +473,13 @@ struct state_flatten_visitor_merger
       else if (!to_append_index_empty)
       {
         pw.message_value.push_back(existing.message_value);
-        value_merger<true>::insert_in_tuple(
+        value_merger<true>::insert_in_list(
             pw.message_value, std::move(incoming.message_value),
             incoming.destination.index);
       }
       else if (!source_index_empty)
       {
-        value_merger<true>::insert_in_tuple(
+        value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
             existing.destination.index);
         value_merger<true>::set_first_value(
@@ -500,8 +500,8 @@ struct state_flatten_visitor_merger
     }
     else
     {
-      // add it wherever possible, by extending the tuple as required
-      value_merger<true>::insert_in_tuple(
+      // add it wherever possible, by extending the list as required
+      value_merger<true>::insert_in_list(
           existing.message_value, std::move(incoming.message_value),
           incoming.destination.index);
     }
@@ -524,8 +524,8 @@ struct state_flatten_visitor_merger
     }
     else
     {
-      // add it wherever possible, by extending the tuple as required
-      value_merger<false>::insert_in_tuple(
+      // add it wherever possible, by extending the list as required
+      value_merger<false>::insert_in_list(
           other.message_value, existing.message_value,
           existing.destination.index);
     }
@@ -538,7 +538,7 @@ struct state_flatten_visitor_merger
   void operator()(piecewise_message& existing, piecewise_message&& incoming)
   {
     // merge the new piecewise into the existing one
-    value_merger<true>::merge_tuple(
+    value_merger<true>::merge_list(
         existing.message_value, std::move(incoming.message_value));
   }
 

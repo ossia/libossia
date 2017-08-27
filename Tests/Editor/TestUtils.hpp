@@ -17,7 +17,7 @@ struct TestDevice
   ossia::net::parameter_base* vec2f_addr = device.create_child("vec2f")->create_parameter(val_type::VEC2F);
   ossia::net::parameter_base* vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);
   ossia::net::parameter_base* vec4f_addr = device.create_child("vec4f")->create_parameter(val_type::VEC4F);
-  ossia::net::parameter_base* tuple_addr = device.create_child("tuple")->create_parameter(val_type::TUPLE);
+  ossia::net::parameter_base* tuple_addr = device.create_child("tuple")->create_parameter(val_type::LIST);
 };
 struct TestDeviceRef
 {
@@ -31,7 +31,7 @@ struct TestDeviceRef
   ossia::net::parameter_base* vec2f_addr = device.create_child("vec2f")->create_parameter(val_type::VEC2F);
   ossia::net::parameter_base* vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);
   ossia::net::parameter_base* vec4f_addr = device.create_child("vec4f")->create_parameter(val_type::VEC4F);
-  ossia::net::parameter_base* tuple_addr = device.create_child("tuple")->create_parameter(val_type::TUPLE);
+  ossia::net::parameter_base* tuple_addr = device.create_child("tuple")->create_parameter(val_type::LIST);
 };
 }
 namespace QTest {

@@ -34,7 +34,7 @@ template<>
 struct matching_domain<ossia::val_type::STRING>
 { using type = ossia::domain_base<std::string>; };
 template<>
-struct matching_domain<ossia::val_type::TUPLE>
+struct matching_domain<ossia::val_type::LIST>
 { using type = ossia::vector_domain; };
 template<>
 struct matching_domain<ossia::val_type::VEC2F>
@@ -62,7 +62,7 @@ ossia::domain make_domain(ossia::val_type t)
       return ossia::domain_base<char>{};
     case ossia::val_type::STRING:
       return ossia::domain_base<std::string>();
-    case ossia::val_type::TUPLE:
+    case ossia::val_type::LIST:
       return ossia::vector_domain{};
     case ossia::val_type::VEC2F:
       return ossia::vecf_domain<2>();

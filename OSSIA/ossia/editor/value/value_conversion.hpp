@@ -19,7 +19,7 @@ template <typename T>
 OSSIA_EXPORT T convert(const ossia::value& val);
 
 /**
- * @brief convert Convert tuples to array<float, 2/3/4>
+ * @brief convert Convert lists to array<float, 2/3/4>
  */
 template <typename T>
 OSSIA_EXPORT T convert(const std::vector<ossia::value>& val);

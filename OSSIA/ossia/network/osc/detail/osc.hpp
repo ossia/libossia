@@ -233,7 +233,7 @@ struct osc_utilities
     }
   }
 
-  static std::vector<ossia::value> create_tuple(
+  static std::vector<ossia::value> create_list(
       oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
   {
     std::vector<ossia::value> t;
@@ -354,7 +354,7 @@ struct osc_inbound_visitor
     }
   }
   */
-    return osc_utilities::create_tuple(cur_it, numArguments);
+    return osc_utilities::create_list(cur_it, numArguments);
   }
 
   ossia::value operator()() const

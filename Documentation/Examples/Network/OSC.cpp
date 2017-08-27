@@ -63,7 +63,7 @@ int main()
   oscStringAddress->add_callback(printValueCallback);
 
   auto oscTupleNode = oscTestNode->create_child("my_tuple");
-  auto oscTupleAddress = oscTupleNode->create_parameter(val_type::TUPLE);
+  auto oscTupleAddress = oscTupleNode->create_parameter(val_type::LIST);
   oscTupleAddress->add_callback(printValueCallback);
 
   // update tree value

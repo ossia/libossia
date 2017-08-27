@@ -382,7 +382,7 @@ static ossia::val_type VecTypetag(ossia::string_view typetag)
   else if (typetag == "ffff" || typetag == "[ffff]")
     return ossia::val_type::VEC4F;
   else
-    return ossia::val_type::TUPLE;
+    return ossia::val_type::LIST;
 }
 
 //! Used to check if an actual value with multiple elements,
@@ -414,7 +414,7 @@ static ossia::val_type VecTypetag(const rapidjson::Value& val)
       }
     }
   }
-  return ossia::val_type::TUPLE;
+  return ossia::val_type::LIST;
 }
 
 void json_parser_impl::readObject(
@@ -477,9 +477,9 @@ void json_parser_impl::readObject(
       }
       else if (ext_type)
       {
-        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse
+        ossia::val_type actual_type = ossia::val_type::LIST; // Generic worse
                                                               // case; also
-                                                              // "tuple_type()"
+                                                              // "list_type()"
         const auto& e_type = *ext_type;
         if (e_type == generic_buffer_type()
             || e_type == filesystem_path_type())
@@ -495,7 +495,7 @@ void json_parser_impl::readObject(
         {
           // Look for Vec2f, Vec3f, Vec4f
           actual_type = VecTypetag(typetag);
-          if (actual_type == ossia::val_type::TUPLE)
+          if (actual_type == ossia::val_type::LIST)
           {
             // We try to find through the actual values
             if (value_it != obj.MemberEnd())

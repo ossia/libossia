@@ -69,7 +69,7 @@ public class CustomDevice : MonoBehaviour
 
     {
       var array = Ossia.Node.CreateNode (root, "/my_array");
-      Ossia.Parameter addr2 = array.CreateParameter (Ossia.ossia_type.TUPLE);
+      Ossia.Parameter addr2 = array.CreateParameter (Ossia.ossia_type.LIST);
       addr2.PushValue (new int[]{ 1, 2, 4, 65 });
       for(int i = 0; i < 4; i++)
         Debug.Log(addr2.GetValue().GetIntArray()[i]);

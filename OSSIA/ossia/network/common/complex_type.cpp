@@ -177,11 +177,6 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
     add_simple("infinitum", ossia::val_type::IMPULSE);
     add_simple("bang", ossia::val_type::IMPULSE);
 
-    add_simple("array", ossia::val_type::TUPLE);
-    add_simple("list", ossia::val_type::TUPLE);
-    add_simple("tuple", ossia::val_type::TUPLE);
-    add_simple("vector", ossia::val_type::TUPLE);
-
     auto add_ext = [&] (auto e) {
       net::parameter_data p; p.type = e; t.insert({e, p});
     };

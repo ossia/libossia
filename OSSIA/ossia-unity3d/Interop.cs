@@ -497,7 +497,7 @@ namespace Ossia
     public static extern IntPtr ossia_value_create_string (string value);
 
     [DllImport ("ossia")]
-    public static extern IntPtr ossia_value_create_tuple (IntPtr[] values, UIntPtr size);
+    public static extern IntPtr ossia_value_create_list (IntPtr[] values, UIntPtr size);
     [DllImport ("ossia")]
     public static extern IntPtr ossia_value_create_fn (float[] values, UIntPtr size);
     [DllImport ("ossia")]
@@ -537,12 +537,12 @@ namespace Ossia
       out UIntPtr size);
 
     [DllImport ("ossia")]
-    public static extern void ossia_value_to_tuple (
+    public static extern void ossia_value_to_list (
       IntPtr val_in,
       out IntPtr val_out,
       out UIntPtr size);
     [DllImport ("ossia")]
-    public static extern void ossia_value_free_tuple (IntPtr[] tpl);
+    public static extern void ossia_value_free_list (IntPtr[] tpl);
 
     [DllImport ("ossia")]
     public static extern void ossia_value_to_fn(
@@ -581,7 +581,7 @@ namespace Ossia
       out UIntPtr size);
 
     [DllImport ("ossia")]
-    public static extern void ossia_value_convert_tuple (
+    public static extern void ossia_value_convert_list (
       IntPtr val_in,
       out IntPtr val_out,
       out UIntPtr size);

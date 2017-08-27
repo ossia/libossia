@@ -336,7 +336,7 @@ struct OSSIA_EXPORT js_value_outbound_visitor
 
   QJSValue operator()(const std::string& val) const;
 
-  QJSValue make_tuple(const std::vector<ossia::value>& arr) const;
+  QJSValue make_list(const std::vector<ossia::value>& arr) const;
 
   QJSValue operator()(const std::vector<ossia::value>& val) const;
 

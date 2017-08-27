@@ -348,7 +348,7 @@ mapper::compute_value(const ossia::value& driver, const ossia::behavior& drive)
 
   throw invalid_value_type_error(
       "mapper_impl::computeValue: "
-      "drive.getType() is neither BEHAVIOR nor TUPLE");
+      "drive.getType() is neither BEHAVIOR nor LIST");
   return {};
 }
 

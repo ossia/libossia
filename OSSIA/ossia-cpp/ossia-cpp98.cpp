@@ -63,7 +63,7 @@ bool value::is_bool() const
 bool value::is_list() const
 {
   const auto t = m_val->getType();
-  return t == ossia::val_type::TUPLE || t == ossia::val_type::VEC2F
+  return t == ossia::val_type::LIST || t == ossia::val_type::VEC2F
          || t == ossia::val_type::VEC3F || t == ossia::val_type::VEC4F;
 }
 
@@ -314,7 +314,7 @@ node node::create_list(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, n->create_parameter(ossia::val_type::TUPLE)};
+    return node{n, n->create_parameter(ossia::val_type::LIST)};
   }
 
   return {};

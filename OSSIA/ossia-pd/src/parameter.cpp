@@ -545,7 +545,7 @@ void t_param::set_default()
           }
           break;
         }
-      case ossia::val_type::TUPLE:
+      case ossia::val_type::LIST:
         {
           auto def = attribute2value(x_default, x_default_size);
 
