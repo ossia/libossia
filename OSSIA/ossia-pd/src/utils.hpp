@@ -193,7 +193,7 @@ struct value_visitor
 
   void operator()() const
   {
-    pd_error(x, "%s receive an invalid data", x->m_name->s_name);
+    pd_error(x, "%s received invalid data", x->m_name->s_name);
   }
 };
 
