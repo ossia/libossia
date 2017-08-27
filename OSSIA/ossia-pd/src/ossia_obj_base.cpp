@@ -150,7 +150,7 @@ void t_matcher::set_value(const ossia::value& v)
 
   ossia::value vv;
   if ( parent->x_ounit != ossia::none )
-    vv = ossia::convert(v, param->get_unit(), parent->x_ounit.value());
+    vv = ossia::convert(v, param->get_unit(), *parent->x_ounit);
   else
     vv = v;
 
@@ -231,7 +231,7 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
 
         if ( parent->x_ounit != ossia::none )
         {
-          auto src_unit = parent->x_ounit.value();
+          auto src_unit = *parent->x_ounit;
           auto dst_unit = param->get_unit();
 
           vv = ossia::convert(v, src_unit, dst_unit);
@@ -252,7 +252,7 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
           else
             pd_error(x, "value type not handled");
         }
-        auto src_unit = parent->x_ounit.value();
+        auto src_unit = *parent->x_ounit;
         auto dst_unit = param->get_unit();
 
         ossia::convert(list, src_unit, dst_unit);

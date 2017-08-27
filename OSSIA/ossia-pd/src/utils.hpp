@@ -594,7 +594,7 @@ void obj_dump(T* x)
     if (priority)
     {
       t_atom a;
-      SETFLOAT(&a, priority.value());
+      SETFLOAT(&a, *priority);
       outlet_anything(x->x_dumpout, gensym("priority"), 1, &a);
     }
   }
