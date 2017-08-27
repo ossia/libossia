@@ -344,6 +344,45 @@ const char* ossia_node_get_description(
   });
 }
 
+
+void ossia_node_set_extended_type(
+    ossia_node_t node,
+    const char* extended_type)
+{
+  return safe_function(__func__, [=] {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_set_extended_type: node is null");
+      return;
+    }
+
+    auto& n = *convert_node(node);
+    if(extended_type)
+      ossia::net::set_extended_type(n, ossia::extended_type{extended_type});
+    else
+      ossia::net::set_extended_type(n, ossia::none);
+  });
+}
+
+const char* ossia_node_get_extended_type(
+    ossia_node_t node)
+{
+  return safe_function(__func__, [=]() -> const char* {
+    if (!node)
+    {
+      ossia_log_error("ossia_node_get_extended_type: node is null");
+      return nullptr;
+    }
+
+    auto str = ossia::net::get_extended_type(*convert_node(node));
+    if(!str)
+      return nullptr;
+
+    return copy_string(*str);
+  });
+}
+
+
 OSSIA_EXPORT
 void ossia_node_set_tags(
     ossia_node_t node,

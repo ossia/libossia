@@ -422,7 +422,7 @@ typedef enum
  */
 OSSIA_EXPORT
 ossia_node_t ossia_parameter_get_node(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_access_mode
@@ -430,7 +430,7 @@ ossia_node_t ossia_parameter_get_node(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_access_mode(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_access_mode am);
 /**
  * @see ossia::net::get_access_mode
@@ -438,7 +438,7 @@ void ossia_parameter_set_access_mode(
  */
 OSSIA_EXPORT
 ossia_access_mode ossia_parameter_get_access_mode(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_bounding_mode
@@ -446,7 +446,7 @@ ossia_access_mode ossia_parameter_get_access_mode(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_bounding_mode(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_bounding_mode bm);
 /**
  * @see ossia::net::get_bounding_mode
@@ -454,7 +454,7 @@ void ossia_parameter_set_bounding_mode(
  */
 OSSIA_EXPORT
 ossia_bounding_mode ossia_parameter_get_bounding_mode(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_domain
@@ -462,7 +462,7 @@ ossia_bounding_mode ossia_parameter_get_bounding_mode(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_domain(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_domain_t domain);
 /**
  * @see ossia::net::get_domain
@@ -470,7 +470,7 @@ void ossia_parameter_set_domain(
  */
 OSSIA_EXPORT
 ossia_domain_t ossia_parameter_get_domain(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_unit
@@ -478,7 +478,7 @@ ossia_domain_t ossia_parameter_get_domain(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_unit(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     const char* unit);
 /**
  * @see ossia::net::get_unit
@@ -487,7 +487,7 @@ void ossia_parameter_set_unit(
  */
 OSSIA_EXPORT
 const char* ossia_parameter_get_unit(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_muted
@@ -495,7 +495,7 @@ const char* ossia_parameter_get_unit(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_muted(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int muted);
 /**
  * @see ossia::net::get_muted
@@ -503,7 +503,7 @@ void ossia_parameter_set_muted(
  */
 OSSIA_EXPORT
 int ossia_parameter_get_muted(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_disabled
@@ -511,7 +511,7 @@ int ossia_parameter_get_muted(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_disabled(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int disabled);
 /**
  * @see ossia::net::get_disabled
@@ -519,7 +519,7 @@ void ossia_parameter_set_disabled(
  */
 OSSIA_EXPORT
 int ossia_parameter_get_disabled(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_critical
@@ -527,7 +527,7 @@ int ossia_parameter_get_disabled(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_critical(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int critical);
 /**
  * @see ossia::net::get_critical
@@ -535,7 +535,7 @@ void ossia_parameter_set_critical(
  */
 OSSIA_EXPORT
 int ossia_parameter_get_critical(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_repetition_filter
@@ -545,7 +545,7 @@ int ossia_parameter_get_critical(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_repetition_filter(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int repetition_filter);
 /**
  * @see ossia::net::get_repetition_filter
@@ -554,7 +554,7 @@ void ossia_parameter_set_repetition_filter(
  */
 OSSIA_EXPORT
 int ossia_parameter_get_repetition_filter(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @see ossia::net::parameter_base::set_value
@@ -562,7 +562,7 @@ int ossia_parameter_get_repetition_filter(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_value(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_value_t value);
 /**
  * @see ossia::net::parameter_base::value
@@ -570,14 +570,14 @@ void ossia_parameter_set_value(
  */
 OSSIA_EXPORT
 ossia_value_t ossia_parameter_get_value(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
 void ossia_parameter_push_value(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_value_t value);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -585,14 +585,14 @@ void ossia_parameter_push_value(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_impulse(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
 void ossia_parameter_push_i(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int value);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -602,7 +602,7 @@ void ossia_parameter_push_i(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_b(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int b);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -610,7 +610,7 @@ void ossia_parameter_push_b(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_f(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     float value);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -618,7 +618,7 @@ void ossia_parameter_push_f(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_2f(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     float v1, float v2);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -626,7 +626,7 @@ void ossia_parameter_push_2f(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_3f(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     float v1, float v2, float v3);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -634,7 +634,7 @@ void ossia_parameter_push_3f(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_4f(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     float v1, float v2, float v3, float v4);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -642,7 +642,7 @@ void ossia_parameter_push_4f(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_c(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     char value);
 /**
  * @see ossia::net::parameter_base::push_value
@@ -650,7 +650,7 @@ void ossia_parameter_push_c(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_s(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     const char* value);
 
 /**
@@ -660,7 +660,7 @@ void ossia_parameter_push_s(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_in(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     const int* value,
     size_t sz);
 /**
@@ -670,7 +670,7 @@ void ossia_parameter_push_in(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_fn(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     const float* value,
     size_t sz);
 /**
@@ -680,7 +680,7 @@ void ossia_parameter_push_fn(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_cn(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     const char* value,
     size_t sz);
 /**
@@ -689,7 +689,7 @@ void ossia_parameter_push_cn(
  */
 OSSIA_EXPORT
 ossia_value_t ossia_parameter_fetch_value(
-    ossia_parameter_t address);
+    ossia_parameter_t param);
 
 /**
  * @brief Enable or disable remote updates for a given address
@@ -697,7 +697,7 @@ ossia_value_t ossia_parameter_fetch_value(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_listening(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     int listening);
 
 /**
@@ -713,7 +713,7 @@ void ossia_parameter_set_listening(
  */
 OSSIA_EXPORT
 ossia_value_callback_idx_t ossia_parameter_add_callback(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_value_callback_t callback,
     void* ctx);
 
@@ -729,7 +729,7 @@ ossia_value_callback_idx_t ossia_parameter_add_callback(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_callback(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_value_callback_t callback,
     void* ctx);
 
@@ -743,7 +743,7 @@ void ossia_parameter_push_callback(
  */
 OSSIA_EXPORT
 void ossia_parameter_remove_callback(
-    ossia_parameter_t address,
+    ossia_parameter_t param,
     ossia_value_callback_idx_t index);
 
 /**
@@ -1015,6 +1015,23 @@ const char* ossia_node_get_description(
     ossia_node_t node);
 
 /**
+ * @see ossia::net::set_extended_type
+ * @note Multithread guarantees: MT-Safe.
+ */
+OSSIA_EXPORT
+void ossia_node_set_extended_type(
+    ossia_node_t node,
+    const char* extended_type);
+/**
+ * @see ossia::net::get_extended_type, ossia_string_free
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+const char* ossia_node_get_extended_type(
+    ossia_node_t node);
+
+
+/**
  * @see ossia::net::set_tags
  * @note Multithread guarantees: MT-Safe.
  */
@@ -1254,7 +1271,7 @@ void ossia_domain_set_values(
  */
 OSSIA_EXPORT
 void ossia_domain_free(
-    ossia_domain_t address);
+    ossia_domain_t domain);
 
 /** @}*/
 
@@ -1673,7 +1690,7 @@ void ossia_mq_unregister(ossia_mq_t, ossia_parameter_t);
  * @return 1 if the queue could be read successfully
  */
 OSSIA_EXPORT
-int ossia_mq_pop(ossia_mq_t mq, ossia_parameter_t* address, ossia_value_t* val);
+int ossia_mq_pop(ossia_mq_t mq, ossia_parameter_t* param, ossia_value_t* val);
 
 /**
  * @brief Remove a message queue

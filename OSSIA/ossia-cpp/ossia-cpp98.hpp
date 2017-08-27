@@ -176,13 +176,20 @@ public:
   node& set_tags(std::vector<std::string> v);
   std::vector<std::string> get_tags() const;
 
-  node& set_priority(int v);
-  int get_priority();
+  node& set_instance_bounds(int min, int max);
+  node& unset_instance_bounds();
+  std::pair<int, int> get_instance_bounds() const;
+
+  node& set_priority(float v);
+  node& unset_priority();
+  float get_priority();
 
   node& set_refresh_rate(int v);
+  node& unset_refresh_rate();
   int get_refresh_rate();
 
   node& set_value_step_size(double v);
+  node& unset_value_step_size();
   double get_value_step_size();
 
   node& set_hidden(bool v);

@@ -63,7 +63,7 @@ qml_node_base* qml_node_base::parentNode() const
   return m_parentNode;
 }
 
-qint32 qml_node_base::priority() const
+qreal qml_node_base::priority() const
 {
   if (m_ossia_node)
     if (auto prio = ossia::net::get_priority(*m_ossia_node))
@@ -123,7 +123,7 @@ qint32 qml_node_base::refreshRate() const
   return m_refreshRate;
 }
 
-double qml_node_base::stepSize() const
+qreal qml_node_base::stepSize() const
 {
   if (m_ossia_node)
     if (auto val = ossia::net::get_value_step_size(*m_ossia_node))
@@ -198,7 +198,7 @@ void qml_node_base::setParentNode(qml_node_base* parentNode)
   emit parentNodeChanged(parentNode);
 }
 
-void qml_node_base::setPriority(qint32 priority)
+void qml_node_base::setPriority(qreal priority)
 {
   if (m_priority == priority)
     return;
@@ -249,7 +249,7 @@ void qml_node_base::setRefreshRate(qint32 refreshRate)
   emit refreshRateChanged(refreshRate);
 }
 
-void qml_node_base::setStepSize(double stepSize)
+void qml_node_base::setStepSize(qreal stepSize)
 {
   if (m_stepSize == stepSize)
     return;

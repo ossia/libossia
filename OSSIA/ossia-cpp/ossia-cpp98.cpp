@@ -745,7 +745,36 @@ std::vector<std::string> node::get_tags() const
   return {};
 }
 
-node& node::set_priority(int v)
+node& node::set_instance_bounds(int min, int max)
+{
+  if (m_node)
+  {
+    ossia::net::set_instance_bounds(*m_node, ossia::net::instance_bounds{min, max});
+  }
+  return *this;
+}
+node& node::unset_instance_bounds()
+{
+  if (m_node)
+  {
+    ossia::net::set_instance_bounds(*m_node, ossia::none);
+  }
+  return *this;
+}
+
+std::pair<int,int> node::get_instance_bounds() const
+{
+  if (m_node)
+  {
+    auto v = ossia::net::get_instance_bounds(*m_node);
+    if (v)
+      return {v->min_instances, v->max_instances};
+    return {};
+  }
+  return {};
+}
+
+node& node::set_priority(float v)
 {
   if (m_node)
   {
@@ -754,7 +783,16 @@ node& node::set_priority(int v)
   return *this;
 }
 
-int node::get_priority()
+node& node::unset_priority()
+{
+  if (m_node)
+  {
+    ossia::net::set_priority(*m_node, ossia::none);
+  }
+  return *this;
+}
+
+float node::get_priority()
 {
   if (m_node)
   {
@@ -771,6 +809,15 @@ node& node::set_refresh_rate(int v)
   if (m_node)
   {
     ossia::net::set_refresh_rate(*m_node, v);
+  }
+  return *this;
+}
+
+node& node::unset_refresh_rate()
+{
+  if (m_node)
+  {
+    ossia::net::set_refresh_rate(*m_node, ossia::none);
   }
   return *this;
 }
@@ -792,6 +839,16 @@ node& node::set_value_step_size(double v)
   if (m_node)
   {
     ossia::net::set_value_step_size(*m_node, v);
+  }
+  return *this;
+}
+
+
+node& node::unset_value_step_size()
+{
+  if (m_node)
+  {
+    ossia::net::set_value_step_size(*m_node, ossia::none);
   }
   return *this;
 }

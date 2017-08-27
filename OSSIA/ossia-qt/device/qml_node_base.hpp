@@ -31,11 +31,11 @@ class OSSIA_EXPORT qml_node_base : public QQuickItem, public Nano::Observer
   Q_PROPERTY(QString extendedType READ extendedType WRITE setExtendedType
                  NOTIFY extendedTypeChanged FINAL)
   Q_PROPERTY(QStringList tags READ tags WRITE setTags NOTIFY tagsChanged FINAL)
-  Q_PROPERTY(qint32 priority READ priority WRITE setPriority NOTIFY
+  Q_PROPERTY(qreal priority READ priority WRITE setPriority NOTIFY
                  priorityChanged FINAL)
   Q_PROPERTY(qint32 refreshRate READ refreshRate WRITE setRefreshRate NOTIFY
                  refreshRateChanged FINAL)
-  Q_PROPERTY(double stepSize READ stepSize WRITE setStepSize NOTIFY
+  Q_PROPERTY(qreal stepSize READ stepSize WRITE setStepSize NOTIFY
                  stepSizeChanged FINAL)
   Q_PROPERTY(QVariant defaultValue READ defaultValue WRITE setDefaultValue
                  NOTIFY defaultValueChanged FINAL)
@@ -59,11 +59,11 @@ public:
 
   qml_node_base* parentNode() const;
 
-  qint32 priority() const;
+  qreal priority() const;
   QString description() const;
   QStringList tags() const;
   qint32 refreshRate() const;
-  double stepSize() const;
+  qreal stepSize() const;
   QVariant defaultValue() const;
   bool critical() const;
   bool hidden() const;
@@ -76,12 +76,12 @@ public slots:
   virtual void setDevice(QObject* device);
 
   void setParentNode(qml_node_base* parentNode);
-  void setPriority(qint32 priority);
+  void setPriority(qreal priority);
   void setDescription(QString description);
   void setTags(QStringList tags);
   void setExtendedType(QString extendedType);
   void setRefreshRate(qint32 refreshRate);
-  void setStepSize(double stepSize);
+  void setStepSize(qreal stepSize);
   void setDefaultValue(QVariant defaultValue);
   void setCritical(bool critical);
   void setHidden(bool hidden);
@@ -95,12 +95,12 @@ signals:
 
   void parentNodeChanged(qml_node_base* parentNode);
 
-  void priorityChanged(qint32 priority);
+  void priorityChanged(qreal priority);
   void descriptionChanged(QString description);
   void extendedTypeChanged(QString extendedType);
   void tagsChanged(QStringList tags);
   void refreshRateChanged(qint32 refreshRate);
-  void stepSizeChanged(double stepSize);
+  void stepSizeChanged(qreal stepSize);
   void defaultValueChanged(QVariant defaultValue);
   void criticalChanged(bool critical);
   void hiddenChanged(bool hidden);
@@ -127,9 +127,9 @@ protected:
   QString m_extendedType;
   QStringList m_tags;
   QVariant m_defaultValue;
-  qint32 m_priority{};
+  qreal m_priority{};
   qint32 m_refreshRate{};
-  double m_stepSize{};
+  qreal m_stepSize{};
   bool m_critical{};
   bool m_hidden{};
   bool m_disabled{};
