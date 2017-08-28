@@ -143,6 +143,9 @@ void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& p
 
 static void client_update(t_client* x)
 {
+  // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
+  // for OSC Query
+
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
@@ -182,11 +185,11 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 
   if (argc && argv->a_type == A_SYMBOL)
   {
-    std::string protocol = argv->a_w.w_symbol->s_name;
+    std::string protocol_name = argv->a_w.w_symbol->s_name;
 
     if ( argc == 1
-         && protocol != "oscquery"
-         && protocol != "Minuit" )
+         && protocol_name != "oscquery"
+         && protocol_name != "Minuit" )
     {
       std::string name;
 
@@ -195,31 +198,31 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
       else
         name = argv->a_w.w_symbol->s_name;
 
-      protocol = "";
+      protocol_name = "";
       for ( auto dev : x->m_oscq_devices )
       {
         if ( dev.name == name )
         {
-          protocol = "oscquery";
+          protocol_name = "oscquery";
           oscq_settings = dev;
           break;
         }
       }
 
-      if ( protocol == "" )
+      if ( protocol_name == "" )
       {
         for ( auto dev : x->m_minuit_devices )
         {
           if ( dev.name == name )
           {
-            protocol = "Minuit";
+            protocol_name = "Minuit";
             minuit_settings = dev;
             break;
           }
         }
       }
 
-      if ( protocol == "" ) // can't find any device in the list that matches the name
+      if ( protocol_name == "" ) // can't find any device in the list that matches the name
       {
         if ( !x->m_done )
         {
@@ -249,7 +252,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
       }
     }
 
-    if (protocol == "Minuit")
+    if (protocol_name == "Minuit")
     {
       argc--;
       argv++;
@@ -288,7 +291,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 
       outlet_anything(x->m_dumpout, gensym("connect"),6, connection_status);
     }
-    else if (protocol == "oscquery")
+    else if (protocol_name == "oscquery")
     {
       argc--;
       argv++;
@@ -299,7 +302,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
         wsurl = atom_getsymbol(argv)->s_name;
       }
 
-      SETSYMBOL(connection_status+1, gensym("minuit"));
+      SETSYMBOL(connection_status+1, gensym("oscquery"));
       SETSYMBOL(connection_status+2, gensym(oscq_settings.name.c_str()));
       SETSYMBOL(connection_status+3, gensym(wsurl.c_str()));
 
@@ -307,7 +310,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
       {
         auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
         x->m_device = new ossia::net::generic_device{
-            std::unique_ptr<ossia::net::protocol_base>(protocol), "Pd"};
+            std::unique_ptr<ossia::net::protocol_base>(protocol), oscq_settings.name};
 
         std::cout << "connected to device " << x->m_device->get_name()
                   << " on " << wsurl << std::endl;
@@ -323,7 +326,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
     }
     else
     {
-      pd_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
+      pd_error((t_object*)x, "Unknown protocol: %s", protocol_name.c_str());
     }
   }
   else
@@ -372,10 +375,11 @@ void check_thread_status(t_client* x)
     for (auto dev : x->m_oscq_devices)
     {
       SETSYMBOL(av+1, gensym(dev.name.c_str()));
-      SETSYMBOL(av+2, gensym(dev.host.c_str()));
-      SETFLOAT(av+3, dev.port);
+      std::stringstream ss;
+      ss << "ws://" << dev.host << ":" << dev.port;
+      SETSYMBOL(av+2, gensym(ss.str().c_str()));
 
-      outlet_anything(x->m_dumpout, gensym("device"), 4, av);
+      outlet_anything(x->m_dumpout, gensym("device"), 3, av);
     }
 
     if ( x->m_looking_for )
