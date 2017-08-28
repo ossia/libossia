@@ -1,3 +1,55 @@
+if(OSSIA_UNITY3D)
+    if(${CMAKE_SIZEOF_VOID_P} MATCHES "4")
+        set(OSSIA_UNITY_PLUGIN_FOLDER "x86")
+    else()
+        set(OSSIA_UNITY_PLUGIN_FOLDER "x86_64")
+    endif()
+
+    if(APPLE)
+        set_target_properties(ossia PROPERTIES
+            PREFIX ""
+            SUFFIX "bundle"
+            )
+        install(
+            TARGETS ossia
+            LIBRARY DESTINATION ossia-unity/Plugins/
+            )
+    elseif(WIN32)
+        install(
+            TARGETS ossia
+            RUNTIME DESTINATION ossia-unity/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
+            )
+    else() # Linux
+        install(
+            TARGETS ossia
+            LIBRARY DESTINATION ossia-unity/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
+            )
+    endif()
+    return()
+elseif(OSSIA_QML)
+    install(
+        TARGETS ossia
+        LIBRARY DESTINATION Ossia/
+        )
+    install(
+        FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml
+        DESTINATION Ossia)
+    return()
+endif()
+
+
+# Default case, C / C++ library
 # Install
 install(TARGETS ossia
     EXPORT ossia-targets
@@ -47,20 +99,6 @@ if(OSSIA_DATAFLOW)
 endif()
 if(OSSIA_QT)
   install_headers_rec("${OSSIA_QT_HEADERS}")
-  install(
-      FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml
-      DESTINATION lib)
 endif()
 # Install export header
 install(FILES
@@ -133,4 +171,3 @@ set(ConfigPackageLocation lib/cmake/ossia)
 install(EXPORT ossia-targets
         DESTINATION "${ConfigPackageLocation}"
         NAMESPACE ossia::)
-

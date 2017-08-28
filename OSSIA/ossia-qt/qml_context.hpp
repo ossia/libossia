@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QUrl>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 namespace spdlog
 {

@@ -7,7 +7,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/value/value.hpp>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <QQmlEngine>
 #include <QQmlComponent>
 

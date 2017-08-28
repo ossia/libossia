@@ -6,7 +6,7 @@
 
 #include <ossia/ossia.hpp>
 #include <ossia/network/base/node_attributes.hpp>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>

@@ -7,7 +7,7 @@
 #include <string>
 #include <rapidjson/document.h>
 #include <ossia-c/preset/preset.h>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia/ossia.hpp>
 
 TEST_CASE ("JSON array") {

@@ -159,7 +159,6 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 
-
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
@@ -170,6 +169,9 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.hpp"
     )
 
 set(SRCS
@@ -238,6 +240,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.cpp"
 )
 
 set(OSSIA_C_HEADERS
@@ -259,10 +264,6 @@ set(OSSIA_C_SRCS
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.cpp"
 
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.cpp"
     )
 
 set(OSSIA_CPP_HEADERS

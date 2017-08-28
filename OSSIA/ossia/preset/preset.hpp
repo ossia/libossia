@@ -4,7 +4,7 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <ossia-c/preset/exception.hpp>
+#include <ossia/preset/exception.hpp>
 #include <ossia_export.h>
 #include <regex>
 #include <string>

@@ -5,7 +5,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <regex>
 
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 
 extern void glist_noselect(t_glist* x);
 extern void canvas_vis(t_canvas* x, t_floatarg f);

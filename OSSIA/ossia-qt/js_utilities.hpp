@@ -26,7 +26,7 @@
 #include <QtGui/QVector2D>
 #include <QtGui/QVector3D>
 #include <QtGui/QVector4D>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>
 #include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/name_utils.hpp>

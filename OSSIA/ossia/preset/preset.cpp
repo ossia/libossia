@@ -19,9 +19,9 @@
 
 #include <ossia/detail/logger.hpp>
 #include <ossia-c/log/ossia_log.h>
-#include <ossia-c/preset/exception.hpp>
+#include <ossia/preset/exception.hpp>
 #include <ossia-c/preset/preset.h>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia-c/preset/result.h>
 
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
@@ -985,7 +985,7 @@ void apply_preset_node(
       if (!child)
       {
         auto err = std::string("Null child of : ") + root.get_name();
-        ossia_log_error(err.c_str());
+        ossia::logger().error("{}", err.c_str());
       }
       else
       {
@@ -1209,27 +1209,27 @@ static ossia_preset_result lippincott()
     }
     catch (const ossia::ossiaException_InvalidAddress& b)
     {
-      ossia_log_error(b.what());
+      ossia::logger().error("{}", b.what());
       return OSSIA_PRESETS_INVALID_ADDRESS;
     }
     catch (const ossia::ossiaException_InvalidJSON& b)
     {
-      ossia_log_error(b.what());
+      ossia::logger().error("{}", b.what());
       return OSSIA_PRESETS_INVALID_JSON;
     }
     catch (const ossia::ossiaException_InvalidXML& b)
     {
-      ossia_log_error(b.what());
+      ossia::logger().error("{}", b.what());
       return OSSIA_PRESETS_INVALID_XML;
     }
     catch (const ossia::ossiaException& b)
     {
-      ossia_log_error(b.what());
+      ossia::logger().error("{}", b.what());
       return OSSIA_PRESETS_GENERIC_EXCEPTION;
     }
     catch (const std::exception& e)
     {
-      ossia_log_error(e.what());
+      ossia::logger().error("{}", e.what());
       return OSSIA_PRESETS_STANDARD_EXCEPTION;
     }
     catch (...)
