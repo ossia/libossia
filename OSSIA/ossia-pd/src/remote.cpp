@@ -28,11 +28,11 @@ bool t_remote::register_node(ossia::net::node_base* node)
 
   if (node && m_is_pattern){
     auto& dev = node->get_device();
-    if (&dev != x_dev)
+    if (&dev != m_dev)
     {
-      if (x_dev) x_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
-      x_dev = &dev;
-      x_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
+      if (m_dev) m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
+      m_dev = &dev;
+      m_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
     }
   }
 
@@ -48,7 +48,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
   {
     std::string name = m_name->s_name;
 
-    if (m_addr_scope == AddrScope::absolute)
+    if (m_addr_scope == address_scope::absolute)
     {
       // get root node
       node = &node->get_device().get_root_node();
@@ -60,7 +60,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
     std::vector<ossia::net::node_base*> nodes{};
 
-    if (m_addr_scope == AddrScope::global)
+    if (m_addr_scope == address_scope::global)
       nodes = ossia::pd::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*node, name);
@@ -119,26 +119,42 @@ void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& p
 
 void t_remote::set_unit()
 {
-  if ( x_unit !=  gensym("") )
+  if ( m_unit !=  gensym("") )
   {
     // TODO check for unit compatibility with parameter
-    ossia::unit_t unit = ossia::parse_pretty_unit(x_unit->s_name);
+    ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
     if (unit)
       m_ounit = unit;
     else
-      pd_error(this, "wrong unit: %s", x_unit->s_name);
+      pd_error(this, "wrong unit: %s", m_unit->s_name);
+  }
+}
+
+void t_remote::set_mute()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_muted(*node, !m_mute);
   }
 }
 
 void remote_get_unit(t_remote*x)
 {
   t_atom a;
-  if (x->x_unit)
+  if (x->m_unit)
   {
-    SETSYMBOL(&a,x->x_unit);
+    SETSYMBOL(&a,x->m_unit);
     outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
   } else
     outlet_anything(x->m_dumpout, gensym("unit"), 0, NULL);
+}
+
+void remote_get_mute(t_remote*x)
+{
+  t_atom a;
+  SETFLOAT(&a,x->m_mute);
+  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
 t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
@@ -147,6 +163,8 @@ t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void
   {
     if ( s == gensym("unit") )
       x->set_unit();
+    else if ( s == gensym("mute") )
+      x->set_mute();
   }
 }
 
@@ -200,7 +218,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     new (&x->m_callbackits) decltype(x->m_callbackits);
     new (&x->m_matchers) decltype(x->m_matchers);
-    x->x_dev = nullptr;
+    x->m_dev = nullptr;
     x->m_ounit = ossia::none;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
@@ -238,9 +256,9 @@ static void remote_free(t_remote* x)
   obj_dequarantining<t_remote>(x);
   ossia_pd::instance().remotes.remove_all(x);
 
-  if(x->m_is_pattern && x->x_dev)
+  if(x->m_is_pattern && x->m_dev)
   {
-    x->x_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
+    x->m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
   }
 
   outlet_free(x->m_setout);
@@ -267,10 +285,12 @@ extern "C" void setup_ossia0x2eremote(void)
     eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) obj_get_address,        "getaddress",  A_NULL,   0);
 
-    CLASS_ATTR_SYMBOL(c, "unit", 0, t_remote, x_unit);
+    CLASS_ATTR_SYMBOL(c, "unit", 0, t_remote, m_unit);
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
     eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
+    eclass_addmethod(c, (method) remote_get_mute,        "getmute",     A_NULL, 0);
+
   }
 
   auto& ossia_pd = ossia_pd::instance();

@@ -24,6 +24,7 @@ struct t_param : t_obj_base
   void set_tags();
   void set_priority();
   void set_enable();
+  void set_mute();
   void set_hidden();
   void set_minmax();
   void set_range();
@@ -33,28 +34,28 @@ struct t_param : t_obj_base
   void set_type();
 
   // attributes
-  t_symbol* x_type;
-  t_atom x_default[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom x_min[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom x_max[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom x_range[OSSIA_PD_MAX_ATTR_SIZE];
-  t_symbol* x_bounding_mode;
-  t_symbol* x_access_mode;
-  t_float x_repetition_filter = 0;
-  t_symbol* x_unit;
-  t_atom x_tags[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom x_description[OSSIA_PD_MAX_ATTR_SIZE];
-  int x_priority;
-  bool x_hidden;
-  bool x_enable;
+  t_symbol* m_type;
+  t_atom m_default[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_min[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_max[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_range[OSSIA_PD_MAX_ATTR_SIZE];
+  t_symbol* m_bounding_mode;
+  t_symbol* m_access_mode;
+  t_float m_repetition_filter = 0;
+  t_symbol* m_unit;
+  t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE];
+  int m_priority;
+  bool m_hidden;
+  bool m_enable;
 
   // size of size-variable attribute
-  long x_default_size;
-  long x_range_size;
-  long x_min_size;
-  long x_max_size;
-  long x_tags_size;
-  long x_description_size;
+  long m_default_size;
+  long m_range_size;
+  long m_min_size;
+  long m_max_size;
+  long m_tags_size;
+  long m_description_size;
 
   static ossia::safe_vector<t_param*>& quarantine();
 
