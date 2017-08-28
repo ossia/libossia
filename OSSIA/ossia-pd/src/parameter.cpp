@@ -530,6 +530,7 @@ void t_param::set_default()
       case ossia::val_type::FLOAT:
       case ossia::val_type::CHAR:
       case ossia::val_type::INT:
+      case ossia::val_type::BOOL:
         {
           if (x_default[0].a_type == A_FLOAT )
           {
@@ -552,7 +553,8 @@ void t_param::set_default()
           ossia::net::set_default_value(*node, def);
           break;
         }
-
+      default:
+        ;
     }
   }
 }

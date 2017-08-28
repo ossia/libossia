@@ -10,6 +10,8 @@
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <boost/algorithm/string.hpp>
+#include <unordered_map>
+
 namespace ossia
 {
 
