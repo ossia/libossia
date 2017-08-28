@@ -18,8 +18,8 @@
 #X symbolatom 33 17 10 0 0 0 - - -, f 10;
 #X symbolatom 36 67 10 0 0 0 - - -, f 10;
 #X obj 37 45 ø.param string @type string;
-#N canvas 0 93 450 300 model 1;
-#X obj 220 278 ø.model model;
+#N canvas 248 517 456 355 model 1;
+#X obj 220 280 ø.model model;
 #N canvas 531 230 450 300 submodel 1;
 #X obj 163 75 ø.param foo;
 #X floatatom 162 45 5 0 0 0 - - -, f 5;
@@ -39,10 +39,14 @@
 #X floatatom 268 43 5 0 0 0 - - -, f 5;
 #X floatatom 271 95 5 0 0 0 - - -, f 5;
 #X obj 271 73 ø.param bar;
-#X msg 234 140 preset save model1.json;
 #X msg 244 163 preset save model2.json;
-#X msg 254 190 preset load model1.json;
 #X msg 264 213 preset load model2.json;
+#X msg 254 191 preset load /model1.json;
+#X msg 234 140 preset save /model1.json;
+#X obj 220 300 print;
+#X msg 226 115 preset;
+#X msg 281 116 preset toto;
+#X connect 0 0 12 0;
 #X connect 2 0 4 0;
 #X connect 3 0 2 0;
 #X connect 5 0 7 0;
@@ -51,6 +55,8 @@
 #X connect 9 0 0 0;
 #X connect 10 0 0 0;
 #X connect 11 0 0 0;
+#X connect 13 0 0 0;
+#X connect 14 0 12 0;
 #X restore 249 194 pd model;
 #X connect 0 0 5 0;
 #X connect 1 0 4 0;
