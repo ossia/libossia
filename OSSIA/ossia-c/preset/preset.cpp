@@ -13,7 +13,6 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <sstream>
-#include <fstream>
 #include <string>
 #include <vector>
 
@@ -902,16 +901,12 @@ ossia::presets::write_json(const ossia::net::device_base& deviceBase)
 void ossia::presets::write_file(
     ossia::string_view content, ossia::string_view filename)
 {
-  // output json file if needed
-  if (!filename.empty())
-  {
-    FILE* fp = std::fopen(filename.data(), "wb"); // non-Windows use "w"
-    if (fp)
-    {
-      std::fwrite(content.data(), 1, content.size(), fp);
-      std::fclose(fp);
-    }
-  }
+  std::ofstream out;
+  out.exceptions ( std::ofstream::failbit | std::ofstream::badbit );
+  std::string sf(filename.data(), filename.size());
+  out.open(sf);
+  out << content;
+  out.close();
 }
 
 const std::string ossia::presets::read_file(
@@ -922,6 +917,7 @@ const std::string ossia::presets::read_file(
   if (!filename.empty())
   {
     std::ifstream file;
+    file.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
     file.open(filename);
     buffer << file.rdbuf();
   }

@@ -8,6 +8,7 @@
 #include <ossia_export.h>
 #include <regex>
 #include <string>
+#include <fstream>
 
 namespace ossia
 {

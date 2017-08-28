@@ -450,35 +450,68 @@ void obj_preset(t_obj_base *x, t_symbol*s, int argc, t_atom* argv)
       node = nullptr;
   }
 
+  t_atom status[3];
+  status[0] = argv[0];
+
+  if ( argc < 2
+       || argv[0].a_type != A_SYMBOL
+       || argv[1].a_type != A_SYMBOL )
+  {
+    pd_error(x, "Wrong argument number to 'preset' message"
+                "needs 2 symbol arguments: <load|save> <filename>");
+    return;
+  }
+
   if (node)
   {
-    if ( argc > 0 && argv[0].a_type == A_SYMBOL )
+    if ( argv[0].a_w.w_symbol == gensym("save") )
     {
-      if ( argv[0].a_w.w_symbol == gensym("save") )
-      {
-        argc--;
-        argv++;
-        if ( argc > 0 && argv[0].a_type == A_SYMBOL )
-        {
-          auto preset = ossia::presets::make_preset(*node);
-          auto json = ossia::presets::write_json(x->m_name->s_name, preset);
-          ossia::presets::write_file(json, argv[0].a_w.w_symbol->s_name);
-        }
+      argc--;
+      argv++;
+
+      SETFLOAT(status+1, 0);
+      status[2] = argv[0];
+
+      try {
+
+        auto preset = ossia::presets::make_preset(*node);
+        auto json = ossia::presets::write_json(x->m_name->s_name, preset);
+        ossia::presets::write_file(json, argv[0].a_w.w_symbol->s_name);
+        SETFLOAT(status+1, 1);
+
+      } catch (std::ifstream::failure e) {
+        pd_error(x,"Can't open file %s, error: %s", argv[0].a_w.w_symbol->s_name, e.what());
       }
-      else if ( argv[0].a_w.w_symbol == gensym("load") )
-      {
-        argc--;
-        argv++;
-        if ( argc > 0 && argv[0].a_type == A_SYMBOL )
-        {
-          auto json = ossia::presets::read_file(argv[0].a_w.w_symbol->s_name);
-          auto preset = ossia::presets::read_json(json);
-          ossia::presets::apply_preset(*node, preset);
-        }
-      }
-      else
-        pd_error(x, "unknown preset command '%s'", argv[0].a_w.w_symbol->s_name);
+
+      outlet_anything(x->m_dumpout, gensym("preset"),3, status);
+
     }
+    else if ( argv[0].a_w.w_symbol == gensym("load") )
+    {
+      argc--;
+      argv++;
+
+      SETFLOAT(status+1, 0);
+      status[2] = argv[0];
+      try {
+
+        auto json = ossia::presets::read_file(argv[0].a_w.w_symbol->s_name);
+        auto preset = ossia::presets::read_json(json);
+        ossia::presets::apply_preset(*node, preset);
+        SETFLOAT(status+1, 1);
+
+      } catch (std::ifstream::failure e) {
+
+        pd_error(x,"Can't write file %s, error: %s", argv[0].a_w.w_symbol->s_name, e.what());
+
+      }
+
+      outlet_anything(x->m_dumpout, gensym("preset"),3, status);
+
+    }
+    else
+      pd_error(x, "unknown preset command '%s'", argv[0].a_w.w_symbol->s_name);
+
   }
   else
   {
