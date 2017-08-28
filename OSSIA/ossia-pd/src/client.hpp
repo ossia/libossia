@@ -1,6 +1,8 @@
 #pragma once
 #include "ossia_obj_base.hpp"
 
+#include <ossia/network/zeroconf/zeroconf.hpp>
+
 namespace ossia
 {
 namespace pd
@@ -32,6 +34,14 @@ struct t_client : t_obj_base
         "\twsurl (symbol) : url to connect to (default : "
         "ws://127.0.0.1:5678)\n");
   }
+
+  std::vector<ossia::net::minuit_connection_data> m_minuit_devices;
+  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices;
+
+  std::thread* m_async_thread;
+
+  bool m_done;
+  t_symbol* m_looking_for; // the device's name we are looking for
 };
 }
 } // namespace
