@@ -13,6 +13,15 @@
 #X obj 73 25 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
 #X obj 102 102 ossia.param foo @range 0 1 @enable 0;
+#X obj 177 25 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X msg 174 49 mute \$1;
+#X obj 38 187 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X msg 35 211 mute \$1;
+#X msg 287 216 enable \$1;
+#X obj 290 192 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 12 0;
@@ -25,3 +34,9 @@
 #X connect 11 0 10 0;
 #X connect 12 0 3 0;
 #X connect 12 1 5 0;
+#X connect 13 0 14 0;
+#X connect 14 0 12 0;
+#X connect 15 0 16 0;
+#X connect 16 0 0 0;
+#X connect 17 0 0 0;
+#X connect 18 0 17 0;
