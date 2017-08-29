@@ -13,30 +13,50 @@ namespace max
 
 struct t_parameter : t_object_base
 {
-  t_symbol* m_type{};
-  long m_type_size{};
-  t_atom m_default[64]{};
-
-  // TODO use optional for range
-  t_atom m_range[2]{};
-  t_symbol* m_bounding_mode{};
-  t_symbol* m_access_mode{};
-  long m_repetition_filter{};
-  t_symbol* m_unit{};
-  t_symbol* m_tags[64];
-  long m_tags_size{};
-  t_symbol* m_description{};
-  long m_priority{};
-  long m_hidden{};
-
+  using is_model = std::true_type;
 
   bool register_node(ossia::net::node_base* node);
-
   bool do_registration(ossia::net::node_base* node);
-
   bool unregister();
-
   void is_deleted(const ossia::net::node_base& n);
+
+  // attribute setting method
+  void set_access_mode();
+  void set_repetition_filter();
+  void set_description();
+  void set_tags();
+  void set_priority();
+  void set_enable();
+  void set_mute();
+  void set_hidden();
+  void set_minmax();
+  void set_range();
+  void set_bounding_mode();
+  void set_default();
+  void set_unit();
+  void set_type();
+
+  // attributes
+  t_symbol* m_type;
+  t_atom m_default[OSSIA_MAX_MAX_ATTR_SIZE];
+  t_atom m_min[OSSIA_MAX_MAX_ATTR_SIZE];
+  t_atom m_max[OSSIA_MAX_MAX_ATTR_SIZE];
+  t_atom m_range[OSSIA_MAX_MAX_ATTR_SIZE];
+  t_symbol* m_bounding_mode;
+  t_symbol* m_access_mode;
+  float m_repetition_filter = 0;
+  t_symbol* m_unit;
+  t_atom m_tags[OSSIA_MAX_MAX_ATTR_SIZE];
+  t_symbol* m_description;
+  int m_priority;
+  bool m_hidden;
+
+  // size of size-variable attribute
+  long m_default_size;
+  long m_range_size;
+  long m_min_size;
+  long m_max_size;
+  long m_tags_size;
 
   static ossia::safe_vector<t_parameter*>& quarantine();
 };
@@ -46,16 +66,8 @@ struct t_parameter : t_object_base
 
 static void push_default_value(t_parameter* x)
 {
-  int i = 0;
-
-  for (; i < x->m_type_size; i++)
-  {
-    if (x->m_default[i].a_type == A_NOTHING)
-      break;
-  }
-
-  if (i > 0)
-    t_object_base::push(x, nullptr, i, x->m_default);
+  if ( x->m_default_size > 0 )
+    t_object_base::push(x, nullptr, x->m_default_size, x->m_default);
 }
 
 } // max namespace
@@ -71,7 +83,7 @@ void ossia_parameter_free(ossia::max::t_parameter*);
 void ossia_parameter_assist(
     ossia::max::t_parameter*, void*, long, long, char*);
 void ossia_parameter_in_float(ossia::max::t_parameter*, double f);
-void ossia_parameter_in_int(ossia::max::t_parameter*, long int f);
+void ossia_parameter_in_int(ossia::max::t_parameter* x, long int f);
 void ossia_parameter_in_bang(ossia::max::t_parameter*);
 void ossia_parameter_in_symbol(ossia::max::t_parameter*, t_symbol*);
 void ossia_parameter_in_char(ossia::max::t_parameter*, char);

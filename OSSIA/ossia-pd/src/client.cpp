@@ -20,7 +20,7 @@ namespace ossia
 namespace pd
 {
 
-void client_find_devices(t_client* x);
+void client_getdevices(t_client* x);
 
 static void client_free(t_client* x)
 {
@@ -44,7 +44,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.clients.push_back(x);
-    x->m_otype = Type::client;
+    x->m_otype = object_class::client;
 
     x->m_name = gensym("Pd");
     x->m_device = nullptr;
@@ -85,16 +85,16 @@ void t_client::loadbang(t_client* x, t_float type)
 void t_client::register_children(t_client* x)
 {
 
-  std::vector<t_obj_base*> viewnodes
+  std::vector<t_object_base*> viewnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v->m_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
       view->register_node(x->m_node);
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->register_node(x->m_node);
@@ -104,16 +104,16 @@ void t_client::register_children(t_client* x)
 
 void t_client::unregister_children()
 {
-  std::vector<t_obj_base*> viewnode
+  std::vector<t_object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->m_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->unregister();
@@ -244,7 +244,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
             return;
           }
           x->m_looking_for = gensym(name.c_str());
-          client_find_devices(x);
+          client_getdevices(x);
           return;
         }
       } else {
@@ -406,7 +406,7 @@ void find_devices_async(t_client* x)
   x->m_done = true;
 }
 
-void client_find_devices(t_client* x)
+void client_getdevices(t_client* x)
 {
   if (x->m_async_thread)
   {
@@ -440,7 +440,7 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
     eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
-    eclass_addmethod(c, (method) client_find_devices, "find_devices", A_NULL, 0);
+    eclass_addmethod(c, (method) client_getdevices, "getdevices", A_NULL, 0);
 
   }
 

@@ -8,7 +8,7 @@ namespace ossia
 namespace pd
 {
 
-struct t_view : t_obj_base
+struct t_view : t_object_base
 {
   using is_view = std::true_type;
 

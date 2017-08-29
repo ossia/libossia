@@ -43,7 +43,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.devices.push_back(x);
-    x->m_otype = Type::device;
+    x->m_otype = object_class::device;
 
     x->m_name = gensym("Pd");
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
@@ -82,32 +82,32 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 void t_device::register_children(t_device* x)
 {
 
-  std::vector<t_obj_base*> modelnodes
+  std::vector<t_object_base*> modelnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
   {
-    if (v->m_otype == Type::model)
+    if (v->m_otype == object_class::model)
     {
       t_model* model = (t_model*)v;
       model->register_node(x->m_node);
     }
-    else if (v->m_otype == Type::param)
+    else if (v->m_otype == object_class::param)
     {
       t_param* param = (t_param*)v;
       param->register_node(x->m_node);
     }
   }
 
-  std::vector<t_obj_base*> viewnodes
+  std::vector<t_object_base*> viewnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v->m_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
       view->register_node(x->m_node);
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->register_node(x->m_node);
@@ -124,32 +124,32 @@ void t_device::register_children(t_device* x)
 
 void t_device::unregister_children()
 {
-  std::vector<t_obj_base*> node
+  std::vector<t_object_base*> node
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : node)
   {
-    if (v->m_otype == Type::model)
+    if (v->m_otype == object_class::model)
     {
       t_model* model = (t_model*)v;
       model->unregister();
     }
-    else if (v->m_otype == Type::param)
+    else if (v->m_otype == object_class::param)
     {
       t_param* param = (t_param*)v;
       param->unregister();
     }
   }
 
-  std::vector<t_obj_base*> viewnode
+  std::vector<t_object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->m_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->unregister();

@@ -10,12 +10,14 @@ namespace ossia
 namespace pd
 {
 
-struct t_param : t_obj_base
+struct t_param : t_object_base
 {
   using is_model = std::true_type;
+
   bool register_node(ossia::net::node_base* node);
   bool do_registration(ossia::net::node_base* node);
   bool unregister();
+  void is_deleted(const ossia::net::node_base& n);
 
   // attribute setting method
   void set_access_mode();
@@ -57,9 +59,6 @@ struct t_param : t_obj_base
   long m_description_size;
 
   static ossia::safe_vector<t_param*>& quarantine();
-
-  void is_deleted(const ossia::net::node_base& n);
-
 
 };
 }

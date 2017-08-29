@@ -12,32 +12,6 @@ namespace max
 
 struct t_remote;
 
-class t_matcher
-{
-public:
-  t_matcher(ossia::net::node_base* n, t_remote* p); // constructor
-  ~t_matcher();
-  t_matcher(const t_matcher&) = delete;
-  t_matcher(t_matcher&& other);
-  t_matcher& operator=(const t_matcher&) = delete;
-  t_matcher& operator=(t_matcher&& other);
-
-  void set_value(const ossia::value& v);
-  auto get_node() const { return node; }
-
-  inline bool operator==(const t_matcher& rhs)
-  { return (get_node() == rhs.node); }
-
-
-  private:
-    ossia::net::node_base* node{};
-    t_remote* parent{};
-
-    ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-        callbackit = ossia::none;
-
-};
-
 struct t_remote : t_object_base
 {
   bool register_node(ossia::net::node_base* node);

@@ -26,7 +26,7 @@ extern "C" void ossia_device_setup()
       c, (method)t_device::register_children,
       "register", A_NOTHING, 0);
   class_addmethod(
-      c, (method)t_object_base::relative_namespace, "namespace",
+      c, (method)t_object_base::getnamespace, "namespace",
       A_NOTHING, 0);
   class_addmethod(
       c, (method)ossia_device_expose, "expose",
@@ -59,7 +59,7 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = gensym("Max");
-    x->m_otype = Type::device;
+    x->m_otype = object_class::device;
 
     if (ossia::max::find_peer(x))
     {
@@ -247,12 +247,12 @@ void t_device::register_children(t_device* x)
 
   for (auto child : children_model)
   {
-    if (child->m_otype == Type::model)
+    if (child->m_otype == object_class::model)
     {
       t_model* model = (t_model*)child;
       model->register_node(x->m_node);
     }
-    else if (child->m_otype == Type::param)
+    else if (child->m_otype == object_class::param)
     {
       t_parameter* parameter = (t_parameter*)child;
       parameter->register_node(x->m_node);
@@ -264,12 +264,12 @@ void t_device::register_children(t_device* x)
 
   for (auto child : children_view)
   {
-    if (child->m_otype == Type::view)
+    if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
       view->register_node(x->m_node);
     }
-    else if (child->m_otype == Type::remote)
+    else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
       remote->register_node(x->m_node);
@@ -284,12 +284,12 @@ void t_device::unregister_children()
 
   for (auto child : children_model)
   {
-    if (child->m_otype == Type::model)
+    if (child->m_otype == object_class::model)
     {
       t_model* model = (t_model*)child;
       model->unregister();
     }
-    else if (child->m_otype == Type::param)
+    else if (child->m_otype == object_class::param)
     {
       t_parameter* parameter = (t_parameter*)child;
       parameter->unregister();
@@ -301,12 +301,12 @@ void t_device::unregister_children()
 
   for (auto child : children_view)
   {
-    if (child->m_otype == Type::view)
+    if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
       view->unregister();
     }
-    else if (child->m_otype == Type::remote)
+    else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
       remote->unregister();

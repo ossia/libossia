@@ -53,6 +53,8 @@ public:
 
     ossia::safe_vector<t_select_clock*> select_clocks;
 
+    t_symbol* sym_addr;
+
 private:
     ossia_pd(); // constructor
     ~ossia_pd(); // destructor

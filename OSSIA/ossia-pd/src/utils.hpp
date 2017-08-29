@@ -221,7 +221,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
+t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
 
 /**
  * @brief find_parent_alive
@@ -231,10 +231,10 @@ t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* 
  * @param start_level
  * @return
  */
-static t_obj_base* find_parent_alive(
+static t_object_base* find_parent_alive(
     t_eobj* x, std::string classname, int start_level, int* level)
 {
-  t_obj_base* obj = find_parent(x, classname, start_level, level);
+  t_object_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
   {
     while (obj && obj->m_dead)
@@ -348,7 +348,7 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-ossia::net::node_base* find_parent_node(t_obj_base* x);
+ossia::net::node_base* find_parent_node(t_object_base* x);
 
 /**
  * @brief Find all objects [classname] in the current patcher starting at
@@ -358,15 +358,15 @@ ossia::net::node_base* find_parent_node(t_obj_base* x);
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
+std::vector<t_object_base*> find_child_to_register(
+    t_object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
  * @param x
  * @return true if a peer have been found, false otherwise
  */
-bool find_peer(t_obj_base* x);
+bool find_peer(t_object_base* x);
 
 /**
  * @brief find_global_node: find nodes matching address with a 'device:' prefix
@@ -449,9 +449,9 @@ void obj_dump(T* x)
 {
   t_atom a;
   std::string fullpath;
-  if (x->m_otype == Type::remote || x->m_otype == Type::param)
+  if (x->m_otype == object_class::remote || x->m_otype == object_class::param)
   {
-    t_obj_base* remote = (t_obj_base*) x;
+    t_object_base* remote = (t_object_base*) x;
     if (remote->m_matchers.size() == 1)
       x->m_node = remote->m_matchers[0].get_node();
     else x->m_node = nullptr;

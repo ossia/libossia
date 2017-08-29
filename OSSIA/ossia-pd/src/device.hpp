@@ -54,7 +54,7 @@ static void print_protocol_help()
 }
 }
 
-struct t_device : t_obj_base
+struct t_device : t_object_base
 {
   static void register_children(t_device* x);
   void unregister_children();

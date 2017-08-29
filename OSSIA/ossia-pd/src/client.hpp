@@ -8,7 +8,7 @@ namespace ossia
 namespace pd
 {
 
-struct t_client : t_obj_base
+struct t_client : t_object_base
 {
   ossia::net::local_protocol m_local_proto;
 

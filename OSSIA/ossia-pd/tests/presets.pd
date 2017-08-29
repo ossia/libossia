@@ -1,7 +1,7 @@
-#N canvas 742 306 450 300 10;
+#N canvas 766 204 450 300 10;
 #X obj 59 157 print;
 #X obj 59 129 ø;
-#N canvas 1258 350 450 300 device 1;
+#N canvas 1082 237 529 402 device 0;
 #X obj 46 248 ø.device subDevice;
 #X obj 251 74 ø.param foo;
 #X msg 54 212 expose oscquery;
@@ -20,7 +20,7 @@
 #X obj 37 45 ø.param string @type string;
 #N canvas 248 517 456 355 model 1;
 #X obj 220 280 ø.model model;
-#N canvas 531 230 450 300 submodel 1;
+#N canvas 312 202 450 300 submodel 1;
 #X obj 163 75 ø.param foo;
 #X floatatom 162 45 5 0 0 0 - - -, f 5;
 #X floatatom 163 97 5 0 0 0 - - -, f 5;
@@ -57,7 +57,16 @@
 #X connect 11 0 0 0;
 #X connect 13 0 0 0;
 #X connect 14 0 12 0;
-#X restore 249 194 pd model;
+#X restore 251 303 pd model;
+#X obj 204 187 savepanel;
+#X obj 250 268 list prepend preset save;
+#X obj 202 160 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X msg 205 212 preset save \$1.json;
+#X obj 356 163 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 358 190 openpanel;
+#X msg 359 215 preset load \$1;
 #X connect 0 0 5 0;
 #X connect 1 0 4 0;
 #X connect 2 0 0 0;
@@ -70,6 +79,12 @@
 #X connect 12 0 0 0;
 #X connect 13 0 15 0;
 #X connect 15 0 14 0;
+#X connect 17 0 20 0;
+#X connect 19 0 17 0;
+#X connect 20 0 0 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 0 0;
 #X restore 170 236 pd device;
 #N canvas 1253 733 450 300 client 1;
 #X obj 51 216 ø.client;

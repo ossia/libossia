@@ -87,6 +87,7 @@ ossia_pd::ossia_pd():
   m_localProtocol{new ossia::net::local_protocol},
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
+  sym_addr = gensym("address");
 }
 
 ossia_pd::~ossia_pd()

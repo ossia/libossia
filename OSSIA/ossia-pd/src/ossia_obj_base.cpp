@@ -19,7 +19,7 @@ namespace pd
 
 #pragma mark t_select_clock
 
-t_select_clock::t_select_clock(t_canvas* cnv, t_obj_base* obj) :
+t_select_clock::t_select_clock(t_canvas* cnv, t_object_base* obj) :
   m_canvas(cnv), m_obj(obj)
 {
   m_clock = clock_new(this, (t_method) t_select_clock::deselect);
@@ -95,13 +95,13 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   return *this;
 }
 
-t_matcher::t_matcher(ossia::net::node_base* n, t_obj_base* p) :
+t_matcher::t_matcher(ossia::net::node_base* n, t_object_base* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
   callbackit = node->get_parameter()->add_callback(
       [=](const ossia::value& v) { set_value(v); });
 
-  node->about_to_be_deleted.connect<t_obj_base, &t_obj_base::is_deleted>(
+  node->about_to_be_deleted.connect<t_object_base, &t_object_base::is_deleted>(
         parent);
 
   set_parent_addr();
@@ -113,12 +113,12 @@ t_matcher::~t_matcher()
 {
   if(node)
   {
-    if (parent->m_otype == Type::param)
+    if (parent->m_otype == object_class::param)
     {
       if (!parent->m_is_deleted)
       {
         if (node->get_parent())
-          node->get_parent()->remove_child(*node);
+          node->get_parent()->remove_child(*node); // FIXME this crashes sometimes on quit (when ~ossia_pd() is called)
       }
       // if there vector is empty
       // remote should be quarantinized
@@ -129,7 +129,7 @@ t_matcher::~t_matcher()
     } else {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
-      node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
+      node->about_to_be_deleted.disconnect<t_object_base, &t_object_base::is_deleted>(parent);
 
       // if there vector is empty
       // remote should be quarantinized
@@ -144,7 +144,7 @@ t_matcher::~t_matcher()
 
 void t_matcher::set_value(const ossia::value& v)
 {
-  outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+  outlet_anything(parent->m_dumpout, ossia_pd::instance().sym_addr, 1, &m_addr);
 
   auto param = node->get_parameter();
 
@@ -158,8 +158,8 @@ void t_matcher::set_value(const ossia::value& v)
         param->get_domain(),
         vv,
         param->get_bounding());
-  value_visitor<t_obj_base> vm;
-  vm.x = (t_obj_base*)parent;
+  value_visitor<t_object_base> vm;
+  vm.x = (t_object_base*)parent;
   filtered.apply(vm);
 }
 
@@ -188,7 +188,7 @@ void t_matcher::set_parent_addr()
 
 #pragma mark t_obj_base
 
-void t_obj_base::is_deleted(const ossia::net::node_base& n)
+void t_object_base::is_deleted(const ossia::net::node_base& n)
 {
   if (!m_dead)
   {
@@ -208,7 +208,7 @@ void t_obj_base::is_deleted(const ossia::net::node_base& n)
  * @param argc : number of value in the list
  * @param argv :  list of t_atom value(s)
  */
-void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
+void t_object_base::obj_push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
 {
   for (auto& m : x->m_matchers)
   {
@@ -268,7 +268,7 @@ void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
  * @brief t_obj_base::obj_bang send out the current value of the parameter
  * @param x
  */
-void t_obj_base::obj_bang(t_obj_base* x)
+void t_object_base::obj_bang(t_object_base* x)
 {
   for (auto& matcher : x->m_matchers)
   {
@@ -289,7 +289,7 @@ void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::n
   }
 }
 
-void obj_namespace(t_obj_base* x)
+void obj_namespace(t_object_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
@@ -313,7 +313,7 @@ void obj_namespace(t_obj_base* x)
   }
 }
 
-void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
+void obj_set(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYMBOL)
   {
@@ -331,14 +331,14 @@ void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
           x->m_matchers.push_back(std::move(matcher));
         }
       }
-      t_obj_base::obj_push(x,gensym(""),argc, argv);
+      t_object_base::obj_push(x,gensym(""),argc, argv);
       x->m_matchers.clear();
       x->m_node = tmp;
     }
   }
 }
 
-void obj_get_address(t_obj_base *x)
+void obj_get_address(t_object_base *x)
 {
   if (!x->m_matchers.empty())
   {
@@ -362,10 +362,10 @@ void obj_get_address(t_obj_base *x)
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
 }
 
-bool find_and_display_friend(t_obj_base* x)
+bool find_and_display_friend(t_object_base* x)
 {
   int found = 0;
-  if (x->m_otype == Type::remote)
+  if (x->m_otype == object_class::remote)
   {
     for (auto& rm_matcher : x->m_matchers)
     {
@@ -382,7 +382,7 @@ bool find_and_display_friend(t_obj_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              t_obj_base* obj = pa_matcher.get_parent();
+              t_object_base* obj = pa_matcher.get_parent();
               t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
@@ -397,7 +397,7 @@ bool find_and_display_friend(t_obj_base* x)
       }
     }
   }
-  else if (x->m_otype == Type::view)
+  else if (x->m_otype == object_class::view)
   {
     for (auto& vw_matcher : x->m_matchers)
     {
@@ -414,7 +414,7 @@ bool find_and_display_friend(t_obj_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              t_obj_base* obj = md_matcher.get_parent();
+              t_object_base* obj = md_matcher.get_parent();
               t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
@@ -433,17 +433,17 @@ bool find_and_display_friend(t_obj_base* x)
 }
 
 
-void obj_preset(t_obj_base *x, t_symbol*s, int argc, t_atom* argv)
+void obj_preset(t_object_base *x, t_symbol*s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node{};
   switch (x->m_otype)
   {
-    case Type::client:
-    case Type::device:
+    case object_class::client:
+    case object_class::device:
       node = &x->m_device->get_root_node();
       break;
-    case Type::model:
-    case Type::view:
+    case object_class::model:
+    case object_class::view:
       node = x->m_node;
       break;
     default:

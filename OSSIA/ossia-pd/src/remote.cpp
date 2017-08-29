@@ -230,11 +230,10 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
-    x->m_otype = Type::remote;
+    x->m_otype = object_class::remote;
     x->m_setout = outlet_new((t_object*)x, nullptr);
     x->m_dataout = outlet_new((t_object*)x, nullptr);
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    new (&x->m_callbackits) decltype(x->m_callbackits);
     new (&x->m_matchers) decltype(x->m_matchers);
     x->m_dev = nullptr;
     x->m_ounit = ossia::none;
@@ -255,7 +254,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
 
     x->m_clock = nullptr;
-    x->m_regclock = clock_new(x, (t_method)t_obj_base::obj_bang);
+    x->m_regclock = clock_new(x, (t_method)t_object_base::obj_bang);
 
     x->m_parent_node = nullptr;
     x->m_node = nullptr;
@@ -297,8 +296,8 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) t_obj_base::obj_push,   "anything",    A_GIMME,  0);
-    eclass_addmethod(c, (method) t_obj_base::obj_bang,   "bang",        A_NULL,   0);
+    eclass_addmethod(c, (method) t_object_base::obj_push,   "anything",    A_GIMME,  0);
+    eclass_addmethod(c, (method) t_object_base::obj_bang,   "bang",        A_NULL,   0);
     eclass_addmethod(c, (method) obj_dump<t_remote>,     "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,  0);

@@ -13,7 +13,7 @@ namespace ossia
 namespace pd
 {
 
-enum class Type {
+enum class object_class {
   root = 0,
   param,
   remote,
@@ -30,18 +30,18 @@ enum class address_scope
   global
 };
 
-struct t_obj_base;
+struct t_object_base;
 
 class t_select_clock
 {
 public:
-  t_select_clock(t_canvas* canvas, t_obj_base* obj);
+  t_select_clock(t_canvas* canvas, t_object_base* obj);
   ~t_select_clock();
 
   static void deselect(t_select_clock* x);
 private:
   t_clock* m_clock{};
-  t_obj_base* m_obj{};
+  t_object_base* m_obj{};
   t_canvas* m_canvas{};
 
 };
@@ -49,7 +49,7 @@ private:
 class t_matcher
 {
 public:
-  t_matcher(ossia::net::node_base* n, t_obj_base* p); // constructor
+  t_matcher(ossia::net::node_base* n, t_object_base* p); // constructor
   ~t_matcher();
   t_matcher(const t_matcher&) = delete;
   t_matcher(t_matcher&& other);
@@ -67,7 +67,7 @@ public:
 
 private:
   ossia::net::node_base* node{};
-  t_obj_base* parent{};
+  t_object_base* parent{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
@@ -76,14 +76,16 @@ private:
 
 };
 
-struct t_obj_base
+struct t_object_base
 {
   t_eobj m_obj;
-  Type m_otype{};
-  t_symbol* m_name{};
+
   t_outlet* m_setout{};
   t_outlet* m_dataout{};
   t_outlet* m_dumpout{};
+
+  object_class m_otype{};
+  t_symbol* m_name{};
   address_scope m_addr_scope{};
   bool m_is_pattern{}; // whether the address is a pattern or not
   bool m_dead{}; // whether this object is being deleted or not
@@ -103,13 +105,11 @@ struct t_obj_base
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
 
-  std::vector<ossia::optional<ossia::callback_container<ossia::value_callback>::iterator> >
-      m_callbackits;
   void is_deleted(const ossia::net::node_base& n);
 
   // TODO why some methods are inside t_obj_base class and other are outside ?
-  static void obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv);
-  static void obj_bang(t_obj_base* x);
+  static void obj_push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
+  static void obj_bang(t_object_base* x);
 };
 
 /**
@@ -117,14 +117,14 @@ struct t_obj_base
  * @param x the remote
  * @return false if nothing have been found
  */
-bool find_and_display_friend(t_obj_base* x);
+bool find_and_display_friend(t_object_base* x);
 
 /**
  * @brief obj_namespace send the namespace through dump outlet
  * @note only relevant for client, device, model and view objects.
  * @param x
  */
-void obj_namespace(t_obj_base* x);
+void obj_namespace(t_object_base* x);
 
 /**
  * @brief obj_set
@@ -133,14 +133,14 @@ void obj_namespace(t_obj_base* x);
  * @param argc
  * @param argv
  */
-void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv);
+void obj_set(t_object_base* x, t_symbol* s, int argc, t_atom* argv);
 
 /**
  * @brief obj_get_address return global address through dump outlet
  * @param x
  */
-void obj_get_address(t_obj_base *x);
+void obj_get_address(t_object_base *x);
 
-void obj_preset(t_obj_base *x, t_symbol* s, int argc, t_atom* argv);
+void obj_preset(t_object_base *x, t_symbol* s, int argc, t_atom* argv);
 }
 } // namespace
