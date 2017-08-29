@@ -135,7 +135,16 @@ void t_remote::set_mute()
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node, !m_mute);
+    ossia::net::set_muted(*node, m_mute);
+  }
+}
+
+void t_remote::set_enable()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_disabled(*node, !m_enable);
   }
 }
 
@@ -157,6 +166,13 @@ void remote_get_mute(t_remote*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
+void remote_get_enable(t_remote*x)
+{
+  t_atom a;
+  SETFLOAT(&a,x->m_enable);
+  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+}
+
 t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
@@ -165,6 +181,8 @@ t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void
       x->set_unit();
     else if ( s == gensym("mute") )
       x->set_mute();
+    else if ( s == gensym("enable") )
+      x->set_enable();
   }
 }
 
@@ -220,6 +238,8 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     new (&x->m_matchers) decltype(x->m_matchers);
     x->m_dev = nullptr;
     x->m_ounit = ossia::none;
+    x->m_mute = false;
+    x->m_enable = true;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -285,11 +305,15 @@ extern "C" void setup_ossia0x2eremote(void)
     eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) obj_get_address,        "getaddress",  A_NULL,   0);
 
-    CLASS_ATTR_SYMBOL(c, "unit", 0, t_remote, m_unit);
+    CLASS_ATTR_SYMBOL(c, "unit",   0, t_remote, m_unit);
+    CLASS_ATTR_INT   (c, "mute",   0, t_remote, m_mute);
+    CLASS_ATTR_INT   (c, "enable", 0, t_remote, m_enable);
+
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
     eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_mute,        "getmute",     A_NULL, 0);
+    eclass_addmethod(c, (method) remote_get_enable,      "getenable",   A_NULL, 0);
 
   }
 

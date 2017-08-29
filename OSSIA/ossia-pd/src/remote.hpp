@@ -20,6 +20,7 @@ struct t_remote : t_obj_base
 
   void set_unit();
   void set_mute();
+  void set_enable();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 

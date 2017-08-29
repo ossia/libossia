@@ -47,7 +47,6 @@ struct t_param : t_obj_base
   t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE];
   int m_priority;
   bool m_hidden;
-  bool m_enable;
 
   // size of size-variable attribute
   long m_default_size;

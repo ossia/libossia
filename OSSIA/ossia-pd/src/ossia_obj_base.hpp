@@ -89,6 +89,7 @@ struct t_obj_base
   bool m_dead{}; // whether this object is being deleted or not
   bool m_is_deleted{}; // true during the is_deleted callback method
   bool m_mute{};
+  bool m_enable{};
 
   t_clock* m_clock{};
   t_clock* m_regclock{};   // registration clock

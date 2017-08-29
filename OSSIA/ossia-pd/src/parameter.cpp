@@ -302,7 +302,7 @@ void t_param::set_mute()
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node, !m_mute);
+    ossia::net::set_muted(*node, m_mute);
   }
 }
 
@@ -738,15 +738,15 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, t_param, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
     CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, t_param, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
 
-    CLASS_ATTR_ATOM_VARSIZE(c, "default", 0, t_param, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "range",   0, t_param, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "min",     0, t_param, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "max",     0, t_param, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_FLOAT(c, "repetition_filter", 0, t_param, m_repetition_filter);
-    CLASS_ATTR_INT(c, "priority", 0, t_param, m_priority);
-    CLASS_ATTR_INT(c, "hidden", 0, t_param, m_hidden);
-    CLASS_ATTR_INT(c, "enable", 0, t_param, m_enable);
-    CLASS_ATTR_INT(c, "mute", 0, t_param, m_mute);
+    CLASS_ATTR_ATOM_VARSIZE(c, "default",           0, t_param, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "range",             0, t_param, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "min",               0, t_param, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, t_param, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_FLOAT       (c, "repetition_filter", 0, t_param, m_repetition_filter);
+    CLASS_ATTR_INT(         c, "priority",          0, t_param, m_priority);
+    CLASS_ATTR_INT(         c, "hidden",            0, t_param, m_hidden);
+    CLASS_ATTR_INT(         c, "enable",            0, t_param, m_enable);
+    CLASS_ATTR_INT(         c, "mute",              0, t_param, m_mute);
 
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
