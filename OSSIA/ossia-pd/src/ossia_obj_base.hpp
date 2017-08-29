@@ -23,7 +23,7 @@ enum class Type {
   client
 };
 
-enum class AddrScope
+enum class address_scope
 {
   relative = 0,
   absolute,
@@ -70,7 +70,7 @@ private:
   t_obj_base* parent{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-  callbackit = ossia::none;
+    callbackit = ossia::none;
 
   t_atom m_addr;
 
@@ -84,16 +84,17 @@ struct t_obj_base
   t_outlet* m_setout{};
   t_outlet* m_dataout{};
   t_outlet* m_dumpout{};
-  AddrScope m_addr_scope{};
+  address_scope m_addr_scope{};
   bool m_is_pattern{}; // whether the address is a pattern or not
   bool m_dead{}; // whether this object is being deleted or not
   bool m_is_deleted{}; // true during the is_deleted callback method
+  bool m_mute{};
+  bool m_enable{};
 
   t_clock* m_clock{};
   t_clock* m_regclock{};   // registration clock
   t_clock* m_unregclock{}; // unregistration clock
-  t_canvas* m_last_opened_canvas{};
-  std::chrono::milliseconds m_last_click;
+  std::chrono::milliseconds m_last_click{};
 
   ossia::optional<ossia::unit_t> m_ounit;
 

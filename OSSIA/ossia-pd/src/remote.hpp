@@ -15,10 +15,12 @@ struct t_remote : t_obj_base
   bool do_registration(ossia::net::node_base* node);
   bool unregister();
 
-  ossia::net::device_base* x_dev{};
-  t_symbol* x_unit;
+  ossia::net::device_base* m_dev{};
+  t_symbol* m_unit;
 
   void set_unit();
+  void set_mute();
+  void set_enable();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 

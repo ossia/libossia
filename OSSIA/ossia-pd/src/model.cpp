@@ -146,22 +146,22 @@ bool t_model::unregister()
 void t_model::set_priority()
 {
   // TODO why this doesn't work
-  if (m_node) ossia::net::set_priority(*m_node, x_priority);
+  if (m_node) ossia::net::set_priority(*m_node, m_priority);
 }
 
 void t_model::set_description()
 {
   std::stringstream description;
-  for (int i = 0; i < x_description_size; i++)
+  for (int i = 0; i < m_description_size; i++)
   {
-    switch(x_description[i].a_type)
+    switch(m_description[i].a_type)
     {
       case A_SYMBOL:
-        description << x_description[i].a_w.w_symbol->s_name << " ";
+        description << m_description[i].a_w.w_symbol->s_name << " ";
         break;
       case A_FLOAT:
         {
-          description << x_description[i].a_w.w_float << " ";
+          description << m_description[i].a_w.w_float << " ";
           break;
         }
       default:
@@ -175,17 +175,17 @@ void t_model::set_description()
 void t_model::set_tags()
 {
   std::vector<std::string> tags;
-  for (int i = 0; i < x_tags_size; i++)
+  for (int i = 0; i < m_tags_size; i++)
   {
-    switch(x_tags[i].a_type)
+    switch(m_tags[i].a_type)
     {
       case A_SYMBOL:
-        tags.push_back(x_tags[i].a_w.w_symbol->s_name);
+        tags.push_back(m_tags[i].a_w.w_symbol->s_name);
         break;
       case A_FLOAT:
         {
           std::stringstream ss;
-          ss << x_tags[i].a_w.w_float;
+          ss << m_tags[i].a_w.w_float;
           tags.push_back(ss.str());
           break;
         }
@@ -215,20 +215,20 @@ t_pd_err model_notify(t_model*x, t_symbol*s, t_symbol* msg, void* sender, void* 
 void model_get_priority(t_model*x)
 {
   t_atom a;
-  SETFLOAT(&a, x->x_priority);
+  SETFLOAT(&a, x->m_priority);
   outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
 }
 
 void model_get_tags(t_model*x)
 {
   outlet_anything(x->m_dumpout, gensym("tags"),
-                  x->x_tags_size, x->x_tags);
+                  x->m_tags_size, x->m_tags);
 }
 
 void model_get_description(t_model*x)
 {
   outlet_anything(x->m_dumpout, gensym("description"),
-                  x->x_description_size, x->x_description);
+                  x->m_description_size, x->m_description);
 }
 
 ossia::safe_vector<t_model*>& t_model::quarantine()
@@ -323,9 +323,9 @@ extern "C" void setup_ossia0x2emodel(void)
     eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
     eclass_addmethod(c, (method) model_notify,     "notify",   A_NULL,  0);
 
-    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, t_model, x_description, x_description_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, t_model, x_tags, x_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_INT(c, "priority", 0, t_param, x_priority);
+    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, t_model, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, t_model, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_INT(c, "priority", 0, t_param, m_priority);
 
     eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL,  0);
     eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL,  0);

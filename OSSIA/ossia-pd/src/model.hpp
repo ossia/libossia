@@ -25,12 +25,12 @@ struct t_model : t_obj_base
   void set_description();
   void set_priority();
 
-  t_atom x_tags[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom x_description[OSSIA_PD_MAX_ATTR_SIZE];
-  int x_priority;
+  t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE];
+  int m_priority;
 
-  long x_tags_size;
-  long x_description_size;
+  long m_tags_size;
+  long m_description_size;
 };
 }
 } // namespace

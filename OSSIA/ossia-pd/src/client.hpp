@@ -10,7 +10,7 @@ namespace pd
 
 struct t_client : t_obj_base
 {
-  ossia::net::local_protocol x_local_proto;
+  ossia::net::local_protocol m_local_proto;
 
   static void register_children(t_client* x);
   void unregister_children();

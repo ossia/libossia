@@ -61,11 +61,11 @@ bool t_view::do_registration(ossia::net::node_base* node)
   {
     m_parent_node = node;
 
-    if (m_addr_scope == AddrScope::relative)
+    if (m_addr_scope == address_scope::relative)
     {
       m_node = node->find_child(m_name->s_name);
     }
-    else if(m_addr_scope == AddrScope::absolute)
+    else if(m_addr_scope == address_scope::absolute)
     {
       m_node = ossia::net::find_node(
             node->get_device().get_root_node(), m_name->s_name);
