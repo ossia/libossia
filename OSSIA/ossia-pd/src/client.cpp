@@ -20,7 +20,7 @@ namespace ossia
 namespace pd
 {
 
-void client_find_devices(t_client* x);
+void client_getdevices(t_client* x);
 
 static void client_free(t_client* x)
 {
@@ -244,7 +244,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
             return;
           }
           x->m_looking_for = gensym(name.c_str());
-          client_find_devices(x);
+          client_getdevices(x);
           return;
         }
       } else {
@@ -406,7 +406,7 @@ void find_devices_async(t_client* x)
   x->m_done = true;
 }
 
-void client_find_devices(t_client* x)
+void client_getdevices(t_client* x)
 {
   if (x->m_async_thread)
   {
@@ -440,7 +440,7 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
     eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
-    eclass_addmethod(c, (method) client_find_devices, "find_devices", A_NULL, 0);
+    eclass_addmethod(c, (method) client_getdevices, "getdevices", A_NULL, 0);
 
   }
 
