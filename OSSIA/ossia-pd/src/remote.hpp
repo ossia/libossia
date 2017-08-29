@@ -8,7 +8,7 @@ namespace ossia
 namespace pd
 {
 
-struct t_remote : t_obj_base
+struct t_remote : t_object_base
 {
   using is_view = std::true_type;
   bool register_node(ossia::net::node_base* node);

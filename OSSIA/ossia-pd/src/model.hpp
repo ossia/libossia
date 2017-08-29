@@ -8,7 +8,7 @@ namespace ossia
 namespace pd
 {
 
-struct t_model : t_obj_base
+struct t_model : t_object_base
 {
   using is_model = std::true_type;
 

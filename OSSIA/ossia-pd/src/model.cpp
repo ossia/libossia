@@ -45,11 +45,11 @@ bool t_model::do_registration(ossia::net::node_base* node)
   if (node->find_child(name))
   { // we have to check if a node with the same name already exists to avoid
     // auto-incrementing name
-    std::vector<t_obj_base*> obj
+    std::vector<t_object_base*> obj
         = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
     for (auto v : obj)
     {
-      if (v->m_otype == Type::param)
+      if (v->m_otype == object_class::param)
       {
         t_param* param = (t_param*)v;
         if (std::string(param->m_name->s_name) == name)
@@ -76,11 +76,11 @@ bool t_model::do_registration(ossia::net::node_base* node)
 void t_model::register_children()
 {
   obj_dequarantining<t_model>(this);
-  std::vector<t_obj_base*> obj
+  std::vector<t_object_base*> obj
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : obj)
   {
-    if (v->m_otype == Type::model)
+    if (v->m_otype == object_class::model)
     {
       t_model* model = (t_model*)v;
       if (model == this)
@@ -90,12 +90,12 @@ void t_model::register_children()
       }
       model->register_node(m_node);
     }
-    else if (v->m_otype == Type::param)
+    else if (v->m_otype == object_class::param)
     {
       t_param* param = (t_param*)v;
       param->register_node(m_node);
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->register_node(m_node);
@@ -255,7 +255,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
   {
     ossia_pd.models.push_back(x);
 
-    x->m_otype = Type::model;
+    x->m_otype = object_class::model;
 
     t_binbuf* d = binbuf_via_atoms(argc, argv);
     if (d)

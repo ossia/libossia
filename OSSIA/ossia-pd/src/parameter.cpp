@@ -43,12 +43,6 @@ bool t_param::do_registration(ossia::net::node_base* node)
   if (!node)
     return false;
 
-  /*
-  std::string absolute_path = get_absolute_path<t_param>(this);
-  std::string address_string = ossia::net::address_string_from_node(*node);
-  if (absolute_path != address_string) return false;
-  */
-
   m_parent_node = node;
 
   auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
@@ -133,7 +127,7 @@ void t_param::is_deleted(const net::node_base& n)
 static void push_default_value(t_param* x)
 {
   if ( x->m_default_size > 0 )
-    t_obj_base::obj_push(x, nullptr, x->m_default_size, x->m_default);
+    t_object_base::obj_push(x, nullptr, x->m_default_size, x->m_default);
 }
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
@@ -147,7 +141,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.params.push_back(x);
-    x->m_otype = Type::param;
+    x->m_otype = object_class::param;
 
     x->m_setout = nullptr;
     x->m_dataout = outlet_new((t_object*)x, nullptr);
@@ -724,8 +718,8 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) t_obj_base::obj_push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method) t_obj_base::obj_bang, "bang",     A_NULL,  0);
+    eclass_addmethod(c, (method) t_object_base::obj_push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) t_object_base::obj_bang, "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",     A_NULL,  0);
     eclass_addmethod(c, (method) parameter_notify,     "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)

@@ -44,7 +44,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
   if (x && d)
   {
     ossia_pd.clients.push_back(x);
-    x->m_otype = Type::client;
+    x->m_otype = object_class::client;
 
     x->m_name = gensym("Pd");
     x->m_device = nullptr;
@@ -85,16 +85,16 @@ void t_client::loadbang(t_client* x, t_float type)
 void t_client::register_children(t_client* x)
 {
 
-  std::vector<t_obj_base*> viewnodes
+  std::vector<t_object_base*> viewnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v->m_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
       view->register_node(x->m_node);
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->register_node(x->m_node);
@@ -104,16 +104,16 @@ void t_client::register_children(t_client* x)
 
 void t_client::unregister_children()
 {
-  std::vector<t_obj_base*> viewnode
+  std::vector<t_object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->m_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
       view->unregister();
     }
-    else if (v->m_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
       remote->unregister();
