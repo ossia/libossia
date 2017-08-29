@@ -34,6 +34,8 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->m_device = ossia_pd.get_default_device();
+  x->m_otype = Type::device;
+  x->m_name = gensym(x->m_device->get_name().c_str());
 
   x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
   x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
@@ -41,7 +43,8 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   x->m_node = &x->m_device->get_root_node();
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
-      std::string name = argv[0].a_w.w_symbol->s_name;
+      x->m_name = argv[0].a_w.w_symbol;
+      std::string name = x->m_name->s_name;
       x->m_device->set_name(name);
     }
 
@@ -71,9 +74,10 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   class_addcreator((t_newmethod)ossia_new,gensym("ø"), A_GIMME, 0);
 
-  eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
-  eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
-  eclass_addmethod(c, (method)obj_namespace, "namespace", A_GIMME, 0);
+  eclass_addmethod(c, (method) device_expose, "expose",    A_GIMME, 0);
+  eclass_addmethod(c, (method) device_name,   "name",      A_GIMME, 0);
+  eclass_addmethod(c, (method) obj_namespace, "namespace", A_GIMME, 0);
+  eclass_addmethod(c, (method) obj_preset,    "preset",    A_GIMME, 0);
 
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.ossia = c;
