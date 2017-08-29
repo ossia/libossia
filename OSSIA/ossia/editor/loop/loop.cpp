@@ -43,6 +43,9 @@ loop::~loop()
 
 state_element loop::offset(ossia::time_value offset, double pos)
 {
+  time_value patternOffset{
+      std::fmod((double)offset, (double)m_constraint->get_nominal_duration())};
+  m_constraint->offset(patternOffset);
     /*
     std::cerr << "Offset: " << offset << std::endl;
    // reset internal mOffsetState
