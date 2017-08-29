@@ -4,7 +4,6 @@
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_parse.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <boost/spirit/include/qi.hpp>
 #include <brigand/algorithms/for_each.hpp>
 #include <brigand/algorithms/wrap.hpp>
 namespace ossia
