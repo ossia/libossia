@@ -966,8 +966,16 @@ void apply_preset_node(
 {
   if (keys.size() == 0)
   {
-    if(auto p = root.get_parameter())
-      p->push_value(val);
+    if (root.children().size() > 0)
+    {
+      std::string details = "Node " + root.get_name() + " is not terminal";
+      throw(ossia::ossiaException_InvalidAddress(
+          __LINE__, __FILE__, details.c_str()));
+    }
+    else
+    {
+      root.get_parameter()->push_value(val);
+    }
   }
   else
   {

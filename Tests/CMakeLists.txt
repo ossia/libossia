@@ -103,6 +103,7 @@ ossia_add_test(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmar
 endif()
 
 
+if(OSSIA_C)
 function(ossia_add_test_c TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME}_test ${TESTSRCS})
 
@@ -117,10 +118,10 @@ function(ossia_add_test_c TESTNAME TESTSRCS)
     add_test(NAME ossia_target_${TESTNAME}_test COMMAND ossia_${TESTNAME}_test)
 endFunction()
 
-ossia_add_test_c(devices_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-devices.cpp")
-ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-api.cpp")
-ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
-
+  ossia_add_test_c(devices_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-devices.cpp")
+  ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-api.cpp")
+  ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
+endif()
 # A command to copy the test data.
 
 if(MSVC)
