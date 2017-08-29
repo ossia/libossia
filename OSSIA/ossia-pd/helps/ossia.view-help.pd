@@ -1,7 +1,7 @@
-#N canvas 289 53 592 132 10;
+#N canvas 289 53 625 133 10;
 #X text 35 19 [ø.view] allows to connect a series of [ø.remote]s
 to an [ø.model] instance., f 76;
-#N canvas 289 209 592 315 view 1;
+#N canvas 289 209 625 311 view 1;
 #X floatatom 20 56 5 0 0 0 - - -, f 5;
 #X obj 20 17 ossia.view my_model;
 #X text 163 17 the name of the model to connect to has to be put as
@@ -17,14 +17,14 @@ the connected [ossia.model] will appear \, if it is locally available
 #X text 27 99 You can have only one [ossia.view] per patcher.;
 #X text 16 227 One can also dynamically bind a view to models - see
 in:;
-#N canvas 882 260 594 140 bind_to_views 1;
+#N canvas 911 283 634 144 bind_to_views 0;
 #X floatatom 311 112 5 0 0 0 - - -, f 5;
 #X obj 352 110 ossia.remote foo;
 #X text 20 11 Dynamically bind to another instance of model.;
 #X msg 71 70 bind /my_model/my_submodel;
 #X msg 28 37 bind my_submodel.1;
 #X obj 60 107 ossia.view my_submodel;
-#X text 240 71 or absolute (leading slash refers to the root);
+#X text 267 70 or absolute (leading slash refers to the root);
 #X text 169 37 addresses can be relative to the view hierarchy (no
 leading slash), f 66;
 #X connect 0 0 1 0;
@@ -32,7 +32,7 @@ leading slash), f 66;
 #X connect 3 0 5 0;
 #X connect 4 0 5 0;
 #X restore 413 226 pd bind_to_views;
-#N canvas 882 423 222 96 subview 1;
+#N canvas 882 422 222 96 subview 0;
 #X obj 16 14 ossia.view my_submodel;
 #X obj 68 45 ossia.remote foo;
 #X floatatom 19 46 5 0 0 0 - - -, f 5;
@@ -44,13 +44,13 @@ leading slash), f 66;
 #X connect 0 0 5 0;
 #X connect 5 0 0 0;
 #X restore 178 56 pd view;
-#N canvas 882 53 215 184 models 1;
+#N canvas 882 53 215 207 models 0;
 #X obj 46 34 ossia.model my_model;
 #X obj 47 58 ossia.param foo;
-#N canvas 1098 161 175 76 submodel 1;
+#N canvas 1097 178 199 82 submodel 0;
 #X obj 18 8 ossia.model my_submodel;
 #X obj 18 31 ossia.param foo;
-#N canvas 1274 161 202 76 submodel 1;
+#N canvas 1296 178 218 81 submodel 0;
 #X obj 17 33 ossia.param foo;
 #X obj 17 9 ossia.model my_subsubmodel;
 #X floatatom 17 55 5 0 0 0 - - -, f 5;
@@ -59,10 +59,10 @@ leading slash), f 66;
 #X floatatom 18 53 5 0 0 0 - - -, f 5;
 #X connect 1 0 3 0;
 #X restore 47 116 pd submodel;
-#N canvas 1096 52 177 89 submodel 1;
+#N canvas 1096 52 200 103 submodel 0;
 #X obj 17 11 ossia.model my_submodel;
 #X obj 20 38 ossia.param foo;
-#N canvas 1274 52 198 86 submodel 1;
+#N canvas 1298 51 218 103 submodel 0;
 #X obj 26 36 ossia.param foo;
 #X obj 24 11 ossia.model my_subsubmodel;
 #X floatatom 26 58 5 0 0 0 - - -, f 5;
