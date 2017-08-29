@@ -31,7 +31,23 @@ ossia::net::node_base* find_global_node(const std::string& addr);
  * @param addr: the address to process
  * @return
  */
-ossia::max::AddrType get_parameter_type(const std::string& addr);
+ossia::max::address_scope get_parameter_type(const std::string& addr);
+
+/**
+ * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
+ * @param atom : array of atom
+ * @param size : number of value to take
+ * @return array of ossia::value
+ */
+std::vector<ossia::value> attribute2value(t_atom* atom, long size);
+
+/**
+ * @brief symbol2val_type Convert a t_symbol into ossia::val_type
+ * @param s
+ * @return ossia::val_type
+ */
+ossia::val_type symbol2val_type(t_symbol* s);
+t_symbol* val_type2symbol(ossia::val_type t);
 
 } // namespace max
 } // namespace ossia

@@ -27,7 +27,7 @@ extern "C" void ossia_model_setup()
       A_CANT, 0);
 
   class_addmethod(
-      ossia_library.ossia_model_class, (method)t_object_base::relative_namespace,
+      ossia_library.ossia_model_class, (method)t_object_base::getnamespace,
               "namespace", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
@@ -54,7 +54,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
 
     x->m_description = _sym_nothing;
     x->m_tags_size = 0;
-    x->m_otype = Type::model;
+    x->m_otype = object_class::model;
 
     if(find_peer(x))
     {
@@ -77,7 +77,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
+        x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
        }
     }
 
@@ -170,7 +170,7 @@ bool t_model::do_registration(ossia::net::node_base* node)
 
     for (auto child : children_model)
     {
-      if (child->m_otype == Type::param)
+      if (child->m_otype == object_class::param)
       {
         t_parameter* parameter = (t_parameter*)child;
 
@@ -204,7 +204,7 @@ void t_model::register_children()
 
   for (auto child : children)
   {
-    if (child->m_otype == Type::model)
+    if (child->m_otype == object_class::model)
     {
       t_model* model = (t_model*)child;
 
@@ -214,7 +214,7 @@ void t_model::register_children()
 
       model->register_node(m_node);
     }
-    else if (child->m_otype == Type::param)
+    else if (child->m_otype == object_class::param)
     {
       t_parameter* parameter = (t_parameter*)child;
 

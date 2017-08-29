@@ -23,7 +23,7 @@ extern "C" void ossia_view_setup()
         A_NOTHING, 0);
 
     class_addmethod(
-          c, (method)t_object_base::relative_namespace,
+          c, (method)t_object_base::getnamespace,
                   "namespace", A_NOTHING, 0);
     class_addmethod(
           c,(method)t_view::view_bind, "bind", A_SYM, 0);
@@ -55,7 +55,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
-    x->m_otype = Type::view;
+    x->m_otype = object_class::view;
 
     if(find_peer(x))
     {
@@ -71,7 +71,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
+        x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
       }
 
       // we need to delay registration because object may use patcher hierarchy
@@ -165,12 +165,12 @@ bool t_view::register_node(ossia::net::node_base* node)
 
     for (auto child : children_view)
     {
-      if (child->m_otype == Type::view)
+      if (child->m_otype == object_class::view)
       {
         t_view* view = (t_view*)child;
         view->register_node(m_node);
       }
-      else if (child->m_otype == Type::remote)
+      else if (child->m_otype == object_class::remote)
       {
         t_remote* remote = (t_remote*)child;
         remote->register_node(m_node);
@@ -195,7 +195,7 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
   if (node)
   {
-    if(m_parameter_type == AddrType::relative)
+    if(m_addr_scope == address_scope::relative)
     {
       std::string absolute_path = object_path_absolute<t_view>(this);
       std::string address_string = ossia::net::address_string_from_node(*node);
@@ -205,7 +205,7 @@ bool t_view::do_registration(ossia::net::node_base* node)
 
       m_node = node->find_child(m_name->s_name);
     }
-    else if(m_parameter_type == AddrType::absolute)
+    else if(m_addr_scope == address_scope::absolute)
     {
       m_node = ossia::net::find_node(
             node->get_device().get_root_node(), m_name->s_name);
@@ -233,7 +233,7 @@ void t_view::register_children(t_view* x)
 
   for (auto child : children_view)
   {
-    if (child->m_otype == Type::view)
+    if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
 
@@ -242,7 +242,7 @@ void t_view::register_children(t_view* x)
 
       max_object_register<t_view>(view);
     }
-    else if (child->m_otype == Type::remote)
+    else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
       max_object_register<t_remote>(remote);
@@ -261,7 +261,7 @@ bool t_view::unregister()
 
   for (auto child : children_view)
   {
-    if (child->m_otype == Type::view)
+    if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
 
@@ -270,7 +270,7 @@ bool t_view::unregister()
 
       view->unregister();
     }
-    else if (child->m_otype == Type::remote)
+    else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
       remote->unregister();
@@ -288,7 +288,7 @@ bool t_view::unregister()
 void t_view::view_bind(t_view* x, t_symbol* address)
 {
   x->m_name = address;
-  x->m_parameter_type = ossia::max::get_parameter_type(x->m_name->s_name);
+  x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }

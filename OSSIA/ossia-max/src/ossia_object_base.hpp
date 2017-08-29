@@ -3,6 +3,8 @@
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia/ossia.hpp>
 
+#define OSSIA_MAX_MAX_ATTR_SIZE 256
+
 namespace ossia
 {
 namespace max
@@ -11,7 +13,7 @@ namespace max
 #pragma mark -
 #pragma mark t_object_base structure declaration
 
-enum class Type
+enum class object_class
 {
   root = 0,
   param,
@@ -22,11 +24,43 @@ enum class Type
   client
 };
 
-enum class AddrType
+enum class address_scope
 {
   relative = 0,
   absolute,
   global
+};
+
+struct t_object_base;
+
+class t_matcher
+{
+public:
+  t_matcher(ossia::net::node_base* n, t_object_base* p); // constructor
+  ~t_matcher();
+  t_matcher(const t_matcher&) = delete;
+  t_matcher(t_matcher&& other);
+  t_matcher& operator=(const t_matcher&) = delete;
+  t_matcher& operator=(t_matcher&& other);
+
+  void set_value(const ossia::value& v);
+  auto get_node() const { return node; }
+  auto get_parent() const { return parent; }
+  void set_parent_addr();
+
+  inline bool operator==(const t_matcher& rhs)
+  { return (get_node() == rhs.node); }
+
+
+private:
+  ossia::net::node_base* node{};
+  t_object_base* parent{};
+
+  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
+    callbackit = ossia::none;
+
+  t_atom m_addr;
+
 };
 
 struct t_object_base
@@ -40,25 +74,31 @@ struct t_object_base
   void* m_set_out{};
   void* m_dump_out{};
 
-  ossia::net::node_base* m_node{};
-
-  Type m_otype{};
+  object_class m_otype{};
   t_symbol* m_name{};
-  AddrType m_parameter_type{};
+  address_scope m_addr_scope{};
+  bool m_is_pattern{};
   bool m_dead = false; // wether this object is being deleted or not;
-                       //            t_canvas*   m_last_opened_canvas{};
+  bool m_is_deleted;
+  bool m_enable;
+  bool m_mute;
 
   void* m_clock{};
   void* m_regclock{};   // registration clock
   void* m_unregclock{}; // unregistration clock
 
-  void apply_value_visitor(const ossia::value& val);
+  ossia::optional<ossia::unit_t> m_ounit;
+
+  ossia::net::node_base* m_node{};
+  ossia::net::node_base* m_parent_node{};
+  std::vector<t_matcher> m_matchers{};
+
+  void is_deleted(const ossia::net::node_base& n);
 
   static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
   static void bang(t_object_base* x);
   static void defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_atom* argv);
-  //            static void tick(t_object_base* x);
-  static void relative_namespace(t_object_base* x);
+  static void getnamespace(t_object_base *x);
 };
 
 #pragma mark -
@@ -100,150 +140,72 @@ static ossia::val_type name_to_type(ossia::string_view name)
 // Typed function switcher to convert ossia::value to t_atom
 struct value2atom
 {
-  std::vector<t_atom> operator()(impulse) const
+  std::vector<t_atom>& data;
+  void operator()(impulse) const
   {
     t_atom a;
-
     atom_setsym(&a, gensym("bang"));
-
-    std::vector<t_atom> va;
-
-    va.push_back(a);
-
-    return va;
+    data.push_back(a);
   }
 
-  std::vector<t_atom> operator()(int32_t i) const
+  void operator()(int32_t i) const
   {
     t_atom a;
-
     atom_setfloat(&a, i);
-
-    std::vector<t_atom> va;
-
-    va.push_back(a);
-
-    return va;
+    data.push_back(a);
   }
 
-  std::vector<t_atom> operator()(float f) const
+  void operator()(float f) const
   {
     t_atom a;
     atom_setfloat(&a, f);
-
-    std::vector<t_atom> va;
-
-    va.push_back(a);
-
-    return va;
+    data.push_back(a);
   }
 
-  std::vector<t_atom> operator()(bool b) const
+  void operator()(bool b) const
   {
     t_atom a;
     float f = b ? 1. : 0.;
-
     atom_setfloat(&a, f);
-
-    std::vector<t_atom> va;
-    va.push_back(a);
-
-    return va;
+    data.push_back(a);
   }
 
-  std::vector<t_atom> operator()(const std::string& str) const
+  void operator()(const std::string& str) const
   {
     t_symbol* s = gensym(str.c_str());
     t_atom a;
-
     atom_setsym(&a, s);
-    std::vector<t_atom> va;
-    va.push_back(a);
-
-    return va;
+    data.push_back(a);
   }
 
-  std::vector<t_atom> operator()(char c) const
+  void operator()(char c) const
   {
-    std::vector<t_atom> va;
     t_atom a;
-
     atom_setfloat(&a, (float)c);
-    va.push_back(a);
-
-    return va;
+    data.push_back(a);
   }
 
-  std::vector<t_atom> operator()(vec2f vec) const
+  template <std::size_t N>
+  void operator()(std::array<float, N> vec) const
   {
-    t_atom a[2];
-
-    atom_setfloat(a, vec[0]);
-    atom_setfloat(a + 1, vec[1]);
-
-    std::vector<t_atom> va;
-
-    va.push_back(a[0]);
-    va.push_back(a[1]);
-
-    return va;
-  }
-
-  std::vector<t_atom> operator()(vec3f vec) const
-  {
-    t_atom a[3];
-
-    atom_setfloat(a, vec[0]);
-    atom_setfloat(a + 1, vec[1]);
-    atom_setfloat(a + 2, vec[2]);
-
-    std::vector<t_atom> va;
-
-    va.push_back(a[0]);
-    va.push_back(a[1]);
-    va.push_back(a[2]);
-
-    return va;
-  }
-
-  std::vector<t_atom> operator()(vec4f vec) const
-  {
-    t_atom a[4];
-
-    atom_setfloat(a, vec[0]);
-    atom_setfloat(a + 1, vec[1]);
-    atom_setfloat(a + 2, vec[2]);
-    atom_setfloat(a + 3, vec[3]);
-
-    std::vector<t_atom> va;
-
-    va.push_back(a[0]);
-    va.push_back(a[1]);
-    va.push_back(a[2]);
-
-    return va;
-  }
-
-  std::vector<t_atom> operator()(const std::vector<ossia::value>& t) const
-  {
-    std::vector<t_atom> va;
-
-    for (auto v : t)
+    data.reserve(data.size() + N);
+    for (std::size_t i = 0; i < N; i++)
     {
-      std::vector<t_atom> b;
-      value2atom vm;
-
-      b = v.apply(vm);
-      std::move(b.begin(), b.end(), std::back_inserter(va));
+      t_atom a;
+      atom_setfloat(&a, vec[i]);
+      data.push_back(a);
     }
-
-    return va;
   }
 
-  std::vector<t_atom> operator()() const
+  void operator()(const std::vector<ossia::value>& t) const
   {
-    std::vector<t_atom> va;
-    return va;
+    data.reserve(data.size() + t.size());
+    for (const auto& v : t)
+      v.apply(*this);
+  }
+
+  void operator()() const
+  {
   }
 };
 
@@ -368,16 +330,13 @@ struct value_visitor
   void operator()(const std::vector<ossia::value>& t) const
   {
     std::vector<t_atom> va;
+    value2atom vm{va};
+    for (const auto& v : t)
+      v.apply(vm);
 
-    for (auto v : t)
-    {
-      std::vector<t_atom> b;
-      value2atom vm;
-      b = v.apply(vm);
-      std::move(b.begin(), b.end(), std::back_inserter(va));
-    }
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
-    outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
+    if (x->m_data_out)
+      outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
 
     if (x->m_set_out)
       defer_low((t_object*)x,(method)t_object_base::defer_set_output,

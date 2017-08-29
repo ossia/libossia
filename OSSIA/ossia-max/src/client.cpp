@@ -36,7 +36,7 @@ extern "C" void ossia_client_setup()
       ossia_library.ossia_client_class, (method)t_client::loadbang, "loadbang",
       A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_client_class, (method)t_object_base::relative_namespace,
+      ossia_library.ossia_client_class, (method)t_object_base::getnamespace,
               "namespace", A_NOTHING, 0);
   class_addmethod(
       ossia_library.ossia_client_class, (method)ossia_client_connect,
@@ -63,7 +63,7 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
     x->m_device = 0;
     x->m_node = 0;
 
-    x->m_otype = Type::client;
+    x->m_otype = object_class::client;
 
     if (ossia::max::find_peer(x))
     {
@@ -248,12 +248,12 @@ void t_client::register_children(t_client* x)
 
   for (auto child : children_view)
   {
-    if (child->m_otype == Type::view)
+    if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
       view->register_node(x->m_node);
     }
-    else if (child->m_otype == Type::remote)
+    else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
       remote->register_node(x->m_node);
@@ -268,12 +268,12 @@ void t_client::unregister_children()
 
   for (auto child : children_model)
   {
-    if (child->m_otype == Type::model)
+    if (child->m_otype == object_class::model)
     {
       t_model* model = (t_model*)child;
       model->unregister();
     }
-    else if (child->m_otype == Type::param)
+    else if (child->m_otype == object_class::param)
     {
       t_parameter* parameter = (t_parameter*)child;
       parameter->unregister();
@@ -285,12 +285,12 @@ void t_client::unregister_children()
 
   for (auto child : children_view)
   {
-    if (child->m_otype == Type::view)
+    if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
       view->unregister();
     }
-    else if (child->m_otype == Type::remote)
+    else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
       remote->unregister();

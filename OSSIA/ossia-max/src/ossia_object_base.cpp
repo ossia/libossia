@@ -2,77 +2,243 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_object_base.hpp"
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/preset/preset.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <regex>
 
 namespace ossia
 {
 namespace max
 {
 
-void t_object_base::apply_value_visitor(const ossia::value& v)
+#pragma mark t_matcher
+
+t_matcher::t_matcher(t_matcher&& other)
 {
-  auto local_param = m_node->get_parameter();
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+
+  if(node)
+  {
+    if(auto param = node->get_parameter())
+    {
+      if (callbackit)
+        param->remove_callback(*callbackit);
+
+      callbackit = param->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+
+      set_parent_addr();
+    }
+  }
+}
+
+t_matcher& t_matcher::operator=(t_matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  parent = other.parent;
+  other.parent = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = ossia::none;
+
+  if(node)
+  {
+    if(auto param = node->get_parameter())
+    {
+      if (callbackit)
+        param->remove_callback(*callbackit);
+
+      callbackit = param->add_callback(
+        [=] (const ossia::value& v) { set_value(v); });
+
+      set_parent_addr();
+    }
+  }
+
+  return *this;
+}
+
+t_matcher::t_matcher(ossia::net::node_base* n, t_object_base* p) :
+  node{n}, parent{p}, callbackit{ossia::none}
+{
+  callbackit = node->get_parameter()->add_callback(
+      [=](const ossia::value& v) { set_value(v); });
+
+  node->about_to_be_deleted.connect<t_object_base, &t_object_base::is_deleted>(
+        parent);
+
+  set_parent_addr();
+
+  //clock_delay(x_regclock, 0);
+}
+
+t_matcher::~t_matcher()
+{
+  if(node)
+  {
+    if (parent->m_otype == object_class::param)
+    {
+      if (!parent->m_is_deleted)
+      {
+        if (node->get_parent())
+          node->get_parent()->remove_child(*node);
+      }
+      // if there vector is empty
+      // remote should be quarantinized
+      if (parent->m_matchers.size() == 0)
+      {
+        object_quarantining<t_parameter>((t_parameter*) parent);
+      }
+    } else {
+      auto param = node->get_parameter();
+      if (param && callbackit) param->remove_callback(*callbackit);
+      node->about_to_be_deleted.disconnect<t_object_base, &t_object_base::is_deleted>(parent);
+
+      // if there vector is empty
+      // remote should be quarantinized
+      if (parent->m_matchers.size() == 0)
+      {
+        object_quarantining<t_remote>((t_remote*) parent);
+      }
+    }
+  }
+  node = nullptr;
+}
+
+void t_matcher::set_value(const ossia::value& v)
+{
+  outlet_anything(parent->m_dump_out,gensym("address"),1,&m_addr);
+
+  auto param = node->get_parameter();
+
+  ossia::value vv;
+  if ( parent->m_ounit != ossia::none )
+    vv = ossia::convert(v, param->get_unit(), *parent->m_ounit);
+  else
+    vv = v;
+
   auto filtered = ossia::net::filter_value(
-        local_param->get_domain(),
-        v,
-        local_param->get_bounding());
+        param->get_domain(),
+        vv,
+        param->get_bounding());
   value_visitor<t_object_base> vm;
-  vm.x = this;
+  vm.x = (t_object_base*)parent;
   filtered.apply(vm);
 }
 
-void t_object_base::push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
+void t_matcher::set_parent_addr()
 {
-  if (x->m_node && x->m_node->get_parameter())
-  {
-    if (argc == 1)
+  if (parent->m_parent_node){
+    std::string addr = ossia::net::address_string_from_node(*node);
+    std::string parent_addr = ossia::net::address_string_from_node(*parent->m_parent_node);
+    if ( parent_addr.back() != '/' ) parent_addr += "/";
+
+    std::regex addr_regex(parent_addr);
+    std::smatch addr_match;
+
+    if (std::regex_search(addr, addr_match, addr_regex))
     {
-      // convert one element array to single element
-      if (argv->a_type == A_SYM)
-        x->m_node->get_parameter()->push_value(
-            std::string(atom_getsym(argv)->s_name));
-
-      else if (argv->a_type == A_LONG)
-        x->m_node->get_parameter()->push_value((int32_t)atom_getlong(argv));
-
-      else if (argv->a_type == A_FLOAT)
-        x->m_node->get_parameter()->push_value(atom_getfloat(argv));
+      A_SETSYM(&m_addr, gensym(addr_match.suffix().str().c_str()));
+    } else {
+      A_SETSYM(&m_addr, gensym(node->get_name().c_str()));
     }
-    else
+  }
+  else
+  {
+    A_SETSYM(&m_addr, gensym("."));
+  }
+}
+
+void t_object_base::is_deleted(const ossia::net::node_base& n)
+{
+  if (!m_dead)
+  {
+    m_is_deleted= true;
+    ossia::remove_one_if(
+      m_matchers,
+      [&] (const auto& m) {
+        return m.get_node() == &n;
+    });
+    m_is_deleted = false;
+  }
+}
+
+void t_object_base::push(t_object_base* x, t_symbol*s, int argc, t_atom* argv)
+{
+  for (auto& m : x->m_matchers)
+  {
+    x->m_node = m.get_node();
+    auto parent = m.get_parent();
+    auto param = x->m_node->get_parameter();
+
+    if (x->m_node && param)
     {
-      std::vector<ossia::value> list;
-
-      for (; argc > 0; argc--, argv++)
+      if (argc == 1)
       {
-        if (argv->a_type == A_SYM)
-          list.push_back(std::string(atom_getsym(argv)->s_name));
-        else if (argv->a_type == A_LONG)
-          list.push_back((int32_t)atom_getlong(argv));
-        else if (argv->a_type == A_FLOAT)
-          list.push_back(atom_getfloat(argv));
-        else
-          object_error((t_object*)x, "value type not handled");
+        // convert one element array to single element
+        switch (argv->a_type )
+        {
+          case A_SYM:
+            x->m_node->get_parameter()->push_value(
+                  std::string(atom_getsym(argv)->s_name));
+            break;
+          case A_LONG:
+            x->m_node->get_parameter()->push_value((int32_t)atom_getlong(argv));
+            break;
+          case A_FLOAT:
+            x->m_node->get_parameter()->push_value(atom_getfloat(argv));
+            break;
+          default:
+            object_error((t_object*)x, "value type not handled");
+        }
       }
+      else
+      {
+        std::vector<ossia::value> list;
 
-      x->m_node->get_parameter()->push_value(list);
+        if (s && s != gensym("list") )
+          list.push_back(std::string(s->s_name));
+
+        for (; argc > 0; argc--, argv++)
+        {
+          switch(argv->a_type)
+          {
+            case A_SYM:
+              list.push_back(std::string(atom_getsym(argv)->s_name));
+              break;
+            case A_LONG:
+              list.push_back((int32_t)atom_getlong(argv));
+              break;
+            case A_FLOAT:
+              list.push_back(atom_getfloat(argv));
+              break;
+            default:
+              object_error((t_object*)x, "value type not handled");
+          }
+        }
+
+        x->m_node->get_parameter()->push_value(list);
+      }
     }
   }
 }
 
 void t_object_base::bang(t_object_base* x)
 {
-  if (x->m_node && x->m_node->get_parameter())
-    x->apply_value_visitor(x->m_node->get_parameter()->value());
+  for (auto& matcher : x->m_matchers)
+  {
+    matcher.set_value(matcher.get_node()->get_parameter()->value());
+  }
 }
-/*
-    void t_object_base :: tick(t_object_base* x)
-    {
-        if (x->m_last_opened_canvas)
-        {
-            glist_noselect(x->m_last_opened_canvas);
-            x->m_last_opened_canvas = nullptr;
-        }
-    }
-*/
 
 void t_object_base::defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_atom* argv){
   outlet_anything(x->m_set_out, s, argc, argv);
@@ -90,19 +256,35 @@ void list_all_child(const ossia::net::node_base& node, std::vector<std::string>&
   }
 }
 
-void t_object_base::relative_namespace(t_object_base* x)
+void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::node_base*>& list){
+  for (const auto& child : node.children_copy())
+  {
+    list.push_back(child);
+    list_all_child(*child,list);
+  }
+}
+
+void t_object_base::getnamespace(t_object_base* x)
 {
-  if (x->m_node == nullptr) return;
   t_symbol* prependsym = gensym("namespace");
-  std::vector<std::string> list;
+  std::vector<ossia::net::node_base*> list;
   list_all_child(*x->m_node, list);
   int pos = ossia::net::osc_parameter_string(*x->m_node).length();
-  for (auto& addr : list)
+  for (ossia::net::node_base* child : list)
   {
-    std::string s = addr.substr(pos);
-    t_atom a;
-    atom_setsym(&a,gensym(s.c_str()));
-    outlet_anything(x->m_dump_out, prependsym,1,&a);
+    if (child->get_parameter())
+    {
+      ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
+      ossia::value val = child->get_parameter()->fetch_value();
+
+      std::vector<t_atom> va;
+      value2atom vm{va};
+
+      name.apply(vm);
+      val.apply(vm);
+
+      outlet_anything(x->m_dump_out, prependsym, va.size(), va.data());
+    }
   }
 }
 

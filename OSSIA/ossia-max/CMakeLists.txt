@@ -56,6 +56,8 @@ set(PROJECT_SRCS
     )
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+# add_custom_target just to display sources files in qtcreator
+add_custom_target(source SOURCES ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 

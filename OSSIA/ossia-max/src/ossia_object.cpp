@@ -29,7 +29,7 @@ extern "C" void ossia_ossia_setup()
 
   class_addmethod(c, (method)ossia_device_expose, "expose", A_GIMME, 0);
   class_addmethod(c, (method)ossia_device_name, "name", A_GIMME, 0);
-  class_addmethod(c, (method)ossia::max::t_object_base::relative_namespace, "namespace", A_NOTHING, 0);
+  class_addmethod(c, (method)object_namespace, "namespace", A_NOTHING, 0);
 
   class_register(CLASS_BOX, c);
 
