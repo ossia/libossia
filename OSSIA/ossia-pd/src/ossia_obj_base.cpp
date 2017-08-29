@@ -118,7 +118,7 @@ t_matcher::~t_matcher()
       if (!parent->m_is_deleted)
       {
         if (node->get_parent())
-          node->get_parent()->remove_child(*node);
+          node->get_parent()->remove_child(*node); // FIXME this crashes sometimes on quit (when ~ossia_pd() is called)
       }
       // if there vector is empty
       // remote should be quarantinized
@@ -144,7 +144,7 @@ t_matcher::~t_matcher()
 
 void t_matcher::set_value(const ossia::value& v)
 {
-  outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+  outlet_anything(parent->m_dumpout, ossia_pd::instance().sym_addr, 1, &m_addr);
 
   auto param = node->get_parameter();
 
