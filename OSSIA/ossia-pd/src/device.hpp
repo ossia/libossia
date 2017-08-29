@@ -63,6 +63,8 @@ struct t_device : t_object_base
   void on_parameter_created_callback(const ossia::net::parameter_base& param);
   void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
 
+  std::vector<std::vector<t_atom>> m_protocols;
+
 };
 
 void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv);

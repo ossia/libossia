@@ -203,6 +203,13 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
         multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
+        std::vector<t_atom> a;
+        a.resize(4);
+        SETSYMBOL(&a[0], gensym("Minuit"));
+        SETSYMBOL(&a[1], gensym(settings.remoteip.c_str()));
+        SETFLOAT(&a[2], settings.remoteport);
+        SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -233,6 +240,13 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
         oscq_proto->set_echo(true);
 
         multiplex.expose_to(std::move(oscq_proto));
+
+        std::vector<t_atom> a;
+        a.resize(3);
+        SETSYMBOL(&a[0], gensym("oscquery"));
+        SETFLOAT(&a[1], settings.oscport);
+        SETFLOAT(&a[2], settings.wsport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -262,6 +276,13 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
       {
         multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport));
+        std::vector<t_atom> a;
+        a.resize(4);
+        SETSYMBOL(&a[0], gensym("osc"));
+        SETSYMBOL(&a[1], gensym(settings.remoteip.c_str()));
+        SETFLOAT(&a[2], settings.remoteport);
+        SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -306,6 +327,15 @@ void device_getprotocols(t_device* x)
   t_atom a;
   SETFLOAT(&a,protos.size());
   outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
+
+  for (auto& v : x->m_protocols)
+  {
+    t_atom ar[4];
+    for (int i = 0 ; i<v.size() ; i++)
+      ar[i] = v[i];
+
+    outlet_anything(x->m_dumpout, gensym("protocol"), v.size(), ar);
+  }
 
 }
 
