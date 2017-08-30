@@ -70,7 +70,10 @@ bool t_model::do_registration(std::vector<ossia::net::node_base*> nodes)
 
     m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
-      n->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
+    {
+      t_matcher m{n,this};
+      m_matchers.push_back(std::move(m));
+    }
 
     set_priority();
     set_description();
