@@ -208,7 +208,7 @@ void t_object_base::is_deleted(const ossia::net::node_base& n)
  * @param argc : number of value in the list
  * @param argv :  list of t_atom value(s)
  */
-void t_object_base::obj_push(t_object_base* x, t_symbol*, int argc, t_atom* argv)
+void t_object_base::obj_push(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   for (auto& m : x->m_matchers)
   {
@@ -243,6 +243,10 @@ void t_object_base::obj_push(t_object_base* x, t_symbol*, int argc, t_atom* argv
       else
       {
         std::vector<ossia::value> list;
+
+        if ( s && s != gensym("list") )
+          list.push_back(std::string(s->s_name));
+
         for (; argc > 0; argc--, argv++)
         {
           if (argv->a_type == A_SYMBOL)

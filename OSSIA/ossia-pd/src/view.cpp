@@ -162,18 +162,7 @@ static void view_click(
     int l;
     t_device* device
         = (t_device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
-    /*
-    if (!device || !x->x_node || obj_isQuarantined<t_remote>(x)){
-      pd_error(x, "sorry no device found, or not connected or quarantined...");
-      return;
-    }
-    */
 
-    /*
-    t_canvas* root = x->x_obj.o_canvas;
-    while (root->gl_owner)
-      root = root->gl_owner;
-    */
     if (!find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
