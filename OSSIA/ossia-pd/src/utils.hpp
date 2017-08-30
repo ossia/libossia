@@ -224,6 +224,12 @@ void register_quarantinized();
 t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
 
 /**
+ * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
+ * @return the processed string
+ */
+std::string replace_brackets(std::string);
+
+/**
  * @brief find_parent_alive
  * @details Find a parent that is not being removed soon
  * @param x
@@ -244,6 +250,8 @@ static t_object_base* find_parent_alive(
   }
   return obj;
 }
+
+#pragma mark template
 
 /**
  * @brief get_absolute_path

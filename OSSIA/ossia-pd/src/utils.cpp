@@ -468,5 +468,11 @@ t_symbol* val_type2symbol(ossia::val_type type)
   }
 }
 
+std::string replace_brackets(std::string str){
+  std::replace(str.begin(), str.end(), '<', '{');
+  std::replace(str.begin(), str.end(), '>', '}');
+  return str;
+}
+
 }
 }
