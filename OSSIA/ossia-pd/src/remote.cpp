@@ -16,7 +16,7 @@ namespace pd
 
 static void remote_free(t_remote* x);
 
-bool t_remote::register_node(ossia::net::node_base* node)
+bool t_remote::register_node(std::vector<ossia::net::node_base*> node)
 {
   bool res = do_registration(node);
   if (res)
@@ -26,8 +26,9 @@ bool t_remote::register_node(ossia::net::node_base* node)
   else
     obj_quarantining<t_remote>(this);
 
-  if (node && m_is_pattern){
-    auto& dev = node->get_device();
+  if (!node.empty() && m_is_pattern){
+    // assume all nodes refer to the same device
+    auto& dev = node[0]->get_device();
     if (&dev != m_dev)
     {
       if (m_dev) m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
@@ -39,14 +40,15 @@ bool t_remote::register_node(ossia::net::node_base* node)
   return res;
 }
 
-bool t_remote::do_registration(ossia::net::node_base* node)
+bool t_remote::do_registration(std::vector<ossia::net::node_base*> _nodes)
 {
 
   unregister();
 
-  if (node)
+  std::string name = m_name->s_name;
+
+  for (auto node : _nodes)
   {
-    std::string name = m_name->s_name;
 
     if (m_addr_scope == address_scope::absolute)
     {
@@ -69,6 +71,7 @@ bool t_remote::do_registration(ossia::net::node_base* node)
       if (n->get_parameter()){
         t_matcher matcher{n,this};
         m_matchers.push_back(std::move(matcher));
+        m_nodes.push_back(n);
       } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
@@ -78,13 +81,11 @@ bool t_remote::do_registration(ossia::net::node_base* node)
         if (node){
           t_matcher matcher{node,this};
           m_matchers.push_back(std::move(matcher));
+          m_nodes.push_back(n);
         }
       }
     }
     clock_delay(m_regclock, 0);
-
-  } else {
-    return false;
   }
 
   // do not put it in quarantine if it's a pattern
@@ -96,10 +97,10 @@ bool t_remote::unregister()
 {
   clock_unset(m_regclock);
   m_matchers.clear();
+  m_nodes.clear();
 
   obj_quarantining<t_remote>(this);
 
-  m_node = nullptr;
   m_parent_node = nullptr;
   return true;
 }
@@ -114,6 +115,7 @@ void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& p
   if ( path && ossia::traversal::match(*path, node) )
   {
     m_matchers.emplace_back(&node,this);
+    m_nodes.push_back(&node);
   }
 }
 
@@ -257,7 +259,6 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->m_regclock = clock_new(x, (t_method)t_object_base::obj_bang);
 
     x->m_parent_node = nullptr;
-    x->m_node = nullptr;
 
     ebox_attrprocess_viabinbuf(x, d);
 

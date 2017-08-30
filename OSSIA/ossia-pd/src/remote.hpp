@@ -11,8 +11,8 @@ namespace pd
 struct t_remote : t_object_base
 {
   using is_view = std::true_type;
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(std::vector<ossia::net::node_base*> node);
+  bool do_registration(std::vector<ossia::net::node_base*> node);
   bool unregister();
 
   ossia::net::device_base* m_dev{};

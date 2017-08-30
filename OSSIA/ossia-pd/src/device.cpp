@@ -60,7 +60,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
     x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
 
-    x->m_node = &x->m_device->get_root_node();
+    x->m_nodes = {&x->m_device->get_root_node()};
     x->m_parent_node = nullptr;
     x->m_regclock = clock_new(x, (t_method)t_device::register_children);
     clock_delay(x->m_regclock, 0);
@@ -89,12 +89,12 @@ void t_device::register_children(t_device* x)
     if (v->m_otype == object_class::model)
     {
       t_model* model = (t_model*)v;
-      model->register_node(x->m_node);
+      model->register_node(x->m_nodes);
     }
     else if (v->m_otype == object_class::param)
     {
       t_param* param = (t_param*)v;
-      param->register_node(x->m_node);
+      param->register_node(x->m_nodes);
     }
   }
 
@@ -105,12 +105,12 @@ void t_device::register_children(t_device* x)
     if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
-      view->register_node(x->m_node);
+      view->register_node(x->m_nodes);
     }
     else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
-      remote->register_node(x->m_node);
+      remote->register_node(x->m_nodes);
     }
   }
 

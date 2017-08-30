@@ -18,7 +18,7 @@ namespace pd
 
 static void parameter_free(t_param* x);
 
-bool t_param::register_node(ossia::net::node_base* node)
+bool t_param::register_node(std::vector<ossia::net::node_base*> node)
 {
   bool res = do_registration(node);
   if (res)
@@ -35,14 +35,14 @@ bool t_param::register_node(ossia::net::node_base* node)
   return res;
 }
 
-bool t_param::do_registration(ossia::net::node_base* node)
+bool t_param::do_registration(std::vector<ossia::net::node_base*> _nodes)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
-  if (!node)
-    return false;
 
+  for (auto node : _nodes)
+  {
   m_parent_node = node;
 
   auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
@@ -77,6 +77,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
 
     t_matcher matcher{n,this};
     m_matchers.push_back(std::move(matcher));
+    m_nodes.push_back(n);
   }
 
   set_description();
@@ -87,6 +88,7 @@ bool t_param::do_registration(ossia::net::node_base* node)
   set_range();
   set_minmax();
   set_default();
+  }
 
   clock_delay(m_clock, 0);
 
@@ -98,8 +100,7 @@ bool t_param::unregister()
   clock_unset(m_clock);
 
   m_matchers.clear();
-
-  m_node = nullptr;
+  m_nodes.clear();
 
   for (auto remote : t_remote::quarantine().copy())
   {
@@ -119,8 +120,8 @@ ossia::safe_vector<t_param*>& t_param::quarantine()
 
 void t_param::is_deleted(const net::node_base& n)
 {
-  m_node->about_to_be_deleted.disconnect<t_param, &t_param::is_deleted>(this);
-  m_node = nullptr;
+  m_matchers.clear();
+  m_nodes.clear();
   obj_quarantining<t_param>(this);
 }
 
@@ -146,7 +147,6 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->m_setout = nullptr;
     x->m_dataout = outlet_new((t_object*)x, nullptr);
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_node = nullptr;
     x->m_parent_node = nullptr;
 
     x->m_access_mode = gensym("rw");

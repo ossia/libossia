@@ -15,7 +15,7 @@ namespace pd
 
 static void model_free(t_model* x);
 
-bool t_model::register_node(ossia::net::node_base* node)
+bool t_model::register_node(std::vector<ossia::net::node_base*> node)
 {
   bool res = do_registration(node);
   if (res)
@@ -28,47 +28,53 @@ bool t_model::register_node(ossia::net::node_base* node)
   return res;
 }
 
-bool t_model::do_registration(ossia::net::node_base* node)
+bool t_model::do_registration(std::vector<ossia::net::node_base*> nodes)
 {
-
-  if (m_node && m_node->get_parent() == node)
-    return true; // already register to this node;
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the parameter
-  if (!node)
-    return false;
 
   std::string name(m_name->s_name);
 
-  m_parent_node = node;
+  for (auto node : nodes)
+  {
+    m_parent_node = node;
 
-  if (node->find_child(name))
-  { // we have to check if a node with the same name already exists to avoid
-    // auto-incrementing name
-    std::vector<t_object_base*> obj
-        = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
-    for (auto v : obj)
+    if (node->find_child(name))
     {
-      if (v->m_otype == object_class::param)
+      // TODO : check if node has a parameter
+      // in that case it is an ø.param, with no doubts
+      // then remove it (and associated ø.param
+      // and ø.remote will be unregistered automatically)
+
+      // we have to check if a node with the same name already exists to avoid
+      // auto-incrementing name
+      std::vector<t_obj_base*> obj
+          = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+      for (auto v : obj)
       {
-        t_param* param = (t_param*)v;
-        if (std::string(param->m_name->s_name) == name)
+        if (v->m_otype == Type::param)
         {
-          param->unregister(); // if we already have a t_param node of that
-                               // name, unregister it
-          // we will register it again after node creation
-          continue;
+          t_param* param = (t_param*)v;
+          if (std::string(param->m_name->s_name) == name)
+          {
+            // if we already have a t_param node of that
+            // name, unregister it
+            // we will register it again after node creation
+            param->unregister();
+            continue;
+          }
         }
       }
     }
+
+    m_nodes = ossia::net::create_nodes(*node, name);
+    for (auto n : m_nodes)
+      n->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
+
+    set_priority();
+    set_description();
+    set_tags();
   }
-
-  m_node = &ossia::net::create_node(*node, name);
-  m_node->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
-
-  set_priority();
-  set_description();
-  set_tags();
 
   return true;
 }
@@ -88,17 +94,17 @@ void t_model::register_children()
         // not registering itself
         continue;
       }
-      model->register_node(m_node);
+      model->register_node(m_nodes);
     }
     else if (v->m_otype == object_class::param)
     {
       t_param* param = (t_param*)v;
-      param->register_node(m_node);
+      param->register_node(m_nodes);
     }
     else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
-      remote->register_node(m_node);
+      remote->register_node(m_nodes);
     }
   }
 
@@ -118,23 +124,25 @@ bool t_model::unregister()
 {
 
   clock_unset(m_regclock);
-  if (!m_node)
-    return true; // not registered
 
-  m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
-
-  if (m_node && m_node->get_parent())
+  for (auto n : m_nodes)
   {
-    m_node->get_parent()->remove_child(*m_node); // this calls isDeleted() on
-                                                 // each registered child and
-                                                 // put them into quarantine
+    n->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
+
+    if (n->get_parent())
+    {
+      // this calls isDeleted() on
+      // each registered child and
+      // put them into quarantine
+      n->get_parent()->remove_child(*n);
+    }
   }
 
   // we can't register children to parent node
   // because it might be deleted soon
   // (when removing root device for example)
 
-  m_node = nullptr;
+  m_nodes.clear();
 
   obj_quarantining<t_model>(this);
 
@@ -146,7 +154,8 @@ bool t_model::unregister()
 void t_model::set_priority()
 {
   // TODO why this doesn't work
-  if (m_node) ossia::net::set_priority(*m_node, m_priority);
+  for (auto n : m_nodes)
+    ossia::net::set_priority(*n, m_priority);
 }
 
 void t_model::set_description()
@@ -169,7 +178,8 @@ void t_model::set_description()
     }
   }
 
-  if(m_node) ossia::net::set_description(*m_node, description.str());
+  for (auto n : m_nodes)
+    ossia::net::set_description(*n, description.str());
 }
 
 void t_model::set_tags()
@@ -194,7 +204,8 @@ void t_model::set_tags()
     }
   }
 
-  if (m_node) ossia::net::set_tags(*m_node, tags);
+  for (auto n : m_nodes)
+    ossia::net::set_tags(*n, tags);
 }
 
 
@@ -241,8 +252,10 @@ void t_model::is_deleted(const net::node_base& n)
 {
   if (!m_dead)
   {
-    m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
-    m_node = nullptr;
+    for (auto n : m_nodes)
+      n->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
+
+    m_nodes.clear();
     obj_quarantining<t_model>(this);
   }
 }
@@ -274,7 +287,6 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
         pd_error(x, "You have to pass a name as the first argument");
       }
 
-      x->m_node = nullptr;
       x->m_parent_node = nullptr;
 
       ebox_attrprocess_viabinbuf(x, d);

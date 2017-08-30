@@ -101,7 +101,7 @@ struct t_object_base
   ossia::optional<ossia::unit_t> m_ounit;
 
   ossia::net::generic_device* m_device{};
-  ossia::net::node_base* m_node{};
+  std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
 

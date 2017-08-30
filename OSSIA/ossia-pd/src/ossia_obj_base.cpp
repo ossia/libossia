@@ -98,7 +98,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, t_object_base* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  callbackit = node->get_parameter()->add_callback(
+  if (node->get_parameter())
+    callbackit = node->get_parameter()->add_callback(
       [=](const ossia::value& v) { set_value(v); });
 
   node->about_to_be_deleted.connect<t_object_base, &t_object_base::is_deleted>(
@@ -210,13 +211,15 @@ void t_object_base::is_deleted(const ossia::net::node_base& n)
  */
 void t_object_base::obj_push(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
 {
+  ossia::net::node_base* node;
+
   for (auto& m : x->m_matchers)
   {
-    x->m_node = m.get_node();
+    node = m.get_node();
     auto parent = m.get_parent();
-    auto param = x->m_node->get_parameter();
+    auto param = node->get_parameter();
 
-    if (x->m_node && param)
+    if (node && param)
     {
       if (argc == 1)
       {
@@ -238,7 +241,7 @@ void t_object_base::obj_push(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
         } else
           vv = v;
 
-        x->m_node->get_parameter()->push_value(vv);
+        node->get_parameter()->push_value(vv);
       }
       else
       {
@@ -261,11 +264,10 @@ void t_object_base::obj_push(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
 
         ossia::convert(list, src_unit, dst_unit);
 
-        x->m_node->get_parameter()->push_value(list);
+        node->get_parameter()->push_value(list);
       }
     }
   }
-  x->m_node = nullptr;
 }
 
 /**
@@ -297,22 +299,25 @@ void obj_namespace(t_object_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
-  list_all_child(*x->m_node, list);
-  int pos = ossia::net::osc_parameter_string(*x->m_node).length();
-  for (ossia::net::node_base* child : list)
+  for (auto n : x->m_nodes)
   {
-    if (child->get_parameter())
+    list_all_child(*n, list);
+    int pos = ossia::net::osc_parameter_string(*n).length();
+    for (ossia::net::node_base* child : list)
     {
-      ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-      ossia::value val = child->get_parameter()->fetch_value();
+      if (child->get_parameter())
+      {
+        ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
+        ossia::value val = child->get_parameter()->fetch_value();
 
-      std::vector<t_atom> va;
-      value2atom vm{va};
+        std::vector<t_atom> va;
+        value2atom vm{va};
 
-      name.apply(vm);
-      val.apply(vm);
+        name.apply(vm);
+        val.apply(vm);
 
-      outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
+        outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
+      }
     }
   }
 }
@@ -324,20 +329,18 @@ void obj_set(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
     std::string addr = argv[0].a_w.w_symbol->s_name;
     argv++;
     argc--;
-    if (x->m_node)
+    for (auto n : x->m_nodes)
     {
-      auto tmp = x->m_node;
-      auto nodes = ossia::net::find_nodes(*x->m_node, addr);
-      for (auto n : nodes)
+      auto nodes = ossia::net::find_nodes(*n, addr);
+      for (auto& no : nodes)
       {
-        if (n->get_parameter()){
-          t_matcher matcher{n,x};
+        if (no->get_parameter()){
+          t_matcher matcher{no,x};
           x->m_matchers.push_back(std::move(matcher));
         }
       }
-      t_object_base::obj_push(x,gensym(""),argc, argv);
+      t_object_base::obj_push(x,nullptr, argc, argv);
       x->m_matchers.clear();
-      x->m_node = tmp;
     }
   }
 }
@@ -355,12 +358,15 @@ void obj_get_address(t_object_base *x)
       outlet_anything(x->m_dumpout, sym_address, 1, &a);
     }
   }
-  else if (x->m_node)
+  else if (!x->m_nodes.empty())
   {
-    std::string addr = ossia::net::address_string_from_node(*x->m_node);
-    t_atom a;
-    SETSYMBOL(&a, gensym(addr.c_str()));
-    outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
+    for (auto n : x->m_nodes)
+    {
+      std::string addr = ossia::net::address_string_from_node(*n);
+      t_atom a;
+      SETSYMBOL(&a, gensym(addr.c_str()));
+      outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
+    }
   }
   else
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
@@ -448,7 +454,8 @@ void obj_preset(t_object_base *x, t_symbol*s, int argc, t_atom* argv)
       break;
     case object_class::model:
     case object_class::view:
-      node = x->m_node;
+      // TODO oups how to get that ?
+      node = x->m_nodes[0];
       break;
     default:
       node = nullptr;

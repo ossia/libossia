@@ -13,9 +13,8 @@ namespace pd
 struct t_param : t_object_base
 {
   using is_model = std::true_type;
-
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(std::vector<ossia::net::node_base*> node);
+  bool do_registration(std::vector<ossia::net::node_base*> node);
   bool unregister();
   void is_deleted(const ossia::net::node_base& n);
 

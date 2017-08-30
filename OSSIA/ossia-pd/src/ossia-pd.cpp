@@ -40,7 +40,7 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
   x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
 
-  x->m_node = &x->m_device->get_root_node();
+  x->m_nodes = {&x->m_device->get_root_node()};
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
       x->m_name = argv[0].a_w.w_symbol;
@@ -96,14 +96,20 @@ ossia_pd::ossia_pd():
 
 ossia_pd::~ossia_pd()
 {
+  for (auto x : devices.copy()){
+    if (x->m_device){
+      x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
+      x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+    }
+  }
   for (auto x : views.copy()){
-    if (x->m_node) x->m_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+    x->m_matchers.clear();
   }
   for (auto x : remotes.copy()){
     x->m_matchers.clear();
   }
   for (auto x : models.copy()){
-    if (x->m_node) x->m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+    x->m_matchers.clear();
   }
   for (auto x : params.copy()){
     x->m_matchers.clear();

@@ -48,7 +48,6 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_name = gensym("Pd");
     x->m_device = nullptr;
-    x->m_node = nullptr;
     x->m_parent_node = nullptr;
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->m_async_thread = nullptr;
@@ -92,12 +91,12 @@ void t_client::register_children(t_client* x)
     if (v->m_otype == object_class::view)
     {
       t_view* view = (t_view*)v;
-      view->register_node(x->m_node);
+      view->register_node(x->m_nodes);
     }
     else if (v->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)v;
-      remote->register_node(x->m_node);
+      remote->register_node(x->m_nodes);
     }
   }
 }
@@ -149,7 +148,7 @@ static void client_update(t_client* x)
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_node = &x->m_device->get_root_node();
+    x->m_nodes = {&x->m_device->get_root_node()};
 
     t_client::register_children(x);
   }

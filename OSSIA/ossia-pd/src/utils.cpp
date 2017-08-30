@@ -103,7 +103,7 @@ t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, in
 }
 
 
-ossia::net::node_base* find_parent_node(t_object_base* x){
+std::vector<ossia::net::node_base*> find_parent_node(t_obj_base* x){
   int l;
   t_device* device = (t_device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
   t_client* client = (t_client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
@@ -134,30 +134,28 @@ ossia::net::node_base* find_parent_node(t_object_base* x){
     }
   }
 
-  ossia::net::node_base* node = nullptr;
-
   if (view)
   {
-    node = view->m_node;
+    return view->m_nodes;
   }
   else if (model)
   {
-    node = model->m_node;
+    return model->m_nodes;
   }
   else if (client)
   {
-    node = client->m_node;
+    return client->m_nodes;
   }
   else if (device)
   {
-    node = device->m_node;
+    return device->m_nodes;
   }
   else
   {
-    node = &ossia_pd::get_default_device()->get_root_node();
+    return {&ossia_pd::get_default_device()->get_root_node()};
   }
 
-  return node;
+  return   std::vector<ossia::net::node_base*>{};
 }
 
 std::vector<t_object_base*> find_child_to_register(

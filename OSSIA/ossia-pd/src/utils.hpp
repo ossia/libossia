@@ -348,7 +348,7 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-ossia::net::node_base* find_parent_node(t_object_base* x);
+std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x);
 
 /**
  * @brief Find all objects [classname] in the current patcher starting at
@@ -449,16 +449,17 @@ void obj_dump(T* x)
 {
   t_atom a;
   std::string fullpath;
+  ossia::net::node_base* node{};
   if (x->m_otype == object_class::remote || x->m_otype == object_class::param)
   {
     t_object_base* remote = (t_object_base*) x;
     if (remote->m_matchers.size() == 1)
-      x->m_node = remote->m_matchers[0].get_node();
-    else x->m_node = nullptr;
+      node = remote->m_matchers[0].get_node();
   }
-  if (x->m_node)
+
+  if (node)
   {
-    fullpath = ossia::net::address_string_from_node(*x->m_node);
+    fullpath = ossia::net::address_string_from_node(*node);
     SETSYMBOL(&a, gensym(fullpath.c_str()));
     outlet_anything(x->m_dumpout, gensym("fullpath"), 1, &a);
   }
@@ -469,7 +470,7 @@ void obj_dump(T* x)
   SETSYMBOL(&a, gensym(fullpath.c_str()));
   outlet_anything(x->m_dumpout, gensym("pdpath"), 1, &a);
 
-  if (x->m_node)
+  if (node)
   {
     SETFLOAT(&a, 1.);
   }
@@ -482,9 +483,9 @@ void obj_dump(T* x)
   SETFLOAT(&a, obj_is_quarantined<T>(x));
   outlet_anything(x->m_dumpout, gensym("quarantined"), 1, &a);
 
-  if (x->m_node)
+  if (node)
   {
-    ossia::net::parameter_base* param = x->m_node->get_parameter();
+    ossia::net::parameter_base* param = node->get_parameter();
     if (param)
     {
       // type
@@ -564,7 +565,7 @@ void obj_dump(T* x)
     }
 
     // description
-    auto description = ossia::net::get_description(*(x->m_node));
+    auto description = ossia::net::get_description(*node);
     if (description)
     {
       SETSYMBOL(&a, gensym((*description).c_str()));
@@ -574,7 +575,7 @@ void obj_dump(T* x)
       outlet_anything(x->m_dumpout, gensym("description"), 0, nullptr);
 
     // tags
-    auto tags = ossia::net::get_tags(*x->m_node);
+    auto tags = ossia::net::get_tags(*node);
     if (tags)
     {
       std::size_t N = (*tags).size();
@@ -590,7 +591,7 @@ void obj_dump(T* x)
       outlet_anything(x->m_dumpout, gensym("tags"), 0, nullptr);
     }
 
-    auto priority = ossia::net::get_priority(*x->m_node);
+    auto priority = ossia::net::get_priority(*node);
     if (priority)
     {
       t_atom a;
