@@ -1,6 +1,5 @@
 #pragma once
-#include <ossia/ossia.hpp>
-#include <ossia/network/common/websocket_log_sink.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/detail/safe_vec.hpp>
 
 #include "parameter.hpp"
@@ -16,6 +15,7 @@ extern "C" {
 
 namespace ossia
 {
+struct websocket_threaded_connection;
 namespace pd
 {
 

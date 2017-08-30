@@ -8,6 +8,7 @@
 #include "utils.hpp"
 
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
 namespace ossia

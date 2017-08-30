@@ -10,7 +10,7 @@
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <limits>
-
+#include <sstream>
 namespace ossia
 {
 namespace pd

@@ -7,6 +7,7 @@
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
 #include <ossia-pd/src/ossia_obj_base.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <fmt/format.h>

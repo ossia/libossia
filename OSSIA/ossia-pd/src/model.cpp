@@ -6,6 +6,7 @@
 #include "remote.hpp"
 #include "utils.hpp"
 #include "view.hpp"
+#include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
 namespace ossia

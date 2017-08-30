@@ -1,7 +1,9 @@
 #pragma once
 #include <ossia/detail/safe_vec.hpp>
-#include <ossia/ossia.hpp>
-
+#include <ossia/detail/optional.hpp>
+#include <ossia/network/base/value_callback.hpp>
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
 extern "C" {
 #include <cicm_wrapper.h>
 }
@@ -10,6 +12,12 @@ extern "C" {
 
 namespace ossia
 {
+namespace net {
+class node_base;
+class parameter_base;
+class device_base;
+class generic_device;
+}
 namespace pd
 {
 

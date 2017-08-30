@@ -1,6 +1,6 @@
 #pragma once
 #include "ossia_obj_base.hpp"
-
+#include <ossia/network/local/local.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
 namespace ossia

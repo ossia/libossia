@@ -9,12 +9,13 @@
 
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include <functional>
 #include <iostream>
 #include <memory>
-
+#include <sstream>
 namespace ossia
 {
 namespace pd

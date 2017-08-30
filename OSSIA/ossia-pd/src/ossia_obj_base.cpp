@@ -3,6 +3,7 @@
 #include "ossia_obj_base.hpp"
 #include "utils.hpp"
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <regex>
 
 #include <ossia/preset/preset.hpp>
@@ -98,8 +99,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, t_object_base* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  if (node->get_parameter())
-    callbackit = node->get_parameter()->add_callback(
+  if (auto param = node->get_parameter())
+    callbackit = param->add_callback(
       [=](const ossia::value& v) { set_value(v); });
 
   node->about_to_be_deleted.connect<t_object_base, &t_object_base::is_deleted>(
