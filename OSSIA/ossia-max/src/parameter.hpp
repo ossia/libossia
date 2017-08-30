@@ -89,4 +89,6 @@ void ossia_parameter_in_symbol(ossia::max::t_parameter*, t_symbol*);
 void ossia_parameter_in_char(ossia::max::t_parameter*, char);
 void ossia_parameter_in_anything(
     ossia::max::t_parameter*, t_symbol*, long, t_atom*);
+t_max_err ossia_parameter_notify(ossia::max::t_parameter *x,
+    t_symbol *s, t_symbol *msg, void *sender, void *data);
 }

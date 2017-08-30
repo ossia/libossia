@@ -45,6 +45,9 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       c, (method)object_dump<t_parameter>,
       "dump", A_NOTHING, 0);
+  class_addmethod(
+      c, (method)ossia_parameter_notify,
+      "notify", A_CANT, 0);
 
   CLASS_ATTR_SYM(
       c, "type", 0, t_parameter, m_type);
@@ -130,6 +133,7 @@ extern "C" void ossia_parameter_setup()
       c, "mute", 0, "onoff");
 
   class_register(CLASS_BOX, c);
+
   ossia_library.ossia_parameter_class = c;
 }
 
@@ -142,8 +146,12 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
   if (x)
   {
     // make outlets
-    x->m_dump_out
+    x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump parameter state
+
+    if ( auto err = object_obex_store((t_object*)x, _sym_dumpout, (t_object*)x->m_dumpout) != MAX_ERR_NONE )
+      error("can't store obex dumpout, error %d", err);
+
     x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
 
     x->m_node = nullptr;
@@ -187,6 +195,11 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
+    // Register object to istself so it can receive notification when attribute changed
+    // This is not documented anywhere, please look at :
+    // https://cycling74.com/forums/notify-when-attribute-changes
+    object_attach_byptr_register(x, x, CLASS_BOX);
+
     // start registration
     max_object_register<t_parameter>(x);
     ossia_max::instance().parameters.push_back(x);
@@ -204,7 +217,7 @@ extern "C" void ossia_parameter_free(t_parameter* x)
   ossia_max::instance().parameters.remove_all(x);
   object_free(x->m_clock);
   outlet_delete(x->m_data_out);
-  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_dumpout);
 }
 
 extern "C" void
@@ -212,11 +225,21 @@ ossia_parameter_assist(t_parameter* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "I am inlet %ld", a);
+    sprintf(s, "All purpose input");
   }
   else
   {
-    sprintf(s, "I am outlet %ld", a);
+    switch(a)
+    {
+      case 0:
+        sprintf(s, "Data output");
+        break;
+      case 1:
+        sprintf(s, "Dumpout");
+        break;
+      default:
+        ;
+    }
   }
 }
 
@@ -239,6 +262,49 @@ extern "C" void ossia_parameter_in_symbol(t_parameter* x, t_symbol* f)
   t_atom a;
   A_SETSYM(&a,f);
   t_object_base::push(x,nullptr,1,&a);
+}
+
+extern "C" t_max_err
+ossia_parameter_notify(t_parameter *x, t_symbol *s,
+                       t_symbol *msg, void *sender, void *data)
+{
+  t_symbol *attrname;
+
+  post("parameter notify call");
+
+  if (msg == gensym("attr_modified")) {
+    attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
+
+    if( attrname == gensym("range") )
+      x->set_range();
+    else if ( attrname == gensym("bounding_mode") )
+      x->set_bounding_mode();
+    else if ( attrname == gensym("min") || attrname == gensym("max") )
+      x->set_minmax();
+    else if ( attrname == gensym("default") )
+      x->set_default();
+    else if ( attrname == gensym("unit") )
+      x->set_unit();
+    else if ( attrname == gensym("hidden") )
+      x->set_hidden();
+    else if ( attrname == gensym("priority") )
+      x->set_priority();
+    else if ( attrname == gensym("access_mode") )
+      x->set_access_mode();
+    else if ( attrname == gensym("repetition_filter") )
+      x->set_repetition_filter();
+    else if ( attrname == gensym("tags") )
+      x->set_tags();
+    else if ( attrname == gensym("description") )
+      x->set_description();
+    else if ( attrname == gensym("enable") )
+      x->set_enable();
+    else if ( attrname == gensym("type") )
+      x->set_type();
+    else if ( attrname == gensym("mute") )
+      x->set_mute();
+
+  }
 }
 
 namespace ossia

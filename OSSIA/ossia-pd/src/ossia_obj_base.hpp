@@ -116,8 +116,8 @@ struct t_object_base
   void is_deleted(const ossia::net::node_base& n);
 
   // TODO why some methods are inside t_obj_base class and other are outside ?
-  static void obj_push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
-  static void obj_bang(t_object_base* x);
+  static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
+  static void bang(t_object_base* x);
 };
 
 /**

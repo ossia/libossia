@@ -8,7 +8,7 @@ extern "C" void* ossia_object_new(t_symbol* name, int argc, t_atom* argv)
   auto& ossia_library = ossia::max::ossia_max::instance();
   t_ossia* x = (t_ossia*) object_alloc(ossia_library.ossia_ossia_class);
 
-  x->m_dump_out
+  x->m_dumpout
       = outlet_new(x, NULL); // anything outlet to dump device state
   x->m_device = ossia_library.get_default_device();
   x->m_node = &ossia_library.get_default_device()->get_root_node();
@@ -18,7 +18,7 @@ extern "C" void* ossia_object_new(t_symbol* name, int argc, t_atom* argv)
 
 extern "C" void ossia_object_free(t_ossia *x)
 {
-  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_dumpout);
 }
 
 extern "C" void ossia_ossia_setup()

@@ -120,7 +120,7 @@ t_matcher::~t_matcher()
       if (!parent->m_is_deleted)
       {
         if (node->get_parent())
-          node->get_parent()->remove_child(*node); // FIXME this crashes sometimes on quit (when ~ossia_pd() is called)
+          node->get_parent()->remove_child(*node);
       }
       // if there vector is empty
       // remote should be quarantinized
@@ -146,7 +146,7 @@ t_matcher::~t_matcher()
 
 void t_matcher::set_value(const ossia::value& v)
 {
-  outlet_anything(parent->m_dumpout, ossia_pd::instance().sym_addr, 1, &m_addr);
+  outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
   auto param = node->get_parameter();
 
@@ -206,12 +206,12 @@ void t_object_base::is_deleted(const ossia::net::node_base& n)
 }
 
 /**
- * @brief t_obj_base::obj_push : push a value to a node
+ * @brief t_obj_base::push : push a value to a node
  * @param x : caller that holds the node to push to
  * @param argc : number of value in the list
  * @param argv :  list of t_atom value(s)
  */
-void t_object_base::obj_push(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
+void t_object_base::push(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node;
 
@@ -273,10 +273,10 @@ void t_object_base::obj_push(t_object_base* x, t_symbol* s, int argc, t_atom* ar
 }
 
 /**
- * @brief t_obj_base::obj_bang send out the current value of the parameter
+ * @brief t_obj_base::bang send out the current value of the parameter
  * @param x
  */
-void t_object_base::obj_bang(t_object_base* x)
+void t_object_base::bang(t_object_base* x)
 {
   for (auto& matcher : x->m_matchers)
   {
@@ -341,7 +341,7 @@ void obj_set(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
           x->m_matchers.push_back(std::move(matcher));
         }
       }
-      t_object_base::obj_push(x,nullptr, argc, argv);
+      t_object_base::push(x,nullptr, argc, argv);
       x->m_matchers.clear();
     }
   }

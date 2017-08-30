@@ -127,7 +127,7 @@ void t_param::is_deleted(const net::node_base& n)
 static void push_default_value(t_param* x)
 {
   if ( x->m_default_size > 0 )
-    t_object_base::obj_push(x, nullptr, x->m_default_size, x->m_default);
+    t_object_base::push(x, nullptr, x->m_default_size, x->m_default);
 }
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
@@ -719,10 +719,10 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) t_object_base::obj_push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method) t_object_base::obj_bang, "bang",     A_NULL,  0);
-    eclass_addmethod(c, (method) obj_dump<t_param>,    "dump",     A_NULL,  0);
-    eclass_addmethod(c, (method) parameter_notify,     "notify",   A_NULL,  0);
+    eclass_addmethod(c, (method) t_object_base::push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) t_object_base::bang, "bang",     A_NULL,  0);
+    eclass_addmethod(c, (method) obj_dump<t_param>,   "dump",     A_NULL,  0);
+    eclass_addmethod(c, (method) parameter_notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
     eclass_addmethod(c, (method) push_default_value,   "reset",    A_NULL,  0);
 

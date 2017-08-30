@@ -72,8 +72,11 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     // make outlets
-    x->m_dump_out
+    x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump remote state
+
+    object_obex_store(x, _sym_dumpout, (t_object*)x->m_dumpout);
+
     x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
     x->m_set_out
         = outlet_new(x, NULL); // anything outlet to output data for ui
@@ -132,7 +135,7 @@ extern "C" void ossia_remote_free(t_remote* x)
     x->m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
   }
 
-  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);  
   x->~t_remote();
@@ -361,11 +364,13 @@ bool t_remote::do_registration(ossia::net::node_base* node)
 
 bool t_remote::unregister()
 {
+  clock_unset(m_regclock);
   m_matchers.clear();
 
   object_quarantining<t_remote>(this);
 
   m_node = nullptr;
+  m_parent_node = nullptr;
   return true;
 }
 

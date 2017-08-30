@@ -116,7 +116,7 @@ t_matcher::~t_matcher()
 
 void t_matcher::set_value(const ossia::value& v)
 {
-  outlet_anything(parent->m_dump_out,gensym("address"),1,&m_addr);
+  outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
   auto param = node->get_parameter();
 
@@ -283,7 +283,7 @@ void t_object_base::getnamespace(t_object_base* x)
       name.apply(vm);
       val.apply(vm);
 
-      outlet_anything(x->m_dump_out, prependsym, va.size(), va.data());
+      outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
     }
   }
 }

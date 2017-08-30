@@ -176,7 +176,7 @@ set(API_HEADERS
 
 set(SRCS
     ${API_HEADERS}
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
@@ -209,7 +209,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
 

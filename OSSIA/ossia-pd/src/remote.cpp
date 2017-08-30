@@ -260,7 +260,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
 
     x->m_clock = nullptr;
-    x->m_regclock = clock_new(x, (t_method)t_object_base::obj_bang);
+    x->m_regclock = clock_new(x, (t_method)t_object_base::bang);
 
     x->m_parent_node = nullptr;
 
@@ -301,8 +301,8 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) t_object_base::obj_push,   "anything",    A_GIMME,  0);
-    eclass_addmethod(c, (method) t_object_base::obj_bang,   "bang",        A_NULL,   0);
+    eclass_addmethod(c, (method) t_object_base::push,   "anything",    A_GIMME,  0);
+    eclass_addmethod(c, (method) t_object_base::bang,   "bang",        A_NULL,   0);
     eclass_addmethod(c, (method) obj_dump<t_remote>,     "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,  0);

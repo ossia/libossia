@@ -57,7 +57,7 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     // make outlets
-    x->m_dump_out
+    x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump client state
 
     x->m_device = 0;
@@ -102,7 +102,7 @@ extern "C" void ossia_client_free(t_client* x)
   if (x->m_device)
     delete (x->m_device);
   x->m_device = nullptr;
-  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
   register_quarantinized();
 }
@@ -122,7 +122,7 @@ static void dump_child(t_client* x, const ossia::net::node_base& node)
 
     t_atom a;
     atom_setsym(&a, gensym(ss.str().c_str()));
-    outlet_anything(x->m_dump_out, gensym("child"), 1, &a);
+    outlet_anything(x->m_dumpout, gensym("child"), 1, &a);
     dump_child(x, *child);
   }
 }

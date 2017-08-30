@@ -276,7 +276,7 @@ void object_dump(T* x)
   {
     fullpath = ossia::net::address_string_from_node(*x->m_node);
     atom_setsym(&a, gensym(fullpath.c_str()));
-    outlet_anything(x->m_dump_out, gensym("fullpath"), 1, &a);
+    outlet_anything(x->m_dumpout, gensym("fullpath"), 1, &a);
   }
 
   fullpath = object_path_absolute(x);
@@ -285,17 +285,17 @@ void object_dump(T* x)
 
   fullpath += x->m_name->s_name;
   atom_setsym(&a, gensym(fullpath.c_str()));
-  outlet_anything(x->m_dump_out, gensym("maxpath"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("maxpath"), 1, &a);
 
   if (x->m_node)
     atom_setfloat(&a, 1.);
   else
     atom_setfloat(&a, 0.);
 
-  outlet_anything(x->m_dump_out, gensym("registered"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("registered"), 1, &a);
 
   atom_setfloat(&a, object_is_quarantined(x));
-  outlet_anything(x->m_dump_out, gensym("quarantined"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("quarantined"), 1, &a);
 
   if (x->m_node)
   {
@@ -341,12 +341,12 @@ void object_dump(T* x)
       }
 
       atom_setsym(&a, gensym(type.c_str()));
-      outlet_anything(x->m_dump_out, gensym("type"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
 
       // domain
       ossia::domain domain = address->get_domain();
       atom_setsym(&a, gensym(domain.to_pretty_string().c_str()));
-      outlet_anything(x->m_dump_out, gensym("domain"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("domain"), 1, &a);
 
       // bounding mode
       std::string bounding_mode;
@@ -375,7 +375,7 @@ void object_dump(T* x)
       }
 
       atom_setsym(&a, gensym(bounding_mode.c_str()));
-      outlet_anything(x->m_dump_out, gensym("bounding_mode"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
 
       // access mode
       std::string access_mode;
@@ -395,12 +395,12 @@ void object_dump(T* x)
       }
 
       atom_setsym(&a, gensym(access_mode.c_str()));
-      outlet_anything(x->m_dump_out, gensym("access_mode"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
 
       // repetition filter
       bool rep = address->get_repetition_filter();
       atom_setfloat(&a, rep);
-      outlet_anything(x->m_dump_out, gensym("repetition_filter"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
 
       // unit
       // TODO
@@ -412,10 +412,10 @@ void object_dump(T* x)
     if (description)
     {
       atom_setsym(&a, gensym((*description).c_str()));
-      outlet_anything(x->m_dump_out, gensym("description"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("description"), 1, &a);
     }
     else
-      outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
+      outlet_anything(x->m_dumpout, gensym("tags"), 0, nullptr);
 
     // tags
     auto tags = ossia::net::get_tags(*x->m_node);
@@ -427,10 +427,10 @@ void object_dump(T* x)
       {
         atom_setsym(&l[i], gensym((*tags)[i].c_str()));
       }
-      outlet_anything(x->m_dump_out, gensym("tags"), N, l.data());
+      outlet_anything(x->m_dumpout, gensym("tags"), N, l.data());
     }
     else
-      outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
+      outlet_anything(x->m_dumpout, gensym("tags"), 0, nullptr);
   }
 }
 

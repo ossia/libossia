@@ -50,7 +50,7 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     // make outlets
-    x->m_dump_out = outlet_new(x, NULL); // anything outlet to dump model state
+    x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump model state
 
     x->m_description = _sym_nothing;
     x->m_tags_size = 0;
@@ -110,7 +110,7 @@ extern "C" void ossia_model_free(t_model* x)
   object_dequarantining<t_model>(x);
   ossia_max::instance().models.remove_all(x);
   if(x->m_regclock) object_free(x->m_regclock);
-  if(x->m_dump_out) outlet_delete(x->m_dump_out);
+  if(x->m_dumpout) outlet_delete(x->m_dumpout);
 }
 
 extern "C" void

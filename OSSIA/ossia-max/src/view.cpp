@@ -46,7 +46,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     // make outlets
-    x->m_dump_out = outlet_new(x, NULL); // anything outlet to dump view state
+    x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump view state
 
     //        x->m_clock = clock_new(x, (method)t_object_base::tick);
     x->m_regclock = clock_new(
@@ -105,7 +105,7 @@ extern "C" void ossia_view_free(t_view* x)
   ossia_max::instance().views.remove_all(x);
   object_free(x->m_regclock);
   object_free(x->m_clock);
-  if(x->m_dump_out) outlet_delete(x->m_dump_out);
+  if(x->m_dumpout) outlet_delete(x->m_dumpout);
 }
 /*
 extern "C"

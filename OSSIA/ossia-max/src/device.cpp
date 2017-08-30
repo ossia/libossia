@@ -51,7 +51,7 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     // make outlets
-    x->m_dump_out
+    x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump device state
 
     // parse arguments
@@ -98,7 +98,7 @@ extern "C" void ossia_device_free(t_device* x)
   x->unregister_children();
   if (x->m_device)
     delete (x->m_device);
-  outlet_delete(x->m_dump_out);
+  outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
   register_quarantinized();
 
@@ -223,7 +223,7 @@ extern "C" void ossia_device_name(t_device *x, t_symbol* s, long argc, t_atom* a
   {
     t_atom a;
     atom_setsym(&a,gensym(x->m_device->get_name().c_str()));
-    outlet_anything(x->m_dump_out,gensym("name"),1,&a);
+    outlet_anything(x->m_dumpout,gensym("name"),1,&a);
   } else if ( argv[0].a_type == A_SYM ) {
     x->m_name = argv[0].a_w.w_sym;
     x->m_device->set_name(x->m_name->s_name);

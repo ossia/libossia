@@ -72,7 +72,7 @@ struct t_object_base
   void** m_inlets{};
   void* m_data_out{};
   void* m_set_out{};
-  void* m_dump_out{};
+  void* m_dumpout{};
 
   object_class m_otype{};
   t_symbol* m_name{};
