@@ -217,7 +217,8 @@ static void remote_click(
 
 static void remote_bind(t_remote* x, t_symbol* address)
 {
-  x->m_name = address;
+  std::string name = replace_brackets(address->s_name);
+  x->m_name = gensym(name.c_str());
   x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);
@@ -244,7 +245,9 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
-      x->m_name = atom_getsymbol(argv);
+      t_symbol* address = atom_getsymbol(argv);
+      std::string name = replace_brackets(address->s_name);
+      x->m_name = gensym(name.c_str());
       x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
     }
     else
