@@ -1,4 +1,4 @@
-#N canvas 16 171 1166 778 10;
+#N canvas 197 59 1166 778 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
 #X text 668 119 bool : bollean value \, 0 or 1;
@@ -116,7 +116,7 @@ bi @range 0 2;
 #N canvas 749 93 740 913 more_about_range_and_minmax 0;
 #X obj 93 234 list prepend set;
 #X obj 93 255 list trim;
-#X msg 93 276 20 20 20 20 20;
+#X msg 93 276 10 10 10 -10 2;
 #X floatatom 93 83 5 0 0 0 - - -, f 5;
 #X obj 126 558 list prepend set;
 #X obj 126 579 list trim;
@@ -146,7 +146,7 @@ bi @range 0 2;
 #X msg 191 444 casquette;
 #X msg 266 444 chapeau;
 #X msg 58 369 range;
-#X msg 126 600 bikini;
+#X msg 126 600 string;
 #X obj 126 524 ossia.param my_string @type string @range bikini caleçon
 string culotte sling @bounding_mode clip @default string;
 #X obj 93 198 ossia.param my_list @type list @range -10 10 @bounding_mode
@@ -196,7 +196,7 @@ float-list minimum and maximum.;
 #X connect 38 0 33 0;
 #X connect 39 0 33 0;
 #X connect 40 0 23 0;
-#X restore 53 516 pd more_about_range_and_minmax;
+#X restore 54 492 pd more_about_range_and_minmax;
 #N canvas 543 365 677 647 attributes_get/set 0;
 #X obj 30 148 s \$0-param_bar;
 #X obj 30 451 r \$0-param_bar;
@@ -332,10 +332,36 @@ patcher.;
 #X connect 57 0 12 0;
 #X connect 58 0 20 0;
 #X connect 58 1 28 0;
-#X restore 55 584 pd attributes_get/set;
+#X restore 55 536 pd attributes_get/set;
 #X msg 291 336 reset;
 #X text 120 305 send attribute values and parameter state through rightmost
 output, f 66;
+#N canvas 777 353 649 398 declaring_multiple_parameters_in_1_object
+0;
+#X floatatom 50 150 5 0 0 0 - - -, f 5;
+#X floatatom 50 97 5 0 0 0 - - -, f 5;
+#X obj 425 156 route address;
+#X obj 425 178 symbol;
+#X symbolatom 425 200 25 0 0 0 - - -, f 25;
+#X obj 50 117 ø.param test.[0-5]/bar.[1-3]/b[a-c]r.[0-1] @type float
+@default 12 @bounding_mode CLIP;
+#X text 43 32 Several parameters can be created in a row in one ossia.param
+object., f 74;
+#X text 44 58 This is done by using brackets for defining a range of
+numbers or characters, f 76;
+#X text 41 225 (note that this will work only with one character at
+a time);
+#X text 42 258 in order to do the same for numbers \, a different syntax
+has to be used (brace expansion - notice that due to limitations of
+the UI framework of pd \, tcl/tk \, curly braces are replaced by <>
+):, f 78;
+#X obj 48 327 ø.param moreTest.<1..32>;
+#X connect 1 0 5 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 5 0 0 0;
+#X connect 5 1 2 0;
+#X restore 56 584 pd declaring_multiple_parameters_in_1_object;
 #X connect 16 0 17 0;
 #X connect 16 1 18 0;
 #X connect 16 2 19 0;
