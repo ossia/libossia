@@ -58,7 +58,7 @@ static node_base& find_or_create_node_rec(
     {
       // There are still nodes since we found a slash
       return find_or_create_node_rec(
-          *cld, address.substr(first_slash_index + 1));
+            *cld, address.substr(first_slash_index + 1));
     }
     else
     {
@@ -67,7 +67,7 @@ static node_base& find_or_create_node_rec(
 
       // Recurse on it
       return find_or_create_node_rec(
-          child, address.substr(first_slash_index + 1));
+            child, address.substr(first_slash_index + 1));
     }
   }
   else
@@ -207,35 +207,35 @@ template <typename ForwardIterator>
 class tokenizer
 {
 
-    ForwardIterator _tbegin, _tend, _end;
+  ForwardIterator _tbegin, _tend, _end;
 
-  public:
+public:
 
-    tokenizer(ForwardIterator begin, ForwardIterator end)
-      : _tbegin(begin), _tend(begin), _end(end)
-    { }
+  tokenizer(ForwardIterator begin, ForwardIterator end)
+    : _tbegin(begin), _tend(begin), _end(end)
+  { }
 
-    template <typename Lambda>
-    bool next(Lambda istoken)
-    {
-      if (_tbegin == _end) {
-        return false;
-      }
-      _tbegin = _tend;
-      for (; _tend != _end && !istoken(*_tend); ++_tend) {
-        if (*_tend == '\\' && std::next(_tend) != _end) {
-          ++_tend;
-        }
-      }
-      if (_tend == _tbegin) {
-        _tend++;
-      }
-      return _tbegin != _end;
+  template <typename Lambda>
+  bool next(Lambda istoken)
+  {
+    if (_tbegin == _end) {
+      return false;
     }
+    _tbegin = _tend;
+    for (; _tend != _end && !istoken(*_tend); ++_tend) {
+      if (*_tend == '\\' && std::next(_tend) != _end) {
+        ++_tend;
+      }
+    }
+    if (_tend == _tbegin) {
+      _tend++;
+    }
+    return _tbegin != _end;
+  }
 
-    ForwardIterator begin() const { return _tbegin; }
-    ForwardIterator end()   const { return _tend; }
-    bool operator==(char c) { return *_tbegin == c; }
+  ForwardIterator begin() const { return _tbegin; }
+  ForwardIterator end()   const { return _tend; }
+  bool operator==(char c) { return *_tbegin == c; }
 
 };
 
@@ -340,34 +340,41 @@ List expand(const Range & range)
 
 std::string canonicalize_str(std::string str)
 {
-  // 1. find all [a-z0-9XYZ]
-  static std::regex rx_class{"\\[[a-zA-Z0-9-]+\\]"};
-
-  struct rx_pos
   {
+    // 1. find all [a-z0-9XYZ]
+    static std::regex rx_class{"\\[[a-zA-Z0-9-]+\\]"};
+
+    struct rx_pos
+    {
       std::size_t start{}, length{};
       std::bitset<128> chars;
-  };
-  chobo::small_vector<rx_pos, 4> positions;
+    };
+    chobo::small_vector<rx_pos, 4> positions;
 
-  std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), rx_class);
-  std::regex_iterator<std::string::iterator> rend;
+    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), rx_class);
+    std::regex_iterator<std::string::iterator> rend;
 
-  for(auto it = rit; it != rend; ++it)
-  {
-    auto str = it->str();
-    str = str.substr(1, str.size() - 2);
-    std::bitset<128> bits;
-
-    for(int i = 0, N = str.size(); i < N; )
+    for(auto it = rit; it != rend; ++it)
     {
-      if((N - i) > 2)
+      auto str = it->str();
+      str = str.substr(1, str.size() - 2);
+      std::bitset<128> bits;
+
+      for(int i = 0, N = str.size(); i < N; )
       {
-        if(str[i+1] == '-' && (int) str[i+2] > (int) str[i])
+        if((N - i) > 2)
         {
-          for(int ch = (int) str[i]; ch <= (int) str[i+2]; ++ch)
-            bits[ch] = true;
-          i += 2;
+          if(str[i+1] == '-' && (int) str[i+2] > (int) str[i])
+          {
+            for(int ch = (int) str[i]; ch <= (int) str[i+2]; ++ch)
+              bits[ch] = true;
+            i += 2;
+          }
+          else
+          {
+            bits[(int) str[i]] = true;
+            i++;
+          }
         }
         else
         {
@@ -375,34 +382,127 @@ std::string canonicalize_str(std::string str)
           i++;
         }
       }
+      positions.push_back(rx_pos{(std::size_t)it->position(), (std::size_t)it->length(), bits});
+    }
+
+    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    {
+      std::string rep{"{"};
+      for(std::size_t i = 0; i < it->chars.size(); ++i)
+      {
+        if(it->chars[i])
+        {
+          rep += (char) i;
+          rep += ',';
+        }
+      }
+
+      if(rep.back() == ',')
+      {
+        rep.back() = '}';
+        str.replace(it->start, it->length, rep);
+      }
+    }
+  }
+
+  {
+    std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+
+    struct rx_triple
+    {
+      std::size_t start{}, length{};
+      int64_t first{}, last{}, increment{};
+    };
+    chobo::small_vector<rx_triple, 4> positions;
+
+    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
+    std::regex_iterator<std::string::iterator> rend;
+
+    for(auto it = rit; it != rend; ++it)
+    {
+      int fst = std::stoi(it->str(1));
+      int lst = std::stoi(it->str(2));
+      int inc = std::stoi(it->str(3));
+      if(inc != 0)
+      {
+        positions.push_back(rx_triple{
+                              (std::size_t)it->position(),
+                              (std::size_t)it->length(),
+                              std::min(fst,lst),
+                              std::max(fst,lst),
+                              inc
+                            });
+      }
+    }
+
+    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    {
+      std::string rep{"{"};
+      rep.reserve(3 * std::abs((it->last - it->first) / it->increment));
+      if(it->increment > 0)
+      {
+        for(int64_t v = it->first; v <= it->last; v += it->increment) {
+          rep += std::to_string(v);
+          rep += ',';
+        }
+      }
       else
       {
-        bits[(int) str[i]] = true;
-        i++;
+        for(int64_t v = it->last; v <= it->first; v += it->increment) {
+          rep += std::to_string(v);
+          rep += ',';
+        }
+      }
+
+      if(rep.back() == ',')
+      {
+        rep.back() = '}';
+        str.replace(it->start, it->length, rep);
       }
     }
-    positions.push_back(rx_pos{(std::size_t)it->position(), (std::size_t)it->length(), bits});
   }
 
-  for(auto it = positions.rbegin(); it != positions.rend(); ++it)
   {
-    std::string rep{"{"};
-    for(std::size_t i = 0; i < it->chars.size(); ++i)
+    std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+
+    struct rx_double
     {
-      if(it->chars[i])
-      {
-        rep += (char) i;
+      std::size_t start{}, length{};
+      int64_t first{}, last{};
+    };
+    chobo::small_vector<rx_double, 4> positions;
+
+    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
+    std::regex_iterator<std::string::iterator> rend;
+
+    for(auto it = rit; it != rend; ++it)
+    {
+      int fst = std::stoi(it->str(1));
+      int lst = std::stoi(it->str(2));
+      positions.push_back(rx_double{
+                            (std::size_t)it->position(),
+                            (std::size_t)it->length(),
+                            std::min(fst,lst),
+                            std::max(fst,lst)
+                          });
+    }
+
+    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    {
+      std::string rep{"{"};
+      rep.reserve(3 * std::abs((it->last - it->first)));
+      for(int64_t v = it->first; v <= it->last; v ++) {
+        rep += std::to_string(v);
         rep += ',';
       }
-    }
 
-    if(rep.back() == ',')
-    {
-      rep.back() = '}';
-      str.replace(it->start, it->length, rep);
+      if(rep.back() == ',')
+      {
+        rep.back() = '}';
+        str.replace(it->start, it->length, rep);
+      }
     }
   }
-
   return str;
 }
 

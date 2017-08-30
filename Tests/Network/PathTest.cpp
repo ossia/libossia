@@ -5,6 +5,7 @@
 #include <iostream>
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <Editor/TestUtils.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std::placeholders;
@@ -87,6 +88,27 @@ private Q_SLOTS:
         QVERIFY(rit->str() == "a-b");
         ++rit;
         QVERIFY(rit->str() == "5-6");
+      }
+    }
+    {
+      std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+      {
+        std::string ex = "{0..32}";
+        std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+        std::regex_iterator<std::string::iterator> rend;
+
+        QVERIFY(rit != rend);
+        QCOMPARE(rit->str(1), std::string("0"));
+        QCOMPARE(rit->str(2), std::string("32"));
+      }
+      {
+        std::string ex = "{-50..50}";
+        std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+        std::regex_iterator<std::string::iterator> rend;
+
+        QVERIFY(rit != rend);
+        QVERIFY(rit->str(1) == "-50");
+        QVERIFY(rit->str(2) == "50");
       }
     }
 
@@ -309,8 +331,37 @@ private Q_SLOTS:
     QVERIFY(ossia::contains(addresses, "/foo9/bar/acz"));
     QVERIFY(ossia::contains(addresses, "/foo9/bar/ez"));
     QVERIFY(ossia::contains(addresses, "/foo9/baz/adx"));
+  }
+  void test_create_2()
+  {
+    ossia::net::generic_device device1{};
 
+    auto created = ossia::net::create_nodes(device1, "/foo.{-2..2}/bar.{5..10..2}");
 
+    std::vector<std::string> addresses;
+    ossia::transform(
+          created,
+          std::back_inserter(addresses),
+          [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+    QVERIFY(ossia::contains(addresses, "/foo.-2/bar.5"));
+    QVERIFY(ossia::contains(addresses, "/foo.-2/bar.7"));
+    QVERIFY(ossia::contains(addresses, "/foo.-2/bar.9"));
+    QVERIFY(ossia::contains(addresses, "/foo.-1/bar.5"));
+    QVERIFY(ossia::contains(addresses, "/foo.-1/bar.7"));
+    QVERIFY(ossia::contains(addresses, "/foo.-1/bar.9"));
+    QVERIFY(ossia::contains(addresses, "/foo.0/bar.5"));
+    QVERIFY(ossia::contains(addresses, "/foo.0/bar.7"));
+    QVERIFY(ossia::contains(addresses, "/foo.0/bar.9"));
+    QVERIFY(ossia::contains(addresses, "/foo.1/bar.5"));
+    QVERIFY(ossia::contains(addresses, "/foo.1/bar.7"));
+    QVERIFY(ossia::contains(addresses, "/foo.1/bar.9"));
+    QVERIFY(ossia::contains(addresses, "/foo.2/bar.5"));
+    QVERIFY(ossia::contains(addresses, "/foo.2/bar.7"));
+    QVERIFY(ossia::contains(addresses, "/foo.2/bar.9"));
+
+    QVERIFY(!ossia::contains(addresses, "/foo.-2/bar.6"));
+    QVERIFY(!ossia::contains(addresses, "/foo.-3/bar.5"));
+    QVERIFY(!ossia::contains(addresses, "/foo.-2/bar.10"));
   }
 };
 
