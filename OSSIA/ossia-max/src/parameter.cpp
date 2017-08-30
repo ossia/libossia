@@ -25,7 +25,7 @@ extern "C" void ossia_parameter_setup()
       c, (method)ossia_parameter_assist,
       "assist", A_CANT, 0);
   class_addmethod(
-      c, (method)ossia_parameter_in_bang,
+      c, (method)t_object_base::bang,
       "bang", 0);
   class_addmethod(
       c, (method)ossia_parameter_in_int,
@@ -232,11 +232,6 @@ extern "C" void ossia_parameter_in_int(t_parameter* x, long int f)
   t_atom a;
   A_SETLONG(&a,f);
   t_object_base::push(x,nullptr,1,&a);
-}
-
-extern "C" void ossia_parameter_in_bang(t_parameter* x)
-{
- //  ossia_parameter_in(x, ossia::impulse{});
 }
 
 extern "C" void ossia_parameter_in_symbol(t_parameter* x, t_symbol* f)
