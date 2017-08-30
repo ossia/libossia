@@ -114,8 +114,7 @@ bool t_param::unregister()
 
 ossia::safe_vector<t_param*>& t_param::quarantine()
 {
-  static ossia::safe_vector<t_param*> quarantine;
-  return quarantine;
+    return ossia_pd::instance().parameter_quarantine;
 }
 
 void t_param::is_deleted(const net::node_base& n)

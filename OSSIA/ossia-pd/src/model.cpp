@@ -244,8 +244,7 @@ void model_get_description(t_model*x)
 
 ossia::safe_vector<t_model*>& t_model::quarantine()
 {
-  static ossia::safe_vector<t_model*> quarantine;
-  return quarantine;
+    return ossia_pd::instance().model_quarantine;
 }
 
 void t_model::is_deleted(const net::node_base& n)

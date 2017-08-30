@@ -320,5 +320,11 @@ extern "C" void setup_ossia0x2eremote(void)
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.remote = c;
 }
+
+ossia::safe_vector<t_remote*>& t_remote::quarantine()
+{
+    return ossia_pd::instance().remote_quarantine;
+}
+
 } // pd namespace
 } // ossia namespace

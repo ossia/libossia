@@ -98,8 +98,8 @@ ossia_pd::~ossia_pd()
 {
   for (auto x : devices.copy()){
     if (x->m_device){
-      x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
-      x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+      x->m_device->on_parameter_created.disconnect<t_device, &t_device::on_parameter_created_callback>(x);
+      x->m_device->on_parameter_removing.disconnect<t_device, &t_device::on_parameter_deleted_callback>(x);
     }
   }
   for (auto x : views.copy()){

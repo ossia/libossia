@@ -24,11 +24,7 @@ struct t_remote : t_object_base
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
-  static ossia::safe_vector<t_remote*>& quarantine()
-  {
-    static ossia::safe_vector<t_remote*> quarantine;
-    return quarantine;
-  }
+  static ossia::safe_vector<t_remote*>& quarantine();
 };
 } // namespace pd
 } // namespace ossia

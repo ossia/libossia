@@ -55,6 +55,12 @@ public:
 
     t_symbol* sym_addr;
 
+
+    ossia::safe_vector<t_model*> model_quarantine;
+    ossia::safe_vector<t_view*> view_quarantine;
+    ossia::safe_vector<t_param*> parameter_quarantine;
+    ossia::safe_vector<t_remote*> remote_quarantine;
+
 private:
     ossia_pd(); // constructor
     ~ossia_pd(); // destructor

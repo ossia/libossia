@@ -255,5 +255,11 @@ extern "C" void setup_ossia0x2eview(void)
   auto& ossia_pd = ossia_pd::instance();
   ossia_pd.view = c;
 }
+
+ossia::safe_vector<t_view*>& t_view::quarantine()
+{
+    return ossia_pd::instance().view_quarantine;
+}
+
 } // pd namespace
 } // ossia namespace

@@ -16,11 +16,7 @@ struct t_view : t_object_base
   bool do_registration(std::vector<ossia::net::node_base*> node);
   bool unregister();
 
-  static ossia::safe_vector<t_view*>& quarantine()
-  {
-    static ossia::safe_vector<t_view*> quarantine;
-    return quarantine;
-  }
+  static ossia::safe_vector<t_view*>& quarantine();
 };
 }
 } // namespace
