@@ -1,4 +1,4 @@
-#N canvas 197 59 1166 778 10;
+#N canvas 197 93 1166 778 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
 #X text 668 119 bool : bollean value \, 0 or 1;
@@ -356,11 +356,16 @@ has to be used (brace expansion - notice that due to limitations of
 the UI framework of pd \, tcl/tk \, curly braces are replaced by <>
 ):, f 78;
 #X obj 48 327 ø.param moreTest.<1..32>;
+#X obj 383 332 ø;
+#X msg 383 309 namespace;
+#X obj 383 354 print;
 #X connect 1 0 5 0;
 #X connect 2 0 3 0;
 #X connect 3 0 4 0;
 #X connect 5 0 0 0;
 #X connect 5 1 2 0;
+#X connect 11 0 13 0;
+#X connect 12 0 11 0;
 #X restore 56 584 pd declaring_multiple_parameters_in_1_object;
 #X connect 16 0 17 0;
 #X connect 16 1 18 0;
