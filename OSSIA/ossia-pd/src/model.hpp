@@ -19,8 +19,6 @@ struct t_model : t_object_base
 
   static ossia::safe_vector<t_model*>& quarantine();
 
-  void is_deleted(const ossia::net::node_base& n);
-
   void set_tags();
   void set_description();
   void set_priority();

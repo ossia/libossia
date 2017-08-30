@@ -16,7 +16,6 @@ struct t_param : t_object_base
   bool register_node(std::vector<ossia::net::node_base*> node);
   bool do_registration(std::vector<ossia::net::node_base*> node);
   bool unregister();
-  void is_deleted(const ossia::net::node_base& n);
 
   // attribute setting method
   void set_access_mode();

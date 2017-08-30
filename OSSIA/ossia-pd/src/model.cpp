@@ -129,18 +129,7 @@ bool t_model::unregister()
 
   clock_unset(m_regclock);
 
-  for (auto n : m_nodes)
-  {
-    n->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
-
-    if (n->get_parent())
-    {
-      // this calls isDeleted() on
-      // each registered child and
-      // put them into quarantine
-      n->get_parent()->remove_child(*n);
-    }
-  }
+  m_matchers.clear();
 
   // we can't register children to parent node
   // because it might be deleted soon
@@ -249,18 +238,6 @@ void model_get_description(t_model*x)
 ossia::safe_vector<t_model*>& t_model::quarantine()
 {
     return ossia_pd::instance().model_quarantine;
-}
-
-void t_model::is_deleted(const net::node_base& n)
-{
-  if (!m_dead)
-  {
-    for (auto n : m_nodes)
-      n->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
-
-    m_nodes.clear();
-    obj_quarantining<t_model>(this);
-  }
 }
 
 static void* model_new(t_symbol* name, int argc, t_atom* argv)

@@ -117,13 +117,6 @@ ossia::safe_vector<t_param*>& t_param::quarantine()
     return ossia_pd::instance().parameter_quarantine;
 }
 
-void t_param::is_deleted(const net::node_base& n)
-{
-  m_matchers.clear();
-  m_nodes.clear();
-  obj_quarantining<t_param>(this);
-}
-
 static void push_default_value(t_param* x)
 {
   if ( x->m_default_size > 0 )
