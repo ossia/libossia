@@ -209,7 +209,7 @@ void t_object_base::is_deleted(const ossia::net::node_base& n)
  * @param argc : number of value in the list
  * @param argv :  list of t_atom value(s)
  */
-void t_object_base::obj_push(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
+void t_object_base::obj_push(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node;
 

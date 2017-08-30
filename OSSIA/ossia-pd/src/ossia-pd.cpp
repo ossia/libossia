@@ -34,7 +34,7 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->m_device = ossia_pd.get_default_device();
-  x->m_otype = Type::device;
+  x->m_otype = object_class::device;
   x->m_name = gensym(x->m_device->get_name().c_str());
 
   x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);

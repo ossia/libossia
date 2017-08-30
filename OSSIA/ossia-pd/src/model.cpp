@@ -48,11 +48,11 @@ bool t_model::do_registration(std::vector<ossia::net::node_base*> nodes)
 
       // we have to check if a node with the same name already exists to avoid
       // auto-incrementing name
-      std::vector<t_obj_base*> obj
+      std::vector<t_object_base*> obj
           = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
       for (auto v : obj)
       {
-        if (v->m_otype == Type::param)
+        if (v->m_otype == object_class::param)
         {
           t_param* param = (t_param*)v;
           if (std::string(param->m_name->s_name) == name)
