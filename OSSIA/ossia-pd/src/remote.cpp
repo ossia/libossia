@@ -186,6 +186,7 @@ t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void
     else if ( s == gensym("enable") )
       x->set_enable();
   }
+  return {};
 }
 
 static void remote_click(
