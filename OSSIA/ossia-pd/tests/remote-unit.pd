@@ -1,6 +1,6 @@
 #N canvas 678 510 554 353 10;
 #X floatatom 52 55 5 0 0 0 - - -, f 5;
-#X floatatom 53 104 5 0 0 0 - - -, f 5;
+#X floatatom 53 124 5 0 0 0 - - -, f 5;
 #X floatatom 60 193 5 0 0 0 - - -, f 5;
 #X floatatom 60 242 5 0 0 0 - - -, f 5;
 #X obj 60 220 ø.remote freq;
@@ -10,10 +10,11 @@
 #X obj 361 248 route address;
 #X obj 449 274 print;
 #X obj 194 218 ø.remote freq @unit time.midinote;
-#X obj 53 81 ø.param freq @unit time.hz @range 200 5000;
-#X obj 420 109 ossia;
-#X msg 420 79 expose oscquery;
-#X connect 0 0 11 0;
+#X obj 427 165 ossia;
+#X msg 427 135 expose oscquery;
+#X obj 53 81 ø.param freq @unit time.hz @range 200 5000 @bounding_mode
+clip;
+#X connect 0 0 13 0;
 #X connect 2 0 4 0;
 #X connect 4 0 3 0;
 #X connect 5 0 10 0;
@@ -21,5 +22,5 @@
 #X connect 8 1 9 0;
 #X connect 10 0 6 0;
 #X connect 10 2 8 0;
-#X connect 11 0 1 0;
-#X connect 13 0 12 0;
+#X connect 12 0 11 0;
+#X connect 13 0 1 0;
