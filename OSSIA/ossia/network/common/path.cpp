@@ -3,6 +3,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -99,6 +100,7 @@ void add_relative_path(
   if (part != "..")
   {
     // Perform the various regex-like replacements
+    net::expand_ranges(part);
     boost::replace_all(part, "(", "\\(");
     boost::replace_all(part, ")", "\\)");
     boost::replace_all(part, "{", "(");

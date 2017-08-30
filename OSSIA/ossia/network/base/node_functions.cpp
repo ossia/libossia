@@ -338,11 +338,114 @@ List expand(const Range & range)
   return expand<Iterator, String, List>(std::begin(range), std::end(range));
 }
 
+
+void expand_ranges(std::string& str)
+{
+  {
+    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+
+    struct rx_triple
+    {
+      std::size_t start{}, length{};
+      int64_t first{}, last{}, increment{};
+    };
+    chobo::small_vector<rx_triple, 4> positions;
+
+    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
+    std::regex_iterator<std::string::iterator> rend;
+
+    for(auto it = rit; it != rend; ++it)
+    {
+      int fst = std::stoi(it->str(1));
+      int lst = std::stoi(it->str(2));
+      int inc = std::stoi(it->str(3));
+      if(inc != 0)
+      {
+        positions.push_back(rx_triple{
+                              (std::size_t)it->position(),
+                              (std::size_t)it->length(),
+                              std::min(fst,lst),
+                              std::max(fst,lst),
+                              inc
+                            });
+      }
+    }
+
+    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    {
+      std::string rep{"{"};
+      rep.reserve(3 * std::abs((it->last - it->first) / it->increment));
+      if(it->increment > 0)
+      {
+        for(int64_t v = it->first; v <= it->last; v += it->increment) {
+          rep += std::to_string(v);
+          rep += ',';
+        }
+      }
+      else
+      {
+        for(int64_t v = it->last; v <= it->first; v += it->increment) {
+          rep += std::to_string(v);
+          rep += ',';
+        }
+      }
+
+      if(rep.back() == ',')
+      {
+        rep.back() = '}';
+        str.replace(it->start, it->length, rep);
+      }
+    }
+  }
+
+  {
+    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+
+    struct rx_double
+    {
+      std::size_t start{}, length{};
+      int64_t first{}, last{};
+    };
+    chobo::small_vector<rx_double, 4> positions;
+
+    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
+    std::regex_iterator<std::string::iterator> rend;
+
+    for(auto it = rit; it != rend; ++it)
+    {
+      int fst = std::stoi(it->str(1));
+      int lst = std::stoi(it->str(2));
+      positions.push_back(rx_double{
+                            (std::size_t)it->position(),
+                            (std::size_t)it->length(),
+                            std::min(fst,lst),
+                            std::max(fst,lst)
+                          });
+    }
+
+    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    {
+      std::string rep{"{"};
+      rep.reserve(3 * std::abs((it->last - it->first)));
+      for(int64_t v = it->first; v <= it->last; v ++) {
+        rep += std::to_string(v);
+        rep += ',';
+      }
+
+      if(rep.back() == ',')
+      {
+        rep.back() = '}';
+        str.replace(it->start, it->length, rep);
+      }
+    }
+  }
+}
+
 std::string canonicalize_str(std::string str)
 {
   {
     // 1. find all [a-z0-9XYZ]
-    static std::regex rx_class{"\\[[a-zA-Z0-9-]+\\]"};
+    static const std::regex rx_class{"\\[[a-zA-Z0-9-]+\\]"};
 
     struct rx_pos
     {
@@ -405,104 +508,7 @@ std::string canonicalize_str(std::string str)
     }
   }
 
-  {
-    std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)})_"};
-
-    struct rx_triple
-    {
-      std::size_t start{}, length{};
-      int64_t first{}, last{}, increment{};
-    };
-    chobo::small_vector<rx_triple, 4> positions;
-
-    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
-    std::regex_iterator<std::string::iterator> rend;
-
-    for(auto it = rit; it != rend; ++it)
-    {
-      int fst = std::stoi(it->str(1));
-      int lst = std::stoi(it->str(2));
-      int inc = std::stoi(it->str(3));
-      if(inc != 0)
-      {
-        positions.push_back(rx_triple{
-                              (std::size_t)it->position(),
-                              (std::size_t)it->length(),
-                              std::min(fst,lst),
-                              std::max(fst,lst),
-                              inc
-                            });
-      }
-    }
-
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
-    {
-      std::string rep{"{"};
-      rep.reserve(3 * std::abs((it->last - it->first) / it->increment));
-      if(it->increment > 0)
-      {
-        for(int64_t v = it->first; v <= it->last; v += it->increment) {
-          rep += std::to_string(v);
-          rep += ',';
-        }
-      }
-      else
-      {
-        for(int64_t v = it->last; v <= it->first; v += it->increment) {
-          rep += std::to_string(v);
-          rep += ',';
-        }
-      }
-
-      if(rep.back() == ',')
-      {
-        rep.back() = '}';
-        str.replace(it->start, it->length, rep);
-      }
-    }
-  }
-
-  {
-    std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)})_"};
-
-    struct rx_double
-    {
-      std::size_t start{}, length{};
-      int64_t first{}, last{};
-    };
-    chobo::small_vector<rx_double, 4> positions;
-
-    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
-    std::regex_iterator<std::string::iterator> rend;
-
-    for(auto it = rit; it != rend; ++it)
-    {
-      int fst = std::stoi(it->str(1));
-      int lst = std::stoi(it->str(2));
-      positions.push_back(rx_double{
-                            (std::size_t)it->position(),
-                            (std::size_t)it->length(),
-                            std::min(fst,lst),
-                            std::max(fst,lst)
-                          });
-    }
-
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
-    {
-      std::string rep{"{"};
-      rep.reserve(3 * std::abs((it->last - it->first)));
-      for(int64_t v = it->first; v <= it->last; v ++) {
-        rep += std::to_string(v);
-        rep += ',';
-      }
-
-      if(rep.back() == ',')
-      {
-        rep.back() = '}';
-        str.replace(it->start, it->length, rep);
-      }
-    }
-  }
+  expand_ranges(str);
   return str;
 }
 
@@ -532,6 +538,5 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
 
   return v;
 }
-
 }
 }

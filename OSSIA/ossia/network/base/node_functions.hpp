@@ -111,5 +111,7 @@ OSSIA_EXPORT void
 push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
 
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
+
+void expand_ranges(std::string& str);
 }
 }
