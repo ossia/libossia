@@ -32,6 +32,8 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   auto& ossia_pd = ossia_pd::instance();
   t_ossia* x = (t_ossia*) eobj_new(ossia_pd.ossia);
 
+  ossia_pd.devices.push_back(x);
+
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->m_device = ossia_pd.get_default_device();
   x->m_otype = object_class::device;
@@ -57,6 +59,8 @@ static void ossia_free(t_ossia *x)
 
   x->m_device->on_parameter_created.disconnect<t_device, &t_device::on_parameter_created_callback>(x);
   x->m_device->on_parameter_removing.disconnect<t_device, &t_device::on_parameter_deleted_callback>(x);
+
+  ossia_pd::instance().devices.remove_all(x);
 }
 
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
@@ -98,8 +102,8 @@ ossia_pd::~ossia_pd()
 {
   for (auto x : devices.copy()){
     if (x->m_device){
-      x->m_device->on_parameter_created.connect<t_device, &t_device::on_parameter_created_callback>(x);
-      x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
+      x->m_device->on_parameter_created.disconnect<t_device, &t_device::on_parameter_created_callback>(x);
+      x->m_device->on_parameter_removing.disconnect<t_device, &t_device::on_parameter_deleted_callback>(x);
     }
   }
   for (auto x : views.copy()){
