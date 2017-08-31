@@ -110,7 +110,7 @@ public:
 
   t_clock* m_clock{};   // multi-purpose clock
   t_clock* m_poll_clock{}; // value polling clock
-  float m_poll_interval;
+  float m_poll_interval{10};
   std::chrono::milliseconds m_last_click{};
 
   ossia::optional<ossia::unit_t> m_ounit;

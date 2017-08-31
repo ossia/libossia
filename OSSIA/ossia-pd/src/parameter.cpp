@@ -738,7 +738,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_INT(         c, "hidden",            0, t_param, m_hidden);
     CLASS_ATTR_INT(         c, "enable",            0, t_param, m_enable);
     CLASS_ATTR_INT(         c, "mute",              0, t_param, m_mute);
-    CLASS_ATTR_INT(         c, "poll_interval",     0, t_param, m_poll_interval);
+    CLASS_ATTR_FLOAT(       c, "poll_interval",     0, t_param, m_poll_interval);
 
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
@@ -761,7 +761,7 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter_get_enable,            "getenable",            A_NULL, 0);
 
     eclass_addmethod(c, (method) parameter_get_mute,              "getmute",              A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_get_poll_interval,     "getpollinterval",      A_NULL, 0);
+    eclass_addmethod(c, (method) parameter_get_poll_interval,     "getpoll_interval",     A_NULL, 0);
 
     eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
 
