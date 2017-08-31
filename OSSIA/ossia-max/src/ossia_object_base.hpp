@@ -2,6 +2,8 @@
 #include "ossia-max.hpp"
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia/ossia.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+
 
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
 
@@ -89,6 +91,7 @@ struct t_object_base
 
   ossia::optional<ossia::unit_t> m_ounit;
 
+  ossia::net::generic_device* m_device{};
   ossia::net::node_base* m_node{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
@@ -99,6 +102,7 @@ struct t_object_base
   static void bang(t_object_base* x);
   static void defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_atom* argv);
   static void getnamespace(t_object_base *x);
+  static void preset(t_object_base *x, t_symbol*s, int argc, t_atom* argv);
 };
 
 #pragma mark -

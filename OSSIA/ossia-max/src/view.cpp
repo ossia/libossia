@@ -28,6 +28,11 @@ extern "C" void ossia_view_setup()
     class_addmethod(
           c,(method)t_view::view_bind, "bind", A_SYM, 0);
 
+    class_addmethod(
+          c, (method)t_object_base::preset,
+          "preset",        A_GIMME,  0);
+
+
     //        class_addmethod(c,
     //        (method)ossia_view_click,       "click",      A_NOTHING,   0);
   }

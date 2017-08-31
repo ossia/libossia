@@ -12,7 +12,6 @@ namespace max
 
 struct t_client : t_object_base
 {
-  ossia::net::generic_device* m_device{};
   ossia::net::local_protocol m_local_proto;
 
   static void register_children(t_client*);

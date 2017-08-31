@@ -26,15 +26,20 @@ extern "C" void ossia_device_setup()
       c, (method)t_device::register_children,
       "register", A_NOTHING, 0);
   class_addmethod(
-      c, (method)t_object_base::getnamespace, "namespace",
-      A_NOTHING, 0);
+      c, (method)t_object_base::getnamespace,
+      "namespace", A_NOTHING, 0);
   class_addmethod(
-      c, (method)ossia_device_expose, "expose",
-      A_GIMME, 0);
+      c, (method)ossia_device_expose,
+      "expose", A_GIMME, 0);
   class_addmethod(
-      c,
-      (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
-  class_addmethod(c, (method)ossia_device_name, "name", A_GIMME, 0);
+      c, (method)protocol_settings::print_protocol_help,
+      "help", A_NOTHING, 0);
+  class_addmethod(
+      c, (method)ossia_device_name,
+      "name", A_GIMME, 0);
+  class_addmethod(
+      c, (method)t_object_base::preset,
+      "preset", A_GIMME,  0);
 
 
   class_register(CLASS_BOX, c);

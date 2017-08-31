@@ -149,9 +149,6 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump parameter state
 
-    if ( auto err = object_obex_store((t_object*)x, _sym_dumpout, (t_object*)x->m_dumpout) != MAX_ERR_NONE )
-      error("can't store obex dumpout, error %d", err);
-
     x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
 
     x->m_node = nullptr;

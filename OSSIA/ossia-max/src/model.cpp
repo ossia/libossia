@@ -18,28 +18,32 @@ extern "C" void ossia_model_setup()
   auto& ossia_library = ossia_max::instance();
 
   // instantiate the ossia.parameter class
-  ossia_library.ossia_model_class = class_new(
+  t_class* c = class_new(
       "ossia.model", (method)ossia_model_new, (method)ossia_model_free,
       (long)sizeof(ossia::max::t_model), 0L, A_GIMME, 0);
 
   class_addmethod(
-      ossia_library.ossia_model_class, (method)ossia_model_assist, "assist",
+      c, (method)ossia_model_assist, "assist",
       A_CANT, 0);
 
   class_addmethod(
-      ossia_library.ossia_model_class, (method)t_object_base::getnamespace,
+      c, (method)t_object_base::getnamespace,
               "namespace", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
-      ossia_library.ossia_model_class, "description", 0, t_model,
+      c, "description", 0, t_model,
       m_description);
   CLASS_ATTR_SYM_VARSIZE(
-      ossia_library.ossia_model_class, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
+      c, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
   CLASS_ATTR_LONG(
-      ossia_library.ossia_model_class, "hidden", 0, t_model,
+      c, "hidden", 0, t_model,
       m_hidden);
+  class_addmethod(
+      c, (method)t_object_base::preset,
+      "preset",        A_GIMME,  0);
 
-  class_register(CLASS_BOX, ossia_library.ossia_model_class);
+  class_register(CLASS_BOX, c);
+  ossia_library.ossia_model_class = c;
 }
 
 extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)

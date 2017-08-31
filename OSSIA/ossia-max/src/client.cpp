@@ -25,27 +25,31 @@ extern "C" void ossia_client_setup()
   auto& ossia_library = ossia_max::instance();
 
   // instantiate the ossia.client class
-  ossia_library.ossia_client_class = class_new(
+  t_class* c = class_new(
       "ossia.client", (method)ossia_client_new, (method)ossia_client_free,
       (short)sizeof(t_client), 0L, A_GIMME, 0);
 
   class_addmethod(
-      ossia_library.ossia_client_class, (method)t_client::register_children,
+      c, (method)t_client::register_children,
       "register", A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_client_class, (method)t_client::loadbang, "loadbang",
+      c, (method)t_client::loadbang, "loadbang",
       A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_client_class, (method)t_object_base::getnamespace,
+      c, (method)t_object_base::getnamespace,
               "namespace", A_NOTHING, 0);
   class_addmethod(
-      ossia_library.ossia_client_class, (method)ossia_client_connect,
+      c, (method)ossia_client_connect,
       "connect", A_GIMME, 0);
   class_addmethod(
-      ossia_library.ossia_client_class,
+      c,
       (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
+  class_addmethod(
+      c, (method)t_object_base::preset,
+      "preset",        A_GIMME,  0);
 
-  class_register(CLASS_BOX, ossia_library.ossia_client_class);
+  class_register(CLASS_BOX, c);
+  ossia_library.ossia_client_class = c;
 
 }
 
