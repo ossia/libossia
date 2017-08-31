@@ -8,12 +8,15 @@
 #include "view.hpp"
 #include "utils.hpp"
 
-#include "ossia/network/osc/osc.hpp"
+#include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <sstream>
 
 using namespace ossia::max;
 
@@ -32,18 +35,31 @@ extern "C" void ossia_client_setup()
   class_addmethod(
       c, (method)t_client::register_children,
       "register", A_NOTHING, 0);
+
   class_addmethod(
-      c, (method)t_client::loadbang, "loadbang",
-      A_NOTHING, 0);
+      c, (method)t_client::update,
+      "update", A_NOTHING, 0);
+
+  class_addmethod(
+      c, (method)t_client::loadbang,
+      "loadbang", A_NOTHING, 0);
+
   class_addmethod(
       c, (method)t_object_base::getnamespace,
-              "namespace", A_NOTHING, 0);
+      "namespace", A_NOTHING, 0);
+
   class_addmethod(
-      c, (method)ossia_client_connect,
+      c, (method)t_client::connect,
       "connect", A_GIMME, 0);
+
   class_addmethod(
-      c,
-      (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
+      c, (method)t_client::disconnect,
+      "disconnect", A_GIMME, 0);
+
+  class_addmethod(
+      c, (method)protocol_settings::print_protocol_help,
+      "help", A_NOTHING, 0);
+
   class_addmethod(
       c, (method)t_object_base::preset,
       "preset",        A_GIMME,  0);
@@ -111,132 +127,6 @@ extern "C" void ossia_client_free(t_client* x)
   register_quarantinized();
 }
 
-static void dump_child(t_client* x, const ossia::net::node_base& node)
-{
-  for (const auto& child : node.children())
-  {
-    std::stringstream ss;
-    auto parent = child->get_parent();
-    while (parent != nullptr)
-    {
-      ss << "\t";
-      parent = parent->get_parent();
-    }
-    ss << child->get_name();
-
-    t_atom a;
-    atom_setsym(&a, gensym(ss.str().c_str()));
-    outlet_anything(x->m_dumpout, gensym("child"), 1, &a);
-    dump_child(x, *child);
-  }
-}
-
-extern "C" void ossia_client_dump(t_client* x)
-{
-  dump_child(x, x->m_device->get_root_node());
-}
-
-extern "C" void
-ossia_client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
-{
-  ossia_client_free(x); // unregister and delete m_device
-
-  if (argc && argv->a_type == A_SYM)
-  {
-    std::string protocol = atom_getsym(argv)->s_name;
-
-    if (protocol == "Minuit")
-    {
-      std::string device_name = "Max";
-      protocol_settings::minuit settings{};
-
-      argc--;
-      argv++;
-
-      if (argc == 4 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM
-          && argv[2].a_type == A_LONG && argv[3].a_type == A_LONG)
-      {
-        device_name = atom_getsym(argv++)->s_name;
-        settings.remoteip = atom_getsym(argv++)->s_name;
-        settings.remoteport = atom_getfloat(argv++);
-        settings.localport = atom_getfloat(argv++);
-      }
-
-      try
-      {
-        x->m_device = new ossia::net::generic_device{
-            std::make_unique<ossia::net::minuit_protocol>(
-                device_name, settings.remoteip, settings.remoteport,
-                settings.localport),
-            x->m_name->s_name};
-      }
-      catch (const std::exception& e)
-      {
-        object_error((t_object*)x, "%s", e.what());
-        return;
-      }
-
-      object_post(
-          (t_object*)x,
-          "Connected with Minuit protocol to %s on port %u and listening on "
-          "port %u",
-          settings.remoteip.c_str(), settings.remoteport, settings.localport);
-    }
-    else if (protocol == "oscquery")
-    {
-      std::string wsurl;
-
-      argc--;
-      argv++;
-
-      if (argc == 1 && argv[0].a_type == A_SYM)
-      {
-        wsurl = atom_getsym(argv)->s_name;
-      }
-
-      try
-      {
-        auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
-        x->m_device = new ossia::net::generic_device{
-            std::unique_ptr<ossia::net::protocol_base>(protocol), "Max"};
-      }
-      catch (const std::exception& e)
-      {
-        object_error((t_object*)x, "%s", e.what());
-        return;
-      }
-
-      object_post(
-          (t_object*)x, "Connected with oscquery protocol to %s",
-          wsurl.c_str());
-    }
-    else
-    {
-      object_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
-      return;
-    }
-  }
-  else
-  {
-    protocol_settings::print_protocol_help();
-    return;
-  }
-
-  if (x->m_device)
-  {
-    x->m_device->get_protocol().update(*x->m_device);
-    x->m_node = &x->m_device->get_root_node();
-
-    t_client::register_children(x);
-    t_client::explore(x->m_device->get_root_node());
-
-    for (auto& child : x->m_device->children())
-    {
-      std::cout << child->get_name() << std::endl;
-    }
-  }
-}
-
 namespace ossia
 {
 namespace max
@@ -244,6 +134,260 @@ namespace max
 
 #pragma mark -
 #pragma mark t_client structure functions
+
+void t_client::connect(t_client* x, t_symbol*, int argc, t_atom* argv)
+{
+
+  disconnect(x);
+
+  ossia::net::minuit_connection_data minuit_settings;
+  minuit_settings.name = "Pd";
+  minuit_settings.host = "127.0.0.1";
+  minuit_settings.remote_port = 6666;
+  minuit_settings.local_port = 9999;
+
+  ossia::net::oscquery_connection_data oscq_settings;
+  oscq_settings.name = "Max";
+  oscq_settings.host = "127.0.0.1";
+  oscq_settings.port = 5678;
+
+  t_atom connection_status[6];
+
+  if (argc && argv->a_type == A_SYM)
+  {
+    std::string protocol_name = argv->a_w.w_sym->s_name;
+
+    if ( argc == 1
+         && protocol_name != "oscquery"
+         && protocol_name != "Minuit" )
+    {
+      std::string name;
+
+      if ( x->m_looking_for )
+        name = x->m_looking_for->s_name;
+      else
+        name = argv->a_w.w_sym->s_name;
+
+      protocol_name = "";
+      for ( auto dev : x->m_oscq_devices )
+      {
+        if ( dev.name == name )
+        {
+          protocol_name = "oscquery";
+          oscq_settings = dev;
+          break;
+        }
+      }
+
+      if ( protocol_name == "" )
+      {
+        for ( auto dev : x->m_minuit_devices )
+        {
+          if ( dev.name == name )
+          {
+            protocol_name = "Minuit";
+            minuit_settings = dev;
+            break;
+          }
+        }
+      }
+
+      if ( protocol_name == "" ) // can't find any device in the list that matches the name
+      {
+        if ( !x->m_done )
+        {
+          object_error((t_object*)x, "it seems that I'am already looking for something, please wait a bit...");
+          return;
+        }
+        else
+        {
+          if ( x->m_looking_for )
+          {
+            object_error((t_object*)x, "sorry I can't find device %s, try again later...", x->m_looking_for->s_name);
+            t_atom connection_status[2];
+            A_SETFLOAT(connection_status, 0);
+            (connection_status+1, x->m_looking_for);
+
+            outlet_anything(x->m_dumpout, gensym("connect"), 2, connection_status);
+            x->m_looking_for = nullptr;
+
+            return;
+          }
+          x->m_looking_for = gensym(name.c_str());
+          t_client::getdevices(x);
+          return;
+        }
+      } else {
+        x->m_looking_for = nullptr;
+      }
+    }
+
+    if (protocol_name == "Minuit")
+    {
+      argc--;
+      argv++;
+      if (argc == 4
+          && argv[0].a_type == A_SYM
+          && argv[1].a_type == A_SYM
+          && argv[2].a_type == A_FLOAT
+          && argv[3].a_type == A_FLOAT)
+      {
+        minuit_settings.name = atom_getsym(argv++)->s_name;
+        minuit_settings.host = atom_getsym(argv++)->s_name;
+        minuit_settings.remote_port = atom_getfloat(argv++);
+        minuit_settings.local_port = atom_getfloat(argv++);
+      }
+
+      (connection_status+1, gensym("minuit"));
+      (connection_status+2, gensym(minuit_settings.name.c_str()));
+      (connection_status+3, gensym(minuit_settings.host.c_str()));
+      A_SETFLOAT(connection_status+4, minuit_settings.remote_port);
+      A_SETFLOAT(connection_status+5, minuit_settings.local_port);
+
+      try
+      {
+        x->m_device = new ossia::net::generic_device{
+            std::make_unique<ossia::net::minuit_protocol>(
+              minuit_settings.name, minuit_settings.host,
+              minuit_settings.remote_port, minuit_settings.local_port),
+            x->m_name->s_name};
+        A_SETFLOAT(connection_status,1);
+      }
+      catch (const std::exception& e)
+      {
+        object_error((t_object*)x, "%s", e.what());
+        A_SETFLOAT(connection_status,0);
+      }
+
+      outlet_anything(x->m_dumpout, gensym("connect"),6, connection_status);
+    }
+    else if (protocol_name == "oscquery")
+    {
+      argc--;
+      argv++;
+      std::string wsurl = "ws://127.0.0.1:5678";
+      if (argc == 1
+          && argv[0].a_type == A_SYM)
+      {
+        wsurl = atom_getsym(argv)->s_name;
+      }
+
+      A_SETSYM(connection_status+1, gensym("oscquery"));
+      A_SETSYM(connection_status+2, gensym(oscq_settings.name.c_str()));
+      A_SETSYM(connection_status+3, gensym(wsurl.c_str()));
+
+      try
+      {
+        auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
+        x->m_device = new ossia::net::generic_device{
+            std::unique_ptr<ossia::net::protocol_base>(protocol), oscq_settings.name};
+
+        std::cout << "connected to device " << x->m_device->get_name()
+                  << " on " << wsurl << std::endl;
+        A_SETFLOAT(connection_status,1);
+      }
+      catch (const std::exception& e)
+      {
+        object_error((t_object*)x, "%s", e.what());
+        A_SETFLOAT(connection_status,0);
+      }
+
+      outlet_anything(x->m_dumpout, gensym("connect"),4, connection_status);
+    }
+    else
+    {
+      object_error((t_object*)(t_object*)x, "Unknown protocol: %s", protocol_name.c_str());
+    }
+  }
+  else
+  {
+    t_client::print_protocol_help();
+  }
+
+  if (x->m_device)
+  {
+    x->m_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
+    x->m_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
+  }
+
+  t_client::update(x);
+}
+
+void check_thread_status(t_client* x)
+{
+  if ( x->m_done )
+  {
+    x->m_async_thread->join();
+    delete x->m_async_thread;
+    x->m_async_thread = nullptr;
+
+    clock_free((t_object*)x->m_clock);
+    x->m_clock = nullptr;
+
+    t_atom a;
+    float num = x->m_minuit_devices.size() + x->m_oscq_devices.size();
+    A_SETFLOAT(&a, num);
+    outlet_anything(x->m_dumpout, gensym("devices"), 1, &a);
+
+    t_atom av[5];
+    A_SETSYM(av, gensym("minuit"));
+    for (auto dev : x->m_minuit_devices)
+    {
+      (av+1, gensym(dev.name.c_str()));
+      (av+2, gensym(dev.host.c_str()));
+      A_SETFLOAT(av+3, dev.local_port);
+      A_SETFLOAT(av+4, dev.remote_port);
+
+      outlet_anything(x->m_dumpout, gensym("device"), 5, av);
+    }
+
+    (av, gensym("oscquery"));
+    for (auto dev : x->m_oscq_devices)
+    {
+      A_SETSYM(av+1, gensym(dev.name.c_str()));
+      std::stringstream ss;
+      ss << "ws://" << dev.host << ":" << dev.port;
+      A_SETSYM(av+2, gensym(ss.str().c_str()));
+
+      outlet_anything(x->m_dumpout, gensym("device"), 3, av);
+    }
+
+    if ( x->m_looking_for )
+    {
+      t_atom a;
+      (&a, x->m_looking_for);
+      t_client::connect(x, gensym("connect"), 1, &a);
+    }
+
+  } else {
+    clock_delay(x->m_clock,10);
+  }
+}
+
+void find_devices_async(t_client* x)
+{
+  x->m_done = false;
+  x->m_minuit_devices.clear();
+  x->m_oscq_devices.clear();
+
+  x->m_minuit_devices =  ossia::net::list_minuit_devices();
+  x->m_oscq_devices = ossia::net::list_oscquery_devices();
+
+  x->m_done = true;
+}
+
+void t_client::getdevices(t_client* x)
+{
+  if (x->m_async_thread)
+  {
+    object_error((t_object*)x, "already scanning network for device, please wait a bit.");
+  } else {
+    x->m_async_thread = new std::thread(find_devices_async,x);
+    x->m_clock = clock_new(x, (method)check_thread_status);
+    clock_delay(x->m_clock,1000);
+  }
+
+}
 
 void t_client::register_children(t_client* x)
 {
@@ -267,22 +411,6 @@ void t_client::register_children(t_client* x)
 
 void t_client::unregister_children()
 {
-  std::vector<t_object_base*> children_model = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.model"));
-
-  for (auto child : children_model)
-  {
-    if (child->m_otype == object_class::model)
-    {
-      t_model* model = (t_model*)child;
-      model->unregister();
-    }
-    else if (child->m_otype == object_class::param)
-    {
-      t_parameter* parameter = (t_parameter*)child;
-      parameter->unregister();
-    }
-  }
 
   std::vector<t_object_base*> children_view = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.view"));
@@ -302,37 +430,53 @@ void t_client::unregister_children()
   }
 }
 
-void t_client::loadbang(t_client* x)
+void t_client::on_parameter_created_callback(const ossia::net::parameter_base& param)
 {
-  // if (LB_LOAD == (int)type)
-  register_children(x);
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  A_SETSYM(a, gensym("create"));
+  A_SETSYM(a+1, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
-void t_client::explore(const ossia::net::node_base& node)
+void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
 {
-  for (const auto& child : node.children_copy())
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  A_SETSYM(a, gensym("delete"));
+  A_SETSYM(a+1, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
+}
+
+void t_client::update(t_client* x)
+{
+  // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
+  // for OSC Query
+
+  if (x->m_device)
   {
-    if (auto addr = child->get_parameter())
-    {
-      // attach to callback to display value update
-      addr->add_callback([=](const value& v) {
-        std::cerr << "[message] " << osc_parameter_string(*addr) << " <- "
-                  << value_to_pretty_string(v) << std::endl;
-      });
+    x->m_device->get_protocol().update(*x->m_device);
+    x->m_node = &x->m_device->get_root_node();
 
-      // update the value
-      addr->pull_value();
-    }
-
-    /*
-     fmt::MemoryWriter w;
-     w << *child;
-     std::cerr << w.str() << "\n";
-     */
-    std::cout << child->get_name() << std::endl;
-
-    explore(*child);
+    t_client::register_children(x);
   }
+}
+
+void t_client::disconnect(t_client* x)
+{
+  if (x->m_device)
+  {
+    x->unregister_children();
+    delete x->m_device;
+    x->m_device = nullptr;
+  }
+}
+
+void t_client::loadbang(t_client* x)
+{
+  register_children(x);
 }
 
 } // max namespace
