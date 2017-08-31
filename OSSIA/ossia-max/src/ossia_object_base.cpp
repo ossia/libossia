@@ -120,19 +120,20 @@ void t_matcher::set_value(const ossia::value& v)
 
   auto param = node->get_parameter();
 
-  ossia::value vv;
-  if ( parent->m_ounit != ossia::none )
-    vv = ossia::convert(v, param->get_unit(), *parent->m_ounit);
-  else
-    vv = v;
-
   auto filtered = ossia::net::filter_value(
         param->get_domain(),
-        vv,
+        v,
         param->get_bounding());
+
+  ossia::value converted;
+  if ( parent->m_ounit != ossia::none )
+    converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
+  else
+    converted = filtered;
+
   value_visitor<t_object_base> vm;
   vm.x = (t_object_base*)parent;
-  filtered.apply(vm);
+  converted.apply(vm);
 }
 
 void t_matcher::set_parent_addr()
