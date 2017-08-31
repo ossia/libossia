@@ -8,8 +8,11 @@ namespace ossia
 namespace pd
 {
 
-struct t_view : t_object_base
+struct t_view : public t_object_base
 {
+public:
+  t_view();
+
   using is_view = std::true_type;
 
   bool register_node(std::vector<ossia::net::node_base*> node);

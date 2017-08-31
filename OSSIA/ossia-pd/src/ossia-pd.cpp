@@ -83,12 +83,21 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   eclass_addmethod(c, (method) obj_namespace, "namespace", A_GIMME, 0);
   eclass_addmethod(c, (method) obj_preset,    "preset",    A_GIMME, 0);
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.ossia = c;
+  ossia_pd::ossia = c;
 
   post("Welcome to ossia library");
   post("build on %s at %s", __DATE__, __TIME__);
 }
+
+// initializers
+t_eclass* ossia_pd::client;
+t_eclass* ossia_pd::device;
+t_eclass* ossia_pd::logger;
+t_eclass* ossia_pd::model;
+t_eclass* ossia_pd::param;
+t_eclass* ossia_pd::remote;
+t_eclass* ossia_pd::view;
+t_eclass* ossia_pd::ossia;
 
 // ossia-pd constructor
 ossia_pd::ossia_pd():

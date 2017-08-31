@@ -18,6 +18,10 @@ namespace pd
 
 static void parameter_free(t_param* x);
 
+t_param::t_param():
+  t_object_base{ossia_pd::param}
+{ }
+
 bool t_param::register_node(std::vector<ossia::net::node_base*> node)
 {
   bool res = do_registration(node);
@@ -129,7 +133,8 @@ static void push_default_value(t_param* x)
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_param* x = (t_param*)eobj_new(ossia_pd.param);
+  t_param* x = new t_param();
+  // t_param* ox = (t_param*)eobj_new(ossia_pd.param);
 
   // TODO SANITIZE : memory leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
@@ -139,21 +144,13 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     ossia_pd.params.push_back(x);
     x->m_otype = object_class::param;
 
-    x->m_setout = nullptr;
     x->m_dataout = outlet_new((t_object*)x, nullptr);
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_parent_node = nullptr;
 
     x->m_access_mode = gensym("rw");
     x->m_bounding_mode = gensym("free");
     x->m_unit = gensym("");
     x->m_type = gensym("float");
-    x->m_priority = 0;
-    x->m_hidden = false;
-    x->m_ounit = ossia::none;
-    x->m_enable = true;
-    x->m_mute = false;
-    x->m_poll_interval = 10.;
 
     x->m_clock = clock_new(x, (t_method)push_default_value);
     x->m_poll_clock = clock_new(x, (t_method)t_object_base::output_value);
@@ -772,8 +769,7 @@ extern "C" void setup_ossia0x2eparam(void)
     // buggy
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.param = c;
+  ossia_pd::param = c;
 }
 } // pd namespace
 } // ossia namespace

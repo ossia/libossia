@@ -16,6 +16,10 @@ namespace pd
 
 static void model_free(t_model* x);
 
+t_model::t_model():
+  t_object_base{ossia_pd::model}
+{ }
+
 bool t_model::register_node(std::vector<ossia::net::node_base*> node)
 {
   bool res = do_registration(node);
@@ -286,6 +290,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
       model_free(x);
+      delete x;
       x = nullptr;
     }
   }
@@ -300,6 +305,8 @@ static void model_free(t_model* x)
   obj_dequarantining<t_model>(x);
   ossia_pd::instance().models.remove_all(x);
   clock_free(x->m_clock);
+
+  x->~t_model();
 }
 
 extern "C" void setup_ossia0x2emodel(void)
@@ -331,8 +338,7 @@ extern "C" void setup_ossia0x2emodel(void)
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy
   }
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.model = c;
+  ossia_pd::model = c;
 }
 } // pd namespace
 } // ossia namespace

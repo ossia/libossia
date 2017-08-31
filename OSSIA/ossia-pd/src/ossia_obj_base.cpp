@@ -200,6 +200,32 @@ void t_matcher::set_parent_addr()
 
 #pragma mark t_obj_base
 
+t_object_base::t_object_base(t_eclass* c)
+{
+  char buffer[MAXPDSTRING];
+
+  if (c)
+  {
+    m_obj.o_obj.te_g.g_pd = (t_pd)c;
+
+    if(c->c_class.c_patchable)
+    {
+      m_obj.o_obj.te_inlet = 0;
+      m_obj.o_obj.te_outlet = 0;
+    }
+
+    m_obj.o_nproxy = 0;
+    m_obj.o_proxy = NULL;
+    m_obj.o_canvas = canvas_getcurrent();
+
+    sprintf(buffer,"#%s%lx", c->c_class.c_name->s_name, (long unsigned int)this);
+    m_obj.o_id = gensym(buffer);
+    pd_bind(&m_obj.o_obj.ob_pd, m_obj.o_id);
+    sprintf(buffer,".x%lx.c", (long unsigned int)m_obj.o_canvas);
+    c->c_widget.w_dosave = (t_typ_method)eobj_dosave;
+  }
+}
+
 void t_object_base::is_deleted(const ossia::net::node_base& n)
 {
   if (!m_dead)

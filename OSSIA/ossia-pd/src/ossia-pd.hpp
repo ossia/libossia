@@ -35,14 +35,14 @@ public:
       return &instance().m_device;
     }
 
-    t_eclass* client{};
-    t_eclass* device{};
-    t_eclass* logger{};
-    t_eclass* model{};
-    t_eclass* param{};
-    t_eclass* remote{};
-    t_eclass* view{};
-    t_eclass* ossia{};
+    static t_eclass* client;
+    static t_eclass* device;
+    static t_eclass* logger;
+    static t_eclass* model;
+    static t_eclass* param;
+    static t_eclass* remote;
+    static t_eclass* view;
+    static t_eclass* ossia;
 
     ossia::safe_vector<t_param*> params;
     ossia::safe_vector<t_remote*> remotes;

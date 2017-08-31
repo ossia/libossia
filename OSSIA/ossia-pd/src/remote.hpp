@@ -8,9 +8,13 @@ namespace ossia
 namespace pd
 {
 
-struct t_remote : t_object_base
+class t_remote : public t_object_base
 {
+public:
   using is_view = std::true_type;
+
+  t_remote();
+
   bool register_node(std::vector<ossia::net::node_base*> node);
   bool do_registration(std::vector<ossia::net::node_base*> node);
   bool unregister();

@@ -10,9 +10,13 @@ namespace ossia
 namespace pd
 {
 
-struct t_param : t_object_base
+class t_param : public t_object_base
 {
+public:
   using is_model = std::true_type;
+
+  t_param();
+
   bool register_node(std::vector<ossia::net::node_base*> node);
   bool do_registration(std::vector<ossia::net::node_base*> node);
   bool unregister();
@@ -34,27 +38,27 @@ struct t_param : t_object_base
   void set_type();
 
   // attributes
-  t_symbol* m_type;
+  t_symbol* m_type{};
   t_atom m_default[OSSIA_PD_MAX_ATTR_SIZE];
   t_atom m_min[OSSIA_PD_MAX_ATTR_SIZE];
   t_atom m_max[OSSIA_PD_MAX_ATTR_SIZE];
   t_atom m_range[OSSIA_PD_MAX_ATTR_SIZE];
-  t_symbol* m_bounding_mode;
-  t_symbol* m_access_mode;
-  t_float m_repetition_filter = 0;
-  t_symbol* m_unit;
+  t_symbol* m_bounding_mode{};
+  t_symbol* m_access_mode{};
+  t_float m_repetition_filter{};
+  t_symbol* m_unit{};
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE];
   t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE];
-  int m_priority;
-  bool m_hidden;
+  int m_priority{};
+  bool m_hidden{};
 
   // size of size-variable attribute
-  long m_default_size;
-  long m_range_size;
-  long m_min_size;
-  long m_max_size;
-  long m_tags_size;
-  long m_description_size;
+  long m_default_size{};
+  long m_range_size{};
+  long m_min_size{};
+  long m_max_size{};
+  long m_tags_size{};
+  long m_description_size{};
 
   static ossia::safe_vector<t_param*>& quarantine();
 

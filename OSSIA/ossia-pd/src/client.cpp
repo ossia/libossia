@@ -23,6 +23,10 @@ namespace pd
 
 void client_getdevices(t_client* x);
 
+t_client::t_client():
+  t_object_base{ossia_pd::client}
+{ }
+
 static void client_free(t_client* x)
 {
   x->m_dead = true;
@@ -33,6 +37,8 @@ static void client_free(t_client* x)
   ossia_pd::instance().clients.remove_all(x);
   outlet_free(x->m_dumpout);
   register_quarantinized();
+
+  x->~t_client();
 }
 
 static void* client_new(t_symbol* name, int argc, t_atom* argv)
@@ -67,6 +73,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.device]/[ø.client] intance per patcher is allowed.");
       client_free(x);
+      delete x;
       x = nullptr;
     }
   }
@@ -444,8 +451,7 @@ extern "C" void setup_ossia0x2eclient(void)
 
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.client = c;
+  ossia_pd::client = c;
 
 }
 } // pd namespace

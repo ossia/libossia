@@ -14,6 +14,10 @@ namespace pd
 static t_eclass* view_class;
 static void view_free(t_view* x);
 
+t_view::t_view():
+  t_object_base{ossia_pd::view}
+{ }
+
 //****************//
 // Member methods //
 //****************//
@@ -182,8 +186,6 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->m_clock = clock_new(x, (t_method)obj_register<t_view>);
 
-    x->m_parent_node = nullptr;
-
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       t_symbol* address = atom_getsymbol(argv);
@@ -209,6 +211,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
       error(
           "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
       view_free(x);
+      delete x;
       x = nullptr;
     }
   }
@@ -223,6 +226,8 @@ static void view_free(t_view* x)
   obj_dequarantining<t_view>(x);
   ossia_pd::instance().views.remove_all(x);
   clock_free(x->m_clock);
+
+  x->~t_view();
 }
 
 static void view_bind(t_view* x, t_symbol* address)
@@ -254,8 +259,7 @@ extern "C" void setup_ossia0x2eview(void)
 
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.view = c;
+  ossia_pd::view = c;
 }
 
 ossia::safe_vector<t_view*>& t_view::quarantine()

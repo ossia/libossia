@@ -16,6 +16,10 @@ namespace ossia
 namespace pd
 {
 
+t_device::t_device():
+  t_object_base{ossia_pd::device}
+{ }
+
 static void device_free(t_device* x)
 {
   x->m_dead = true;
@@ -32,6 +36,8 @@ static void device_free(t_device* x)
   ossia_pd::instance().devices.remove_all(x);
   outlet_free(x->m_dumpout);
   register_quarantinized();
+
+  x->~t_device();
 }
 
 static void* device_new(t_symbol* name, int argc, t_atom* argv)
@@ -73,6 +79,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.device]/[ø.client] instance per patcher is allowed.");
       device_free(x);
+      delete x;
       x = nullptr;
     }
   }
@@ -377,8 +384,7 @@ extern "C" void setup_ossia0x2edevice(void)
     eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.device = c;
+  ossia_pd::device = c;
 }
 } // pd namespace
 } // ossia namespace

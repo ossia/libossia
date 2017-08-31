@@ -8,9 +8,12 @@ namespace ossia
 namespace pd
 {
 
-struct t_client : t_object_base
+class t_client : public t_object_base
 {
   ossia::net::local_protocol m_local_proto;
+
+public:
+  t_client();
 
   static void register_children(t_client* x);
   void unregister_children();

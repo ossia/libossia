@@ -87,8 +87,12 @@ private:
 
 };
 
-struct t_object_base
+class t_object_base
 {
+
+public:
+  t_object_base(t_eclass* c);
+
   t_eobj m_obj;
 
   t_outlet* m_setout{};

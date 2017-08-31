@@ -16,6 +16,10 @@ namespace pd
 
 static void remote_free(t_remote* x);
 
+t_remote::t_remote():
+  t_object_base{ossia_pd::remote}
+{ }
+
 bool t_remote::register_node(std::vector<ossia::net::node_base*> node)
 {
   bool res = do_registration(node);
@@ -233,7 +237,8 @@ static void remote_bind(t_remote* x, t_symbol* address)
 static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
+  t_remote* x = new t_remote();
+  // t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
 
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
@@ -297,6 +302,7 @@ static void remote_free(t_remote* x)
   outlet_free(x->m_setout);
   outlet_free(x->m_dataout);
   outlet_free(x->m_dumpout);
+
   x->~t_remote();
 }
 
@@ -332,8 +338,7 @@ extern "C" void setup_ossia0x2eremote(void)
 
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.remote = c;
+  ossia_pd::remote = c;
 }
 
 ossia::safe_vector<t_remote*>& t_remote::quarantine()
