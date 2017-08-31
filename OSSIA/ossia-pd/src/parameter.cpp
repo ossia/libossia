@@ -285,15 +285,6 @@ void t_param::set_enable()
   }
 }
 
-void t_param::set_mute()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node, m_mute);
-  }
-}
-
 void t_param::set_type()
 {
   for (t_matcher& m : m_matchers)
@@ -646,13 +637,6 @@ void parameter_get_enable(t_param*x)
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
-void parameter_get_mute(t_param*x)
-{
-  t_atom a;
-  SETFLOAT(&a,x->m_mute);
-  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
-}
-
 t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
@@ -683,8 +667,7 @@ t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, vo
         x->set_enable();
       else if ( s == gensym("type") )
         x->set_type();
-      else if ( s == gensym("mute") )
-        x->set_mute();
+
   }
   return 0;
 }
@@ -734,7 +717,6 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_INT(         c, "priority",          0, t_param, m_priority);
     CLASS_ATTR_INT(         c, "hidden",            0, t_param, m_hidden);
     CLASS_ATTR_INT(         c, "enable",            0, t_param, m_enable);
-    CLASS_ATTR_INT(         c, "mute",              0, t_param, m_mute);
 
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
@@ -755,7 +737,6 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter_get_tags,              "gettags",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_description,       "getdescription",       A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_enable,            "getenable",            A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_get_mute,              "getmute",              A_NULL, 0);
 
     eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
 

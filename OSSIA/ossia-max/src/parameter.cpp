@@ -112,25 +112,12 @@ extern "C" void ossia_parameter_setup()
       c, "enable", 0, t_parameter,
       m_hidden);
 
-  CLASS_ATTR_LONG(
-      c, "mute", 0, t_parameter,
-      m_hidden);
-
-  // TODO : for each attribute :
-  // CLASS_ATTR_ADD_FLAGS(c, "attrname",
-  // ATTR_SET_OPAQUE);
-  // note : ATTR_SET_OPAQUE means that the attribute can't be changed by
-  // message afterward
-  // AV: why ? I understand user wont be able to change attribute by sending message
-
   CLASS_ATTR_STYLE(
       c, "repetition_filter", 0, "onoff");
   CLASS_ATTR_STYLE(
       c, "hidden", 0, "onoff");
   CLASS_ATTR_STYLE(
       c, "enable", 0, "onoff");
-  CLASS_ATTR_STYLE(
-      c, "mute", 0, "onoff");
 
   class_register(CLASS_BOX, c);
 
@@ -298,8 +285,6 @@ ossia_parameter_notify(t_parameter *x, t_symbol *s,
       x->set_enable();
     else if ( attrname == gensym("type") )
       x->set_type();
-    else if ( attrname == gensym("mute") )
-      x->set_mute();
 
   }
 }
@@ -500,15 +485,6 @@ void t_parameter::set_enable()
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_disabled(*node, !m_enable);
-  }
-}
-
-void t_parameter::set_mute()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node, m_mute);
   }
 }
 
