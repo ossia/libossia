@@ -96,6 +96,10 @@ public:
       on_parameter_created; // The parameter being created
   Nano::Signal<void(const parameter_base&)>
       on_parameter_removing; // The node whose parameter was removed
+  Nano::Signal<void(const parameter_base&)>
+      on_message; // A received value
+  Nano::Signal<void(ossia::string_view, const ossia::value& val)>
+      on_unhandled_message; // A received value on a non-existing address
 
   //! Called when a network client requests the creation of an instance.
   //!  First argument is the path to the parent.

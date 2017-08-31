@@ -12,6 +12,7 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
 namespace ossia
@@ -480,50 +481,7 @@ void oscquery_mirror_protocol::on_OSCMessage(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  auto addr_txt = m.AddressPattern();
-  auto addr = m_listening.find(addr_txt);
-  if (addr && *addr)
-  {
-    net::update_value(**addr, m);
-  }
-  else
-  {
-    // Maybe waiting for a get()
-    auto get_opt = m_getOSCPromises.find_and_take(addr_txt);
-    if (get_opt)
-    {
-      net::update_value(*get_opt->address, m);
-      get_opt->promise.set_value();
-    }
-    else
-    {
-      // We still want to save the value even if it is not listened to.
-      auto node = find_node(m_device->get_root_node(), addr_txt);
-      if (node)
-      {
-        auto base_addr = node->get_parameter();
-        if (base_addr)
-        {
-          net::update_value_quiet(*base_addr, m);
-        }
-      }
-      else
-      {
-        // Try to handle pattern matching
-        auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
-        for(auto n : nodes)
-        {
-          if (auto addr = n->get_parameter())
-          {
-            if(m_listening.find(net::osc_parameter_string(*n)))
-              net::update_value(*addr, m);
-            else
-              net::update_value_quiet(*addr, m);
-          }
-        }
-      }
-    }
-  }
+  ossia::net::handle_osc_message(m, m_listening, *m_device);
 
   if (m_logger.inbound_logger)
     m_logger.inbound_logger->info("In: {0}", m);
@@ -665,6 +623,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
     if (m_logger.inbound_logger)
       m_logger.inbound_logger->warn(
           "Error while parsing: {} ==> {}", e.what(), message);
+    return false;
   }
 
   if (m_logger.inbound_logger)

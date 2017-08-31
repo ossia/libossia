@@ -14,11 +14,11 @@
 #include <boost/algorithm/string.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 namespace ossia
 {
 namespace net
 {
-
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port)
     : m_sender{std::make_unique<osc::sender<osc_outbound_visitor>>(
@@ -219,38 +219,7 @@ void osc_protocol::on_received_message(
 {
   if (!m_learning)
   {
-    auto addr_txt = m.AddressPattern();
-    auto addr = m_listening.find(addr_txt);
-    if (addr && *addr)
-    {
-      update_value(**addr, m);
-    }
-    else
-    {
-      // We still want to save the value even if it is not listened to.
-      if (auto n = find_node(m_device->get_root_node(), addr_txt))
-      {
-        if (auto base_addr = n->get_parameter())
-        {
-          update_value_quiet(*base_addr, m);
-        }
-      }
-      else
-      {
-        // Try to handle pattern matching
-        auto nodes = find_nodes(m_device->get_root_node(), addr_txt);
-        for(auto n : nodes)
-        {
-          if (auto addr = n->get_parameter())
-          {
-             if(m_listening.find(net::osc_parameter_string(*n)))
-               net::update_value(*addr, m);
-             else
-               net::update_value_quiet(*addr, m);
-          }
-        }
-      }
-    }
+    handle_osc_message(m, m_listening, *m_device);
   }
   else
   {
@@ -274,6 +243,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
   // TODO put them in a hash map instead.
   // Find-or-add algorithm
   ossia::string_view addr = m.AddressPattern();
+  // TODO string -> string_view
   std::vector<std::string> v = address_parts(addr);
 
   bool is_new = false;
@@ -335,7 +305,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       if (is_vec<3>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC3F);
-        addr->set_value(convert<ossia::vec2f>(val));
+        addr->set_value(convert<ossia::vec3f>(val));
       }
       else
       {
@@ -352,7 +322,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       if (is_vec<4>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC4F);
-        addr->set_value(convert<ossia::vec2f>(val));
+        addr->set_value(convert<ossia::vec4f>(val));
       }
       else
       {

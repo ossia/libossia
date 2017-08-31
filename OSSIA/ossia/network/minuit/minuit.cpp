@@ -11,6 +11,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 
 namespace ossia
@@ -408,23 +409,7 @@ void minuit_protocol::on_received_message(
 
   if (address.size() > 0 && address[0] == '/')
   {
-    // Handle the OSC-like case where we receive a plain value.
-    auto addr = m_listening.find(std::string(address)); // TODO string_set<>
-    if (addr && *addr)
-    {
-      update_value(**addr, m);
-    }
-    else
-    {
-      // We still want to save the value even if it is not listened to.
-      if (auto n = find_node(m_device->get_root_node(), address))
-      {
-        if (auto base_addr = n->get_parameter())
-        {
-          update_value_quiet(*base_addr, m);
-        }
-      }
-    }
+    ossia::net::handle_osc_message(m, m_listening, *m_device);
   }
   else
   {

@@ -244,6 +244,17 @@ struct osc_utilities
     }
     return t;
   }
+
+  static ossia::value create_any(
+      oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
+  {
+    switch(numArguments)
+    {
+      case 0: return ossia::impulse{};
+      case 1: return create_value(cur_it);
+      default: return create_list(cur_it, numArguments);
+    }
+  }
 };
 
 struct osc_inbound_visitor

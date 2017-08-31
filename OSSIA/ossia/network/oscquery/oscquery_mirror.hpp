@@ -145,7 +145,6 @@ private:
   moodycamel::ReaderWriterQueue<get_ws_promise> m_getWSPromises;
   moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
-  promises_map m_getOSCPromises;
 
   std::thread m_wsThread;
   std::string m_websocketHost;

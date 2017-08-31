@@ -18,6 +18,7 @@
 #include <ossia/network/oscquery/detail/server.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
@@ -365,38 +366,7 @@ void oscquery_server_protocol::remove_node(
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) try
 {
-  auto addr_txt = m.AddressPattern();
-  auto addr = m_listening.find(addr_txt);
-  if (addr && *addr)
-  {
-    net::update_value(**addr, m);
-  }
-  else
-  {
-    // We still want to save the value even if it is not listened to.
-    if (auto n = net::find_node(m_device->get_root_node(), addr_txt))
-    {
-      if (auto base_addr = n->get_parameter())
-      {
-        net::update_value_quiet(*base_addr, m);
-      }
-    }
-    else
-    {
-      // Try to handle pattern matching
-      auto nodes = net::find_nodes(m_device->get_root_node(), addr_txt);
-      for(auto n : nodes)
-      {
-        if (auto addr = n->get_parameter())
-        {
-          if(m_listening.find(net::osc_parameter_string(*n)))
-            net::update_value(*addr, m);
-          else
-            net::update_value_quiet(*addr, m);
-        }
-      }
-    }
-  }
+  ossia::net::handle_osc_message(m, m_listening, *m_device);
 
   if(m_echo)
   {
@@ -540,25 +510,27 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
 {
   if (m_logger.inbound_logger)
     m_logger.inbound_logger->info("OSCQuery WS In: {}", message);
+
   if (message.empty())
+  {
     return {};
+  }
   else if (message[0] == '/')
   {
     return query_parser::parse_http_request(
         message, get_query_answerer{}(*this, hdl));
   }
-  else if (message[0] == '{')
+  else
   {
     rapidjson::Document doc;
     doc.Parse(message); // TODO ParseInsitu
 
-    return json_query_answerer{}(*this, hdl, doc);
-  }
-  else
-  {
-    return {};
+    if(!doc.HasParseError())
+      return json_query_answerer{}(*this, hdl, doc);
   }
   // Exceptions are catched in the caller.
+
+  return {};
 }
 }
 }
