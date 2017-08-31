@@ -61,7 +61,7 @@ t_matcher::t_matcher(t_matcher&& other)
         param->remove_callback(*callbackit);
 
       callbackit = param->add_callback(
-        [=] (const ossia::value& v) { set_value(v); });
+        [=] (const ossia::value& v) { enqueue_value(v); });
 
       set_parent_addr();
     }
@@ -87,7 +87,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
         param->remove_callback(*callbackit);
 
       callbackit = param->add_callback(
-        [=] (const ossia::value& v) { set_value(v); });
+        [=] (const ossia::value& v) { enqueue_value(v); });
 
       set_parent_addr();
     }
@@ -101,7 +101,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, t_object_base* p) :
 {
   if (auto param = node->get_parameter())
     callbackit = param->add_callback(
-      [=](const ossia::value& v) { set_value(v); });
+      [=](const ossia::value& v) { enqueue_value(v); });
 
   node->about_to_be_deleted.connect<t_object_base, &t_object_base::is_deleted>(
         parent);
@@ -144,26 +144,35 @@ t_matcher::~t_matcher()
   node = nullptr;
 }
 
-void t_matcher::set_value(const ossia::value& v)
+void t_matcher::enqueue_value(const ossia::value& v)
 {
-  outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+  m_queue_list.enqueue(v);
+}
 
-  auto param = node->get_parameter();
+void t_matcher::output_value()
+{
+  ossia::value val;
+  while(m_queue_list.try_dequeue(val)) {
 
-  auto filtered = ossia::net::filter_value(
-        param->get_domain(),
-        v,
-        param->get_bounding());
+    outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
-  ossia::value converted;
-  if ( parent->m_ounit != ossia::none )
-    converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
-  else
-    converted = filtered;
+    auto param = node->get_parameter();
 
-  value_visitor<t_object_base> vm;
-  vm.x = (t_object_base*)parent;
-  converted.apply(vm);
+    auto filtered = ossia::net::filter_value(
+          param->get_domain(),
+          val,
+          param->get_bounding());
+
+    ossia::value converted;
+    if ( parent->m_ounit != ossia::none )
+      converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
+    else
+      converted = filtered;
+
+    value_visitor<t_object_base> vm;
+    vm.x = (t_object_base*)parent;
+    converted.apply(vm);
+  }
 }
 
 void t_matcher::set_parent_addr()
@@ -215,58 +224,61 @@ void t_object_base::push(t_object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node;
 
-  for (auto& m : x->m_matchers)
+  if (!x->m_mute)
   {
-    node = m.get_node();
-    auto parent = m.get_parent();
-    auto param = node->get_parameter();
-
-    if (node && param)
+    for (auto& m : x->m_matchers)
     {
-      if (argc == 1)
+      node = m.get_node();
+      auto parent = m.get_parent();
+      auto param = node->get_parameter();
+
+      if (node && param)
       {
-        ossia::value v;
-        // convert one element array to single element
-        if (argv->a_type == A_SYMBOL)
-          v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
-        else if (argv->a_type == A_FLOAT)
-          v = ossia::value(atom_getfloat(argv));
-
-        ossia::value vv;
-
-        if ( parent->m_ounit != ossia::none )
+        if (argc == 1)
         {
+          ossia::value v;
+          // convert one element array to single element
+          if (argv->a_type == A_SYMBOL)
+            v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
+          else if (argv->a_type == A_FLOAT)
+            v = ossia::value(atom_getfloat(argv));
+
+          ossia::value vv;
+
+          if ( parent->m_ounit != ossia::none )
+          {
+            auto src_unit = *parent->m_ounit;
+            auto dst_unit = param->get_unit();
+
+            vv = ossia::convert(v, src_unit, dst_unit);
+          } else
+            vv = v;
+
+          node->get_parameter()->push_value(vv);
+        }
+        else
+        {
+          std::vector<ossia::value> list;
+
+          if ( s && s != gensym("list") )
+            list.push_back(std::string(s->s_name));
+
+          for (; argc > 0; argc--, argv++)
+          {
+            if (argv->a_type == A_SYMBOL)
+              list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            else if (argv->a_type == A_FLOAT)
+              list.push_back(atom_getfloat(argv));
+            else
+              pd_error(x, "value type not handled");
+          }
           auto src_unit = *parent->m_ounit;
           auto dst_unit = param->get_unit();
 
-          vv = ossia::convert(v, src_unit, dst_unit);
-        } else
-          vv = v;
+          ossia::convert(list, src_unit, dst_unit);
 
-        node->get_parameter()->push_value(vv);
-      }
-      else
-      {
-        std::vector<ossia::value> list;
-
-        if ( s && s != gensym("list") )
-          list.push_back(std::string(s->s_name));
-
-        for (; argc > 0; argc--, argv++)
-        {
-          if (argv->a_type == A_SYMBOL)
-            list.push_back(std::string(atom_getsymbol(argv)->s_name));
-          else if (argv->a_type == A_FLOAT)
-            list.push_back(atom_getfloat(argv));
-          else
-            pd_error(x, "value type not handled");
+          node->get_parameter()->push_value(list);
         }
-        auto src_unit = *parent->m_ounit;
-        auto dst_unit = param->get_unit();
-
-        ossia::convert(list, src_unit, dst_unit);
-
-        node->get_parameter()->push_value(list);
       }
     }
   }
@@ -280,8 +292,18 @@ void t_object_base::bang(t_object_base* x)
 {
   for (auto& matcher : x->m_matchers)
   {
-    matcher.set_value(matcher.get_node()->get_parameter()->value());
+    matcher.enqueue_value(matcher.get_node()->get_parameter()->value());
+    matcher.output_value();
   }
+}
+
+void t_object_base::output_value(t_object_base* x)
+{
+  for (auto& m : x->m_matchers)
+  {
+    m.output_value();
+  }
+  clock_set(x->m_poll_clock, x->m_poll_interval);
 }
 
 /**

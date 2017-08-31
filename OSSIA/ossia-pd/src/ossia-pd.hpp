@@ -54,6 +54,7 @@ public:
     ossia::safe_vector<t_select_clock*> select_clocks;
 
     t_symbol* sym_addr;
+    t_symbol* sym_set;
 
 
     ossia::safe_vector<t_model*> model_quarantine;

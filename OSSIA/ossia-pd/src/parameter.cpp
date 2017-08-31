@@ -28,6 +28,8 @@ bool t_param::register_node(std::vector<ossia::net::node_base*> node)
     {
       obj_register<t_remote>(static_cast<t_remote*>(remote));
     }
+
+    clock_delay(m_poll_clock,1);
   }
   else
     obj_quarantining<t_param>(this);
@@ -98,6 +100,7 @@ bool t_param::do_registration(std::vector<ossia::net::node_base*> _nodes)
 bool t_param::unregister()
 {
   clock_unset(m_clock);
+  clock_unset(m_poll_clock);
 
   m_matchers.clear();
   m_nodes.clear();
@@ -149,8 +152,11 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->m_hidden = false;
     x->m_ounit = ossia::none;
     x->m_enable = true;
+    x->m_mute = false;
+    x->m_poll_interval = 10.;
 
     x->m_clock = clock_new(x, (t_method)push_default_value);
+    x->m_poll_clock = clock_new(x, (t_method)t_object_base::output_value);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -637,6 +643,20 @@ void parameter_get_enable(t_param*x)
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
+void parameter_get_mute(t_param*x)
+{
+  t_atom a;
+  SETFLOAT(&a,x->m_mute);
+  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+}
+
+void parameter_get_poll_interval(t_param*x)
+{
+  t_atom a;
+  SETFLOAT(&a,x->m_poll_interval);
+  outlet_anything(x->m_dumpout, gensym("poll_interval"), 1, &a);
+}
+
 t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
@@ -682,6 +702,9 @@ static void parameter_free(t_param* x)
   outlet_free(x->m_dataout);
   outlet_free(x->m_dumpout);
 
+  clock_free(x->m_clock);
+  clock_free(x->m_poll_clock);
+
   x->~t_param();
 }
 
@@ -717,6 +740,8 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_INT(         c, "priority",          0, t_param, m_priority);
     CLASS_ATTR_INT(         c, "hidden",            0, t_param, m_hidden);
     CLASS_ATTR_INT(         c, "enable",            0, t_param, m_enable);
+    CLASS_ATTR_INT(         c, "mute",              0, t_param, m_mute);
+    CLASS_ATTR_INT(         c, "poll_interval",     0, t_param, m_poll_interval);
 
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
@@ -737,6 +762,9 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter_get_tags,              "gettags",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_description,       "getdescription",       A_NULL, 0);
     eclass_addmethod(c, (method) parameter_get_enable,            "getenable",            A_NULL, 0);
+
+    eclass_addmethod(c, (method) parameter_get_mute,              "getmute",              A_NULL, 0);
+    eclass_addmethod(c, (method) parameter_get_poll_interval,     "getpollinterval",      A_NULL, 0);
 
     eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
 

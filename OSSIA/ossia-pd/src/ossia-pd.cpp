@@ -96,6 +96,7 @@ ossia_pd::ossia_pd():
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
   sym_addr = gensym("address");
+  sym_set  = gensym("set");
 }
 
 ossia_pd::~ossia_pd()

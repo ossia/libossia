@@ -19,8 +19,8 @@ namespace pd
 static void device_free(t_device* x)
 {
   x->m_dead = true;
-  clock_unset(x->m_regclock);
-  clock_free(x->m_regclock);
+  clock_unset(x->m_clock);
+  clock_free(x->m_clock);
 
   // TODO why is this necessary since all children
   // should have register to node.about_to_be_deleted() signal
@@ -63,8 +63,8 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_nodes = {&x->m_device->get_root_node()};
     x->m_parent_node = nullptr;
-    x->m_regclock = clock_new(x, (t_method)t_device::register_children);
-    clock_delay(x->m_regclock, 0);
+    x->m_clock = clock_new(x, (t_method)t_device::register_children);
+    clock_delay(x->m_clock, 0);
 
     ebox_attrprocess_viabinbuf(x, d);
 

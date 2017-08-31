@@ -180,8 +180,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_otype = object_class::view;
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_clock = nullptr;
-    x->m_regclock = clock_new(x, (t_method)obj_register<t_view>);
+    x->m_clock = clock_new(x, (t_method)obj_register<t_view>);
 
     x->m_parent_node = nullptr;
 
@@ -197,7 +196,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
       // and object will be added to patcher's objects list (aka canvas g_list)
       // after model_new() returns.
       // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->m_regclock, 0);
+      clock_delay(x->m_clock, 0);
     }
     else
     {
@@ -223,7 +222,7 @@ static void view_free(t_view* x)
   x->unregister();
   obj_dequarantining<t_view>(x);
   ossia_pd::instance().views.remove_all(x);
-  clock_free(x->m_regclock);
+  clock_free(x->m_clock);
 }
 
 static void view_bind(t_view* x, t_symbol* address)

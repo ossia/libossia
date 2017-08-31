@@ -7,6 +7,7 @@
 extern "C" {
 #include <cicm_wrapper.h>
 }
+#include <readerwriterqueue.h>
 
 #define OSSIA_PD_MAX_ATTR_SIZE 256
 
@@ -64,7 +65,8 @@ public:
   t_matcher& operator=(const t_matcher&) = delete;
   t_matcher& operator=(t_matcher&& other);
 
-  void set_value(const ossia::value& v);
+  void enqueue_value(const ossia::value& v);
+  void output_value();
   auto get_node() const { return node; }
   auto get_parent() const { return parent; }
   void set_parent_addr();
@@ -72,13 +74,14 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
-
 private:
   ossia::net::node_base* node{};
   t_object_base* parent{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
+
+  moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
   t_atom m_addr;
 
@@ -101,9 +104,9 @@ struct t_object_base
   bool m_mute{};
   bool m_enable{};
 
-  t_clock* m_clock{};
-  t_clock* m_regclock{};   // registration clock
-  t_clock* m_unregclock{}; // unregistration clock
+  t_clock* m_clock{};   // multi-purpose clock
+  t_clock* m_poll_clock{}; // value polling clock
+  float m_poll_interval;
   std::chrono::milliseconds m_last_click{};
 
   ossia::optional<ossia::unit_t> m_ounit;
@@ -118,6 +121,8 @@ struct t_object_base
   // TODO why some methods are inside t_obj_base class and other are outside ?
   static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
   static void bang(t_object_base* x);
+  static void output_value(t_object_base* x);
+
 };
 
 /**
