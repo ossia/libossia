@@ -1,4 +1,4 @@
-#N canvas 357 61 537 160 10;
+#N canvas 357 93 537 160 10;
 #N canvas 357 244 537 644 localDevice 1;
 #X obj 80 90 ossia.remote foo;
 #X floatatom 45 91 5 0 0 0 - - -, f 5;
@@ -23,13 +23,13 @@ osssia.param;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X restore 407 164 pd model;
-#X obj 153 545 ossia.remote /sub/bar;
-#X floatatom 116 546 5 0 0 0 - - -, f 5;
+#X obj 153 575 ossia.remote /sub/bar;
+#X floatatom 116 576 5 0 0 0 - - -, f 5;
 #X text 35 17 Here the remote connects to a local device and a local
 parameter \, it acts more or less like a send/receive pair.;
 #X text 38 165 remotes are also used in :;
 #X text 288 164 which works with;
-#X text 41 494 when there are several levels of hierarchies \, one
+#X text 41 524 when there are several levels of hierarchies \, one
 can use absolute addresses \, refering to the current device's root
 \, and starting with a leading slash:;
 #X text 41 59 the name of the remote binds it to the similarly named
@@ -78,7 +78,7 @@ can use another (convertible unit) - see;
 #X connect 14 0 13 0;
 #X connect 15 0 1 0;
 #X restore 180 244 pd units;
-#X text 38 579 NB: There is no [ossia.device] here so all ossia objects
+#X text 38 609 NB: There is no [ossia.device] here so all ossia objects
 refer to the default global device - see [ossia] for more on that,
 f 65;
 #N canvas 768 122 288 95 more_models 0;
@@ -141,26 +141,26 @@ f 65;
 to address several params with one object;
 #X obj 83 341 ø.remote subModel.[0-3]/bar*, f 30;
 #X floatatom 39 342 5 0 0 0 - - -, f 5;
-#N canvas 0 22 196 135 (subpatch) 0;
+#N canvas 0 120 196 135 (subpatch) 1;
 #X obj 45 21 inlet;
 #X obj 45 42 route address;
 #X obj 45 64 symbol;
-#X obj 43 88 outlet, f 5;
+#X obj 45 85 outlet, f 7;
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
 #X restore 311 341 pd;
 #X symbolatom 311 375 23 0 0 0 - - -, f 23;
-#X text 31 402 (note: don't use print with a lot of messages \, that
+#X text 31 432 (note: don't use print with a lot of messages \, that
 will jam pd), f 64;
-#X text 35 369 when receiving a value \, the origin address is output
+#X text 35 399 when receiving a value \, the origin address is output
 on the 3rd outlet:;
-#X text 34 424 hint: double click on the remote and change values in
+#X text 34 454 hint: double click on the remote and change values in
 the models to see this in action, f 65;
 #X text 119 131 _______________________________;
 #X text 120 190 _______________________________;
 #X text 122 268 _______________________________;
-#X text 116 464 _______________________________;
+#X text 116 494 _______________________________;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 4 0;

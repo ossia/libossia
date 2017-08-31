@@ -1,4 +1,4 @@
-#N canvas 197 93 1166 778 10;
+#N canvas 240 113 1166 778 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
 #X text 668 119 bool : bollean value \, 0 or 1;
@@ -205,12 +205,12 @@ float-list minimum and maximum.;
 #X obj 390 148 s \$0-param_bar;
 #X obj 30 268 s \$0-param_bar;
 #X obj 180 268 s \$0-param_bar;
-#X obj 410 268 s \$0-param_bar;
-#X obj 530 268 s \$0-param_bar;
+#X obj 539 264 s \$0-param_bar;
+#X obj 516 407 s \$0-param_bar;
 #X obj 30 378 s \$0-param_bar;
 #X obj 210 378 s \$0-param_bar;
-#X msg 400 329 unit speed.m/s;
-#X obj 390 378 s \$0-param_bar;
+#X msg 366 329 unit speed.m/s;
+#X obj 356 378 s \$0-param_bar;
 #X msg 30 59 range 0 1;
 #X msg 40 79 range -10 10;
 #X msg 55 123 getrange;
@@ -262,30 +262,35 @@ float-list minimum and maximum.;
 #X msg 205 243 gethidden;
 #X obj 180 198 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 410 219 priority \$1;
-#X msg 435 243 getpriority;
-#X floatatom 410 197 5 0 0 0 - - -, f 5;
-#X msg 530 199 access_mode bi;
-#X msg 555 243 getaccess_mode;
-#X msg 540 219 access_mode get;
+#X msg 539 215 priority \$1;
+#X msg 564 239 getpriority;
+#X floatatom 539 193 5 0 0 0 - - -, f 5;
+#X msg 516 338 access_mode bi;
+#X msg 541 382 getaccess_mode;
+#X msg 526 358 access_mode get;
 #X msg 30 329 repetition_filter \$1;
 #X msg 45 353 getrepetition_filter;
 #X obj 30 310 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 235 353 gettags;
 #X msg 210 331 tags graphic core;
-#X msg 415 353 getdescription;
+#X msg 381 353 getdescription;
 #X obj 290 268 s \$0-param_bar;
 #X obj 290 198 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 290 219 enable \$1;
 #X msg 315 243 getenable;
-#X msg 390 309 description Something meaningful;
+#X msg 356 309 description Something meaningful;
 #X obj 30 524 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
 "My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
 bi @range 0 2;
 #X text 20 6 Each attribute can be set and get via a message from the
 patcher.;
+#X obj 410 268 s \$0-param_bar;
+#X obj 410 198 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 435 243 getmute;
+#X msg 410 219 mute \$1;
 #X connect 1 0 58 0;
 #X connect 11 0 12 0;
 #X connect 13 0 0 0;
@@ -332,6 +337,9 @@ patcher.;
 #X connect 57 0 12 0;
 #X connect 58 0 20 0;
 #X connect 58 1 28 0;
+#X connect 61 0 63 0;
+#X connect 62 0 60 0;
+#X connect 63 0 60 0;
 #X restore 55 536 pd attributes_get/set;
 #X msg 291 336 reset;
 #X text 120 305 send attribute values and parameter state through rightmost
