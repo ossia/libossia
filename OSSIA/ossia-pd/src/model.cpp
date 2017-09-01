@@ -20,9 +20,9 @@ t_model::t_model():
   t_object_base{ossia_pd::model}
 { }
 
-bool t_model::register_node(const std::vector<ossia::net::node_base*>& node)
+bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
+  bool res = do_registration(nodes);
   if (res)
   {
     register_children();
@@ -273,16 +273,14 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
         pd_error(x, "You have to pass a name as the first argument");
       }
 
-      x->m_parent_node = nullptr;
-
       ebox_attrprocess_viabinbuf(x, d);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
       // and object will be added to patcher's objects list (aka canvas g_list)
       // after model_new() returns.
-      // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->m_clock, 0);
+      // clock_set uses ticks as time unit
+      clock_set(x->m_clock, 1);
     }
 
     if (find_peer(x))

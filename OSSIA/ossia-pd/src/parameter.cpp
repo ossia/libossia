@@ -22,9 +22,9 @@ t_param::t_param():
   t_object_base{ossia_pd::param}
 { }
 
-bool t_param::register_node(const std::vector<ossia::net::node_base*>& node)
+bool t_param::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
+  bool res = do_registration(nodes);
   if (res)
   {
     obj_dequarantining<t_param>(this);
@@ -49,51 +49,51 @@ bool t_param::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
   for (auto node : _nodes)
   {
-  m_parent_node = node;
+    m_parent_node = node;
 
-  auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
+    auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
 
-  for (auto n : nodes)
-  {
-    ossia::net::parameter_base* local_param{};
-
-    auto type = symbol2val_type(m_type);
-
-    if ( type != ossia::val_type::NONE )
-      local_param = n->create_parameter(type);
-    else
+    for (auto n : nodes)
     {
-      pd_error(
-            this,
-            "type should one of: float, symbol, int, vec2f, "
-            "vec3f, vec4f, bool, list, char");
+      ossia::net::parameter_base* local_param{};
+
+      auto type = symbol2val_type(m_type);
+
+      if ( type != ossia::val_type::NONE )
+        local_param = n->create_parameter(type);
+      else
+      {
+        pd_error(
+              this,
+              "type should one of: float, symbol, int, vec2f, "
+              "vec3f, vec4f, bool, list, char");
+      }
+      if (!local_param)
+        return false;
+
+      local_param->set_repetition_filter(
+            m_repetition_filter ? ossia::repetition_filter::ON
+                                : ossia::repetition_filter::OFF);
+
+      ossia::net::set_priority(local_param->get_node(), m_priority);
+
+      ossia::net::set_disabled(local_param->get_node(), !m_enable);
+
+      ossia::net::set_hidden(local_param->get_node(), m_hidden);
+
+      t_matcher matcher{n,this};
+      m_matchers.push_back(std::move(matcher));
+      m_nodes.push_back(n);
     }
-    if (!local_param)
-      return false;
 
-    local_param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
-
-    ossia::net::set_priority(local_param->get_node(), m_priority);
-
-    ossia::net::set_disabled(local_param->get_node(), !m_enable);
-
-    ossia::net::set_hidden(local_param->get_node(), m_hidden);
-
-    t_matcher matcher{n,this};
-    m_matchers.push_back(std::move(matcher));
-    m_nodes.push_back(n);
-  }
-
-  set_description();
-  set_tags();
-  set_access_mode();
-  set_unit();
-  set_bounding_mode();
-  set_range();
-  set_minmax();
-  set_default();
+    set_description();
+    set_tags();
+    set_access_mode();
+    set_unit();
+    set_bounding_mode();
+    set_range();
+    set_minmax();
+    set_default();
   }
 
   clock_delay(m_clock, 0);
@@ -647,11 +647,11 @@ void parameter_get_mute(t_param*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void parameter_get_poll_interval(t_param*x)
+void parameter_get_rate(t_param*x)
 {
   t_atom a;
-  SETFLOAT(&a,x->m_poll_interval);
-  outlet_anything(x->m_dumpout, gensym("poll_interval"), 1, &a);
+  SETFLOAT(&a,x->m_rate);
+  outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
 }
 
 t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
@@ -738,7 +738,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_INT(         c, "hidden",            0, t_param, m_hidden);
     CLASS_ATTR_INT(         c, "enable",            0, t_param, m_enable);
     CLASS_ATTR_INT(         c, "mute",              0, t_param, m_mute);
-    CLASS_ATTR_FLOAT(       c, "poll_interval",     0, t_param, m_poll_interval);
+    CLASS_ATTR_FLOAT(       c, "rate",              0, t_param, m_rate);
 
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
@@ -761,7 +761,7 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter_get_enable,            "getenable",            A_NULL, 0);
 
     eclass_addmethod(c, (method) parameter_get_mute,              "getmute",              A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_get_poll_interval,     "getpoll_interval",     A_NULL, 0);
+    eclass_addmethod(c, (method) parameter_get_rate,              "getrate",              A_NULL, 0);
 
     eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
 

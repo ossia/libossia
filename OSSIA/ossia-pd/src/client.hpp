@@ -38,13 +38,13 @@ public:
         "ws://127.0.0.1:5678)\n");
   }
 
-  std::vector<ossia::net::minuit_connection_data> m_minuit_devices;
-  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices;
+  std::vector<ossia::net::minuit_connection_data> m_minuit_devices{};
+  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices{};
 
-  std::thread* m_async_thread;
+  std::thread* m_async_thread{};
 
-  bool m_done;
-  t_symbol* m_looking_for; // the device's name we are looking for
+  bool m_done{true};
+  t_symbol* m_looking_for{}; // the device's name we are looking for
 };
 }
 } // namespace

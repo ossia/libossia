@@ -27,7 +27,7 @@ bool t_remote::register_node(const std::vector<ossia::net::node_base*>& node)
   {
     obj_dequarantining<t_remote>(this);
 
-    clock_delay(m_poll_clock,1);
+    clock_set(m_poll_clock,1);
   }
   else
     obj_quarantining<t_remote>(this);
@@ -167,11 +167,11 @@ void remote_get_mute(t_remote*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void remote_get_poll_interval(t_remote*x)
+void remote_get_rate(t_remote*x)
 {
   t_atom a;
-  SETFLOAT(&a,x->m_poll_interval);
-  outlet_anything(x->m_dumpout, gensym("poll_interval"), 1, &a);
+  SETFLOAT(&a,x->m_rate);
+  outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
 }
 
 void remote_get_enable(t_remote*x)
@@ -248,12 +248,6 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
     x->m_setout = outlet_new((t_object*)x, nullptr);
     x->m_dataout = outlet_new((t_object*)x, nullptr);
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    new (&x->m_matchers) decltype(x->m_matchers);
-    x->m_dev = nullptr;
-    x->m_ounit = ossia::none;
-    x->m_mute = false;
-    x->m_enable = true;
-    x->m_poll_interval = 10.;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -272,8 +266,6 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_clock = clock_new(x, (t_method)t_object_base::bang);
     x->m_poll_clock = clock_new(x, (t_method)t_object_base::output_value);
-
-    x->m_parent_node = nullptr;
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -327,14 +319,14 @@ extern "C" void setup_ossia0x2eremote(void)
     CLASS_ATTR_SYMBOL(c, "unit",          0, t_remote, m_unit);
     CLASS_ATTR_INT   (c, "mute",          0, t_remote, m_mute);
     CLASS_ATTR_INT   (c, "enable",        0, t_remote, m_enable);
-    CLASS_ATTR_INT   (c, "poll_interval", 0, t_remote, m_poll_interval);
+    CLASS_ATTR_INT   (c, "rate",          0, t_remote, m_rate);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
     eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_mute,        "getmute",     A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_enable,      "getenable",   A_NULL, 0);
-    eclass_addmethod(c, (method) remote_get_poll_interval,     "getpollinterval",      A_NULL, 0);
+    eclass_addmethod(c, (method) remote_get_rate,        "rate",        A_NULL, 0);
 
   }
 

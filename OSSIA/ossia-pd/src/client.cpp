@@ -54,12 +54,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
     x->m_otype = object_class::client;
 
     x->m_name = gensym("Pd");
-    x->m_device = nullptr;
-    x->m_parent_node = nullptr;
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_async_thread = nullptr;
-    x->m_looking_for = nullptr;
-    x->m_done = true;
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {

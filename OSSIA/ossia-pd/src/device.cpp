@@ -68,7 +68,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
 
     x->m_nodes = {&x->m_device->get_root_node()};
-    x->m_parent_node = nullptr;
+
     x->m_clock = clock_new(x, (t_method)t_device::register_children);
     clock_delay(x->m_clock, 0);
 

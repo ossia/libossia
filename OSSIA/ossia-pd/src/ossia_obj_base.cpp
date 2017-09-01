@@ -139,8 +139,8 @@ t_matcher::~t_matcher()
           node->get_parent()->remove_child(*node);
         }
       }
-      // if there vector is empty
-      // remote should be quarantinized
+      // if there is no more matcher,
+      // object should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
         obj_quarantining<t_param>((t_param*) parent);
@@ -150,8 +150,8 @@ t_matcher::~t_matcher()
       if (param && callbackit) param->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<t_object_base, &t_object_base::is_deleted>(parent);
 
-      // if there vector is empty
-      // remote should be quarantinized
+      // if there is no more matcher,
+      // object should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
         obj_quarantining<t_remote>((t_remote*) parent);
@@ -346,7 +346,7 @@ void t_object_base::output_value(t_object_base* x)
   {
     m.output_value();
   }
-  clock_set(x->m_poll_clock, x->m_poll_interval);
+  clock_set(x->m_poll_clock, x->m_rate);
 }
 
 /**
