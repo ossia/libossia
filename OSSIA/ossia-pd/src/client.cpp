@@ -41,6 +41,15 @@ static void client_free(t_client* x)
   x->~t_client();
 }
 
+static void client_poll_message(t_client* x)
+{
+  if (x->m_oscq_protocol)
+  {
+    x->m_oscq_protocol->run_commands();
+    clock_delay(x->m_poll_clock, x->m_rate);
+  }
+}
+
 static void* client_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -55,11 +64,14 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_name = gensym("Pd");
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_poll_clock = clock_new((t_object*)x, (t_method) client_poll_message);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->m_name = atom_getsymbol(argv);
     }
+
+    x->m_rate = 100;
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -164,6 +176,7 @@ static void client_disconnect(t_client* x)
     x->unregister_children();
     delete x->m_device;
     x->m_device = nullptr;
+    x->m_oscq_protocol = nullptr;
   }
 }
 
@@ -310,12 +323,13 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        auto protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
+        x->m_oscq_protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
         x->m_device = new ossia::net::generic_device{
-            std::unique_ptr<ossia::net::protocol_base>(protocol), oscq_settings.name};
+            std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name};
 
         std::cout << "connected to device " << x->m_device->get_name()
                   << " on " << wsurl << std::endl;
+        clock_set(x->m_poll_clock, 1);
         SETFLOAT(connection_status,1);
       }
       catch (const std::exception& e)
@@ -340,6 +354,7 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
   {
     x->m_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
     x->m_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
+    // TODO add callback for message
   }
 
   client_update(x);

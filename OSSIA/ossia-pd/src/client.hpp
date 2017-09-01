@@ -2,6 +2,7 @@
 #include "ossia_obj_base.hpp"
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 namespace ossia
 {
@@ -10,8 +11,6 @@ namespace pd
 
 class t_client : public t_object_base
 {
-  ossia::net::local_protocol m_local_proto;
-
 public:
   t_client();
 
@@ -42,6 +41,8 @@ public:
   std::vector<ossia::net::oscquery_connection_data> m_oscq_devices{};
 
   std::thread* m_async_thread{};
+
+  ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 
   bool m_done{true};
   t_symbol* m_looking_for{}; // the device's name we are looking for
