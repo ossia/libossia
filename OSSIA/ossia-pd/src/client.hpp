@@ -2,15 +2,17 @@
 #include "ossia_obj_base.hpp"
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 namespace ossia
 {
 namespace pd
 {
 
-struct t_client : t_object_base
+class t_client : public t_object_base
 {
-  ossia::net::local_protocol m_local_proto;
+public:
+  t_client();
 
   static void register_children(t_client* x);
   void unregister_children();
@@ -35,13 +37,15 @@ struct t_client : t_object_base
         "ws://127.0.0.1:5678)\n");
   }
 
-  std::vector<ossia::net::minuit_connection_data> m_minuit_devices;
-  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices;
+  std::vector<ossia::net::minuit_connection_data> m_minuit_devices{};
+  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices{};
 
-  std::thread* m_async_thread;
+  std::thread* m_async_thread{};
 
-  bool m_done;
-  t_symbol* m_looking_for; // the device's name we are looking for
+  ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
+
+  bool m_done{true};
+  t_symbol* m_looking_for{}; // the device's name we are looking for
 };
 }
 } // namespace

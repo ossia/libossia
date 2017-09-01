@@ -16,11 +16,15 @@ namespace ossia
 namespace pd
 {
 
+t_device::t_device():
+  t_object_base{ossia_pd::device}
+{ }
+
 static void device_free(t_device* x)
 {
   x->m_dead = true;
-  clock_unset(x->m_regclock);
-  clock_free(x->m_regclock);
+  clock_unset(x->m_clock);
+  clock_free(x->m_clock);
 
   // TODO why is this necessary since all children
   // should have register to node.about_to_be_deleted() signal
@@ -32,6 +36,8 @@ static void device_free(t_device* x)
   ossia_pd::instance().devices.remove_all(x);
   outlet_free(x->m_dumpout);
   register_quarantinized();
+
+  x->~t_device();
 }
 
 static void* device_new(t_symbol* name, int argc, t_atom* argv)
@@ -62,9 +68,9 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->m_device->on_parameter_removing.connect<t_device, &t_device::on_parameter_deleted_callback>(x);
 
     x->m_nodes = {&x->m_device->get_root_node()};
-    x->m_parent_node = nullptr;
-    x->m_regclock = clock_new(x, (t_method)t_device::register_children);
-    clock_delay(x->m_regclock, 0);
+
+    x->m_clock = clock_new(x, (t_method)t_device::register_children);
+    clock_delay(x->m_clock, 0);
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -73,6 +79,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.device]/[ø.client] instance per patcher is allowed.");
       device_free(x);
+      delete x;
       x = nullptr;
     }
   }
@@ -377,8 +384,7 @@ extern "C" void setup_ossia0x2edevice(void)
     eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.device = c;
+  ossia_pd::device = c;
 }
 } // pd namespace
 } // ossia namespace

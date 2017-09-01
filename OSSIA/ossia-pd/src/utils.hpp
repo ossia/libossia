@@ -115,7 +115,7 @@ struct value_visitor
       outlet_float(x->m_dataout, (t_float)i);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(float f) const
   {
@@ -125,7 +125,7 @@ struct value_visitor
       outlet_float(x->m_dataout, (t_float)f);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(bool b) const
   {
@@ -136,7 +136,7 @@ struct value_visitor
       outlet_float(x->m_dataout, f);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(const std::string& str) const
   {
@@ -147,7 +147,7 @@ struct value_visitor
       outlet_symbol(x->m_dataout, s);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(char c) const
   {
@@ -157,7 +157,7 @@ struct value_visitor
       outlet_float(x->m_dataout, (float)c);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
 
   template <std::size_t N>
@@ -174,7 +174,7 @@ struct value_visitor
       outlet_list(x->m_dataout, gensym("list"), N, a);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), N, a);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, N, a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
@@ -189,7 +189,7 @@ struct value_visitor
       outlet_list(x->m_dataout, gensym("list"), va.size(), list_ptr);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, gensym("set"), va.size(), list_ptr);
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, va.size(), list_ptr);
   }
 
   void operator()() const

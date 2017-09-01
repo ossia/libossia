@@ -16,9 +16,13 @@ namespace pd
 
 static void model_free(t_model* x);
 
-bool t_model::register_node(std::vector<ossia::net::node_base*> node)
+t_model::t_model():
+  t_object_base{ossia_pd::model}
+{ }
+
+bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
+  bool res = do_registration(nodes);
   if (res)
   {
     register_children();
@@ -29,7 +33,7 @@ bool t_model::register_node(std::vector<ossia::net::node_base*> node)
   return res;
 }
 
-bool t_model::do_registration(std::vector<ossia::net::node_base*> nodes)
+bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 {
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the parameter
@@ -127,7 +131,7 @@ void t_model::register_children()
 bool t_model::unregister()
 {
 
-  clock_unset(m_regclock);
+  clock_unset(m_clock);
 
   m_matchers.clear();
 
@@ -254,7 +258,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
     if (d)
     {
       x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-      x->m_regclock = clock_new(x, (t_method)obj_register<t_model>);
+      x->m_clock = clock_new(x, (t_method)obj_register<t_model>);
 
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
@@ -269,16 +273,14 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
         pd_error(x, "You have to pass a name as the first argument");
       }
 
-      x->m_parent_node = nullptr;
-
       ebox_attrprocess_viabinbuf(x, d);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
       // and object will be added to patcher's objects list (aka canvas g_list)
       // after model_new() returns.
-      // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->m_regclock, 0);
+      // clock_set uses ticks as time unit
+      clock_set(x->m_clock, 1);
     }
 
     if (find_peer(x))
@@ -286,6 +288,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
       model_free(x);
+      delete x;
       x = nullptr;
     }
   }
@@ -299,7 +302,9 @@ static void model_free(t_model* x)
   x->unregister();
   obj_dequarantining<t_model>(x);
   ossia_pd::instance().models.remove_all(x);
-  clock_free(x->m_regclock);
+  clock_free(x->m_clock);
+
+  x->~t_model();
 }
 
 extern "C" void setup_ossia0x2emodel(void)
@@ -331,8 +336,7 @@ extern "C" void setup_ossia0x2emodel(void)
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy
   }
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.model = c;
+  ossia_pd::model = c;
 }
 } // pd namespace
 } // ossia namespace

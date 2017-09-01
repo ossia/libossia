@@ -54,8 +54,11 @@ static void print_protocol_help()
 }
 }
 
-struct t_device : t_object_base
+class t_device : public t_object_base
 {
+public:
+  t_device();
+
   static void register_children(t_device* x);
   void unregister_children();
   static void loadbang(t_device* x, t_float type);
@@ -63,7 +66,7 @@ struct t_device : t_object_base
   void on_parameter_created_callback(const ossia::net::parameter_base& param);
   void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
 
-  std::vector<std::vector<t_atom>> m_protocols;
+  std::vector<std::vector<t_atom>> m_protocols{};
 
 };
 

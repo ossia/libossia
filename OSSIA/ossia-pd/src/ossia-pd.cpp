@@ -29,13 +29,13 @@ using t_ossia = t_device;
 
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 {
-  auto& ossia_pd = ossia_pd::instance();
-  t_ossia* x = (t_ossia*) eobj_new(ossia_pd.ossia);
+  auto& opd = ossia_pd::instance();
+  t_ossia* x = (t_ossia*) eobj_new(opd.ossia);
 
-  ossia_pd.devices.push_back(x);
+  opd.devices.push_back(x);
 
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-  x->m_device = ossia_pd.get_default_device();
+  x->m_device = opd.get_default_device();
   x->m_otype = object_class::device;
   x->m_name = gensym(x->m_device->get_name().c_str());
 
@@ -83,12 +83,21 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   eclass_addmethod(c, (method) obj_namespace, "namespace", A_GIMME, 0);
   eclass_addmethod(c, (method) obj_preset,    "preset",    A_GIMME, 0);
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.ossia = c;
+  ossia_pd::ossia = c;
 
   post("Welcome to ossia library");
   post("build on %s at %s", __DATE__, __TIME__);
 }
+
+// initializers
+t_eclass* ossia_pd::client;
+t_eclass* ossia_pd::device;
+t_eclass* ossia_pd::logger;
+t_eclass* ossia_pd::model;
+t_eclass* ossia_pd::param;
+t_eclass* ossia_pd::remote;
+t_eclass* ossia_pd::view;
+t_eclass* ossia_pd::ossia;
 
 // ossia-pd constructor
 ossia_pd::ossia_pd():
@@ -96,6 +105,7 @@ ossia_pd::ossia_pd():
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
   sym_addr = gensym("address");
+  sym_set  = gensym("set");
 }
 
 ossia_pd::~ossia_pd()
