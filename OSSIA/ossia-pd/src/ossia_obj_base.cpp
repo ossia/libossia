@@ -53,6 +53,11 @@ t_matcher::t_matcher(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
+  m_addr = other.m_addr;
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(v);
+
   if(node)
   {
     if(auto param = node->get_parameter())
@@ -78,6 +83,12 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
+
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(std::move(v));
+
+  m_addr = other.m_addr;
 
   if(node)
   {
@@ -120,7 +131,13 @@ t_matcher::~t_matcher()
       if (!parent->m_is_deleted)
       {
         if (node->get_parent())
+        {
+          auto param = node->get_parameter();
+          if (param && callbackit) param->remove_callback(*callbackit);
+          node->about_to_be_deleted.disconnect<t_object_base, &t_object_base::is_deleted>(parent);
+
           node->get_parent()->remove_child(*node);
+        }
       }
       // if there vector is empty
       // remote should be quarantinized

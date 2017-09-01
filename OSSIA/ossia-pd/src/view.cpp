@@ -21,7 +21,7 @@ t_view::t_view():
 //****************//
 // Member methods //
 //****************//
-bool t_view::register_node(std::vector<ossia::net::node_base*> node)
+bool t_view::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
   if (res)
@@ -54,7 +54,7 @@ bool t_view::register_node(std::vector<ossia::net::node_base*> node)
   return res;
 }
 
-bool t_view::do_registration(std::vector<ossia::net::node_base*> _nodes)
+bool t_view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
 
   // we should unregister here because we may have add a node

@@ -20,7 +20,7 @@ t_remote::t_remote():
   t_object_base{ossia_pd::remote}
 { }
 
-bool t_remote::register_node(std::vector<ossia::net::node_base*> node)
+bool t_remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
   if (res)
@@ -46,7 +46,7 @@ bool t_remote::register_node(std::vector<ossia::net::node_base*> node)
   return res;
 }
 
-bool t_remote::do_registration(std::vector<ossia::net::node_base*> _nodes)
+bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
 
   unregister();

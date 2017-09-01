@@ -29,13 +29,13 @@ using t_ossia = t_device;
 
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 {
-  auto& ossia_pd = ossia_pd::instance();
-  t_ossia* x = (t_ossia*) eobj_new(ossia_pd.ossia);
+  auto& opd = ossia_pd::instance();
+  t_ossia* x = (t_ossia*) eobj_new(opd.ossia);
 
-  ossia_pd.devices.push_back(x);
+  opd.devices.push_back(x);
 
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-  x->m_device = ossia_pd.get_default_device();
+  x->m_device = opd.get_default_device();
   x->m_otype = object_class::device;
   x->m_name = gensym(x->m_device->get_name().c_str());
 

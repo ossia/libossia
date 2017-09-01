@@ -22,7 +22,7 @@ t_param::t_param():
   t_object_base{ossia_pd::param}
 { }
 
-bool t_param::register_node(std::vector<ossia::net::node_base*> node)
+bool t_param::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
   if (res)
@@ -41,7 +41,7 @@ bool t_param::register_node(std::vector<ossia::net::node_base*> node)
   return res;
 }
 
-bool t_param::do_registration(std::vector<ossia::net::node_base*> _nodes)
+bool t_param::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter

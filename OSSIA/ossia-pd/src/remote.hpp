@@ -15,8 +15,8 @@ public:
 
   t_remote();
 
-  bool register_node(std::vector<ossia::net::node_base*> node);
-  bool do_registration(std::vector<ossia::net::node_base*> node);
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
   ossia::net::device_base* m_dev{};

@@ -17,8 +17,8 @@ public:
 
   t_param();
 
-  bool register_node(std::vector<ossia::net::node_base*> node);
-  bool do_registration(std::vector<ossia::net::node_base*> node);
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
   // attribute setting method
@@ -39,16 +39,16 @@ public:
 
   // attributes
   t_symbol* m_type{};
-  t_atom m_default[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom m_min[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom m_max[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom m_range[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_default[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
+  t_atom m_min[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
+  t_atom m_max[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
+  t_atom m_range[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_bounding_mode{};
   t_symbol* m_access_mode{};
   t_float m_repetition_filter{};
   t_symbol* m_unit{};
-  t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE];
-  t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE];
+  t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
+  t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   int m_priority{};
   bool m_hidden{};
 
