@@ -346,7 +346,7 @@ void t_object_base::output_value(t_object_base* x)
   {
     m.output_value();
   }
-  clock_set(x->m_poll_clock, x->m_rate);
+  clock_delay(x->m_poll_clock, x->m_rate);
 }
 
 /**
