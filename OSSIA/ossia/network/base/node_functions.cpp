@@ -342,7 +342,7 @@ List expand(const Range & range)
 void expand_ranges(std::string& str)
 {
   {
-    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
 
     struct rx_triple
     {
@@ -399,7 +399,7 @@ void expand_ranges(std::string& str)
   }
 
   {
-    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
 
     struct rx_double
     {

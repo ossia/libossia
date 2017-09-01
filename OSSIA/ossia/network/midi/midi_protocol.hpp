@@ -23,47 +23,55 @@ namespace midi
 {
 struct OSSIA_EXPORT midi_info
 {
-  enum class Type
-  {
-    RemoteInput,
-    RemoteOutput
-  };
+    enum class Type
+    {
+      RemoteInput,
+      RemoteOutput
+    };
 
-  midi_info() = default;
-  midi_info(Type t, std::string d, int p)
+    midi_info() = default;
+    midi_info(Type t, std::string d, int p)
       : type{t}, device{std::move(d)}, port{p}
-  {
-  }
+    {
+    }
 
-  Type type{};
-  std::string device{};
-  int port{};
+    Type type{};
+    std::string device{};
+    int port{};
 };
 
 class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 {
-  std::unique_ptr<mm::MidiInput> m_input;
-  std::unique_ptr<mm::MidiOutput> m_output;
+  public:
+    midi_protocol();
+    midi_protocol(midi_info);
+    ~midi_protocol();
 
-  std::array<midi_channel, 16> m_channels;
+    bool set_info(midi_info);
+    midi_info get_info() const;
 
-  midi_info m_info;
+    std::vector<midi_info> scan();
 
-public:
-  midi_protocol();
-  midi_protocol(midi_info);
-  ~midi_protocol();
+  private:
+    std::unique_ptr<mm::MidiInput> m_input;
+    std::unique_ptr<mm::MidiOutput> m_output;
 
-  bool set_info(midi_info);
-  midi_info get_info() const;
+    std::array<midi_channel, 16> m_channels;
 
-  bool pull(ossia::net::parameter_base&) override;
-  bool push(const ossia::net::parameter_base&) override;
-  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool observe(ossia::net::parameter_base&, bool) override;
-  bool update(ossia::net::node_base& node_base) override;
+    midi_info m_info;
+    midi_device* m_dev{};
 
-  std::vector<midi_info> scan();
+    friend class midi_device;
+    friend class midi_parameter;
+    bool pull(ossia::net::parameter_base&) override;
+    bool push(const ossia::net::parameter_base&) override;
+    bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+    bool observe(ossia::net::parameter_base&, bool) override;
+    bool update(ossia::net::node_base& node_base) override;
+    void set_device(ossia::net::device_base& dev) override;
+
+    void value_callback(ossia::net::parameter_base& param, const ossia::value& val);
+
 };
 }
 }

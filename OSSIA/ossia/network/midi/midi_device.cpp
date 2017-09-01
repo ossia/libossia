@@ -14,6 +14,7 @@ namespace midi
 midi_device::midi_device(std::unique_ptr<protocol_base> prot)
     : ossia::net::device_base{std::move(prot)}, midi_node{*this, *this}
 {
+  m_protocol->set_device(*this);
 }
 
 node_base& midi_device::set_name(std::string n)
