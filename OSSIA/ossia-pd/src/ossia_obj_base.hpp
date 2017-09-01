@@ -103,10 +103,10 @@ public:
   t_symbol* m_name{};
   address_scope m_addr_scope{};
   bool m_is_pattern{}; // whether the address is a pattern or not
-  bool m_dead{}; // whether this object is being deleted or not
-  bool m_is_deleted{}; // true during the is_deleted callback method
-  bool m_mute{};
-  bool m_enable{};
+  bool m_dead{false}; // whether this object is being deleted or not
+  bool m_is_deleted{false}; // true during the is_deleted callback method
+  bool m_mute{false};
+  bool m_enable{true};
 
   t_clock* m_clock{};   // multi-purpose clock
   t_clock* m_poll_clock{}; // value polling clock
