@@ -78,6 +78,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     set_priority();
     set_description();
     set_tags();
+    set_hidden();
   }
 
   return true;
@@ -130,11 +131,6 @@ bool model::unregister()
   clock_unset(m_clock);
 
   m_matchers.clear();
-
-  // we can't register children to parent node
-  // because it might be deleted soon
-  // (when removing root device for example)
-
   m_nodes.clear();
 
   obj_quarantining<model>(this);
@@ -155,6 +151,8 @@ t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* d
         x->set_tags();
       else if ( s == gensym("description") )
         x->set_description();
+      else if ( s == gensym("hidden") )
+        x->set_hidden();
   }
   return 0;
 }
