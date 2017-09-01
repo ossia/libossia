@@ -36,6 +36,7 @@ public:
   void set_default();
   void set_unit();
   void set_type();
+  void set_rate();
 
   // attributes
   t_symbol* m_type{};

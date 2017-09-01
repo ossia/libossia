@@ -94,6 +94,7 @@ bool t_param::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     set_range();
     set_minmax();
     set_default();
+    set_rate();
   }
 
   clock_delay(m_clock, 0);
@@ -295,6 +296,15 @@ void t_param::set_type()
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
     param->set_value_type(symbol2val_type(m_type));
+  }
+}
+
+void t_param::set_rate()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_refresh_rate(*node,m_rate);
   }
 }
 
@@ -684,6 +694,8 @@ t_pd_err parameter_notify(t_param*x, t_symbol*s, t_symbol* msg, void* sender, vo
         x->set_enable();
       else if ( s == gensym("type") )
         x->set_type();
+      else if ( s == gensym("rate") )
+        x->set_rate();
 
   }
   return 0;
