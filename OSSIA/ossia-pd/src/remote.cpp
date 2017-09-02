@@ -14,39 +14,39 @@ namespace pd
 
 #pragma mark t_remote
 
-static void remote_free(t_remote* x);
+static void remote_free(remote* x);
 
-t_remote::t_remote():
-  t_object_base{ossia_pd::remote}
+remote::remote():
+  parameter_base{ossia_pd::remote_class}
 { }
 
-bool t_remote::register_node(const std::vector<ossia::net::node_base*>& node)
+bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
   if (res)
   {
-    obj_dequarantining<t_remote>(this);
+    obj_dequarantining<remote>(this);
 
     clock_set(m_poll_clock,1);
   }
   else
-    obj_quarantining<t_remote>(this);
+    obj_quarantining<remote>(this);
 
   if (!node.empty() && m_is_pattern){
     // assume all nodes refer to the same device
     auto& dev = node[0]->get_device();
     if (&dev != m_dev)
     {
-      if (m_dev) m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
+      if (m_dev) m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
       m_dev = &dev;
-      m_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
+      m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
     }
   }
 
   return res;
 }
 
-bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
 
   unregister();
@@ -99,7 +99,7 @@ bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes
   return (!m_matchers.empty() || m_is_pattern);
 }
 
-bool t_remote::unregister()
+bool remote::unregister()
 {
   clock_unset(m_clock);
   clock_unset(m_poll_clock);
@@ -107,14 +107,13 @@ bool t_remote::unregister()
   m_matchers.clear();
   m_nodes.clear();
 
-  obj_quarantining<t_remote>(this);
+  obj_quarantining<remote>(this);
 
   m_parent_node = nullptr;
   return true;
 }
 
-
-void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& param)
+void remote::on_parameter_created_callback(const ossia::net::parameter_base& param)
 {
   auto& node = param.get_node();
   auto path = ossia::traversal::make_path(m_name->s_name);
@@ -127,7 +126,7 @@ void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& p
   }
 }
 
-void t_remote::set_unit()
+void remote::set_unit()
 {
   if ( m_unit !=  gensym("") )
   {
@@ -140,7 +139,7 @@ void t_remote::set_unit()
   }
 }
 
-void t_remote::set_enable()
+void remote::set_enable()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -149,7 +148,7 @@ void t_remote::set_enable()
   }
 }
 
-void remote_get_unit(t_remote*x)
+void remote_get_unit(remote*x)
 {
   t_atom a;
   if (x->m_unit)
@@ -160,28 +159,28 @@ void remote_get_unit(t_remote*x)
     outlet_anything(x->m_dumpout, gensym("unit"), 0, NULL);
 }
 
-void remote_get_mute(t_remote*x)
+void remote_get_mute(remote*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_mute);
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void remote_get_rate(t_remote*x)
+void remote_get_rate(remote*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_rate);
   outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
 }
 
-void remote_get_enable(t_remote*x)
+void remote_get_enable(remote*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_enable);
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
-t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_pd_err remote_notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
   {
@@ -199,7 +198,7 @@ t_pd_err remote_notify(t_remote*x, t_symbol*s, t_symbol* msg, void* sender, void
 }
 
 static void remote_click(
-    t_remote* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
+    remote* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
     t_floatarg ctrl, t_floatarg alt)
 {
 
@@ -213,8 +212,8 @@ static void remote_click(
 
     int l;
 
-    t_device* device
-        = (t_device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
+    ossia::pd::device* device
+        = (ossia::pd::device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
 
     if (!find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
@@ -225,7 +224,7 @@ static void remote_click(
   }
 }
 
-static void remote_bind(t_remote* x, t_symbol* address)
+static void remote_bind(remote* x, t_symbol* address)
 {
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
@@ -237,7 +236,7 @@ static void remote_bind(t_remote* x, t_symbol* address)
 static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_remote* x = new t_remote();
+  remote* x = new remote();
   // t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
 
   t_binbuf* d = binbuf_via_atoms(argc, argv);
@@ -269,23 +268,23 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     ebox_attrprocess_viabinbuf(x, d);
 
-    obj_register<t_remote>(x);
+    obj_register<remote>(x);
     ossia_pd.remotes.push_back(x);
   }
 
   return (x);
 }
 
-static void remote_free(t_remote* x)
+static void remote_free(remote* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<t_remote>(x);
+  obj_dequarantining<remote>(x);
   ossia_pd::instance().remotes.remove_all(x);
 
   if(x->m_is_pattern && x->m_dev)
   {
-    x->m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
+    x->m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(x);
   }
 
   clock_free(x->m_clock);
@@ -295,14 +294,14 @@ static void remote_free(t_remote* x)
   outlet_free(x->m_dataout);
   outlet_free(x->m_dumpout);
 
-  x->~t_remote();
+  x->~remote();
 }
 
 extern "C" void setup_ossia0x2eremote(void)
 {
   t_eclass* c = eclass_new(
       "ossia.remote", (method)remote_new, (method)remote_free,
-      (short)sizeof(t_remote), CLASS_DEFAULT, A_GIMME, 0);
+      (short)sizeof(remote), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
@@ -310,16 +309,16 @@ extern "C" void setup_ossia0x2eremote(void)
 
     eclass_addmethod(c, (method) t_object_base::push,   "anything",    A_GIMME,  0);
     eclass_addmethod(c, (method) t_object_base::bang,   "bang",        A_NULL,   0);
-    eclass_addmethod(c, (method) obj_dump<t_remote>,     "dump",        A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<remote>,     "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,  0);
     eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) obj_get_address,        "getaddress",  A_NULL,   0);
 
-    CLASS_ATTR_SYMBOL(c, "unit",          0, t_remote, m_unit);
-    CLASS_ATTR_INT   (c, "mute",          0, t_remote, m_mute);
-    CLASS_ATTR_INT   (c, "enable",        0, t_remote, m_enable);
-    CLASS_ATTR_INT   (c, "rate",          0, t_remote, m_rate);
+    CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
+    CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
+    CLASS_ATTR_INT   (c, "enable",        0, remote, m_enable);
+    CLASS_ATTR_INT   (c, "rate",          0, remote, m_rate);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
@@ -330,10 +329,10 @@ extern "C" void setup_ossia0x2eremote(void)
 
   }
 
-  ossia_pd::remote = c;
+  ossia_pd::remote_class = c;
 }
 
-ossia::safe_vector<t_remote*>& t_remote::quarantine()
+ossia::safe_vector<remote*>& remote::quarantine()
 {
     return ossia_pd::instance().remote_quarantine;
 }

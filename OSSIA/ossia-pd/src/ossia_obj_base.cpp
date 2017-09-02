@@ -143,7 +143,7 @@ t_matcher::~t_matcher()
       // object should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
-        obj_quarantining<t_param>((t_param*) parent);
+        obj_quarantining<parameter>((parameter*) parent);
       }
     } else {
       auto param = node->get_parameter();
@@ -154,7 +154,7 @@ t_matcher::~t_matcher()
       // object should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
-        obj_quarantining<t_remote>((t_remote*) parent);
+        obj_quarantining<remote>((remote*) parent);
       }
     }
   }

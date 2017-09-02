@@ -52,6 +52,8 @@ set(PROJECT_SRCS
   src/ossia_obj_base.hpp
   src/parameter.cpp
   src/parameter.hpp
+  src/parameter_base.cpp
+  src/parameter_base.hpp
   src/remote.cpp
   src/remote.hpp
   src/view.cpp

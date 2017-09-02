@@ -12,28 +12,28 @@ namespace pd
 {
 
 static t_eclass* view_class;
-static void view_free(t_view* x);
+static void view_free(view* x);
 
-t_view::t_view():
-  t_object_base{ossia_pd::view}
+view::view():
+  t_object_base{ossia_pd::view_class}
 { }
 
 //****************//
 // Member methods //
 //****************//
-bool t_view::register_node(const std::vector<ossia::net::node_base*>& node)
+bool view::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
   if (res)
   {
-    obj_dequarantining<t_view>(this);
+    obj_dequarantining<view>(this);
     std::vector<t_object_base*> viewnode
         = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnode)
     {
       if (v->m_otype == object_class::view)
       {
-        t_view* view = (t_view*)v;
+        ossia::pd::view* view = (ossia::pd::view*)v;
         if (view == this)
         {
           // not registering itself
@@ -43,18 +43,18 @@ bool t_view::register_node(const std::vector<ossia::net::node_base*>& node)
       }
       else if (v->m_otype == object_class::remote)
       {
-        t_remote* remote = (t_remote*)v;
+        ossia::pd::remote* remote = (ossia::pd::remote*)v;
         remote->register_node(m_nodes);
       }
     }
   }
   else
-    obj_quarantining<t_view>(this);
+    obj_quarantining<view>(this);
 
   return res;
 }
 
-bool t_view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
 
   // we should unregister here because we may have add a node
@@ -97,7 +97,7 @@ bool t_view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
   return (!m_matchers.empty() || m_is_pattern);
 }
 
-static void register_children(t_view* x)
+static void register_children(view* x)
 {
   std::vector<t_object_base*> viewnode
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
@@ -105,20 +105,20 @@ static void register_children(t_view* x)
   {
     if (v->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)v;
+      ossia::pd::view* view = (ossia::pd::view*)v;
       if (view == x)
         continue;
-      obj_register<t_view>(view);
+      obj_register<ossia::pd::view>(view);
     }
     else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
-      obj_register<t_remote>(remote);
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
+      obj_register<ossia::pd::remote>(remote);
     }
   }
 }
 
-bool t_view::unregister()
+bool view::unregister()
 {
   m_matchers.clear();
   m_nodes.clear();
@@ -129,18 +129,18 @@ bool t_view::unregister()
   {
     if (v->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)v;
+      ossia::pd::view* view = (ossia::pd::view*)v;
       if (view == this)
         continue;
       view->unregister();
     }
     else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
       remote->unregister();
     }
   }
-  obj_quarantining<t_view>(this);
+  obj_quarantining<view>(this);
 
   register_children(this);
 
@@ -148,7 +148,7 @@ bool t_view::unregister()
 }
 
 static void view_click(
-    t_view* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
+    view* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
     t_floatarg ctrl, t_floatarg alt)
 {
 
@@ -161,8 +161,8 @@ static void view_click(
     x->m_last_click = milliseconds(0);
 
     int l;
-    t_device* device
-        = (t_device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
+    ossia::pd::device* device
+        = (ossia::pd::device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
 
     if (!find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
@@ -176,7 +176,7 @@ static void view_click(
 static void* view_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_view* x = (t_view*)eobj_new(ossia_pd.view);
+  ossia::pd::view* x = (ossia::pd::view*)eobj_new(ossia_pd.view_class);
 
   if (x)
   {
@@ -184,7 +184,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_otype = object_class::view;
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_clock = clock_new(x, (t_method)obj_register<t_view>);
+    x->m_clock = clock_new(x, (t_method)obj_register<view>);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -219,18 +219,18 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
   return x;
 }
 
-static void view_free(t_view* x)
+static void view_free(view* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<t_view>(x);
+  obj_dequarantining<view>(x);
   ossia_pd::instance().views.remove_all(x);
   clock_free(x->m_clock);
 
-  x->~t_view();
+  x->~view();
 }
 
-static void view_bind(t_view* x, t_symbol* address)
+static void view_bind(view* x, t_symbol* address)
 {
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
@@ -242,14 +242,14 @@ static void view_bind(t_view* x, t_symbol* address)
 extern "C" void setup_ossia0x2eview(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.view", (method)view_new, (method)view_free, (short)sizeof(t_view),
+      "ossia.view", (method)view_new, (method)view_free, (short)sizeof(view),
       CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
     class_addcreator((t_newmethod)view_new,gensym("ø.view"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) obj_dump<t_view>, "dump",          A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<view>, "dump",          A_NULL,   0);
     eclass_addmethod(c, (method) view_click,       "click",         A_NULL,   0);
     eclass_addmethod(c, (method) view_bind,        "bind",          A_SYMBOL, 0);
     eclass_addmethod(c, (method) obj_namespace,    "namespace",     A_NULL,   0);
@@ -259,10 +259,10 @@ extern "C" void setup_ossia0x2eview(void)
 
   }
 
-  ossia_pd::view = c;
+  ossia_pd::view_class = c;
 }
 
-ossia::safe_vector<t_view*>& t_view::quarantine()
+ossia::safe_vector<view*>& view::quarantine()
 {
     return ossia_pd::instance().view_quarantine;
 }

@@ -14,13 +14,13 @@ namespace ossia
 namespace pd
 {
 
-static void model_free(t_model* x);
+static void model_free(model* x);
 
-t_model::t_model():
-  t_object_base{ossia_pd::model}
+model::model():
+  t_object_base{ossia_pd::model_class}
 { }
 
-bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
   bool res = do_registration(nodes);
   if (res)
@@ -28,12 +28,12 @@ bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
     register_children();
   }
   else
-    obj_quarantining<t_model>(this);
+    obj_quarantining<model>(this);
 
   return res;
 }
 
-bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
+bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 {
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the parameter
@@ -59,7 +59,7 @@ bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
       {
         if (v->m_otype == object_class::param)
         {
-          t_param* param = (t_param*)v;
+          parameter* param = (parameter*)v;
           if (std::string(param->m_name->s_name) == name)
           {
             // if we already have a t_param node of that
@@ -87,16 +87,16 @@ bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
   return true;
 }
 
-void t_model::register_children()
+void model::register_children()
 {
-  obj_dequarantining<t_model>(this);
+  obj_dequarantining<model>(this);
   std::vector<t_object_base*> obj
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : obj)
   {
     if (v->m_otype == object_class::model)
     {
-      t_model* model = (t_model*)v;
+      ossia::pd::model* model = (ossia::pd::model*)v;
       if (model == this)
       {
         // not registering itself
@@ -106,29 +106,29 @@ void t_model::register_children()
     }
     else if (v->m_otype == object_class::param)
     {
-      t_param* param = (t_param*)v;
+      parameter* param = (parameter*)v;
       param->register_node(m_nodes);
     }
     else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
       remote->register_node(m_nodes);
     }
   }
 
-  for (auto view : t_view::quarantine().copy())
+  for (auto view : view::quarantine().copy())
   {
-    obj_register(static_cast<t_view*>(view));
+    obj_register(static_cast<ossia::pd::view*>(view));
   }
 
   // then try to register quarantinized remote
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : remote::quarantine().copy())
   {
-    obj_register(static_cast<t_remote*>(remote));
+    obj_register(static_cast<ossia::pd::remote*>(remote));
   }
 }
 
-bool t_model::unregister()
+bool model::unregister()
 {
 
   clock_unset(m_clock);
@@ -141,21 +141,21 @@ bool t_model::unregister()
 
   m_nodes.clear();
 
-  obj_quarantining<t_model>(this);
+  obj_quarantining<model>(this);
 
   register_children();
 
   return true;
 }
 
-void t_model::set_priority()
+void model::set_priority()
 {
   // TODO why this doesn't work
   for (auto n : m_nodes)
     ossia::net::set_priority(*n, m_priority);
 }
 
-void t_model::set_description()
+void model::set_description()
 {
   std::stringstream description;
   for (int i = 0; i < m_description_size; i++)
@@ -179,7 +179,7 @@ void t_model::set_description()
     ossia::net::set_description(*n, description.str());
 }
 
-void t_model::set_tags()
+void model::set_tags()
 {
   std::vector<std::string> tags;
   for (int i = 0; i < m_tags_size; i++)
@@ -206,7 +206,7 @@ void t_model::set_tags()
 }
 
 
-t_pd_err model_notify(t_model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_pd_err model_notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
   {
@@ -220,26 +220,26 @@ t_pd_err model_notify(t_model*x, t_symbol*s, t_symbol* msg, void* sender, void* 
   return 0;
 }
 
-void model_get_priority(t_model*x)
+void model_get_priority(model*x)
 {
   t_atom a;
   SETFLOAT(&a, x->m_priority);
   outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
 }
 
-void model_get_tags(t_model*x)
+void model_get_tags(model*x)
 {
   outlet_anything(x->m_dumpout, gensym("tags"),
                   x->m_tags_size, x->m_tags);
 }
 
-void model_get_description(t_model*x)
+void model_get_description(model*x)
 {
   outlet_anything(x->m_dumpout, gensym("description"),
                   x->m_description_size, x->m_description);
 }
 
-ossia::safe_vector<t_model*>& t_model::quarantine()
+ossia::safe_vector<model*>& model::quarantine()
 {
     return ossia_pd::instance().model_quarantine;
 }
@@ -247,7 +247,7 @@ ossia::safe_vector<t_model*>& t_model::quarantine()
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_model* x = (t_model*)eobj_new(ossia_pd.model);
+  ossia::pd::model* x = (ossia::pd::model*)eobj_new(ossia_pd.model_class);
   if(x)
   {
     ossia_pd.models.push_back(x);
@@ -258,7 +258,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
     if (d)
     {
       x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-      x->m_clock = clock_new(x, (t_method)obj_register<t_model>);
+      x->m_clock = clock_new(x, (t_method)obj_register<model>);
 
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
@@ -296,35 +296,35 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
   return x;
 }
 
-static void model_free(t_model* x)
+static void model_free(model* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<t_model>(x);
+  obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);
   clock_free(x->m_clock);
 
-  x->~t_model();
+  x->~model();
 }
 
 extern "C" void setup_ossia0x2emodel(void)
 {
   t_eclass* c = eclass_new(
       "ossia.model", (method)model_new, (method)model_free,
-      (short)sizeof(t_model), CLASS_DEFAULT, A_GIMME, 0);
+      (short)sizeof(model), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
     class_addcreator((t_newmethod)model_new,gensym("ø.model"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method)obj_dump<model>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
     eclass_addmethod(c, (method) model_notify,     "notify",   A_NULL,  0);
 
-    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, t_model, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, t_model, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_INT(c, "priority", 0, t_param, m_priority);
+    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, model, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, model, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
+    CLASS_ATTR_INT(c, "priority", 0, parameter, m_priority);
 
     eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL,  0);
     eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL,  0);
@@ -336,7 +336,7 @@ extern "C" void setup_ossia0x2emodel(void)
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy
   }
-  ossia_pd::model = c;
+  ossia_pd::model_class = c;
 }
 } // pd namespace
 } // ossia namespace

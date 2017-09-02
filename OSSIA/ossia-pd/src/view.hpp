@@ -8,10 +8,10 @@ namespace ossia
 namespace pd
 {
 
-struct t_view : public t_object_base
+struct view : public t_object_base
 {
 public:
-  t_view();
+  view();
 
   using is_view = std::true_type;
 
@@ -19,7 +19,7 @@ public:
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
-  static ossia::safe_vector<t_view*>& quarantine();
+  static ossia::safe_vector<view*>& quarantine();
 };
 }
 } // namespace

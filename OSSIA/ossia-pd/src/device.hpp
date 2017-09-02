@@ -54,14 +54,14 @@ static void print_protocol_help()
 }
 }
 
-class t_device : public t_object_base
+class device : public t_object_base
 {
 public:
-  t_device();
+  device();
 
-  static void register_children(t_device* x);
+  static void register_children(device* x);
   void unregister_children();
-  static void loadbang(t_device* x, t_float type);
+  static void loadbang(device* x, t_float type);
 
   void on_parameter_created_callback(const ossia::net::parameter_base& param);
   void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
@@ -70,8 +70,8 @@ public:
 
 };
 
-void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv);
-void device_name(t_device* x, t_symbol*, int argc, t_atom* argv);
+void device_expose(device* x, t_symbol*, int argc, t_atom* argv);
+void device_name(device* x, t_symbol*, int argc, t_atom* argv);
 
 }
 } // namespace

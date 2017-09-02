@@ -35,21 +35,21 @@ public:
       return &instance().m_device;
     }
 
-    static t_eclass* client;
-    static t_eclass* device;
-    static t_eclass* logger;
-    static t_eclass* model;
-    static t_eclass* param;
-    static t_eclass* remote;
-    static t_eclass* view;
-    static t_eclass* ossia;
+    static t_eclass* client_class;
+    static t_eclass* device_class;
+    static t_eclass* logger_class;
+    static t_eclass* model_class;
+    static t_eclass* param_class;
+    static t_eclass* remote_class;
+    static t_eclass* view_class;
+    static t_eclass* ossia_class;
 
-    ossia::safe_vector<t_param*> params;
-    ossia::safe_vector<t_remote*> remotes;
-    ossia::safe_vector<t_model*> models;
-    ossia::safe_vector<t_view*> views;
-    ossia::safe_vector<t_device*> devices;
-    ossia::safe_vector<t_client*> clients;
+    ossia::safe_vector<parameter*> params;
+    ossia::safe_vector<remote*> remotes;
+    ossia::safe_vector<model*> models;
+    ossia::safe_vector<view*> views;
+    ossia::safe_vector<device*> devices;
+    ossia::safe_vector<client*> clients;
 
     ossia::safe_vector<t_select_clock*> select_clocks;
 
@@ -57,10 +57,10 @@ public:
     t_symbol* sym_set;
 
 
-    ossia::safe_vector<t_model*> model_quarantine;
-    ossia::safe_vector<t_view*> view_quarantine;
-    ossia::safe_vector<t_param*> parameter_quarantine;
-    ossia::safe_vector<t_remote*> remote_quarantine;
+    ossia::safe_vector<model*> model_quarantine;
+    ossia::safe_vector<view*> view_quarantine;
+    ossia::safe_vector<parameter*> parameter_quarantine;
+    ossia::safe_vector<remote*> remote_quarantine;
 
 private:
     ossia_pd(); // constructor

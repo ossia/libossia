@@ -8,18 +8,18 @@ namespace ossia
 namespace pd
 {
 
-class t_model : public t_object_base
+class model : public t_object_base
 {
 public:
   using is_model = std::true_type;
-  t_model();
+  model();
 
   bool register_node(const std::vector<ossia::net::node_base*>& node);
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
   void register_children();
 
-  static ossia::safe_vector<t_model*>& quarantine();
+  static ossia::safe_vector<model*>& quarantine();
 
   void set_tags();
   void set_description();

@@ -9,17 +9,19 @@ namespace ossia
 namespace pd
 {
 
-class t_client : public t_object_base
+class client : public t_object_base
 {
 public:
-  t_client();
+  client();
 
-  static void register_children(t_client* x);
+  static void register_children(client* x);
   void unregister_children();
-  static void loadbang(t_client* x, t_float type);
+  static void loadbang(client* x, t_float type);
 
   void on_parameter_created_callback(const ossia::net::parameter_base& param);
   void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
+  void on_attribute_modified_callback(const ossia::net::node_base& node,
+                                      ossia::string_view attribute);
 
   static void print_protocol_help()
   {

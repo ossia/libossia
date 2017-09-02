@@ -21,13 +21,13 @@ namespace ossia
 namespace pd
 {
 
-void client_getdevices(t_client* x);
+void client_getdevices(client* x);
 
-t_client::t_client():
-  t_object_base{ossia_pd::client}
+client::client():
+  t_object_base{ossia_pd::client_class}
 { }
 
-static void client_free(t_client* x)
+static void client_free(client* x)
 {
   x->m_dead = true;
   x->unregister_children();
@@ -38,10 +38,10 @@ static void client_free(t_client* x)
   outlet_free(x->m_dumpout);
   register_quarantinized();
 
-  x->~t_client();
+  x->~client();
 }
 
-static void client_poll_message(t_client* x)
+static void client_poll_message(client* x)
 {
   if (x->m_oscq_protocol)
   {
@@ -53,7 +53,7 @@ static void client_poll_message(t_client* x)
 static void* client_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_client* x = (t_client*)eobj_new(ossia_pd.client);
+  client* x = (ossia::pd::client*)eobj_new(ossia_pd.client_class);
   // TODO SANITIZE : Direct leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
@@ -88,7 +88,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-void t_client::loadbang(t_client* x, t_float type)
+void client::loadbang(client* x, t_float type)
 {
   if (LB_LOAD == (int)type)
   {
@@ -96,7 +96,7 @@ void t_client::loadbang(t_client* x, t_float type)
   }
 }
 
-void t_client::register_children(t_client* x)
+void client::register_children(client* x)
 {
 
   std::vector<t_object_base*> viewnodes
@@ -105,18 +105,18 @@ void t_client::register_children(t_client* x)
   {
     if (v->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)v;
+      ossia::pd::view* view = (ossia::pd::view*)v;
       view->register_node(x->m_nodes);
     }
     else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
       remote->register_node(x->m_nodes);
     }
   }
 }
 
-void t_client::unregister_children()
+void client::unregister_children()
 {
   std::vector<t_object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
@@ -124,18 +124,18 @@ void t_client::unregister_children()
   {
     if (v->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)v;
+      ossia::pd::view* view = (ossia::pd::view*)v;
       view->unregister();
     }
     else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
       remote->unregister();
     }
   }
 }
 
-void t_client::on_parameter_created_callback(const ossia::net::parameter_base& param)
+void client::on_parameter_created_callback(const ossia::net::parameter_base& param)
 {
   auto& node = param.get_node();
   std::string addr = ossia::net::address_string_from_node(node);
@@ -145,7 +145,7 @@ void t_client::on_parameter_created_callback(const ossia::net::parameter_base& p
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
-void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
+void client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
 {
   auto& node = param.get_node();
   std::string addr = ossia::net::address_string_from_node(node);
@@ -155,7 +155,53 @@ void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& p
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
-static void client_update(t_client* x)
+void client::on_attribute_modified_callback(const ossia::net::node_base& node, ossia::string_view attribute)
+{
+  std::cout << attribute << std::endl;
+  if (node.get_parameter())
+  {
+    for ( auto param : ossia_pd::instance().params.copy() )
+    {
+      for ( auto& m : param->m_matchers )
+      {
+        if ( m.get_node() == &node )
+          //t_param::update_attribute((t_param*)m.parent,attribute);
+          ;
+      }
+    }
+
+    for ( auto remote : ossia_pd::instance().remotes.copy() )
+    {
+      for ( auto& m : remote->m_matchers )
+      {
+        if ( m.get_node() == &node )
+          parameter_base::update_attribute((parameter_base*)m.get_parent(),attribute);
+      }
+    }
+  } else {
+    for ( auto model : ossia_pd::instance().models.copy() )
+    {
+      for ( auto& m : model->m_matchers )
+      {
+        if ( m.get_node() == &node )
+          // t_model::update_attribute((t_model*)m.parent,attribute);
+          ;
+      }
+    }
+
+    for ( auto view : ossia_pd::instance().views.copy() )
+    {
+      for ( auto& m : view->m_matchers )
+      {
+        if ( m.get_node() == &node )
+          // t_view::update_attribute((t_view*)m.parent,attribute);
+          ;
+      }
+    }
+  }
+}
+
+static void client_update(client* x)
 {
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
   // for OSC Query
@@ -165,11 +211,11 @@ static void client_update(t_client* x)
     x->m_device->get_protocol().update(*x->m_device);
     x->m_nodes = {&x->m_device->get_root_node()};
 
-    t_client::register_children(x);
+    client::register_children(x);
   }
 }
 
-static void client_disconnect(t_client* x)
+static void client_disconnect(client* x)
 {
   if (x->m_device)
   {
@@ -180,7 +226,7 @@ static void client_disconnect(t_client* x)
   }
 }
 
-static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
+static void client_connect(client* x, t_symbol*, int argc, t_atom* argv)
 {
 
   client_disconnect(x);
@@ -347,20 +393,22 @@ static void client_connect(t_client* x, t_symbol*, int argc, t_atom* argv)
   }
   else
   {
-    t_client::print_protocol_help();
+    client::print_protocol_help();
   }
 
   if (x->m_device)
   {
-    x->m_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
-    x->m_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
+    x->m_device->on_parameter_created.connect<client, &client::on_parameter_created_callback>(x);
+    x->m_device->on_parameter_removing.connect<client, &client::on_parameter_deleted_callback>(x);
+    // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
+    x->m_device->on_attribute_modified.connect<client, &client::on_attribute_modified_callback>(x);
     // TODO add callback for message
   }
 
   client_update(x);
 }
 
-void check_thread_status(t_client* x)
+void check_thread_status(client* x)
 {
   if ( x->m_done )
   {
@@ -411,7 +459,7 @@ void check_thread_status(t_client* x)
   }
 }
 
-void find_devices_async(t_client* x)
+void find_devices_async(client* x)
 {
   x->m_done = false;
   x->m_minuit_devices.clear();
@@ -423,7 +471,7 @@ void find_devices_async(t_client* x)
   x->m_done = true;
 }
 
-void client_getdevices(t_client* x)
+void client_getdevices(client* x)
 {
   if (x->m_async_thread)
   {
@@ -440,16 +488,16 @@ extern "C" void setup_ossia0x2eclient(void)
 {
   t_eclass* c = eclass_new(
       "ossia.client", (method)client_new, (method)client_free,
-      (short)sizeof(t_client), CLASS_DEFAULT, A_GIMME, 0);
+      (short)sizeof(client), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
     class_addcreator((t_newmethod)client_new,gensym("ø.client"), A_GIMME, 0);
 
     eclass_addmethod(
-        c, (method)t_client::register_children, "register", A_NULL, 0);
+        c, (method)client::register_children, "register", A_NULL, 0);
     eclass_addmethod(c, (method)client_update, "update", A_NULL, 0);
-    eclass_addmethod(c, (method)t_client::loadbang, "loadbang", A_NULL, 0);
+    eclass_addmethod(c, (method)client::loadbang, "loadbang", A_NULL, 0);
     eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)client_connect, "connect", A_GIMME, 0);
     eclass_addmethod(c, (method)client_disconnect, "disconnect", A_NULL, 0);
@@ -461,7 +509,7 @@ extern "C" void setup_ossia0x2eclient(void)
 
   }
 
-  ossia_pd::client = c;
+  ossia_pd::client_class = c;
 
 }
 } // pd namespace

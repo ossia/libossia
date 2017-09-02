@@ -269,22 +269,22 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
 
-  t_model* model = nullptr;
+  model* m = nullptr;
   int model_level = 0;
 
   int start_level = 0;
-  if (std::is_same<T, t_model>::value)
+  if (std::is_same<T, model>::value)
     start_level = 1;
 
-  model = (t_model*)find_parent_alive(
+  m = (model*)find_parent_alive(
       &x->m_obj, "ossia.model", start_level, &model_level);
-  t_model* tmp = nullptr;
+  model* tmp = nullptr;
 
-  while (model)
+  while (m)
   {
-    vs.push_back(model->m_name->s_name);
-    tmp = model;
-    model = (t_model*)find_parent_alive(
+    vs.push_back(m->m_name->s_name);
+    tmp = m;
+    m = (model*)find_parent_alive(
         &tmp->m_obj, "ossia.model", 1, &model_level);
   }
 
@@ -294,8 +294,8 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   int client_level = 0;
 
   // FIXme TODO use get root device instead
-  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &device_level);
-  auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
+  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
 
   if (client)
     fullpath << client->m_name->s_name << ":";
@@ -313,23 +313,23 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
 
-  t_view* view = nullptr;
+  ossia::pd::view* view = nullptr;
   int view_level = 0;
 
   int start_level = 0;
-  if (std::is_same<T, t_view>::value)
+  if (std::is_same<T, ossia::pd::view>::value)
     start_level = 1;
 
-  view =  (t_view*)find_parent_alive(
+  view =  (ossia::pd::view*)find_parent_alive(
       &x->m_obj, "ossia.view", start_level, &view_level);
-  t_view* tmp = nullptr;
+  ossia::pd::view* tmp = nullptr;
 
   while (view)
   {
     vs.push_back(view->m_name->s_name);
     tmp = view;
     view
-        = (t_view*) find_parent_alive(&tmp->m_obj, "ossia.view", 1, &view_level);
+        = (ossia::pd::view*) find_parent_alive(&tmp->m_obj, "ossia.view", 1, &view_level);
   }
 
   t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
@@ -339,8 +339,8 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   int client_level = 0;
 
   // FIXme TODO use get root device instead
-  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &device_level);
-  auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
+  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
 
   if (client)
     fullpath << client->m_name->s_name << ":";

@@ -1,19 +1,19 @@
 #pragma once
 
 #include "device.hpp"
-#include "ossia_obj_base.hpp"
+#include "parameter_base.hpp"
 
 namespace ossia
 {
 namespace pd
 {
 
-class t_remote : public t_object_base
+class remote : public parameter_base
 {
 public:
   using is_view = std::true_type;
 
-  t_remote();
+  remote();
 
   bool register_node(const std::vector<ossia::net::node_base*>& node);
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
@@ -28,7 +28,7 @@ public:
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
-  static ossia::safe_vector<t_remote*>& quarantine();
+  static ossia::safe_vector<remote*>& quarantine();
 };
 } // namespace pd
 } // namespace ossia

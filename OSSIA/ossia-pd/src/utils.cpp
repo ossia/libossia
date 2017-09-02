@@ -49,21 +49,21 @@ std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWrit
 
 void register_quarantinized()
 {
-  for (auto model : t_model::quarantine().copy())
+  for (auto model : ossia::pd::model::quarantine().copy())
   {
-    obj_register<t_model>(model);
+    obj_register<ossia::pd::model>(model);
   }
-  for (auto param : t_param::quarantine().copy())
+  for (auto param : ossia::pd::parameter::quarantine().copy())
   {
-    obj_register<t_param>(param);
+    obj_register<ossia::pd::parameter>(param);
   }
-  for (auto view : t_view::quarantine().copy())
+  for (auto view : ossia::pd::view::quarantine().copy())
   {
-    obj_register<t_view>(view);
+    obj_register<ossia::pd::view>(view);
   }
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register<t_remote>(remote);
+    obj_register<ossia::pd::remote>(remote);
   }
 }
 
@@ -105,11 +105,11 @@ t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, in
 
 std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x){
   int l;
-  t_device* device = (t_device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
-  t_client* client = (t_client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
+  ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
+  ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
 
-  t_model* model = nullptr;
-  t_view* view = nullptr;
+  ossia::pd::model* model = nullptr;
+  ossia::pd::view* view = nullptr;
   int view_level = 0, model_level = 0;
   int start_level = 0;
 
@@ -124,12 +124,12 @@ std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x){
     if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
     {
       view
-          = (t_view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
+          = (ossia::pd::view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
     }
 
     if (!view)
     {
-      model = (t_model*)find_parent_alive(
+      model = (ossia::pd::model*)find_parent_alive(
           &x->m_obj, "ossia.model", 0, &model_level);
     }
   }
