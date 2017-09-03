@@ -21,13 +21,11 @@ namespace ossia
 namespace pd
 {
 
-void client_getdevices(client* x);
-
 client::client():
   device_base{ossia_pd::client_class}
 { }
 
-static void client_free(client* x)
+void client::destroy(client* x)
 {
   x->m_dead = true;
   x->unregister_children();
@@ -41,7 +39,7 @@ static void client_free(client* x)
   x->~client();
 }
 
-static void client_poll_message(client* x)
+void client::poll_message(client* x)
 {
   if (x->m_oscq_protocol)
   {
@@ -50,7 +48,7 @@ static void client_poll_message(client* x)
   }
 }
 
-static void* client_new(t_symbol* name, int argc, t_atom* argv)
+void* client::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   ossia::pd::client* x = new ossia::pd::client();
@@ -65,7 +63,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_name = gensym("Pd");
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_poll_clock = clock_new((t_object*)x, (t_method) client_poll_message);
+    x->m_poll_clock = clock_new((t_object*)x, (t_method) client::poll_message);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -80,7 +78,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
     {
       error(
             "Only one [ø.device]/[ø.client] intance per patcher is allowed.");
-      client_free(x);
+      client::destroy(x);
       free(x);
       x = nullptr;
     }
@@ -138,7 +136,7 @@ void client::unregister_children()
 
 
 
-static void client_update(client* x)
+void client::update(client* x)
 {
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
   // for OSC Query
@@ -152,7 +150,7 @@ static void client_update(client* x)
   }
 }
 
-static void client_disconnect(client* x)
+void client::disconnect(client* x)
 {
   if (x->m_device)
   {
@@ -164,10 +162,10 @@ static void client_disconnect(client* x)
   }
 }
 
-static void client_connect(client* x, t_symbol*, int argc, t_atom* argv)
+void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 {
 
-  client_disconnect(x);
+  client::disconnect(x);
 
   ossia::net::minuit_connection_data minuit_settings;
   minuit_settings.name = "Pd";
@@ -243,7 +241,7 @@ static void client_connect(client* x, t_symbol*, int argc, t_atom* argv)
             return;
           }
           x->m_looking_for = gensym(name.c_str());
-          client_getdevices(x);
+          client::getdevices(x);
           return;
         }
       } else {
@@ -335,10 +333,10 @@ static void client_connect(client* x, t_symbol*, int argc, t_atom* argv)
   }
 
   x->connect_slots();
-  client_update(x);
+  client::update(x);
 }
 
-void check_thread_status(client* x)
+void client::check_thread_status(client* x)
 {
   if ( x->m_done )
   {
@@ -381,7 +379,7 @@ void check_thread_status(client* x)
     {
       t_atom a;
       SETSYMBOL(&a, x->m_looking_for);
-      client_connect(x, gensym("connect"), 1, &a);
+      client::connect(x, gensym("connect"), 1, &a);
     }
 
   } else {
@@ -401,14 +399,14 @@ void find_devices_async(client* x)
   x->m_done = true;
 }
 
-void client_getdevices(client* x)
+void client::getdevices(client* x)
 {
   if (x->m_async_thread)
   {
     pd_error(x, "already scanning network for device, please wait a bit.");
   } else {
     x->m_async_thread = new std::thread(find_devices_async,x);
-    x->m_clock = clock_new(x, (t_method)check_thread_status);
+    x->m_clock = clock_new(x, (t_method)client::check_thread_status);
     clock_delay(x->m_clock,1000);
   }
 
@@ -417,25 +415,25 @@ void client_getdevices(client* x)
 extern "C" void setup_ossia0x2eclient(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.client", (method)client_new, (method)client_free,
+      "ossia.client", (method)client::create, (method)client::destroy,
       (short)sizeof(client), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)client_new,gensym("ø.client"), A_GIMME, 0);
+    class_addcreator((t_newmethod)client::create,gensym("ø.client"), A_GIMME, 0);
 
     eclass_addmethod(
         c, (method)client::register_children, "register", A_NULL, 0);
-    eclass_addmethod(c, (method)client_update, "update", A_NULL, 0);
+    eclass_addmethod(c, (method)client::update, "update", A_NULL, 0);
     eclass_addmethod(c, (method)client::loadbang, "loadbang", A_NULL, 0);
     eclass_addmethod(c, (method)object_base::get_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method)client_connect, "connect", A_GIMME, 0);
-    eclass_addmethod(c, (method)client_disconnect, "disconnect", A_NULL, 0);
+    eclass_addmethod(c, (method)client::connect, "connect", A_GIMME, 0);
+    eclass_addmethod(c, (method)client::disconnect, "disconnect", A_NULL, 0);
 
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
     eclass_addmethod(c, (method) node_base::preset, "preset", A_GIMME, 0);
-    eclass_addmethod(c, (method) client_getdevices, "getdevices", A_NULL, 0);
+    eclass_addmethod(c, (method) client::getdevices, "getdevices", A_NULL, 0);
   }
 
   ossia_pd::client_class = c;

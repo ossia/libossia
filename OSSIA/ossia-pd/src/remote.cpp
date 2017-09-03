@@ -141,7 +141,7 @@ void remote::set_unit()
   }
 }
 
-void remote_get_unit(remote*x)
+void remote::get_unit(remote*x)
 {
   t_atom a;
   if (x->m_unit)
@@ -152,28 +152,28 @@ void remote_get_unit(remote*x)
     outlet_anything(x->m_dumpout, gensym("unit"), 0, NULL);
 }
 
-void remote_get_mute(remote*x)
+void remote::get_mute(remote*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_mute);
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void remote_get_rate(remote*x)
+void remote::get_rate(remote*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_rate);
   outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
 }
 
-void remote_get_enable(remote*x)
+void remote::get_enable(remote*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_enable);
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
-t_pd_err remote_notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
   {
@@ -190,7 +190,7 @@ t_pd_err remote_notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* 
   return {};
 }
 
-static void remote_click(
+void remote::click(
     remote* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
     t_floatarg ctrl, t_floatarg alt)
 {
@@ -217,7 +217,7 @@ static void remote_click(
   }
 }
 
-static void remote_bind(remote* x, t_symbol* address)
+void remote::bind(remote* x, t_symbol* address)
 {
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
@@ -226,7 +226,7 @@ static void remote_bind(remote* x, t_symbol* address)
   obj_register(x);
 }
 
-static void* remote_new(t_symbol* name, int argc, t_atom* argv)
+void* remote::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   remote* x = new remote();
@@ -267,7 +267,7 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-static void remote_free(remote* x)
+void remote::destroy(remote* x)
 {
   x->m_dead = true;
   x->unregister();
@@ -302,20 +302,21 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
 
 extern "C" void setup_ossia0x2eremote(void)
 {
-  t_eclass* c = eclass_new(
-      "ossia.remote", (method)remote_new, (method)remote_free,
+  t_eclass* c = eclass_new("ossia.remote",
+      (method)ossia::pd::remote::create,
+      (method)ossia::pd::remote::destroy,
       (short)sizeof(remote), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
+    class_addcreator((t_newmethod)remote::create,gensym("ø.remote"), A_GIMME, 0);
 
     eclass_addmethod(c, (method) parameter_base::push,   "anything",    A_GIMME,  0);
     eclass_addmethod(c, (method) parameter_base::bang,   "bang",        A_NULL,   0);
     eclass_addmethod(c, (method) obj_dump<remote>,       "dump",        A_NULL,   0);
-    eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
-    eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,   0);
-    eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
+    eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
+    eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
+    eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) object_base::get_address,        "getaddress",  A_NULL,   0);
 
     CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
@@ -327,9 +328,9 @@ extern "C" void setup_ossia0x2eremote(void)
     parameter_base::declare_attributes(c);
 
     // remote special attributes
-    eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote_get_mute,        "getmute",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote_get_rate,        "rate",        A_NULL, 0);
+    eclass_addmethod(c, (method) remote::get_unit,        "getunit",     A_NULL, 0);
+    eclass_addmethod(c, (method) remote::get_mute,        "getmute",     A_NULL, 0);
+    eclass_addmethod(c, (method) remote::get_rate,        "rate",        A_NULL, 0);
 
   }
 

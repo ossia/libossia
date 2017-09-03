@@ -11,8 +11,6 @@ namespace ossia
 namespace pd
 {
 
-static void view_free(view* x);
-
 view::view():
   node_base{ossia_pd::view_class}
 { }
@@ -146,7 +144,7 @@ bool view::unregister()
   return true;
 }
 
-static void view_click(
+void view::click(
     view* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
     t_floatarg ctrl, t_floatarg alt)
 {
@@ -172,7 +170,7 @@ static void view_click(
   }
 }
 
-static void* view_new(t_symbol* name, int argc, t_atom* argv)
+void* view::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   ossia::pd::view* x = new ossia::pd::view();
@@ -209,7 +207,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
     {
       error(
           "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
-      view_free(x);
+      view::destroy(x);
       free(x);
       x = nullptr;
     }
@@ -218,7 +216,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
   return x;
 }
 
-static void view_free(view* x)
+void view::destroy(view* x)
 {
   x->m_dead = true;
   x->unregister();
@@ -229,7 +227,7 @@ static void view_free(view* x)
   x->~view();
 }
 
-static void view_bind(view* x, t_symbol* address)
+void view::bind(view* x, t_symbol* address)
 {
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
@@ -241,16 +239,16 @@ static void view_bind(view* x, t_symbol* address)
 extern "C" void setup_ossia0x2eview(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.view", (method)view_new, (method)view_free, (short)sizeof(view),
+      "ossia.view", (method)view::create, (method)view::destroy, (short)sizeof(view),
       CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)view_new,gensym("ø.view"), A_GIMME, 0);
+    class_addcreator((t_newmethod)view::create,gensym("ø.view"), A_GIMME, 0);
 
     eclass_addmethod(c, (method) obj_dump<view>,                "dump",          A_NULL,   0);
-    eclass_addmethod(c, (method) view_click,                    "click",         A_NULL,   0);
-    eclass_addmethod(c, (method) view_bind,                     "bind",          A_SYMBOL, 0);
+    eclass_addmethod(c, (method) view::click,                    "click",         A_NULL,   0);
+    eclass_addmethod(c, (method) view::bind,                     "bind",          A_SYMBOL, 0);
     eclass_addmethod(c, (method) object_base::get_namespace,    "namespace",     A_NULL,   0);
     eclass_addmethod(c, (method) object_base::set,              "set",           A_GIMME,  0);
     eclass_addmethod(c, (method) object_base::get_address,               "getaddress",    A_NULL,   0);

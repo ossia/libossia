@@ -16,8 +16,6 @@ namespace ossia
 namespace pd
 {
 
-static void parameter_free(parameter* x);
-
 parameter::parameter():
   parameter_base{ossia_pd::param_class}
 { }
@@ -131,7 +129,7 @@ static void push_default_value(parameter* x)
     parameter_base::push(x, nullptr, x->m_default_size, x->m_default);
 }
 
-static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
+void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   parameter* x = new parameter();
@@ -262,7 +260,7 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
   return 0;
 }
 
-static void parameter_free(parameter* x)
+void parameter::destroy(parameter* x)
 {
   x->m_dead = true;
   x->unregister();
@@ -294,12 +292,12 @@ void parameter::update_attribute(parameter* x, ossia::string_view attribute)
 extern "C" void setup_ossia0x2eparam(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.param", (method)parameter_new, (method)parameter_free,
+      "ossia.param", (method)parameter::create, (method)parameter::destroy,
       (short)sizeof(parameter), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
+    class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
 
     eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
     eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);

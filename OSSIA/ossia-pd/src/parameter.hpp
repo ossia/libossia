@@ -32,6 +32,10 @@ public:
 
   void set_unit();
 
+  static void* create(t_symbol* name, int argc, t_atom* argv);
+  static void destroy(parameter* x);
+
+
 };
 } // namespace pd
 } // namespace ossia

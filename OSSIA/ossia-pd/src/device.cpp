@@ -20,7 +20,7 @@ device::device():
   device_base{ossia_pd::device_class}
 { }
 
-static void device_free(device* x)
+void device::destroy(device* x)
 {
   x->m_dead = true;
   clock_unset(x->m_clock);
@@ -42,7 +42,7 @@ static void device_free(device* x)
   x->~device();
 }
 
-static void* device_new(t_symbol* name, int argc, t_atom* argv)
+void* device::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   ossia::pd::device* x = new ossia::pd::device();
@@ -79,7 +79,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     {
       error(
             "Only one [ø.device]/[ø.client] instance per patcher is allowed.");
-      device_free(x);
+      device::destroy(x);
       free(x);
       x = nullptr;
     }
@@ -186,7 +186,7 @@ void device::on_parameter_deleted_callback(const ossia::net::parameter_base& par
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
-void device_expose(device* x, t_symbol*, int argc, t_atom* argv)
+void device::expose(device* x, t_symbol*, int argc, t_atom* argv)
 {
 
   if (argc && argv->a_type == A_SYMBOL)
@@ -313,7 +313,7 @@ void device_expose(device* x, t_symbol*, int argc, t_atom* argv)
     Protocol_Settings::print_protocol_help();
 }
 
-void device_name(device *x, t_symbol* s, int argc, t_atom* argv){
+void device::name(device *x, t_symbol* s, int argc, t_atom* argv){
   if( argc == 0 )
   {
     t_atom a;
@@ -327,7 +327,7 @@ void device_name(device *x, t_symbol* s, int argc, t_atom* argv){
   }
 }
 
-void device_getprotocols(device* x)
+void device::getprotocols(device* x)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
@@ -348,7 +348,7 @@ void device_getprotocols(device* x)
 
 }
 
-void device_stop_expose(device*x, int index)
+void device::stop_expose(device*x, int index)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
@@ -364,24 +364,24 @@ void device_stop_expose(device*x, int index)
 extern "C" void setup_ossia0x2edevice(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.device", (method)device_new, (method)device_free,
+      "ossia.device", (method)device::create, (method)device::destroy,
       (short)sizeof(device), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)device_new,gensym("ø.device"), A_GIMME, 0);
+    class_addcreator((t_newmethod)device::create,gensym("ø.device"), A_GIMME, 0);
 
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method) object_base::get_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
+    eclass_addmethod(c, (method) device::expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
-    eclass_addmethod(c, (method) device_name, "name", A_GIMME, 0);
+    eclass_addmethod(c, (method) device::name, "name", A_GIMME, 0);
 
-    eclass_addmethod(c, (method) device_getprotocols, "getprotocols", A_NULL, 0);
-    eclass_addmethod(c, (method) device_stop_expose, "stop", A_FLOAT, 0);
+    eclass_addmethod(c, (method) device::getprotocols, "getprotocols", A_NULL, 0);
+    eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
     eclass_addmethod(c, (method) node_base::preset, "preset", A_GIMME, 0);
   }
 

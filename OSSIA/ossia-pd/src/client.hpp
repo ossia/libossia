@@ -43,6 +43,17 @@ public:
 
   bool m_done{true};
   t_symbol* m_looking_for{}; // the device's name we are looking for
+
+  static void disconnect(client* x);
+  static void connect(client* x, t_symbol*, int argc, t_atom* argv);
+  static void getdevices(client* x);
+  static void check_thread_status(client* x);
+  static void update(client* x);
+  static void poll_message(client* x);
+  static void destroy(client* x);
+  static void* create(t_symbol* name, int argc, t_atom* argv);
+  static void find_devices_async(client* x);
+
 };
 }
 } // namespace

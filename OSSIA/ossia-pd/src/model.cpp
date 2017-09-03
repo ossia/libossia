@@ -15,8 +15,6 @@ namespace ossia
 namespace pd
 {
 
-static void model_free(model* x);
-
 model::model():
   node_base{ossia_pd::model_class}
 { }
@@ -150,7 +148,7 @@ bool model::unregister()
 }
 
 
-t_pd_err model_notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
   {
@@ -164,31 +162,12 @@ t_pd_err model_notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* da
   return 0;
 }
 
-void model_get_priority(model*x)
-{
-  t_atom a;
-  SETFLOAT(&a, x->m_priority);
-  outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
-}
-
-void model_get_tags(model*x)
-{
-  outlet_anything(x->m_dumpout, gensym("tags"),
-                  x->m_tags_size, x->m_tags);
-}
-
-void model_get_description(model*x)
-{
-  outlet_anything(x->m_dumpout, gensym("description"),
-                  x->m_description_size, x->m_description);
-}
-
 ossia::safe_vector<model*>& model::quarantine()
 {
     return ossia_pd::instance().model_quarantine;
 }
 
-static void* model_new(t_symbol* name, int argc, t_atom* argv)
+void* model::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   ossia::pd::model* x = new ossia::pd::model();
@@ -231,7 +210,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
     {
       error(
             "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
-      model_free(x);
+      model::destroy(x);
       free(x);
       x = nullptr;
     }
@@ -240,7 +219,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
   return x;
 }
 
-static void model_free(model* x)
+void model::destroy(model* x)
 {
   x->m_dead = true;
   x->unregister();
@@ -254,27 +233,27 @@ static void model_free(model* x)
 extern "C" void setup_ossia0x2emodel(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.model", (method)model_new, (method)model_free,
+      "ossia.model", (method)model::create, (method)model::destroy,
       (short)sizeof(model), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)model_new,gensym("ø.model"), A_GIMME, 0);
+    class_addcreator((t_newmethod)model::create,gensym("ø.model"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)obj_dump<model>, "dump", A_NULL, 0);
-    eclass_addmethod(c, (method)object_base::get_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method)object_base::set, "set", A_GIMME, 0);
-    eclass_addmethod(c, (method) model_notify,     "notify",   A_NULL,  0);
+    eclass_addmethod(c, (method) obj_dump<model>, "dump", A_NULL, 0);
+    eclass_addmethod(c, (method) object_base::get_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method) object_base::set, "set", A_GIMME, 0);
+    eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
 
     CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, model, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
     CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, model, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
     CLASS_ATTR_INT(c, "priority", 0, parameter, m_priority);
 
-    eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL,  0);
-    eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL,  0);
-    eclass_addmethod(c, (method) model_get_description,       "getdescription",       A_NULL,  0);
-    eclass_addmethod(c, (method) object_base::get_address,             "getaddress",           A_NULL,  0);
-    eclass_addmethod(c, (method) node_base::preset,                  "preset",               A_GIMME, 0);
+    eclass_addmethod(c, (method) object_base::get_priority,          "getpriority",          A_NULL,  0);
+    eclass_addmethod(c, (method) object_base::get_tags,              "gettags",              A_NULL,  0);
+    eclass_addmethod(c, (method) object_base::get_description,       "getdescription",       A_NULL,  0);
+    eclass_addmethod(c, (method) object_base::get_address,     "getaddress",           A_NULL,  0);
+    eclass_addmethod(c, (method) node_base::preset,            "preset",               A_GIMME, 0);
 
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
