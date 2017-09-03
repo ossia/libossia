@@ -80,8 +80,8 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   eclass_addmethod(c, (method) device_expose, "expose",    A_GIMME, 0);
   eclass_addmethod(c, (method) device_name,   "name",      A_GIMME, 0);
-  eclass_addmethod(c, (method) obj_namespace, "namespace", A_GIMME, 0);
-  eclass_addmethod(c, (method) obj_preset,    "preset",    A_GIMME, 0);
+  eclass_addmethod(c, (method) ossia::pd::object_base::get_namespace, "namespace", A_GIMME, 0);
+  eclass_addmethod(c, (method) node_base::preset,    "preset",    A_GIMME, 0);
 
   ossia_pd::ossia_class = c;
 

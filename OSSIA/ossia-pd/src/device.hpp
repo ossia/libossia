@@ -1,5 +1,5 @@
 #pragma once
-#include "ossia_obj_base.hpp"
+#include "device_base.hpp"
 
 namespace ossia
 {
@@ -54,7 +54,7 @@ static void print_protocol_help()
 }
 }
 
-class device : public t_object_base
+class device : public device_base
 {
 public:
   device();

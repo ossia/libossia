@@ -1,14 +1,14 @@
 #pragma once
 
-#include "device.hpp"
-#include "ossia_obj_base.hpp"
+#include <ossia-pd/src/device.hpp>
+#include <ossia-pd/src/parameter_base.hpp>
 
 namespace ossia
 {
 namespace pd
 {
 
-struct view : public t_object_base
+struct view : public node_base
 {
 public:
   view();

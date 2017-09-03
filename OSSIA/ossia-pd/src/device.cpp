@@ -1,11 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "device.hpp"
-#include "model.hpp"
-#include "parameter.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "utils.hpp"
+#include <ossia-pd/src/device.hpp>
+#include <ossia-pd/src/model.hpp>
+#include <ossia-pd/src/parameter.hpp>
+#include <ossia-pd/src/remote.hpp>
+#include <ossia-pd/src/view.hpp>
+#include <ossia-pd/src/utils.hpp>
 
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/minuit/minuit.hpp>
@@ -17,7 +17,7 @@ namespace pd
 {
 
 device::device():
-  t_object_base{ossia_pd::device_class}
+  device_base{ossia_pd::device_class}
 { }
 
 static void device_free(device* x)
@@ -43,7 +43,7 @@ static void device_free(device* x)
 static void* device_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  device* x = (ossia::pd::device*)eobj_new(ossia_pd::device_class);
+  ossia::pd::device* x = new ossia::pd::device();
   // TODO SANITIZE : Direct leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
@@ -79,7 +79,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.device]/[ø.client] instance per patcher is allowed.");
       device_free(x);
-      delete x;
+      free(x);
       x = nullptr;
     }
   }
@@ -90,7 +90,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
 void device::register_children(device* x)
 {
 
-  std::vector<t_object_base*> modelnodes
+  std::vector<object_base*> modelnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
   {
@@ -106,7 +106,7 @@ void device::register_children(device* x)
     }
   }
 
-  std::vector<t_object_base*> viewnodes
+  std::vector<object_base*> viewnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
@@ -132,7 +132,7 @@ void device::register_children(device* x)
 
 void device::unregister_children()
 {
-  std::vector<t_object_base*> node
+  std::vector<object_base*> node
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : node)
   {
@@ -148,7 +148,7 @@ void device::unregister_children()
     }
   }
 
-  std::vector<t_object_base*> viewnode
+  std::vector<object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
@@ -373,7 +373,7 @@ extern "C" void setup_ossia0x2edevice(void)
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)device::register_children,"register", A_NULL, 0);
-    eclass_addmethod(c, (method) obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method) object_base::get_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method) device_expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
@@ -381,7 +381,7 @@ extern "C" void setup_ossia0x2edevice(void)
 
     eclass_addmethod(c, (method) device_getprotocols, "getprotocols", A_NULL, 0);
     eclass_addmethod(c, (method) device_stop_expose, "stop", A_FLOAT, 0);
-    eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
+    eclass_addmethod(c, (method) node_base::preset, "preset", A_GIMME, 0);
   }
 
   ossia_pd::device_class = c;

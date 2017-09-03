@@ -1,7 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "ossia_obj_base.hpp"
-#include "utils.hpp"
+#include <ossia-pd/src/object_base.hpp>
+#include <ossia-pd/src/utils.hpp>
+
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <regex>

@@ -1,5 +1,5 @@
 #pragma once
-#include "ossia_obj_base.hpp"
+#include <ossia-pd/src/device_base.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -9,7 +9,7 @@ namespace ossia
 namespace pd
 {
 
-class client : public t_object_base
+class client : public device_base
 {
 public:
   client();
@@ -17,11 +17,6 @@ public:
   static void register_children(client* x);
   void unregister_children();
   static void loadbang(client* x, t_float type);
-
-  void on_parameter_created_callback(const ossia::net::parameter_base& param);
-  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
-  void on_attribute_modified_callback(const ossia::net::node_base& node,
-                                      ossia::string_view attribute);
 
   static void print_protocol_help()
   {

@@ -6,7 +6,7 @@
 #include "remote.hpp"
 #include "utils.hpp"
 #include "ossia-pd.hpp"
-#include "ossia_obj_base.hpp"
+#include <ossia-pd/src/object_base.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <limits>
@@ -128,14 +128,13 @@ ossia::safe_vector<parameter*>& parameter::quarantine()
 static void push_default_value(parameter* x)
 {
   if ( x->m_default_size > 0 )
-    t_object_base::push(x, nullptr, x->m_default_size, x->m_default);
+    parameter_base::push(x, nullptr, x->m_default_size, x->m_default);
 }
 
 static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   parameter* x = new parameter();
-  // t_param* ox = (t_param*)eobj_new(ossia_pd.param);
 
   // TODO SANITIZE : memory leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
@@ -154,7 +153,7 @@ static void* parameter_new(t_symbol* name, int argc, t_atom* argv)
     x->m_type = gensym("float");
 
     x->m_clock = clock_new(x, (t_method)push_default_value);
-    x->m_poll_clock = clock_new(x, (t_method)t_object_base::output_value);
+    x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -289,55 +288,29 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter_new,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) t_object_base::push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method) t_object_base::bang, "bang",     A_NULL,  0);
+    eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) obj_dump<parameter>,   "dump",     A_NULL,  0);
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
     eclass_addmethod(c, (method) push_default_value,   "reset",    A_NULL,  0);
 
-    CLASS_ATTR_SYMBOL(c, "type", 0, parameter, m_type);
-    CLASS_ATTR_SYMBOL(c, "unit", 0, parameter, m_unit);
-    CLASS_ATTR_SYMBOL(c, "bounding_mode", 0, parameter, m_bounding_mode);
-    CLASS_ATTR_SYMBOL(c, "access_mode", 0, parameter, m_access_mode);
-    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, parameter, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, parameter, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
+    parameter_base::declare_attributes(c);
 
-    CLASS_ATTR_ATOM_VARSIZE(c, "default",           0, parameter, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "range",             0, parameter, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "min",               0, parameter, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, parameter, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_FLOAT       (c, "repetition_filter", 0, parameter, m_repetition_filter);
-    CLASS_ATTR_INT(         c, "priority",          0, parameter, m_priority);
-    CLASS_ATTR_INT(         c, "hidden",            0, parameter, m_hidden);
-    CLASS_ATTR_INT(         c, "enable",            0, parameter, m_enable);
-    CLASS_ATTR_INT(         c, "mute",              0, parameter, m_mute);
-    CLASS_ATTR_FLOAT(       c, "rate",              0, parameter, m_rate);
-
+    // special attributes
     CLASS_ATTR_DEFAULT(c, "type",          0, "float");
     CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
     CLASS_ATTR_DEFAULT(c, "access_mode",   0, "bi");
 
-    // attributes getter
-    eclass_addmethod(c, (method) parameter_base::get_range,             "getrange",             A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_min,               "getmin",               A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_max,               "getmax",               A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_bounding_mode,     "getbounding_mode",     A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_default,           "getdefault",           A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_type,              "gettype",              A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_hidden,            "gethidden",            A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_priority,          "getpriority",          A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getaccess_mode",       A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetition_filter", A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_tags,              "gettags",              A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_description,       "getdescription",       A_NULL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NULL, 0);
+    CLASS_ATTR_SYMBOL(      c, "unit",              0, parameter, m_unit);
+    CLASS_ATTR_INT(         c, "mute",              0, parameter, m_mute);
+    CLASS_ATTR_FLOAT(       c, "rate",              0, parameter, m_rate);
 
     eclass_addmethod(c, (method) parameter::get_unit,              "getunit",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter::get_mute,              "getmute",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter::get_rate,              "getrate",              A_NULL, 0);
 
-    eclass_addmethod(c, (method) obj_get_address,                 "getaddress",           A_NULL, 0);
+    eclass_addmethod(c, (method) object_base::get_address,                 "getaddress",           A_NULL, 0);
 
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy

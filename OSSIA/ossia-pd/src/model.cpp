@@ -8,6 +8,7 @@
 #include "view.hpp"
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia-pd/src/node_base.hpp>
 
 namespace ossia
 {
@@ -17,7 +18,7 @@ namespace pd
 static void model_free(model* x);
 
 model::model():
-  t_object_base{ossia_pd::model_class}
+  node_base{ossia_pd::model_class}
 { }
 
 bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
@@ -53,7 +54,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
       // we have to check if a node with the same name already exists to avoid
       // auto-incrementing name
-      std::vector<t_object_base*> obj
+      std::vector<object_base*> obj
           = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
       for (auto v : obj)
       {
@@ -90,7 +91,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 void model::register_children()
 {
   obj_dequarantining<model>(this);
-  std::vector<t_object_base*> obj
+  std::vector<object_base*> obj
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : obj)
   {
@@ -148,63 +149,6 @@ bool model::unregister()
   return true;
 }
 
-void model::set_priority()
-{
-  // TODO why this doesn't work
-  for (auto n : m_nodes)
-    ossia::net::set_priority(*n, m_priority);
-}
-
-void model::set_description()
-{
-  std::stringstream description;
-  for (int i = 0; i < m_description_size; i++)
-  {
-    switch(m_description[i].a_type)
-    {
-      case A_SYMBOL:
-        description << m_description[i].a_w.w_symbol->s_name << " ";
-        break;
-      case A_FLOAT:
-        {
-          description << m_description[i].a_w.w_float << " ";
-          break;
-        }
-      default:
-        ;
-    }
-  }
-
-  for (auto n : m_nodes)
-    ossia::net::set_description(*n, description.str());
-}
-
-void model::set_tags()
-{
-  std::vector<std::string> tags;
-  for (int i = 0; i < m_tags_size; i++)
-  {
-    switch(m_tags[i].a_type)
-    {
-      case A_SYMBOL:
-        tags.push_back(m_tags[i].a_w.w_symbol->s_name);
-        break;
-      case A_FLOAT:
-        {
-          std::stringstream ss;
-          ss << m_tags[i].a_w.w_float;
-          tags.push_back(ss.str());
-          break;
-        }
-      default:
-        ;
-    }
-  }
-
-  for (auto n : m_nodes)
-    ossia::net::set_tags(*n, tags);
-}
-
 
 t_pd_err model_notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
@@ -247,7 +191,7 @@ ossia::safe_vector<model*>& model::quarantine()
 static void* model_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  ossia::pd::model* x = (ossia::pd::model*)eobj_new(ossia_pd.model_class);
+  ossia::pd::model* x = new ossia::pd::model();
   if(x)
   {
     ossia_pd.models.push_back(x);
@@ -288,7 +232,7 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
       model_free(x);
-      delete x;
+      free(x);
       x = nullptr;
     }
   }
@@ -318,8 +262,8 @@ extern "C" void setup_ossia0x2emodel(void)
     class_addcreator((t_newmethod)model_new,gensym("ø.model"), A_GIMME, 0);
 
     eclass_addmethod(c, (method)obj_dump<model>, "dump", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
+    eclass_addmethod(c, (method)object_base::get_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)object_base::set, "set", A_GIMME, 0);
     eclass_addmethod(c, (method) model_notify,     "notify",   A_NULL,  0);
 
     CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, model, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
@@ -329,8 +273,8 @@ extern "C" void setup_ossia0x2emodel(void)
     eclass_addmethod(c, (method) model_get_priority,          "getpriority",          A_NULL,  0);
     eclass_addmethod(c, (method) model_get_tags,              "gettags",              A_NULL,  0);
     eclass_addmethod(c, (method) model_get_description,       "getdescription",       A_NULL,  0);
-    eclass_addmethod(c, (method) obj_get_address,             "getaddress",           A_NULL,  0);
-    eclass_addmethod(c, (method) obj_preset,                  "preset",               A_GIMME, 0);
+    eclass_addmethod(c, (method) object_base::get_address,             "getaddress",           A_NULL,  0);
+    eclass_addmethod(c, (method) node_base::preset,                  "preset",               A_GIMME, 0);
 
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's

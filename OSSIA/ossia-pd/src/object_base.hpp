@@ -39,18 +39,18 @@ enum class address_scope
   global
 };
 
-struct t_object_base;
+struct object_base;
 
 class t_select_clock
 {
 public:
-  t_select_clock(t_canvas* canvas, t_object_base* obj);
+  t_select_clock(t_canvas* canvas, object_base* obj);
   ~t_select_clock();
 
   static void deselect(t_select_clock* x);
 private:
   t_clock* m_clock{};
-  t_object_base* m_obj{};
+  object_base* m_obj{};
   t_canvas* m_canvas{};
 
 };
@@ -58,7 +58,7 @@ private:
 class t_matcher
 {
 public:
-  t_matcher(ossia::net::node_base* n, t_object_base* p); // constructor
+  t_matcher(ossia::net::node_base* n, object_base* p); // constructor
   ~t_matcher();
   t_matcher(const t_matcher&) = delete;
   t_matcher(t_matcher&& other);
@@ -74,9 +74,13 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
+  void set_dead(){ m_dead = true; };
+
+  bool m_dead{};
+
 private:
   ossia::net::node_base* node{};
-  t_object_base* parent{};
+  object_base* parent{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
@@ -87,13 +91,11 @@ private:
 
 };
 
-class t_object_base
+class object_base
 {
 
 public:
-  t_object_base(t_eclass* c);
-
-  t_eobj m_obj;
+  t_eobj m_obj; // should be the first element
 
   t_outlet* m_setout{};
   t_outlet* m_dataout{};
@@ -109,9 +111,10 @@ public:
   bool m_enable{true};
 
   t_clock* m_clock{};   // multi-purpose clock
+  std::chrono::milliseconds m_last_click{};
+
   t_clock* m_poll_clock{}; // value polling clock
   float m_rate{10};
-  std::chrono::milliseconds m_last_click{};
 
   ossia::optional<ossia::unit_t> m_ounit;
 
@@ -120,44 +123,61 @@ public:
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
 
+  static void declare_attributes(t_eclass*c);
+
+  void set_description();
+  void set_tags();
+  void set_priority();
+  void set_hidden();
+
+  static void get_description(object_base* x);
+  static void get_tags(object_base* x);
+  static void get_priority(object_base* x);
+  static void get_hidden(object_base* x);
+
+  t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
+  t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
+  int m_priority{};
+  bool m_hidden{};
+
+  long m_tags_size{};
+  long m_description_size{};
+
+  // constructor
+  object_base(t_eclass* c);
+
+
   void is_deleted(const ossia::net::node_base& n);
 
-  // TODO why some methods are inside t_obj_base class and other are outside ?
-  static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
-  static void bang(t_object_base* x);
-  static void output_value(t_object_base* x);
+  /**
+   * @brief find_and_display_friend go through all registered parameters to find the ones that matches current remote
+   * @param x the remote
+   * @return false if nothing have been found
+   */
+  static bool find_and_display_friend(object_base* x);
 
+  /**
+   * @brief obj_namespace send the namespace through dump outlet
+   * @note only relevant for client, device, model and view objects.
+   * @param x
+   */
+  static void get_namespace(object_base* x);
+
+  /**
+   * @brief set Set the parameter value from Pd patcher
+   * @param x
+   * @param s
+   * @param argc
+   * @param argv
+   */
+  static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
+
+  /**
+   * @brief obj_get_address return global address through dump outlet
+   * @param x
+   */
+  static void get_address(object_base *x);
 };
 
-/**
- * @brief find_and_display_friend go through all registered parameters to find the ones that matches current remote
- * @param x the remote
- * @return false if nothing have been found
- */
-bool find_and_display_friend(t_object_base* x);
-
-/**
- * @brief obj_namespace send the namespace through dump outlet
- * @note only relevant for client, device, model and view objects.
- * @param x
- */
-void obj_namespace(t_object_base* x);
-
-/**
- * @brief obj_set
- * @param x
- * @param s
- * @param argc
- * @param argv
- */
-void obj_set(t_object_base* x, t_symbol* s, int argc, t_atom* argv);
-
-/**
- * @brief obj_get_address return global address through dump outlet
- * @param x
- */
-void obj_get_address(t_object_base *x);
-
-void obj_preset(t_object_base *x, t_symbol* s, int argc, t_atom* argv);
 }
 } // namespace

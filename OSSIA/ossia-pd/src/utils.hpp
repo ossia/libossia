@@ -6,7 +6,7 @@
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
-#include <ossia-pd/src/ossia_obj_base.hpp>
+#include <ossia-pd/src/object_base.hpp>
 #include <ossia/network/domain/domain.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
@@ -222,7 +222,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
+object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
 
 /**
  * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
@@ -238,10 +238,10 @@ std::string replace_brackets(std::string);
  * @param start_level
  * @return
  */
-static t_object_base* find_parent_alive(
+static object_base* find_parent_alive(
     t_eobj* x, std::string classname, int start_level, int* level)
 {
-  t_object_base* obj = find_parent(x, classname, start_level, level);
+  object_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
   {
     while (obj && obj->m_dead)
@@ -357,7 +357,7 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x);
+std::vector<ossia::net::node_base*> find_parent_node(object_base* x);
 
 /**
  * @brief Find all objects [classname] in the current patcher starting at
@@ -367,15 +367,15 @@ std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x);
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<t_object_base*> find_child_to_register(
-    t_object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
+std::vector<object_base*> find_child_to_register(
+    object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
  * @param x
  * @return true if a peer have been found, false otherwise
  */
-bool find_peer(t_object_base* x);
+bool find_peer(object_base* x);
 
 /**
  * @brief find_global_node: find nodes matching address with a 'device:' prefix
@@ -461,7 +461,7 @@ void obj_dump(T* x)
   ossia::net::node_base* node{};
   if (x->m_otype == object_class::remote || x->m_otype == object_class::param)
   {
-    t_object_base* remote = (t_object_base*) x;
+    object_base* remote = (object_base*) x;
     if (remote->m_matchers.size() == 1)
       node = remote->m_matchers[0].get_node();
   }

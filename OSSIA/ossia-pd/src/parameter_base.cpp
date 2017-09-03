@@ -13,7 +13,7 @@ namespace ossia {
 namespace pd {
 
 parameter_base::parameter_base(t_eclass* x)
-  : t_object_base{x}
+  : object_base{x}
 { }
 
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute)
@@ -73,67 +73,7 @@ void parameter_base::set_repetition_filter()
   }
 }
 
-void parameter_base::set_description()
-{
-  std::stringstream description;
-  for (int i = 0; i < m_description_size; i++)
-  {
-    switch(m_description[i].a_type)
-    {
-      case A_SYMBOL:
-        description << m_description[i].a_w.w_symbol->s_name << " ";
-        break;
-      case A_FLOAT:
-        {
-          description << m_description[i].a_w.w_float << " ";
-          break;
-        }
-      default:
-        ;
-    }
-  }
 
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_description(*node, description.str());
-  }
-}
-
-void parameter_base::set_tags()
-{
-  std::vector<std::string> tags;
-  for (int i = 0; i < m_tags_size; i++)
-  {
-    switch(m_tags[i].a_type)
-    {
-      case A_SYMBOL:
-        tags.push_back(m_tags[i].a_w.w_symbol->s_name);
-        break;
-      case A_FLOAT:
-        {
-          std::stringstream ss;
-          ss << m_tags[i].a_w.w_float;
-          tags.push_back(ss.str());
-          break;
-        }
-      default:
-        ;
-    }
-  }
-
-  for (t_matcher& m : m_matchers)
-    ossia::net::set_tags(*m.get_node(), tags);
-}
-
-void parameter_base::set_priority()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_priority(*node, m_priority);
-  }
-}
 
 void parameter_base::set_enable()
 {
@@ -160,15 +100,6 @@ void parameter_base::set_rate()
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_refresh_rate(*node,m_rate);
-  }
-}
-
-void parameter_base::set_hidden()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_hidden(*node, m_hidden);
   }
 }
 
@@ -428,20 +359,6 @@ void parameter_base::get_type(parameter_base*x)
   outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
 }
 
-void parameter_base::get_hidden(parameter_base*x)
-{
-  t_atom a;
-  SETFLOAT(&a, x->m_hidden);
-  outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
-}
-
-void parameter_base::get_priority(parameter_base*x)
-{
-  t_atom a;
-  SETFLOAT(&a, x->m_priority);
-  outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
-}
-
 void parameter_base::get_access_mode(parameter_base*x)
 {
   t_atom a;
@@ -456,23 +373,125 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
 }
 
-void parameter_base::get_tags(parameter_base*x)
-{
-  outlet_anything(x->m_dumpout, gensym("tags"),
-                  x->m_tags_size, x->m_tags);
-}
-
-void parameter_base::get_description(parameter_base*x)
-{
-  outlet_anything(x->m_dumpout, gensym("description"),
-                  x->m_description_size, x->m_description);
-}
-
 void parameter_base::get_enable(parameter_base*x)
 {
   t_atom a;
   SETFLOAT(&a,x->m_enable);
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
+}
+
+void parameter_base::push(object_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  ossia::net::node_base* node;
+
+  if (!x->m_mute)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      node = m.get_node();
+      auto parent = m.get_parent();
+      auto param = node->get_parameter();
+
+      if (node && param)
+      {
+        if (argc == 1)
+        {
+          ossia::value v;
+          // convert one element array to single element
+          if (argv->a_type == A_SYMBOL)
+            v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
+          else if (argv->a_type == A_FLOAT)
+            v = ossia::value(atom_getfloat(argv));
+
+          ossia::value vv;
+
+          if ( parent->m_ounit != ossia::none )
+          {
+            auto src_unit = *parent->m_ounit;
+            auto dst_unit = param->get_unit();
+
+            vv = ossia::convert(v, src_unit, dst_unit);
+          } else
+            vv = v;
+
+          node->get_parameter()->push_value(vv);
+        }
+        else
+        {
+          std::vector<ossia::value> list;
+
+          if ( s && s != gensym("list") )
+            list.push_back(std::string(s->s_name));
+
+          for (; argc > 0; argc--, argv++)
+          {
+            if (argv->a_type == A_SYMBOL)
+              list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            else if (argv->a_type == A_FLOAT)
+              list.push_back(atom_getfloat(argv));
+            else
+              pd_error(x, "value type not handled");
+          }
+          auto src_unit = *parent->m_ounit;
+          auto dst_unit = param->get_unit();
+
+          ossia::convert(list, src_unit, dst_unit);
+
+          node->get_parameter()->push_value(list);
+        }
+      }
+    }
+  }
+}
+
+void parameter_base::bang(object_base* x)
+{
+  for (auto& matcher : x->m_matchers)
+  {
+    matcher.enqueue_value(matcher.get_node()->get_parameter()->value());
+    matcher.output_value();
+  }
+}
+
+void parameter_base::output_value(object_base* x)
+{
+  for (auto& m : x->m_matchers)
+  {
+    m.output_value();
+  }
+  clock_delay(x->m_poll_clock, x->m_rate);
+}
+
+void parameter_base::declare_attributes(t_eclass* c)
+{
+  object_base :: declare_attributes(c);
+
+  CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
+  eclass_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NULL, 0);
+
+  CLASS_ATTR_ATOM_VARSIZE(c, "default",           0, parameter_base, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
+  eclass_addmethod(c, (method) parameter_base::get_default,           "getdefault",           A_NULL, 0);
+
+  CLASS_ATTR_ATOM_VARSIZE(c, "range",             0, parameter_base, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
+  eclass_addmethod(c, (method) parameter_base::get_range,             "getrange",             A_NULL, 0);
+
+  CLASS_ATTR_ATOM_VARSIZE(c, "min",               0, parameter_base, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
+  eclass_addmethod(c, (method) parameter_base::get_min,               "getmin",               A_NULL, 0);
+
+  CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, parameter_base, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
+  eclass_addmethod(c, (method) parameter_base::get_max,               "getmax",               A_NULL, 0);
+
+  CLASS_ATTR_SYMBOL(      c, "bounding_mode", 0, parameter_base, m_bounding_mode);
+  eclass_addmethod(c, (method) parameter_base::get_bounding_mode,     "getbounding_mode",     A_NULL, 0);
+
+  CLASS_ATTR_SYMBOL(c, "type", 0, parameter_base, m_type);
+  eclass_addmethod(c, (method) parameter_base::get_type,              "gettype",              A_NULL, 0);
+
+  CLASS_ATTR_SYMBOL(c, "access_mode", 0, parameter_base, m_access_mode);
+  eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getaccess_mode",       A_NULL, 0);
+
+  CLASS_ATTR_FLOAT       (c, "repetition_filter", 0, parameter_base, m_repetition_filter);
+  eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetition_filter", A_NULL, 0);
 }
 
 } // namespace pd

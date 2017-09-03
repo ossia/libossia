@@ -44,12 +44,16 @@ set(PROJECT_SRCS
   src/client.hpp
   src/device.cpp
   src/device.hpp
+  src/device_base.cpp
+  src/device_base.hpp
   src/model.cpp
   src/model.hpp
+  src/node_base.cpp
+  src/node_base.hpp
   src/ossia-pd.cpp
   src/ossia-pd.hpp
-  src/ossia_obj_base.cpp
-  src/ossia_obj_base.hpp
+  src/object_base.cpp
+  src/object_base.hpp
   src/parameter.cpp
   src/parameter.hpp
   src/parameter_base.cpp

@@ -11,11 +11,10 @@ namespace ossia
 namespace pd
 {
 
-static t_eclass* view_class;
 static void view_free(view* x);
 
 view::view():
-  t_object_base{ossia_pd::view_class}
+  node_base{ossia_pd::view_class}
 { }
 
 //****************//
@@ -27,7 +26,7 @@ bool view::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     obj_dequarantining<view>(this);
-    std::vector<t_object_base*> viewnode
+    std::vector<object_base*> viewnode
         = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
     for (auto v : viewnode)
     {
@@ -99,7 +98,7 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
 static void register_children(view* x)
 {
-  std::vector<t_object_base*> viewnode
+  std::vector<object_base*> viewnode
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
@@ -123,7 +122,7 @@ bool view::unregister()
   m_matchers.clear();
   m_nodes.clear();
 
-  std::vector<t_object_base*> viewnode
+  std::vector<object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
@@ -164,7 +163,7 @@ static void view_click(
     ossia::pd::device* device
         = (ossia::pd::device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
 
-    if (!find_and_display_friend(x))
+    if (!ossia::pd::object_base::find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
   else
@@ -176,7 +175,7 @@ static void view_click(
 static void* view_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  ossia::pd::view* x = (ossia::pd::view*)eobj_new(ossia_pd.view_class);
+  ossia::pd::view* x = new ossia::pd::view();
 
   if (x)
   {
@@ -211,7 +210,7 @@ static void* view_new(t_symbol* name, int argc, t_atom* argv)
       error(
           "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
       view_free(x);
-      delete x;
+      free(x);
       x = nullptr;
     }
   }
@@ -249,13 +248,13 @@ extern "C" void setup_ossia0x2eview(void)
   {
     class_addcreator((t_newmethod)view_new,gensym("ø.view"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) obj_dump<view>, "dump",          A_NULL,   0);
-    eclass_addmethod(c, (method) view_click,       "click",         A_NULL,   0);
-    eclass_addmethod(c, (method) view_bind,        "bind",          A_SYMBOL, 0);
-    eclass_addmethod(c, (method) obj_namespace,    "namespace",     A_NULL,   0);
-    eclass_addmethod(c, (method) obj_set,          "set",           A_GIMME,  0);
-    eclass_addmethod(c, (method) obj_get_address,  "getaddress",    A_NULL,   0);
-    eclass_addmethod(c, (method) obj_preset,       "preset",        A_GIMME,  0);
+    eclass_addmethod(c, (method) obj_dump<view>,                "dump",          A_NULL,   0);
+    eclass_addmethod(c, (method) view_click,                    "click",         A_NULL,   0);
+    eclass_addmethod(c, (method) view_bind,                     "bind",          A_SYMBOL, 0);
+    eclass_addmethod(c, (method) object_base::get_namespace,    "namespace",     A_NULL,   0);
+    eclass_addmethod(c, (method) object_base::set,              "set",           A_GIMME,  0);
+    eclass_addmethod(c, (method) object_base::get_address,               "getaddress",    A_NULL,   0);
+    eclass_addmethod(c, (method) node_base::preset,                    "preset",        A_GIMME,  0);
 
   }
 

@@ -24,7 +24,7 @@ namespace pd
 void client_getdevices(client* x);
 
 client::client():
-  t_object_base{ossia_pd::client_class}
+  device_base{ossia_pd::client_class}
 { }
 
 static void client_free(client* x)
@@ -53,7 +53,8 @@ static void client_poll_message(client* x)
 static void* client_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  client* x = (ossia::pd::client*)eobj_new(ossia_pd.client_class);
+  ossia::pd::client* x = new ossia::pd::client();
+
   // TODO SANITIZE : Direct leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
@@ -80,7 +81,7 @@ static void* client_new(t_symbol* name, int argc, t_atom* argv)
       error(
             "Only one [ø.device]/[ø.client] intance per patcher is allowed.");
       client_free(x);
-      delete x;
+      free(x);
       x = nullptr;
     }
   }
@@ -99,7 +100,7 @@ void client::loadbang(client* x, t_float type)
 void client::register_children(client* x)
 {
 
-  std::vector<t_object_base*> viewnodes
+  std::vector<object_base*> viewnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
@@ -118,7 +119,7 @@ void client::register_children(client* x)
 
 void client::unregister_children()
 {
-  std::vector<t_object_base*> viewnode
+  std::vector<object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
@@ -135,71 +136,7 @@ void client::unregister_children()
   }
 }
 
-void client::on_parameter_created_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  SETSYMBOL(a, gensym("create"));
-  SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
 
-void client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  SETSYMBOL(a, gensym("delete"));
-  SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
-
-void client::on_attribute_modified_callback(const ossia::net::node_base& node, ossia::string_view attribute)
-{
-  std::cout << attribute << std::endl;
-  if (node.get_parameter())
-  {
-    for ( auto param : ossia_pd::instance().params.copy() )
-    {
-      for ( auto& m : param->m_matchers )
-      {
-        if ( m.get_node() == &node )
-          //t_param::update_attribute((t_param*)m.parent,attribute);
-          ;
-      }
-    }
-
-    for ( auto remote : ossia_pd::instance().remotes.copy() )
-    {
-      for ( auto& m : remote->m_matchers )
-      {
-        if ( m.get_node() == &node )
-          parameter_base::update_attribute((parameter_base*)m.get_parent(),attribute);
-      }
-    }
-  } else {
-    for ( auto model : ossia_pd::instance().models.copy() )
-    {
-      for ( auto& m : model->m_matchers )
-      {
-        if ( m.get_node() == &node )
-          // t_model::update_attribute((t_model*)m.parent,attribute);
-          ;
-      }
-    }
-
-    for ( auto view : ossia_pd::instance().views.copy() )
-    {
-      for ( auto& m : view->m_matchers )
-      {
-        if ( m.get_node() == &node )
-          // t_view::update_attribute((t_view*)m.parent,attribute);
-          ;
-      }
-    }
-  }
-}
 
 static void client_update(client* x)
 {
@@ -398,10 +335,10 @@ static void client_connect(client* x, t_symbol*, int argc, t_atom* argv)
 
   if (x->m_device)
   {
-    x->m_device->on_parameter_created.connect<client, &client::on_parameter_created_callback>(x);
-    x->m_device->on_parameter_removing.connect<client, &client::on_parameter_deleted_callback>(x);
+    x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
+    x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
-    x->m_device->on_attribute_modified.connect<client, &client::on_attribute_modified_callback>(x);
+    x->m_device->on_attribute_modified.connect<device_base, &device_base::on_attribute_modified_callback>(x);
     // TODO add callback for message
   }
 
@@ -498,15 +435,14 @@ extern "C" void setup_ossia0x2eclient(void)
         c, (method)client::register_children, "register", A_NULL, 0);
     eclass_addmethod(c, (method)client_update, "update", A_NULL, 0);
     eclass_addmethod(c, (method)client::loadbang, "loadbang", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
+    eclass_addmethod(c, (method)object_base::get_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method)client_connect, "connect", A_GIMME, 0);
     eclass_addmethod(c, (method)client_disconnect, "disconnect", A_NULL, 0);
 
     eclass_addmethod(
         c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
-    eclass_addmethod(c, (method) obj_preset, "preset", A_GIMME, 0);
+    eclass_addmethod(c, (method) node_base::preset, "preset", A_GIMME, 0);
     eclass_addmethod(c, (method) client_getdevices, "getdevices", A_NULL, 0);
-
   }
 
   ossia_pd::client_class = c;

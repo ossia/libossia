@@ -215,7 +215,7 @@ static void remote_click(
     ossia::pd::device* device
         = (ossia::pd::device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
 
-    if (!find_and_display_friend(x))
+    if (!object_base::find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
   else
@@ -237,7 +237,6 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
   remote* x = new remote();
-  // t_remote* x = (t_remote*)eobj_new(ossia_pd.remote);
 
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
@@ -263,8 +262,8 @@ static void* remote_new(t_symbol* name, int argc, t_atom* argv)
 
     x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
 
-    x->m_clock = clock_new(x, (t_method)t_object_base::bang);
-    x->m_poll_clock = clock_new(x, (t_method)t_object_base::output_value);
+    x->m_clock = clock_new(x, (t_method)parameter_base::bang);
+    x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -307,13 +306,13 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote_new,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) t_object_base::push,   "anything",    A_GIMME,  0);
-    eclass_addmethod(c, (method) t_object_base::bang,   "bang",        A_NULL,   0);
+    eclass_addmethod(c, (method) parameter_base::push,   "anything",    A_GIMME,  0);
+    eclass_addmethod(c, (method) parameter_base::bang,   "bang",        A_NULL,   0);
     eclass_addmethod(c, (method) obj_dump<remote>,     "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,  0);
     eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
-    eclass_addmethod(c, (method) obj_get_address,        "getaddress",  A_NULL,   0);
+    eclass_addmethod(c, (method) object_base::get_address,        "getaddress",  A_NULL,   0);
 
     CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
     CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
@@ -322,6 +321,9 @@ extern "C" void setup_ossia0x2eremote(void)
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
+    parameter_base::declare_attributes(c);
+
+    // remote special attributes
     eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_mute,        "getmute",     A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_enable,      "getenable",   A_NULL, 0);

@@ -67,7 +67,7 @@ void register_quarantinized()
   }
 }
 
-t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
+object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
 {
   t_canvas* canvas = x->o_canvas;
 
@@ -92,7 +92,7 @@ t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, in
       std::string current = list->g_pd->c_name->s_name;
       if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
       { // check if type match and not the same intance...
-        return (t_object_base*) &(list->g_pd);
+        return (object_base*) &(list->g_pd);
       }
       list = list->g_next;
     }
@@ -103,7 +103,7 @@ t_object_base* find_parent(t_eobj* x, std::string classname, int start_level, in
 }
 
 
-std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x){
+std::vector<ossia::net::node_base*> find_parent_node(object_base* x){
   int l;
   ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
   ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
@@ -158,14 +158,14 @@ std::vector<ossia::net::node_base*> find_parent_node(t_object_base* x){
   return   std::vector<ossia::net::node_base*>{};
 }
 
-std::vector<t_object_base*> find_child_to_register(
-    t_object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev)
+std::vector<object_base*> find_child_to_register(
+    object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev)
 {
   std::string subclassname
       = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
 
   t_gobj* list = start_list;
-  std::vector<t_object_base*> found;
+  std::vector<object_base*> found;
   bool found_model = false;
   bool found_view = false;
 
@@ -175,8 +175,8 @@ std::vector<t_object_base*> find_child_to_register(
     std::string current = list->g_pd->c_name->s_name;
     if (current == classname)
     {
-      t_object_base* o;
-      o = (t_object_base*)&list->g_pd;
+      object_base* o;
+      o = (object_base*)&list->g_pd;
       if (x != o && !o->m_dead)
       {
         found.push_back(o);
@@ -193,8 +193,8 @@ std::vector<t_object_base*> find_child_to_register(
     // don't register anything
     if ( found_dev && (current == "ossia.device" || current == "ossia.client") )
     {
-      t_object_base* o;
-      o = (t_object_base*)&list->g_pd;
+      object_base* o;
+      o = (object_base*)&list->g_pd;
       if (x != o && !o->m_dead)
       {
         *found_dev = true;
@@ -222,7 +222,7 @@ std::vector<t_object_base*> find_child_to_register(
         {
           t_gobj* _list = canvas->gl_list;
           bool _found_dev = false;
-          std::vector<t_object_base*> found_tmp
+          std::vector<object_base*> found_tmp
               = find_child_to_register(x, _list, classname, &_found_dev);
           if (!_found_dev)
           {
@@ -243,8 +243,8 @@ std::vector<t_object_base*> find_child_to_register(
       if ( current == subclassname
           || ( !found_view && current == "ossia.remote" ) )
       {
-        t_object_base* o;
-        o = (t_object_base*)&list->g_pd;
+        object_base* o;
+        o = (object_base*)&list->g_pd;
         if (x != o && !o->m_dead)
         {
           found.push_back(o);
@@ -257,7 +257,7 @@ std::vector<t_object_base*> find_child_to_register(
   return found;
 }
 
-bool find_peer(t_object_base* x)
+bool find_peer(object_base* x)
 {
   t_symbol* classname = x->m_obj.o_obj.te_g.g_pd->c_name;
   t_symbol* derived_classname = nullptr;
@@ -271,13 +271,14 @@ bool find_peer(t_object_base* x)
   else if (x->m_otype == object_class::client)
     derived_classname = gensym("ossia.device");
 
+  // go through all patcher's objects to check there is an incompatibility
   t_gobj* list = x->m_obj.o_canvas->gl_list;
   while (list)
   {
     t_symbol* current = list->g_pd->c_name;
     if (current == classname)
     {
-      if (x != (t_object_base*)&list->g_pd)
+      if (x != (object_base*)&list->g_pd)
       {
         return true;
       }
