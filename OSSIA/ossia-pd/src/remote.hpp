@@ -21,12 +21,13 @@ public:
 
   ossia::net::device_base* m_dev{};
   t_symbol* m_unit;
+  float m_rate_min;
 
   void set_unit();
-  void set_mute();
-  void set_enable();
+  void set_rate();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
+  static void update_attribute(remote* x, ossia::string_view attribute);
 
   static ossia::safe_vector<remote*>& quarantine();
 };

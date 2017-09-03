@@ -278,6 +278,19 @@ static void parameter_free(parameter* x)
   x->~parameter();
 }
 
+void parameter::update_attribute(parameter* x, ossia::string_view attribute)
+{
+  if ( attribute == ossia::net::text_refresh_rate() ){
+    get_rate(x);
+  } else if ( attribute == ossia::net::text_muted() ){
+    get_mute(x);
+  } else if ( attribute == ossia::net::text_unit() ){
+    get_unit(x);
+  } else {
+    parameter_base::update_attribute(x, attribute);
+  }
+}
+
 extern "C" void setup_ossia0x2eparam(void)
 {
   t_eclass* c = eclass_new(

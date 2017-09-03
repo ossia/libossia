@@ -156,6 +156,7 @@ static void client_disconnect(client* x)
 {
   if (x->m_device)
   {
+    x->disconnect_slots();
     x->unregister_children();
     delete x->m_device;
     x->m_device = nullptr;
@@ -333,15 +334,7 @@ static void client_connect(client* x, t_symbol*, int argc, t_atom* argv)
     client::print_protocol_help();
   }
 
-  if (x->m_device)
-  {
-    x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
-    x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
-    // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
-    x->m_device->on_attribute_modified.connect<device_base, &device_base::on_attribute_modified_callback>(x);
-    // TODO add callback for message
-  }
-
+  x->connect_slots();
   client_update(x);
 }
 

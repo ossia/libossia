@@ -22,6 +22,8 @@ remote::remote():
 
 bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
+  if (m_mute) return false;
+
   bool res = do_registration(node);
   if (res)
   {
@@ -136,15 +138,6 @@ void remote::set_unit()
       m_ounit = unit;
     else
       pd_error(this, "wrong unit: %s", m_unit->s_name);
-  }
-}
-
-void remote::set_enable()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_disabled(*node, !m_enable);
   }
 }
 
@@ -296,6 +289,17 @@ static void remote_free(remote* x)
   x->~remote();
 }
 
+void remote::update_attribute(remote* x, ossia::string_view attribute)
+{
+  // @mute and @unit attributes are specific to each remote
+  // it makes no sens to sens to change when an attribute changes
+  if ( attribute == ossia::net::text_refresh_rate() )
+  {
+
+  }
+  parameter_base::update_attribute(x, attribute);
+}
+
 extern "C" void setup_ossia0x2eremote(void)
 {
   t_eclass* c = eclass_new(
@@ -308,15 +312,14 @@ extern "C" void setup_ossia0x2eremote(void)
 
     eclass_addmethod(c, (method) parameter_base::push,   "anything",    A_GIMME,  0);
     eclass_addmethod(c, (method) parameter_base::bang,   "bang",        A_NULL,   0);
-    eclass_addmethod(c, (method) obj_dump<remote>,     "dump",        A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<remote>,       "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote_click,           "click",       A_NULL,   0);
-    eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,  0);
+    eclass_addmethod(c, (method) remote_notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) remote_bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) object_base::get_address,        "getaddress",  A_NULL,   0);
 
     CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
     CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
-    CLASS_ATTR_INT   (c, "enable",        0, remote, m_enable);
     CLASS_ATTR_INT   (c, "rate",          0, remote, m_rate);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
@@ -326,7 +329,6 @@ extern "C" void setup_ossia0x2eremote(void)
     // remote special attributes
     eclass_addmethod(c, (method) remote_get_unit,        "getunit",     A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_mute,        "getmute",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote_get_enable,      "getenable",   A_NULL, 0);
     eclass_addmethod(c, (method) remote_get_rate,        "rate",        A_NULL, 0);
 
   }

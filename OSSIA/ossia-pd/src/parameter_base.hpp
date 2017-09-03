@@ -23,7 +23,6 @@ public:
   void set_range();
   void set_bounding_mode();
   void set_default();
-  void set_unit();
   void set_type();
   void set_rate();
 
@@ -34,7 +33,6 @@ public:
   static void get_max(parameter_base* x);
   static void get_bounding_mode(parameter_base* x);
   static void get_default(parameter_base* x);
-  static void get_unit(parameter_base* x);
   static void get_type(parameter_base* x);
   static void get_priority(parameter_base* x);
   static void get_access_mode(parameter_base* x);

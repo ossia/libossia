@@ -531,6 +531,21 @@ void object_base::declare_attributes(t_eclass*c)
   eclass_addmethod(c, (method) parameter_base::get_hidden,            "gethidden",            A_NULL, 0);
 }
 
+void object_base::update_attribute(object_base* x, ossia::string_view attribute)
+{
+  if ( attribute == ossia::net::text_priority() ){
+    logpost(x,2,"update priority attribute");
+  } else if ( attribute == ossia::net::text_description() ){
+    logpost(x,2,"update description attribute");
+  } else if ( attribute == ossia::net::text_tags() ){
+    logpost(x,2,"update tags attribute");
+  } else if ( attribute == ossia::net::text_hidden() ){
+    logpost(x,2,"update hidden attribute");
+  } else {
+    pd_error(x, "no attribute %s", std::string(attribute).c_str());
+  }
+}
+
 
 }
 } // namespace

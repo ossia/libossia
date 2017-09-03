@@ -30,6 +30,8 @@ static void device_free(device* x)
   // should have register to node.about_to_be_deleted() signal
   // x->unregister_children();
 
+  x->disconnect_slots();
+
   if (x->m_device)
     delete (x->m_device);
 
@@ -64,8 +66,7 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->m_name->s_name};
 
-    x->m_device->on_parameter_created.connect<device, &device::on_parameter_created_callback>(x);
-    x->m_device->on_parameter_removing.connect<device, &device::on_parameter_deleted_callback>(x);
+    x->connect_slots();
 
     x->m_nodes = {&x->m_device->get_root_node()};
 

@@ -28,6 +28,8 @@ public:
   static void get_mute(parameter*x);
   static void get_rate(parameter*x);
 
+  static void update_attribute(parameter* x, ossia::string_view attribute);
+
   void set_unit();
 
 };

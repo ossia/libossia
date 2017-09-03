@@ -8,6 +8,7 @@
 #include <ossia-pd/src/utils.hpp>
 
 #include <sstream>
+#include <algorithm>
 
 namespace ossia {
 namespace pd {
@@ -19,21 +20,22 @@ parameter_base::parameter_base(t_eclass* x)
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute)
 {
   if ( attribute == ossia::net::text_value_type() ){
-    logpost(x,2,"update type attribute");
+    get_type(x);
   } else if ( attribute == ossia::net::text_domain() ){
+    // get_domain(x);
     logpost(x,2,"update domain attribute");
   } else if ( attribute == ossia::net::text_access_mode() ){
-    logpost(x,2,"update acces_mode attribute");
+    get_access_mode(x);
   } else if ( attribute == ossia::net::text_bounding_mode() ){
-    logpost(x,2,"update bounding_mode attribute");
-  } else if ( attribute == ossia::net::text_muted() ){
-    logpost(x,2,"update mute attribute");
+    get_bounding_mode(x);
   } else if ( attribute == ossia::net::text_disabled() ){
     logpost(x,2,"update enable attribute");
   } else if ( attribute == ossia::net::text_repetition_filter() ){
     logpost(x,2,"update repetition_filter attribute");
+  } else if ( attribute == ossia::net::text_default_value() ) {
+    logpost(x, 2, "update default value");
   } else {
-    logpost(x,2,"no attribute %s", attribute);
+    object_base::update_attribute((node_base*)x, attribute);
   }
 }
 
@@ -48,16 +50,7 @@ void parameter_base::set_access_mode()
     ossia::transform(access_mode, access_mode.begin(), ::tolower);
     m_access_mode = gensym(access_mode.c_str());
 
-    if (access_mode == "bi" || access_mode == "rw")
-      param->set_access(ossia::access_mode::BI);
-    else if (access_mode == "get" || access_mode == "r")
-      param->set_access(ossia::access_mode::GET);
-    else if (access_mode == "set" || access_mode == "w")
-      param->set_access(ossia::access_mode::SET);
-    else
-    {
-      pd_error(this, "unknown access mode: %s", access_mode.c_str());
-    }
+    param->set_access(symbol2access_mode(m_access_mode));
   }
 }
 
@@ -341,6 +334,12 @@ void parameter_base::get_max(parameter_base*x)
 
 void parameter_base::get_bounding_mode(parameter_base*x)
 {
+  // assume all matchers have the same bounding_mode
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+  ossia::net::parameter_base* param = node->get_parameter();
+
+  x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
   t_atom a;
   SETSYMBOL(&a,x->m_bounding_mode);
   outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
@@ -348,12 +347,41 @@ void parameter_base::get_bounding_mode(parameter_base*x)
 
 void parameter_base::get_default(parameter_base*x)
 {
+  // assume all matchers have the same default value
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+  ossia::net::parameter_base* param = node->get_parameter();
+
+  auto def_val = ossia::net::get_default_value(*node);
+
+  if ( def_val ){
+    std::vector<t_atom> va;
+    value2atom vm{va};
+    ossia::value v = *def_val;
+    v.apply(vm);
+
+    x->m_default_size = std::min(va.size(), (long unsigned int) OSSIA_PD_MAX_ATTR_SIZE);
+
+    for (int i=0; i < x->m_default_size; i++ )
+      x->m_default[i] = va[i];
+  } else {
+    x->m_default_size = 0;
+  }
+
   outlet_anything(x->m_dumpout, gensym("default"),
                   x->m_default_size, x->m_default);
 }
 
 void parameter_base::get_type(parameter_base*x)
 {
+
+  // assume all matchers have the same type
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+  ossia::net::parameter_base* param = node->get_parameter();
+
+  x->m_type = val_type2symbol(param->get_value_type());
+
   t_atom a;
   SETSYMBOL(&a,x->m_type);
   outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
@@ -361,6 +389,13 @@ void parameter_base::get_type(parameter_base*x)
 
 void parameter_base::get_access_mode(parameter_base*x)
 {
+  // assume all matchers have the same bounding_mode
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+  ossia::net::parameter_base* param = node->get_parameter();
+
+  x->m_access_mode = access_mode2symbol(param->get_access());
+
   t_atom a;
   SETSYMBOL(&a, x->m_access_mode);
   outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
@@ -368,6 +403,13 @@ void parameter_base::get_access_mode(parameter_base*x)
 
 void parameter_base::get_repetition_filter(parameter_base*x)
 {
+  // assume all matchers have the same bounding_mode
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+  ossia::net::parameter_base* param = node->get_parameter();
+
+  x->m_repetition_filter = param->get_repetition_filter();
+
   t_atom a;
   SETFLOAT(&a, x->m_repetition_filter);
   outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
@@ -375,6 +417,13 @@ void parameter_base::get_repetition_filter(parameter_base*x)
 
 void parameter_base::get_enable(parameter_base*x)
 {
+  // assume all matchers have the same bounding_mode
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+  ossia::net::parameter_base* param = node->get_parameter();
+
+  x->m_enable = !param->get_disabled();
+
   t_atom a;
   SETFLOAT(&a,x->m_enable);
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);

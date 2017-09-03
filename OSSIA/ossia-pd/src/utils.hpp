@@ -408,6 +408,17 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size);
 ossia::val_type symbol2val_type(t_symbol* s);
 t_symbol* val_type2symbol(ossia::val_type t);
 
+/**
+ * @brief symbol2bounding_mode convert t_symbol* to corresponging ossia::bounding_mode
+ * @param t_symbol* bounding_mode
+ * @return ossia::bounding_mode
+ */
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode);
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm);
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode);
+t_symbol* access_mode2symbol(ossia::access_mode mode);
+
 #pragma mark Templates
 
 template<typename T>
@@ -428,11 +439,6 @@ bool obj_register(T* x)
 
   return x->register_node(node);
 }
-
-/*
-template <typename T>
-extern void obj_bang(T* x);
-*/
 
 template <typename T>
 bool obj_is_quarantined(T* x)

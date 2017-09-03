@@ -147,6 +147,7 @@ public:
   object_base(t_eclass* c);
 
 
+  static void update_attribute(object_base* x, ossia::string_view attribute);
   void is_deleted(const ossia::net::node_base& n);
 
   /**
