@@ -515,6 +515,9 @@ void parameter_base::declare_attributes(t_eclass* c)
 {
   object_base :: declare_attributes(c);
 
+  eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
+  eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);
+
   CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
   eclass_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NULL, 0);
 

@@ -294,8 +294,6 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) obj_dump<parameter>,   "dump",     A_NULL,  0);
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
@@ -315,8 +313,6 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter::get_unit,              "getunit",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter::get_mute,              "getmute",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter::get_rate,              "getrate",              A_NULL, 0);
-
-    eclass_addmethod(c, (method) object_base::get_address,                 "getaddress",           A_NULL, 0);
 
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy

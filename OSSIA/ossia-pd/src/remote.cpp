@@ -324,13 +324,10 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote::create,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) parameter_base::push,   "anything",    A_GIMME,  0);
-    eclass_addmethod(c, (method) parameter_base::bang,   "bang",        A_NULL,   0);
-    eclass_addmethod(c, (method) obj_dump<remote>,       "dump",        A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<remote>,        "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
-    eclass_addmethod(c, (method) object_base::get_address,        "getaddress",  A_NULL,   0);
 
     CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
     CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
