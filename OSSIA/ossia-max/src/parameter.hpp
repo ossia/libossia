@@ -1,5 +1,8 @@
 #pragma once
 
+#include "device.hpp"
+#include "model.hpp"
+#include "remote.hpp"
 #include "ossia_object_base.hpp"
 
 namespace ossia
@@ -15,8 +18,8 @@ struct t_parameter : t_object_base
 {
   using is_model = std::true_type;
 
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
   void is_deleted(const ossia::net::node_base& n);
 

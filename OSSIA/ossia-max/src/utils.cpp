@@ -1,6 +1,7 @@
 #include "utils.hpp"
-#include "device.hpp"
-#include "client.hpp"
+
+#include <ossia/network/common/path.hpp>
+
 
 namespace ossia
 {
@@ -40,39 +41,87 @@ bool find_peer(t_object_base* x)
     return false;
 }
 
-ossia::net::node_base* find_global_node(const std::string& addr)
+std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
 {
+  std::vector<ossia::net::node_base*> nodes{};
   auto& instance = ossia_max::instance();
+  size_t pos = addr.find(":");
+  if (pos == std::string::npos) return nodes;
+
+  std::string prefix = addr.substr(0,pos);
+  // remove 'device_name:/' prefix
+  std::string osc_name = addr.substr(pos+2);
+
+  bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
+  bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
+  std::regex pattern(prefix.c_str());
+
   for (auto device : instance.devices.copy())
   {
     auto dev = device->m_device;
+    if (!dev) continue;
+
     std::string name = dev->get_name();
-    size_t pos = addr.find(":");
-    std::string prefix = addr.substr(0,pos);
-    if (pos != std::string::npos && name == prefix)
+
+    bool match;
+    if(is_prefix_pattern)
     {
-      // remove 'device_name:/' prefix
-      std::string osc_name = addr.substr(name.length()+2);
-      auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-      if (node) return node;
+      try {
+        match = std::regex_match(name, pattern);
+      } catch (std::exception& e) {
+        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        return nodes;
+      }
+    } else match = (name == prefix);
+
+    if (match)
+    {
+      if (is_osc_name_pattern)
+      {
+        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+        nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+      }
+      else
+      {
+        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+        if (node) nodes.push_back(node);
+      }
     }
   }
 
   for (auto client : instance.clients.copy())
   {
     auto dev = client->m_device;
+    if (!dev) continue;
+
     std::string name = dev->get_name();
-    size_t pos = addr.find(":");
-    std::string prefix = addr.substr(0,pos);
-    if (pos != std::string::npos && name == prefix)
+
+    bool match;
+    if(is_prefix_pattern)
     {
-      // remove 'device_name:/' prefix
-      std::string osc_name = addr.substr(name.length()+2);
-      auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-      if (node) return node;
+      try {
+        match = std::regex_match(name, pattern);
+      } catch (std::exception& e) {
+        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        return nodes;
+      }
+    } else match = (name == prefix);
+
+    if (match)
+    {
+      if (is_osc_name_pattern)
+      {
+        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+        nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+      }
+      else
+      {
+        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+        if (node) nodes.push_back(node);
+      }
     }
   }
-  return nullptr;
+  return nodes;
 }
 
 ossia::max::address_scope get_parameter_type(const std::string& addr)

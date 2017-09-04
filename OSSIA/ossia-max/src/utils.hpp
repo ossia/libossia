@@ -5,8 +5,17 @@
 #undef error
 #undef post
 
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/client.hpp>
+#include <ossia-max/src/model.hpp>
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/parameter.hpp>
+#include <ossia-max/src/remote.hpp>
+#include <ossia-max/src/view.hpp>
+#include <ossia-max/src/ossia_object_base.hpp>
+#include <ossia/network/domain/domain.hpp>
 
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <fmt/format.h>
 namespace ossia
 {
 namespace max
@@ -24,7 +33,7 @@ bool find_peer(t_object_base *x);
  * @param addr : address string
  * @return pointer to the node
  */
-ossia::net::node_base* find_global_node(const std::string& addr);
+std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
 
 /**
  * @brief get_parameter_type: return address type (relative, absolute or globale)

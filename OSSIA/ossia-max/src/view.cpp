@@ -157,9 +157,9 @@ namespace ossia
 {
 namespace max
 {
-bool t_view::register_node(ossia::net::node_base* node)
+bool t_view::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
+  bool res = do_registration(nodes);
 
   if (res)
   {
@@ -173,12 +173,12 @@ bool t_view::register_node(ossia::net::node_base* node)
       if (child->m_otype == object_class::view)
       {
         t_view* view = (t_view*)child;
-        view->register_node(m_node);
+        view->register_node(m_nodes);
       }
       else if (child->m_otype == object_class::remote)
       {
         t_remote* remote = (t_remote*)child;
-        remote->register_node(m_node);
+        remote->register_node(m_nodes);
       }
     }
   }
@@ -188,47 +188,46 @@ bool t_view::register_node(ossia::net::node_base* node)
   return res;
 }
 
-bool t_view::do_registration(ossia::net::node_base* node)
+bool t_view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
-  // already register to this node;
-  if (m_node && m_node->get_parent() == node)
-    return true;
-
   // we should unregister here because we may have add a node between the
   // registered node and the remote
   unregister();
 
-  if (node)
+  for (auto _node : _nodes)
   {
-    if(m_addr_scope == address_scope::relative)
-    {
-      std::string absolute_path = object_path_absolute<t_view>(this);
-      std::string address_string = ossia::net::address_string_from_node(*node);
+    std::string name = m_name->s_name;
 
-      if (absolute_path != address_string)
-        return false;
-
-      m_node = node->find_child(m_name->s_name);
-    }
-    else if(m_addr_scope == address_scope::absolute)
+    if (m_addr_scope == address_scope::absolute)
     {
-      m_node = ossia::net::find_node(
-            node->get_device().get_root_node(), m_name->s_name);
+      // get root node
+      _node = &_node->get_device().get_root_node();
+      // and remove starting '/'
+      name = name.substr(1);
     }
+
+    m_parent_node = _node;
+
+    std::vector<ossia::net::node_base*> nodes{};
+
+    if (m_addr_scope == address_scope::global)
+      nodes = ossia::max::find_global_nodes(name);
     else
-    {
-      m_node = ossia::max::find_global_node(m_name->s_name);
-    }
+      nodes = ossia::net::find_nodes(*_node, name);
 
-    if (m_node)
-      m_node->about_to_be_deleted.connect<t_view, &t_view::is_deleted>(this);
-    else
-      return false;
+    for (auto n : nodes){
+      // we may have found a node with the same name
+      // but with a parameter, in that case it's an ø.param
+      // then forget it
+      if (!n->get_parameter()){
+        t_matcher matcher{n,this};
+        m_matchers.push_back(std::move(matcher));
+        m_nodes.push_back(n);
+      }
+    }
   }
-  else
-    return false;
 
-  return true;
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 void t_view::register_children(t_view* x)
@@ -257,9 +256,8 @@ void t_view::register_children(t_view* x)
 
 bool t_view::unregister()
 {
-  // not registered
-  if (!m_node)
-    return true;
+  m_matchers.clear();
+  m_nodes.clear();
 
   std::vector<t_object_base*> children_view = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.view"));
@@ -282,7 +280,6 @@ bool t_view::unregister()
     }
   }
 
-  m_node = nullptr;
   object_quarantining<t_view>(this);
 
   register_children(this);
@@ -298,5 +295,10 @@ void t_view::view_bind(t_view* x, t_symbol* address)
   max_object_register(x);
 }
 
+ossia::safe_vector<t_view*>& t_view::quarantine()
+{
+    return ossia_max::instance().view_quarantine;
 }
-}
+
+} // max namespace
+} // ossia namespace

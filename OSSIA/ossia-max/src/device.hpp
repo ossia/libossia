@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ossia_object_base.hpp"
+#include <ossia/network/base/protocol.hpp>
 
 namespace ossia
 {
@@ -12,12 +13,15 @@ namespace max
 
 struct t_device : t_object_base
 {
-  ossia::net::local_protocol m_local_proto;
-
   static void register_children(t_device*);
   void unregister_children();
 
   static void loadbang(t_device*);
+
+  void on_parameter_created_callback(const ossia::net::parameter_base& param);
+  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
+
+  std::vector<std::vector<t_atom>> m_protocols;
 };
 
 #pragma mark -
@@ -83,6 +87,9 @@ extern "C" {
 void* ossia_device_new(t_symbol*, long, t_atom*);
 void ossia_device_free(ossia::max::t_device*);
 void ossia_device_dump(ossia::max::t_device*);
+void device_getprotocols(ossia::max::t_device* x);
+void device_stop_expose(ossia::max::t_device*x, int index);
+void ossia_device_getdevices(ossia::max::t_device*);
 void ossia_device_expose(ossia::max::t_device*, t_symbol*, long, t_atom*);
 void ossia_device_name(ossia::max::t_device*, t_symbol*, long, t_atom*);
 }

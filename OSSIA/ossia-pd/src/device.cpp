@@ -131,6 +131,7 @@ void device::unregister_children()
 {
   std::vector<object_base*> node
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+
   for (auto v : node)
   {
     if (v->m_otype == object_class::model)

@@ -11,7 +11,7 @@ extern "C" void* ossia_object_new(t_symbol* name, int argc, t_atom* argv)
   x->m_dumpout
       = outlet_new(x, NULL); // anything outlet to dump device state
   x->m_device = ossia_library.get_default_device();
-  x->m_node = &ossia_library.get_default_device()->get_root_node();
+  x->m_nodes = {&ossia_library.get_default_device()->get_root_node()};
 
   return (x);
 }

@@ -14,8 +14,8 @@ struct t_remote;
 
 struct t_remote : t_object_base
 {
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
   std::vector<boost::optional<ossia::callback_container<ossia::value_callback>::iterator> >
@@ -31,11 +31,7 @@ struct t_remote : t_object_base
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
-  static ossia::safe_vector<t_remote*>& quarantine()
-  {
-    static ossia::safe_vector<t_remote*> quarantine;
-    return quarantine;
-  }
+  static ossia::safe_vector<t_remote*>& quarantine();
 };
 
 } // max namespace
