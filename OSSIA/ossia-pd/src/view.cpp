@@ -1,10 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// A starter for Pd objects
-#include "view.hpp"
-#include "remote.hpp"
-#include "utils.hpp"
-#include "ossia-pd.hpp"
+#include <ossia-pd/src/view.hpp>
+#include <ossia-pd/src/utils.hpp>
+#include <ossia-pd/src/ossia-pd.hpp>
 
 namespace ossia
 {

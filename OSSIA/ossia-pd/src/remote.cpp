@@ -1,9 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "remote.hpp"
-#include "device.hpp"
-#include "parameter.hpp"
-#include "utils.hpp"
+#include <ossia-pd/src/remote.hpp>
+#include <ossia-pd/src/ossia-pd.hpp>
+#include <ossia-pd/src/utils.hpp>
 
 #include <ossia/network/common/path.hpp>
 
@@ -295,6 +294,20 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
   // it makes no sens to sens to change when an attribute changes
   if ( attribute == ossia::net::text_refresh_rate() )
   {
+    // assume all matchers have the same bounding_mode
+    ossia::pd::t_matcher& m = x->m_matchers[0];
+    ossia::net::node_base* node = m.get_node();
+
+    auto rate = ossia::net::get_refresh_rate(*node);
+    if (rate)
+    {
+      x->m_rate_min = *rate;
+      x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
+    }
+
+    t_atom a;
+    SETFLOAT(&a,x->m_rate);
+    outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
 
   }
   parameter_base::update_attribute(x, attribute);

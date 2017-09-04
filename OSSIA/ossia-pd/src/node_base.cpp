@@ -1,4 +1,4 @@
-#include "node_base.hpp"
+#include <ossia-pd/src/node_base.hpp>
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 

@@ -1,7 +1,5 @@
 #pragma once
-
-#include <ossia-pd/src/device.hpp>
-#include <ossia-pd/src/parameter_base.hpp>
+#include <ossia-pd/src/node_base.hpp>
 
 namespace ossia
 {
@@ -24,8 +22,6 @@ public:
   static void destroy(model* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);
   static t_pd_err notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
-
-
 
 };
 }

@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "parameter_base.hpp"
+#include <ossia-pd/src/parameter_base.hpp>
 
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>

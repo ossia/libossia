@@ -1,8 +1,5 @@
 #pragma once
 
-#include "device.hpp"
-#include "model.hpp"
-#include "remote.hpp"
 #include <ossia-pd/src/parameter_base.hpp>
 
 namespace ossia

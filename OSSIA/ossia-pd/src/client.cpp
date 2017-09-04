@@ -1,11 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "client.hpp"
-#include "model.hpp"
-#include "parameter.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "utils.hpp"
+
+#include <ossia-pd/src/client.hpp>
+#include <ossia-pd/src/ossia-pd.hpp>
+#include <ossia-pd/src/utils.hpp>
 
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -387,7 +385,7 @@ void client::check_thread_status(client* x)
   }
 }
 
-void find_devices_async(client* x)
+void client::find_devices_async(client* x)
 {
   x->m_done = false;
   x->m_minuit_devices.clear();
@@ -405,7 +403,7 @@ void client::getdevices(client* x)
   {
     pd_error(x, "already scanning network for device, please wait a bit.");
   } else {
-    x->m_async_thread = new std::thread(find_devices_async,x);
+    x->m_async_thread = new std::thread(client::find_devices_async,x);
     x->m_clock = clock_new(x, (t_method)client::check_thread_status);
     clock_delay(x->m_clock,1000);
   }

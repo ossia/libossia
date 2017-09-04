@@ -1,15 +1,10 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "parameter.hpp"
-#include "device.hpp"
-#include "model.hpp"
-#include "remote.hpp"
-#include "utils.hpp"
-#include "ossia-pd.hpp"
-#include <ossia-pd/src/object_base.hpp>
-
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <limits>
+#include <ossia-pd/src/ossia-pd.hpp>
+#include <ossia-pd/src/parameter.hpp>
+#include <ossia-pd/src/remote.hpp>
+#include <ossia-pd/src/utils.hpp>
 #include <sstream>
 namespace ossia
 {

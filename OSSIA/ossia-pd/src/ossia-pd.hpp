@@ -2,12 +2,12 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/detail/safe_vec.hpp>
 
-#include "parameter.hpp"
-#include "model.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "device.hpp"
-#include "client.hpp"
+#include <ossia-pd/src/parameter.hpp>
+#include <ossia-pd/src/model.hpp>
+#include <ossia-pd/src/remote.hpp>
+#include <ossia-pd/src/view.hpp>
+#include <ossia-pd/src/device.hpp>
+#include <ossia-pd/src/client.hpp>
 
 extern "C" {
 #include <cicm_wrapper.h>

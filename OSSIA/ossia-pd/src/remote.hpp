@@ -1,7 +1,6 @@
 #pragma once
 
-#include "device.hpp"
-#include "parameter_base.hpp"
+#include <ossia-pd/src/parameter_base.hpp>
 
 namespace ossia
 {
@@ -42,8 +41,6 @@ public:
   static void get_mute(remote*x);
   static void get_rate(remote*x);
   static void get_enable(remote*x);
-
-
 
 };
 } // namespace pd

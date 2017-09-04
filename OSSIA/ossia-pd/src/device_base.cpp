@@ -34,7 +34,6 @@ void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base
 
 void device_base::on_attribute_modified_callback(const ossia::net::node_base& node, ossia::string_view attribute)
 {
-  std::cout << attribute << std::endl;
   if (node.get_parameter())
   {
     for ( auto param : ossia_pd::instance().params.copy() )
