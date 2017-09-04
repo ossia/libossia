@@ -22,6 +22,8 @@ public:
    */
   static void get_namespace(object_base* x);
 
+  static void update_attribute(object_base* x, ossia::string_view attribute);
+
 };
 
 } // namespace pd

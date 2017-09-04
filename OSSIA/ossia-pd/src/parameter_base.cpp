@@ -319,6 +319,7 @@ void parameter_base::set_default()
 
 void parameter_base::get_range(parameter_base*x)
 {
+  // TODO how to get min/max/range from domain ?
   outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
 }
 

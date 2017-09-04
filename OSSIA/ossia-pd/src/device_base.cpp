@@ -59,7 +59,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       for ( auto& m : model->m_matchers )
       {
         if ( m.get_node() == &node )
-          node_base::update_attribute((node_base*)m.get_parent(),attribute);
+          model::update_attribute((ossia::pd::model*)m.get_parent(),attribute);
           ;
       }
     }
@@ -69,7 +69,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       for ( auto& m : view->m_matchers )
       {
         if ( m.get_node() == &node )
-          node_base::update_attribute((node_base*)m.get_parent(),attribute);
+          view::update_attribute((ossia::pd::view*)m.get_parent(),attribute);
           ;
       }
     }

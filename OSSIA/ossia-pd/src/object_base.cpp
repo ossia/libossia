@@ -354,14 +354,42 @@ void object_base::set_hidden()
 
 void object_base::get_tags(object_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("tags"),
-                  x->m_tags_size, x->m_tags);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto optags = ossia::net::get_tags(*node);
+
+    if (optags)
+    {
+      std::vector<std::string> tags = *optags;
+      x->m_tags_size = tags.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : tags.size();
+      for (int i=0; i < x->m_tags_size; i++)
+      {
+        SETSYMBOL(&x->m_tags[i], gensym(tags[i].c_str()));
+      }
+
+      outlet_anything(x->m_dumpout, gensym("tags"),
+                      x->m_tags_size, x->m_tags);
+    }
+  }
 }
 
 void object_base::get_description(object_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("description"),
-                  x->m_description_size, x->m_description);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto description = ossia::net::get_description(*node);
+
+    if (description)
+    {
+      SETSYMBOL(x->m_description, gensym((*description).c_str()));
+      x->m_description_size = 1;
+
+      outlet_anything(x->m_dumpout, gensym("description"),
+                      x->m_description_size, x->m_description);
+    }
+  }
 }
 
 void object_base::get_priority(object_base*x)
