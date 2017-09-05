@@ -17,6 +17,14 @@ class value;
 struct value_with_unit;
 
 /**
+ * @brief Check if two units are convertible into each other
+ *
+ * i.e. if they are in the same dataspace
+ */
+OSSIA_EXPORT
+bool check_units_convertible(const ossia::unit_t&, const ossia::unit_t&);
+
+/**
  * @brief get_dataspace_text
  * @return Text corresponding to the dataspace. For instance "color" or "gain".
  */

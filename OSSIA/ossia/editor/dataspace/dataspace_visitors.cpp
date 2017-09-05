@@ -15,6 +15,14 @@
 
 namespace ossia
 {
+/// Checks ///
+
+bool check_units_convertible(const ossia::unit_t& lhs, const ossia::unit_t& rhs)
+{
+  return lhs.which() == rhs.which();
+}
+
+
 /// Parse ///
 ossia::string_view get_dataspace_text(const unit_t& u)
 {

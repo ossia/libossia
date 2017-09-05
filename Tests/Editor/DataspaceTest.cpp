@@ -354,6 +354,16 @@ qDebug() << ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_
     get_unit_parser();
   }
 
+  void test_convertible()
+  {
+    using namespace ossia;
+    QVERIFY(check_units_convertible(ossia::rgb_u{}, ossia::hsv_u{}));
+    QVERIFY(check_units_convertible(ossia::rgb_u{}, ossia::rgb_u{}));
+    QVERIFY(!check_units_convertible(ossia::rgb_u{}, ossia::degree_u{}));
+    QVERIFY(!check_units_convertible(ossia::rgb_u{}, ossia::cartesian_3d_u{}));
+
+  }
+
   void convert_benchmark()
   {
     const int N = 100000;
