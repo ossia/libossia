@@ -11,7 +11,7 @@
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
-#include <ossia-max/src/ossia_object_base.hpp>
+#include <ossia-max/src/object_base.hpp>
 #include <ossia/network/domain/domain.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
@@ -26,7 +26,7 @@ namespace max
  * @param x : object we are looking for friend
  * @return true if we find one, false otherwise
  */
-bool find_peer(t_object_base *x);
+bool find_peer(object_base *x);
 
 /**
  * @brief find_global_node: find node matching address with a 'device:' prefix
@@ -57,6 +57,18 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size);
  */
 ossia::val_type symbol2val_type(t_symbol* s);
 t_symbol* val_type2symbol(ossia::val_type t);
+
+
+/**
+ * @brief symbol2bounding_mode convert t_symbol* to corresponging ossia::bounding_mode
+ * @param t_symbol* bounding_mode
+ * @return ossia::bounding_mode
+ */
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode);
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm);
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode);
+t_symbol* access_mode2symbol(ossia::access_mode mode);
 
 } // namespace max
 } // namespace ossia

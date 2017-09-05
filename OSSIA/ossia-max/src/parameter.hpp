@@ -1,9 +1,6 @@
 #pragma once
 
-#include "device.hpp"
-#include "model.hpp"
-#include "remote.hpp"
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/parameter_base.hpp>
 
 namespace ossia
 {
@@ -14,14 +11,18 @@ namespace max
 #pragma mark -
 #pragma mark t_parameter structure declaration
 
-struct t_parameter : t_object_base
+class parameter : public object_base
 {
+public:
   using is_model = std::true_type;
+
+  parameter();
 
   bool register_node(const std::vector<ossia::net::node_base*>& node);
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
-  void is_deleted(const ossia::net::node_base& n);
+
+  static ossia::safe_vector<parameter*>& quarantine();
 
   // attribute setting method
   void set_access_mode();
@@ -61,17 +62,13 @@ struct t_parameter : t_object_base
   long m_max_size;
   long m_tags_size;
 
-  static ossia::safe_vector<t_parameter*>& quarantine();
+  static void push_default_value(parameter* x);
+
 };
 
 #pragma mark -
 #pragma mark Utilities
 
-static void push_default_value(t_parameter* x)
-{
-  if ( x->m_default_size > 0 )
-    t_object_base::push(x, nullptr, x->m_default_size, x->m_default);
-}
 
 } // max namespace
 } // ossia namespace
@@ -81,17 +78,17 @@ static void push_default_value(t_parameter* x)
 
 extern "C" {
 void* ossia_parameter_new(t_symbol*, long, t_atom*);
-void ossia_parameter_free(ossia::max::t_parameter*);
+void ossia_parameter_free(ossia::max::parameter*);
 
 void ossia_parameter_assist(
-    ossia::max::t_parameter*, void*, long, long, char*);
-void ossia_parameter_in_float(ossia::max::t_parameter*, double f);
-void ossia_parameter_in_int(ossia::max::t_parameter* x, long int f);
-void ossia_parameter_in_bang(ossia::max::t_parameter*);
-void ossia_parameter_in_symbol(ossia::max::t_parameter*, t_symbol*);
-void ossia_parameter_in_char(ossia::max::t_parameter*, char);
+    ossia::max::parameter*, void*, long, long, char*);
+void ossia_parameter_in_float(ossia::max::parameter*, double f);
+void ossia_parameter_in_int(ossia::max::parameter* x, long int f);
+void ossia_parameter_in_bang(ossia::max::parameter*);
+void ossia_parameter_in_symbol(ossia::max::parameter*, t_symbol*);
+void ossia_parameter_in_char(ossia::max::parameter*, char);
 void ossia_parameter_in_anything(
-    ossia::max::t_parameter*, t_symbol*, long, t_atom*);
-t_max_err ossia_parameter_notify(ossia::max::t_parameter *x,
+    ossia::max::parameter*, t_symbol*, long, t_atom*);
+t_max_err ossia_parameter_notify(ossia::max::parameter *x,
     t_symbol *s, t_symbol *msg, void *sender, void *data);
 }

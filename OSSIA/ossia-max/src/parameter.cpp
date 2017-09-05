@@ -18,98 +18,82 @@ extern "C" void ossia_parameter_setup()
   // instantiate the ossia.parameter class
   auto c = class_new(
       "ossia.parameter", (method)ossia_parameter_new,
-      (method)ossia_parameter_free, (long)sizeof(ossia::max::t_parameter), 0L,
+      (method)ossia_parameter_free, (long)sizeof(ossia::max::parameter), 0L,
       A_GIMME, 0);
 
   class_addmethod(
       c, (method)ossia_parameter_assist,
       "assist", A_CANT, 0);
   class_addmethod(
-      c, (method)t_object_base::bang,
-      "bang", 0);
-  class_addmethod(
-      c, (method)ossia_parameter_in_int,
-      "int", A_LONG, A_GIMME, 0);
-  class_addmethod(
-      c, (method)ossia_parameter_in_float,
-      "float", A_FLOAT, 0);
-  class_addmethod(
-      c, (method)ossia_parameter_in_symbol,
-      "symbol", A_SYM, 0);
-  class_addmethod(
-      c, (method)t_object_base::push,
-      "list", A_GIMME, 0);
-  class_addmethod(
-      c, (method)t_object_base::push,
-      "anything", A_GIMME, 0);
-  class_addmethod(
-      c, (method)object_dump<t_parameter>,
+      c, (method)object_dump<parameter>,
       "dump", A_NOTHING, 0);
   class_addmethod(
       c, (method)ossia_parameter_notify,
       "notify", A_CANT, 0);
 
+  // TODO add a reset method
+
   CLASS_ATTR_SYM(
-      c, "type", 0, t_parameter, m_type);
+      c, "type", 0, parameter, m_type);
   CLASS_ATTR_ENUM (
       c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
 
   CLASS_ATTR_SYM(
-      c, "unit", 0, t_parameter, m_unit);
+      c, "unit", 0, parameter, m_unit);
   CLASS_ATTR_ENUM (
       c, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h");
   //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
 
   CLASS_ATTR_SYM(
-      c, "bounding_mode", 0, t_parameter,
+      c, "bounding_mode", 0, parameter,
       m_bounding_mode);
   CLASS_ATTR_ENUM (
       c, "bounding_mode", 0, "free clip wrap fold low high");
 
   CLASS_ATTR_SYM(
-      c, "access_mode", 0, t_parameter,
+      c, "access_mode", 0, parameter,
       m_access_mode);
   CLASS_ATTR_ENUM (
       c, "access_mode", 0, "bi get set");
 
   CLASS_ATTR_SYM(
-      c, "description", 0, t_parameter,
+      c, "description", 0, parameter,
       m_description);
 
   CLASS_ATTR_SYM_VARSIZE(
-      c, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
+      c, "tags", 0, parameter, m_tags, m_tags_size, 64);
 
   CLASS_ATTR_ATOM_VARSIZE(
-      c, "default", 0, t_parameter,
+      c, "default", 0, parameter,
       m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   CLASS_ATTR_ATOM_VARSIZE(
-      c, "range", 0, t_parameter,
+      c, "range", 0, parameter,
       m_range, m_range_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   CLASS_ATTR_ATOM_VARSIZE(
-      c, "min", 0, t_parameter,
+      c, "min", 0, parameter,
       m_min, m_min_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   CLASS_ATTR_ATOM_VARSIZE(
-      c, "max", 0, t_parameter,
+      c, "max", 0, parameter,
       m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   // TODO add enum for boolean param
   CLASS_ATTR_LONG(
-      c, "repetition_filter", 0, t_parameter,
+      c, "repetition_filter", 0, parameter,
       m_repetition_filter);
 
   CLASS_ATTR_LONG(
-      c, "priority", 0, t_parameter,
+      c, "priority", 0, parameter,
       m_priority);
 
   CLASS_ATTR_LONG(
-      c, "hidden", 0, t_parameter,
+      c, "hidden", 0, parameter,
       m_hidden);
 
   CLASS_ATTR_LONG(
-      c, "enable", 0, t_parameter,
+      c, "enable", 0, parameter,
       m_hidden);
 
   CLASS_ATTR_STYLE(
@@ -127,8 +111,8 @@ extern "C" void ossia_parameter_setup()
 extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  t_parameter* x
-      = (t_parameter*)object_alloc(ossia_library.ossia_parameter_class);
+  parameter* x
+      = (parameter*)object_alloc(ossia_library.ossia_parameter_class);
 
   if (x)
   {
@@ -149,7 +133,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     x->m_description = gensym("");
     x->m_priority = 0;
 
-    x->m_clock = clock_new(x, (method)ossia::max::push_default_value);
+    x->m_clock = clock_new(x, (method)parameter::push_default_value);
 
     x->m_otype = object_class::param;
 
@@ -183,7 +167,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
     object_attach_byptr_register(x, x, CLASS_BOX);
 
     // start registration
-    max_object_register<t_parameter>(x);
+    max_object_register<parameter>(x);
     ossia_max::instance().parameters.push_back(x);
   }
 
@@ -192,10 +176,10 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
   return x;
 }
 
-extern "C" void ossia_parameter_free(t_parameter* x)
+extern "C" void ossia_parameter_free(parameter* x)
 {
   x->unregister();
-  object_dequarantining<t_parameter>(x);
+  object_dequarantining<parameter>(x);
   ossia_max::instance().parameters.remove_all(x);
   object_free(x->m_clock);
   outlet_delete(x->m_data_out);
@@ -203,7 +187,7 @@ extern "C" void ossia_parameter_free(t_parameter* x)
 }
 
 extern "C" void
-ossia_parameter_assist(t_parameter* x, void* b, long m, long a, char* s)
+ossia_parameter_assist(parameter* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
@@ -225,29 +209,8 @@ ossia_parameter_assist(t_parameter* x, void* b, long m, long a, char* s)
   }
 }
 
-extern "C" void ossia_parameter_in_float(t_parameter* x, double f)
-{
-  t_atom a;
-  A_SETFLOAT(&a,f);
-  t_object_base::push(x,nullptr,1,&a);
-}
-
-extern "C" void ossia_parameter_in_int(t_parameter* x, long int f)
-{
-  t_atom a;
-  A_SETLONG(&a,f);
-  t_object_base::push(x,nullptr,1,&a);
-}
-
-extern "C" void ossia_parameter_in_symbol(t_parameter* x, t_symbol* f)
-{
-  t_atom a;
-  A_SETSYM(&a,f);
-  t_object_base::push(x,nullptr,1,&a);
-}
-
 extern "C" t_max_err
-ossia_parameter_notify(t_parameter *x, t_symbol *s,
+ossia_parameter_notify(parameter *x, t_symbol *s,
                        t_symbol *msg, void *sender, void *data)
 {
   t_symbol *attrname;
@@ -285,6 +248,7 @@ ossia_parameter_notify(t_parameter *x, t_symbol *s,
       x->set_type();
 
   }
+  return 0;
 }
 
 namespace ossia
@@ -292,27 +256,30 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark t_parameter structure functions
+void parameter::push_default_value(parameter* x)
+{
+  if ( x->m_default_size > 0 )
+    parameter_base::push(x, nullptr, x->m_default_size, x->m_default);
+}
 
-bool t_parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
   bool res = do_registration(nodes);
   if (res)
   {
-    object_dequarantining<t_parameter>(this);
-    for (auto remote : t_remote::quarantine().copy())
+    object_dequarantining<parameter>(this);
+    for (auto remote : remote::quarantine().copy())
     {
-      max_object_register<t_remote>(static_cast<t_remote*>(remote));
+      max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
     }
   }
   else
-    object_quarantining<t_parameter>(this);
+    object_quarantining<parameter>(this);
 
   return res;
 }
 
-bool t_parameter::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
@@ -372,16 +339,16 @@ bool t_parameter::do_registration(const std::vector<ossia::net::node_base*>& _no
   return true;
 }
 
-bool t_parameter::unregister()
+bool parameter::unregister()
 {
   clock_unset(m_clock);
 
   m_matchers.clear();
   m_nodes.clear();
 
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<t_remote>(static_cast<t_remote*>(remote));
+    max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
   }
 
   object_quarantining(this);
@@ -389,7 +356,7 @@ bool t_parameter::unregister()
   return true;
 }
 
-void t_parameter::set_access_mode()
+void parameter::set_access_mode()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -413,7 +380,7 @@ void t_parameter::set_access_mode()
   }
 }
 
-void t_parameter::set_repetition_filter()
+void parameter::set_repetition_filter()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -425,7 +392,7 @@ void t_parameter::set_repetition_filter()
   }
 }
 
-void t_parameter::set_description()
+void parameter::set_description()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -434,7 +401,7 @@ void t_parameter::set_description()
   }
 }
 
-void t_parameter::set_tags()
+void parameter::set_tags()
 {
   std::vector<std::string> tags;
   for (int i = 0; i < m_tags_size; i++)
@@ -460,7 +427,7 @@ void t_parameter::set_tags()
     ossia::net::set_tags(*m.get_node(), tags);
 }
 
-void t_parameter::set_priority()
+void parameter::set_priority()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -469,7 +436,7 @@ void t_parameter::set_priority()
   }
 }
 
-void t_parameter::set_enable()
+void parameter::set_enable()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -478,7 +445,7 @@ void t_parameter::set_enable()
   }
 }
 
-void t_parameter::set_type()
+void parameter::set_type()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -488,7 +455,7 @@ void t_parameter::set_type()
   }
 }
 
-void t_parameter::set_hidden()
+void parameter::set_hidden()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -497,7 +464,7 @@ void t_parameter::set_hidden()
   }
 }
 
-void t_parameter::set_unit()
+void parameter::set_unit()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -520,7 +487,7 @@ void t_parameter::set_unit()
   }
 }
 
-void t_parameter::set_minmax(){
+void parameter::set_minmax(){
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
@@ -584,7 +551,7 @@ void t_parameter::set_minmax(){
   }
 }
 
-void t_parameter::set_range()
+void parameter::set_range()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -651,7 +618,7 @@ void t_parameter::set_range()
   }
 }
 
-void t_parameter::set_bounding_mode()
+void parameter::set_bounding_mode()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -681,7 +648,7 @@ void t_parameter::set_bounding_mode()
   }
 }
 
-void t_parameter::set_default()
+void parameter::set_default()
 {
   for (t_matcher& m : m_matchers)
   {
@@ -757,7 +724,7 @@ void t_parameter::set_default()
   }
 }
 
-ossia::safe_vector<t_parameter*>& t_parameter::quarantine()
+ossia::safe_vector<parameter*>& parameter::quarantine()
 {
   return ossia_max::instance().parameter_quarantine;
 }

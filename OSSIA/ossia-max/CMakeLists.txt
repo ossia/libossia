@@ -32,20 +32,26 @@ endif()
 set(PROJECT_SRCS
     src/ossia-max.cpp
     src/ossia-max.hpp
-    src/ossia_object_base.cpp
-    src/ossia_object_base.hpp
+    src/object_base.cpp
+    src/object_base.hpp
     src/ossia_object.cpp
     src/ossia_object.hpp
-    src/parameter.hpp
-    src/parameter.cpp
     src/client.hpp
     src/client.cpp
     src/device.hpp
     src/device.cpp
-    src/model.hpp
-    src/model.cpp
+    src/device_base.hpp
+    src/device_base.cpp
     src/logger.hpp
     src/logger.cpp
+    src/model.hpp
+    src/model.cpp
+    src/node_base.cpp
+    src/node_base.hpp
+    src/parameter.hpp
+    src/parameter.cpp
+    src/parameter_base.hpp
+    src/parameter_base.cpp
     src/remote.hpp
     src/remote.cpp
     src/utils.hpp

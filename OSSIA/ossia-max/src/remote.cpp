@@ -18,56 +18,38 @@ extern "C" void ossia_remote_setup()
 
   // instantiate the ossia.remote class
   ossia_library.ossia_remote_class = class_new(
-      "ossia.remote", (method)ossia_remote_new, (method)ossia_remote_free,
-      (short)sizeof(t_remote), 0L, A_GIMME, 0);
+      "ossia.remote", (method)remote::create, (method)remote::destroy,
+      (short)sizeof(remote), 0L, A_GIMME, 0);
 
   if (ossia_library.ossia_remote_class)
   {
-    class_addmethod(ossia_library.ossia_remote_class, (method)t_remote::remote_bind,
+    class_addmethod(ossia_library.ossia_remote_class, (method)remote::bind,
                     "bind", A_SYM, 0);
-    // TODO why there is 2 "anything" methods ?
     class_addmethod(
-        ossia_library.ossia_remote_class, (method)t_object_base::push,
-        "anything", A_GIMME, 0);
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)t_object_base::bang, "bang",
-        A_NOTHING, 0);
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)object_dump<t_remote>,
+        ossia_library.ossia_remote_class, (method)object_dump<remote>,
         "dump", A_NOTHING, 0);
     //        class_addmethod(ossia_library.ossia_remote_class,
     //        (method)ossia_remote_click,             "click",
     //        A_NOTHING,     0);
 
     class_addmethod(
-        ossia_library.ossia_remote_class, (method)ossia_remote_assist,
+        ossia_library.ossia_remote_class, (method)remote::assist,
         "assist", A_CANT, 0);
-
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)ossia_remote_in_bang, "bang",
-        0);
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)ossia_remote_in_int, "int",
-        A_LONG, 0);
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)ossia_remote_in_float,
-        "float", A_FLOAT, 0);
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)ossia_remote_in_symbol,
-        "symbol", A_SYM, 0);
-    class_addmethod(
-        ossia_library.ossia_remote_class, (method)t_object_base::push,
-        "anything", A_GIMME, 0);
-
   }
 
   class_register(CLASS_BOX, ossia_library.ossia_remote_class);
 }
 
-extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
+namespace ossia
+{
+namespace max
+{
+
+void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  t_remote* x = (t_remote*)object_alloc(ossia_library.ossia_remote_class);
+  auto place = object_alloc(ossia_library.ossia_remote_class);
+  remote* x = new(place) remote();
 
   if (x)
   {
@@ -81,12 +63,10 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
     x->m_set_out
         = outlet_new(x, NULL); // anything outlet to output data for ui
 
-    new (&x->m_callbackits) decltype(x->m_callbackits);
-    new (&x->m_matchers) decltype(x->m_matchers);
     x->m_dev = nullptr;
 
     //        x->m_clock = clock_new(x, (method)t_object_base::tick);
-    x->m_regclock = clock_new(x, (method)t_object_base::bang);
+    x->m_clock = clock_new(x, (method)parameter_base::bang);
 
     x->m_otype = object_class::remote;
 
@@ -116,33 +96,33 @@ extern "C" void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
 
     x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
 
-    max_object_register<t_remote>(x);
+    max_object_register<remote>(x);
     ossia_max::instance().remotes.push_back(x);
   }
 
   return (x);
 }
 
-extern "C" void ossia_remote_free(t_remote* x)
+void ossia_remote_free(remote* x)
 {
+  if (x->m_clock) clock_free((t_object*)x->m_clock);
   x->m_dead = true;
   x->unregister();
-  object_dequarantining<t_remote>(x);
+  object_dequarantining<remote>(x);
   ossia_max::instance().remotes.remove_all(x);
 
   if(x->m_is_pattern && x->m_dev)
   {
-    x->m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(x);
+    x->m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(x);
   }
 
   outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);  
-  x->~t_remote();
+  x->~remote();
 }
 
-extern "C" void
-ossia_remote_assist(t_remote* x, void* b, long m, long a, char* s)
+void ossia_remote_assist(remote* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
@@ -206,81 +186,34 @@ system_clock::now().time_since_epoch() );
 }
 */
 
-template <typename T>
-void ossia_remote_in(t_remote* x, T f)
-{
-  for (auto& m : x->m_matchers)
-  {
-    // a matcher already have valid node and address
-    m.get_node()->get_parameter()->push_value(f);
-  }
-
-  if (x->m_matchers.empty())
-  {
-    object_error(
-        (t_object*)x, "[ossia.remote %s] is not registered to any parameter",
-        x->m_name->s_name);
-  }
-}
-
-extern "C" void ossia_remote_in_float(t_remote* x, double f)
-{
-  ossia_remote_in(x, f);
-}
-
-extern "C" void ossia_remote_in_int(t_remote* x, long int f)
-{
-  ossia_remote_in(x, (int32_t)f);
-}
-
-extern "C" void ossia_remote_in_bang(t_remote* x)
-{
-  ossia_remote_in(x, ossia::impulse{});
-}
-
-extern "C" void ossia_remote_in_symbol(t_remote* x, t_symbol* f)
-{
-  ossia_remote_in(x, std::string(f->s_name));
-}
-
-extern "C" void ossia_remote_in_char(t_remote* x, char f)
-{
-  ossia_remote_in(x, f);
-}
-
-namespace ossia
-{
-namespace max
-{
-
 #pragma mark t_remote
 
-bool t_remote::register_node(const std::vector<ossia::net::node_base*>& node)
+bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
 
   if (res)
   {
-    object_dequarantining<t_remote>(this);
+    object_dequarantining<remote>(this);
   }
   else
-    object_quarantining<t_remote>(this);
+    object_quarantining<remote>(this);
 
   if (!node.empty() && m_is_pattern){
     // assume all nodes refer to the same device
     auto& dev = node[0]->get_device();
     if (&dev != m_dev)
     {
-      if (m_dev) m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
+      if (m_dev) m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
       m_dev = &dev;
-      m_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
+      m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
     }
   }
 
   return res;
 }
 
-bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
   unregister();
 
@@ -324,7 +257,7 @@ bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes
         }
       }
     }
-    clock_delay(m_regclock, 0);
+    clock_delay(m_clock, 1);
   }
 
   // do not put it in quarantine if it's a pattern
@@ -332,19 +265,19 @@ bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes
   return (!m_matchers.empty() || m_is_pattern);
 }
 
-bool t_remote::unregister()
+bool remote::unregister()
 {
-  clock_unset(m_regclock);
+  clock_unset(m_clock);
   m_matchers.clear();
   m_nodes.clear();
 
-  object_quarantining<t_remote>(this);
+  object_quarantining<remote>(this);
 
   m_parent_node = nullptr;
   return true;
 }
 
-void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
+void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
   if (!m_name) return;
@@ -357,19 +290,7 @@ void t_remote::on_parameter_created_callback(const ossia::net::parameter_base& a
   }
 }
 
-void t_remote::is_deleted(const ossia::net::node_base& n)
-{
-  if (!m_dead)
-  {
-    ossia::remove_one_if(
-      m_matchers,
-      [&] (const auto& m) {
-        return m.get_node() == &n;
-    });
-  }
-}
-
-void t_remote::remote_bind(t_remote* x, t_symbol* address)
+void remote::bind(remote* x, t_symbol* address)
 {
   x->m_name = address;
   x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
@@ -377,7 +298,7 @@ void t_remote::remote_bind(t_remote* x, t_symbol* address)
   max_object_register(x);
 }
 
-ossia::safe_vector<t_remote*>& t_remote::quarantine()
+ossia::safe_vector<remote*>& remote::quarantine()
 {
     return ossia_max::instance().remote_quarantine;
 }

@@ -8,7 +8,7 @@ namespace ossia
 namespace max
 {
 
-bool find_peer(t_object_base* x)
+bool find_peer(object_base* x)
 {
     t_symbol* classname = object_classname(x);
     t_symbol* derived_classname = nullptr;
@@ -32,7 +32,7 @@ bool find_peer(t_object_base* x)
       {
         t_symbol* current = object_classname(obj);
         if(current == classname
-           && (t_object_base*)obj != x)
+           && (object_base*)obj != x)
           return true;
         if (derived_classname && current == derived_classname)
           return true;
@@ -216,6 +216,76 @@ t_symbol* val_type2symbol(ossia::val_type type)
     case ossia::val_type::NONE:
     default:
       return gensym("none");
+  }
+}
+
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
+{
+  if (bounding_mode == gensym("free"))
+    return ossia::bounding_mode::FREE;
+  else if (bounding_mode == gensym("clip"))
+    return ossia::bounding_mode::CLIP;
+  else if (bounding_mode == gensym("wrap"))
+    return ossia::bounding_mode::WRAP;
+  else if (bounding_mode == gensym("fold"))
+    return ossia::bounding_mode::FOLD;
+  else if (bounding_mode == gensym("low"))
+    return ossia::bounding_mode::LOW;
+  else if (bounding_mode == gensym("high"))
+    return ossia::bounding_mode::HIGH;
+  else
+  {
+    error("unknown bounding mode: %s", bounding_mode->s_name);
+    return ossia::bounding_mode::FREE;
+  }
+}
+
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
+{
+  switch (bm)
+  {
+    case ossia::bounding_mode::FREE:
+      return gensym("free");
+    case ossia::bounding_mode::CLIP:
+      return gensym("clip");
+    case ossia::bounding_mode::WRAP:
+      return gensym("wrap");
+    case ossia::bounding_mode::FOLD:
+      return gensym("fold");
+    case ossia::bounding_mode::LOW:
+      return gensym("low");
+    case ossia::bounding_mode::HIGH:
+      return gensym("high");
+    default :
+      return nullptr;
+  }
+}
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode)
+{
+  if (access_mode == gensym("bi") || access_mode == gensym("rw"))
+    return ossia::access_mode::BI;
+  else if (access_mode == gensym("get") || access_mode == gensym("r"))
+    return ossia::access_mode::GET;
+  else if (access_mode == gensym("set") || access_mode == gensym("w"))
+    return ossia::access_mode::SET;
+  else
+  {
+    error("unknown access mode: %s", access_mode->s_name);
+    return ossia::access_mode::BI;
+  }
+}
+
+t_symbol* access_mode2symbol(ossia::access_mode mode)
+{
+  switch(mode)
+  {
+    case ossia::access_mode::SET:
+      return gensym("set");
+    case ossia::access_mode::GET:
+      return gensym("get");
+    default:
+      return gensym("bi");
   }
 }
 

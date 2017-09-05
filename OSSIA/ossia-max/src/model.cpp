@@ -19,37 +19,41 @@ extern "C" void ossia_model_setup()
 
   // instantiate the ossia.parameter class
   t_class* c = class_new(
-      "ossia.model", (method)ossia_model_new, (method)ossia_model_free,
-      (long)sizeof(ossia::max::t_model), 0L, A_GIMME, 0);
+      "ossia.model", (method)model::create, (method)model::destroy,
+      (long)sizeof(ossia::max::model), 0L, A_GIMME, 0);
+
+  node_base::declare_attributes(c);
 
   class_addmethod(
-      c, (method)ossia_model_assist, "assist",
-      A_CANT, 0);
-
-  class_addmethod(
-      c, (method)t_object_base::getnamespace,
-              "namespace", A_NOTHING, 0);
-
-  CLASS_ATTR_SYM(
-      c, "description", 0, t_model,
-      m_description);
-  CLASS_ATTR_SYM_VARSIZE(
-      c, "tags", 0, t_parameter, m_tags, m_tags_size, 64);
-  CLASS_ATTR_LONG(
-      c, "hidden", 0, t_model,
-      m_hidden);
-  class_addmethod(
-      c, (method)t_object_base::preset,
-      "preset",        A_GIMME,  0);
+      c, (method)model::assist,
+        "assist", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
   ossia_library.ossia_model_class = c;
 }
 
-extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
+extern "C" void
+ossia_model_assist(model* x, void* b, long m, long a, char* s)
+{
+  if (m == ASSIST_INLET)
+  {
+    sprintf(s, "I am inlet %ld", a);
+  }
+  else
+  {
+    sprintf(s, "I am outlet %ld", a);
+  }
+}
+
+namespace ossia
+{
+namespace max
+{
+
+void* model::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  t_model* x = (t_model*)object_alloc(ossia_library.ossia_model_class);
+  model* x = (model*)object_alloc(ossia_library.ossia_model_class);
 
   if (x)
   {
@@ -63,13 +67,14 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     if(find_peer(x))
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
-      ossia_model_free(x);
+      model::destroy(x);
+      free(x);
       return nullptr;
     }
 
-    x->m_regclock = clock_new(
+    x->m_clock = clock_new(
         x, reinterpret_cast<method>(
-               static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)));
+               static_cast<bool (*)(model*)>(&max_object_register<model>)));
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -100,45 +105,29 @@ extern "C" void* ossia_model_new(t_symbol* name, long argc, t_atom* argv)
     // and object will be added to patcher's objects list (aka canvas g_list)
     // after model_new() returns.
     // 0 ms delay means that it will be perform on next clock tick
-    clock_delay(x->m_regclock, 0);
+    // defer_low(x,reinterpret_cast<method>(
+                //static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)), nullptr, 0, 0L );
+    clock_delay(x->m_clock, 1);
     ossia_max::instance().models.push_back(x);
   }
 
   return (x);
 }
 
-extern "C" void ossia_model_free(t_model* x)
+void model::destroy(model* x)
 {
   x->m_dead = true;
   x->unregister();
-  object_dequarantining<t_model>(x);
+  object_dequarantining<model>(x);
   ossia_max::instance().models.remove_all(x);
-  if(x->m_regclock) object_free(x->m_regclock);
+  if(x->m_clock) object_free(x->m_clock);
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
 }
-
-extern "C" void
-ossia_model_assist(t_model* x, void* b, long m, long a, char* s)
-{
-  if (m == ASSIST_INLET)
-  {
-    sprintf(s, "I am inlet %ld", a);
-  }
-  else
-  {
-    sprintf(s, "I am outlet %ld", a);
-  }
-}
-
-namespace ossia
-{
-namespace max
-{
 
 #pragma mark -
 #pragma mark t_model structure functions
 
-bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
   bool res = do_registration(nodes);
 
@@ -147,12 +136,12 @@ bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
     register_children();
   }
   else
-    object_quarantining<t_model>(this);
+    object_quarantining<model>(this);
 
   return res;
 }
 
-bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
+bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 {
   // we should unregister here because we may have add a node between the
   // registered node and the parameter
@@ -174,13 +163,13 @@ bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
       // we have to check if a node with the same name already exists to avoid
       // auto-incrementing name
-      std::vector<t_object_base*> obj = find_children_to_register(
+      std::vector<object_base*> obj = find_children_to_register(
             &m_object, get_patcher(&m_object), gensym("ossia.model"));
       for (auto v : obj)
       {
         if (v->m_otype == object_class::param)
         {
-          t_parameter* param = (t_parameter*)v;
+          parameter* param = (parameter*)v;
           if (std::string(param->m_name->s_name) == name)
           {
             // if we already have a t_param node of that
@@ -203,47 +192,24 @@ bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     set_priority();
     set_description();
     set_tags();
-
+    set_hidden();
   }
 
   return true;
 }
 
-void t_model::set_priority()
+void model::register_children()
 {
-  // TODO why this doesn't work
-  for (auto n : m_nodes)
-    ossia::net::set_priority(*n, m_priority);
-}
+  object_dequarantining<model>(this);
 
-void t_model::set_description()
-{
-  for (auto n : m_nodes)
-    ossia::net::set_description(*n, m_description->s_name);
-}
-
-void t_model::set_tags()
-{
-  std::vector<std::string> tags;
-  for (int i = 0; i < m_tags_size; i++)
-    tags.push_back(m_tags[i]->s_name);
-
-  for (auto n : m_nodes)
-    ossia::net::set_tags(*n, tags);
-}
-
-void t_model::register_children()
-{
-  object_dequarantining<t_model>(this);
-
-  std::vector<t_object_base*> children = find_children_to_register(
+  std::vector<object_base*> children = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
   for (auto child : children)
   {
     if (child->m_otype == object_class::model)
     {
-      t_model* model = (t_model*)child;
+      ossia::max::model* model = (ossia::max::model*)child;
 
       // ignore itself
       if (model == this)
@@ -253,39 +219,39 @@ void t_model::register_children()
     }
     else if (child->m_otype == object_class::param)
     {
-      t_parameter* parameter = (t_parameter*)child;
+      ossia::max::parameter* parameter = (ossia::max::parameter*)child;
 
       parameter->register_node(m_nodes);
     }
   }
 
-  for (auto view : t_view::quarantine().copy())
+  for (auto view : view::quarantine().copy())
   {
-    max_object_register<t_view>(static_cast<t_view*>(view));
+    max_object_register<ossia::max::view>(static_cast<ossia::max::view*>(view));
   }
 
   // then try to register qurantinized remote
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<t_remote>(static_cast<t_remote*>(remote));
+    max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
   }
 }
 
-bool t_model::unregister()
+bool model::unregister()
 {
-  if (m_regclock) clock_unset(m_regclock);
+  if (m_clock) clock_unset(m_clock);
 
   m_matchers.clear();
   m_nodes.clear();
 
-  object_quarantining<t_model>(this);
+  object_quarantining<model>(this);
 
   register_children();
 
   return true;
 }
 
-ossia::safe_vector<t_model*>& t_model::quarantine()
+ossia::safe_vector<model*>& model::quarantine()
 {
   return ossia_max::instance().model_quarantine;
 }

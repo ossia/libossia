@@ -1,7 +1,7 @@
 #include "ossia-max.hpp"
 #include "device.hpp"
 
-using t_ossia = ossia::max::t_device;
+using t_ossia = ossia::max::device;
 
 extern "C" void* ossia_object_new(t_symbol* name, int argc, t_atom* argv)
 {

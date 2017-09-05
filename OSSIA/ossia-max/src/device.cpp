@@ -20,14 +20,13 @@ extern "C" void ossia_device_setup()
   // instantiate the ossia.client class
   t_class* c = class_new(
       "ossia.device", (method)ossia_device_new, (method)ossia_device_free,
-      (short)sizeof(t_device), 0L, A_GIMME, 0);
+      (short)sizeof(device), 0L, A_GIMME, 0);
+
+  device_base::declare_attributes(c);
 
   class_addmethod(
-      c, (method)t_device::register_children,
+      c, (method)device::register_children,
       "register", A_NOTHING, 0);
-  class_addmethod(
-      c, (method)t_object_base::getnamespace,
-      "namespace", A_NOTHING, 0);
   class_addmethod(
       c, (method)ossia_device_expose,
       "expose", A_GIMME, 0);
@@ -43,9 +42,6 @@ extern "C" void ossia_device_setup()
   class_addmethod(
         c, (method) device_stop_expose,
         "stop", A_FLOAT, 0);
-  class_addmethod(
-      c, (method)t_object_base::preset,
-      "preset", A_GIMME,  0);
 
 
   class_register(CLASS_BOX, c);
@@ -57,7 +53,7 @@ extern "C" void ossia_device_setup()
 extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  t_device* x = (t_device*)object_alloc(ossia_library.ossia_device_class);
+  device* x = (device*)object_alloc(ossia_library.ossia_device_class);
 
   if (x)
   {
@@ -97,13 +93,13 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
     x->m_nodes = {&x->m_device->get_root_node()};
 
     ossia_library.devices.push_back(x);
-    t_device::register_children(x);
+    device::register_children(x);
   }
 
   return (x);
 }
 
-extern "C" void ossia_device_free(t_device* x)
+extern "C" void ossia_device_free(device* x)
 {
   x->m_dead = true;
   x->unregister_children();
@@ -115,8 +111,91 @@ extern "C" void ossia_device_free(t_device* x)
 
 }
 
-extern "C" void
-ossia_device_expose(t_device* x, t_symbol*, long argc, t_atom* argv)
+
+
+namespace ossia
+{
+namespace max
+{
+
+#pragma mark -
+#pragma mark t_device structure functions
+
+void device::register_children(device* x)
+{
+  std::vector<object_base*> children_model = find_children_to_register(
+      &x->m_object, get_patcher(&x->m_object), gensym("ossia.model"));
+
+  for (auto child : children_model)
+  {
+    if (child->m_otype == object_class::model)
+    {
+      ossia::max::model* model = (ossia::max::model*)child;
+      model->register_node(x->m_nodes);
+    }
+    else if (child->m_otype == object_class::param)
+    {
+      ossia::max::parameter* parameter = (ossia::max::parameter*)child;
+      parameter->register_node(x->m_nodes);
+    }
+  }
+
+  std::vector<object_base*> children_view = find_children_to_register(
+      &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
+
+  for (auto child : children_view)
+  {
+    if (child->m_otype == object_class::view)
+    {
+      ossia::max::view* view = (ossia::max::view*)child;
+      view->register_node(x->m_nodes);
+    }
+    else if (child->m_otype == object_class::remote)
+    {
+      ossia::max::remote* remote = (ossia::max::remote*)child;
+      remote->register_node(x->m_nodes);
+    }
+  }
+}
+
+void device::unregister_children()
+{
+  std::vector<object_base*> children_model = find_children_to_register(
+      &m_object, get_patcher(&m_object), gensym("ossia.model"));
+
+  for (auto child : children_model)
+  {
+    if (child->m_otype == object_class::model)
+    {
+      ossia::max::model* model = (ossia::max::model*)child;
+      model->unregister();
+    }
+    else if (child->m_otype == object_class::param)
+    {
+      ossia::max::parameter* parameter = (ossia::max::parameter*)child;
+      parameter->unregister();
+    }
+  }
+
+  std::vector<object_base*> children_view = find_children_to_register(
+      &m_object, get_patcher(&m_object), gensym("ossia.view"));
+
+  for (auto child : children_view)
+  {
+    if (child->m_otype == object_class::view)
+    {
+      ossia::max::view* view = (ossia::max::view*)child;
+      view->unregister();
+    }
+    else if (child->m_otype == object_class::remote)
+    {
+      ossia::max::remote* remote = (ossia::max::remote*)child;
+      remote->unregister();
+    }
+  }
+}
+
+void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
   if (argc && argv->a_type == A_SYM)
   {
@@ -229,7 +308,7 @@ ossia_device_expose(t_device* x, t_symbol*, long argc, t_atom* argv)
     protocol_settings::print_protocol_help();
 }
 
-extern "C" void ossia_device_name(t_device *x, t_symbol* s, long argc, t_atom* argv){
+void device::name(device *x, t_symbol* s, long argc, t_atom* argv){
   if( argc == 0 )
   {
     t_atom a;
@@ -243,7 +322,7 @@ extern "C" void ossia_device_name(t_device *x, t_symbol* s, long argc, t_atom* a
   }
 }
 
-extern "C" void device_getprotocols(t_device* x)
+void device::getprotocols(device* x)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
@@ -263,7 +342,7 @@ extern "C" void device_getprotocols(t_device* x)
   }
 }
 
-extern "C" void device_stop_expose(t_device*x, int index)
+void device::stop_expose(device*x, int index)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
@@ -273,88 +352,6 @@ extern "C" void device_stop_expose(t_device*x, int index)
     multiplex.stop_expose_to(*protos[index]);
   else
     object_error((t_object*)x, "Index %d out of bound.", index);
-}
-
-namespace ossia
-{
-namespace max
-{
-
-#pragma mark -
-#pragma mark t_device structure functions
-
-void t_device::register_children(t_device* x)
-{
-  std::vector<t_object_base*> children_model = find_children_to_register(
-      &x->m_object, get_patcher(&x->m_object), gensym("ossia.model"));
-
-  for (auto child : children_model)
-  {
-    if (child->m_otype == object_class::model)
-    {
-      t_model* model = (t_model*)child;
-      model->register_node(x->m_nodes);
-    }
-    else if (child->m_otype == object_class::param)
-    {
-      t_parameter* parameter = (t_parameter*)child;
-      parameter->register_node(x->m_nodes);
-    }
-  }
-
-  std::vector<t_object_base*> children_view = find_children_to_register(
-      &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
-
-  for (auto child : children_view)
-  {
-    if (child->m_otype == object_class::view)
-    {
-      t_view* view = (t_view*)child;
-      view->register_node(x->m_nodes);
-    }
-    else if (child->m_otype == object_class::remote)
-    {
-      t_remote* remote = (t_remote*)child;
-      remote->register_node(x->m_nodes);
-    }
-  }
-}
-
-void t_device::unregister_children()
-{
-  std::vector<t_object_base*> children_model = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.model"));
-
-  for (auto child : children_model)
-  {
-    if (child->m_otype == object_class::model)
-    {
-      t_model* model = (t_model*)child;
-      model->unregister();
-    }
-    else if (child->m_otype == object_class::param)
-    {
-      t_parameter* parameter = (t_parameter*)child;
-      parameter->unregister();
-    }
-  }
-
-  std::vector<t_object_base*> children_view = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.view"));
-
-  for (auto child : children_view)
-  {
-    if (child->m_otype == object_class::view)
-    {
-      t_view* view = (t_view*)child;
-      view->unregister();
-    }
-    else if (child->m_otype == object_class::remote)
-    {
-      t_remote* remote = (t_remote*)child;
-      remote->unregister();
-    }
-  }
 }
 
 } // max namespace

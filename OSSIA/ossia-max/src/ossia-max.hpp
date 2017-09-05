@@ -5,7 +5,7 @@
 #undef error
 #undef post
 
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/object_base.hpp>
 
 #include <ossia/ossia.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
@@ -59,17 +59,17 @@ public:
   t_class* ossia_ossia_class{};
 
   // keep list of all objects
-  ossia::safe_vector<t_parameter*> parameters;
-  ossia::safe_vector<t_remote*> remotes;
-  ossia::safe_vector<t_model*> models;
-  ossia::safe_vector<t_view*> views;
-  ossia::safe_vector<t_device*> devices;
-  ossia::safe_vector<t_client*> clients;
+  ossia::safe_vector<parameter*> parameters;
+  ossia::safe_vector<remote*> remotes;
+  ossia::safe_vector<model*> models;
+  ossia::safe_vector<view*> views;
+  ossia::safe_vector<device*> devices;
+  ossia::safe_vector<client*> clients;
 
-  ossia::safe_vector<t_model*> model_quarantine;
-  ossia::safe_vector<t_view*> view_quarantine;
-  ossia::safe_vector<t_parameter*> parameter_quarantine;
-  ossia::safe_vector<t_remote*> remote_quarantine;
+  ossia::safe_vector<model*> model_quarantine;
+  ossia::safe_vector<view*> view_quarantine;
+  ossia::safe_vector<parameter*> parameter_quarantine;
+  ossia::safe_vector<remote*> remote_quarantine;
 
 private:
   ossia_max();
@@ -107,9 +107,9 @@ extern bool object_is_quarantined(T*);
 template <typename T>
 extern void object_dump(T*);
 
-struct t_object_base;
+struct object_base;
 
-void object_namespace(t_object_base* x);
+void object_namespace(object_base* x);
 
 #pragma mark -
 #pragma mark Utilities
@@ -131,7 +131,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the parent box if exists. Otherwise returns nullptr.
  */
-t_object_base* find_parent_box(
+object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -142,7 +142,7 @@ t_object_base* find_parent_box(
  * @param start_level
  * @return
  */
-t_object_base* find_parent_box_alive(
+object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -170,7 +170,7 @@ public:
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<t_object_base*> find_children_to_register(
+std::vector<object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev = nullptr);
 
 /**
