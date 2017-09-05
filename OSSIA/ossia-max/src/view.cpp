@@ -13,14 +13,11 @@ extern "C" void ossia_view_setup()
 {
   // instantiate the ossia.view class
   t_class* c = class_new(
-      "ossia.view", (method)ossia_view_new, (method)ossia_view_free,
+      "ossia.view", (method)view::create, (method)view::destroy,
       (short)sizeof(view), 0L, A_GIMME, 0);
 
   if (c)
   {
-    class_addmethod(
-        c, (method)object_dump<view>, "dump",
-        A_NOTHING, 0);
     class_addmethod(
           c,(method)view::view_bind, "bind", A_SYM, 0);
 
@@ -35,7 +32,12 @@ extern "C" void ossia_view_setup()
   ossia_library.ossia_view_class = c;
 }
 
-extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
+namespace ossia
+{
+namespace max
+{
+
+void* view::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
   auto place = object_alloc(ossia_library.ossia_view_class);
@@ -58,7 +60,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
     if(find_peer(x))
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
-      ossia_view_free(x);
+      view::destroy(x);
       return nullptr;
     }
 
@@ -95,7 +97,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
   return (x);
 }
 
-extern "C" void ossia_view_free(view* x)
+void view::destroy(view* x)
 {
   x->m_dead = true;
   x->unregister();
@@ -147,10 +149,6 @@ shift, t_floatarg ctrl, t_floatarg alt)
 }
  */
 
-namespace ossia
-{
-namespace max
-{
 bool view::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
   bool res = do_registration(nodes);

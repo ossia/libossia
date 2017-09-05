@@ -59,15 +59,11 @@ public:
   static void find_devices_async(client* x);
   static void assist(client*, void*, long, long, char*);
 
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::client*);
+
 };
 
 } // max namespace
 } // ossia namespace
 
-#pragma mark -
-#pragma mark ossia_client class declaration
-
-extern "C" {
-void* ossia_client_new(t_symbol*, long, t_atom*);
-void ossia_client_free(ossia::max::client*);
-}

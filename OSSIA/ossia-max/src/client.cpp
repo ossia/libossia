@@ -29,7 +29,7 @@ extern "C" void ossia_client_setup()
 
   // instantiate the ossia.client class
   t_class* c = class_new(
-      "ossia.client", (method)ossia_client_new, (method)ossia_client_free,
+      "ossia.client", (method)client::create, (method)client::destroy,
       (short)sizeof(client), 0L, A_GIMME, 0);
 
   class_addmethod(
@@ -65,10 +65,17 @@ extern "C" void ossia_client_setup()
 
 }
 
-extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
+
+namespace ossia
+{
+namespace max
+{
+
+void* client::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  client* x = (client*)object_alloc(ossia_library.ossia_client_class);
+  auto place = object_alloc(ossia_library.ossia_client_class);
+  client* x = new(place) client();
 
   if (x)
   {
@@ -83,7 +90,7 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
     if (ossia::max::find_peer(x))
     {
       error("You can have only one [ossia.device] or [ossia.client] per patcher.");
-      ossia_client_free(x);
+      client::destroy(x);
       return nullptr;
     }
 
@@ -109,7 +116,7 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
   return (x);
 }
 
-extern "C" void ossia_client_free(client* x)
+void client::destroy(client* x)
 {
   x->m_dead = true;
   x->unregister_children();
@@ -120,12 +127,8 @@ extern "C" void ossia_client_free(client* x)
   outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
   register_quarantinized();
+  x->~client();
 }
-
-namespace ossia
-{
-namespace max
-{
 
 #pragma mark -
 #pragma mark t_client structure functions

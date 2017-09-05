@@ -17,18 +17,15 @@ extern "C" void ossia_parameter_setup()
 
   // instantiate the ossia.parameter class
   auto c = class_new(
-      "ossia.parameter", (method)ossia_parameter_new,
-      (method)ossia_parameter_free, (long)sizeof(ossia::max::parameter), 0L,
+      "ossia.parameter", (method)parameter::create,
+      (method)parameter::destroy, (long)sizeof(ossia::max::parameter), 0L,
       A_GIMME, 0);
 
   class_addmethod(
-      c, (method)ossia_parameter_assist,
+      c, (method)parameter::assist,
       "assist", A_CANT, 0);
   class_addmethod(
-      c, (method)object_dump<parameter>,
-      "dump", A_NOTHING, 0);
-  class_addmethod(
-      c, (method)ossia_parameter_notify,
+      c, (method)parameter::notify,
       "notify", A_CANT, 0);
 
   // TODO add a reset method
@@ -108,11 +105,16 @@ extern "C" void ossia_parameter_setup()
   ossia_library.ossia_parameter_class = c;
 }
 
-extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
+namespace ossia
+{
+namespace max
+{
+
+void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  parameter* x
-      = (parameter*)object_alloc(ossia_library.ossia_parameter_class);
+  auto place = object_alloc(ossia_library.ossia_parameter_class);
+  parameter* x = new(place) parameter();
 
   if (x)
   {
@@ -176,7 +178,7 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
   return x;
 }
 
-extern "C" void ossia_parameter_free(parameter* x)
+void parameter::destroy(parameter* x)
 {
   x->unregister();
   object_dequarantining<parameter>(x);
@@ -184,6 +186,7 @@ extern "C" void ossia_parameter_free(parameter* x)
   object_free(x->m_clock);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
+  x->~parameter();
 }
 
 extern "C" void
@@ -250,11 +253,6 @@ ossia_parameter_notify(parameter *x, t_symbol *s,
   }
   return 0;
 }
-
-namespace ossia
-{
-namespace max
-{
 
 void parameter::push_default_value(parameter* x)
 {

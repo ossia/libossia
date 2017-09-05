@@ -27,6 +27,8 @@ public:
   //    t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
 
   static void register_children(view* x);
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::view*);
 
 };
 
@@ -36,8 +38,3 @@ public:
 #pragma mark -
 #pragma mark ossia_view class declaration
 
-extern "C" {
-void* ossia_view_new(t_symbol*, long, t_atom*);
-void ossia_view_free(ossia::max::view*);
-
-}

@@ -19,7 +19,7 @@ extern "C" void ossia_device_setup()
 {
   // instantiate the ossia.client class
   t_class* c = class_new(
-      "ossia.device", (method)ossia_device_new, (method)ossia_device_free,
+      "ossia.device", (method)device::create, (method)device::destroy,
       (short)sizeof(device), 0L, A_GIMME, 0);
 
   device_base::declare_attributes(c);
@@ -28,19 +28,19 @@ extern "C" void ossia_device_setup()
       c, (method)device::register_children,
       "register", A_NOTHING, 0);
   class_addmethod(
-      c, (method)ossia_device_expose,
+      c, (method)device::expose,
       "expose", A_GIMME, 0);
   class_addmethod(
       c, (method)protocol_settings::print_protocol_help,
       "help", A_NOTHING, 0);
   class_addmethod(
-      c, (method)ossia_device_name,
+      c, (method)device::name,
       "name", A_GIMME, 0);
   class_addmethod(
-        c, (method) device_getprotocols,
+        c, (method) device::getprotocols,
         "getprotocols", A_NOTHING, 0);
   class_addmethod(
-        c, (method) device_stop_expose,
+        c, (method) device::stop_expose,
         "stop", A_FLOAT, 0);
 
 
@@ -50,10 +50,16 @@ extern "C" void ossia_device_setup()
   ossia_library.ossia_device_class = c;
 }
 
-extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
+namespace ossia
+{
+namespace max
+{
+
+void* device::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  device* x = (device*)object_alloc(ossia_library.ossia_device_class);
+  auto place = object_alloc(ossia_library.ossia_device_class);
+  device* x = new(place) device();
 
   if (x)
   {
@@ -71,7 +77,7 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
     if (ossia::max::find_peer(x))
     {
       error("You can have only one [ossia.device] or [ossia.client] per patcher.");
-      ossia_device_free(x);
+      device::destroy(x);
       return nullptr;
     }
 
@@ -99,7 +105,7 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
   return (x);
 }
 
-extern "C" void ossia_device_free(device* x)
+void device::destroy(device* x)
 {
   x->m_dead = true;
   x->unregister_children();
@@ -108,18 +114,8 @@ extern "C" void ossia_device_free(device* x)
   outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
   register_quarantinized();
-
+  x->~device();
 }
-
-
-
-namespace ossia
-{
-namespace max
-{
-
-#pragma mark -
-#pragma mark t_device structure functions
 
 void device::register_children(device* x)
 {

@@ -31,6 +31,9 @@ public:
   static void name(device* x, t_symbol*, long argc, t_atom* argv);
   static void getprotocols(device* x);
   static void stop_expose(device*x, int index);
+
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::device*);
 };
 
 #pragma mark -
@@ -89,16 +92,3 @@ static void print_protocol_help()
 } // max namespace
 } // ossia namespace
 
-#pragma mark -
-#pragma mark ossia_client class declaration
-
-extern "C" {
-void* ossia_device_new(t_symbol*, long, t_atom*);
-void ossia_device_free(ossia::max::device*);
-void ossia_device_dump(ossia::max::device*);
-void device_getprotocols(ossia::max::device* x);
-void device_stop_expose(ossia::max::device*x, int index);
-void ossia_device_getdevices(ossia::max::device*);
-void ossia_device_expose(ossia::max::device*, t_symbol*, long, t_atom*);
-void ossia_device_name(ossia::max::device*, t_symbol*, long, t_atom*);
-}

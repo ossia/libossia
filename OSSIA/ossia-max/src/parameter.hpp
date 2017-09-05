@@ -63,6 +63,13 @@ public:
   long m_tags_size;
 
   static void push_default_value(parameter* x);
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::parameter*);
+
+  static void assist(
+      ossia::max::parameter*, void*, long, long, char*);
+  static t_max_err notify(ossia::max::parameter *x,
+      t_symbol *s, t_symbol *msg, void *sender, void *data);
 
 };
 
@@ -75,20 +82,3 @@ public:
 
 #pragma mark -
 #pragma mark ossia_parameter class declaration
-
-extern "C" {
-void* ossia_parameter_new(t_symbol*, long, t_atom*);
-void ossia_parameter_free(ossia::max::parameter*);
-
-void ossia_parameter_assist(
-    ossia::max::parameter*, void*, long, long, char*);
-void ossia_parameter_in_float(ossia::max::parameter*, double f);
-void ossia_parameter_in_int(ossia::max::parameter* x, long int f);
-void ossia_parameter_in_bang(ossia::max::parameter*);
-void ossia_parameter_in_symbol(ossia::max::parameter*, t_symbol*);
-void ossia_parameter_in_char(ossia::max::parameter*, char);
-void ossia_parameter_in_anything(
-    ossia::max::parameter*, t_symbol*, long, t_atom*);
-t_max_err ossia_parameter_notify(ossia::max::parameter *x,
-    t_symbol *s, t_symbol *msg, void *sender, void *data);
-}

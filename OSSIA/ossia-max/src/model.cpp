@@ -53,7 +53,8 @@ namespace max
 void* model::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  model* x = (model*)object_alloc(ossia_library.ossia_model_class);
+  auto place = object_alloc(ossia_library.ossia_model_class);
+  model* x = new(place) model();
 
   if (x)
   {
@@ -122,6 +123,7 @@ void model::destroy(model* x)
   ossia_max::instance().models.remove_all(x);
   if(x->m_clock) object_free(x->m_clock);
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
+  x->~model();
 }
 
 #pragma mark -
