@@ -57,8 +57,8 @@ namespace max
 void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia::max::ossia_max::instance();
-  auto place = object_alloc(ossia_library.ossia_parameter_class);
-  parameter* x = new(place) parameter();
+  parameter* x = (parameter*)object_alloc(ossia_library.ossia_parameter_class);
+  //parameter* x = new(place) parameter();
 
   if (x)
   {
