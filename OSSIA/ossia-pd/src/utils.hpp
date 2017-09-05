@@ -378,7 +378,7 @@ std::vector<object_base*> find_child_to_register(
 bool find_peer(object_base* x);
 
 /**
- * @brief find_global_node: find nodes matching address with a 'device:' prefix
+ * @brief find_global_nodes: find nodes matching address with a 'device:' prefix
  * @param addr : address string
  * @return vector of pointers to matching nodes
  */

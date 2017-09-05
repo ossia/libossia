@@ -258,47 +258,6 @@ void object_base::is_deleted(const ossia::net::node_base& n)
   }
 }
 
-
-/**
- * @brief list_all_child : list all node childs recursively
- * @param node : starting point
- * @param list : reference to a node_base vector to store each node
- */
-void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::node_base*>& list){
-  for (const auto& child : node.children_copy())
-  {
-    list.push_back(child);
-    list_all_child(*child,list);
-  }
-}
-
-void ossia::pd::object_base::get_namespace(object_base* x)
-{
-  t_symbol* prependsym = gensym("namespace");
-  std::vector<ossia::net::node_base*> list;
-  for (auto n : x->m_nodes)
-  {
-    list_all_child(*n, list);
-    int pos = ossia::net::osc_parameter_string(*n).length();
-    for (ossia::net::node_base* child : list)
-    {
-      if (child->get_parameter())
-      {
-        ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-        ossia::value val = child->get_parameter()->fetch_value();
-
-        std::vector<t_atom> va;
-        value2atom vm{va};
-
-        name.apply(vm);
-        val.apply(vm);
-
-        outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
-      }
-    }
-  }
-}
-
 void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYMBOL)
@@ -395,28 +354,72 @@ void object_base::set_hidden()
 
 void object_base::get_tags(object_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("tags"),
-                  x->m_tags_size, x->m_tags);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto optags = ossia::net::get_tags(*node);
+
+    if (optags)
+    {
+      std::vector<std::string> tags = *optags;
+      x->m_tags_size = tags.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : tags.size();
+      for (int i=0; i < x->m_tags_size; i++)
+      {
+        SETSYMBOL(&x->m_tags[i], gensym(tags[i].c_str()));
+      }
+
+      outlet_anything(x->m_dumpout, gensym("tags"),
+                      x->m_tags_size, x->m_tags);
+    }
+  }
 }
 
 void object_base::get_description(object_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("description"),
-                  x->m_description_size, x->m_description);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto description = ossia::net::get_description(*node);
+
+    if (description)
+    {
+      SETSYMBOL(x->m_description, gensym((*description).c_str()));
+      x->m_description_size = 1;
+
+      outlet_anything(x->m_dumpout, gensym("description"),
+                      x->m_description_size, x->m_description);
+    }
+  }
 }
 
 void object_base::get_priority(object_base*x)
 {
-  t_atom a;
-  SETFLOAT(&a, x->m_priority);
-  outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
+  // assume all matchers have the same priority
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+
+  auto priority = ossia::net::get_priority(*node);
+  if (priority)
+  {
+    x->m_priority = *priority;
+    t_atom a;
+    SETFLOAT(&a, x->m_priority);
+    outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
+  }
 }
 
 void object_base::get_hidden(object_base*x)
 {
+  // assume all matchers have the same bounding_mode
+  ossia::pd::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+
+  x->m_hidden = ossia::net::get_hidden(*node);
+
   t_atom a;
   SETFLOAT(&a, x->m_hidden);
   outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);;
+
 }
 
 void object_base::get_address(object_base *x)
@@ -518,6 +521,8 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
 
 void object_base::declare_attributes(t_eclass*c)
 {
+  eclass_addmethod(c, (method) object_base::set,           "set",       A_GIMME, 0);
+
   CLASS_ATTR_INT(         c, "priority",          0, object_base, m_priority);
   eclass_addmethod(c, (method) object_base   ::get_priority,          "getpriority",          A_NULL, 0);
 
@@ -529,18 +534,20 @@ void object_base::declare_attributes(t_eclass*c)
 
   CLASS_ATTR_INT(         c, "hidden",            0, object_base, m_hidden);
   eclass_addmethod(c, (method) parameter_base::get_hidden,            "gethidden",            A_NULL, 0);
+
+  eclass_addmethod(c, (method) object_base::get_address,              "getaddress",           A_NULL,  0);
 }
 
 void object_base::update_attribute(object_base* x, ossia::string_view attribute)
 {
   if ( attribute == ossia::net::text_priority() ){
-    logpost(x,2,"update priority attribute");
+    get_priority(x);
   } else if ( attribute == ossia::net::text_description() ){
-    logpost(x,2,"update description attribute");
+    get_description(x);
   } else if ( attribute == ossia::net::text_tags() ){
-    logpost(x,2,"update tags attribute");
+    get_tags(x);
   } else if ( attribute == ossia::net::text_hidden() ){
-    logpost(x,2,"update hidden attribute");
+    get_hidden(x);
   } else {
     pd_error(x, "no attribute %s", std::string(attribute).c_str());
   }

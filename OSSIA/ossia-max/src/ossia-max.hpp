@@ -12,6 +12,13 @@
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia-max_export.h>
 
+#include "parameter.hpp"
+#include "model.hpp"
+#include "remote.hpp"
+#include "view.hpp"
+#include "device.hpp"
+#include "client.hpp"
+
 extern "C"
 {
     OSSIA_MAX_EXPORT void ossia_client_setup();
@@ -28,14 +35,6 @@ namespace ossia
 {
 namespace max
 {
-
-// TODO refactor headers to avoid that and include directly relevant headers
-struct t_parameter;
-struct t_remote;
-struct t_view;
-struct t_model;
-struct t_device;
-struct t_client;
 
 #pragma mark -
 #pragma mark Library
@@ -66,6 +65,11 @@ public:
   ossia::safe_vector<t_view*> views;
   ossia::safe_vector<t_device*> devices;
   ossia::safe_vector<t_client*> clients;
+
+  ossia::safe_vector<t_model*> model_quarantine;
+  ossia::safe_vector<t_view*> view_quarantine;
+  ossia::safe_vector<t_parameter*> parameter_quarantine;
+  ossia::safe_vector<t_remote*> remote_quarantine;
 
 private:
   ossia_max();
@@ -167,7 +171,7 @@ public:
  * corresponding classname
  */
 std::vector<t_object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname);
+    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev = nullptr);
 
 /**
  * @brief             Convenient method to easily get the patcher where a box

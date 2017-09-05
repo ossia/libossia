@@ -78,6 +78,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     set_priority();
     set_description();
     set_tags();
+    set_hidden();
   }
 
   return true;
@@ -130,11 +131,6 @@ bool model::unregister()
   clock_unset(m_clock);
 
   m_matchers.clear();
-
-  // we can't register children to parent node
-  // because it might be deleted soon
-  // (when removing root device for example)
-
   m_nodes.clear();
 
   obj_quarantining<model>(this);
@@ -155,6 +151,8 @@ t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* d
         x->set_tags();
       else if ( s == gensym("description") )
         x->set_description();
+      else if ( s == gensym("hidden") )
+        x->set_hidden();
   }
   return 0;
 }
@@ -237,21 +235,10 @@ extern "C" void setup_ossia0x2emodel(void)
   {
     class_addcreator((t_newmethod)model::create,gensym("ø.model"), A_GIMME, 0);
 
+    node_base::declare_attributes(c);
+
     eclass_addmethod(c, (method) obj_dump<model>, "dump", A_NULL, 0);
-    eclass_addmethod(c, (method) object_base::get_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method) object_base::set, "set", A_GIMME, 0);
     eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
-
-    CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, model, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, model, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
-    CLASS_ATTR_INT(c, "priority", 0, parameter, m_priority);
-
-    eclass_addmethod(c, (method) object_base::get_priority,          "getpriority",          A_NULL,  0);
-    eclass_addmethod(c, (method) object_base::get_tags,              "gettags",              A_NULL,  0);
-    eclass_addmethod(c, (method) object_base::get_description,       "getdescription",       A_NULL,  0);
-    eclass_addmethod(c, (method) object_base::get_address,     "getaddress",           A_NULL,  0);
-    eclass_addmethod(c, (method) node_base::preset,            "preset",               A_GIMME, 0);
-
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy

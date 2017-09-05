@@ -12,8 +12,8 @@ namespace max
 
 struct t_view : t_object_base
 {
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(const std::vector<ossia::net::node_base*>& nodes);
+  bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
   bool unregister();
 
   void register_children(t_view* x);
@@ -25,11 +25,7 @@ struct t_view : t_object_base
       unregister();
   }
 
-  static ossia::safe_vector<t_view*>& quarantine()
-  {
-    static ossia::safe_vector<t_view*> quarantine;
-    return quarantine;
-  }
+  static ossia::safe_vector<t_view*>& quarantine();
 };
 
 } // max namespace

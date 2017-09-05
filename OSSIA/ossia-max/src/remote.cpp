@@ -56,7 +56,7 @@ extern "C" void ossia_remote_setup()
         ossia_library.ossia_remote_class, (method)ossia_remote_in_symbol,
         "symbol", A_SYM, 0);
     class_addmethod(
-        ossia_library.ossia_remote_class, (method)ossia_remote_in_anything,
+        ossia_library.ossia_remote_class, (method)t_object_base::push,
         "anything", A_GIMME, 0);
 
   }
@@ -248,17 +248,6 @@ extern "C" void ossia_remote_in_char(t_remote* x, char f)
   ossia_remote_in(x, f);
 }
 
-extern "C" void
-ossia_remote_in_anything(t_remote* x, t_symbol* s, long argc, t_atom* argv)
-{
-  for (auto& m : x->m_matchers)
-  {
-    x->m_node = m.get_node();
-    t_object_base::push(x,s,argc,argv);
-  }
-  x->m_node = nullptr;
-}
-
 namespace ossia
 {
 namespace max
@@ -266,7 +255,7 @@ namespace max
 
 #pragma mark t_remote
 
-bool t_remote::register_node(ossia::net::node_base* node)
+bool t_remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   bool res = do_registration(node);
 
@@ -277,88 +266,69 @@ bool t_remote::register_node(ossia::net::node_base* node)
   else
     object_quarantining<t_remote>(this);
 
-  if (node && m_is_pattern){
-    auto& dev = node->get_device();
+  if (!node.empty() && m_is_pattern){
+    // assume all nodes refer to the same device
+    auto& dev = node[0]->get_device();
     if (&dev != m_dev)
     {
-      if (m_dev) {
-        std::cout << "disconnect " << this << " from " << m_dev << std::endl;
-        m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
-      }
+      if (m_dev) m_dev->on_parameter_created.disconnect<t_remote, &t_remote::on_parameter_created_callback>(this);
       m_dev = &dev;
       m_dev->on_parameter_created.connect<t_remote, &t_remote::on_parameter_created_callback>(this);
-      std::cout << "connecting " << this << " to " << m_dev << std::endl;
     }
   }
 
   return res;
 }
 
-bool t_remote::do_registration(ossia::net::node_base* node)
+bool t_remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
-  if (m_node && m_node->get_parent() == node)
-  {
-    return true; // already registered to this node;
-  }
-
   unregister();
 
-  if (node)
+  std::string name = m_name->s_name;
+
+  for (auto node : _nodes)
   {
-    if (node)
+
+    if (m_addr_scope == address_scope::absolute)
     {
-      std::string name = m_name->s_name;
+      // get root node
+      node = &node->get_device().get_root_node();
+      // and remove starting '/'
+      name = name.substr(1);
+    }
 
-      if ( m_is_pattern )
-      {
-        auto nodes = ossia::net::find_nodes(*node, name);
-        for (auto n : nodes){
-          if (n->get_parameter()){
-            t_matcher matcher{n,this};
-            if (ossia::find(m_matchers,matcher) == m_matchers.end())
-              m_matchers.push_back(std::move(matcher));
-          }
-        }
-      }
-      else
-      {
-        if (m_addr_scope == address_scope::relative)
-        {
-          m_node = ossia::net::find_node(*node, m_name->s_name);
-        }
-        else if (m_addr_scope == address_scope::absolute)
-        {
-          // remove starting '/'
-          std::string addr = std::string(m_name->s_name).substr(1);
-          m_node = ossia::net::find_node(
-                node->get_device().get_root_node(), addr);
-        }
-        else
-        {
-          m_node = ossia::max::find_global_node(m_name->s_name);
-        }
+    m_parent_node = node;
 
+    std::vector<ossia::net::node_base*> nodes{};
+
+    if (m_addr_scope == address_scope::global)
+      nodes = ossia::max::find_global_nodes(name);
+    else
+      nodes = ossia::net::find_nodes(*node, name);
+
+    for (auto n : nodes){
+      if (n->get_parameter()){
+        t_matcher matcher{n,this};
+        m_matchers.push_back(std::move(matcher));
+        m_nodes.push_back(n);
+      } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
-        if (m_node && !m_node->get_parameter()){
-          fmt::MemoryWriter path;
-          path << name << "/" << name;
-          m_node = ossia::net::find_node(*node, path.str());
+        fmt::MemoryWriter path;
+        path << name << "/" << name;
+        auto node = ossia::net::find_node(*n, path.str());
+        if (node){
+          t_matcher matcher{node,this};
+          m_matchers.push_back(std::move(matcher));
+          m_nodes.push_back(n);
         }
-
-        if (m_node && m_node->get_parameter())
-        {
-          t_matcher matcher{m_node,this};
-          if (ossia::find(m_matchers,matcher) == m_matchers.end())
-            m_matchers.push_back(std::move(matcher));
-        }
-        clock_delay(m_regclock, 0);
       }
     }
+    clock_delay(m_regclock, 0);
   }
 
   // do not put it in quarantine if it's a pattern
-  // and even if it can't find any node
+  // and even if it can't find any matching node
   return (!m_matchers.empty() || m_is_pattern);
 }
 
@@ -366,10 +336,10 @@ bool t_remote::unregister()
 {
   clock_unset(m_regclock);
   m_matchers.clear();
+  m_nodes.clear();
 
   object_quarantining<t_remote>(this);
 
-  m_node = nullptr;
   m_parent_node = nullptr;
   return true;
 }
@@ -406,6 +376,12 @@ void t_remote::remote_bind(t_remote* x, t_symbol* address)
   x->unregister();
   max_object_register(x);
 }
+
+ossia::safe_vector<t_remote*>& t_remote::quarantine()
+{
+    return ossia_max::instance().remote_quarantine;
+}
+
 
 } // max namespace
 } // ossia namespace

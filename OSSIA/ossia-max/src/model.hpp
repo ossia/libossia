@@ -13,18 +13,24 @@ namespace max
 struct t_model : t_object_base
 {
   t_symbol* m_tags[64];
-  long m_tags_size;
   t_symbol* m_description;
-  long m_hidden;
+  int m_priority;
+  int m_hidden;
 
-  bool register_node(ossia::net::node_base*);
-  bool do_registration(ossia::net::node_base*);
+  long m_tags_size;
+
+  bool register_node(const std::vector<ossia::net::node_base*>& nodes);
+  bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
   bool unregister();
   void register_children();
 
   void is_deleted(const ossia::net::node_base&);
 
   static ossia::safe_vector<t_model*>& quarantine();
+
+  void set_tags();
+  void set_description();
+  void set_priority();
 };
 
 } // max namespace

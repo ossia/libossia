@@ -38,6 +38,12 @@ extern "C" void ossia_device_setup()
       c, (method)ossia_device_name,
       "name", A_GIMME, 0);
   class_addmethod(
+        c, (method) device_getprotocols,
+        "getprotocols", A_NOTHING, 0);
+  class_addmethod(
+        c, (method) device_stop_expose,
+        "stop", A_FLOAT, 0);
+  class_addmethod(
       c, (method)t_object_base::preset,
       "preset", A_GIMME,  0);
 
@@ -88,7 +94,7 @@ extern "C" void* ossia_device_new(t_symbol* name, long argc, t_atom* argv)
 
     x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->m_name->s_name};
-    x->m_node = &x->m_device->get_root_node();
+    x->m_nodes = {&x->m_device->get_root_node()};
 
     ossia_library.devices.push_back(x);
     t_device::register_children(x);
@@ -237,6 +243,38 @@ extern "C" void ossia_device_name(t_device *x, t_symbol* s, long argc, t_atom* a
   }
 }
 
+extern "C" void device_getprotocols(t_device* x)
+{
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+      x->m_device->get_protocol());
+  auto& protos = multiplex.get_protocols();
+
+  t_atom a;
+  A_SETFLOAT(&a,protos.size());
+  outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
+
+  for (auto& v : x->m_protocols)
+  {
+    t_atom ar[4];
+    for (int i = 0 ; i<v.size() ; i++)
+      ar[i] = v[i];
+
+    outlet_anything(x->m_dumpout, gensym("protocol"), v.size(), ar);
+  }
+}
+
+extern "C" void device_stop_expose(t_device*x, int index)
+{
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+      x->m_device->get_protocol());
+  auto& protos = multiplex.get_protocols();
+
+  if ( index < protos.size() )
+    multiplex.stop_expose_to(*protos[index]);
+  else
+    object_error((t_object*)x, "Index %d out of bound.", index);
+}
+
 namespace ossia
 {
 namespace max
@@ -255,12 +293,12 @@ void t_device::register_children(t_device* x)
     if (child->m_otype == object_class::model)
     {
       t_model* model = (t_model*)child;
-      model->register_node(x->m_node);
+      model->register_node(x->m_nodes);
     }
     else if (child->m_otype == object_class::param)
     {
       t_parameter* parameter = (t_parameter*)child;
-      parameter->register_node(x->m_node);
+      parameter->register_node(x->m_nodes);
     }
   }
 
@@ -272,12 +310,12 @@ void t_device::register_children(t_device* x)
     if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
-      view->register_node(x->m_node);
+      view->register_node(x->m_nodes);
     }
     else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
-      remote->register_node(x->m_node);
+      remote->register_node(x->m_nodes);
     }
   }
 }

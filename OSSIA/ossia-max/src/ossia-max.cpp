@@ -10,6 +10,7 @@
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
 #include <ossia-max/src/utils.hpp>
+#include <ossia-max/src/ossia_object_base.hpp>
 
 #include <commonsyms.h>
 #pragma mark -
@@ -31,16 +32,16 @@ ossia_max::ossia_max():
 ossia_max::~ossia_max()
 {
     for (auto x : views.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+      x->m_matchers.clear();
     }
     for (auto x : remotes.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
+      x->m_matchers.clear();
     }
     for (auto x : models.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+      x->m_matchers.clear();
     }
     for (auto x : parameters.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_parameter, &t_parameter::is_deleted>(x);
+      x->m_matchers.clear();
     }
 }
 
@@ -62,16 +63,14 @@ namespace max
 template <typename T>
 bool max_object_register(T* x)
 {
-  if (x->m_node)
-    return true; // already registered
   if (x->m_dead)
     return false; // object will be removed soon
 
-  ossia::net::node_base* node = nullptr;
+  std::vector<ossia::net::node_base*> nodes{};
 
   if (x->m_addr_scope == address_scope::global)
   {
-    node = ossia::max::find_global_node(x->m_name->s_name);
+    nodes = {ossia::max::find_global_nodes(x->m_name->s_name)};
   }
   else
   {
@@ -92,7 +91,7 @@ bool max_object_register(T* x)
     if (x->m_addr_scope == address_scope::relative)
     {
       // then try to locate a parent view or model
-      if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
       {
         view = (t_view*) find_parent_box_alive(
               &x->m_object, gensym("ossia.view"), start_level, &view_level);
@@ -106,18 +105,18 @@ bool max_object_register(T* x)
     }
 
     if (view)
-      node = view->m_node;
+      nodes = view->m_nodes;
     else if (model)
-      node = model->m_node;
+      nodes = model->m_nodes;
     else if (client)
-      node = client->m_node;
+      nodes = client->m_nodes;
     else if (device)
-      node = device->m_node;
+      nodes = device->m_nodes;
     else
-      node = &ossia_max::get_default_device()->get_root_node();
+      nodes = {&ossia_max::get_default_device()->get_root_node()};
   }
 
-  return x->register_node(node);
+  return x->register_node(nodes);
 }
 
 template bool max_object_register<t_parameter>(t_parameter*);
@@ -269,12 +268,14 @@ template bool object_is_quarantined<t_view>(t_view*);
 template <typename T>
 void object_dump(T* x)
 {
+
+  /*
   t_atom a;
   std::string fullpath;
 
-  if (x->m_node)
+  for (auto node : x->m_nodes)
   {
-    fullpath = ossia::net::address_string_from_node(*x->m_node);
+    fullpath = ossia::net::address_string_from_node(*node);
     atom_setsym(&a, gensym(fullpath.c_str()));
     outlet_anything(x->m_dumpout, gensym("fullpath"), 1, &a);
   }
@@ -287,7 +288,7 @@ void object_dump(T* x)
   atom_setsym(&a, gensym(fullpath.c_str()));
   outlet_anything(x->m_dumpout, gensym("maxpath"), 1, &a);
 
-  if (x->m_node)
+  if (!x->m_nodes.empty())
     atom_setfloat(&a, 1.);
   else
     atom_setfloat(&a, 0.);
@@ -297,9 +298,9 @@ void object_dump(T* x)
   atom_setfloat(&a, object_is_quarantined(x));
   outlet_anything(x->m_dumpout, gensym("quarantined"), 1, &a);
 
-  if (x->m_node)
+  if (!x->m_nodes.empty())
   {
-    ossia::net::parameter_base* address = x->m_node->get_parameter();
+    ossia::net::parameter_base* address = x->m_nodes->get_parameter();
     if (address)
     {
       // type
@@ -408,7 +409,7 @@ void object_dump(T* x)
     }
 
     // description
-    auto description = ossia::net::get_description(*(x->m_node));
+    auto description = ossia::net::get_description(*(x->m_nodes));
     if (description)
     {
       atom_setsym(&a, gensym((*description).c_str()));
@@ -418,7 +419,7 @@ void object_dump(T* x)
       outlet_anything(x->m_dumpout, gensym("tags"), 0, nullptr);
 
     // tags
-    auto tags = ossia::net::get_tags(*x->m_node);
+    auto tags = ossia::net::get_tags(*x->m_nodes);
     if (tags)
     {
       std::size_t N = (*tags).size();
@@ -432,6 +433,7 @@ void object_dump(T* x)
     else
       outlet_anything(x->m_dumpout, gensym("tags"), 0, nullptr);
   }
+  */
 }
 
 template void object_dump<t_parameter>(t_parameter*);
@@ -522,7 +524,7 @@ t_object_base* find_parent_box_alive(
 }
 
 std::vector<t_object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname)
+    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev)
 {
   t_symbol* subclassname = classname == gensym("ossia.model")
                                ? gensym("ossia.parameter")
@@ -530,17 +532,46 @@ std::vector<t_object_base*> find_children_to_register(
 
   std::vector<t_object_base*> found;
   t_object* next_box;
+  bool found_model = false;
+  bool found_view = false;
 
   // 1: look for [classname] objects into the patcher
   next_box = object_attr_getobj(patcher, _sym_firstobject);
 
   while (next_box)
   {
-    if (object_attr_getsym(next_box, _sym_maxclass) == classname)
+    t_symbol* current = object_attr_getsym(next_box, _sym_maxclass);
+    if (current == classname)
     {
       t_object* object_box = NULL;
       object_obex_lookup(object, gensym("#B"), &object_box);
 
+      // the object itself cannot be stored into the hierachy
+      if (next_box != object_box && next_box != nullptr)
+      {
+        t_object_base* o = (t_object_base*) jbox_get_object(next_box);
+
+        // ignore dying object
+        if (!o->m_dead)
+          found.push_back(o);
+      }
+    }
+
+    // if we're looking for ossia.view but found a model, remind it
+    if ( classname == gensym("ossia.view")
+         && current == gensym("ossia.model") )
+      found_model = true;
+    else if ( classname == gensym("ossia.model")
+              && current == gensym("ossia.view") )
+      found_view = true;
+
+    // if there is a client or device in the current patcher
+    // don't register anything
+    if ( found_dev
+         && (current == gensym("ossia.device") || current == gensym("ossia.client")) )
+    {
+      t_object* object_box = NULL;
+      object_obex_lookup(object, gensym("#B"), &object_box);
       // the object itself cannot be stored into the hierachy
       if (next_box != object_box && next_box != nullptr)
       {
@@ -571,13 +602,13 @@ std::vector<t_object_base*> find_children_to_register(
           || next_box_classname == _sym_bpatcher)
       {
         t_object* patcher = jbox_get_object(next_box);
-
+        bool _found_dev = false;
         std::vector<t_object_base*> found_tmp
-            = find_children_to_register(object, patcher, classname);
+            = find_children_to_register(object, patcher, classname, &_found_dev);
 
-        for (auto obj : found_tmp)
+        if (!_found_dev)
         {
-          found.push_back(obj);
+          found.insert(found.end(),found_tmp.begin(), found_tmp.end());
         }
       }
 
@@ -589,7 +620,9 @@ std::vector<t_object_base*> find_children_to_register(
 
     while (next_box)
     {
-      if (object_attr_getsym(next_box, _sym_maxclass) == subclassname)
+      t_symbol* current = object_attr_getsym(next_box, _sym_maxclass);
+      if (current == subclassname
+          || ( !found_view && current == gensym("ossia.remote") ) )
       {
         t_object* object_box = NULL;
         object_obex_lookup(object, gensym("#B"), &object_box);

@@ -1,6 +1,6 @@
-
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
@@ -137,8 +137,6 @@ extern "C" void* ossia_parameter_new(t_symbol* s, long argc, t_atom* argv)
         = outlet_new(x, NULL); // anything outlet to dump parameter state
 
     x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
-
-    x->m_node = nullptr;
 
     // initialize attributes
     atom_setfloat(&x->m_range[0], 0.);
@@ -297,31 +295,31 @@ namespace max
 #pragma mark -
 #pragma mark t_parameter structure functions
 
-bool t_parameter::register_node(ossia::net::node_base* node)
+bool t_parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
-
+  bool res = do_registration(nodes);
   if (res)
   {
     object_dequarantining<t_parameter>(this);
-
     for (auto remote : t_remote::quarantine().copy())
+    {
       max_object_register<t_remote>(static_cast<t_remote*>(remote));
+    }
   }
   else
-    object_quarantining(this);
+    object_quarantining<t_parameter>(this);
 
   return res;
 }
 
-bool t_parameter::do_registration(ossia::net::node_base* node)
+bool t_parameter::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
-  if (!node)
-    return false;
 
+  for (auto node : _nodes)
+  {
   m_parent_node = node;
 
   auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
@@ -337,9 +335,9 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
     else
     {
       object_error(
-            (t_object*) this,
-            "type should one of: float, symbol, int, "
-            "vec2f, vec3f, vec4f, bool, list, char");
+            (t_object*)this,
+            "type should one of: float, symbol, int, vec2f, "
+            "vec3f, vec4f, bool, list, char");
     }
     if (!local_param)
       return false;
@@ -356,6 +354,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
     t_matcher matcher{n,this};
     m_matchers.push_back(std::move(matcher));
+    m_nodes.push_back(n);
   }
 
   set_description();
@@ -366,6 +365,7 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
   set_range();
   set_minmax();
   set_default();
+  }
 
   clock_delay(m_clock, 0);
 
@@ -374,30 +374,20 @@ bool t_parameter::do_registration(ossia::net::node_base* node)
 
 bool t_parameter::unregister()
 {
-  if (m_node)
+  clock_unset(m_clock);
+
+  m_matchers.clear();
+  m_nodes.clear();
+
+  for (auto remote : t_remote::quarantine().copy())
   {
-    if (m_node->get_parent())
-      m_node->get_parent()->remove_child(*m_node);
-
-    m_node = nullptr;
-
-    for (auto remote : t_remote::quarantine().copy())
-      max_object_register<t_remote>(static_cast<t_remote*>(remote));
+    max_object_register<t_remote>(static_cast<t_remote*>(remote));
   }
 
   object_quarantining(this);
 
   return true;
 }
-
-void t_parameter::is_deleted(const ossia::net::node_base& n)
-{
-  m_node->about_to_be_deleted
-      .disconnect<t_parameter, &t_parameter::is_deleted>(this);
-  m_node = nullptr;
-  object_quarantining<t_parameter>(this);
-}
-
 
 void t_parameter::set_access_mode()
 {
@@ -601,46 +591,62 @@ void t_parameter::set_range()
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    if ( param->get_value_type() == ossia::val_type::STRING )
+    switch(param->get_value_type())
     {
-      std::vector<std::string> senum;
-      for ( int i = 0; i < m_range_size; i++)
-      {
-        if (m_range[i].a_type == A_SYM)
-          senum.push_back(m_range[i].a_w.w_sym->s_name);
-        else if (m_range[i].a_type == A_FLOAT)
+      case ossia::val_type::INT:
+      case ossia::val_type::FLOAT:
+      case ossia::val_type::CHAR:
+      case ossia::val_type::STRING:
+      case ossia::val_type::LIST:
+      case ossia::val_type::VEC2F:
+      case ossia::val_type::VEC3F:
+      case ossia::val_type::VEC4F:
         {
-          std::stringstream ss;
-          ss << m_range[i].a_w.w_float;
-          senum.push_back(ss.str());
-        }
-        else
-          break;
-      }
-      param->set_domain(make_domain(senum));
-    }
-    else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
-    {
-      switch( param->get_value_type() )
-      {
-        case ossia::val_type::INT:
-        case ossia::val_type::FLOAT:
-        case ossia::val_type::CHAR:
-          param->set_domain(
-                ossia::make_domain(m_range[0].a_w.w_float,m_range[1].a_w.w_float));
-          break;
-        default:
+
+          if ( param->get_value_type() == ossia::val_type::STRING )
           {
-            std::vector<ossia::value> omin, omax;
-            // TODO check param size
-            std::array<float, OSSIA_MAX_MAX_ATTR_SIZE> min, max;
-            min.fill(m_range[0].a_w.w_float);
-            max.fill(m_range[1].a_w.w_float);
-            omin.assign(min.begin(), min.end());
-            omax.assign(max.begin(), max.end());
-            param->set_domain(ossia::make_domain(omin,omax));
+            std::vector<std::string> senum;
+            for ( int i = 0; i < m_range_size; i++)
+            {
+              if (m_range[i].a_type == A_SYM)
+                senum.push_back(m_range[i].a_w.w_sym->s_name);
+              else if (m_range[i].a_type == A_FLOAT)
+              {
+                std::stringstream ss;
+                ss << m_range[i].a_w.w_float;
+                senum.push_back(ss.str());
+              }
+              else
+                break;
+            }
+            param->set_domain(make_domain(senum));
           }
-      }
+          else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
+          {
+            switch( param->get_value_type() )
+            {
+              case ossia::val_type::INT:
+              case ossia::val_type::FLOAT:
+              case ossia::val_type::CHAR:
+                param->set_domain(
+                      ossia::make_domain(m_range[0].a_w.w_float,m_range[1].a_w.w_float));
+                break;
+              default:
+                {
+                  std::vector<ossia::value> omin, omax;
+                  // TODO check param size
+                  std::array<float, OSSIA_MAX_MAX_ATTR_SIZE> min, max;
+                  min.fill(m_range[0].a_w.w_float);
+                  max.fill(m_range[1].a_w.w_float);
+                  omin.assign(min.begin(), min.end());
+                  omax.assign(max.begin(), max.end());
+                  param->set_domain(ossia::make_domain(omin,omax));
+                }
+            }
+          }
+        }
+      default:
+        ;
     }
   }
 }
@@ -753,8 +759,7 @@ void t_parameter::set_default()
 
 ossia::safe_vector<t_parameter*>& t_parameter::quarantine()
 {
-  static ossia::safe_vector<t_parameter*> quarantine;
-  return quarantine;
+  return ossia_max::instance().parameter_quarantine;
 }
 
 } // max namespace

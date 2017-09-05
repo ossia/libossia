@@ -1,9 +1,13 @@
 #pragma once
-#include "ossia-max.hpp"
-#include <ossia/detail/safe_vec.hpp>
-#include <ossia/ossia.hpp>
-#include <ossia/network/generic/generic_device.hpp>
+#include "ext.h"
 
+#include <ossia/detail/safe_vec.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/network/base/value_callback.hpp>
+#include <ossia/detail/callback_container.hpp>
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
 
@@ -53,7 +57,6 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
-
 private:
   ossia::net::node_base* node{};
   t_object_base* parent{};
@@ -92,7 +95,7 @@ struct t_object_base
   ossia::optional<ossia::unit_t> m_ounit;
 
   ossia::net::generic_device* m_device{};
-  ossia::net::node_base* m_node{};
+  std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
 

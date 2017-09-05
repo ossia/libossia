@@ -131,6 +131,7 @@ void device::unregister_children()
 {
   std::vector<object_base*> node
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+
   for (auto v : node)
   {
     if (v->m_otype == object_class::model)
@@ -367,10 +368,11 @@ extern "C" void setup_ossia0x2edevice(void)
   {
     class_addcreator((t_newmethod)device::create,gensym("ø.device"), A_GIMME, 0);
 
+    device_base::declare_attributes(c);
+
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)device::register_children,"register", A_NULL, 0);
-    eclass_addmethod(c, (method) object_base::get_namespace, "namespace", A_NULL, 0);
     eclass_addmethod(c, (method) device::expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
@@ -378,7 +380,6 @@ extern "C" void setup_ossia0x2edevice(void)
 
     eclass_addmethod(c, (method) device::getprotocols, "getprotocols", A_NULL, 0);
     eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
-    eclass_addmethod(c, (method) node_base::preset, "preset", A_GIMME, 0);
   }
 
   ossia_pd::device_class = c;

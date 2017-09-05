@@ -158,13 +158,6 @@ public:
   static bool find_and_display_friend(object_base* x);
 
   /**
-   * @brief obj_namespace send the namespace through dump outlet
-   * @note only relevant for client, device, model and view objects.
-   * @param x
-   */
-  static void get_namespace(object_base* x);
-
-  /**
    * @brief set Set the parameter value from Pd patcher
    * @param x
    * @param s
@@ -178,6 +171,7 @@ public:
    * @param x
    */
   static void get_address(object_base *x);
+
 };
 
 }

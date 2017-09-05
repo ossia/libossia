@@ -6,6 +6,7 @@
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
 #include <sstream>
+
 namespace ossia
 {
 namespace pd
@@ -199,23 +200,51 @@ void parameter::set_unit()
 
 void parameter::get_unit(parameter*x)
 {
-  t_atom a;
-  SETSYMBOL(&a,x->m_unit);
-  outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+    x->m_unit = gensym(unit.c_str());
+
+    t_atom a;
+    SETSYMBOL(&a, x->m_unit);
+    outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+  }
 }
 
 void parameter::get_mute(parameter*x)
 {
-  t_atom a;
-  SETFLOAT(&a,x->m_mute);
-  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    x->m_mute = param->get_muted();
+
+    t_atom a;
+    SETFLOAT(&a, x->m_mute);
+    outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+  }
 }
 
 void parameter::get_rate(parameter*x)
 {
-  t_atom a;
-  SETFLOAT(&a,x->m_rate);
-  outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto rate = ossia::net::get_refresh_rate(*node);
+
+    if (rate)
+    {
+      x->m_rate = *rate;
+
+      t_atom a;
+      SETFLOAT(&a, x->m_rate);
+      outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+    }
+  }
 }
 
 t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
@@ -294,8 +323,6 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) obj_dump<parameter>,   "dump",     A_NULL,  0);
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
@@ -315,8 +342,6 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter::get_unit,              "getunit",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter::get_mute,              "getmute",              A_NULL, 0);
     eclass_addmethod(c, (method) parameter::get_rate,              "getrate",              A_NULL, 0);
-
-    eclass_addmethod(c, (method) object_base::get_address,                 "getaddress",           A_NULL, 0);
 
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy

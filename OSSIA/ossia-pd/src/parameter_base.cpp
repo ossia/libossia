@@ -319,6 +319,7 @@ void parameter_base::set_default()
 
 void parameter_base::get_range(parameter_base*x)
 {
+  // TODO how to get min/max/range from domain ?
   outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
 }
 
@@ -514,6 +515,9 @@ void parameter_base::output_value(object_base* x)
 void parameter_base::declare_attributes(t_eclass* c)
 {
   object_base :: declare_attributes(c);
+
+  eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
+  eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);
 
   CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
   eclass_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NULL, 0);

@@ -81,7 +81,6 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
         = outlet_new(x, NULL); // anything outlet to dump client state
 
     x->m_device = 0;
-    x->m_node = 0;
 
     x->m_otype = object_class::client;
 
@@ -399,12 +398,12 @@ void t_client::register_children(t_client* x)
     if (child->m_otype == object_class::view)
     {
       t_view* view = (t_view*)child;
-      view->register_node(x->m_node);
+      view->register_node(x->m_nodes);
     }
     else if (child->m_otype == object_class::remote)
     {
       t_remote* remote = (t_remote*)child;
-      remote->register_node(x->m_node);
+      remote->register_node(x->m_nodes);
     }
   }
 }
@@ -458,7 +457,7 @@ void t_client::update(t_client* x)
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_node = &x->m_device->get_root_node();
+    x->m_nodes = {&x->m_device->get_root_node()};
 
     t_client::register_children(x);
   }

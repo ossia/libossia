@@ -140,6 +140,11 @@ void remote::set_unit()
   }
 }
 
+void remote::set_rate()
+{
+  m_rate = m_rate < m_rate_min ? m_rate_min : m_rate;
+}
+
 void remote::get_unit(remote*x)
 {
   t_atom a;
@@ -185,6 +190,8 @@ t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void*
         obj_register(x);
     else if ( s == gensym("enable") )
       x->set_enable();
+    else if ( s == gensym("rate") )
+      x->set_rate();
   }
   return {};
 }
@@ -308,7 +315,6 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
     t_atom a;
     SETFLOAT(&a,x->m_rate);
     outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-
   }
   parameter_base::update_attribute(x, attribute);
 }
@@ -324,13 +330,10 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote::create,gensym("ø.remote"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) parameter_base::push,   "anything",    A_GIMME,  0);
-    eclass_addmethod(c, (method) parameter_base::bang,   "bang",        A_NULL,   0);
-    eclass_addmethod(c, (method) obj_dump<remote>,       "dump",        A_NULL,   0);
+    eclass_addmethod(c, (method) obj_dump<remote>,        "dump",        A_NULL,   0);
     eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
-    eclass_addmethod(c, (method) object_base::get_address,        "getaddress",  A_NULL,   0);
 
     CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
     CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);

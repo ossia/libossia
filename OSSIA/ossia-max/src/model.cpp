@@ -138,9 +138,9 @@ namespace max
 #pragma mark -
 #pragma mark t_model structure functions
 
-bool t_model::register_node(ossia::net::node_base* node)
+bool t_model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
+  bool res = do_registration(nodes);
 
   if (res)
   {
@@ -152,51 +152,84 @@ bool t_model::register_node(ossia::net::node_base* node)
   return res;
 }
 
-bool t_model::do_registration(ossia::net::node_base* node)
+bool t_model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 {
-  // already register to this node
-  if (m_node && m_node->get_parent() == node)
-    return true;
-
   // we should unregister here because we may have add a node between the
   // registered node and the parameter
   unregister();
 
-  if (!node)
-    return false;
+  std::string name(m_name->s_name);
 
-  // check if a node with the same name already exists to avoid
-  // auto-incrementing name
-  if (node->find_child(m_name->s_name))
+  for (auto node : nodes)
   {
-    std::vector<t_object_base*> children_model = find_children_to_register(
-        &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
-    for (auto child : children_model)
+    m_parent_node = node;
+
+    if (node->find_child(name))
     {
-      if (child->m_otype == object_class::param)
-      {
-        t_parameter* parameter = (t_parameter*)child;
+      // TODO : check if node has a parameter
+      // in that case it is an ø.param, with no doubts
+      // then remove it (and associated ø.param
+      // and ø.remote will be unregistered automatically)
 
-        // if we already have a t_parameter node of that name, unregister it
-        // we will register it again after node creation
-        if (parameter->m_name == m_name)
+      // we have to check if a node with the same name already exists to avoid
+      // auto-incrementing name
+      std::vector<t_object_base*> obj = find_children_to_register(
+            &m_object, get_patcher(&m_object), gensym("ossia.model"));
+      for (auto v : obj)
+      {
+        if (v->m_otype == object_class::param)
         {
-          parameter->unregister();
-          continue;
+          t_parameter* param = (t_parameter*)v;
+          if (std::string(param->m_name->s_name) == name)
+          {
+            // if we already have a t_param node of that
+            // name, unregister it
+            // we will register it again after node creation
+            param->unregister();
+            continue;
+          }
         }
       }
     }
+
+    m_nodes = ossia::net::create_nodes(*node, name);
+    for (auto n : m_nodes)
+    {
+      t_matcher m{n,this};
+      m_matchers.push_back(std::move(m));
+    }
+
+    set_priority();
+    set_description();
+    set_tags();
+
   }
 
-  m_node = &ossia::net::create_node(*node, m_name->s_name);
-  m_node->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
-
-  ossia::net::set_description(*m_node, m_description->s_name);
-  ossia::net::set_tags(*m_node, parse_tags_symbol(m_tags, m_tags_size));
-  ossia::net::set_hidden(*m_node, m_hidden != 0);
-
   return true;
+}
+
+void t_model::set_priority()
+{
+  // TODO why this doesn't work
+  for (auto n : m_nodes)
+    ossia::net::set_priority(*n, m_priority);
+}
+
+void t_model::set_description()
+{
+  for (auto n : m_nodes)
+    ossia::net::set_description(*n, m_description->s_name);
+}
+
+void t_model::set_tags()
+{
+  std::vector<std::string> tags;
+  for (int i = 0; i < m_tags_size; i++)
+    tags.push_back(m_tags[i]->s_name);
+
+  for (auto n : m_nodes)
+    ossia::net::set_tags(*n, tags);
 }
 
 void t_model::register_children()
@@ -216,13 +249,13 @@ void t_model::register_children()
       if (model == this)
         continue;
 
-      model->register_node(m_node);
+      model->register_node(m_nodes);
     }
     else if (child->m_otype == object_class::param)
     {
       t_parameter* parameter = (t_parameter*)child;
 
-      parameter->register_node(m_node);
+      parameter->register_node(m_nodes);
     }
   }
 
@@ -242,18 +275,8 @@ bool t_model::unregister()
 {
   if (m_regclock) clock_unset(m_regclock);
 
-  // not registered
-  if (!m_node)
-    return true;
-
-  m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
-
-  if (m_node && m_node->get_parent())
-    m_node->get_parent()->remove_child(*m_node); // this calls isDeleted() on
-                                                 // each registered child and
-                                                 // put them into quarantine
-
-  m_node = nullptr;
+  m_matchers.clear();
+  m_nodes.clear();
 
   object_quarantining<t_model>(this);
 
@@ -262,24 +285,9 @@ bool t_model::unregister()
   return true;
 }
 
-void t_model::is_deleted(const ossia::net::node_base& n)
-{
-  if (!m_dead)
-  {
-    if (m_node)
-    {
-      m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(
-        this);
-      m_node = nullptr;
-    }
-    object_quarantining<t_model>(this);
-  }
-}
-
 ossia::safe_vector<t_model*>& t_model::quarantine()
 {
-  static ossia::safe_vector<t_model*> quarantine;
-  return quarantine;
+  return ossia_max::instance().model_quarantine;
 }
 
 } // max namespace

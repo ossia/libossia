@@ -244,14 +244,11 @@ extern "C" void setup_ossia0x2eview(void)
   {
     class_addcreator((t_newmethod)view::create,gensym("ø.view"), A_GIMME, 0);
 
+    node_base::declare_attributes(c);
+
     eclass_addmethod(c, (method) obj_dump<view>,                "dump",          A_NULL,   0);
     eclass_addmethod(c, (method) view::click,                    "click",         A_NULL,   0);
     eclass_addmethod(c, (method) view::bind,                     "bind",          A_SYMBOL, 0);
-    eclass_addmethod(c, (method) object_base::get_namespace,    "namespace",     A_NULL,   0);
-    eclass_addmethod(c, (method) object_base::set,              "set",           A_GIMME,  0);
-    eclass_addmethod(c, (method) object_base::get_address,               "getaddress",    A_NULL,   0);
-    eclass_addmethod(c, (method) node_base::preset,                    "preset",        A_GIMME,  0);
-
   }
 
   ossia_pd::view_class = c;
