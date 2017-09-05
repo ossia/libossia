@@ -180,11 +180,15 @@ void t_matcher::output_value()
           val,
           param->get_bounding());
 
+    ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
+
     ossia::value converted;
-    if ( parent->m_ounit != ossia::none )
-      converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
-    else
+    if ( x->m_ounit != ossia::none )
+    {
+      converted = ossia::convert(filtered, param->get_unit(), *x->m_ounit);
+    } else {
       converted = filtered;
+    }
 
     value_visitor<object_base> vm;
     vm.x = (object_base*)parent;

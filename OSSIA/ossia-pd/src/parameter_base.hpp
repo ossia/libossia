@@ -56,6 +56,7 @@ public:
   long m_min_size{};
   long m_max_size{};
 
+  ossia::optional<ossia::unit_t> m_ounit;
 
   /**
    * @brief t_obj_base::push : push a value to a node

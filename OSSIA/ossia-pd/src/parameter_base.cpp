@@ -29,11 +29,11 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
   } else if ( attribute == ossia::net::text_bounding_mode() ){
     get_bounding_mode(x);
   } else if ( attribute == ossia::net::text_disabled() ){
-    logpost(x,2,"update enable attribute");
+    get_enable(x);
   } else if ( attribute == ossia::net::text_repetition_filter() ){
-    logpost(x,2,"update repetition_filter attribute");
+    get_repetition_filter(x);
   } else if ( attribute == ossia::net::text_default_value() ) {
-    logpost(x, 2, "update default value");
+    get_default(x);
   } else {
     object_base::update_attribute((node_base*)x, attribute);
   }
@@ -185,6 +185,7 @@ void parameter_base::set_range()
       }
       param->set_domain(make_domain(senum));
     }
+
     else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
     {
       switch( param->get_value_type() )
@@ -453,18 +454,20 @@ void parameter_base::push(object_base* x, t_symbol* s, int argc, t_atom* argv)
           else if (argv->a_type == A_FLOAT)
             v = ossia::value(atom_getfloat(argv));
 
-          ossia::value vv;
+          ossia::value converted;
 
-          if ( parent->m_ounit != ossia::none )
+          ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
+
+          if ( x->m_ounit != ossia::none )
           {
-            auto src_unit = *parent->m_ounit;
+            auto src_unit = *x->m_ounit;
             auto dst_unit = param->get_unit();
 
-            vv = ossia::convert(v, src_unit, dst_unit);
+            converted = ossia::convert(v, src_unit, dst_unit);
           } else
-            vv = v;
+            converted = v;
 
-          node->get_parameter()->push_value(vv);
+          node->get_parameter()->push_value(converted);
         }
         else
         {
@@ -482,12 +485,19 @@ void parameter_base::push(object_base* x, t_symbol* s, int argc, t_atom* argv)
             else
               pd_error(x, "value type not handled");
           }
-          auto src_unit = *parent->m_ounit;
-          auto dst_unit = param->get_unit();
 
-          ossia::convert(list, src_unit, dst_unit);
+          ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
 
-          node->get_parameter()->push_value(list);
+          if ( xparam->m_ounit != ossia::none )
+          {
+            auto src_unit = *xparam->m_ounit;
+            auto dst_unit = param->get_unit();
+
+            auto converted = ossia::convert(list, src_unit, dst_unit);
+            node->get_parameter()->push_value(converted);
+          } else {
+            node->get_parameter()->push_value(list);
+          }
         }
       }
     }

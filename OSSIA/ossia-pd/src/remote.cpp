@@ -136,7 +136,27 @@ void remote::set_unit()
     if (unit)
       m_ounit = unit;
     else
+    {
       pd_error(this, "wrong unit: %s", m_unit->s_name);
+      m_ounit = ossia::none;
+      m_unit = gensym("");
+      return;
+    }
+
+    if ( !m_matchers.empty() )
+    {
+      auto dst_unit = m_matchers[0].get_node()->get_parameter()->get_unit();
+      if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
+        auto src = ossia::get_pretty_unit_text(*m_ounit);
+        auto dst = ossia::get_pretty_unit_text(dst_unit);
+        pd_error(this, "sorry I don't know how to convert '%s' into '%s'",
+                 src.c_str(), dst.c_str() );
+        m_ounit = ossia::none;
+        m_unit = gensym("");
+      }
+    }
+  } else {
+    m_ounit = ossia::none;
   }
 }
 
@@ -170,13 +190,6 @@ void remote::get_rate(remote*x)
   outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
 }
 
-void remote::get_enable(remote*x)
-{
-  t_atom a;
-  SETFLOAT(&a,x->m_enable);
-  outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
-}
-
 t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
@@ -188,8 +201,6 @@ t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void*
         x->unregister();
       else
         obj_register(x);
-    else if ( s == gensym("enable") )
-      x->set_enable();
     else if ( s == gensym("rate") )
       x->set_rate();
   }
@@ -315,8 +326,22 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
     t_atom a;
     SETFLOAT(&a,x->m_rate);
     outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+  } else if ( attribute == ossia::net::text_unit()) {
+    // assume all matchers have the same bounding_mode
+    ossia::pd::t_matcher& m = x->m_matchers[0];
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
+    {
+      x->m_ounit = param->get_unit();
+      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+      x->m_unit = gensym(unit.c_str());
+    }
+
+  } else {
+    parameter_base::update_attribute(x, attribute);
   }
-  parameter_base::update_attribute(x, attribute);
 }
 
 extern "C" void setup_ossia0x2eremote(void)
