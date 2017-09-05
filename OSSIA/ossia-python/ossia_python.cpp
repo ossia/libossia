@@ -158,7 +158,7 @@ struct to_python_value
     vec.reserve(N);
 
     for (const auto& i : v)
-      vec.push_back(i;
+      vec.push_back(i);
 
     return py::cast(vec);
   }
