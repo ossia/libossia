@@ -8,11 +8,6 @@ namespace ossia
 namespace max
 {
 
-node_base::node_base(t_class* x)
-  : object_base{x}
-{ }
-
-
 void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
 {
   ossia::net::node_base* node{};
@@ -146,6 +141,14 @@ void node_base::get_namespace(node_base* x)
     }
   }
 }
+
+void node_base::declare_attributes(t_class* c)
+{
+  object_base::declare_attributes(c);
+  class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
+  class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
+}
+
 
 } // namespace max
 } // namespace ossia

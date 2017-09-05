@@ -12,8 +12,6 @@ namespace max
 class model : public node_base
 {
 public:
-  model();
-
   bool register_node(const std::vector<ossia::net::node_base*>& nodes);
   bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
   bool unregister();

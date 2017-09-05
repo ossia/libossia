@@ -32,19 +32,6 @@ extern "C" void ossia_model_setup()
   ossia_library.ossia_model_class = c;
 }
 
-extern "C" void
-ossia_model_assist(model* x, void* b, long m, long a, char* s)
-{
-  if (m == ASSIST_INLET)
-  {
-    sprintf(s, "I am inlet %ld", a);
-  }
-  else
-  {
-    sprintf(s, "I am outlet %ld", a);
-  }
-}
-
 namespace ossia
 {
 namespace max
@@ -126,8 +113,17 @@ void model::destroy(model* x)
   x->~model();
 }
 
-#pragma mark -
-#pragma mark t_model structure functions
+void model::assist(model* x, void* b, long m, long a, char* s)
+{
+  if (m == ASSIST_INLET)
+  {
+    sprintf(s, "I am inlet %ld", a);
+  }
+  else
+  {
+    sprintf(s, "I am outlet %ld", a);
+  }
+}
 
 bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {

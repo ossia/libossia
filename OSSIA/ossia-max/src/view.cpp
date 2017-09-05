@@ -19,7 +19,7 @@ extern "C" void ossia_view_setup()
   if (c)
   {
     class_addmethod(
-          c,(method)view::view_bind, "bind", A_SYM, 0);
+          c,(method)view::bind, "bind", A_SYM, 0);
 
 
     //        class_addmethod(c,
@@ -279,7 +279,7 @@ bool view::unregister()
   return true;
 }
 
-void view::view_bind(view* x, t_symbol* address)
+void view::bind(view* x, t_symbol* address)
 {
   x->m_name = address;
   x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);

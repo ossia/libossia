@@ -57,9 +57,6 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark Templates
-
 template <typename T>
 bool max_object_register(T* x)
 {

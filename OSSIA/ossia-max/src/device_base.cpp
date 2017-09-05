@@ -8,10 +8,6 @@ namespace ossia
 namespace max
 {
 
-device_base::device_base(t_class* c) :
-  node_base(c)
-{ }
-
 void device_base::on_parameter_created_callback(const ossia::net::parameter_base& param)
 {
   auto& node = param.get_node();

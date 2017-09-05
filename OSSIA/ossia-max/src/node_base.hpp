@@ -9,8 +9,6 @@ namespace max
 class node_base : public object_base
 {
 public:
-  node_base(t_class* x);
-
   static void preset(node_base *x, t_symbol* s, long argc, t_atom* argv);
   static void declare_attributes(t_class* c);
 

@@ -218,8 +218,140 @@ void object_base::set_tags()
     ossia::net::set_tags(*n, tags);
 }
 
+void object_base::set_hidden()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_hidden(*node, m_hidden);
+  }
+}
+
 void object_base::defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv){
   outlet_anything(x->m_set_out, s, argc, argv);
+}
+
+void object_base::update_attribute(object_base* x, ossia::string_view attribute)
+{
+  if ( attribute == ossia::net::text_priority() ){
+    get_priority(x);
+  } else if ( attribute == ossia::net::text_description() ){
+    get_description(x);
+  } else if ( attribute == ossia::net::text_tags() ){
+    get_tags(x);
+  } else if ( attribute == ossia::net::text_hidden() ){
+    get_hidden(x);
+  } else {
+    object_error((t_object*)x, "no attribute %s", std::string(attribute).c_str());
+  }
+}
+
+void object_base::get_tags(object_base*x)
+{
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto optags = ossia::net::get_tags(*node);
+
+    if (optags)
+    {
+      std::vector<std::string> tags = *optags;
+      x->m_tags_size = tags.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : tags.size();
+      for (int i=0; i < x->m_tags_size; i++)
+        x->m_tags[i] = gensym(tags[i].c_str());
+
+      //outlet_anything(x->m_dumpout, gensym("tags"),
+      //                x->m_tags_size, x->m_tags);
+    }
+  }
+}
+
+void object_base::get_description(object_base*x)
+{
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto description = ossia::net::get_description(*node);
+
+    if (description)
+    {
+      std::string str = *description;
+      x->m_description = gensym(str.c_str());
+
+      // outlet_anything(x->m_dumpout, gensym("description"),
+      //                x->m_description_size, x->m_description);
+    }
+  }
+}
+
+void object_base::get_priority(object_base*x)
+{
+  // assume all matchers have the same priority
+  ossia::max::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+
+  auto priority = ossia::net::get_priority(*node);
+  if (priority)
+  {
+    x->m_priority = *priority;
+    /*
+    t_atom a;
+    A_SETFLOAT(&a, x->m_priority);
+    outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
+    */
+  }
+}
+
+void object_base::get_hidden(object_base*x)
+{
+  // assume all matchers have the same bounding_mode
+  ossia::max::t_matcher& m = x->m_matchers[0];
+  ossia::net::node_base* node = m.get_node();
+
+  x->m_hidden = ossia::net::get_hidden(*node);
+
+  // TODO notify object
+}
+
+void object_base::declare_attributes(t_class*c)
+{
+  CLASS_ATTR_LONG(c, "priority", 0, object_base, m_priority);
+
+  CLASS_ATTR_SYM(c, "description", 0, object_base, m_description);
+
+  CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_MAX_MAX_ATTR_SIZE);
+
+  CLASS_ATTR_LONG( c, "hidden", 0, object_base, m_hidden);
+  CLASS_ATTR_STYLE(c, "hidden", 0, "onoff");
+
+  class_addmethod(c, (method) object_base::get_address, "getaddress", A_NOTHING,  0);
+}
+
+void object_base::get_address(object_base *x)
+{
+  if (!x->m_matchers.empty())
+  {
+    t_symbol* sym_address = gensym("global_address");
+    for (auto& m : x->m_matchers)
+    {
+      std::string addr = ossia::net::address_string_from_node(*m.get_node());
+      t_atom a;
+      A_SETSYM(&a, gensym(addr.c_str()));
+      outlet_anything(x->m_dumpout, sym_address, 1, &a);
+    }
+  }
+  else if (!x->m_nodes.empty())
+  {
+    for (auto n : x->m_nodes)
+    {
+      std::string addr = ossia::net::address_string_from_node(*n);
+      t_atom a;
+      A_SETSYM(&a, gensym(addr.c_str()));
+      outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
+    }
+  }
+  else
+    outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
 }
 
 } // max namespace

@@ -8,14 +8,9 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark t_device structure declaration
-
 class device : public device_base
 {
 public:
-  device();
-
   static void register_children(device*);
   void unregister_children();
   static void loadbang(device*);
@@ -35,9 +30,6 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);
 };
-
-#pragma mark -
-#pragma mark protocol setting stuctures declaration
 
 namespace protocol_settings
 {

@@ -8,18 +8,15 @@
 
 using namespace ossia::max;
 
-#pragma mark -
-#pragma mark ossia_parameter class methods
-
 extern "C" void ossia_parameter_setup()
 {
-  auto& ossia_library = ossia_max::instance();
-
   // instantiate the ossia.parameter class
   auto c = class_new(
       "ossia.parameter", (method)parameter::create,
       (method)parameter::destroy, (long)sizeof(ossia::max::parameter), 0L,
       A_GIMME, 0);
+
+  parameter_base::declare_attributes(c);
 
   class_addmethod(
       c, (method)parameter::assist,
@@ -27,13 +24,9 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
+  class_addmethod(c, (method) parameter::push_default_value, "reset", A_NOTHING,  0);
 
   // TODO add a reset method
-
-  CLASS_ATTR_SYM(
-      c, "type", 0, parameter, m_type);
-  CLASS_ATTR_ENUM (
-      c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
 
   CLASS_ATTR_SYM(
       c, "unit", 0, parameter, m_unit);
@@ -41,68 +34,19 @@ extern "C" void ossia_parameter_setup()
       c, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h");
   //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
 
-  CLASS_ATTR_SYM(
-      c, "bounding_mode", 0, parameter,
-      m_bounding_mode);
-  CLASS_ATTR_ENUM (
-      c, "bounding_mode", 0, "free clip wrap fold low high");
-
-  CLASS_ATTR_SYM(
-      c, "access_mode", 0, parameter,
-      m_access_mode);
-  CLASS_ATTR_ENUM (
-      c, "access_mode", 0, "bi get set");
-
-  CLASS_ATTR_SYM(
-      c, "description", 0, parameter,
-      m_description);
-
-  CLASS_ATTR_SYM_VARSIZE(
-      c, "tags", 0, parameter, m_tags, m_tags_size, 64);
-
-  CLASS_ATTR_ATOM_VARSIZE(
-      c, "default", 0, parameter,
-      m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
-
-  CLASS_ATTR_ATOM_VARSIZE(
-      c, "range", 0, parameter,
-      m_range, m_range_size, OSSIA_MAX_MAX_ATTR_SIZE);
-
-  CLASS_ATTR_ATOM_VARSIZE(
-      c, "min", 0, parameter,
-      m_min, m_min_size, OSSIA_MAX_MAX_ATTR_SIZE);
-
-  CLASS_ATTR_ATOM_VARSIZE(
-      c, "max", 0, parameter,
-      m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
-
-  // TODO add enum for boolean param
-  CLASS_ATTR_LONG(
-      c, "repetition_filter", 0, parameter,
-      m_repetition_filter);
+  CLASS_ATTR_FLOAT(
+        c, "rate", 0, parameter, m_rate);
 
   CLASS_ATTR_LONG(
-      c, "priority", 0, parameter,
-      m_priority);
-
-  CLASS_ATTR_LONG(
-      c, "hidden", 0, parameter,
-      m_hidden);
-
-  CLASS_ATTR_LONG(
-      c, "enable", 0, parameter,
-      m_hidden);
-
+        c, "mute", 0, parameter, m_mute);
   CLASS_ATTR_STYLE(
-      c, "repetition_filter", 0, "onoff");
-  CLASS_ATTR_STYLE(
-      c, "hidden", 0, "onoff");
-  CLASS_ATTR_STYLE(
-      c, "enable", 0, "onoff");
+      c, "mute", 0, "onoff");
 
   class_register(CLASS_BOX, c);
 
+  auto& ossia_library = ossia::max::ossia_max::instance();
   ossia_library.ossia_parameter_class = c;
+
 }
 
 namespace ossia
@@ -112,7 +56,7 @@ namespace max
 
 void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia_max::instance();
+  auto& ossia_library = ossia::max::ossia_max::instance();
   auto place = object_alloc(ossia_library.ossia_parameter_class);
   parameter* x = new(place) parameter();
 
@@ -189,8 +133,7 @@ void parameter::destroy(parameter* x)
   x->~parameter();
 }
 
-extern "C" void
-ossia_parameter_assist(parameter* x, void* b, long m, long a, char* s)
+void parameter::assist(parameter* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
@@ -212,8 +155,7 @@ ossia_parameter_assist(parameter* x, void* b, long m, long a, char* s)
   }
 }
 
-extern "C" t_max_err
-ossia_parameter_notify(parameter *x, t_symbol *s,
+t_max_err parameter::notify(parameter *x, t_symbol *s,
                        t_symbol *msg, void *sender, void *data)
 {
   t_symbol *attrname;
@@ -354,114 +296,6 @@ bool parameter::unregister()
   return true;
 }
 
-void parameter::set_access_mode()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    auto param = node->get_parameter();
-
-    std::string access_mode = m_access_mode->s_name;
-    ossia::transform(access_mode, access_mode.begin(), ::tolower);
-    m_access_mode = gensym(access_mode.c_str());
-
-    if (access_mode == "bi" || access_mode == "rw")
-      param->set_access(ossia::access_mode::BI);
-    else if (access_mode == "get" || access_mode == "r")
-      param->set_access(ossia::access_mode::GET);
-    else if (access_mode == "set" || access_mode == "w")
-      param->set_access(ossia::access_mode::SET);
-    else
-    {
-      object_error((t_object*)this, "unknown access mode: %s", access_mode.c_str());
-    }
-  }
-}
-
-void parameter::set_repetition_filter()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    auto param = node->get_parameter();
-    param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
-  }
-}
-
-void parameter::set_description()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_description(*node, m_description->s_name);
-  }
-}
-
-void parameter::set_tags()
-{
-  std::vector<std::string> tags;
-  for (int i = 0; i < m_tags_size; i++)
-  {
-    switch(m_tags[i].a_type)
-    {
-      case A_SYM:
-        tags.push_back(m_tags[i].a_w.w_sym->s_name);
-        break;
-      case A_FLOAT:
-        {
-          std::stringstream ss;
-          ss << m_tags[i].a_w.w_float;
-          tags.push_back(ss.str());
-          break;
-        }
-      default:
-        ;
-    }
-  }
-
-  for (t_matcher& m : m_matchers)
-    ossia::net::set_tags(*m.get_node(), tags);
-}
-
-void parameter::set_priority()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_priority(*node, m_priority);
-  }
-}
-
-void parameter::set_enable()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_disabled(*node, !m_enable);
-  }
-}
-
-void parameter::set_type()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-    param->set_value_type(symbol2val_type(m_type));
-  }
-}
-
-void parameter::set_hidden()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_hidden(*node, m_hidden);
-  }
-}
-
 void parameter::set_unit()
 {
   for (t_matcher& m : m_matchers)
@@ -485,240 +319,62 @@ void parameter::set_unit()
   }
 }
 
-void parameter::set_minmax(){
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    std::vector<ossia::value> min = attribute2value(m_min, m_min_size);
-    std::vector<ossia::value> max = attribute2value(m_max, m_max_size);
-
-    if (min.empty())
-    {
-      switch( param->get_value_type() )
-      {
-        case ossia::val_type::CHAR:
-          min = {0};
-          break;
-        case ossia::val_type::FLOAT:
-        case ossia::val_type::INT:
-          min = {0.};
-          break;
-        case ossia::val_type::VEC2F:
-          min = {0.,0.};
-          break;
-        case ossia::val_type::VEC3F:
-          min = {0.,0.,0.};
-          break;
-        case ossia::val_type::VEC4F:
-          min = {0.,0.,0.,0.};
-          break;
-        default:
-          ;
-      }
-    }
-
-    if ( max.empty() )
-    {
-      switch( param->get_value_type() )
-      {
-        case ossia::val_type::CHAR:
-          min = {255};
-          break;
-        case ossia::val_type::FLOAT:
-        case ossia::val_type::INT:
-          min = {1.};
-          break;
-        case ossia::val_type::VEC2F:
-          min = {1.,1.};
-          break;
-        case ossia::val_type::VEC3F:
-          min = {1.,1.,1.};
-          break;
-        case ossia::val_type::VEC4F:
-          min = {1.,1.,1.,1.};
-          break;
-        default:
-          ;
-      }
-    }
-
-    if (!min.empty() && !max.empty())
-      param->set_domain(ossia::make_domain(min,max));
-  }
-}
-
-void parameter::set_range()
+void parameter::set_rate()
 {
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
+    ossia::net::set_refresh_rate(*node,m_rate);
+  }
+}
 
-    switch(param->get_value_type())
+void parameter::update_attribute(parameter* x, ossia::string_view attribute)
+{
+  if ( attribute == ossia::net::text_refresh_rate() ){
+    parameter::get_rate(x);
+  } else if ( attribute == ossia::net::text_muted() ){
+    parameter::get_mute(x);
+  } else if ( attribute == ossia::net::text_unit() ){
+    parameter::get_unit(x);
+  } else {
+    parameter_base::update_attribute(x, attribute);
+  }
+}
+
+void parameter::get_rate(parameter*x)
+{
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto rate = ossia::net::get_refresh_rate(*node);
+
+    if (rate)
     {
-      case ossia::val_type::INT:
-      case ossia::val_type::FLOAT:
-      case ossia::val_type::CHAR:
-      case ossia::val_type::STRING:
-      case ossia::val_type::LIST:
-      case ossia::val_type::VEC2F:
-      case ossia::val_type::VEC3F:
-      case ossia::val_type::VEC4F:
-        {
-
-          if ( param->get_value_type() == ossia::val_type::STRING )
-          {
-            std::vector<std::string> senum;
-            for ( int i = 0; i < m_range_size; i++)
-            {
-              if (m_range[i].a_type == A_SYM)
-                senum.push_back(m_range[i].a_w.w_sym->s_name);
-              else if (m_range[i].a_type == A_FLOAT)
-              {
-                std::stringstream ss;
-                ss << m_range[i].a_w.w_float;
-                senum.push_back(ss.str());
-              }
-              else
-                break;
-            }
-            param->set_domain(make_domain(senum));
-          }
-          else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
-          {
-            switch( param->get_value_type() )
-            {
-              case ossia::val_type::INT:
-              case ossia::val_type::FLOAT:
-              case ossia::val_type::CHAR:
-                param->set_domain(
-                      ossia::make_domain(m_range[0].a_w.w_float,m_range[1].a_w.w_float));
-                break;
-              default:
-                {
-                  std::vector<ossia::value> omin, omax;
-                  // TODO check param size
-                  std::array<float, OSSIA_MAX_MAX_ATTR_SIZE> min, max;
-                  min.fill(m_range[0].a_w.w_float);
-                  max.fill(m_range[1].a_w.w_float);
-                  omin.assign(min.begin(), min.end());
-                  omax.assign(max.begin(), max.end());
-                  param->set_domain(ossia::make_domain(omin,omax));
-                }
-            }
-          }
-        }
-      default:
-        ;
+      x->m_rate = *rate;
     }
   }
 }
 
-void parameter::set_bounding_mode()
+void parameter::get_mute(parameter*x)
 {
-  for (t_matcher& m : m_matchers)
+  if (!x->m_matchers.empty())
   {
-    ossia::net::node_base* node = m.get_node();
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    std::string bounding_mode = m_bounding_mode->s_name;
-    ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
-    m_bounding_mode = gensym(bounding_mode.c_str());
-
-    if (bounding_mode == "free")
-      param->set_bounding(ossia::bounding_mode::FREE);
-    else if (bounding_mode == "clip")
-      param->set_bounding(ossia::bounding_mode::CLIP);
-    else if (bounding_mode == "wrap")
-      param->set_bounding(ossia::bounding_mode::WRAP);
-    else if (bounding_mode == "fold")
-      param->set_bounding(ossia::bounding_mode::FOLD);
-    else if (bounding_mode == "low")
-      param->set_bounding(ossia::bounding_mode::LOW);
-    else if (bounding_mode == "high")
-      param->set_bounding(ossia::bounding_mode::HIGH);
-    else
-    {
-      object_error((t_object*)this, "unknown bounding mode: %s", bounding_mode.c_str());
-    }
+    x->m_mute = param->get_muted();
   }
 }
 
-void parameter::set_default()
+void parameter::get_unit(parameter*x)
 {
-  for (t_matcher& m : m_matchers)
+  if (!x->m_matchers.empty())
   {
-    ossia::net::node_base* node = m.get_node();
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    switch(param->get_value_type())
-    {
-
-      case ossia::val_type::VEC4F:
-        {
-          if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
-              && m_default[2].a_type == A_FLOAT && m_default[3].a_type == A_FLOAT)
-          {
-            vec4f vec = make_vec(
-                  m_default[0].a_w.w_float, m_default[1].a_w.w_float,
-                m_default[2].a_w.w_float, m_default[3].a_w.w_float);
-            ossia::net::set_default_value(*node, vec);
-          }
-          break;
-        }
-      case ossia::val_type::VEC3F:
-        {
-          if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
-              && m_default[2].a_type == A_FLOAT )
-          {
-            vec3f vec = make_vec(
-                  m_default[0].a_w.w_float, m_default[1].a_w.w_float,
-                m_default[2].a_w.w_float);
-            ossia::net::set_default_value(*node, vec);
-          }
-          break;
-        }
-      case ossia::val_type::VEC2F:
-        {
-          if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT )
-          {
-            vec2f vec = make_vec(
-                  m_default[0].a_w.w_float, m_default[1].a_w.w_float);
-            ossia::net::set_default_value(*node, vec);
-          }
-          break;
-        }
-      case ossia::val_type::FLOAT:
-      case ossia::val_type::CHAR:
-      case ossia::val_type::INT:
-      case ossia::val_type::BOOL:
-        {
-          if (m_default[0].a_type == A_FLOAT )
-          {
-            ossia::net::set_default_value(*node, m_default[0].a_w.w_float);
-          }
-          break;
-        }
-      case ossia::val_type::STRING:
-        {
-          if (m_default[0].a_type == A_SYM )
-          {
-            ossia::net::set_default_value(*node, m_default[0].a_w.w_sym->s_name);
-          }
-          break;
-        }
-      case ossia::val_type::LIST:
-        {
-          auto def = attribute2value(m_default, m_default_size);
-
-          ossia::net::set_default_value(*node, def);
-          break;
-        }
-      default:
-        ;
-    }
+    std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+    x->m_unit = gensym(unit.c_str());
   }
 }
 

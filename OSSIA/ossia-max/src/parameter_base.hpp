@@ -9,21 +9,17 @@ namespace max
 class parameter_base : public object_base
 {
 public:
-  parameter_base(t_class*x);
-
   static void update_attribute(parameter_base* x, ossia::string_view attribute);
 
   // attribute setting method
   void set_access_mode();
   void set_repetition_filter();
   void set_enable();
-  void set_mute();
   void set_minmax();
   void set_range();
   void set_bounding_mode();
   void set_default();
   void set_type();
-  void set_rate();
 
   static void declare_attributes(t_class*c);
 
@@ -70,6 +66,7 @@ public:
   static void bang(object_base* x);
   static void output_value(object_base* x);
 
+  static void set(parameter_base* x, t_symbol* s, int argc, t_atom* argv);
   static void in_float(parameter_base* x, double f);
   static void in_int(parameter_base* x, long int f);
   static void in_symbol(parameter_base* x, t_symbol* f);

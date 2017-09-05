@@ -42,5 +42,6 @@ extern "C" void ossia_ossia_setup()
   ossia_library.ossia_ossia_class = c;
 }
 
+
 } // namespace max
 } // namespace ossia

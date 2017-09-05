@@ -45,7 +45,7 @@ namespace ossia
 namespace max
 {
 
-void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
+void* remote::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
   auto place = object_alloc(ossia_library.ossia_remote_class);
@@ -103,7 +103,7 @@ void* ossia_remote_new(t_symbol* name, long argc, t_atom* argv)
   return (x);
 }
 
-void ossia_remote_free(remote* x)
+void remote::destroy(remote* x)
 {
   if (x->m_clock) clock_free((t_object*)x->m_clock);
   x->m_dead = true;
@@ -122,7 +122,7 @@ void ossia_remote_free(remote* x)
   x->~remote();
 }
 
-void ossia_remote_assist(remote* x, void* b, long m, long a, char* s)
+void remote::assist(remote* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
@@ -185,8 +185,6 @@ system_clock::now().time_since_epoch() );
         x->m_last_click = ms;
 }
 */
-
-#pragma mark t_remote
 
 bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
@@ -296,6 +294,41 @@ void remote::bind(remote* x, t_symbol* address)
   x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
+}
+
+void remote::update_attribute(remote* x, ossia::string_view attribute)
+{
+  // @mute and @unit attributes are specific to each remote
+  // it makes no sens to sens to change when an attribute changes
+  if ( attribute == ossia::net::text_refresh_rate() )
+  {
+    // assume all matchers have the same bounding_mode
+    ossia::max::t_matcher& m = x->m_matchers[0];
+    ossia::net::node_base* node = m.get_node();
+
+    auto rate = ossia::net::get_refresh_rate(*node);
+    if (rate)
+    {
+      x->m_rate_min = *rate;
+      x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
+    }
+
+  } else if ( attribute == ossia::net::text_unit()) {
+    // assume all matchers have the same bounding_mode
+    ossia::max::t_matcher& m = x->m_matchers[0];
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
+    {
+      x->m_ounit = param->get_unit();
+      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+      x->m_unit = gensym(unit.c_str());
+    }
+
+  } else {
+    parameter_base::update_attribute(x, attribute);
+  }
 }
 
 ossia::safe_vector<remote*>& remote::quarantine()

@@ -121,57 +121,22 @@ public:
 
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_description{};
-  int m_priority{};
-  bool m_hidden{};
+  long m_priority{};
+  long m_hidden{};
 
   long m_tags_size{};
   long m_description_size{};
-
-  // constructor
-  object_base(t_class* c);
 
   static void update_attribute(object_base* x, ossia::string_view attribute);
   void is_deleted(const ossia::net::node_base& n);
 
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
+  static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x);
 };
 
 #pragma mark -
 #pragma mark Utilities
-
-// Converts a max string to a type used in the api
-static ossia::val_type name_to_type(ossia::string_view name)
-{
-  if (name == "integer")
-    return ossia::val_type::INT;
-  if (name == "float")
-    return ossia::val_type::FLOAT;
-  if (name == "numeric")
-    return ossia::val_type::FLOAT;
-  if (name == "array")
-    return ossia::val_type::LIST;
-  if (name == "impulse")
-    return ossia::val_type::IMPULSE;
-  if (name == "bool")
-    return ossia::val_type::BOOL;
-  if (name == "boolean")
-    return ossia::val_type::BOOL;
-  if (name == "string")
-    return ossia::val_type::STRING;
-  if (name == "symbol")
-    return ossia::val_type::STRING;
-  if (name == "vec2f")
-    return ossia::val_type::VEC2F;
-  if (name == "vec3f")
-    return ossia::val_type::VEC3F;
-  if (name == "vec4f")
-    return ossia::val_type::VEC4F;
-  if (name == "char")
-    return ossia::val_type::CHAR;
-
-  return ossia::val_type::FLOAT;
-}
 
 // Typed function switcher to convert ossia::value to t_atom
 struct value2atom

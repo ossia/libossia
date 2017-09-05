@@ -43,7 +43,6 @@ extern "C" void ossia_device_setup()
         c, (method) device::stop_expose,
         "stop", A_FLOAT, 0);
 
-
   class_register(CLASS_BOX, c);
 
   auto& ossia_library = ossia_max::instance();

@@ -16,8 +16,6 @@ namespace max
 class client : public device_base
 {
 public:
-  client();
-
   static void register_children(client*);
   void unregister_children();
   static void loadbang(client*);

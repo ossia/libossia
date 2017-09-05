@@ -13,10 +13,6 @@
 namespace ossia {
 namespace max {
 
-parameter_base::parameter_base(t_class* x)
-  : object_base{x}
-{ }
-
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute)
 {
   if ( attribute == ossia::net::text_value_type() ){
@@ -82,15 +78,6 @@ void parameter_base::set_type()
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
     param->set_value_type(symbol2val_type(m_type));
-  }
-}
-
-void parameter_base::set_rate()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_refresh_rate(*node,m_rate);
   }
 }
 
@@ -530,9 +517,34 @@ void parameter_base::in_symbol(parameter_base* x, t_symbol* f)
   parameter_base::push(x,nullptr,1,&a);
 }
 
+void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if (argc > 0 && argv[0].a_type == A_SYM)
+  {
+    std::string addr = argv[0].a_w.w_sym->s_name;
+    argv++;
+    argc--;
+    for (auto n : x->m_nodes)
+    {
+      auto nodes = ossia::net::find_nodes(*n, addr);
+      for (auto& no : nodes)
+      {
+        if (no->get_parameter()){
+          t_matcher matcher{no,x};
+          x->m_matchers.push_back(std::move(matcher));
+        }
+      }
+      parameter_base::push(x,nullptr, argc, argv);
+      x->m_matchers.clear();
+    }
+  }
+}
+
 void parameter_base::declare_attributes(t_class* c)
 {
   object_base :: declare_attributes(c);
+
+  class_addmethod(c, (method) parameter_base::set,  "set",      A_GIMME, 0);
 
   class_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
   class_addmethod(c, (method) parameter_base::bang, "bang",     A_NOTHING,  0);
@@ -550,33 +562,54 @@ void parameter_base::declare_attributes(t_class* c)
       c, (method)parameter_base::push,
       "list", A_GIMME, 0);
 
+  CLASS_ATTR_SYM(
+      c, "type", 0, parameter_base, m_type);
+  CLASS_ATTR_ENUM (
+      c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
 
-  CLASS_ATTR_LONG(         c, "enable",            0, parameter_base, m_enable);
-  class_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NOTHING, 0);
+  CLASS_ATTR_SYM(
+      c, "bounding_mode", 0, parameter_base,
+      m_bounding_mode);
+  CLASS_ATTR_ENUM (
+      c, "bounding_mode", 0, "free clip wrap fold low high");
 
-  CLASS_ATTR_ATOM_VARSIZE(c, "default",           0, parameter_base, m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
-  class_addmethod(c, (method) parameter_base::get_default,           "getdefault",           A_NOTHING, 0);
+  CLASS_ATTR_LONG(c, "enable", 0, parameter_base, m_enable);
+  CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
 
-  CLASS_ATTR_ATOM_VARSIZE(c, "range",             0, parameter_base, m_range,   m_range_size,   OSSIA_MAX_MAX_ATTR_SIZE);
-  class_addmethod(c, (method) parameter_base::get_range,             "getrange",             A_NOTHING, 0);
+  CLASS_ATTR_SYM(
+      c, "access_mode", 0, parameter_base,
+      m_access_mode);
+  CLASS_ATTR_ENUM (
+      c, "access_mode", 0, "bi get set");
 
-  CLASS_ATTR_ATOM_VARSIZE(c, "min",               0, parameter_base, m_min,     m_min_size,     OSSIA_MAX_MAX_ATTR_SIZE);
-  class_addmethod(c, (method) parameter_base::get_min,               "getmin",               A_NOTHING, 0);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "default", 0, parameter_base,
+      m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
-  CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, parameter_base, m_max,     m_max_size,     OSSIA_MAX_MAX_ATTR_SIZE);
-  class_addmethod(c, (method) parameter_base::get_max,               "getmax",               A_NOTHING, 0);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "range", 0, parameter_base,
+      m_range, m_range_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
-  CLASS_ATTR_SYM(      c, "bounding_mode", 0, parameter_base, m_bounding_mode);
-  class_addmethod(c, (method) parameter_base::get_bounding_mode,     "getbounding_mode",     A_NOTHING, 0);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "min", 0, parameter_base,
+      m_min, m_min_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
-  CLASS_ATTR_SYM(c, "type", 0, parameter_base, m_type);
-  class_addmethod(c, (method) parameter_base::get_type,              "gettype",              A_NOTHING, 0);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "max", 0, parameter_base,
+      m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
-  CLASS_ATTR_SYM(c, "access_mode", 0, parameter_base, m_access_mode);
-  class_addmethod(c, (method) parameter_base::get_access_mode,       "getaccess_mode",       A_NOTHING, 0);
+  CLASS_ATTR_LONG(
+      c, "repetition_filter", 0, parameter_base,
+      m_repetition_filter);
+  CLASS_ATTR_STYLE(
+      c, "repetition_filter", 0, "onoff");
 
-  CLASS_ATTR_FLOAT       (c, "repetition_filter", 0, parameter_base, m_repetition_filter);
-  class_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetition_filter", A_NOTHING, 0);
+  CLASS_ATTR_LONG(
+      c, "enable", 0, parameter_base,
+      m_hidden);
+  CLASS_ATTR_STYLE(
+      c, "enable", 0, "onoff");
+
 }
 
 } // namespace max

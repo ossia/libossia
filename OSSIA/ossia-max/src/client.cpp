@@ -326,7 +326,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
   client::update(x);
 }
 
-void check_thread_status(client* x)
+void client::check_thread_status(client* x)
 {
   if ( x->m_done )
   {
@@ -377,7 +377,7 @@ void check_thread_status(client* x)
   }
 }
 
-void find_devices_async(client* x)
+void client::find_devices_async(client* x)
 {
   x->m_done = false;
   x->m_minuit_devices.clear();
@@ -395,8 +395,8 @@ void client::getdevices(client* x)
   {
     object_error((t_object*)x, "already scanning network for device, please wait a bit.");
   } else {
-    x->m_async_thread = new std::thread(find_devices_async,x);
-    x->m_clock = clock_new(x, (method)check_thread_status);
+    x->m_async_thread = new std::thread(client::find_devices_async,x);
+    x->m_clock = clock_new(x, (method)client::check_thread_status);
     clock_delay(x->m_clock,1000);
   }
 
