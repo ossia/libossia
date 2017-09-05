@@ -469,7 +469,7 @@ struct unit_factory_visitor
     static const auto units = brigand::wrap<
         typename matching_unit_u_list<Dataspace_T>::type, make_unit_map>{}();
     auto it = units.find(text);
-    return it != units.end() ? it->second : arg;
+    return it != units.end() ? it->second : ossia::unit_t{};
   }
 
   OSSIA_INLINE ossia::unit_t operator()()
