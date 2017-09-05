@@ -81,26 +81,27 @@ clamp(T d, const T min, const T max)
 // Credits : Nils Peters, Nov. 2008
 template <class T>
 OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T
-wrap(T val, const T low, const T high)
+wrap(const T val, const T low, const T high)
 {
   if ((val >= low) && (val < high))
     return val;
-  else if (val - low >= 0)
-    return std::fmod(val - low, std::fabs(low - high)) + low;
+  else if (val >= low)
+    return low + std::fmod(val - low, std::fabs(low - high));
   else
-    return -1.0 * std::fmod(-1.0 * (val - low), std::fabs(low - high)) + high;
+    return high - std::fmod(low - val, std::fabs(low - high));
 }
 
 template <class T>
 OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T
-fold(T val, const T low, const T high)
+fold(const T val, const T low, const T high)
 {
   if ((val >= low) && (val <= high))
     return val;
   else
   {
-    return std::fabs(ossia::remainder(val - low, 2. * std::fabs(low - high)))
-           + low;
+    return low +
+        std::fabs(
+          ossia::remainder(val - low, 2. * std::fabs(low - high)));
   }
 }
 }

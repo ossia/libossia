@@ -75,7 +75,7 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr)
     case ossia::val_type::IMPULSE:
       break;
     default:
-      throw;
+      throw std::runtime_error("serial_protocol::push: bad type");
   }
 
   str += '\n';

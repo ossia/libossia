@@ -453,140 +453,140 @@ inline const float& value_variant_type::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const int& value_variant_type::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const ossia::vec2f& value_variant_type::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const ossia::vec3f& value_variant_type::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const ossia::vec4f& value_variant_type::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const ossia::impulse& value_variant_type::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const bool& value_variant_type::get() const
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const std::string& value_variant_type::get() const
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const std::vector<ossia::value>& value_variant_type::get() const
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline const char& value_variant_type::get() const
 {
   if (m_type == Type9)
     return m_impl.m_value9;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline float& value_variant_type::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline int& value_variant_type::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline ossia::vec2f& value_variant_type::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline ossia::vec3f& value_variant_type::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline ossia::vec4f& value_variant_type::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline ossia::impulse& value_variant_type::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline bool& value_variant_type::get()
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline std::string& value_variant_type::get()
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline std::vector<ossia::value>& value_variant_type::get()
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <>
 inline char& value_variant_type::get()
 {
   if (m_type == Type9)
     return m_impl.m_value9;
-  throw;
+  throw std::runtime_error("value_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const value_variant_type& var)
@@ -614,7 +614,7 @@ auto apply_nonnull(Visitor&& functor, const value_variant_type& var)
     case value_variant_type::Type::Type9:
       return functor(var.m_impl.m_value9);
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -643,7 +643,7 @@ auto apply_nonnull(Visitor&& functor, value_variant_type& var)
     case value_variant_type::Type::Type9:
       return functor(var.m_impl.m_value9);
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -672,7 +672,7 @@ auto apply_nonnull(Visitor&& functor, value_variant_type&& var)
     case value_variant_type::Type::Type9:
       return functor(std::move(var.m_impl.m_value9));
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -814,7 +814,7 @@ auto apply(
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -862,7 +862,7 @@ auto apply(
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -910,7 +910,7 @@ auto apply(
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -958,7 +958,7 @@ auto apply(
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -1006,7 +1006,7 @@ auto apply(
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -1054,7 +1054,7 @@ auto apply(
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -1102,7 +1102,7 @@ auto apply(
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -1150,7 +1150,7 @@ auto apply(
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -1198,7 +1198,7 @@ auto apply(
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -1246,11 +1246,11 @@ auto apply(
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Functor>
@@ -1305,7 +1305,7 @@ auto apply(
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -1353,7 +1353,7 @@ auto apply(
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -1401,7 +1401,7 @@ auto apply(
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -1449,7 +1449,7 @@ auto apply(
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -1497,7 +1497,7 @@ auto apply(
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -1545,7 +1545,7 @@ auto apply(
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -1593,7 +1593,7 @@ auto apply(
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -1641,7 +1641,7 @@ auto apply(
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -1689,7 +1689,7 @@ auto apply(
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -1737,11 +1737,11 @@ auto apply(
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Functor>
@@ -1796,7 +1796,7 @@ auto apply(
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -1844,7 +1844,7 @@ auto apply(
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -1892,7 +1892,7 @@ auto apply(
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -1940,7 +1940,7 @@ auto apply(
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -1988,7 +1988,7 @@ auto apply(
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -2036,7 +2036,7 @@ auto apply(
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -2084,7 +2084,7 @@ auto apply(
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -2132,7 +2132,7 @@ auto apply(
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -2180,7 +2180,7 @@ auto apply(
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -2228,11 +2228,11 @@ auto apply(
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Functor>
@@ -2306,7 +2306,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -2374,7 +2374,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -2442,7 +2442,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -2510,7 +2510,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -2578,7 +2578,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -2646,7 +2646,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -2714,7 +2714,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -2782,7 +2782,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -2850,7 +2850,7 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -2918,11 +2918,11 @@ auto apply(
               std::move(arg1.m_impl.m_value9));
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Functor>
@@ -2976,7 +2976,7 @@ auto apply(
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -3024,7 +3024,7 @@ auto apply(
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -3072,7 +3072,7 @@ auto apply(
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -3120,7 +3120,7 @@ auto apply(
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -3168,7 +3168,7 @@ auto apply(
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -3216,7 +3216,7 @@ auto apply(
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -3264,7 +3264,7 @@ auto apply(
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -3312,7 +3312,7 @@ auto apply(
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -3360,7 +3360,7 @@ auto apply(
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -3408,11 +3408,11 @@ auto apply(
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Functor>
@@ -3491,7 +3491,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -3559,7 +3559,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -3627,7 +3627,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -3695,7 +3695,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -3763,7 +3763,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -3831,7 +3831,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -3899,7 +3899,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -3967,7 +3967,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -4035,7 +4035,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -4103,11 +4103,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -4179,7 +4179,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -4247,7 +4247,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -4315,7 +4315,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -4383,7 +4383,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -4451,7 +4451,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -4519,7 +4519,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -4587,7 +4587,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -4655,7 +4655,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -4723,7 +4723,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -4791,11 +4791,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -4867,7 +4867,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -4935,7 +4935,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -5003,7 +5003,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -5071,7 +5071,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -5139,7 +5139,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -5207,7 +5207,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -5275,7 +5275,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -5343,7 +5343,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -5411,7 +5411,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -5479,11 +5479,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -5555,7 +5555,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -5623,7 +5623,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -5691,7 +5691,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -5759,7 +5759,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -5827,7 +5827,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -5895,7 +5895,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -5963,7 +5963,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -6031,7 +6031,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -6099,7 +6099,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -6167,11 +6167,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -6243,7 +6243,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -6311,7 +6311,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -6379,7 +6379,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -6447,7 +6447,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -6515,7 +6515,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -6583,7 +6583,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -6651,7 +6651,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -6719,7 +6719,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -6787,7 +6787,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -6855,11 +6855,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -6931,7 +6931,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -6999,7 +6999,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -7067,7 +7067,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -7135,7 +7135,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -7203,7 +7203,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -7271,7 +7271,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -7339,7 +7339,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -7407,7 +7407,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -7475,7 +7475,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -7543,11 +7543,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -7619,7 +7619,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -7687,7 +7687,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -7755,7 +7755,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -7823,7 +7823,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -7891,7 +7891,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -7959,7 +7959,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -8027,7 +8027,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -8095,7 +8095,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -8163,7 +8163,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -8231,11 +8231,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -8307,7 +8307,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -8375,7 +8375,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -8443,7 +8443,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -8511,7 +8511,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -8579,7 +8579,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -8647,7 +8647,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -8715,7 +8715,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -8783,7 +8783,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -8851,7 +8851,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -8919,11 +8919,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -8995,7 +8995,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -9063,7 +9063,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -9131,7 +9131,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -9199,7 +9199,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -9267,7 +9267,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -9335,7 +9335,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -9403,7 +9403,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -9471,7 +9471,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -9539,7 +9539,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -9607,11 +9607,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -9683,7 +9683,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -9751,7 +9751,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -9819,7 +9819,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -9887,7 +9887,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -9955,7 +9955,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -10023,7 +10023,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -10091,7 +10091,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -10159,7 +10159,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -10227,7 +10227,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -10295,15 +10295,15 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }
 template <typename Functor>
@@ -10382,7 +10382,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -10450,7 +10450,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -10518,7 +10518,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -10586,7 +10586,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -10654,7 +10654,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -10722,7 +10722,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -10790,7 +10790,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -10858,7 +10858,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -10926,7 +10926,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -10994,11 +10994,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -11070,7 +11070,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -11138,7 +11138,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -11206,7 +11206,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -11274,7 +11274,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -11342,7 +11342,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -11410,7 +11410,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -11478,7 +11478,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -11546,7 +11546,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -11614,7 +11614,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -11682,11 +11682,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -11758,7 +11758,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -11826,7 +11826,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -11894,7 +11894,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -11962,7 +11962,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -12030,7 +12030,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -12098,7 +12098,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -12166,7 +12166,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -12234,7 +12234,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -12302,7 +12302,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -12370,11 +12370,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -12446,7 +12446,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -12514,7 +12514,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -12582,7 +12582,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -12650,7 +12650,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -12718,7 +12718,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -12786,7 +12786,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -12854,7 +12854,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -12922,7 +12922,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -12990,7 +12990,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -13058,11 +13058,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -13134,7 +13134,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -13202,7 +13202,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -13270,7 +13270,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -13338,7 +13338,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -13406,7 +13406,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -13474,7 +13474,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -13542,7 +13542,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -13610,7 +13610,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -13678,7 +13678,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -13746,11 +13746,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -13822,7 +13822,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -13890,7 +13890,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -13958,7 +13958,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -14026,7 +14026,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -14094,7 +14094,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -14162,7 +14162,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -14230,7 +14230,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -14298,7 +14298,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -14366,7 +14366,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -14434,11 +14434,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -14510,7 +14510,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -14578,7 +14578,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -14646,7 +14646,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -14714,7 +14714,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -14782,7 +14782,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -14850,7 +14850,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -14918,7 +14918,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -14986,7 +14986,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -15054,7 +15054,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -15122,11 +15122,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -15198,7 +15198,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -15266,7 +15266,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -15334,7 +15334,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -15402,7 +15402,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -15470,7 +15470,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -15538,7 +15538,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -15606,7 +15606,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -15674,7 +15674,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -15742,7 +15742,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -15810,11 +15810,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -15886,7 +15886,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -15954,7 +15954,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -16022,7 +16022,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -16090,7 +16090,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -16158,7 +16158,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -16226,7 +16226,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -16294,7 +16294,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -16362,7 +16362,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -16430,7 +16430,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -16498,11 +16498,11 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -16574,7 +16574,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type1:
@@ -16642,7 +16642,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type2:
@@ -16710,7 +16710,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type3:
@@ -16778,7 +16778,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type4:
@@ -16846,7 +16846,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type5:
@@ -16914,7 +16914,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type6:
@@ -16982,7 +16982,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type7:
@@ -17050,7 +17050,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type8:
@@ -17118,7 +17118,7 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         case value_variant_type::Type::Type9:
@@ -17186,14 +17186,14 @@ auto apply(
                   arg2.m_impl.m_value9);
             }
             default:
-              throw;
+              throw std::runtime_error("value_variant: bad type");
           }
         }
         default:
-          throw;
+          throw std::runtime_error("value_variant: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("value_variant: bad type");
   }
 }

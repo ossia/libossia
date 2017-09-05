@@ -143,22 +143,29 @@ struct to_python_value
   py::object operator()(const std::vector<ossia::value>& v) const
   {
     std::vector<py::object> vec;
+    vec.reserve(v.size());
 
-    for (auto i : v)
+    for (const auto& i : v)
       vec.push_back(i.apply(to_python_value{}));
 
     return py::cast(vec);
   }
 
   template <int N>
-  py::object operator()(const std::array<float, N>&) const
+  py::object operator()(const std::array<float, N>& v) const
   {
-    throw;
+    std::vector<py::object> vec;
+    vec.reserve(N);
+
+    for (const auto& i : v)
+      vec.push_back(i;
+
+    return py::cast(vec);
   }
 
   py::object operator()()
   {
-    throw;
+    throw std::runtime_error("to_python_value: bad type");
   }
 };
 

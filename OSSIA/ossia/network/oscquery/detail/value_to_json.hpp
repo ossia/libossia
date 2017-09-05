@@ -63,7 +63,7 @@ struct value_to_json
   }
   void operator()() const
   {
-    throw;
+    throw std::runtime_error("value_to_json: no type");
   }
 };
 
@@ -117,7 +117,7 @@ struct value_to_json_value
   }
   rapidjson::Value operator()() const
   {
-    throw;
+    throw std::runtime_error("value_to_json_value: no type");
   }
 };
 
@@ -324,7 +324,7 @@ struct json_to_value
 
   bool operator()() const
   {
-    throw;
+    throw std::runtime_error("json_to_value: no type");
   }
 };
 
@@ -440,7 +440,7 @@ struct json_to_value_unchecked
 
   void operator()() const
   {
-    throw;
+    throw std::runtime_error("json_to_value_unchecked: no type");
   }
 };
 }

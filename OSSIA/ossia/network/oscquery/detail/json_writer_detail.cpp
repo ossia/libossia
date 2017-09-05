@@ -48,7 +48,7 @@ void json_writer_impl::writeValue(bounding_mode b) const
       writer.String("Fold");
       break;
     default:
-      throw;
+      throw std::runtime_error("json_writer_impl: bad clip mode");
   }
 }
 
