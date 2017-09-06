@@ -88,7 +88,8 @@ t_matcher::~t_matcher()
   std::cout << "destructor ===============>" << this << std::endl;
   if(node && parent)
   {
-    if (parent->m_otype == object_class::param)
+    if (   parent->m_otype == object_class::param
+        || parent->m_otype == object_class::param )
     {
       if (!parent->m_is_deleted)
       {
@@ -108,7 +109,17 @@ t_matcher::~t_matcher()
       // remote should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
-        object_quarantining<parameter>((parameter*) parent);
+        switch(parent->m_otype)
+        {
+          case object_class::model:
+            object_quarantining<model>((model*) parent);
+            break;
+          case object_class::param:
+            object_quarantining<parameter>((parameter*) parent);
+            break;
+          default:
+            ;
+        }
       }
     } else {
 
@@ -130,9 +141,6 @@ t_matcher::~t_matcher()
             break;
           case object_class::view:
             object_quarantining<view>((view*) parent);
-            break;
-          case object_class::model:
-            object_quarantining<model>((model*) parent);
             break;
           default:
             ;

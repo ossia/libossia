@@ -217,13 +217,12 @@ void model::register_children()
       if (model == this)
         continue;
 
-      model->register_node(m_nodes);
+      max_object_register<ossia::max::model>(model);
     }
     else if (child->m_otype == object_class::param)
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-
-      parameter->register_node(m_nodes);
+      max_object_register<ossia::max::parameter>(parameter);
     }
   }
 
