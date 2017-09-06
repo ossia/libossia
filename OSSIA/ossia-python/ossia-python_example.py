@@ -25,9 +25,9 @@ local_device.create_oscquery_server(3456, 5678)
 # create a node, create a boolean parameter and initialize it
 bool_node = local_device.add_node("/test/value/bool")
 bool_parameter = bool_node.create_parameter(ossia.ValueType.Bool)
-### TODO : bool_parameter = bool_node.create_parameter(type='Bool', default=True, repetitions=False)
 bool_parameter.access_mode = ossia.AccessMode.Get
 bool_parameter.value = ossia.Value(True)                  ### TODO : bool_parameter.value = True
+### TODO : bool_parameter.defaultvalue = True
 
 
 # create a node, create an integer parameter and initialize it
@@ -36,49 +36,50 @@ int_parameter = int_node.create_parameter(ossia.ValueType.Int)
 
 int_parameter.access_mode = ossia.AccessMode.Set
 int_parameter.bounding_mode = ossia.BoundingMode.Clip
-int_parameter.value = ossia.Value(100)                  ### TODO : int_parameter.value = 100
-### TODO : int_parameter = int_node.create_parameter(type='Int', default=4, domain=[-66, 66], bounding='wrap', repetitions=True)
+int_parameter.value = ossia.Value(9)                  ### TODO : int_parameter.value = 9
 int_parameter.make_domain(ossia.Value(-10), ossia.Value(10))        ### TODO : int_parameter.make_domain(-10, 10)
 int_parameter.apply_domain()
+### TODO : int_parameter.defaultvalue = -3
 
 # create a node, create a float parameter, set its properties and initialize it
 float_node = local_device.add_node("/test/value/float")
 float_parameter = float_node.create_parameter(ossia.ValueType.Float)
-### TODO : float_parameter = float_node.create_parameter(type='Float', default=0.2, domain=[0, 0.98], bounding='Clip', repetitions=False)
 float_parameter.access_mode = ossia.AccessMode.Bi
 float_parameter.bounding_mode = ossia.BoundingMode.Clip
 float_parameter.value = ossia.Value(2.5)                  ### TODO : float_parameter.value = 2.5
 
 float_parameter.make_domain(ossia.Value(-2.0), ossia.Value(2.0))      ### TODO : float_parameter.make_domain(-2.0, 2.0)
 float_parameter.apply_domain()
-
+### TODO : float_parameter.defaultvalue = 0.123456789
 
 # create a node, create a char parameter and initialize it
 char_node = local_device.add_node("/test/value/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
-### TODO : char_parameter = char_node.create_parameter(type='Char', default=z, domain=[a, z], bounding='fold', repetitions=True)
 char_parameter.value = ossia.Value('a')
+### TODO : char_parameter.defaultvalue = chr(69)
 
 
 # create a node, create a string parameter and initialize it
 string_node = local_device.add_node("/test/value/string")
 string_parameter = string_node.create_parameter(ossia.ValueType.String)
-### TODO : string_parameter = char_node.create_parameter(type='String', default='Hello world !', repetitions=True)
 string_parameter.value= ossia.Value("hello world !")            ### TODO : string_parameter.value = "hello world !"
-
+### TODO : string_parameter.defaultvalue = ['init value']
+### TODO : string_parameter.make_domain(['once', 'loop', 'ping-pong'])
+#string_parameter.apply_domain()
 
 # create a node, create a 3 floats vector parameter and initialize it
 vec3f_node = local_device.add_node("/test/value/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
-### TODO : vec3f_parameter = vec3f_node.create_parameter(type='Vec3f', default=[0, 0, 0], repetitions=True)
-vec3f_parameter.value = ossia.Value([100, 127, 255])            ### TODO : vec3f_parameter.value = [100, 127, 255]
-
+vec3f_parameter.value = ossia.Value([0, 146, 207])            ### TODO : vec3f_parameter.value = [0, 146, 207]
+### TODO : vec3f_parameter.defaultvalue = [0, 146, 207]
+### TODO : vec3f_parameter.make_domain([0, 255])
+#vec3f_parameter.apply_domain()
 
 # create a node, create a list parameter and initialize it
 list_node = local_device.add_node("/test/value/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
-### TODO : list_parameter = list_node.create_parameter(type='List', default=[44100, "test.wav", 0.9], repetitions=True)
 list_parameter.value = ossia.Value([ossia.Value(44100), ossia.Value("test.wav"), ossia.Value(0.9)]) ### TODO : list_parameter.value = [44100, "test.wav", 0.9]
+### TODO : list_parameter.defaultvalue = [44100, "ossia.wav", 0.9]
 
 
 # attach a callback function to the boolean parameter
