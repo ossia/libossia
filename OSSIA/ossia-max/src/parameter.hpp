@@ -32,7 +32,6 @@ public:
   static void update_attribute(parameter* x, ossia::string_view attribute);
 
   // attributes
-  t_symbol* m_unit;
   float m_rate;
   long m_mute;
 

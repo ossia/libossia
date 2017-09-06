@@ -11,6 +11,8 @@ class parameter_base : public object_base
 public:
   static void update_attribute(parameter_base* x, ossia::string_view attribute);
 
+  parameter_base();
+
   // attribute setting method
   void set_access_mode();
   void set_repetition_filter();
@@ -44,6 +46,7 @@ public:
   t_symbol* m_access_mode{};
   float m_repetition_filter{};
   t_symbol* m_unit{};
+  ossia::optional<ossia::unit_t> m_ounit;
 
   // size of size-variable attribute
   long m_default_size{};
@@ -51,6 +54,7 @@ public:
   long m_min_size{};
   long m_max_size{};
 
+  void* m_poll_clock{};
 
   /**
    * @brief t_obj_base::push : push a value to a node
@@ -58,13 +62,13 @@ public:
    * @param argc : number of value in the list
    * @param argv :  list of t_atom value(s)
    */
-  static void push(object_base* x, t_symbol*, int argc, t_atom* argv);
+  static void push(parameter_base* x, t_symbol*, int argc, t_atom* argv);
   /**
    * @brief t_obj_base::bang send out the current value of the parameter
    * @param x
    */
-  static void bang(object_base* x);
-  static void output_value(object_base* x);
+  static void bang(parameter_base* x);
+  static void output_value(parameter_base* x);
 
   static void set(parameter_base* x, t_symbol* s, int argc, t_atom* argv);
   static void in_float(parameter_base* x, double f);

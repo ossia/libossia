@@ -97,10 +97,7 @@ public:
 
   void* m_clock{};
 
-  t_clock* m_poll_clock{};
   float m_rate{10};
-
-  ossia::optional<ossia::unit_t> m_ounit;
 
   ossia::net::generic_device* m_device{};
   std::vector<ossia::net::node_base*> m_nodes{};

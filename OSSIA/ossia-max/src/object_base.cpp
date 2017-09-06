@@ -151,8 +151,9 @@ void t_matcher::output_value()
           param->get_bounding());
 
     ossia::value converted;
-    if ( parent->m_ounit != ossia::none )
-      converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
+    parameter_base* xparam = (parameter_base*)parent;
+    if ( xparam->m_ounit != ossia::none )
+      converted = ossia::convert(filtered, param->get_unit(), *xparam->m_ounit);
     else
       converted = filtered;
 
@@ -204,8 +205,11 @@ void object_base::set_priority()
 
 void object_base::set_description()
 {
-  for (auto n : m_nodes)
-    ossia::net::set_description(*n, m_description->s_name);
+  if (m_description != gensym(""))
+  {
+    for (auto n : m_nodes)
+      ossia::net::set_description(*n, m_description->s_name);
+  }
 }
 
 void object_base::set_tags()
