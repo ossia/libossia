@@ -109,6 +109,7 @@ void add_relative_path(
 
     boost::replace_all(part, "?", "[" + ossia_chars + "]?");
     boost::replace_all(part, "*", "[" + ossia_chars + "]*");
+    boost::replace_all(part, "!", "(\\.[0-9]+)?");
 
     std::regex r(part);
     p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });

@@ -174,6 +174,7 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * ossia::net::name_characters()
  * "?"      -> [:ossia:]?
  * "*"      -> [:ossia:]*
+ * "!"      -> any_instance()
  * "//"     -> any_path() /
  * ".."     -> get_parent()
  * "{1..5}" -> get_range()
