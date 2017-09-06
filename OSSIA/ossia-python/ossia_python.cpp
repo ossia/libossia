@@ -205,8 +205,8 @@ PYBIND11_MODULE(ossia_python, m)
       .def(
           "find_node", &ossia_oscquery_device::find_node,
           py::return_value_policy::reference)
-      .def(
-          "get_root_node", &ossia_oscquery_device::get_root_node,
+      .def_property_readonly(
+          "root_node", &ossia_oscquery_device::get_root_node,
           py::return_value_policy::reference);
 
   py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
@@ -249,7 +249,7 @@ PYBIND11_MODULE(ossia_python, m)
         return ossia::net::osc_parameter_string(node);
       });
 
-  py::class_<ossia::net::parameter_base>(m, "Address")
+  py::class_<ossia::net::parameter_base>(m, "Parameter")
       .def_property_readonly(
           "node", &ossia::net::parameter_base::get_node,
           py::return_value_policy::reference)

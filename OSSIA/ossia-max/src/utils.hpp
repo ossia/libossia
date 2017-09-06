@@ -11,7 +11,7 @@
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
-#include <ossia-max/src/ossia_object_base.hpp>
+#include <ossia-max/src/object_base.hpp>
 #include <ossia/network/domain/domain.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
@@ -26,7 +26,7 @@ namespace max
  * @param x : object we are looking for friend
  * @return true if we find one, false otherwise
  */
-bool find_peer(t_object_base *x);
+bool find_peer(object_base *x);
 
 /**
  * @brief find_global_node: find node matching address with a 'device:' prefix
@@ -40,7 +40,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
  * @param addr: the address to process
  * @return
  */
-ossia::max::address_scope get_parameter_type(const std::string& addr);
+ossia::max::address_scope get_address_scope(const std::string& addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
@@ -57,6 +57,81 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size);
  */
 ossia::val_type symbol2val_type(t_symbol* s);
 t_symbol* val_type2symbol(ossia::val_type t);
+
+
+/**
+ * @brief symbol2bounding_mode convert t_symbol* to corresponging ossia::bounding_mode
+ * @param t_symbol* bounding_mode
+ * @return ossia::bounding_mode
+ */
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode);
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm);
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode);
+t_symbol* access_mode2symbol(ossia::access_mode mode);
+
+// put templates after prototype so we can use them
+
+template <typename T>
+bool max_object_register(T* x)
+{
+  if (x->m_dead)
+    return false; // object will be removed soon
+
+  std::vector<ossia::net::node_base*> nodes{};
+
+  if (x->m_addr_scope == address_scope::global)
+  {
+    nodes = {ossia::max::find_global_nodes(x->m_name->s_name)};
+  }
+  else
+  {
+    int l;
+    ossia::max::device* device = (ossia::max::device*)
+        find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
+    ossia::max::client* client = (ossia::max::client*)
+        find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
+
+    model* model = nullptr;
+    view* view = nullptr;
+    int view_level = 0, model_level = 0;
+    int start_level = 0;
+
+    if (std::is_same<T, ossia::max::view>::value || std::is_same<T, ossia::max::model>::value)
+    {
+      start_level = 1;
+    }
+
+    if (x->m_addr_scope == address_scope::relative)
+    {
+      // then try to locate a parent view or model
+      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
+      {
+        view = (ossia::max::view*) find_parent_box_alive(
+              &x->m_object, gensym("ossia.view"), start_level, &view_level);
+      }
+
+      if (!view)
+      {
+        model = (ossia::max::model*)find_parent_box_alive(
+              &x->m_object, gensym("ossia.model"), start_level, &model_level);
+      }
+    }
+
+    if (view)
+      nodes = view->m_nodes;
+    else if (model)
+      nodes = model->m_nodes;
+    else if (client)
+      nodes = client->m_nodes;
+    else if (device)
+      nodes = device->m_nodes;
+    else
+      nodes = {&ossia_max::get_default_device()->get_root_node()};
+  }
+
+  return x->register_node(nodes);
+}
 
 } // namespace max
 } // namespace ossia

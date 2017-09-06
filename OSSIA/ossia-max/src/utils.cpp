@@ -1,6 +1,7 @@
 #include "utils.hpp"
 
 #include <ossia/network/common/path.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 
 namespace ossia
@@ -8,7 +9,7 @@ namespace ossia
 namespace max
 {
 
-bool find_peer(t_object_base* x)
+bool find_peer(object_base* x)
 {
     t_symbol* classname = object_classname(x);
     t_symbol* derived_classname = nullptr;
@@ -22,7 +23,6 @@ bool find_peer(t_object_base* x)
     else if (x->m_otype == object_class::client)
       derived_classname = gensym("ossia.device");
 
-
     t_object *patcher, *box, *obj;
     object_obex_lookup(x, gensym("#P"), &patcher);
     for (box = jpatcher_get_firstobject(patcher); box; box =
@@ -32,7 +32,7 @@ bool find_peer(t_object_base* x)
       {
         t_symbol* current = object_classname(obj);
         if(current == classname
-           && (t_object_base*)obj != x)
+           && (object_base*)obj != x)
           return true;
         if (derived_classname && current == derived_classname)
           return true;
@@ -124,16 +124,15 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
   return nodes;
 }
 
-ossia::max::address_scope get_parameter_type(const std::string& addr)
+ossia::max::address_scope get_address_scope(const std::string& addr)
 {
   address_scope type = address_scope::relative;
-  if ( addr.length() > 0 )
-  {
-    if (addr[0] == '/')
-      type = address_scope::absolute;
-    else if ( addr.find(":/") != std::string::npos )
+  if (boost::starts_with(addr, "//") )
+    type = address_scope::relative;
+  else if ( boost::starts_with(addr, "/") )
+    type = address_scope::absolute;
+  else if ( addr.find(":/") != std::string::npos )
       type = address_scope::global;
-  }
   return type;
 }
 
@@ -153,30 +152,34 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
 
 ossia::val_type symbol2val_type(t_symbol* s)
 {
-  std::string type = s->s_name;
+  if (s)
+  {
+    std::string type = s->s_name;
 
-  if (type == "float")
+    if (type == "float")
+      return ossia::val_type::FLOAT;
+    else if (type == "symbol" || type == "string")
+      return ossia::val_type::STRING;
+    else if (type == "int")
+      return ossia::val_type::INT;
+    else if (type == "vec2f")
+      return ossia::val_type::VEC2F;
+    else if (type == "vec3f")
+      return ossia::val_type::VEC3F;
+    else if (type == "vec4f")
+      return ossia::val_type::VEC4F;
+    else if (type == "impulse")
+      return ossia::val_type::IMPULSE;
+    else if (type == "bool")
+      return ossia::val_type::BOOL;
+    else if (type == "list")
+      return ossia::val_type::LIST;
+    else if (type == "char")
+      return ossia::val_type::CHAR;
+    else
+      return ossia::val_type::NONE;
+  } else
     return ossia::val_type::FLOAT;
-  else if (type == "symbol" || type == "string")
-    return ossia::val_type::STRING;
-  else if (type == "int")
-    return ossia::val_type::INT;
-  else if (type == "vec2f")
-    return ossia::val_type::VEC2F;
-  else if (type == "vec3f")
-    return ossia::val_type::VEC3F;
-  else if (type == "vec4f")
-    return ossia::val_type::VEC4F;
-  else if (type == "impulse")
-    return ossia::val_type::IMPULSE;
-  else if (type == "bool")
-    return ossia::val_type::BOOL;
-  else if (type == "list")
-    return ossia::val_type::LIST;
-  else if (type == "char")
-    return ossia::val_type::CHAR;
-  else
-    return ossia::val_type::NONE;
 }
 
 t_symbol* val_type2symbol(ossia::val_type type)
@@ -216,6 +219,76 @@ t_symbol* val_type2symbol(ossia::val_type type)
     case ossia::val_type::NONE:
     default:
       return gensym("none");
+  }
+}
+
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
+{
+  if (bounding_mode == gensym("free"))
+    return ossia::bounding_mode::FREE;
+  else if (bounding_mode == gensym("clip"))
+    return ossia::bounding_mode::CLIP;
+  else if (bounding_mode == gensym("wrap"))
+    return ossia::bounding_mode::WRAP;
+  else if (bounding_mode == gensym("fold"))
+    return ossia::bounding_mode::FOLD;
+  else if (bounding_mode == gensym("low"))
+    return ossia::bounding_mode::LOW;
+  else if (bounding_mode == gensym("high"))
+    return ossia::bounding_mode::HIGH;
+  else
+  {
+    error("unknown bounding mode: %s", bounding_mode->s_name);
+    return ossia::bounding_mode::FREE;
+  }
+}
+
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
+{
+  switch (bm)
+  {
+    case ossia::bounding_mode::FREE:
+      return gensym("free");
+    case ossia::bounding_mode::CLIP:
+      return gensym("clip");
+    case ossia::bounding_mode::WRAP:
+      return gensym("wrap");
+    case ossia::bounding_mode::FOLD:
+      return gensym("fold");
+    case ossia::bounding_mode::LOW:
+      return gensym("low");
+    case ossia::bounding_mode::HIGH:
+      return gensym("high");
+    default :
+      return nullptr;
+  }
+}
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode)
+{
+  if (access_mode == gensym("bi") || access_mode == gensym("rw"))
+    return ossia::access_mode::BI;
+  else if (access_mode == gensym("get") || access_mode == gensym("r"))
+    return ossia::access_mode::GET;
+  else if (access_mode == gensym("set") || access_mode == gensym("w"))
+    return ossia::access_mode::SET;
+  else
+  {
+    error("unknown access mode: %s", access_mode->s_name);
+    return ossia::access_mode::BI;
+  }
+}
+
+t_symbol* access_mode2symbol(ossia::access_mode mode)
+{
+  switch(mode)
+  {
+    case ossia::access_mode::SET:
+      return gensym("set");
+    case ossia::access_mode::GET:
+      return gensym("get");
+    default:
+      return gensym("bi");
   }
 }
 

@@ -13,24 +13,13 @@ extern "C" void ossia_view_setup()
 {
   // instantiate the ossia.view class
   t_class* c = class_new(
-      "ossia.view", (method)ossia_view_new, (method)ossia_view_free,
-      (short)sizeof(t_view), 0L, A_GIMME, 0);
+      "ossia.view", (method)view::create, (method)view::destroy,
+      (short)sizeof(view), 0L, A_GIMME, 0);
 
   if (c)
   {
     class_addmethod(
-        c, (method)object_dump<t_view>, "dump",
-        A_NOTHING, 0);
-
-    class_addmethod(
-          c, (method)t_object_base::getnamespace,
-                  "namespace", A_NOTHING, 0);
-    class_addmethod(
-          c,(method)t_view::view_bind, "bind", A_SYM, 0);
-
-    class_addmethod(
-          c, (method)t_object_base::preset,
-          "preset",        A_GIMME,  0);
+          c,(method)view::bind, "bind", A_SYM, 0);
 
 
     //        class_addmethod(c,
@@ -43,20 +32,30 @@ extern "C" void ossia_view_setup()
   ossia_library.ossia_view_class = c;
 }
 
-extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
+namespace ossia
+{
+namespace max
+{
+
+void* view::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  t_view* x = (t_view*)object_alloc(ossia_library.ossia_view_class);
+  auto place = object_alloc(ossia_library.ossia_view_class);
+
+  t_object tmp;
+  memcpy(&tmp, place, sizeof(t_object));
+  view* x = new(place) view();
+  memcpy(x, &tmp, sizeof(t_object));
 
   if (x)
   {
     // make outlets
     x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump view state
 
-    //        x->m_clock = clock_new(x, (method)t_object_base::tick);
-    x->m_regclock = clock_new(
+    //        x->m_clock = clock_new(x, (method)object_base::tick);
+    x->m_clock = clock_new(
         x, reinterpret_cast<method>(
-               static_cast<bool (*)(t_view*)>(&max_object_register<t_view>)));
+               static_cast<bool (*)(view*)>(&max_object_register<view>)));
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -65,7 +64,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
     if(find_peer(x))
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
-      ossia_view_free(x);
+      view::destroy(x);
       return nullptr;
     }
 
@@ -76,7 +75,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
+        x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
       }
 
       // we need to delay registration because object may use patcher hierarchy
@@ -84,7 +83,7 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
       // and object will be added to patcher's objects list (aka canvas g_list)
       // after model_new() returns.
       // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->m_regclock, 0);
+      clock_delay(x->m_clock, 0);
     }
 
     if (x->m_name == _sym_nothing)
@@ -102,15 +101,16 @@ extern "C" void* ossia_view_new(t_symbol* name, long argc, t_atom* argv)
   return (x);
 }
 
-extern "C" void ossia_view_free(t_view* x)
+void view::destroy(view* x)
 {
   x->m_dead = true;
   x->unregister();
-  object_dequarantining<t_view>(x);
+  object_dequarantining<view>(x);
   ossia_max::instance().views.remove_all(x);
-  object_free(x->m_regclock);
+  object_free(x->m_clock);
   object_free(x->m_clock);
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
+  x->~view();
 }
 /*
 extern "C"
@@ -153,42 +153,38 @@ shift, t_floatarg ctrl, t_floatarg alt)
 }
  */
 
-namespace ossia
-{
-namespace max
-{
-bool t_view::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool view::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
   bool res = do_registration(nodes);
 
   if (res)
   {
-    object_dequarantining<t_view>(this);
+    object_dequarantining<view>(this);
 
-    std::vector<t_object_base*> children_view = find_children_to_register(
+    std::vector<object_base*> children_view = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
     for (auto child : children_view)
     {
       if (child->m_otype == object_class::view)
       {
-        t_view* view = (t_view*)child;
+        ossia::max::view* view = (ossia::max::view*)child;
         view->register_node(m_nodes);
       }
       else if (child->m_otype == object_class::remote)
       {
-        t_remote* remote = (t_remote*)child;
+        ossia::max::remote* remote = (ossia::max::remote*)child;
         remote->register_node(m_nodes);
       }
     }
   }
   else
-    object_quarantining<t_view>(this);
+    object_quarantining<ossia::max::view>(this);
 
   return res;
 }
 
-bool t_view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
   // we should unregister here because we may have add a node between the
   // registered node and the remote
@@ -230,43 +226,43 @@ bool t_view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
   return (!m_matchers.empty() || m_is_pattern);
 }
 
-void t_view::register_children(t_view* x)
+void view::register_children(view* x)
 {
-  std::vector<t_object_base*> children_view = find_children_to_register(
-      &x->m_object, get_patcher(&m_object), gensym("ossia.view"));
+  std::vector<object_base*> children_view = find_children_to_register(
+      &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
     if (child->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)child;
+      ossia::max::view* view = (ossia::max::view*)child;
 
       if (view == x)
         continue;
 
-      max_object_register<t_view>(view);
+      max_object_register<ossia::max::view>(view);
     }
     else if (child->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)child;
-      max_object_register<t_remote>(remote);
+      ossia::max::remote* remote = (ossia::max::remote*)child;
+      max_object_register<ossia::max::remote>(remote);
     }
   }
 }
 
-bool t_view::unregister()
+bool view::unregister()
 {
   m_matchers.clear();
   m_nodes.clear();
 
-  std::vector<t_object_base*> children_view = find_children_to_register(
+  std::vector<object_base*> children_view = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
     if (child->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)child;
+      ossia::max::view* view = (ossia::max::view*)child;
 
       if (view == this)
         continue;
@@ -275,27 +271,27 @@ bool t_view::unregister()
     }
     else if (child->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)child;
+      ossia::max::remote* remote = (ossia::max::remote*)child;
       remote->unregister();
     }
   }
 
-  object_quarantining<t_view>(this);
+  object_quarantining<view>(this);
 
   register_children(this);
 
   return true;
 }
 
-void t_view::view_bind(t_view* x, t_symbol* address)
+void view::bind(view* x, t_symbol* address)
 {
   x->m_name = address;
-  x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
+  x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }
 
-ossia::safe_vector<t_view*>& t_view::quarantine()
+ossia::safe_vector<view*>& view::quarantine()
 {
     return ossia_max::instance().view_quarantine;
 }

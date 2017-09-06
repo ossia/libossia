@@ -1,8 +1,9 @@
 #pragma once
 
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/device_base.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 namespace ossia
 {
@@ -12,21 +13,12 @@ namespace max
 #pragma mark -
 #pragma mark t_client structure declaration
 
-struct t_client : t_object_base
+class client : public device_base
 {
-  ossia::net::local_protocol m_local_proto;
-
-  static void register_children(t_client*);
+public:
+  static void register_children(client*);
   void unregister_children();
-  static void loadbang(t_client*);
-
-  static void connect(ossia::max::t_client*, t_symbol*, int, t_atom*);
-  static void disconnect(ossia::max::t_client*);
-  static void update(t_client* x);
-  static void getdevices(t_client*x);
-
-  void on_parameter_created_callback(const ossia::net::parameter_base& param);
-  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
+  static void loadbang(client*);
 
   static void print_protocol_help()
   {
@@ -49,18 +41,27 @@ struct t_client : t_object_base
 
   std::thread* m_async_thread;
 
-  bool m_done;
-  t_symbol* m_looking_for; // the name of the device we are looking for
+  ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
+
+  bool m_done{true};
+  t_symbol* m_looking_for{}; // the name of the device we are looking for
+
+  static void connect(ossia::max::client*, t_symbol*, int, t_atom*);
+  static void disconnect(ossia::max::client*);
+  static void getdevices(client*x);
+  static void check_thread_status(client* x);
+  static void update(client* x);
+  static void poll_message(client* x);
+  // static void destroy(client* x);
+  // static void* create(t_symbol* name, int argc, t_atom* argv);
+  static void find_devices_async(client* x);
+  static void assist(client*, void*, long, long, char*);
+
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::client*);
 
 };
 
 } // max namespace
 } // ossia namespace
 
-#pragma mark -
-#pragma mark ossia_client class declaration
-
-extern "C" {
-void* ossia_client_new(t_symbol*, long, t_atom*);
-void ossia_client_free(ossia::max::t_client*);
-}

@@ -1,5 +1,7 @@
+Set-PSDebug -Trace 1
+
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
-  copy OSSIA\%configuration%\ossia.dll Tests\%configuration%\
+  copy OSSIA\${env:CONFIGURATION}\ossia.dll Tests\${env:CONFIGURATION}\
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
@@ -25,7 +27,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   mkdir ossia-max-package\ossia\examples
   mkdir ossia-max-package\ossia\extensions
 
-  copy build\OSSIA\ossia-max\Release\ossia-max.mxe ossia-max-package\ossia\
+  copy build\OSSIA\ossia-max\Release\ossia-max.mxe64 ossia-max-package\ossia\
+  copy build-32bit\OSSIA\ossia-max\Release\ossia-max.mxe ossia-max-package\ossia\
   copy OSSIA\ossia-max\help\* ossia-max-package\ossia\help\
   copy OSSIA\ossia-max\examples\* ossia-max-package\ossia\examples\
 }

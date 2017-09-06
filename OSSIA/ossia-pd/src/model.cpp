@@ -18,9 +18,11 @@ model::model():
 
 bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
+  if (m_dead) return true;
   bool res = do_registration(nodes);
   if (res)
   {
+    obj_dequarantining<model>(this);
     register_children();
   }
   else
@@ -86,7 +88,6 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
 void model::register_children()
 {
-  obj_dequarantining<model>(this);
   std::vector<object_base*> obj
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : obj)
@@ -94,22 +95,24 @@ void model::register_children()
     if (v->m_otype == object_class::model)
     {
       ossia::pd::model* model = (ossia::pd::model*)v;
+
+      // not registering itself
       if (model == this)
-      {
-        // not registering itself
         continue;
-      }
-      model->register_node(m_nodes);
+
+      obj_register<ossia::pd::model>(model);
     }
     else if (v->m_otype == object_class::param)
     {
       parameter* param = (parameter*)v;
-      param->register_node(m_nodes);
+      // param->register_node(m_nodes);
+      obj_register<ossia::pd::parameter>(param);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      remote->register_node(m_nodes);
+      // remote->register_node(m_nodes);
+      obj_register<ossia::pd::remote>(remote);
     }
   }
 
@@ -134,6 +137,8 @@ bool model::unregister()
   m_nodes.clear();
 
   obj_quarantining<model>(this);
+
+  //m_parent_node = find_parent_nodes(x);
 
   register_children();
 
@@ -221,6 +226,7 @@ void model::destroy(model* x)
   obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);
   clock_free(x->m_clock);
+  x->m_clock = nullptr;
 
   x->~model();
 }

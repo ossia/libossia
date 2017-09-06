@@ -4,11 +4,11 @@
 <c74object name="ossia.model" module="Ossia" category="Ossia">
 
 	<digest>
-		Model
+		Declare patcher as a model
 	</digest>
 
 	<description>
-		Model
+		Create a node under which several <o>ossia.parameter</o> or <o>ossia.model</o> can subscribe. Allows to create complex and nested address hierarchies describing your patcher's features as a namespace
 	</description>
 
 	
@@ -37,6 +37,9 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.parameter" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.device" type="refpage"/>		
 	</seealsolist>
 
 	

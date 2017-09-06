@@ -29,31 +29,27 @@ extern "C" void ossia_client_setup()
 
   // instantiate the ossia.client class
   t_class* c = class_new(
-      "ossia.client", (method)ossia_client_new, (method)ossia_client_free,
-      (short)sizeof(t_client), 0L, A_GIMME, 0);
+      "ossia.client", (method)client::create, (method)client::destroy,
+      (short)sizeof(client), 0L, A_GIMME, 0);
 
   class_addmethod(
-      c, (method)t_client::register_children,
+      c, (method)client::register_children,
       "register", A_NOTHING, 0);
 
   class_addmethod(
-      c, (method)t_client::update,
+      c, (method)client::update,
       "update", A_NOTHING, 0);
 
   class_addmethod(
-      c, (method)t_client::loadbang,
+      c, (method)client::loadbang,
       "loadbang", A_NOTHING, 0);
 
   class_addmethod(
-      c, (method)t_object_base::getnamespace,
-      "namespace", A_NOTHING, 0);
-
-  class_addmethod(
-      c, (method)t_client::connect,
+      c, (method)client::connect,
       "connect", A_GIMME, 0);
 
   class_addmethod(
-      c, (method)t_client::disconnect,
+      c, (method)client::disconnect,
       "disconnect", A_GIMME, 0);
 
   class_addmethod(
@@ -61,18 +57,29 @@ extern "C" void ossia_client_setup()
       "help", A_NOTHING, 0);
 
   class_addmethod(
-      c, (method)t_object_base::preset,
-      "preset",        A_GIMME,  0);
+      c, (method)client::assist,
+      "assist", A_NOTHING, 0);
 
   class_register(CLASS_BOX, c);
   ossia_library.ossia_client_class = c;
 
 }
 
-extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
+
+namespace ossia
+{
+namespace max
+{
+
+void* client::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  t_client* x = (t_client*)object_alloc(ossia_library.ossia_client_class);
+  auto place = object_alloc(ossia_library.ossia_client_class);
+
+  t_object tmp;
+  memcpy(&tmp, place, sizeof(t_object));
+  client* x = new(place) client();
+  memcpy(x, &tmp, sizeof(t_object));
 
   if (x)
   {
@@ -87,7 +94,7 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
     if (ossia::max::find_peer(x))
     {
       error("You can have only one [ossia.device] or [ossia.client] per patcher.");
-      ossia_client_free(x);
+      client::destroy(x);
       return nullptr;
     }
 
@@ -113,7 +120,7 @@ extern "C" void* ossia_client_new(t_symbol* name, long argc, t_atom* argv)
   return (x);
 }
 
-extern "C" void ossia_client_free(t_client* x)
+void client::destroy(client* x)
 {
   x->m_dead = true;
   x->unregister_children();
@@ -124,17 +131,32 @@ extern "C" void ossia_client_free(t_client* x)
   outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
   register_quarantinized();
+  x->~client();
 }
-
-namespace ossia
-{
-namespace max
-{
 
 #pragma mark -
 #pragma mark t_client structure functions
 
-void t_client::connect(t_client* x, t_symbol*, int argc, t_atom* argv)
+void client::assist(client*, void*, long m, long a, char* s)
+{
+  if (m == ASSIST_INLET)
+  {
+    sprintf(s, "All purpose input");
+  }
+  else
+  {
+    switch(a)
+    {
+      case 0:
+        sprintf(s, "Dumpout");
+        break;
+      default:
+        ;
+    }
+  }
+}
+
+void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 {
 
   disconnect(x);
@@ -213,7 +235,7 @@ void t_client::connect(t_client* x, t_symbol*, int argc, t_atom* argv)
             return;
           }
           x->m_looking_for = gensym(name.c_str());
-          t_client::getdevices(x);
+          client::getdevices(x);
           return;
         }
       } else {
@@ -300,19 +322,15 @@ void t_client::connect(t_client* x, t_symbol*, int argc, t_atom* argv)
   }
   else
   {
-    t_client::print_protocol_help();
+    client::print_protocol_help();
   }
 
-  if (x->m_device)
-  {
-    x->m_device->on_parameter_created.connect<t_client, &t_client::on_parameter_created_callback>(x);
-    x->m_device->on_parameter_removing.connect<t_client, &t_client::on_parameter_deleted_callback>(x);
-  }
+  x->connect_slots();
 
-  t_client::update(x);
+  client::update(x);
 }
 
-void check_thread_status(t_client* x)
+void client::check_thread_status(client* x)
 {
   if ( x->m_done )
   {
@@ -355,7 +373,7 @@ void check_thread_status(t_client* x)
     {
       t_atom a;
       (&a, x->m_looking_for);
-      t_client::connect(x, gensym("connect"), 1, &a);
+      client::connect(x, gensym("connect"), 1, &a);
     }
 
   } else {
@@ -363,7 +381,7 @@ void check_thread_status(t_client* x)
   }
 }
 
-void find_devices_async(t_client* x)
+void client::find_devices_async(client* x)
 {
   x->m_done = false;
   x->m_minuit_devices.clear();
@@ -375,81 +393,61 @@ void find_devices_async(t_client* x)
   x->m_done = true;
 }
 
-void t_client::getdevices(t_client* x)
+void client::getdevices(client* x)
 {
   if (x->m_async_thread)
   {
     object_error((t_object*)x, "already scanning network for device, please wait a bit.");
   } else {
-    x->m_async_thread = new std::thread(find_devices_async,x);
-    x->m_clock = clock_new(x, (method)check_thread_status);
+    x->m_async_thread = new std::thread(client::find_devices_async,x);
+    x->m_clock = clock_new(x, (method)client::check_thread_status);
     clock_delay(x->m_clock,1000);
   }
 
 }
 
-void t_client::register_children(t_client* x)
+void client::register_children(client* x)
 {
-  std::vector<t_object_base*> children_view = find_children_to_register(
+  std::vector<object_base*> children_view = find_children_to_register(
       &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
     if (child->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)child;
+      ossia::max::view* view = (ossia::max::view*)child;
       view->register_node(x->m_nodes);
     }
     else if (child->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)child;
+      ossia::max::remote* remote = (ossia::max::remote*)child;
       remote->register_node(x->m_nodes);
     }
   }
 }
 
-void t_client::unregister_children()
+void client::unregister_children()
 {
 
-  std::vector<t_object_base*> children_view = find_children_to_register(
+  std::vector<object_base*> children_view = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
   for (auto child : children_view)
   {
     if (child->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)child;
+      ossia::max::view* view = (ossia::max::view*)child;
       view->unregister();
     }
     else if (child->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)child;
+      ossia::max::remote* remote = (ossia::max::remote*)child;
       remote->unregister();
     }
   }
 }
 
-void t_client::on_parameter_created_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  A_SETSYM(a, gensym("create"));
-  A_SETSYM(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
-
-void t_client::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  A_SETSYM(a, gensym("delete"));
-  A_SETSYM(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
-
-void t_client::update(t_client* x)
+void client::update(client* x)
 {
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
   // for OSC Query
@@ -459,11 +457,11 @@ void t_client::update(t_client* x)
     x->m_device->get_protocol().update(*x->m_device);
     x->m_nodes = {&x->m_device->get_root_node()};
 
-    t_client::register_children(x);
+    client::register_children(x);
   }
 }
 
-void t_client::disconnect(t_client* x)
+void client::disconnect(client* x)
 {
   if (x->m_device)
   {
@@ -473,7 +471,7 @@ void t_client::disconnect(t_client* x)
   }
 }
 
-void t_client::loadbang(t_client* x)
+void client::loadbang(client* x)
 {
   register_children(x);
 }

@@ -27,7 +27,7 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     obj_dequarantining<remote>(this);
-
+    parameter_base::bang(this);
     clock_set(m_poll_clock,1);
   }
   else
@@ -92,7 +92,6 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         }
       }
     }
-    clock_delay(m_clock, 0);
   }
 
   // do not put it in quarantine if it's a pattern

@@ -9,6 +9,9 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <readerwriterqueue.h>
+
+
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
 
 namespace ossia
@@ -37,19 +40,20 @@ enum class address_scope
   global
 };
 
-struct t_object_base;
+struct object_base;
 
 class t_matcher
 {
 public:
-  t_matcher(ossia::net::node_base* n, t_object_base* p); // constructor
+  t_matcher(ossia::net::node_base* n, object_base* p); // constructor
   ~t_matcher();
   t_matcher(const t_matcher&) = delete;
   t_matcher(t_matcher&& other);
   t_matcher& operator=(const t_matcher&) = delete;
   t_matcher& operator=(t_matcher&& other);
 
-  void set_value(const ossia::value& v);
+  void enqueue_value(const ossia::value& v);
+  void output_value();
   auto get_node() const { return node; }
   auto get_parent() const { return parent; }
   void set_parent_addr();
@@ -59,17 +63,20 @@ public:
 
 private:
   ossia::net::node_base* node{};
-  t_object_base* parent{};
+  object_base* parent{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
+
+  moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
   t_atom m_addr;
 
 };
 
-struct t_object_base
+struct object_base
 {
+public:
   t_object m_object; // the Max object instance.
   // !!! this member is handled by Max API : that's why there is no place in
   // our code where it is initialized.
@@ -89,60 +96,44 @@ struct t_object_base
   bool m_mute;
 
   void* m_clock{};
-  void* m_regclock{};   // registration clock
-  void* m_unregclock{}; // unregistration clock
 
-  ossia::optional<ossia::unit_t> m_ounit;
+  float m_rate{10};
 
   ossia::net::generic_device* m_device{};
   std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
 
+  static void class_setup(t_class*c);
+
+  void set_description();
+  void set_tags();
+  void set_priority();
+  void set_hidden();
+
+  static void get_description(object_base* x);
+  static void get_tags(object_base* x);
+  static void get_priority(object_base* x);
+  static void get_hidden(object_base* x);
+
+  t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
+  t_symbol* m_description{};
+  long m_priority{};
+  long m_hidden{};
+
+  long m_tags_size{};
+  long m_description_size{};
+
+  static void update_attribute(object_base* x, ossia::string_view attribute);
   void is_deleted(const ossia::net::node_base& n);
 
-  static void push(t_object_base* x, t_symbol*, int argc, t_atom* argv);
-  static void bang(t_object_base* x);
-  static void defer_set_output(t_object_base*x, t_symbol*s ,int argc, t_atom* argv);
-  static void getnamespace(t_object_base *x);
-  static void preset(t_object_base *x, t_symbol*s, int argc, t_atom* argv);
+  static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
+  static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
+  static void get_address(object_base *x);
 };
 
 #pragma mark -
 #pragma mark Utilities
-
-// Converts a max string to a type used in the api
-static ossia::val_type name_to_type(ossia::string_view name)
-{
-  if (name == "integer")
-    return ossia::val_type::INT;
-  if (name == "float")
-    return ossia::val_type::FLOAT;
-  if (name == "numeric")
-    return ossia::val_type::FLOAT;
-  if (name == "array")
-    return ossia::val_type::LIST;
-  if (name == "impulse")
-    return ossia::val_type::IMPULSE;
-  if (name == "bool")
-    return ossia::val_type::BOOL;
-  if (name == "boolean")
-    return ossia::val_type::BOOL;
-  if (name == "string")
-    return ossia::val_type::STRING;
-  if (name == "symbol")
-    return ossia::val_type::STRING;
-  if (name == "vec2f")
-    return ossia::val_type::VEC2F;
-  if (name == "vec3f")
-    return ossia::val_type::VEC3F;
-  if (name == "vec4f")
-    return ossia::val_type::VEC4F;
-  if (name == "char")
-    return ossia::val_type::CHAR;
-
-  return ossia::val_type::FLOAT;
-}
 
 // Typed function switcher to convert ossia::value to t_atom
 struct value2atom
@@ -238,7 +229,7 @@ struct value_visitor
     outlet_int(x->m_data_out, i);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),1,&a);
   }
 
@@ -250,7 +241,7 @@ struct value_visitor
     outlet_float(x->m_data_out, f);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),1,&a);
   }
 
@@ -263,7 +254,7 @@ struct value_visitor
     outlet_int(x->m_data_out, i);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),1,&a);
   }
 
@@ -276,7 +267,7 @@ struct value_visitor
     outlet_anything(x->m_data_out, s, 0, nullptr);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),1,&a);
   }
 
@@ -288,7 +279,7 @@ struct value_visitor
     outlet_int(x->m_data_out, (long)c);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),1,&a);
   }
 
@@ -301,7 +292,7 @@ struct value_visitor
     outlet_list(x->m_data_out, gensym("list"), 2, a);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),2,a);
   }
 
@@ -315,7 +306,7 @@ struct value_visitor
     outlet_list(x->m_data_out, gensym("list"), 3, a);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),3,a);
   }
 
@@ -330,7 +321,7 @@ struct value_visitor
     outlet_list(x->m_data_out, gensym("list"), 4, a);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),4,a);
   }
 
@@ -346,7 +337,7 @@ struct value_visitor
       outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
 
     if (x->m_set_out)
-      defer_low((t_object*)x,(method)t_object_base::defer_set_output,
+      defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),va.size(), list_ptr);
   }
 
