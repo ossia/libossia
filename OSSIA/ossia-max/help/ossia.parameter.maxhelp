@@ -514,7 +514,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -551,7 +551,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 435.0, 35.0, 21.0 ],
-									"presentation_rect" : [ 727.0, 494.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : " "
 								}
@@ -566,7 +565,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 492.0, 35.0, 21.0 ],
-									"presentation_rect" : [ 725.0, 397.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : " "
 								}
@@ -581,7 +579,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 351.0, 35.0, 21.0 ],
-									"presentation_rect" : [ 727.0, 255.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : " "
 								}
@@ -596,7 +593,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 323.0, 35.0, 21.0 ],
-									"presentation_rect" : [ 941.0, 401.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : " "
 								}
@@ -612,7 +608,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 710.0, 108.0, 362.5, 21.0 ],
-									"presentation_rect" : [ 913.0, 44.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Available units",
 									"textcolor" : [ 1.0, 1.0, 1.0, 1.0 ]
@@ -628,7 +623,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 185.0, 142.0, 136.0 ],
-									"presentation_rect" : [ 941.0, 264.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "second (time.second)\nbark (time.bark)\nhz (time.hz)\ncents (time.cents)\nhz (time.hz)\nmel (time.mel)\nmidinote (time.midinote)\nms (time.ms)\nspeed (time.speed"
 								}
@@ -643,7 +637,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 162.0, 37.0, 21.0 ],
-									"presentation_rect" : [ 941.0, 231.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Time"
 								}
@@ -658,7 +651,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 369.0, 136.0, 64.0 ],
-									"presentation_rect" : [ 882.0, 557.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "linear (gain.linear)\nmidigain (gain.midigain)\ndb (gain.db)\ndb-raw (gain.db-raw)"
 								}
@@ -673,7 +665,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 346.0, 35.0, 21.0 ],
-									"presentation_rect" : [ 882.0, 524.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Gain"
 								}
@@ -688,7 +679,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 481.0, 112.0, 122.0 ],
-									"presentation_rect" : [ 729.0, 572.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "argb (color.argb)\nrgba (color.rgba)\nrgb (color.rgb)\nbgr (color.bgr)\nargb8 (color.argb8)\nhsv (color.hsv)\ncmy8 (color.cmy8)\nxyz (color.xyz)"
 								}
@@ -703,7 +693,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 926.5, 458.0, 40.0, 21.0 ],
-									"presentation_rect" : [ 729.0, 539.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Color"
 								}
@@ -718,7 +707,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 538.5, 198.0, 50.0 ],
-									"presentation_rect" : [ 726.0, 509.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "quaternion (orientation.quaternion)\neuler (orientation.euler)\naxis (orientation.axis)"
 								}
@@ -733,7 +721,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 515.0, 72.0, 21.0 ],
-									"presentation_rect" : [ 726.0, 476.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Orientation"
 								}
@@ -748,7 +735,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 397.0, 171.0, 93.0 ],
-									"presentation_rect" : [ 724.0, 295.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "cart3D (position.cart3D)\ncart2D (position.cart2D)\nspherical (position.spherical)\npolar (position.polar)\nopenGL (position.openGL)\ncylindrical (position.cylindrical)"
 								}
@@ -763,7 +749,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 374.0, 54.0, 21.0 ],
-									"presentation_rect" : [ 724.0, 262.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Position"
 								}
@@ -778,7 +763,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 726.0, 185.0, 136.0, 165.0 ],
-									"presentation_rect" : [ 724.0, 91.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "m (distance.m)\nkm (distance.km)\ndm (distance.dm)\ncm (distance.cm)\nmm (distance.mm)\num (distance.um)\nnm (distance.nm)\npm (distance.pm)\ninches (distance.inches)\nfeet (distance.feet)\nmiles (distance.miles)"
 								}
@@ -808,7 +792,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 114.0, 416.0, 275.0, 50.0 ],
-									"presentation_rect" : [ 114.0, 416.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Remotes can be specified a unit belonging to the chosen dataspace and automatically convert parameter value",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1095,7 +1078,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 784.0, 618.0, 131.0, 22.0 ],
 									"style" : "",
-									"text" : "1.06"
+									"text" : "0. 0. 0. 0."
 								}
 
 							}
@@ -1121,9 +1104,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 784.0, 556.0, 215.0, 49.0 ],
+									"patching_rect" : [ 784.0, 556.0, 211.0, 49.0 ],
 									"style" : "",
-									"text" : "ossia.parameter a_list @type tuple @range -1. 1. @bounding_mode clip @default 0. 0. 0. 0."
+									"text" : "ossia.parameter a_list @type list @range -1. 1. @bounding_mode clip @default 0. 0. 0. 0."
 								}
 
 							}
@@ -1164,9 +1147,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 784.0, 221.0, 51.0, 22.0 ],
-									"style" : "",
-									"text" : "apple"
+									"patching_rect" : [ 784.0, 221.0, 63.0, 22.0 ],
+									"style" : ""
 								}
 
 							}
@@ -1231,7 +1213,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 784.0, 159.0, 232.0, 49.0 ],
+									"patching_rect" : [ 784.0, 158.0, 232.0, 49.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_menu @type string @range banana apple cherry @bounding_mode clip"
 								}
@@ -1659,7 +1641,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1725,13 +1707,14 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-42",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 280.0, 96.0, 22.0 ],
+									"patching_rect" : [ 651.0, 280.0, 96.0, 35.0 ],
 									"style" : "",
-									"text" : "1 2 3 4 anything"
+									"text" : "1. 2. 3. 4. anything"
 								}
 
 							}
@@ -1769,9 +1752,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 651.0, 245.0, 205.0, 22.0 ],
+									"patching_rect" : [ 651.0, 245.0, 193.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_list @type tuple"
+									"text" : "ossia.parameter my_list @type list"
 								}
 
 							}
@@ -1958,8 +1941,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 115.0, 446.5, 100.0, 22.0 ],
-									"style" : "",
-									"text" : "tres"
+									"style" : ""
 								}
 
 							}
