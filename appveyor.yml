@@ -37,8 +37,8 @@ before_build:
 #build_script:
 #  - ps: C:\projects\libossia\ci\build.ps1
 build:
-  -  project: C:\projects\libossia\build\OSSIA.sln
-  -  parallel: true
+  project: C:\projects\libossia\build\OSSIA.sln
+  parallel: true
 
 after_build:
   - ps: C:\projects\libossia\ci\after_build.ps1
