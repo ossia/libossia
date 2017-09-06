@@ -126,7 +126,8 @@ t_matcher::~t_matcher()
   if (m_dead) return;
   if(node && parent)
   {
-    if (parent->m_otype == object_class::param)
+    if (   parent->m_otype == object_class::param
+        || parent->m_otype == object_class::model  )
     {
       if (!parent->m_is_deleted)
       {
@@ -143,7 +144,17 @@ t_matcher::~t_matcher()
       // object should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
-        obj_quarantining<parameter>((parameter*) parent);
+        switch(parent->m_otype)
+        {
+          case object_class::model:
+            obj_quarantining<model>((model*) parent);
+            break;
+          case object_class::param:
+            obj_quarantining<parameter>((parameter*) parent);
+            break;
+          default:
+            ;
+        }
       }
     } else {
       auto param = node->get_parameter();
@@ -161,9 +172,6 @@ t_matcher::~t_matcher()
             break;
           case object_class::view:
             obj_quarantining<view>((view*) parent);
-            break;
-          case object_class::model:
-            obj_quarantining<model>((model*) parent);
             break;
           default:
             ;
@@ -213,6 +221,7 @@ void t_matcher::set_parent_addr()
 {
   if (parent->m_parent_node){
     std::string addr = ossia::net::address_string_from_node(*node);
+    // TODO how to deal with multiple parents ?
     std::string parent_addr = ossia::net::address_string_from_node(*parent->m_parent_node);
     if ( parent_addr.back() != '/' ) parent_addr += "/";
 

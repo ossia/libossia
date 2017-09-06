@@ -18,9 +18,11 @@ model::model():
 
 bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
+  if (m_dead) return true;
   bool res = do_registration(nodes);
   if (res)
   {
+    obj_dequarantining<model>(this);
     register_children();
   }
   else
@@ -86,7 +88,6 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
 void model::register_children()
 {
-  obj_dequarantining<model>(this);
   std::vector<object_base*> obj
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : obj)
@@ -225,6 +226,7 @@ void model::destroy(model* x)
   obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);
   clock_free(x->m_clock);
+  x->m_clock = nullptr;
 
   x->~model();
 }
