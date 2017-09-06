@@ -595,10 +595,14 @@ bool is_array(const ossia::value& val)
 
 ossia::value convert(const ossia::value& val, ossia::val_type newtype)
 {
-  return lift(newtype, [&](auto t) -> ossia::value {
-    using ossia_type = typename decltype(t)::ossia_type;
-    return convert<ossia_type>(val);
-  });
+  if(newtype != ossia::val_type::NONE)
+  {
+    return lift(newtype, [&](auto t) -> ossia::value {
+      using ossia_type = typename decltype(t)::ossia_type;
+      return convert<ossia_type>(val);
+    });
+  }
+  return ossia::value{};
 }
 
 value::~value() noexcept
