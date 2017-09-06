@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <?xml-stylesheet href="./_c74_ref.xsl" type="text/xsl"?>
 
-<c74object name="ossia.parameter" module="max" category="Ossia">
+<c74object name="ossia.view" module="max" category="Ossia">
 
 	<digest>
-		Parameter
+		Bind to a model patcher
 	</digest>
 
 	<description>
-		Parameter
+		ossia.view allows to bind to a model patcher and define a scope to the ossia.remote at the same level patcher or below to automatically bind to corresponding ossia.parameters
 	</description>
 
 	
@@ -49,7 +49,6 @@
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ossia.model"/>
-		<seealso name="ossia.view"/>
 		<seealso name="ossia.remote"/>
 	</seealsolist>
 
