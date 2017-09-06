@@ -16,6 +16,8 @@
 #pragma mark -
 #pragma mark library
 
+#include <git_info.h>
+
 using namespace ossia::max;
 
 // ossia-max library constructor
@@ -25,7 +27,7 @@ ossia_max::ossia_max():
 {
   common_symbols_init();
   post("OSSIA library for Max is loaded");
-  post("build on %s at %s", __DATE__, __TIME__);
+  post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
 }
 
 // ossia-max library destructor
