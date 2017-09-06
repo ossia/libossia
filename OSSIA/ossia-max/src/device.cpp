@@ -9,6 +9,7 @@
 
 #include "ossia/network/osc/osc.hpp"
 #include "ossia/network/oscquery/oscquery_server.hpp"
+#include "ossia/network/minuit/minuit.hpp"
 
 using namespace ossia::max;
 

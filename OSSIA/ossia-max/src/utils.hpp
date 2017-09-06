@@ -70,5 +70,68 @@ t_symbol* bounding_mode2symbol(ossia::bounding_mode bm);
 ossia::access_mode symbol2access_mode(t_symbol* access_mode);
 t_symbol* access_mode2symbol(ossia::access_mode mode);
 
+// put templates after prototype so we can use them
+
+template <typename T>
+bool max_object_register(T* x)
+{
+  if (x->m_dead)
+    return false; // object will be removed soon
+
+  std::vector<ossia::net::node_base*> nodes{};
+
+  if (x->m_addr_scope == address_scope::global)
+  {
+    nodes = {ossia::max::find_global_nodes(x->m_name->s_name)};
+  }
+  else
+  {
+    int l;
+    ossia::max::device* device = (ossia::max::device*)
+        find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
+    ossia::max::client* client = (ossia::max::client*)
+        find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
+
+    model* model = nullptr;
+    view* view = nullptr;
+    int view_level = 0, model_level = 0;
+    int start_level = 0;
+
+    if (std::is_same<T, ossia::max::view>::value || std::is_same<T, ossia::max::model>::value)
+    {
+      start_level = 1;
+    }
+
+    if (x->m_addr_scope == address_scope::relative)
+    {
+      // then try to locate a parent view or model
+      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
+      {
+        view = (ossia::max::view*) find_parent_box_alive(
+              &x->m_object, gensym("ossia.view"), start_level, &view_level);
+      }
+
+      if (!view)
+      {
+        model = (ossia::max::model*)find_parent_box_alive(
+              &x->m_object, gensym("ossia.model"), start_level, &model_level);
+      }
+    }
+
+    if (view)
+      nodes = view->m_nodes;
+    else if (model)
+      nodes = model->m_nodes;
+    else if (client)
+      nodes = client->m_nodes;
+    else if (device)
+      nodes = device->m_nodes;
+    else
+      nodes = {&ossia_max::get_default_device()->get_root_node()};
+  }
+
+  return x->register_node(nodes);
+}
+
 } // namespace max
 } // namespace ossia

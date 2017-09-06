@@ -7,7 +7,6 @@
 
 #include <ossia-max/src/object_base.hpp>
 
-#include <ossia/ossia.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia-max_export.h>
@@ -82,9 +81,6 @@ private:
 
 #pragma mark -
 #pragma mark Templates
-
-template <typename T>
-extern bool max_object_register(T*);
 
 /**
  * @brief get absolute path to an object
