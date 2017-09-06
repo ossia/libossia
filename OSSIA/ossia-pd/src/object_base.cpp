@@ -124,7 +124,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
 t_matcher::~t_matcher()
 {
   if (m_dead) return;
-  if(node)
+  if(node && parent)
   {
     if (parent->m_otype == object_class::param)
     {
@@ -154,7 +154,20 @@ t_matcher::~t_matcher()
       // object should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
-        obj_quarantining<remote>((remote*) parent);
+        switch(parent->m_otype)
+        {
+          case object_class::remote:
+            obj_quarantining<remote>((remote*) parent);
+            break;
+          case object_class::view:
+            obj_quarantining<view>((view*) parent);
+            break;
+          case object_class::model:
+            obj_quarantining<model>((model*) parent);
+            break;
+          default:
+            ;
+        }
       }
     }
   }

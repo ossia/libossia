@@ -123,7 +123,20 @@ t_matcher::~t_matcher()
       // remote should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
-        object_quarantining<remote>((remote*) parent);
+        switch(parent->m_otype)
+        {
+          case object_class::remote:
+            object_quarantining<remote>((remote*) parent);
+            break;
+          case object_class::view:
+            object_quarantining<view>((view*) parent);
+            break;
+          case object_class::model:
+            object_quarantining<model>((model*) parent);
+            break;
+          default:
+            ;
+        }
       }
     }
     node = nullptr;
