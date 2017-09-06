@@ -58,7 +58,11 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
   auto place = object_alloc(ossia_library.ossia_device_class);
+
+  t_object tmp;
+  memcpy(&tmp, place, sizeof(t_object));
   device* x = new(place) device();
+  memcpy(x, &tmp, sizeof(t_object));
 
   if (x)
   {

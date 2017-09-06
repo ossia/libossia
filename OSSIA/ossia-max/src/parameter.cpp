@@ -57,8 +57,13 @@ namespace max
 void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia::max::ossia_max::instance();
-  parameter* x = (parameter*)object_alloc(ossia_library.ossia_parameter_class);
-  //parameter* x = new(place) parameter();
+  // ugly hack while waiting for C++ Max API
+  auto place = object_alloc(ossia_library.ossia_parameter_class);
+  t_object tmp;
+  memcpy(&tmp, place, sizeof(t_object));
+  parameter* x = new(place) parameter();
+  memcpy(x, &tmp, sizeof(t_object));
+
 
   if (x)
   {
@@ -69,17 +74,11 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
 
     // initialize attributes
-    atom_setfloat(&x->m_range[0], 0.);
-    atom_setfloat(&x->m_range[1], 1.);
     x->m_access_mode = gensym("bi");
     x->m_bounding_mode = gensym("free");
-    x->m_unit = gensym("");
-    x->m_type = gensym("float");
-    x->m_tags_size = 0;
-    x->m_description = gensym("");
-    x->m_priority = 0;
 
     x->m_clock = clock_new(x, (method)parameter::push_default_value);
+    x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
 
     x->m_otype = object_class::param;
 
@@ -128,6 +127,7 @@ void parameter::destroy(parameter* x)
   object_dequarantining<parameter>(x);
   ossia_max::instance().parameters.remove_all(x);
   object_free(x->m_clock);
+  object_free(x->m_poll_clock);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
   x->~parameter();
@@ -212,6 +212,8 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
     {
       max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
     }
+
+    clock_delay(m_poll_clock,1);
   }
   else
     object_quarantining<parameter>(this);
@@ -227,51 +229,51 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
   for (auto node : _nodes)
   {
-  m_parent_node = node;
+    m_parent_node = node;
 
-  auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
+    auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
 
-  for (auto n : nodes)
-  {
-    ossia::net::parameter_base* local_param{};
-
-    auto type = symbol2val_type(m_type);
-
-    if ( type != ossia::val_type::NONE )
-      local_param = n->create_parameter(type);
-    else
+    for (auto n : nodes)
     {
-      object_error(
-            (t_object*)this,
-            "type should one of: float, symbol, int, vec2f, "
-            "vec3f, vec4f, bool, list, char");
+      ossia::net::parameter_base* local_param{};
+
+      auto type = symbol2val_type(m_type);
+
+      if ( type != ossia::val_type::NONE )
+        local_param = n->create_parameter(type);
+      else
+      {
+        object_error(
+              (t_object*)this,
+              "type should one of: float, symbol, int, vec2f, "
+              "vec3f, vec4f, bool, list, char");
+      }
+      if (!local_param)
+        return false;
+
+      local_param->set_repetition_filter(
+            m_repetition_filter ? ossia::repetition_filter::ON
+                                : ossia::repetition_filter::OFF);
+
+      ossia::net::set_priority(local_param->get_node(), m_priority);
+
+      ossia::net::set_disabled(local_param->get_node(), !m_enable);
+
+      ossia::net::set_hidden(local_param->get_node(), m_hidden);
+
+      t_matcher matcher{n,this};
+      m_matchers.push_back(std::move(matcher));
+      m_nodes.push_back(n);
     }
-    if (!local_param)
-      return false;
 
-    local_param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
-
-    ossia::net::set_priority(local_param->get_node(), m_priority);
-
-    ossia::net::set_disabled(local_param->get_node(), !m_enable);
-
-    ossia::net::set_hidden(local_param->get_node(), m_hidden);
-
-    t_matcher matcher{n,this};
-    m_matchers.push_back(std::move(matcher));
-    m_nodes.push_back(n);
-  }
-
-  set_description();
-  set_tags();
-  set_access_mode();
-  set_unit();
-  set_bounding_mode();
-  set_range();
-  set_minmax();
-  set_default();
+    set_description();
+    set_tags();
+    set_access_mode();
+    set_unit();
+    set_bounding_mode();
+    set_range();
+    set_minmax();
+    set_default();
   }
 
   clock_delay(m_clock, 0);
@@ -282,6 +284,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 bool parameter::unregister()
 {
   clock_unset(m_clock);
+  clock_unset(m_poll_clock);
 
   m_matchers.clear();
   m_nodes.clear();
