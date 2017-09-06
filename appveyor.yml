@@ -1,7 +1,7 @@
 image: Visual Studio 2017
 
 environment:
-  BOOST_ROOT: c:/Libraries/boost_1_64_0
+  BOOST_ROOT: c:\Libraries\boost_1_64_0
   CTEST_OUTPUT_ON_FAILURE: 1
 
   matrix:
@@ -10,36 +10,31 @@ environment:
       APPVEYOR_BUILD_TYPE: testing
       QTDIR: C:\Qt\5.9\msvc2017_64
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
-      CMAKE_OPTION: -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5"
+      CMAKE_OPTION: -DCMAKE_BUILD_TYPE=Debug -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%\lib\cmake\Qt5"
     - platform: x64
       configuration: Release
       APPVEYOR_BUILD_TYPE: testing
       QTDIR: C:\Qt\5.9\msvc2017_64
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
-      CMAKE_OPTION: -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%/lib/cmake/Qt5"
+      CMAKE_OPTION: -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="%BOOST_ROOT%" -DCMAKE_PREFIX_PATH="%QTDIR%\lib\cmake\Qt5"
     - platform: x64
       configuration: Release
       APPVEYOR_BUILD_TYPE: pd
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017
-      CMAKE_OPTION: -DOSSIA_PD=1 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%"
+      CMAKE_OPTION: -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=1 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%"
     - platform: x64
       configuration: Release
       APPVEYOR_BUILD_TYPE: max
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
-      CMAKE_OPTION: -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="%APPVEYOR_BUILD_FOLDER%\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%"
+      CMAKE_GENERATOR_NAME_32BIT: Visual Studio 15 2017
+      CMAKE_OPTION: -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="%APPVEYOR_BUILD_FOLDER%\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="%APPVEYOR_BUILD_FOLDER%" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="%BOOST_ROOT%"
 
 before_build:
   - git submodule update --init --recursive
-  - curl --retry 10 -sO https://cycling74.s3.amazonaws.com/download/max-sdk-7.3.3.zip
-  - 7z x max-sdk-7.3.3.zip -y > nul
-  - mkdir build
-  - cd build
-  - if exist "%QTDIR%\bin\" set PATH=%QTDIR%\bin;%PATH%
-  - cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% %CMAKE_OPTION%  ..
+  - ps: C:\projects\libossia\ci\before_build.ps1
 
-build:
-  project: C:\projects\libossia\build\OSSIA.sln
-  parallel: true
+build_script:
+  - ps: C:\projects\libossia\ci\build.ps1
 
 after_build:
   - ps: C:\projects\libossia\ci\after_build.ps1
@@ -54,6 +49,8 @@ artifacts:
   - path: ossia-max-package
     name: ossia-max-windows-x86_64
     type: zip
+  - name: Log files
+    path: '*.log'
 
 deploy:
   description: 'Release description'
