@@ -1,5 +1,5 @@
 #N canvas 357 93 537 160 10;
-#N canvas 357 244 537 644 localDevice 1;
+#N canvas 355 276 487 393 localDevice 1;
 #X obj 80 90 ossia.remote foo;
 #X floatatom 45 91 5 0 0 0 - - -, f 5;
 #X obj 299 88 ossia.param foo;
@@ -23,20 +23,15 @@ osssia.param;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
 #X restore 407 164 pd model;
-#X obj 153 575 ossia.remote /sub/bar;
-#X floatatom 116 576 5 0 0 0 - - -, f 5;
 #X text 35 17 Here the remote connects to a local device and a local
 parameter \, it acts more or less like a send/receive pair.;
 #X text 38 165 remotes are also used in :;
 #X text 288 164 which works with;
-#X text 41 524 when there are several levels of hierarchies \, one
-can use absolute addresses \, refering to the current device's root
-\, and starting with a leading slash:;
 #X text 41 59 the name of the remote binds it to the similarly named
 param;
 #X text 36 226 when using units in params \, ossia.remote can do some
 conversion \, see in:;
-#N canvas 587 332 473 305 units 0;
+#N canvas 901 310 473 305 units 0;
 #X floatatom 36 80 5 0 0 0 - - -, f 5;
 #X floatatom 36 138 5 0 0 0 - - -, f 5;
 #X floatatom 191 198 5 0 0 0 - - -, f 5;
@@ -78,9 +73,10 @@ can use another (convertible unit) - see;
 #X connect 14 0 13 0;
 #X connect 15 0 1 0;
 #X restore 180 244 pd units;
-#X text 38 609 NB: There is no [ossia.device] here so all ossia objects
-refer to the default global device - see [ossia] for more on that,
-f 65;
+#X text 119 131 _______________________________;
+#X text 120 190 _______________________________;
+#X text 123 266 _______________________________;
+#N canvas 313 506 513 292 pattern-matching 0;
 #N canvas 768 122 288 95 more_models 0;
 #N canvas 865 325 503 220 model 0;
 #X floatatom 62 46 5 0 0 0 - - -, f 5;
@@ -136,12 +132,12 @@ f 65;
 #X connect 7 0 9 0;
 #X connect 9 0 8 0;
 #X restore 189 35 pd model;
-#X restore 361 342 pd more_models;
-#X text 37 298 pattern-matching can be used in ø.remotes \, in order
+#X restore 347 80 pd more_models;
+#X text 23 36 pattern-matching can be used in ø.remotes \, in order
 to address several params with one object;
-#X obj 83 341 ø.remote subModel.[0-3]/bar*, f 30;
-#X floatatom 39 342 5 0 0 0 - - -, f 5;
-#N canvas 0 120 196 135 (subpatch) 1;
+#X obj 69 79 ø.remote subModel.[0-3]/bar*, f 30;
+#X floatatom 25 80 5 0 0 0 - - -, f 5;
+#N canvas 0 120 196 135 (subpatch) 0;
 #X obj 45 21 inlet;
 #X obj 45 42 route address;
 #X obj 45 64 symbol;
@@ -149,28 +145,80 @@ to address several params with one object;
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
-#X restore 311 341 pd;
-#X symbolatom 311 375 23 0 0 0 - - -, f 23;
-#X text 31 432 (note: don't use print with a lot of messages \, that
+#X restore 297 79 pd;
+#X symbolatom 297 113 23 0 0 0 - - -, f 23;
+#X text 17 170 (note: don't use print with a lot of messages \, that
 will jam pd), f 64;
-#X text 35 399 when receiving a value \, the origin address is output
+#X text 21 137 when receiving a value \, the origin address is output
 on the 3rd outlet:;
-#X text 34 454 hint: double click on the remote and change values in
+#X text 20 192 hint: double click on the remote and change values in
 the models to see this in action, f 65;
-#X text 119 131 _______________________________;
-#X text 120 190 _______________________________;
-#X text 122 268 _______________________________;
-#X text 116 494 _______________________________;
+#X connect 2 0 3 0;
+#X connect 2 2 4 0;
+#X connect 3 0 2 0;
+#X connect 4 0 5 0;
+#X restore 39 337 pd pattern-matching;
+#N canvas 893 276 434 377 attributes 1;
+#X obj 131 97 ossia.param Attrs;
+#X msg 204 58 range -1 1;
+#X msg 292 59 range 0 2;
+#X msg 131 58 getrange;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 45 37 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X connect 0 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X restore 258 99 pd;
+#X msg 258 127 range -1 1;
+#X msg 153 245 range -1 1;
+#X msg 241 246 range 0 2;
+#X msg 80 245 getrange;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 45 37 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X connect 0 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X restore 212 284 pd;
+#X msg 213 308 range 0 2;
+#X text 31 16 most attributes can be set and get from the remote:;
+#X text 29 57 e.g. range:;
+#X text 76 195 change the attributes' values here \, and then test
+on the param;
+#X obj 80 284 ossia.remote Attrs;
+#X connect 0 1 4 0;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 3 0 0 0;
+#X connect 4 0 5 0;
+#X connect 6 0 14 0;
+#X connect 7 0 14 0;
+#X connect 8 0 14 0;
+#X connect 9 0 10 0;
+#X connect 14 2 9 0;
+#X restore 218 304 pd attributes;
+#N canvas 873 699 529 231 absolute_addresses 0;
+#X obj 145 80 ossia.remote /sub/bar;
+#X floatatom 108 81 5 0 0 0 - - -, f 5;
+#X text 33 29 when there are several levels of hierarchies \, one can
+use absolute addresses \, refering to the current device's root \,
+and starting with a leading slash:;
+#X text 29 120 NB: There is no [ossia.device] here so all ossia objects
+refer to the default global device - see [ossia] for more on that,
+f 65;
+#X connect 0 0 1 0;
+#X connect 1 0 0 0;
+#X restore 215 337 pd absolute_addresses;
+#X text 39 300 some more features:;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 4 0;
 #X connect 3 0 2 0;
-#X connect 7 0 8 0;
-#X connect 8 0 7 0;
-#X connect 19 0 20 0;
-#X connect 19 2 21 0;
-#X connect 20 0 19 0;
-#X connect 21 0 22 0;
 #X restore 116 61 pd localDevice;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
