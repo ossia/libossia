@@ -113,9 +113,19 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
 void remote::destroy(remote* x)
 {
-  if (x->m_clock) clock_free((t_object*)x->m_clock);
+  if (x->m_clock) {
+    clock_free((t_object*)x->m_clock);
+    x->m_clock = nullptr;
+  }
+
+  if (x->m_poll_clock)
+  {
+    clock_free((t_object*)x->m_poll_clock);
+    x->m_poll_clock = nullptr;
+  }
   x->m_dead = true;
   x->unregister();
+
   object_dequarantining<remote>(x);
   ossia_max::instance().remotes.remove_all(x);
 
