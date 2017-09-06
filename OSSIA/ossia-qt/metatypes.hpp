@@ -18,3 +18,6 @@ Q_DECLARE_METATYPE(ossia::net::protocol_base*)
 Q_DECLARE_METATYPE(ossia::extended_attributes)
 
 Q_DECLARE_METATYPE(ossia::traversal::path)
+Q_DECLARE_METATYPE(ossia::access_mode)
+Q_DECLARE_METATYPE(ossia::bounding_mode)
+Q_DECLARE_METATYPE(ossia::unit_t)
