@@ -1,11 +1,16 @@
 Set-PSDebug -Trace 1
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
   copy OSSIA\${env:CONFIGURATION}\ossia.dll Tests\${env:CONFIGURATION}\
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
-  cd ..
+  cd ${env:APPVEYOR_BUILD_FOLDER}
+
+  ls .
+  ls install
+
   mkdir ossia-pd-package
   mkdir ossia-pd-package\ossia
   mkdir ossia-pd-package\ossia\helps
@@ -20,7 +25,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
-  cd ..
+  cd ${env:APPVEYOR_BUILD_FOLDER}
+
+  ls .
+  ls install
+
   mkdir ossia-max-package
   mkdir ossia-max-package\ossia
   mkdir ossia-max-package\ossia\help
