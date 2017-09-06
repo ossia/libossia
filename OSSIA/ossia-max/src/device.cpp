@@ -22,7 +22,7 @@ extern "C" void ossia_device_setup()
       "ossia.device", (method)device::create, (method)device::destroy,
       (short)sizeof(device), 0L, A_GIMME, 0);
 
-  device_base::declare_attributes(c);
+  device_base::class_setup(c);
 
   class_addmethod(
       c, (method)device::register_children,

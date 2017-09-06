@@ -33,6 +33,7 @@ extern "C" void ossia_ossia_setup()
       "ossia", (method)ossia_object_new, (method)ossia_object_free,
       (short)sizeof(t_ossia), 0L, A_GIMME, 0);
 
+  node_base::class_setup(c);
   class_addmethod(c, (method)device::expose, "expose", A_GIMME, 0);
   class_addmethod(c, (method)device::name, "name", A_GIMME, 0);
 

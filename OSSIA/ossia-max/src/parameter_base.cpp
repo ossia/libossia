@@ -559,9 +559,9 @@ void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
   }
 }
 
-void parameter_base::declare_attributes(t_class* c)
+void parameter_base::class_setup(t_class* c)
 {
-  object_base :: declare_attributes(c);
+  object_base :: class_setup(c);
 
   class_addmethod(c, (method) parameter_base::set,  "set",      A_GIMME, 0);
 

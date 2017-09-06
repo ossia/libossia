@@ -22,7 +22,7 @@ extern "C" void ossia_model_setup()
       "ossia.model", (method)model::create, (method)model::destroy,
       (long)sizeof(ossia::max::model), 0L, A_GIMME, 0);
 
-  node_base::declare_attributes(c);
+  node_base::class_setup(c);
 
   class_addmethod(
       c, (method)model::assist,

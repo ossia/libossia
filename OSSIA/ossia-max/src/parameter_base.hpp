@@ -23,7 +23,7 @@ public:
   void set_default();
   void set_type();
 
-  static void declare_attributes(t_class*c);
+  static void class_setup(t_class*c);
 
   static void get_range(parameter_base* x);
   static void get_min(parameter_base* x);

@@ -16,7 +16,7 @@ extern "C" void ossia_parameter_setup()
       (method)parameter::destroy, (long)sizeof(ossia::max::parameter), 0L,
       A_GIMME, 0);
 
-  parameter_base::declare_attributes(c);
+  parameter_base::class_setup(c);
 
   class_addmethod(
       c, (method)parameter::assist,

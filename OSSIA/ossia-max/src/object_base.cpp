@@ -317,7 +317,7 @@ void object_base::get_hidden(object_base*x)
   // TODO notify object
 }
 
-void object_base::declare_attributes(t_class*c)
+void object_base::class_setup(t_class*c)
 {
   CLASS_ATTR_LONG(c, "priority", 0, object_base, m_priority);
 

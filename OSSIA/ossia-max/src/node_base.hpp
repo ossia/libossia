@@ -10,7 +10,7 @@ class node_base : public object_base
 {
 public:
   static void preset(node_base *x, t_symbol* s, long argc, t_atom* argv);
-  static void declare_attributes(t_class* c);
+  static void class_setup(t_class* c);
 
   /**
    * @brief get_namespace send the namespace through dump outlet

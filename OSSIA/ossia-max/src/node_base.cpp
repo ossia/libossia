@@ -142,9 +142,9 @@ void node_base::get_namespace(node_base* x)
   }
 }
 
-void node_base::declare_attributes(t_class* c)
+void node_base::class_setup(t_class* c)
 {
-  object_base::declare_attributes(c);
+  object_base::class_setup(c);
   class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
   class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
 }

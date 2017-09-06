@@ -23,7 +23,7 @@ extern "C" void ossia_remote_setup()
 
   if (c)
   {
-    parameter_base::declare_attributes(c);
+    parameter_base::class_setup(c);
     class_addmethod(c, (method)remote::bind,
                     "bind", A_SYM, 0);
     class_addmethod(
@@ -201,6 +201,7 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     object_dequarantining<remote>(this);
+    //clock_delay(m_clock, 1);
     clock_delay(m_poll_clock,1);
   }
   else
@@ -264,7 +265,6 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         }
       }
     }
-    clock_delay(m_clock, 1);
   }
 
   // do not put it in quarantine if it's a pattern
@@ -274,7 +274,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
 bool remote::unregister()
 {
-  clock_unset(m_clock);
+  if(m_clock) clock_unset(m_clock);
   m_matchers.clear();
   m_nodes.clear();
 
