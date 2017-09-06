@@ -18,7 +18,6 @@ public:
   bool unregister();
 
   ossia::net::device_base* m_dev{};
-  t_symbol* m_unit;
   float m_rate_min;
 
   void set_unit();

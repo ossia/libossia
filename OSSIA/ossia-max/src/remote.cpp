@@ -33,6 +33,9 @@ extern "C" void ossia_remote_setup()
     class_addmethod(
         c, (method)remote::assist,
         "assist", A_CANT, 0);
+    class_addmethod(
+        c, (method)remote::notify,
+        "notify", A_CANT, 0);
   }
 
   class_register(CLASS_BOX, c);
@@ -68,9 +71,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     x->m_dev = nullptr;
     x->m_clock = clock_new(x, (method)parameter_base::bang);
     x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
-    x->m_enable = 1;
-    x->m_mute = 0;
-    x->m_rate = 10;
+
     x->m_otype = object_class::remote;
 
     // Register object to istself so it can receive notification when attribute changed
@@ -163,6 +164,84 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
         break;
     }
   }
+}
+
+
+t_max_err remote::notify(remote *x, t_symbol *s,
+                       t_symbol *msg, void *sender, void *data)
+{
+  t_symbol *attrname;
+
+  if (msg == gensym("attr_modified")) {
+    attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
+
+    if( attrname == gensym("range") )
+      x->set_range();
+    else if ( attrname == gensym("bounding_mode") )
+      x->set_bounding_mode();
+    else if ( attrname == gensym("min") || attrname == gensym("max") )
+      x->set_minmax();
+    else if ( attrname == gensym("default") )
+      x->set_default();
+    else if ( attrname == gensym("unit") )
+      x->set_unit();
+    else if ( attrname == gensym("hidden") )
+      x->set_hidden();
+    else if ( attrname == gensym("priority") )
+      x->set_priority();
+    else if ( attrname == gensym("access_mode") )
+      x->set_access_mode();
+    else if ( attrname == gensym("repetition_filter") )
+      x->set_repetition_filter();
+    else if ( attrname == gensym("tags") )
+      x->set_tags();
+    else if ( attrname == gensym("description") )
+      x->set_description();
+    else if ( attrname == gensym("enable") )
+      x->set_enable();
+    else if ( attrname == gensym("type") )
+      x->set_type();
+
+  }
+  return 0;
+}
+
+void remote::set_unit()
+{
+  if ( m_unit !=  gensym("") )
+  {
+    // TODO check for unit compatibility with parameter
+    ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
+    if (unit)
+      m_ounit = unit;
+    else
+    {
+      object_error((t_object*)this, "wrong unit: %s", m_unit->s_name);
+      m_ounit = ossia::none;
+      m_unit = gensym("");
+      return;
+    }
+
+    if ( !m_matchers.empty() )
+    {
+      auto dst_unit = m_matchers[0].get_node()->get_parameter()->get_unit();
+      if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
+        auto src = ossia::get_pretty_unit_text(*m_ounit);
+        auto dst = ossia::get_pretty_unit_text(dst_unit);
+        object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
+                 src.c_str(), dst.c_str() );
+        m_ounit = ossia::none;
+        m_unit = gensym("");
+      }
+    }
+  } else {
+    m_ounit = ossia::none;
+  }
+}
+
+void remote::set_rate()
+{
+  m_rate = m_rate < m_rate_min ? m_rate_min : m_rate;
 }
 
 /*
