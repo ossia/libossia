@@ -85,6 +85,43 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-9",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 233.0, 599.0, 93.0, 22.0 ],
+									"style" : "",
+									"text" : "print @popup 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-5",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 782.0, 599.0, 93.0, 22.0 ],
+									"style" : "",
+									"text" : "print @popup 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-3",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 243.0, 267.0, 221.0, 22.0 ],
+									"style" : "",
+									"text" : "address my_spat.1/source.3/gain"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"format" : 6,
 									"id" : "obj-14",
 									"maxclass" : "flonum",
@@ -93,7 +130,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 570.0, 531.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 570.0, 531.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -101,13 +137,14 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-15",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 722.0, 531.0, 79.0, 22.0 ],
-									"presentation_rect" : [ 702.0, 531.0, 0.0, 0.0 ],
-									"style" : ""
+									"patching_rect" : [ 651.0, 531.0, 150.0, 35.0 ],
+									"style" : "",
+									"text" : "address my_spat.1/source.1/gain"
 								}
 
 							}
@@ -123,7 +160,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 810.0, 477.5, 174.0, 49.0 ],
-									"presentation_rect" : [ 801.0, 477.5, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Use a bracket syntaxe to bind to a group of nodes",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -140,7 +176,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 570.0, 457.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 570.0, 457.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -169,7 +204,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 41.0, 531.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 40.0, 531.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -177,12 +211,14 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-12",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 173.0, 531.0, 79.0, 22.0 ],
-									"style" : ""
+									"patching_rect" : [ 102.0, 531.0, 150.0, 35.0 ],
+									"style" : "",
+									"text" : "address my_spat.1/source.3/gain"
 								}
 
 							}
@@ -214,7 +250,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 41.0, 457.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 40.0, 457.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -255,7 +290,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 41.0, 267.0, 118.0, 22.0 ],
-									"style" : ""
+									"style" : "",
+									"text" : "1.37"
 								}
 
 							}
@@ -309,7 +345,7 @@
 									"filename" : "helpdetails.js",
 									"id" : "obj-19",
 									"ignoreclick" : 1,
-									"jsarguments" : [ "ossia.parameter" ],
+									"jsarguments" : [ "ossia.remote" ],
 									"maxclass" : "jsui",
 									"numinlets" : 1,
 									"numoutlets" : 1,
@@ -337,6 +373,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-3", 1 ],
+									"source" : [ "obj-2", 1 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-4", 1 ],
 									"midpoints" : [ 50.5, 254.0, 149.5, 254.0 ],
 									"source" : [ "obj-2", 0 ]
@@ -353,6 +396,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-15", 1 ],
+									"order" : 0,
+									"source" : [ "obj-20", 2 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-5", 0 ],
+									"order" : 1,
 									"source" : [ "obj-20", 2 ]
 								}
 
@@ -374,6 +426,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-12", 1 ],
+									"order" : 0,
 									"source" : [ "obj-8", 2 ]
 								}
 
@@ -382,6 +435,14 @@
 								"patchline" : 								{
 									"destination" : [ "obj-13", 0 ],
 									"source" : [ "obj-8", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-9", 0 ],
+									"order" : 1,
+									"source" : [ "obj-8", 2 ]
 								}
 
 							}
@@ -467,7 +528,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 356.0, 640.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 358.0, 640.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -496,7 +556,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 96.0, 640.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 98.0, 640.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -527,7 +586,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 585.5, 498.0, 186.0, 64.0 ],
-									"presentation_rect" : [ 585.5, 492.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "ossia.remote can convert to/from any unit belonging to the same kind",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -562,7 +620,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 356.0, 557.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 301.0, 535.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -591,7 +648,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 96.0, 557.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 40.0, 536.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -620,7 +676,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 241.0, 428.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 187.0, 407.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -1026,7 +1081,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 315.0, 238.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 431.0, 605.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -1223,7 +1277,6 @@
 									}
 ,
 									"patching_rect" : [ 291.0, 274.0, 247.0, 286.0 ],
-									"presentation_rect" : [ 403.0, 271.0, 0.0, 0.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -1696,7 +1749,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 922.0, 490.0, 236.0, 64.0 ],
-									"presentation_rect" : [ 902.0, 677.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "remotes within a view (see ossia.view maxhelp for more info) automatically bind to the parameter in the model the view is binding to",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1841,7 +1893,6 @@
 									}
 ,
 									"patching_rect" : [ 850.0, 366.0, 313.0, 286.0 ],
-									"presentation_rect" : [ 900.0, 366.0, 0.0, 0.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -1856,7 +1907,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 553.0, 250.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 229.0, 442.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -1888,7 +1938,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 6.5, 302.5, 195.0, 49.0 ],
-									"presentation_rect" : [ 9.5, 300.5, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Multiple remotes can bind to a parameter",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1905,7 +1954,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 228.0, 350.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 227.0, 350.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -1919,7 +1967,6 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 228.0, 316.0, 160.0, 22.0 ],
-									"presentation_rect" : [ 227.0, 316.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_parameter"
 								}
