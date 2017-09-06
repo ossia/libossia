@@ -8,6 +8,8 @@
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 
+#include <git_info.h>
+
 namespace ossia
 {
 namespace pd
@@ -74,7 +76,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   ossia_pd::ossia_class = c;
 
   post("Welcome to ossia library");
-  post("build on %s at %s", __DATE__, __TIME__);
+  post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
 }
 
 // initializers

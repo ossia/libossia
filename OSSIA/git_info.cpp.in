@@ -1,0 +1,16 @@
+#define GIT_SHA "@GIT_SHA@"
+#define GIT_DATE "@GIT_DATE@"
+#include "git_info.h"
+namespace ossia {
+
+std::string get_commit_sha()
+{
+  return std::string(GIT_SHA);
+}
+
+std::string get_commit_date()
+{
+  return std::string(GIT_DATE);
+}
+
+}
