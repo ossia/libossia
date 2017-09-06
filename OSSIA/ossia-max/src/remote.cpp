@@ -185,6 +185,8 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       x->set_default();
     else if ( attrname == gensym("unit") )
       x->set_unit();
+    else if ( attrname == gensym("rate") )
+      x->set_rate();
     else if ( attrname == gensym("hidden") )
       x->set_hidden();
     else if ( attrname == gensym("priority") )
@@ -290,7 +292,7 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     object_dequarantining<remote>(this);
-    //clock_delay(m_clock, 1);
+    parameter_base::bang(this);
     clock_delay(m_poll_clock,1);
   }
   else
