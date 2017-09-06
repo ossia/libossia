@@ -22,7 +22,6 @@ bool find_peer(object_base* x)
     else if (x->m_otype == object_class::client)
       derived_classname = gensym("ossia.device");
 
-
     t_object *patcher, *box, *obj;
     object_obex_lookup(x, gensym("#P"), &patcher);
     for (box = jpatcher_get_firstobject(patcher); box; box =

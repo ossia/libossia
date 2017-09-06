@@ -428,14 +428,19 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
       if (node && param)
       {
-        if (argc == 1)
+        if (argc == 0 && s)
+        {
+          ossia::value v = std::string(s->s_name);
+          node->get_parameter()->push_value(v);
+        }
+        else if (argc == 1)
         {
           ossia::value v;
           // convert one element array to single element
           switch(argv->a_type)
           {
             case A_SYM:
-              v = ossia::value(std::string(atom_getsym(argv)->s_name));
+              v = std::string(atom_getsym(argv)->s_name);
               break;
             case A_FLOAT:
               v = ossia::value(atom_getfloat(argv));
