@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 298.0, 56.0, 1348.0, 767.0 ],
+		"rect" : [ 162.0, 201.0, 1348.0, 767.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 298.0, 82.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -109,7 +109,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
-									"outlettype" : [ "clear" ],
+									"outlettype" : [ "" ],
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
@@ -514,7 +514,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -543,6 +543,279 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-26",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 435.0, 35.0, 21.0 ],
+									"presentation_rect" : [ 727.0, 494.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : " "
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-25",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 492.0, 35.0, 21.0 ],
+									"presentation_rect" : [ 725.0, 397.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : " "
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-24",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 351.0, 35.0, 21.0 ],
+									"presentation_rect" : [ 727.0, 255.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : " "
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-23",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 323.0, 35.0, 21.0 ],
+									"presentation_rect" : [ 941.0, 401.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : " "
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bgcolor" : [ 0.113725, 0.607843, 0.607843, 0.99 ],
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-22",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 710.0, 108.0, 362.5, 21.0 ],
+									"presentation_rect" : [ 913.0, 44.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Available units",
+									"textcolor" : [ 1.0, 1.0, 1.0, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"id" : "obj-20",
+									"linecount" : 9,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 185.0, 142.0, 136.0 ],
+									"presentation_rect" : [ 941.0, 264.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "second (time.second)\nbark (time.bark)\nhz (time.hz)\ncents (time.cents)\nhz (time.hz)\nmel (time.mel)\nmidinote (time.midinote)\nms (time.ms)\nspeed (time.speed"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-21",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 162.0, 37.0, 21.0 ],
+									"presentation_rect" : [ 941.0, 231.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Time"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"id" : "obj-16",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 369.0, 136.0, 64.0 ],
+									"presentation_rect" : [ 882.0, 557.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "linear (gain.linear)\nmidigain (gain.midigain)\ndb (gain.db)\ndb-raw (gain.db-raw)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-17",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 346.0, 35.0, 21.0 ],
+									"presentation_rect" : [ 882.0, 524.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Gain"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"id" : "obj-14",
+									"linecount" : 8,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 481.0, 112.0, 122.0 ],
+									"presentation_rect" : [ 729.0, 572.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "argb (color.argb)\nrgba (color.rgba)\nrgb (color.rgb)\nbgr (color.bgr)\nargb8 (color.argb8)\nhsv (color.hsv)\ncmy8 (color.cmy8)\nxyz (color.xyz)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-15",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 926.5, 458.0, 40.0, 21.0 ],
+									"presentation_rect" : [ 729.0, 539.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Color"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"id" : "obj-12",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 538.5, 198.0, 50.0 ],
+									"presentation_rect" : [ 726.0, 509.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "quaternion (orientation.quaternion)\neuler (orientation.euler)\naxis (orientation.axis)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-13",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 515.0, 72.0, 21.0 ],
+									"presentation_rect" : [ 726.0, 476.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Orientation"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"id" : "obj-10",
+									"linecount" : 6,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 397.0, 171.0, 93.0 ],
+									"presentation_rect" : [ 724.0, 295.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "cart3D (position.cart3D)\ncart2D (position.cart2D)\nspherical (position.spherical)\npolar (position.polar)\nopenGL (position.openGL)\ncylindrical (position.cylindrical)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-11",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 374.0, 54.0, 21.0 ],
+									"presentation_rect" : [ 724.0, 262.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Position"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"id" : "obj-9",
+									"linecount" : 11,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 185.0, 136.0, 165.0 ],
+									"presentation_rect" : [ 724.0, 91.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "m (distance.m)\nkm (distance.km)\ndm (distance.dm)\ncm (distance.cm)\nmm (distance.mm)\num (distance.um)\nnm (distance.nm)\npm (distance.pm)\ninches (distance.inches)\nfeet (distance.feet)\nmiles (distance.miles)"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontface" : 1,
+									"fontname" : "Lato Regular",
+									"id" : "obj-8",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 726.0, 162.0, 57.0, 21.0 ],
+									"style" : "",
+									"text" : "Distance"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-1",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 114.0, 416.0, 275.0, 50.0 ],
+									"presentation_rect" : [ 114.0, 416.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Remotes can be specified a unit belonging to the chosen dataspace and automatically convert parameter value",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
