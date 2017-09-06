@@ -362,7 +362,7 @@ void parameter_base::get_default(parameter_base*x)
     ossia::value v = *def_val;
     v.apply(vm);
 
-    x->m_default_size = std::min(va.size(), (long unsigned int) OSSIA_PD_MAX_ATTR_SIZE);
+    x->m_default_size = va.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : va.size();
 
     for (int i=0; i < x->m_default_size; i++ )
       x->m_default[i] = va[i];
