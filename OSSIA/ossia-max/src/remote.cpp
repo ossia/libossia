@@ -17,27 +17,26 @@ extern "C" void ossia_remote_setup()
   auto& ossia_library = ossia_max::instance();
 
   // instantiate the ossia.remote class
-  ossia_library.ossia_remote_class = class_new(
+  t_class* c = class_new(
       "ossia.remote", (method)remote::create, (method)remote::destroy,
       (short)sizeof(remote), 0L, A_GIMME, 0);
 
-  if (ossia_library.ossia_remote_class)
+  if (c)
   {
-    class_addmethod(ossia_library.ossia_remote_class, (method)remote::bind,
+    parameter_base::declare_attributes(c);
+    class_addmethod(c, (method)remote::bind,
                     "bind", A_SYM, 0);
     class_addmethod(
-        ossia_library.ossia_remote_class, (method)object_dump<remote>,
+        c, (method)object_dump<remote>,
         "dump", A_NOTHING, 0);
-    //        class_addmethod(ossia_library.ossia_remote_class,
-    //        (method)ossia_remote_click,             "click",
-    //        A_NOTHING,     0);
 
     class_addmethod(
-        ossia_library.ossia_remote_class, (method)remote::assist,
+        c, (method)remote::assist,
         "assist", A_CANT, 0);
   }
 
-  class_register(CLASS_BOX, ossia_library.ossia_remote_class);
+  class_register(CLASS_BOX, c);
+  ossia_library.ossia_remote_class = c;
 }
 
 namespace ossia
@@ -58,22 +57,26 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    // make outlets
-    x->m_dumpout
-        = outlet_new(x, NULL); // anything outlet to dump remote state
-
-    object_obex_store(x, _sym_dumpout, (t_object*)x->m_dumpout);
-
-    x->m_data_out = outlet_new(x, NULL); // anything outlet to output data
-    x->m_set_out
-        = outlet_new(x, NULL); // anything outlet to output data for ui
+    // make outlets:
+    // anything outlet to dump remote state
+    x->m_dumpout = outlet_new(x, NULL);
+    // anything outlet to output data
+    x->m_data_out = outlet_new(x, NULL);
+    // anything outlet to output data for ui
+    x->m_set_out  = outlet_new(x, NULL);
 
     x->m_dev = nullptr;
-
-    //        x->m_clock = clock_new(x, (method)t_object_base::tick);
     x->m_clock = clock_new(x, (method)parameter_base::bang);
-
+    x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
+    x->m_enable = 1;
+    x->m_mute = 0;
+    x->m_rate = 10;
     x->m_otype = object_class::remote;
+
+    // Register object to istself so it can receive notification when attribute changed
+    // This is not documented anywhere, please look at :
+    // https://cycling74.com/forums/notify-when-attribute-changes
+    object_attach_byptr_register(x, x, CLASS_BOX);
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -198,6 +201,7 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     object_dequarantining<remote>(this);
+    clock_delay(m_poll_clock,1);
   }
   else
     object_quarantining<remote>(this);
