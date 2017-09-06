@@ -78,7 +78,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
+        x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
       }
     }
 

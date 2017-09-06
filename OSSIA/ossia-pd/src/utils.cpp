@@ -3,6 +3,7 @@
 #include "utils.hpp"
 
 #include <ossia/network/common/path.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace ossia
 {
@@ -376,14 +377,12 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
 ossia::pd::address_scope get_address_scope(const std::string& addr)
 {
   address_scope type = address_scope::relative;
-  if ( addr.length() > 0 )
-  {
-    if (addr[0] == '/'
-        && addr.length() > 1 && addr[1] != '/') // escape the '//' special combinaison
-      type = address_scope::absolute;
-    else if ( addr.find(":/") != std::string::npos )
+  if (boost::starts_with(addr, "//") )
+    type = address_scope::relative;
+  else if ( boost::starts_with(addr, "/") )
+    type = address_scope::absolute;
+  else if ( addr.find(":/") != std::string::npos )
       type = address_scope::global;
-  }
   return type;
 }
 

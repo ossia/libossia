@@ -40,7 +40,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
  * @param addr: the address to process
  * @return
  */
-ossia::max::address_scope get_parameter_type(const std::string& addr);
+ossia::max::address_scope get_address_scope(const std::string& addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

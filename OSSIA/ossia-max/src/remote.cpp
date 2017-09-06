@@ -89,7 +89,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
+        x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
       }
     }
 
@@ -391,7 +391,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 void remote::bind(remote* x, t_symbol* address)
 {
   x->m_name = address;
-  x->m_addr_scope = ossia::max::get_parameter_type(x->m_name->s_name);
+  x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }
