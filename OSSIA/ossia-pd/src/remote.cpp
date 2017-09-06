@@ -191,17 +191,42 @@ void remote::get_rate(remote*x)
 
 t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
+  // TODO : forward notification to parent class
   if (msg == gensym("attr_modified"))
   {
-    if ( s == gensym("unit") )
-      x->set_unit();
-    else if ( s == gensym("mute") )
-      if (x->m_mute)
-        x->unregister();
-      else
-        obj_register(x);
-    else if ( s == gensym("rate") )
-      x->set_rate();
+      if( s == gensym("range") )
+        x->set_range();
+      else if ( s == gensym("bounding_mode") )
+        x->set_bounding_mode();
+      else if ( s == gensym("min") || s == gensym("max") )
+        x->set_minmax();
+      else if ( s == gensym("default") )
+        x->set_default();
+      else if ( s == gensym("unit") )
+        x->set_unit();
+      else if ( s == gensym("hidden") )
+        x->set_hidden();
+      else if ( s == gensym("priority") )
+        x->set_priority();
+      else if ( s == gensym("access_mode") )
+        x->set_access_mode();
+      else if ( s == gensym("repetition_filter") )
+        x->set_repetition_filter();
+      else if ( s == gensym("tags") )
+        x->set_tags();
+      else if ( s == gensym("description") )
+        x->set_description();
+      else if ( s == gensym("enable") )
+        x->set_enable();
+      else if ( s == gensym("type") )
+        x->set_type();
+      else if ( s == gensym("rate") )
+        x->set_rate();
+      else if ( s == gensym("mute") )
+        if (x->m_mute)
+          x->unregister();
+        else
+          obj_register(x);
   }
   return {};
 }
