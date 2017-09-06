@@ -118,7 +118,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 422.0, 207.0, 951.0, 798.0 ],
+						"rect" : [ 0.0, 26.0, 951.0, 798.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -150,12 +150,29 @@
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
-									"id" : "obj-4",
-									"linecount" : 6,
+									"id" : "obj-3",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 121.0, 363.0, 270.0, 93.0 ],
+									"patching_rect" : [ 121.0, 325.0, 205.0, 35.0 ],
+									"presentation_rect" : [ 121.5, 327.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "Another submodel named sub_model (see inside ossia.model argument)",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-4",
+									"linecount" : 4,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 4.5, 59.0, 440.0, 64.0 ],
 									"style" : "",
 									"text" : "If 2 or more models have the same name at the same level (like in this example, with two submodels being named identically), they will be registered as the next available instance (instances are appended to the node name, after a dot separator)",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -560,8 +577,9 @@
 													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
-													"numinlets" : 0,
-													"numoutlets" : 0,
+													"numinlets" : 1,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
 													"patching_rect" : [ 46.0, 83.0, 137.0, 22.0 ],
 													"style" : "",
 													"text" : "ossia.model sub_model"
@@ -660,8 +678,9 @@
 													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
-													"numinlets" : 0,
-													"numoutlets" : 0,
+													"numinlets" : 1,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
 													"patching_rect" : [ 46.0, 83.0, 137.0, 22.0 ],
 													"style" : "",
 													"text" : "ossia.model sub_model"
@@ -698,7 +717,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 8.0, 7.0, 651.5, 79.0 ]
+									"patching_rect" : [ 8.0, 7.0, 649.5, 50.0 ]
 								}
 
 							}
@@ -761,7 +780,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 951.0, 798.0 ],
+						"rect" : [ 422.0, 207.0, 951.0, 798.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1203,8 +1222,9 @@
 													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
 													"id" : "obj-2",
 													"maxclass" : "newobj",
-													"numinlets" : 0,
-													"numoutlets" : 0,
+													"numinlets" : 1,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
 													"patching_rect" : [ 9.0, 23.0, 158.0, 22.0 ],
 													"style" : "",
 													"text" : "ossia.model another_model"
@@ -1302,8 +1322,9 @@
 									"id" : "obj-2",
 									"linecount" : 2,
 									"maxclass" : "newobj",
-									"numinlets" : 0,
-									"numoutlets" : 0,
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.0, 247.0, 272.0, 35.0 ],
 									"style" : "",
 									"text" : "ossia.model my_model @description \"A patchers declared as a model\" @tags maxhelp demo"
@@ -1377,11 +1398,8 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "ossia.model.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/ossia/help",
-				"patcherrelativepath" : ".",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "ossia.model.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.parameter.mxo",
