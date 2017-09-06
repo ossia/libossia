@@ -4,11 +4,11 @@
 <c74object name="ossia.remote" module="Ossia" category="Ossia">
 
 	<digest>
-		Remote
+		Monitor and remote control OSSIA parameter
 	</digest>
 
 	<description>
-		Remote
+		ossia.remote allows to bind to an ossia.parameter for remote control or monitoring. It can bind to local or distant devices
 	</description>
 
 	
@@ -37,6 +37,9 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.parameter" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.device" type="refpage"/>		
 	</seealsolist>
 
 	
