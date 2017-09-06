@@ -17,7 +17,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 mkdir build
 cd build
 
-cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release c:\projects\libossia
+# ok: cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release c:\projects\libossia
+cmake -G "${env:CMAKE_GENERATOR_NAME}" -DCMAKE_BUILD_TYPE=${env:configuration} c:\projects\libossia
 # Write-Host cmake -G "${env:CMAKE_GENERATOR_NAME}" ${env:CMAKE_OPTION}  .. ">" C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}.log
 # cmake -G "${env:CMAKE_GENERATOR_NAME}" -DCMAKE_BUILD_TYPE=${env:configuration} ${env:CMAKE_OPTION}  C:\projects\libossia  > C:\projects\libossia\config-${env:APPVEYOR_BUILD_TYPE}.log
 exit
