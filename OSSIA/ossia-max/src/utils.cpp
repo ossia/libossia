@@ -145,7 +145,7 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
     if (atom[i].a_type == A_FLOAT)
       list.push_back(atom_getfloat(&atom[i]));
     else if (atom[i].a_type == A_LONG)
-      list.push_back(atom_getlong(&atom[i]));
+      list.push_back(static_cast<int>(atom_getlong(&atom[i])));
     else if (atom[i].a_type == A_SYM)
       list.push_back(std::string(atom_getsym(&atom[i])->s_name));
   }

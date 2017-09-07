@@ -205,7 +205,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       if (x->m_mute)
         x->unregister();
       else
-        obj_register(x);
+        max_object_register(x);
     }
 
   }
