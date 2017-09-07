@@ -4,11 +4,11 @@
 <c74object name="ossia.device" module="Ossia" category="Ossia">
 
 	<digest>
-		Device
+		Create a local device
 	</digest>
 
 	<description>
-		Device
+		ossia.device creates a local device under which will register all models and parameters in the same patcher or below. Namespace of this device can then be exposed to local or distant applications through various protocoles
 	</description>
 
 	
@@ -37,6 +37,9 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.model" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.client" type="refpage"/>		
 	</seealsolist>
 
 	
