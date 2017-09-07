@@ -304,17 +304,17 @@ void parameter_base::set_default()
 
 void parameter_base::get_range(parameter_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
+  // outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
 }
 
 void parameter_base::get_min(parameter_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
+  // outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
 }
 
 void parameter_base::get_max(parameter_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
+  // outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
 }
 
 void parameter_base::get_bounding_mode(parameter_base*x)
@@ -323,11 +323,7 @@ void parameter_base::get_bounding_mode(parameter_base*x)
   ossia::max::t_matcher& m = x->m_matchers[0];
   ossia::net::node_base* node = m.get_node();
   ossia::net::parameter_base* param = node->get_parameter();
-
   x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
-  t_atom a;
-  A_SETSYM(&a,x->m_bounding_mode);
-  outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
 }
 
 void parameter_base::get_default(parameter_base*x)
@@ -352,9 +348,6 @@ void parameter_base::get_default(parameter_base*x)
   } else {
     x->m_default_size = 0;
   }
-
-  outlet_anything(x->m_dumpout, gensym("default"),
-                  x->m_default_size, x->m_default);
 }
 
 void parameter_base::get_type(parameter_base*x)
@@ -366,10 +359,6 @@ void parameter_base::get_type(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_type = val_type2symbol(param->get_value_type());
-
-  t_atom a;
-  A_SETSYM(&a,x->m_type);
-  outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
 }
 
 void parameter_base::get_access_mode(parameter_base*x)
@@ -380,10 +369,6 @@ void parameter_base::get_access_mode(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_access_mode = access_mode2symbol(param->get_access());
-
-  t_atom a;
-  A_SETSYM(&a, x->m_access_mode);
-  outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
 }
 
 void parameter_base::get_repetition_filter(parameter_base*x)
@@ -394,10 +379,6 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_repetition = !param->get_repetition_filter();
-
-  t_atom a;
-  A_SETFLOAT(&a, x->m_repetition_filter);
-  outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
 }
 
 void parameter_base::get_enable(parameter_base*x)
@@ -408,10 +389,6 @@ void parameter_base::get_enable(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_enable = !param->get_disabled();
-
-  t_atom a;
-  A_SETFLOAT(&a,x->m_enable);
-  outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
