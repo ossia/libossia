@@ -25,11 +25,11 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
   } else if ( attribute == ossia::net::text_bounding_mode() ){
     get_bounding_mode(x);
   } else if ( attribute == ossia::net::text_disabled() ){
-    object_post((t_object*)x, "update enable attribute");
+    get_enable(x);
   } else if ( attribute == ossia::net::text_repetition_filter() ){
-    object_post((t_object*)x, "update repetition_filter attribute");
+    get_repetition_filter(x);
   } else if ( attribute == ossia::net::text_default_value() ) {
-    object_post((t_object*)x, "update default value");
+    get_default(x);
   } else {
     object_base::update_attribute((node_base*)x, attribute);
   }
