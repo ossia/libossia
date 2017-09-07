@@ -100,9 +100,6 @@ extern void object_dequarantining(T*);
 template <typename T>
 extern bool object_is_quarantined(T*);
 
-template <typename T>
-extern void object_dump(T*);
-
 struct object_base;
 
 void object_namespace(object_base* x);

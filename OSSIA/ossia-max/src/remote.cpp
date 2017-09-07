@@ -24,12 +24,9 @@ extern "C" void ossia_remote_setup()
   if (c)
   {
     parameter_base::class_setup(c);
-    class_addmethod(c, (method)remote::bind,
-                    "bind", A_SYM, 0);
     class_addmethod(
-        c, (method)object_dump<remote>,
-        "dump", A_NOTHING, 0);
-
+          c, (method)remote::bind,
+          "bind", A_SYM, 0);
     class_addmethod(
         c, (method)remote::assist,
         "assist", A_CANT, 0);

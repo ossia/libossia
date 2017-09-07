@@ -246,7 +246,6 @@ extern "C" void setup_ossia0x2eview(void)
 
     node_base::declare_attributes(c);
 
-    eclass_addmethod(c, (method) obj_dump<view>,                "dump",          A_NULL,   0);
     eclass_addmethod(c, (method) view::click,                    "click",         A_NULL,   0);
     eclass_addmethod(c, (method) view::bind,                     "bind",          A_SYMBOL, 0);
   }
