@@ -4,7 +4,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/mapper/mapper.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/misc_visitors.hpp>
 #include <iostream>
 

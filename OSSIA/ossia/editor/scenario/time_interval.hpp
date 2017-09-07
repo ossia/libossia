@@ -11,7 +11,7 @@
 #include <ossia_export.h>
 
 /**
- * \file time_constraint.hpp
+ * \file time_interval.hpp
  */
 namespace ossia
 {
@@ -20,17 +20,17 @@ class time_process;
 struct time_value;
 
 /**
- * @brief The time_constraint class
+ * @brief The time_interval class
  *
- * \brief #time_constraint is use to describe temporal structure precising
+ * \brief #time_interval is use to describe temporal structure precising
  * which
  * amount of time (the duration) are between two #time_events.
  *
  * \details The duration can be fixed or between a minimal and a maximal
  * duration. \n
- * #time_constraint is also a #Clock and a #TimeProcess container.
+ * #time_interval is also a #Clock and a #TimeProcess container.
  */
-class OSSIA_EXPORT time_constraint
+class OSSIA_EXPORT time_interval
 {
 
 public:
@@ -61,7 +61,7 @@ public:
   void tick(ossia::time_value usec);
   void tick(ossia::time_value usec, double ratio);
 
-  /*! to get the constraint execution back
+  /*! to get the interval execution back
    \param const #TimeValue process clock position
    \param const #TimeValue process clock date
    \param std::shared_ptr<#State> */
@@ -69,57 +69,57 @@ public:
       double, ossia::time_value, const ossia::state_element&)>;
 
   /*! constructor
-   \details by default a #time_constraint has an infinite duration with no
+   \details by default a #time_interval has an infinite duration with no
    minimal duration and an infinite maximal duration.
-   \param #time_constraint::ExecutionCallback to use to be notified at each
+   \param #time_interval::ExecutionCallback to use to be notified at each
    step
-   \param #std::shared_ptr<TimeEvent> event where the #time_constraint starts
-   \param #std::shared_ptr<TimeEvent> event where the #time_constraint ends
-   \param const #TimeValue& nominal duration of the #time_constraint
-   \param const #TimeValue& minimal duration of the #time_constraint
-   \param const #TimeValue& maximal duration of the #time_constraint
-   \return std::shared_ptr<#time_constraint> */
-  static std::shared_ptr<time_constraint> create(
-      time_constraint::exec_callback, time_event&, time_event&,
+   \param #std::shared_ptr<TimeEvent> event where the #time_interval starts
+   \param #std::shared_ptr<TimeEvent> event where the #time_interval ends
+   \param const #TimeValue& nominal duration of the #time_interval
+   \param const #TimeValue& minimal duration of the #time_interval
+   \param const #TimeValue& maximal duration of the #time_interval
+   \return std::shared_ptr<#time_interval> */
+  static std::shared_ptr<time_interval> create(
+      time_interval::exec_callback, time_event&, time_event&,
       time_value = Infinite, time_value = Zero, time_value = Infinite);
 
-  time_constraint(
-      time_constraint::exec_callback, time_event&, time_event&,
+  time_interval(
+      time_interval::exec_callback, time_event&, time_event&,
       time_value = Infinite, time_value = Zero, time_value = Infinite);
 
   /*! desctructor */
-  ~time_constraint();
+  ~time_interval();
 
-  /*! start #time_constraint's #Clock */
+  /*! start #time_interval's #Clock */
   void start();
   void start(ossia::state&);
 
-  /*! stop #time_constraint's #Clock */
+  /*! stop #time_interval's #Clock */
   void stop();
 
-  /*! start #time_constraint's #Clock */
+  /*! start #time_interval's #Clock */
   void pause();
 
-  /*! stop #time_constraint's #Clock */
+  /*! stop #time_interval's #Clock */
   void resume();
 
-  /*! set #time_constraint's #Clock offset and process a state at offset date
+  /*! set #time_interval's #Clock offset and process a state at offset date
    \details the returned #State is made of as many as sub States for each
-   TimeProcess the #time_constraint manages
-   \details don't call offset when the #time_constraint is running
+   TimeProcess the #time_interval manages
+   \details don't call offset when the #time_interval is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
   ossia::state_element offset(ossia::time_value);
 
-  /*! get a #State from the constraint depending on its #Clock date
+  /*! get a #State from the interval depending on its #Clock date
    \details the returned #State is made of as many as sub States for each
-   TimeProcess the #time_constraint manages
-   \details don't call state when the #time_constraint is not running
+   TimeProcess the #time_interval manages
+   \details don't call state when the #time_interval is not running
    \return std::shared_ptr<#State> */
   ossia::state_element state();
 
-  /*! sets a new callback for the constraint
-    \param #time_constraint::ExecutionCallback to use to be notified at each
+  /*! sets a new callback for the interval
+    \param #time_interval::ExecutionCallback to use to be notified at each
     step
     */
   void set_callback(exec_callback);
@@ -127,54 +127,54 @@ public:
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
 
-  /*! get the #time_constraint nominal duration
+  /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
   const time_value& get_nominal_duration() const;
 
-  /*! set the #time_constraint duration
+  /*! set the #time_interval duration
    \param const #TimeValue& duration
-   \return #time_constraint the constraint */
-  time_constraint& set_nominal_duration(ossia::time_value);
+   \return #time_interval the interval */
+  time_interval& set_nominal_duration(ossia::time_value);
 
-  /*! get the #time_constraint minimal duration
+  /*! get the #time_interval minimal duration
    \return const #TimeValue& minimal duration */
   const time_value& get_min_duration() const;
 
-  /*! set the #time_constraint minimal duration
+  /*! set the #time_interval minimal duration
    \param const #TimeValue& minimal duration
-   \return #time_constraint the constraint */
-  time_constraint& set_min_duration(ossia::time_value);
+   \return #time_interval the interval */
+  time_interval& set_min_duration(ossia::time_value);
 
-  /*! get the #time_constraint maximal duration
+  /*! get the #time_interval maximal duration
    \return const #TimeValue& maximal duration */
   const time_value& get_max_duration() const;
 
-  /*! set the #time_constraint maximal duration
+  /*! set the #time_interval maximal duration
    \param const #TimeValue& maximal duration
-   \return #time_constraint the constraint */
-  time_constraint& set_max_duration(ossia::time_value);
+   \return #time_interval the interval */
+  time_interval& set_max_duration(ossia::time_value);
 
-  /*! get the event from where the #time_constraint starts
+  /*! get the event from where the #time_interval starts
    \return std::shared_ptr<#time_event> start event */
   time_event& get_start_event() const;
 
-  /*! get the event from where the #time_constraint starts
+  /*! get the event from where the #time_interval starts
    \return std::shared_ptr<#time_event> start event */
   time_event& get_end_event() const;
 
   /*! add a #TimeProcess
    \details it also stores the #TimeProcess's start and end #States into the
-   #time_constraint's start and end #time_events
+   #time_interval's start and end #time_events
    \param std::shared_ptr<#TimeProcess> to insert */
   void add_time_process(std::shared_ptr<time_process>);
 
   /*! remove a #TimeProcess
    \details it also removes the #TimeProcess's start and end #States from the
-   #time_constraint's start and end #time_events
+   #time_interval's start and end #time_events
    \param std::shared_ptr<#TimeProcess> to insert */
   void remove_time_process(time_process*);
 
-  /*! get time processes attached to the #time_constraint
+  /*! get time processes attached to the #time_interval
    \return #Container<#TimeProcess> */
   const std::vector<std::shared_ptr<time_process>>& get_time_processes() const
   {
@@ -185,7 +185,7 @@ private:
   ossia::state make_state();
 
   std::vector<std::shared_ptr<time_process>> m_processes;
-  time_constraint::exec_callback m_callback;
+  time_interval::exec_callback m_callback;
 
   time_event& m_start;
   time_event& m_end;

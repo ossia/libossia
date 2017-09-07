@@ -12,7 +12,7 @@ class LoopTest : public QObject
 {
     Q_OBJECT
 
-    void constraint_callback(double position, time_value date, const state_element& element)
+    void interval_callback(double position, time_value date, const state_element& element)
     {
         ossia::launch(element);
     }
@@ -27,12 +27,12 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
+        auto interval_callback = std::bind(&LoopTest::interval_callback, this, _1, _2, _3);
         auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
 
-        loop l(25._tv, constraint_callback, event_callback, event_callback);
+        loop l(25._tv, interval_callback, event_callback, event_callback);
 
-        QVERIFY(l.get_time_constraint() != nullptr);
+        QVERIFY(l.get_time_interval() != nullptr);
         QVERIFY(l.get_start_timesync() != nullptr);
         QVERIFY(l.get_end_timesync() != nullptr);
 
@@ -43,7 +43,7 @@ private Q_SLOTS:
     //! \todo test state()
     void test_execution()
     {
-        auto constraint_callback = std::bind(&LoopTest::constraint_callback, this, _1, _2, _3);
+        auto interval_callback = std::bind(&LoopTest::interval_callback, this, _1, _2, _3);
         auto event_callback = std::bind(&LoopTest::event_callback, this, _1);
 
         auto start_node = std::make_shared<time_sync>();
@@ -52,11 +52,11 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
 
-        auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
+        auto interval = time_interval::create(interval_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
-        ossia::clock c{*constraint};
-        constraint->add_time_process(
-              std::make_unique<loop>(25._tv, constraint_callback, event_callback, event_callback));
+        ossia::clock c{*interval};
+        interval->add_time_process(
+              std::make_unique<loop>(25._tv, interval_callback, event_callback, event_callback));
 
         c.start();
 

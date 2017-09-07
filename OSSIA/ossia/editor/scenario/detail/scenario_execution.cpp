@@ -4,7 +4,7 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <boost/container/flat_map.hpp>
@@ -18,28 +18,28 @@
 namespace ossia
 {
 void scenario::make_happen(
-    time_event& event, constraint_set& started, constraint_set& stopped, ossia::state& st)
+    time_event& event, interval_set& started, interval_set& stopped, ossia::state& st)
 {
   event.m_status = time_event::status::HAPPENED;
 
-  // stop previous TimeConstraints
-  for (auto& timeConstraint : event.previous_time_constraints())
+  // stop previous TimeIntervals
+  for (auto& timeInterval : event.previous_time_intervals())
   {
-    stopped.insert(timeConstraint.get());
+    stopped.insert(timeInterval.get());
   }
 
-  // setup next TimeConstraints
-  for (auto& timeConstraint : event.next_time_constraints())
+  // setup next TimeIntervals
+  for (auto& timeInterval : event.next_time_intervals())
   {
-    timeConstraint->start(st);
-    started.insert(timeConstraint.get());
+    timeInterval->start(st);
+    started.insert(timeInterval.get());
   }
 
   if (event.m_callback)
     (event.m_callback)(event.m_status);
 }
 
-void scenario::make_dispose(time_event& event, constraint_set& stopped)
+void scenario::make_dispose(time_event& event, interval_set& stopped)
 {
   if (event.m_status == time_event::status::HAPPENED)
   {
@@ -51,21 +51,21 @@ void scenario::make_dispose(time_event& event, constraint_set& stopped)
 
   event.m_status = time_event::status::DISPOSED;
 
-  // stop previous TimeConstraints
-  for (auto& timeConstraint : event.previous_time_constraints())
+  // stop previous TimeIntervals
+  for (auto& timeInterval : event.previous_time_intervals())
   {
-    stopped.insert(timeConstraint.get());
+    stopped.insert(timeInterval.get());
   }
 
-  // dispose next TimeConstraints end event if everything is disposed before
-  for (auto& nextTimeConstraint : event.next_time_constraints())
+  // dispose next TimeIntervals end event if everything is disposed before
+  for (auto& nextTimeInterval : event.next_time_intervals())
   {
     bool dispose = true;
 
-    for (auto& previousTimeConstraint :
-         nextTimeConstraint->get_end_event().previous_time_constraints())
+    for (auto& previousTimeInterval :
+         nextTimeInterval->get_end_event().previous_time_intervals())
     {
-      if (previousTimeConstraint->get_start_event().get_status()
+      if (previousTimeInterval->get_start_event().get_status()
           != time_event::status::DISPOSED)
       {
         dispose = false;
@@ -74,7 +74,7 @@ void scenario::make_dispose(time_event& event, constraint_set& stopped)
     }
 
     if (dispose)
-      nextTimeConstraint->get_end_event().dispose();
+      nextTimeInterval->get_end_event().dispose();
   }
 
   if (event.m_callback)
@@ -83,7 +83,7 @@ void scenario::make_dispose(time_event& event, constraint_set& stopped)
 
 void scenario::process_this(
     time_sync& node, std::vector<time_event*>& statusChangedEvents,
-    constraint_set& started, constraint_set& stopped, ossia::state& st)
+    interval_set& started, interval_set& stopped, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
@@ -100,17 +100,17 @@ void scenario::process_this(
       {
         bool minimalDurationReached = true;
 
-        for (const std::shared_ptr<ossia::time_constraint>& timeConstraint :
-             timeEvent->previous_time_constraints())
+        for (const std::shared_ptr<ossia::time_interval>& timeInterval :
+             timeEvent->previous_time_intervals())
         {
-          const auto& ev = timeConstraint->get_start_event();
-          // previous TimeConstraints with a DISPOSED start event are ignored
+          const auto& ev = timeInterval->get_start_event();
+          // previous TimeIntervals with a DISPOSED start event are ignored
           if (ev.get_status() == time_event::status::DISPOSED)
           {
             continue;
           }
 
-          // previous TimeConstraint with a none HAPPENED start event
+          // previous TimeInterval with a none HAPPENED start event
           // can't have reached its minimal duration
           if (ev.get_status() != time_event::status::HAPPENED)
           {
@@ -118,16 +118,16 @@ void scenario::process_this(
             break;
           }
 
-          // previous TimeConstraint which doesn't reached its minimal duration
+          // previous TimeInterval which doesn't reached its minimal duration
           // force to quit
-          if (timeConstraint->get_date() < timeConstraint->get_min_duration())
+          if (timeInterval->get_date() < timeInterval->get_min_duration())
           {
             minimalDurationReached = false;
             break;
           }
         }
 
-        // access to PENDING status once all previous TimeConstraints allow it
+        // access to PENDING status once all previous TimeIntervals allow it
         if (minimalDurationReached)
           timeEvent->set_status(time_event::status::PENDING);
         else
@@ -139,10 +139,10 @@ void scenario::process_this(
       {
         node.m_pending.push_back(timeEvent.get());
 
-        for (const std::shared_ptr<ossia::time_constraint>& timeConstraint :
-             timeEvent->previous_time_constraints())
+        for (const std::shared_ptr<ossia::time_interval>& timeInterval :
+             timeEvent->previous_time_intervals())
         {
-          if (timeConstraint->get_date() >= timeConstraint->get_max_duration())
+          if (timeInterval->get_date() >= timeInterval->get_max_duration())
           {
             maximalDurationReached = true;
             break;
@@ -179,7 +179,7 @@ void scenario::process_this(
   }
 
   //! \todo force triggering if at leat one TimeEvent has
-  // at least one TimeConstraint over its maximal duration
+  // at least one TimeInterval over its maximal duration
 
   // update the expression one time
   // then observe and evaluate TimeSync's expression before to trig
@@ -242,15 +242,15 @@ enum progress_mode
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void update_overtick(
-    time_constraint& constraint, time_sync* end_node,
+    time_interval& interval, time_sync* end_node,
     ossia::time_value tick_us, ossia::time_value cst_old_date,
     overtick_map& node_tick_dur)
 {
   // Store the over-ticking min / max, scaled to speed = 1.
   // That is : tick - (max_dur - tick_start_dur) / speed
-  auto cst_speed = constraint.get_speed();
+  auto cst_speed = interval.get_speed();
   auto ot
-      = tick_us - (constraint.get_max_duration() - cst_old_date) / cst_speed;
+      = tick_us - (interval.get_max_duration() - cst_old_date) / cst_speed;
 
   auto node_it = node_tick_dur.lower_bound(end_node);
   if (node_it != node_tick_dur.end() && (end_node == node_it->first))
@@ -268,19 +268,19 @@ void update_overtick(
   }
 }
 
-void scenario::tick_constraint(time_constraint& constraint, time_value tick)
+void scenario::tick_interval(time_interval& interval, time_value tick)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
-  auto cst_max_dur = constraint.get_max_duration();
+  auto cst_max_dur = interval.get_max_duration();
   if (!cst_max_dur.infinite())
   {
-    auto this_tick = std::min(tick, cst_max_dur - constraint.get_date());
-    constraint.tick(this_tick);
+    auto this_tick = std::min(tick, cst_max_dur - interval.get_date());
+    interval.tick(this_tick);
   }
   else
   {
-    constraint.tick(tick);
+    interval.tick(tick);
   }
 }
 
@@ -301,16 +301,16 @@ state_element scenario::state(ossia::time_value date, double pos)
     ossia::state cur_state;
     m_overticks.clear();
     m_endNodes.clear();
-    constraints_started.clear();
-    constraints_stopped.clear();
+    intervals_started.clear();
+    intervals_stopped.clear();
 
     m_endNodes.reserve(m_nodes.size());
     m_overticks.reserve(m_nodes.size());
-    // First we should find, for each running constraint, the actual maximum
+    // First we should find, for each running interval, the actual maximum
     // tick length
     // that they can be ticked. If it is < tick_us, then they won't execute.
 
-    // Three categories of constraints:
+    // Three categories of intervals:
     // * the ones currently we're starting from
     // * intermediary ones (e.g. fitting entirely in one tick) : we take their
     // state at 0.5
@@ -322,7 +322,7 @@ state_element scenario::state(ossia::time_value date, double pos)
     for (time_sync* n : m_waitingNodes)
     {
       process_this(
-          *n, statusChangedEvents, m_runningConstraints, m_runningConstraints, writeState);
+          *n, statusChangedEvents, m_runningIntervals, m_runningIntervals, writeState);
       if (!statusChangedEvents.empty())
       {
         // TODO won't work if there are multiple waiting nodes
@@ -340,47 +340,47 @@ state_element scenario::state(ossia::time_value date, double pos)
     }
     m_waitingNodes.clear();
 
-    for (time_constraint* constraint : m_runningConstraints)
+    for (time_interval* interval : m_runningIntervals)
     {
-      auto cst_old_date = constraint->get_date();
-      tick_constraint(*constraint, tick_ms);
+      auto cst_old_date = interval->get_date();
+      tick_interval(*interval, tick_ms);
 
-      // ossia::logger().info("scenario::state tick {}: {}", (void*)constraint,
+      // ossia::logger().info("scenario::state tick {}: {}", (void*)interval,
       // tick_us);
 
-      auto end_node = &constraint->get_end_event().get_time_sync();
+      auto end_node = &interval->get_end_event().get_time_sync();
       m_endNodes.insert(end_node);
 
       update_overtick(
-          *constraint, end_node, tick_ms, cst_old_date, m_overticks);
+          *interval, end_node, tick_ms, cst_old_date, m_overticks);
     }
 
-    // Handle time syncs / events... if they are not finished, constraints in
-    // running_constraint are in cur_cst
-    // else, add the next constraints
+    // Handle time syncs / events... if they are not finished, intervals in
+    // running_interval are in cur_cst
+    // else, add the next intervals
 
     for (time_sync* node : m_endNodes)
     {
       process_this(
-          *node, statusChangedEvents, constraints_started,
-          constraints_stopped, writeState);
+          *node, statusChangedEvents, intervals_started,
+          intervals_stopped, writeState);
     }
 
-    for (auto c : constraints_stopped)
-      m_runningConstraints.erase(c);
-    m_runningConstraints.insert(
-        constraints_started.begin(), constraints_started.end());
+    for (auto c : intervals_stopped)
+      m_runningIntervals.erase(c);
+    m_runningIntervals.insert(
+        intervals_started.begin(), intervals_started.end());
 
     m_endNodes.clear();
     do
     {
       if (is_unmuted)
       {
-        // For constraints that did finish, we take their last state :
-        for (auto constraint : constraints_stopped)
+        // For intervals that did finish, we take their last state :
+        for (auto interval : intervals_stopped)
         {
-          flatten_and_filter(cur_state, constraint->state());
-          constraint->stop();
+          flatten_and_filter(cur_state, interval->state());
+          interval->stop();
         }
       }
 
@@ -399,7 +399,7 @@ state_element scenario::state(ossia::time_value date, double pos)
             auto& tn = ev.get_time_sync();
             if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
             {
-              // Propagate the remaining tick to the next constraints
+              // Propagate the remaining tick to the next intervals
               auto it = m_overticks.find(&tn);
               if (it == m_overticks.end())
               {
@@ -410,19 +410,19 @@ state_element scenario::state(ossia::time_value date, double pos)
               time_value remaining_tick
                   = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
 
-              const auto& next = ev.next_time_constraints();
+              const auto& next = ev.next_time_intervals();
               // overticks.reserve(overticks.size() + next.size());
-              for (const auto& constraint : next)
+              for (const auto& interval : next)
               {
                 // ossia::logger().info("scenario::state tick {}: {}",
-                // (void*)constraint, tick_dur);
-                tick_constraint(*constraint, remaining_tick);
+                // (void*)interval, tick_dur);
+                tick_interval(*interval, remaining_tick);
 
-                auto end_node = &constraint->get_end_event().get_time_sync();
+                auto end_node = &interval->get_end_event().get_time_sync();
                 m_endNodes.insert(end_node);
 
                 update_overtick(
-                    *constraint, end_node, remaining_tick, 0._tv, m_overticks);
+                    *interval, end_node, remaining_tick, 0._tv, m_overticks);
               }
             }
             break;
@@ -435,28 +435,28 @@ state_element scenario::state(ossia::time_value date, double pos)
       }
 
       statusChangedEvents.clear();
-      constraints_started.clear();
-      constraints_stopped.clear();
+      intervals_started.clear();
+      intervals_stopped.clear();
 
       for (auto node : m_endNodes)
       {
         process_this(
-            *node, statusChangedEvents, constraints_started,
-            constraints_stopped, writeState);
+            *node, statusChangedEvents, intervals_started,
+            intervals_stopped, writeState);
       }
 
-      for (auto c : constraints_stopped)
-        m_runningConstraints.erase(c);
-      m_runningConstraints.insert(
-          constraints_started.begin(), constraints_started.end());
+      for (auto c : intervals_stopped)
+        m_runningIntervals.erase(c);
+      m_runningIntervals.insert(
+          intervals_started.begin(), intervals_started.end());
       m_endNodes.clear();
 
     } while (!statusChangedEvents.empty());
 
-    // Finally, take the state of the constraints that are still running.
-    for (auto& constraint : m_runningConstraints)
+    // Finally, take the state of the intervals that are still running.
+    for (auto& interval : m_runningIntervals)
     {
-      flatten_and_filter(cur_state, constraint->state());
+      flatten_and_filter(cur_state, interval->state());
     }
 
     m_lastState = cur_state;
@@ -480,7 +480,7 @@ state_element scenario::state(ossia::time_value date, double pos)
     ossia::state cur_state;
     // reset internal mCurrentState
 
-    // process the scenario from the first TimeSync to the running constraints
+    // process the scenario from the first TimeSync to the running intervals
     std::vector<time_event*> statusChangedEvents;
     time_sync& n = *m_nodes[0];
     n.process(statusChangedEvents);
@@ -496,22 +496,22 @@ state_element scenario::state(ossia::time_value date, double pos)
       }
     }
 
-    // make the time of each running TimeConstraint flows and add their state
-    // note : this means TimeConstraint's state can overwrite TimeEvent's state
-    for (const auto& timeConstraint : m_constraints)
+    // make the time of each running TimeInterval flows and add their state
+    // note : this means TimeInterval's state can overwrite TimeEvent's state
+    for (const auto& timeInterval : m_intervals)
     {
-      time_constraint& cst = *timeConstraint;
+      time_interval& cst = *timeInterval;
       if (cst.get_drive_mode() != clock::drive_mode::EXTERNAL)
       {
         throw execution_error("scenario_impl::state: "
-            "the pattern constraint clock is supposed to "
+            "the pattern interval clock is supposed to "
             "be in EXTERNAL drive mode");
         return {};
       }
 
       if (cst.running())
       {
-        // don't tick if the TimeConstraint is starting to avoid double ticks
+        // don't tick if the TimeInterval is starting to avoid double ticks
         auto& startEvent = cst.get_start_event();
         bool not_starting = none_of(
             statusChangedEvents, [&](auto ev) {
@@ -530,7 +530,7 @@ state_element scenario::state(ossia::time_value date, double pos)
         else
         {
 
-          // We advance the constraint so that we don't loose time
+          // We advance the interval so that we don't loose time
           // TODO getDate is worst-case linear, maybe we should cache it to
           // have the executedDate in constant time ?
 //          if(prev_last_date == Infinite)
@@ -543,7 +543,7 @@ cst.get_start_event().get_time_sync()->get_date())*
         }
       }
 
-      // if the time constraint is still running after the tick
+      // if the time interval is still running after the tick
       if (cst.running())
       {
         flatten_and_filter(cur_state, cst.state());
@@ -559,12 +559,12 @@ cst.get_start_event().get_time_sync()->get_date())*
           });
     });
 
-    // if the Scenario is done : stop the parent TimeConstraint
+    // if the Scenario is done : stop the parent TimeInterval
     if (done)
     {
       if (date > parent()->get_min_duration())
       {
-        ; //! \todo mParent->stop(); // if the parent TimeConstraint's Clock is
+        ; //! \todo mParent->stop(); // if the parent TimeInterval's Clock is
           //! in EXTERNAL drive mode, it creates a deadlock.
       }
     }

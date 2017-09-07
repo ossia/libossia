@@ -11,7 +11,7 @@
  */
 namespace ossia
 {
-class time_constraint;
+class time_interval;
 struct time_value;
 /**
  * @brief The time_process class
@@ -20,23 +20,23 @@ struct time_value;
  */
 class OSSIA_EXPORT time_process
 {
-  friend class time_constraint;
+  friend class time_interval;
 
 public:
   /*! destructor */
   virtual ~time_process();
 
-  /*! get a #StateElement from the process on its parent #time_constraint
+  /*! get a #StateElement from the process on its parent #time_interval
    offset
-   \details don't call offset when the parent #time_constraint is running
+   \details don't call offset when the parent #time_interval is running
    \param date offset date
    \param pos offset position (in [0;1] relative to parent nominal duration)
    \return state_element */
   virtual state_element offset(ossia::time_value date, double pos);
 
   /*! get a #StateElement from the process depending on its parent
-   #time_constraint date
-   \details don't call state when the parent #time_constraint is not running
+   #time_interval date
+   \details don't call state when the parent #time_interval is not running
    \return state_element */
   virtual state_element state(ossia::time_value date, double pos) = 0;
 
@@ -44,7 +44,7 @@ public:
   * @brief start
   *
   * Will be called when
-  * the parent time constraint is started.
+  * the parent time interval is started.
   */
   virtual void start(ossia::state& st);
 
@@ -52,7 +52,7 @@ public:
   * @brief stop
   *
   * Will be called when
-  * the parent time constraint is stopped.
+  * the parent time interval is stopped.
   */
   virtual void stop();
 
@@ -60,7 +60,7 @@ public:
   * @brief stop
   *
   * Will be called when
-  * the parent time constraint is paused.
+  * the parent time interval is paused.
   */
   virtual void pause();
 
@@ -68,7 +68,7 @@ public:
   * @brief resume
   *
   * Will be called when
-  * the parent time constraint is resumed.
+  * the parent time interval is resumed.
   */
   virtual void resume();
 

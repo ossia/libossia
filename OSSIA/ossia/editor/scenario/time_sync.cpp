@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
 namespace ossia
@@ -51,19 +51,19 @@ bool time_sync::trigger(ossia::state& st)
 
 time_value time_sync::get_date() const
 {
-  // compute the date from each first previous time constraint
-  // ignoring zero duration time constraint
+  // compute the date from each first previous time interval
+  // ignoring zero duration time interval
   if (!get_time_events().empty())
   {
     for (auto& timeEvent : get_time_events())
     {
-      if (!timeEvent->previous_time_constraints().empty())
+      if (!timeEvent->previous_time_intervals().empty())
       {
-        if (timeEvent->previous_time_constraints()[0]->get_nominal_duration()
+        if (timeEvent->previous_time_intervals()[0]->get_nominal_duration()
             > Zero)
-          return timeEvent->previous_time_constraints()[0]
+          return timeEvent->previous_time_intervals()[0]
                      ->get_nominal_duration()
-                 + timeEvent->previous_time_constraints()[0]
+                 + timeEvent->previous_time_intervals()[0]
                        ->get_start_event()
                        .get_time_sync()
                        .get_date();
@@ -123,32 +123,32 @@ void time_sync::process(std::vector<time_event*>& statusChangedEvents, ossia::st
       {
         bool minimalDurationReached = true;
 
-        for (auto& timeConstraint : timeEvent->previous_time_constraints())
+        for (auto& timeInterval : timeEvent->previous_time_intervals())
         {
-          // previous TimeConstraints with a DISPOSED start event are ignored
-          if (timeConstraint->get_start_event().get_status()
+          // previous TimeIntervals with a DISPOSED start event are ignored
+          if (timeInterval->get_start_event().get_status()
               == time_event::status::DISPOSED)
             continue;
 
-          // previous TimeConstraint with a none HAPPENED start event
+          // previous TimeInterval with a none HAPPENED start event
           // can't have reached its minimal duration
-          if (timeConstraint->get_start_event().get_status()
+          if (timeInterval->get_start_event().get_status()
               != time_event::status::HAPPENED)
           {
             minimalDurationReached = false;
             break;
           }
 
-          // previous TimeConstraint which doesn't reached its minimal duration
+          // previous TimeInterval which doesn't reached its minimal duration
           // force to quit
-          if (timeConstraint->get_date() < timeConstraint->get_min_duration())
+          if (timeInterval->get_date() < timeInterval->get_min_duration())
           {
             minimalDurationReached = false;
             break;
           }
         }
 
-        // access to PENDING status once all previous TimeConstraints allow it
+        // access to PENDING status once all previous TimeIntervals allow it
         if (minimalDurationReached)
           timeEvent->set_status(time_event::status::PENDING);
         else
@@ -160,9 +160,9 @@ void time_sync::process(std::vector<time_event*>& statusChangedEvents, ossia::st
       {
         m_pending.push_back(timeEvent.get());
 
-        for (auto& timeConstraint : timeEvent->previous_time_constraints())
+        for (auto& timeInterval : timeEvent->previous_time_intervals())
         {
-          if (timeConstraint->get_date() >= timeConstraint->get_max_duration())
+          if (timeInterval->get_date() >= timeInterval->get_max_duration())
           {
             maximalDurationReached = true;
             break;
@@ -173,12 +173,12 @@ void time_sync::process(std::vector<time_event*>& statusChangedEvents, ossia::st
       }
 
       // HAPPENED TimeEvent propagates recursively the execution to the end of
-      // each next TimeConstraints
+      // each next TimeIntervals
       case time_event::status::HAPPENED:
       {
-        for (auto& timeConstraint : timeEvent->next_time_constraints())
+        for (auto& timeInterval : timeEvent->next_time_intervals())
         {
-          timeConstraint->get_end_event().get_time_sync().process(
+          timeInterval->get_end_event().get_time_sync().process(
               statusChangedEvents, st);
         }
 
@@ -212,7 +212,7 @@ void time_sync::process(std::vector<time_event*>& statusChangedEvents, ossia::st
   }
 
   //! \todo force triggering if at leat one TimeEvent has
-  // at least one TimeConstraint over its maximal duration
+  // at least one TimeInterval over its maximal duration
 
   // update the expression one time
   // then observe and evaluate TimeSync's expression before to trig
