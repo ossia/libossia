@@ -57,8 +57,8 @@ void parameter_base::set_repetition_filter()
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
+          m_repetition ? ossia::repetition_filter::OFF
+                              : ossia::repetition_filter::ON);
   }
 }
 
@@ -393,7 +393,7 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   ossia::net::node_base* node = m.get_node();
   ossia::net::parameter_base* param = node->get_parameter();
 
-  x->m_repetition_filter = param->get_repetition_filter();
+  x->m_repetition = !param->get_repetition_filter();
 
   t_atom a;
   A_SETFLOAT(&a, x->m_repetition_filter);
@@ -638,10 +638,10 @@ void parameter_base::class_setup(t_class* c)
       m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   CLASS_ATTR_LONG(
-      c, "repetition_filter", 0, parameter_base,
-      m_repetition_filter);
+      c, "repetition", 0, parameter_base,
+      m_repetition);
   CLASS_ATTR_STYLE(
-      c, "repetition_filter", 0, "onoff");
+      c, "repetition", 0, "onoff");
 
   CLASS_ATTR_LONG(
       c, "enable", 0, parameter_base,
