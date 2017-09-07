@@ -11,7 +11,7 @@
 #include <ossia/editor/curve/curve_segment/sin.hpp>
 
 #include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_process.hpp>

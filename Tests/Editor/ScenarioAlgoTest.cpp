@@ -41,27 +41,27 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> se = start_event(scenario);
       std::shared_ptr<time_event> ee = create_event(scenario);
 
-      std::shared_ptr<time_constraint> c = time_constraint::create([] (auto&&...) {}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
-      s.scenario->add_time_constraint(c);
+      std::shared_ptr<time_interval> c = time_interval::create([] (auto&&...) {}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
+      s.scenario->add_time_interval(c);
 
-      s.constraint->start();
+      s.interval->start();
       QVERIFY(se->get_status() == time_event::status::HAPPENED);
       QCOMPARE(c->get_date(), 0_tv);
 
-      s.constraint->tick(1000_tv);
+      s.interval->tick(1000_tv);
       QCOMPARE(c->get_date(), 1000_tv);
-      s.constraint->tick(1000_tv);
+      s.interval->tick(1000_tv);
       QCOMPARE(c->get_date(), 2000_tv);
-      s.constraint->tick(999_tv);
+      s.interval->tick(999_tv);
       QCOMPARE(c->get_date(), 2999_tv);
-      s.constraint->tick(1_tv); // The constraint is stopped
+      s.interval->tick(1_tv); // The interval is stopped
 
       QCOMPARE(c->get_date(), 0_tv);
       QCOMPARE(c->get_end_event().get_status(), time_event::status::HAPPENED);
-      s.constraint->tick(1000_tv);
+      s.interval->tick(1000_tv);
       QCOMPARE(c->get_date(), 0_tv);
       QCOMPARE(c->get_end_event().get_status(), time_event::status::HAPPENED);
-      s.constraint->tick(1000_tv);
+      s.interval->tick(1000_tv);
       QCOMPARE(c->get_date(), 0_tv);
       QCOMPARE(c->get_end_event().get_status(), time_event::status::HAPPENED);
     }
@@ -77,17 +77,17 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
 
-      s.scenario->add_time_constraint(c0);
-      s.scenario->add_time_constraint(c1);
+      s.scenario->add_time_interval(c0);
+      s.scenario->add_time_interval(c1);
 
-      s.constraint->start();
-      s.constraint->tick(500_tv);
+      s.interval->start();
+      s.interval->tick(500_tv);
       QCOMPARE(c0->get_date(), 500_tv);
       QCOMPARE(c1->get_date(), 0_tv);
-      s.constraint->tick(3000_tv);
+      s.interval->tick(3000_tv);
 
       QCOMPARE(c0->get_date(), 0_tv);
       QCOMPARE(c1->get_date(), 500_tv);
@@ -107,19 +107,19 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e4 = create_event(scenario);
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_constraint> c2 = time_constraint::create([] (auto&&...) {}, *e2, *e3, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_constraint> c3 = time_constraint::create([] (auto&&...) {}, *e3, *e4, 10_tv, 10_tv, 10_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 1_tv, 1_tv, 1_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 1_tv, 1_tv, 1_tv);
+      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 1_tv, 1_tv, 1_tv);
+      std::shared_ptr<time_interval> c3 = time_interval::create([] (auto&&...) {}, *e3, *e4, 10_tv, 10_tv, 10_tv);
 
-      s.scenario->add_time_constraint(c0);
-      s.scenario->add_time_constraint(c1);
-      s.scenario->add_time_constraint(c2);
-      s.scenario->add_time_constraint(c3);
+      s.scenario->add_time_interval(c0);
+      s.scenario->add_time_interval(c1);
+      s.scenario->add_time_interval(c2);
+      s.scenario->add_time_interval(c3);
 
       std::cerr << c0.get() << " " << c1.get() << " " << c2.get() << " " << c3.get() << std::endl;
-      s.constraint->start();
-      s.constraint->tick(5_tv);
+      s.interval->start();
+      s.interval->tick(5_tv);
       std::cerr << e0->get_status() << " "
                 << e1->get_status() << " "
                 << e2->get_status() << " "
@@ -143,22 +143,22 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
-      s.scenario->add_time_constraint(c0);
-      s.scenario->add_time_constraint(c1);
+      s.scenario->add_time_interval(c0);
+      s.scenario->add_time_interval(c1);
 
-      s.constraint->start();
-      s.constraint->tick(1000_tv);
+      s.interval->start();
+      s.interval->tick(1000_tv);
       QCOMPARE(c0->get_date(), 1000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
-      s.constraint->tick(1500_tv); // Get into the min; the node is triggered
+      s.interval->tick(1500_tv); // Get into the min; the node is triggered
       QCOMPARE(c0->get_date(), 0_tv);
       QCOMPARE(c1->get_date(), 0_tv);
 
-      // whole tick goes in the next constraint
-      s.constraint->tick(5000_tv);
+      // whole tick goes in the next interval
+      s.interval->tick(5000_tv);
 
       QCOMPARE(c0->get_date(), 0_tv);
       QCOMPARE(c1->get_date(), 5000_tv);
@@ -177,17 +177,17 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
-      std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
-      scenario.add_time_constraint(c0);
-      scenario.add_time_constraint(c1);
+      scenario.add_time_interval(c0);
+      scenario.add_time_interval(c1);
 
-      s.constraint->start();
-      s.constraint->tick(3000_tv);
+      s.interval->start();
+      s.interval->tick(3000_tv);
       QCOMPARE(c0->get_date(), 3000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
-      s.constraint->tick(1500_tv); // Go past the max
+      s.interval->tick(1500_tv); // Go past the max
       QCOMPARE(c0->get_date(), 0_tv);
       QCOMPARE(c1->get_date(), 500_tv);
     }
@@ -203,26 +203,26 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e0 = create_event(scenario);
       std::shared_ptr<time_event> e1 = create_event(scenario);
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
-      s.scenario->add_time_constraint(c0);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_interval(c0);
 
       QCOMPARE(c0->get_position(), 0.);
       QVERIFY(e0->get_status() == time_event::status::NONE);
       QVERIFY(e1->get_status() == time_event::status::NONE);
 
-      s.constraint->start();
+      s.interval->start();
 
       QCOMPARE(c0->get_position(), 0.);
       QVERIFY(e0->get_status() == time_event::status::NONE);
       QVERIFY(e1->get_status() == time_event::status::NONE);
 
-      s.constraint->tick(1_tv);
+      s.interval->tick(1_tv);
 
       QCOMPARE(c0->get_position(), 0.);
       QVERIFY(e0->get_status() == time_event::status::NONE);
       QVERIFY(e1->get_status() == time_event::status::NONE);
 
-      s.constraint->tick(1_tv);
+      s.interval->tick(1_tv);
 
       QCOMPARE(c0->get_position(), 0.);
       QVERIFY(e0->get_status() == time_event::status::NONE);
@@ -240,8 +240,8 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e0 = start_event(scenario);
       std::shared_ptr<time_event> e1 = create_event(scenario);
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
-      s.scenario->add_time_constraint(c0);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_interval(c0);
 
       std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
       proc->set_destination(*utils.float_addr);
@@ -256,13 +256,13 @@ class ScenarioAlgoTest : public QObject
       proc->set_behavior(crv);
       c0->add_time_process(proc);
 
-      s.constraint->set_callback([] (double, time_value, const state_element& s) {
+      s.interval->set_callback([] (double, time_value, const state_element& s) {
         ossia::print(std::cerr, s);
       });
-      s.constraint->start();
-      s.constraint->tick(1000_tv);
-      s.constraint->tick(999_tv);
-      s.constraint->tick(1_tv);
+      s.interval->start();
+      s.interval->tick(1000_tv);
+      s.interval->tick(999_tv);
+      s.interval->tick(1_tv);
     }
 
     void test_autom_and_state()
@@ -279,8 +279,8 @@ class ScenarioAlgoTest : public QObject
       e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
 
 
-      std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
-      s.scenario->add_time_constraint(c0);
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_interval(c0);
 
       std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
       proc->set_destination(*utils.float_addr);
@@ -295,13 +295,13 @@ class ScenarioAlgoTest : public QObject
       proc->set_behavior(crv);
       c0->add_time_process(proc);
 
-      s.constraint->set_callback([] (double, time_value, const state_element& s) {
+      s.interval->set_callback([] (double, time_value, const state_element& s) {
         ossia::print(std::cerr, s);
       });
-      s.constraint->start();
-      s.constraint->tick(1000_tv);
-      s.constraint->tick(999_tv);
-      s.constraint->tick(1_tv);
+      s.interval->start();
+      s.interval->tick(1000_tv);
+      s.interval->tick(999_tv);
+      s.interval->tick(1_tv);
     }
 
     void test_offset()
@@ -319,15 +319,15 @@ class ScenarioAlgoTest : public QObject
         e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
         e2->add_state(ossia::message{*utils.float_addr, ossia::value{31.}});
 
-        std::shared_ptr<time_constraint> c0 = time_constraint::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
-        s.scenario->add_time_constraint(c0);
-        std::shared_ptr<time_constraint> c1 = time_constraint::create([] (auto&&...) {}, *e1, *e2, 5_tv, 5_tv, 5_tv);
-        s.scenario->add_time_constraint(c1);
-        std::shared_ptr<time_constraint> c2 = time_constraint::create([] (auto&&...) {}, *e2, *e3, 5_tv, 5_tv, 5_tv);
-        s.scenario->add_time_constraint(c1);
+        std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+        s.scenario->add_time_interval(c0);
+        std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 5_tv, 5_tv, 5_tv);
+        s.scenario->add_time_interval(c1);
+        std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 5_tv, 5_tv, 5_tv);
+        s.scenario->add_time_interval(c1);
 
         {
-            auto st = s.constraint->offset(7_tv);
+            auto st = s.interval->offset(7_tv);
             ossia::print(std::cerr, st);
 
             ossia::state expected;
@@ -344,16 +344,16 @@ class ScenarioAlgoTest : public QObject
 
             ossia::state expected;
 
-            s.constraint->start(st);
+            s.interval->start(st);
             ossia::print(std::cerr, st);
 
             QVERIFY(st == expected);
         }
 
-        s.constraint->stop();
+        s.interval->stop();
 
         {
-            auto st = s.constraint->offset(13_tv);
+            auto st = s.interval->offset(13_tv);
             ossia::print(std::cerr, st);
 
             ossia::state expected;
@@ -370,7 +370,7 @@ class ScenarioAlgoTest : public QObject
 
             ossia::state expected;
 
-            s.constraint->start(st);
+            s.interval->start(st);
             ossia::print(std::cerr, st);
 
             QVERIFY(st == expected);

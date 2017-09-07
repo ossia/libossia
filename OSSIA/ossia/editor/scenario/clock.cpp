@@ -5,15 +5,15 @@
 #include <ossia/detail/thread.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <cassert>
 #include <iostream>
 #include <ossia/editor/state/state.hpp>
 
 namespace ossia
 {
-clock::clock(ossia::time_constraint& cst, double ratio)
-    : m_constraint{cst}
+clock::clock(ossia::time_interval& cst, double ratio)
+    : m_interval{cst}
     , m_ratio(ratio)
     , m_duration(
           cst.get_max_duration().infinite() ? time_value::infinity
@@ -52,7 +52,7 @@ void clock::start(ossia::state& st)
   m_elapsedTime = 0.;
 
   // notify the owner
-  m_constraint.start(st);
+  m_interval.start(st);
 
   if (m_thread.joinable())
     m_thread.join();
@@ -69,7 +69,7 @@ void clock::stop()
   if (m_thread.joinable())
     m_thread.join();
 
-  m_constraint.stop();
+  m_interval.stop();
 
   m_date = 0;
   m_lastTime = clock_type::time_point{};
@@ -122,7 +122,7 @@ bool clock::tick()
     if (m_duration - m_date < Zero && !m_duration.infinite())
     {
       // notify the owner
-      m_constraint.tick(time_value{deltaInUs});
+      m_interval.tick(time_value{deltaInUs});
 
       request_stop();
 
@@ -173,7 +173,7 @@ bool clock::tick()
   if (!paused && running)
   {
     // notify the owner
-    m_constraint.tick(time_value{deltaInUs}, m_ratio);
+    m_interval.tick(time_value{deltaInUs}, m_ratio);
 
     // is this the end
     if (m_duration - m_date < Zero && !m_duration.infinite())

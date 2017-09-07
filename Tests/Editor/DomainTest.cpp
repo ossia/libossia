@@ -147,10 +147,10 @@ class DomainTest : public QObject
     using val_t = T;
     // TODO why couldn't domain operate on dataspaces ?
     // e.g. for a position, we could want to limit its norm ?
-    // Maybe the domain could be a list of constraint :
-    // "default" min max constraint,
-    // constraint added by the unit type (e.g. rgb : between 0 / 1)
-    // additional constraints..
+    // Maybe the domain could be a list of interval :
+    // "default" min max interval,
+    // interval added by the unit type (e.g. rgb : between 0 / 1)
+    // additional intervals..
     std::vector<ossia::value> t{T{(val_t)(min - 100)},
             min,
                 T{(val_t)((min + max) / 2)},

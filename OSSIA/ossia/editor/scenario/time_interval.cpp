@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state_element.hpp>
@@ -10,7 +10,7 @@
 #include <iostream>
 namespace ossia
 {
-void time_constraint::tick(time_value usec)
+void time_interval::tick(time_value usec)
 {
   m_date += std::llround(usec.impl * m_speed);
   m_position = double(m_date) / double(m_nominal);
@@ -19,7 +19,7 @@ void time_constraint::tick(time_value usec)
     (m_callback)(m_position, m_date, state());
 }
 
-void time_constraint::tick(time_value usec, double ratio)
+void time_interval::tick(time_value usec, double ratio)
 {
   m_date += std::llround(usec.impl * m_speed / ratio);
   m_position = double(m_date) / double(m_nominal);
@@ -28,21 +28,21 @@ void time_constraint::tick(time_value usec, double ratio)
     (m_callback)(m_position, m_date, state());
 }
 
-std::shared_ptr<time_constraint> time_constraint::create(
-    time_constraint::exec_callback callback, time_event& startEvent,
+std::shared_ptr<time_interval> time_interval::create(
+    time_interval::exec_callback callback, time_event& startEvent,
     time_event& endEvent, time_value nominal, time_value min, time_value max)
 {
-  auto timeConstraint = std::make_shared<time_constraint>(
+  auto timeInterval = std::make_shared<time_interval>(
       callback, startEvent, endEvent, nominal, min, max);
 
-  startEvent.next_time_constraints().push_back(timeConstraint);
-  endEvent.previous_time_constraints().push_back(timeConstraint);
+  startEvent.next_time_intervals().push_back(timeInterval);
+  endEvent.previous_time_intervals().push_back(timeInterval);
 
-  return timeConstraint;
+  return timeInterval;
 }
 
-time_constraint::time_constraint(
-    time_constraint::exec_callback callback, time_event& startEvent,
+time_interval::time_interval(
+    time_interval::exec_callback callback, time_event& startEvent,
     time_event& endEvent, time_value nominal, time_value min, time_value max)
     : m_callback(std::move(callback))
     , m_start(startEvent)
@@ -53,18 +53,18 @@ time_constraint::time_constraint(
 {
 }
 
-time_constraint::~time_constraint()
+time_interval::~time_interval()
 {
 }
 
-void time_constraint::start()
+void time_interval::start()
 {
   ossia::state st;
   start(st);
   ossia::launch(st);
 }
 
-void time_constraint::start(ossia::state& pstate)
+void time_interval::start(ossia::state& pstate)
 {
   if (!m_running)
   {
@@ -90,7 +90,7 @@ void time_constraint::start(ossia::state& pstate)
   }
 }
 
-void time_constraint::stop()
+void time_interval::stop()
 {
   if (m_running)
   {
@@ -105,7 +105,7 @@ void time_constraint::stop()
   }
 }
 
-ossia::state_element time_constraint::offset(ossia::time_value date)
+ossia::state_element time_interval::offset(ossia::time_value date)
 {
   m_offset = date;
   m_date = date;
@@ -138,7 +138,7 @@ ossia::state_element time_constraint::offset(ossia::time_value date)
   return {};
 }
 
-ossia::state_element time_constraint::state()
+ossia::state_element time_interval::state()
 {
   const auto& processes = get_time_processes();
   const auto N = processes.size();
@@ -166,7 +166,7 @@ ossia::state_element time_constraint::state()
   return {};
 }
 
-void time_constraint::pause()
+void time_interval::pause()
 {
   // pause all time processes
   for (const auto& timeProcess : get_time_processes())
@@ -175,7 +175,7 @@ void time_constraint::pause()
   }
 }
 
-void time_constraint::resume()
+void time_interval::resume()
 {
   // resume all time processes
   for (const auto& timeProcess : get_time_processes())
@@ -184,23 +184,23 @@ void time_constraint::resume()
   }
 }
 
-void time_constraint::set_callback(time_constraint::exec_callback callback)
+void time_interval::set_callback(time_interval::exec_callback callback)
 {
   m_callback = callback;
 }
 
-void time_constraint::set_stateless_callback(time_constraint::exec_callback cb)
+void time_interval::set_stateless_callback(time_interval::exec_callback cb)
 {
   m_callback = cb;
 }
 
-const time_value& time_constraint::get_nominal_duration() const
+const time_value& time_interval::get_nominal_duration() const
 {
   return m_nominal;
 }
 
-time_constraint&
-time_constraint::set_nominal_duration(ossia::time_value durationNominal)
+time_interval&
+time_interval::set_nominal_duration(ossia::time_value durationNominal)
 {
   m_nominal = durationNominal;
 
@@ -213,13 +213,13 @@ time_constraint::set_nominal_duration(ossia::time_value durationNominal)
   return *this;
 }
 
-const time_value& time_constraint::get_min_duration() const
+const time_value& time_interval::get_min_duration() const
 {
   return m_min;
 }
 
-time_constraint&
-time_constraint::set_min_duration(ossia::time_value durationMin)
+time_interval&
+time_interval::set_min_duration(ossia::time_value durationMin)
 {
   m_min = durationMin;
 
@@ -229,13 +229,13 @@ time_constraint::set_min_duration(ossia::time_value durationMin)
   return *this;
 }
 
-const time_value& time_constraint::get_max_duration() const
+const time_value& time_interval::get_max_duration() const
 {
   return m_max;
 }
 
-time_constraint&
-time_constraint::set_max_duration(ossia::time_value durationMax)
+time_interval&
+time_interval::set_max_duration(ossia::time_value durationMax)
 {
   m_max = durationMax;
 
@@ -245,17 +245,17 @@ time_constraint::set_max_duration(ossia::time_value durationMax)
   return *this;
 }
 
-time_event& time_constraint::get_start_event() const
+time_event& time_interval::get_start_event() const
 {
   return m_start;
 }
 
-time_event& time_constraint::get_end_event() const
+time_event& time_interval::get_end_event() const
 {
   return m_end;
 }
 
-void time_constraint::add_time_process(
+void time_interval::add_time_process(
     std::shared_ptr<time_process> timeProcess)
 {
   if (!timeProcess)
@@ -268,7 +268,7 @@ void time_constraint::add_time_process(
   }
 }
 
-void time_constraint::remove_time_process(time_process* timeProcess)
+void time_interval::remove_time_process(time_process* timeProcess)
 {
   auto it = find_if(m_processes, [=](const auto& other) {
     return other.get() == timeProcess;

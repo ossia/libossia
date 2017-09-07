@@ -11,11 +11,11 @@
 namespace ossia
 {
 class state;
-class time_constraint;
+class time_interval;
 using clock_type = std::chrono::steady_clock;
 class OSSIA_EXPORT clock
 {
-  friend class time_constraint;
+  friend class time_interval;
 
 public:
   enum exec_status
@@ -26,7 +26,7 @@ public:
   using exec_status_callback = std::function<void(exec_status)>;
 
   //! Ratio : the number of time units in one millisecond
-  clock(ossia::time_constraint& cst, double time_ratio = 1000.);
+  clock(ossia::time_interval& cst, double time_ratio = 1000.);
 
   /*! destructor */
   ~clock();
@@ -41,7 +41,7 @@ public:
   /*! pause the clock progression */
   void pause();
 
-  /*! true if the constraint is running and paused, else false */
+  /*! true if the interval is running and paused, else false */
   bool paused() const;
 
   /*! resume the clock progression */
@@ -89,14 +89,14 @@ public:
   exec_status_callback get_exec_status_callback() const;
 
 private:
-  /*! to allow TimeConstraint to override setDuration accessor */
+  /*! to allow TimeInterval to override setDuration accessor */
   void do_set_duration(ossia::time_value);
 
   /*! to avoid dead lock in EXTERNAL drive mode if a TimeProcess wants to end
-   * its ParentTimeConstraint's clock */
+   * its ParentTimeInterval's clock */
   void request_stop();
 
-  time_constraint& m_constraint;
+  time_interval& m_interval;
 
   double m_ratio{};
 

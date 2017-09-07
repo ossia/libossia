@@ -10,9 +10,9 @@
 namespace ossia
 {
 class time_event;
-class time_constraint;
+class time_interval;
 class time_sync;
-using constraint_set = boost::container::flat_set<time_constraint*>;
+using interval_set = boost::container::flat_set<time_interval*>;
 struct overtick
 {
   ossia::time_value min;
@@ -35,16 +35,16 @@ public:
   void pause() override;
   void resume() override;
 
-  /*! add a #time_constraint and its #time_syncs into the scenario if they
+  /*! add a #time_interval and its #time_syncs into the scenario if they
    don't
    already be added
-   \param std::shared_ptr<#time_constraint> to add */
-  void add_time_constraint(std::shared_ptr<time_constraint>);
+   \param std::shared_ptr<#time_interval> to add */
+  void add_time_interval(std::shared_ptr<time_interval>);
 
-  /*! remove a #time_constraint from the scenario without removing any
+  /*! remove a #time_interval from the scenario without removing any
    #time_sync
-   \param std::shared_ptr<#time_constraint> to remove */
-  void remove_time_constraint(const std::shared_ptr<time_constraint>&);
+   \param std::shared_ptr<#time_interval> to remove */
+  void remove_time_interval(const std::shared_ptr<time_interval>&);
 
   /*! add a #time_sync into the scenario if it is not already added
    \param std::shared_ptr<#time_sync> to add */
@@ -62,30 +62,30 @@ public:
    \return #Container<#time_sync> */
   const ptr_container<time_sync>& get_time_syncs() const;
 
-  /*! get all TimeConstraints of the scenario
-   \return #Container<#time_constraint> */
-  const ptr_container<time_constraint>& get_time_constraints() const;
+  /*! get all TimeIntervals of the scenario
+   \return #Container<#time_interval> */
+  const ptr_container<time_interval>& get_time_intervals() const;
 
 private:
-  ptr_container<time_constraint> m_constraints;
+  ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
                                     // (the first is the start node, the
                                     // second is the end node)
 
   ossia::state m_lastState;
 
-  constraint_set m_runningConstraints;
-  constraint_set constraints_started, constraints_stopped;
+  interval_set m_runningIntervals;
+  interval_set intervals_started, intervals_stopped;
   std::vector<time_sync*> m_waitingNodes;
   overtick_map m_overticks;
   boost::container::flat_set<time_sync*> m_endNodes;
 
   void process_this(
       time_sync& node, std::vector<time_event*>& statusChangedEvents,
-      constraint_set& started, constraint_set& stopped, ossia::state& st);
+      interval_set& started, interval_set& stopped, ossia::state& st);
   void make_happen(
-      time_event& event, constraint_set& started, constraint_set& stopped, ossia::state& st);
-  void make_dispose(time_event& event, constraint_set& stopped);
-  void tick_constraint(time_constraint& c, time_value tick);
+      time_event& event, interval_set& started, interval_set& stopped, ossia::state& st);
+  void make_dispose(time_event& event, interval_set& stopped);
+  void tick_interval(time_interval& c, time_value tick);
 };
 }

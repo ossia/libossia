@@ -50,8 +50,8 @@ public:
   std::atomic_bool trigger_request{};
 
   /*! get the date
- \details the date is the sum of its previous #time_constraint durations
- \details a #time_sync with na previous #time_constraints have a date equals to
+ \details the date is the sum of its previous #time_interval durations
+ \details a #time_sync with na previous #time_intervals have a date equals to
  0.
  \return #TimeValue the date */
   time_value get_date() const;

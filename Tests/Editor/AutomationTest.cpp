@@ -14,7 +14,7 @@ class AutomationTest : public QObject
 
   std::vector<value> m_parameter_values;
 
-  void constraint_callback(double position, time_value date, const state_element& element)
+  void interval_callback(double position, time_value date, const state_element& element)
   {
     std::cerr << position << std::endl;
     ossia::print(std::cerr, element);
@@ -71,11 +71,11 @@ private Q_SLOTS:
     auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
     auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
-    auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
-    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
-    constraint->add_time_process(std::make_unique<automation>(*address, curve_ptr{c}));
+    auto interval_callback = std::bind(&AutomationTest::interval_callback, this, _1, _2, _3);
+    auto interval = time_interval::create(interval_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
+    interval->add_time_process(std::make_unique<automation>(*address, curve_ptr{c}));
 
-    ossia::clock clck{*constraint};
+    ossia::clock clck{*interval};
     m_parameter_values.clear();
 
     using namespace std::literals;
@@ -134,16 +134,16 @@ private Q_SLOTS:
     auto event_callback = std::bind(&AutomationTest::event_callback, this, _1);
     auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
-    auto constraint_callback = std::bind(&AutomationTest::constraint_callback, this, _1, _2, _3);
-    auto constraint = time_constraint::create(constraint_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
+    auto interval_callback = std::bind(&AutomationTest::interval_callback, this, _1, _2, _3);
+    auto interval = time_interval::create(interval_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
     auto autom = std::make_unique<automation>(Destination{*address, {2}, ossia::hsv_u{}}, c);
 
     auto& tp = (ossia::time_process&) *autom;
 
-    constraint->add_time_process(std::move(autom));
+    interval->add_time_process(std::move(autom));
 
-    auto state = tp.offset(constraint->get_nominal_duration() * 0.5, 0.5);
+    auto state = tp.offset(interval->get_nominal_duration() * 0.5, 0.5);
     auto mess = state.target<ossia::message>() ;
     QVERIFY(mess != nullptr);
 

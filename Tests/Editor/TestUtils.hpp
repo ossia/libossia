@@ -57,12 +57,12 @@ struct root_scenario
   std::shared_ptr<ossia::time_event> start_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *start_node, ossia::expressions::make_expression_true())};
   std::shared_ptr<ossia::time_event> end_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *end_node, ossia::expressions::make_expression_true())};
 
-  std::shared_ptr<ossia::time_constraint> constraint{ossia::time_constraint::create(
+  std::shared_ptr<ossia::time_interval> interval{ossia::time_interval::create(
             [] (auto&&...) {},
             *start_event, *end_event,
             ossia::time_value(15000), ossia::time_value(15000), ossia::time_value(15000))};
   std::shared_ptr<ossia::scenario> scenario{std::make_shared<ossia::scenario>()};
-  ossia::clock clck{*constraint};
+  ossia::clock clck{*interval};
 
   root_scenario()
   {
@@ -73,7 +73,7 @@ struct root_scenario
     using namespace std::literals;
     clck.set_granularity(50ms);
 
-    constraint->add_time_process(scenario);
+    interval->add_time_process(scenario);
     auto scen_sn = scenario->get_start_time_sync();
     auto scen_se = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *scen_sn, ossia::expressions::make_expression_true());
     scen_sn->insert(scen_sn->get_time_events().end(), scen_se);
