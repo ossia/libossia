@@ -24,6 +24,7 @@ public:
   void set_mute();
   void set_unit();
   void set_rate();
+  void set_mute();
 
   static void get_mute(parameter*x);
   static void get_rate(parameter*x);

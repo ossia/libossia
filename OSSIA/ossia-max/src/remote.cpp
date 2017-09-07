@@ -200,6 +200,13 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       x->set_enable();
     else if ( attrname == gensym("type") )
       x->set_type();
+    else if ( attrname == gensym("mute") )
+    {
+      if (x->m_mute)
+        x->unregister();
+      else
+        obj_register(x);
+    }
 
   }
   return 0;

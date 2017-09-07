@@ -198,6 +198,15 @@ void parameter::set_unit()
   }
 }
 
+void parameter::set_mute()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_muted(*node,m_mute);
+  }
+}
+
 void parameter::get_unit(parameter*x)
 {
   if (!x->m_matchers.empty())
@@ -279,6 +288,8 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
         x->set_type();
       else if ( s == gensym("rate") )
         x->set_rate();
+      else if ( s == gensym("mute") )
+        x->set_mute();
 
   }
   return 0;

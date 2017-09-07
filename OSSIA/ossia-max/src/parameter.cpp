@@ -173,7 +173,8 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
       x->set_enable();
     else if ( attrname == gensym("type") )
       x->set_type();
-
+    else if ( s == gensym("mute") )
+      x->set_mute();
   }
   return 0;
 }
@@ -307,6 +308,15 @@ void parameter::set_rate()
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_refresh_rate(*node,m_rate);
+  }
+}
+
+void parameter::set_mute()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_muted(*node,m_mute);
   }
 }
 
