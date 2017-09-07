@@ -615,10 +615,11 @@ void parameter_base::class_setup(t_class* c)
       m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   CLASS_ATTR_LONG(
-      c, "repetition", 0, parameter_base,
+      c, "repetitions", 0, parameter_base,
       m_repetition);
   CLASS_ATTR_STYLE(
-      c, "repetition", 0, "onoff");
+      c, "repetitions", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "repetitions", 0, "Allow repeated values to be sent out.");
 
   CLASS_ATTR_LONG(
       c, "enable", 0, parameter_base,
