@@ -108,7 +108,7 @@ void view::destroy(view* x)
   object_dequarantining<view>(x);
   ossia_max::instance().views.remove_all(x);
   object_free(x->m_clock);
-  object_free(x->m_clock);
+
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
   x->~view();
 }

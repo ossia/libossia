@@ -91,6 +91,8 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 
     x->m_otype = object_class::client;
 
+    x->m_poll_clock = clock_new(x, (method)client::poll_message);
+
     if (ossia::max::find_peer(x))
     {
       error("You can have only one [ossia.device] or [ossia.client] per patcher.");
@@ -124,6 +126,7 @@ void client::destroy(client* x)
 {
   x->m_dead = true;
   x->unregister_children();
+  object_free((t_object*)x->m_poll_clock);
 
   if (x->m_device)
     delete (x->m_device);
@@ -474,6 +477,15 @@ void client::disconnect(client* x)
 void client::loadbang(client* x)
 {
   register_children(x);
+}
+
+void client::poll_message(client* x)
+{
+  if (x->m_oscq_protocol)
+  {
+    x->m_oscq_protocol->run_commands();
+    clock_delay(x->m_poll_clock, x->m_rate);
+  }
 }
 
 } // max namespace

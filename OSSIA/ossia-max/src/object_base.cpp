@@ -89,7 +89,7 @@ t_matcher::~t_matcher()
   if(node && parent)
   {
     if (   parent->m_otype == object_class::param
-        || parent->m_otype == object_class::param )
+        || parent->m_otype == object_class::model )
     {
       if (!parent->m_is_deleted)
       {
