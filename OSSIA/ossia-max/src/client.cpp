@@ -32,6 +32,8 @@ extern "C" void ossia_client_setup()
       "ossia.client", (method)client::create, (method)client::destroy,
       (short)sizeof(client), 0L, A_GIMME, 0);
 
+  device_base::class_setup(c);
+
   class_addmethod(
       c, (method)client::register_children,
       "register", A_NOTHING, 0);
