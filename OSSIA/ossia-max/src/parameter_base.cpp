@@ -57,8 +57,8 @@ void parameter_base::set_repetition_filter()
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetition ? ossia::repetition_filter::OFF
-                              : ossia::repetition_filter::ON);
+          m_repetition ? ossia::repetition_filter::ON
+                              : ossia::repetition_filter::OFF);
   }
 }
 
@@ -221,7 +221,7 @@ void parameter_base::set_bounding_mode()
       param->set_bounding(ossia::bounding_mode::HIGH);
     else
     {
-      object_error((t_object*)this, "unknown bounding mode: %s", bounding_mode.c_str());
+      object_error((t_object*)this, "unknown clip mode: %s", bounding_mode.c_str());
     }
   }
 }

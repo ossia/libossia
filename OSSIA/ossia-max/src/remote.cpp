@@ -174,7 +174,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
 
     if( attrname == gensym("range") )
       x->set_range();
-    else if ( attrname == gensym("bounding_mode") )
+    else if ( attrname == gensym("clip") )
       x->set_bounding_mode();
     else if ( attrname == gensym("min") || attrname == gensym("max") )
       x->set_minmax();

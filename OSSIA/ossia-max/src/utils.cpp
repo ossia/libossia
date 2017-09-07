@@ -240,7 +240,7 @@ ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
     return ossia::bounding_mode::HIGH;
   else
   {
-    error("unknown bounding mode: %s", bounding_mode->s_name);
+    error("unknown clip mode: %s", bounding_mode->s_name);
     return ossia::bounding_mode::FREE;
   }
 }
