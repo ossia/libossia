@@ -15,12 +15,11 @@ environment:
       APPVEYOR_BUILD_TYPE: testing
       QTDIR: C:\Qt\5.9\msvc2017_64
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
-    - platform: x64
+    - platform: x86
       configuration: Release
       APPVEYOR_BUILD_TYPE: pd
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017
-    - platform: x64
-      configuration: Release
+    - configuration: Release
       APPVEYOR_BUILD_TYPE: max
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
       CMAKE_GENERATOR_NAME_32BIT: Visual Studio 15 2017
