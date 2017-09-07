@@ -4,8 +4,8 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 5,
-			"architecture" : "x86",
+			"revision" : 4,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
@@ -50,12 +50,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -115,8 +115,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -570,8 +570,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -1021,12 +1021,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1151,7 +1151,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 784.0, 618.0, 131.0, 22.0 ],
 									"style" : "",
-									"text" : "-1. -1. -1. -1."
+									"text" : "0. 0. 0. 0."
 								}
 
 							}
@@ -1172,14 +1172,14 @@
 								"box" : 								{
 									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
 									"id" : "obj-40",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 784.0, 556.0, 211.0, 49.0 ],
+									"patching_rect" : [ 784.0, 555.0, 232.0, 35.0 ],
 									"style" : "",
-									"text" : "ossia.parameter a_list @type list @range -1. 1. @bounding_mode clip @default 0. 0. 0. 0."
+									"text" : "ossia.parameter a_list @type list @range -1. 1. @clip both @default 0. 0. 0. 0."
 								}
 
 							}
@@ -1282,14 +1282,14 @@
 								"box" : 								{
 									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
 									"id" : "obj-18",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 784.0, 158.0, 232.0, 49.0 ],
+									"patching_rect" : [ 784.0, 158.0, 232.0, 35.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_menu @type string @range banana apple cherry @bounding_mode clip"
+									"text" : "ossia.parameter my_menu @type string @range banana apple cherry @clip both"
 								}
 
 							}
@@ -1374,14 +1374,14 @@
 								"box" : 								{
 									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
 									"id" : "obj-10",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 246.0, 517.0, 209.0, 49.0 ],
+									"patching_rect" : [ 246.0, 517.0, 232.0, 35.0 ],
 									"style" : "",
-									"text" : "ossia.parameter constrained_value @type float @range 0.25 0.75 @bounding_mode clip"
+									"text" : "ossia.parameter constrained_value @type float @range 0.25 0.75 @clip free"
 								}
 
 							}
@@ -1479,7 +1479,7 @@
 							}
 , 							{
 								"box" : 								{
-									"attr" : "bounding_mode",
+									"attr" : "clip",
 									"id" : "obj-17",
 									"maxclass" : "attrui",
 									"numinlets" : 1,
@@ -1658,8 +1658,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -1721,8 +1721,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -2364,8 +2364,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -2590,7 +2590,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 586.0, 581.0, 180.0, 89.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_color @type vec4f @unit color.rgba @default 1. 0. 0. 1. @range 0 1 @bounding_mode clip @description \"My beautiful red\" @tags beautiful color"
+									"text" : "ossia.parameter my_color @type vec4f @unit color.rgba @default 1. 0. 0. 1. @range 0 1 @clip both @description \"My beautiful red\" @tags beautiful color"
 								}
 
 							}
