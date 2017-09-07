@@ -143,7 +143,7 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="access_mode" get="1" set="1" type="symbol" size="1">
+		<attribute name="mode" get="1" set="1" type="symbol" size="1">
 			<digest>
 			Define access mode of parameter : GET, SET, or both (BI)
 			</digest>
@@ -184,7 +184,7 @@
 				Value range
 			</digest>
 			<description>
-				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range.
+				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range.
 			</description>
 		</attribute>		
 <!--
@@ -193,7 +193,7 @@
 				Value range minimum
 			</digest>
 			<description>
-				The <at>@min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
+				The <at>@min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
 			</description>
 		</attribute>	
 
@@ -202,26 +202,26 @@
 				Value range maximum
 			</digest>
 			<description>
-				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
+				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
 			</description>
 		</attribute>	
 -->
-		<attribute name="bounding_mode" get="1" set="1" type="symbol" size="1">
+		<attribute name="clip" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Set how values exceeding range will be clipped
 			</digest>
 			<description>
-				The <at>@bounding_mode</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
+				The <at>@clip</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
 				<ul><li><m>free</m>: when set to free (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>clip</m>: when set to <m>clip</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
 			</description>
 		</attribute>
 
-		<attribute name="repetition_filter" get="1" set="1" type="boolean" size="1">
+		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
 			<digest>
-				Filter out value repetitions
+				Allow value repetitions (on by default)
 			</digest>
 			<description>
-				The <at>@repetition_filter</at> attribute defines whether repeated values will be filtered out or not (off by default)
+				The <at>@repetitions</at> attribute defines whether identical values will berepeated (on by default)
 			</description>
 		</attribute>
 
@@ -236,10 +236,10 @@
 
 		<attribute name="unit" get="1" set="1" type="symbol" size="1">
 			<digest>
-				unit used by the node
+				unit used by the parameter
 			</digest>
 			<description>
-				The <at>@unit</at> attribute defines the unit used by this node. Values will get output according to this unit.
+				The <at>@unit</at> attribute defines the unit used by this parameter. Values will get output according to this unit.
 			</description>
 		</attribute>
 

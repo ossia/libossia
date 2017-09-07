@@ -209,7 +209,7 @@ void parameter_base::set_bounding_mode()
 
     if (bounding_mode == "free")
       param->set_bounding(ossia::bounding_mode::FREE);
-    else if (bounding_mode == "clip")
+    else if (bounding_mode == "both")
       param->set_bounding(ossia::bounding_mode::CLIP);
     else if (bounding_mode == "wrap")
       param->set_bounding(ossia::bounding_mode::WRAP);
@@ -593,10 +593,10 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
 
   CLASS_ATTR_SYM(
-      c, "access_mode", 0, parameter_base,
+      c, "mode", 0, parameter_base,
       m_access_mode);
   CLASS_ATTR_ENUM (
-      c, "access_mode", 0, "bi get set");
+      c, "mode", 0, "bi get set");
 
   CLASS_ATTR_ATOM_VARSIZE(
       c, "default", 0, parameter_base,

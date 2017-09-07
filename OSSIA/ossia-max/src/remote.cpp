@@ -188,9 +188,9 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       x->set_hidden();
     else if ( attrname == gensym("priority") )
       x->set_priority();
-    else if ( attrname == gensym("access_mode") )
+    else if ( attrname == gensym("mode") )
       x->set_access_mode();
-    else if ( attrname == gensym("repetition_filter") )
+    else if ( attrname == gensym("repetitions") )
       x->set_repetition_filter();
     else if ( attrname == gensym("tags") )
       x->set_tags();
