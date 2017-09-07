@@ -51,7 +51,7 @@
 				Name in ossia namespace
 			</digest>
 			<description>
-				ossia.parameter requires an argument defining a node name in the ossia namespace.  This is ma,datory, and each <o>ossia.parameter</o> within an ossia model must have a unique name - if several  nodes are named similarly, instances (such as name.1, name.2, etc...) will be created.
+				ossia.parameter requires an argument defining a node name in the ossia namespace.  This is mandatory, and each <o>ossia.parameter</o> within an ossia model must have a unique name - if several  nodes are named similarly, instances (such as name.1, name.2, etc...) will be created.
 			</description>
 		</objarg>
 	</objarglist>
@@ -212,9 +212,10 @@
 			</digest>
 			<description>
 				The <at>@clip</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
-				<ul><li><m>free</m>: when set to free (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>clip</m>: when set to <m>clip</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
+				<ul><li><m>free</m>: when set to <m>free</m> (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>clip</m>: when set to <m>clip</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
 			</description>
 			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Clip Mode" />
 			</attributelist>
@@ -225,9 +226,10 @@
 				Allow value repetitions (on by default)
 			</digest>
 			<description>
-				The <at>@repetitions</at> attribute defines whether identical values will berepeated (on by default)
+				The <at>@repetitions</at> attribute defines whether identical values will be repeated (on by default)
 			</description>
 			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
 				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Allow Repetitions" />
 			</attributelist>
