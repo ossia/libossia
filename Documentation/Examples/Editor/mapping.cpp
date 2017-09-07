@@ -32,7 +32,7 @@ using namespace ossia;
 
 using namespace std;
 
-void constraint_callback(ossia::time_value position, time_value date, std::shared_ptr<StateElement> element)
+void interval_callback(ossia::time_value position, time_value date, std::shared_ptr<StateElement> element)
 {
     element->launch();
 }
@@ -70,15 +70,15 @@ int main()
     auto end_node = TimeSync::create();
     auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
-    auto constraint = TimeConstraint::create(&constraint_callback, start_event, end_event, 100.);
-    constraint->add_time_process(mapper);
+    auto interval = TimeConstraint::create(&interval_callback, start_event, end_event, 100.);
+    interval->add_time_process(mapper);
     
-    constraint->set_granularity(10.);
-    constraint->start();
+    interval->set_granularity(10.);
+    interval->start();
     
-    while (constraint->running())
+    while (interval->running())
     {
-        double position = constraint->getPosition();
+        double position = interval->getPosition();
         const Float* current_float = static_cast<const Float*>(float_address->getvalue());
         const Int* current_int = static_cast<const Int*>(int_address->getvalue());
 
