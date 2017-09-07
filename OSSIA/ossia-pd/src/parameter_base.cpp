@@ -225,7 +225,7 @@ void parameter_base::set_bounding_mode()
 
     if (bounding_mode == "free")
       param->set_bounding(ossia::bounding_mode::FREE);
-    else if (bounding_mode == "clip")
+    else if (bounding_mode == "both")
       param->set_bounding(ossia::bounding_mode::CLIP);
     else if (bounding_mode == "wrap")
       param->set_bounding(ossia::bounding_mode::WRAP);
@@ -237,7 +237,7 @@ void parameter_base::set_bounding_mode()
       param->set_bounding(ossia::bounding_mode::HIGH);
     else
     {
-      pd_error(this, "unknown bounding mode: %s", bounding_mode.c_str());
+      pd_error(this, "unknown clip mode: %s", bounding_mode.c_str());
     }
   }
 }
@@ -344,7 +344,7 @@ void parameter_base::get_bounding_mode(parameter_base*x)
   x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
   t_atom a;
   SETSYMBOL(&a,x->m_bounding_mode);
-  outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
 }
 
 void parameter_base::get_default(parameter_base*x)
@@ -400,7 +400,7 @@ void parameter_base::get_access_mode(parameter_base*x)
 
   t_atom a;
   SETSYMBOL(&a, x->m_access_mode);
-  outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
 }
 
 void parameter_base::get_repetition_filter(parameter_base*x)
@@ -414,7 +414,7 @@ void parameter_base::get_repetition_filter(parameter_base*x)
 
   t_atom a;
   SETFLOAT(&a, x->m_repetition_filter);
-  outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
 }
 
 void parameter_base::get_enable(parameter_base*x)

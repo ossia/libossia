@@ -196,7 +196,7 @@ t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void*
   {
       if( s == gensym("range") )
         x->set_range();
-      else if ( s == gensym("bounding_mode") )
+      else if ( s == gensym("clip") )
         x->set_bounding_mode();
       else if ( s == gensym("min") || s == gensym("max") )
         x->set_minmax();
@@ -208,9 +208,9 @@ t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void*
         x->set_hidden();
       else if ( s == gensym("priority") )
         x->set_priority();
-      else if ( s == gensym("access_mode") )
+      else if ( s == gensym("mode") )
         x->set_access_mode();
-      else if ( s == gensym("repetition_filter") )
+      else if ( s == gensym("repetitions") )
         x->set_repetition_filter();
       else if ( s == gensym("tags") )
         x->set_tags();
