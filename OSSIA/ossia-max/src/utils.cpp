@@ -224,9 +224,9 @@ t_symbol* val_type2symbol(ossia::val_type type)
 
 ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
 {
-  if (bounding_mode == gensym("off"))
+  if (bounding_mode == gensym("free"))
     return ossia::bounding_mode::FREE;
-  else if (bounding_mode == gensym("on"))
+  else if (bounding_mode == gensym("both"))
     return ossia::bounding_mode::CLIP;
   else if (bounding_mode == gensym("wrap"))
     return ossia::bounding_mode::WRAP;
@@ -248,9 +248,9 @@ t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
   switch (bm)
   {
     case ossia::bounding_mode::FREE:
-      return gensym("off");
+      return gensym("free");
     case ossia::bounding_mode::CLIP:
-      return gensym("on");
+      return gensym("both");
     case ossia::bounding_mode::WRAP:
       return gensym("wrap");
     case ossia::bounding_mode::FOLD:

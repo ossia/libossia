@@ -610,7 +610,7 @@ void parameter_base::class_setup(t_class* c)
       c, "clip", 0, parameter_base,
       m_bounding_mode);
   CLASS_ATTR_ENUM (
-      c, "clip", 0, "off on wrap fold low high");
+      c, "clip", 0, "free low high both wrap fold ");
 
   CLASS_ATTR_LONG(c, "enable", 0, parameter_base, m_enable);
   CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
