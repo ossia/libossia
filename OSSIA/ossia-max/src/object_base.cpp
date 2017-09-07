@@ -85,7 +85,6 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
 
 t_matcher::~t_matcher()
 {
-  std::cout << "destructor ===============>" << this << std::endl;
   if(node && parent)
   {
     if (   parent->m_otype == object_class::param
