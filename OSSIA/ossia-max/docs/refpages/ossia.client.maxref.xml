@@ -4,11 +4,11 @@
 <c74object name="ossia.client" module="Ossia" category="Ossia">
 
 	<digest>
-		Client
+		Connect to a distant ossia device
 	</digest>
 
 	<description>
-		Client
+		ossia.client allows to connect to a distant device (either locally or on another computer) through various protcoles and let you bind to it through <o>ossia.view</o> and <o>ossia.remote</o>
 	</description>
 
 	
@@ -37,6 +37,9 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.device" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.remote" type="refpage"/>		
 	</seealsolist>
 
 	
