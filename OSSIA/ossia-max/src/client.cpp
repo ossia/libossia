@@ -55,6 +55,10 @@ extern "C" void ossia_client_setup()
       "disconnect", A_GIMME, 0);
 
   class_addmethod(
+      c, (method)client::getdevices,
+      "getdevices", A_NOTHING, 0);
+
+  class_addmethod(
       c, (method)protocol_settings::print_protocol_help,
       "help", A_NOTHING, 0);
 
