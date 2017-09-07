@@ -100,6 +100,8 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
     x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->m_name->s_name};
+    x->connect_slots();
+
     x->m_nodes = {&x->m_device->get_root_node()};
 
     ossia_library.devices.push_back(x);
