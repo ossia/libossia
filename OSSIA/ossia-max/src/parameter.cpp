@@ -102,8 +102,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     ossia_max::instance().parameters.push_back(x);
   }
 
-  std::cout << "new o.param object" << std::endl;
-
   return x;
 }
 

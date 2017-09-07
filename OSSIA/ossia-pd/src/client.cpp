@@ -307,8 +307,6 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
         x->m_device = new ossia::net::generic_device{
             std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name};
 
-        std::cout << "connected to device " << x->m_device->get_name()
-                  << " on " << wsurl << std::endl;
         clock_set(x->m_poll_clock, 1);
         SETFLOAT(connection_status,1);
       }

@@ -54,8 +54,6 @@ public:
   long m_min_size{};
   long m_max_size{};
 
-  void* m_poll_clock{};
-
   /**
    * @brief t_obj_base::push : push a value to a node
    * @param x : caller that holds the node to push to

@@ -113,7 +113,7 @@ public:
   t_clock* m_clock{};   // multi-purpose clock
   std::chrono::milliseconds m_last_click{};
 
-  t_clock* m_poll_clock{}; // value polling clock
+  t_clock* m_poll_clock{}; // value or message polling clock
   float m_rate{10};
 
   ossia::net::generic_device* m_device{};

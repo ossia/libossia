@@ -223,10 +223,12 @@ t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void*
       else if ( s == gensym("rate") )
         x->set_rate();
       else if ( s == gensym("mute") )
+      {
         if (x->m_mute)
           x->unregister();
         else
           obj_register(x);
+      }
   }
   return {};
 }

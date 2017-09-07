@@ -96,6 +96,7 @@ public:
   bool m_mute;
 
   void* m_clock{};
+  void* m_poll_clock{}; // value or message polling clock
 
   float m_rate{10};
 
