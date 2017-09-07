@@ -330,9 +330,9 @@ extern "C" void setup_ossia0x2eparam(void)
     parameter_base::declare_attributes(c);
 
     // special attributes
-    CLASS_ATTR_DEFAULT(c, "type",          0, "float");
-    CLASS_ATTR_DEFAULT(c, "bounding_mode", 0, "free");
-    CLASS_ATTR_DEFAULT(c, "access_mode",   0, "bi");
+    CLASS_ATTR_DEFAULT(c, "type", 0, "float");
+    CLASS_ATTR_DEFAULT(c, "clip", 0, "free");
+    CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
     CLASS_ATTR_SYMBOL(      c, "unit",              0, parameter, m_unit);
     CLASS_ATTR_INT(         c, "mute",              0, parameter, m_mute);

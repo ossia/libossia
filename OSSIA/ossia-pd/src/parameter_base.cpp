@@ -544,17 +544,18 @@ void parameter_base::declare_attributes(t_eclass* c)
   CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, parameter_base, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
   eclass_addmethod(c, (method) parameter_base::get_max,               "getmax",               A_NULL, 0);
 
-  CLASS_ATTR_SYMBOL(      c, "bounding_mode", 0, parameter_base, m_bounding_mode);
-  eclass_addmethod(c, (method) parameter_base::get_bounding_mode,     "getbounding_mode",     A_NULL, 0);
+  CLASS_ATTR_SYMBOL(      c, "clip", 0, parameter_base, m_bounding_mode);
+  eclass_addmethod(c, (method) parameter_base::get_bounding_mode,     "getclip",     A_NULL, 0);
 
   CLASS_ATTR_SYMBOL(c, "type", 0, parameter_base, m_type);
   eclass_addmethod(c, (method) parameter_base::get_type,              "gettype",              A_NULL, 0);
 
-  CLASS_ATTR_SYMBOL(c, "access_mode", 0, parameter_base, m_access_mode);
-  eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getaccess_mode",       A_NULL, 0);
+  CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
+  eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getmode",       A_NULL, 0);
 
-  CLASS_ATTR_FLOAT       (c, "repetition_filter", 0, parameter_base, m_repetition_filter);
+  CLASS_ATTR_FLOAT       (c, "repetition", 0, parameter_base, m_repetition_filter);
   eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetition_filter", A_NULL, 0);
+
 }
 
 } // namespace pd

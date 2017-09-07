@@ -594,6 +594,7 @@ void parameter_base::class_setup(t_class* c)
 
   CLASS_ATTR_FLOAT(
         c, "rate", 0, parameter, m_rate);
+  CLASS_ATTR_FILTER_MIN(c, "rate", 1);
 
   CLASS_ATTR_LONG(
         c, "mute", 0, parameter, m_mute);
@@ -606,10 +607,10 @@ void parameter_base::class_setup(t_class* c)
       c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
 
   CLASS_ATTR_SYM(
-      c, "bounding_mode", 0, parameter_base,
+      c, "clip", 0, parameter_base,
       m_bounding_mode);
   CLASS_ATTR_ENUM (
-      c, "bounding_mode", 0, "free clip wrap fold low high");
+      c, "clip", 0, "off on wrap fold low high");
 
   CLASS_ATTR_LONG(c, "enable", 0, parameter_base, m_enable);
   CLASS_ATTR_STYLE(c, "enable", 0, "onoff");

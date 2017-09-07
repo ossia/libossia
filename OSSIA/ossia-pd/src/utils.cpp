@@ -476,9 +476,9 @@ std::string replace_brackets(std::string str){
 
 ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
 {
-  if (bounding_mode == gensym("free"))
+  if (bounding_mode == gensym("off"))
     return ossia::bounding_mode::FREE;
-  else if (bounding_mode == gensym("clip"))
+  else if (bounding_mode == gensym("on"))
     return ossia::bounding_mode::CLIP;
   else if (bounding_mode == gensym("wrap"))
     return ossia::bounding_mode::WRAP;
@@ -500,9 +500,9 @@ t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
   switch (bm)
   {
     case ossia::bounding_mode::FREE:
-      return gensym("free");
+      return gensym("off");
     case ossia::bounding_mode::CLIP:
-      return gensym("clip");
+      return gensym("on");
     case ossia::bounding_mode::WRAP:
       return gensym("wrap");
     case ossia::bounding_mode::FOLD:
