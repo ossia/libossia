@@ -120,7 +120,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 0.0, 0.0, 640.0, 480.0 ],
+										"rect" : [ 63.0, 81.0, 640.0, 480.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -803,13 +803,13 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-18",
-									"linecount" : 3,
+									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 41.0, 104.0, 271.0, 50.0 ],
+									"patching_rect" : [ 41.0, 104.0, 288.0, 64.0 ],
 									"style" : "",
-									"text" : "Parameters can be specified a kind of unit, aka dataspace (gain, time, color, position, orientation, distance or speed) and a specific unit",
+									"text" : "Parameters can be specified a kind of unit, (aka dataspace) and a specific unit. Various units can be gain, time, color, position, orientation, distance or speed kind",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -934,7 +934,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 464.0, 237.0, 126.0, 22.0 ],
+					"patching_rect" : [ 464.0, 237.0, 88.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -944,7 +944,7 @@
 					}
 ,
 					"style" : "",
-					"text" : "p \"Dataspace & units\""
+					"text" : "p \"Values unit\""
 				}
 
 			}
@@ -994,6 +994,18 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-3",
+									"maxclass" : "button",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "bang" ],
+									"patching_rect" : [ 852.0, 221.0, 24.0, 24.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"bubble" : 1,
 									"bubbletextmargin" : 10,
@@ -1078,7 +1090,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 784.0, 618.0, 131.0, 22.0 ],
 									"style" : "",
-									"text" : "0. 0. 0. 0."
+									"text" : "-1. -1. -1. -1."
 								}
 
 							}
@@ -1119,7 +1131,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 866.0, 221.0, 271.0, 35.0 ],
+									"patching_rect" : [ 889.0, 221.0, 271.0, 35.0 ],
 									"style" : "",
 									"text" : "When parameter is of type string, @range can be used to define possible values",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1148,7 +1160,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 784.0, 221.0, 63.0, 22.0 ],
-									"style" : ""
+									"style" : "",
+									"text" : "cherry"
 								}
 
 							}
@@ -1455,6 +1468,17 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-25", 1 ],
+									"midpoints" : [ 793.5, 213.5, 837.5, 213.5 ],
+									"order" : 1,
+									"source" : [ "obj-18", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"midpoints" : [ 793.5, 213.5, 861.5, 213.5 ],
+									"order" : 0,
 									"source" : [ "obj-18", 0 ]
 								}
 
@@ -1641,7 +1665,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1941,7 +1965,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 115.0, 446.5, 100.0, 22.0 ],
-									"style" : ""
+									"style" : "",
+									"text" : "tres"
 								}
 
 							}
@@ -2283,7 +2308,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 162.0, 227.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2634,7 +2659,17 @@
 				"type" : "iLaX"
 			}
  ],
-		"autosave" : 0
+		"autosave" : 0,
+		"styles" : [ 			{
+				"name" : "Jamoma_highlighted_orange",
+				"default" : 				{
+					"accentcolor" : [ 1.0, 0.5, 0.0, 1.0 ]
+				}
+,
+				"parentstyle" : "",
+				"multi" : 0
+			}
+ ]
 	}
 
 }
