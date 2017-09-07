@@ -24,12 +24,12 @@ int main()
   auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), {}));
 
   // Our process will play for five seconds
-  auto constraint =
-      std::make_shared<time_constraint>(
+  auto interval =
+      std::make_shared<time_interval>(
         [] (auto t, auto t2, const auto& state) { ossia::launch(state); },
         *start_event, *end_event, 5000._tv, 5000._tv, 5000._tv);
 
-  ossia::clock clk{*constraint};
+  ossia::clock clk{*interval};
   using namespace std::literals;
 
   clk.set_granularity(50ms);
@@ -43,9 +43,9 @@ int main()
   behaviour->add_point(curve_segment_linear<float>{}, 0.5, 1.);
   behaviour->add_point(curve_segment_ease<float, easing::circularOut>{}, 1., 0.);
 
-  constraint->add_time_process(std::make_unique<automation>(*address, (curve_ptr)behaviour));
+  interval->add_time_process(std::make_unique<automation>(*address, (curve_ptr)behaviour));
 
-  constraint->set_speed(1._tv);
+  interval->set_speed(1._tv);
 
   // Start the execution. It runs in its own separate thread.
   std::cerr << "Starting\n";
@@ -65,13 +65,13 @@ int main()
   std::cerr << "Starting manually\n";
   // We can have the execution perform manually, too,
   // for instance for use with an external clock source
-  constraint->start(st);
+  interval->start(st);
   for(int i = 0; i < 500; i++)
   {
     // Tick every 100 units of time
-    constraint->tick(10._tv);
+    interval->tick(10._tv);
   }
-  constraint->stop();
+  interval->stop();
 
   std::cerr << std::flush;
   return 0;

@@ -21,11 +21,11 @@
 using namespace ossia;
 using namespace std;
 
-void main_constraint_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element);
+void main_interval_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element);
 void main_start_event_callback(TimeEvent::Status newStatus);
 void main_end_event_callback(TimeEvent::Status newStatus);
 
-void loop_pattern_constraint_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element);
+void loop_pattern_interval_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element);
 void loop_pattern_start_event_callback(TimeEvent::Status newStatus);
 void loop_pattern_end_event_callback(TimeEvent::Status newStatus);
 
@@ -45,17 +45,17 @@ int main()
     auto main_end_event = *(end_node->emplace(end_node->get_time_events().begin(), &main_end_event_callback));
 
     time_value main_duration(2000.);
-    auto main_constraint = TimeConstraint::create(main_constraint_callback, main_start_event, main_end_event, main_duration);
+    auto main_interval = TimeConstraint::create(main_interval_callback, main_start_event, main_end_event, main_duration);
     
-    main_constraint->set_granularity(10.);
+    main_interval->set_granularity(10.);
     
     /*
      Loop Process setup
      */
     
-    auto loop = Loop::create(90., loop_pattern_constraint_callback, loop_pattern_start_event_callback, loop_pattern_end_event_callback);
+    auto loop = Loop::create(90., loop_pattern_interval_callback, loop_pattern_start_event_callback, loop_pattern_end_event_callback);
     
-    main_constraint->add_time_process(loop);
+    main_interval->add_time_process(loop);
 
     /*
      Display TimeSync's date
@@ -72,12 +72,12 @@ int main()
     
     start_node->happen();
     
-    // look at the console to see how things are repeated during the main constraint duration
-    while (main_constraint->running())
+    // look at the console to see how things are repeated during the main interval duration
+    while (main_interval->running())
         ;
 }
 
-void main_constraint_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element)
+void main_interval_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element)
 {
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
@@ -92,7 +92,7 @@ void main_end_event_callback(TimeEvent::Status newStatus)
     print_event_status(newStatus, "Main End");
 }
 
-void loop_pattern_constraint_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element)
+void loop_pattern_interval_callback(ossia::time_value position, time_value date, shared_ptr<StateElement> element)
 {
     cout << "Loop Constraint : " << double(position) << ", " << double(date) << endl;
 }

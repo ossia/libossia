@@ -553,8 +553,8 @@ void parameter_base::declare_attributes(t_eclass* c)
   CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
   eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getmode",       A_NULL, 0);
 
-  CLASS_ATTR_FLOAT       (c, "repetition", 0, parameter_base, m_repetition_filter);
-  eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetition_filter", A_NULL, 0);
+  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetition_filter);
+  eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetitions", A_NULL, 0);
 
 }
 
