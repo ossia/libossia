@@ -19,7 +19,7 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
     get_type(x);
   } else if ( attribute == ossia::net::text_domain() ){
     // get_domain(x);
-    object_post((t_object*)x, "update domain attribute");
+    // object_post((t_object*)x, "update domain attribute");
   } else if ( attribute == ossia::net::text_access_mode() ){
     get_access_mode(x);
   } else if ( attribute == ossia::net::text_bounding_mode() ){
@@ -345,7 +345,7 @@ void parameter_base::get_default(parameter_base*x)
     ossia::value v = *def_val;
     v.apply(vm);
 
-    x->m_default_size = std::min(va.size(), (long unsigned int) OSSIA_MAX_MAX_ATTR_SIZE);
+    x->m_default_size = va.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : va.size();
 
     for (int i=0; i < x->m_default_size; i++ )
       x->m_default[i] = va[i];
