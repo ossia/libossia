@@ -2,7 +2,7 @@ Set-PSDebug -Trace 1
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
-  copy OSSIA\${env:CONFIGURATION}\ossia.dll Tests\${env:CONFIGURATION}\
+  copy OSSIA\${env:configuration}\ossia.dll Tests\${env:configuration}\
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
