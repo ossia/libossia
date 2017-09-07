@@ -23,7 +23,7 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
     get_type(x);
   } else if ( attribute == ossia::net::text_domain() ){
     // get_domain(x);
-    logpost(x,2,"update domain attribute");
+    // logpost(x,2,"update domain attribute");
   } else if ( attribute == ossia::net::text_access_mode() ){
     get_access_mode(x);
   } else if ( attribute == ossia::net::text_bounding_mode() ){

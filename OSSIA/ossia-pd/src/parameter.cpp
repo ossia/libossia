@@ -323,7 +323,6 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) obj_dump<parameter>,   "dump",     A_NULL,  0);
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
     eclass_addmethod(c, (method) push_default_value,   "reset",    A_NULL,  0);

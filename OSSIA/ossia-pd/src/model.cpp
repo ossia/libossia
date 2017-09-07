@@ -243,7 +243,6 @@ extern "C" void setup_ossia0x2emodel(void)
 
     node_base::declare_attributes(c);
 
-    eclass_addmethod(c, (method) obj_dump<model>, "dump", A_NULL, 0);
     eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
