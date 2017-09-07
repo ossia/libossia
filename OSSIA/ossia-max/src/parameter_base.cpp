@@ -57,8 +57,8 @@ void parameter_base::set_repetition_filter()
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
+          m_repetition ? ossia::repetition_filter::OFF
+                              : ossia::repetition_filter::ON);
   }
 }
 
@@ -304,17 +304,17 @@ void parameter_base::set_default()
 
 void parameter_base::get_range(parameter_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
+  // outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
 }
 
 void parameter_base::get_min(parameter_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
+  // outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
 }
 
 void parameter_base::get_max(parameter_base*x)
 {
-  outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
+  // outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
 }
 
 void parameter_base::get_bounding_mode(parameter_base*x)
@@ -323,11 +323,7 @@ void parameter_base::get_bounding_mode(parameter_base*x)
   ossia::max::t_matcher& m = x->m_matchers[0];
   ossia::net::node_base* node = m.get_node();
   ossia::net::parameter_base* param = node->get_parameter();
-
   x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
-  t_atom a;
-  A_SETSYM(&a,x->m_bounding_mode);
-  outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
 }
 
 void parameter_base::get_default(parameter_base*x)
@@ -352,9 +348,6 @@ void parameter_base::get_default(parameter_base*x)
   } else {
     x->m_default_size = 0;
   }
-
-  outlet_anything(x->m_dumpout, gensym("default"),
-                  x->m_default_size, x->m_default);
 }
 
 void parameter_base::get_type(parameter_base*x)
@@ -366,10 +359,6 @@ void parameter_base::get_type(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_type = val_type2symbol(param->get_value_type());
-
-  t_atom a;
-  A_SETSYM(&a,x->m_type);
-  outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
 }
 
 void parameter_base::get_access_mode(parameter_base*x)
@@ -380,10 +369,6 @@ void parameter_base::get_access_mode(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_access_mode = access_mode2symbol(param->get_access());
-
-  t_atom a;
-  A_SETSYM(&a, x->m_access_mode);
-  outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
 }
 
 void parameter_base::get_repetition_filter(parameter_base*x)
@@ -393,11 +378,7 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   ossia::net::node_base* node = m.get_node();
   ossia::net::parameter_base* param = node->get_parameter();
 
-  x->m_repetition_filter = param->get_repetition_filter();
-
-  t_atom a;
-  A_SETFLOAT(&a, x->m_repetition_filter);
-  outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
+  x->m_repetition = !param->get_repetition_filter();
 }
 
 void parameter_base::get_enable(parameter_base*x)
@@ -408,10 +389,6 @@ void parameter_base::get_enable(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
 
   x->m_enable = !param->get_disabled();
-
-  t_atom a;
-  A_SETFLOAT(&a,x->m_enable);
-  outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
@@ -594,6 +571,7 @@ void parameter_base::class_setup(t_class* c)
 
   CLASS_ATTR_FLOAT(
         c, "rate", 0, parameter, m_rate);
+  CLASS_ATTR_FILTER_MIN(c, "rate", 1);
 
   CLASS_ATTR_LONG(
         c, "mute", 0, parameter, m_mute);
@@ -606,10 +584,10 @@ void parameter_base::class_setup(t_class* c)
       c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
 
   CLASS_ATTR_SYM(
-      c, "bounding_mode", 0, parameter_base,
+      c, "clip", 0, parameter_base,
       m_bounding_mode);
   CLASS_ATTR_ENUM (
-      c, "bounding_mode", 0, "free clip wrap fold low high");
+      c, "clip", 0, "off on wrap fold low high");
 
   CLASS_ATTR_LONG(c, "enable", 0, parameter_base, m_enable);
   CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
@@ -637,10 +615,11 @@ void parameter_base::class_setup(t_class* c)
       m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
 
   CLASS_ATTR_LONG(
-      c, "repetition_filter", 0, parameter_base,
-      m_repetition_filter);
+      c, "repetitions", 0, parameter_base,
+      m_repetition);
   CLASS_ATTR_STYLE(
-      c, "repetition_filter", 0, "onoff");
+      c, "repetitions", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "repetitions", 0, "Allow repeated values to be sent out.");
 
   CLASS_ATTR_LONG(
       c, "enable", 0, parameter_base,

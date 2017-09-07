@@ -233,10 +233,6 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       if (!local_param)
         return false;
 
-      local_param->set_repetition_filter(
-            m_repetition_filter ? ossia::repetition_filter::ON
-                                : ossia::repetition_filter::OFF);
-
       ossia::net::set_priority(local_param->get_node(), m_priority);
 
       ossia::net::set_disabled(local_param->get_node(), !m_enable);
@@ -256,6 +252,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
     set_range();
     set_minmax();
     set_default();
+    set_repetition_filter();
   }
 
   clock_delay(m_clock, 0);
