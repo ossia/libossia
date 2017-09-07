@@ -568,70 +568,92 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_ENUM (
       c, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h");
   //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
+  //sure, but I don't have any idea how to do that - PB
+  CLASS_ATTR_LABEL(c, "unit", 0, "Value Unit");
 
   CLASS_ATTR_FLOAT(
         c, "rate", 0, parameter, m_rate);
   CLASS_ATTR_FILTER_MIN(c, "rate", 1);
+  CLASS_ATTR_LABEL(c, "rate", 0, "Update Rate");
 
   CLASS_ATTR_LONG(
         c, "mute", 0, parameter, m_mute);
   CLASS_ATTR_STYLE(
       c, "mute", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "mute", 0, "Mute Output");
 
   CLASS_ATTR_SYM(
       c, "type", 0, parameter_base, m_type);
   CLASS_ATTR_ENUM (
       c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
+  CLASS_ATTR_LABEL(c, "type", 0, "Value Type");
 
   CLASS_ATTR_SYM(
       c, "clip", 0, parameter_base,
       m_bounding_mode);
   CLASS_ATTR_ENUM (
       c, "clip", 0, "free low high both wrap fold ");
-
-  CLASS_ATTR_LONG(c, "enable", 0, parameter_base, m_enable);
-  CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "clip", 0, "Clip Mode");
 
   CLASS_ATTR_SYM(
       c, "mode", 0, parameter_base,
       m_access_mode);
   CLASS_ATTR_ENUM (
       c, "mode", 0, "bi get set");
+  CLASS_ATTR_LABEL(c, "mode", 0, "Acces Mode");
 
   CLASS_ATTR_ATOM_VARSIZE(
       c, "default", 0, parameter_base,
       m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
+  CLASS_ATTR_LABEL(c, "default", 0, "Default Value");
 
   CLASS_ATTR_ATOM_VARSIZE(
       c, "range", 0, parameter_base,
       m_range, m_range_size, OSSIA_MAX_MAX_ATTR_SIZE);
+  CLASS_ATTR_LABEL(c, "range", 0, "Value Range");
 
   CLASS_ATTR_ATOM_VARSIZE(
       c, "min", 0, parameter_base,
       m_min, m_min_size, OSSIA_MAX_MAX_ATTR_SIZE);
+  CLASS_ATTR_LABEL(c, "min", 0, "Minimum Value");
 
   CLASS_ATTR_ATOM_VARSIZE(
       c, "max", 0, parameter_base,
       m_max, m_max_size, OSSIA_MAX_MAX_ATTR_SIZE);
+  CLASS_ATTR_LABEL(c, "max", 0, "Maximum Value");
 
   CLASS_ATTR_LONG(
       c, "repetitions", 0, parameter_base,
       m_repetition);
   CLASS_ATTR_STYLE(
       c, "repetitions", 0, "onoff");
-  CLASS_ATTR_LABEL(c, "repetitions", 0, "Allow repeated values to be sent out.");
+  CLASS_ATTR_LABEL(c, "repetitions", 0, "Allow Repetitions");
 
-  CLASS_ATTR_LONG(
-      c, "enable", 0, parameter_base,
-      m_hidden);
+  CLASS_ATTR_LONG(c, "enable", 0, parameter_base, m_enable);
+  CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "enable", 0, "Enable Parameter");
+
+  CLASS_ATTR_LONG(c, "hidden", 0, parameter_base, m_hidden);
   CLASS_ATTR_STYLE(
-      c, "enable", 0, "onoff");
+      c, "hidden", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "hidden", 0, "Hide Parameter");
+
+/*
+  CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, parameter_base, m_description);
+  CLASS_ATTR_LABEL(c, "description", 0, "Description");
+
+  CLASS_ATTR_FLOAT(
+        c, "priority", 0, parameter, m_prioriy);
+  CLASS_ATTR_LABEL(c, "priority", 0, "Priority");
+*/
 
 }
 
 parameter_base::parameter_base()
 {
   m_type = gensym("float");
+  m_enable = gensym("1");
+  //m_repetition = gensym("1");
   m_bounding_mode = gensym("free");
   m_access_mode = gensym("bi");
   m_description = gensym("");

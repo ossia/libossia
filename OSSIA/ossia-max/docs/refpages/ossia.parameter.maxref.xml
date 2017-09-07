@@ -221,7 +221,7 @@
 			</attributelist>
 		</attribute>
 
-		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
+		<attribute name="nawak" get="1" set="1" type="boolean" size="1">
 			<digest>
 				Allow value repetitions (on by default)
 			</digest>
