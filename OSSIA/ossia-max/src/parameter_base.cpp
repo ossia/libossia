@@ -57,8 +57,8 @@ void parameter_base::set_repetition_filter()
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetition ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
+          m_repetition ? ossia::repetition_filter::OFF
+                              : ossia::repetition_filter::ON);
   }
 }
 
@@ -638,22 +638,12 @@ void parameter_base::class_setup(t_class* c)
       c, "hidden", 0, "onoff");
   CLASS_ATTR_LABEL(c, "hidden", 0, "Hide Parameter");
 
-/*
-  CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, parameter_base, m_description);
-  CLASS_ATTR_LABEL(c, "description", 0, "Description");
-
-  CLASS_ATTR_FLOAT(
-        c, "priority", 0, parameter, m_prioriy);
-  CLASS_ATTR_LABEL(c, "priority", 0, "Priority");
-*/
 
 }
 
 parameter_base::parameter_base()
 {
   m_type = gensym("float");
-  m_enable = gensym("1");
-  //m_repetition = gensym("1");
   m_bounding_mode = gensym("free");
   m_access_mode = gensym("bi");
   m_description = gensym("");
