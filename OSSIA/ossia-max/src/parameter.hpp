@@ -35,7 +35,6 @@ public:
   float m_rate;
   long m_mute;
 
-  static void push_default_value(parameter* x);
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::parameter*);
 

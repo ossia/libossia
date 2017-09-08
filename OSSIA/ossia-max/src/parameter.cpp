@@ -24,7 +24,6 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
-  class_addmethod(c, (method) parameter::push_default_value, "reset", A_NOTHING,  0);
 
   // TODO add a reset method
 
@@ -177,12 +176,6 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
       x->set_mute();
   }
   return 0;
-}
-
-void parameter::push_default_value(parameter* x)
-{
-  if ( x->m_default_size > 0 )
-    parameter_base::push(x, nullptr, x->m_default_size, x->m_default);
 }
 
 bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)

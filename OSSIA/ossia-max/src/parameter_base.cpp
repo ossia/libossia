@@ -145,6 +145,25 @@ void parameter_base::set_minmax(){
   }
 }
 
+void parameter_base::push_default_value(parameter_base* x)
+{
+  ossia::net::node_base* node;
+
+  if (!x->m_mute)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      node = m.get_node();
+      auto parent = m.get_parent();
+      auto param = node->get_parameter();
+
+      auto def_val = ossia::net::get_default_value(*node);
+      if (def_val)
+        param->push_value(*def_val);
+    }
+  }
+}
+
 void parameter_base::set_range()
 {
   for (t_matcher& m : m_matchers)
@@ -564,6 +583,9 @@ void parameter_base::class_setup(t_class* c)
   class_addmethod(
       c, (method)parameter_base::push,
       "list", A_GIMME, 0);
+  class_addmethod(
+      c, (method)parameter_base::push_default_value,
+      "reset", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
       c, "unit", 0, parameter, m_unit);

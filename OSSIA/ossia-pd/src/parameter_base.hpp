@@ -64,13 +64,15 @@ public:
    * @param argc : number of value in the list
    * @param argv :  list of t_atom value(s)
    */
-  static void push(object_base* x, t_symbol*, int argc, t_atom* argv);
+  static void push(parameter_base* x, t_symbol*, int argc, t_atom* argv);
+
+  static void push_default_value(parameter_base* x);
   /**
    * @brief t_obj_base::bang send out the current value of the parameter
    * @param x
    */
-  static void bang(object_base* x);
-  static void output_value(object_base* x);
+  static void bang(parameter_base* x);
+  static void output_value(parameter_base* x);
 };
 
 

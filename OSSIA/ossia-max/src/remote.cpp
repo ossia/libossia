@@ -169,7 +169,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
 {
   t_symbol *attrname;
 
-  if (msg == gensym("attr_modified")) {
+  if (msg == gensym("attr_modified") && sender == x) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
     if( attrname == gensym("range") )
@@ -416,6 +416,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
       x->m_rate_min = *rate;
       x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
     }
+    notify(x, nullptr, gensym("attr_modified"), 0L, 0L);
 
   } else if ( attribute == ossia::net::text_unit()) {
     // assume all matchers have the same bounding_mode

@@ -67,6 +67,7 @@ public:
    */
   static void bang(parameter_base* x);
   static void output_value(parameter_base* x);
+  static void push_default_value(parameter_base* x);
 
   static void set(parameter_base* x, t_symbol* s, int argc, t_atom* argv);
   static void in_float(parameter_base* x, double f);

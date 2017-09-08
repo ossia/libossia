@@ -119,12 +119,6 @@ ossia::safe_vector<parameter*>& parameter::quarantine()
     return ossia_pd::instance().parameter_quarantine;
 }
 
-static void push_default_value(parameter* x)
-{
-  if ( x->m_default_size > 0 )
-    parameter_base::push(x, nullptr, x->m_default_size, x->m_default);
-}
-
 void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -336,7 +330,6 @@ extern "C" void setup_ossia0x2eparam(void)
 
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
-    eclass_addmethod(c, (method) push_default_value,   "reset",    A_NULL,  0);
 
     parameter_base::declare_attributes(c);
 

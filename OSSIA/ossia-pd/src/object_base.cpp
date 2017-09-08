@@ -305,7 +305,7 @@ void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
           x->m_matchers.push_back(std::move(matcher));
         }
       }
-      parameter_base::push(x,nullptr, argc, argv);
+      parameter_base::push((parameter_base*)x,nullptr, argc, argv);
       x->m_matchers.clear();
     }
   }

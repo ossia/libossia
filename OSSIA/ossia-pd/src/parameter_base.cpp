@@ -435,7 +435,7 @@ void parameter_base::get_enable(parameter_base*x)
   outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
 }
 
-void parameter_base::push(object_base* x, t_symbol* s, int argc, t_atom* argv)
+void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node;
 
@@ -508,7 +508,7 @@ void parameter_base::push(object_base* x, t_symbol* s, int argc, t_atom* argv)
   }
 }
 
-void parameter_base::bang(object_base* x)
+void parameter_base::bang(parameter_base* x)
 {
   for (auto& matcher : x->m_matchers)
   {
@@ -517,7 +517,7 @@ void parameter_base::bang(object_base* x)
   }
 }
 
-void parameter_base::output_value(object_base* x)
+void parameter_base::output_value(parameter_base* x)
 {
   for (auto& m : x->m_matchers)
   {
@@ -526,12 +526,33 @@ void parameter_base::output_value(object_base* x)
   clock_delay(x->m_poll_clock, x->m_rate);
 }
 
+void parameter_base::push_default_value(parameter_base* x)
+{
+  ossia::net::node_base* node;
+
+  if (!x->m_mute)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      node = m.get_node();
+      auto parent = m.get_parent();
+      auto param = node->get_parameter();
+
+      auto def_val = ossia::net::get_default_value(*node);
+      if (def_val)
+        param->push_value(*def_val);
+    }
+  }
+}
+
 void parameter_base::declare_attributes(t_eclass* c)
 {
   object_base :: declare_attributes(c);
 
-  eclass_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
-  eclass_addmethod(c, (method) parameter_base::bang, "bang",     A_NULL,  0);
+  eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
+  eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
+  eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
+
 
   CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
   eclass_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NULL, 0);
