@@ -184,7 +184,11 @@ t_matcher::~t_matcher()
 
 void t_matcher::enqueue_value(const ossia::value& v)
 {
-  m_queue_list.enqueue(v);
+  auto val = net::filter_value(*node->get_parameter());
+  if (val.valid())
+  {
+    m_queue_list.enqueue(v);
+  }
 }
 
 void t_matcher::output_value()
