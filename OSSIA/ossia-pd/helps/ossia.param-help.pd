@@ -116,7 +116,7 @@ bi @range 0 2;
 #N canvas 749 93 740 913 more_about_range_and_minmax 0;
 #X obj 93 234 list prepend set;
 #X obj 93 255 list trim;
-#X msg 93 276 10 10 10 -10 2;
+#X msg 93 276 26 37 18 -20 2;
 #X floatatom 93 83 5 0 0 0 - - -, f 5;
 #X obj 126 558 list prepend set;
 #X obj 126 579 list trim;
@@ -341,7 +341,7 @@ patcher.;
 #X connect 62 0 60 0;
 #X connect 63 0 60 0;
 #X restore 55 536 pd attributes_get/set;
-#X msg 291 336 reset;
+#X msg 253 335 reset;
 #X text 120 305 send attribute values and parameter state through rightmost
 output, f 66;
 #N canvas 777 353 649 398 declaring_multiple_parameters_in_1_object
@@ -375,6 +375,7 @@ the UI framework of pd \, tcl/tk \, curly braces are replaced by <>
 #X connect 11 0 13 0;
 #X connect 12 0 11 0;
 #X restore 56 584 pd declaring_multiple_parameters_in_1_object;
+#X text 303 335 will reset to default value(s);
 #X connect 16 0 17 0;
 #X connect 16 1 18 0;
 #X connect 16 2 19 0;
