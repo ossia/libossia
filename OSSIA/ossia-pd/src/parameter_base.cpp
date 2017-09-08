@@ -61,8 +61,8 @@ void parameter_base::set_repetition_filter()
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
+          m_repetitions ? ossia::repetition_filter::OFF
+                              : ossia::repetition_filter::ON);
   }
 }
 
@@ -410,10 +410,10 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   ossia::net::node_base* node = m.get_node();
   ossia::net::parameter_base* param = node->get_parameter();
 
-  x->m_repetition_filter = param->get_repetition_filter();
+  x->m_repetitions = !param->get_repetition_filter();
 
   t_atom a;
-  SETFLOAT(&a, x->m_repetition_filter);
+  SETFLOAT(&a, x->m_repetitions);
   outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
 }
 
@@ -553,7 +553,7 @@ void parameter_base::declare_attributes(t_eclass* c)
   CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
   eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getmode",       A_NULL, 0);
 
-  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetition_filter);
+  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
   eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetitions", A_NULL, 0);
 
 }
