@@ -8,6 +8,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/preset/preset.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <QQmlEngine>
 #include <QQmlComponent>
 
@@ -53,6 +54,26 @@ private slots:
 
     auto str = ossia::presets::write_json(dev);
     qDebug() << str.c_str();
+  }
+
+  void test_nodes()
+  {
+
+    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), "mydevice"};
+
+    auto& root = dev.get_root_node();
+
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.1"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.2"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.3"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.5"));
+
+
+    auto preset = ossia::presets::make_preset(dev);
+    auto presetJSON = ossia::presets::write_json("mydevice", preset);
+    qDebug() << presetJSON.c_str();
+
   }
 };
 
