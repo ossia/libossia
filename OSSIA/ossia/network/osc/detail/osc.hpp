@@ -465,11 +465,11 @@ inline ossia::value filter_value(
 template<typename Addr_T>
 inline ossia::value filter_value(const Addr_T& addr)
 {
-  auto val = addr.value();
-  if (addr.filter_value(val))
-    return {};
-
-  return filter_value(addr.get_domain(), std::move(val), addr.get_bounding());
+  auto val = filter_value(addr.get_domain(), addr.value(), addr.get_bounding());
+  auto filtered = addr.filter_value(val);
+  if(!filtered)
+    return val;
+  return {};
 }
 
 inline ossia::value to_value(
