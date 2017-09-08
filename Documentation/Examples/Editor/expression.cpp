@@ -19,7 +19,7 @@ using namespace std;
 int main()
 {
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "i-score"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "score"};
 
     // Local tree building
     auto localImpulseNode1 = device.create_child("my_impulse.1");

@@ -14,7 +14,7 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      sudo wget -nv https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
+      sudo wget -nv https://github.com/OSSIA/score-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
 
       wget -nv https://cmake.org/files/v3.9/cmake-3.9.0-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
@@ -58,7 +58,7 @@ case "$TRAVIS_OS_NAME" in
     set +e
     brew install gnu-tar xz
     ARCHIVE=homebrew-cache.tar.xz
-    wget -nv "https://github.com/OSSIA/iscore-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
+    wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
     brew link --force boost cmake ninja qt5
 

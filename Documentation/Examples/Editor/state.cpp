@@ -25,7 +25,7 @@ int main()
 {
   // Local device
   ossia::net::generic_device device{
-         std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 9998, 13579),
+         std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 9998, 13579),
         "newDevice"};
 
   // Minuit tree building

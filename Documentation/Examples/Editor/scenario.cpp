@@ -33,8 +33,8 @@ int main()
      Network setup
      */
 
-    // create a Local device "i-score"
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "i-score"};
+    // create a Local device "score"
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "score"};
 
     // add a /play address
     auto local_play_node = device.create_child("play");
@@ -134,7 +134,7 @@ int main()
      Main scenario edition : make an event interactive
      */
 
-    // create an expression : /i-score/test >= {0.7, 0.7, 0.7}
+    // create an expression : /score/test >= {0.7, 0.7, 0.7}
     auto make_expr = [&] () {
       return expressions::make_expression_atom(
         Destination(*local_test_address),
@@ -272,7 +272,7 @@ void local_play_callback(const value& v)
 
 void local_test_callback(const value& v)
 {
-    cout << "/i-score/test = ";
+    cout << "/score/test = ";
 
     if (v.getType() == val_type::LIST)
     {

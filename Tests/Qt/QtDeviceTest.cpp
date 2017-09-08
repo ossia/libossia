@@ -100,7 +100,7 @@ private Q_SLOTS:
 
         auto& proto = static_cast<ossia::net::multiplex_protocol&>(dev.get_protocol());
         proto.expose_to(
-              std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 13579, 9998));
+              std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 13579, 9998));
 
        QTimer::singleShot(3000, [&] () { app.exit(); });
 

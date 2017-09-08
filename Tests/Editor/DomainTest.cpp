@@ -269,6 +269,79 @@ class DomainTest : public QObject
   }
 private Q_SLOTS:
 
+  void test_visit()
+  {
+    auto range = ossia::make_domain(-1, 1);
+    struct my_vis {
+      void operator()(ossia::domain_base<int>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<float>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<char>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<bool>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<impulse>& d)
+      {
+        // nothing to do
+      }
+      void operator()(ossia::domain_base<std::string> d)
+      {
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<ossia::value> d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::vecf_domain<2>& d)
+      {
+        for(auto min : d.min) if(min) { }
+        for(auto max : d.max) if(max) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()(ossia::vecf_domain<3>& d)
+      {
+        for(auto min : d.min) if(min) { }
+        for(auto max : d.max) if(max) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()(ossia::vecf_domain<4>& d)
+      {
+        for(auto min : d.min) if(min) { }
+        for(auto max : d.max) if(max) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()(ossia::vector_domain& d)
+      {
+        if(!d.min.empty()) { }
+        if(!d.max.empty()) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()()
+      {
+
+      }
+    } my_visitor;
+    ossia::apply(my_visitor, range.v);
+  }
 
   /*! test life cycle and accessors functions */
   void test_basic()

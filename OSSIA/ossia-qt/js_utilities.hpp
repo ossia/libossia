@@ -345,7 +345,6 @@ struct OSSIA_EXPORT js_value_outbound_visitor
   {
     auto array = engine.newArray(arr.size());
     int i = 0;
-
     for (auto child : arr)
     {
       array.setProperty(i++, child);

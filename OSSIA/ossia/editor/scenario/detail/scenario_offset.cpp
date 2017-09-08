@@ -133,7 +133,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   // note : this change the semantics of the score and should not be done like
   // this;
   // it's only a temporary (1 year later: haha) bugfix for
-  // https://github.com/OSSIA/i-score/issues/253 .
+  // https://github.com/OSSIA/score/issues/253 .
   for (auto& elt : time_map)
   {
     if (elt.second < offset)
