@@ -77,7 +77,7 @@
 				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range.
 			</description>
 		</attribute>		
-<!--
+
 		<attribute name="min" get="1" set="1" type="list" size="2">
 			<digest>
 				Value range minimum
@@ -95,7 +95,7 @@
 				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
 			</description>
 		</attribute>	
--->
+
 		<attribute name="clip" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Set how values exceeding range will be clipped
