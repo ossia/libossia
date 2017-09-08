@@ -5,6 +5,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia-pd/src/utils.hpp>
 
 #include <sstream>
@@ -86,8 +87,7 @@ void parameter_base::set_type()
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-    param->set_value_type(symbol2val_type(m_type));
+    ossia::try_setup_parameter(m_type->s_name, *node);
   }
 }
 

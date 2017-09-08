@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
@@ -49,21 +50,16 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
     for (auto n : nodes)
     {
-      ossia::net::parameter_base* local_param{};
+      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
 
-      auto type = symbol2val_type(m_type);
-
-      if ( type != ossia::val_type::NONE )
-        local_param = n->create_parameter(type);
-      else
+      if (!local_param)
       {
         pd_error(
               this,
               "type should one of: float, symbol, int, vec2f, "
               "vec3f, vec4f, bool, list, char");
-      }
-      if (!local_param)
         return false;
+      }
 
       local_param->set_repetition_filter(
             m_repetitions ? ossia::repetition_filter::ON

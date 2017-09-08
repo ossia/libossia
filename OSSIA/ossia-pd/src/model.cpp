@@ -192,8 +192,20 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
       }
       else
       {
-        x->m_name = gensym("untitledModel");
-        pd_error(x, "You have to pass a name as the first argument");
+        std::string cur = canvas_getcurrent()->gl_name->s_name;
+        if(cur.find(".pd") != std::string::npos)
+        {
+          cur.resize(cur.size() - 3);
+        }
+        if(cur.empty())
+        {
+          x->m_name = gensym("unnamedModel");
+          pd_error(x, "You have to pass a name as the first argument");
+        }
+        else
+        {
+          x->m_name = gensym(cur.c_str());
+        }
       }
 
       ebox_attrprocess_viabinbuf(x, d);

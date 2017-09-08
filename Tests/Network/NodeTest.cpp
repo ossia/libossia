@@ -158,6 +158,20 @@ private Q_SLOTS:
     /* TODO */
   }
 
+  void test_complex_type()
+  {
+
+    ossia::net::generic_device device;
+    QVERIFY(ossia::try_setup_parameter("time.Hz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("time.hz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("time.Hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("time.hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("Hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("Hz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("hz", device.get_root_node()));
+  }
+
   void test_sanitize()
   {
       using namespace std::literals;

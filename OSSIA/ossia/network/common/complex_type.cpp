@@ -53,22 +53,47 @@ struct setup_parameter_visitor
   ossia::net::node_base& n;
   ret operator()(ossia::val_type v) const
   {
-    return n.create_parameter(v);
+    if(auto p = n.get_parameter())
+    {
+      p->set_value_type(v);
+      return p;
+    }
+    else
+    {
+      return n.create_parameter(v);
+    }
   }
   ret operator()(const ossia::unit_t& v) const
   {
-    auto addr = n.create_parameter(ossia::matching_type(v));
-    addr->set_unit(v);
-    return addr;
+    ossia::net::parameter_base* p{};
+    auto t = ossia::matching_type(v);
+    if((p = n.get_parameter()))
+    {
+      p->set_value_type(t);
+    }
+    else
+    {
+      p = n.create_parameter(t);
+    }
+    p->set_unit(v);
+    return p;
   }
   ret operator()(const ossia::extended_type& v) const
   {
     auto t = ossia::underlying_type(v);
     if (!t.empty())
     {
-      auto addr = n.create_parameter(t[0]);
+      ossia::net::parameter_base* p{};
+      if((p = n.get_parameter()))
+      {
+        p->set_value_type(t[0]);
+      }
+      else
+      {
+        p = n.create_parameter(t[0]);
+      }
       ossia::net::set_extended_type(n, v);
-      return addr;
+      return p;
     }
     return nullptr;
   }
@@ -96,9 +121,10 @@ static void list_units(std::unordered_map<std::string, net::parameter_data>& map
     using d_traits = dataspace_traits<dataspace_type>;
     for(auto dn : d_traits::text())
     {
-      std::string dataspace_name(dn);
+      std::string dataspace_name = boost::algorithm::to_lower_copy(std::string(dn));
       using neutral_u = typename d_traits::neutral_unit;
       neutral_u neutral;
+      p.type = neutral;
       p.unit = neutral;
       map.insert({dataspace_name, p});
 
@@ -108,9 +134,11 @@ static void list_units(std::unordered_map<std::string, net::parameter_data>& map
         for (auto un : unit_traits<unit_type>::text())
         {
           // Add the unit in short form and long
+          p.type = unit_type{};
           p.unit = unit_type{};
-          map.insert({dataspace_name + "." + std::string(un), p});
-          map.insert({std::string(un), p});
+          std::string s = boost::algorithm::to_lower_copy(std::string(un));
+          map.insert({dataspace_name + "." + s, p});
+          map.insert({s, p});
         }
       });
     }
@@ -119,7 +147,7 @@ static void list_units(std::unordered_map<std::string, net::parameter_data>& map
 
 const std::unordered_map<std::string, net::parameter_data>& parameter_creation_map()
 {
-  static auto map = [] {
+  static const auto map = [] {
     std::unordered_map<std::string, net::parameter_data> t;
     list_units(t);
 
@@ -131,6 +159,7 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
     add_simple("integer", ossia::val_type::INT);
     add_simple("int32", ossia::val_type::INT);
     add_simple("i32", ossia::val_type::INT);
+    add_simple("long", ossia::val_type::INT);
 
     add_simple("float", ossia::val_type::FLOAT);
     add_simple("single", ossia::val_type::FLOAT);
@@ -143,11 +172,19 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
     add_simple("real", ossia::val_type::FLOAT);
     add_simple("width", ossia::val_type::FLOAT);
     add_simple("length", ossia::val_type::FLOAT);
+    add_simple("len", ossia::val_type::FLOAT);
     add_simple("height", ossia::val_type::FLOAT);
+    add_simple("glfloat", ossia::val_type::FLOAT);
+    add_simple("x", ossia::val_type::FLOAT);
+    add_simple("y", ossia::val_type::FLOAT);
+    add_simple("z", ossia::val_type::FLOAT);
+    add_simple("w", ossia::val_type::FLOAT);
+    add_simple("scale", ossia::val_type::FLOAT);
 
     add_simple("string", ossia::val_type::STRING);
     add_simple("str", ossia::val_type::STRING);
     add_simple("symbol", ossia::val_type::STRING);
+    add_simple("sym", ossia::val_type::STRING);
     add_simple("font", ossia::val_type::STRING);
     add_simple("label", ossia::val_type::STRING);
     add_simple("url", ossia::val_type::STRING);
@@ -203,9 +240,12 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
 
     add_ext_2("array", list_type());
     add_ext_2("list", list_type());
+    add_ext_2("lst", list_type());
     add_ext_2("tuple", list_type());
     add_ext_2("vector", list_type());
     add_ext_2("generic", list_type());
+    add_ext_2("anything", list_type());
+    add_ext_2("any", list_type());
 
     auto add_u = [&] (auto e, auto u) {
       net::parameter_data p; p.type = u; t.insert({e, p});
@@ -215,6 +255,7 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
     add_u("point2d", ossia::cartesian_2d_u{});
     add_u("2d", ossia::cartesian_2d_u{});
     add_u("cartesian2d", ossia::cartesian_2d_u{});
+
     add_u("pos",   ossia::cartesian_3d_u{});
     add_u("point",   ossia::cartesian_3d_u{});
     add_u("point3d", ossia::cartesian_3d_u{});
@@ -225,10 +266,20 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
     add_u("coordinates", ossia::cartesian_3d_u{});
     add_u("pvector", ossia::cartesian_3d_u{});
     add_u("vertex",  ossia::cartesian_3d_u{});
+
     add_u("gl",  ossia::opengl_u{});
     add_u("opengl",  ossia::opengl_u{});
     add_u("position.gl",  ossia::opengl_u{});
     add_u("position.opengl",  ossia::opengl_u{});
+
+    add_u("freq",  ossia::frequency_u{});
+    add_u("frequence",  ossia::frequency_u{});
+    add_u("frequency",  ossia::frequency_u{});
+
+    add_u("col", ossia::dataspace_traits<color_u>::neutral_unit{});
+
+    add_u("rot", ossia::dataspace_traits<angle_u>::neutral_unit{});
+    add_u("rotation", ossia::dataspace_traits<angle_u>::neutral_unit{});
 
     return t;
   }();
@@ -241,7 +292,9 @@ net::parameter_base* try_setup_parameter(std::string str, net::node_base& node)
   boost::algorithm::to_lower(str);
   auto it = map.find(str);
   if(it != map.end())
+  {
     return setup_parameter(it->second.type, node);
+  }
   return nullptr;
 }
 

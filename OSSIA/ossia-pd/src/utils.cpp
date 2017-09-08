@@ -402,7 +402,7 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
 
 ossia::val_type symbol2val_type(t_symbol* s)
 {
-  std::string type = s->s_name;
+  std::string_view type = s->s_name;
 
   if (type == "float")
     return ossia::val_type::FLOAT;
