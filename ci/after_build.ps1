@@ -1,12 +1,19 @@
 Set-PSDebug -Trace 1
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
-  cd ${env:APPVEYOR_BUILD_FOLDER}\build
-  copy OSSIA\${env:configuration}\ossia.dll Tests\${env:configuration}\
+  cd c:\projects\libossia\build
+
+  if ( $env:configuration -eq "Release" ){
+    copy OSSIA\Release\ossia.dll Tests\Release\
+  } else {
+    copy OSSIA\Debug\ossia.dll Tests\Debug\
+  }
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
-  cd ${env:APPVEYOR_BUILD_FOLDER}
+  cd c:\projects\libossia\build
+
+  cmake --build . --target install
 
   ls .
   ls install
@@ -25,7 +32,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
-  cd ${env:APPVEYOR_BUILD_FOLDER}
+
+  cd c:\projects\libossia\build
+
+  cmake --build . --target install
+
 
   ls .
   ls install
@@ -36,8 +47,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   mkdir ossia-max-package\ossia\examples
   mkdir ossia-max-package\ossia\extensions
 
-  copy build\OSSIA\ossia-max\Release\ossia-max.mxe64 ossia-max-package\ossia\
-  copy build-32bit\OSSIA\ossia-max\Release\ossia-max.mxe ossia-max-package\ossia\
+  copy build\OSSIA\ossia-max\Release\*.mxe64 ossia-max-package\ossia\externals
+  copy build-32bit\OSSIA\ossia-max\Release\*.mxe ossia-max-package\ossia\externals
   copy OSSIA\ossia-max\help\* ossia-max-package\ossia\help\
   copy OSSIA\ossia-max\examples\* ossia-max-package\ossia\examples\
 }
