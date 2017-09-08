@@ -291,6 +291,8 @@ system_clock::now().time_since_epoch() );
 
 bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
+  if(m_mute) return false;
+
   bool res = do_registration(node);
 
   if (res)
