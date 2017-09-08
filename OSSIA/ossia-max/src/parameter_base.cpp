@@ -170,23 +170,25 @@ void parameter_base::set_range()
       }
       param->set_domain(make_domain(senum));
     }
-    else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
+    else if (   ( m_range[0].a_type == A_FLOAT || m_range[0].a_type == A_LONG )
+             && ( m_range[0].a_type == A_FLOAT || m_range[1].a_type == A_LONG ) )
     {
+      auto _min = atom_getfloat(m_range);
+      auto _max = atom_getfloat(m_range+1);
       switch( param->get_value_type() )
       {
         case ossia::val_type::INT:
         case ossia::val_type::FLOAT:
         case ossia::val_type::CHAR:
-          param->set_domain(
-                ossia::make_domain(m_range[0].a_w.w_float,m_range[1].a_w.w_float));
+          param->set_domain(ossia::make_domain(_min, _max));
           break;
         default:
           {
             std::vector<ossia::value> omin, omax;
             // TODO check param size
             std::array<float, OSSIA_MAX_MAX_ATTR_SIZE> min, max;
-            min.fill(m_range[0].a_w.w_float);
-            max.fill(m_range[1].a_w.w_float);
+            min.fill(_min);
+            max.fill(_max);
             omin.assign(min.begin(), min.end());
             omax.assign(max.begin(), max.end());
             param->set_domain(ossia::make_domain(omin,omax));
