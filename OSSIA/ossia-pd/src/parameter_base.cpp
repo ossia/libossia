@@ -581,6 +581,8 @@ void parameter_base::declare_attributes(t_eclass* c)
   CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
   eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetitions", A_NULL, 0);
 
+  CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
+
 }
 
 } // namespace pd

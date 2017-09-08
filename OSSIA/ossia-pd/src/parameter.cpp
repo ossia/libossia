@@ -339,7 +339,6 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
     CLASS_ATTR_SYMBOL(      c, "unit",              0, parameter, m_unit);
-    CLASS_ATTR_INT(         c, "mute",              0, parameter, m_mute);
     CLASS_ATTR_FLOAT(       c, "rate",              0, parameter, m_rate);
 
     eclass_addmethod(c, (method) parameter::get_unit,              "getunit",              A_NULL, 0);

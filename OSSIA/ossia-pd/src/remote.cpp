@@ -386,7 +386,6 @@ extern "C" void setup_ossia0x2eremote(void)
     eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
 
     CLASS_ATTR_SYMBOL(c, "unit",          0, remote, m_unit);
-    CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
     CLASS_ATTR_INT   (c, "rate",          0, remote, m_rate);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
