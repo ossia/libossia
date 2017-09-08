@@ -47,7 +47,7 @@ public:
   t_atom m_range[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_bounding_mode{};
   t_symbol* m_access_mode{};
-  t_float m_repetition_filter{};
+  t_float m_repetitions{};
   t_symbol* m_unit{};
 
   // size of size-variable attribute

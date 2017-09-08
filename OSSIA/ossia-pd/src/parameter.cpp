@@ -66,7 +66,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
         return false;
 
       local_param->set_repetition_filter(
-            m_repetition_filter ? ossia::repetition_filter::ON
+            m_repetitions ? ossia::repetition_filter::ON
                                 : ossia::repetition_filter::OFF);
 
       ossia::net::set_priority(local_param->get_node(), m_priority);
