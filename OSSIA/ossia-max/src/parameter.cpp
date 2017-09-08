@@ -149,7 +149,7 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
 
     if( attrname == gensym("range") )
       x->set_range();
-    else if ( attrname == gensym("bounding_mode") )
+    else if ( attrname == gensym("clip") )
       x->set_bounding_mode();
     else if ( attrname == gensym("min") || attrname == gensym("max") )
       x->set_minmax();
@@ -161,9 +161,9 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
       x->set_hidden();
     else if ( attrname == gensym("priority") )
       x->set_priority();
-    else if ( attrname == gensym("access_mode") )
+    else if ( attrname == gensym("mode") )
       x->set_access_mode();
-    else if ( attrname == gensym("repetition_filter") )
+    else if ( attrname == gensym("repetitions") )
       x->set_repetition_filter();
     else if ( attrname == gensym("tags") )
       x->set_tags();
@@ -173,7 +173,8 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
       x->set_enable();
     else if ( attrname == gensym("type") )
       x->set_type();
-
+    else if ( s == gensym("mute") )
+      x->set_mute();
   }
   return 0;
 }
@@ -307,6 +308,15 @@ void parameter::set_rate()
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::set_refresh_rate(*node,m_rate);
+  }
+}
+
+void parameter::set_mute()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_muted(*node,m_mute);
   }
 }
 

@@ -145,7 +145,7 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
     if (atom[i].a_type == A_FLOAT)
       list.push_back(atom_getfloat(&atom[i]));
     else if (atom[i].a_type == A_LONG)
-      list.push_back(atom_getlong(&atom[i]));
+      list.push_back(static_cast<int>(atom_getlong(&atom[i])));
     else if (atom[i].a_type == A_SYM)
       list.push_back(std::string(atom_getsym(&atom[i])->s_name));
   }
@@ -226,9 +226,9 @@ t_symbol* val_type2symbol(ossia::val_type type)
 
 ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
 {
-  if (bounding_mode == gensym("off"))
+  if (bounding_mode == gensym("free"))
     return ossia::bounding_mode::FREE;
-  else if (bounding_mode == gensym("on"))
+  else if (bounding_mode == gensym("both"))
     return ossia::bounding_mode::CLIP;
   else if (bounding_mode == gensym("wrap"))
     return ossia::bounding_mode::WRAP;
@@ -240,7 +240,7 @@ ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
     return ossia::bounding_mode::HIGH;
   else
   {
-    error("unknown bounding mode: %s", bounding_mode->s_name);
+    error("unknown clip mode: %s", bounding_mode->s_name);
     return ossia::bounding_mode::FREE;
   }
 }
@@ -250,9 +250,9 @@ t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
   switch (bm)
   {
     case ossia::bounding_mode::FREE:
-      return gensym("off");
+      return gensym("free");
     case ossia::bounding_mode::CLIP:
-      return gensym("on");
+      return gensym("both");
     case ossia::bounding_mode::WRAP:
       return gensym("wrap");
     case ossia::bounding_mode::FOLD:

@@ -66,7 +66,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
         return false;
 
       local_param->set_repetition_filter(
-            m_repetition_filter ? ossia::repetition_filter::ON
+            m_repetitions ? ossia::repetition_filter::ON
                                 : ossia::repetition_filter::OFF);
 
       ossia::net::set_priority(local_param->get_node(), m_priority);
@@ -198,6 +198,15 @@ void parameter::set_unit()
   }
 }
 
+void parameter::set_mute()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_muted(*node,m_mute);
+  }
+}
+
 void parameter::get_unit(parameter*x)
 {
   if (!x->m_matchers.empty())
@@ -253,7 +262,7 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
   {
       if( s == gensym("range") )
         x->set_range();
-      else if ( s == gensym("bounding_mode") )
+      else if ( s == gensym("clip") )
         x->set_bounding_mode();
       else if ( s == gensym("min") || s == gensym("max") )
         x->set_minmax();
@@ -265,9 +274,9 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
         x->set_hidden();
       else if ( s == gensym("priority") )
         x->set_priority();
-      else if ( s == gensym("access_mode") )
+      else if ( s == gensym("mode") )
         x->set_access_mode();
-      else if ( s == gensym("repetition_filter") )
+      else if ( s == gensym("repetitions") )
         x->set_repetition_filter();
       else if ( s == gensym("tags") )
         x->set_tags();
@@ -279,6 +288,8 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
         x->set_type();
       else if ( s == gensym("rate") )
         x->set_rate();
+      else if ( s == gensym("mute") )
+        x->set_mute();
 
   }
   return 0;

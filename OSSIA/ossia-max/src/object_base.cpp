@@ -153,7 +153,11 @@ t_matcher::~t_matcher()
 
 void t_matcher::enqueue_value(const ossia::value& v)
 {
-  m_queue_list.enqueue(v);
+  auto val = net::filter_value(*node->get_parameter());
+  if (val.valid())
+  {
+    m_queue_list.enqueue(v);
+  }
 }
 
 void t_matcher::output_value()
@@ -340,13 +344,17 @@ void object_base::get_hidden(object_base*x)
 void object_base::class_setup(t_class*c)
 {
   CLASS_ATTR_LONG(c, "priority", 0, object_base, m_priority);
+  CLASS_ATTR_LABEL(c, "priority", 0, "Priority");
 
   CLASS_ATTR_SYM(c, "description", 0, object_base, m_description);
+  CLASS_ATTR_LABEL(c, "description", 0, "Description");
 
   CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_MAX_MAX_ATTR_SIZE);
+  CLASS_ATTR_LABEL(c, "tags", 0, "Tags");  
 
   CLASS_ATTR_LONG( c, "hidden", 0, object_base, m_hidden);
   CLASS_ATTR_STYLE(c, "hidden", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
 
   class_addmethod(c, (method) object_base::get_address, "getaddress", A_NOTHING,  0);
 }

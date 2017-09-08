@@ -28,6 +28,7 @@ public:
   static void update_attribute(parameter* x, ossia::string_view attribute);
 
   void set_unit();
+  void set_mute();
 
   static void* create(t_symbol* name, int argc, t_atom* argv);
   static void destroy(parameter* x);

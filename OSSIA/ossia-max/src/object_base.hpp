@@ -90,10 +90,10 @@ public:
   t_symbol* m_name{};
   address_scope m_addr_scope{};
   bool m_is_pattern{};
-  bool m_dead = false; // wether this object is being deleted or not;
+  bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted;
-  bool m_enable;
-  bool m_mute;
+  bool m_enable{1};
+  bool m_mute{0};
 
   void* m_clock{};
   void* m_poll_clock{}; // value or message polling clock

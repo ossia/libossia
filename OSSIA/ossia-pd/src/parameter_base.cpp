@@ -15,7 +15,11 @@ namespace pd {
 
 parameter_base::parameter_base(t_eclass* x)
   : object_base{x}
-{ }
+{
+  m_range_size = 2;
+  SETFLOAT(m_range,0);
+  SETFLOAT(m_range+1,1);
+}
 
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute)
 {
@@ -61,8 +65,8 @@ void parameter_base::set_repetition_filter()
     ossia::net::node_base* node = m.get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetition_filter ? ossia::repetition_filter::ON
-                              : ossia::repetition_filter::OFF);
+          m_repetitions ? ossia::repetition_filter::OFF
+                              : ossia::repetition_filter::ON);
   }
 }
 
@@ -225,7 +229,7 @@ void parameter_base::set_bounding_mode()
 
     if (bounding_mode == "free")
       param->set_bounding(ossia::bounding_mode::FREE);
-    else if (bounding_mode == "clip")
+    else if (bounding_mode == "both")
       param->set_bounding(ossia::bounding_mode::CLIP);
     else if (bounding_mode == "wrap")
       param->set_bounding(ossia::bounding_mode::WRAP);
@@ -237,7 +241,7 @@ void parameter_base::set_bounding_mode()
       param->set_bounding(ossia::bounding_mode::HIGH);
     else
     {
-      pd_error(this, "unknown bounding mode: %s", bounding_mode.c_str());
+      pd_error(this, "unknown clip mode: %s", bounding_mode.c_str());
     }
   }
 }
@@ -344,7 +348,7 @@ void parameter_base::get_bounding_mode(parameter_base*x)
   x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
   t_atom a;
   SETSYMBOL(&a,x->m_bounding_mode);
-  outlet_anything(x->m_dumpout, gensym("bounding_mode"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
 }
 
 void parameter_base::get_default(parameter_base*x)
@@ -400,7 +404,7 @@ void parameter_base::get_access_mode(parameter_base*x)
 
   t_atom a;
   SETSYMBOL(&a, x->m_access_mode);
-  outlet_anything(x->m_dumpout, gensym("access_mode"), 1, &a);
+  outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
 }
 
 void parameter_base::get_repetition_filter(parameter_base*x)
@@ -410,11 +414,11 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   ossia::net::node_base* node = m.get_node();
   ossia::net::parameter_base* param = node->get_parameter();
 
-  x->m_repetition_filter = param->get_repetition_filter();
+  x->m_repetitions = !param->get_repetition_filter();
 
   t_atom a;
-  SETFLOAT(&a, x->m_repetition_filter);
-  outlet_anything(x->m_dumpout, gensym("repetition_filter"), 1, &a);
+  SETFLOAT(&a, x->m_repetitions);
+  outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
 }
 
 void parameter_base::get_enable(parameter_base*x)
@@ -553,7 +557,7 @@ void parameter_base::declare_attributes(t_eclass* c)
   CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
   eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getmode",       A_NULL, 0);
 
-  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetition_filter);
+  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
   eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetitions", A_NULL, 0);
 
 }
