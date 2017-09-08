@@ -650,6 +650,10 @@ parameter_base::parameter_base()
   m_access_mode = gensym("bi");
   m_description = gensym("");
   m_unit = gensym("");
+
+  m_range_size = 2;
+  atom_setfloat(m_range,0.);
+  atom_setfloat(m_range+1,1.);
 }
 
 } // namespace max
