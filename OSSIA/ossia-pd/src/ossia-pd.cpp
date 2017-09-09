@@ -67,7 +67,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   class_addcreator((t_newmethod)ossia_new,gensym("ø"), A_GIMME, 0);
 
-  node_base::declare_attributes(c);
+  node_base::class_setup(c);
 
   eclass_addmethod(c, (method) device::expose, "expose",    A_GIMME, 0);
   eclass_addmethod(c, (method) device::name,   "name",      A_GIMME, 0);
@@ -102,15 +102,14 @@ ossia_pd::ossia_pd():
 {
   sym_addr = gensym("address");
   sym_set  = gensym("set");
+  m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 }
 
 ossia_pd::~ossia_pd()
 {
+  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
   for (auto x : devices.copy()){
-    if (x->m_device){
-      x->m_device->on_parameter_created.disconnect<device, &device::on_parameter_created_callback>(x);
-      x->m_device->on_parameter_removing.disconnect<device, &device::on_parameter_deleted_callback>(x);
-    }
+    x->disconnect_slots();
   }
   for (auto x : views.copy()){
     x->m_matchers.clear();

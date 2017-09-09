@@ -198,6 +198,70 @@ struct value_visitor
   }
 };
 
+struct domain_visitor {
+  parameter_base* x;
+
+  template<typename T>
+  void operator()(ossia::domain_base<T>& d)
+  {
+    if(d.min && d.max) {
+      x->m_range_size = 2;
+      SETFLOAT(x->m_range, *d.min);
+      SETFLOAT(x->m_range+1, *d.max);
+    }
+
+    if (d.min) {
+      x->m_min_size = 1;
+      SETFLOAT(x->m_min, *d.min);
+    }
+
+    if (d.max) {
+      x->m_max_size = 1;
+      SETFLOAT(x->m_max, *d.max);
+    }
+  }
+  void operator()(ossia::domain_base<impulse>& d)
+  {
+    // nothing to do
+  }
+  void operator()(ossia::domain_base<std::string> d)
+  {
+    if(!d.values.empty())
+    {
+      x->m_range_size = d.values.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.values.size();
+      for (int i = 0; i < x->m_range_size; i++)
+      {
+        // SETSYMBOL(x->m_range+i,gensym(d.values[i].c_str()));
+      }
+    }
+  }
+  void operator()(ossia::domain_base<ossia::value> d)
+  {
+    if(d.min) { }
+    if(d.max) { }
+    if(!d.values.empty()) { }
+  }
+
+  template<std::size_t N>
+  void operator()(ossia::vecf_domain<N>& d)
+  {
+    for(const auto& min : d.min) if(min) { }
+    for(const auto& max : d.max) if(max) { }
+    for(const auto& values : d.values) if(!values.empty()) { }
+  }
+
+  void operator()(ossia::vector_domain& d)
+  {
+    if(!d.min.empty()) { }
+    if(!d.max.empty()) { }
+    for(const auto& values : d.values) if(!values.empty()) { }
+  }
+  void operator()()
+  {
+
+  }
+};
+
 #pragma mark Prototype
 
 std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);

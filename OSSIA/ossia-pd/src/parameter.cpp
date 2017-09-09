@@ -302,7 +302,7 @@ void parameter::destroy(parameter* x)
   x->~parameter();
 }
 
-void parameter::update_attribute(parameter* x, ossia::string_view attribute)
+void parameter::update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   if ( attribute == ossia::net::text_refresh_rate() ){
     get_rate(x);
@@ -311,7 +311,7 @@ void parameter::update_attribute(parameter* x, ossia::string_view attribute)
   } else if ( attribute == ossia::net::text_unit() ){
     get_unit(x);
   } else {
-    parameter_base::update_attribute(x, attribute);
+    parameter_base::update_attribute(x, attribute, node);
   }
 }
 
@@ -328,7 +328,7 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
 
-    parameter_base::declare_attributes(c);
+    parameter_base::class_setup(c);
 
     // special attributes
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");

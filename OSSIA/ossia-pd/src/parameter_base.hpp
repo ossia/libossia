@@ -12,7 +12,7 @@ public:
 
   parameter_base(t_eclass*x);
 
-  static void update_attribute(parameter_base* x, ossia::string_view attribute);
+  static void update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
 
   // attribute setting method
   void set_access_mode();
@@ -26,18 +26,18 @@ public:
   void set_type();
   void set_rate();
 
-  static void declare_attributes(t_eclass*c);
+  static void class_setup(t_eclass*c);
 
-  static void get_range(parameter_base* x);
-  static void get_min(parameter_base* x);
-  static void get_max(parameter_base* x);
-  static void get_bounding_mode(parameter_base* x);
-  static void get_default(parameter_base* x);
-  static void get_type(parameter_base* x);
-  static void get_priority(parameter_base* x);
-  static void get_access_mode(parameter_base* x);
-  static void get_repetition_filter(parameter_base* x);
-  static void get_enable(parameter_base* x);
+  static void get_domain(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_min(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_max(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_bounding_mode(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_default(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_type(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_priority(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_access_mode(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_repetition_filter(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_enable(parameter_base* x, const ossia::net::node_base* node = nullptr);
 
   // attributes
   t_symbol* m_type{};
@@ -49,6 +49,8 @@ public:
   t_symbol* m_access_mode{};
   t_float m_repetitions{};
   t_symbol* m_unit{};
+  int m_mute{0};
+  int m_enable{1};
 
   // size of size-variable attribute
   long m_default_size{};

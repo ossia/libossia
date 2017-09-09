@@ -415,7 +415,7 @@ extern "C" void setup_ossia0x2eremote(void)
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
-    parameter_base::declare_attributes(c);
+    parameter_base::class_setup(c);
 
     // remote special attributes
     eclass_addmethod(c, (method) remote::get_unit,        "getunit",     A_NULL, 0);

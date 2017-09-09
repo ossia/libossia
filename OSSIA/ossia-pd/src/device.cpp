@@ -369,7 +369,7 @@ extern "C" void setup_ossia0x2edevice(void)
   {
     class_addcreator((t_newmethod)device::create,gensym("ø.device"), A_GIMME, 0);
 
-    device_base::declare_attributes(c);
+    device_base::class_setup(c);
 
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(

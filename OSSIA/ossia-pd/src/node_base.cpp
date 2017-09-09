@@ -140,9 +140,9 @@ void ossia::pd::node_base::get_namespace(object_base* x)
   }
 }
 
-void node_base :: declare_attributes(t_eclass* c)
+void node_base :: class_setup(t_eclass* c)
 {
-  object_base::declare_attributes(c);
+  object_base::class_setup(c);
   eclass_addmethod(c, (method) node_base::get_namespace,     "namespace", A_NULL,  0);
   eclass_addmethod(c, (method) node_base::preset,            "preset",    A_GIMME, 0);
 }

@@ -25,7 +25,7 @@ public:
   static void get_mute(parameter*x);
   static void get_rate(parameter*x);
 
-  static void update_attribute(parameter* x, ossia::string_view attribute);
+  static void update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
 
   void set_unit();
   void set_mute();
