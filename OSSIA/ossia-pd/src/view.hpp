@@ -27,9 +27,6 @@ public:
   static void click(view* x, t_floatarg xpos, t_floatarg ypos,
     t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
 
-
-  void on_device_deleted(const ossia::net::node_base&);
-  void on_node_deleted(const ossia::net::node_base&);
 };
 }
 } // namespace

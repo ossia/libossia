@@ -44,6 +44,7 @@ bool find_peer(object_base* x)
 std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
 {
   std::vector<ossia::net::node_base*> nodes{};
+  nodes.reserve(4);
   ossia_max& instance = ossia_max::instance();
   size_t pos = addr.find(":");
   if (pos == std::string::npos) return nodes;

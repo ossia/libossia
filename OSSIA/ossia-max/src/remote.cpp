@@ -133,6 +133,7 @@ void remote::destroy(remote* x)
   if(x->m_is_pattern && x->m_dev)
   {
     x->m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(x);
+    x->m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(x);
   }
 
   outlet_delete(x->m_dumpout);
@@ -326,13 +327,22 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
     auto& dev = node[0]->get_device();
     if (&dev != m_dev)
     {
-      if (m_dev) m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
+      if (m_dev) {
+          m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
+          m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(this);
+      }
       m_dev = &dev;
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
+      m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
     }
   }
 
   return res;
+}
+
+void remote::on_device_deleted(const net::node_base &)
+{
+  m_dev = nullptr;
 }
 
 bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
@@ -396,6 +406,12 @@ bool remote::unregister()
   object_quarantining<remote>(this);
 
   m_parent_node = nullptr;
+  if(m_dev)
+  {
+    m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
+    m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(this);
+  }
+  m_dev = nullptr;
   return true;
 }
 

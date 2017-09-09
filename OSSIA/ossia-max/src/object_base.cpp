@@ -218,6 +218,7 @@ void object_base::is_deleted(const ossia::net::node_base& n)
       [&] (const auto& m) {
         return m.get_node() == &n;
     });
+    ossia::remove_one(m_nodes, &n);
     m_is_deleted = false;
 }
 

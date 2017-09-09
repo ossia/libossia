@@ -131,6 +131,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 void client::destroy(client* x)
 {
   x->m_dead = true;
+  m_matchers.clear();
   x->unregister_children();
   object_free((t_object*)x->m_poll_clock);
 
@@ -185,13 +186,13 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 
   if (argc && argv->a_type == A_SYM)
   {
-    std::string protocol_name = argv->a_w.w_sym->s_name;
+    ossia::string_view protocol_name = argv->a_w.w_sym->s_name;
 
     if ( argc == 1
          && protocol_name != "oscquery"
          && protocol_name != "Minuit" )
     {
-      std::string name;
+      ossia::string_view name;
 
       if ( x->m_looking_for )
         name = x->m_looking_for->s_name;
@@ -243,7 +244,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 
             return;
           }
-          x->m_looking_for = gensym(name.c_str());
+          x->m_looking_for = gensym(name.data());
           client::getdevices(x);
           return;
         }

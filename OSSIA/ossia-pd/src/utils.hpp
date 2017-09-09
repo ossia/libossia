@@ -292,7 +292,7 @@ object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_leve
  * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
  * @return the processed string
  */
-std::string replace_brackets(ossia::string_view);
+std::string replace_brackets(const string_view);
 
 /**
  * @brief find_parent_alive

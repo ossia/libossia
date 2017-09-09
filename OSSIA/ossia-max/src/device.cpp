@@ -114,6 +114,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 void device::destroy(device* x)
 {
   x->m_dead = true;
+  m_matchers.clear();
   x->unregister_children();
 
   delete x->m_device;
@@ -205,7 +206,7 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
   {
     auto& proto = static_cast<ossia::net::local_protocol&>(
         x->m_device->get_protocol());
-    std::string protocol = atom_getsym(argv)->s_name;
+    const ossia::string_view protocol = atom_getsym(argv)->s_name;
 
     if (protocol == "Minuit")
     {

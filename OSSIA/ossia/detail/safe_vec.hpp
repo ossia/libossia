@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <boost/container/flat_set.hpp>
 #include <hopscotch_set.h>
 #include <vector>
 

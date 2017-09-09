@@ -53,7 +53,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 {
   unregister();
 
-  ossia::string_view name = m_name->s_name;
+  std::string name = m_name->s_name;
 
   for (auto node : _nodes)
   {

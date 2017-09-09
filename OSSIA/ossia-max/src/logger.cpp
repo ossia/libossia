@@ -36,7 +36,7 @@ extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)
     {
       if ((argv + i)->a_type == A_SYM)
       {
-        std::string ip = atom_getsym(argv + i)->s_name;
+        ossia::string_view ip = atom_getsym(argv + i)->s_name;
         // x->m_log = std::make_shared<spdlog::logger>(
         //      "max_logger",
         //      std::make_shared<ossia::websocket_log_sink>(ossia_library.get_connection(ip)));

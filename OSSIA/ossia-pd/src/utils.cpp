@@ -405,7 +405,7 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
 
 ossia::val_type symbol2val_type(t_symbol* s)
 {
-  ossia::string_view type = s->s_name;
+  const ossia::string_view type = s->s_name;
 
   if (type == "float")
     return ossia::val_type::FLOAT;
@@ -472,7 +472,7 @@ t_symbol* val_type2symbol(ossia::val_type type)
 }
 
 // see https://www.reddit.com/r/cpp_questions/comments/6z10d6/getting_that_sweet_zerooverhead_optimization/
-std::string replace_brackets(ossia::string_view sv) {
+std::string replace_brackets(const ossia::string_view sv) {
   std::string str(sv);
   for(std::size_t i = 0, N = str.size(); i < N; i++) {
     if(str[i] == '<')

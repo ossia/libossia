@@ -7,6 +7,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia-max/src/utils.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 #include <sstream>
 #include <algorithm>
@@ -44,7 +45,7 @@ void parameter_base::set_access_mode()
     auto param = node->get_parameter();
 
     std::string access_mode = m_access_mode->s_name;
-    ossia::transform(access_mode, access_mode.begin(), ::tolower);
+    boost::algorithm::to_lower(access_mode);
     m_access_mode = gensym(access_mode.c_str());
 
     param->set_access(symbol2access_mode(m_access_mode));
@@ -225,7 +226,7 @@ void parameter_base::set_bounding_mode()
     ossia::net::parameter_base* param = node->get_parameter();
 
     std::string bounding_mode = m_bounding_mode->s_name;
-    ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
+    boost::algorithm::to_lower(bounding_mode);
     m_bounding_mode = gensym(bounding_mode.c_str());
 
     if (bounding_mode == "free")
@@ -544,7 +545,7 @@ void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYM)
   {
-    std::string addr = argv[0].a_w.w_sym->s_name;
+    ossia::string_view addr = argv[0].a_w.w_sym->s_name;
     argv++;
     argc--;
     for (auto n : x->m_nodes)

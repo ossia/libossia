@@ -96,19 +96,24 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
 }
 
 void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
-  for (const auto& child : node.children_copy())
+
+  const auto children = node.children_copy();
+  list.reserve(list.size() + children.size());
+  for (const auto& child : children)
   {
     if (auto addr = child->get_parameter())
     {
-      std::string s = ossia::net::osc_parameter_string(*child);
-      list.push_back(s);
+      list.push_back(ossia::net::osc_parameter_string(*child));
     }
     list_all_child(*child,list);
   }
 }
 
 void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::node_base*>& list){
-  for (const auto& child : node.children_copy())
+
+  const auto children = node.children_copy();
+  list.reserve(list.size() + children.size());
+  for (const auto& child : children)
   {
     list.push_back(child);
     list_all_child(*child,list);
