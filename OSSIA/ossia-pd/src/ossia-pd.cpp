@@ -36,8 +36,7 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
       x->m_name = argv[0].a_w.w_symbol;
-      std::string name = x->m_name->s_name;
-      x->m_device->set_name(name);
+      x->m_device->set_name(x->m_name->s_name);
     }
 
   return (x);
@@ -75,6 +74,13 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   ossia_pd::ossia_class = c;
 
+  auto& inst = ossia_pd::instance();
+  inst.params.reserve(2048);
+  inst.remotes.reserve(1024);
+  inst.models.reserve(512);
+  inst.views.reserve(512);
+  inst.devices.reserve(4);
+  inst.clients.reserve(4);
   post("Welcome to ossia library");
   post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
 }

@@ -65,7 +65,7 @@ public:
   t_matcher& operator=(const t_matcher&) = delete;
   t_matcher& operator=(t_matcher&& other);
 
-  void enqueue_value(const ossia::value& v);
+  void enqueue_value(ossia::value v);
   void output_value();
   auto get_node() const { return node; }
   auto get_parent() const { return parent; }

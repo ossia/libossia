@@ -187,8 +187,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
     {
-      t_matcher m{n,this};
-      m_matchers.push_back(std::move(m));
+      m_matchers.emplace_back(n, this);
     }
 
     set_priority();

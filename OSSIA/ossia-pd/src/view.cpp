@@ -77,13 +77,15 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     else
       nodes = ossia::net::find_nodes(*_node, name);
 
+    m_nodes.reserve(m_nodes.size() + nodes.size());
+    m_matchers.reserve(m_matchers.size() + nodes.size());
+
     for (auto n : nodes){
       // we may have found a node with the same name
       // but with a parameter, in that case it's an ø.param
       // then forget it
       if (!n->get_parameter()){
-        t_matcher matcher{n,this};
-        m_matchers.push_back(std::move(matcher));
+        m_matchers.emplace_back(n, this);
         m_nodes.push_back(n);
       }
     }
@@ -98,6 +100,7 @@ static void register_children(view* x)
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
+    assert(!v->m_dead);
     if (v->m_otype == object_class::view)
     {
       ossia::pd::view* view = (ossia::pd::view*)v;
@@ -217,6 +220,7 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
 void view::destroy(view* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<view>(x);
   ossia_pd::instance().views.remove_all(x);
@@ -253,7 +257,7 @@ extern "C" void setup_ossia0x2eview(void)
   ossia_pd::view_class = c;
 }
 
-ossia::safe_vector<view*>& view::quarantine()
+ossia::safe_set<view*>& view::quarantine()
 {
     return ossia_pd::instance().view_quarantine;
 }

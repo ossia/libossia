@@ -230,8 +230,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
       ossia::net::set_hidden(local_param->get_node(), m_hidden);
 
-      t_matcher matcher{n,this};
-      m_matchers.push_back(std::move(matcher));
+      m_matchers.emplace_back(n, this);
       m_nodes.push_back(n);
     }
 

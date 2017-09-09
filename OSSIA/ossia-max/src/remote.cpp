@@ -344,10 +344,12 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     else
       nodes = ossia::net::find_nodes(*node, name);
 
+    m_nodes.reserve(m_nodes.size() + nodes.size());
+    m_matchers.reserve(m_matchers.size() + nodes.size());
+
     for (auto n : nodes){
       if (n->get_parameter()){
-        t_matcher matcher{n,this};
-        m_matchers.push_back(std::move(matcher));
+        m_matchers.emplace_back(n, this);
         m_nodes.push_back(n);
       } else {
         // if there is a node without address it might be a model
@@ -356,8 +358,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         path << name << "/" << name;
         auto node = ossia::net::find_node(*n, path.str());
         if (node){
-          t_matcher matcher{node,this};
-          m_matchers.push_back(std::move(matcher));
+          m_matchers.emplace_back(node, this);
           m_nodes.push_back(n);
         }
       }

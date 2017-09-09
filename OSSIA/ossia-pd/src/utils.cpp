@@ -90,7 +90,7 @@ object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_leve
     t_gobj* list = canvas->gl_list;
     while (list)
     {
-      ossia::string_view current = list->g_pd->c_name->s_name;
+      const ossia::string_view current = list->g_pd->c_name->s_name;
       if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
       { // check if type match and not the same intance...
         return (object_base*) &(list->g_pd);
@@ -157,24 +157,25 @@ std::vector<ossia::net::node_base*> find_parent_node(object_base* x)
     return {&ossia_pd::get_default_device()->get_root_node()};
   }
 
-  return   std::vector<ossia::net::node_base*>{};
+  return std::vector<ossia::net::node_base*>{};
 }
 
-std::vector<object_base*> find_child_to_register(
-    object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev)
+std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, string_view classname, bool* found_dev)
 {
-  std::string subclassname
+  const ossia::string_view subclassname
       = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
 
   t_gobj* list = start_list;
   std::vector<object_base*> found;
+  found.reserve(4);
+
   bool found_model = false;
   bool found_view = false;
 
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
   {
-    std::string current = list->g_pd->c_name->s_name;
+    const ossia::string_view current = list->g_pd->c_name->s_name;
     if (current == classname)
     {
       object_base* o;
@@ -216,7 +217,7 @@ std::vector<object_base*> find_child_to_register(
     list = start_list;
     while (list && list->g_pd)
     {
-      std::string current = list->g_pd->c_name->s_name;
+      const ossia::string_view current = list->g_pd->c_name->s_name;
       if (current == "canvas")
       {
         t_canvas* canvas = (t_canvas*)&list->g_pd;
@@ -239,7 +240,7 @@ std::vector<object_base*> find_child_to_register(
     list = start_list;
     while (list && list->g_pd)
     {
-      std::string current = list->g_pd->c_name->s_name;
+      const ossia::string_view current = list->g_pd->c_name->s_name;
 
       // if there is no view next to model, then take also remote into account
       if ( current == subclassname
@@ -295,7 +296,7 @@ bool find_peer(object_base* x)
 std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
 {
   std::vector<ossia::net::node_base*> nodes;
-  auto& instance = ossia_pd::instance();
+  ossia_pd& instance = ossia_pd::instance();
   size_t pos = addr.find(":");
   if (pos == std::string::npos) return nodes;
 
@@ -307,7 +308,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
   std::regex pattern(prefix.data(), prefix.size());
 
-  for (auto device : instance.devices.copy())
+  for (auto device : instance.devices.reference())
   {
     auto dev = device->m_device;
     if (!dev) continue;
@@ -340,7 +341,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
     }
   }
 
-  for (auto client : instance.clients.copy())
+  for (auto client : instance.clients.reference())
   {
     auto dev = client->m_device;
     if (!dev) continue;

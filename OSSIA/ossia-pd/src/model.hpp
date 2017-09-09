@@ -17,7 +17,7 @@ public:
   bool unregister();
   void register_children();
 
-  static ossia::safe_vector<model*>& quarantine();
+  static ossia::safe_set<model*>& quarantine();
 
   static void destroy(model* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);

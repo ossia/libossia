@@ -18,7 +18,7 @@ public:
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
-  static ossia::safe_vector<parameter*>& quarantine();
+  static ossia::safe_set<parameter*>& quarantine();
 
   static t_pd_err notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
   static void get_unit(parameter*x);

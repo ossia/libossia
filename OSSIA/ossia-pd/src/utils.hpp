@@ -249,6 +249,7 @@ static object_base* find_parent_alive(
       obj = find_parent_alive(&obj->m_obj, classname, 1, level);
     }
   }
+  assert(!obj || !obj->m_dead);
   return obj;
 }
 
@@ -368,7 +369,7 @@ std::vector<ossia::net::node_base*> find_parent_node(object_base* x);
  * corresponding classname
  */
 std::vector<object_base*> find_child_to_register(
-    object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
+    object_base* x, t_gobj* start_list, ossia::string_view classname, bool* found_dev = nullptr);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer

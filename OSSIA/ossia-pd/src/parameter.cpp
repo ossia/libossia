@@ -7,6 +7,7 @@
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
 #include <sstream>
+#include <boost/algorithm/string/case_conv.hpp>
 
 namespace ossia
 {
@@ -109,9 +110,9 @@ bool parameter::unregister()
   return true;
 }
 
-ossia::safe_vector<parameter*>& parameter::quarantine()
+ossia::safe_set<parameter*>& parameter::quarantine()
 {
-    return ossia_pd::instance().parameter_quarantine;
+  return ossia_pd::instance().parameter_quarantine;
 }
 
 void* parameter::create(t_symbol* name, int argc, t_atom* argv)
@@ -155,7 +156,7 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 
     // change some attributes names to lower case
     std::string type = x->m_type->s_name;
-    ossia::transform(type, type.begin(), ::tolower);
+    boost::algorithm::to_lower(type);
     x->m_type = gensym(type.c_str());
 
     obj_register<parameter>(x);
@@ -287,6 +288,7 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
 void parameter::destroy(parameter* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<parameter>(x);
   ossia_pd::instance().params.remove_all(x);

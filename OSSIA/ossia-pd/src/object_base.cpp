@@ -57,7 +57,9 @@ t_matcher::t_matcher(t_matcher&& other)
   while(other.m_queue_list.try_dequeue(v))
     m_queue_list.enqueue(v);
 
-  if(node)
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -89,7 +91,9 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   m_addr = other.m_addr;
 
-  if(node)
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -156,7 +160,9 @@ t_matcher::~t_matcher()
             ;
         }
       }
-    } else {
+    }
+    else
+    {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
@@ -182,11 +188,24 @@ t_matcher::~t_matcher()
   node = nullptr;
 }
 
-void t_matcher::enqueue_value(const ossia::value& v)
+void t_matcher::enqueue_value(ossia::value v)
 {
+  auto param = node->get_parameter();
+  v = ossia::net::filter_value(
+        param->get_domain(),
+        std::move(v),
+        param->get_bounding());
+
   auto val = net::filter_value(*node->get_parameter());
   if (val.valid())
   {
+    ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
+
+    if ( x->m_ounit != ossia::none )
+    {
+      val = ossia::convert(std::move(val), param->get_unit(), *x->m_ounit);
+    }
+
     m_queue_list.enqueue(v);
   }
 }
@@ -198,26 +217,12 @@ void t_matcher::output_value()
 
     outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
-    auto param = node->get_parameter();
-
-    auto filtered = ossia::net::filter_value(
-          param->get_domain(),
-          val,
-          param->get_bounding());
 
     ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
 
-    ossia::value converted;
-    if ( x->m_ounit != ossia::none )
-    {
-      converted = ossia::convert(filtered, param->get_unit(), *x->m_ounit);
-    } else {
-      converted = filtered;
-    }
-
     value_visitor<object_base> vm;
     vm.x = (object_base*)parent;
-    converted.apply(vm);
+    val.apply(vm);
   }
 }
 
@@ -284,6 +289,7 @@ void object_base::is_deleted(const ossia::net::node_base& n)
         m.set_dead();
         return m.get_node() == &n;
     });
+    ossia::remove_one(m_nodes, &n);
     m_is_deleted = false;
   }
 }
@@ -301,8 +307,7 @@ void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
       for (auto& no : nodes)
       {
         if (no->get_parameter()){
-          t_matcher matcher{no,x};
-          x->m_matchers.push_back(std::move(matcher));
+          x->m_matchers.emplace_back(no, x);
         }
       }
       parameter_base::push((parameter_base*)x,nullptr, argc, argv);
@@ -486,7 +491,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& rm_matcher : x->m_matchers)
     {
-      for (auto param : ossia_pd::instance().params.copy())
+      for (auto param : ossia_pd::instance().params.reference())
       {
         for (auto& pa_matcher : param->m_matchers)
         {
@@ -518,7 +523,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& vw_matcher : x->m_matchers)
     {
-      for (auto model : ossia_pd::instance().models.copy())
+      for (auto model : ossia_pd::instance().models.reference())
       {
         for (auto& md_matcher : model->m_matchers)
         {

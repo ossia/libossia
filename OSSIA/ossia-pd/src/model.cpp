@@ -73,8 +73,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
     {
-      t_matcher m{n,this};
-      m_matchers.push_back(std::move(m));
+      m_matchers.emplace_back(n, this);
     }
 
     set_priority();
@@ -162,7 +161,7 @@ t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* d
   return 0;
 }
 
-ossia::safe_vector<model*>& model::quarantine()
+ossia::safe_set<model*>& model::quarantine()
 {
     return ossia_pd::instance().model_quarantine;
 }
@@ -234,6 +233,7 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
 void model::destroy(model* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);

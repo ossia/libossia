@@ -211,13 +211,15 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     else
       nodes = ossia::net::find_nodes(*_node, name);
 
+    m_nodes.reserve(m_nodes.size() + nodes.size());
+    m_matchers.reserve(m_matchers.size() + nodes.size());
+
     for (auto n : nodes){
       // we may have found a node with the same name
       // but with a parameter, in that case it's an ø.param
       // then forget it
-      if (!n->get_parameter()){
-        t_matcher matcher{n,this};
-        m_matchers.push_back(std::move(matcher));
+      if (!n->get_parameter())
+        m_matchers.emplace_back(n, this);
         m_nodes.push_back(n);
       }
     }

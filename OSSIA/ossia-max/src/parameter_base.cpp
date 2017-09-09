@@ -552,8 +552,7 @@ void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
       for (auto& no : nodes)
       {
         if (no->get_parameter()){
-          t_matcher matcher{no,x};
-          x->m_matchers.push_back(std::move(matcher));
+          x->m_matchers.emplace_back(no, x);
         }
       }
       parameter_base::push(x,nullptr, argc, argv);

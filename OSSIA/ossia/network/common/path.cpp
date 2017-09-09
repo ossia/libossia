@@ -109,7 +109,7 @@ struct regex_cache
   }
 
 
-  std::map<std::string, std::regex> map;
+  ossia::string_map<std::regex> map;
   std::mutex mtex;
 };
 
@@ -118,40 +118,42 @@ void add_relative_path(
 {
   if (part != "..")
   {
-    // Perform the various regex-like replacements
-    net::expand_ranges(part);
-    std::string res; res.reserve(part.size() + 16);
-
-    static const auto qmark = "[" + std::string(ossia::net::name_characters()) + "]?";
-    static const auto smark = "[" + std::string(ossia::net::name_characters()) + "]*";
-    for(std::size_t i = 0, N = part.size(); i < N; i++)
-    {
-      if(part[i] == '(') res.append("\\(");
-      else if(part[i] == ')') res.append("\\)");
-      else if(part[i] == '{') res.append("(");
-      else if(part[i] == '}') res.append("}");
-      else if(part[i] == ',') res.append("|");
-      else if(part[i] == '?') res.append(qmark);
-      else if(part[i] == '*') res.append(smark);
-      else if(part[i] == '!') res.append("(\\.[0-9a-zA-Z]+)?");
-      else res += part[i];
-    }
-
-
     {
       auto& map = regex_cache::instance();
       std::lock_guard<std::mutex> _(map.mtex);
 
-      auto it = map.map.find(res);
-      if(it == map.map.end())
+      auto it = map.map.find(part);
+      if(it != map.map.end())
       {
-        std::regex r(res);
-        p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
-        map.map.insert(std::make_pair(std::move(res), std::move(r)));
+        p.child_functions.push_back([r=it->second](auto& v) { match_with_regex(v, r); });
       }
       else
       {
-        p.child_functions.push_back([r=it->second](auto& v) { match_with_regex(v, r); });
+        std::string orig = part;
+
+        // Perform the various regex-like replacements
+        net::expand_ranges(part);
+        std::string res;
+        res.reserve(part.size() + 16);
+
+        static const auto qmark = "[" + std::string(ossia::net::name_characters()) + "]?";
+        static const auto smark = "[" + std::string(ossia::net::name_characters()) + "]*";
+        for(std::size_t i = 0, N = part.size(); i < N; i++)
+        {
+          if(part[i] == '(') res.append("\\(");
+          else if(part[i] == ')') res.append("\\)");
+          else if(part[i] == '{') res.append("(");
+          else if(part[i] == '}') res.append("}");
+          else if(part[i] == ',') res.append("|");
+          else if(part[i] == '?') res.append(qmark);
+          else if(part[i] == '*') res.append(smark);
+          else if(part[i] == '!') res.append("(\\.[0-9a-zA-Z]+)?");
+          else res += part[i];
+        }
+
+        std::regex r(res);
+        p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
+        map.map.insert(std::make_pair(std::move(orig), std::move(r)));
       }
     }
   }
