@@ -545,9 +545,9 @@ void parameter_base::push_default_value(parameter_base* x)
   }
 }
 
-void parameter_base::declare_attributes(t_eclass* c)
+void parameter_base::class_setup(t_eclass* c)
 {
-  object_base :: declare_attributes(c);
+  object_base :: class_setup(c);
 
   eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
   eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);

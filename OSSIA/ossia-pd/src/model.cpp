@@ -253,7 +253,7 @@ extern "C" void setup_ossia0x2emodel(void)
   {
     class_addcreator((t_newmethod)model::create,gensym("ø.model"), A_GIMME, 0);
 
-    node_base::declare_attributes(c);
+    node_base::class_setup(c);
 
     eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
 

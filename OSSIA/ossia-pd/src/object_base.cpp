@@ -427,11 +427,16 @@ void object_base::get_description(object_base*x)
   }
 }
 
-void object_base::get_priority(object_base*x)
+void object_base::get_priority(object_base*x, ossia::net::node_base* _node)
 {
-  // assume all matchers have the same priority
-  ossia::pd::t_matcher& m = x->m_matchers[0];
-  ossia::net::node_base* node = m.get_node();
+  ossia::net::node_base* node;
+  if (!node){
+    // assume all matchers have the same priority
+    ossia::pd::t_matcher& m = x->m_matchers[0];
+    ossia::net::node_base* node = m.get_node();
+  } else {
+    node = _node;
+  }
 
   auto priority = ossia::net::get_priority(*node);
   if (priority)
@@ -554,7 +559,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   return found;
 }
 
-void object_base::declare_attributes(t_eclass*c)
+void object_base::class_setup(t_eclass*c)
 {
   eclass_addmethod(c, (method) object_base::set,           "set",       A_GIMME, 0);
 

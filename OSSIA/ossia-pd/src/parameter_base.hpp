@@ -26,7 +26,7 @@ public:
   void set_type();
   void set_rate();
 
-  static void declare_attributes(t_eclass*c);
+  static void class_setup(t_eclass*c);
 
   static void get_range(parameter_base* x);
   static void get_min(parameter_base* x);

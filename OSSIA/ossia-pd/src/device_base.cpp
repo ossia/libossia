@@ -41,7 +41,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       for ( auto& m : param->m_matchers )
       {
         if ( m.get_node() == &node )
-          parameter::update_attribute((ossia::pd::parameter*)m.get_parent(),attribute);
+          parameter::update_attribute((ossia::pd::parameter*)m.get_parent(),attribute, &node);
       }
     }
 

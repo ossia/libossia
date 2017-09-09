@@ -328,7 +328,7 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
 
-    parameter_base::declare_attributes(c);
+    parameter_base::class_setup(c);
 
     // special attributes
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");

@@ -123,7 +123,7 @@ public:
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
 
-  static void declare_attributes(t_eclass*c);
+  static void class_setup(t_eclass*c);
 
   void set_description();
   void set_tags();
