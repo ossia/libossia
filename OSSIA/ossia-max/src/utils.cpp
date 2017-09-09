@@ -156,7 +156,7 @@ ossia::val_type symbol2val_type(t_symbol* s)
 {
   if (s)
   {
-    std::string type = s->s_name;
+    ossia::string_view type = s->s_name;
 
     if (type == "float")
       return ossia::val_type::FLOAT;
