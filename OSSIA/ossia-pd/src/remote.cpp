@@ -85,7 +85,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
         fmt::MemoryWriter path;
-        fmt::BasicStringRef name_fmt(name.data(), name.size());
+        fmt::BasicStringRef<char> name_fmt(name.data(), name.size());
         path << name_fmt << "/" << name_fmt;
         auto node = ossia::net::find_node(*n, path.str());
         if (node){
