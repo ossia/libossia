@@ -116,10 +116,9 @@ bool remote::unregister()
 void remote::on_parameter_created_callback(const ossia::net::parameter_base& param)
 {
   auto& node = param.get_node();
-  auto path = ossia::traversal::make_path(m_name->s_name);
 
   // FIXME check for path validity
-  if ( path && ossia::traversal::match(*path, node) )
+  if ( m_path && ossia::traversal::match(*m_path, node) )
   {
     m_matchers.emplace_back(&node,this);
     m_nodes.push_back(&node);
@@ -262,8 +261,10 @@ void remote::click(
 
 void remote::bind(remote* x, t_symbol* address)
 {
+  // TODO maybe instead use a temporary local char array.
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
+  x->m_path = ossia::traversal::make_path(name);
   x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);

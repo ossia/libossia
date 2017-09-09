@@ -209,7 +209,7 @@ void parameter_base::set_range()
             max.fill(m_range[1].a_w.w_float);
             omin.assign(min.begin(), min.end());
             omax.assign(max.begin(), max.end());
-            param->set_domain(ossia::make_domain(omin,omax));
+            param->set_domain(ossia::make_domain(std::move(omin), std::move(omax)));
           }
       }
     }
@@ -476,7 +476,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         else
         {
           std::vector<ossia::value> list;
-
+          list.reserve(argc+1);
           if ( s && s != gensym("list") )
             list.push_back(std::string(s->s_name));
 

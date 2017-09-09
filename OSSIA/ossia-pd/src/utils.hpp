@@ -222,13 +222,13 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
+object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level);
 
 /**
  * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
  * @return the processed string
  */
-std::string replace_brackets(std::string);
+std::string replace_brackets(ossia::string_view);
 
 /**
  * @brief find_parent_alive
@@ -239,7 +239,7 @@ std::string replace_brackets(std::string);
  * @return
  */
 static object_base* find_parent_alive(
-    t_eobj* x, std::string classname, int start_level, int* level)
+    t_eobj* x, ossia::string_view classname, int start_level, int* level)
 {
   object_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
@@ -382,7 +382,7 @@ bool find_peer(object_base* x);
  * @param addr : address string
  * @return vector of pointers to matching nodes
  */
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
+std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
 
 
 /**
@@ -390,7 +390,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
  * @param addr: the address to process
  * @return the scope
  */
-ossia::pd::address_scope get_address_scope(const std::string& addr);
+ossia::pd::address_scope get_address_scope(ossia::string_view addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

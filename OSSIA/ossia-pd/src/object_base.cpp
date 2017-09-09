@@ -35,8 +35,8 @@ t_select_clock::~t_select_clock()
 void t_select_clock::deselect(t_select_clock* x)
 {
   glist_deselect(x->m_canvas, (t_gobj*) x->m_obj);
-  x->~t_select_clock();
   ossia_pd::instance().select_clocks.remove_all(x);
+  delete x;
 }
 
 #pragma mark t_matcher
@@ -313,7 +313,7 @@ void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
 
 void object_base::set_description()
 {
-  std::stringstream description;
+  fmt::MemoryWriter description;
   for (int i = 0; i < m_description_size; i++)
   {
     switch(m_description[i].a_type)
@@ -391,7 +391,7 @@ void object_base::get_tags(object_base*x)
 
     if (optags)
     {
-      std::vector<std::string> tags = *optags;
+      const std::vector<std::string>& tags = *optags;
       x->m_tags_size = tags.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : tags.size();
       for (int i=0; i < x->m_tags_size; i++)
       {

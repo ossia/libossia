@@ -58,7 +58,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
         if (v->m_otype == object_class::param)
         {
           parameter* param = (parameter*)v;
-          if (std::string(param->m_name->s_name) == name)
+          if (ossia::string_view(param->m_name->s_name) == name)
           {
             // if we already have a t_param node of that
             // name, unregister it
