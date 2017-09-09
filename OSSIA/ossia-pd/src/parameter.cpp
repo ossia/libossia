@@ -302,7 +302,7 @@ void parameter::destroy(parameter* x)
   x->~parameter();
 }
 
-void parameter::update_attribute(parameter* x, ossia::string_view attribute)
+void parameter::update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   if ( attribute == ossia::net::text_refresh_rate() ){
     get_rate(x);
@@ -311,7 +311,7 @@ void parameter::update_attribute(parameter* x, ossia::string_view attribute)
   } else if ( attribute == ossia::net::text_unit() ){
     get_unit(x);
   } else {
-    parameter_base::update_attribute(x, attribute);
+    parameter_base::update_attribute(x, attribute, node);
   }
 }
 

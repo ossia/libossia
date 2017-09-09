@@ -107,8 +107,6 @@ public:
   bool m_is_pattern{}; // whether the address is a pattern or not
   bool m_dead{false}; // whether this object is being deleted or not
   bool m_is_deleted{false}; // true during the is_deleted callback method
-  bool m_mute{false};
-  bool m_enable{true};
 
   t_clock* m_clock{};   // multi-purpose clock
   std::chrono::milliseconds m_last_click{};
@@ -130,10 +128,10 @@ public:
   void set_priority();
   void set_hidden();
 
-  static void get_description(object_base* x);
-  static void get_tags(object_base* x);
-  static void get_priority(object_base* x);
-  static void get_hidden(object_base* x);
+  static void get_description(object_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_tags(object_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_priority(object_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_hidden(object_base* x, const ossia::net::node_base* node = nullptr);
 
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
@@ -147,7 +145,7 @@ public:
   object_base(t_eclass* c);
 
 
-  static void update_attribute(object_base* x, ossia::string_view attribute);
+  static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
   void is_deleted(const ossia::net::node_base& n);
 
   /**
