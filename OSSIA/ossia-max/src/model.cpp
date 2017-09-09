@@ -149,7 +149,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
   // registered node and the parameter
   unregister();
 
-  std::string_view name(m_name->s_name);
+  ossia::string_view name(m_name->s_name);
 
   for (auto node : nodes)
   {
