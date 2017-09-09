@@ -82,9 +82,9 @@ void node_base::preset(object_base *x, t_symbol*s, int argc, t_atom* argv)
         SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
-
-        pd_error(x,"Can't write file %s, error: %s", argv[0].a_w.w_symbol->s_name, e.what());
-
+        pd_error(x,"Can't read file %s, error: %s", argv[0].a_w.w_symbol->s_name, e.what());
+      } catch (...) {
+        pd_error(x,"Can't apply preset to current device...");
       }
 
       outlet_anything(x->m_dumpout, gensym("preset"),3, status);
