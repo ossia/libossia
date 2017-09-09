@@ -201,14 +201,28 @@ void remote::on_device_deleted(const net::node_base &)
   m_dev = nullptr;
 }
 
+void remote::update_path(string_view name)
+{
+    m_is_pattern = ossia::traversal::is_pattern(name);
+
+    if(m_is_pattern)
+    {
+        m_path = ossia::traversal::make_path(name);
+    }
+    else
+    {
+        m_path = ossia::none;
+    }
+}
+
 t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
-  // TODO : forward notification to parent class
-  if (msg == gensym("attr_modified"))
-  {
-      if( s == gensym("range") )
-        x->set_range();
-      else if ( s == gensym("clip") )
+    // TODO : forward notification to parent class
+    if (msg == gensym("attr_modified"))
+    {
+        if( s == gensym("range") )
+            x->set_range();
+        else if ( s == gensym("clip") )
         x->set_bounding_mode();
       else if ( s == gensym("min") || s == gensym("max") )
         x->set_minmax();
@@ -277,11 +291,7 @@ void remote::bind(remote* x, t_symbol* address)
   // TODO maybe instead use a temporary local char array.
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
-  x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
-  if(x->m_is_pattern)
-  {
-    x->m_path = ossia::traversal::make_path(name);
-  }
+  x->update_path(name);
   x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);
@@ -314,12 +324,7 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
       x->m_name = gensym("untitledRemote");
     }
 
-    ossia::string_view nam = x->m_name->s_name;
-    x->m_is_pattern = ossia::traversal::is_pattern(nam);
-    if(x->m_is_pattern)
-    {
-      x->m_path = ossia::traversal::make_path(nam);
-    }
+    x->update_path(x->m_name->s_name);
 
     x->m_clock = clock_new(x, (t_method)parameter_base::bang);
     x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);

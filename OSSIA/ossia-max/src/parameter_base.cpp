@@ -180,7 +180,7 @@ void parameter_base::set_range()
           senum.push_back(m_range[i].a_w.w_sym->s_name);
         else if (m_range[i].a_type == A_FLOAT)
         {
-          std::stringstream ss;
+          fmt::MemoryWriter ss;
           ss << m_range[i].a_w.w_float;
           senum.push_back(ss.str());
         }
@@ -210,7 +210,7 @@ void parameter_base::set_range()
             max.fill(_max);
             omin.assign(min.begin(), min.end());
             omax.assign(max.begin(), max.end());
-            param->set_domain(ossia::make_domain(omin,omax));
+            param->set_domain(ossia::make_domain(std::move(omin),std::move(omax)));
           }
       }
     }
@@ -466,6 +466,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         else
         {
           std::vector<ossia::value> list;
+          list.reserve(argc+1);
 
           if ( s && s != gensym("list") )
             list.push_back(std::string(s->s_name));

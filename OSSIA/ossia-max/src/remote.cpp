@@ -94,8 +94,11 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     {
       object_error((t_object*)x, "needs a name as first argument");
       x->m_name = gensym("untitledRemote");
+      x->update_path(x->m_name->s_name);
       return x;
     }
+
+    x->update_path(x->m_name->s_name);
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
@@ -138,6 +141,20 @@ void remote::destroy(remote* x)
   x->~remote();
 }
 
+void remote::update_path(string_view name)
+{
+  bool is_pattern = ossia::traversal::is_pattern(name);
+
+  if(is_pattern)
+  {
+    m_path = ossia::traversal::make_path(name);
+  }
+  else
+  {
+    m_path = ossia::none;
+  }
+}
+
 void remote::assist(remote* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
@@ -148,8 +165,8 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
   {
     switch(a)
     {
-      case 0:
-        sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
+    case 0:
+      sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
         break;
       case 1:
         sprintf(s, "raw outlet", a);
@@ -386,10 +403,10 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 {
   auto& node = addr.get_node();
   if (!m_name) return;
-  auto path = ossia::traversal::make_path(m_name->s_name);
+  update_path(m_name->s_name);
 
   // FIXME check for path validity
-  if ( path && ossia::traversal::match(*path, node) )
+  if ( m_path && ossia::traversal::match(*m_path, node) )
   {
     m_matchers.emplace_back(&node,this);
   }
@@ -398,6 +415,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 void remote::bind(remote* x, t_symbol* address)
 {
   x->m_name = address;
+  x->update_path(x->m_name->s_name);
   x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
   x->unregister();
   max_object_register(x);

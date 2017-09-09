@@ -239,6 +239,7 @@ void object_base::set_description()
 void object_base::set_tags()
 {
   std::vector<std::string> tags;
+  tags.reserve(m_tags_size);
   for (int i = 0; i < m_tags_size; i++)
     tags.push_back(m_tags[i]->s_name);
 

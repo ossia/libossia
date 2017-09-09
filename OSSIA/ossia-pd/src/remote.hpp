@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ossia-pd/src/parameter_base.hpp>
+#include <ossia/detail/optional.hpp>
 #include <ossia/network/common/path.hpp>
 
 namespace ossia
@@ -45,6 +46,7 @@ public:
 
   void on_device_deleted(const ossia::net::node_base&);
 private:
+  void update_path(ossia::string_view name);
   ossia::optional<ossia::traversal::path> m_path;
 
 };

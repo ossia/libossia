@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia-max/src/parameter_base.hpp>
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {
@@ -45,6 +46,9 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::remote*);
 
+private:
+  ossia::optional<ossia::traversal::path> m_path;
+  void update_path(string_view name);
 };
 
 } // max namespace
