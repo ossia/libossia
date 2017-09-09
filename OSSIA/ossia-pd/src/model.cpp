@@ -233,7 +233,6 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
 void model::destroy(model* x)
 {
   x->m_dead = true;
-  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);

@@ -288,7 +288,6 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
 void parameter::destroy(parameter* x)
 {
   x->m_dead = true;
-  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<parameter>(x);
   ossia_pd::instance().params.remove_all(x);

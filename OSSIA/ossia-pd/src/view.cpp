@@ -220,7 +220,6 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
 void view::destroy(view* x)
 {
   x->m_dead = true;
-  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<view>(x);
   ossia_pd::instance().views.remove_all(x);

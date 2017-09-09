@@ -359,7 +359,7 @@ void parameter::get_unit(parameter*x)
   }
 }
 
-ossia::safe_vector<parameter*>& parameter::quarantine()
+ossia::safe_set<parameter *> &parameter::quarantine()
 {
   return ossia_max::instance().parameter_quarantine;
 }

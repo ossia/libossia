@@ -17,7 +17,7 @@ public:
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
-  static ossia::safe_vector<parameter*>& quarantine();
+  static ossia::safe_set<parameter*>& quarantine();
 
   // attribute setting method
 

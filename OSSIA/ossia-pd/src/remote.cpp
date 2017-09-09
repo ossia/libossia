@@ -341,7 +341,6 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
 void remote::destroy(remote* x)
 {
   x->m_dead = true;
-  x->m_matchers.clear();
   x->unregister();
   obj_dequarantining<remote>(x);
   ossia_pd::instance().remotes.remove_all(x);

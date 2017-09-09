@@ -35,7 +35,7 @@ public:
   //static void destroy(remote* x);
   //static void* create(t_symbol* name, int argc, t_atom* argv);
 
-  static ossia::safe_vector<remote*>& quarantine();
+  static ossia::safe_set<remote *> &quarantine();
 
   static void get_unit(remote*x);
   static void get_mute(remote*x);

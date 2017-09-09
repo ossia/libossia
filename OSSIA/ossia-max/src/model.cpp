@@ -251,7 +251,7 @@ bool model::unregister()
   return true;
 }
 
-ossia::safe_vector<model*>& model::quarantine()
+ossia::safe_set<model*>& model::quarantine()
 {
   return ossia_max::instance().model_quarantine;
 }

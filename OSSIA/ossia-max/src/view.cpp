@@ -293,7 +293,7 @@ void view::bind(view* x, t_symbol* address)
   max_object_register(x);
 }
 
-ossia::safe_vector<view*>& view::quarantine()
+ossia::safe_set<view*>& view::quarantine()
 {
     return ossia_max::instance().view_quarantine;
 }

@@ -457,7 +457,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
   }
 }
 
-ossia::safe_vector<remote*>& remote::quarantine()
+ossia::safe_set<remote*>& remote::quarantine()
 {
     return ossia_max::instance().remote_quarantine;
 }

@@ -151,12 +151,26 @@ t_matcher::~t_matcher()
   }
 }
 
-void t_matcher::enqueue_value(const ossia::value& v)
+void t_matcher::enqueue_value(ossia::value v)
 {
-  auto val = net::filter_value(*node->get_parameter());
-  if (val.valid())
+  auto param = node->get_parameter();
+  v = ossia::net::filter_value(
+        param->get_domain(),
+        std::move(v),
+        param->get_bounding());
+
+  if(!param->filter_value(v))
   {
-    m_queue_list.enqueue(v);
+    auto x = (parameter_base*) parent;
+
+    if ( x->m_ounit == ossia::none )
+    {
+      m_queue_list.enqueue(std::move(v));
+    }
+    else
+    {
+      m_queue_list.enqueue(ossia::convert(std::move(v), param->get_unit(), *x->m_ounit));
+    }
   }
 }
 
@@ -166,20 +180,6 @@ void t_matcher::output_value()
   while(m_queue_list.try_dequeue(v)) {
 
     outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
-
-    auto param = node->get_parameter();
-
-    auto filtered = ossia::net::filter_value(
-          param->get_domain(),
-          v,
-          param->get_bounding());
-
-    ossia::value converted;
-    parameter_base* xparam = (parameter_base*)parent;
-    if ( xparam->m_ounit != ossia::none )
-      converted = ossia::convert(filtered, param->get_unit(), *xparam->m_ounit);
-    else
-      converted = filtered;
 
     value_visitor<object_base> vm;
     vm.x = (object_base*)parent;

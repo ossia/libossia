@@ -32,7 +32,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
 {
   if (node.get_parameter())
   {
-    for ( auto param : ossia_max::instance().parameters.copy() )
+    for ( auto param : ossia_max::instance().parameters.reference() )
     {
       for ( auto& m : param->m_matchers )
       {
@@ -41,7 +41,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       }
     }
 
-    for ( auto remote : ossia_max::instance().remotes.copy() )
+    for ( auto remote : ossia_max::instance().remotes.reference() )
     {
       for ( auto& m : remote->m_matchers )
       {
@@ -50,7 +50,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       }
     }
   } else {
-    for ( auto model : ossia_max::instance().models.copy() )
+    for ( auto model : ossia_max::instance().models.reference() )
     {
       for ( auto& m : model->m_matchers )
       {
@@ -59,7 +59,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       }
     }
 
-    for ( auto view : ossia_max::instance().views.copy() )
+    for ( auto view : ossia_max::instance().views.reference() )
     {
       for ( auto& m : view->m_matchers )
       {

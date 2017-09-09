@@ -550,6 +550,7 @@ void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
     for (auto n : x->m_nodes)
     {
       auto nodes = ossia::net::find_nodes(*n, addr);
+      x->m_matchers.reserve(x->m_matchers.size() + nodes.size());
       for (auto& no : nodes)
       {
         if (no->get_parameter()){

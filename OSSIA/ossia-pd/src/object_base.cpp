@@ -196,17 +196,18 @@ void t_matcher::enqueue_value(ossia::value v)
         std::move(v),
         param->get_bounding());
 
-  auto val = net::filter_value(*node->get_parameter());
-  if (val.valid())
+  if(!param->filter_value(v))
   {
-    ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
+    auto x = (ossia::pd::parameter_base*) parent;
 
-    if ( x->m_ounit != ossia::none )
+    if ( x->m_ounit == ossia::none )
     {
-      val = ossia::convert(std::move(val), param->get_unit(), *x->m_ounit);
+      m_queue_list.enqueue(std::move(v));
     }
-
-    m_queue_list.enqueue(v);
+    else
+    {
+      m_queue_list.enqueue(ossia::convert(std::move(v), param->get_unit(), *x->m_ounit));
+    }
   }
 }
 
@@ -216,9 +217,6 @@ void t_matcher::output_value()
   while(m_queue_list.try_dequeue(val)) {
 
     outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
-
-
-    ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
 
     value_visitor<object_base> vm;
     vm.x = (object_base*)parent;

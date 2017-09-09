@@ -44,7 +44,7 @@ bool find_peer(object_base* x)
 std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
 {
   std::vector<ossia::net::node_base*> nodes{};
-  auto& instance = ossia_max::instance();
+  ossia_max& instance = ossia_max::instance();
   size_t pos = addr.find(":");
   if (pos == std::string::npos) return nodes;
 
@@ -56,7 +56,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
   std::regex pattern(prefix.data(), prefix.size());
 
-  for (auto device : instance.devices.copy())
+  for (auto device : instance.devices.reference())
   {
     auto dev = device->m_device;
     if (!dev) continue;
@@ -89,7 +89,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
     }
   }
 
-  for (auto client : instance.clients.copy())
+  for (auto client : instance.clients.reference())
   {
     auto dev = client->m_device;
     if (!dev) continue;

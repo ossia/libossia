@@ -115,8 +115,10 @@ void device::destroy(device* x)
 {
   x->m_dead = true;
   x->unregister_children();
-  if (x->m_device)
-    delete (x->m_device);
+
+  delete x->m_device;
+  x->m_device = nullptr;
+
   outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
   register_quarantinized();
