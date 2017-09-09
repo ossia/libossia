@@ -9,6 +9,7 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/editor/dataspace/detail/list_units.hpp>
 #include <boost/algorithm/string.hpp>
 #include <unordered_map>
 
@@ -113,43 +114,16 @@ net::parameter_base* setup_parameter(const complex_type& t, net::node_base& node
 }
 
 
-static void list_units(std::unordered_map<std::string, net::parameter_data>& map)
-{
-  brigand::for_each<dataspace_u_list>([&](auto t) {
-    ossia::net::parameter_data p;
-    using dataspace_type = typename decltype(t)::type;
-    using d_traits = dataspace_traits<dataspace_type>;
-    for(auto dn : d_traits::text())
-    {
-      std::string dataspace_name = boost::algorithm::to_lower_copy(std::string(dn));
-      using neutral_u = typename d_traits::neutral_unit;
-      neutral_u neutral;
-      p.type = neutral;
-      p.unit = neutral;
-      map.insert({dataspace_name, p});
-
-      brigand::for_each<dataspace_type>([&](auto u) {
-        using unit_type = typename decltype(u)::type;
-
-        for (auto un : unit_traits<unit_type>::text())
-        {
-          // Add the unit in short form and long
-          p.type = unit_type{};
-          p.unit = unit_type{};
-          std::string s = boost::algorithm::to_lower_copy(std::string(un));
-          map.insert({dataspace_name + "." + s, p});
-          map.insert({s, p});
-        }
-      });
-    }
-  });
-}
-
-const std::unordered_map<std::string, net::parameter_data>& parameter_creation_map()
+static const auto& parameter_creation_map()
 {
   static const auto map = [] {
-    std::unordered_map<std::string, net::parameter_data> t;
-    list_units(t);
+    ossia::string_map<net::parameter_data> t;
+    ossia::detail::list_units( [&] (std::string e, ossia::unit_t u) {
+        net::parameter_data p;
+        p.type = u;
+        p.unit = u;
+        t.insert({std::move(e), std::move(p)});
+    });
 
     auto add_simple = [&] (std::string s, ossia::val_type typ) {
       net::parameter_data p; p.type = typ; t.insert({std::move(s), p});
@@ -246,40 +220,6 @@ const std::unordered_map<std::string, net::parameter_data>& parameter_creation_m
     add_ext_2("generic", list_type());
     add_ext_2("anything", list_type());
     add_ext_2("any", list_type());
-
-    auto add_u = [&] (auto e, auto u) {
-      net::parameter_data p; p.type = u; t.insert({e, p});
-    };
-
-    add_u("complex", cartesian_2d_u{});
-    add_u("point2d", ossia::cartesian_2d_u{});
-    add_u("2d", ossia::cartesian_2d_u{});
-    add_u("cartesian2d", ossia::cartesian_2d_u{});
-
-    add_u("pos",   ossia::cartesian_3d_u{});
-    add_u("point",   ossia::cartesian_3d_u{});
-    add_u("point3d", ossia::cartesian_3d_u{});
-    add_u("3d", ossia::cartesian_3d_u{});
-    add_u("cartesian3d", ossia::cartesian_3d_u{});
-    add_u("coord", ossia::cartesian_3d_u{});
-    add_u("coordinate", ossia::cartesian_3d_u{});
-    add_u("coordinates", ossia::cartesian_3d_u{});
-    add_u("pvector", ossia::cartesian_3d_u{});
-    add_u("vertex",  ossia::cartesian_3d_u{});
-
-    add_u("gl",  ossia::opengl_u{});
-    add_u("opengl",  ossia::opengl_u{});
-    add_u("position.gl",  ossia::opengl_u{});
-    add_u("position.opengl",  ossia::opengl_u{});
-
-    add_u("freq",  ossia::frequency_u{});
-    add_u("frequence",  ossia::frequency_u{});
-    add_u("frequency",  ossia::frequency_u{});
-
-    add_u("col", ossia::dataspace_traits<color_u>::neutral_unit{});
-
-    add_u("rot", ossia::dataspace_traits<angle_u>::neutral_unit{});
-    add_u("rotation", ossia::dataspace_traits<angle_u>::neutral_unit{});
 
     return t;
   }();
