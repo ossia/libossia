@@ -220,8 +220,7 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       // then forget it
       if (!n->get_parameter())
         m_matchers.emplace_back(n, this);
-        m_nodes.push_back(n);
-      }
+      m_nodes.push_back(n);
     }
   }
 

@@ -55,7 +55,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
 
   bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-  std::regex pattern(prefix.data(), prefix.size());
+  std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
 
   for (auto device : instance.devices.reference())
   {

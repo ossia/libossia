@@ -114,7 +114,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 void device::destroy(device* x)
 {
   x->m_dead = true;
-  m_matchers.clear();
+  x->m_matchers.clear();
   x->unregister_children();
 
   delete x->m_device;
@@ -306,7 +306,7 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
     }
     else
     {
-      object_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
+      object_error((t_object*)x, "Unknown protocol: %s", protocol.data());
     }
   }
   else

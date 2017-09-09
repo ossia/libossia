@@ -232,7 +232,7 @@ bool is_brace_expansion(string_view s)
   int brace_count = 0;
   int arr_count = 0;
 
-  for(int i = 0; i < s.size(); i++)
+  for(std::size_t i = 0; i < s.size(); i++)
   {
     if(s[i] == '{')
     {

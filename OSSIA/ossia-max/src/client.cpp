@@ -131,7 +131,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 void client::destroy(client* x)
 {
   x->m_dead = true;
-  m_matchers.clear();
+  x->m_matchers.clear();
   x->unregister_children();
   object_free((t_object*)x->m_poll_clock);
 
@@ -326,7 +326,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
     }
     else
     {
-      object_error((t_object*)(t_object*)x, "Unknown protocol: %s", protocol_name.c_str());
+      object_error((t_object*)x, "Unknown protocol: %s", protocol_name.data());
     }
   }
   else

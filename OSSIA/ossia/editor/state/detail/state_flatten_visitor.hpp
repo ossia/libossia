@@ -10,7 +10,7 @@
 namespace ossia
 {
 
-static OSSIA_DECL_RELAXED_CONSTEXPR bool is_vec(ossia::val_type v)
+static inline OSSIA_DECL_RELAXED_CONSTEXPR bool is_vec(ossia::val_type v)
 {
   switch (v)
   {
@@ -23,7 +23,7 @@ static OSSIA_DECL_RELAXED_CONSTEXPR bool is_vec(ossia::val_type v)
   }
 }
 
-static bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
+inline bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
 {
   const auto first = lhs.getType();
   const auto second = rhs.getType();

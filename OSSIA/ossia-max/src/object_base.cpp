@@ -176,14 +176,14 @@ void t_matcher::enqueue_value(ossia::value v)
 
 void t_matcher::output_value()
 {
-  ossia::value v;
-  while(m_queue_list.try_dequeue(v)) {
+  ossia::value val;
+  while(m_queue_list.try_dequeue(val)) {
 
     outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
     value_visitor<object_base> vm;
     vm.x = (object_base*)parent;
-    converted.apply(vm);
+    val.apply(vm);
   }
 }
 
