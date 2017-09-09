@@ -102,15 +102,14 @@ ossia_pd::ossia_pd():
 {
   sym_addr = gensym("address");
   sym_set  = gensym("set");
+  m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 }
 
 ossia_pd::~ossia_pd()
 {
+  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
   for (auto x : devices.copy()){
-    if (x->m_device){
-      x->m_device->on_parameter_created.disconnect<device, &device::on_parameter_created_callback>(x);
-      x->m_device->on_parameter_removing.disconnect<device, &device::on_parameter_deleted_callback>(x);
-    }
+    x->disconnect_slots();
   }
   for (auto x : views.copy()){
     x->m_matchers.clear();
