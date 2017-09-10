@@ -4,9 +4,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd c:\projects\libossia\build
 
   if ( $env:configuration -eq "Release" ){
-    copy OSSIA\Release\ossia.dll Tests\Release\
+    mkdir c:\projects\libossia\build\Test\Release
+    copy c:\projects\libossia\build\OSSIA\Release\ossia.dll c:\projects\libossia\build\Tests\Release\
   } else {
-    copy OSSIA\Debug\ossia.dll Tests\Debug\
+    mkdir c:\projects\libossia\build\Test\Debug
+    copy c:\projects\libossia\build\OSSIA\Debug\ossia.dll c:\projects\libossia\build\Tests\Debug\
   }
 }
 
