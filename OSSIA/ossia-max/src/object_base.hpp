@@ -347,7 +347,7 @@ struct value_visitor
   void operator()() const
   {
     object_error(
-        (t_object*)x, "%s receive an invalid data", x->m_name->s_name);
+        (t_object*)x, "%s received an invalid data", x->m_name->s_name);
   }
 };
 
