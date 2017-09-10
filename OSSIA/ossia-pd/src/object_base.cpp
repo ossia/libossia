@@ -444,8 +444,7 @@ void object_base::get_priority(object_base* x, const ossia::net::node_base* _nod
     const ossia::net::node_base* node;
     if (!_node){
       // assume all matchers have the same priority
-      ossia::pd::t_matcher& m = x->m_matchers[0];
-      ossia::net::node_base* node = m.get_node();
+      node = x->m_matchers[0].get_node();
     } else {
       node = _node;
     }
