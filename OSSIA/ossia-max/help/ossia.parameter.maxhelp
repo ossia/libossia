@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 99.0, 142.0, 1348.0, 767.0 ],
+		"rect" : [ 100.0, 100.0, 1348.0, 767.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -676,7 +676,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 100.0, 126.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -705,6 +705,124 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-33",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 56.0, 619.5, 305.0, 21.0 ],
+									"presentation_rect" : [ 51.0, 615.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "and the unit for conversion can be set in its short form:",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-32",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 52.0, 481.0, 305.0, 21.0 ],
+									"presentation_rect" : [ 45.0, 474.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "hence, units can be set directly as @type, such as below:",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-31",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 41.0, 435.0, 384.0, 35.0 ],
+									"presentation_rect" : [ 75.0, 467.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "libossia has a mechanism to automatically give the relevant type to the chosen unit, and also to lookup units among categories",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-4",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 46.0, 685.5, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-27",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 46.0, 585.0, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-28",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 46.0, 511.0, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-29",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "", "" ],
+									"patching_rect" : [ 46.0, 653.5, 295.0, 22.0 ],
+									"style" : "",
+									"text" : "ossia.remote my_soundfileplayer/gain-quick @unit db"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+									"id" : "obj-30",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 46.0, 548.0, 332.0, 22.0 ],
+									"style" : "",
+									"text" : "ossia.parameter my_soundfileplayer/gain-quick @type linear"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontface" : 1,
 									"fontname" : "Lato Regular",
@@ -953,7 +1071,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 41.0, 323.0, 327.0, 50.0 ],
+									"patching_rect" : [ 41.0, 277.0, 327.0, 50.0 ],
 									"style" : "",
 									"text" : "Remotes can be specified a unit belonging to the same category as the parameter's unit and automatically converts parameter values to/from this unit",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -969,7 +1087,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 41.0, 104.0, 427.0, 50.0 ],
+									"patching_rect" : [ 41.0, 108.0, 427.0, 50.0 ],
 									"style" : "",
 									"text" : "Units can be specified for parameters. \nUnits are sorted by categories : gain, time, color, position, orientation, distance or speed, inside of which conversions car be performed between different units ",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -985,7 +1103,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 41.0, 415.5, 50.0, 22.0 ],
+									"patching_rect" : [ 41.0, 369.5, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -999,7 +1117,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 41.0, 257.0, 50.0, 22.0 ],
+									"patching_rect" : [ 41.0, 240.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1013,7 +1131,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 41.0, 183.0, 50.0, 22.0 ],
+									"patching_rect" : [ 41.0, 166.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1025,7 +1143,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 41.0, 383.5, 290.0, 22.0 ],
+									"patching_rect" : [ 41.0, 337.5, 290.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_soundfileplayer/gain @unit gain.db"
 								}
@@ -1039,7 +1157,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 41.0, 220.0, 387.0, 22.0 ],
+									"patching_rect" : [ 41.0, 203.0, 387.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_soundfileplayer/gain @type float @unit gain.linear"
 								}
@@ -1071,8 +1189,37 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-30", 0 ],
+									"source" : [ "obj-28", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-4", 0 ],
+									"source" : [ "obj-29", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-7", 0 ],
 									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-27", 0 ],
+									"source" : [ "obj-30", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-29", 0 ],
+									"midpoints" : [ 55.5, 716.5, 32.0, 716.5, 32.0, 647.5, 55.5, 647.5 ],
+									"source" : [ "obj-4", 0 ]
 								}
 
 							}
@@ -1086,7 +1233,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-3", 0 ],
-									"midpoints" : [ 50.5, 446.5, 27.0, 446.5, 27.0, 377.5, 50.5, 377.5 ],
+									"midpoints" : [ 50.5, 400.5, 27.0, 400.5, 27.0, 331.5, 50.5, 331.5 ],
 									"source" : [ "obj-7", 0 ]
 								}
 
@@ -1186,9 +1333,9 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 947.0, 462.5, 190.0, 64.0 ],
+									"patching_rect" : [ 947.0, 462.5, 187.0, 64.0 ],
 									"style" : "",
-									"text" : "Use @min & @max and note how different ranges are applied to tuple items",
+									"text" : "Use @min & @max and notice how different ranges are applied to list items",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -1959,9 +2106,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 280.0, 96.0, 22.0 ],
+									"patching_rect" : [ 651.0, 280.0, 229.0, 22.0 ],
 									"style" : "",
-									"text" : "any kind of stuff"
+									"text" : "1. 2. 3. 4. anything"
 								}
 
 							}
@@ -2489,6 +2636,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-42", 1 ],
+									"midpoints" : [ 660.5, 273.0, 870.5, 273.0 ],
 									"source" : [ "obj-38", 0 ]
 								}
 
@@ -2503,6 +2651,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-38", 0 ],
+									"midpoints" : [ 769.5, 238.0, 660.5, 238.0 ],
 									"source" : [ "obj-41", 0 ]
 								}
 
@@ -2559,7 +2708,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 99.0, 168.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2598,7 +2747,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 205.0, 632.0, 231.0, 35.0 ],
-									"presentation_rect" : [ 186.0, 624.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "or fired again with the reset message",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2704,7 +2852,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 51.0, 234.5, 236.0, 35.0 ],
+									"patching_rect" : [ 51.0, 197.5, 236.0, 35.0 ],
 									"style" : "",
 									"text" : "Set a name as argument to declare a node in the namespace",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2855,7 +3003,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 38.0, 208.0, 177.0, 22.0 ],
+									"patching_rect" : [ 38.0, 171.0, 177.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_parameter"
 								}
@@ -2873,7 +3021,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 8.0, 7.0, 561.5, 143.0 ]
+									"patching_rect" : [ 8.0, 7.0, 561.5, 119.0 ]
 								}
 
 							}
