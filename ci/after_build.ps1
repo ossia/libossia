@@ -13,9 +13,10 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
 
-  cmake --build . --target install
+  cmake --build . --target install > C:\projects\libossia\install-pd.log
 
   ls ../install
+  ls ../install/ossia-pd-package/*
   # install target fails with error MSB3073, see https://ci.appveyor.com/project/JeanMichalCelerier/libossia/build/job/65o4lytwm9gr74n2
   # cmake --build . --target install
   # 7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\ossia-pd-package\*
@@ -25,7 +26,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
   cd c:\projects\libossia\build
 
-  cmake --build . --target install
+  cmake --build . --target install > C:\projects\libossia\install-max.log
+
+  cd c:\projects\libossia\build-32bit
+
+  cmake --build . --target install > C:\projects\libossia\install-max-32bit.log
 
   ls ../install
+  ls ../install/ossia-max-package/*
 }
