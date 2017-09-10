@@ -16,7 +16,11 @@ namespace pd
 
 parameter::parameter():
   parameter_base{ossia_pd::param_class}
-{ }
+{
+  m_range_size = 2;
+  SETFLOAT(m_range,0);
+  SETFLOAT(m_range+1,1);
+}
 
 bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
