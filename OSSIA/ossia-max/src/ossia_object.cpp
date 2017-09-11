@@ -1,15 +1,12 @@
-#include "ossia-max.hpp"
-#include "device.hpp"
-
-using t_ossia = ossia::max::device;
+#include "ossia_object.hpp"
 
 using namespace ossia::max;
 
 extern "C" void ossia_ossia_setup()
 {
   t_class* c = class_new(
-      "ossia", (method)ossia_object_new, (method)ossia_object_free,
-      (short)sizeof(t_ossia), 0L, A_GIMME, 0);
+      "ossia", (method)ossia_object::create, (method)ossia_object::destroy,
+      (long)sizeof(ossia::max::ossia_object), 0L, A_GIMME, 0);
 
   node_base::class_setup(c);
   class_addmethod(c, (method)device::expose, "expose", A_GIMME, 0);
@@ -26,23 +23,28 @@ namespace ossia
 namespace max
 {
 
-
-extern "C" void* ossia_object_new(t_symbol* name, int argc, t_atom* argv)
+void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia::max::ossia_max::instance();
-  t_ossia* x = (t_ossia*) object_alloc(ossia_library.ossia_ossia_class);
+  // ugly hack while waiting for C++ Max API
+  auto place = object_alloc(ossia_library.ossia_ossia_class);
+  t_object tmp;
+  memcpy(&tmp, place, sizeof(t_object));
+  ossia_object* x = new(place) ossia_object();
+  memcpy(x, &tmp, sizeof(t_object));
 
   x->m_dumpout
       = outlet_new(x, NULL); // anything outlet to dump device state
   x->m_device = ossia_library.get_default_device();
-  x->m_nodes = {&ossia_library.get_default_device()->get_root_node()};
+  x->m_nodes = {&x->m_device->get_root_node()};
 
   return (x);
 }
 
-extern "C" void ossia_object_free(t_ossia *x)
+void ossia_object::destroy(ossia_object *x)
 {
   outlet_delete(x->m_dumpout);
+  x->~ossia_object();
 }
 
 } // namespace max

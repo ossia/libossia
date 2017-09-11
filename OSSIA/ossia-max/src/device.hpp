@@ -29,6 +29,8 @@ public:
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);
+
+
 };
 
 namespace protocol_settings
