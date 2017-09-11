@@ -24,9 +24,15 @@ void node_base::preset(object_base *x, t_symbol*s, int argc, t_atom* argv)
       break;
     case object_class::model:
     case object_class::view:
-      // TODO oups how to get that ?
-      node = x->m_nodes[0];
+    {
+      if(!x->m_nodes.empty())
+      {
+        // TODO oups how to get that ?
+        node = x->m_nodes[0];
+      } else
+        return;
       break;
+    }
     default:
       node = nullptr;
   }

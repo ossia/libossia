@@ -17,9 +17,6 @@ namespace pd {
 parameter_base::parameter_base(t_eclass* x)
   : object_base{x}
 {
-  m_range_size = 2;
-  SETFLOAT(m_range,0);
-  SETFLOAT(m_range+1,1);
 }
 
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node)

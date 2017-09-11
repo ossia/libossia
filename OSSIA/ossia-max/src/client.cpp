@@ -367,7 +367,7 @@ void client::check_thread_status(client* x)
       outlet_anything(x->m_dumpout, gensym("device"), 5, av);
     }
 
-    (av, gensym("oscquery"));
+    A_SETSYM(av, gensym("oscquery"));
     for (auto dev : x->m_oscq_devices)
     {
       A_SETSYM(av+1, gensym(dev.name.c_str()));
@@ -474,9 +474,11 @@ void client::disconnect(client* x)
 {
   if (x->m_device)
   {
+    x->disconnect_slots();
     x->unregister_children();
     delete x->m_device;
     x->m_device = nullptr;
+    x->m_oscq_protocol = nullptr;
   }
 }
 

@@ -41,11 +41,11 @@ test_script:
   - ps: C:\projects\libossia\ci\test.ps1
 
 artifacts:
-  - path: ossia-pd-package
-    name: ossia-pd-windows-x86_64
+  - path: install\ossia-pd-package
+    name: ossia-pd-windows
     type: zip
-  - path: ossia-max-package
-    name: ossia-max-windows-x86_64
+  - path: install\ossia-max-package
+    name: ossia-max-windows
     type: zip
   - name: Log files
     path: '*.log'
@@ -55,7 +55,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: moePiJbJVxE0xx/iyPjZ4yAWJe+ZiJeVroktPbW6ybfamReA+oNojo3l23+/LtHt
-  artifact: ossia-pd-windows-x86_64.zip, ossia-max-windows-x86_64.zip
+  artifact: ossia-pd-windows.zip, ossia-max-windows.zip
   draft: false
   prerelease: true
   on:
