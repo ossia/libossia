@@ -41,10 +41,10 @@ test_script:
   - ps: C:\projects\libossia\ci\test.ps1
 
 artifacts:
-  - path:  C:\projects\libossia\install\ossia-pd-package
+  - path: install\ossia-pd-package
     name: ossia-pd-windows
     type: zip
-  - path:  C:\projects\libossia\install\ossia-max-package
+  - path: install\ossia-max-package
     name: ossia-max-windows
     type: zip
   - name: Log files
