@@ -28,7 +28,10 @@ namespace net
 class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
 public:
-  osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port, bool expose = false);
+  osc_protocol(std::string ip,
+               uint16_t remote_port,
+               uint16_t local_port,
+               ossia::optional<std::string> expose_name = ossia::none);
 
   osc_protocol(const osc_protocol&) = delete;
   osc_protocol(osc_protocol&&) = delete;
@@ -87,7 +90,7 @@ private:
   std::atomic_bool
       m_learning{}; /// if the device is currently learning from inbound
                     /// messages.
-  bool m_expose{};
+  optional<std::string> m_expose{};
 };
 }
 }

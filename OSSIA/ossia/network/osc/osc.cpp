@@ -22,14 +22,15 @@ namespace net
 using sender_t = osc::sender<osc_outbound_visitor>;
 
 osc_protocol::osc_protocol(
-    std::string ip, uint16_t remote_port, uint16_t local_port, bool expose)
-  : m_ip{ip}
+    std::string ip, uint16_t remote_port, uint16_t local_port, ossia::optional<std::string> expose)
+  : m_ip{std::move(ip)}
   , m_remote_port{remote_port}
   , m_local_port{local_port}
-  , m_expose{expose}
+  , m_expose{std::move(expose)}
 {
   update_sender();
   update_receiver();
+  update_zeroconf();
 }
 
 osc_protocol::~osc_protocol()
@@ -45,6 +46,7 @@ osc_protocol& osc_protocol::set_ip(std::string ip)
 {
   m_ip = std::move(ip);
   update_sender();
+  update_zeroconf();
 
   return *this;
 }
@@ -58,6 +60,7 @@ osc_protocol& osc_protocol::set_remote_port(uint16_t in_port)
 {
   m_remote_port = in_port;
   update_sender();
+  update_zeroconf();
 
   return *this;
 }
@@ -71,6 +74,7 @@ osc_protocol& osc_protocol::set_local_port(uint16_t out_port)
 {
   m_local_port = out_port;
   update_receiver();
+  update_zeroconf();
 
   return *this;
 }
@@ -78,7 +82,6 @@ osc_protocol& osc_protocol::set_local_port(uint16_t out_port)
 void osc_protocol::update_sender()
 {
   m_sender = std::make_unique<sender_t>(m_logger, m_ip, m_remote_port);
-  update_zeroconf();
 }
 
 void osc_protocol::update_receiver()
@@ -99,7 +102,6 @@ void osc_protocol::update_receiver()
   }
 
   m_receiver->run();
-  update_zeroconf();
 }
 
 void osc_protocol::update_zeroconf()
@@ -109,9 +111,9 @@ void osc_protocol::update_zeroconf()
   try
   {
     m_zeroconfServer = net::make_zeroconf_server(
-                         m_device->get_name(),
+                         *m_expose,
                          "_osc._udp",
-                         m_device->get_name(),
+                         *m_expose,
                          m_local_port,
                          m_remote_port);
   }

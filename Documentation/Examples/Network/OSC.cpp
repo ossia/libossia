@@ -27,7 +27,7 @@ int main()
 {
   // declare this program "P" as an OSC device
   ossia::net::generic_device device{
-    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997),
+    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997, "mydevice"),
         "P"};
 
   /* publish each feature of program "P" as address into a tree
