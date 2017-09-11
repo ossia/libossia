@@ -45,6 +45,11 @@ public:
   {
   }
 
+  std::string get_name()
+  {
+    return m_device.get_name();
+  }
+
   /** Make the local device able to handle oscquery request
   \param int port where OSC requests have to be sent by any remote client to
   deal with the local device
@@ -86,7 +91,7 @@ public:
     {
       m_local_protocol.expose_to(
           std::make_unique<ossia::net::osc_protocol>(
-              ip, in_port, out_port));
+              ip, in_port, out_port, true));
       return true;
     }
     catch (std::exception& e)
@@ -213,6 +218,9 @@ PYBIND11_MODULE(ossia_python, m)
 
   py::class_<ossia_local_device>(m, "LocalDevice")
       .def(py::init<std::string>())
+      .def_property_readonly(
+          "name", &ossia_local_device::get_name,
+          py::return_value_policy::reference)
       .def_property_readonly(
           "root_node", &ossia_local_device::get_root_node,
           py::return_value_policy::reference)

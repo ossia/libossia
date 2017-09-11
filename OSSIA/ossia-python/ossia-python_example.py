@@ -17,6 +17,8 @@ print("OSSIA LIBRARY EXAMPLE")
 # create a device for this python program
 local_device = ossia.LocalDevice("newDevice")
 
+print("local device is called: " + local_device.name)
+
 # enable OSCQuery communication for our device
 #local_device.create_oscquery_server(3456, 5678)
 
@@ -160,7 +162,7 @@ iterate_on_children(local_device.root_node)
 
 
 ### REMOTE DEVICE SETUP
-
+'''
 # try to connect to a remote device using OSCQuery protocol
 oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://127.0.0.1:5678", 9998)
 
@@ -195,7 +197,7 @@ iterate_on_children(oscquery_device.root_node)
 # iterate on our minuit device
 #print("\nREMOTE DEVICE MINUIT NAMESPACE\n")
 #iterate_on_children(minuit_device.root_node)
-
+'''
 
 # MAIN LOOP
 # wait and use i-score to change the value remotely
