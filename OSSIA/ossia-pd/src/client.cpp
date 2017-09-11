@@ -26,6 +26,7 @@ client::client():
 void client::destroy(client* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   x->unregister_children();
   if (x->m_device)
     delete (x->m_device);
@@ -418,7 +419,7 @@ extern "C" void setup_ossia0x2eclient(void)
   {
     class_addcreator((t_newmethod)client::create,gensym("ø.client"), A_GIMME, 0);
 
-    device_base::declare_attributes(c);
+    device_base::class_setup(c);
 
     eclass_addmethod(
         c, (method)client::register_children, "register", A_NULL, 0);

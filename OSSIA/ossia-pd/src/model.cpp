@@ -58,7 +58,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
         if (v->m_otype == object_class::param)
         {
           parameter* param = (parameter*)v;
-          if (std::string(param->m_name->s_name) == name)
+          if (ossia::string_view(param->m_name->s_name) == name)
           {
             // if we already have a t_param node of that
             // name, unregister it
@@ -73,8 +73,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
     {
-      t_matcher m{n,this};
-      m_matchers.push_back(std::move(m));
+      m_matchers.emplace_back(n, this);
     }
 
     set_priority();
@@ -162,7 +161,7 @@ t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* d
   return 0;
 }
 
-ossia::safe_vector<model*>& model::quarantine()
+ossia::safe_set<model*>& model::quarantine()
 {
     return ossia_pd::instance().model_quarantine;
 }
@@ -192,8 +191,20 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
       }
       else
       {
-        x->m_name = gensym("untitledModel");
-        pd_error(x, "You have to pass a name as the first argument");
+        std::string cur = canvas_getcurrent()->gl_name->s_name;
+        if(cur.find(".pd") != std::string::npos)
+        {
+          cur.resize(cur.size() - 3);
+        }
+        if(cur.empty())
+        {
+          x->m_name = gensym("unnamedModel");
+          pd_error(x, "You have to pass a name as the first argument");
+        }
+        else
+        {
+          x->m_name = gensym(cur.c_str());
+        }
       }
 
       ebox_attrprocess_viabinbuf(x, d);
@@ -241,7 +252,7 @@ extern "C" void setup_ossia0x2emodel(void)
   {
     class_addcreator((t_newmethod)model::create,gensym("ø.model"), A_GIMME, 0);
 
-    node_base::declare_attributes(c);
+    node_base::class_setup(c);
 
     eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
 

@@ -114,9 +114,12 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 void device::destroy(device* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   x->unregister_children();
-  if (x->m_device)
-    delete (x->m_device);
+
+  delete x->m_device;
+  x->m_device = nullptr;
+
   outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
   register_quarantinized();
@@ -203,7 +206,7 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
   {
     auto& proto = static_cast<ossia::net::local_protocol&>(
         x->m_device->get_protocol());
-    std::string protocol = atom_getsym(argv)->s_name;
+    const ossia::string_view protocol = atom_getsym(argv)->s_name;
 
     if (protocol == "Minuit")
     {
@@ -303,7 +306,7 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
     }
     else
     {
-      object_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
+      object_error((t_object*)x, "Unknown protocol: %s", protocol.data());
     }
   }
   else

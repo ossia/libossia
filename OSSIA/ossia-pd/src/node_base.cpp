@@ -24,9 +24,15 @@ void node_base::preset(object_base *x, t_symbol*s, int argc, t_atom* argv)
       break;
     case object_class::model:
     case object_class::view:
-      // TODO oups how to get that ?
-      node = x->m_nodes[0];
+    {
+      if(!x->m_nodes.empty())
+      {
+        // TODO oups how to get that ?
+        node = x->m_nodes[0];
+      } else
+        return;
       break;
+    }
     default:
       node = nullptr;
   }
@@ -82,9 +88,9 @@ void node_base::preset(object_base *x, t_symbol*s, int argc, t_atom* argv)
         SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
-
-        pd_error(x,"Can't write file %s, error: %s", argv[0].a_w.w_symbol->s_name, e.what());
-
+        pd_error(x,"Can't read file %s, error: %s", argv[0].a_w.w_symbol->s_name, e.what());
+      } catch (...) {
+        pd_error(x,"Can't apply preset to current device...");
       }
 
       outlet_anything(x->m_dumpout, gensym("preset"),3, status);
@@ -140,9 +146,9 @@ void ossia::pd::node_base::get_namespace(object_base* x)
   }
 }
 
-void node_base :: declare_attributes(t_eclass* c)
+void node_base :: class_setup(t_eclass* c)
 {
-  object_base::declare_attributes(c);
+  object_base::class_setup(c);
   eclass_addmethod(c, (method) node_base::get_namespace,     "namespace", A_NULL,  0);
   eclass_addmethod(c, (method) node_base::preset,            "preset",    A_GIMME, 0);
 }

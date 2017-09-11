@@ -19,6 +19,7 @@ device::device():
 void device::destroy(device* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   clock_unset(x->m_clock);
   clock_free(x->m_clock);
 
@@ -28,8 +29,8 @@ void device::destroy(device* x)
 
   x->disconnect_slots();
 
-  if (x->m_device)
-    delete (x->m_device);
+  delete x->m_device;
+  x->m_device = nullptr;
 
   ossia_pd::instance().devices.remove_all(x);
   outlet_free(x->m_dumpout);
@@ -368,7 +369,7 @@ extern "C" void setup_ossia0x2edevice(void)
   {
     class_addcreator((t_newmethod)device::create,gensym("ø.device"), A_GIMME, 0);
 
-    device_base::declare_attributes(c);
+    device_base::class_setup(c);
 
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(

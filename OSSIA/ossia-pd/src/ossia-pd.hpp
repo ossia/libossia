@@ -57,10 +57,10 @@ public:
     t_symbol* sym_set;
 
 
-    ossia::safe_vector<model*> model_quarantine;
-    ossia::safe_vector<view*> view_quarantine;
-    ossia::safe_vector<parameter*> parameter_quarantine;
-    ossia::safe_vector<remote*> remote_quarantine;
+    ossia::safe_set<model*> model_quarantine;
+    ossia::safe_set<view*> view_quarantine;
+    ossia::safe_set<parameter*> parameter_quarantine;
+    ossia::safe_set<remote*> remote_quarantine;
 
 private:
     ossia_pd(); // constructor

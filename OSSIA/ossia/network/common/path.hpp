@@ -219,12 +219,12 @@ struct OSSIA_EXPORT path
 };
 
 //! True if this is a pattern match address
-OSSIA_EXPORT bool is_pattern(const std::string& address);
+OSSIA_EXPORT bool is_pattern(ossia::string_view address);
 
 /**
  * @brief Tries to parse a parameter into a path.
  */
-OSSIA_EXPORT ossia::optional<path> make_path(const std::string& address);
+OSSIA_EXPORT ossia::optional<path> make_path(ossia::string_view address);
 
 /**
  * @brief Get all the nodes matching a path, from a given list of root nodes.

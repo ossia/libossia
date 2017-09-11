@@ -35,8 +35,8 @@ t_select_clock::~t_select_clock()
 void t_select_clock::deselect(t_select_clock* x)
 {
   glist_deselect(x->m_canvas, (t_gobj*) x->m_obj);
-  x->~t_select_clock();
   ossia_pd::instance().select_clocks.remove_all(x);
+  delete x;
 }
 
 #pragma mark t_matcher
@@ -57,7 +57,9 @@ t_matcher::t_matcher(t_matcher&& other)
   while(other.m_queue_list.try_dequeue(v))
     m_queue_list.enqueue(v);
 
-  if(node)
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -89,7 +91,9 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   m_addr = other.m_addr;
 
-  if(node)
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -156,7 +160,9 @@ t_matcher::~t_matcher()
             ;
         }
       }
-    } else {
+    }
+    else
+    {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
@@ -182,12 +188,26 @@ t_matcher::~t_matcher()
   node = nullptr;
 }
 
-void t_matcher::enqueue_value(const ossia::value& v)
+void t_matcher::enqueue_value(ossia::value v)
 {
-  auto val = net::filter_value(*node->get_parameter());
-  if (val.valid())
+  auto param = node->get_parameter();
+  auto filtered = ossia::net::filter_value(
+        param->get_domain(),
+        std::move(v),
+        param->get_bounding());
+
+  if(!param->filter_value(v))
   {
-    m_queue_list.enqueue(v);
+    auto x = (ossia::pd::parameter_base*) parent;
+
+    if ( x->m_ounit == ossia::none )
+    {
+      m_queue_list.enqueue(std::move(filtered));
+    }
+    else
+    {
+      m_queue_list.enqueue(ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit));
+    }
   }
 }
 
@@ -195,29 +215,11 @@ void t_matcher::output_value()
 {
   ossia::value val;
   while(m_queue_list.try_dequeue(val)) {
-
     outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
-
-    auto param = node->get_parameter();
-
-    auto filtered = ossia::net::filter_value(
-          param->get_domain(),
-          val,
-          param->get_bounding());
-
-    ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
-
-    ossia::value converted;
-    if ( x->m_ounit != ossia::none )
-    {
-      converted = ossia::convert(filtered, param->get_unit(), *x->m_ounit);
-    } else {
-      converted = filtered;
-    }
 
     value_visitor<object_base> vm;
     vm.x = (object_base*)parent;
-    converted.apply(vm);
+    val.apply(vm);
   }
 }
 
@@ -284,6 +286,7 @@ void object_base::is_deleted(const ossia::net::node_base& n)
         m.set_dead();
         return m.get_node() == &n;
     });
+    ossia::remove_one(m_nodes, &n);
     m_is_deleted = false;
   }
 }
@@ -301,8 +304,7 @@ void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
       for (auto& no : nodes)
       {
         if (no->get_parameter()){
-          t_matcher matcher{no,x};
-          x->m_matchers.push_back(std::move(matcher));
+          x->m_matchers.emplace_back(no, x);
         }
       }
       parameter_base::push((parameter_base*)x,nullptr, argc, argv);
@@ -313,7 +315,7 @@ void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
 
 void object_base::set_description()
 {
-  std::stringstream description;
+  fmt::MemoryWriter description;
   for (int i = 0; i < m_description_size; i++)
   {
     switch(m_description[i].a_type)
@@ -382,16 +384,22 @@ void object_base::set_hidden()
   }
 }
 
-void object_base::get_tags(object_base*x)
+void object_base::get_tags(object_base*x, const ossia::net::node_base* _node)
 {
   if (!x->m_matchers.empty())
   {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    const ossia::net::node_base* node;
+    if (!_node)
+      // assume all matchers have the same bounding_mode
+      node = x->m_matchers[0].get_node();
+    else
+      node = _node;
+
     auto optags = ossia::net::get_tags(*node);
 
     if (optags)
     {
-      std::vector<std::string> tags = *optags;
+      const std::vector<std::string>& tags = *optags;
       x->m_tags_size = tags.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : tags.size();
       for (int i=0; i < x->m_tags_size; i++)
       {
@@ -404,11 +412,17 @@ void object_base::get_tags(object_base*x)
   }
 }
 
-void object_base::get_description(object_base*x)
+void object_base::get_description(object_base*x, const ossia::net::node_base* _node)
 {
   if (!x->m_matchers.empty())
   {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    const ossia::net::node_base* node;
+    if (!_node)
+      // assume all matchers have the same bounding_mode
+      node = x->m_matchers[0].get_node();
+    else
+      node = _node;
+
     auto description = ossia::net::get_description(*node);
 
     if (description)
@@ -422,33 +436,46 @@ void object_base::get_description(object_base*x)
   }
 }
 
-void object_base::get_priority(object_base*x)
+void object_base::get_priority(object_base* x, const ossia::net::node_base* _node)
 {
-  // assume all matchers have the same priority
-  ossia::pd::t_matcher& m = x->m_matchers[0];
-  ossia::net::node_base* node = m.get_node();
-
-  auto priority = ossia::net::get_priority(*node);
-  if (priority)
+  if (!x->m_matchers.empty())
   {
-    x->m_priority = *priority;
-    t_atom a;
-    SETFLOAT(&a, x->m_priority);
-    outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
+    const ossia::net::node_base* node;
+    if (!_node){
+      // assume all matchers have the same priority
+      node = x->m_matchers[0].get_node();
+    } else {
+      node = _node;
+    }
+
+    auto priority = ossia::net::get_priority(*node);
+    if (priority)
+    {
+      x->m_priority = *priority;
+      t_atom a;
+      SETFLOAT(&a, x->m_priority);
+      outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
+    }
   }
 }
 
-void object_base::get_hidden(object_base*x)
+void object_base::get_hidden(object_base*x, const ossia::net::node_base* _node)
 {
-  // assume all matchers have the same bounding_mode
-  ossia::pd::t_matcher& m = x->m_matchers[0];
-  ossia::net::node_base* node = m.get_node();
+  if (!x->m_matchers.empty())
+  {
+    const ossia::net::node_base* node;
+    if (!_node)
+      // assume all matchers have the same bounding_mode
+      node = x->m_matchers[0].get_node();
+    else
+      node = _node;
 
-  x->m_hidden = ossia::net::get_hidden(*node);
+    x->m_hidden = ossia::net::get_hidden(*node);
 
-  t_atom a;
-  SETFLOAT(&a, x->m_hidden);
-  outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);;
+    t_atom a;
+    SETFLOAT(&a, x->m_hidden);
+    outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+  }
 
 }
 
@@ -486,7 +513,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& rm_matcher : x->m_matchers)
     {
-      for (auto param : ossia_pd::instance().params.copy())
+      for (auto param : ossia_pd::instance().params.reference())
       {
         for (auto& pa_matcher : param->m_matchers)
         {
@@ -518,7 +545,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& vw_matcher : x->m_matchers)
     {
-      for (auto model : ossia_pd::instance().models.copy())
+      for (auto model : ossia_pd::instance().models.reference())
       {
         for (auto& md_matcher : model->m_matchers)
         {
@@ -549,7 +576,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   return found;
 }
 
-void object_base::declare_attributes(t_eclass*c)
+void object_base::class_setup(t_eclass*c)
 {
   eclass_addmethod(c, (method) object_base::set,           "set",       A_GIMME, 0);
 
@@ -568,16 +595,16 @@ void object_base::declare_attributes(t_eclass*c)
   eclass_addmethod(c, (method) object_base::get_address,              "getaddress",           A_NULL,  0);
 }
 
-void object_base::update_attribute(object_base* x, ossia::string_view attribute)
+void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   if ( attribute == ossia::net::text_priority() ){
-    get_priority(x);
+    get_priority(x, node);
   } else if ( attribute == ossia::net::text_description() ){
-    get_description(x);
+    get_description(x, node);
   } else if ( attribute == ossia::net::text_tags() ){
-    get_tags(x);
+    get_tags(x, node);
   } else if ( attribute == ossia::net::text_hidden() ){
-    get_hidden(x);
+    get_hidden(x, node);
   } else {
     pd_error(x, "no attribute %s", std::string(attribute).c_str());
   }

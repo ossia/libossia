@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia-max/src/parameter.hpp>
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/utils.hpp>
@@ -211,30 +212,25 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
     for (auto n : nodes)
     {
-      ossia::net::parameter_base* local_param{};
+      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
 
-      auto type = symbol2val_type(m_type);
-
-      if ( type != ossia::val_type::NONE )
-        local_param = n->create_parameter(type);
-      else
+      if (!local_param)
       {
         object_error(
               (t_object*)this,
               "type should one of: float, symbol, int, vec2f, "
               "vec3f, vec4f, bool, list, char");
-      }
-      if (!local_param)
+      
         return false;
-
+      }
+      
       ossia::net::set_priority(local_param->get_node(), m_priority);
 
       ossia::net::set_disabled(local_param->get_node(), !m_enable);
 
       ossia::net::set_hidden(local_param->get_node(), m_hidden);
 
-      t_matcher matcher{n,this};
-      m_matchers.push_back(std::move(matcher));
+      m_matchers.emplace_back(n, this);
       m_nodes.push_back(n);
     }
 
@@ -363,7 +359,7 @@ void parameter::get_unit(parameter*x)
   }
 }
 
-ossia::safe_vector<parameter*>& parameter::quarantine()
+ossia::safe_set<parameter *> &parameter::quarantine()
 {
   return ossia_max::instance().parameter_quarantine;
 }

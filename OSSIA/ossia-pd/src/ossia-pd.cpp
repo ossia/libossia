@@ -36,8 +36,7 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
       x->m_name = argv[0].a_w.w_symbol;
-      std::string name = x->m_name->s_name;
-      x->m_device->set_name(name);
+      x->m_device->set_name(x->m_name->s_name);
     }
 
   return (x);
@@ -68,13 +67,20 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   class_addcreator((t_newmethod)ossia_new,gensym("ø"), A_GIMME, 0);
 
-  node_base::declare_attributes(c);
+  node_base::class_setup(c);
 
   eclass_addmethod(c, (method) device::expose, "expose",    A_GIMME, 0);
   eclass_addmethod(c, (method) device::name,   "name",      A_GIMME, 0);
 
   ossia_pd::ossia_class = c;
 
+  auto& inst = ossia_pd::instance();
+  inst.params.reserve(2048);
+  inst.remotes.reserve(1024);
+  inst.models.reserve(512);
+  inst.views.reserve(512);
+  inst.devices.reserve(4);
+  inst.clients.reserve(4);
   post("Welcome to ossia library");
   post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
 }
@@ -96,15 +102,14 @@ ossia_pd::ossia_pd():
 {
   sym_addr = gensym("address");
   sym_set  = gensym("set");
+  m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 }
 
 ossia_pd::~ossia_pd()
 {
+  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
   for (auto x : devices.copy()){
-    if (x->m_device){
-      x->m_device->on_parameter_created.disconnect<device, &device::on_parameter_created_callback>(x);
-      x->m_device->on_parameter_removing.disconnect<device, &device::on_parameter_deleted_callback>(x);
-    }
+    x->disconnect_slots();
   }
   for (auto x : views.copy()){
     x->m_matchers.clear();

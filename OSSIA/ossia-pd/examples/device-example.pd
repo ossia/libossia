@@ -1,4 +1,4 @@
-#N canvas 46 155 540 654 10;
+#N canvas 25 925 2830 394 10;
 #X obj 26 372 osc~;
 #X obj 26 504 *~;
 #X obj 106 448 phasor~;
@@ -120,16 +120,16 @@ and velocity", f 25;
 #X obj 26 578 *~ 0.2;
 #X obj 393 598 ossia.device Pd;
 #X msg 317 572 namespace;
-#X floatatom 174 266 5 0 0 0 - - -, f 5;
+#X floatatom 174 265 5 0 0 0 - - -, f 5;
 #X text 212 95 You can use - the patch "client-example.pd" \, - the
 "client-example.html" web application - or the QML application "client-example.qml"
 to control this device., f 44;
-#X obj 174 288 ossia.param modgain @default -20 @type float @description
-"Modulator frequency gain" @unit dB @range -100 6 @bounding_mode CLIP
-, f 44;
 #X text 180 512 <- open this for more parameters;
 #X obj 25 14 ossia.param play @description "Turn on/off random note
 generation" @type bool, f 25;
+#X obj 174 288 ossia.param modgain @default -20 @type float @description
+"Modulator frequency gain" @unit dB @range -100 6 @clip BOTH, f 44
+;
 #X connect 0 0 1 0;
 #X connect 1 0 5 0;
 #X connect 2 0 6 0;
@@ -161,6 +161,6 @@ generation" @type bool, f 25;
 #X connect 30 0 14 1;
 #X connect 31 0 4 0;
 #X connect 32 0 31 0;
-#X connect 33 0 35 0;
-#X connect 35 0 15 0;
-#X connect 37 0 18 0;
+#X connect 33 0 37 0;
+#X connect 36 0 18 0;
+#X connect 37 0 15 0;

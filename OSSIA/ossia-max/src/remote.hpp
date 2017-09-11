@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia-max/src/parameter_base.hpp>
-#include <boost/optional.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {
@@ -34,7 +35,7 @@ public:
   //static void destroy(remote* x);
   //static void* create(t_symbol* name, int argc, t_atom* argv);
 
-  static ossia::safe_vector<remote*>& quarantine();
+  static ossia::safe_set<remote *> &quarantine();
 
   static void get_unit(remote*x);
   static void get_mute(remote*x);
@@ -45,6 +46,10 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::remote*);
 
+  void on_device_deleted(const ossia::net::node_base&);
+private:
+  ossia::optional<ossia::traversal::path> m_path;
+  void update_path(string_view name);
 };
 
 } // max namespace

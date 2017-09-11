@@ -26,6 +26,14 @@ ossia_max::ossia_max():
     m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
 {
   common_symbols_init();
+
+  parameters.reserve(2048);
+  remotes.reserve(1024);
+  models.reserve(512);
+  views.reserve(512);
+  devices.reserve(4);
+  clients.reserve(4);
+
   post("OSSIA library for Max is loaded");
   post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
 }
@@ -64,6 +72,7 @@ std::string object_path_absolute(T* x)
 {
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
+  vs.reserve(8);
 
   if (std::is_same<T, view>::value || std::is_same<T, remote>::value)
   {

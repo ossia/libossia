@@ -23,7 +23,8 @@ struct address_info
     CC,        // /12/CC 64 123
     CC_N,      // /12/CC/64 123,
     PC,        // /12/PC 32
-    PC_N       // /12/PC/32 Impulse
+    PC_N,      // /12/PC/32 Impulse
+    PB         // /12/PB -8192 -> 8191
   };
 
   ossia::val_type matchingType()
@@ -38,6 +39,7 @@ struct address_info
       case Type::NoteOff_N:
       case Type::CC_N:
       case Type::PC:
+      case Type::PB:
         return ossia::val_type::INT;
       case Type::PC_N:
         return ossia::val_type::IMPULSE;
@@ -69,11 +71,13 @@ struct address_info
       case Type::PC_N:
         return "/" + boost::lexical_cast<std::string>(channel) + "/PC/"
                + boost::lexical_cast<std::string>(note);
+      case Type::PB:
+        return "/" + boost::lexical_cast<std::string>(channel) + "/PB";
     }
     return {};
   }
 
-  ossia::value defaultValue(midi_size_t val)
+  ossia::value defaultValue(int32_t val)
   {
     switch (type)
     {
@@ -85,6 +89,7 @@ struct address_info
       case Type::NoteOff_N:
       case Type::CC_N:
       case Type::PC:
+      case Type::PB:
         return int32_t{val};
       case Type::PC_N:
         return ossia::impulse{};
@@ -94,8 +99,9 @@ struct address_info
 
   ossia::domain defaultDomain()
   {
-
-    return ossia::make_domain(defaultValue(0), defaultValue(127));
+    if(type != Type::PB)
+      return ossia::make_domain(defaultValue(0), defaultValue(127));
+    return ossia::make_domain(-8192, 8191);
   }
 
   address_info(Type t) : type{t}

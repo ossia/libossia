@@ -5,7 +5,9 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia-max/src/utils.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 #include <sstream>
 #include <algorithm>
@@ -43,7 +45,7 @@ void parameter_base::set_access_mode()
     auto param = node->get_parameter();
 
     std::string access_mode = m_access_mode->s_name;
-    ossia::transform(access_mode, access_mode.begin(), ::tolower);
+    boost::algorithm::to_lower(access_mode);
     m_access_mode = gensym(access_mode.c_str());
 
     param->set_access(symbol2access_mode(m_access_mode));
@@ -76,8 +78,7 @@ void parameter_base::set_type()
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-    param->set_value_type(symbol2val_type(m_type));
+    ossia::try_setup_parameter(m_type->s_name, *node);
   }
 }
 
@@ -180,7 +181,7 @@ void parameter_base::set_range()
           senum.push_back(m_range[i].a_w.w_sym->s_name);
         else if (m_range[i].a_type == A_FLOAT)
         {
-          std::stringstream ss;
+          fmt::MemoryWriter ss;
           ss << m_range[i].a_w.w_float;
           senum.push_back(ss.str());
         }
@@ -210,7 +211,7 @@ void parameter_base::set_range()
             max.fill(_max);
             omin.assign(min.begin(), min.end());
             omax.assign(max.begin(), max.end());
-            param->set_domain(ossia::make_domain(omin,omax));
+            param->set_domain(ossia::make_domain(std::move(omin),std::move(omax)));
           }
       }
     }
@@ -225,7 +226,7 @@ void parameter_base::set_bounding_mode()
     ossia::net::parameter_base* param = node->get_parameter();
 
     std::string bounding_mode = m_bounding_mode->s_name;
-    ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
+    boost::algorithm::to_lower(bounding_mode);
     m_bounding_mode = gensym(bounding_mode.c_str());
 
     if (bounding_mode == "free")
@@ -466,6 +467,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         else
         {
           std::vector<ossia::value> list;
+          list.reserve(argc+1);
 
           if ( s && s != gensym("list") )
             list.push_back(std::string(s->s_name));
@@ -543,17 +545,17 @@ void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYM)
   {
-    std::string addr = argv[0].a_w.w_sym->s_name;
+    ossia::string_view addr = argv[0].a_w.w_sym->s_name;
     argv++;
     argc--;
     for (auto n : x->m_nodes)
     {
       auto nodes = ossia::net::find_nodes(*n, addr);
+      x->m_matchers.reserve(x->m_matchers.size() + nodes.size());
       for (auto& no : nodes)
       {
         if (no->get_parameter()){
-          t_matcher matcher{no,x};
-          x->m_matchers.push_back(std::move(matcher));
+          x->m_matchers.emplace_back(no, x);
         }
       }
       parameter_base::push(x,nullptr, argc, argv);
@@ -588,7 +590,7 @@ void parameter_base::class_setup(t_class* c)
       "reset", A_NOTHING, 0);
 
   CLASS_ATTR_SYM(
-      c, "unit", 0, parameter, m_unit);
+      c, "unit", 0, parameter_base, m_unit);
   CLASS_ATTR_ENUM (
       c, "unit", 0, "gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h");
   //maybe this enum could be done more properly by retrieving the full list from the dataspace code ?
@@ -596,12 +598,12 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_LABEL(c, "unit", 0, "Value Unit");
 
   CLASS_ATTR_FLOAT(
-        c, "rate", 0, parameter, m_rate);
+        c, "rate", 0, parameter_base, m_rate);
   CLASS_ATTR_FILTER_MIN(c, "rate", 1);
   CLASS_ATTR_LABEL(c, "rate", 0, "Update Rate");
 
   CLASS_ATTR_LONG(
-        c, "mute", 0, parameter, m_mute);
+        c, "mute", 0, parameter_base, m_mute);
   CLASS_ATTR_STYLE(
       c, "mute", 0, "onoff");
   CLASS_ATTR_LABEL(c, "mute", 0, "Mute Output");

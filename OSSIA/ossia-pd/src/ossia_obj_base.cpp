@@ -302,17 +302,17 @@ void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYMBOL)
   {
-    std::string addr = argv[0].a_w.w_symbol->s_name;
+    ossia::string_view addr = argv[0].a_w.w_symbol->s_name;
     argv++;
     argc--;
     for (auto n : x->m_nodes)
     {
       auto nodes = ossia::net::find_nodes(*n, addr);
+      x->m_matchers.reserve(x->m_matchers.size() + nodes.size());
       for (auto& no : nodes)
       {
         if (no->get_parameter()){
-          t_matcher matcher{no,x};
-          x->m_matchers.push_back(std::move(matcher));
+          x->m_matchers.emplace_back(no, x);
         }
       }
       parameter_base::push(x,nullptr, argc, argv);
@@ -452,7 +452,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& rm_matcher : x->m_matchers)
     {
-      for (auto param : ossia_pd::instance().params.copy())
+      for (auto param : ossia_pd::instance().params.reference())
       {
         for (auto& pa_matcher : param->m_matchers)
         {
@@ -484,7 +484,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& vw_matcher : x->m_matchers)
     {
-      for (auto model : ossia_pd::instance().models.copy())
+      for (auto model : ossia_pd::instance().models.reference())
       {
         for (auto& md_matcher : model->m_matchers)
         {

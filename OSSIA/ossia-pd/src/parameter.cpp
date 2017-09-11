@@ -1,11 +1,13 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
 #include <sstream>
+#include <boost/algorithm/string/case_conv.hpp>
 
 namespace ossia
 {
@@ -14,7 +16,11 @@ namespace pd
 
 parameter::parameter():
   parameter_base{ossia_pd::param_class}
-{ }
+{
+  m_range_size = 2;
+  SETFLOAT(m_range,0);
+  SETFLOAT(m_range+1,1);
+}
 
 bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
@@ -49,21 +55,16 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
     for (auto n : nodes)
     {
-      ossia::net::parameter_base* local_param{};
+      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
 
-      auto type = symbol2val_type(m_type);
-
-      if ( type != ossia::val_type::NONE )
-        local_param = n->create_parameter(type);
-      else
+      if (!local_param)
       {
         pd_error(
               this,
               "type should one of: float, symbol, int, vec2f, "
               "vec3f, vec4f, bool, list, char");
-      }
-      if (!local_param)
         return false;
+      }
 
       local_param->set_repetition_filter(
             m_repetitions ? ossia::repetition_filter::ON
@@ -75,8 +76,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
       ossia::net::set_hidden(local_param->get_node(), m_hidden);
 
-      t_matcher matcher{n,this};
-      m_matchers.push_back(std::move(matcher));
+      m_matchers.emplace_back(n, this);
       m_nodes.push_back(n);
     }
 
@@ -114,9 +114,9 @@ bool parameter::unregister()
   return true;
 }
 
-ossia::safe_vector<parameter*>& parameter::quarantine()
+ossia::safe_set<parameter*>& parameter::quarantine()
 {
-    return ossia_pd::instance().parameter_quarantine;
+  return ossia_pd::instance().parameter_quarantine;
 }
 
 void* parameter::create(t_symbol* name, int argc, t_atom* argv)
@@ -160,7 +160,7 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 
     // change some attributes names to lower case
     std::string type = x->m_type->s_name;
-    ossia::transform(type, type.begin(), ::tolower);
+    boost::algorithm::to_lower(type);
     x->m_type = gensym(type.c_str());
 
     obj_register<parameter>(x);
@@ -305,7 +305,7 @@ void parameter::destroy(parameter* x)
   x->~parameter();
 }
 
-void parameter::update_attribute(parameter* x, ossia::string_view attribute)
+void parameter::update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   if ( attribute == ossia::net::text_refresh_rate() ){
     get_rate(x);
@@ -314,7 +314,7 @@ void parameter::update_attribute(parameter* x, ossia::string_view attribute)
   } else if ( attribute == ossia::net::text_unit() ){
     get_unit(x);
   } else {
-    parameter_base::update_attribute(x, attribute);
+    parameter_base::update_attribute(x, attribute, node);
   }
 }
 
@@ -331,7 +331,7 @@ extern "C" void setup_ossia0x2eparam(void)
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     // TODO should we do something else with reset (like resetting all attributes)
 
-    parameter_base::declare_attributes(c);
+    parameter_base::class_setup(c);
 
     // special attributes
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");
@@ -339,7 +339,6 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
     CLASS_ATTR_SYMBOL(      c, "unit",              0, parameter, m_unit);
-    CLASS_ATTR_INT(         c, "mute",              0, parameter, m_mute);
     CLASS_ATTR_FLOAT(       c, "rate",              0, parameter, m_rate);
 
     eclass_addmethod(c, (method) parameter::get_unit,              "getunit",              A_NULL, 0);

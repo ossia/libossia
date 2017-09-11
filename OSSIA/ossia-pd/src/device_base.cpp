@@ -36,16 +36,16 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
 {
   if (node.get_parameter())
   {
-    for ( auto param : ossia_pd::instance().params.copy() )
+    for ( auto param : ossia_pd::instance().params.reference() )
     {
       for ( auto& m : param->m_matchers )
       {
         if ( m.get_node() == &node )
-          parameter::update_attribute((ossia::pd::parameter*)m.get_parent(),attribute);
+          parameter::update_attribute((ossia::pd::parameter*)m.get_parent(),attribute, &node);
       }
     }
 
-    for ( auto remote : ossia_pd::instance().remotes.copy() )
+    for ( auto remote : ossia_pd::instance().remotes.reference() )
     {
       for ( auto& m : remote->m_matchers )
       {
@@ -54,23 +54,21 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
       }
     }
   } else {
-    for ( auto model : ossia_pd::instance().models.copy() )
+    for ( auto model : ossia_pd::instance().models.reference() )
     {
       for ( auto& m : model->m_matchers )
       {
         if ( m.get_node() == &node )
           model::update_attribute((ossia::pd::model*)m.get_parent(),attribute);
-          ;
       }
     }
 
-    for ( auto view : ossia_pd::instance().views.copy() )
+    for ( auto view : ossia_pd::instance().views.reference() )
     {
       for ( auto& m : view->m_matchers )
       {
         if ( m.get_node() == &node )
           view::update_attribute((ossia::pd::view*)m.get_parent(),attribute);
-          ;
       }
     }
   }
@@ -83,7 +81,7 @@ void device_base::connect_slots()
     m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(this);
     m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(this);
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
-    m_device->on_attribute_modified.connect<device_base, &device_base::on_attribute_modified_callback>(this);
+    m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
   }
 }
@@ -96,7 +94,7 @@ void device_base::disconnect_slots()
     m_device->on_parameter_created.disconnect<device_base, &device_base::on_parameter_created_callback>(this);
     m_device->on_parameter_removing.disconnect<device_base, &device_base::on_parameter_deleted_callback>(this);
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
-    m_device->on_attribute_modified.disconnect<device_base, &device_base::on_attribute_modified_callback>(this);
+    m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
   }
 }

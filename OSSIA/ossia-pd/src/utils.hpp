@@ -198,6 +198,70 @@ struct value_visitor
   }
 };
 
+struct domain_visitor {
+  parameter_base* x;
+
+  template<typename T>
+  void operator()(ossia::domain_base<T>& d)
+  {
+    if(d.min && d.max) {
+      x->m_range_size = 2;
+      SETFLOAT(x->m_range, *d.min);
+      SETFLOAT(x->m_range+1, *d.max);
+    }
+
+    if (d.min) {
+      x->m_min_size = 1;
+      SETFLOAT(x->m_min, *d.min);
+    }
+
+    if (d.max) {
+      x->m_max_size = 1;
+      SETFLOAT(x->m_max, *d.max);
+    }
+  }
+  void operator()(ossia::domain_base<impulse>& d)
+  {
+    // nothing to do
+  }
+  void operator()(ossia::domain_base<std::string> d)
+  {
+    if(!d.values.empty())
+    {
+      x->m_range_size = d.values.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.values.size();
+      for (int i = 0; i < x->m_range_size; i++)
+      {
+        // SETSYMBOL(x->m_range+i,gensym(d.values[i].c_str()));
+      }
+    }
+  }
+  void operator()(ossia::domain_base<ossia::value> d)
+  {
+    if(d.min) { }
+    if(d.max) { }
+    if(!d.values.empty()) { }
+  }
+
+  template<std::size_t N>
+  void operator()(ossia::vecf_domain<N>& d)
+  {
+    for(const auto& min : d.min) if(min) { }
+    for(const auto& max : d.max) if(max) { }
+    for(const auto& values : d.values) if(!values.empty()) { }
+  }
+
+  void operator()(ossia::vector_domain& d)
+  {
+    if(!d.min.empty()) { }
+    if(!d.max.empty()) { }
+    for(const auto& values : d.values) if(!values.empty()) { }
+  }
+  void operator()()
+  {
+
+  }
+};
+
 #pragma mark Prototype
 
 std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
@@ -222,13 +286,13 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-object_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
+object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level);
 
 /**
  * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
  * @return the processed string
  */
-std::string replace_brackets(std::string);
+std::string replace_brackets(const string_view);
 
 /**
  * @brief find_parent_alive
@@ -239,7 +303,7 @@ std::string replace_brackets(std::string);
  * @return
  */
 static object_base* find_parent_alive(
-    t_eobj* x, std::string classname, int start_level, int* level)
+    t_eobj* x, ossia::string_view classname, int start_level, int* level)
 {
   object_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
@@ -249,6 +313,7 @@ static object_base* find_parent_alive(
       obj = find_parent_alive(&obj->m_obj, classname, 1, level);
     }
   }
+  assert(!obj || !obj->m_dead);
   return obj;
 }
 
@@ -368,7 +433,7 @@ std::vector<ossia::net::node_base*> find_parent_node(object_base* x);
  * corresponding classname
  */
 std::vector<object_base*> find_child_to_register(
-    object_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
+    object_base* x, t_gobj* start_list, ossia::string_view classname, bool* found_dev = nullptr);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
@@ -382,7 +447,7 @@ bool find_peer(object_base* x);
  * @param addr : address string
  * @return vector of pointers to matching nodes
  */
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
+std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
 
 
 /**
@@ -390,7 +455,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
  * @param addr: the address to process
  * @return the scope
  */
-ossia::pd::address_scope get_address_scope(const std::string& addr);
+ossia::pd::address_scope get_address_scope(ossia::string_view addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

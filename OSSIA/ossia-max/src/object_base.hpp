@@ -52,7 +52,7 @@ public:
   t_matcher& operator=(const t_matcher&) = delete;
   t_matcher& operator=(t_matcher&& other);
 
-  void enqueue_value(const ossia::value& v);
+  void enqueue_value(ossia::value v);
   void output_value();
   auto get_node() const { return node; }
   auto get_parent() const { return parent; }
@@ -86,14 +86,14 @@ public:
   void* m_set_out{};
   void* m_dumpout{};
 
-  object_class m_otype{};
-  t_symbol* m_name{};
-  address_scope m_addr_scope{};
+  //flags
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted;
-  bool m_enable{1};
-  bool m_mute{0};
+  address_scope m_addr_scope{};
+  object_class m_otype{};
+
+
 
   void* m_clock{};
   void* m_poll_clock{}; // value or message polling clock
@@ -117,6 +117,8 @@ public:
   static void get_priority(object_base* x);
   static void get_hidden(object_base* x);
 
+  // default attributes
+  t_symbol* m_name{};
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_description{};
   long m_priority{};
@@ -345,7 +347,7 @@ struct value_visitor
   void operator()() const
   {
     object_error(
-        (t_object*)x, "%s receive an invalid data", x->m_name->s_name);
+        (t_object*)x, "%s received an invalid data", x->m_name->s_name);
   }
 };
 

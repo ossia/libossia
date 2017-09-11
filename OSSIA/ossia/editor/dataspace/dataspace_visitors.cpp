@@ -6,6 +6,7 @@
 #include <ossia/editor/dataspace/detail/dataspace_convert.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/editor/dataspace/detail/list_units.hpp>
 #include <ossia/editor/dataspace/detail/make_unit.hpp>
 #include <ossia/editor/dataspace/detail/make_value.hpp>
 #include <ossia/editor/dataspace/value_with_unit.hpp>
@@ -75,16 +76,19 @@ ossia::unit_t parse_unit(ossia::string_view text, T dataspace)
 
 unit_t parse_pretty_unit(ossia::string_view text)
 {
-  auto idx = text.find_first_of('.');
-  if (idx != std::string::npos)
-  {
-    if (auto d = parse_dataspace(text.substr(0, idx)))
-    {
-      return parse_unit(text.substr(idx + 1), d);
-    }
-  }
+  static const auto map = [] {
+    ossia::string_map<ossia::unit_t> t;
+    ossia::detail::list_units([&] (auto str, auto u) {
+      t.insert({std::move(str), std::move(u)});
+    });
+    return t;
+  }();
 
-  return {};
+  auto it = map.find(text);
+  if(it != map.end())
+   return it->second;
+  else
+   return {};
 }
 
 unit_t parse_dataspace(ossia::string_view text)

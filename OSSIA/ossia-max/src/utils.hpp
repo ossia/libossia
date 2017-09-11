@@ -33,14 +33,14 @@ bool find_peer(object_base *x);
  * @param addr : address string
  * @return pointer to the node
  */
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
+std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
 
 /**
  * @brief get_parameter_type: return address type (relative, absolute or globale)
  * @param addr: the address to process
  * @return
  */
-ossia::max::address_scope get_address_scope(const std::string& addr);
+ossia::max::address_scope get_address_scope(ossia::string_view addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

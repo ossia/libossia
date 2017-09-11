@@ -16,7 +16,7 @@ public:
   bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
   bool unregister();
 
-  static ossia::safe_vector<view*>& quarantine();
+  static ossia::safe_set<view*>& quarantine();
 
   // static void* create(t_symbol* name, int argc, t_atom* argv);
   // static void destroy(view* x);

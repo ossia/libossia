@@ -9,15 +9,15 @@
 \, RGB color;
 #X text 668 207 vec4f : list of 4 float values \, useful for RGBA color
 ;
-#X text 653 623 @tags <symbol> string list to decribe some key features
+#X text 653 649 @tags <symbol> string list to decribe some key features
 (like audio \, video \, synthesis \, effect...);
-#X text 653 652 @description <symbol> textual decription of the parameter
+#X text 653 678 @description <symbol> textual decription of the parameter
 ;
 #X text 649 51 @type <symbol> define value type \, could be one of
 :;
-#X text 651 288 @default <atoms> define default value \, fired at loading
+#X text 649 287 @default <atoms> define default value \, fired at loading
 ;
-#X text 652 560 @priority <int> defines recall order \, higher priority
+#X text 652 586 @priority <int> defines recall order \, higher priority
 comes first, f 66;
 #N canvas 1533 499 285 538 unit 0;
 #X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
@@ -70,16 +70,8 @@ time.mel time.midinote time.ms time.speed, f 24;
 in Pd., f 66;
 #X text 240 642 see also :;
 #X floatatom 199 687 5 0 0 0 - - -, f 5;
-#X text 652 581 @hidden <float> enable/disable hidden attribute \,
+#X text 652 607 @hidden <float> enable/disable hidden attribute \,
 could be 0 or 1, f 65;
-#X text 651 484 @repetition_filter <float> enable/disable repetition
-filter \, could be 0 or 1 - default: 0 when none specified;
-#X text 652 527 @access_mode <symbol> defines if the value can be read
-\, write or both \, could be : BI (default) \, GET \, SET \, RW \,
-R \, W;
-#X text 651 409 @bounding_mode <symbol> defines behavior when value
-go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
-\, FOLD \, LOW \, HIGH, f 68;
 #X obj 236 663 ossia.model param-help;
 #X floatatom 115 166 5 0 0 0 - - -, f 5;
 #X floatatom 115 124 5 0 0 0 - - -, f 5;
@@ -99,9 +91,9 @@ type when none specified;
 #X text 666 246 impulse : bang (only useful with SET or GET access_modes
 , f 61;
 #X text 668 227 list : list of anything, f 61;
-#X text 653 702 @enable <0|1> enable/disable the parameter \, default:
+#X text 653 728 @enable <0|1> enable/disable the parameter \, default:
 1;
-#X text 653 671 @hidden <0|1> hide the parameter to the user (e.g.
+#X text 653 697 @hidden <0|1> hide the parameter to the user (e.g.
 in i-score) \, default: 0;
 #X text 651 368 @min <list of float> / @max <list of float> define
 minimum and maximum values. For vector \, min/max are defined for each
@@ -116,7 +108,7 @@ bi @range 0 2;
 #N canvas 749 93 740 913 more_about_range_and_minmax 0;
 #X obj 93 234 list prepend set;
 #X obj 93 255 list trim;
-#X msg 93 276 10 10 10 -10 2;
+#X msg 93 276 26 37 18 -20 2;
 #X floatatom 93 83 5 0 0 0 - - -, f 5;
 #X obj 126 558 list prepend set;
 #X obj 126 579 list trim;
@@ -206,10 +198,9 @@ float-list minimum and maximum.;
 #X obj 30 268 s \$0-param_bar;
 #X obj 180 268 s \$0-param_bar;
 #X obj 539 264 s \$0-param_bar;
-#X obj 516 407 s \$0-param_bar;
+#X obj 537 411 s \$0-param_bar;
 #X obj 30 378 s \$0-param_bar;
 #X obj 210 378 s \$0-param_bar;
-#X msg 366 329 unit speed.m/s;
 #X obj 356 378 s \$0-param_bar;
 #X msg 30 59 range 0 1;
 #X msg 40 79 range -10 10;
@@ -251,10 +242,6 @@ float-list minimum and maximum.;
 #X obj 398 581 route address;
 #X obj 486 606 print;
 #X msg 50 99 range;
-#X msg 390 49 bounding_mode clip;
-#X msg 400 70 bounding_mode low;
-#X msg 415 91 bounding_mode free;
-#X msg 428 112 getbounding_mode;
 #X msg 55 243 getdefault;
 #X msg 40 219 default blah fruh;
 #X msg 30 199 default 0 1 1 1;
@@ -265,9 +252,6 @@ float-list minimum and maximum.;
 #X msg 539 215 priority \$1;
 #X msg 564 239 getpriority;
 #X floatatom 539 193 5 0 0 0 - - -, f 5;
-#X msg 516 338 access_mode bi;
-#X msg 541 382 getaccess_mode;
-#X msg 526 358 access_mode get;
 #X msg 30 329 repetition_filter \$1;
 #X msg 45 353 getrepetition_filter;
 #X obj 30 310 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
@@ -291,57 +275,72 @@ patcher.;
 1;
 #X msg 435 243 getmute;
 #X msg 410 219 mute \$1;
-#X connect 1 0 58 0;
-#X connect 11 0 12 0;
+#X msg 537 342 mode bi;
+#X msg 547 364 mode get;
+#X msg 561 386 getmode;
+#X msg 366 329 description nothing;
+#X msg 390 49 clip both;
+#X msg 400 70 clip low;
+#X msg 415 91 clip free;
+#X msg 427 112 getclip;
+#X obj 530 539 s \$0-param_bar;
+#X msg 554 514 getrate;
+#X msg 530 489 rate \$1;
+#X floatatom 530 466 5 0 0 0 - - -, f 5;
+#X connect 1 0 50 0;
+#X connect 12 0 0 0;
 #X connect 13 0 0 0;
 #X connect 14 0 0 0;
-#X connect 15 0 0 0;
+#X connect 15 0 2 0;
 #X connect 16 0 2 0;
 #X connect 17 0 2 0;
-#X connect 18 0 2 0;
-#X connect 19 0 58 0;
-#X connect 20 0 21 0;
-#X connect 20 1 22 0;
-#X connect 20 2 23 0;
-#X connect 20 3 24 0;
+#X connect 18 0 50 0;
+#X connect 19 0 20 0;
+#X connect 19 1 21 0;
+#X connect 19 2 22 0;
+#X connect 19 3 23 0;
+#X connect 24 0 3 0;
 #X connect 25 0 3 0;
 #X connect 26 0 3 0;
-#X connect 27 0 3 0;
-#X connect 28 1 29 0;
-#X connect 30 0 0 0;
-#X connect 31 0 4 0;
-#X connect 32 0 4 0;
-#X connect 33 0 4 0;
-#X connect 34 0 4 0;
-#X connect 35 0 5 0;
-#X connect 36 0 5 0;
-#X connect 37 0 5 0;
-#X connect 38 0 6 0;
-#X connect 39 0 6 0;
-#X connect 40 0 38 0;
-#X connect 41 0 7 0;
-#X connect 42 0 7 0;
-#X connect 43 0 41 0;
-#X connect 44 0 8 0;
-#X connect 45 0 8 0;
-#X connect 46 0 8 0;
-#X connect 47 0 9 0;
-#X connect 48 0 9 0;
-#X connect 49 0 47 0;
-#X connect 50 0 10 0;
-#X connect 51 0 10 0;
-#X connect 52 0 12 0;
-#X connect 54 0 55 0;
-#X connect 55 0 53 0;
-#X connect 56 0 53 0;
-#X connect 57 0 12 0;
-#X connect 58 0 20 0;
-#X connect 58 1 28 0;
-#X connect 61 0 63 0;
-#X connect 62 0 60 0;
-#X connect 63 0 60 0;
+#X connect 27 1 28 0;
+#X connect 29 0 0 0;
+#X connect 30 0 5 0;
+#X connect 31 0 5 0;
+#X connect 32 0 5 0;
+#X connect 33 0 6 0;
+#X connect 34 0 6 0;
+#X connect 35 0 33 0;
+#X connect 36 0 7 0;
+#X connect 37 0 7 0;
+#X connect 38 0 36 0;
+#X connect 39 0 9 0;
+#X connect 40 0 9 0;
+#X connect 41 0 39 0;
+#X connect 42 0 10 0;
+#X connect 43 0 10 0;
+#X connect 44 0 11 0;
+#X connect 46 0 47 0;
+#X connect 47 0 45 0;
+#X connect 48 0 45 0;
+#X connect 49 0 11 0;
+#X connect 50 0 19 0;
+#X connect 50 1 27 0;
+#X connect 53 0 55 0;
+#X connect 54 0 52 0;
+#X connect 55 0 52 0;
+#X connect 56 0 8 0;
+#X connect 57 0 8 0;
+#X connect 58 0 8 0;
+#X connect 59 0 11 0;
+#X connect 60 0 4 0;
+#X connect 61 0 4 0;
+#X connect 62 0 4 0;
+#X connect 63 0 4 0;
+#X connect 65 0 64 0;
+#X connect 66 0 64 0;
+#X connect 67 0 66 0;
 #X restore 55 536 pd attributes_get/set;
-#X msg 291 336 reset;
+#X msg 253 335 reset;
 #X text 120 305 send attribute values and parameter state through rightmost
 output, f 66;
 #N canvas 777 353 649 398 declaring_multiple_parameters_in_1_object
@@ -375,18 +374,29 @@ the UI framework of pd \, tcl/tk \, curly braces are replaced by <>
 #X connect 11 0 13 0;
 #X connect 12 0 11 0;
 #X restore 56 584 pd declaring_multiple_parameters_in_1_object;
+#X text 303 335 will reset to default value(s);
+#X text 652 553 @mode <symbol> defines if the value can be read \,
+write or both \, could be : BI (default) \, GET \, SET \, RW \, R \,
+W;
+#X text 651 484 @repetitions <float> enable/disable repetitions \,
+could be 0 or 1 - default: 1 when none specified;
+#X text 651 409 @clip <symbol> defines behavior when value go out of
+range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
+LOW \, HIGH, f 68;
+#X text 652 519 @rate: how often (in ms) the value is output - default
+10;
 #X connect 16 0 17 0;
 #X connect 16 1 18 0;
 #X connect 16 2 19 0;
 #X connect 16 3 20 0;
-#X connect 21 0 49 0;
-#X connect 22 0 49 0;
-#X connect 23 0 49 0;
-#X connect 27 0 38 0;
-#X connect 34 0 35 0;
-#X connect 35 0 33 0;
-#X connect 38 0 27 0;
-#X connect 41 0 40 0;
-#X connect 49 0 16 0;
-#X connect 49 1 15 0;
-#X connect 52 0 49 0;
+#X connect 21 0 46 0;
+#X connect 22 0 46 0;
+#X connect 23 0 46 0;
+#X connect 27 0 35 0;
+#X connect 31 0 32 0;
+#X connect 32 0 30 0;
+#X connect 35 0 27 0;
+#X connect 38 0 37 0;
+#X connect 46 0 16 0;
+#X connect 46 1 15 0;
+#X connect 49 0 46 0;

@@ -1,6 +1,17 @@
 #pragma once
+#include <ossia-max/src/ossia-max.hpp>
 
-extern "C" {
-void* ossia_ossia_new(t_symbol*, long, t_atom*);
-void ossia_ossia_free(ossia::max::t_device*);
-}
+namespace ossia
+{
+namespace max
+{
+
+class ossia_object : public device
+{
+public:
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::ossia_object*);
+};
+
+} // max namespace
+} // ossia namespace

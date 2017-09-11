@@ -228,7 +228,7 @@ PYBIND11_MODULE(ossia_python, m)
 
   py::class_<ossia::net::node_base>(m, "Node")
       .def_property_readonly(
-          "address", &ossia::net::node_base::get_parameter,
+          "parameter", &ossia::net::node_base::get_parameter,
           py::return_value_policy::reference)
 
       .def(

@@ -131,6 +131,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 void client::destroy(client* x)
 {
   x->m_dead = true;
+  x->m_matchers.clear();
   x->unregister_children();
   object_free((t_object*)x->m_poll_clock);
 
@@ -185,13 +186,13 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 
   if (argc && argv->a_type == A_SYM)
   {
-    std::string protocol_name = argv->a_w.w_sym->s_name;
+    ossia::string_view protocol_name = argv->a_w.w_sym->s_name;
 
     if ( argc == 1
          && protocol_name != "oscquery"
          && protocol_name != "Minuit" )
     {
-      std::string name;
+      ossia::string_view name;
 
       if ( x->m_looking_for )
         name = x->m_looking_for->s_name;
@@ -243,7 +244,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 
             return;
           }
-          x->m_looking_for = gensym(name.c_str());
+          x->m_looking_for = gensym(name.data());
           client::getdevices(x);
           return;
         }
@@ -325,7 +326,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
     }
     else
     {
-      object_error((t_object*)(t_object*)x, "Unknown protocol: %s", protocol_name.c_str());
+      object_error((t_object*)x, "Unknown protocol: %s", protocol_name.data());
     }
   }
   else
@@ -366,7 +367,7 @@ void client::check_thread_status(client* x)
       outlet_anything(x->m_dumpout, gensym("device"), 5, av);
     }
 
-    (av, gensym("oscquery"));
+    A_SETSYM(av, gensym("oscquery"));
     for (auto dev : x->m_oscq_devices)
     {
       A_SETSYM(av+1, gensym(dev.name.c_str()));
@@ -473,9 +474,11 @@ void client::disconnect(client* x)
 {
   if (x->m_device)
   {
+    x->disconnect_slots();
     x->unregister_children();
     delete x->m_device;
     x->m_device = nullptr;
+    x->m_oscq_protocol = nullptr;
   }
 }
 

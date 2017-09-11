@@ -18,14 +18,14 @@ public:
   bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
-  static ossia::safe_vector<parameter*>& quarantine();
+  static ossia::safe_set<parameter*>& quarantine();
 
   static t_pd_err notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
   static void get_unit(parameter*x);
   static void get_mute(parameter*x);
   static void get_rate(parameter*x);
 
-  static void update_attribute(parameter* x, ossia::string_view attribute);
+  static void update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
 
   void set_unit();
   void set_mute();

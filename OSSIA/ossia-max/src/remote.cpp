@@ -94,8 +94,11 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     {
       object_error((t_object*)x, "needs a name as first argument");
       x->m_name = gensym("untitledRemote");
+      x->update_path(x->m_name->s_name);
       return x;
     }
+
+    x->update_path(x->m_name->s_name);
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
@@ -130,12 +133,27 @@ void remote::destroy(remote* x)
   if(x->m_is_pattern && x->m_dev)
   {
     x->m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(x);
+    x->m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(x);
   }
 
   outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);  
   x->~remote();
+}
+
+void remote::update_path(string_view name)
+{
+  bool is_pattern = ossia::traversal::is_pattern(name);
+
+  if(is_pattern)
+  {
+    m_path = ossia::traversal::make_path(name);
+  }
+  else
+  {
+    m_path = ossia::none;
+  }
 }
 
 void remote::assist(remote* x, void* b, long m, long a, char* s)
@@ -148,8 +166,8 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
   {
     switch(a)
     {
-      case 0:
-        sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
+    case 0:
+      sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
         break;
       case 1:
         sprintf(s, "raw outlet", a);
@@ -309,13 +327,22 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
     auto& dev = node[0]->get_device();
     if (&dev != m_dev)
     {
-      if (m_dev) m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
+      if (m_dev) {
+          m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
+          m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(this);
+      }
       m_dev = &dev;
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
+      m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
     }
   }
 
   return res;
+}
+
+void remote::on_device_deleted(const net::node_base &)
+{
+  m_dev = nullptr;
 }
 
 bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
@@ -344,10 +371,12 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     else
       nodes = ossia::net::find_nodes(*node, name);
 
+    m_nodes.reserve(m_nodes.size() + nodes.size());
+    m_matchers.reserve(m_matchers.size() + nodes.size());
+
     for (auto n : nodes){
       if (n->get_parameter()){
-        t_matcher matcher{n,this};
-        m_matchers.push_back(std::move(matcher));
+        m_matchers.emplace_back(n, this);
         m_nodes.push_back(n);
       } else {
         // if there is a node without address it might be a model
@@ -356,8 +385,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         path << name << "/" << name;
         auto node = ossia::net::find_node(*n, path.str());
         if (node){
-          t_matcher matcher{node,this};
-          m_matchers.push_back(std::move(matcher));
+          m_matchers.emplace_back(node, this);
           m_nodes.push_back(n);
         }
       }
@@ -378,6 +406,12 @@ bool remote::unregister()
   object_quarantining<remote>(this);
 
   m_parent_node = nullptr;
+  if(m_dev)
+  {
+    m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
+    m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(this);
+  }
+  m_dev = nullptr;
   return true;
 }
 
@@ -385,10 +419,10 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 {
   auto& node = addr.get_node();
   if (!m_name) return;
-  auto path = ossia::traversal::make_path(m_name->s_name);
+  update_path(m_name->s_name);
 
   // FIXME check for path validity
-  if ( path && ossia::traversal::match(*path, node) )
+  if ( m_path && ossia::traversal::match(*m_path, node) )
   {
     m_matchers.emplace_back(&node,this);
   }
@@ -397,6 +431,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 void remote::bind(remote* x, t_symbol* address)
 {
   x->m_name = address;
+  x->update_path(x->m_name->s_name);
   x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
@@ -438,7 +473,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
   }
 }
 
-ossia::safe_vector<remote*>& remote::quarantine()
+ossia::safe_set<remote*>& remote::quarantine()
 {
     return ossia_max::instance().remote_quarantine;
 }

@@ -52,26 +52,6 @@ at the same level (like in this example \, with two submodels being
 named identically) \, they will be registered as the next available
 instance (instances are appended to the node name \, after a dot separator)
 , f 97;
-#N canvas 934 627 665 300 attributes 0;
-#X msg 113 38 dump;
-#X obj 113 208 print foo;
-#X obj 113 146 ø.model bar @priority 12 @tags audio core @description
-"Something meaningful";
-#X msg 136 66 priority 23;
-#X msg 138 98 getpriority;
-#X msg 246 66 tags blah bloh;
-#X msg 248 98 gettags;
-#X msg 368 98 getdescription;
-#X msg 366 66 description Something more meaningful;
-#X connect 0 0 2 0;
-#X connect 2 0 1 0;
-#X connect 3 0 2 0;
-#X connect 4 0 2 0;
-#X connect 5 0 2 0;
-#X connect 6 0 2 0;
-#X connect 7 0 2 0;
-#X connect 8 0 2 0;
-#X restore 125 453 pd attributes;
 #N canvas 0 22 361 184 presets 0;
 #X obj 196 126 outlet;
 #X obj 52 60 savepanel;
@@ -92,5 +72,40 @@ instance (instances are appended to the node name \, after a dot separator)
 #X restore 39 262 pd presets;
 #X text 125 262 presets of the current values can be saved and recalled
 ;
+#N canvas 707 350 676 421 messages_and_attributes 0;
+#X obj 77 235 print foo;
+#X obj 80 178 ø.model bar @priority 12 @tags audio core @description
+"Something meaningful";
+#X msg 80 81 priority 23;
+#X msg 82 113 getpriority;
+#X msg 190 81 tags blah bloh;
+#X msg 192 113 gettags;
+#X msg 312 113 getdescription;
+#X msg 310 81 description Something more meaningful;
+#X obj 284 304 ø.param hop @default 0.1;
+#X floatatom 284 326 5 0 0 0 - - -, f 5;
+#X floatatom 283 285 5 0 0 0 - - -, f 5;
+#X floatatom 87 326 5 0 0 0 - - -, f 5;
+#X floatatom 86 285 5 0 0 0 - - -, f 5;
+#X obj 87 304 ø.param hop @default 0.4;
+#X msg 470 153 reset;
+#X msg 137 282 reset;
+#X msg 331 282 reset;
+#X text 519 155 doesn't work yet;
+#X connect 1 0 0 0;
+#X connect 2 0 1 0;
+#X connect 3 0 1 0;
+#X connect 4 0 1 0;
+#X connect 5 0 1 0;
+#X connect 6 0 1 0;
+#X connect 7 0 1 0;
+#X connect 8 0 9 0;
+#X connect 10 0 8 0;
+#X connect 12 0 13 0;
+#X connect 13 0 11 0;
+#X connect 14 0 1 0;
+#X connect 15 0 13 0;
+#X connect 16 0 8 0;
+#X restore 53 452 pd messages_and_attributes;
 #X connect 0 0 8 0;
-#X connect 18 0 7 0;
+#X connect 17 0 7 0;

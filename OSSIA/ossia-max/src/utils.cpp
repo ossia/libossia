@@ -41,22 +41,23 @@ bool find_peer(object_base* x)
     return false;
 }
 
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
+std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
 {
   std::vector<ossia::net::node_base*> nodes{};
-  auto& instance = ossia_max::instance();
+  nodes.reserve(4);
+  ossia_max& instance = ossia_max::instance();
   size_t pos = addr.find(":");
   if (pos == std::string::npos) return nodes;
 
-  std::string prefix = addr.substr(0,pos);
+  ossia::string_view prefix = addr.substr(0,pos);
   // remove 'device_name:/' prefix
-  std::string osc_name = addr.substr(pos+2);
+  ossia::string_view osc_name = addr.substr(pos+2);
 
   bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-  std::regex pattern(prefix.c_str());
+  std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
 
-  for (auto device : instance.devices.copy())
+  for (auto device : instance.devices.reference())
   {
     auto dev = device->m_device;
     if (!dev) continue;
@@ -69,7 +70,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
       try {
         match = std::regex_match(name, pattern);
       } catch (std::exception& e) {
-        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        error("'%s' bad regex: %s", prefix.data(), e.what());
         return nodes;
       }
     } else match = (name == prefix);
@@ -89,7 +90,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
     }
   }
 
-  for (auto client : instance.clients.copy())
+  for (auto client : instance.clients.reference())
   {
     auto dev = client->m_device;
     if (!dev) continue;
@@ -102,7 +103,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
       try {
         match = std::regex_match(name, pattern);
       } catch (std::exception& e) {
-        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        error("'%s' bad regex: %s", prefix.data(), e.what());
         return nodes;
       }
     } else match = (name == prefix);
@@ -124,7 +125,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
   return nodes;
 }
 
-ossia::max::address_scope get_address_scope(const std::string& addr)
+ossia::max::address_scope get_address_scope(ossia::string_view addr)
 {
   address_scope type = address_scope::relative;
   if (boost::starts_with(addr, "//") )
@@ -139,6 +140,7 @@ ossia::max::address_scope get_address_scope(const std::string& addr)
 std::vector<ossia::value> attribute2value(t_atom* atom, long size)
 {
   std::vector<ossia::value> list;
+  list.reserve(size);
 
   for (int i = 0; i < size; i++)
   {
@@ -156,7 +158,7 @@ ossia::val_type symbol2val_type(t_symbol* s)
 {
   if (s)
   {
-    std::string type = s->s_name;
+    ossia::string_view type = s->s_name;
 
     if (type == "float")
       return ossia::val_type::FLOAT;
