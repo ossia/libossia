@@ -18,10 +18,10 @@ print("OSSIA LIBRARY EXAMPLE")
 local_device = ossia.LocalDevice("newDevice")
 
 # enable OSCQuery communication for our device
-local_device.create_oscquery_server(3456, 5678)
+#local_device.create_oscquery_server(3456, 5678)
 
 # enable OSC communication for that device
-### TODO : local_device.create_oscserver(1234, 1235)
+local_device.create_osc_server("localhost", 9996, 9997)
 
 # enable MIDI communication for that device
 ### TODO : enable MIDI communication

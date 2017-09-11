@@ -19,6 +19,7 @@ namespace py = pybind11;
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/osc/osc.hpp>
 #include <ossia/detail/logger.hpp>
 
 namespace py = pybind11;
@@ -69,6 +70,35 @@ public:
     {
       ossia::logger().error(
           "ossia_local_device: error when creating OSCQuery server: {}");
+    }
+    return false;
+  }
+
+  /** Make the local device able to handle osc request and emit osc message
+  \param int port where OSC requests have to be sent by any remote client to
+  deal with the local device
+  \param int port where osc messages have to be sent to be catch by a remote 
+  client to listen to the local device
+  \return bool */
+  bool create_osc_server(std::string ip, int in_port, int out_port)
+  {
+    try
+    {
+      m_local_protocol.expose_to(
+          std::make_unique<ossia::net::osc_protocol>(
+              ip, in_port, out_port));
+      return true;
+    }
+    catch (std::exception& e)
+    {
+      ossia::logger().error(
+          "ossia_local_device: error when creating OSC server: {}",
+          e.what());
+    }
+    catch (...)
+    {
+      ossia::logger().error(
+          "ossia_local_device: error when creating OSC server: {}");
     }
     return false;
   }
@@ -190,6 +220,9 @@ PYBIND11_MODULE(ossia_python, m)
       .def(
           "create_oscquery_server",
           &ossia_local_device::create_oscquery_server)
+      .def(
+          "create_osc_server",
+          &ossia_local_device::create_osc_server)
       .def(
           "add_node", &ossia_local_device::add_node,
           py::return_value_policy::reference)
