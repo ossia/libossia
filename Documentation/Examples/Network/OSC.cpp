@@ -15,7 +15,7 @@
 #include <functional>
 
 #include <ossia/ossia.hpp>
-
+#include <ossia/network/common/debug.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -85,5 +85,6 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << value_to_pretty_string(v) << "\n";
+  std::cout << "Callback: " << value_to_pretty_string(v) << std::endl;
 }
+
