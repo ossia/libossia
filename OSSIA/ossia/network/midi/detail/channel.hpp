@@ -22,6 +22,9 @@ struct midi_channel
   // PC
   midi_size_t pc{};
 
+  // PB
+  int32_t pb{};
+
   // velocity or value
   std::array<midi_size_t, 128> note_on_N = {{64}};
   std::array<midi_size_t, 128> note_off_N = {{64}};
@@ -33,6 +36,7 @@ struct midi_channel
   midi_parameter* callback_note_off{};
   midi_parameter* callback_cc{};
   midi_parameter* callback_pc{};
+  midi_parameter* callback_pb{};
   std::array<midi_parameter*, 128> callback_note_on_N = {{}};
   std::array<midi_parameter*, 128> callback_note_off_N = {{}};
   std::array<midi_parameter*, 128> callback_cc_N = {{}};

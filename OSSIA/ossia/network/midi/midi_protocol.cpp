@@ -118,6 +118,13 @@ bool midi_protocol::set_info(midi_info m)
               value_callback(*ptr, ossia::impulse{});
             }
             break;
+          case mm::MessageType::PITCH_BEND:
+            c.pb = mess.data[2] * 128 + mess.data[1];
+            if (auto ptr = c.callback_pb)
+            {
+              value_callback(*ptr, int32_t{c.pb});
+            }
+            break;
           default:
             break;
         }
@@ -203,6 +210,13 @@ bool midi_protocol::pull(parameter_base& address)
       address.set_value(val);
       return true;
     }
+
+    case address_info::Type::PB:
+    {
+      int32_t val{chan.pb};
+      address.set_value(val);
+      return true;
+    }
     default:
       return false;
   }
@@ -276,6 +290,12 @@ bool midi_protocol::push(const parameter_base& address)
         m_output->send(mm::MakeProgramChange(adrinfo.channel, adrinfo.note));
         return true;
       }
+
+      case address_info::Type::PB:
+      {
+        m_output->send(mm::MakePitchBend(adrinfo.channel, adrs.getValue().get<int32_t>()));
+        return true;
+      }
       default:
         return false;
     }
@@ -330,6 +350,11 @@ bool midi_protocol::observe(parameter_base& address, bool enable)
     case address_info::Type::PC_N:
     {
       chan.callback_pc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      return true;
+    }
+    case address_info::Type::PB:
+    {
+      chan.callback_pb = enable ? adrs_ptr : nullptr;
       return true;
     }
 

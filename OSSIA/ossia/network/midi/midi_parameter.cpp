@@ -16,7 +16,7 @@ midi_parameter::midi_parameter(address_info info, node_base& parent)
           parent.get_device().get_protocol())}
     , m_domain{m_info.defaultDomain()}
     , m_type{m_info.matchingType()}
-    , m_value{m_info.defaultValue(64)}
+    , m_value{m_info.defaultValue(m_info.type == address_info::Type::PB ? 0 : 64)}
 {
 }
 
