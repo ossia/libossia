@@ -208,6 +208,25 @@ public:
   }
 };
 
+class OSSIA_EXPORT pitch_bend_node final : public midi_node, public midi_parameter
+{
+public:
+  pitch_bend_node(midi_size_t channel, midi_device& aDevice)
+      : midi_node(aDevice, aDevice)
+      , midi_parameter{address_info{channel, address_info::Type::PB, 0}, *this}
+  {
+    using namespace std::literals;
+    m_name = "pitchbend"s;
+    m_parameter.reset(this);
+  }
+
+  ~pitch_bend_node()
+  {
+    about_to_be_deleted(*this);
+    m_parameter.release();
+  }
+};
+
 class OSSIA_EXPORT channel_node final : public midi_node
 {
   const midi_size_t m_channel;
@@ -218,22 +237,21 @@ public:
   {
     m_name = midi_node_name(channel);
     m_children.reserve(4);
-    {
-      m_children.push_back(
+
+    m_children.push_back(
           std::make_unique<note_on_node>(m_channel, m_device));
-    }
-    {
-      m_children.push_back(
+
+    m_children.push_back(
           std::make_unique<note_off_node>(m_channel, m_device));
-    }
-    {
-      m_children.push_back(
+
+    m_children.push_back(
           std::make_unique<control_node>(m_channel, m_device));
-    }
-    {
-      m_children.push_back(
+
+    m_children.push_back(
           std::make_unique<program_node>(m_channel, m_device));
-    }
+
+    m_children.push_back(
+          std::make_unique<pitch_bend_node>(m_channel, m_device));
   }
 
   ~channel_node()
