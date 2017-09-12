@@ -124,6 +124,7 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/init"
         "${CMAKE_CURRENT_SOURCE_DIR}/interfaces"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs"
+        "${CMAKE_CURRENT_SOURCE_DIR}/patchers"
     DESTINATION
         ${OSSIA_MAX_INSTALL_FOLDER}
     COMPONENT
