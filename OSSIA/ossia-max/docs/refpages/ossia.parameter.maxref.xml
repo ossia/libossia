@@ -121,7 +121,7 @@
 				Reset to default value
 			</digest>
 			<description>
-				The message <m>reset</m> sent to the leftmost inlet reset the current value to the value defined by the <at>@default</at> attribute
+				The message <m>reset</m> sent to the leftmost inlet reset the current value to the value defined by the <at>@defval</at> attribute
 			</description>
 		</method>
 -->
@@ -165,7 +165,7 @@
 				Default value
 			</digest>
 			<description>
-				The <at>@default</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
+				The <at>@defval</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
 			</description>
 		</attribute>	
 

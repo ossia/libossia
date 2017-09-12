@@ -1435,7 +1435,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 784.0, 555.0, 232.0, 35.0 ],
 									"style" : "",
-									"text" : "ossia.parameter a_list @type list @range -1. 1. @clip both @default 0. 0. 0. 0."
+									"text" : "ossia.parameter a_list @type list @range -1. 1. @clip both @defval 0. 0. 0. 0."
 								}
 
 							}
@@ -2809,7 +2809,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 38.0, 586.0, 177.0, 35.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_loadmess @type float @default 1.23"
+									"text" : "ossia.parameter my_loadmess @type float @defval 1.23"
 								}
 
 							}
@@ -2973,7 +2973,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 586.0, 581.0, 180.0, 89.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_color @type vec4f @unit color.rgba @default 1. 0. 0. 1. @range 0 1 @clip both @description \"My beautiful red\" @tags beautiful color"
+									"text" : "ossia.parameter my_color @type vec4f @unit color.rgba @defval 1. 0. 0. 1. @range 0 1 @clip both @description \"My beautiful red\" @tags beautiful color"
 								}
 
 							}

@@ -146,7 +146,7 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
       x->set_bounding_mode();
     else if ( attrname == gensym("min") || attrname == gensym("max") )
       x->set_minmax();
-    else if ( attrname == gensym("default") )
+    else if ( attrname == gensym("defval") )
       x->set_default();
     else if ( attrname == gensym("unit") )
       x->set_unit();

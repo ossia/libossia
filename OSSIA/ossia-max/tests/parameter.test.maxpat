@@ -110,7 +110,7 @@
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 73.0, 597.0, 430.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_position @type vec3f @access_mode BI @default 1. 2. 3."
+					"text" : "ossia.parameter my_position @type vec3f @access_mode BI @defval 1. 2. 3."
 				}
 
 			}
@@ -404,7 +404,7 @@
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 69.0, 490.0, 422.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_string @type string @access_mode GET @default none"
+					"text" : "ossia.parameter my_string @type string @access_mode GET @defval none"
 				}
 
 			}
@@ -417,7 +417,7 @@
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 69.0, 391.0, 407.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_boolean @type bool @access_mode SET @default 1"
+					"text" : "ossia.parameter my_boolean @type bool @access_mode SET @defval 1"
 				}
 
 			}
@@ -430,7 +430,7 @@
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 69.0, 297.0, 718.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_float @type float @bounding_mode WRAP @access_mode BI @repetition_filter 1 @range -1.5 2.5 @default -1."
+					"text" : "ossia.parameter my_float @type float @bounding_mode WRAP @access_mode BI @repetition_filter 1 @range -1.5 2.5 @defval -1."
 				}
 
 			}
@@ -443,7 +443,7 @@
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 69.0, 200.0, 628.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_int @type int @bounding_mode FREE @access_mode BI @unit m @range -10 10 @default -1"
+					"text" : "ossia.parameter my_int @type int @bounding_mode FREE @access_mode BI @unit m @range -10 10 @defval -1"
 				}
 
 			}

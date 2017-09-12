@@ -938,7 +938,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 96.0, 241.0, 518.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_freq @unit time.hz @default 440 @range 20 20000 @clip both"
+									"text" : "ossia.parameter my_freq @unit time.hz @defval 440 @range 20 20000 @clip both"
 								}
 
 							}
