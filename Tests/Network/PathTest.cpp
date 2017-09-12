@@ -371,31 +371,49 @@ private Q_SLOTS:
 
   void test_match_range()
   {
-    ossia::net::generic_device device1{};
-    auto created = ossia::net::create_nodes(device1, "/foo.{-2..2}/bar.{5..10..2}");
-    std::set<ossia::net::node_base*> created_set(created.begin(), created.end());
-
     {
-      auto match = ossia::net::find_nodes(device1, "/foo.{-2..2}/bar.{5..10..2}");
-      std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
+      ossia::net::generic_device device{};
+      auto created = ossia::net::create_nodes(device, "/foo.{-2..2}/bar.{5..10..2}");
+      std::set<ossia::net::node_base*> created_set(created.begin(), created.end());
 
-      QVERIFY(created_set == match_set);
+      {
+        auto match = ossia::net::find_nodes(device, "/foo.{-2..2}/bar.{5..10..2}");
+        std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
+
+        QVERIFY(created_set == match_set);
+      }
+
+      {
+        auto match = ossia::net::find_nodes(device, "/foo.{0..2}/bar.{0..100}");
+        auto addresses = to_string(match);
+
+        QVERIFY(ossia::contains(addresses, "/foo.0/bar.5"));
+        QVERIFY(ossia::contains(addresses, "/foo.0/bar.7"));
+        QVERIFY(ossia::contains(addresses, "/foo.0/bar.9"));
+        QVERIFY(ossia::contains(addresses, "/foo.1/bar.5"));
+        QVERIFY(ossia::contains(addresses, "/foo.1/bar.7"));
+        QVERIFY(ossia::contains(addresses, "/foo.1/bar.9"));
+        QVERIFY(ossia::contains(addresses, "/foo.2/bar.5"));
+        QVERIFY(ossia::contains(addresses, "/foo.2/bar.7"));
+        QVERIFY(ossia::contains(addresses, "/foo.2/bar.9"));
+        QCOMPARE(addresses.size(), std::size_t(9));
+      }
     }
 
     {
-      auto match = ossia::net::find_nodes(device1, "/foo.{0..2}/bar.{0..100}");
-      auto addresses = to_string(match);
+      ossia::net::generic_device device{};
+      ossia::net::create_nodes(device, "/foo.{1..50}");
 
-      QVERIFY(ossia::contains(addresses, "/foo.0/bar.5"));
-      QVERIFY(ossia::contains(addresses, "/foo.0/bar.7"));
-      QVERIFY(ossia::contains(addresses, "/foo.0/bar.9"));
-      QVERIFY(ossia::contains(addresses, "/foo.1/bar.5"));
-      QVERIFY(ossia::contains(addresses, "/foo.1/bar.7"));
-      QVERIFY(ossia::contains(addresses, "/foo.1/bar.9"));
-      QVERIFY(ossia::contains(addresses, "/foo.2/bar.5"));
-      QVERIFY(ossia::contains(addresses, "/foo.2/bar.7"));
-      QVERIFY(ossia::contains(addresses, "/foo.2/bar.9"));
-      QCOMPARE(addresses.size(), std::size_t(9));
+      for(int start = 1; start < 25; start++)
+      {
+        auto match = ossia::net::find_nodes(device, "/foo.{" + std::to_string(start) + "..25}");
+        std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
+
+        auto addresses = to_string(match);
+        for(int i = start; i <= 25; i++)
+          QVERIFY(ossia::contains(addresses, "/foo." + std::to_string(i)));
+        QVERIFY((int)match_set.size() == (25 - start + 1));
+      }
     }
 
   }
