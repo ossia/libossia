@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 105.0, 272.0, 1213.0, 774.0 ],
+		"rect" : [ 89.0, 238.0, 1213.0, 774.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -85,6 +85,92 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-11",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 782.0, 418.0, 93.0, 22.0 ],
+									"style" : "",
+									"text" : "print @popup 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-21",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 570.0, 350.0, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-22",
+									"linecount" : 2,
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 651.0, 350.0, 150.0, 35.0 ],
+									"style" : "",
+									"text" : "address my_spat.1/source.1/gain"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-23",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 810.0, 296.5, 174.0, 49.0 ],
+									"style" : "",
+									"text" : "Use a bracket syntaxe to bind to a group of nodes",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-24",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 570.0, 276.0, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+									"id" : "obj-25",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "", "" ],
+									"patching_rect" : [ 570.0, 310.0, 235.0, 22.0 ],
+									"style" : "",
+									"text" : "ossia.remote my_spat.{1..3}/source.1/gain"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-9",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -116,7 +202,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 243.0, 267.0, 221.0, 22.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.3/gain"
+									"text" : "address my_spat.3/source.1/gain"
 								}
 
 							}
@@ -144,7 +230,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 651.0, 531.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.1/gain"
+									"text" : "address my_spat.3/source.1/gain"
 								}
 
 							}
@@ -218,7 +304,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 102.0, 531.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.3/gain"
+									"text" : "address my_spat.1/source.1/gain"
 								}
 
 							}
@@ -291,7 +377,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 41.0, 267.0, 118.0, 22.0 ],
 									"style" : "",
-									"text" : "1.37"
+									"text" : "0.053"
 								}
 
 							}
@@ -406,6 +492,36 @@
 									"destination" : [ "obj-5", 0 ],
 									"order" : 1,
 									"source" : [ "obj-20", 2 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-25", 0 ],
+									"source" : [ "obj-24", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-11", 0 ],
+									"order" : 1,
+									"source" : [ "obj-25", 2 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-21", 0 ],
+									"source" : [ "obj-25", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-22", 1 ],
+									"order" : 0,
+									"source" : [ "obj-25", 2 ]
 								}
 
 							}
@@ -1711,7 +1827,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 105.0, 298.0, 1213.0, 748.0 ],
+						"rect" : [ 89.0, 264.0, 1213.0, 748.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
