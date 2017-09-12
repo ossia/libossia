@@ -37,6 +37,12 @@ void set_thread_realtime(std::thread& t)
   sch_params.sched_priority = 99;
   pthread_setschedparam(t.native_handle(), SCHED_FIFO, &sch_params);
 }
+
+int get_pid()
+{
+  return getpid();
+}
+
 }
 
 #endif
@@ -74,11 +80,6 @@ std::string get_module_path()
   }
 
   return path;
-}
-
-int get_pid()
-{
-  return getpid();
 }
 
 }
