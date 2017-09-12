@@ -289,7 +289,7 @@ private Q_SLOTS:
       QVERIFY(parse_pretty_unit("") == ossia::unit_t{});
       QVERIFY(parse_pretty_unit("plouf") == ossia::unit_t{});
       QVERIFY(parse_pretty_unit("none") == ossia::unit_t{});
-      QVERIFY(parse_pretty_unit("rgb") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("rgb") == ossia::rgb_u{});
       QVERIFY(parse_pretty_unit("color.rgb") == ossia::rgb_u{});
       QVERIFY(parse_pretty_unit("color.tata") == ossia::unit_t{});
       QVERIFY(parse_pretty_unit("color.cm") == ossia::unit_t{});

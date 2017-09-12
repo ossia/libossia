@@ -18,6 +18,15 @@ class PathTest : public QObject
     for(auto n : t)
       qDebug() << QString::fromStdString(ossia::net::address_string_from_node(*n));
   }
+  std::vector<std::string> to_string(const std::vector<ossia::net::node_base*>& match)
+  {
+    std::vector<std::string> addresses;
+    ossia::transform(
+          match,
+          std::back_inserter(addresses),
+          [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+    return addresses;
+  }
 
 private Q_SLOTS:
 
@@ -309,11 +318,7 @@ private Q_SLOTS:
 
     auto created = ossia::net::create_nodes(device1, "/foo[0-9]/{bar,baz}/{a{b,c,d},e}[x-z]");
 
-    std::vector<std::string> addresses;
-    ossia::transform(
-          created,
-          std::back_inserter(addresses),
-          [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+    auto addresses = to_string(created);
     QVERIFY(ossia::contains(addresses, "/foo0/bar/abx"));
     QVERIFY(ossia::contains(addresses, "/foo0/bar/abz"));
     QVERIFY(ossia::contains(addresses, "/foo0/bar/acz"));
@@ -341,11 +346,7 @@ private Q_SLOTS:
 
     auto created = ossia::net::create_nodes(device1, "/foo.{-2..2}/bar.{5..10..2}");
 
-    std::vector<std::string> addresses;
-    ossia::transform(
-          created,
-          std::back_inserter(addresses),
-          [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+    auto addresses = to_string(created);
     QVERIFY(ossia::contains(addresses, "/foo.-2/bar.5"));
     QVERIFY(ossia::contains(addresses, "/foo.-2/bar.7"));
     QVERIFY(ossia::contains(addresses, "/foo.-2/bar.9"));
@@ -377,16 +378,14 @@ private Q_SLOTS:
     {
       auto match = ossia::net::find_nodes(device1, "/foo.{-2..2}/bar.{5..10..2}");
       std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
+
       QVERIFY(created_set == match_set);
     }
 
     {
       auto match = ossia::net::find_nodes(device1, "/foo.{0..2}/bar.{0..100}");
-      std::vector<std::string> addresses;
-      ossia::transform(
-            match,
-            std::back_inserter(addresses),
-            [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+      auto addresses = to_string(match);
+
       QVERIFY(ossia::contains(addresses, "/foo.0/bar.5"));
       QVERIFY(ossia::contains(addresses, "/foo.0/bar.7"));
       QVERIFY(ossia::contains(addresses, "/foo.0/bar.9"));
@@ -415,11 +414,7 @@ private Q_SLOTS:
 
     {
       auto match = ossia::net::find_nodes(device1, "/foo/bar/baz!");
-      std::vector<std::string> addresses;
-      ossia::transform(
-            match,
-            std::back_inserter(addresses),
-            [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+      auto addresses = to_string(match);
 
       QCOMPARE(match.size(), std::size_t(4));
       QVERIFY(ossia::contains(addresses, "/foo/bar/baz"));
@@ -435,11 +430,10 @@ private Q_SLOTS:
 
     {
       auto match = ossia::net::find_nodes(device1, "/foo/bar/baz!");
-      std::vector<std::string> addresses;
-      ossia::transform(
-            match,
-            std::back_inserter(addresses),
-            [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+      auto addresses = to_string(match);
+
+      qDebug() << "MATCH ==> ";
+      debug(match);
 
       QCOMPARE(match.size(), std::size_t(4));
       QVERIFY(ossia::contains(addresses, "/foo/bar/baz"));
@@ -450,11 +444,7 @@ private Q_SLOTS:
 
     {
       auto match = ossia::net::find_nodes(device1, "/foo/bar/baz!!");
-      std::vector<std::string> addresses;
-      ossia::transform(
-            match,
-            std::back_inserter(addresses),
-            [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+      auto addresses = to_string(match);
 
       QCOMPARE(match.size(), std::size_t(7));
       QVERIFY(ossia::contains(addresses, "/foo/bar/baz"));
@@ -471,11 +461,7 @@ private Q_SLOTS:
 
     {
       auto match = ossia::net::find_nodes(device1, "/foo/bar/baz!");
-      std::vector<std::string> addresses;
-      ossia::transform(
-            match,
-            std::back_inserter(addresses),
-            [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+      auto addresses = to_string(match);
 
       QCOMPARE(match.size(), std::size_t(4));
       QVERIFY(ossia::contains(addresses, "/foo/bar/baz"));
@@ -486,11 +472,7 @@ private Q_SLOTS:
 
     {
       auto match = ossia::net::find_nodes(device1, "/foo/bar!/baz!");
-      std::vector<std::string> addresses;
-      ossia::transform(
-            match,
-            std::back_inserter(addresses),
-            [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+      auto addresses = to_string(match);
 
       QCOMPARE(match.size(), std::size_t(6));
       QVERIFY(ossia::contains(addresses, "/foo/bar/baz"));

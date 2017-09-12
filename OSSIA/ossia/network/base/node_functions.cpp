@@ -182,7 +182,7 @@ find_or_create_node(node_base& dev, string_view parameter_base, bool create)
 
 std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
 {
-  if(auto path = traversal::make_path(std::string(pattern)))
+  if(auto path = traversal::make_path(pattern))
   {
     std::vector<node_base*> nodes{&dev};
     traversal::apply(*path, nodes);
