@@ -201,7 +201,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 830.0, 415.5, 237.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.remote-multi calar.1/truc.{5..12}"
+									"text" : "ossia.remote_array calar.1/truc.{5..12}"
 								}
 
 							}
@@ -259,9 +259,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 405.0, 415.5, 182.0, 22.0 ],
+									"patching_rect" : [ 405.0, 415.5, 187.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.remote-multi color.{17..32}"
+									"text" : "ossia.remote_array color.{17..32}"
 								}
 
 							}
@@ -306,9 +306,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 32.0, 419.5, 175.0, 22.0 ],
+									"patching_rect" : [ 32.0, 419.5, 180.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.remote-multi color.{1..16}"
+									"text" : "ossia.remote_array color.{1..16}"
 								}
 
 							}
@@ -450,9 +450,9 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "ossia.remote-multi.maxpat",
-				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/help",
-				"patcherrelativepath" : ".",
+				"name" : "ossia.remote_array.maxpat",
+				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
+				"patcherrelativepath" : "../patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
