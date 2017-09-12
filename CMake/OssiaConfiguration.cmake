@@ -45,7 +45,7 @@ include(UseGold)
 include(LinkerWarnings)
 
 if(OSSIA_QML)
-    set(OSSIA_OSX_FAT_LIBRARIES 1)
+    set(OSSIA_OSX_FAT_LIBRARIES 0)
     set(OSSIA_QT 1)
     set(OSSIA_NO_SONAME 1)
 endif()
