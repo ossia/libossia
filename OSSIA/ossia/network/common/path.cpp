@@ -128,7 +128,7 @@ void add_relative_path(
         // Perform the various regex-like replacements
         // note: seriously, don't do this with regex if possible
         net::expand_ranges(part);
-        std::string res;
+        std::string res = "^";
         res.reserve(part.size() + 16);
 
         static const auto qmark = "[" + std::string(ossia::net::name_characters()) + "]?";
@@ -145,7 +145,8 @@ void add_relative_path(
           else if(part[i] == '!') res.append(regex_path::any_instance::instance_regex());
           else res += part[i];
         }
-
+        res += "$";
+        
         std::regex r(res);
         p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
         map.map.insert(std::make_pair(std::move(orig), std::move(r)));

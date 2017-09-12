@@ -410,8 +410,11 @@ private Q_SLOTS:
         std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
 
         auto addresses = to_string(match);
-        for(int i = start; i <= 25; i++)
+        debug(match);
+        for(int i = start; i <= 25; i++) {
+          qDebug() << "start " << start << " ; i" << i;
           QVERIFY(ossia::contains(addresses, "/foo." + std::to_string(i)));
+        }
         QVERIFY((int)match_set.size() == (25 - start + 1));
       }
     }

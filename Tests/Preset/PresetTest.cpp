@@ -87,7 +87,9 @@ private slots:
         "/.0",
         "/.1"
   }) {
-      bool ok = boost::spirit::x3::parse(str.begin(), str.end(), ossia::detail::parse::address_);
+  	  std::string res;
+      bool ok = boost::spirit::x3::phrase_parse(str.begin(), str.end(), ossia::detail::parse::address_, 
+                  boost::spirit::x3::ascii::space, res);
       QVERIFY(ok);
     }
 
@@ -103,6 +105,7 @@ private slots:
                   );
       QVERIFY(ok);
     }
+    
 
     for(std::string str : {
         "vec4f: [0, 0, 0, 0]",
