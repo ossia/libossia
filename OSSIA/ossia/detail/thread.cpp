@@ -1,6 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/thread.hpp>
+#include <string>
+#include <boost/process/environment.hpp>
+#include <ossia/../../3rdparty/whereami/src/whereami.h>
+#include <ossia/../../3rdparty/whereami/src/whereami.c>
+
 #if defined(_MSC_VER)
 
 #include <windows.h>
@@ -29,3 +34,45 @@ void set_thread_realtime(std::thread& t)
 }
 
 #endif
+
+
+namespace ossia
+{
+std::string get_exe_path()
+{
+  std::string path;
+  int length{};
+  int dirname_length{};
+
+  length = wai_getExecutablePath(NULL, 0, &dirname_length);
+  if (length > 0)
+  {
+    path.resize(length);
+    wai_getExecutablePath(&path[0], length, &dirname_length);
+  }
+
+  return path;
+}
+
+std::string get_module_path()
+{
+  std::string path;
+  int length{};
+  int dirname_length{};
+
+  length = wai_getModulePath(NULL, 0, &dirname_length);
+  if (length > 0)
+  {
+    path.resize(length);
+    wai_getModulePath(&path[0], length, &dirname_length);
+  }
+
+  return path;
+}
+
+int get_pid()
+{
+  return boost::this_process::get_id();
+}
+
+}
