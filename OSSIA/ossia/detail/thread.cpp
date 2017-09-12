@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/thread.hpp>
 #include <string>
-#include <boost/process/environment.hpp>
 #include <ossia/../../3rdparty/whereami/src/whereami.h>
 #include <ossia/../../3rdparty/whereami/src/whereami.c>
 
@@ -19,10 +18,17 @@ void set_thread_realtime(std::thread& t)
   SetPriorityClass(hdl, REALTIME_PRIORITY_CLASS);
   SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
 }
+
+int get_pid()
+{
+  return GetCurrentProcessId();
+}
+
 }
 #else
 
 #include <pthread.h>
+#include <unistd.h>
 namespace ossia
 {
 void set_thread_realtime(std::thread& t)
@@ -72,7 +78,7 @@ std::string get_module_path()
 
 int get_pid()
 {
-  return boost::this_process::get_id();
+  return getpid();
 }
 
 }
