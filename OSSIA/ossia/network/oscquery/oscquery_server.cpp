@@ -366,7 +366,7 @@ void oscquery_server_protocol::remove_node(
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) try
 {
-  ossia::net::handle_osc_message(m, m_listening, *m_device);
+  ossia::net::handle_osc_message<true>(m, m_listening, *m_device);
 
   if(m_echo)
   {

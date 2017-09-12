@@ -36,6 +36,10 @@ inline ossia::string_view name_characters() noexcept
   return make_string_view("a-zA-Z0-9_~().-");
 }
 
+inline ossia::string_view name_characters_no_instance() noexcept
+{
+  return make_string_view("a-zA-Z0-9_~()-");
+}
 /**
  * @brief Characters valid in an OSSIA pattern-matching part.
  *

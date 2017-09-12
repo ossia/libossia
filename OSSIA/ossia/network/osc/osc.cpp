@@ -254,7 +254,7 @@ void osc_protocol::on_received_message(
 {
   if (!m_learning)
   {
-    handle_osc_message(m, m_listening, *m_device);
+    handle_osc_message<false>(m, m_listening, *m_device);
   }
   else
   {

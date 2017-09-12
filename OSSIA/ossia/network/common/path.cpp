@@ -97,20 +97,14 @@ void match_with_regex(
 
 struct regex_cache
 {
-  regex_cache()
-  {
-
-  }
-
   static regex_cache& instance()
   {
     static regex_cache c;
     return c;
   }
 
-
   ossia::string_map<std::regex> map;
-  std::mutex mtex;
+  std::mutex mutex;
 };
 
 void add_relative_path(
@@ -120,7 +114,7 @@ void add_relative_path(
   {
     {
       auto& map = regex_cache::instance();
-      std::lock_guard<std::mutex> _(map.mtex);
+      std::lock_guard<std::mutex> _(map.mutex);
 
       auto it = map.map.find(part);
       if(it != map.map.end())
@@ -132,6 +126,7 @@ void add_relative_path(
         std::string orig = part;
 
         // Perform the various regex-like replacements
+        // note: seriously, don't do this with regex if possible
         net::expand_ranges(part);
         std::string res;
         res.reserve(part.size() + 16);
@@ -143,11 +138,11 @@ void add_relative_path(
           if(part[i] == '(') res.append("\\(");
           else if(part[i] == ')') res.append("\\)");
           else if(part[i] == '{') res.append("(");
-          else if(part[i] == '}') res.append("}");
+          else if(part[i] == '}') res.append(")");
           else if(part[i] == ',') res.append("|");
           else if(part[i] == '?') res.append(qmark);
           else if(part[i] == '*') res.append(smark);
-          else if(part[i] == '!') res.append("(\\.[0-9a-zA-Z]+)?");
+          else if(part[i] == '!') res.append(regex_path::any_instance::instance_regex());
           else res += part[i];
         }
 
@@ -167,7 +162,7 @@ bool is_pattern(ossia::string_view address)
 {
   if(boost::starts_with(address, "//"))
     return true;
-  const auto pred = boost::is_any_of("?*[]{}");
+  static const auto pred = boost::is_any_of("?*[]{}!");
   for(char c : address)
   {
     if(pred(c))

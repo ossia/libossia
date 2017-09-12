@@ -409,7 +409,7 @@ void minuit_protocol::on_received_message(
 
   if (address.size() > 0 && address[0] == '/')
   {
-    ossia::net::handle_osc_message(m, m_listening, *m_device);
+    ossia::net::handle_osc_message<true>(m, m_listening, *m_device);
   }
   else
   {

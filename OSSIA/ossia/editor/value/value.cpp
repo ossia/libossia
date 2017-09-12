@@ -541,10 +541,10 @@ ossia::value parse_pretty_value(ossia::string_view str)
 {
   ossia::value val;
 
-  using boost::spirit::x3::parse;
+  using boost::spirit::x3::phrase_parse;
   using ossia::detail::parse::value_;
   auto first = str.cbegin(), last = str.cend();
-  bool r = parse(first, last, value_, val);
+  bool r = phrase_parse(first, last, value_, boost::spirit::x3::ascii::space, val);
   if(!r)
     ossia::logger().error("ossia::parse_pretty_value error: {}", str);
   return val;

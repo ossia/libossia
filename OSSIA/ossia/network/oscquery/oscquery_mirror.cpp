@@ -481,7 +481,7 @@ void oscquery_mirror_protocol::on_OSCMessage(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  ossia::net::handle_osc_message(m, m_listening, *m_device);
+  ossia::net::handle_osc_message<true>(m, m_listening, *m_device);
 
   if (m_logger.inbound_logger)
     m_logger.inbound_logger->info("In: {0}", m);

@@ -67,8 +67,13 @@ struct OSSIA_EXPORT device : public path_element
 //! Can match nodes that are instances : foo:/bar, foo:/bar.1, etc.
 struct OSSIA_EXPORT any_instance : public path_element
 {
+  static std::string instance_regex()
+  {
+    static const auto str = "(\\.[" + std::string(ossia::net::name_characters_no_instance()) + "]+)?";
+    return str;
+  }
   explicit any_instance(std::string s)
-      : path_element{std::move(s) + "(\\.[0-9]+)?"}
+      : path_element{std::move(s) + instance_regex()}
   {
   }
 };

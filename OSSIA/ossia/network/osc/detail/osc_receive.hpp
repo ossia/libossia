@@ -9,6 +9,7 @@ namespace ossia
 {
 namespace net
 {
+template<bool SilentUpdate>
 inline void handle_osc_message(
     const oscpack::ReceivedMessage& m,
     const ossia::net::listened_parameters& listening,
@@ -30,8 +31,16 @@ inline void handle_osc_message(
     {
       if (auto base_addr = n->get_parameter())
       {
-        if(update_value_quiet(*base_addr, m))
-          dev.on_message(*base_addr);
+        if(SilentUpdate)
+        {
+          if(update_value_quiet(*base_addr, m))
+            dev.on_message(*base_addr);
+        }
+        else
+        {
+          if(update_value(*base_addr, m))
+            dev.on_message(*base_addr);
+        }
       }
     }
     else
@@ -42,7 +51,7 @@ inline void handle_osc_message(
       {
         if (auto addr = n->get_parameter())
         {
-          if(listening.find(net::osc_parameter_string(*n)))
+          if(!SilentUpdate || listening.find(net::osc_parameter_string(*n)))
           {
             if(net::update_value(*addr, m))
               dev.on_message(*addr);
