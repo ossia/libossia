@@ -82,7 +82,7 @@ public:
   /** Make the local device able to handle osc request and emit osc message
   \param int port where OSC requests have to be sent by any remote client to
   deal with the local device
-  \param int port where osc messages have to be sent to be catch by a remote 
+  \param int port where osc messages have to be sent to be catch by a remote
   client to listen to the local device
   \return bool */
   bool create_osc_server(std::string ip, int in_port, int out_port)
@@ -91,7 +91,7 @@ public:
     {
       m_local_protocol.expose_to(
           std::make_unique<ossia::net::osc_protocol>(
-              ip, in_port, out_port, true));
+              ip, in_port, out_port, m_device.get_name()));
       return true;
     }
     catch (std::exception& e)

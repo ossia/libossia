@@ -153,11 +153,11 @@ void client::disconnect(client* x)
 {
   if (x->m_device)
   {
+    x->m_oscq_protocol = nullptr;
     x->disconnect_slots();
     x->unregister_children();
     delete x->m_device;
     x->m_device = nullptr;
-    x->m_oscq_protocol = nullptr;
   }
 }
 
