@@ -148,6 +148,33 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-4",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 664.0, 73.5, 369.0, 20.0 ],
+									"presentation_rect" : [ 666.0, 73.5, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "see: https://github.com/OSSIA/libossia/issues/205"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-2",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 664.0, 49.5, 369.0, 20.0 ],
+									"presentation_rect" : [ 232.0, 163.5, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "WARNING: THIS CURRENTLY CRASHES WHILE IN OVERDRIVE",
+									"textcolor" : [ 0.784314, 0.145098, 0.023529, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-3",
 									"maxclass" : "comment",
 									"numinlets" : 1,
@@ -170,7 +197,7 @@
 									"patching_rect" : [ 830.0, 496.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 16,
+									"size" : 8,
 									"style" : ""
 								}
 
@@ -214,7 +241,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 892.5, 220.0, 225.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter calar.{1..4}/truc.{5..12}"
+									"text" : "ossia.parameter calar.{1..4}/truc.{1..18}"
 								}
 
 							}

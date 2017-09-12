@@ -1,0 +1,11 @@
+#N canvas 442 313 450 300 10;
+#X floatatom 80 94 5 0 0 0 - - -, f 5;
+#X obj 91 226 print;
+#X obj 83 169 ø.param color.<1..50>;
+#X obj 82 141 ø.remote color.<3..42>;
+#X floatatom 262 97 5 0 0 0 - - -, f 5;
+#X obj 264 144 ø.remote color.<1..25>;
+#X connect 0 0 3 0;
+#X connect 2 0 1 0;
+#X connect 2 1 1 0;
+#X connect 4 0 5 0;
