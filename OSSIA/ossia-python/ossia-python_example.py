@@ -23,7 +23,7 @@ print("local device is called: " + local_device.name)
 #local_device.create_oscquery_server(3456, 5678)
 
 # enable OSC communication for that device
-local_device.create_osc_server("localhost", 9996, 9997)
+local_device.create_osc_server("127.0.0.1", 9997, 9996)
 
 # enable MIDI communication for that device
 ### TODO : enable MIDI communication
