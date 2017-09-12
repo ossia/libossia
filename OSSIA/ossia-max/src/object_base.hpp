@@ -54,8 +54,8 @@ public:
 
   void enqueue_value(ossia::value v);
   void output_value();
-  auto get_node() const { return node; }
-  auto get_parent() const { return parent; }
+  ossia::net::node_base* get_node() const { return node; }
+  object_base* get_parent() const { return parent; }
   void set_parent_addr();
 
   inline bool operator==(const t_matcher& rhs)

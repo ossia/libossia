@@ -505,10 +505,15 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
 void parameter_base::bang(parameter_base* x)
 {
-  for (auto& matcher : x->m_matchers)
+  for (const t_matcher& m : x->m_matchers)
   {
-    matcher.enqueue_value(matcher.get_node()->get_parameter()->value());
-    matcher.output_value();
+    auto node = m.get_node();
+
+    if(auto param = node->get_parameter())
+      param->push_value(param->value());
+
+    //m.enqueue_value(m.get_node()->get_parameter()->value());
+    //m.output_value();
   }
 }
 
