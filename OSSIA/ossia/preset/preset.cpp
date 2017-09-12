@@ -674,10 +674,13 @@ ossia::presets::preset ossia::presets::from_string(const ossia::string_view& str
 {
   preset ps;
 
-  using boost::spirit::x3::parse;
+  using boost::spirit::x3::phrase_parse;
   using ossia::detail::parse::preset_;
   auto first = str.cbegin(), last = str.cend();
-  bool r = parse(first, last, preset_, ps);
+  bool r = phrase_parse(first, last,
+                        preset_,
+                        boost::spirit::x3::ascii::space,
+                        ps);
   if(!r)
     ossia::logger().error("ossia::presetss::from_string error: {}", str);
   return ps;

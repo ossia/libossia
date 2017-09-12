@@ -20,7 +20,10 @@ namespace py = pybind11;
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/osc/osc.hpp>
+
+#include <ossia/network/common/network_logger.hpp>
 #include <ossia/detail/logger.hpp>
+#include <spdlog/spdlog.h>
 
 namespace py = pybind11;
 
@@ -45,6 +48,8 @@ public:
   {
   }
 
+  /** get local device name
+  \return std::string */
   std::string get_name()
   {
     return m_device.get_name();
@@ -55,14 +60,45 @@ public:
   deal with the local device
   \param int port where WebSocket requests have to be sent by any remote client
   to deal with the local device
+  \param bool enable protocol logging
   \return bool */
-  bool create_oscquery_server(int osc_port, int ws_port)
+  bool create_oscquery_server(int osc_port, int ws_port, bool log=false)
   {
     try
     {
       m_local_protocol.expose_to(
           std::make_unique<ossia::oscquery::oscquery_server_protocol>(
               osc_port, ws_port));
+
+      if (log)
+      {
+        ossia::net::network_logger logger;
+
+        logger.inbound_logger = spdlog::stderr_logger_mt("input");
+        logger.inbound_logger->set_pattern("input: %v");
+        logger.inbound_logger->set_level(spdlog::level::info);
+
+        logger.outbound_logger = spdlog::stderr_logger_mt("output");
+        logger.outbound_logger->set_pattern("output: %v");
+        logger.outbound_logger->set_level(spdlog::level::info);
+
+        // attach the logger to the OSCQuery Server protocol only
+        for (const auto& p : m_local_protocol.get_protocols())
+        {
+          try
+          {
+            ossia::oscquery::oscquery_server_protocol& oscquery_server = dynamic_cast<ossia::oscquery::oscquery_server_protocol&> (*p);
+          
+            oscquery_server.set_logger(std::move(logger));
+            break;
+          }
+          catch (std::exception& e)
+          {
+            continue;
+          }
+        }
+      }
+
       return true;
     }
     catch (std::exception& e)
@@ -84,14 +120,45 @@ public:
   client to listen to the local device
   \param int port where OSC requests have to be sent by any remote client to
   deal with the local device
+  \param bool enable protocol logging
   \return bool */
-  bool create_osc_server(std::string ip, int remote_port, int local_port)
+  bool create_osc_server(std::string ip, int remote_port, int local_port, bool log=false)
   {
     try
     {
       m_local_protocol.expose_to(
           std::make_unique<ossia::net::osc_protocol>(
-              ip, remote_port, local_port));
+              ip, remote_port, local_port, m_device.get_name()));
+
+      if (log)
+      {
+        ossia::net::network_logger logger;
+
+        logger.inbound_logger = spdlog::stderr_logger_mt("input");
+        logger.inbound_logger->set_pattern("input: %v");
+        logger.inbound_logger->set_level(spdlog::level::info);
+
+        logger.outbound_logger = spdlog::stderr_logger_mt("output");
+        logger.outbound_logger->set_pattern("output: %v");
+        logger.outbound_logger->set_level(spdlog::level::info);
+
+        // attach the logger to the OSC protocol only
+        for (const auto& p : m_local_protocol.get_protocols())
+        {
+          try
+          {
+            ossia::net::osc_protocol& osc_server = dynamic_cast<ossia::net::osc_protocol&> (*p);
+          
+            osc_server.set_logger(std::move(logger));
+            break;
+          }
+          catch (std::exception& e)
+          {
+            continue;
+          }
+        }
+      }
+
       return true;
     }
     catch (std::exception& e)
@@ -294,7 +361,10 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "node", &ossia::net::parameter_base::get_node,
           py::return_value_policy::reference)
-
+      .def_property_readonly(
+          "callback_count", [](ossia::net::parameter_base& addr) -> int {
+            return addr.callback_count();
+          })
       .def_property(
           "value",
           [](ossia::net::parameter_base& addr) -> ossia::value {

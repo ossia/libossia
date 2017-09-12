@@ -9,6 +9,7 @@
 #include <ossia/editor/value/value.hpp>
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/editor/value/detail/value_parse_impl.hpp>
 #include <QQmlEngine>
 #include <QQmlComponent>
 
@@ -73,6 +74,117 @@ private slots:
     auto preset = ossia::presets::make_preset(dev);
     auto presetJSON = ossia::presets::write_json("mydevice", preset);
     qDebug() << presetJSON.c_str();
+
+  }
+
+  void test_parse()
+  {
+    for(std::string str : {
+        "/foo/bar/baz",
+        "/foo/bar.1",
+        "/",
+        "/a",
+        "/.0",
+        "/.1"
+  }) {
+      bool ok = boost::spirit::x3::parse(str.begin(), str.end(), ossia::detail::parse::address_);
+      QVERIFY(ok);
+    }
+
+    {
+      std::string str = "vec4f: [0, 0, 0, 0]";
+      auto beg = str.begin(), end = str.end();
+      ossia::detail::parse::array_parser<4> v;
+      bool ok = boost::spirit::x3::phrase_parse(
+                  beg, end,
+                  ossia::detail::parse::o_vec4_,
+                  boost::spirit::x3::ascii::space,
+                  v
+                  );
+      QVERIFY(ok);
+    }
+
+    for(std::string str : {
+        "vec4f: [0, 0, 0, 0]",
+        "int: 1234",
+        "string: \"hello\"",
+        "char: 'x'",
+        "float: 1.2345",
+        "list: []",
+        "list: [ ]",
+        "list: [char: '0']",
+        "list: [ char: '0' ]",
+        "list: [ int: 1234 ]",
+        "list: [ char: '0', int: 1234 ]",
+        "list: [char: '0',int: 1234]"
+  }) {
+      ossia::value v;
+      auto beg = str.begin(), end = str.end();
+      bool ok = boost::spirit::x3::phrase_parse(beg, end,
+                                         ossia::detail::parse::value_,
+                                         boost::spirit::x3::ascii::space,
+                                         v);
+      qDebug() << str.c_str();
+      QVERIFY(ok);
+    }
+
+    for(std::string str : {
+        "/foo/bar.1\t",
+        "/foo/bar/baz\t"
+  }) {
+      std::string v;
+      using namespace ossia::detail::parse;
+      auto beg = str.begin(), end = str.end();
+      bool ok = boost::spirit::x3::phrase_parse(
+                  beg, end,
+                  x3::lexeme [ address_ >> x3::lit("\t") ],
+                  boost::spirit::x3::ascii::space,
+                  v);
+      qDebug() << str.c_str();
+      QVERIFY(ok);
+    }
+
+    for(std::string str : {
+        "/foo/bar.1\tint: 1234",
+        "/foo/bar/baz\tvec4f: [0, 0, 0, 0]",
+        "/\tstring: \"hello\"",
+        "/a\tchar: 'x'",
+        "/.0\tfloat: 1.2345",
+        "/.1\tlist: [ char: '0', int: 1234 ]"
+  }) {
+      ossia::presets::preset_pair v;
+      auto beg = str.begin(), end = str.end();
+      bool ok = boost::spirit::x3::phrase_parse(beg, end,
+                                         ossia::detail::parse::preset_pair_,
+                                         boost::spirit::x3::ascii::space,
+                                         v);
+      qDebug() << str.c_str();
+      QVERIFY(ok);
+    }
+  }
+
+  void test_nodes_txt()
+  {
+    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), "mydevice"};
+
+    auto& root = dev.get_root_node();
+
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.1"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.2"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.3"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4"));
+    ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.5"));
+
+
+    auto preset = ossia::presets::make_preset(dev);
+    auto presetStr = ossia::presets::to_string(preset);
+    qDebug() << presetStr.c_str();
+
+    auto loadPreset = ossia::presets::from_string(presetStr);
+    for(auto s : loadPreset) qDebug() << s.first.c_str();
+    auto presetStr2 = ossia::presets::to_string(loadPreset);
+    qDebug() << presetStr2.c_str();
+    QVERIFY(loadPreset == preset);
 
   }
 };

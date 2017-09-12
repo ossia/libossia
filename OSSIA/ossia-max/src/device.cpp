@@ -85,7 +85,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
       return nullptr;
     }
 
-    if (attrstart && argv)
+    if (argc && argv)
     {
       if (atom_gettype(argv) == A_SYM)
       {

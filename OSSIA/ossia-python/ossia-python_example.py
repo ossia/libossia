@@ -17,13 +17,13 @@ print("OSSIA LIBRARY EXAMPLE")
 # create a device for this python program
 local_device = ossia.LocalDevice("newDevice")
 
-print("local device is called: " + local_device.name)
+print("local device name: " + local_device.name)
 
 # enable OSCQuery communication for our device
-#local_device.create_oscquery_server(3456, 5678)
+#local_device.create_oscquery_server(3456, 5678, True)
 
-# enable OSC communication for that device
-local_device.create_osc_server("127.0.0.1", 9997, 9996)
+# enable OSC communication for that device and messages logging
+local_device.create_osc_server("127.0.0.1", 9997, 9996, True)
 
 # enable MIDI communication for that device
 ### TODO : enable MIDI communication
@@ -38,7 +38,6 @@ bool_parameter = bool_node.create_parameter(ossia.ValueType.Bool)
 bool_parameter.access_mode = ossia.AccessMode.Get
 bool_parameter.value = ossia.Value(True)                  ### TODO : bool_parameter.value = True
 ### TODO : bool_parameter.defaultvalue = True
-
 
 # create a node, create an integer parameter and initialize it
 int_node = local_device.add_node("/test/numeric/int")
@@ -67,7 +66,6 @@ char_node = local_device.add_node("/test/misc/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
 char_parameter.value = ossia.Value('a')
 ### TODO : char_parameter.defaultvalue = chr(69)
-
 
 # create a node, create a string parameter and initialize it
 string_node = local_device.add_node("/test/misc/string")
@@ -148,6 +146,7 @@ def iterate_on_children(node):
       print('PARAMETER -> ' + str(child) + " " + str(child.parameter) + " <" + str(child.parameter.value_type) + ", " + str(child.parameter.access_mode) + ">")
       if child.parameter.have_domain():
         print("min : " + str(child.parameter.domain.min) + ", max : " + str(child.parameter.domain.max))
+      print("callback count = " + str(child.parameter.callback_count))
     else:
       print()
       print('NODE -> ' + str(child))
