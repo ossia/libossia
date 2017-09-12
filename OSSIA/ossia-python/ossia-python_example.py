@@ -19,8 +19,8 @@ local_device = ossia.LocalDevice("newDevice")
 
 print("local device name: " + local_device.name)
 
-# enable OSCQuery communication for our device
-#local_device.create_oscquery_server(3456, 5678, True)
+# enable OSCQuery communication for our device and messages logging
+local_device.create_oscquery_server(3456, 5678, True)
 
 # enable OSC communication for that device and messages logging
 local_device.create_osc_server("127.0.0.1", 9997, 9996, True)
