@@ -1,5 +1,9 @@
 #pragma once
-#include <ossia-max/src/ossia-max.hpp>
+#include "ext.h"
+#include "ext_obex.h"
+#undef error
+#undef post
+#include <ossia/network/common/websocket_log_sink.hpp>
 
 namespace ossia
 {
@@ -9,12 +13,15 @@ namespace max
 #pragma mark -
 #pragma mark t_logger structure declaration
 
-struct t_logger
+struct logger
 {
-  t_object m_object; // the Max object instance
-  // !!! this member is handled by Max API : that's why there is no place in
-  // our code where it is initialized.
+  t_object m_object;
+
+  logger(long argc, t_atom* argv);
+
+  std::shared_ptr<ossia::websocket_threaded_connection> m_con;
   std::shared_ptr<spdlog::logger> m_log;
+  std::shared_ptr<ossia::websocket_heartbeat> m_beat;
 };
 } // max namespace
 } // ossia namespace
@@ -25,6 +32,6 @@ struct t_logger
 extern "C" {
 void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv);
 void ossia_logger_in_anything(
-    ossia::max::t_logger* x, t_symbol* s, long argc, t_atom* argv);
-void ossia_logger_free(ossia::max::t_logger* x);
+    ossia::max::logger* x, t_symbol* s, long argc, t_atom* argv);
+void ossia_logger_free(ossia::max::logger* x);
 }

@@ -39,13 +39,7 @@ namespace max
 
 void* view::create(t_symbol* name, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia_max::instance();
-  auto place = object_alloc(ossia_library.ossia_view_class);
-
-  t_object tmp;
-  memcpy(&tmp, place, sizeof(t_object));
-  view* x = new(place) view();
-  memcpy(x, &tmp, sizeof(t_object));
+  auto x = make_ossia<view>();
 
   if (x)
   {

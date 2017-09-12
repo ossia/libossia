@@ -17,6 +17,8 @@
 #include "view.hpp"
 #include "device.hpp"
 #include "client.hpp"
+#include "ossia_object.hpp"
+#include "logger.hpp"
 
 extern "C"
 {
@@ -47,6 +49,18 @@ public:
     return &instance().m_device;
   }
 
+  template<typename T>
+  t_class* get_class() {
+    if(std::is_same<T, parameter>::value) return ossia_parameter_class;
+    if(std::is_same<T, remote>::value) return ossia_remote_class;
+    if(std::is_same<T, model>::value) return ossia_model_class;
+    if(std::is_same<T, view>::value) return ossia_view_class;
+    if(std::is_same<T, device>::value) return ossia_device_class;
+    if(std::is_same<T, client>::value) return ossia_client_class;
+    if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
+    if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
+    return nullptr;
+  }
 
   t_class* ossia_client_class{};
   t_class* ossia_device_class{};
@@ -186,6 +200,22 @@ t_object* get_patcher(t_object* object);
 /**
  */
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
+
+template<typename T, typename... Args>
+T* make_ossia(Args&&... args)
+{
+  auto obj = object_alloc(ossia_max::instance().get_class<T>());
+  if(obj)
+  {
+    t_object tmp;
+    memcpy(&tmp, obj, sizeof(t_object));
+    auto x = new(obj) T{std::forward<Args>(args)...};
+    memcpy(x, &tmp, sizeof(t_object));
+
+    return x;
+  }
+  return nullptr;
+}
 
 } // max namespace
 } // ossia namespace

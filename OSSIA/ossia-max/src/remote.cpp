@@ -46,14 +46,7 @@ namespace max
 
 void* remote::create(t_symbol* name, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia_max::instance();
-
-  // ugly hack while waiting for C++ Max API
-  auto place = object_alloc(ossia_library.ossia_remote_class);
-  t_object tmp;
-  memcpy(&tmp, place, sizeof(t_object));
-  remote* x = new(place) remote();
-  memcpy(x, &tmp, sizeof(t_object));
+  auto x = make_ossia<remote>();
 
   if (x)
   {
@@ -167,13 +160,13 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
     switch(a)
     {
     case 0:
-      sprintf(s, "deferred outlet with set prefix (for connecting to UI object)", a);
+      sprintf(s, "deferred outlet with set prefix (for connecting to UI object), %l", a);
         break;
       case 1:
-        sprintf(s, "raw outlet", a);
+        sprintf(s, "raw outlet, %l", a);
         break;
       case 2:
-        sprintf(s, "dump outlet", a);
+        sprintf(s, "dump outlet, %l", a);
         break;
       default:
         break;

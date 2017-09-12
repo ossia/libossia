@@ -1,4 +1,5 @@
 #include "ossia_object.hpp"
+#include "ossia-max.hpp"
 
 using namespace ossia::max;
 
@@ -26,12 +27,8 @@ namespace max
 void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia::max::ossia_max::instance();
-  // ugly hack while waiting for C++ Max API
-  auto place = object_alloc(ossia_library.ossia_ossia_class);
-  t_object tmp;
-  memcpy(&tmp, place, sizeof(t_object));
-  ossia_object* x = new(place) ossia_object();
-  memcpy(x, &tmp, sizeof(t_object));
+
+  auto x = make_ossia<ossia_object>();
 
   x->m_dumpout
       = outlet_new(x, NULL); // anything outlet to dump device state

@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/device.hpp>
 
 namespace ossia
 {

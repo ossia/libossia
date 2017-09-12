@@ -39,13 +39,7 @@ namespace max
 
 void* model::create(t_symbol* name, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia_max::instance();
-  auto place = object_alloc(ossia_library.ossia_model_class);
-
-  t_object tmp;
-  memcpy(&tmp, place, sizeof(t_object));
-  model* x = new(place) model();
-  memcpy(x, &tmp, sizeof(t_object));
+  auto x = make_ossia<model>();
 
   if (x)
   {

@@ -80,12 +80,7 @@ namespace max
 void* client::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
-  auto place = object_alloc(ossia_library.ossia_client_class);
-
-  t_object tmp;
-  memcpy(&tmp, place, sizeof(t_object));
-  client* x = new(place) client();
-  memcpy(x, &tmp, sizeof(t_object));
+  auto x = make_ossia<client>();
 
   if (x)
   {

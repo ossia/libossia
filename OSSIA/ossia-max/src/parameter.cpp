@@ -42,14 +42,7 @@ namespace max
 
 void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia::max::ossia_max::instance();
-  // ugly hack while waiting for C++ Max API
-  auto place = object_alloc(ossia_library.ossia_parameter_class);
-  t_object tmp;
-  memcpy(&tmp, place, sizeof(t_object));
-  parameter* x = new(place) parameter();
-  memcpy(x, &tmp, sizeof(t_object));
-
+  auto x = make_ossia<parameter>();
 
   if (x)
   {
