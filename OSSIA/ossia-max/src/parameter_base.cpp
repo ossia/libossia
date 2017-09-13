@@ -420,25 +420,19 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
   if (!x->m_mute)
   {
-    for (auto& m : x->m_matchers)
+    if (node && param)
     {
-      node = m.get_node();
-      auto parent = m.get_parent();
-      auto param = node->get_parameter();
-
-      if (node && param)
+      if (argc == 0 && s)
       {
-        if (argc == 0 && s)
+        ossia::value v = std::string(s->s_name);
+        node->get_parameter()->push_value(v);
+      }
+      else if (argc == 1)
+      {
+        ossia::value v;
+        // convert one element array to single element
+        switch(argv->a_type)
         {
-          ossia::value v = std::string(s->s_name);
-          node->get_parameter()->push_value(v);
-        }
-        else if (argc == 1)
-        {
-          ossia::value v;
-          // convert one element array to single element
-          switch(argv->a_type)
-          {
           case A_SYM:
             v = std::string(atom_getsym(argv)->s_name);
             break;
@@ -450,33 +444,40 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
             break;
           default:
             ;
-          }
+        }
 
-          ossia::value vv;
+        for (auto& m : x->m_matchers)
+        {
+          node = m.get_node();
+          auto parent = m.get_parent();
+          auto param = node->get_parameter();
+
+          ossia::value converted;
           parameter_base* xparam = (parameter_base*)parent;
           if ( xparam->m_ounit != ossia::none )
           {
             auto src_unit = *xparam->m_ounit;
             auto dst_unit = param->get_unit();
 
-            vv = ossia::convert(v, src_unit, dst_unit);
+            converted = ossia::convert(v, src_unit, dst_unit);
           } else
-            vv = v;
+            converted = v;
 
-          node->get_parameter()->push_value(vv);
+          node->get_parameter()->push_value(converted);
         }
-        else
+      }
+      else
+      {
+        std::vector<ossia::value> list;
+        list.reserve(argc+1);
+
+        if ( s && s != gensym("list") )
+          list.push_back(std::string(s->s_name));
+
+        for (; argc > 0; argc--, argv++)
         {
-          std::vector<ossia::value> list;
-          list.reserve(argc+1);
-
-          if ( s && s != gensym("list") )
-            list.push_back(std::string(s->s_name));
-
-          for (; argc > 0; argc--, argv++)
+          switch(argv->a_type)
           {
-            switch(argv->a_type)
-            {
             case A_SYM:
               list.push_back(std::string(atom_getsym(argv)->s_name));
               break;
@@ -488,9 +489,16 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
               break;
             default:
               object_error((t_object*)x, "value type not handled");
-            }
           }
-          parameter_base* xparam = (parameter_base*) parent;
+        }
+        parameter_base* xparam = (parameter_base*) parent;
+
+        for (auto& m : x->m_matchers)
+        {
+          node = m.get_node();
+          auto parent = m.get_parent();
+          auto param = node->get_parameter();
+
           auto src_unit = *xparam->m_ounit;
           auto dst_unit = param->get_unit();
 
@@ -501,7 +509,6 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       }
     }
   }
-}
 
 void parameter_base::bang(parameter_base* x)
 {
