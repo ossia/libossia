@@ -453,67 +453,82 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
   if (!x->m_mute)
   {
-    for (auto& m : x->m_matchers)
+    if (argc == 1)
     {
-      node = m.get_node();
-      auto parent = m.get_parent();
-      auto param = node->get_parameter();
-
-      if (node && param)
+      ossia::value v;
+      // convert one element array to single element
+      switch(argv->a_type)
       {
-        if (argc == 1)
+        case A_SYMBOL:
+          v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
+          break;
+        case A_FLOAT:
+          v = ossia::value(atom_getfloat(argv));
+          break;
+        default:
+          ;
+      }
+
+      for (auto& m : x->m_matchers)
+      {
+        node = m.get_node();
+        auto parent = m.get_parent();
+        auto param = node->get_parameter();
+
+        ossia::value converted;
+        ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) parent;
+
+        if ( xparam->m_ounit != ossia::none )
         {
-          ossia::value v;
-          // convert one element array to single element
-          if (argv->a_type == A_SYMBOL)
-            v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
-          else if (argv->a_type == A_FLOAT)
-            v = ossia::value(atom_getfloat(argv));
+          auto src_unit = *xparam->m_ounit;
+          auto dst_unit = param->get_unit();
 
-          ossia::value converted;
+          converted = ossia::convert(v, src_unit, dst_unit);
+        } else
+          converted = v;
 
-          ossia::pd::parameter_base* x = (ossia::pd::parameter_base*) parent;
+        node->get_parameter()->push_value(converted);
+      }
+    }
+    else
+    {
+      std::vector<ossia::value> list;
+      list.reserve(argc+1);
+      if ( s && s != gensym("list") )
+        list.push_back(std::string(s->s_name));
 
-          if ( x->m_ounit != ossia::none )
-          {
-            auto src_unit = *x->m_ounit;
-            auto dst_unit = param->get_unit();
-
-            converted = ossia::convert(v, src_unit, dst_unit);
-          } else
-            converted = v;
-
-          node->get_parameter()->push_value(converted);
+      for (; argc > 0; argc--, argv++)
+      {
+        switch (argv->a_type)
+        {
+          case A_SYMBOL:
+            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          default:
+            pd_error(x, "value type not handled");
         }
-        else
+      }
+
+      ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
+
+      for (auto& m : x->m_matchers)
+      {
+        node = m.get_node();
+        auto parent = m.get_parent();
+        auto param = node->get_parameter();
+
+        if ( xparam->m_ounit != ossia::none )
         {
-          std::vector<ossia::value> list;
-          list.reserve(argc+1);
-          if ( s && s != gensym("list") )
-            list.push_back(std::string(s->s_name));
+          auto src_unit = *xparam->m_ounit;
+          auto dst_unit = param->get_unit();
 
-          for (; argc > 0; argc--, argv++)
-          {
-            if (argv->a_type == A_SYMBOL)
-              list.push_back(std::string(atom_getsymbol(argv)->s_name));
-            else if (argv->a_type == A_FLOAT)
-              list.push_back(atom_getfloat(argv));
-            else
-              pd_error(x, "value type not handled");
-          }
-
-          ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
-
-          if ( xparam->m_ounit != ossia::none )
-          {
-            auto src_unit = *xparam->m_ounit;
-            auto dst_unit = param->get_unit();
-
-            auto converted = ossia::convert(list, src_unit, dst_unit);
-            node->get_parameter()->push_value(converted);
-          } else {
-            node->get_parameter()->push_value(list);
-          }
+          auto converted = ossia::convert(list, src_unit, dst_unit);
+          node->get_parameter()->push_value(converted);
+        } else {
+          node->get_parameter()->push_value(list);
         }
       }
     }
