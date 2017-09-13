@@ -1,5 +1,21 @@
 Set-PSDebug -Trace 1
 
+function CheckLastExitCode {
+    param ([int[]]$SuccessCodes = @(0), [scriptblock]$CleanupScript=$null)
+
+    if ($SuccessCodes -notcontains $LastExitCode) {
+        if ($CleanupScript) {
+            "Executing cleanup script: $CleanupScript"
+            &$CleanupScript
+        }
+        $msg = @"
+EXE RETURNED EXIT CODE $LastExitCode
+CALLSTACK:$(Get-PSCallStack | Out-String)
+"@
+        throw $msg
+    }
+}
+
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd c:\projects\libossia\build
 
@@ -16,6 +32,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
 
   cmake --build . --target install > C:\projects\libossia\install-pd.log
+  CheckLastExitCode
 
   ls ../install
   ls ../install/ossia-pd-package/*
@@ -29,10 +46,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   cd c:\projects\libossia\build
 
   cmake --build . --target install > C:\projects\libossia\install-max.log
+  CheckLastExitCode
 
   cd c:\projects\libossia\build-32bit
 
   cmake --build . --target install > C:\projects\libossia\install-max-32bit.log
+  CheckLastExitCode
 
   ls ../install
   ls ../install/ossia-max-package/*
