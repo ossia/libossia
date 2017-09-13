@@ -26,9 +26,92 @@ namespace py = pybind11;
 #include <spdlog/spdlog.h>
 #include <ossia/network/base/message_queue.hpp>
 #include <spdlog/spdlog.h>
+#include <Python.h>
 
 namespace py = pybind11;
+namespace ossia { namespace python {
 
+/**
+ * @brief To cast python value into OSSIA value
+ *
+ */
+struct to_python_value
+{
+  template <typename T>
+  py::object operator()(const T& t) const
+  {
+    return py::cast(t);
+  }
+
+  py::object operator()(const std::vector<ossia::value>& v) const
+  {
+    std::vector<py::object> vec;
+    vec.reserve(v.size());
+
+    for (const auto& i : v)
+      vec.push_back(i.apply(to_python_value{}));
+
+    return py::cast(vec);
+  }
+
+  template <std::size_t N>
+  py::object operator()(const std::array<float, N>& v) const
+  {
+    std::vector<py::object> vec(N);
+
+    for (float f : v)
+      vec[f] = py::cast(f);
+
+    return py::cast(vec);
+  }
+
+  py::object operator()()
+  {
+    throw std::runtime_error("to_python_value: bad type");
+  }
+};
+
+} }
+/*
+namespace pybind11 { namespace detail {
+    template <> struct type_caster<ossia::value> {
+    public:
+        PYBIND11_TYPE_CASTER(ossia::value, _("value"));
+
+        bool load(handle src, bool) {
+            PyObject *source = src.ptr();
+
+            PyObject *tmp = nullptr;
+            if(PyNumber_Check(source))
+            {
+              if (tmp = PyNumber_Long(source))
+                value = (int)PyLong_AsLong(tmp);
+              else if(tmp = PyNumber_Float(source))
+                value = (float)PyFloat_AsDouble(tmp);
+            }
+            else if(PyBool_Check(source))
+              value = (source == Py_True);
+            else if(PyUnicode_Check(source))
+              value = (std::string)PyUnicode_AsUTF8(source);
+            else if(PyBytes_Check(source))
+              value = (std::string)PyBytes_AsString(source);
+            else if(tmp = PyByteArray_FromObject(source))
+              value = (std::string)PyByteArray_AsString(tmp);
+
+            // TODO arrays, etc
+            if(tmp)
+              Py_DECREF(tmp);
+
+            return !PyErr_Occurred();
+        }
+
+        static handle cast(const ossia::value& src, return_value_policy policy , handle parent) {
+          return src.apply(ossia::python::to_python_value{});
+        }
+    };
+}} // namespace pybind11::detail
+
+*/
 /**
  * @brief Local device class
  *
@@ -234,46 +317,6 @@ public:
   }
 };
 
-/**
- * @brief To cast python value into OSSIA value
- *
- */
-struct to_python_value
-{
-  template <typename T>
-  py::object operator()(const T& t) const
-  {
-    return py::cast(t);
-  }
-
-  py::object operator()(const std::vector<ossia::value>& v) const
-  {
-    std::vector<py::object> vec;
-    vec.reserve(v.size());
-
-    for (const auto& i : v)
-      vec.push_back(i.apply(to_python_value{}));
-
-    return py::cast(vec);
-  }
-
-  template <int N>
-  py::object operator()(const std::array<float, N>& v) const
-  {
-    std::vector<py::object> vec;
-    vec.reserve(N);
-
-    for (const auto& i : v)
-      vec.push_back(i);
-
-    return py::cast(vec);
-  }
-
-  py::object operator()()
-  {
-    throw std::runtime_error("to_python_value: bad type");
-  }
-};
 
 // TODO : add explorations tools functions
 // get_nodes
@@ -516,7 +559,7 @@ PYBIND11_MODULE(ossia_python, m)
       .def("reset", &ossia::value::reset)
       .def(
           "get",
-          [](const ossia::value& val) { return val.apply(to_python_value{}); })
+          [](const ossia::value& val) { return val.apply(ossia::python::to_python_value{}); })
       .def("get_bool", [](const ossia::value& val) { return val.get<bool>(); })
       .def("get_int", [](const ossia::value& val) { return val.get<int>(); })
       .def(

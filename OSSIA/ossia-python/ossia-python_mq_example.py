@@ -10,16 +10,26 @@ print("local device name: " + local_device.name)
 local_device.create_oscquery_server(3456, 5678, True)
 
 # create a node, create a float parameter, set its properties and initialize it
-float_node = local_device.add_node("/test/numeric/float")
-float_parameter = float_node.create_parameter(ossia.ValueType.Float)
-float_parameter.access_mode = ossia.AccessMode.Bi
-float_parameter.bounding_mode = ossia.BoundingMode.Clip
-float_parameter.value = ossia.Value(2.5)                  ### TODO : float_parameter.value = 2.5
+node = local_device.add_node("/test/numeric/float")
+parameter = node.create_parameter(ossia.ValueType.Float)
+parameter.access_mode = ossia.AccessMode.Bi
+parameter.bounding_mode = ossia.BoundingMode.Clip
+parameter.value = 2.5
 
-float_parameter.add_callback_param(lambda node, val: print(str(node) + ": " + str(val)))
+def value_callback0(val):
+  print(str(val))
+
+parameter.add_callback(value_callback0)
+node = local_device.add_node("/test/str")
+parameter = node.create_parameter(ossia.ValueType.String)
+parameter.value = "a string"
+
+def value_callback(node, val):
+  print(str(node) + ": " + str(val))
+parameter.add_callback_param(value_callback)
 
 messq = ossia.MessageQueue(local_device)
-messq.register(float_parameter)
+messq.register(parameter)
 
 while(True):
   res = messq.pop()
