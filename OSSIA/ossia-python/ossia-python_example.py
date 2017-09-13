@@ -17,20 +17,21 @@ print("OSSIA LIBRARY EXAMPLE")
 # create a device for this python program
 local_device = ossia.LocalDevice("newDevice")
 
-print("local device name: " + local_device.name)
+print("\nlocal device name: " + local_device.name)
 
 # enable OSCQuery communication for our device and messages logging
 local_device.create_oscquery_server(3456, 5678, True)
 
 # enable OSC communication for that device and messages logging
-local_device.create_osc_server("127.0.0.1", 9997, 9996, True)
+#local_device.create_osc_server("127.0.0.1", 9997, 9996, True)
 
 # enable MIDI communication for that device
 ### TODO : enable MIDI communication
 
 # list all devices on the network
-# print(' SCAN FOR OSC_QUERY DEVICES ')
-### TODO : print(local_device.list_osc_query_devices)
+print('\nSCAN FOR OSC_QUERY DEVICES\n')
+for data in ossia.list_oscquery_devices():
+  print(data.name + ": host = " + data.host + ", port = " + str(data.port))
 
 # create a node, create a boolean parameter and initialize it
 bool_node = local_device.add_node("/test/special/bool")
@@ -146,15 +147,13 @@ def iterate_on_children(node):
       print('PARAMETER -> ' + str(child) + " " + str(child.parameter) + " <" + str(child.parameter.value_type) + ", " + str(child.parameter.access_mode) + ">")
       if child.parameter.have_domain():
         print("min : " + str(child.parameter.domain.min) + ", max : " + str(child.parameter.domain.max))
-      print("callback count = " + str(child.parameter.callback_count))
     else:
-      print()
-      print('NODE -> ' + str(child))
+      print('\nNODE -> ' + str(child))
       print('--------------')
     iterate_on_children(child)
 
 # iterate on our device
-print("\nLOCAL DEVICE NAMESPACE\n")
+print("\nLOCAL DEVICE NAMESPACE")
 iterate_on_children(local_device.root_node)
 
 
