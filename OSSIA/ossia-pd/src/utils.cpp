@@ -479,6 +479,8 @@ std::string replace_brackets(const ossia::string_view sv) {
       str[i] = '{';
     else if(str[i] == '>')
       str[i] = '}';
+    else if(str[i] == '|')
+      str[i] = ',';
   }
   return str;
 }
