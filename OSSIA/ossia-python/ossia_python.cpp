@@ -74,12 +74,12 @@ public:
       {
         ossia::net::network_logger logger;
 
-        logger.inbound_logger = spdlog::stderr_logger_mt("input");
-        logger.inbound_logger->set_pattern("input: %v");
+        logger.inbound_logger = spdlog::stderr_logger_mt("oscquery input");
+        logger.inbound_logger->set_pattern("oscquery input: %v");
         logger.inbound_logger->set_level(spdlog::level::info);
 
-        logger.outbound_logger = spdlog::stderr_logger_mt("output");
-        logger.outbound_logger->set_pattern("output: %v");
+        logger.outbound_logger = spdlog::stderr_logger_mt("oscquery output");
+        logger.outbound_logger->set_pattern("oscquery output: %v");
         logger.outbound_logger->set_level(spdlog::level::info);
 
         // attach the logger to the OSCQuery Server protocol only
@@ -134,12 +134,12 @@ public:
       {
         ossia::net::network_logger logger;
 
-        logger.inbound_logger = spdlog::stderr_logger_mt("input");
-        logger.inbound_logger->set_pattern("input: %v");
+        logger.inbound_logger = spdlog::stderr_logger_mt("osc input");
+        logger.inbound_logger->set_pattern("osc input: %v");
         logger.inbound_logger->set_level(spdlog::level::info);
 
-        logger.outbound_logger = spdlog::stderr_logger_mt("output");
-        logger.outbound_logger->set_pattern("output: %v");
+        logger.outbound_logger = spdlog::stderr_logger_mt("osc output");
+        logger.outbound_logger->set_pattern("osc output: %v");
         logger.outbound_logger->set_level(spdlog::level::info);
 
         // attach the logger to the OSC protocol only
@@ -217,6 +217,55 @@ public:
   bool update()
   {
     return m_oscquery_protocol.update(m_device.get_root_node());
+  }
+
+  ossia::net::node_base* find_node(const std::string& address)
+  {
+    return ossia::net::find_node(m_device.get_root_node(), address);
+  }
+
+  ossia::net::node_base* get_root_node()
+  {
+    return &m_device.get_root_node();
+  }
+};
+
+/**
+ * @brief OSC device class
+ *
+ * An OSC device is required to deal with a remote application using
+ * OSC protocol
+ */
+class ossia_osc_device
+{
+  ossia::net::generic_device m_device;
+  ossia::net::osc_protocol& m_osc_protocol;
+
+public:
+  ossia_osc_device(
+      std::string name, std::string ip, uint16_t remote_port, uint16_t local_port)
+      : m_device{std::make_unique<ossia::net::osc_protocol>(
+                     ip, remote_port, local_port),
+                 std::move(name)}
+      , m_osc_protocol{
+            static_cast<ossia::net::osc_protocol&>(
+                m_device.get_protocol())}
+  {
+  }
+
+  bool get_learning()
+  {
+    return m_osc_protocol.learning();
+  }
+
+  void set_learning(bool l)
+  {
+    m_osc_protocol.set_learning(l);
+  }
+
+  ossia::net::node_base* add_node(const std::string& address)
+  {
+    return &ossia::net::find_or_create_node(m_device.get_root_node(), address);
   }
 
   ossia::net::node_base* find_node(const std::string& address)
@@ -321,6 +370,20 @@ PYBIND11_MODULE(ossia_python, m)
       .def_readwrite("port", &ossia::net::oscquery_connection_data::port);
 
   m.def("list_oscquery_devices", &ossia::net::list_oscquery_devices);
+
+  py::class_<ossia_osc_device>(m, "OSCDevice")
+      .def(py::init<std::string, std::string, uint16_t, uint16_t>())
+      .def_property("learning", &ossia_osc_device::get_learning,
+          &ossia_osc_device::set_learning)
+      .def(
+          "add_node", &ossia_osc_device::add_node,
+          py::return_value_policy::reference)
+      .def(
+          "find_node", &ossia_osc_device::find_node,
+          py::return_value_policy::reference)
+      .def_property_readonly(
+          "root_node", &ossia_osc_device::get_root_node,
+          py::return_value_policy::reference);
 
   py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
       .def(py::init<>())
