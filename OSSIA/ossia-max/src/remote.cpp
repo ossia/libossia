@@ -423,6 +423,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 
 void remote::bind(remote* x, t_symbol* address)
 {
+  std::lock_guard<std::mutex> lock(x->bindMutex);
   x->m_name = address;
   x->update_path(x->m_name->s_name);
   x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);

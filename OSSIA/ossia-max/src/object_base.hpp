@@ -127,6 +127,8 @@ public:
   long m_tags_size{};
   long m_description_size{};
 
+  std::mutex bindMutex;
+
   static void update_attribute(object_base* x, ossia::string_view attribute);
   void is_deleted(const ossia::net::node_base& n);
 
@@ -241,9 +243,10 @@ struct value_visitor
     t_atom a;
 
     atom_setfloat(&a, f);
-    outlet_float(x->m_data_out, f);
+    if(x && x->m_data_out)
+      outlet_float(x->m_data_out, f);
 
-    if (x->m_set_out)
+    if (x && x->m_set_out)
       defer_low((t_object*)x,(method)object_base::defer_set_output,
                 gensym("set"),1,&a);
   }

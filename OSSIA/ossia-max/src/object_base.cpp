@@ -176,14 +176,19 @@ void t_matcher::enqueue_value(ossia::value v)
 
 void t_matcher::output_value()
 {
-  ossia::value val;
-  while(m_queue_list.try_dequeue(val)) {
+  if(parent)
+  {
+    std::lock_guard<std::mutex> lock(parent->bindMutex);
+    ossia::value val;
+    while(m_queue_list.try_dequeue(val)) {
 
-    outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+      if(parent->m_dumpout)
+        outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
-    value_visitor<object_base> vm;
-    vm.x = (object_base*)parent;
-    val.apply(vm);
+      value_visitor<object_base> vm;
+      vm.x = (object_base*)parent;
+      val.apply(vm);
+    }
   }
 }
 
