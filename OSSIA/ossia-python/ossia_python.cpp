@@ -24,6 +24,8 @@ namespace py = pybind11;
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/detail/logger.hpp>
 #include <spdlog/spdlog.h>
+#include <ossia/network/base/message_queue.hpp>
+#include <spdlog/spdlog.h>
 
 namespace py = pybind11;
 
@@ -48,6 +50,8 @@ public:
   {
   }
 
+
+  operator ossia::net::generic_device&() { return m_device; }
   /** get local device name
   \return std::string */
   std::string get_name()
@@ -88,7 +92,7 @@ public:
           try
           {
             ossia::oscquery::oscquery_server_protocol& oscquery_server = dynamic_cast<ossia::oscquery::oscquery_server_protocol&> (*p);
-          
+
             oscquery_server.set_logger(std::move(logger));
             break;
           }
@@ -116,7 +120,7 @@ public:
   }
 
   /** Make the local device able to handle osc request and emit osc message
-  \param int port where osc messages have to be sent to be catch by a remote 
+  \param int port where osc messages have to be sent to be catch by a remote
   client to listen to the local device
   \param int port where OSC requests have to be sent by any remote client to
   deal with the local device
@@ -148,7 +152,7 @@ public:
           try
           {
             ossia::net::osc_protocol& osc_server = dynamic_cast<ossia::net::osc_protocol&> (*p);
-          
+
             osc_server.set_logger(std::move(logger));
             break;
           }
@@ -498,8 +502,17 @@ PYBIND11_MODULE(ossia_python, m)
                            const ossia::value& v) { addr.push_value(v); })
       .def(
           "add_callback",
-          [](ossia::net::parameter_base& addr, ossia::value_callback clbk) {
+          [](ossia::net::parameter_base& addr,
+             ossia::value_callback clbk) {
             addr.add_callback(clbk);
+          })
+      .def(
+         "add_callback_param",
+          [](ossia::net::parameter_base& addr,
+             std::function<void(ossia::net::node_base&, const ossia::value&)> clbk) {
+             addr.add_callback([clbk,&addr] (const ossia::value& val) {
+               clbk(addr.get_node(), val);
+             });
           })
       .def("__str__", [](ossia::net::parameter_base& addr) -> std::string {
         return ossia::value_to_pretty_string(addr.value());
@@ -594,4 +607,20 @@ PYBIND11_MODULE(ossia_python, m)
       .def("__str__", [](const ossia::value& val) -> std::string {
         return ossia::value_to_pretty_string(val);
       });
+
+  py::class_<ossia::message_queue>(m, "MessageQueue")
+      .def(py::init<ossia_local_device&>())
+      .def("register", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
+    mq.reg(p);
+  })
+      .def("unregister", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
+    mq.unreg(p);
+  })
+      .def("pop", [] (ossia::message_queue& mq) -> py::object {
+     ossia::received_value v;
+     bool res = mq.try_dequeue(v);
+     if(res)
+       return py::make_tuple(*v.address, v.value);
+     return py::none{};
+  });
 }

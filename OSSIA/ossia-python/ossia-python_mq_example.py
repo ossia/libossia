@@ -16,6 +16,7 @@ float_parameter.access_mode = ossia.AccessMode.Bi
 float_parameter.bounding_mode = ossia.BoundingMode.Clip
 float_parameter.value = ossia.Value(2.5)                  ### TODO : float_parameter.value = 2.5
 
+float_parameter.add_callback_param(lambda node, val: print(str(node) + ": " + str(val)))
 
 messq = ossia.MessageQueue(local_device)
 messq.register(float_parameter)
