@@ -47,8 +47,6 @@ artifacts:
   - path: install\ossia-max-package
     name: ossia-max-windows
     type: zip
-  - name: Log files
-    path: '*.log'
 
 deploy:
   description: 'Release description'
@@ -61,3 +59,7 @@ deploy:
   on:
     branch: master                 # release from master branch only
     appveyor_repo_tag: true        # deploy on tag push only
+
+# push log artifacts even if build failed
+after_build:
+  - ps: Get-ChildItem .\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
