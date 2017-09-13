@@ -475,10 +475,20 @@ t_symbol* val_type2symbol(ossia::val_type type)
 std::string replace_brackets(const ossia::string_view sv) {
   std::string str(sv);
   for(std::size_t i = 0, N = str.size(); i < N; i++) {
-    if(str[i] == '<')
-      str[i] = '{';
-    else if(str[i] == '>')
-      str[i] = '}';
+    switch(str[i])
+    {
+      case '<':
+        str[i] = '{';
+        break;
+      case '>':
+        str[i] = '}';
+        break;
+      case '|':
+        str[i] = ',';
+        break;
+      default:
+        ;
+    }
   }
   return str;
 }
