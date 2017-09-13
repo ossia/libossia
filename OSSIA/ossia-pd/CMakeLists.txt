@@ -7,13 +7,11 @@ set(CMAKE_MACOSX_RPATH Off)
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
     message("Downloading and extracting PureData windows binary")
-    # On windows we have to create a .lib file for Pd since the original one is incomplete
-
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
       file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/a0urdqx1xuve5fbh/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     else()
-      return()
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-0.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     endif()
 
     # Extract Pd.
@@ -78,7 +76,11 @@ add_custom_target(pd_qml_examples SOURCES ${QMLS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
 if(MSVC)
+  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
     target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd.lib")
+  else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
+  endif()
 endif()
 
 add_linker_warnings_external(${PROJECT_NAME})
