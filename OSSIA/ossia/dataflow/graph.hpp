@@ -60,9 +60,9 @@ public:
   static void copy(const delay_line_type& out, std::size_t pos, inlet& in);
   static void copy(const outlet& out, inlet& in);
   static void copy_to_local(
-      const data_type& out, const Destination& d, execution_state& in);
+      const data_type& out, const destination& d, execution_state& in);
   static void copy_to_global(
-      const data_type& out, const Destination& d, execution_state& in);
+      const data_type& out, const destination& d, execution_state& in);
   static void pull_from_parameter(inlet& in, execution_state& e);
 
   void init_node(graph_node& n, execution_state& e);

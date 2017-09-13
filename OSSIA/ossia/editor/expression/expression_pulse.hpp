@@ -13,7 +13,7 @@
  */
 namespace ossia
 {
-class Destination;
+class destination;
 
 namespace expressions
 {
@@ -25,7 +25,7 @@ class OSSIA_EXPORT expression_pulse final
     : public expression_callback_container
 {
 public:
-  expression_pulse(const Destination& destination);
+  expression_pulse(const destination& destination);
   expression_pulse(expression_pulse&& other) = delete;
   expression_pulse& operator=(expression_pulse&& other) = delete;
   expression_pulse(const expression_pulse& other) = delete;
@@ -42,7 +42,7 @@ public:
   /*! reset the evaluation to false until the next destination update */
   void update() const;
 
-  const Destination& get_destination() const;
+  const destination& get_destination() const;
 
 private:
   void on_first_callback_added() override;
@@ -50,7 +50,7 @@ private:
 
   void destination_callback(const value& value);
 
-  Destination m_destination;
+  destination m_destination;
 
   net::parameter_base::callback_index m_callback;
   mutable bool m_result{};

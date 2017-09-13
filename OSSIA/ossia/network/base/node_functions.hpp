@@ -102,13 +102,13 @@ osc_parameter_string_with_device(const ossia::net::node_base&);
 /**
  * @brief Get the value associated with a destination
  */
-OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
+OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::destination& addr);
 
 /**
  * @brief Send a value to a given destination
  */
 OSSIA_EXPORT void
-push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
+push_value(const ossia::destination& addr, const ossia::value_with_unit&);
 
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
 

@@ -34,12 +34,12 @@ class OSSIA_EXPORT mapper final : public ossia::time_process
 {
 public:
   mapper();
-  mapper(ossia::Destination, ossia::Destination, ossia::behavior);
+  mapper(ossia::destination, ossia::destination, ossia::behavior);
 
   ~mapper();
 
-  void set_driver(ossia::Destination);
-  void set_driven(ossia::Destination);
+  void set_driver(ossia::destination);
+  void set_driven(ossia::destination);
   void set_behavior(ossia::behavior b);
 
   void clean();
@@ -59,7 +59,7 @@ private:
 
   void driver_value_callback(ossia::value value);
 
-  optional<ossia::Destination> m_driverAddress;
+  optional<ossia::destination> m_driverAddress;
   ossia::behavior m_drive;
 
   optional<ossia::message> m_lastMessage;

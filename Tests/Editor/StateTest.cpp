@@ -191,7 +191,7 @@ private Q_SLOTS:
 
     const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
     QVERIFY(pw);
-    QVERIFY(pw->address == m0.destination.value);
+    QVERIFY(pw->address == m0.dest.value);
     std::vector<ossia::value> expected{float{5.}, float{10.}, float{15.}};
     QVERIFY(pw->message_value == expected);
 
@@ -242,7 +242,7 @@ private Q_SLOTS:
 
     const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
     QVERIFY(pw);
-    QVERIFY(pw->address == m0.target<message>()->destination.value);
+    QVERIFY(pw->address == m0.target<message>()->dest.value);
     std::vector<ossia::value> expected{float{5.}, float{10.}, float{15.}};
     QVERIFY(pw->message_value == expected);
 

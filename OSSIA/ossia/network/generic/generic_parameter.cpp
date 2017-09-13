@@ -150,7 +150,7 @@ void generic_parameter::set_value_quiet(ossia::value&& val)
   }
 }
 
-void generic_parameter::set_value_quiet(const Destination& destination)
+void generic_parameter::set_value_quiet(const destination& destination)
 {
   lock_t lock(m_valueMutex);
   if (destination.address().get_value_type() == m_valueType)

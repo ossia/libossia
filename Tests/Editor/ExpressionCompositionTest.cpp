@@ -107,13 +107,13 @@ private Q_SLOTS:
     auto localIntNode3 = device.create_child("my_int.3");
     auto localIntAddress3 = localIntNode3->create_parameter(val_type::INT);
 
-    auto testDestinationExprA = make_expression_atom(Destination(*localIntAddress1),
+    auto testDestinationExprA = make_expression_atom(destination(*localIntAddress1),
                                                      comparator::LOWER,
-                                                     Destination(*localIntAddress2));
+                                                     destination(*localIntAddress2));
 
-    auto testDestinationExprB = make_expression_atom(Destination(*localIntAddress2),
+    auto testDestinationExprB = make_expression_atom(destination(*localIntAddress2),
                                                      comparator::LOWER,
-                                                     Destination(*localIntAddress3));
+                                                     destination(*localIntAddress3));
 
     auto testDestinationComposition = make_expression_composition(std::move(testDestinationExprA),
                                                                   binary_operator::AND,

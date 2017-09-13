@@ -122,7 +122,7 @@ private Q_SLOTS:
 
     c->set_x0(0.);
 
-    Destination d(*localTupleAddress, ossia::destination_index{1});
+    destination d(*localTupleAddress, ossia::destination_index{1});
     c->set_y0_destination(d);
 
     QVERIFY(c->get_y0_destination() == d);

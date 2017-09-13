@@ -53,7 +53,7 @@ public:
 
   void set_translation(double x, double y);
   void set_scale(double x, double y);
-  void set_destination(ossia::Destination a);
+  void set_destination(ossia::destination a);
   void set_spline(const spline_data& t);
 
   ossia::state_element state(ossia::time_value date, double pos) override;
@@ -64,7 +64,7 @@ public:
   void resume() override;
 
 private:
-  ossia::optional<ossia::Destination> m_parameter;
+  ossia::optional<ossia::destination> m_parameter;
   tinyspline::BSpline m_spline;
   double m_x{}, m_y{}, m_scaleX{1.}, m_scaleY{1.};
 };

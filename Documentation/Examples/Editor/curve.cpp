@@ -51,7 +51,7 @@ int main()
   localTupleAddress->set_value(std::vector<ossia::value>{-1., 0., 1.});
 
   cout << "*** test 3 ***" << endl;
-  c->set_y0_destination(Destination(*localTupleAddress));
+  c->set_y0_destination(destination(*localTupleAddress));
 
   cout << "value at 0. = " << c->value_at(0.) << endl;
   cout << "value at 0.5 = " << c->value_at(0.5) << endl;
@@ -60,7 +60,7 @@ int main()
   cout << "value at 2. = " << c->value_at(2.) << endl;
 
   cout << "*** test 4 ***" << endl;
-  c->set_y0_destination(Destination(*localTupleAddress, destination_index{1}));
+  c->set_y0_destination(destination(*localTupleAddress, destination_index{1}));
 
   cout << "value at 0. = " << c->value_at(0.) << endl;
   cout << "value at 0.5 = " << c->value_at(0.5) << endl;

@@ -13,7 +13,7 @@ public:
 
   color_automation();
 
-  void set_destination(ossia::Destination a);
+  void set_destination(ossia::destination a);
   void set_gradient(grad_type t);
 
   ossia::state_element state(ossia::time_value date, double pos) override;
@@ -24,7 +24,7 @@ public:
   void resume() override;
 
 private:
-  optional<ossia::Destination> m_parameter;
+  optional<ossia::destination> m_parameter;
   grad_type m_data;
 };
 }

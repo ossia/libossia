@@ -11,7 +11,7 @@ spline_automation::spline_automation()
 {
 }
 
-void spline_automation::set_destination(Destination a)
+void spline_automation::set_destination(destination a)
 {
   m_parameter = std::move(a);
 }

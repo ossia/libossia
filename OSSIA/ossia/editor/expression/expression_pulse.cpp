@@ -7,7 +7,7 @@ namespace ossia
 namespace expressions
 {
 
-expression_pulse::expression_pulse(const Destination& destination)
+expression_pulse::expression_pulse(const destination& destination)
     : m_destination(destination), m_result(false)
 {
   // start destination observation
@@ -41,7 +41,7 @@ void expression_pulse::on_removing_last_callback()
 {
 }
 
-const Destination& expression_pulse::get_destination() const
+const destination& expression_pulse::get_destination() const
 {
   return m_destination;
 }

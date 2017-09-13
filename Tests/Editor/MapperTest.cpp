@@ -93,7 +93,7 @@ private Q_SLOTS:
     auto interval_callback = std::bind(&MapperTest::interval_callback, this, _1, _2, _3);
     auto interval = time_interval::create(interval_callback, *start_event, *end_event, 400._tv, 400._tv, 400._tv);
     interval->add_time_process(
-          std::make_unique<mapper>(Destination{*m_float_address}, Destination{*m_int_address}, curve_ptr{c}));
+          std::make_unique<mapper>(destination{*m_float_address}, destination{*m_int_address}, curve_ptr{c}));
     ossia::clock clck{*interval};
     m_float_parameter_values.clear();
     m_int_parameter_values.clear();

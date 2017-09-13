@@ -470,13 +470,13 @@ void graph::copy(const outlet& out, inlet& in)
 }
 
 void graph::copy_to_local(
-    const data_type& out, const Destination& d, execution_state& in)
+    const data_type& out, const destination& d, execution_state& in)
 {
   in.insert(destination_t{&d.address()}, out);
 }
 
 void graph::copy_to_global(
-    const data_type& out, const Destination& d, execution_state& in)
+    const data_type& out, const destination& d, execution_state& in)
 {
   // TODO
 }

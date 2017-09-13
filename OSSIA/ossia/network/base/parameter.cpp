@@ -231,14 +231,14 @@ parameter_base& parameter_base::set_critical(bool v)
   return *this;
 }
 
-value_with_unit get_value(const ossia::Destination& d)
+value_with_unit get_value(const ossia::destination& d)
 {
   ossia::net::parameter_base& addr = d.value.get();
 
   return make_value(addr.value(d.index), addr.get_unit());
 }
 
-void push_value(const Destination& d, const value_with_unit& v)
+void push_value(const destination& d, const value_with_unit& v)
 {
   ossia::net::parameter_base& addr = d.value.get();
   addr.push_value(ossia::to_value(v)); // TODO what about destination_index ??
