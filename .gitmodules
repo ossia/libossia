@@ -53,7 +53,7 @@
 	url = https://github.com/pybind/pybind11
 [submodule "3rdparty/asio"]
 	path = 3rdparty/asio
-	url = https://github.com/jcelerier/asio
+	url = https://github.com/chriskohlhoff/asio
 [submodule "3rdparty/websocketpp"]
 	path = 3rdparty/websocketpp
 	url = https://github.com/jcelerier/websocketpp
