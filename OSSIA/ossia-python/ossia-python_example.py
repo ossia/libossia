@@ -23,7 +23,7 @@ print("\nlocal device name: " + local_device.name)
 local_device.create_oscquery_server(3456, 5678, True)
 
 # enable OSC communication for that device and messages logging
-#local_device.create_osc_server("127.0.0.1", 9997, 9996, True)
+local_device.create_osc_server("127.0.0.1", 9997, 9996, True)
 
 # enable MIDI communication for that device
 ### TODO : enable MIDI communication
@@ -157,47 +157,46 @@ print("\nLOCAL DEVICE NAMESPACE")
 iterate_on_children(local_device.root_node)
 
 
-
-
-### REMOTE DEVICE SETUP
-'''
-# try to connect to a remote device using OSCQuery protocol
-oscquery_device = ossia.OSCQueryDevice("remoteDevice", "ws://127.0.0.1:5678", 9998)
+### REMOTE OSCQUERY DEVICE FEATURES
 
 # try to connect to a remote device using OSCQuery protocol
-### TODO : oscquery_device = ossia.MidiDevice()
+oscquery_device = ossia.OSCQueryDevice("remoteOSCQueryDevice", "ws://127.0.0.1:5678", 9998)
 
-# try to connect to a remote device using OSC protocol
-### TODO : osc_device = ossia.OscDevice()
-
-# try to connect to a remote device using minuit protocol
-### TODO : minuit_device = ossia.minuitDevice()
-
-
-# explore the remote device
+# update the remote OSCQuery device namespace
 oscquery_device.update()
-### TODO : osc_device.update()
-### TODO : midi_device.update()
-### TODO : minuit_device.update()
 
-# iterate on our oscquery device
-print("\nREMOTE DEVICE OSCQUERY NAMESPACE\n")
+# iterate on our OSCQuery device namespace
+print("\nREMOTE OSCQUERY DEVICE NAMESPACE")
 iterate_on_children(oscquery_device.root_node)
 
-# iterate on our osc device
-#print("\nREMOTE DEVICE OSC NAMESPACE\n")
-#iterate_on_children(osc_device.root_node)
 
-# iterate on our midi device
-#print("\nREMOTE DEVICE MIDI NAMESPACE\n")
-#iterate_on_children(midi_device.root_node)
+### REMOTE OSC DEVICE FEATURES
+'''
+# try to connect to a remote device using OSC protocol
+osc_device = ossia.OscDevice()
 
-# iterate on our minuit device
-#print("\nREMOTE DEVICE MINUIT NAMESPACE\n")
-#iterate_on_children(minuit_device.root_node)
+# load the remote OSC device namespace
+osc_device.load("/path/to/namespace/file")
+
+# iterate on our OSC device namespace
+print("\nREMOTE OSC DEVICE NAMESPACE\n")
+iterate_on_children(osc_device.root_node)
+'''
+
+### REMOTE MIDI DEVICE FEATURES
+'''
+# try to connect to a remote device using MIDI protocol
+midi_device = ossia.MidiDevice()
+
+# load the remote MIDI device map
+midi_device.load("/path/to/map/file")
+
+# iterate on our MIDI device namespace
+print("\nREMOTE MIDI DEVICE NAMESPACE")
+iterate_on_children(midi_device.root_node)
 '''
 
 # MAIN LOOP
-# wait and use i-score to change the value remotely
+# wait and use Ossia Score to change the value remotely
 while True:
   time.sleep(0.1)
