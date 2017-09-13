@@ -147,6 +147,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/value_callback.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/name_validation.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/message_queue.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/debug.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.hpp"

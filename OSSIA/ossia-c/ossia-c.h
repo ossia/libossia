@@ -1658,8 +1658,7 @@ void ossia_logger_free(ossia_logger_t log);
  *
  *  @{
  */
-struct ossia_mq;
-typedef struct ossia_mq* ossia_mq_t;
+typedef void* ossia_mq_t;
 
 /**
  * @brief Create a message queue for a given device
