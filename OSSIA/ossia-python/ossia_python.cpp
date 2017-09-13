@@ -439,8 +439,17 @@ PYBIND11_MODULE(ossia_python, m)
                            const ossia::value& v) { addr.push_value(v); })
       .def(
           "add_callback",
-          [](ossia::net::parameter_base& addr, ossia::value_callback clbk) {
+          [](ossia::net::parameter_base& addr,
+             ossia::value_callback clbk) {
             addr.add_callback(clbk);
+          })
+      .def(
+         "add_callback_param",
+          [](ossia::net::parameter_base& addr,
+             std::function<void(ossia::net::node_base&, const ossia::value&)> clbk) {
+             addr.add_callback([clbk,&addr] (const ossia::value& val) {
+               clbk(addr.get_node(), val);
+             });
           })
       .def("__str__", [](ossia::net::parameter_base& addr) -> std::string {
         return ossia::value_to_pretty_string(addr.value());
