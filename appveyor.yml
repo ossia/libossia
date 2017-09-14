@@ -62,4 +62,5 @@ deploy:
 
 # push log artifacts even if build failed
 on_finish:
-  - ps: Get-ChildItem .\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  - ps: Get-ChildItem C:\projects\libossia\build\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  - ps: Get-ChildItem C:\projects\libossia\build-32bit\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
