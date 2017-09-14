@@ -62,6 +62,7 @@ set(PROJECT_SRCS
     )
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
 # add_custom_target just to display sources files in qtcreator
 add_custom_target(source SOURCES ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})

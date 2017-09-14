@@ -415,7 +415,7 @@ void parameter_base::get_enable(parameter_base*x)
 }
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
-  ossia::net::node_base* node;
+  ossia::net::node_base* node{};
 
   if (!x->m_mute)
   {
@@ -449,18 +449,18 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         auto parent = m.get_parent();
         auto param = node->get_parameter();
 
-        ossia::value converted;
         parameter_base* xparam = (parameter_base*)parent;
         if ( xparam->m_ounit != ossia::none )
         {
           auto src_unit = *xparam->m_ounit;
           auto dst_unit = param->get_unit();
 
-          converted = ossia::convert(v, src_unit, dst_unit);
-        } else
-          converted = v;
-
-        node->get_parameter()->push_value(converted);
+          node->get_parameter()->push_value(ossia::convert(v, src_unit, dst_unit));
+        } 
+        else
+        {
+          node->get_parameter()->push_value(v);
+        }
       }
     }
     else
@@ -496,12 +496,15 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
         auto param = node->get_parameter();
 
-        auto src_unit = *xparam->m_ounit;
-        auto dst_unit = param->get_unit();
+        if (xparam->m_ounit != ossia::none)
+        {
+            auto src_unit = *xparam->m_ounit;
+            auto dst_unit = param->get_unit();
 
-        ossia::convert(list, src_unit, dst_unit);
-
-        node->get_parameter()->push_value(list);
+            node->get_parameter()->push_value(ossia::convert(list, src_unit, dst_unit));
+        }
+        else
+            node->get_parameter()->push_value(list);
       }
     }
   }

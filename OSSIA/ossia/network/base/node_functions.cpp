@@ -227,7 +227,7 @@ public:
         ++_tend;
       }
     }
-    if (_tend == _tbegin) {
+    if (_tend == _tbegin && _tend != _end) {
       _tend++;
     }
     return _tbegin != _end;
