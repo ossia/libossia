@@ -152,7 +152,7 @@ extern "C" void setup_ossia0x2elogger(void)
   CLASS_ATTR_FILTER_CLIP(c, "heartbeat", 1, 1000);
 
 
-  // eclass_register(CLASS_OBJ, c);
+  eclass_register(CLASS_OBJ, c);
   ossia_pd::logger_class = c;
 }
 
