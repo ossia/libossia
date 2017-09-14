@@ -427,9 +427,6 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(c, (method)client::loadbang, "loadbang", A_NULL, 0);
     eclass_addmethod(c, (method)client::connect, "connect", A_GIMME, 0);
     eclass_addmethod(c, (method)client::disconnect, "disconnect", A_NULL, 0);
-
-    eclass_addmethod(
-        c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
     eclass_addmethod(c, (method) client::getdevices, "getdevices", A_NULL, 0);
   }
 
