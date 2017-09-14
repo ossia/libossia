@@ -3,6 +3,8 @@ Set-PSDebug -Trace 1
 function CheckLastExitCode {
     param ([int[]]$SuccessCodes = @(0), [scriptblock]$CleanupScript=$null)
 
+    Push-AppveyorArtifact $LogFile
+
     if ($SuccessCodes -notcontains $LastExitCode) {
         if ($CleanupScript) {
             "Executing cleanup script: $CleanupScript"
@@ -17,11 +19,13 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 }
 
 cd C:\projects\libossia\build\
-cmake --build . > C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}.log
+$LogFile = C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}.log
+cmake --build . > $LogFile
 CheckLastExitCode
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "max"){
   cd C:\projects\libossia\build-32bit
-  cmake --build . > C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-32bit.log
+  $LogFile = C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-32bit.log
+  cmake --build . > $LogFile
   CheckLastExitCode
 }
