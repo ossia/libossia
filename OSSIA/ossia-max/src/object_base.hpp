@@ -289,46 +289,18 @@ struct value_visitor
                 gensym("set"),1,&a);
   }
 
-  void operator()(vec2f vec) const
+  template<std::size_t N>
+  void operator()(std::array<float, N> vec) const
   {
-    t_atom a[2];
+    t_atom a[N];
 
-    atom_setfloat(a, vec[0]);
-    atom_setfloat(a + 1, vec[1]);
-    outlet_list(x->m_data_out, gensym("list"), 2, a);
+    for(int i = 0; i < N; i++)
+      atom_setfloat(a + i, vec[i]);
+    outlet_list(x->m_data_out, gensym("list"), N, a);
 
     if (x->m_set_out)
       defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),2,a);
-  }
-
-  void operator()(vec3f vec) const
-  {
-    t_atom a[3];
-
-    atom_setfloat(a, vec[0]);
-    atom_setfloat(a + 1, vec[1]);
-    atom_setfloat(a + 2, vec[2]);
-    outlet_list(x->m_data_out, gensym("list"), 3, a);
-
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),3,a);
-  }
-
-  void operator()(vec4f vec) const
-  {
-    t_atom a[4];
-
-    atom_setfloat(a, vec[0]);
-    atom_setfloat(a + 1, vec[1]);
-    atom_setfloat(a + 2, vec[2]);
-    atom_setfloat(a + 3, vec[3]);
-    outlet_list(x->m_data_out, gensym("list"), 4, a);
-
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),4,a);
+                gensym("set"), N,a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
