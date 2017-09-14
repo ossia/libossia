@@ -54,17 +54,6 @@ struct to_python_value
     return py::cast(vec);
   }
 
-  template <std::size_t N>
-  py::object operator()(const std::array<float, N>& v) const
-  {
-    std::vector<py::object> vec(N);
-
-    for (float f : v)
-      vec[f] = py::cast(f);
-
-    return py::cast(vec);
-  }
-
   py::object operator()()
   {
     throw std::runtime_error("to_python_value: bad type");
