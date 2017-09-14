@@ -218,6 +218,7 @@ endif()
 
 if(OSSIA_DNSSD)
   target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
+  target_link_libraries(ossia PRIVATE Servus_iface)
   get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
   get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
   target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
