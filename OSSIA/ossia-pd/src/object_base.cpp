@@ -135,14 +135,17 @@ t_matcher::~t_matcher()
     {
       if (!parent->m_is_deleted)
       {
-        if (node->get_parent())
-        {
-          auto param = node->get_parameter();
-          if (param && callbackit) param->remove_callback(*callbackit);
-          node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+        auto param = node->get_parameter();
+        if (param && callbackit) param->remove_callback(*callbackit);
+        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
 
-          node->get_parent()->remove_child(*node);
+        for (auto remote : ossia_pd::instance().remotes.copy())
+        {
+          ossia::remove_one(remote->m_matchers,*this);
         }
+
+        if (node->get_parent())
+          node->get_parent()->remove_child(*node);
       }
       // if there is no more matcher,
       // object should be quarantinized
