@@ -44,6 +44,8 @@ set(PROJECT_SRCS
   src/device.hpp
   src/device_base.cpp
   src/device_base.hpp
+  src/logger.cpp
+  src/logger.hpp
   src/model.cpp
   src/model.hpp
   src/node_base.cpp
