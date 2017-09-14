@@ -572,6 +572,14 @@ void parameter_base::push_default_value(parameter_base* x)
   }
 }
 
+void get_enable_mess_cb (parameter*x) { parameter::get_enable(x,nullptr); }
+void get_default_mess_cb(parameter*x) { parameter::get_default(x,nullptr); }
+void get_domain_mess_cb(parameter*x) {  parameter::get_domain(x,nullptr); }
+void get_bounding_mode_mess_cb(parameter*x) { parameter::get_bounding_mode(x,nullptr); }
+void get_type_mess_cb(parameter*x) { parameter::get_type(x,nullptr); }
+void get_access_mode_mess_cb(parameter*x) { parameter::get_access_mode(x,nullptr); }
+void get_repetition_filter_mess_cb(parameter*x) { parameter::get_repetition_filter(x,nullptr); }
+
 void parameter_base::class_setup(t_eclass* c)
 {
   object_base :: class_setup(c);
@@ -582,31 +590,31 @@ void parameter_base::class_setup(t_eclass* c)
 
 
   CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
-  eclass_addmethod(c, (method) parameter_base::get_enable,            "getenable",            A_NULL, 0);
+  eclass_addmethod(c, (method) get_enable_mess_cb,            "getenable",            A_NULL, 0);
 
   CLASS_ATTR_ATOM_VARSIZE(c, "default",           0, parameter_base, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
-  eclass_addmethod(c, (method) parameter_base::get_default,           "getdefault",           A_NULL, 0);
+  eclass_addmethod(c, (method) get_default_mess_cb,           "getdefault",           A_NULL, 0);
 
   CLASS_ATTR_ATOM_VARSIZE(c, "range",             0, parameter_base, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
-  eclass_addmethod(c, (method) parameter_base::get_domain,             "getrange",             A_NULL, 0);
+  eclass_addmethod(c, (method) get_domain_mess_cb,             "getrange",             A_NULL, 0);
 
   CLASS_ATTR_ATOM_VARSIZE(c, "min",               0, parameter_base, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
-  eclass_addmethod(c, (method) parameter_base::get_domain,               "getmin",               A_NULL, 0);
+  eclass_addmethod(c, (method) get_domain_mess_cb,               "getmin",               A_NULL, 0);
 
   CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, parameter_base, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
-  eclass_addmethod(c, (method) parameter_base::get_domain,               "getmax",               A_NULL, 0);
+  eclass_addmethod(c, (method) get_domain_mess_cb,               "getmax",   A_NULL, 0);
 
   CLASS_ATTR_SYMBOL(      c, "clip", 0, parameter_base, m_bounding_mode);
-  eclass_addmethod(c, (method) parameter_base::get_bounding_mode,     "getclip",     A_NULL, 0);
+  eclass_addmethod(c, (method) get_bounding_mode_mess_cb,     "getclip",     A_NULL, 0);
 
   CLASS_ATTR_SYMBOL(c, "type", 0, parameter_base, m_type);
-  eclass_addmethod(c, (method) parameter_base::get_type,              "gettype",              A_NULL, 0);
+  eclass_addmethod(c, (method) get_type_mess_cb,              "gettype",     A_NULL, 0);
 
   CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
-  eclass_addmethod(c, (method) parameter_base::get_access_mode,       "getmode",       A_NULL, 0);
+  eclass_addmethod(c, (method) get_access_mode_mess_cb,       "getmode",     A_NULL, 0);
 
   CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
-  eclass_addmethod(c, (method) parameter_base::get_repetition_filter, "getrepetitions", A_NULL, 0);
+  eclass_addmethod(c, (method) get_repetition_filter_mess_cb, "getrepetitions", A_NULL, 0);
 
   CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
 
