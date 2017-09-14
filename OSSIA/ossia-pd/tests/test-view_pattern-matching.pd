@@ -1,0 +1,12 @@
+#N canvas 528 134 268 122 10;
+#X obj 24 19 ø.param test.<1..12>/machin;
+#X obj 27 62 print;
+#N canvas 528 279 268 114 view 1;
+#X obj 45 26 ø.view test.<3..5>;
+#X obj 89 65 ø.remote machin;
+#X floatatom 48 66 5 0 0 0 - - -, f 5;
+#X connect 1 0 2 0;
+#X connect 2 0 1 0;
+#X restore 148 61 pd view;
+#X connect 0 0 1 0;
+#X connect 0 1 1 0;
