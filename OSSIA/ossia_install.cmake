@@ -30,6 +30,7 @@ elseif(OSSIA_QML)
     install(
         TARGETS ossia
         LIBRARY DESTINATION Ossia/
+        RUNTIME DESTINATION Ossia/
         )
     install(
         FILES

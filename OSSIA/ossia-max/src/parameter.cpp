@@ -213,10 +213,10 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
               (t_object*)this,
               "type should one of: float, symbol, int, vec2f, "
               "vec3f, vec4f, bool, list, char");
-      
+
         return false;
       }
-      
+
       ossia::net::set_priority(local_param->get_node(), m_priority);
 
       ossia::net::set_disabled(local_param->get_node(), !m_enable);

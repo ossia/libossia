@@ -447,6 +447,7 @@ std::string canonicalize_str(std::string str)
     // 1. find all [a-z0-9XYZ]
     static const std::regex rx_class{"\\[[a-zA-Z0-9-]+\\]"};
 
+    std::replace(str.begin(), str.end(), '|', ',');
     struct rx_pos
     {
       std::size_t start{}, length{};

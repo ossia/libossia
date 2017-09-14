@@ -88,7 +88,7 @@ its properties as attributes, f 88;
 type when none specified;
 #X obj 406 686 ossia;
 #X msg 406 662 expose oscquery;
-#X text 666 246 impulse : bang (only useful with SET or GET access_modes
+#X text 666 246 impulse : bang (only useful with SET or GET mode
 , f 61;
 #X text 668 227 list : list of anything, f 61;
 #X text 653 728 @enable <0|1> enable/disable the parameter \, default:
@@ -103,7 +103,7 @@ vector element., f 61;
 #X text 650 306 @range <float> <float> define min and max at the same
 time for all elements for list or vector type;
 #X obj 53 367 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
+"My beautiful red" @tags color beautiful @clip both @mode
 bi @range 0 2;
 #N canvas 749 93 740 913 more_about_range_and_minmax 0;
 #X obj 93 234 list prepend set;
@@ -130,7 +130,7 @@ bi @range 0 2;
 #X obj 524 858 print;
 #X obj 449 829 route address;
 #X obj 98 771 ossia.param my_list @type vec4f @min -1 -2 -3 -4 @max
-1 2 3 4 @bounding_mode clip, f 62;
+1 2 3 4 @clip both, f 62;
 #X msg 98 721 \$1 \$1 \$1 \$1 \$1;
 #X msg 274 715 min 0 0 0 0;
 #X msg 262 680 max 10 20 30 40;
@@ -140,9 +140,9 @@ bi @range 0 2;
 #X msg 58 369 range;
 #X msg 126 600 string;
 #X obj 126 524 ossia.param my_string @type string @range bikini caleçon
-string culotte sling @bounding_mode clip @default string;
-#X obj 93 198 ossia.param my_list @type list @range -10 10 @bounding_mode
-clip @default 26 37 18 -20 2;
+string culotte sling @clip both @default string;
+#X obj 93 198 ossia.param my_list @type list @range -10 10 @clip
+both @default 26 37 18 -20 2;
 #X text 137 349 range attribute define a list of possible value for
 a string parameter.;
 #X msg 95 416 range bikini caleçon string culotte sling;
@@ -151,7 +151,7 @@ float-list minimum and maximum.;
 #X msg 93 114 \$1 \$1 \$1 \$1 \$1;
 #X msg 108 140 range 0 1;
 #X msg 117 166 range 0 127;
-#X msg 75 666 bounding_mode wrap;
+#X msg 75 666 clip wrap;
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
 #X connect 3 0 37 0;
@@ -266,7 +266,7 @@ float-list minimum and maximum.;
 #X msg 315 243 getenable;
 #X msg 356 309 description Something meaningful;
 #X obj 30 524 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
+"My beautiful red" @tags color beautiful @clip both @mode
 bi @range 0 2;
 #X text 20 6 Each attribute can be set and get via a message from the
 patcher.;
@@ -279,10 +279,10 @@ patcher.;
 #X msg 547 364 mode get;
 #X msg 561 386 getmode;
 #X msg 366 329 description nothing;
-#X msg 390 49 clip both;
-#X msg 400 70 clip low;
-#X msg 415 91 clip free;
-#X msg 427 112 getclip;
+#X msg 390 49 both both;
+#X msg 400 70 both low;
+#X msg 415 91 both free;
+#X msg 427 112 getboth;
 #X obj 530 539 s \$0-param_bar;
 #X msg 554 514 getrate;
 #X msg 530 489 rate \$1;
@@ -351,7 +351,7 @@ output, f 66;
 #X obj 425 178 symbol;
 #X symbolatom 425 200 25 0 0 0 - - -, f 25;
 #X obj 50 117 ø.param test.[0-5]/bar.[1-3]/b[a-c]r.[0-1] @type float
-@default 12 @bounding_mode CLIP;
+@default 12 @clip both;
 #X text 43 32 Several parameters can be created in a row in one ossia.param
 object., f 74;
 #X text 44 58 This is done by using brackets for defining a range of
@@ -380,7 +380,7 @@ write or both \, could be : BI (default) \, GET \, SET \, RW \, R \,
 W;
 #X text 651 484 @repetitions <float> enable/disable repetitions \,
 could be 0 or 1 - default: 1 when none specified;
-#X text 651 409 @clip <symbol> defines behavior when value go out of
+#X text 651 409 @both <symbol> defines behavior when value go out of
 range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
 LOW \, HIGH, f 68;
 #X text 652 519 @rate: how often (in ms) the value is output - default
