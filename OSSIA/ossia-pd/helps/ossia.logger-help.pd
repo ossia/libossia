@@ -1,4 +1,4 @@
-#N canvas 52 94 726 344 10;
+#N canvas 682 247 726 344 10;
 #X obj 60 276 ossia.logger;
 #X msg 347 108 error My error message;
 #X msg 347 138 trace My trace message;

@@ -1563,7 +1563,7 @@
 									"numoutlets" : 0,
 									"patching_rect" : [ 47.0, 415.0, 192.0, 78.0 ],
 									"style" : "",
-									"text" : "Change bounding_mode attribute value and see how incoming value gets constrained.",
+									"text" : "Change 'clip' attribute value and see how incoming value gets constrained.",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -1655,7 +1655,7 @@
 									"numoutlets" : 0,
 									"patching_rect" : [ 47.0, 206.0, 192.0, 78.0 ],
 									"style" : "",
-									"text" : "With no bounding_mode defined, range is indicative and value can exceed the set range",
+									"text" : "With no 'clip' defined, range is indicative and value can exceed the set range",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 

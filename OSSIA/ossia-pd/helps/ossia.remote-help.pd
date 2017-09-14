@@ -57,7 +57,7 @@ can use another (convertible unit) - see;
 #X floatatom 51 201 5 0 0 0 - - -, f 5;
 #X obj 36 180 ø.remote freq;
 #X obj 37 100 ø.param freq @unit time.Hz @default 440 @range 20 20000
-@bounding_mode clip, f 42;
+@clip both, f 42;
 #X connect 0 0 15 0;
 #X connect 2 0 3 0;
 #X connect 3 0 2 0;
