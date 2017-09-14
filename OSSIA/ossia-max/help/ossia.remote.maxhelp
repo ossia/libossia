@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 89.0, 238.0, 1213.0, 774.0 ],
+		"rect" : [ 100.0, 100.0, 1123.0, 772.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1213.0, 748.0 ],
+						"rect" : [ 100.0, 126.0, 1123.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -87,12 +87,72 @@
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
+									"id" : "obj-45",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 69.0, 704.0, 184.0, 21.0 ],
+									"style" : "",
+									"text" : "see help patcher for more on this",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-44",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 58.0, 553.0, 231.0, 35.0 ],
+									"style" : "",
+									"text" : "you can also access a row of parameteres \nwith a list thanks to ossia.remote_array",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"contdata" : 1,
+									"id" : "obj-29",
+									"maxclass" : "multislider",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 36.0, 593.0, 275.0, 72.0 ],
+									"setminmax" : [ 0.0, 1.0 ],
+									"setstyle" : 1,
+									"size" : 3,
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-27",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 36.0, 676.0, 269.0, 22.0 ],
+									"style" : "",
+									"text" : "ossia.remote_array my_spat.1/source.{1..3}/gain"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
 									"id" : "obj-31",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 41.0, 144.0, 164.0, 21.0 ],
-									"presentation_rect" : [ 262.0, 148.0, 0.0, 0.0 ],
+									"patching_rect" : [ 36.0, 147.0, 164.0, 21.0 ],
 									"style" : "",
 									"text" : "let's create some parameters:",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -104,13 +164,13 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-28",
-									"linecount" : 8,
+									"linecount" : 9,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 574.0, 130.0, 468.0, 136.0 ],
+									"patching_rect" : [ 554.0, 183.0, 468.0, 150.0 ],
 									"style" : "",
-									"text" : "Syntax is:\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers (one digit at a time,\n see below for numbers above 10)\n\n{1..12} wil match instances for all numbers between 1 and 12 \n{A,b,some,things} will string between commas (avoid spaces)\n",
+									"text" : "Syntax is:\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers (one digit at a time,\n see below for numbers above 10)\n\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} wil match instances for all numbers between 1 and 12 \n{A,b,some,things} will string between commas (avoid spaces)\n",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -123,7 +183,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 570.0, 585.5, 283.0, 22.0 ],
+									"patching_rect" : [ 563.0, 688.5, 283.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_spit.[a-c]/source{.{1..3}\\,d}/gain"
 								}
@@ -135,7 +195,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 810.0, 363.0, 93.0, 22.0 ],
+									"patching_rect" : [ 803.0, 476.0, 93.0, 22.0 ],
 									"style" : "",
 									"text" : "print @popup 1"
 								}
@@ -150,7 +210,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 570.0, 350.0, 50.0, 22.0 ],
+									"patching_rect" : [ 563.0, 463.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -163,9 +223,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 350.0, 150.0, 35.0 ],
+									"patching_rect" : [ 644.0, 463.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.3/source.1/gain"
+									"text" : "address my_spat.1/source.1/gain"
 								}
 
 							}
@@ -180,7 +240,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 810.0, 296.5, 195.0, 49.0 ],
+									"patching_rect" : [ 803.0, 409.5, 195.0, 49.0 ],
 									"style" : "",
 									"text" : "Use the brace syntax to bind to a group of nodes",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -196,7 +256,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 570.0, 276.0, 50.0, 22.0 ],
+									"patching_rect" : [ 563.0, 389.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -209,7 +269,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 570.0, 310.0, 235.0, 22.0 ],
+									"patching_rect" : [ 563.0, 423.0, 235.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_spat.{1..3}/source.1/gain"
 								}
@@ -221,7 +281,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 266.0, 583.0, 93.0, 22.0 ],
+									"patching_rect" : [ 266.0, 476.0, 93.0, 22.0 ],
 									"style" : "",
 									"text" : "print @popup 1"
 								}
@@ -233,7 +293,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 812.0, 544.0, 93.0, 22.0 ],
+									"patching_rect" : [ 805.0, 647.0, 93.0, 22.0 ],
 									"style" : "",
 									"text" : "print @popup 1"
 								}
@@ -248,7 +308,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 238.0, 230.0, 221.0, 22.0 ],
 									"style" : "",
-									"text" : "address my_spat.3/source.3/gain"
+									"text" : "address my_spat.1/source.3/gain"
 								}
 
 							}
@@ -261,7 +321,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 570.0, 531.0, 50.0, 22.0 ],
+									"patching_rect" : [ 563.0, 634.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -274,9 +334,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 531.0, 150.0, 35.0 ],
+									"patching_rect" : [ 644.0, 634.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spit.c/sourced/gain"
+									"text" : "address my_spat.1/source.3/gain"
 								}
 
 							}
@@ -291,7 +351,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 862.0, 477.5, 174.0, 49.0 ],
+									"patching_rect" : [ 855.0, 580.5, 174.0, 49.0 ],
 									"style" : "",
 									"text" : "More can be achieved with regular expressions",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -307,7 +367,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 570.0, 457.0, 50.0, 22.0 ],
+									"patching_rect" : [ 563.0, 560.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -320,7 +380,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 570.0, 491.0, 261.0, 22.0 ],
+									"patching_rect" : [ 563.0, 594.0, 261.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_sp{a\\,i}t.[1-3a-c]/source*/gain"
 								}
@@ -335,7 +395,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 41.0, 570.0, 50.0, 22.0 ],
+									"patching_rect" : [ 41.0, 463.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -348,7 +408,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 102.0, 570.0, 150.0, 35.0 ],
+									"patching_rect" : [ 102.0, 463.0, 150.0, 35.0 ],
 									"style" : "",
 									"text" : "address my_spat.1/source.3/gain"
 								}
@@ -365,9 +425,9 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 272.0, 516.5, 174.0, 49.0 ],
+									"patching_rect" : [ 272.0, 409.5, 174.0, 49.0 ],
 									"style" : "",
-									"text" : "Use a wildcard to bind to any instance of a node",
+									"text" : "Use a wildcard to bind to every instance of a node",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -381,7 +441,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 41.0, 496.0, 50.0, 22.0 ],
+									"patching_rect" : [ 41.0, 389.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -394,9 +454,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 41.0, 530.0, 211.0, 22.0 ],
+									"patching_rect" : [ 41.0, 423.0, 211.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.remote my_spat.1/source.*/gain"
+									"text" : "ossia.remote my_spat.1/source!/gain"
 								}
 
 							}
@@ -409,7 +469,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 41.0, 400.0, 50.0, 22.0 ],
+									"patching_rect" : [ 41.0, 293.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -423,7 +483,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 28.0, 230.0, 118.0, 22.0 ],
 									"style" : "",
-									"text" : "0.012"
+									"text" : "0.319444"
 								}
 
 							}
@@ -435,7 +495,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 41.0, 434.0, 213.0, 22.0 ],
+									"patching_rect" : [ 41.0, 327.0, 213.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_spat.1/source.1/gain"
 								}
@@ -491,7 +551,7 @@
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
-									"midpoints" : [ 50.5, 459.0, 26.0, 459.0, 26.0, 396.0, 50.5, 396.0 ],
+									"midpoints" : [ 50.5, 352.0, 26.0, 352.0, 26.0, 289.0, 50.5, 289.0 ],
 									"source" : [ "obj-1", 0 ]
 								}
 
@@ -568,6 +628,21 @@
 									"destination" : [ "obj-22", 1 ],
 									"order" : 1,
 									"source" : [ "obj-25", 2 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-29", 0 ],
+									"midpoints" : [ 45.5, 710.0, 19.0, 710.0, 19.0, 578.0, 45.5, 578.0 ],
+									"source" : [ "obj-27", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-27", 0 ],
+									"source" : [ "obj-29", 0 ]
 								}
 
 							}
@@ -652,7 +727,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1213.0, 748.0 ],
+						"rect" : [ 0.0, 26.0, 1123.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1107,7 +1182,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1213.0, 748.0 ],
+						"rect" : [ 0.0, 26.0, 1123.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1170,7 +1245,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 89.0, 264.0, 1213.0, 748.0 ],
+						"rect" : [ 0.0, 26.0, 1123.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1873,7 +1948,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1213.0, 748.0 ],
+						"rect" : [ 0.0, 26.0, 1123.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2575,6 +2650,13 @@
 				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
 				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "ossia.remote_array.maxpat",
+				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
+				"patcherrelativepath" : "../patchers",
+				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{

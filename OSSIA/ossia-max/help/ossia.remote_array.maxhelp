@@ -149,27 +149,13 @@
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-4",
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 664.0, 73.5, 369.0, 20.0 ],
-									"presentation_rect" : [ 666.0, 73.5, 0.0, 0.0 ],
+									"patching_rect" : [ 858.0, 446.0, 242.0, 33.0 ],
 									"style" : "",
-									"text" : "see: https://github.com/OSSIA/libossia/issues/205"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-2",
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 664.0, 49.5, 369.0, 20.0 ],
-									"presentation_rect" : [ 232.0, 163.5, 0.0, 0.0 ],
-									"style" : "",
-									"text" : "WARNING: THIS CURRENTLY CRASHES WHILE IN OVERDRIVE",
-									"textcolor" : [ 0.784314, 0.145098, 0.023529, 1.0 ]
+									"text" : "notice that this will only work with one level of pattern-matching expression"
 								}
 
 							}
@@ -318,7 +304,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 32.0, 267.5, 350.0, 135.0 ],
+									"patching_rect" : [ 32.0, 279.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 16,
