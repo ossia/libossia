@@ -66,7 +66,7 @@ read_file(const std::string& filename);
 
 OSSIA_EXPORT void apply_preset(
     ossia::net::node_base&, const presets::preset&,
-    keep_arch_type t = keep_arch_on, presets::instance_functions = {});
+    keep_arch_type t = keep_arch_on, presets::instance_functions = {}, bool allow_nonterminal = false);
 
 OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&);
 
