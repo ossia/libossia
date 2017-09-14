@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 246.0, 114.0, 1259.0, 837.0 ],
+		"rect" : [ 100.0, 100.0, 1259.0, 837.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1158,7 +1158,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 246.0, 140.0, 1259.0, 811.0 ],
+						"rect" : [ 100.0, 126.0, 1259.0, 811.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1188,26 +1188,123 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
-									"id" : "obj-52",
+									"id" : "obj-30",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 690.0, 299.0, 43.0, 20.0 ],
+									"patching_rect" : [ 892.0, 636.5, 301.0, 20.0 ],
 									"style" : "",
-									"text" : "howto"
+									"text" : "the device name can be prepended to the address, too"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"id" : "obj-51",
+									"bgcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
+									"bgoncolor" : [ 0.93, 0.93, 0.93, 1.0 ],
+									"fontface" : 1,
+									"fontname" : "Helvetica Neue Bold",
+									"id" : "obj-33",
+									"ignoreclick" : 1,
+									"legacytextcolor" : 1,
+									"maxclass" : "textbutton",
+									"numinlets" : 1,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "", "int" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 885.0, 478.0, 24.0, 24.0 ],
+									"rounded" : 180.0,
+									"style" : "",
+									"text" : "5",
+									"textcolor" : [ 1.0, 1.0, 1.0, 0.698039 ],
+									"textoncolor" : [ 1.0, 1.0, 1.0, 1.0 ],
+									"textovercolor" : [ 1.0, 1.0, 1.0, 1.0 ],
+									"usebgoncolor" : 1,
+									"usetextovercolor" : 1
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbleside" : 2,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-31",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 658.0, 253.5, 186.0, 33.0 ],
+									"patching_rect" : [ 914.0, 467.0, 207.0, 64.0 ],
 									"style" : "",
-									"text" : "get list of zeroconf-compliant devices available on the network"
+									"text" : "ossia.remotes now automatically bind to the distant ossia.device",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-29",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 677.0, 274.5, 221.0, 49.0 ],
+									"style" : "",
+									"text" : "get list of zeroconf-compliant devices available on the network",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-25",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 154.0, 461.5, 373.0, 35.0 ],
+									"style" : "",
+									"text" : "get info in the Max window on how to use the connect message",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-24",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 186.0, 514.0, 247.0, 35.0 ],
+									"style" : "",
+									"text" : "disconnect from the connected device",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-15",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 88.0, 468.0, 53.0, 22.0 ],
+									"style" : "",
+									"text" : "connect"
 								}
 
 							}
@@ -1217,7 +1314,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 820.0, 349.5, 50.0, 20.0 ],
+									"patching_rect" : [ 795.0, 349.5, 50.0, 20.0 ],
 									"style" : "",
 									"text" : "presets"
 								}
@@ -1234,7 +1331,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 751.0, 342.0, 50.0, 50.0 ],
+									"patching_rect" : [ 726.0, 342.0, 50.0, 50.0 ],
 									"style" : "",
 									"text" : "recall",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1252,7 +1349,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 650.0, 342.0, 46.0, 50.0 ],
+									"patching_rect" : [ 625.0, 342.0, 46.0, 50.0 ],
 									"style" : "",
 									"text" : "save",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1265,7 +1362,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 705.0, 349.5, 39.0, 20.0 ],
+									"patching_rect" : [ 680.0, 349.5, 39.0, 20.0 ],
 									"style" : "",
 									"text" : "and"
 								}
@@ -1278,7 +1375,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 662.0, 431.5, 72.0, 22.0 ],
+									"patching_rect" : [ 637.0, 431.5, 72.0, 22.0 ],
 									"style" : "",
 									"text" : "~/test2.json"
 								}
@@ -1291,7 +1388,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 738.0, 397.5, 72.0, 22.0 ],
+									"patching_rect" : [ 713.0, 397.5, 72.0, 22.0 ],
 									"style" : "",
 									"text" : "~/test1.json"
 								}
@@ -1305,7 +1402,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 738.0, 508.5, 73.0, 35.0 ],
+									"patching_rect" : [ 713.0, 508.5, 73.0, 35.0 ],
 									"style" : "",
 									"text" : "prepend preset load"
 								}
@@ -1318,7 +1415,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 765.0, 431.5, 72.0, 22.0 ],
+									"patching_rect" : [ 740.0, 431.5, 72.0, 22.0 ],
 									"style" : "",
 									"text" : "~/test2.json"
 								}
@@ -1332,7 +1429,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
-									"patching_rect" : [ 738.0, 467.0, 82.0, 35.0 ],
+									"patching_rect" : [ 713.0, 467.0, 82.0, 35.0 ],
 									"style" : "",
 									"text" : "conformpath max boot"
 								}
@@ -1346,7 +1443,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 641.0, 508.5, 73.0, 35.0 ],
+									"patching_rect" : [ 616.0, 508.5, 73.0, 35.0 ],
 									"style" : "",
 									"text" : "prepend preset save"
 								}
@@ -1359,7 +1456,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 641.0, 397.5, 72.0, 22.0 ],
+									"patching_rect" : [ 616.0, 397.5, 72.0, 22.0 ],
 									"style" : "",
 									"text" : "~/test1.json"
 								}
@@ -1373,22 +1470,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
-									"patching_rect" : [ 641.0, 467.0, 82.0, 35.0 ],
+									"patching_rect" : [ 616.0, 467.0, 82.0, 35.0 ],
 									"style" : "",
 									"text" : "conformpath max boot"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-24",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 616.0, 299.0, 68.0, 22.0 ],
-									"style" : "",
-									"text" : "help"
 								}
 
 							}
@@ -1411,7 +1495,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 583.0, 259.0, 68.0, 22.0 ],
+									"patching_rect" : [ 595.0, 288.0, 68.0, 22.0 ],
 									"style" : "",
 									"text" : "getdevices"
 								}
@@ -1428,7 +1512,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 606.0, 191.5, 167.0, 49.0 ],
+									"patching_rect" : [ 617.0, 201.5, 167.0, 49.0 ],
 									"style" : "",
 									"text" : "Report changes in the distant namespace",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1442,7 +1526,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 553.0, 205.0, 47.0, 22.0 ],
+									"patching_rect" : [ 564.0, 215.0, 47.0, 22.0 ],
 									"style" : "",
 									"text" : "update"
 								}
@@ -1457,7 +1541,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 937.0, 576.0, 50.0, 22.0 ],
+									"patching_rect" : [ 1041.0, 583.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1469,25 +1553,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 937.0, 544.0, 100.0, 22.0 ],
+									"patching_rect" : [ 1041.0, 551.0, 100.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote bar"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
-									"id" : "obj-33",
-									"linecount" : 3,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 937.0, 620.0, 132.0, 50.0 ],
-									"style" : "",
-									"text" : "ossia.remote now automatically bind to the distant ossia.device",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
 							}
@@ -1505,7 +1573,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 907.0, 370.0, 24.0, 24.0 ],
+									"patching_rect" : [ 888.0, 403.0, 24.0, 24.0 ],
 									"rounded" : 180.0,
 									"style" : "",
 									"text" : "4",
@@ -1526,7 +1594,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 914.0, 76.0, 50.0, 22.0 ],
+									"patching_rect" : [ 906.0, 695.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1538,7 +1606,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 914.0, 42.0, 287.0, 22.0 ],
+									"patching_rect" : [ 906.0, 663.0, 287.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote distant_device://my_distant_model/foo"
 								}
@@ -1551,7 +1619,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 933.0, 370.0, 167.0, 22.0 ],
+									"patching_rect" : [ 914.0, 404.0, 167.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.view my_distant_model"
 								}
@@ -1566,7 +1634,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 937.0, 495.0, 50.0, 22.0 ],
+									"patching_rect" : [ 914.0, 578.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1578,7 +1646,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 937.0, 468.0, 99.0, 22.0 ],
+									"patching_rect" : [ 914.0, 551.0, 99.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote foo"
 								}
@@ -1591,7 +1659,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 79.5, 502.0, 68.0, 22.0 ],
+									"patching_rect" : [ 106.0, 520.5, 68.0, 22.0 ],
 									"style" : "",
 									"text" : "disconnect"
 								}
@@ -1608,9 +1676,9 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 295.0, 446.0, 251.0, 64.0 ],
+									"patching_rect" : [ 306.0, 398.5, 247.0, 64.0 ],
 									"style" : "",
-									"text" : "oscquery & Minuit enabled devices can be connected to using connect message followed by the port of the device",
+									"text" : "oscquery & Minuit enabled devices can be connected using connect message followed by the name of the device",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -1622,7 +1690,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 77.0, 467.0, 213.0, 22.0 ],
+									"patching_rect" : [ 88.0, 419.5, 213.0, 22.0 ],
 									"style" : "",
 									"text" : "connect oscquery ws://127.0.0.1:9876"
 								}
@@ -1635,7 +1703,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 77.0, 397.5, 138.0, 22.0 ],
+									"patching_rect" : [ 81.0, 353.5, 138.0, 22.0 ],
 									"style" : "",
 									"text" : "connect distant_device"
 								}
@@ -1652,7 +1720,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 225.0, 376.5, 247.0, 64.0 ],
+									"patching_rect" : [ 229.0, 332.5, 247.0, 64.0 ],
 									"style" : "",
 									"text" : "oscquery & Minuit enabled devices can be connected using connect message followed by the name of the device",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1673,7 +1741,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 30.5, 332.0, 24.0, 24.0 ],
+									"patching_rect" : [ 30.5, 288.0, 24.0, 24.0 ],
 									"rounded" : 180.0,
 									"style" : "",
 									"text" : "3",
@@ -1714,7 +1782,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 22.5, 205.0, 24.0, 24.0 ],
+									"patching_rect" : [ 22.5, 190.5, 24.0, 24.0 ],
 									"rounded" : 180.0,
 									"style" : "",
 									"text" : "1",
@@ -1737,7 +1805,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 186.0, 177.0, 136.0, 78.0 ],
+									"patching_rect" : [ 186.0, 162.5, 136.0, 78.0 ],
 									"style" : "",
 									"text" : "Open distant ossia.device and expose it through oscquery protocole",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1751,7 +1819,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 62.0, 239.0, 53.0, 22.0 ],
+									"patching_rect" : [ 62.0, 224.5, 53.0, 22.0 ],
 									"style" : "",
 									"text" : "pcontrol"
 								}
@@ -1764,7 +1832,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 62.0, 205.0, 113.0, 22.0 ],
+									"patching_rect" : [ 62.0, 190.5, 113.0, 22.0 ],
 									"style" : "",
 									"text" : "load distant_device"
 								}
@@ -1777,7 +1845,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 62.0, 334.0, 105.0, 22.0 ],
+									"patching_rect" : [ 62.0, 290.0, 105.0, 22.0 ],
 									"style" : "",
 									"text" : "connect oscquery"
 								}
@@ -1794,7 +1862,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 174.0, 320.5, 167.0, 49.0 ],
+									"patching_rect" : [ 174.0, 276.5, 167.0, 49.0 ],
 									"style" : "",
 									"text" : "Connect to the distant device",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2281,7 +2349,7 @@
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 86.5, 496.5, 71.5, 496.5 ],
+									"midpoints" : [ 97.5, 450.75, 71.5, 450.75 ],
 									"source" : [ "obj-10", 0 ]
 								}
 
@@ -2289,7 +2357,16 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 115.5, 556.75, 71.5, 556.75 ],
 									"source" : [ "obj-13", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 97.5, 553.0, 71.5, 553.0 ],
+									"source" : [ "obj-15", 0 ]
 								}
 
 							}
@@ -2310,7 +2387,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 592.5, 555.5, 71.5, 555.5 ],
+									"midpoints" : [ 604.5, 555.5, 71.5, 555.5 ],
 									"source" : [ "obj-20", 0 ]
 								}
 
@@ -2318,23 +2395,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-17", 0 ],
-									"midpoints" : [ 946.5, 525.0, 924.0, 525.0, 924.0, 462.0, 946.5, 462.0 ],
+									"midpoints" : [ 923.5, 608.0, 901.0, 608.0, 901.0, 545.0, 923.5, 545.0 ],
 									"source" : [ "obj-22", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 625.5, 555.5, 71.5, 555.5 ],
-									"source" : [ "obj-24", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-27", 0 ],
-									"midpoints" : [ 923.5, 101.0, 901.0, 101.0, 901.0, 38.0, 923.5, 38.0 ],
+									"midpoints" : [ 915.5, 724.0, 893.0, 724.0, 893.0, 657.0, 915.5, 657.0 ],
 									"source" : [ "obj-26", 0 ]
 								}
 
@@ -2356,7 +2425,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-35", 0 ],
-									"midpoints" : [ 946.5, 601.0, 924.0, 601.0, 924.0, 538.0, 946.5, 538.0 ],
+									"midpoints" : [ 1050.5, 608.0, 1028.0, 608.0, 1028.0, 545.0, 1050.5, 545.0 ],
 									"source" : [ "obj-34", 0 ]
 								}
 
@@ -2378,7 +2447,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 562.5, 555.0, 71.5, 555.0 ],
+									"midpoints" : [ 573.5, 555.0, 71.5, 555.0 ],
 									"order" : 1,
 									"source" : [ "obj-37", 0 ]
 								}
@@ -2387,7 +2456,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-9", 1 ],
-									"midpoints" : [ 562.5, 555.5, 338.5, 555.5 ],
+									"midpoints" : [ 573.5, 555.5, 338.5, 555.5 ],
 									"order" : 0,
 									"source" : [ "obj-37", 0 ]
 								}
@@ -2396,7 +2465,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 650.5, 554.0, 71.5, 554.0 ],
+									"midpoints" : [ 625.5, 554.0, 71.5, 554.0 ],
 									"source" : [ "obj-39", 0 ]
 								}
 
@@ -2404,7 +2473,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 747.5, 553.5, 71.5, 553.5 ],
+									"midpoints" : [ 722.5, 553.5, 71.5, 553.5 ],
 									"source" : [ "obj-40", 0 ]
 								}
 
@@ -2440,7 +2509,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 71.5, 463.0, 71.5, 463.0 ],
+									"midpoints" : [ 71.5, 397.5, 71.5, 397.5 ],
 									"order" : 1,
 									"source" : [ "obj-5", 0 ]
 								}
@@ -2449,7 +2518,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-9", 1 ],
-									"midpoints" : [ 71.5, 555.5, 338.5, 555.5 ],
+									"midpoints" : [ 71.5, 555.0, 338.5, 555.0 ],
 									"order" : 0,
 									"source" : [ "obj-5", 0 ]
 								}
@@ -2465,7 +2534,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 86.5, 445.75, 71.5, 445.75 ],
+									"midpoints" : [ 90.5, 386.75, 71.5, 386.75 ],
 									"source" : [ "obj-8", 0 ]
 								}
 
