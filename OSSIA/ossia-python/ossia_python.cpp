@@ -74,35 +74,64 @@ namespace pybind11
     public:
         PYBIND11_TYPE_CASTER(ossia::value, _("value"));
 
-        bool load(handle src, bool) 
+        ossia::value check_and_cast(PyObject *source)
         {
-            PyObject *source = src.ptr();
+            ossia::value returned_value;
 
             PyObject *tmp = nullptr;
             if (PyNumber_Check(source))
             {
               if ((tmp = PyNumber_Long(source)))
-                value = (int)PyLong_AsLong(tmp);
+                returned_value = (int)PyLong_AsLong(tmp);
               else if ((tmp = PyNumber_Float(source)))
-                value = (float)PyFloat_AsDouble(tmp);
+                returned_value = (float)PyFloat_AsDouble(tmp);
             }
             else if (PyBool_Check(source))
-              value = (source == Py_True);
+              returned_value = (source == Py_True);
 #if PY_MAJOR_VERSION >= 3
             else if (PyUnicode_Check(source))
-              value = (std::string)PyUnicode_AsUTF8(source);
+              returned_value = (std::string)PyUnicode_AsUTF8(source);
 #endif
             else if (PyBytes_Check(source))
-              value = (std::string)PyBytes_AsString(source);
+              returned_value = (std::string)PyBytes_AsString(source);
             else if ((tmp = PyByteArray_FromObject(source)))
-              value = (std::string)PyByteArray_AsString(tmp);
+              returned_value = (std::string)PyByteArray_AsString(tmp);
             else if (PyList_Check(source))
-              ; // TODO: use load() recursively => needs to create and handle
+            {
+              std::vector<ossia::value> vec;
+              int n = PyList_Size(source);
+              vec.reserve(n);
+
+              PyObject *iterator = PyObject_GetIter(source);
+              PyObject *item;
+
+              while ((item = PyIter_Next(iterator)))
+              {
+                vec.push_back(check_and_cast(item));
+                Py_DECREF(item);
+              }
+
+              returned_value = std::move(vec);
+            }
 
             if (tmp)
               Py_DECREF(tmp);
 
-            return !PyErr_Occurred();
+            return returned_value;
+        }
+
+        bool load(handle src, bool) 
+        {
+            PyObject *source = src.ptr();
+
+            value = std::move(check_and_cast(source));
+
+            bool err = PyErr_Occurred();
+
+            if (err)
+              PyErr_Print();
+
+            return !err;
         }
 
         static handle cast(const ossia::value& src, return_value_policy policy , handle parent) 
