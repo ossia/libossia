@@ -78,13 +78,14 @@ unit_t parse_pretty_unit(ossia::string_view text)
 {
   static const auto map = [] {
     ossia::string_map<ossia::unit_t> t;
-    ossia::detail::list_units([&] (auto str, auto u) {
+    ossia::detail::list_units([&] (std::string str, auto u) {
+      boost::to_lower(str);
       t.insert({std::move(str), std::move(u)});
     });
     return t;
   }();
 
-  auto it = map.find(text);
+  auto it = map.find(boost::to_lower_copy(std::string(text)));
   if(it != map.end())
    return it->second;
   else
