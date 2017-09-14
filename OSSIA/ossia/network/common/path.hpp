@@ -88,7 +88,7 @@ struct OSSIA_EXPORT any_between : public path_element
 
   any_between(std::initializer_list<std::string> args) : path_element{""}
   {
-    const int N = args.size();
+    const auto N = args.size();
     if (N > 0)
     {
       address += '(';

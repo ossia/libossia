@@ -415,7 +415,7 @@ void parameter_base::get_enable(parameter_base*x)
 }
 
 template<std::size_t N>
-ossia::value to_array(t_atom* argv)
+ossia::optional<std::array<float, N>> to_array(t_atom* argv)
 {
   std::array<float, N> arr;
   for(std::size_t i = 0; i < N; i++)
@@ -429,8 +429,7 @@ ossia::value to_array(t_atom* argv)
         arr[i] = (float)atom_getlong(&argv[i]); 
         break;
       default: 
-        post("Bade type: %d", (int)argv[i].a_type);
-        return {};
+        return ossia::none;
     }
   }
   return arr;
