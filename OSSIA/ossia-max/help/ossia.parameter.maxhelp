@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 100.0, 100.0, 1348.0, 767.0 ],
+		"rect" : [ 100.0, 100.0, 1110.0, 770.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,19 @@
 		"showontab" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 415.0, 153.0, 100.0, 22.0 ],
+					"style" : "",
+					"text" : "ossia.device"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"annotation" : "none",
 					"id" : "obj-6",
 					"maxclass" : "newobj",
@@ -55,7 +68,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -92,7 +105,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 23.0, 302.0, 647.5, 136.0 ],
+									"patching_rect" : [ 23.0, 302.0, 647.5, 122.0 ],
 									"style" : "",
 									"text" : "Syntax is:\n[a-u] will create one instance of each character between  a and u\n[abc] will create one instance for each character\n[1-5] this works also for numbers (one digit at a time, see below for numbers above 10)\n\n{1..12} wil create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 2 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -472,7 +485,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 776.0, 287.0, 286.0, 22.0 ],
+									"patching_rect" : [ 749.0, 287.0, 286.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -493,7 +506,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 776.0, 205.0, 73.0, 22.0 ],
+									"patching_rect" : [ 749.0, 205.0, 73.0, 22.0 ],
 									"style" : "",
 									"text" : "namespace"
 								}
@@ -513,7 +526,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 4,
 									"outlettype" : [ "list", "", "", "" ],
-									"patching_rect" : [ 776.0, 338.0, 324.0, 288.0 ],
+									"patching_rect" : [ 749.0, 338.0, 324.0, 288.0 ],
 									"rows" : 50
 								}
 
@@ -527,7 +540,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 776.0, 242.0, 272.0, 35.0 ],
+									"patching_rect" : [ 749.0, 242.0, 272.0, 35.0 ],
 									"style" : "",
 									"text" : "ossia.model Multiples @description \"A patchers declared as a model\" @tags maxhelp demo"
 								}
@@ -540,13 +553,12 @@
 									"bubbletextmargin" : 10,
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
-									"hidden" : 1,
 									"id" : "obj-39",
 									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 580.0, 185.0, 186.0, 64.0 ],
+									"patching_rect" : [ 553.0, 185.0, 186.0, 64.0 ],
 									"style" : "",
 									"text" : "Click 'namespace' message to see how node instances get created",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -577,9 +589,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 28.0, 201.0, 517.0, 22.0 ],
+									"patching_rect" : [ 28.0, 201.0, 446.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_spat.{1..5}/source.{1..3}/gain.{L\\,R\\,C\\,Ls\\,Rs} @type float @unit gain.linear"
+									"text" : "ossia.parameter my_spat.{1..5}/source.{1..3}/gain.{L\\,R\\,C\\,Ls\\,Rs} @type gain.linear"
 								}
 
 							}
@@ -611,7 +623,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-9", 1 ],
-									"midpoints" : [ 785.5, 238.5, 1052.5, 238.5 ],
+									"midpoints" : [ 758.5, 238.5, 1025.5, 238.5 ],
 									"order" : 0,
 									"source" : [ "obj-1", 0 ]
 								}
@@ -627,7 +639,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-16", 0 ],
-									"midpoints" : [ 785.5, 315.0, 785.5, 315.0 ],
+									"midpoints" : [ 758.5, 315.0, 758.5, 315.0 ],
 									"source" : [ "obj-9", 0 ]
 								}
 
@@ -676,7 +688,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -713,7 +725,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 56.0, 619.5, 305.0, 21.0 ],
-									"presentation_rect" : [ 51.0, 615.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "and the unit for conversion can be set in its short form:",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -729,7 +740,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 52.0, 481.0, 305.0, 21.0 ],
-									"presentation_rect" : [ 45.0, 474.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "hence, units can be set directly as @type, such as below:",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -746,7 +756,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 41.0, 435.0, 384.0, 35.0 ],
-									"presentation_rect" : [ 75.0, 467.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "libossia has a mechanism to automatically give the relevant type to the chosen unit, and also to lookup units among categories",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1282,7 +1291,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1317,7 +1326,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
-									"patching_rect" : [ 852.0, 221.0, 24.0, 24.0 ],
+									"patching_rect" : [ 774.0, 227.5, 24.0, 24.0 ],
 									"style" : ""
 								}
 
@@ -1333,7 +1342,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 947.0, 462.5, 187.0, 64.0 ],
+									"patching_rect" : [ 869.0, 469.0, 187.0, 64.0 ],
 									"style" : "",
 									"text" : "Use @min & @max and notice how different ranges are applied to list items",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1348,7 +1357,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 833.0, 477.0, 101.0, 35.0 ],
+									"patching_rect" : [ 755.0, 483.5, 101.0, 35.0 ],
 									"style" : "",
 									"text" : "min 0. -1. 2. 0., max 1. 1. 10. 5."
 								}
@@ -1363,7 +1372,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 878.0, 356.0, 271.0, 78.0 ],
+									"patching_rect" : [ 800.0, 362.5, 271.0, 78.0 ],
 									"style" : "",
 									"text" : "With tuple values, @range attribute defines a common range for all items in the tuple.\n\nPer items ranges can be set using the @min & @max attributes",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1379,7 +1388,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 784.0, 356.0, 50.0, 22.0 ],
+									"patching_rect" : [ 706.0, 362.5, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1391,7 +1400,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 784.0, 324.0, 150.0, 20.0 ],
+									"patching_rect" : [ 706.0, 330.5, 150.0, 20.0 ],
 									"style" : "",
 									"text" : "Tuple and range",
 									"textcolor" : [ 1.0, 1.0, 1.0, 1.0 ]
@@ -1405,9 +1414,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 784.0, 618.0, 131.0, 22.0 ],
+									"patching_rect" : [ 706.0, 624.5, 131.0, 22.0 ],
 									"style" : "",
-									"text" : "1. 1. 10. 5."
+									"text" : "0. 0. 0. 0."
 								}
 
 							}
@@ -1418,7 +1427,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 784.0, 383.0, 74.0, 22.0 ],
+									"patching_rect" : [ 706.0, 389.5, 74.0, 22.0 ],
 									"style" : "",
 									"text" : "$1 $1 $1 $1"
 								}
@@ -1433,7 +1442,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 784.0, 555.0, 232.0, 35.0 ],
+									"patching_rect" : [ 706.0, 561.5, 232.0, 35.0 ],
 									"style" : "",
 									"text" : "ossia.parameter a_list @type list @range -1. 1. @clip both @defval 0. 0. 0. 0."
 								}
@@ -1448,7 +1457,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 889.0, 221.0, 271.0, 35.0 ],
+									"patching_rect" : [ 811.0, 227.5, 271.0, 35.0 ],
 									"style" : "",
 									"text" : "When parameter is of type string, @range can be used to define possible values",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1462,7 +1471,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 784.0, 64.0, 150.0, 20.0 ],
+									"patching_rect" : [ 706.0, 70.5, 150.0, 20.0 ],
 									"style" : "",
 									"text" : "Strings and range",
 									"textcolor" : [ 1.0, 1.0, 1.0, 1.0 ]
@@ -1476,7 +1485,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 784.0, 221.0, 63.0, 22.0 ],
+									"patching_rect" : [ 706.0, 227.5, 63.0, 22.0 ],
 									"style" : "",
 									"text" : "cherry"
 								}
@@ -1489,7 +1498,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 939.0, 113.0, 44.0, 22.0 ],
+									"patching_rect" : [ 861.0, 119.5, 44.0, 22.0 ],
 									"style" : "",
 									"text" : "potato"
 								}
@@ -1502,7 +1511,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 889.0, 113.0, 44.0, 22.0 ],
+									"patching_rect" : [ 811.0, 119.5, 44.0, 22.0 ],
 									"style" : "",
 									"text" : "cherry"
 								}
@@ -1515,7 +1524,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 844.0, 113.0, 40.0, 22.0 ],
+									"patching_rect" : [ 766.0, 119.5, 40.0, 22.0 ],
 									"style" : "",
 									"text" : "apple"
 								}
@@ -1528,7 +1537,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 784.0, 113.0, 51.0, 22.0 ],
+									"patching_rect" : [ 706.0, 119.5, 51.0, 22.0 ],
 									"style" : "",
 									"text" : "banana"
 								}
@@ -1543,7 +1552,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 784.0, 158.0, 232.0, 35.0 ],
+									"patching_rect" : [ 706.0, 164.5, 232.0, 35.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_menu @type string @range banana apple cherry @clip both"
 								}
@@ -1561,7 +1570,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 47.0, 415.0, 192.0, 78.0 ],
+									"patching_rect" : [ 47.0, 415.0, 180.0, 78.0 ],
 									"style" : "",
 									"text" : "Change 'clip' attribute value and see how incoming value gets constrained.",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1653,7 +1662,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 47.0, 206.0, 192.0, 78.0 ],
+									"patching_rect" : [ 47.0, 206.0, 180.0, 78.0 ],
 									"style" : "",
 									"text" : "With no 'clip' defined, range is indicative and value can exceed the set range",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1785,7 +1794,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-25", 1 ],
-									"midpoints" : [ 793.5, 213.5, 837.5, 213.5 ],
+									"midpoints" : [ 715.5, 220.0, 759.5, 220.0 ],
 									"order" : 1,
 									"source" : [ "obj-18", 0 ]
 								}
@@ -1794,7 +1803,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-3", 0 ],
-									"midpoints" : [ 793.5, 213.5, 861.5, 213.5 ],
+									"midpoints" : [ 715.5, 220.0, 783.5, 220.0 ],
 									"order" : 0,
 									"source" : [ "obj-18", 0 ]
 								}
@@ -1810,7 +1819,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 0 ],
-									"midpoints" : [ 793.5, 146.5, 793.5, 146.5 ],
+									"midpoints" : [ 715.5, 153.0, 715.5, 153.0 ],
 									"source" : [ "obj-21", 0 ]
 								}
 
@@ -1818,7 +1827,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 0 ],
-									"midpoints" : [ 853.5, 146.5, 793.5, 146.5 ],
+									"midpoints" : [ 775.5, 153.0, 715.5, 153.0 ],
 									"source" : [ "obj-22", 0 ]
 								}
 
@@ -1826,7 +1835,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 0 ],
-									"midpoints" : [ 898.5, 146.5, 793.5, 146.5 ],
+									"midpoints" : [ 820.5, 153.0, 715.5, 153.0 ],
 									"source" : [ "obj-23", 0 ]
 								}
 
@@ -1834,7 +1843,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-18", 0 ],
-									"midpoints" : [ 948.5, 146.5, 793.5, 146.5 ],
+									"midpoints" : [ 870.5, 153.0, 715.5, 153.0 ],
 									"source" : [ "obj-24", 0 ]
 								}
 
@@ -1842,7 +1851,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-40", 0 ],
-									"midpoints" : [ 793.5, 406.5, 793.5, 406.5 ],
+									"midpoints" : [ 715.5, 413.0, 715.5, 413.0 ],
 									"source" : [ "obj-39", 0 ]
 								}
 
@@ -1919,7 +1928,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1982,7 +1991,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2012,6 +2021,37 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+									"id" : "obj-13",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 667.0, 647.5, 248.0, 22.0 ],
+									"style" : "",
+									"text" : "ossia.parameter my_other_color @type argb"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-5",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 663.0, 587.5, 293.0, 35.0 ],
+									"presentation_rect" : [ 664.0, 587.5, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "as demonstrated in the Units tab, @type can also included extended types with units, such as",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"format" : 6,
 									"id" : "obj-24",
 									"maxclass" : "flonum",
@@ -2019,7 +2059,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 722.5, 426.0, 50.0, 22.0 ],
+									"patching_rect" : [ 734.5, 344.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -2033,7 +2073,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 651.0, 426.0, 50.0, 22.0 ],
+									"patching_rect" : [ 663.0, 344.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -2045,9 +2085,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 655.0, 518.0, 86.5, 22.0 ],
+									"patching_rect" : [ 667.0, 436.0, 86.5, 22.0 ],
 									"style" : "",
-									"text" : "0. 0.06"
+									"text" : "0. 0."
 								}
 
 							}
@@ -2058,7 +2098,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 456.0, 90.5, 22.0 ],
+									"patching_rect" : [ 663.0, 374.0, 90.5, 22.0 ],
 									"style" : "",
 									"text" : "pak 0. 0."
 								}
@@ -2073,7 +2113,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 651.0, 368.5, 246.0, 50.0 ],
+									"patching_rect" : [ 663.0, 286.5, 246.0, 50.0 ],
 									"style" : "",
 									"text" : "Values represented as a list of fixed size floats such as 2d or 3d position, color, etc. can be specified using vecnf type",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2092,7 +2132,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 488.0, 224.0, 152.0, 64.0 ],
+									"patching_rect" : [ 500.0, 142.0, 152.0, 64.0 ],
 									"style" : "",
 									"text" : "Tuple of values (aka lists, including symbols)",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2106,7 +2146,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 280.0, 229.0, 22.0 ],
+									"patching_rect" : [ 663.0, 198.0, 229.0, 22.0 ],
 									"style" : "",
 									"text" : "1. 2. 3. 4. anything"
 								}
@@ -2119,7 +2159,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 760.0, 210.0, 120.0, 22.0 ],
+									"patching_rect" : [ 772.0, 128.0, 120.0, 22.0 ],
 									"style" : "",
 									"text" : "any kind of stuff"
 								}
@@ -2132,7 +2172,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 651.0, 210.0, 96.0, 22.0 ],
+									"patching_rect" : [ 663.0, 128.0, 96.0, 22.0 ],
 									"style" : "",
 									"text" : "1 2 3 4 anything"
 								}
@@ -2146,7 +2186,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 651.0, 245.0, 193.0, 22.0 ],
+									"patching_rect" : [ 663.0, 163.0, 193.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_list @type list"
 								}
@@ -2160,7 +2200,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 651.0, 601.0, 219.0, 22.0 ],
+									"patching_rect" : [ 663.0, 519.0, 219.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_color @type vec4f"
 								}
@@ -2174,7 +2214,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 651.0, 564.0, 247.0, 22.0 ],
+									"patching_rect" : [ 663.0, 482.0, 247.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_3dposition @type vec3f"
 								}
@@ -2188,7 +2228,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 651.0, 487.0, 247.0, 22.0 ],
+									"patching_rect" : [ 663.0, 405.0, 247.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_2dposition @type vec2f"
 								}
@@ -2628,7 +2668,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-11", 1 ],
-									"midpoints" : [ 660.5, 513.0, 732.0, 513.0 ],
+									"midpoints" : [ 672.5, 431.0, 744.0, 431.0 ],
 									"source" : [ "obj-35", 0 ]
 								}
 
@@ -2636,7 +2676,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-42", 1 ],
-									"midpoints" : [ 660.5, 273.0, 870.5, 273.0 ],
+									"midpoints" : [ 672.5, 191.0, 882.5, 191.0 ],
 									"source" : [ "obj-38", 0 ]
 								}
 
@@ -2651,7 +2691,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-38", 0 ],
-									"midpoints" : [ 769.5, 238.0, 660.5, 238.0 ],
+									"midpoints" : [ 781.5, 156.0, 672.5, 156.0 ],
 									"source" : [ "obj-41", 0 ]
 								}
 
@@ -2708,7 +2748,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1348.0, 741.0 ],
+						"rect" : [ 100.0, 126.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2737,6 +2777,18 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 507.0, 714.0, 571.0, 20.0 ],
+									"style" : "",
+									"text" : " NB: there's an ossia.device in the root patcher to make sure we don't have duplicates with other patchers"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"bubble" : 1,
 									"bubbletextmargin" : 10,
@@ -3114,6 +3166,10 @@
 			}
 , 			{
 				"name" : "ossia.model.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.device.mxo",
 				"type" : "iLaX"
 			}
  ],
