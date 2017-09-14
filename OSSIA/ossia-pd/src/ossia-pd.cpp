@@ -60,6 +60,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   setup_ossia0x2eclient();
   setup_ossia0x2edevice();
+  setup_ossia0x2elogger();
   setup_ossia0x2emodel();
   setup_ossia0x2eparam();
   setup_ossia0x2eremote();
