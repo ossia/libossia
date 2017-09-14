@@ -1,0 +1,24 @@
+#N canvas 52 94 726 344 10;
+#X obj 60 276 ossia.logger;
+#X msg 347 108 error My error message;
+#X msg 347 138 trace My trace message;
+#X msg 346 166 info My info message;
+#X msg 345 193 warning My warning message;
+#X msg 344 223 critical My critical message;
+#X msg 344 254 debug My debug message;
+#X text 64 28 follow the instructions at https://github.com/OSSIA/libossia/tree/master/Documentation/Examples/Common
+to setup a log server, f 39;
+#X msg 61 108 host ws://127.0.0.1:1337;
+#X msg 72 144 appname pd;
+#X text 343 83 several message types can be sent:;
+#X text 78 175 heartbeat (in seconds);
+#X msg 80 198 heartbeat 5;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 3 0 0 0;
+#X connect 4 0 0 0;
+#X connect 5 0 0 0;
+#X connect 6 0 0 0;
+#X connect 8 0 0 0;
+#X connect 9 0 0 0;
+#X connect 12 0 0 0;
