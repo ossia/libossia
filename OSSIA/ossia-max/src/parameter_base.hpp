@@ -63,6 +63,12 @@ public:
    * @param argv :  list of t_atom value(s)
    */
   static void push(parameter_base* x, t_symbol*, int argc, t_atom* argv);
+
+  /**
+   * @brief Send a list of key-value pairs
+   */
+  static void push_one(parameter_base* x, t_symbol* s, int argc, t_atom* argv);
+
   /**
    * @brief t_obj_base::bang send out the current value of the parameter
    * @param x

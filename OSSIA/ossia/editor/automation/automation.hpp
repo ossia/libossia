@@ -47,12 +47,12 @@ class OSSIA_EXPORT automation final : public ossia::time_process
 {
 public:
   automation();
-  automation(Destination, const ossia::behavior&);
-  automation(Destination, ossia::behavior&&);
+  automation(destination, const ossia::behavior&);
+  automation(destination, ossia::behavior&&);
 
   ~automation();
 
-  void set_destination(Destination d);
+  void set_destination(destination d);
   void set_behavior(ossia::behavior b);
 
   void clean();

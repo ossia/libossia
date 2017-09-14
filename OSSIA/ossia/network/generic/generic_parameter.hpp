@@ -61,7 +61,7 @@ public:
   /** Set a value without sending notifications **/
   void set_value_quiet(const ossia::value&) override;
   void set_value_quiet(ossia::value&&) override;
-  void set_value_quiet(const ossia::Destination&);
+  void set_value_quiet(const ossia::destination&);
 
   ossia::val_type get_value_type() const final override;
   ossia::net::generic_parameter& set_value_type(ossia::val_type) final override;

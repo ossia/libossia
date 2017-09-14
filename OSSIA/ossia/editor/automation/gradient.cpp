@@ -11,7 +11,7 @@ color_automation::color_automation()
 {
 }
 
-void color_automation::set_destination(Destination a)
+void color_automation::set_destination(destination a)
 {
   a.unit = ossia::argb_u{};
   m_parameter = std::move(a);

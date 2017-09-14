@@ -586,16 +586,16 @@ private Q_SLOTS:
     std::vector<ossia::value> t{float(-1.), float(0.), float(1.)};
     localTupleAddress->set_value(t);
 
-    Destination d1(*localTupleAddress);
+    destination d1(*localTupleAddress);
     QVERIFY(d1.index.size() == 0);
 
-    Destination d2(*localTupleAddress, ossia::destination_index{1});
+    destination d2(*localTupleAddress, ossia::destination_index{1});
     QVERIFY(d2.index.size() == 1);
     QVERIFY(d2.index[0] == 1);
 
-    Destination d3 = d1;
+    destination d3 = d1;
     QVERIFY(&d3.value.get() == &d1.value.get());
-    Destination d4 = std::move(d1);
+    destination d4 = std::move(d1);
     QVERIFY(&d4.value.get() == &d3.value.get());
   }
 

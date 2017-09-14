@@ -137,7 +137,7 @@ int main()
     // create an expression : /score/test >= {0.7, 0.7, 0.7}
     auto make_expr = [&] () {
       return expressions::make_expression_atom(
-        Destination(*local_test_address),
+        destination(*local_test_address),
         expressions::comparator::GREATER_EQUAL,
         std::vector<ossia::value>{0.7, 0.7, 0.7});
     };

@@ -137,7 +137,7 @@ private Q_SLOTS:
     auto interval_callback = std::bind(&AutomationTest::interval_callback, this, _1, _2, _3);
     auto interval = time_interval::create(interval_callback, *start_event, *end_event, 100._tv, 100._tv, 100._tv);
 
-    auto autom = std::make_unique<automation>(Destination{*address, {2}, ossia::hsv_u{}}, c);
+    auto autom = std::make_unique<automation>(destination{*address, {2}, ossia::hsv_u{}}, c);
 
     auto& tp = (ossia::time_process&) *autom;
 
@@ -147,7 +147,7 @@ private Q_SLOTS:
     auto mess = state.target<ossia::message>() ;
     QVERIFY(mess != nullptr);
 
-    ossia::message expected{Destination{*address, {2}, ossia::hsv_u{}}, float{0.5}};
+    ossia::message expected{destination{*address, {2}, ossia::hsv_u{}}, float{0.5}};
 
     ossia::print(std::cerr, *mess);
     ossia::print(std::cerr, expected);

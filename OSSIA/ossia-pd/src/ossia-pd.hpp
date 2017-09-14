@@ -21,6 +21,7 @@ namespace pd
 
 extern "C" void setup_ossia0x2eclient(void);
 extern "C" void setup_ossia0x2edevice(void);
+extern "C" void setup_ossia0x2elogger(void);
 extern "C" void setup_ossia0x2emodel(void);
 extern "C" void setup_ossia0x2eparam(void);
 extern "C" void setup_ossia0x2eremote(void);

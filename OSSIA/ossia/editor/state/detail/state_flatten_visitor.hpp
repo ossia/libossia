@@ -35,8 +35,8 @@ inline bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
 
 struct vec_merger
 {
-  const ossia::Destination& existing_dest;
-  const ossia::Destination& incoming_dest;
+  const ossia::destination& existing_dest;
+  const ossia::destination& incoming_dest;
 
   template <typename T, typename U>
   ossia::state_element operator()(T&, const U&) const
@@ -224,18 +224,18 @@ struct state_flatten_visitor_merger
   //// Message incoming
   void operator()(message& existing, const message& incoming)
   {
-    auto to_append_index_empty = incoming.destination.index.empty();
-    auto source_index_empty = existing.destination.index.empty();
+    auto to_append_index_empty = incoming.dest.index.empty();
+    auto source_index_empty = existing.dest.index.empty();
     if (incoming.message_value.valid()
         && (same_vec_type(existing.message_value, incoming.message_value)
-            || is_vec(existing.destination.address().get_value_type())))
+            || is_vec(existing.dest.address().get_value_type())))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
       auto res = ossia::apply(
-          vec_merger{existing.destination, incoming.destination},
+          vec_merger{existing.dest, incoming.dest},
           existing.message_value.v, incoming.message_value.v);
 
       if (res)
@@ -262,16 +262,16 @@ struct state_flatten_visitor_merger
     else
     {
       piecewise_message pw{
-          incoming.destination.value, {}, incoming.destination.unit};
+          incoming.dest.value, {}, incoming.dest.unit};
       if (!to_append_index_empty && !source_index_empty)
       {
         // Most complex case : we create a list big enough to host both values
         value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
-            existing.destination.index);
+            existing.dest.index);
         value_merger<true>::insert_in_list(
             pw.message_value, incoming.message_value,
-            incoming.destination.index);
+            incoming.dest.index);
       }
       // For these cases, we mix in the one that has the index;
       // the one without index information becomes index [0] :
@@ -280,13 +280,13 @@ struct state_flatten_visitor_merger
         pw.message_value.push_back(existing.message_value);
         value_merger<true>::insert_in_list(
             pw.message_value, incoming.message_value,
-            incoming.destination.index);
+            incoming.dest.index);
       }
       else if (!source_index_empty)
       {
         value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
-            existing.destination.index);
+            existing.dest.index);
         value_merger<true>::set_first_value(
             pw.message_value, incoming.message_value);
       }
@@ -297,7 +297,7 @@ struct state_flatten_visitor_merger
 
   void operator()(piecewise_message& existing, const message& incoming)
   {
-    if (incoming.destination.index.empty())
+    if (incoming.dest.index.empty())
     {
       // add it at [0]
       value_merger<true>::set_first_value(
@@ -308,7 +308,7 @@ struct state_flatten_visitor_merger
       // add it wherever possible, by extending the list as required
       value_merger<true>::insert_in_list(
           existing.message_value, incoming.message_value,
-          incoming.destination.index);
+          incoming.dest.index);
     }
   }
 
@@ -322,9 +322,9 @@ struct state_flatten_visitor_merger
       // incoming is a Float with index
       case ossia::val_type::FLOAT:
       {
-        if (!incoming.destination.index.empty())
+        if (!incoming.dest.index.empty())
         {
-          auto i = incoming.destination.index[0];
+          auto i = incoming.dest.index[0];
           if (i < N)
           {
             existing.message_value[i] = incoming.message_value.get<float>();
@@ -337,9 +337,9 @@ struct state_flatten_visitor_merger
       case ossia::value_trait<vec_type>::ossia_enum:
       {
         // With index -> set it
-        if (!incoming.destination.index.empty())
+        if (!incoming.dest.index.empty())
         {
-          auto i = incoming.destination.index[0];
+          auto i = incoming.dest.index[0];
           if (i < N)
           {
             auto& inc = incoming.message_value.get<vec_type>();
@@ -368,7 +368,7 @@ struct state_flatten_visitor_merger
     // unless the piecewise_message also has a
     // value at this index
 
-    if (existing.destination.index.empty())
+    if (existing.dest.index.empty())
     {
       // add it at [0]
       value_merger<false>::set_first_value(
@@ -379,7 +379,7 @@ struct state_flatten_visitor_merger
       // add it wherever possible, by extending the list as required
       value_merger<false>::insert_in_list(
           other.message_value, existing.message_value,
-          existing.destination.index);
+          existing.dest.index);
     }
 
     state.remove(existing);
@@ -420,18 +420,18 @@ struct state_flatten_visitor_merger
     //              << ossia::to_pretty_string(incoming.destination) << " : "
     //              << ossia::value_to_pretty_string(incoming) << std::endl;
 
-    auto to_append_index_empty = incoming.destination.index.empty();
-    auto source_index_empty = existing.destination.index.empty();
+    auto to_append_index_empty = incoming.dest.index.empty();
+    auto source_index_empty = existing.dest.index.empty();
     if (incoming.message_value.valid()
         && (same_vec_type(existing.message_value, incoming.message_value)
-            || is_vec(existing.destination.address().get_value_type())))
+            || is_vec(existing.dest.address().get_value_type())))
     {
       // We handle the Vec types a bit differently :
       // since it's very cheap, the value will contain the whole array data
       // and the index will be the relevant index in the array.
       // Hence we merge both indexes.
       auto res = ossia::apply(
-          vec_merger{existing.destination, incoming.destination},
+          vec_merger{existing.dest, incoming.dest},
           existing.message_value.v, incoming.message_value.v);
 
       if (res)
@@ -457,16 +457,16 @@ struct state_flatten_visitor_merger
     else
     {
       piecewise_message pw{
-          incoming.destination.value, {}, incoming.destination.unit};
+          incoming.dest.value, {}, incoming.dest.unit};
       if (!to_append_index_empty && !source_index_empty)
       {
         // Most complex case : we create a list big enough to host both values
         value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
-            existing.destination.index);
+            existing.dest.index);
         value_merger<true>::insert_in_list(
             pw.message_value, std::move(incoming.message_value),
-            incoming.destination.index);
+            incoming.dest.index);
       }
       // For these cases, we mix in the one that has the index;
       // the one without index information becomes index [0] :
@@ -475,13 +475,13 @@ struct state_flatten_visitor_merger
         pw.message_value.push_back(existing.message_value);
         value_merger<true>::insert_in_list(
             pw.message_value, std::move(incoming.message_value),
-            incoming.destination.index);
+            incoming.dest.index);
       }
       else if (!source_index_empty)
       {
         value_merger<true>::insert_in_list(
             pw.message_value, existing.message_value,
-            existing.destination.index);
+            existing.dest.index);
         value_merger<true>::set_first_value(
             pw.message_value, std::move(incoming.message_value));
       }
@@ -492,7 +492,7 @@ struct state_flatten_visitor_merger
   }
   void operator()(piecewise_message& existing, message&& incoming)
   {
-    if (incoming.destination.index.empty())
+    if (incoming.dest.index.empty())
     {
       // add it at [0]
       value_merger<true>::set_first_value(
@@ -503,7 +503,7 @@ struct state_flatten_visitor_merger
       // add it wherever possible, by extending the list as required
       value_merger<true>::insert_in_list(
           existing.message_value, std::move(incoming.message_value),
-          incoming.destination.index);
+          incoming.dest.index);
     }
   }
 
@@ -516,7 +516,7 @@ struct state_flatten_visitor_merger
     // unless the piecewise_message also has a
     // value at this index
 
-    if (existing.destination.index.empty())
+    if (existing.dest.index.empty())
     {
       // add it at [0]
       value_merger<false>::set_first_value(
@@ -527,7 +527,7 @@ struct state_flatten_visitor_merger
       // add it wherever possible, by extending the list as required
       value_merger<false>::insert_in_list(
           other.message_value, existing.message_value,
-          existing.destination.index);
+          existing.dest.index);
     }
 
     state.remove(existing);
@@ -614,7 +614,7 @@ struct state_flatten_visitor
 
   static ossia::net::parameter_base* param_ptr(const message& m)
   {
-    return &m.destination.value.get();
+    return &m.dest.value.get();
   }
 
   static ossia::net::parameter_base* param_ptr(const piecewise_message& m)
@@ -634,8 +634,8 @@ struct state_flatten_visitor
   {
     return find_if(state, [&](const state_element& e) {
       auto address = param_ptr(incoming);
-      if (auto m = e.target<message>())
-        return &m->destination.value.get() == address
+      if (const message* m = e.target<message>())
+        return &m->dest.value.get() == address
                && incoming.get_unit() == m->get_unit();
       else if (auto p = e.target<piecewise_message>())
         return &p->address.get() == address

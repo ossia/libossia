@@ -41,87 +41,87 @@ convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
 template OSSIA_EXPORT std::array<float, 4>
 convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
-Destination::Destination(const Destination& other) = default;
-Destination::Destination(Destination&& other) = default;
+destination::destination(const destination& other) = default;
+destination::destination(destination&& other) = default;
 
-Destination& Destination::operator=(const Destination&) = default;
-Destination& Destination::operator=(Destination&&) = default;
+destination& destination::operator=(const destination&) = default;
+destination& destination::operator=(destination&&) = default;
 
-value Destination::pull() const
+value destination::pull() const
 {
   // TODO unit conversion
   return value.get().value(index);
 }
 
-Destination::Destination(ossia::net::parameter_base& v) : value(v)
+destination::destination(ossia::net::parameter_base& v) : value(v)
 {
   // TODO should we also copy the unit of the address ?
 }
 
-Destination::Destination(ossia::net::parameter_base& v, destination_index idx)
+destination::destination(ossia::net::parameter_base& v, destination_index idx)
     : value(v), index(std::move(idx))
 {
   // TODO should we also copy the unit of the address ?
 }
 
-Destination::Destination(
+destination::destination(
     ossia::net::parameter_base& v, destination_index idx, const ossia::unit_t& u)
     : value(v), index(std::move(idx)), unit{u}
 {
 }
 
-Destination::Destination(net::parameter_base& v, const unit_t& u)
+destination::destination(net::parameter_base& v, const unit_t& u)
     : value(v), unit{u}
 {
 }
 
-bool Destination::operator==(const ossia::value& v) const
+bool destination::operator==(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
-bool Destination::operator!=(const ossia::value& v) const
+bool destination::operator!=(const ossia::value& v) const
 {
   return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
-bool Destination::operator>(const ossia::value& v) const
+bool destination::operator>(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
 }
 
-bool Destination::operator>=(const ossia::value& v) const
+bool destination::operator>=(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(
       *this, v, std::greater_equal<>{});
 }
 
-bool Destination::operator<(const ossia::value& v) const
+bool destination::operator<(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::less<>{});
 }
 
-bool Destination::operator<=(const ossia::value& v) const
+bool destination::operator<=(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
 }
 
-bool operator==(const Destination& lhs, const Destination& rhs)
+bool operator==(const destination& lhs, const destination& rhs)
 {
   return lhs.value == rhs.value && lhs.index == rhs.index;
 }
 
-bool operator!=(const Destination& lhs, const Destination& rhs)
+bool operator!=(const destination& lhs, const destination& rhs)
 {
   return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
-bool operator==(const Destination& lhs, const ossia::net::parameter_base& rhs)
+bool operator==(const destination& lhs, const ossia::net::parameter_base& rhs)
 {
   return lhs.value == rhs && lhs.index.empty();
 }
 
-bool operator!=(const Destination& lhs, const ossia::net::parameter_base& rhs)
+bool operator!=(const destination& lhs, const ossia::net::parameter_base& rhs)
 {
   return lhs.value != rhs || !lhs.index.empty();
 }
@@ -146,7 +146,7 @@ std::string to_pretty_string(const destination_index& index)
   return str;
 }
 
-std::string to_pretty_string(const Destination& d)
+std::string to_pretty_string(const destination& d)
 {
   using namespace std::literals;
   return ossia::net::address_string_from_node(d.value.get())

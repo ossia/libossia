@@ -24,16 +24,16 @@ namespace expressions
 class OSSIA_EXPORT expression_atom final : public expression_callback_container
 {
 public:
-  using val_t = eggs::variant<ossia::value, ossia::Destination>;
+  using val_t = eggs::variant<ossia::value, ossia::destination>;
   expression_atom(
       const value& lhs, comparator op = comparator::EQUAL,
       const value& rhs = impulse{});
   expression_atom(
-      const Destination& lhs, comparator op = comparator::EQUAL,
+      const destination& lhs, comparator op = comparator::EQUAL,
       const value& rhs = impulse{});
   expression_atom(
-      const Destination& lhs, comparator op, const Destination& rhs);
-  expression_atom(const value& lhs, comparator op, const Destination& rhs);
+      const destination& lhs, comparator op, const destination& rhs);
+  expression_atom(const value& lhs, comparator op, const destination& rhs);
 
   struct dummy_t
   {
@@ -57,11 +57,11 @@ public:
 
   bool operator()(const ossia::value& first, const ossia::value& second) const;
   bool operator()(
-      const ossia::value& first, const ossia::Destination& second) const;
+      const ossia::value& first, const ossia::destination& second) const;
   bool operator()(
-      const ossia::Destination& first, const ossia::value& second) const;
+      const ossia::destination& first, const ossia::value& second) const;
   bool operator()(
-      const ossia::Destination& first, const ossia::Destination& second) const;
+      const ossia::destination& first, const ossia::destination& second) const;
 
 private:
   bool operator()(const ossia::value& first, const val_t& second) const;
