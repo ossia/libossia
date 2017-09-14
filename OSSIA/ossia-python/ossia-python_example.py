@@ -86,7 +86,7 @@ vec3f_parameter.value = [0, 146, 207]
 # create a node, create a list parameter and initialize it
 list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
-list_parameter.value = [44100, "test.wav", 0.9]
+list_parameter.value = ['a', 't', 'z'] ### TODO : list_parameter.value = [44100, "test.wav", 0.9]
 ### TODO : list_parameter.defaultvalue = [44100, "ossia.wav", 0.9]
 
 
@@ -144,6 +144,12 @@ def iterate_on_children(node):
   for child in node.children():
     if child.parameter:
       print('PARAMETER -> ' + str(child) + " " + str(child.parameter) + " <" + str(child.parameter.value_type) + ", " + str(child.parameter.access_mode) + ">")
+      
+      ### TODO : remove this test
+      # displaying the domain bounds for the float parameter crashes ... ???
+      if (child.parameter.value_type == ossia.ValueType.Float):
+        continue
+
       if child.parameter.have_domain():
         print("min : " + str(child.parameter.domain.min) + ", max : " + str(child.parameter.domain.max))
     else:

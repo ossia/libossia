@@ -104,7 +104,7 @@ namespace pybind11
 
               PyObject *iterator = PyObject_GetIter(source);
               PyObject *item;
-
+              
               while ((item = PyIter_Next(iterator)))
               {
                 vec.push_back(check_and_cast(item));
