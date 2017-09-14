@@ -165,7 +165,7 @@ parameter_base&alias_path::push_value()
 }
 
 
-parameter_base&alias_path::set_value(const ossia::value&)
+parameter_base&alias_path::set_value(const ossia::value& v)
 {
   do_for_nodes([&] (ossia::net::node_base& n) {
     if(auto p = n.get_parameter())
