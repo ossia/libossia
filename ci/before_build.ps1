@@ -3,7 +3,7 @@ Set-PSDebug -Trace 1
 function CheckLastExitCode {
     param ([int[]]$SuccessCodes = @(0), [scriptblock]$CleanupScript=$null)
 
-    Push-AppveyorArtifact $LogFile
+    Push-AppveyorArtifact "$LogFile"
 
     if ($SuccessCodes -notcontains $LastExitCode) {
         if ($CleanupScript) {
@@ -34,7 +34,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     set $env:PATH=${env:QTDIR}\bin;${env:PATH};
   }
 
-  $LogFile = ${env:APPVEYOR_BUILD_FOLDER}\${env:APPVEYOR_BUILD_TYPE}-${env:configuration}.log
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\${env:APPVEYOR_BUILD_TYPE}-${env:configuration}.log"
   if ( $env:configuration -eq "Release" ){
     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
   } else {
