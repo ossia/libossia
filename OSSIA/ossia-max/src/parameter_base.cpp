@@ -677,7 +677,7 @@ void parameter_base::class_setup(t_class* c)
   class_addmethod(c, (method) parameter_base::set,  "set",      A_GIMME, 0);
 
   class_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
-  class_addmethod(c, (method) parameter_base::push_one, "push_one", A_GIMME, 0);
+  class_addmethod(c, (method) parameter_base::push_one, "send", A_GIMME, 0);
   class_addmethod(c, (method) parameter_base::bang, "bang",     A_NOTHING,  0);
 
   class_addmethod(
