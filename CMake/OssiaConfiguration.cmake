@@ -237,7 +237,7 @@ else()
     endif()
     set(OSSIA_COMPILE_OPTIONS
         ${OSSIA_COMPILE_OPTIONS}
-        -std=c++1z
+        $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>
         -Wall
         -Wextra
         -Wno-unused-parameter
