@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 100.0, 100.0, 1213.0, 774.0 ],
+		"rect" : [ 445.0, 215.0, 1196.0, 694.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,19 @@
 		"showontab" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-2",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 364.0, 186.0, 100.0, 22.0 ],
+					"style" : "",
+					"text" : "ossia.device"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"annotation" : "none",
 					"id" : "obj-3",
 					"maxclass" : "newobj",
@@ -55,7 +68,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1213.0, 748.0 ],
+						"rect" : [ 0.0, 26.0, 1196.0, 668.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -118,7 +131,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1213.0, 748.0 ],
+						"rect" : [ 445.0, 241.0, 1196.0, 668.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -148,12 +161,36 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 598.0, 620.0, 571.0, 20.0 ],
+									"style" : "",
+									"text" : " NB: there's an ossia.device in the root patcher to make sure we don't have duplicates with other patchers"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 857.0, 433.0, 254.0, 20.0 ],
+									"style" : "",
+									"text" : "e.g. calar.{1..4}/truc.{1..18} won't work for now"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-4",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 858.0, 446.0, 242.0, 33.0 ],
+									"patching_rect" : [ 857.0, 405.0, 242.0, 33.0 ],
 									"style" : "",
 									"text" : "notice that this will only work with one level of pattern-matching expression"
 								}
@@ -180,7 +217,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 830.0, 496.5, 350.0, 135.0 ],
+									"patching_rect" : [ 829.0, 459.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 8,
@@ -197,7 +234,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 830.0, 269.5, 350.0, 135.0 ],
+									"patching_rect" : [ 829.0, 232.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 8,
@@ -212,7 +249,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 830.0, 415.5, 237.0, 22.0 ],
+									"patching_rect" : [ 829.0, 378.5, 237.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote_array calar.1/truc.{5..12}"
 								}
@@ -225,7 +262,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 892.5, 220.0, 225.0, 22.0 ],
+									"patching_rect" : [ 891.5, 183.0, 225.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter calar.{1..4}/truc.{1..18}"
 								}
@@ -240,7 +277,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 405.0, 496.5, 350.0, 135.0 ],
+									"patching_rect" : [ 404.0, 459.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 16,
@@ -257,7 +294,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 405.0, 269.5, 350.0, 135.0 ],
+									"patching_rect" : [ 404.0, 232.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 16,
@@ -272,7 +309,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 405.0, 415.5, 187.0, 22.0 ],
+									"patching_rect" : [ 404.0, 378.5, 187.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote_array color.{17..32}"
 								}
@@ -287,7 +324,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 32.0, 496.5, 350.0, 135.0 ],
+									"patching_rect" : [ 31.0, 459.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 16,
@@ -304,7 +341,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 32.0, 279.5, 350.0, 135.0 ],
+									"patching_rect" : [ 31.0, 242.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
 									"size" : 16,
@@ -319,7 +356,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 32.0, 419.5, 180.0, 22.0 ],
+									"patching_rect" : [ 31.0, 382.5, 180.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote_array color.{1..16}"
 								}
@@ -332,7 +369,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 320.0, 215.0, 163.0, 22.0 ],
+									"patching_rect" : [ 319.0, 178.0, 163.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter color.{1..32}"
 								}
@@ -358,7 +395,7 @@
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-21", 0 ],
-									"midpoints" : [ 41.5, 455.0, 17.0, 455.0, 17.0, 269.0, 41.5, 269.0 ],
+									"midpoints" : [ 40.5, 418.0, 16.0, 418.0, 16.0, 232.0, 40.5, 232.0 ],
 									"order" : 1,
 									"source" : [ "obj-20", 0 ]
 								}
@@ -397,7 +434,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-29", 0 ],
-									"midpoints" : [ 414.5, 438.0, 390.0, 438.0, 390.0, 264.0, 414.5, 264.0 ],
+									"midpoints" : [ 413.5, 413.0, 389.0, 413.0, 389.0, 227.0, 413.5, 227.0 ],
 									"order" : 1,
 									"source" : [ "obj-30", 0 ]
 								}
@@ -421,7 +458,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-34", 0 ],
-									"midpoints" : [ 839.5, 454.0, 815.0, 454.0, 815.0, 265.0, 839.5, 265.0 ],
+									"midpoints" : [ 838.5, 417.0, 814.0, 417.0, 814.0, 228.0, 838.5, 228.0 ],
 									"order" : 1,
 									"source" : [ "obj-35", 0 ]
 								}
@@ -477,8 +514,22 @@
 				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
+, 			{
+				"name" : "ossia.device.mxo",
+				"type" : "iLaX"
+			}
  ],
-		"autosave" : 0
+		"autosave" : 0,
+		"styles" : [ 			{
+				"name" : "Jamoma_highlighted_orange",
+				"default" : 				{
+					"accentcolor" : [ 1.0, 0.5, 0.0, 1.0 ]
+				}
+,
+				"parentstyle" : "",
+				"multi" : 0
+			}
+ ]
 	}
 
 }

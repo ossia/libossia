@@ -26,8 +26,6 @@ extern "C" void ossia_parameter_setup()
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
 
-  // TODO add a reset method
-
   class_register(CLASS_BOX, c);
 
   auto& ossia_library = ossia::max::ossia_max::instance();

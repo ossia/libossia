@@ -51,7 +51,7 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
       try {
 
         auto preset = ossia::presets::make_preset(*node);
-        auto json = ossia::presets::write_json(x->m_name->s_name, preset);
+        auto json = ossia::presets::to_string(preset);
         ossia::presets::write_file(json, argv[0].a_w.w_sym->s_name);
         A_SETFLOAT(status+1, 1);
 
@@ -72,12 +72,14 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
       try {
 
         auto json = ossia::presets::read_file(argv[0].a_w.w_sym->s_name);
-        auto preset = ossia::presets::read_json(json);
-        ossia::presets::apply_preset(*node, preset);
+        auto preset = ossia::presets::from_string(json);
+        ossia::presets::apply_preset(*node, preset, ossia::presets::keep_arch_on, {}, true);
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
         object_error((t_object*)x,"Can't write file %s, error: %s", argv[0].a_w.w_sym->s_name, e.what());
+      } catch (const std::exception& e) {
+        object_error((t_object*)x,"Can't apply preset to current device:  %s", e.what());
       } catch (...) {
         object_error((t_object*)x,"Can't apply preset to current device...");
       }

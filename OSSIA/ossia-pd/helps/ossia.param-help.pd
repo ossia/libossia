@@ -19,17 +19,6 @@
 ;
 #X text 652 586 @priority <int> defines recall order \, higher priority
 comes first, f 66;
-#N canvas 1533 499 285 538 unit 0;
-#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
-distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
-position.cart3D position.cart2D position.spherical position.polar position.openGL
-position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
-speed.ft/h orientation.quaternion orientation.euler orientation.axis
-angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
-color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
-gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
-time.mel time.midinote time.ms time.speed, f 24;
-#X restore 932 444 pd unit list;
 #X text 651 444 @unit <symbol> defines unit \, see list :;
 #X text 52 94 Needed argument : parameter name with no special character
 ;
@@ -88,8 +77,8 @@ its properties as attributes, f 88;
 type when none specified;
 #X obj 406 686 ossia;
 #X msg 406 662 expose oscquery;
-#X text 666 246 impulse : bang (only useful with SET or GET mode
-, f 61;
+#X text 666 246 impulse : bang (only useful with SET or GET mode,
+f 61;
 #X text 668 227 list : list of anything, f 61;
 #X text 653 728 @enable <0|1> enable/disable the parameter \, default:
 1;
@@ -103,12 +92,12 @@ vector element., f 61;
 #X text 650 306 @range <float> <float> define min and max at the same
 time for all elements for list or vector type;
 #X obj 53 367 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @clip both @mode
-bi @range 0 2;
+"My beautiful red" @tags color beautiful @clip both @mode bi @range
+0 2;
 #N canvas 749 93 740 913 more_about_range_and_minmax 0;
 #X obj 93 234 list prepend set;
 #X obj 93 255 list trim;
-#X msg 93 276 26 37 18 -20 2;
+#X msg 93 276 10 10 10 -10 2;
 #X floatatom 93 83 5 0 0 0 - - -, f 5;
 #X obj 126 558 list prepend set;
 #X obj 126 579 list trim;
@@ -141,8 +130,8 @@ bi @range 0 2;
 #X msg 126 600 string;
 #X obj 126 524 ossia.param my_string @type string @range bikini caleçon
 string culotte sling @clip both @default string;
-#X obj 93 198 ossia.param my_list @type list @range -10 10 @clip
-both @default 26 37 18 -20 2;
+#X obj 93 198 ossia.param my_list @type list @range -10 10 @clip both
+@default 26 37 18 -20 2;
 #X text 137 349 range attribute define a list of possible value for
 a string parameter.;
 #X msg 95 416 range bikini caleçon string culotte sling;
@@ -266,8 +255,8 @@ float-list minimum and maximum.;
 #X msg 315 243 getenable;
 #X msg 356 309 description Something meaningful;
 #X obj 30 524 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @clip both @mode
-bi @range 0 2;
+"My beautiful red" @tags color beautiful @clip both @mode bi @range
+0 2;
 #X text 20 6 Each attribute can be set and get via a message from the
 patcher.;
 #X obj 410 268 s \$0-param_bar;
@@ -282,11 +271,13 @@ patcher.;
 #X msg 390 49 both both;
 #X msg 400 70 both low;
 #X msg 415 91 both free;
-#X msg 427 112 getboth;
 #X obj 530 539 s \$0-param_bar;
 #X msg 554 514 getrate;
 #X msg 530 489 rate \$1;
 #X floatatom 530 466 5 0 0 0 - - -, f 5;
+#X obj 504 149 s \$0-param_bar;
+#X msg 427 112 getclip;
+#X msg 534 113 gettype;
 #X connect 1 0 50 0;
 #X connect 12 0 0 0;
 #X connect 13 0 0 0;
@@ -335,10 +326,11 @@ patcher.;
 #X connect 60 0 4 0;
 #X connect 61 0 4 0;
 #X connect 62 0 4 0;
-#X connect 63 0 4 0;
-#X connect 65 0 64 0;
-#X connect 66 0 64 0;
-#X connect 67 0 66 0;
+#X connect 64 0 63 0;
+#X connect 65 0 63 0;
+#X connect 66 0 65 0;
+#X connect 68 0 4 0;
+#X connect 69 0 67 0;
 #X restore 55 536 pd attributes_get/set;
 #X msg 253 335 reset;
 #X text 120 305 send attribute values and parameter state through rightmost
@@ -385,18 +377,90 @@ range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
 LOW \, HIGH, f 68;
 #X text 652 519 @rate: how often (in ms) the value is output - default
 10;
-#X connect 16 0 17 0;
-#X connect 16 1 18 0;
-#X connect 16 2 19 0;
-#X connect 16 3 20 0;
-#X connect 21 0 46 0;
-#X connect 22 0 46 0;
-#X connect 23 0 46 0;
-#X connect 27 0 35 0;
-#X connect 31 0 32 0;
-#X connect 32 0 30 0;
-#X connect 35 0 27 0;
-#X connect 38 0 37 0;
-#X connect 46 0 16 0;
-#X connect 46 1 15 0;
-#X connect 49 0 46 0;
+#N canvas 530 67 495 609 units 0;
+#X obj 35 85 ossia.param aParam @unit gain.db;
+#X obj 39 289 ossia.param myGain @unit db;
+#X obj 40 204 ossia.param aParam @type float @unit db;
+#X obj 35 385 ossia.param myGain @type db;
+#X msg 181 356 getunit;
+#X msg 113 355 gettype;
+#X obj 232 385 print;
+#X msg 91 263 gettype;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 45 37 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X connect 0 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X restore 236 290 pd;
+#X msg 266 291 clip both;
+#X obj 41 541 ossia.param aGain @unit db;
+#X floatatom 41 569 5 0 0 0 - - -, f 5;
+#X floatatom 40 483 5 0 0 0 - - -, f 5;
+#X obj 87 482 ossia.remote aGain @unit linear;
+#X text 31 27 Units can be specified \, with the @unit argument \,
+by providing their full names \, i.e. by using the syntax "category.unit"
+;
+#X text 37 120 see full unit list here:;
+#N canvas 1533 499 285 538 unit_list 0;
+#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
+distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
+position.cart3D position.cart2D position.spherical position.polar position.openGL
+position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
+speed.ft/h orientation.quaternion orientation.euler orientation.axis
+angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
+color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
+gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
+time.mel time.midinote time.ms time.speed, f 24;
+#X restore 221 118 pd unit_list;
+#X text 35 162 They can also be provided by their unit name only (unit
+names being unique), f 50;
+#X text 30 422 Remotes can be specified a unit belonging to the same
+category as the parameter's unit and they will automatically convert
+parameter values to/from this unit, f 57;
+#X floatatom 41 517 5 0 0 0 - - -, f 5;
+#X text 37 235 As the type is deduced from the unit \, we can omit
+it.;
+#X text 35 322 Or even provide the unit directly under the @type attribute:
+;
+#X text 34 355 check:;
+#X text 38 262 check:;
+#X connect 1 1 8 0;
+#X connect 3 1 6 0;
+#X connect 4 0 3 0;
+#X connect 5 0 3 0;
+#X connect 7 0 1 0;
+#X connect 8 0 9 0;
+#X connect 10 0 11 0;
+#X connect 12 0 13 0;
+#X connect 13 0 12 0;
+#X connect 19 0 10 0;
+#X restore 262 539 pd units;
+#N canvas 1533 499 285 538 unit_list 0;
+#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
+distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
+position.cart3D position.cart2D position.spherical position.polar position.openGL
+position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
+speed.ft/h orientation.quaternion orientation.euler orientation.axis
+angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
+color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
+gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
+time.mel time.midinote time.ms time.speed, f 24;
+#X restore 932 444 pd unit_list;
+#X connect 15 0 16 0;
+#X connect 15 1 17 0;
+#X connect 15 2 18 0;
+#X connect 15 3 19 0;
+#X connect 20 0 45 0;
+#X connect 21 0 45 0;
+#X connect 22 0 45 0;
+#X connect 26 0 34 0;
+#X connect 30 0 31 0;
+#X connect 31 0 29 0;
+#X connect 34 0 26 0;
+#X connect 37 0 36 0;
+#X connect 45 0 15 0;
+#X connect 45 1 14 0;
+#X connect 48 0 45 0;

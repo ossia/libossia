@@ -965,11 +965,12 @@ bool instance_string_compare(
 void apply_preset_node(
     ossia::net::node_base& root, std::vector<std::string> keys,
     const ossia::value& val, ossia::presets::keep_arch_type keeparch,
-    std::vector<ossia::net::node_base*>& created_nodes)
+    std::vector<ossia::net::node_base*>& created_nodes,
+    bool allow_nonterminal)
 {
   if (keys.size() == 0)
   {
-    if (root.children().size() > 0)
+    if (!allow_nonterminal && root.children().size() > 0)
     {
       std::string details = "Node " + root.get_name() + " is not terminal";
       throw(ossia::ossiaException_InvalidAddress(
@@ -1000,7 +1001,7 @@ void apply_preset_node(
         if (currentkey == childName)
         {
           child_exists = true;
-          apply_preset_node(*child, keys, val, keeparch, created_nodes);
+          apply_preset_node(*child, keys, val, keeparch, created_nodes, allow_nonterminal);
         }
         else
         {
@@ -1011,7 +1012,7 @@ void apply_preset_node(
           {
             currentkey.resize(currentkey.size() - 2);
             child_exists = true;
-            apply_preset_node(*child, keys, val, keeparch, created_nodes);
+            apply_preset_node(*child, keys, val, keeparch, created_nodes, allow_nonterminal);
           }
         }
       }
@@ -1037,7 +1038,7 @@ void apply_preset_node(
           if (keys.empty())
             newchild->create_parameter(val.getType());
 
-          apply_preset_node(*newchild, keys, val, keeparch, created_nodes);
+          apply_preset_node(*newchild, keys, val, keeparch, created_nodes, allow_nonterminal);
         }
       }
     }
@@ -1064,7 +1065,8 @@ void on_instance_creation(
 void ossia::presets::apply_preset(
     ossia::net::node_base& node, const ossia::presets::preset& preset,
     ossia::presets::keep_arch_type keeparch,
-    presets::instance_functions functions)
+    presets::instance_functions functions,
+    bool allow_nonterminal)
 {
   std::vector<ossia::net::node_base*> created_nodes;
 
@@ -1076,13 +1078,15 @@ void ossia::presets::apply_preset(
         boost::token_compress_on);
     if(!keys.empty())
       keys.erase(keys.begin()); // first subtring is empty
-    if(!keys.empty())
-      keys.erase(keys.begin()); // then we have to remove the "initial" key which is the device name
-    if(node.get_parent())
-      keys.erase(keys.begin()); // remove another one in case node is not a root
-
+    if(!allow_nonterminal)
+    {
+      if(!keys.empty())
+        keys.erase(keys.begin()); // then we have to remove the "initial" key which is the device name
+      if(node.get_parent())
+        keys.erase(keys.begin()); // remove another one in case node is not a root
+    }
     apply_preset_node(
-        node, keys, itpp->second, keeparch, created_nodes);
+        node, keys, itpp->second, keeparch, created_nodes, allow_nonterminal);
   }
 
   for (auto node : created_nodes)

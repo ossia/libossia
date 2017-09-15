@@ -170,6 +170,7 @@ if(MSVC)
     set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /PDBCompress /OPT:REF /OPT:ICF")
 
     set(OSSIA_COMPILE_OPTIONS
+        "/wd4065" # switch statement contains default but no case labels
         "/wd4068" # pragma mark -
         "/wd4250" # inherits via dominance
         "/wd4251" # DLL stuff
@@ -236,7 +237,6 @@ else()
     endif()
     set(OSSIA_COMPILE_OPTIONS
         ${OSSIA_COMPILE_OPTIONS}
-        -std=c++1z
         -Wall
         -Wextra
         -Wno-unused-parameter

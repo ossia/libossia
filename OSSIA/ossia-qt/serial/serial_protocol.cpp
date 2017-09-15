@@ -15,6 +15,12 @@ namespace ossia
 {
 namespace net
 {
+
+serial_wrapper::~serial_wrapper()
+{
+    
+}
+
 serial_protocol::serial_protocol(
     const QByteArray& code, const QSerialPortInfo& bot)
     : mEngine{new QQmlEngine}

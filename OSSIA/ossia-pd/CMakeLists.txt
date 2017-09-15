@@ -68,6 +68,7 @@ set(PROJECT_SRCS
 
 include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
 use_gold(${PROJECT_NAME})
 
 generate_export_header(${PROJECT_NAME} BASE_NAME OSSIA_PD)

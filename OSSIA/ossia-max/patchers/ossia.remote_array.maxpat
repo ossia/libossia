@@ -47,7 +47,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 53.0, 476.75, 111.0, 22.0 ],
 					"style" : "",
-					"text" : "prepend push_one"
+					"text" : "prepend send"
 				}
 
 			}

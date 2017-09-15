@@ -85,7 +85,7 @@ void node_base::preset(object_base *x, t_symbol*s, int argc, t_atom* argv)
 
         auto json = ossia::presets::read_file(argv[0].a_w.w_symbol->s_name);
         auto preset = ossia::presets::read_json(json);
-        ossia::presets::apply_preset(*node, preset);
+        ossia::presets::apply_preset(*node, preset,  ossia::presets::keep_arch_on, {}, true);
         SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
