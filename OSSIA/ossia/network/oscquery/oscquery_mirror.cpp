@@ -13,6 +13,7 @@
 #include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
+#include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
 namespace ossia
@@ -568,8 +569,18 @@ bool oscquery_mirror_protocol::on_WSMessage(
               if (addr)
               {
                 json_parser::parse_value(*addr, *data);
+                m_device->on_message(*addr);
+              }
+              else
+              {
+                m_device->on_unhandled_message(p->address, detail::ReadValue(*data));
               }
             }
+            else
+            {
+              m_device->on_unhandled_message(p->address, oscquery::detail::ReadValue(*data));
+            }
+
             p->promise.set_value();
             m_getWSPromises.pop();
           }

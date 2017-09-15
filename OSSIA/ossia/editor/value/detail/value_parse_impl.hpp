@@ -100,7 +100,7 @@ const auto address__def = x3::lexeme [ (+("/" >> +x3::char_(std::string{ossia::n
 BOOST_SPIRIT_DEFINE(address_)
 
 const x3::rule<class preset_pair_, std::pair<std::string, ossia::value>> preset_pair_ = "preset_pair";
-const auto preset_pair__def = x3::lexeme [ +x3::char_(std::string{"a-zA-Z0-9_~().-/"}) >> x3::lit("\t") ] >> value_ ;
+const auto preset_pair__def = x3::lexeme [ +x3::char_(std::string{ossia::net::path_characters()}) >> x3::lit("\t") ] >> value_ ;
 BOOST_SPIRIT_DEFINE(preset_pair_)
 
 const x3::rule<class preset_, std::vector<std::pair<std::string, ossia::value>>> preset_ = "preset";

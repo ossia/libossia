@@ -4,6 +4,7 @@
 #include "json_parser.hpp"
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
@@ -679,7 +680,8 @@ void json_parser::parse_value(
 }
 
 void json_parser::parse_parameter_value(
-    net::node_base& root, const rapidjson::Value& obj)
+    net::node_base& root, const rapidjson::Value& obj,
+    ossia::net::device_base& dev)
 {
   for(auto it = obj.MemberBegin(), end = obj.MemberEnd(); it != end; ++it)
   {
@@ -697,9 +699,13 @@ void json_parser::parse_parameter_value(
 
           // TODO don't push it back to the sender
           addr->push_value(std::move(val));
+          dev.on_message(*addr);
+          continue;
         }
       }
     }
+
+    dev.on_unhandled_message(path, detail::ReadValue(it->value));
   }
 }
 
