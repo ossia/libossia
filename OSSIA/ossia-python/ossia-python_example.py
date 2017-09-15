@@ -86,7 +86,7 @@ vec3f_parameter.value = [0, 146, 207]
 # create a node, create a list parameter and initialize it
 list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
-list_parameter.value = ['a', 't', 'z'] ### TODO : list_parameter.value = [44100, "test.wav", 0.9]
+list_parameter.value = [44100, "test.wav", 0.9]
 ### TODO : list_parameter.defaultvalue = [44100, "ossia.wav", 0.9]
 
 

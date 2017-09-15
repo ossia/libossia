@@ -94,8 +94,6 @@ namespace pybind11
 #endif
             else if (PyBytes_Check(source))
               returned_value = (std::string)PyBytes_AsString(source);
-            else if ((tmp = PyByteArray_FromObject(source)))
-              returned_value = (std::string)PyByteArray_AsString(tmp);
             else if (PyList_Check(source))
             {
               std::vector<ossia::value> vec;
@@ -104,7 +102,7 @@ namespace pybind11
 
               PyObject *iterator = PyObject_GetIter(source);
               PyObject *item;
-              
+
               while ((item = PyIter_Next(iterator)))
               {
                 vec.push_back(check_and_cast(item));
@@ -113,6 +111,8 @@ namespace pybind11
 
               returned_value = std::move(vec);
             }
+            else if ((tmp = PyByteArray_FromObject(source)))
+              returned_value = (std::string)PyByteArray_AsString(tmp);
 
             if (tmp)
               Py_DECREF(tmp);
