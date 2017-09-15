@@ -2,6 +2,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/detail/safe_vec.hpp>
 
+#include <ossia-pd/src/attribute.hpp>
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/model.hpp>
 #include <ossia-pd/src/remote.hpp>
@@ -19,6 +20,7 @@ struct websocket_threaded_connection;
 namespace pd
 {
 
+extern "C" void setup_ossia0x2eattribute(void);
 extern "C" void setup_ossia0x2eclient(void);
 extern "C" void setup_ossia0x2edevice(void);
 extern "C" void setup_ossia0x2elogger(void);
@@ -36,6 +38,7 @@ public:
       return &instance().m_device;
     }
 
+    static t_eclass* attribute_class;
     static t_eclass* client_class;
     static t_eclass* device_class;
     static t_eclass* logger_class;
@@ -45,6 +48,7 @@ public:
     static t_eclass* view_class;
     static t_eclass* ossia_class;
 
+    ossia::safe_vector<attribute*> attributes;
     ossia::safe_vector<parameter*> params;
     ossia::safe_vector<remote*> remotes;
     ossia::safe_vector<model*> models;
@@ -57,7 +61,7 @@ public:
     t_symbol* sym_addr;
     t_symbol* sym_set;
 
-
+    ossia::safe_set<attribute*> attribute_quarantine;
     ossia::safe_set<model*> model_quarantine;
     ossia::safe_set<view*> view_quarantine;
     ossia::safe_set<parameter*> parameter_quarantine;

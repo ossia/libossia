@@ -24,6 +24,7 @@ namespace pd
 
 enum class object_class {
   root = 0,
+  attribute,
   param,
   remote,
   model,

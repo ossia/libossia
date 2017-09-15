@@ -512,7 +512,8 @@ void object_base::get_address(object_base *x)
 bool ossia::pd::object_base::find_and_display_friend(object_base* x)
 {
   int found = 0;
-  if (x->m_otype == object_class::remote)
+  if (x->m_otype == object_class::remote
+      || x->m_otype == object_class::attribute )
   {
     for (auto& rm_matcher : x->m_matchers)
     {

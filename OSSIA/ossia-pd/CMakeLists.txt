@@ -38,6 +38,8 @@ set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
 
 set(PROJECT_SRCS
+  src/attribute.cpp
+  src/attribute.hpp
   src/client.cpp
   src/client.hpp
   src/device.cpp
