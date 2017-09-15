@@ -58,6 +58,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
       "ossia", (method)ossia_new, (method)ossia_free, sizeof(t_ossia),
       CLASS_DEFAULT, A_GIMME, 0);
 
+  setup_ossia0x2eattribute();
   setup_ossia0x2eclient();
   setup_ossia0x2edevice();
   setup_ossia0x2elogger();
@@ -87,6 +88,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 }
 
 // initializers
+t_eclass* ossia_pd::attribute_class;
 t_eclass* ossia_pd::client_class;
 t_eclass* ossia_pd::device_class;
 t_eclass* ossia_pd::logger_class;

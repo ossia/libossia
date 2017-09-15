@@ -53,6 +53,15 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
           remote::update_attribute((ossia::pd::remote*)m.get_parent(),attribute);
       }
     }
+
+    for ( auto attr : ossia_pd::instance().attributes.reference() )
+    {
+      for ( auto& m : attr->m_matchers )
+      {
+        if ( m.get_node() == &node )
+          attribute::update_attribute((ossia::pd::attribute*)m.get_parent(),attribute);
+      }
+    }
   } else {
     for ( auto model : ossia_pd::instance().models.reference() )
     {

@@ -28,9 +28,16 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   if (res)
   {
     obj_dequarantining<parameter>(this);
+
+    // TODO should we put this into device_base::on_parameter_deleted_callback ?
+    // the drawback is that when the parmater is created, it is not fully configured
     for (auto remote : ossia::pd::remote::quarantine().copy())
     {
-      obj_register<ossia::pd::remote>(static_cast<ossia::pd::remote*>(remote));
+      obj_register(remote);
+    }
+    for (auto attribute : ossia::pd::attribute::quarantine().copy())
+    {
+      obj_register(attribute);
     }
 
     clock_delay(m_poll_clock,1);
@@ -45,7 +52,6 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
-
 
   for (auto node : _nodes)
   {
@@ -106,7 +112,11 @@ bool parameter::unregister()
 
   for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register<ossia::pd::remote>(static_cast<ossia::pd::remote*>(remote));
+    obj_register(remote);
+  }
+  for (auto attribute : ossia::pd::attribute::quarantine().copy())
+  {
+    obj_register(attribute);
   }
 
   obj_quarantining<parameter>(this);
