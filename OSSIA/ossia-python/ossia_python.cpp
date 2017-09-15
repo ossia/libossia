@@ -31,7 +31,7 @@ namespace pybind11
 
 namespace py = pybind11;
 
-namespace ossia { 
+namespace ossia {
   namespace python {
 
 /**
@@ -65,11 +65,11 @@ struct to_python_value
 
 } }
 
-namespace pybind11 
-{ 
-  namespace detail 
+namespace pybind11
+{
+  namespace detail
   {
-    template <> struct type_caster<ossia::value> 
+    template <> struct type_caster<ossia::value>
     {
     public:
         PYBIND11_TYPE_CASTER(ossia::value, _("value"));
@@ -120,7 +120,7 @@ namespace pybind11
             return returned_value;
         }
 
-        bool load(handle src, bool) 
+        bool load(handle src, bool)
         {
             PyObject *source = src.ptr();
 
@@ -134,7 +134,7 @@ namespace pybind11
             return !err;
         }
 
-        static handle cast(const ossia::value& src, return_value_policy policy , handle parent) 
+        static handle cast(const ossia::value& src, return_value_policy policy , handle parent)
         {
           return src.apply(ossia::python::to_python_value{});
         }
@@ -576,7 +576,9 @@ PYBIND11_MODULE(ossia_python, m)
           "add_callback",
           [](ossia::net::parameter_base& addr,
              ossia::value_callback clbk) {
-            addr.add_callback(clbk);
+            addr.add_callback([=] (const auto& val) {
+              clbk(val);
+            });
           })
       .def(
          "add_callback_param",
@@ -692,7 +694,22 @@ PYBIND11_MODULE(ossia_python, m)
      ossia::received_value v;
      bool res = mq.try_dequeue(v);
      if(res)
-       return py::make_tuple(*v.address, v.value);
+     {
+       return py::make_tuple(py::cast(v.address), v.value.apply(ossia::python::to_python_value{}));
+     }
+     return py::none{};
+  });
+
+
+  py::class_<ossia::global_message_queue>(m, "GlobalMessageQueue")
+      .def(py::init<ossia_local_device&>())
+      .def("pop", [] (ossia::global_message_queue& mq) -> py::object {
+     ossia::received_value v;
+     bool res = mq.try_dequeue(v);
+     if(res)
+     {
+       return py::make_tuple(py::cast(v.address), v.value.apply(ossia::python::to_python_value{}));
+     }
      return py::none{};
   });
 }

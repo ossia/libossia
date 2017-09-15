@@ -67,4 +67,28 @@ class message_queue final : public Nano::Observer
       ossia::net::parameter_base::callback_index> m_reg;
 };
 
+class global_message_queue final : public Nano::Observer
+{
+  public:
+    global_message_queue(ossia::net::device_base& dev)
+    {
+      dev.on_message
+         .connect<global_message_queue, &global_message_queue::on_message>(
+            *this);
+    }
+
+    void on_message(const ossia::net::parameter_base& p)
+    {
+      m_queue.enqueue({const_cast<ossia::net::parameter_base*>(&p), p.value()});
+    }
+
+    bool try_dequeue(ossia::received_value& v)
+    {
+      return m_queue.try_dequeue(v);
+    }
+
+  private:
+    moodycamel::ReaderWriterQueue<received_value> m_queue;
+};
+
 }

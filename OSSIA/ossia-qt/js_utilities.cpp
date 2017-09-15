@@ -26,9 +26,20 @@ namespace ossia
 {
 namespace net
 {
+OSSIA_EXPORT void sanitize_device_name(QString& ret)
+{
+  const QChar underscore = '_';
+  for (auto& c : ret)
+  {
+    if (ossia::net::is_valid_character_for_device(c))
+      continue;
+    else
+      c = underscore;
+  }
+}
+
 OSSIA_EXPORT void sanitize_name(QString& ret)
 {
-  // Keep in sync with node.cpp
   const QChar underscore = '_';
   for (auto& c : ret)
   {
