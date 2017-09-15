@@ -96,7 +96,7 @@ struct OSSIA_EXPORT any_between : public path_element
       auto it = args.begin();
       address += *it;
 
-      for (int i = 1; i < N; i++)
+      for (std::size_t i = 1; i < N; i++)
       {
         ++it;
         address += '|';
