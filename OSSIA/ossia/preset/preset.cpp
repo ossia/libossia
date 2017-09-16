@@ -1082,9 +1082,10 @@ void ossia::presets::apply_preset(
     {
       if(!keys.empty())
         keys.erase(keys.begin()); // then we have to remove the "initial" key which is the device name
-      if(node.get_parent())
-        keys.erase(keys.begin()); // remove another one in case node is not a root
     }
+    if(node.get_parent())
+      keys.erase(keys.begin()); // remove another one in case node is not a root
+    
     apply_preset_node(
         node, keys, itpp->second, keeparch, created_nodes, allow_nonterminal);
   }
