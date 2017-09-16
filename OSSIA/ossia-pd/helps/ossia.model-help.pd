@@ -91,7 +91,7 @@ instance (instances are appended to the node name \, after a dot separator)
 #X msg 470 153 reset;
 #X msg 137 282 reset;
 #X msg 331 282 reset;
-#X text 519 155 doesn't work yet;
+#X text 519 154;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
 #X connect 3 0 1 0;
