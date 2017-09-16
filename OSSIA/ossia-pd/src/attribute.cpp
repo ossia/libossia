@@ -402,6 +402,8 @@ extern "C" void setup_ossia0x2eattribute(void)
   if (c)
   {
     class_addcreator((t_newmethod)attribute::create,gensym("ø.attribute"), A_GIMME, 0);
+    class_addcreator((t_newmethod)attribute::create,gensym("ossia.attr"), A_GIMME, 0);
+    class_addcreator((t_newmethod)attribute::create,gensym("ø.attr"), A_GIMME, 0);
 
     eclass_addmethod(c, (method) attribute::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) attribute::notify,          "notify",      A_NULL,   0);
