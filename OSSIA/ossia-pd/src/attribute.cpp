@@ -415,9 +415,9 @@ extern "C" void setup_ossia0x2eattribute(void)
 
     CLASS_ATTR_SYMBOL(c, "unit", 0, attribute, m_unit);
 
-    eclass_addmethod(c, (method) attribute::get_unit,        "getunit",     A_NULL, 0);
-    eclass_addmethod(c, (method) attribute::get_mute,        "getmute",     A_NULL, 0);
-    eclass_addmethod(c, (method) attribute::get_rate,        "rate",        A_NULL, 0);
+    eclass_addmethod(c, (method) attribute::get_unit, "getunit", A_NULL, 0);
+    eclass_addmethod(c, (method) attribute::get_mute, "getmute", A_NULL, 0);
+    eclass_addmethod(c, (method) attribute::get_rate, "rate",    A_NULL, 0);
 
   }
 

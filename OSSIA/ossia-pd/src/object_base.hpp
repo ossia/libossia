@@ -70,6 +70,7 @@ public:
   void output_value();
   auto get_node() const { return node; }
   auto get_parent() const { return parent; }
+  t_atom* get_atom_addr_ptr() { return &m_addr; }
   void set_parent_addr();
 
   inline bool operator==(const t_matcher& rhs)
