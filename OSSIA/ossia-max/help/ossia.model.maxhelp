@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 240.0, 132.0, 879.0, 831.0 ],
+		"rect" : [ 100.0, 100.0, 879.0, 831.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1160,7 +1160,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 240.0, 158.0, 879.0, 805.0 ],
+						"rect" : [ 100.0, 126.0, 879.0, 805.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1197,7 +1197,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 538.0, 189.0, 254.0, 21.0 ],
-									"presentation_rect" : [ 539.0, 189.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "models can save and load presets of values ",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1221,7 +1220,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 0.0, 0.0, 640.0, 480.0 ],
+										"rect" : [ 1140.0, 121.0, 310.0, 344.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -1254,7 +1253,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 229.0, 107.5, 50.0, 20.0 ],
+													"patching_rect" : [ 221.0, 37.5, 50.0, 20.0 ],
 													"style" : "",
 													"text" : "presets"
 												}
@@ -1271,7 +1270,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 160.0, 100.0, 50.0, 50.0 ],
+													"patching_rect" : [ 152.0, 30.0, 50.0, 50.0 ],
 													"style" : "",
 													"text" : "recall",
 													"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1289,7 +1288,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 59.0, 100.0, 46.0, 50.0 ],
+													"patching_rect" : [ 51.0, 30.0, 46.0, 50.0 ],
 													"style" : "",
 													"text" : "save",
 													"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1302,7 +1301,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 114.0, 107.5, 39.0, 20.0 ],
+													"patching_rect" : [ 106.0, 37.5, 39.0, 20.0 ],
 													"style" : "",
 													"text" : "and"
 												}
@@ -1315,9 +1314,9 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 71.0, 189.5, 72.0, 22.0 ],
+													"patching_rect" : [ 63.0, 119.5, 72.0, 22.0 ],
 													"style" : "",
-													"text" : "~/test2.json"
+													"text" : "~/test2.txt"
 												}
 
 											}
@@ -1328,9 +1327,9 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 147.0, 155.5, 72.0, 22.0 ],
+													"patching_rect" : [ 139.0, 85.5, 72.0, 22.0 ],
 													"style" : "",
-													"text" : "~/test1.json"
+													"text" : "~/test1.txt"
 												}
 
 											}
@@ -1342,7 +1341,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 147.0, 266.5, 73.0, 35.0 ],
+													"patching_rect" : [ 139.0, 196.5, 73.0, 35.0 ],
 													"style" : "",
 													"text" : "prepend preset load"
 												}
@@ -1355,9 +1354,9 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 174.0, 189.5, 72.0, 22.0 ],
+													"patching_rect" : [ 166.0, 119.5, 72.0, 22.0 ],
 													"style" : "",
-													"text" : "~/test2.json"
+													"text" : "~/test2.txt"
 												}
 
 											}
@@ -1369,7 +1368,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "int" ],
-													"patching_rect" : [ 147.0, 225.0, 82.0, 35.0 ],
+													"patching_rect" : [ 139.0, 155.0, 82.0, 35.0 ],
 													"style" : "",
 													"text" : "conformpath max boot"
 												}
@@ -1383,7 +1382,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 50.0, 266.5, 73.0, 35.0 ],
+													"patching_rect" : [ 42.0, 196.5, 73.0, 35.0 ],
 													"style" : "",
 													"text" : "prepend preset save"
 												}
@@ -1396,9 +1395,9 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 50.0, 155.5, 72.0, 22.0 ],
+													"patching_rect" : [ 42.0, 85.5, 72.0, 22.0 ],
 													"style" : "",
-													"text" : "~/test1.json"
+													"text" : "~/test1.txt"
 												}
 
 											}
@@ -1410,7 +1409,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "int" ],
-													"patching_rect" : [ 50.0, 225.0, 82.0, 35.0 ],
+													"patching_rect" : [ 42.0, 155.0, 82.0, 35.0 ],
 													"style" : "",
 													"text" : "conformpath max boot"
 												}
@@ -1424,7 +1423,7 @@
 													"maxclass" : "outlet",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 92.5, 361.5, 30.0, 30.0 ],
+													"patching_rect" : [ 84.5, 291.5, 30.0, 30.0 ],
 													"style" : ""
 												}
 

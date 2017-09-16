@@ -22,18 +22,83 @@
 	
 	<!--INLETS-->
 	<inletlist>
+			<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.model</digest>
+			<description>Messages to the node</description>
+		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
+			<outlet id="0" name="Info outlet" type="any">
+			<digest>Various information messages</digest>
+			<description>Messages and information in reply to various messages</description>
+		</outlet>
 	</outletlist>
-	
+
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="node name" optional="0" type="symbol">
+			<digest>
+				Name in ossia namespace
+			</digest>
+			<description>
+				ossia.model requires an argument defining a node name in the ossia namespace.  This is mandatory, and each <o>ossia.model</o> within a upper-level model or a device must have a unique name - if several  nodes are named similarly, instances (such as name.1, name.2, etc...) will be created.
+			</description>
+		</objarg>
+	</objarglist>	
+
+	<!--METHODS-->	
+	<methodlist>
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				Sending the (namespace) message to the leftmost inlet outputs the list of all parameters registered under this node, and their current values
+			</description>
+		</method>
+
+		<method name="preset">
+			<arglist/>
+			<digest>Preset Management
+			</digest>
+			<description>
+				Sending the (preset save /path/to/file.txt) message to the leftmost inlet will write a list of all parameters and their values to the the disk, under the file /path/to/file.txt <!-- - The preset can also be saved under a json format, by replacing the extension by .json -->
+				Sending the (preset load /path/to/file.txt) message to the leftmost inlet will load a list of all parameters and their values from the the file /path/to/file.txt, and recall the values to the parameters
+			</description>
+		</method>
+	</methodlist>	
 	
 	<!--ATTRIBUTES-->
 	<attributelist>
-	</attributelist>
-	
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with this node
+			</digest>
+			<description>
+				The <at>@tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+		<attribute name="priority" get="1" set="1" type="int" size="1">
+			<digest>
+				Set priority
+			</digest>
+			<description>
+				The <at>@priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+			</description>
+		</attribute>
+		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Hide parameter node in remote client
+			</digest>
+			<description>
+				The <at>@hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+			</description>
+		</attribute>
+	</attributelist>					
 
 	<!--SEEALSO-->
 	<seealsolist>

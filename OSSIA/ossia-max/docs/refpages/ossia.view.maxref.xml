@@ -8,7 +8,7 @@
 	</digest>
 
 	<description>
-		ossia.view allows to bind to a model patcher and define a scope to the ossia.remote at the same level patcher or below to automatically bind to corresponding ossia.parameters
+		ossia.view allows to bind to a model patcher and define a scope to the ossia.remotes at the same level patcher or below to automatically bind to corresponding ossia.parameters
 	</description>
 
 	
@@ -22,34 +22,40 @@
 	
 	<!--INLETS-->
 	<inletlist>
-		<inlet id="0" name="INLET_NAME">
-			<digest>Value to set the parameter to.</digest>
+			<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.model</digest>
+			<description>Messages to the node</description>
 		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
-		<outlet id="0" name="OUTLET_NAME">
-			<digest>Value the parameter was set to.</digest>
+			<outlet id="0" name="Info outlet" type="any">
+			<digest>Various information messages</digest>
+			<description>Messages and information in reply to various messages</description>
 		</outlet>
 	</outletlist>
-	
-	
-	<!--ATTRIBUTES-->
-	<attributelist>
-		<attribute name="accessmode" get="1" set="1" type="symbol" size="1">
+
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="bind to address" optional="0" type="symbol">
+			<digest>
+				The address of the node (model) to bind this view to.
+			</digest>
 			<description>
-			Access
+				ossia.view requires an argument defining a node name in the ossia namespace to which it will bind This will define the scope to which the ossia.remotes at the same level patcher or below will automatically bind to corresponding ossia.parameters.  
+				This argument is mandatory, and each <o>ossia.view</o> within a upper-level model, device or client must have a unique name.
 			</description>
-		</attribute>
-	</attributelist>
+		</objarg>
+	</objarglist>	
 	
 
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ossia.model"/>
 		<seealso name="ossia.remote"/>
+		<seealso name="ossia.client"/>
 	</seealsolist>
 
 	

@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 428.0, 208.0, 1017.0, 831.0 ],
+		"rect" : [ 100.0, 100.0, 946.0, 744.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1017.0, 805.0 ],
+						"rect" : [ 0.0, 26.0, 946.0, 718.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1158,7 +1158,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 428.0, 234.0, 1017.0, 805.0 ],
+						"rect" : [ 100.0, 126.0, 946.0, 718.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -1191,11 +1191,88 @@
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
+									"id" : "obj-23",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 580.0, 482.5, 269.5, 35.0 ],
+									"presentation_rect" : [ 581.0, 491.5, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "notice that changing the device's name while it is exposed won't have effects on the client side",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-21",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 623.0, 454.5, 159.0, 21.0 ],
+									"presentation_rect" : [ 624.5, 460.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "or retrieve the current name",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-18",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 566.0, 454.5, 44.0, 22.0 ],
+									"presentation_rect" : [ 566.0, 459.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "name"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-15",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 679.5, 424.0, 145.0, 21.0 ],
+									"presentation_rect" : [ 679.0, 429.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "change the device's name",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 566.0, 424.0, 105.0, 22.0 ],
+									"presentation_rect" : [ 564.0, 428.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "name someName"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
 									"id" : "obj-11",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 619.0, 352.0, 254.0, 21.0 ],
+									"patching_rect" : [ 632.0, 348.0, 254.0, 21.0 ],
 									"style" : "",
 									"text" : "devices can save and load presets of values ",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1487,7 +1564,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 553.0, 351.0, 60.0, 22.0 ],
+									"patching_rect" : [ 566.0, 347.0, 60.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -1656,13 +1733,13 @@
 										"subpatcher_template" : "",
 										"boxes" : [ 											{
 												"box" : 												{
-													"id" : "obj-4",
-													"maxclass" : "message",
-													"numinlets" : 2,
-													"numoutlets" : 1,
-													"outlettype" : [ "" ],
-													"patching_rect" : [ 108.0, 200.0, 50.0, 22.0 ],
-													"style" : ""
+													"id" : "obj-3",
+													"maxclass" : "newobj",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 93.0, 200.0, 103.0, 22.0 ],
+													"style" : "",
+													"text" : "print ossia.device"
 												}
 
 											}
@@ -1673,7 +1750,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 163.5, 193.0, 50.0, 22.0 ],
+													"patching_rect" : [ 221.5, 188.0, 50.0, 22.0 ],
 													"style" : "",
 													"text" : "clear all"
 												}
@@ -1817,7 +1894,7 @@
 													"numinlets" : 5,
 													"numoutlets" : 4,
 													"outlettype" : [ "int", "", "", "int" ],
-													"patching_rect" : [ 196.5, 239.0, 61.0, 22.0 ],
+													"patching_rect" : [ 254.5, 234.0, 61.0, 22.0 ],
 													"style" : "",
 													"text" : "counter"
 												}
@@ -1873,15 +1950,15 @@
 											}
 , 											{
 												"patchline" : 												{
-													"destination" : [ "obj-31", 0 ],
-													"source" : [ "obj-15", 0 ]
+													"destination" : [ "obj-3", 0 ],
+													"source" : [ "obj-15", 1 ]
 												}
 
 											}
 , 											{
 												"patchline" : 												{
-													"destination" : [ "obj-4", 1 ],
-													"source" : [ "obj-15", 1 ]
+													"destination" : [ "obj-31", 0 ],
+													"source" : [ "obj-15", 0 ]
 												}
 
 											}
@@ -2164,13 +2241,13 @@
 									"fontface" : 1,
 									"fontname" : "Lato Regular",
 									"id" : "obj-8",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 737.0, 659.0, 139.0, 50.0 ],
+									"patching_rect" : [ 711.0, 648.5, 175.0, 35.0 ],
 									"style" : "",
-									"text" : "Note that you can have only one [ossia.device] per patcher."
+									"text" : "Notice that you can have only one [ossia.device] per patcher."
 								}
 
 							}
@@ -2258,6 +2335,14 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 575.5, 483.0, 438.0, 483.0, 438.0, 291.0, 111.5, 291.0 ],
+									"source" : [ "obj-18", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-9", 0 ],
 									"source" : [ "obj-2", 0 ]
 								}
@@ -2282,7 +2367,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 562.5, 399.0, 438.0, 399.0, 438.0, 291.0, 111.5, 291.0 ],
+									"midpoints" : [ 575.5, 450.0, 438.0, 450.0, 438.0, 291.0, 111.5, 291.0 ],
+									"source" : [ "obj-6", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 575.5, 380.0, 438.0, 380.0, 438.0, 291.0, 111.5, 291.0 ],
 									"source" : [ "obj-7", 0 ]
 								}
 

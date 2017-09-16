@@ -22,16 +22,110 @@
 	
 	<!--INLETS-->
 	<inletlist>
+			<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.model</digest>
+			<description>Messages to the node</description>
+		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
 	</outletlist>
-	
+
+	<!--METHODS-->	
+	<methodlist>
+		<method name="error">
+			<arglist/>
+			<digest>
+				Send an error message to the log server
+			</digest>
+			<description>
+				Sending the (error) message with some content afterwards will send the content as an error message to the connected log server
+			</description>
+		</method>
+
+		<method name="trace">
+			<arglist/>
+			<digest>
+				Send a trace message to the log server
+			</digest>
+			<description>
+				Sending the (trace) message with some content afterwards will send the content as a trace message to the connected log server
+			</description>
+		</method>
+
+		<method name="info">
+			<arglist/>
+			<digest>
+				Send an info message to the log server
+			</digest>
+			<description>
+				Sending the (info) message with some content afterwards will send the content as an info message to the connected log server
+			</description>
+		</method>
+
+		<method name="warning">
+			<arglist/>
+			<digest>
+				Send a warning message to the log server
+			</digest>
+			<description>
+				Sending the (warning) message with some content afterwards will send the content as a warning message to the connected log server
+			</description>
+		</method>
+		
+		<method name="critical">
+			<arglist/>
+			<digest>
+				Send a critical message to the log server
+			</digest>
+			<description>
+				Sending the (critical) message with some content afterwards will send the content as a critical message to the connected log server
+			</description>
+		</method>
+
+		<method name="debug">
+			<arglist/>
+			<digest>
+				Send a debug message to the log server
+			</digest>
+			<description>
+				Sending the (debug) message with some content afterwards will send the content as a debug message to the connected log server
+			</description>
+		</method>
+	</methodlist>
+
+		
 	
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="host" get="1" set="1" type="atom" size="1">
+			<digest>
+				URL of the log server
+			</digest>
+			<description>
+				The <at>@host</at> attribute allows to define the URL of the log server to feed.
+			</description>
+		</attribute>
+
+		<attribute name="appname" get="1" set="1" type="atom" size="1">
+			<digest>
+				Name of this application
+			</digest>
+			<description>
+				The <at>@appname</at> attribute allows to give a textual name to this application. This can be useful for humans to identify it on the server side.
+			</description>
+		</attribute>
+
+		<attribute name="heartbeat" get="1" set="1" type="int" size="1">
+			<digest>
+				Set heartbeat interval in seconds
+			</digest>
+			<description>
+				The <at>@heartbeat</at> attribute allows determine at which rate (in seconds) the "alive" message will be sent to the log server.
+			</description>
+		</attribute>
 	</attributelist>
 	
 

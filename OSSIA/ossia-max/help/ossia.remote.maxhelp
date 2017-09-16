@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 181.0, 215.0, 1108.0, 772.0 ],
+		"rect" : [ 289.0, 97.0, 1108.0, 772.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -68,7 +68,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 181.0, 241.0, 1108.0, 746.0 ],
+						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -381,7 +381,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 238.0, 230.0, 221.0, 22.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.2/gain"
+									"text" : "address my_spat.1/source.1/gain"
 								}
 
 							}
@@ -409,7 +409,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 644.0, 606.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.2/gain"
+									"text" : "address my_spat.1/source.1/gain"
 								}
 
 							}
@@ -483,7 +483,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 102.0, 463.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.2/gain"
+									"text" : "address my_spat.1/source.1/gain"
 								}
 
 							}
@@ -556,7 +556,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 28.0, 230.0, 118.0, 22.0 ],
 									"style" : "",
-									"text" : "0.59"
+									"text" : "0."
 								}
 
 							}
@@ -2035,7 +2035,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
+						"rect" : [ 289.0, 123.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2065,6 +2065,375 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-18",
+									"maxclass" : "newobj",
+									"numinlets" : 0,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patcher" : 									{
+										"fileversion" : 1,
+										"appversion" : 										{
+											"major" : 7,
+											"minor" : 3,
+											"revision" : 4,
+											"architecture" : "x64",
+											"modernui" : 1
+										}
+,
+										"rect" : [ 59.0, 103.0, 360.0, 399.0 ],
+										"bglocked" : 0,
+										"openinpresentation" : 0,
+										"default_fontsize" : 12.0,
+										"default_fontface" : 0,
+										"default_fontname" : "Arial",
+										"gridonopen" : 1,
+										"gridsize" : [ 15.0, 15.0 ],
+										"gridsnaponopen" : 1,
+										"objectsnaponopen" : 1,
+										"statusbarvisible" : 2,
+										"toolbarvisible" : 0,
+										"lefttoolbarpinned" : 0,
+										"toptoolbarpinned" : 0,
+										"righttoolbarpinned" : 0,
+										"bottomtoolbarpinned" : 0,
+										"toolbars_unpinned_last_save" : 0,
+										"tallnewobj" : 0,
+										"boxanimatetime" : 200,
+										"enablehscroll" : 1,
+										"enablevscroll" : 1,
+										"devicewidth" : 0.0,
+										"description" : "",
+										"digest" : "",
+										"tags" : "",
+										"style" : "",
+										"subpatcher_template" : "",
+										"boxes" : [ 											{
+												"box" : 												{
+													"id" : "obj-18",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 203.0, 257.0, 63.0, 22.0 ],
+													"presentation_rect" : [ 223.0, 300.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "unit linear"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-17",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 221.0, 289.0, 54.0, 22.0 ],
+													"presentation_rect" : [ 237.0, 334.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "unit db"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-14",
+													"maxclass" : "number",
+													"numinlets" : 1,
+													"numoutlets" : 2,
+													"outlettype" : [ "", "bang" ],
+													"parameter_enable" : 0,
+													"patching_rect" : [ 144.0, 257.0, 50.0, 22.0 ],
+													"style" : ""
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-10",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 144.0, 289.0, 54.0, 22.0 ],
+													"presentation_rect" : [ 157.0, 332.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "rate $1"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-9",
+													"maxclass" : "toggle",
+													"numinlets" : 1,
+													"numoutlets" : 1,
+													"outlettype" : [ "int" ],
+													"parameter_enable" : 0,
+													"patching_rect" : [ 71.0, 257.0, 24.0, 24.0 ],
+													"style" : ""
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-7",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 71.0, 289.0, 54.0, 22.0 ],
+													"presentation_rect" : [ 85.0, 302.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "mute $1"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontname" : "Lato Regular",
+													"fontsize" : 12.0,
+													"id" : "obj-6",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 85.0, 209.0, 187.0, 35.0 ],
+													"presentation_rect" : [ 98.0, 253.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "except for mute, unit and rate, that are specific to this remote",
+													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontname" : "Lato Regular",
+													"fontsize" : 12.0,
+													"id" : "obj-5",
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 138.0, 122.0, 187.0, 21.0 ],
+													"presentation_rect" : [ 151.0, 137.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "as do the messages for attributes:",
+													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-4",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 203.0, 163.0, 72.0, 22.0 ],
+													"presentation_rect" : [ 105.0, 233.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "clip both"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-3",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 100.0, 163.0, 72.0, 22.0 ],
+													"presentation_rect" : [ 91.0, 177.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "range -2. 2."
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontname" : "Lato Regular",
+													"fontsize" : 12.0,
+													"id" : "obj-1",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 42.0, 28.0, 289.0, 35.0 ],
+													"presentation_rect" : [ 65.0, 37.0, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "most messages and attributes to ossia.parameter can be sent or set from ossia.remote:",
+													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-12",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 66.0, 122.0, 63.0, 22.0 ],
+													"style" : "",
+													"text" : "defval 1.2"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"fontname" : "Lato Regular",
+													"fontsize" : 12.0,
+													"id" : "obj-13",
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 96.0, 84.0, 242.0, 21.0 ],
+													"style" : "",
+													"text" : "the reset message also works from a remote",
+													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-2",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 42.0, 84.0, 50.0, 22.0 ],
+													"style" : "",
+													"text" : "reset"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"comment" : "",
+													"id" : "obj-15",
+													"index" : 1,
+													"maxclass" : "outlet",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 42.0, 327.0, 30.0, 30.0 ],
+													"style" : ""
+												}
+
+											}
+ ],
+										"lines" : [ 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 153.5, 318.5, 51.5, 318.5 ],
+													"source" : [ "obj-10", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 75.5, 202.0, 51.5, 202.0 ],
+													"source" : [ "obj-12", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-10", 0 ],
+													"source" : [ "obj-14", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 230.5, 318.5, 51.5, 318.5 ],
+													"source" : [ "obj-17", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 212.5, 316.5, 51.5, 316.5 ],
+													"source" : [ "obj-18", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 51.5, 182.5, 51.5, 182.5 ],
+													"source" : [ "obj-2", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 109.5, 201.5, 51.5, 201.5 ],
+													"source" : [ "obj-3", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 212.5, 200.0, 51.5, 200.0 ],
+													"source" : [ "obj-4", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-15", 0 ],
+													"midpoints" : [ 80.5, 318.5, 51.5, 318.5 ],
+													"source" : [ "obj-7", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-7", 0 ],
+													"source" : [ "obj-9", 0 ]
+												}
+
+											}
+ ]
+									}
+,
+									"patching_rect" : [ 553.0, 178.0, 158.0, 22.0 ],
+									"saved_object_attributes" : 									{
+										"description" : "",
+										"digest" : "",
+										"globalpatchername" : "",
+										"style" : "",
+										"tags" : ""
+									}
+,
+									"style" : "",
+									"text" : "p messages_and_attributes"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-14",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 228.0, 301.0, 190.0, 21.0 ],
+									"style" : "",
+									"text" : "remotes can be individually muted",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-10",
 									"maxclass" : "comment",
 									"numinlets" : 1,
@@ -2083,7 +2452,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 228.0, 282.0, 150.0, 22.0 ],
+									"patching_rect" : [ 229.0, 324.0, 150.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -2286,7 +2655,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 6.5, 302.5, 195.0, 49.0 ],
+									"patching_rect" : [ 7.5, 347.5, 195.0, 49.0 ],
 									"style" : "",
 									"text" : "Multiple remotes can bind to a parameter",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2302,7 +2671,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 228.0, 345.0, 50.0, 22.0 ],
+									"patching_rect" : [ 229.0, 390.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -2315,7 +2684,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 228.0, 316.0, 160.0, 22.0 ],
+									"patching_rect" : [ 229.0, 361.0, 160.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_parameter"
 								}
@@ -2429,13 +2798,14 @@
 , 											{
 												"box" : 												{
 													"id" : "obj-2",
+													"linecount" : 2,
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
-													"patching_rect" : [ 15.0, 205.0, 181.0, 22.0 ],
+													"patching_rect" : [ 15.0, 205.0, 186.0, 35.0 ],
 													"style" : "",
-													"text" : "ossia.parameter another_param"
+													"text" : "ossia.parameter another_param @defval 0.1 @unit gain.linear"
 												}
 
 											}
@@ -2470,7 +2840,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 485.0, 365.0, 247.0, 286.0 ],
+									"patching_rect" : [ 516.0, 365.0, 247.0, 286.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -2574,7 +2944,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 228.0, 556.0, 250.0, 22.0 ],
+									"patching_rect" : [ 228.0, 556.0, 254.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_parameter @range 0. 1."
 								}
@@ -2633,6 +3003,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-7", 0 ],
+									"source" : [ "obj-18", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-16", 0 ],
 									"source" : [ "obj-20", 0 ]
 								}
@@ -2656,7 +3033,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-4", 0 ],
-									"midpoints" : [ 237.5, 373.0, 214.0, 373.0, 214.0, 310.0, 237.5, 310.0 ],
+									"midpoints" : [ 238.5, 418.0, 215.0, 418.0, 215.0, 355.0, 238.5, 355.0 ],
 									"source" : [ "obj-3", 0 ]
 								}
 
