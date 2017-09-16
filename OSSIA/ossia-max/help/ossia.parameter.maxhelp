@@ -68,7 +68,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
+						"rect" : [ 100.0, 126.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -101,13 +101,13 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-4",
-									"linecount" : 8,
+									"linecount" : 9,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 23.0, 302.0, 647.5, 122.0 ],
+									"patching_rect" : [ 23.0, 302.0, 647.5, 150.0 ],
 									"style" : "",
-									"text" : "Syntax is:\n[a-u] will create one instance of each character between  a and u\n[abc] will create one instance for each character\n[1-5] this works also for numbers (one digit at a time, see below for numbers above 10)\n\n{1..12} wil create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 2 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n",
+									"text" : "Syntax is:\n[a-u] will create one instance of each character between  a and u\n[abc] will create one instance for each character\n[1-5] this works also for numbers (one digit at a time, see below for numbers above 10)\n\n{some|words|or|others} wil create one instance per word between the '|' (pipe)\n{1..12} wil create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 2 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -591,7 +591,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 28.0, 201.0, 446.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_spat.{1..5}/source.{1..3}/gain.{L\\,R\\,C\\,Ls\\,Rs} @type gain.linear"
+									"text" : "ossia.parameter my_spat.{1..5}/source.{1..3}/gain.{L|R|C|Ls|Rs} @type gain.linear"
 								}
 
 							}
@@ -1416,7 +1416,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 706.0, 624.5, 131.0, 22.0 ],
 									"style" : "",
-									"text" : "0. 0. 0. 0."
+									"text" : "0. -1. 2. 0."
 								}
 
 							}
@@ -2043,7 +2043,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 663.0, 587.5, 293.0, 35.0 ],
-									"presentation_rect" : [ 664.0, 587.5, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "as demonstrated in the Units tab, @type can also included extended types with units, such as",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2087,7 +2086,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 667.0, 436.0, 86.5, 22.0 ],
 									"style" : "",
-									"text" : "0. 0."
+									"text" : "0. 0.053"
 								}
 
 							}
@@ -2148,7 +2147,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 663.0, 198.0, 229.0, 22.0 ],
 									"style" : "",
-									"text" : "1. 2. 3. 4. anything"
+									"text" : "any kind of stuff"
 								}
 
 							}
@@ -2376,7 +2375,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 115.0, 446.5, 100.0, 22.0 ],
 									"style" : "",
-									"text" : "dos"
+									"text" : "tres"
 								}
 
 							}
@@ -2748,7 +2747,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1110.0, 744.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,

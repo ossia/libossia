@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 480.0, 78.0, 815.0, 901.0 ],
+		"rect" : [ 348.0, 78.0, 815.0, 901.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -413,6 +413,7 @@
 			}
 , 			{
 				"box" : 				{
+					"color" : [ 0.941176, 0.690196, 0.196078, 1.0 ],
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-9",
@@ -458,6 +459,7 @@
 			}
 , 			{
 				"box" : 				{
+					"color" : [ 0.941176, 0.690196, 0.196078, 1.0 ],
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-13",
@@ -663,7 +665,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 229.0, 680.0, 436.0, 20.0 ],
+					"patching_rect" : [ 262.0, 679.0, 436.0, 20.0 ],
 					"style" : "",
 					"text" : "will use oscquery protocol and default ports (OSC port 9999 and WS port 5678)."
 				}
@@ -677,7 +679,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 360.0, 711.0, 357.0, 20.0 ],
+					"patching_rect" : [ 393.0, 710.0, 357.0, 20.0 ],
 					"style" : "",
 					"text" : "will use oscquery protocol with OSC port 1234 and WS port 9876"
 				}

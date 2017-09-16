@@ -105,7 +105,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 567.0, 648.0, 350.0, 21.0 ],
-									"presentation_rect" : [ 571.0, 675.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "this will match also addresses from tje multiple parameter below:",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -382,7 +381,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 238.0, 230.0, 221.0, 22.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.3/gain"
+									"text" : "address my_spat.1/source.2/gain"
 								}
 
 							}
@@ -410,7 +409,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 644.0, 606.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.3/gain"
+									"text" : "address my_spat.1/source.2/gain"
 								}
 
 							}
@@ -484,7 +483,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 102.0, 463.0, 150.0, 35.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.3/gain"
+									"text" : "address my_spat.1/source.2/gain"
 								}
 
 							}
@@ -557,7 +556,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 28.0, 230.0, 118.0, 22.0 ],
 									"style" : "",
-									"text" : "0.819444"
+									"text" : "0.59"
 								}
 
 							}
@@ -2098,7 +2097,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 922.0, 490.0, 236.0, 64.0 ],
+									"patching_rect" : [ 854.0, 489.0, 236.0, 64.0 ],
 									"style" : "",
 									"text" : "remotes within a view (see ossia.view maxhelp for more info) automatically bind to the parameter in the model the view is binding to",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2242,7 +2241,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 850.0, 366.0, 313.0, 286.0 ],
+									"patching_rect" : [ 782.0, 365.0, 313.0, 286.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -2471,7 +2470,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 553.0, 366.0, 247.0, 286.0 ],
+									"patching_rect" : [ 485.0, 365.0, 247.0, 286.0 ],
 									"viewvisibility" : 1
 								}
 

@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 100.0, 100.0, 1259.0, 837.0 ],
+		"rect" : [ 380.0, 119.0, 1259.0, 837.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1158,7 +1158,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1259.0, 811.0 ],
+						"rect" : [ 380.0, 145.0, 1259.0, 811.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1188,6 +1188,116 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-46",
+									"maxclass" : "newobj",
+									"numinlets" : 0,
+									"numoutlets" : 0,
+									"patcher" : 									{
+										"fileversion" : 1,
+										"appversion" : 										{
+											"major" : 7,
+											"minor" : 3,
+											"revision" : 4,
+											"architecture" : "x64",
+											"modernui" : 1
+										}
+,
+										"rect" : [ 435.0, 580.0, 538.0, 140.0 ],
+										"bglocked" : 0,
+										"openinpresentation" : 0,
+										"default_fontsize" : 12.0,
+										"default_fontface" : 0,
+										"default_fontname" : "Arial",
+										"gridonopen" : 1,
+										"gridsize" : [ 15.0, 15.0 ],
+										"gridsnaponopen" : 1,
+										"objectsnaponopen" : 1,
+										"statusbarvisible" : 2,
+										"toolbarvisible" : 0,
+										"lefttoolbarpinned" : 0,
+										"toptoolbarpinned" : 0,
+										"righttoolbarpinned" : 0,
+										"bottomtoolbarpinned" : 0,
+										"toolbars_unpinned_last_save" : 0,
+										"tallnewobj" : 0,
+										"boxanimatetime" : 200,
+										"enablehscroll" : 1,
+										"enablevscroll" : 1,
+										"devicewidth" : 0.0,
+										"description" : "",
+										"digest" : "",
+										"tags" : "",
+										"style" : "",
+										"subpatcher_template" : "",
+										"boxes" : [ 											{
+												"box" : 												{
+													"id" : "obj-2",
+													"linecount" : 3,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 24.0, 70.5, 359.0, 47.0 ],
+													"presentation_rect" : [ 24.0, 65.5, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "this is a known issue, and will be addressed as soon as possible:\n\nhttps://github.com/OSSIA/libossia/issues/196"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-1",
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 24.0, 41.5, 410.0, 20.0 ],
+													"presentation_rect" : [ 29.0, 47.5, 0.0, 0.0 ],
+													"style" : "",
+													"text" : "then, pressing connect again once the scanning is done will actuall connect"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-45",
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 24.0, 17.5, 490.0, 20.0 ],
+													"style" : "",
+													"text" : "you might have to press connect twice, because Max will first scan the network for devices"
+												}
+
+											}
+ ],
+										"lines" : [  ],
+										"styles" : [ 											{
+												"name" : "Jamoma_highlighted_orange",
+												"default" : 												{
+													"accentcolor" : [ 1.0, 0.5, 0.0, 1.0 ]
+												}
+,
+												"parentstyle" : "",
+												"multi" : 0
+											}
+ ]
+									}
+,
+									"patching_rect" : [ 148.0, 380.0, 71.0, 22.0 ],
+									"saved_object_attributes" : 									{
+										"description" : "",
+										"digest" : "",
+										"globalpatchername" : "",
+										"style" : "",
+										"tags" : ""
+									}
+,
+									"style" : "",
+									"text" : "p problem?"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-30",
 									"maxclass" : "comment",
 									"numinlets" : 1,
@@ -1212,7 +1322,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 885.0, 478.0, 24.0, 24.0 ],
+									"patching_rect" : [ 905.0, 478.0, 24.0, 24.0 ],
 									"rounded" : 180.0,
 									"style" : "",
 									"text" : "5",
@@ -1236,7 +1346,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 914.0, 467.0, 207.0, 64.0 ],
+									"patching_rect" : [ 934.0, 467.0, 207.0, 64.0 ],
 									"style" : "",
 									"text" : "ossia.remotes now automatically bind to the distant ossia.device",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1288,7 +1398,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 186.0, 514.0, 247.0, 35.0 ],
+									"patching_rect" : [ 187.0, 502.0, 247.0, 35.0 ],
 									"style" : "",
 									"text" : "disconnect from the connected device",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1573,7 +1683,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 888.0, 403.0, 24.0, 24.0 ],
+									"patching_rect" : [ 905.0, 405.0, 24.0, 24.0 ],
 									"rounded" : 180.0,
 									"style" : "",
 									"text" : "4",
@@ -1619,7 +1729,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 914.0, 404.0, 167.0, 22.0 ],
+									"patching_rect" : [ 934.0, 405.0, 167.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.view my_distant_model"
 								}
@@ -1659,7 +1769,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 106.0, 520.5, 68.0, 22.0 ],
+									"patching_rect" : [ 107.0, 508.5, 68.0, 22.0 ],
 									"style" : "",
 									"text" : "disconnect"
 								}
@@ -2357,7 +2467,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 115.5, 556.75, 71.5, 556.75 ],
+									"midpoints" : [ 116.5, 556.75, 71.5, 556.75 ],
 									"source" : [ "obj-13", 0 ]
 								}
 

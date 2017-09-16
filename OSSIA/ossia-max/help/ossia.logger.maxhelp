@@ -11,7 +11,7 @@
 ,
 		"rect" : [ 612.0, 77.0, 655.0, 544.0 ],
 		"bgcolor" : [ 0.878431, 0.878431, 0.858824, 1.0 ],
-		"editing_bgcolor" : [ 0.239216, 0.254902, 0.278431, 1.0 ],
+		"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -70,7 +70,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 109.0, 385.0, 174.0, 20.0 ],
-					"presentation_rect" : [ 111.0, 366.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "send an 'alive' message every "
 				}
@@ -83,7 +82,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 84.0, 335.0, 143.0, 20.0 ],
-					"presentation_rect" : [ 94.0, 321.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "give a name to this client"
 				}
@@ -96,7 +94,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 61.0, 276.0, 246.0, 20.0 ],
-					"presentation_rect" : [ 64.0, 204.5, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "set the appropriate host IP and port:"
 				}
