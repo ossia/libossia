@@ -63,84 +63,53 @@ struct to_python_value
   }
 };
 
-} }
-
-namespace pybind11
+ossia::value from_python_value(PyObject* source)
 {
-  namespace detail
+  ossia::value returned_value;
+
+  PyObject *tmp = nullptr;
+  if (PyNumber_Check(source))
   {
-    template <> struct type_caster<ossia::value>
-    {
-    public:
-        PYBIND11_TYPE_CASTER(ossia::value, _("value"));
-
-        ossia::value check_and_cast(PyObject *source)
-        {
-            ossia::value returned_value;
-
-            PyObject *tmp = nullptr;
-            if (PyNumber_Check(source))
-            {
-              if ((tmp = PyNumber_Long(source)))
-                returned_value = (int)PyLong_AsLong(tmp);
-              else if ((tmp = PyNumber_Float(source)))
-                returned_value = (float)PyFloat_AsDouble(tmp);
-            }
-            else if (PyBool_Check(source))
-              returned_value = (source == Py_True);
+    if (PyLong_Check(source))
+      returned_value = (int)PyLong_AsLong(source);
+    else if (PyFloat_Check(source))
+      returned_value = (float)PyFloat_AsDouble(source);
+  }
+  else if (PyBool_Check(source))
+    returned_value = (source == Py_True);
 #if PY_MAJOR_VERSION >= 3
-            else if (PyUnicode_Check(source))
-              returned_value = (std::string)PyUnicode_AsUTF8(source);
+  else if (PyUnicode_Check(source))
+    returned_value = (std::string)PyUnicode_AsUTF8(source);
 #endif
-            else if (PyBytes_Check(source))
-              returned_value = (std::string)PyBytes_AsString(source);
-            else if (PyList_Check(source))
-            {
-              std::vector<ossia::value> vec;
-              int n = PyList_Size(source);
-              vec.reserve(n);
+  else if (PyBytes_Check(source))
+    returned_value = (std::string)PyBytes_AsString(source);
+  else if (PyList_Check(source))
+  {
+    std::vector<ossia::value> vec;
+    int n = PyList_Size(source);
+    vec.reserve(n);
 
-              PyObject *iterator = PyObject_GetIter(source);
-              PyObject *item;
+    PyObject *iterator = PyObject_GetIter(source);
+    PyObject *item;
 
-              while ((item = PyIter_Next(iterator)))
-              {
-                vec.push_back(check_and_cast(item));
-                Py_DECREF(item);
-              }
+    while ((item = PyIter_Next(iterator)))
+    {
+      vec.push_back(from_python_value(item));
+      Py_DECREF(item);
+    }
 
-              returned_value = std::move(vec);
-            }
-            else if ((tmp = PyByteArray_FromObject(source)))
-              returned_value = (std::string)PyByteArray_AsString(tmp);
+    returned_value = std::move(vec);
+  }
+  else if ((tmp = PyByteArray_FromObject(source)))
+    returned_value = (std::string)PyByteArray_AsString(tmp);
 
-            if (tmp)
-              Py_DECREF(tmp);
+  if (tmp)
+    Py_DECREF(tmp);
 
-            return returned_value;
-        }
+  return returned_value;
+}
 
-        bool load(handle src, bool)
-        {
-            PyObject *source = src.ptr();
-
-            value = std::move(check_and_cast(source));
-
-            bool err = PyErr_Occurred();
-
-            if (err)
-              PyErr_Print();
-
-            return !err;
-        }
-
-        static handle cast(const ossia::value& src, return_value_policy policy , handle parent)
-        {
-          return src.apply(ossia::python::to_python_value{});
-        }
-    };
-  } // namespace detail
-} // namespace pybind11
+} }
 
 /**
  * @brief Local device class
@@ -510,11 +479,11 @@ PYBIND11_MODULE(ossia_python, m)
           })
       .def_property(
           "value",
-          [](ossia::net::parameter_base& addr) -> ossia::value {
-            return addr.fetch_value();
+          [](ossia::net::parameter_base& addr) -> py::object {
+            return addr.fetch_value().apply(ossia::python::to_python_value{});
           },
-          [](ossia::net::parameter_base& addr, const ossia::value& v) {
-            addr.push_value(v);
+          [](ossia::net::parameter_base& addr, const py::object& v) {
+            addr.push_value(ossia::python::from_python_value(v.ptr()));
           })
       .def_property(
           "value_type", &ossia::net::parameter_base::get_value_type,
@@ -542,15 +511,18 @@ PYBIND11_MODULE(ossia_python, m)
           })
       .def(
           "make_domain",
-          [](ossia::net::parameter_base& addr, const ossia::value& min,
-             const ossia::value& max) {
-            addr.set_domain(ossia::make_domain(min, max));
+          [](ossia::net::parameter_base& addr, const py::object& min, const py::object& max) {
+            addr.set_domain(
+                  ossia::make_domain(
+                    ossia::python::from_python_value(min.ptr())
+                  , ossia::python::from_python_value(max.ptr())));
           })
       .def(
           "make_domain",
-          [](ossia::net::parameter_base& addr, const ossia::value& min,
-             const ossia::value& max, const std::vector<ossia::value>& vals) {
-            addr.set_domain(ossia::make_domain(min, max, vals));
+          [](ossia::net::parameter_base& addr, const py::object& min, const py::object& max, const std::vector<py::object>& vals) {
+            addr.set_domain(ossia::make_domain(
+                              ossia::python::from_python_value(min.ptr())
+                            , ossia::python::from_python_value(max.ptr())));//, vals));
           })
       .def(
           "apply_domain",
@@ -561,31 +533,31 @@ PYBIND11_MODULE(ossia_python, m)
       .def("pull_value", &ossia::net::parameter_base::pull_value)
       .def(
           "clone_value",
-          [](ossia::net::parameter_base& addr) -> ossia::value {
-            return addr.value();
+          [](ossia::net::parameter_base& addr) -> py::object {
+            return addr.value().apply(ossia::python::to_python_value{});
           })
       .def(
           "fetch_value",
-          [](ossia::net::parameter_base& addr) -> ossia::value {
-            return addr.fetch_value();
+          [](ossia::net::parameter_base& addr) -> py::object {
+            return addr.fetch_value().apply(ossia::python::to_python_value{});
           })
       .def(
           "push_value", [](ossia::net::parameter_base& addr,
-                           const ossia::value& v) { addr.push_value(v); })
+                           const py::object& v) { addr.push_value(ossia::python::from_python_value(v.ptr())); })
       .def(
           "add_callback",
           [](ossia::net::parameter_base& addr,
-             ossia::value_callback clbk) {
+             std::function<void(const py::object&)> clbk) {
             addr.add_callback([=] (const auto& val) {
-              clbk(val);
+              clbk(val.apply(ossia::python::to_python_value{}));
             });
           })
       .def(
          "add_callback_param",
           [](ossia::net::parameter_base& addr,
-             std::function<void(ossia::net::node_base&, const ossia::value&)> clbk) {
+             std::function<void(ossia::net::node_base&, const py::object&)> clbk) {
              addr.add_callback([clbk,&addr] (const ossia::value& val) {
-               clbk(addr.get_node(), val);
+               clbk(addr.get_node(), val.apply(ossia::python::to_python_value{}));
              });
           })
       .def("__str__", [](ossia::net::parameter_base& addr) -> std::string {
@@ -629,58 +601,16 @@ PYBIND11_MODULE(ossia_python, m)
       .def(py::init())
       .def_property(
           "min",
-          [](ossia::domain& d) -> ossia::value { return ossia::get_min(d); },
-          [](ossia::domain& d, const ossia::value& v) {
-            ossia::set_min(d, v);
+          [](ossia::domain& d) -> py::object { return ossia::get_min(d).apply(ossia::python::to_python_value{}); },
+          [](ossia::domain& d, const py::object& v) {
+            ossia::set_min(d, ossia::python::from_python_value(v.ptr()));
           })
       .def_property(
           "max",
-          [](ossia::domain& d) -> ossia::value { return ossia::get_max(d); },
-          [](ossia::domain& d, const ossia::value& v) {
-            ossia::set_max(d, v);
+          [](ossia::domain& d) -> py::object { return ossia::get_max(d).apply(ossia::python::to_python_value{}); },
+          [](ossia::domain& d, const py::object& v) {
+            ossia::set_max(d, ossia::python::from_python_value(v.ptr()));
           });
-
-  py::class_<ossia::value>(m, "Value")
-      .def(py::init<bool>())
-      .def(py::init<int>())
-      .def(py::init<float>())
-      .def(py::init<const std::string&>())
-      .def(py::init<const std::vector<ossia::value>&>())
-      .def(py::init<std::array<float, 2>>())
-      .def(py::init<std::array<float, 3>>())
-      .def(py::init<std::array<float, 4>>())
-      .def("valid", &ossia::value::valid)
-      .def("reset", &ossia::value::reset)
-      .def(
-          "get",
-          [](const ossia::value& val) { return val.apply(ossia::python::to_python_value{}); })
-      .def("get_bool", [](const ossia::value& val) { return val.get<bool>(); })
-      .def("get_int", [](const ossia::value& val) { return val.get<int>(); })
-      .def(
-          "get_float",
-          [](const ossia::value& val) { return val.get<float>(); })
-      .def("get_char", [](const ossia::value& val) { return val.get<char>(); })
-      .def(
-          "get_string",
-          [](const ossia::value& val) { return val.get<std::string>(); })
-      .def(
-          "get_vec2f",
-          [](const ossia::value& val) {
-            return val.get<std::array<float, 2>>();
-          })
-      .def(
-          "get_vec3f",
-          [](const ossia::value& val) {
-            return val.get<std::array<float, 3>>();
-          })
-      .def(
-          "get_vec4f",
-          [](const ossia::value& val) {
-            return val.get<std::array<float, 4>>();
-          })
-      .def("__str__", [](const ossia::value& val) -> std::string {
-        return ossia::value_to_pretty_string(val);
-      });
 
   py::class_<ossia::message_queue>(m, "MessageQueue")
       .def(py::init<ossia_local_device&>())
