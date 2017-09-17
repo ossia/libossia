@@ -294,28 +294,6 @@ void object_base::is_deleted(const ossia::net::node_base& n)
   }
 }
 
-void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
-{
-  if (argc > 0 && argv[0].a_type == A_SYMBOL)
-  {
-    std::string addr = argv[0].a_w.w_symbol->s_name;
-    argv++;
-    argc--;
-    for (auto n : x->m_nodes)
-    {
-      auto nodes = ossia::net::find_nodes(*n, addr);
-      for (auto& no : nodes)
-      {
-        if (no->get_parameter()){
-          x->m_matchers.emplace_back(no, x);
-        }
-      }
-      parameter_base::push((parameter_base*)x,nullptr, argc, argv);
-      x->m_matchers.clear();
-    }
-  }
-}
-
 void object_base::set_description()
 {
   fmt::MemoryWriter description;
@@ -597,8 +575,6 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
 
 void object_base::class_setup(t_eclass*c)
 {
-  eclass_addmethod(c, (method) object_base::set,           "set",       A_GIMME, 0);
-
   CLASS_ATTR_INT(         c, "priority",          0, object_base, m_priority);
   eclass_addmethod(c, (method) object_base   ::get_priority,          "getpriority",          A_NULL, 0);
 

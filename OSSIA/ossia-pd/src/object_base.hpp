@@ -158,15 +158,6 @@ public:
   static bool find_and_display_friend(object_base* x);
 
   /**
-   * @brief set Set the parameter value from Pd patcher
-   * @param x
-   * @param s
-   * @param argc
-   * @param argv
-   */
-  static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
-
-  /**
    * @brief obj_get_address return global address through dump outlet
    * @param x
    */

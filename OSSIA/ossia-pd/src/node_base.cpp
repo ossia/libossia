@@ -13,7 +13,7 @@ node_base::node_base(t_eclass* x)
 { }
 
 
-void node_base::preset(object_base *x, t_symbol*s, int argc, t_atom* argv)
+void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node{};
   switch (x->m_otype)
@@ -150,8 +150,9 @@ void ossia::pd::node_base::get_namespace(object_base* x)
 void node_base :: class_setup(t_eclass* c)
 {
   object_base::class_setup(c);
-  eclass_addmethod(c, (method) node_base::get_namespace,     "namespace", A_NULL,  0);
-  eclass_addmethod(c, (method) node_base::preset,            "preset",    A_GIMME, 0);
+  eclass_addmethod(c, (method) node_base::set,           "set",       A_GIMME, 0);
+  eclass_addmethod(c, (method) node_base::get_namespace, "namespace", A_NULL,  0);
+  eclass_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
 }
 
 void node_base::update_attribute(object_base* x, ossia::string_view attribute)
@@ -160,6 +161,27 @@ void node_base::update_attribute(object_base* x, ossia::string_view attribute)
     // filter out refresh_rate attribute which doesn't makes sense for me on node
   } else {
     object_base::update_attribute(x, attribute);
+  }
+}
+
+void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if (argc > 0 && argv[0].a_type == A_SYMBOL)
+  {
+    std::string addr = argv[0].a_w.w_symbol->s_name;
+    argv++;
+    argc--;
+    auto v = atom2value(nullptr,argc,argv);
+    for (auto n : x->m_nodes)
+    {
+      auto nodes = ossia::net::find_nodes(*n, addr);
+      for (auto& node : nodes)
+      {
+        if (auto param = node->get_parameter()){
+          param->push_value(v);
+        }
+      }
+    }
   }
 }
 

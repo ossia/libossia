@@ -262,6 +262,8 @@ struct domain_visitor {
   }
 };
 
+ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
+
 #pragma mark Prototype
 
 std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
