@@ -229,20 +229,9 @@ void t_matcher::output_value()
 void t_matcher::set_parent_addr()
 {
   if (parent->m_parent_node){
-    std::string addr = ossia::net::address_string_from_node(*node);
     // TODO how to deal with multiple parents ?
-    std::string parent_addr = ossia::net::address_string_from_node(*parent->m_parent_node);
-    if ( parent_addr.back() != '/' ) parent_addr += "/";
-
-    std::regex addr_regex(parent_addr);
-    std::smatch addr_match;
-
-    if (std::regex_search(addr, addr_match, addr_regex))
-    {
-      SETSYMBOL(&m_addr, gensym(addr_match.suffix().str().c_str()));
-    } else {
-      SETSYMBOL(&m_addr, gensym(node->get_name().c_str()));
-    }
+    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *parent->m_parent_node);
+    SETSYMBOL(&m_addr, gensym(addr.c_str()));
   }
   else
   {
@@ -455,24 +444,32 @@ void object_base::get_priority(object_base* x, const ossia::net::node_base* node
   }
 }
 
-void object_base::get_hidden(object_base*x, const ossia::net::node_base* _node)
+void object_base::get_hidden(object_base*x, const ossia::net::node_base* node)
 {
   if (!x->m_matchers.empty())
   {
-    const ossia::net::node_base* node;
-    if (!_node)
-      // assume all matchers have the same bounding_mode
-      node = x->m_matchers[0].get_node();
-    else
-      node = _node;
+    if (node)
+    {
+      t_atom a;
+      std::string addr = ossia::net::address_string_from_node(*node);
+      SETSYMBOL(&a, gensym(addr.c_str()));
+      outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
 
-    x->m_hidden = ossia::net::get_hidden(*node);
+      x->m_hidden = ossia::net::get_hidden(*node);
 
-    t_atom a;
-    SETFLOAT(&a, x->m_hidden);
-    outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+      SETFLOAT(&a, x->m_hidden);
+      outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+    } else {
+      for (auto& m : x->m_matchers)
+      {
+        outlet_anything(x->m_dumpout, gensym("address"), 1, m.get_atom_addr_ptr());
+
+        t_atom a;
+        SETFLOAT(&a, ossia::net::get_hidden(*m.get_node()));
+        outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+      }
+    }
   }
-
 }
 
 void object_base::get_address(object_base *x)

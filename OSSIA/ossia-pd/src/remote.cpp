@@ -361,7 +361,7 @@ void remote::destroy(remote* x)
   x->~remote();
 }
 
-void remote::update_attribute(remote* x, ossia::string_view attribute)
+void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   // @mute and @unit attributes are specific to each remote
   // it makes no sens to sens to change when an attribute changes
@@ -383,8 +383,12 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
     outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
   } else if ( attribute == ossia::net::text_unit()) {
     // assume all matchers have the same bounding_mode
-    ossia::pd::t_matcher& m = x->m_matchers[0];
-    ossia::net::node_base* node = m.get_node();
+    if (node == nullptr)
+    {
+      ossia::pd::t_matcher& m = x->m_matchers[0];
+      node = m.get_node();
+    }
+
     ossia::net::parameter_base* param = node->get_parameter();
 
     if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
@@ -395,7 +399,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
     }
 
   } else {
-    parameter_base::update_attribute(x, attribute);
+    parameter_base::update_attribute(x, attribute, node);
   }
 }
 

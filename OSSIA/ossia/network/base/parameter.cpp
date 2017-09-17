@@ -5,6 +5,8 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 
+#include <regex>
+
 namespace ossia
 {
 namespace net
@@ -72,6 +74,24 @@ std::string address_string_from_node(const ossia::net::node_base& node)
 std::string address_string_from_node(const ossia::net::parameter_base& addr)
 {
   return address_string_from_node(addr.get_node());
+}
+
+std::string relative_address_string_from_nodes(const ossia::net::node_base& node, const ossia::net::node_base& parent)
+{
+  std::string addr = ossia::net::address_string_from_node(node);
+  // TODO how to deal with multiple parents ?
+  std::string parent_addr = ossia::net::address_string_from_node(parent);
+  if ( parent_addr.back() != '/' ) parent_addr += "/";
+
+  std::regex addr_regex(parent_addr);
+  std::smatch addr_match;
+
+  if (std::regex_search(addr, addr_match, addr_regex))
+  {
+    return addr_match.suffix().str();
+  } else {
+    return node.get_name();
+  }
 }
 
 std::string osc_parameter_string(const node_base& n)

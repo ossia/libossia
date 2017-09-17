@@ -358,7 +358,7 @@ void attribute::destroy(attribute* x)
   x->~attribute();
 }
 
-void attribute::update_attribute(attribute* x, ossia::string_view attr)
+void attribute::update_attribute(attribute* x, ossia::string_view attr, const ossia::net::node_base* node)
 {
   // @mute and @unit attributes are specific to each remote
   // it makes no sens to sens to change  an attribute changes
@@ -388,7 +388,7 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr)
     SETSYMBOL(&a,x->m_unit);
     outlet_anything(x->m_dumpout, gensym("unit"),1,&a);
   } else {
-    parameter_base::update_attribute(x, attr);
+    parameter_base::update_attribute(x, attr, node);
   }
 }
 

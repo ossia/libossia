@@ -155,15 +155,6 @@ void node_base :: class_setup(t_eclass* c)
   eclass_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
 }
 
-void node_base::update_attribute(object_base* x, ossia::string_view attribute)
-{
-  if ( attribute == ossia::net::text_refresh_rate() ){
-    // filter out refresh_rate attribute which doesn't makes sense for me on node
-  } else {
-    object_base::update_attribute(x, attribute);
-  }
-}
-
 void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYMBOL)
