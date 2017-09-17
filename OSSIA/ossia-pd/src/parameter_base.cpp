@@ -584,10 +584,12 @@ void parameter_base::class_setup(t_eclass* c)
 {
   object_base :: class_setup(c);
 
-  eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
-  eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
-  eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
-
+  if (c != ossia_pd::attribute_class)
+  {
+    eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
+    eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
+  }
 
   if (c != ossia_pd::remote_class){
     CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
@@ -618,7 +620,7 @@ void parameter_base::class_setup(t_eclass* c)
     eclass_addmethod(c, (method) get_repetition_filter_mess_cb, "getrepetitions", A_NULL, 0);
   }
 
-  CLASS_ATTR_INT   (c, "mute",          0, remote, m_mute);
+  CLASS_ATTR_INT   (c, "mute",          0, parameter_base, m_mute);
 }
 
 } // namespace pd

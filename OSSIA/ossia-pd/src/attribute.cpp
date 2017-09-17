@@ -232,9 +232,9 @@ t_pd_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender,
     // TODO : forward notification to parent class
     if (msg == gensym("attr_modified"))
     {
-        if( s == gensym("range") )
-            x->set_range();
-        else if ( s == gensym("clip") )
+      if( s == gensym("range") )
+        x->set_range();
+      else if ( s == gensym("clip") )
         x->set_bounding_mode();
       else if ( s == gensym("min") || s == gensym("max") )
         x->set_minmax();
@@ -261,12 +261,7 @@ t_pd_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender,
       else if ( s == gensym("rate") )
         x->set_rate();
       else if ( s == gensym("mute") )
-      {
-        if (x->m_mute)
-          x->unregister();
-        else
-          obj_register(x);
-      }
+        x->set_mute();
   }
   return {};
 }
@@ -407,6 +402,8 @@ extern "C" void setup_ossia0x2eattribute(void)
   if (c)
   {
     class_addcreator((t_newmethod)attribute::create,gensym("ø.attribute"), A_GIMME, 0);
+    class_addcreator((t_newmethod)attribute::create,gensym("ossia.attr"), A_GIMME, 0);
+    class_addcreator((t_newmethod)attribute::create,gensym("ø.attr"), A_GIMME, 0);
 
     eclass_addmethod(c, (method) attribute::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) attribute::notify,          "notify",      A_NULL,   0);
@@ -414,7 +411,10 @@ extern "C" void setup_ossia0x2eattribute(void)
 
     parameter_base::class_setup(c);
 
-    // attribute special attributes
+    // special attributes
+
+    CLASS_ATTR_SYMBOL(c, "unit", 0, attribute, m_unit);
+
     eclass_addmethod(c, (method) attribute::get_unit,        "getunit",     A_NULL, 0);
     eclass_addmethod(c, (method) attribute::get_mute,        "getmute",     A_NULL, 0);
     eclass_addmethod(c, (method) attribute::get_rate,        "rate",        A_NULL, 0);

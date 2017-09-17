@@ -49,6 +49,7 @@ int_parameter.bounding_mode = ossia.BoundingMode.Clip
 int_parameter.value = 9
 int_parameter.make_domain(-10, 10)
 int_parameter.apply_domain()
+int_parameter.repetition_filter = ossia.RepetitionFilter.Off
 ### TODO : int_parameter.defaultvalue = -3
 
 # create a node, create a float parameter, set its properties and initialize it
@@ -56,7 +57,7 @@ float_node = local_device.add_node("/test/numeric/float")
 float_parameter = float_node.create_parameter(ossia.ValueType.Float)
 float_parameter.access_mode = ossia.AccessMode.Bi
 float_parameter.bounding_mode = ossia.BoundingMode.Clip
-float_parameter.value = 2.5
+float_parameter.value = 1.5
 float_parameter.make_domain(-2.0, 2.0)
 float_parameter.apply_domain()
 ### TODO : float_parameter.defaultvalue = 0.123456789
@@ -88,7 +89,6 @@ list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
 list_parameter.value = [44100, "test.wav", 0.9]
 ### TODO : list_parameter.defaultvalue = [44100, "ossia.wav", 0.9]
-
 
 # attach a callback function to the boolean parameter
 def bool_value_callback(v):
@@ -142,20 +142,30 @@ list_parameter.add_callback(list_value_callback)
 def iterate_on_children(node):
 
   for child in node.children():
+    print('-------------------------------------')
     if child.parameter:
-      print('PARAMETER -> ' + str(child) + " " + str(child.parameter) + " <" + str(child.parameter.value_type) + ", " + str(child.parameter.access_mode) + ">")
-      
+      print('PARAMETER -> ' + str(child))
+      print(str(child.parameter))
+      print(str(child.parameter.value_type))
+      print(str(child.parameter.access_mode))
+      print(str(child.parameter.repetition_filter))
+      print('callbacks : ' + str(child.parameter.callback_count))
       ### TODO : remove this test
       # displaying the domain bounds for the float parameter crashes ... ???
       if (child.parameter.value_type == ossia.ValueType.Float):
+        print('--- -bug on have_domain for float- ---')
         continue
-
       if child.parameter.have_domain():
-        print("min : " + str(child.parameter.domain.min) + ", max : " + str(child.parameter.domain.max))
+        print(str(child.parameter.bounding_mode))
+        print(str(child.parameter.domain)+ ' - min : ' + str(child.parameter.domain.min) + ' / max : ' + str(child.parameter.domain.max))
+      else:
+        print('--- -no domain- ---')
     else:
+      print()
       print('\nNODE -> ' + str(child))
-      print('--------------')
+            #print(getattr(float_parameter, prop))
     iterate_on_children(child)
+
 
 # iterate on our device
 print("\nLOCAL DEVICE NAMESPACE")
