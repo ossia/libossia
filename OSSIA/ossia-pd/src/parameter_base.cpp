@@ -292,7 +292,7 @@ void parameter_base::get_domain(parameter_base*x, const ossia::net::node_base* n
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      auto domain = ossia::net::get_domain(*node);
+      auto domain = ossia::net::get_domain(*m->get_node());
       if (domain)
       {
         domain_visitor dv;
@@ -342,9 +342,7 @@ void parameter_base::get_default(parameter_base*x, const ossia::net::node_base* 
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-
-      auto def_val = ossia::net::get_default_value(*node);
+      auto def_val = ossia::net::get_default_value(*m->get_node());
 
       if ( def_val ){
         std::vector<t_atom> va;

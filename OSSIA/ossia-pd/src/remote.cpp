@@ -372,9 +372,8 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
     for (auto m : matchers)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      ossia::net::node_base* node = m->get_node();
 
-      auto rate = ossia::net::get_refresh_rate(*node);
+      auto rate = ossia::net::get_refresh_rate(*m->get_node());
       if (rate)
       {
         x->m_rate_min = *rate;
