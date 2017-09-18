@@ -10,6 +10,52 @@ namespace ossia
 namespace pd
 {
 
+ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
+{
+    if (argc == 1 && !s)
+    {
+      ossia::value v;
+      // convert one element array to single element
+      switch(argv->a_type)
+      {
+        case A_SYMBOL:
+          v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
+          break;
+        case A_FLOAT:
+          v = ossia::value(atom_getfloat(argv));
+          break;
+        default:
+          ;
+      }
+
+      return v;
+    }
+    else
+    {
+      std::vector<ossia::value> list;
+      list.reserve(argc+1);
+      if ( s && s != gensym("list") )
+        list.push_back(std::string(s->s_name));
+
+      for (; argc > 0; argc--, argv++)
+      {
+        switch (argv->a_type)
+        {
+          case A_SYMBOL:
+            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          default:
+            ;
+        }
+      }
+
+      return ossia::value(list);
+    }
+}
+
 std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
 {
   std::vector<std::string> tags;
@@ -561,6 +607,31 @@ t_symbol* access_mode2symbol(ossia::access_mode mode)
     default:
       return gensym("bi");
   }
+}
+
+std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
+{
+  std::vector<ossia::pd::t_matcher*> matchers;
+  if (node)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      if (node == m.get_node())
+      {
+        matchers.push_back(&m);
+        break;
+      }
+    }
+  }
+
+  if (matchers.empty())
+  {
+    matchers.reserve(x->m_matchers.size());
+    for (auto& m : x->m_matchers)
+      matchers.push_back(&m);
+  }
+
+  return matchers;
 }
 
 }

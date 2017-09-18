@@ -84,6 +84,13 @@ OSSIA_EXPORT std::string
 address_string_from_node(const ossia::net::parameter_base&);
 
 /**
+ * @brief Get the address of a node relative to parent
+ */
+OSSIA_EXPORT std::string
+relative_address_string_from_nodes(const ossia::net::node_base& node, const ossia::net::node_base& parent);
+
+
+/**
  * @brief Get the OSC address of a node: /an/address
  */
 OSSIA_EXPORT std::string osc_parameter_string(const ossia::net::parameter_base&);
