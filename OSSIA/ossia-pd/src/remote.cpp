@@ -367,37 +367,40 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   // it makes no sens to sens to change when an attribute changes
   if ( attribute == ossia::net::text_refresh_rate() )
   {
-    // assume all matchers have the same bounding_mode
-    ossia::pd::t_matcher& m = x->m_matchers[0];
-    ossia::net::node_base* node = m.get_node();
+    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
 
-    auto rate = ossia::net::get_refresh_rate(*node);
-    if (rate)
+    for (auto m : matchers)
     {
-      x->m_rate_min = *rate;
-      x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
-    }
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      ossia::net::node_base* node = m->get_node();
 
-    t_atom a;
-    SETFLOAT(&a,x->m_rate);
-    outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+      auto rate = ossia::net::get_refresh_rate(*node);
+      if (rate)
+      {
+        x->m_rate_min = *rate;
+        x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
+      }
+
+      t_atom a;
+      SETFLOAT(&a,x->m_rate);
+      outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+    }
   } else if ( attribute == ossia::net::text_unit()) {
-    // assume all matchers have the same bounding_mode
-    if (node == nullptr)
+
+    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
+
+    for (auto m : matchers)
     {
-      ossia::pd::t_matcher& m = x->m_matchers[0];
-      node = m.get_node();
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+
+      if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
+      {
+        x->m_ounit = param->get_unit();
+        std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+        x->m_unit = gensym(unit.c_str());
+      }
     }
-
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
-    {
-      x->m_ounit = param->get_unit();
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
-    }
-
   } else {
     parameter_base::update_attribute(x, attribute, node);
   }

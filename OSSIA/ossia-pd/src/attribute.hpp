@@ -38,10 +38,10 @@ public:
 
   static ossia::safe_set<attribute*>& quarantine();
 
-  static void get_unit(attribute*x);
-  static void get_mute(attribute*x);
-  static void get_rate(attribute*x);
-  static void get_enable(attribute*x);
+  static void get_unit(attribute*x, const ossia::net::node_base* node);
+  static void get_mute(attribute*x, const ossia::net::node_base* node);
+  static void get_rate(attribute*x, const ossia::net::node_base* node);
+  static void get_enable(attribute*x, const ossia::net::node_base* node);
 
   void on_device_deleted(const ossia::net::node_base&);
 private:

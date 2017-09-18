@@ -609,5 +609,30 @@ t_symbol* access_mode2symbol(ossia::access_mode mode)
   }
 }
 
+std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
+{
+  std::vector<ossia::pd::t_matcher*> matchers;
+  if (node)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      if (node == m.get_node())
+      {
+        matchers.push_back(&m);
+        break;
+      }
+    }
+  }
+
+  if (matchers.empty())
+  {
+    matchers.reserve(x->m_matchers.size());
+    for (auto& m : x->m_matchers)
+      matchers.push_back(&m);
+  }
+
+  return matchers;
+}
+
 }
 }
