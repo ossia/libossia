@@ -20,12 +20,12 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 
 cd C:\projects\libossia\build\
 $LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}.log"
-cmake --build . --config Release > "$LogFile"
+cmake --build . --config "${env:configuration}" > "$LogFile"
 CheckLastExitCode
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "max"){
   cd C:\projects\libossia\build-32bit
   $LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-32bit.log"
-  cmake --build . --config Release > "$LogFile"
+  cmake --build . --config "${env:configuration}" > "$LogFile"
   CheckLastExitCode
 }
