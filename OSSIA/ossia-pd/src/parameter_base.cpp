@@ -28,20 +28,19 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
   } else if ( attribute == ossia::net::text_unit() ){
     get_unit(x, node);
   } else if ( attribute == ossia::net::text_value_type() ){
-    get_type(x);
+    get_type(x, node);
   } else if ( attribute == ossia::net::text_domain() ){
     get_domain(x, node);
-    // logpost(x,2,"update domain attribute");
   } else if ( attribute == ossia::net::text_access_mode() ){
-    get_access_mode(x);
+    get_access_mode(x, node);
   } else if ( attribute == ossia::net::text_bounding_mode() ){
-    get_bounding_mode(x);
+    get_bounding_mode(x, node);
   } else if ( attribute == ossia::net::text_disabled() ){
-    get_enable(x);
+    get_enable(x, node);
   } else if ( attribute == ossia::net::text_repetition_filter() ){
-    get_repetition_filter(x);
+    get_repetition_filter(x, node);
   } else if ( attribute == ossia::net::text_default_value() ) {
-    get_default(x);
+    get_default(x, node);
   } else {
     object_base::update_attribute((node_base*)x, attribute, node);
   }
@@ -184,31 +183,18 @@ void parameter_base::set_range()
 
 void parameter_base::set_bounding_mode()
 {
+  std::string bounding_mode = m_bounding_mode->s_name;
+  ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
+  m_bounding_mode = gensym(bounding_mode.c_str());
+
+  auto mode = symbol2bounding_mode(m_bounding_mode);
+
   for (t_matcher& m : m_matchers)
   {
     ossia::net::node_base* node = m.get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    std::string bounding_mode = m_bounding_mode->s_name;
-    ossia::transform(bounding_mode, bounding_mode.begin(), ::tolower);
-    m_bounding_mode = gensym(bounding_mode.c_str());
-
-    if (bounding_mode == "free")
-      param->set_bounding(ossia::bounding_mode::FREE);
-    else if (bounding_mode == "both")
-      param->set_bounding(ossia::bounding_mode::CLIP);
-    else if (bounding_mode == "wrap")
-      param->set_bounding(ossia::bounding_mode::WRAP);
-    else if (bounding_mode == "fold")
-      param->set_bounding(ossia::bounding_mode::FOLD);
-    else if (bounding_mode == "low")
-      param->set_bounding(ossia::bounding_mode::LOW);
-    else if (bounding_mode == "high")
-      param->set_bounding(ossia::bounding_mode::HIGH);
-    else
-    {
-      pd_error(this, "unknown clip mode: %s", bounding_mode.c_str());
-    }
+    param->set_bounding(mode);
   }
 }
 
