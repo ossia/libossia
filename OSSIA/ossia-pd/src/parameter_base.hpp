@@ -29,6 +29,7 @@ public:
 
   static void class_setup(t_eclass*c);
 
+  static void get_mess_cb(parameter_base* x, t_symbol* s);
   static void get_unit(parameter_base*x, const ossia::net::node_base* node = nullptr);
   static void get_rate(parameter_base*x, const ossia::net::node_base* node = nullptr);
   static void get_mute(parameter_base*x, const ossia::net::node_base* node = nullptr);

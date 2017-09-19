@@ -664,7 +664,7 @@ void parameter_base::push_default_value(parameter_base* x)
   }
 }
 
-void get_mess_cb(parameter_base* x, t_symbol* s)
+void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
 {
   if ( s == gensym("enable") )
     parameter_base::get_enable(x,nullptr);
@@ -700,8 +700,6 @@ void parameter_base::class_setup(t_eclass* c)
     eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
   }
 
-  eclass_addmethod(c, (method) get_mess_cb, "get", A_SYMBOL, 0);
-
   CLASS_ATTR_INT(         c, "enable",      0, parameter_base, m_enable);
   CLASS_ATTR_ATOM_VARSIZE(c, "default",     0, parameter_base, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
   CLASS_ATTR_ATOM_VARSIZE(c, "range",       0, parameter_base, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
@@ -714,6 +712,10 @@ void parameter_base::class_setup(t_eclass* c)
   CLASS_ATTR_INT         (c, "mute",        0, parameter_base, m_mute);
   CLASS_ATTR_SYMBOL      (c, "unit",        0, parameter_base, m_unit);
   CLASS_ATTR_FLOAT       (c, "rate",        0, parameter_base, m_rate);
+
+  // TODO use those to tweak attributes
+  // CLASS_ATTR_FILTER_CLIP
+  // CLASS_ATTR_STEP
 }
 
 } // namespace pd

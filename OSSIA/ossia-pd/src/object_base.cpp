@@ -354,30 +354,30 @@ void object_base::set_hidden()
   }
 }
 
-void object_base::get_tags(object_base*x, const ossia::net::node_base* _node)
+void object_base::get_tags(object_base*x, const ossia::net::node_base* node)
 {
   if (!x->m_matchers.empty())
   {
-    const ossia::net::node_base* node;
-    if (!_node)
-      // assume all matchers have the same bounding_mode
-      node = x->m_matchers[0].get_node();
-    else
-      node = _node;
+    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
 
-    auto optags = ossia::net::get_tags(*node);
-
-    if (optags)
+    for (auto m : matchers)
     {
-      const std::vector<std::string>& tags = *optags;
-      x->m_tags_size = tags.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : tags.size();
-      for (int i=0; i < x->m_tags_size; i++)
-      {
-        SETSYMBOL(&x->m_tags[i], gensym(tags[i].c_str()));
-      }
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      outlet_anything(x->m_dumpout, gensym("tags"),
-                      x->m_tags_size, x->m_tags);
+      auto optags = ossia::net::get_tags(*m->get_node());
+
+      if (optags)
+      {
+        const std::vector<std::string>& tags = *optags;
+        x->m_tags_size = tags.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : tags.size();
+        for (int i=0; i < x->m_tags_size; i++)
+        {
+          SETSYMBOL(&x->m_tags[i], gensym(tags[i].c_str()));
+        }
+
+        outlet_anything(x->m_dumpout, gensym("tags"),
+                        x->m_tags_size, x->m_tags);
+      }
     }
   }
 }
@@ -548,17 +548,10 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
 
 void object_base::class_setup(t_eclass*c)
 {
-  CLASS_ATTR_INT(         c, "priority",          0, object_base, m_priority);
-  eclass_addmethod(c, (method) object_base   ::get_priority,          "getpriority",          A_NULL, 0);
-
+  CLASS_ATTR_INT         (c, "priority",          0, object_base, m_priority);
   CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, object_base, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
-  eclass_addmethod(c, (method) object_base   ::get_description,       "getdescription",       A_NULL, 0);
-
   CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
-  eclass_addmethod(c, (method) object_base   ::get_tags,              "gettags",              A_NULL, 0);
-
-  CLASS_ATTR_INT(         c, "hidden",            0, object_base, m_hidden);
-  eclass_addmethod(c, (method) parameter_base::get_hidden,            "gethidden",            A_NULL, 0);
+  CLASS_ATTR_INT         (c, "hidden",            0, object_base, m_hidden);
 
   eclass_addmethod(c, (method) object_base::get_address,              "getaddress",           A_NULL,  0);
 }

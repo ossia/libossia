@@ -245,9 +245,10 @@ extern "C" void setup_ossia0x2eparam(void)
     class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
     class_addcreator((t_newmethod)parameter::create,gensym("ossia.parameter"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
-
     parameter_base::class_setup(c);
+
+    eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
+    eclass_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYMBOL, 0);
 
     // special attributes
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");

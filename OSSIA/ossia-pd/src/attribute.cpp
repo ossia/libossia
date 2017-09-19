@@ -334,9 +334,10 @@ extern "C" void setup_ossia0x2eattribute(void)
     eclass_addmethod(c, (method) attribute::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) attribute::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) attribute::bind,            "bind",        A_SYMBOL, 0);
-    // special attributes
+    eclass_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYMBOL, 0);
   }
 
+  eclass_register(CLASS_OBJ, c);
   ossia_pd::attribute_class = c;
 }
 
