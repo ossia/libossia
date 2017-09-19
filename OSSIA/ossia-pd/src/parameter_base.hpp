@@ -25,9 +25,13 @@ public:
   void set_default();
   void set_type();
   void set_rate();
+  void set_unit();
 
   static void class_setup(t_eclass*c);
 
+  static void get_unit(parameter_base*x, const ossia::net::node_base* node = nullptr);
+  static void get_rate(parameter_base*x, const ossia::net::node_base* node = nullptr);
+  static void get_mute(parameter_base*x, const ossia::net::node_base* node = nullptr);
   static void get_domain(parameter_base* x, const ossia::net::node_base* node = nullptr);
   static void get_min(parameter_base* x, const ossia::net::node_base* node = nullptr);
   static void get_max(parameter_base* x, const ossia::net::node_base* node = nullptr);

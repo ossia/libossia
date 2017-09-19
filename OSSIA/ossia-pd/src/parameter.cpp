@@ -179,106 +179,6 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-void parameter::set_unit()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    if ( m_unit !=  gensym("") )
-    {
-      ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
-      if (unit)
-      {
-        param->set_unit(unit);
-        // update m_type since set_unit() may have changed it
-        auto val_type = param->get_value_type();
-        m_type = val_type2symbol(val_type);
-      }
-      else
-        pd_error(this, "wrong unit: %s", m_unit->s_name);
-    }
-  }
-}
-
-void parameter::set_mute()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node,m_mute);
-  }
-}
-
-void parameter::get_unit(parameter*x, const ossia::net::node_base* node)
-{
-  if (!x->m_matchers.empty())
-  {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
-
-      t_atom a;
-      SETSYMBOL(&a, x->m_unit);
-      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
-    }
-  }
-}
-
-void parameter::get_mute(parameter*x, const ossia::net::node_base* node)
-{
-  if (!x->m_matchers.empty())
-  {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-
-      x->m_mute = param->get_muted();
-
-      t_atom a;
-      SETFLOAT(&a, x->m_mute);
-      outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
-    }
-  }
-}
-
-void parameter::get_rate(parameter*x, const ossia::net::node_base* node)
-{
-  if (!x->m_matchers.empty())
-  {
-
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      auto rate = ossia::net::get_refresh_rate(*m->get_node());
-
-      if (rate)
-      {
-        x->m_rate = *rate;
-
-        t_atom a;
-        SETFLOAT(&a, x->m_rate);
-        outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-      }
-    }
-  }
-}
-
 t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
@@ -334,19 +234,6 @@ void parameter::destroy(parameter* x)
   x->~parameter();
 }
 
-void parameter::update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node)
-{
-  if ( attribute == ossia::net::text_refresh_rate() ){
-    get_rate(x, node);
-  } else if ( attribute == ossia::net::text_muted() ){
-    get_mute(x, node);
-  } else if ( attribute == ossia::net::text_unit() ){
-    get_unit(x, node);
-  } else {
-    parameter_base::update_attribute(x, attribute, node);
-  }
-}
-
 extern "C" void setup_ossia0x2eparam(void)
 {
   t_eclass* c = eclass_new(
@@ -359,7 +246,6 @@ extern "C" void setup_ossia0x2eparam(void)
     class_addcreator((t_newmethod)parameter::create,gensym("ossia.parameter"), A_GIMME, 0);
 
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
-    // TODO should we do something else with reset (like resetting all attributes)
 
     parameter_base::class_setup(c);
 
@@ -367,13 +253,6 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");
     CLASS_ATTR_DEFAULT(c, "clip", 0, "free");
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
-
-    CLASS_ATTR_SYMBOL(      c, "unit",              0, parameter, m_unit);
-    CLASS_ATTR_FLOAT(       c, "rate",              0, parameter, m_rate);
-
-    eclass_addmethod(c, (method) parameter::get_unit,              "getunit",              A_NULL, 0);
-    eclass_addmethod(c, (method) parameter::get_mute,              "getmute",              A_NULL, 0);
-    eclass_addmethod(c, (method) parameter::get_rate,              "getrate",              A_NULL, 0);
 
     // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
     // buggy

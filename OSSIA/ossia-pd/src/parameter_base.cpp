@@ -21,7 +21,13 @@ parameter_base::parameter_base(t_eclass* x)
 
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
-  if ( attribute == ossia::net::text_value_type() ){
+  if ( attribute == ossia::net::text_refresh_rate() ){
+    get_rate(x, node);
+  } else if ( attribute == ossia::net::text_muted() ){
+    get_mute(x, node);
+  } else if ( attribute == ossia::net::text_unit() ){
+    get_unit(x, node);
+  } else if ( attribute == ossia::net::text_value_type() ){
     get_type(x);
   } else if ( attribute == ossia::net::text_domain() ){
     get_domain(x, node);
@@ -282,6 +288,38 @@ void parameter_base::set_default()
   }
 }
 
+void parameter_base::set_unit()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    if ( m_unit !=  gensym("") )
+    {
+      ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
+      if (unit)
+      {
+        param->set_unit(unit);
+        // update m_type since set_unit() may have changed it
+        auto val_type = param->get_value_type();
+        m_type = val_type2symbol(val_type);
+      }
+      else
+        pd_error(this, "wrong unit: %s", m_unit->s_name);
+    }
+  }
+}
+
+void parameter_base::set_mute()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_muted(*node,m_mute);
+  }
+}
+
 void parameter_base::get_domain(parameter_base*x, const ossia::net::node_base* node)
 {
   if (!x->m_matchers.empty())
@@ -447,6 +485,74 @@ void parameter_base::get_enable(parameter_base*x, const ossia::net::node_base* n
   }
 }
 
+void parameter_base::get_unit(parameter_base*x, const ossia::net::node_base* node)
+{
+  if (!x->m_matchers.empty())
+  {
+    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
+
+    for (auto m : matchers)
+    {
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+
+      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+      x->m_unit = gensym(unit.c_str());
+
+      t_atom a;
+      SETSYMBOL(&a, x->m_unit);
+      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+    }
+  }
+}
+
+void parameter_base::get_mute(parameter_base*x, const ossia::net::node_base* node)
+{
+  if (!x->m_matchers.empty())
+  {
+    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
+
+    for (auto m : matchers)
+    {
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+
+      x->m_mute = param->get_muted();
+
+      t_atom a;
+      SETFLOAT(&a, x->m_mute);
+      outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+    }
+  }
+}
+
+void parameter_base::get_rate(parameter_base*x, const ossia::net::node_base* node)
+{
+  if (!x->m_matchers.empty())
+  {
+
+    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
+
+    for (auto m : matchers)
+    {
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+      auto rate = ossia::net::get_refresh_rate(*m->get_node());
+
+      if (rate)
+      {
+        x->m_rate = *rate;
+
+        t_atom a;
+        SETFLOAT(&a, x->m_rate);
+        outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+      }
+    }
+  }
+}
+
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node;
@@ -572,13 +678,30 @@ void parameter_base::push_default_value(parameter_base* x)
   }
 }
 
-void get_enable_mess_cb (parameter*x) { parameter::get_enable(x,nullptr); }
-void get_default_mess_cb(parameter*x) { parameter::get_default(x,nullptr); }
-void get_domain_mess_cb(parameter*x) {  parameter::get_domain(x,nullptr); }
-void get_bounding_mode_mess_cb(parameter*x) { parameter::get_bounding_mode(x,nullptr); }
-void get_type_mess_cb(parameter*x) { parameter::get_type(x,nullptr); }
-void get_access_mode_mess_cb(parameter*x) { parameter::get_access_mode(x,nullptr); }
-void get_repetition_filter_mess_cb(parameter*x) { parameter::get_repetition_filter(x,nullptr); }
+void get_mess_cb(parameter_base* x, t_symbol* s)
+{
+  if ( s == gensym("enable") )
+    parameter_base::get_enable(x,nullptr);
+  else if ( s == gensym("default") )
+    parameter_base::get_default(x,nullptr);
+  else if ( s == gensym("range") || s == gensym("min") || s == gensym("max") )
+    parameter_base::get_domain(x,nullptr);
+  else if ( s == gensym("clip") )
+    parameter_base::get_bounding_mode(x,nullptr);
+  else if ( s == gensym("type") )
+    parameter_base::get_type(x,nullptr);
+  else if ( s == gensym("mode") )
+    parameter_base::get_access_mode(x,nullptr);
+  else if ( s == gensym("repetitions") )
+    parameter_base::get_repetition_filter(x,nullptr);
+  else if ( s == gensym("mute") )
+    parameter_base::get_mute(x,nullptr);
+  else if ( s == gensym("unit") )
+    parameter_base::get_unit(x,nullptr);
+  else if ( s == gensym("rate") )
+    parameter_base::get_rate(x,nullptr);
+
+}
 
 void parameter_base::class_setup(t_eclass* c)
 {
@@ -591,36 +714,20 @@ void parameter_base::class_setup(t_eclass* c)
     eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
   }
 
-  if (c != ossia_pd::remote_class){
-    CLASS_ATTR_INT(         c, "enable",            0, parameter_base, m_enable);
-    eclass_addmethod(c, (method) get_enable_mess_cb,            "getenable",            A_NULL, 0);
+  eclass_addmethod(c, (method) get_mess_cb, "get", A_SYMBOL, 0);
 
-    CLASS_ATTR_ATOM_VARSIZE(c, "default",           0, parameter_base, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
-    eclass_addmethod(c, (method) get_default_mess_cb,           "getdefault",           A_NULL, 0);
-
-    CLASS_ATTR_ATOM_VARSIZE(c, "range",             0, parameter_base, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
-    eclass_addmethod(c, (method) get_domain_mess_cb,             "getrange",             A_NULL, 0);
-
-    CLASS_ATTR_ATOM_VARSIZE(c, "min",               0, parameter_base, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
-    eclass_addmethod(c, (method) get_domain_mess_cb,               "getmin",               A_NULL, 0);
-
-    CLASS_ATTR_ATOM_VARSIZE(c, "max",               0, parameter_base, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
-    eclass_addmethod(c, (method) get_domain_mess_cb,               "getmax",   A_NULL, 0);
-
-    CLASS_ATTR_SYMBOL(      c, "clip", 0, parameter_base, m_bounding_mode);
-    eclass_addmethod(c, (method) get_bounding_mode_mess_cb,     "getclip",     A_NULL, 0);
-
-    CLASS_ATTR_SYMBOL(c, "type", 0, parameter_base, m_type);
-    eclass_addmethod(c, (method) get_type_mess_cb,              "gettype",     A_NULL, 0);
-
-    CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
-    eclass_addmethod(c, (method) get_access_mode_mess_cb,       "getmode",     A_NULL, 0);
-
-    CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
-    eclass_addmethod(c, (method) get_repetition_filter_mess_cb, "getrepetitions", A_NULL, 0);
-  }
-
-  CLASS_ATTR_INT   (c, "mute",          0, parameter_base, m_mute);
+  CLASS_ATTR_INT(         c, "enable",      0, parameter_base, m_enable);
+  CLASS_ATTR_ATOM_VARSIZE(c, "default",     0, parameter_base, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_ATOM_VARSIZE(c, "range",       0, parameter_base, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_ATOM_VARSIZE(c, "min",         0, parameter_base, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_ATOM_VARSIZE(c, "max",         0, parameter_base, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_SYMBOL      (c, "clip",        0, parameter_base, m_bounding_mode);
+  CLASS_ATTR_SYMBOL      (c, "type",        0, parameter_base, m_type);
+  CLASS_ATTR_SYMBOL      (c, "mode",        0, parameter_base, m_access_mode);
+  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
+  CLASS_ATTR_INT         (c, "mute",        0, parameter_base, m_mute);
+  CLASS_ATTR_SYMBOL      (c, "unit",        0, parameter_base, m_unit);
+  CLASS_ATTR_FLOAT       (c, "rate",        0, parameter_base, m_rate);
 }
 
 } // namespace pd

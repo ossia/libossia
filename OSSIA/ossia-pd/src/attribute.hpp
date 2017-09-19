@@ -23,9 +23,6 @@ public:
   ossia::net::device_base* m_dev{};
   float m_rate_min;
 
-  void set_unit();
-  void set_mute();
-
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   static void update_attribute(attribute* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static void bind(attribute* x, t_symbol* address);
@@ -37,11 +34,6 @@ public:
   static void* create(t_symbol* name, int argc, t_atom* argv);
 
   static ossia::safe_set<attribute*>& quarantine();
-
-  static void get_unit(attribute*x, const ossia::net::node_base* node);
-  static void get_mute(attribute*x, const ossia::net::node_base* node);
-  static void get_rate(attribute*x, const ossia::net::node_base* node);
-  static void get_enable(attribute*x, const ossia::net::node_base* node);
 
   void on_device_deleted(const ossia::net::node_base&);
 private:

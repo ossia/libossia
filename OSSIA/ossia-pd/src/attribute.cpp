@@ -126,103 +126,6 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
   }
 }
 
-
-void attribute::set_unit()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    if ( m_unit !=  gensym("") )
-    {
-      ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
-      if (unit)
-      {
-        param->set_unit(unit);
-        // update m_type since set_unit() may have changed it
-        auto val_type = param->get_value_type();
-        m_type = val_type2symbol(val_type);
-      }
-      else
-        pd_error(this, "wrong unit: %s", m_unit->s_name);
-    }
-  }
-}
-
-void attribute::set_mute()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node,m_mute);
-  }
-}
-
-void attribute::get_unit(attribute*x, const ossia::net::node_base* node)
-{
-  if (!x->m_matchers.empty())
-  {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
-
-      t_atom a;
-      SETSYMBOL(&a, x->m_unit);
-      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
-    }
-  }
-}
-
-void attribute::get_mute(attribute*x, const ossia::net::node_base* node)
-{
-  if (!x->m_matchers.empty())
-  {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-
-      x->m_mute = param->get_muted();
-
-      t_atom a;
-      SETFLOAT(&a, x->m_mute);
-      outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
-    }
-  }
-}
-
-void attribute::get_rate(attribute*x, const ossia::net::node_base* node)
-{
-  if (!x->m_matchers.empty())
-  {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      auto rate = ossia::net::get_refresh_rate(*node);
-
-      if (rate)
-      {
-        x->m_rate = *rate;
-
-        t_atom a;
-        SETFLOAT(&a, x->m_rate);
-        outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-      }
-    }
-  }
-}
-
 void attribute::on_device_deleted(const net::node_base &)
 {
   m_dev = nullptr;
@@ -426,20 +329,12 @@ extern "C" void setup_ossia0x2eattribute(void)
     class_addcreator((t_newmethod)attribute::create,gensym("ossia.attr"), A_GIMME, 0);
     class_addcreator((t_newmethod)attribute::create,gensym("ø.attr"), A_GIMME, 0);
 
+    parameter_base::class_setup(c);
+
     eclass_addmethod(c, (method) attribute::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) attribute::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) attribute::bind,            "bind",        A_SYMBOL, 0);
-
-    parameter_base::class_setup(c);
-
     // special attributes
-
-    CLASS_ATTR_SYMBOL(c, "unit", 0, attribute, m_unit);
-
-    eclass_addmethod(c, (method) attribute::get_unit, "getunit", A_NULL, 0);
-    eclass_addmethod(c, (method) attribute::get_mute, "getmute", A_NULL, 0);
-    eclass_addmethod(c, (method) attribute::get_rate, "rate",    A_NULL, 0);
-
   }
 
   ossia_pd::attribute_class = c;
