@@ -21,9 +21,9 @@ public:
   static ossia::safe_set<parameter*>& quarantine();
 
   static t_pd_err notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
-  static void get_unit(parameter*x);
-  static void get_mute(parameter*x);
-  static void get_rate(parameter*x);
+  static void get_unit(parameter* x, const ossia::net::node_base* node);
+  static void get_mute(parameter* x, const ossia::net::node_base* node);
+  static void get_rate(parameter* x, const ossia::net::node_base* node);
 
   static void update_attribute(parameter* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
 

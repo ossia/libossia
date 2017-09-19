@@ -74,6 +74,21 @@ std::string address_string_from_node(const ossia::net::parameter_base& addr)
   return address_string_from_node(addr.get_node());
 }
 
+std::string relative_address_string_from_nodes(const ossia::net::node_base& node, const ossia::net::node_base& parent)
+{
+  std::string addr = ossia::net::address_string_from_node(node);
+  // TODO how to deal with multiple parents ?
+  std::string parent_addr = ossia::net::address_string_from_node(parent);
+  if ( parent_addr.back() != '/' ) parent_addr += "/";
+
+  if (addr.find(parent_addr) != std::string::npos)
+  {
+    return addr.substr(parent_addr.size());
+  } else {
+    return node.get_name();
+  }
+}
+
 std::string osc_parameter_string(const node_base& n)
 {
   if (n.get_parent())
