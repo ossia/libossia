@@ -68,7 +68,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1110.0, 744.0 ],
+						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -105,9 +105,9 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 23.0, 302.0, 647.5, 150.0 ],
+									"patching_rect" : [ 28.0, 297.0, 647.5, 136.0 ],
 									"style" : "",
-									"text" : "Syntax is:\n[a-u] will create one instance of each character between  a and u\n[abc] will create one instance for each character\n[1-5] this works also for numbers (one digit at a time, see below for numbers above 10)\n\n{some|words|or|others} wil create one instance per word between the '|' (pipe)\n{1..12} wil create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 2 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n",
+									"text" : "Syntax is:\n{some|words|or|others} wil create one instance per word between the '|' (pipe)\n{1..12} wil create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 2 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n\n[a-u] will create one of each character between  a and u\n[abc] will create one of each character (a, b and c)\n[1-5] this works also for numbers (one digit at a time, see above for numbers above 10)",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -2747,7 +2747,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1110.0, 744.0 ],
+						"rect" : [ 100.0, 126.0, 1110.0, 744.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,

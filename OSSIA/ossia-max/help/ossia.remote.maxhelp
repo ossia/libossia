@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 289.0, 97.0, 1108.0, 772.0 ],
+		"rect" : [ 191.0, 197.0, 1108.0, 772.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,19 @@
 		"showontab" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-8",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 417.0, 337.0, 101.0, 22.0 ],
+					"style" : "",
+					"text" : "expose oscquery"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-4",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -68,7 +81,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
+						"rect" : [ 191.0, 223.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -97,6 +110,19 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-36",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 116.0, 364.0, 255.0, 22.0 ],
+									"style" : "",
+									"text" : "global_address Max:/my_spat.1/source.1/gain"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
@@ -237,13 +263,13 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-28",
-									"linecount" : 9,
+									"linecount" : 10,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 552.0, 126.0, 468.0, 136.0 ],
+									"patching_rect" : [ 552.0, 126.0, 498.0, 150.0 ],
 									"style" : "",
-									"text" : "Syntax is:\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers (one digit at a time,\n see below for numbers above 10)\n\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} wil match instances for all numbers between 1 and 12 \n{A,b,some,things} will string between commas (avoid spaces)\n",
+									"text" : "Syntax is:\n* will match everything until the next slash\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} wil match instances for all numbers between 1 and 12 \n{A,b,some,things} will string between commas (avoid spaces)\n\n? will match any character (but just one)\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers, but only one digit at a time (use braces for higher numbers\n",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -291,14 +317,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-22",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 644.0, 358.0, 150.0, 35.0 ],
-									"style" : "",
-									"text" : "address my_spat.1/source.1/gain"
+									"patching_rect" : [ 644.0, 358.0, 150.0, 22.0 ],
+									"style" : ""
 								}
 
 							}
@@ -366,7 +390,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 805.0, 619.0, 93.0, 22.0 ],
+									"patching_rect" : [ 805.0, 606.0, 93.0, 22.0 ],
 									"style" : "",
 									"text" : "print @popup 1"
 								}
@@ -402,14 +426,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-15",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 644.0, 606.0, 150.0, 35.0 ],
-									"style" : "",
-									"text" : "address my_spat.1/source.1/gain"
+									"patching_rect" : [ 644.0, 606.0, 150.0, 22.0 ],
+									"style" : ""
 								}
 
 							}
@@ -620,8 +642,29 @@
 								}
 
 							}
+, 							{
+								"box" : 								{
+									"id" : "obj-37",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 94.0, 297.0, 68.0, 22.0 ],
+									"style" : "",
+									"text" : "getaddress"
+								}
+
+							}
  ],
 						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-36", 1 ],
+									"midpoints" : [ 244.5, 356.0, 361.5, 356.0 ],
+									"source" : [ "obj-1", 2 ]
+								}
+
+							}
+, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-6", 0 ],
 									"midpoints" : [ 50.5, 352.0, 26.0, 352.0, 26.0, 289.0, 50.5, 289.0 ],
@@ -730,6 +773,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-32", 0 ],
 									"source" : [ "obj-33", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-1", 0 ],
+									"source" : [ "obj-37", 0 ]
 								}
 
 							}
@@ -2035,7 +2085,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 289.0, 123.0, 1108.0, 746.0 ],
+						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2115,7 +2165,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 203.0, 257.0, 63.0, 22.0 ],
-													"presentation_rect" : [ 223.0, 300.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "unit linear"
 												}
@@ -2129,7 +2178,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 221.0, 289.0, 54.0, 22.0 ],
-													"presentation_rect" : [ 237.0, 334.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "unit db"
 												}
@@ -2156,7 +2204,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 144.0, 289.0, 54.0, 22.0 ],
-													"presentation_rect" : [ 157.0, 332.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "rate $1"
 												}
@@ -2183,7 +2230,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 71.0, 289.0, 54.0, 22.0 ],
-													"presentation_rect" : [ 85.0, 302.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "mute $1"
 												}
@@ -2199,7 +2245,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 85.0, 209.0, 187.0, 35.0 ],
-													"presentation_rect" : [ 98.0, 253.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "except for mute, unit and rate, that are specific to this remote",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2215,7 +2260,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 138.0, 122.0, 187.0, 21.0 ],
-													"presentation_rect" : [ 151.0, 137.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "as do the messages for attributes:",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2230,7 +2274,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 203.0, 163.0, 72.0, 22.0 ],
-													"presentation_rect" : [ 105.0, 233.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "clip both"
 												}
@@ -2244,7 +2287,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 100.0, 163.0, 72.0, 22.0 ],
-													"presentation_rect" : [ 91.0, 177.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "range -2. 2."
 												}
@@ -2260,7 +2302,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 42.0, 28.0, 289.0, 35.0 ],
-													"presentation_rect" : [ 65.0, 37.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "most messages and attributes to ossia.parameter can be sent or set from ossia.remote:",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -3088,7 +3129,14 @@
 
 			}
  ],
-		"lines" : [  ],
+		"lines" : [ 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-8", 0 ]
+				}
+
+			}
+ ],
 		"dependency_cache" : [ 			{
 				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
