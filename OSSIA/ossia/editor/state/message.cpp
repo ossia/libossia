@@ -66,35 +66,6 @@ void message::launch() const
     }
     else
     {
-      /*
-      {
-        auto v1 = ossia::net::get_value(addr);
-        auto v2 =
-            ossia::convert(
-              v1,
-              unit);
-        auto v3 =
-            ossia::merge(
-              v2,
-              value,
-              destination.index);
-        auto v4 =
-            ossia::convert(
-              v3, addr_unit);
-        auto v5 =
-            ossia::to_value(v4);
-
-        std::cerr << "v: " << ossia::value_to_pretty_string(value) << "\n";
-        std::cerr << "v1: " << ossia::to_pretty_string(v1) << "\n";
-        std::cerr << "v2: " << ossia::to_pretty_string(v2) << "\n";
-        std::cerr << "di: " << ossia::to_pretty_string(destination.index) <<
-      "\n";
-        std::cerr << "v3: " << ossia::to_pretty_string(v3) << "\n";
-        std::cerr << "v4: " << ossia::to_pretty_string(v4) << "\n";
-        std::cerr << "v5: " << ossia::value_to_pretty_string(v5) << "\n\n\n";
-      }
-      */
-
       addr.push_value(ossia::to_value(ossia::convert(
           ossia::merge(
               ossia::convert(ossia::net::get_value(addr), unit), message_value,

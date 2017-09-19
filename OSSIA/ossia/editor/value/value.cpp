@@ -49,8 +49,21 @@ destination& destination::operator=(destination&&) = default;
 
 value destination::pull() const
 {
-  // TODO unit conversion
-  return value.get().value(index);
+  ossia::net::parameter_base& param = value.get();
+  if(unit)
+  {
+    auto other = param.get_unit();
+    if(other && other != unit)
+    {
+      auto res = ossia::convert(param.value(), other, unit);
+      if(res.valid())
+      {
+        return get_value_at_index(res, index);
+      }
+    }
+  }
+
+  return param.value(index);
 }
 
 destination::destination(ossia::net::parameter_base& v) : value(v)
