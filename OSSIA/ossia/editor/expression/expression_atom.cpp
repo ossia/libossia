@@ -91,14 +91,14 @@ void expression_atom::on_first_callback_added()
   if (auto d = m_first.target<destination>())
   {
     m_firstCallback = d->address().add_callback(
-        [&](const ossia::value& result) { first_value_callback(result); });
+        [&,d](const ossia::value&) { first_value_callback(d->pull()); });
   }
 
   // start second operand observation if it is a Destination
   if (auto d = m_second.target<destination>())
   {
     m_secondCallback = d->address().add_callback(
-        [&](const ossia::value& result) { second_value_callback(result); });
+        [&,d](const ossia::value&) { second_value_callback(d->pull()); });
   }
 }
 
