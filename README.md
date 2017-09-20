@@ -1,25 +1,23 @@
 libossia
 ===
 
-A library to expose the parameters of your creative coding application
-over the network, and score them in time.
+libossia is a modern C++, cross-environment distributed object model for creative coding.
 
-Protocols :
-* OSC
-* MIDI
-* Minuit
-* OSCQuery (in progress)
+It allows to declare the architecture of your creative coding application's functions as a **tree of OSC nodes and parameters**. These nodes/parameters can have attributes, which allow to declare many of their properties, such as their values, types, units, ranges, etc....
 
-Bindings (in progress) :
-* PureData
-* C
-* Python
-* Java (preliminary)
-* Unity3D
-* Qt and QML
-* Faust
+This OSC tree-based architecture (coined "device" in the OSSIA terminology) can then be exposed over the network under several protocols, some of which allow this architecture, and the properties and values of its nodes, to be fully explored and queried. For now, protocols available in the implemenations are: plain OSC, OSCquery, and Minuit - more are part of libossia and will be made available in the future.
+
+libossia offers bindings and implementations for several environments: PureData, Max/MSP, Python, Unity3D, QML, Faust, SuperCollider.
+
+You can find some documentation for the library and its various implementationis at https://ossia.github.io
+
+Please feel free to come and chat with us ! [![join the chat at https://gitter.im/OSSIA](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OSSIA?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+More about the general project at: http://ossia.io 
+
 
 Documentation :
+* [Lib and Implementations](https://ossia.github.io)
 * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation/Examples)
 * [Doxygen](http://ossia.github.io/libossia/html)
 * [Building](https://github.com/OSSIA/libossia/wiki/Building)
