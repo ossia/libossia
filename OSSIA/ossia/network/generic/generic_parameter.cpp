@@ -127,7 +127,7 @@ void generic_parameter::set_value_quiet(const ossia::value& val)
   else
   {
     m_previousValue = m_value;
-    m_value = ossia::convert(val, m_value.getType());
+    m_value = ossia::convert(val, m_previousValue);
   }
 }
 
@@ -146,7 +146,7 @@ void generic_parameter::set_value_quiet(ossia::value&& val)
   else
   {
     m_previousValue = std::move(m_value);
-    m_value = ossia::convert(std::move(val), m_previousValue.getType());
+    m_value = ossia::convert(std::move(val), m_previousValue);
   }
 }
 

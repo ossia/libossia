@@ -26,4 +26,6 @@ OSSIA_EXPORT T convert(const std::vector<ossia::value>& val);
 
 OSSIA_EXPORT ossia::value
 convert(const ossia::value& val, ossia::val_type newtype);
+OSSIA_EXPORT ossia::value
+convert(const ossia::value& val, const ossia::value& cur);
 }

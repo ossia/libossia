@@ -606,6 +606,23 @@ bool is_array(const ossia::value& val)
   return false;
 }
 
+ossia::value convert(const ossia::value& val, const ossia::value& cur)
+{
+  auto t = cur.getType();
+  switch(t)
+  {
+    case ossia::val_type::NONE:
+      return {};
+    case ossia::val_type::IMPULSE:
+      return cur;
+    default:
+      return lift(t, [&](auto t) -> ossia::value {
+        using ossia_type = typename decltype(t)::ossia_type;
+        return convert<ossia_type>(val);
+      });
+  }
+}
+
 ossia::value convert(const ossia::value& val, ossia::val_type newtype)
 {
   if(newtype != ossia::val_type::NONE)
