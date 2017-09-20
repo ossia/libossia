@@ -142,6 +142,13 @@ t_matcher::~t_matcher()
         for (auto remote : ossia_pd::instance().remotes.copy())
         {
           ossia::remove_one(remote->m_matchers,*this);
+          ossia::remove_one(remote->m_node_selection, this);
+        }
+
+        for (auto attribute : ossia_pd::instance().attributes.copy())
+        {
+          ossia::remove_one(attribute->m_matchers,*this);
+          ossia::remove_one(attribute->m_node_selection, this);
         }
 
         if (node->get_parent())
@@ -181,6 +188,9 @@ t_matcher::~t_matcher()
             break;
           case object_class::view:
             obj_quarantining<view>((view*) parent);
+            break;
+          case object_class::attribute:
+            obj_quarantining<attribute>((attribute*) parent);
             break;
           default:
             ;
@@ -265,6 +275,8 @@ object_base::object_base(t_eclass* c)
     sprintf(buffer,".x%lx.c", (long unsigned int)m_obj.o_canvas);
     c->c_widget.w_dosave = (t_typ_method)eobj_dosave;
   }
+
+  m_selection_pattern = gensym("*");
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
@@ -303,9 +315,9 @@ void object_base::set_description()
     }
   }
 
-  for (t_matcher& m : m_matchers)
+  for (t_matcher* m : m_node_selection)
   {
-    ossia::net::node_base* node = m.get_node();
+    ossia::net::node_base* node = m->get_node();
     ossia::net::set_description(*node, description.str());
   }
 }
@@ -332,24 +344,24 @@ void object_base::set_tags()
     }
   }
 
-  for (t_matcher& m : m_matchers)
-    ossia::net::set_tags(*m.get_node(), tags);
+  for (t_matcher* m : m_node_selection)
+    ossia::net::set_tags(*m->get_node(), tags);
 }
 
 void object_base::set_priority()
 {
-  for (t_matcher& m : m_matchers)
+  for (t_matcher* m : m_node_selection)
   {
-    ossia::net::node_base* node = m.get_node();
+    ossia::net::node_base* node = m->get_node();
     ossia::net::set_priority(*node, m_priority);
   }
 }
 
 void object_base::set_hidden()
 {
-  for (t_matcher& m : m_matchers)
+  for (t_matcher* m : m_node_selection)
   {
-    ossia::net::node_base* node = m.get_node();
+    ossia::net::node_base* node = m->get_node();
     ossia::net::set_hidden(*node, m_hidden);
   }
 }
@@ -358,9 +370,7 @@ void object_base::get_tags(object_base*x, const ossia::net::node_base* node)
 {
   if (!x->m_matchers.empty())
   {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -386,9 +396,7 @@ void object_base::get_description(object_base*x, const ossia::net::node_base* no
 {
   if (!x->m_matchers.empty())
   {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -412,9 +420,7 @@ void object_base::get_priority(object_base* x, const ossia::net::node_base* node
 {
   if (!x->m_matchers.empty())
   {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -435,15 +441,32 @@ void object_base::get_hidden(object_base*x, const ossia::net::node_base* node)
 {
   if (!x->m_matchers.empty())
   {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
       t_atom a;
       SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
       outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+    }
+  }
+}
+
+void object_base::fill_selection()
+{
+  m_node_selection.clear();
+  if ( m_selection_pattern != gensym("*") )
+  {
+    // TODO should support pattern matching in selection
+    for (auto& m : m_matchers)
+    {
+      if ( m_selection_pattern == m.get_atom_addr_ptr()->a_w.w_symbol )
+        m_node_selection.push_back(&m);
+    }
+  } else {
+    for (auto& m : m_matchers)
+    {
+      m_node_selection.push_back(&m);
     }
   }
 }
@@ -473,6 +496,16 @@ void object_base::get_address(object_base *x)
   }
   else
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
+}
+
+void object_base::address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if (argc && argv[0].a_type == A_SYMBOL)
+    x->m_selection_pattern = atom_getsymbol(argv);
+  else
+    x->m_selection_pattern = gensym("*");
+
+  x->fill_selection();
 }
 
 bool ossia::pd::object_base::find_and_display_friend(object_base* x)
@@ -553,7 +586,8 @@ void object_base::class_setup(t_eclass*c)
   CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
   CLASS_ATTR_INT         (c, "hidden",            0, object_base, m_hidden);
 
-  eclass_addmethod(c, (method) object_base::get_address,              "getaddress",           A_NULL,  0);
+  eclass_addmethod(c, (method) object_base::get_address,     "getaddress", A_NULL,  0);
+  eclass_addmethod(c, (method) object_base::address_mess_cb, "address",    A_GIMME, 0);
 }
 
 void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)

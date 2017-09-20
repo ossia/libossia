@@ -624,12 +624,14 @@ std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const os
     }
   }
 
+  /*
   if (matchers.empty())
   {
     matchers.reserve(x->m_matchers.size());
     for (auto& m : x->m_matchers)
       matchers.push_back(&m);
   }
+  */
 
   return matchers;
 }

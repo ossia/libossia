@@ -37,7 +37,7 @@ public:
   static void get_min(parameter_base* x, const ossia::net::node_base* node = nullptr);
   static void get_max(parameter_base* x, const ossia::net::node_base* node = nullptr);
   static void get_bounding_mode(parameter_base* x, const ossia::net::node_base* node = nullptr);
-  static void get_default(parameter_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_default(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_type(parameter_base* x, const ossia::net::node_base* node = nullptr);
   static void get_priority(parameter_base* x, const ossia::net::node_base* node = nullptr);
   static void get_access_mode(parameter_base* x, const ossia::net::node_base* node = nullptr);

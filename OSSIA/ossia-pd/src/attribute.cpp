@@ -22,6 +22,7 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
   bool res = do_registration(node);
   if (res)
   {
+    fill_selection();
     obj_dequarantining<attribute>(this);
   }
   else
@@ -123,6 +124,9 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
   {
     m_matchers.emplace_back(&node,this);
     m_nodes.push_back(&node);
+    // TODO optimize : don't clear and iterate through all matchers
+    // just add it if it matches instead
+    fill_selection();
   }
 }
 
@@ -280,9 +284,7 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr, const os
 {
   if ( attr == ossia::net::text_refresh_rate() )
   {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -297,9 +299,7 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr, const os
       outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
     }
   } else if ( attr == ossia::net::text_unit()) {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 

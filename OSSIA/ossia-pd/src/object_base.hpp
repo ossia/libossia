@@ -122,8 +122,12 @@ public:
   // since we may use pattern matching in view and model
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
+  std::vector<t_matcher*> m_node_selection{};
+  t_symbol* m_selection_pattern{};
 
   static void class_setup(t_eclass*c);
+
+  void fill_selection();
 
   void set_description();
   void set_tags();
@@ -162,6 +166,8 @@ public:
    * @param x
    */
   static void get_address(object_base *x);
+
+  static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 
 };
 

@@ -24,6 +24,7 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   bool res = do_registration(node);
   if (res)
   {
+    fill_selection();
     obj_dequarantining<remote>(this);
     parameter_base::bang(this);
     clock_set(m_poll_clock,1);
@@ -130,6 +131,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& par
   {
     m_matchers.emplace_back(&node,this);
     m_nodes.push_back(&node);
+    fill_selection();
   }
 }
 
@@ -367,9 +369,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   // it makes no sens to sens to change when an attribute changes
   if ( attribute == ossia::net::text_refresh_rate() )
   {
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -385,10 +385,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
       outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
     }
   } else if ( attribute == ossia::net::text_unit()) {
-
-    std::vector<ossia::pd::t_matcher*> matchers = make_matchers_vector(x, node);
-
-    for (auto m : matchers)
+    for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
       ossia::net::parameter_base* param = m->get_node()->get_parameter();
