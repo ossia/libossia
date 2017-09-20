@@ -86,6 +86,6 @@ private:
   void make_happen(
       time_event& event, interval_set& started, interval_set& stopped, ossia::state& st);
   void make_dispose(time_event& event, interval_set& stopped);
-  void tick_interval(time_interval& c, time_value tick);
+  ossia::state_element tick_interval(time_interval& c, time_value tick);
 };
 }

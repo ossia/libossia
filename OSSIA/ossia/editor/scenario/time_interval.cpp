@@ -10,22 +10,26 @@
 #include <iostream>
 namespace ossia
 {
-void time_interval::tick(time_value usec)
+ossia::state_element time_interval::tick(time_value usec)
 {
   m_date += std::llround(usec.impl * m_speed);
   m_position = double(m_date) / double(m_nominal);
 
+  auto st = state();
   if (m_callback)
-    (m_callback)(m_position, m_date, state());
+    (m_callback)(m_position, m_date, st);
+  return st;
 }
 
-void time_interval::tick(time_value usec, double ratio)
+ossia::state_element time_interval::tick(time_value usec, double ratio)
 {
   m_date += std::llround(usec.impl * m_speed / ratio);
   m_position = double(m_date) / double(m_nominal);
 
+  auto st = state();
   if (m_callback)
-    (m_callback)(m_position, m_date, state());
+    (m_callback)(m_position, m_date, st);
+  return st;
 }
 
 std::shared_ptr<time_interval> time_interval::create(

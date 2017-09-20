@@ -55,13 +55,21 @@ state_element metronome::state(ossia::time_value date, double pos)
       else
       {
         m_lastTick = elapsed - cur;
-        std::cerr << "pushing: "; print(std::cerr, ossia::message{addr, ossia::impulse{}});
         return ossia::message{addr, ossia::impulse{}};
       }
     }
     else if(date < m_lastDate) {
       time_value elapsed = m_lastDate - date;
-      // TODO backwards in time
+      if(m_lastTick + elapsed < cur) {
+        // not yet
+        m_lastTick += elapsed;
+        return {};
+      }
+      else
+      {
+        m_lastTick = elapsed - cur;
+        return ossia::message{addr, ossia::impulse{}};
+      }
     }
   }
   return {};
