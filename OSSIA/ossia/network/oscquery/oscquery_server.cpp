@@ -46,7 +46,7 @@ oscquery_server_protocol::oscquery_server_protocol(
       connection_handler hdl, const std::string& str) {
     auto res = on_WSrequest(hdl, str);
 
-    if (m_logger.outbound_logger)
+    if (res.GetSize() > 0 && m_logger.outbound_logger)
       m_logger.outbound_logger->info("OSCQuery WS Out: {}", res.GetString());
 
     return res;
