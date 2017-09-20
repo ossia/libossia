@@ -27,6 +27,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/spline.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/gradient.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/metronome.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/curve_value_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
@@ -188,6 +189,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/spline.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/gradient.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/metronome.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
