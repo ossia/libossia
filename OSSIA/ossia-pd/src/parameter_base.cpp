@@ -24,23 +24,23 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
   auto matchers = make_matchers_vector(x,node);
 
   if ( attribute == ossia::net::text_refresh_rate() ){
-    get_rate(x, node);
+    get_rate(x, matchers);
   } else if ( attribute == ossia::net::text_muted() ){
-    get_mute(x, node);
+    get_mute(x, matchers);
   } else if ( attribute == ossia::net::text_unit() ){
-    get_unit(x, node);
+    get_unit(x, matchers);
   } else if ( attribute == ossia::net::text_value_type() ){
-    get_type(x, node);
+    get_type(x, matchers);
   } else if ( attribute == ossia::net::text_domain() ){
-    get_domain(x, node);
+    get_domain(x, matchers);
   } else if ( attribute == ossia::net::text_access_mode() ){
-    get_access_mode(x, node);
+    get_access_mode(x, matchers);
   } else if ( attribute == ossia::net::text_bounding_mode() ){
-    get_bounding_mode(x, node);
+    get_bounding_mode(x, matchers);
   } else if ( attribute == ossia::net::text_disabled() ){
-    get_enable(x, node);
+    get_enable(x, matchers);
   } else if ( attribute == ossia::net::text_repetition_filter() ){
-    get_repetition_filter(x, node);
+    get_repetition_filter(x, matchers);
   } else if ( attribute == ossia::net::text_default_value() ) {
     get_default(x, matchers);
   } else {
@@ -308,49 +308,43 @@ void parameter_base::set_mute()
   }
 }
 
-void parameter_base::get_domain(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      auto domain = ossia::net::get_domain(*m->get_node());
-      if (domain)
-      {
-        domain_visitor dv;
-        dv.x = x;
-        ossia::apply(dv, domain.v);
-      } else {
-        // TODO we have to think about how to display attributes for pattern matching object
-        // when all matchers attribute doesn't have the same value
-        x->m_range_size = 0;
-        x->m_min_size = 0;
-        x->m_max_size = 0;
-      }
-      outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
-      outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
-      outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
+    auto domain = ossia::net::get_domain(*m->get_node());
+    if (domain)
+    {
+      domain_visitor dv;
+      dv.x = x;
+      ossia::apply(dv, domain.v);
+    } else {
+      // TODO we have to think about how to display attributes for pattern matching object
+      // when all matchers attribute doesn't have the same value
+      x->m_range_size = 0;
+      x->m_min_size = 0;
+      x->m_max_size = 0;
     }
+    outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
+    outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
+    outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
   }
 }
 
-void parameter_base::get_bounding_mode(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-      x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
-      t_atom a;
-      SETSYMBOL(&a,x->m_bounding_mode);
-      outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
-    }
+    x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
+    t_atom a;
+    SETSYMBOL(&a,x->m_bounding_mode);
+    outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
   }
 }
 
@@ -381,138 +375,117 @@ void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes
   }
 }
 
-void parameter_base::get_type(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-      x->m_type = val_type2symbol(param->get_value_type());
+    x->m_type = val_type2symbol(param->get_value_type());
 
-      t_atom a;
-      SETSYMBOL(&a,x->m_type);
-      outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
-    }
+    t_atom a;
+    SETSYMBOL(&a,x->m_type);
+    outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
   }
 }
 
-void parameter_base::get_access_mode(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-      x->m_access_mode = access_mode2symbol(param->get_access());
+    x->m_access_mode = access_mode2symbol(param->get_access());
 
-      t_atom a;
-      SETSYMBOL(&a, x->m_access_mode);
-      outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
-    }
+    t_atom a;
+    SETSYMBOL(&a, x->m_access_mode);
+    outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
   }
 }
 
-void parameter_base::get_repetition_filter(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-      x->m_repetitions = !param->get_repetition_filter();
+    x->m_repetitions = !param->get_repetition_filter();
 
-      t_atom a;
-      SETFLOAT(&a, x->m_repetitions);
-      outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
-    }
+    t_atom a;
+    SETFLOAT(&a, x->m_repetitions);
+    outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
   }
 }
 
-void parameter_base::get_enable(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      auto param = m->get_node()->get_parameter();
-      x->m_enable = !param->get_disabled();
+    auto param = m->get_node()->get_parameter();
+    x->m_enable = !param->get_disabled();
 
-      t_atom a;
-      SETFLOAT(&a,x->m_enable);
-      outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
-    }
+    t_atom a;
+    SETFLOAT(&a,x->m_enable);
+    outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
   }
 }
 
-void parameter_base::get_unit(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
+    std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+    x->m_unit = gensym(unit.c_str());
 
-      t_atom a;
-      SETSYMBOL(&a, x->m_unit);
-      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
-    }
+    t_atom a;
+    SETSYMBOL(&a, x->m_unit);
+    outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
   }
 }
 
-void parameter_base::get_mute(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-      x->m_mute = param->get_muted();
+    x->m_mute = param->get_muted();
 
-      t_atom a;
-      SETFLOAT(&a, x->m_mute);
-      outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
-    }
+    t_atom a;
+    SETFLOAT(&a, x->m_mute);
+    outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
   }
 }
 
-void parameter_base::get_rate(parameter_base*x, const ossia::net::node_base* node)
+void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    for (auto m : x->m_node_selection)
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    auto rate = ossia::net::get_refresh_rate(*m->get_node());
+
+    if (rate)
     {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      x->m_rate = *rate;
 
-      auto rate = ossia::net::get_refresh_rate(*m->get_node());
-
-      if (rate)
-      {
-        x->m_rate = *rate;
-
-        t_atom a;
-        SETFLOAT(&a, x->m_rate);
-        outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-      }
+      t_atom a;
+      SETFLOAT(&a, x->m_rate);
+      outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
     }
   }
 }
@@ -645,25 +618,25 @@ void parameter_base::push_default_value(parameter_base* x)
 void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
 {
   if ( s == gensym("enable") )
-    parameter_base::get_enable(x,nullptr);
+    parameter_base::get_enable(x,x->m_node_selection);
   else if ( s == gensym("default") )
     parameter_base::get_default(x,x->m_node_selection);
   else if ( s == gensym("range") || s == gensym("min") || s == gensym("max") )
-    parameter_base::get_domain(x,nullptr);
+    parameter_base::get_domain(x,x->m_node_selection);
   else if ( s == gensym("clip") )
-    parameter_base::get_bounding_mode(x,nullptr);
+    parameter_base::get_bounding_mode(x,x->m_node_selection);
   else if ( s == gensym("type") )
-    parameter_base::get_type(x,nullptr);
+    parameter_base::get_type(x,x->m_node_selection);
   else if ( s == gensym("mode") )
-    parameter_base::get_access_mode(x,nullptr);
+    parameter_base::get_access_mode(x,x->m_node_selection);
   else if ( s == gensym("repetitions") )
-    parameter_base::get_repetition_filter(x,nullptr);
+    parameter_base::get_repetition_filter(x,x->m_node_selection);
   else if ( s == gensym("mute") )
-    parameter_base::get_mute(x,nullptr);
+    parameter_base::get_mute(x,x->m_node_selection);
   else if ( s == gensym("unit") )
-    parameter_base::get_unit(x,nullptr);
+    parameter_base::get_unit(x,x->m_node_selection);
   else if ( s == gensym("rate") )
-    parameter_base::get_rate(x,nullptr);
+    parameter_base::get_rate(x,x->m_node_selection);
 
 }
 

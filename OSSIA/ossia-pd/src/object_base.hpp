@@ -134,10 +134,10 @@ public:
   void set_priority();
   void set_hidden();
 
-  static void get_description(object_base* x, const ossia::net::node_base* node = nullptr);
-  static void get_tags(object_base* x, const ossia::net::node_base* node = nullptr);
-  static void get_priority(object_base* x, const ossia::net::node_base* node = nullptr);
-  static void get_hidden(object_base* x, const ossia::net::node_base* node = nullptr);
+  static void get_description(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
 
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
