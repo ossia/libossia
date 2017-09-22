@@ -36,6 +36,8 @@ int main()
   // Explore the tree of B
   std::cerr << "update: " << device.get_protocol().update(device) << std::endl;
 
+  ossia::net::find_node(device, "/test/my_string")->get_parameter()->push_value("fheakoezp");
+
   // Display the tree in console
   explore(device.get_root_node());
 

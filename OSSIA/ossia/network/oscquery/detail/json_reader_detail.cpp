@@ -612,18 +612,12 @@ int json_parser::get_port(const rapidjson::Value& obj)
 ossia::oscquery::message_type
 json_parser::message_type(const rapidjson::Value& obj)
 {
-  static string_view_map<ossia::oscquery::message_type> map{
+  static const string_view_map<ossia::oscquery::message_type> map{
       {detail::path_added(), ossia::oscquery::message_type::PathAdded},
       {detail::path_changed(), ossia::oscquery::message_type::PathChanged},
       {detail::path_removed(), ossia::oscquery::message_type::PathRemoved},
-      {detail::attributes_changed(),
-       ossia::oscquery::message_type::AttributesChanged}};
+      {detail::attributes_changed(), ossia::oscquery::message_type::AttributesChanged}};
   using namespace detail;
-  auto val_it = obj.FindMember(detail::attribute_value());
-  if (val_it != obj.MemberEnd())
-  {
-    return ossia::oscquery::message_type::Value;
-  }
 
   auto it = obj.FindMember(detail::command());
   if (it != obj.MemberEnd())
@@ -633,12 +627,19 @@ json_parser::message_type(const rapidjson::Value& obj)
       return mt_it.value();
   }
 
+  {
+    if (obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
+    {
+      return ossia::oscquery::message_type::Namespace;
+    }
+  }
+
   if (obj.FindMember(detail::osc_port()) != obj.MemberEnd())
   {
     return ossia::oscquery::message_type::Device;
   }
 
-  return ossia::oscquery::message_type::Namespace; // TODO More checks needed
+  return ossia::oscquery::message_type::Value; // TODO More checks needed
 }
 
 void json_parser::parse_namespace(

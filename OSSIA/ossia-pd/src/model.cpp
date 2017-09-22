@@ -22,6 +22,7 @@ bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
   bool res = do_registration(nodes);
   if (res)
   {
+    fill_selection();
     obj_dequarantining<model>(this);
     register_children();
   }

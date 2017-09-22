@@ -58,8 +58,8 @@ public:
   {
     m_speed = g;
   }
-  void tick(ossia::time_value usec);
-  void tick(ossia::time_value usec, double ratio);
+  ossia::state_element tick(ossia::time_value usec);
+  ossia::state_element tick(ossia::time_value usec, double ratio);
 
   /*! to get the interval execution back
    \param const #TimeValue process clock position

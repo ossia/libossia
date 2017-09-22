@@ -268,7 +268,7 @@ void update_overtick(
   }
 }
 
-void scenario::tick_interval(time_interval& interval, time_value tick)
+ossia::state_element scenario::tick_interval(time_interval& interval, time_value tick)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
@@ -276,11 +276,11 @@ void scenario::tick_interval(time_interval& interval, time_value tick)
   if (!cst_max_dur.infinite())
   {
     auto this_tick = std::min(tick, cst_max_dur - interval.get_date());
-    interval.tick(this_tick);
+    return interval.tick(this_tick);
   }
   else
   {
-    interval.tick(tick);
+    return interval.tick(tick);
   }
 }
 
@@ -343,7 +343,11 @@ state_element scenario::state(ossia::time_value date, double pos)
     for (time_interval* interval : m_runningIntervals)
     {
       auto cst_old_date = interval->get_date();
-      tick_interval(*interval, tick_ms);
+      auto st = tick_interval(*interval, tick_ms);
+      if (is_unmuted)
+      {
+        flatten_and_filter(cur_state, std::move(st));
+      }
 
       // ossia::logger().info("scenario::state tick {}: {}", (void*)interval,
       // tick_us);
@@ -377,9 +381,9 @@ state_element scenario::state(ossia::time_value date, double pos)
       if (is_unmuted)
       {
         // For intervals that did finish, we take their last state :
-        for (auto interval : intervals_stopped)
+        for (time_interval* interval : intervals_stopped)
         {
-          flatten_and_filter(cur_state, interval->state());
+          //flatten_and_filter(cur_state, interval->state());
           interval->stop();
         }
       }
@@ -416,7 +420,9 @@ state_element scenario::state(ossia::time_value date, double pos)
               {
                 // ossia::logger().info("scenario::state tick {}: {}",
                 // (void*)interval, tick_dur);
-                tick_interval(*interval, remaining_tick);
+                auto st = tick_interval(*interval, remaining_tick);
+                if(is_unmuted)
+                  flatten_and_filter(cur_state, std::move(st));
 
                 auto end_node = &interval->get_end_event().get_time_sync();
                 m_endNodes.insert(end_node);
@@ -445,7 +451,7 @@ state_element scenario::state(ossia::time_value date, double pos)
             intervals_stopped, writeState);
       }
 
-      for (auto c : intervals_stopped)
+      for (time_interval* c : intervals_stopped)
         m_runningIntervals.erase(c);
       m_runningIntervals.insert(
           intervals_started.begin(), intervals_started.end());
@@ -454,10 +460,10 @@ state_element scenario::state(ossia::time_value date, double pos)
     } while (!statusChangedEvents.empty());
 
     // Finally, take the state of the intervals that are still running.
-    for (auto& interval : m_runningIntervals)
+    /* for (time_interval* interval : m_runningIntervals)
     {
       flatten_and_filter(cur_state, interval->state());
-    }
+    } */
 
     m_lastState = cur_state;
   }

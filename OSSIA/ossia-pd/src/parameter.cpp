@@ -27,6 +27,7 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   bool res = do_registration(nodes);
   if (res)
   {
+    fill_selection();
     obj_dequarantining<parameter>(this);
 
     // TODO should we put this into device_base::on_parameter_deleted_callback ?

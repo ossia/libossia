@@ -57,9 +57,11 @@ public:
 #endif
           try
           {
-            auto res = h(hdl, msg->get_raw_payload());
+            rapidjson::StringBuffer res = h(hdl, msg->get_raw_payload());
             if (res.GetSize() > 0)
+            {
               send_message(hdl, std::move(res));
+            }
           }
           catch (const ossia::node_not_found_error& e)
           {
