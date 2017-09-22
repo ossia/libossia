@@ -21,18 +21,7 @@ typedef enum ossia_preset_result_enum ossia_preset_result;
  * @return A result code
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_read_json (
-        const char*,
-        ossia_preset_t*);
-
-/**
- * @brief ossia_presets_read_xml
- * @param A string containing xml data of a preset.
- * @param a preset receiving the new preset instance
- * @return A result code
- */
-OSSIA_EXPORT
-ossia_preset_result ossia_presets_read_xml(
+ossia_preset_result ossia_presets_read_json(
         const char*,
         ossia_preset_t*);
 
@@ -59,21 +48,12 @@ ossia_preset_result ossia_presets_free(
  * @param a buffer receiving the text json version of the preset
  * @return A result code
  */
-
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_write_json(const ossia_preset_t, const char* device,
-        const char**);
-/**
- * @brief ossia_presets_write_xml
- * @param a preset
- * @param a buffer receiving the text xml version of the preset
- * @return A result code
- */
+ossia_preset_result ossia_presets_write_json(
+    const ossia_preset_t,
+    const char* device,
+    const char**);
 
-OSSIA_EXPORT
-ossia_preset_result ossia_presets_write_xml(
-        const ossia_preset_t,
-        const char**);
 /**
  * @brief ossia_presets_size
  * @param a preset
@@ -128,34 +108,6 @@ ossia_preset_result ossia_presets_key_to_value(
 /// Device handling ///
 
 /**
- * @brief ossia_devices_read_json
- * @param an existing ossia device
- * @param textual json of device data
- * @return A result code
- *
- * The device will be cleared and replaced
- * with this data.
- */
-OSSIA_EXPORT
-ossia_preset_result ossia_devices_read_json(
-        ossia_device_t*,
-        const char*);
-
-/**
- * @brief ossia_devices_read_xml
- * @param an existing ossia device
- * @param textual xml of device data
- * @return A result code
- *
- * The device will be cleared and replaced
- * with this data.
- */
-OSSIA_EXPORT
-ossia_preset_result ossia_devices_read_xml(
-        ossia_device_t*,
-        const char*);
-
-/**
  * @brief ossia_devices_write_json
  * @param an existing device
  * @param a buffer receiving a json-formatted text string corresponding to this data
@@ -164,17 +116,6 @@ ossia_preset_result ossia_devices_read_xml(
 
 OSSIA_EXPORT
 ossia_preset_result ossia_devices_write_json(
-        const ossia_device_t,
-        const char**);
-
-/**
- * @brief ossia_devices_write_json
- * @param an existing device
- * @param a buffer receiving an xml-formatted text string corresponding to this data
- * @return A result code
- */
-OSSIA_EXPORT
-ossia_preset_result ossia_devices_write_xml(
         const ossia_device_t,
         const char**);
 

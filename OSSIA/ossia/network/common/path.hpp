@@ -67,8 +67,13 @@ struct OSSIA_EXPORT device : public path_element
 //! Can match nodes that are instances : foo:/bar, foo:/bar.1, etc.
 struct OSSIA_EXPORT any_instance : public path_element
 {
+  static std::string instance_regex()
+  {
+    static const auto str = "(\\.[" + std::string(ossia::net::name_characters_no_instance()) + "]+)?";
+    return str;
+  }
   explicit any_instance(std::string s)
-      : path_element{std::move(s) + "(\\.[0-9]+)?"}
+      : path_element{std::move(s) + instance_regex()}
   {
   }
 };
@@ -83,7 +88,7 @@ struct OSSIA_EXPORT any_between : public path_element
 
   any_between(std::initializer_list<std::string> args) : path_element{""}
   {
-    const int N = args.size();
+    const auto N = args.size();
     if (N > 0)
     {
       address += '(';
@@ -91,7 +96,7 @@ struct OSSIA_EXPORT any_between : public path_element
       auto it = args.begin();
       address += *it;
 
-      for (int i = 1; i < N; i++)
+      for (std::size_t i = 1; i < N; i++)
       {
         ++it;
         address += '|';
@@ -174,8 +179,10 @@ inline path_element operator/(const path_element& lhs, const stop& rhs)
  * ossia::net::name_characters()
  * "?"      -> [:ossia:]?
  * "*"      -> [:ossia:]*
+ * "!"      -> any_instance()
  * "//"     -> any_path() /
  * ".."     -> get_parent()
+ * "{1..5}" -> get_range()
  * "[..]"   -> already handled by the regex engine.
  * "{a,b}"  -> "(a|b)"
  *
@@ -217,12 +224,12 @@ struct OSSIA_EXPORT path
 };
 
 //! True if this is a pattern match address
-OSSIA_EXPORT bool is_pattern(const std::string& address);
+OSSIA_EXPORT bool is_pattern(ossia::string_view address);
 
 /**
  * @brief Tries to parse a parameter into a path.
  */
-OSSIA_EXPORT ossia::optional<path> make_path(const std::string& address);
+OSSIA_EXPORT ossia::optional<path> make_path(ossia::string_view address);
 
 /**
  * @brief Get all the nodes matching a path, from a given list of root nodes.

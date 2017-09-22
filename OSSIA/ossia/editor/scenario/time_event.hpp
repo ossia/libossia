@@ -17,14 +17,14 @@
 namespace ossia
 {
 class state;
-class time_constraint;
-class time_node;
+class time_interval;
+class time_sync;
 class scenario;
 /**
  * @brief The time_event class
  *
  * \brief #time_event is use to describe temporal structure to launch the start
- * or the end of each attached #time_constraint.
+ * or the end of each attached #time_interval.
  *
  * \details #time_event has a #State and can also be submitted to an
  * expression.
@@ -63,7 +63,7 @@ public:
 
 public:
   time_event(
-      time_event::exec_callback, time_node& aTimeNode,
+      time_event::exec_callback, time_sync& aTimeSync,
       expression_ptr anExpression);
 
   /*! destructor */
@@ -74,7 +74,7 @@ public:
    \details this may be unsafe to do during execution */
   void set_callback(time_event::exec_callback);
 
-  /*! make the event happen to propagate the execution to next TimeConstraints
+  /*! make the event happen to propagate the execution to next TimeIntervals
    \details the event have to be in PENDING status to call this method
    otherwise
    it will raise a runtime_error
@@ -82,7 +82,7 @@ public:
    notify its owner */
   void happen(ossia::state& st);
 
-  /*! dispose the event to not propagate the execution to next TimeConstraints
+  /*! dispose the event to not propagate the execution to next TimeIntervals
    \details the event have to be in PENDING status to call this method
    otherwise
    it will raise a runtime_error
@@ -98,9 +98,9 @@ public:
    \param std::shared_ptr<#State> to remove */
   void remove_state(const state_element&);
 
-  /*! get the #time_node where the event is
-   \return std::shared_ptr<#time_node> */
-  time_node& get_time_node() const;
+  /*! get the #time_sync where the event is
+   \return std::shared_ptr<#time_sync> */
+  time_sync& get_time_sync() const;
 
   /*! get the state of the event
   \return std::shared_ptr<#State> */
@@ -132,31 +132,31 @@ public:
   time_event& set_offset_behavior(offset_behavior);
 
   /*! get previous time contraints attached to the event
-   \return #Container<#time_constraint> */
-  ptr_container<time_constraint>& previous_time_constraints()
+   \return #Container<#time_interval> */
+  ptr_container<time_interval>& previous_time_intervals()
   {
-    return m_previous_time_constraints;
+    return m_previous_time_intervals;
   }
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const ptr_container<time_constraint>& previous_time_constraints() const
+  const ptr_container<time_interval>& previous_time_intervals() const
   {
-    return m_previous_time_constraints;
+    return m_previous_time_intervals;
   }
 
   /*! get next time contraints attached to the event
-   \return #Container<#time_constraint> */
-  ptr_container<time_constraint>& next_time_constraints()
+   \return #Container<#time_interval> */
+  ptr_container<time_interval>& next_time_intervals()
   {
-    return m_next_time_constraints;
+    return m_next_time_intervals;
   }
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const ptr_container<time_constraint>& next_time_constraints() const
+  const ptr_container<time_interval>& next_time_intervals() const
   {
-    return m_next_time_constraints;
+    return m_next_time_intervals;
   }
 
   void set_status(status s);
@@ -169,14 +169,14 @@ public:
 private:
   time_event::exec_callback m_callback;
 
-  time_node& m_timenode;
+  time_sync& m_timesync;
   state m_state;
   status m_status;
   offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};
 
   expression_ptr m_expression;
 
-  ptr_container<time_constraint> m_previous_time_constraints;
-  ptr_container<time_constraint> m_next_time_constraints;
+  ptr_container<time_interval> m_previous_time_intervals;
+  ptr_container<time_interval> m_next_time_intervals;
 };
 }

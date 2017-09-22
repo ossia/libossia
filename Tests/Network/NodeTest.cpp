@@ -158,6 +158,20 @@ private Q_SLOTS:
     /* TODO */
   }
 
+  void test_complex_type()
+  {
+
+    ossia::net::generic_device device;
+    QVERIFY(ossia::try_setup_parameter("time.Hz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("time.hz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("time.Hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("time.hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("Hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("hertz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("Hz", device.get_root_node()));
+    QVERIFY(ossia::try_setup_parameter("hz", device.get_root_node()));
+  }
+
   void test_sanitize()
   {
       using namespace std::literals;
@@ -202,7 +216,7 @@ private Q_SLOTS:
       const char state1[]{'S', 't', 'a', 't', 'e', '.', '1'};
       QVERIFY((ossia::net::sanitize_name(
                    QString("State.1"),
-                    {"TimeNode.0", "Event.0", "State.0", "TimeNode.1", "bogs3tone68", "State.1"})) == "State.2");
+                    {"TimeSync.0", "Event.0", "State.0", "TimeSync.1", "bogs3tone68", "State.1"})) == "State.2");
       QVERIFY((ossia::net::sanitize_name(
                    QString::fromLatin1(state1, 7),
       {QString::fromLatin1(state1, 7)})) == "State.2");
@@ -304,9 +318,9 @@ private Q_SLOTS:
     QVERIFY((bool)get_unit(n));
     QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
-    n.set(priority_attribute{}, 50);
+    n.set(priority_attribute{}, 50.f);
     QVERIFY((bool)get_priority(n));
-    QCOMPARE(*get_priority(n), 50);
+    QCOMPARE(*get_priority(n), 50.f);
 
     n.set(description_attribute{}, "Such a fancy node?! Incredible! すごい!!");
     QVERIFY((bool)get_description(n));
@@ -389,9 +403,9 @@ private Q_SLOTS:
     QVERIFY((bool)get_unit(n));
     QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
-    set_priority(n, 50);
+    set_priority(n, 50.f);
     QVERIFY((bool)get_priority(n));
-    QCOMPARE(*get_priority(n), 50);
+    QCOMPARE(*get_priority(n), 50.f);
 
     set_description(n, "Such a fancy node?! Incredible! すごい!!");
     QVERIFY((bool)get_description(n));

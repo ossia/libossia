@@ -39,7 +39,7 @@ bool graph_node::consumes(const std::string&) const
   return false;
 }
 
-bool graph_node::consumes(const Destination&) const
+bool graph_node::consumes(const destination&) const
 {
   return false;
 }

@@ -4,11 +4,11 @@
 <c74object name="ossia.remote" module="Ossia" category="Ossia">
 
 	<digest>
-		Remote
+		Monitor and remote control values from ossia.parameter's
 	</digest>
 
 	<description>
-		Remote
+		ossia.remote allows to bind to an ossia.parameter for remote control or monitoring. It can bind to local devices, or distant ones with ossia.client.
 	</description>
 
 	
@@ -22,21 +22,178 @@
 	
 	<!--INLETS-->
 	<inletlist>
+		<inlet id="0" name="Value input" type="any">
+			<digest>Value to set the bound parameter to.</digest>
+			<description>Value to set the parameter to. Several messages can be sent also, including attribute names and values.</description>
+		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
+		<outlet id="0" name="UI output" type="any">
+			<digest>Prepend set'd value the parameter was set to - feed to UI objects.</digest>
+			<description>Value the parameter was set to, prepended with set, so it can be directly set to most UI objects. This outlet is also deferlow'd (set to low priority, so it doesn't bloat other processes.</description>
+		</outlet>
+		<outlet id="1" name="Value output" type="any">
+			<digest>Value the parameter was set to.</digest>
+			<description>Value to set the parameter to - raw format.</description>
+		</outlet>
+		<outlet id="1" name="Dump outlet" type="any">
+			<digest>Various information messages</digest>
+			<description>Messages and information in reply to various messages</description>
+		</outlet>
 	</outletlist>
 	
 	
+
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="mode" get="1" set="1" type="symbol" size="1">
+			<digest>
+			Define access mode of parameter : GET, SET, or both (BI)
+			</digest>
+			<description>
+			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
+			</description>
+		</attribute>
+
+		<attribute name="enable" get="1" set="1" type="int" size="1">
+			<digest>
+				Enable node
+			</digest>
+			<description>
+				The <at>@enable</at> attribute allows to enable (default: 1) or disable the bound parameter.
+			</description>
+		</attribute>  
+
+		<attribute name="defval" get="1" set="1" type="int" size="1">
+			<digest>
+				Default value of parameter
+			</digest>
+			<description>
+				The <at>@defval</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
+			</description>
+		</attribute>	
+
+		<attribute name="type" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Value type of parameter
+			</digest>
+			<description>
+				The <at>@type</at> attribute defines the type of the value. Possible types are:
+				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
+			</description>
+		</attribute>
+
+		<attribute name="range" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range of parameter
+			</digest>
+			<description>
+				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range.
+			</description>
+		</attribute>		
+
+		<attribute name="min" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range minimum of parameter
+			</digest>
+			<description>
+				The <at>@min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="max" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range maximum of parameter
+			</digest>
+			<description>
+				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="clip" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Set how values exceeding range of the parameter will be clipped
+			</digest>
+			<description>
+				The <at>@clip</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
+				<ul><li><m>free</m>: when set to free (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>both</m>: when set to <m>both</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
+			</description>
+		</attribute>
+
+		<attribute name="mute" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Mute remote (off by default)
+			</digest>
+			<description>
+				The <at>@mute</at> attribute allows to mute the remote (i.e. prevent it from receiving or sending values to the bound parameter.)
+			</description>
+		</attribute>
+
+		<attribute name="rate" get="1" set="1" type="integer" size="1">
+			<digest>
+				Determine the update rate at which values will be set and get
+			</digest>
+			<description>
+				The <at>@range</at> attribute defines at which rates values will be set and get from/to the bound parameter
+			</description>
+		</attribute>
+
+		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Allow value repetitions (on by default)
+			</digest>
+			<description>
+				The <at>@repetitions</at> attribute defines whether identical values will berepeated (on by default)
+			</description>
+		</attribute>
+
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with the bound parameter
+			</digest>
+			<description>
+				The <at>@tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+
+		<attribute name="unit" get="1" set="1" type="symbol" size="1">
+			<digest>
+				unit used by the remote
+			</digest>
+			<description>
+				The <at>@unit</at> attribute defines the unit used by this remote. Values will get converted into this unit before being sent to the bound parameter.
+			</description>
+		</attribute>
+
+		<attribute name="priority" get="1" set="1" type="int" size="1">
+			<digest>
+				Set priority
+			</digest>
+			<description>
+				The <at>@priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+			</description>
+		</attribute>
+
+		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Hide parameter node in remote client
+			</digest>
+			<description>
+				The <at>@hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+			</description>
+		</attribute>
 	</attributelist>
 	
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.parameter" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.client" type="refpage"/>
+		<seealso name="ossia.device" type="refpage"/>		
 	</seealsolist>
 
 	

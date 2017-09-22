@@ -204,7 +204,7 @@ struct StringValue
 };
 
 template <typename Fun>
-struct TupleVisitor
+struct ListVisitor
 {
   const std::vector<ossia::value>& lhs;
   const ossia::value& rhs;
@@ -248,19 +248,19 @@ public:
   }
 };
 template <typename Fun>
-auto make_tuple_visitor(
+auto make_list_visitor(
     const std::vector<ossia::value>& lhs, const ossia::value& val, Fun f)
 {
-  return TupleVisitor<Fun>{lhs, val, f};
+  return ListVisitor<Fun>{lhs, val, f};
 }
 
-struct TupleValue
+struct ListValue
 {
   template <typename Fun>
   static bool
   apply(const std::vector<ossia::value>& lhs, const ossia::value& val, Fun fun)
   {
-    auto vis = make_tuple_visitor(lhs, val, fun);
+    auto vis = make_list_visitor(lhs, val, fun);
 
     return val.apply(vis);
   }
@@ -269,7 +269,7 @@ struct TupleValue
 template <typename Fun>
 struct DestinationVisitor
 {
-  const Destination& lhs;
+  const destination& lhs;
   const ossia::value& rhs;
   Fun fun;
 
@@ -293,7 +293,7 @@ public:
 
 template <typename Fun>
 auto make_destination_visitor(
-    const Destination& lhs, const ossia::value& val, Fun f)
+    const destination& lhs, const ossia::value& val, Fun f)
 {
   return DestinationVisitor<Fun>{lhs, val, f};
 }
@@ -301,7 +301,7 @@ auto make_destination_visitor(
 struct DestinationValue
 {
   template <typename Fun>
-  static bool apply(const Destination& lhs, const ossia::value& val, Fun fun)
+  static bool apply(const destination& lhs, const ossia::value& val, Fun fun)
   {
     return val.apply(make_destination_visitor(lhs, val, fun));
   }

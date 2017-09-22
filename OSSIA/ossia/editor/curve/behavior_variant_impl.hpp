@@ -198,28 +198,28 @@ behavior_variant_type::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("behavior_variant: bad type");
 }
 template <>
 inline const std::vector<ossia::behavior>& behavior_variant_type::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("behavior_variant: bad type");
 }
 template <>
 inline std::shared_ptr<ossia::curve_abstract>& behavior_variant_type::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("behavior_variant: bad type");
 }
 template <>
 inline std::vector<ossia::behavior>& behavior_variant_type::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("behavior_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const behavior_variant_type& var)
@@ -231,7 +231,7 @@ auto apply_nonnull(Visitor&& functor, const behavior_variant_type& var)
     case behavior_variant_type::Type::Type1:
       return functor(var.m_impl.m_value1);
     default:
-      throw;
+      throw std::runtime_error("behavior_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -244,7 +244,7 @@ auto apply_nonnull(Visitor&& functor, behavior_variant_type& var)
     case behavior_variant_type::Type::Type1:
       return functor(var.m_impl.m_value1);
     default:
-      throw;
+      throw std::runtime_error("behavior_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -257,7 +257,7 @@ auto apply_nonnull(Visitor&& functor, behavior_variant_type&& var)
     case behavior_variant_type::Type::Type1:
       return functor(std::move(var.m_impl.m_value1));
     default:
-      throw;
+      throw std::runtime_error("behavior_variant: bad type");
   }
 }
 template <typename Visitor>

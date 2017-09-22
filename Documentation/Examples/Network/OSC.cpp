@@ -15,7 +15,7 @@
 #include <functional>
 
 #include <ossia/ossia.hpp>
-
+#include <ossia/network/common/debug.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -27,7 +27,7 @@ int main()
 {
   // declare this program "P" as an OSC device
   ossia::net::generic_device device{
-    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997),
+    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997, std::string("mydevice")),
         "P"};
 
   /* publish each feature of program "P" as address into a tree
@@ -63,7 +63,7 @@ int main()
   oscStringAddress->add_callback(printValueCallback);
 
   auto oscTupleNode = oscTestNode->create_child("my_tuple");
-  auto oscTupleAddress = oscTupleNode->create_parameter(val_type::TUPLE);
+  auto oscTupleAddress = oscTupleNode->create_parameter(val_type::LIST);
   oscTupleAddress->add_callback(printValueCallback);
 
   // update tree value
@@ -85,5 +85,6 @@ int main()
 
 void printValueCallback(const value& v)
 {
-  cout << "Callback: " << value_to_pretty_string(v) << "\n";
+  std::cout << "Callback: " << value_to_pretty_string(v) << std::endl;
 }
+

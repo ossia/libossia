@@ -5,12 +5,20 @@
 #undef error
 #undef post
 
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/object_base.hpp>
 
-#include <ossia/ossia.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia-max_export.h>
+
+#include "parameter.hpp"
+#include "model.hpp"
+#include "remote.hpp"
+#include "view.hpp"
+#include "device.hpp"
+#include "client.hpp"
+#include "ossia_object.hpp"
+#include "logger.hpp"
 
 extern "C"
 {
@@ -29,14 +37,6 @@ namespace ossia
 namespace max
 {
 
-// TODO refactor headers to avoid that and include directly relevant headers
-struct t_parameter;
-struct t_remote;
-struct t_view;
-struct t_model;
-struct t_device;
-struct t_client;
-
 #pragma mark -
 #pragma mark Library
 
@@ -49,6 +49,18 @@ public:
     return &instance().m_device;
   }
 
+  template<typename T>
+  t_class* get_class() {
+    if(std::is_same<T, parameter>::value) return ossia_parameter_class;
+    if(std::is_same<T, remote>::value) return ossia_remote_class;
+    if(std::is_same<T, model>::value) return ossia_model_class;
+    if(std::is_same<T, view>::value) return ossia_view_class;
+    if(std::is_same<T, device>::value) return ossia_device_class;
+    if(std::is_same<T, client>::value) return ossia_client_class;
+    if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
+    if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
+    return nullptr;
+  }
 
   t_class* ossia_client_class{};
   t_class* ossia_device_class{};
@@ -60,12 +72,17 @@ public:
   t_class* ossia_ossia_class{};
 
   // keep list of all objects
-  ossia::safe_vector<t_parameter*> parameters;
-  ossia::safe_vector<t_remote*> remotes;
-  ossia::safe_vector<t_model*> models;
-  ossia::safe_vector<t_view*> views;
-  ossia::safe_vector<t_device*> devices;
-  ossia::safe_vector<t_client*> clients;
+  ossia::safe_vector<parameter*> parameters;
+  ossia::safe_vector<remote*> remotes;
+  ossia::safe_vector<model*> models;
+  ossia::safe_vector<view*> views;
+  ossia::safe_vector<device*> devices;
+  ossia::safe_vector<client*> clients;
+
+  ossia::safe_set<model*> model_quarantine;
+  ossia::safe_set<view*> view_quarantine;
+  ossia::safe_set<parameter*> parameter_quarantine;
+  ossia::safe_set<remote*> remote_quarantine;
 
 private:
   ossia_max();
@@ -78,9 +95,6 @@ private:
 
 #pragma mark -
 #pragma mark Templates
-
-template <typename T>
-extern bool max_object_register(T*);
 
 /**
  * @brief get absolute path to an object
@@ -100,12 +114,9 @@ extern void object_dequarantining(T*);
 template <typename T>
 extern bool object_is_quarantined(T*);
 
-template <typename T>
-extern void object_dump(T*);
+struct object_base;
 
-struct t_object_base;
-
-void object_namespace(t_object_base* x);
+void object_namespace(object_base* x);
 
 #pragma mark -
 #pragma mark Utilities
@@ -127,7 +138,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the parent box if exists. Otherwise returns nullptr.
  */
-t_object_base* find_parent_box(
+object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -138,7 +149,7 @@ t_object_base* find_parent_box(
  * @param start_level
  * @return
  */
-t_object_base* find_parent_box_alive(
+object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
@@ -166,8 +177,8 @@ public:
  * @return std::vector<t_pd*> containing pointer to t_pd struct of the
  * corresponding classname
  */
-std::vector<t_object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname);
+std::vector<object_base*> find_children_to_register(
+    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev = nullptr);
 
 /**
  * @brief             Convenient method to easily get the patcher where a box
@@ -189,6 +200,22 @@ t_object* get_patcher(t_object* object);
 /**
  */
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
+
+template<typename T, typename... Args>
+T* make_ossia(Args&&... args)
+{
+  auto obj = object_alloc(ossia_max::instance().get_class<T>());
+  if(obj)
+  {
+    t_object tmp;
+    memcpy(&tmp, obj, sizeof(t_object));
+    auto x = new(obj) T{std::forward<Args>(args)...};
+    memcpy(x, &tmp, sizeof(t_object));
+
+    return x;
+  }
+  return nullptr;
+}
 
 } // max namespace
 } // ossia namespace

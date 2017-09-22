@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/automation/gradient.hpp>
 #include <ossia/editor/curve/curve_segment/easing.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/state/state_element.hpp>
 
 namespace ossia
@@ -11,7 +11,7 @@ color_automation::color_automation()
 {
 }
 
-void color_automation::set_destination(Destination a)
+void color_automation::set_destination(destination a)
 {
   a.unit = ossia::argb_u{};
   m_parameter = std::move(a);

@@ -15,7 +15,7 @@ public:
   using mapped_type = typename map_type::mapped_type;
   using value_type = typename map_type::value_type;
 
-  optional<mapped_type> find(const key_type& path)
+  optional<mapped_type> find(const key_type& path) const
   {
     lock_t lock(m_mutex);
     auto it = m_map.find(path);
@@ -64,7 +64,7 @@ public:
   }
 
 private:
-  mutex_t m_mutex;
+  mutable mutex_t m_mutex;
   map_type m_map;
 };
 

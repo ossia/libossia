@@ -112,7 +112,7 @@ private Q_SLOTS:
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
     auto localTupleNode = device.create_child("my_tuple");
-    auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
+    auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);
 
     std::vector<ossia::value> t{float{-1.}, float{0.}, float{1.}};
     localTupleAddress->set_value(t);
@@ -122,7 +122,7 @@ private Q_SLOTS:
 
     c->set_x0(0.);
 
-    Destination d(*localTupleAddress, ossia::destination_index{1});
+    destination d(*localTupleAddress, ossia::destination_index{1});
     c->set_y0_destination(d);
 
     QVERIFY(c->get_y0_destination() == d);

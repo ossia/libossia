@@ -55,9 +55,9 @@ ossia_add_test(MessageTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Editor/M
 ossia_add_test(ScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
 ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioAlgoTest.cpp")
 ossia_add_test(StateTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/StateTest.cpp")
-ossia_add_test(TimeConstraintTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeConstraintTest.cpp")
+ossia_add_test(TimeIntervalTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeIntervalTest.cpp")
 ossia_add_test(TimeEventTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
-ossia_add_test(TimeNodeTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeNodeTest.cpp")
+ossia_add_test(TimeSyncTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeSyncTest.cpp")
 ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
 ossia_add_test(DataspaceTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceTest.cpp")
 ossia_add_test(DataspaceMergeTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceMergeTest.cpp")
@@ -93,7 +93,7 @@ if(OSSIA_QT)
     ossia_add_test(JSTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/JSTest.cpp")
 endif()
 if(OSSIA_BENCHMARKS)
-ossia_add_test(ConstraintBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/ConstraintBenchmark.cpp")
+ossia_add_test(IntervalBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/IntervalBenchmark.cpp")
 ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
                                             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 ossia_add_test(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
@@ -103,6 +103,7 @@ ossia_add_test(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmar
 endif()
 
 
+if(OSSIA_C)
 function(ossia_add_test_c TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME}_test ${TESTSRCS})
 
@@ -117,10 +118,10 @@ function(ossia_add_test_c TESTNAME TESTSRCS)
     add_test(NAME ossia_target_${TESTNAME}_test COMMAND ossia_${TESTNAME}_test)
 endFunction()
 
-ossia_add_test_c(devices_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-devices.cpp")
-ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-api.cpp")
-ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
-
+  ossia_add_test_c(devices_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-devices.cpp")
+  ossia_add_test_c(api_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-c-api.cpp")
+  ossia_add_test_c(presets_c "${CMAKE_CURRENT_SOURCE_DIR}/C/unit-tests/unit-tests-presets.cpp")
+endif()
 # A command to copy the test data.
 
 if(MSVC)

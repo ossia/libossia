@@ -2,6 +2,7 @@
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System;
+using UnityEngine;
 
 namespace Ossia
 {
@@ -20,6 +21,7 @@ namespace Ossia
   {
     public float f1, f2, f3, f4;
   }
+  enum log_level { trace, debug, info, warn, error, critical, off };
   internal class Network
   {
     public delegate void ossia_value_callback(IntPtr ctx, IntPtr val);
@@ -202,6 +204,96 @@ namespace Ossia
     public static extern void ossia_node_array_free (
       IntPtr ar);
 
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_description(
+        IntPtr node,
+        string description);
+    [DllImport("ossia")]
+    public static extern IntPtr ossia_node_get_description(
+        IntPtr node);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_tags(
+        IntPtr node,
+        IntPtr tags,
+        UIntPtr sz);
+    [DllImport("ossia")]
+    public static extern void ossia_node_get_tags(
+        IntPtr node,
+        out IntPtr tags,
+        out UIntPtr sz);
+    [DllImport("ossia")]
+    public static extern void ossia_tags_free(
+        IntPtr tags,
+        UIntPtr sz);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_hidden(
+        IntPtr node,
+        int hidden);
+    [DllImport("ossia")]
+    public static extern int ossia_node_get_hidden(
+        IntPtr node);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_refresh_rate(
+        IntPtr node,
+        int refresh_rate);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_refresh_rate(
+        IntPtr node);
+    [DllImport("ossia")]
+    public static extern int ossia_node_get_refresh_rate(
+        IntPtr node,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_priority(
+        IntPtr node,
+        float priority);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_priority(
+        IntPtr node);
+    [DllImport("ossia")]
+    public static extern float ossia_node_get_priority(
+        IntPtr node,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_value_step_size(
+        IntPtr node,
+        double value_step_size);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_value_step_size(
+        IntPtr node);
+    [DllImport("ossia")]
+    public static extern double ossia_node_get_value_step_size(
+        IntPtr node,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_instance_bounds(
+        IntPtr node,
+        int min, int max);
+    [DllImport("ossia")]
+    public static extern void ossia_node_unset_instance_bounds(
+        IntPtr node);
+    [DllImport("ossia")]
+    public static extern void ossia_node_get_instance_bounds(
+        IntPtr node,
+        out int min, out int max,
+        out int ok);
+
+    [DllImport("ossia")]
+    public static extern void ossia_node_set_default_value(
+        IntPtr node,
+        IntPtr default_value);
+    [DllImport("ossia")]
+    public static extern IntPtr ossia_node_get_default_value(
+        IntPtr node);
+
+
     //// Parameter ////
     [DllImport ("ossia")]
     public static extern IntPtr ossia_parameter_get_node (
@@ -216,6 +308,14 @@ namespace Ossia
     public static extern ossia_access_mode ossia_parameter_get_access_mode (
       IntPtr property);
 
+
+    [DllImport ("ossia")]
+    public static extern void ossia_parameter_set_unit(
+      IntPtr address,
+      string unit);
+    [DllImport ("ossia")]
+    public static extern string ossia_parameter_get_unit(
+      IntPtr address);
 
     [DllImport ("ossia")]
     public static extern void ossia_parameter_set_bounding_mode (
@@ -310,6 +410,10 @@ namespace Ossia
     public static extern IntPtr ossia_parameter_fetch_value (
       IntPtr property);
 
+    [DllImport("ossia")]
+    public static extern void ossia_parameter_set_listening (
+      IntPtr address,
+      int listening);
 
     [DllImport ("ossia")]
     public static extern IntPtr ossia_parameter_add_callback (
@@ -393,7 +497,7 @@ namespace Ossia
     public static extern IntPtr ossia_value_create_string (string value);
 
     [DllImport ("ossia")]
-    public static extern IntPtr ossia_value_create_tuple (IntPtr[] values, UIntPtr size);
+    public static extern IntPtr ossia_value_create_list (IntPtr[] values, UIntPtr size);
     [DllImport ("ossia")]
     public static extern IntPtr ossia_value_create_fn (float[] values, UIntPtr size);
     [DllImport ("ossia")]
@@ -433,12 +537,12 @@ namespace Ossia
       out UIntPtr size);
 
     [DllImport ("ossia")]
-    public static extern void ossia_value_to_tuple (
+    public static extern void ossia_value_to_list (
       IntPtr val_in,
       out IntPtr val_out,
       out UIntPtr size);
     [DllImport ("ossia")]
-    public static extern void ossia_value_free_tuple (IntPtr[] tpl);
+    public static extern void ossia_value_free_list (IntPtr[] tpl);
 
     [DllImport ("ossia")]
     public static extern void ossia_value_to_fn(
@@ -477,7 +581,7 @@ namespace Ossia
       out UIntPtr size);
 
     [DllImport ("ossia")]
-    public static extern void ossia_value_convert_tuple (
+    public static extern void ossia_value_convert_list (
       IntPtr val_in,
       out IntPtr val_out,
       out UIntPtr size);
@@ -487,8 +591,84 @@ namespace Ossia
     [DllImport ("ossia")]
     public static extern void ossia_string_free( IntPtr str );
 
+    /// LOG ///
+
     [DllImport ("ossia")]
     public static extern void ossia_set_debug_logger( IntPtr fp );
+
+
+    [DllImport ("ossia")]
+    public static extern IntPtr ossia_logger_create(string host, string app);
+    [DllImport ("ossia")]
+    public static extern void ossia_logger_init_heartbeat(IntPtr log, int pid, string cmdline);
+    [DllImport ("ossia")]
+    public static extern void ossia_logger_set_level(IntPtr log, Ossia.log_level lvl);
+    [DllImport ("ossia")]
+    public static extern void ossia_log(IntPtr log, log_level lvl, string message);
+    [DllImport ("ossia")]
+    public static extern void ossia_logger_free(IntPtr log);
+
+    /// MESSAGE QUEUE ///
+
+    [DllImport ("ossia")]
+    public static extern
+    IntPtr ossia_mq_create(IntPtr device);
+    [DllImport ("ossia")]
+    public static extern void ossia_mq_register(IntPtr mq, IntPtr param);
+    [DllImport ("ossia")]
+    public static extern void ossia_mq_unregister(IntPtr mq, IntPtr param);
+    [DllImport ("ossia")]
+    public static extern int ossia_mq_pop(IntPtr mq, out IntPtr address, out IntPtr value);
+    [DllImport ("ossia")]
+    public static extern void ossia_mq_free(IntPtr mq);
+
+  }
+
+  public class Message
+  {
+    public IntPtr Address;
+    public Ossia.Value Value;
+  }
+
+  public class MessageQueue
+  {
+    IntPtr ossia_mq;
+    public MessageQueue(Ossia.Device dev)
+    {
+      ossia_mq = Network.ossia_mq_create (dev.GetDevice ());
+    }
+
+    ~MessageQueue()
+    {
+      Network.ossia_mq_free (ossia_mq);
+    }
+
+    public void Register(Ossia.Parameter p)
+    {
+      Network.ossia_mq_register (ossia_mq, p.ossia_parameter);
+    }
+
+    public void Unregister(Ossia.Parameter p)
+    {
+      Network.ossia_mq_unregister (ossia_mq, p.ossia_parameter);
+    }
+
+    public bool Pop(out Message m)
+    {
+      IntPtr c_addr;
+      IntPtr c_val;
+
+      int res = Network.ossia_mq_pop (ossia_mq, out c_addr, out c_val);
+      if (res != 0) {
+        m = new Message ();
+        m.Address = c_addr;
+        m.Value = new Ossia.Value (c_val);
+        return true;
+      } else {
+        m = null;
+        return false;
+      }
+    }
   }
 }
 

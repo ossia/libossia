@@ -98,7 +98,7 @@ struct domain_conversion<vecf_domain<N>>
   {
     return src;
   }
-  vecf_domain<N> tuple_func(const vector_domain& t)
+  vecf_domain<N> list_func(const vector_domain& t)
   {
     vecf_domain<N> dom;
     const std::size_t min_size = std::min(N, t.min.size());
@@ -126,7 +126,7 @@ struct domain_conversion<vecf_domain<N>>
 
   OSSIA_INLINE domain operator()(const vector_domain& t)
   {
-    return tuple_func(t);
+    return list_func(t);
   }
 
   template <typename T>
@@ -173,7 +173,7 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
     case val_type::STRING:
       return ossia::apply_nonnull(
           domain_conversion<domain_base<std::string>>{}, dom);
-    case val_type::TUPLE:
+    case val_type::LIST:
       return ossia::apply_nonnull(domain_conversion<vector_domain>{}, dom);
     case val_type::VEC2F:
       return ossia::apply_nonnull(domain_conversion<vecf_domain<2>>{}, dom);
@@ -188,14 +188,14 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
 
 inline void convert_compatible_domain(domain& dom, ossia::val_type newtype)
 {
-  constexpr const auto tuple_index = 6;
+  constexpr const auto list_index = 6;
   // eggs::variants::detail::checked_index_of<vector_domain,
   // domain_base_variant>::count;
 
   // Converts domains but keeps compatible different domains.
-  // e.g. a float domain works for vec4f or tuple.
+  // e.g. a float domain works for vec4f or list.
   //! \note check this if the order in domain_base_variant changes.
-  if (dom.which() < tuple_index)
+  if (dom.which() < list_index)
   {
     dom = convert_domain(dom, newtype);
   }

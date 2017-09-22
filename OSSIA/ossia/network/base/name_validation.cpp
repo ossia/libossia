@@ -9,6 +9,19 @@ namespace ossia
 {
 namespace net
 {
+std::string& sanitize_device_name(std::string& ret)
+{
+  // Note : if this is changed, also change the Qt version in js_utilities.cpp
+  for (auto& c : ret)
+  {
+    if (is_valid_character_for_device(c))
+      continue;
+    else
+      c = '_';
+  }
+  return ret;
+}
+
 std::string& sanitize_name(std::string& ret)
 {
   // Note : if this is changed, also change the Qt version in js_utilities.cpp
@@ -232,7 +245,7 @@ bool is_brace_expansion(string_view s)
   int brace_count = 0;
   int arr_count = 0;
 
-  for(int i = 0; i < s.size(); i++)
+  for(std::size_t i = 0; i < s.size(); i++)
   {
     if(s[i] == '{')
     {

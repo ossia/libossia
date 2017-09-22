@@ -6,7 +6,8 @@
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
-#include <ossia-pd/src/ossia_obj_base.hpp>
+#include <ossia-pd/src/object_base.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <fmt/format.h>
@@ -16,13 +17,7 @@ namespace ossia
 namespace pd
 {
 
-std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
-std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath);
-
-/**
- * @brief register_quarantinized Try to register all quarantinized objects
- */
-void register_quarantinized();
+#pragma mark Value type convertion helper
 
 struct value2atom
 {
@@ -106,63 +101,63 @@ struct value_visitor
     // message
     // and sending a bang to the bang object connected to the inlet of the
     // sender will lead to stack overflow...
-    if (x->x_dataout)
-      outlet_bang(x->x_dataout);
+    if (x->m_dataout)
+      outlet_bang(x->m_dataout);
 
-    if (x->x_setout)
-      outlet_bang(x->x_setout);
+    if (x->m_setout)
+      outlet_bang(x->m_setout);
   }
   void operator()(int32_t i) const
   {
     t_atom a;
     SETFLOAT(&a, (t_float)i);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, (t_float)i);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, (t_float)i);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(float f) const
   {
     t_atom a;
     SETFLOAT(&a, f);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, (t_float)f);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, (t_float)f);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(bool b) const
   {
     t_atom a;
     t_float f = b ? 1. : 0.;
     SETFLOAT(&a, f);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, f);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, f);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(const std::string& str) const
   {
     t_symbol* s = gensym(str.c_str());
     t_atom a;
     SETSYMBOL(&a, s);
-    if (x->x_dataout)
-      outlet_symbol(x->x_dataout, s);
+    if (x->m_dataout)
+      outlet_symbol(x->m_dataout, s);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
   void operator()(char c) const
   {
     t_atom a;
     SETFLOAT(&a, (float)c);
-    if (x->x_dataout)
-      outlet_float(x->x_dataout, (float)c);
+    if (x->m_dataout)
+      outlet_float(x->m_dataout, (float)c);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), 1, &a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
   }
 
   template <std::size_t N>
@@ -175,11 +170,11 @@ struct value_visitor
       SETFLOAT(a + i, vec[i]);
     }
 
-    if (x->x_dataout)
-      outlet_list(x->x_dataout, gensym("list"), N, a);
+    if (x->m_dataout)
+      outlet_list(x->m_dataout, gensym("list"), N, a);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), N, a);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, N, a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
@@ -190,18 +185,94 @@ struct value_visitor
       v.apply(vm);
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
-    if (x->x_dataout)
-      outlet_list(x->x_dataout, gensym("list"), va.size(), list_ptr);
+    if (x->m_dataout)
+      outlet_list(x->m_dataout, gensym("list"), va.size(), list_ptr);
 
-    if (x->x_setout)
-      outlet_anything(x->x_setout, gensym("set"), va.size(), list_ptr);
+    if (x->m_setout)
+      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, va.size(), list_ptr);
   }
 
   void operator()() const
   {
-    pd_error(x, "%s receive an invalid data", x->x_name->s_name);
+    pd_error(x, "%s received invalid data", x->m_name->s_name);
   }
 };
+
+struct domain_visitor {
+  parameter_base* x;
+
+  template<typename T>
+  void operator()(ossia::domain_base<T>& d)
+  {
+    if(d.min && d.max) {
+      x->m_range_size = 2;
+      SETFLOAT(x->m_range, *d.min);
+      SETFLOAT(x->m_range+1, *d.max);
+    }
+
+    if (d.min) {
+      x->m_min_size = 1;
+      SETFLOAT(x->m_min, *d.min);
+    }
+
+    if (d.max) {
+      x->m_max_size = 1;
+      SETFLOAT(x->m_max, *d.max);
+    }
+  }
+  void operator()(ossia::domain_base<impulse>& d)
+  {
+    // nothing to do
+  }
+  void operator()(ossia::domain_base<std::string> d)
+  {
+    if(!d.values.empty())
+    {
+      x->m_range_size = d.values.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.values.size();
+      for (int i = 0; i < x->m_range_size; i++)
+      {
+        // SETSYMBOL(x->m_range+i,gensym(d.values[i].c_str()));
+      }
+    }
+  }
+  void operator()(ossia::domain_base<ossia::value> d)
+  {
+    if(d.min) { }
+    if(d.max) { }
+    if(!d.values.empty()) { }
+  }
+
+  template<std::size_t N>
+  void operator()(ossia::vecf_domain<N>& d)
+  {
+    for(const auto& min : d.min) if(min) { }
+    for(const auto& max : d.max) if(max) { }
+    for(const auto& values : d.values) if(!values.empty()) { }
+  }
+
+  void operator()(ossia::vector_domain& d)
+  {
+    if(!d.min.empty()) { }
+    if(!d.max.empty()) { }
+    for(const auto& values : d.values) if(!values.empty()) { }
+  }
+  void operator()()
+  {
+
+  }
+};
+
+ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
+
+#pragma mark Prototype
+
+std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
+std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath);
+
+/**
+ * @brief register_quarantinized Try to register all quarantinized objects
+ */
+void register_quarantinized();
 
 /**
  * @fn                static t_class* find_parent(t_eobj* x, t_symbol*
@@ -217,7 +288,13 @@ struct value_visitor
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level);
+object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level);
+
+/**
+ * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
+ * @return the processed string
+ */
+std::string replace_brackets(const string_view);
 
 /**
  * @brief find_parent_alive
@@ -227,19 +304,22 @@ t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* 
  * @param start_level
  * @return
  */
-static t_obj_base* find_parent_alive(
-    t_eobj* x, std::string classname, int start_level, int* level)
+static object_base* find_parent_alive(
+    t_eobj* x, ossia::string_view classname, int start_level, int* level)
 {
-  t_obj_base* obj = find_parent(x, classname, start_level, level);
+  object_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
   {
-    while (obj && obj->x_dead)
+    while (obj && obj->m_dead)
     {
-      obj = find_parent_alive(&obj->x_obj, classname, 1, level);
+      obj = find_parent_alive(&obj->m_obj, classname, 1, level);
     }
   }
+  assert(!obj || !obj->m_dead);
   return obj;
 }
+
+#pragma mark template
 
 /**
  * @brief get_absolute_path
@@ -256,38 +336,38 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
 
-  t_model* model = nullptr;
+  model* m = nullptr;
   int model_level = 0;
 
   int start_level = 0;
-  if (std::is_same<T, t_model>::value)
+  if (std::is_same<T, model>::value)
     start_level = 1;
 
-  model = (t_model*)find_parent_alive(
-      &x->x_obj, "ossia.model", start_level, &model_level);
-  t_model* tmp = nullptr;
+  m = (model*)find_parent_alive(
+      &x->m_obj, "ossia.model", start_level, &model_level);
+  model* tmp = nullptr;
 
-  while (model)
+  while (m)
   {
-    vs.push_back(model->x_name->s_name);
-    tmp = model;
-    model = (t_model*)find_parent_alive(
-        &tmp->x_obj, "ossia.model", 1, &model_level);
+    vs.push_back(m->m_name->s_name);
+    tmp = m;
+    m = (model*)find_parent_alive(
+        &tmp->m_obj, "ossia.model", 1, &model_level);
   }
 
-  t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
+  t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
 
   int device_level = 0;
   int client_level = 0;
 
   // FIXme TODO use get root device instead
-  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &device_level);
-  auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
+  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
 
   if (client)
-    fullpath << client->x_name->s_name << ":";
+    fullpath << client->m_name->s_name << ":";
   if (device)
-    fullpath << device->x_name->s_name << ":";
+    fullpath << device->m_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
 
@@ -300,39 +380,39 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
 
-  t_view* view = nullptr;
+  ossia::pd::view* view = nullptr;
   int view_level = 0;
 
   int start_level = 0;
-  if (std::is_same<T, t_view>::value)
+  if (std::is_same<T, ossia::pd::view>::value)
     start_level = 1;
 
-  view =  (t_view*)find_parent_alive(
-      &x->x_obj, "ossia.view", start_level, &view_level);
-  t_view* tmp = nullptr;
+  view =  (ossia::pd::view*)find_parent_alive(
+      &x->m_obj, "ossia.view", start_level, &view_level);
+  ossia::pd::view* tmp = nullptr;
 
   while (view)
   {
-    vs.push_back(view->x_name->s_name);
+    vs.push_back(view->m_name->s_name);
     tmp = view;
     view
-        = (t_view*) find_parent_alive(&tmp->x_obj, "ossia.view", 1, &view_level);
+        = (ossia::pd::view*) find_parent_alive(&tmp->m_obj, "ossia.view", 1, &view_level);
   }
 
-  t_eobj* obj = tmp ? &tmp->x_obj : &x->x_obj;
+  t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
 
 
   int device_level = 0;
   int client_level = 0;
 
   // FIXme TODO use get root device instead
-  auto device = (t_device*)find_parent(obj, "ossia.device", 0, &device_level);
-  auto client = (t_client*)find_parent(obj, "ossia.client", 0, &client_level);
+  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
 
   if (client)
-    fullpath << client->x_name->s_name << ":";
+    fullpath << client->m_name->s_name << ":";
   if (device)
-    fullpath << device->x_name->s_name << ":";
+    fullpath << device->m_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
 
@@ -344,7 +424,78 @@ std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-ossia::net::node_base* find_parent_node(t_obj_base* x);
+std::vector<ossia::net::node_base*> find_parent_node(object_base* x);
+
+/**
+ * @brief Find all objects [classname] in the current patcher starting at
+ * specified level.
+ * @param list : list in which we are looking for objecfts
+ * @param classname : name of the object to search (ossia.model or ossia.view)
+ * @return std::vector<t_pd*> containing pointer to t_pd struct of the
+ * corresponding classname
+ */
+std::vector<object_base*> find_child_to_register(
+    object_base* x, t_gobj* start_list, ossia::string_view classname, bool* found_dev = nullptr);
+
+/**
+ * @brief find_peer: iterate through patcher's object list to find a peer
+ * @param x
+ * @return true if a peer have been found, false otherwise
+ */
+bool find_peer(object_base* x);
+
+/**
+ * @brief find_global_nodes: find nodes matching address with a 'device:' prefix
+ * @param addr : address string
+ * @return vector of pointers to matching nodes
+ */
+std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
+
+
+/**
+ * @brief get_address_scope: return address scope (relative, absolute or globale)
+ * @param addr: the address to process
+ * @return the scope
+ */
+ossia::pd::address_scope get_address_scope(ossia::string_view addr);
+
+/**
+ * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
+ * @param atom : array of atom
+ * @param size : number of value to take
+ * @return array of ossia::value
+ */
+std::vector<ossia::value> attribute2value(t_atom* atom, long size);
+
+/**
+ * @brief symbol2val_type Convert a t_symbol into ossia::val_type
+ * @param s
+ * @return ossia::val_type
+ */
+ossia::val_type symbol2val_type(t_symbol* s);
+t_symbol* val_type2symbol(ossia::val_type t);
+
+/**
+ * @brief symbol2bounding_mode convert t_symbol* to corresponging ossia::bounding_mode
+ * @param t_symbol* bounding_mode
+ * @return ossia::bounding_mode
+ */
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode);
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm);
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode);
+t_symbol* access_mode2symbol(ossia::access_mode mode);
+
+
+/**
+ * @brief make_matchers_vector return one matcher that matches node
+ * @param x
+ * @param node
+ * @return
+ */
+std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
+
+#pragma mark Templates
 
 template<typename T>
 /**
@@ -357,18 +508,13 @@ template<typename T>
 // self registering (when creating the object)
 bool obj_register(T* x)
 {
-  if (x->x_dead)
+  if (x->m_dead)
     return false; // object will be removed soon
 
   auto node = find_parent_node(x);
 
   return x->register_node(node);
 }
-
-/*
-template <typename T>
-extern void obj_bang(T* x);
-*/
 
 template <typename T>
 bool obj_is_quarantined(T* x)
@@ -389,229 +535,5 @@ void obj_dequarantining(T* x)
   x->quarantine().remove_all(x);
 }
 
-template <typename T>
-void obj_dump(T* x)
-{
-  t_atom a;
-  std::string fullpath;
-  if (x->x_otype == Type::remote || x->x_otype == Type::param)
-  {
-    t_obj_base* remote = (t_obj_base*) x;
-    if (remote->x_matchers.size() == 1)
-      x->x_node = remote->x_matchers[0].get_node();
-    else x->x_node = nullptr;
-  }
-  if (x->x_node)
-  {
-    fullpath = ossia::net::address_string_from_node(*x->x_node);
-    SETSYMBOL(&a, gensym(fullpath.c_str()));
-    outlet_anything(x->x_dumpout, gensym("fullpath"), 1, &a);
-  }
-  fullpath = get_absolute_path<T>(x);
-  if (fullpath.back() != '/')
-    fullpath += "/";
-  fullpath += x->x_name->s_name;
-  SETSYMBOL(&a, gensym(fullpath.c_str()));
-  outlet_anything(x->x_dumpout, gensym("pdpath"), 1, &a);
-
-  if (x->x_node)
-  {
-    SETFLOAT(&a, 1.);
-  }
-  else
-  {
-    SETFLOAT(&a, 0.);
-  }
-  outlet_anything(x->x_dumpout, gensym("registered"), 1, &a);
-
-  SETFLOAT(&a, obj_is_quarantined<T>(x));
-  outlet_anything(x->x_dumpout, gensym("quarantined"), 1, &a);
-
-  if (x->x_node)
-  {
-    ossia::net::parameter_base* param = x->x_node->get_parameter();
-    if (param)
-    {
-      // type
-      std::string type = "unknown";
-      switch (param->get_value_type())
-      {
-        case ossia::val_type::FLOAT:
-          type = "float";
-          break;
-        case ossia::val_type::INT:
-          type = "int";
-          break;
-        case ossia::val_type::VEC2F:
-          type = "vec2f";
-          break;
-        case ossia::val_type::VEC3F:
-          type = "vec3f";
-          break;
-        case ossia::val_type::VEC4F:
-          type = "vec4f";
-          break;
-        case ossia::val_type::IMPULSE:
-          type = "impulse";
-          break;
-        case ossia::val_type::BOOL:
-          type = "bool";
-          break;
-        case ossia::val_type::STRING:
-          type = "string";
-          break;
-        case ossia::val_type::TUPLE:
-          type = "list";
-          break;
-        case ossia::val_type::CHAR:
-          type = "char";
-          break;
-        default:
-          type = "unknown";
-      }
-
-      SETSYMBOL(&a, gensym(type.c_str()));
-      outlet_anything(x->x_dumpout, gensym("type"), 1, &a);
-
-      // domain
-      ossia::domain domain = param->get_domain();
-      int i = 0;
-      if (domain)
-      {
-       SETSYMBOL(&a, gensym(domain.to_pretty_string().c_str()));
-       i++;
-      }
-      outlet_anything(x->x_dumpout, gensym("domain"), i, &a);
-
-
-      // bounding mode
-      std::string bounding_mode;
-      switch (param->get_bounding())
-      {
-        case ossia::bounding_mode::FREE:
-          bounding_mode = "free";
-          break;
-        case ossia::bounding_mode::CLIP:
-          bounding_mode = "clip";
-          break;
-        case ossia::bounding_mode::WRAP:
-          bounding_mode = "wrap";
-          break;
-        case ossia::bounding_mode::FOLD:
-          bounding_mode = "fold";
-          break;
-        case ossia::bounding_mode::LOW:
-          bounding_mode = "low";
-          break;
-        case ossia::bounding_mode::HIGH:
-          bounding_mode = "high";
-          break;
-        default:
-          bounding_mode = "unknown";
-      }
-      SETSYMBOL(&a, gensym(bounding_mode.c_str()));
-      outlet_anything(x->x_dumpout, gensym("bounding_mode"), 1, &a);
-
-      // access mode
-      std::string access_mode;
-      switch (param->get_access())
-      {
-        case ossia::access_mode::BI:
-          access_mode = "bi";
-          break;
-        case ossia::access_mode::GET:
-          access_mode = "get";
-          break;
-        case ossia::access_mode::SET:
-          access_mode = "set";
-          break;
-        default:
-          access_mode = "unknown";
-      }
-      SETSYMBOL(&a, gensym(access_mode.c_str()));
-      outlet_anything(x->x_dumpout, gensym("access_mode"), 1, &a);
-
-      // repetition filter
-      bool rep = param->get_repetition_filter();
-      SETFLOAT(&a, rep);
-      outlet_anything(x->x_dumpout, gensym("repetition_filter"), 1, &a);
-
-      // unit
-      std::string pretty_unit
-          = ossia::get_pretty_unit_text(param->get_unit());
-      SETSYMBOL(&a, gensym(pretty_unit.c_str()));
-      outlet_anything(x->x_dumpout, gensym("unit"), 1, &a);
-    }
-
-    // description
-    auto description = ossia::net::get_description(*(x->x_node));
-    if (description)
-    {
-      SETSYMBOL(&a, gensym((*description).c_str()));
-      outlet_anything(x->x_dumpout, gensym("description"), 1, &a);
-    }
-    else
-      outlet_anything(x->x_dumpout, gensym("tags"), 0, nullptr);
-
-    // tags
-    auto tags = ossia::net::get_tags(*x->x_node);
-    if (tags)
-    {
-      std::size_t N = (*tags).size();
-      std::vector<t_atom> l(N);
-      for (std::size_t i = 0; i < N; i++)
-      {
-        SETSYMBOL(&l[i], gensym((*tags)[i].c_str()));
-      }
-      outlet_anything(x->x_dumpout, gensym("tags"), N, l.data());
-    }
-    else
-    {
-      outlet_anything(x->x_dumpout, gensym("tags"), 0, nullptr);
-    }
-  }
-}
-
-/**
- * @brief Find all objects [classname] in the current patcher starting at
- * specified level.
- * @param list : list in which we are looking for objecfts
- * @param classname : name of the object to search (ossia.model or ossia.view)
- * @return std::vector<t_pd*> containing pointer to t_pd struct of the
- * corresponding classname
- */
-std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev = nullptr);
-
-/**
- * @brief find_peer: iterate through patcher's object list to find a peer
- * @param x
- * @return true if a peer have been found, false otherwise
- */
-bool find_peer(t_obj_base* x);
-
-/**
- * @brief find_global_node: find nodes matching address with a 'device:' prefix
- * @param addr : address string
- * @return vector of pointers to matching nodes
- */
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr);
-
-
-/**
- * @brief get_address_scope: return address scope (relative, absolute or globale)
- * @param addr: the address to process
- * @return the scope
- */
-ossia::pd::AddrScope get_address_scope(const std::string& addr);
-
-/**
- * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
- * @param atom : array of atom
- * @param size : number of value to take
- * @return array of ossia::value
- */
-std::vector<ossia::value> attribute2value(t_atom* atom, long size);
-
-}
-}
+} // namespace pd
+} // namespace ossia

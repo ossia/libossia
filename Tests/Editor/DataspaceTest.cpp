@@ -142,7 +142,7 @@ private Q_SLOTS:
       ossia::unit_t some_unit = ossia::color_u{};
       auto parsed_unit = parse_unit("cm", some_unit);
       QVERIFY(parsed_unit != ossia::centimeter_u{});
-      QVERIFY(parsed_unit == ossia::color_u{});
+      QVERIFY(parsed_unit != ossia::color_u{});
     }
 
 #endif
@@ -278,21 +278,26 @@ private Q_SLOTS:
     {
       QVERIFY(parse_unit("rgb", ossia::unit_t{}) == ossia::unit_t{});
       QVERIFY(parse_unit("rgb", ossia::color_u{}) == ossia::rgb_u{});
-      QVERIFY(parse_unit("rgb", ossia::distance_u{}) == ossia::distance_u{});
+      QVERIFY(parse_unit("rgb", ossia::distance_u{}) == ossia::unit_t{});
       QVERIFY(parse_unit("rgb", ossia::unit_t{ossia::color_u{}}) == ossia::rgb_u{});
-      QVERIFY(parse_unit("rgb", ossia::unit_t{ossia::distance_u{}}) == ossia::distance_u{});
+      QVERIFY(parse_unit("rgb", ossia::unit_t{ossia::distance_u{}}) == ossia::unit_t{});
       // should not compile : QVERIFY(parse_unit("rgb", ossia::rgb_u{}) == ossia::rgb_u{});
       // should not compile : QVERIFY(parse_unit("rgb", ossia::hsv_u{}) == ossia::rgb_u{});
     }
 
     {
       QVERIFY(parse_pretty_unit("") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("plouf") == ossia::unit_t{});
       QVERIFY(parse_pretty_unit("none") == ossia::unit_t{});
-      QVERIFY(parse_pretty_unit("rgb") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("rgb") == ossia::rgb_u{});
       QVERIFY(parse_pretty_unit("color.rgb") == ossia::rgb_u{});
-      QVERIFY(parse_pretty_unit("color.tata") == ossia::color_u{});
-      QVERIFY(parse_pretty_unit("color.cm") == ossia::color_u{});
+      QVERIFY(parse_pretty_unit("color.tata") == ossia::unit_t{});
+      QVERIFY(parse_pretty_unit("color.cm") == ossia::unit_t{});
       QVERIFY(parse_pretty_unit("distance.cm") == ossia::centimeter_u{});
+
+      QVERIFY(!ossia::unit_t{});
+      QVERIFY(!parse_pretty_unit("plouf"));
+      QVERIFY(!parse_pretty_unit("time.plouf"));
     }
 
     {
@@ -352,6 +357,15 @@ qDebug() << ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_
     }
 
     get_unit_parser();
+  }
+
+  void test_convertible()
+  {
+    using namespace ossia;
+    QVERIFY(check_units_convertible(ossia::rgb_u{}, ossia::hsv_u{}));
+    QVERIFY(check_units_convertible(ossia::rgb_u{}, ossia::rgb_u{}));
+    QVERIFY(!check_units_convertible(ossia::rgb_u{}, ossia::degree_u{}));
+    QVERIFY(!check_units_convertible(ossia::rgb_u{}, ossia::cartesian_3d_u{}));
   }
 
   void convert_benchmark()

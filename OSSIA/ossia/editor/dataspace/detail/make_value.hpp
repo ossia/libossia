@@ -15,7 +15,7 @@ struct make_value_helper<U, float>
   template <typename T>
   OSSIA_INLINE ossia::value_with_unit operator()(const T& t)
   {
-    // TODO maybe return first value for tuple or vecNf ?
+    // TODO maybe return first value for list or vecNf ?
     // throw std::runtime_error("mismatching value type and unit");
     return {};
   }
@@ -54,15 +54,18 @@ struct make_value_helper<U, ossia::vec2f>
   {
     return strong_value<U>{ossia::convert<std::array<float, 2>>(t)};
   }
-  /*
-    OSSIA_INLINE ossia::value_with_unit operator()(Float t)
-    {
-      return strong_value<U>{fill_vec<2>(t)};
-    }
-  */
+  
   OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec2f t)
   {
     return strong_value<U>{t};
+  }
+  OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec3f t)
+  {
+    return strong_value<U>{ossia::make_vec(t[0], t[1])};
+  }
+  OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec4f t)
+  {
+    return strong_value<U>{ossia::make_vec(t[0], t[1])};
   }
 };
 
@@ -82,15 +85,18 @@ struct make_value_helper<U, ossia::vec3f>
   {
     return strong_value<U>{ossia::convert<std::array<float, 3>>(t)};
   }
-  /*
-    OSSIA_INLINE ossia::value_with_unit operator()(Float t)
-    {
-      return strong_value<U>{fill_vec<3>(t)};
-    }
-  */
+  
+  OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec2f t)
+  {
+    return strong_value<U>{ossia::make_vec(t[0], t[1], 0.)};
+  }
   OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec3f t)
   {
     return strong_value<U>{t};
+  }
+  OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec4f t)
+  {
+    return strong_value<U>{ossia::make_vec(t[0], t[1], t[2])};
   }
 };
 
@@ -110,12 +116,15 @@ struct make_value_helper<U, ossia::vec4f>
   {
     return strong_value<U>{ossia::convert<std::array<float, 4>>(t)};
   }
-  /*
-    OSSIA_INLINE ossia::value_with_unit operator()(Float t)
-    {
-      return strong_value<U>{fill_vec<4>(t)};
-    }
-  */
+  
+  OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec2f t)
+  {
+    return strong_value<U>{ossia::make_vec(t[0], t[1], 0., 0.)};
+  }
+  OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec3f t)
+  {
+    return strong_value<U>{ossia::make_vec(t[0], t[1], t[2], 0.)};
+  }
   OSSIA_INLINE ossia::value_with_unit operator()(ossia::vec4f t)
   {
     return strong_value<U>{t};

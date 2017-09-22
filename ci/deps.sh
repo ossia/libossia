@@ -14,7 +14,7 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      sudo wget -nv https://github.com/OSSIA/iscore-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
+      sudo wget -nv https://github.com/OSSIA/score-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
 
       wget -nv https://cmake.org/files/v3.9/cmake-3.9.0-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
@@ -44,7 +44,7 @@ case "$TRAVIS_OS_NAME" in
         popd
 
         # download, extract and mount raspberry pi image with gcc-6 installed
-        wget -nv https://u3680458.dl.dropboxusercontent.com/u/3680458/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
+        wget -nv https://www.dropbox.com/s/wknbpnd9pvjxgse/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
         tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
         mkdir -p /tmp/rpi/root
         sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
@@ -58,7 +58,7 @@ case "$TRAVIS_OS_NAME" in
     set +e
     brew install gnu-tar xz
     ARCHIVE=homebrew-cache.tar.xz
-    wget -nv "https://github.com/OSSIA/iscore-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
+    wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
     brew link --force boost cmake ninja qt5
 

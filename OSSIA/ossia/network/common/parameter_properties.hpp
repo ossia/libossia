@@ -13,16 +13,16 @@ namespace ossia
  * * ossia::val_type */
 enum class val_type : int8_t
 {
-  FLOAT,   //! \see Float
-  INT,     //! \see Int
-  VEC2F,   //! \see Vec2f
-  VEC3F,   //! \see Vec3f
-  VEC4F,   //! \see Vec4f
-  IMPULSE, //! \see Impulse
-  BOOL,    //! \see Bool
-  STRING,  //! \see String
-  TUPLE,   //! \see Tuple
-  CHAR,
+  FLOAT, //! float
+  INT,   //! int32_t
+  VEC2F, //! array<float, 2>
+  VEC3F, //! array<float, 3>
+  VEC4F, //! array<float, 4>
+  IMPULSE, //! ossia::impulse
+  BOOL, //! bool
+  STRING, //! std::string
+  LIST, //! std::vector<value>
+  CHAR, //! char
   NONE = std::numeric_limits<int8_t>::max()
 };
 

@@ -138,11 +138,11 @@ catch (...)
   return decltype(f())();
 }
 
-inline const char* copy_string(const std::string& str)
+inline char* copy_string(const std::string& str)
 {
   const auto n = str.size();
   auto mbuffer = new char[n + 1];
-  std::sprintf(mbuffer, "%s", str.c_str());
+  std::memcpy(mbuffer, str.data(), n);
   mbuffer[n] = 0;
   return mbuffer;
 }

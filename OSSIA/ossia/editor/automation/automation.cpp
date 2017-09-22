@@ -4,7 +4,7 @@
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <iostream>
 
@@ -15,14 +15,14 @@ automation::automation()
 {
 }
 
-automation::automation(Destination address, const ossia::behavior& drive)
+automation::automation(destination address, const ossia::behavior& drive)
     : m_drive(drive)
     , m_lastMessage{ossia::message{address, ossia::value{}}}
     , m_drivenType{address.address().value(address.index).getType()}
 {
 }
 
-automation::automation(Destination address, ossia::behavior&& drive)
+automation::automation(destination address, ossia::behavior&& drive)
     : m_drive(std::move(drive))
     , m_lastMessage{ossia::message{address, ossia::value{}}}
     , m_drivenType{address.address().value(address.index).getType()}
@@ -82,12 +82,12 @@ void automation::resume()
 {
 }
 
-void automation::set_destination(Destination d)
+void automation::set_destination(destination d)
 {
   m_drivenType = d.address().value(d.index).getType();
   if (m_lastMessage)
   {
-    m_lastMessage->destination = std::move(d);
+    m_lastMessage->dest = std::move(d);
   }
   else
   {

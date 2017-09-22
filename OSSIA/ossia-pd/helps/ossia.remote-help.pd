@@ -1,19 +1,20 @@
-#N canvas 357 61 460 160 10;
-#N canvas 357 244 461 352 localDevice 1;
+#N canvas 357 93 537 160 10;
+#N canvas 355 278 538 390 localDevice 1;
 #X obj 80 90 ossia.remote foo;
 #X floatatom 45 91 5 0 0 0 - - -, f 5;
-#X obj 295 89 ossia.param foo;
+#X obj 299 88 ossia.param foo;
 #X floatatom 262 89 5 0 0 0 - - -, f 5;
-#X floatatom 295 111 5 0 0 0 - - -, f 5;
-#N canvas 476 175 450 300 view 0;
-#X obj 154 103 ossia.remote bar;
-#X floatatom 114 104 5 0 0 0 - - -, f 5;
-#X obj 143 198 ossia.view sub;
-#X text 20 53 you can double click on a remote to locate its associated
+#X floatatom 299 110 5 0 0 0 - - -, f 5;
+#N canvas 476 175 438 223 view 0;
+#X obj 152 74 ossia.remote bar;
+#X floatatom 112 75 5 0 0 0 - - -, f 5;
+#X obj 140 127 ossia.view sub;
+#X text 18 24 you can double click on a remote to locate its associated
 osssia.param;
+#X text 30 171 see ossia.view-help.pd for more about this;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
-#X restore 206 148 pd view;
+#X restore 228 164 pd view;
 #N canvas 0 151 450 300 model 0;
 #X floatatom 161 58 5 0 0 0 - - -, f 5;
 #X floatatom 161 98 5 0 0 0 - - -, f 5;
@@ -21,33 +22,337 @@ osssia.param;
 #X obj 164 183 ossia.model sub;
 #X connect 0 0 2 0;
 #X connect 2 0 1 0;
-#X restore 354 147 pd model;
-#X obj 158 245 ossia.remote /sub/bar;
-#X floatatom 121 246 5 0 0 0 - - -, f 5;
-#X text 35 17 Here the remote connects to a local device and a local
-parameter \, it acts more or less like a send/receive pair.;
-#X text 41 59 the name of the remote binds it to the smilarrly named
+#X restore 428 163 pd model;
+#X text 38 165 remotes are also used in :;
+#X text 309 163 which works with;
+#X text 41 59 the name of the remote binds it to the similarly named
 param;
-#X text 44 149 remotes are also used in :;
-#X text 253 148 which works with;
-#X text 45 200 when there are several levels of hierarchies \, one
-can use absolute addresses \, refering to the current device's root
-\, and starting with a leading slash:;
-#X text 31 298 There is no [ossia.device] here so all ossia objects
+#X text 37 227 when using units in params \, ossia.remote can do some
+conversion \, see in:, f 65;
+#N canvas 901 310 473 305 units 0;
+#X floatatom 36 80 5 0 0 0 - - -, f 5;
+#X floatatom 36 138 5 0 0 0 - - -, f 5;
+#X floatatom 191 198 5 0 0 0 - - -, f 5;
+#X obj 179 177 ø.remote freq @unit time.midinote, f 34;
+#X floatatom 185 274 5 0 0 0 - - -, f 5;
+#X obj 172 236 ø.remote freq @unit time.cents, f 16;
+#X floatatom 49 274 5 0 0 0 - - -, f 5;
+#X obj 35 237 ø.remote freq @unit time.s, f 16;
+#X floatatom 319 274 5 0 0 0 - - -, f 5;
+#X obj 306 236 ø.remote freq @unit time.mel, f 16;
+#N canvas 1533 499 285 538 unit 0;
+#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
+distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
+position.cart3D position.cart2D position.spherical position.polar position.openGL
+position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
+speed.ft/h orientation.quaternion orientation.euler orientation.axis
+angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
+color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
+gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
+time.mel time.midinote time.ms time.speed, f 24;
+#X restore 293 29 pd unit list;
+#X text 32 13 when a parameter is declared with an unit \, ossia.remote
+can use another (convertible unit) - see;
+#X text 106 61 some examples:;
+#X floatatom 51 201 5 0 0 0 - - -, f 5;
+#X obj 36 180 ø.remote freq;
+#X obj 37 100 ø.param freq @unit time.Hz @default 440 @range 20 20000
+@clip both, f 42;
+#X connect 0 0 15 0;
+#X connect 2 0 3 0;
+#X connect 3 0 2 0;
+#X connect 4 0 5 0;
+#X connect 5 0 4 0;
+#X connect 6 0 7 0;
+#X connect 7 0 6 0;
+#X connect 8 0 9 0;
+#X connect 9 0 8 0;
+#X connect 13 0 14 0;
+#X connect 14 0 13 0;
+#X connect 15 0 1 0;
+#X restore 92 245 pd units;
+#X text 119 131 _______________________________;
+#X text 120 190 _______________________________;
+#X text 123 266 _______________________________;
+#N canvas 313 506 513 292 pattern-matching 0;
+#N canvas 768 122 288 95 more_models 0;
+#N canvas 865 325 503 220 model 0;
+#X floatatom 62 46 5 0 0 0 - - -, f 5;
+#X floatatom 62 86 5 0 0 0 - - -, f 5;
+#X obj 62 64 ossia.param bar;
+#X obj 62 143 ossia.model subModel;
+#X floatatom 187 46 5 0 0 0 - - -, f 5;
+#X floatatom 187 86 5 0 0 0 - - -, f 5;
+#X obj 187 64 ossia.param baron;
+#X floatatom 316 45 5 0 0 0 - - -, f 5;
+#X floatatom 316 85 5 0 0 0 - - -, f 5;
+#X obj 316 63 ossia.param barista;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X connect 4 0 6 0;
+#X connect 6 0 5 0;
+#X connect 7 0 9 0;
+#X connect 9 0 8 0;
+#X restore 40 35 pd model;
+#N canvas 837 492 503 220 model 0;
+#X floatatom 62 46 5 0 0 0 - - -, f 5;
+#X floatatom 62 86 5 0 0 0 - - -, f 5;
+#X obj 62 64 ossia.param bar;
+#X obj 62 143 ossia.model subModel;
+#X floatatom 187 46 5 0 0 0 - - -, f 5;
+#X floatatom 187 86 5 0 0 0 - - -, f 5;
+#X obj 187 64 ossia.param baron;
+#X floatatom 316 45 5 0 0 0 - - -, f 5;
+#X floatatom 316 85 5 0 0 0 - - -, f 5;
+#X obj 316 63 ossia.param barista;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X connect 4 0 6 0;
+#X connect 6 0 5 0;
+#X connect 7 0 9 0;
+#X connect 9 0 8 0;
+#X restore 117 35 pd model;
+#N canvas 909 562 503 220 model 0;
+#X floatatom 62 46 5 0 0 0 - - -, f 5;
+#X floatatom 62 86 5 0 0 0 - - -, f 5;
+#X obj 62 64 ossia.param bar;
+#X obj 62 143 ossia.model subModel;
+#X floatatom 187 46 5 0 0 0 - - -, f 5;
+#X floatatom 187 86 5 0 0 0 - - -, f 5;
+#X obj 187 64 ossia.param baron;
+#X floatatom 316 45 5 0 0 0 - - -, f 5;
+#X floatatom 316 85 5 0 0 0 - - -, f 5;
+#X obj 316 63 ossia.param barista;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X connect 4 0 6 0;
+#X connect 6 0 5 0;
+#X connect 7 0 9 0;
+#X connect 9 0 8 0;
+#X restore 189 35 pd model;
+#X restore 347 80 pd more_models;
+#X text 23 36 pattern-matching can be used in ø.remotes \, in order
+to address several params with one object;
+#X obj 69 79 ø.remote subModel.[0-3]/bar*, f 30;
+#X floatatom 25 80 5 0 0 0 - - -, f 5;
+#N canvas 0 120 196 135 (subpatch) 0;
+#X obj 45 21 inlet;
+#X obj 45 42 route address;
+#X obj 45 64 symbol;
+#X obj 45 85 outlet, f 7;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X restore 297 79 pd;
+#X symbolatom 297 113 23 0 0 0 - - -, f 23;
+#X text 17 170 (note: don't use print with a lot of messages \, that
+will jam pd), f 64;
+#X text 21 137 when receiving a value \, the origin address is output
+on the 3rd outlet:;
+#X text 20 192 hint: double click on the remote and change values in
+the models to see this in action, f 65;
+#X connect 2 0 3 0;
+#X connect 2 2 4 0;
+#X connect 3 0 2 0;
+#X connect 4 0 5 0;
+#X restore 39 337 pd pattern-matching;
+#N canvas 873 699 529 231 absolute_addresses 0;
+#X obj 145 80 ossia.remote /sub/bar;
+#X floatatom 108 81 5 0 0 0 - - -, f 5;
+#X text 33 29 when there are several levels of hierarchies \, one can
+use absolute addresses \, refering to the current device's root \,
+and starting with a leading slash:;
+#X text 29 120 NB: There is no [ossia.device] here so all ossia objects
 refer to the default global device - see [ossia] for more on that,
-f 61;
+f 65;
+#X connect 0 0 1 0;
+#X connect 1 0 0 0;
+#X restore 215 337 pd absolute_addresses;
+#X text 39 300 some more features:;
+#N canvas 843 276 504 563 attributes 0;
+#X obj 132 129 ossia.param Attrs;
+#X msg 129 68 range -1 1;
+#X msg 121 45 range 0 2;
+#X msg 132 90 getrange;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 45 37 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X connect 0 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X restore 259 131 pd;
+#X msg 259 159 clip both;
+#X msg 42 295 range -1 1;
+#X msg 29 268 range 0 2;
+#X msg 54 326 getrange;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 46 8 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X obj 45 38 route address;
+#X connect 0 0 4 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X connect 4 1 2 0;
+#X restore 186 365 pd;
+#X msg 187 389 clip both;
+#X text 31 16 most attributes can be set and get from the remote:;
+#X text 30 89 e.g. range:;
+#X text 50 212 change the attributes' values here \, and then test
+on the param, f 38;
+#X obj 54 365 ossia.remote Attrs;
+#X text 49 447 only 3 attributes are local to each ø.remote:;
+#N canvas 0 22 450 300 rate 0;
+#X restore 203 487 pd rate;
+#N canvas 0 50 450 272 unit 0;
+#X restore 312 490 pd unit;
+#X msg 218 46 unit gain.linear;
+#X msg 226 69 unit gain.db;
+#X msg 229 91 getunit;
+#X msg 365 69 clip both;
+#X msg 368 91 getclip;
+#X msg 357 46 clip free;
+#X floatatom 12 366 5 0 0 0 - - -, f 5;
+#X floatatom 88 112 5 0 0 0 - - -, f 5;
+#X floatatom 88 154 5 0 0 0 - - -, f 5;
+#X msg 147 296 clip both;
+#X msg 150 318 getclip;
+#X msg 139 273 clip free;
+#X msg 250 273 mode set;
+#X msg 250 297 mode bi;
+#X msg 248 324 getmode;
+#X msg 366 122 getmode;
+#N canvas 349 511 493 400 mute/enable 0;
+#X floatatom 21 214 5 0 0 0 - - -, f 5;
+#X floatatom 60 120 5 0 0 0 - - -, f 5;
+#X floatatom 21 214 5 0 0 0 - - -, f 5;
+#X floatatom 21 75 5 0 0 0 - - -, f 5;
+#X msg 74 188 mute \$1;
+#X obj 74 167 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 59 27 mute \$1;
+#X obj 59 6 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X floatatom 21 292 5 0 0 0 - - -, f 5;
+#X floatatom 21 292 5 0 0 0 - - -, f 5;
+#X msg 74 266 mute \$1;
+#X obj 74 245 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 60 99 ø.param testMute;
+#X obj 74 213 ø.remote testMute, f 19;
+#X obj 74 291 ø.remote testMute;
+#X text 128 12 muting a parameter will prevent it from outputting locally
+fed values, f 34;
+#X text 220 208 muting a remote will somehow "disconnect" it from the
+bound param, f 37;
+#X text 27 336 hence this attribute is local to the param or remote
+and doesn't propagate \, in contrast to @enable \, that does;
+#X msg 84 74 enable \$1;
+#X obj 83 52 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 44 14 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X obj 44 40 route address;
+#X connect 0 0 4 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X connect 4 1 2 0;
+#X restore 169 122 pd;
+#X msg 169 150 enable 1;
+#X msg 233 292 enable 0;
+#X msg 201 78 getenable;
+#X msg 287 79 getmute;
+#X msg 142 187 getmute;
+#X msg 214 266 getenable;
+#X msg 301 266 getmute;
+#X msg 133 265 enable \$1;
+#X obj 132 243 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 44 14 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X obj 44 40 route address;
+#X connect 0 0 4 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X connect 4 1 2 0;
+#X restore 202 292 pd;
+#X text 115 51 disabling it will make it stop working entirely;
+#X connect 0 0 13 0;
+#X connect 3 0 12 0;
+#X connect 4 0 13 0;
+#X connect 5 0 4 0;
+#X connect 6 0 12 0;
+#X connect 7 0 6 0;
+#X connect 8 0 14 0;
+#X connect 10 0 14 0;
+#X connect 11 0 10 0;
+#X connect 12 0 1 0;
+#X connect 12 1 20 0;
+#X connect 13 0 0 0;
+#X connect 13 2 30 0;
+#X connect 14 0 8 0;
+#X connect 14 2 30 0;
+#X connect 18 0 12 0;
+#X connect 19 0 18 0;
+#X connect 20 0 21 0;
+#X connect 23 0 12 0;
+#X connect 24 0 12 0;
+#X connect 25 0 13 0;
+#X connect 26 0 14 0;
+#X connect 27 0 14 0;
+#X connect 28 0 14 0;
+#X connect 29 0 28 0;
+#X connect 30 0 22 0;
+#X restore 48 488 pd mute/enable;
+#X connect 0 0 26 0;
+#X connect 0 1 4 0;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 3 0 0 0;
+#X connect 4 0 5 0;
+#X connect 6 0 14 0;
+#X connect 7 0 14 0;
+#X connect 8 0 14 0;
+#X connect 9 0 10 0;
+#X connect 14 0 24 0;
+#X connect 14 2 9 0;
+#X connect 18 0 0 0;
+#X connect 19 0 0 0;
+#X connect 20 0 0 0;
+#X connect 21 0 0 0;
+#X connect 22 0 0 0;
+#X connect 23 0 0 0;
+#X connect 24 0 14 0;
+#X connect 25 0 0 0;
+#X connect 27 0 14 0;
+#X connect 28 0 14 0;
+#X connect 29 0 14 0;
+#X connect 30 0 14 0;
+#X connect 31 0 14 0;
+#X connect 32 0 14 0;
+#X connect 33 0 0 0;
+#X restore 214 301 pd attributes;
+#X text 35 17 Here the remote connects to parameters of the local device
+\, it acts more or less like a send/receive pair.;
 #X connect 0 0 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 4 0;
 #X connect 3 0 2 0;
-#X connect 7 0 8 0;
-#X connect 8 0 7 0;
-#X restore 102 62 pd localDevice;
+#X restore 117 61 pd localDevice;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
 #X text 63 76 ø.theNameOftheObject;
-#X restore 373 125 pd ossia/ø;
+#X restore 420 128 pd ossia/ø;
 #X text 20 14 [ø.remote] allows to monitor and remote-control any
 OSSIA parameter:, f 69;
 #X text 22 39 - declared in Pd with [ø.param] and [ø.model];

@@ -2,34 +2,34 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/loop/loop.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/state/state_element.hpp>
 namespace ossia
 {
 loop::loop(
     time_value patternDuration,
-    time_constraint::exec_callback patternConstraintCallback,
+    time_interval::exec_callback patternIntervalCallback,
     time_event::exec_callback patternStartEventCallback,
     time_event::exec_callback patternEndEventCallback)
     : m_startCallback(std::move(patternStartEventCallback))
     , m_endCallback(std::move(patternEndEventCallback))
-    , m_constraintCallback(std::move(patternConstraintCallback))
+    , m_intervalCallback(std::move(patternIntervalCallback))
 {
-  m_startNode = std::make_shared<time_node>();
+  m_startNode = std::make_shared<time_sync>();
   m_startNode->emplace(
       m_startNode->get_time_events().begin(),
       [&](time_event::status result) { start_event_callback(result); });
 
-  m_endNode = std::make_shared<time_node>();
+  m_endNode = std::make_shared<time_sync>();
   m_endNode->emplace(
       m_endNode->get_time_events().begin(),
       [&](time_event::status result) { end_event_callback(result); });
 
-  // create a pattern TimeConstraint with all durations equal by default
-  m_constraint = time_constraint::create(
+  // create a pattern TimeInterval with all durations equal by default
+  m_interval = time_interval::create(
       [=](double position, time_value date,
           const ossia::state_element& state) {
-        return constraint_callback(position, date, state);
+        return interval_callback(position, date, state);
       },
       *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
       patternDuration, patternDuration, patternDuration);
@@ -43,25 +43,28 @@ loop::~loop()
 
 state_element loop::offset(ossia::time_value offset, double pos)
 {
+  time_value patternOffset{
+      std::fmod((double)offset, (double)m_interval->get_nominal_duration())};
+  m_interval->offset(patternOffset);
     /*
     std::cerr << "Offset: " << offset << std::endl;
    // reset internal mOffsetState
     m_offsetState.clear();
     flatten_and_filter(
-        m_offsetState, m_constraint->get_start_event().get_state());
+        m_offsetState, m_interval->get_start_event().get_state());
   m_offsetState.clear();
 
   time_value patternOffset{
-      std::fmod((double)offset, (double)m_constraint->get_nominal_duration())};
-  flatten_and_filter(m_offsetState, m_constraint->offset(patternOffset));
+      std::fmod((double)offset, (double)m_interval->get_nominal_duration())};
+  flatten_and_filter(m_offsetState, m_interval->offset(patternOffset));
   // compile mOffsetState with all HAPPENED event's states
   if (unmuted())
   {
-    auto status = m_constraint->get_start_event().get_status();
+    auto status = m_interval->get_start_event().get_status();
     if (status == time_event::status::HAPPENED)
     {
       flatten_and_filter(
-          m_offsetState, m_constraint->get_start_event().get_state());
+          m_offsetState, m_interval->get_start_event().get_state());
     }
   }
   */
@@ -81,7 +84,7 @@ state_element loop::state(ossia::time_value date, double pos)
     // reset internal State
     m_currentState.clear();
 
-    // process the loop from the pattern start TimeNode
+    // process the loop from the pattern start TimeSync
     std::vector<time_event*> statusChangedEvents;
     if(unmuted())
     {
@@ -93,10 +96,10 @@ state_element loop::state(ossia::time_value date, double pos)
         m_startNode->process(statusChangedEvents, st);
     }
 
-    // make time flow for the pattern constraint
-    // don't tick if the pattern constraint is starting to avoid double
+    // make time flow for the pattern interval
+    // don't tick if the pattern interval is starting to avoid double
     // ticks
-    auto& startEvent = m_constraint->get_start_event();
+    auto& startEvent = m_interval->get_start_event();
     bool not_starting = none_of(statusChangedEvents, [&](time_event* ev) {
       return ev->get_status() == time_event::status::HAPPENED
              && ev == &startEvent;
@@ -107,10 +110,10 @@ state_element loop::state(ossia::time_value date, double pos)
       // no such event found : not starting
       // no such event found : not starting
       if (prev_last_date == Infinite)
-        m_constraint->tick(date);
+        m_interval->tick(date);
       else
       {
-        m_constraint->tick(ossia::time_value{(date - prev_last_date)});
+        m_interval->tick(ossia::time_value{(date - prev_last_date)});
       }
     }
     else
@@ -120,16 +123,16 @@ state_element loop::state(ossia::time_value date, double pos)
 
     flatten_and_filter(
                 m_currentState,
-                m_constraint->state());
+                m_interval->state());
   }
 
   // if the pattern end event happened : stop and reset the loop
-  if (m_constraint->get_end_event().get_status()
+  if (m_interval->get_end_event().get_status()
       == time_event::status::HAPPENED)
     stop();
 
   //! \see mCurrentState is filled below in
-  //! loop::PatternConstraintCallback
+  //! loop::PatternIntervalCallback
   if (unmuted())
     return m_currentState;
   return ossia::state_element{};
@@ -141,48 +144,48 @@ void loop::start(ossia::state& st)
 
 void loop::stop()
 {
-  m_constraint->stop();
+  m_interval->stop();
 
-  m_constraint->offset(Zero);
+  m_interval->offset(Zero);
 
-  m_constraint->get_start_event().set_status(time_event::status::PENDING);
-  m_constraint->get_end_event().set_status(time_event::status::NONE);
+  m_interval->get_start_event().set_status(time_event::status::PENDING);
+  m_interval->get_end_event().set_status(time_event::status::NONE);
 }
 
 void loop::pause()
 {
-  m_constraint->pause();
+  m_interval->pause();
 }
 
 void loop::resume()
 {
-  m_constraint->resume();
+  m_interval->resume();
 }
 
-const std::shared_ptr<time_constraint> loop::get_time_constraint() const
+const std::shared_ptr<time_interval> loop::get_time_interval() const
 {
-  return m_constraint;
+  return m_interval;
 }
 
-const std::shared_ptr<time_node> loop::get_start_timenode() const
+const std::shared_ptr<time_sync> loop::get_start_timesync() const
 {
   return m_startNode;
 }
 
-const std::shared_ptr<time_node> loop::get_end_timenode() const
+const std::shared_ptr<time_sync> loop::get_end_timesync() const
 {
   return m_endNode;
 }
 
-void loop::constraint_callback(
+void loop::interval_callback(
     double position, time_value date, const ossia::state_element&)
 {
-  if (m_constraintCallback)
+  if (m_intervalCallback)
   {
-    // add the state of the pattern TimeConstraint
-    flatten_and_filter(m_currentState, m_constraint->state());
+    // add the state of the pattern TimeInterval
+    flatten_and_filter(m_currentState, m_interval->state());
 
-    (m_constraintCallback)(position, date, m_currentState);
+    (m_intervalCallback)(position, date, m_currentState);
   }
 }
 

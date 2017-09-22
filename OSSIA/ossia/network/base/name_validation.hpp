@@ -10,6 +10,7 @@ namespace ossia
 namespace net
 {
 //! The definition is in node.cpp
+OSSIA_EXPORT std::string& sanitize_device_name(std::string& name);
 OSSIA_EXPORT std::string& sanitize_name(std::string& name);
 OSSIA_EXPORT std::string sanitize_name(const std::string& s);
 OSSIA_EXPORT std::string sanitize_name(std::string&& s);
@@ -21,11 +22,29 @@ sanitize_name(std::string name_base, const std::vector<std::string>& brethren);
  * @brief Checks that a character is fit to be part of an address.
  */
 template <typename Char_T>
-bool is_valid_character_for_name(Char_T c)
+bool is_valid_character_for_device(Char_T c)
 {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
          || (c >= '0' && c <= '9') || (c == '.') || (c == '~') || (c == '_')
          || (c == '(') || (c == ')') || (c == '-');
+}
+/**
+ * @brief Checks that a character is fit to be part of an address.
+ */
+template <typename Char_T>
+bool is_valid_character_for_name(Char_T c)
+{
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+         || (c >= '0' && c <= '9') || (c == '.') || (c == '~') || (c == '_')
+         || (c == '(') || (c == ')') || (c == '-') || (c == ':');
+}
+
+/**
+ * @brief Characters valid in an OSSIA device part.
+ */
+inline ossia::string_view device_characters() noexcept
+{
+  return make_string_view("a-zA-Z0-9_~().-");
 }
 
 /**
@@ -33,9 +52,21 @@ bool is_valid_character_for_name(Char_T c)
  */
 inline ossia::string_view name_characters() noexcept
 {
-  return make_string_view("a-zA-Z0-9_~().-");
+  return make_string_view("a-zA-Z0-9_~():.-");
 }
 
+/**
+ * @brief Characters valid in an OSSIA address path.
+ */
+inline ossia::string_view path_characters() noexcept
+{
+  return make_string_view("/a-zA-Z0-9_~():.-");
+}
+
+inline ossia::string_view name_characters_no_instance() noexcept
+{
+  return make_string_view("a-zA-Z0-9_~():-");
+}
 /**
  * @brief Characters valid in an OSSIA pattern-matching part.
  *
@@ -45,7 +76,7 @@ inline ossia::string_view name_characters() noexcept
  */
 inline ossia::string_view pattern_match_characters() noexcept
 {
-  return make_string_view("a-zA-Z0-9_~().*?,{}\\[\\]-");
+  return make_string_view("a-zA-Z0-9_~():.*?,{}\\[\\]-");
 }
 
 /**

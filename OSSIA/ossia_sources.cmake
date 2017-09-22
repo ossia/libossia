@@ -27,6 +27,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/spline.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/gradient.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/metronome.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/curve_value_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
@@ -55,9 +56,9 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/operators.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_interval.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_sync.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
@@ -86,6 +87,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_parse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_merge.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_convert.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/list_units.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/make_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/make_unit.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_strong_variants.hpp"
@@ -146,6 +148,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/value_callback.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/name_validation.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/message_queue.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/debug.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.hpp"
@@ -159,22 +162,25 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 
-
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.hpp"
     )
 
 set(SRCS
     ${API_HEADERS}
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
@@ -183,6 +189,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/spline.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/gradient.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/metronome.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
@@ -197,9 +204,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_execution.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_offset.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_constraint.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_interval.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_sync.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.cpp"
@@ -207,7 +214,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/value/value.cpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/dataspace_visitors.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/dataspace/detail/dataspace_impl.cpp"
 
@@ -238,6 +245,9 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.cpp"
 )
 
 set(OSSIA_C_HEADERS
@@ -259,10 +269,6 @@ set(OSSIA_C_SRCS
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/log/ossia_log.cpp"
 
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/preset.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/preset/exception.cpp"
     )
 
 set(OSSIA_CPP_HEADERS

@@ -1,9 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
@@ -18,26 +18,26 @@ namespace ossia
 {
 using past_events_map
     = boost::container::flat_map<time_value, std::shared_ptr<time_event>>;
-using DateMap = tsl::hopscotch_map<time_node*, time_value>;
+using DateMap = tsl::hopscotch_map<time_sync*, time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
-using ConstraintPtr = std::shared_ptr<ossia::time_constraint>;
-static void process_timenode_dates(time_node& t, DateMap& map)
+using IntervalPtr = std::shared_ptr<ossia::time_interval>;
+static void process_timesync_dates(time_sync& t, DateMap& map)
 {
   map.insert(std::make_pair(&t, t.get_date()));
 
   for (EventPtr& ev : t.get_time_events())
   {
-    for (ConstraintPtr& cst : ev->next_time_constraints())
+    for (IntervalPtr& cst : ev->next_time_intervals())
     {
-      process_timenode_dates(cst->get_end_event().get_time_node(), map);
+      process_timesync_dates(cst->get_end_event().get_time_sync(), map);
     }
   }
 }
 
 void process_offset(
-    time_node& timenode, time_value offset, past_events_map& pastEvents)
+    time_sync& timesync, time_value offset, past_events_map& pastEvents)
 {
-  time_value date = timenode.get_date();
+  time_value date = timesync.get_date();
   auto get_event_status = [](const time_event& event) {
     switch (event.get_offset_behavior())
     {
@@ -54,12 +54,12 @@ void process_offset(
     }
   };
 
-  for (auto& ev_ptr : timenode.get_time_events())
+  for (auto& ev_ptr : timesync.get_time_events())
   {
     auto& event = *ev_ptr;
     time_event::status eventStatus;
 
-    // evaluate event status considering its time node date
+    // evaluate event status considering its time sync date
     if (date < offset)
     {
       eventStatus = get_event_status(event);
@@ -73,26 +73,26 @@ void process_offset(
       eventStatus = time_event::status::NONE;
     }
 
-    // evaluate event status considering previous time constraints
-    for (const auto& timeConstraint : event.previous_time_constraints())
+    // evaluate event status considering previous time intervals
+    for (const auto& timeInterval : event.previous_time_intervals())
     {
-      time_value constraintOffset
+      time_value intervalOffset
           = offset
-            - timeConstraint->get_start_event().get_time_node().get_date();
+            - timeInterval->get_start_event().get_time_sync().get_date();
 
-      if (constraintOffset < Zero)
+      if (intervalOffset < Zero)
       {
         eventStatus = time_event::status::NONE;
       }
       else if (
-          constraintOffset >= Zero
-          && constraintOffset <= timeConstraint->get_max_duration())
+          intervalOffset >= Zero
+          && intervalOffset <= timeInterval->get_max_duration())
       {
-        eventStatus = constraintOffset > timeConstraint->get_min_duration()
+        eventStatus = intervalOffset > timeInterval->get_min_duration()
                           ? time_event::status::PENDING
                           : time_event::status::NONE;
       }
-      else if (constraintOffset > timeConstraint->get_max_duration())
+      else if (intervalOffset > timeInterval->get_max_duration())
       {
         eventStatus = get_event_status(event);
       }
@@ -106,10 +106,10 @@ void process_offset(
       pastEvents.insert(std::make_pair(date, ev_ptr));
 
     // propagate offset processing to setup all TimeEvents
-    for (const auto& timeConstraint : event.next_time_constraints())
+    for (const auto& timeInterval : event.next_time_intervals())
     {
       process_offset(
-          timeConstraint->get_end_event().get_time_node(), offset, pastEvents);
+          timeInterval->get_end_event().get_time_sync(), offset, pastEvents);
     }
   }
 }
@@ -122,27 +122,27 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   // offset state
   past_events_map pastEvents;
 
-  m_runningConstraints.clear();
+  m_runningIntervals.clear();
   ossia::state cur_state;
 
-  // Precompute the default date of every timenode.
-  tsl::hopscotch_map<time_node*, time_value> time_map;
-  process_timenode_dates(*m_nodes[0], time_map);
+  // Precompute the default date of every timesync.
+  tsl::hopscotch_map<time_sync*, time_value> time_map;
+  process_timesync_dates(*m_nodes[0], time_map);
 
-  // Set *every* time constraint prior to this one to be rigid
+  // Set *every* time interval prior to this one to be rigid
   // note : this change the semantics of the score and should not be done like
   // this;
   // it's only a temporary (1 year later: haha) bugfix for
-  // https://github.com/OSSIA/i-score/issues/253 .
+  // https://github.com/OSSIA/score/issues/253 .
   for (auto& elt : time_map)
   {
     if (elt.second < offset)
     {
       for (EventPtr& ev : elt.first->get_time_events())
       {
-        for (ConstraintPtr& cst_ptr : ev->previous_time_constraints())
+        for (IntervalPtr& cst_ptr : ev->previous_time_intervals())
         {
-          time_constraint& cst = *cst_ptr;
+          time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
           cst.set_min_duration(dur);
           cst.set_max_duration(dur);
@@ -153,10 +153,10 @@ state_element scenario::offset(ossia::time_value offset, double pos)
     {
       for (EventPtr& ev_ptr : elt.first->get_time_events())
       {
-        for (ConstraintPtr& cst_ptr : ev_ptr->previous_time_constraints())
+        for (IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
         {
-          time_constraint& cst = *cst_ptr;
-          auto& start_tn = cst.get_start_event().get_time_node();
+          time_interval& cst = *cst_ptr;
+          auto& start_tn = cst.get_start_event().get_time_sync();
           auto start_date_it = time_map.find(&start_tn);
           if (start_date_it != time_map.end())
           {
@@ -174,7 +174,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
     }
   }
 
-  // propagate offset from the first TimeNode
+  // propagate offset from the first TimeSync
   process_offset(*m_nodes[0], offset, pastEvents);
 
   // build offset state from all ordered past events
@@ -186,28 +186,28 @@ state_element scenario::offset(ossia::time_value offset, double pos)
     }
   }
 
-  // offset all TimeConstraints
-  for (const auto& timeConstraint : m_constraints)
+  // offset all TimeIntervals
+  for (const auto& timeInterval : m_intervals)
   {
-    ossia::time_constraint& cst = *timeConstraint;
+    ossia::time_interval& cst = *timeInterval;
 
     auto& sev = cst.get_start_event();
-    auto& stn = sev.get_time_node();
-    auto start_date = sev.get_time_node().get_date();
+    auto& stn = sev.get_time_sync();
+    auto start_date = sev.get_time_sync().get_date();
     bool all_empty = ossia::all_of(stn.get_time_events(), [](const auto& ev) {
-      return ev->previous_time_constraints().empty();
+      return ev->previous_time_intervals().empty();
     });
 
     if (all_empty && &stn != m_nodes[0].get())
       continue;
 
-    // offset TimeConstraint's Clock
-    time_value constraintOffset = offset - start_date;
+    // offset TimeInterval's Clock
+    time_value intervalOffset = offset - start_date;
 
-    if (constraintOffset >= Zero && constraintOffset <= cst.get_max_duration())
+    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration())
     {
-      flatten_and_filter(cur_state, cst.offset(constraintOffset));
-      m_runningConstraints.insert(&cst);
+      flatten_and_filter(cur_state, cst.offset(intervalOffset));
+      m_runningIntervals.insert(&cst);
     }
   }
 

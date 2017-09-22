@@ -46,33 +46,33 @@ private Q_SLOTS:
     auto localStringAddress = localStringNode->create_parameter(val_type::STRING);
 
     auto localTupleNode = device.create_child("my_tuple");
-    auto localTupleAddress = localTupleNode->create_parameter(val_type::TUPLE);
+    auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);
 
     //! \todo what about Destination address ? do we observe the address ? how to do that ?
     //! auto localDestinationNode = device.create_child("my_destination"));
     //! auto localDestinationAddress = localDestinationNode->create_parameter(Type::DESTINATION);
 
     // evaluate expressions before Destination value updates
-    auto testExprA = make_expression_pulse(Destination(*localImpulseAddress));
+    auto testExprA = make_expression_pulse(destination(*localImpulseAddress));
     QVERIFY(evaluate(testExprA) == false);
 
-    auto testExprB = make_expression_pulse(Destination(*localBoolAddress));
+    auto testExprB = make_expression_pulse(destination(*localBoolAddress));
     QVERIFY(evaluate(testExprB) == false);
 
-    auto testExprC = make_expression_pulse(Destination(*localIntAddress));
+    auto testExprC = make_expression_pulse(destination(*localIntAddress));
     QVERIFY(evaluate(testExprC) == false);
 
-    auto testExprD = make_expression_pulse(Destination(*localFloatAddress));
+    auto testExprD = make_expression_pulse(destination(*localFloatAddress));
     QVERIFY(evaluate(testExprD) == false);
 
-    auto testExprE = make_expression_pulse(Destination(*localStringAddress));
+    auto testExprE = make_expression_pulse(destination(*localStringAddress));
     QVERIFY(evaluate(testExprE) == false);
 
     //! \todo : what about Destination address ? do we observe the address ? how to do that ?
     //auto testExprF = make_expression_pulse(Destination(localDestinationNode));
     //QVERIFY(evaluate(testExprF) == false);
 
-    auto testExprG = make_expression_pulse(Destination(*localStringAddress));
+    auto testExprG = make_expression_pulse(destination(*localStringAddress));
     QVERIFY(evaluate(testExprG) == false);
 
     // update node's value
@@ -162,9 +162,9 @@ private Q_SLOTS:
     auto localNode2 = device.create_child("my_node.2");
     auto lcalAddr2 = localNode2->create_parameter(ossia::val_type::IMPULSE);
 
-    auto testExprA = make_expression_pulse(Destination(*lcalAddr1));
-    auto testExprB = make_expression_pulse(Destination(*lcalAddr2));
-    auto testExprC = make_expression_pulse(Destination(*lcalAddr1));
+    auto testExprA = make_expression_pulse(destination(*lcalAddr1));
+    auto testExprB = make_expression_pulse(destination(*lcalAddr2));
+    auto testExprC = make_expression_pulse(destination(*lcalAddr1));
 
     QVERIFY(expressions::expression_false() != *testExprA);
     QVERIFY(expressions::expression_true() != *testExprA);

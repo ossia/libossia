@@ -33,7 +33,7 @@ int main()
     auto local_dev = ossia_device_create(local_protocol, "newDevice");
 
     auto minuit_protocol = ossia_protocol_minuit_create("127.0.0.1", 13579, 9998);
-    auto minuit_dev = ossia_device_create(minuit_protocol, "i-score");
+    auto minuit_dev = ossia_device_create(minuit_protocol, "score");
 
     auto scene = ossia_device_add_child(local_dev, "scene");
     auto sphere = ossia_node_add_child(scene, "sphere");

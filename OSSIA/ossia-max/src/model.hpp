@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/node_base.hpp>
 
 namespace ossia
 {
@@ -10,28 +9,22 @@ namespace max
 #pragma mark -
 #pragma mark t_model structure declaration
 
-struct t_model : t_object_base
+class model : public node_base
 {
-  t_symbol* m_tags[64];
-  long m_tags_size;
-  t_symbol* m_description;
-  long m_hidden;
-
-  bool register_node(ossia::net::node_base*);
-  bool do_registration(ossia::net::node_base*);
+public:
+  bool register_node(const std::vector<ossia::net::node_base*>& nodes);
+  bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
   bool unregister();
   void register_children();
 
-  void is_deleted(const ossia::net::node_base&);
+  static ossia::safe_set<model*>& quarantine();
 
-  static ossia::safe_vector<t_model*>& quarantine();
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::model*);
+  static void assist(ossia::max::model*, void*, long, long, char*);
+  static t_max_err notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 };
 
 } // max namespace
 } // ossia namespace
 
-extern "C" {
-void* ossia_model_new(t_symbol*, long, t_atom*);
-void ossia_model_assist(ossia::max::t_model*, void*, long, long, char*);
-void ossia_model_free(ossia::max::t_model*);
-}

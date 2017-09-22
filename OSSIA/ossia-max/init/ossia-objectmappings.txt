@@ -8,15 +8,15 @@ max objectfile ø.client ossia.client;
 max objectfile ø.logger ossia.logger;
 max objectfile ø ossia;
 
-max objectfile §.parameter ossia.parameter;
-max objectfile §.param ossia.parameter;
-max objectfile §.model ossia.model;
-max objectfile §.view ossia.view;
-max objectfile §.device ossia.device;
-max objectfile §.remote ossia.remote;
-max objectfile §.client ossia.client;
-max objectfile §.logger ossia.logger;
-max objectfile § ossia;
+max objectfile io.parameter ossia.parameter;
+max objectfile io.param ossia.parameter;
+max objectfile io.model ossia.model;
+max objectfile io.view ossia.view;
+max objectfile io.device ossia.device;
+max objectfile io.remote ossia.remote;
+max objectfile io.client ossia.client;
+max objectfile io.logger ossia.logger;
+max objectfile io ossia;
 
 max objectfile 0.parameter ossia.parameter;
 max objectfile 0.param ossia.parameter;

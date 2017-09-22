@@ -85,7 +85,7 @@ class ClockTest : public QObject
 //            std::cout << std::endl;
 
 //        // setup clock
-//        time_constraint t({});
+//        time_interval t({});
 //        ossia::clock c(t, duration, granularity, offset);
 
 //        // clear frame vectors

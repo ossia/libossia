@@ -3,6 +3,7 @@
 #include "ossia_obj_base.hpp"
 #include "utils.hpp"
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <regex>
 
 extern void glist_noselect(t_glist* x);
@@ -17,7 +18,7 @@ namespace pd
 
 #pragma mark t_select_clock
 
-t_select_clock::t_select_clock(t_canvas* cnv, t_obj_base* obj) :
+t_select_clock::t_select_clock(t_canvas* cnv, object_base* obj) :
   m_canvas(cnv), m_obj(obj)
 {
   m_clock = clock_new(this, (t_method) t_select_clock::deselect);
@@ -50,6 +51,11 @@ t_matcher::t_matcher(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
+  m_addr = other.m_addr;
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(v);
+
   if(node)
   {
     if(auto param = node->get_parameter())
@@ -58,7 +64,7 @@ t_matcher::t_matcher(t_matcher&& other)
         param->remove_callback(*callbackit);
 
       callbackit = param->add_callback(
-        [=] (const ossia::value& v) { set_value(v); });
+        [=] (const ossia::value& v) { enqueue_value(v); });
 
       set_parent_addr();
     }
@@ -76,6 +82,12 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(std::move(v));
+
+  m_addr = other.m_addr;
+
   if(node)
   {
     if(auto param = node->get_parameter())
@@ -84,7 +96,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
         param->remove_callback(*callbackit);
 
       callbackit = param->add_callback(
-        [=] (const ossia::value& v) { set_value(v); });
+        [=] (const ossia::value& v) { enqueue_value(v); });
 
       set_parent_addr();
     }
@@ -93,13 +105,14 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   return *this;
 }
 
-t_matcher::t_matcher(ossia::net::node_base* n, t_obj_base* p) :
+t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
   node{n}, parent{p}, callbackit{ossia::none}
 {
-  callbackit = node->get_parameter()->add_callback(
-      [=](const ossia::value& v) { set_value(v); });
+  if (auto param = node->get_parameter())
+    callbackit = param->add_callback(
+      [=](const ossia::value& v) { enqueue_value(v); });
 
-  node->about_to_be_deleted.connect<t_obj_base, &t_obj_base::is_deleted>(
+  node->about_to_be_deleted.connect<object_base, &object_base::is_deleted>(
         parent);
 
   set_parent_addr();
@@ -109,56 +122,81 @@ t_matcher::t_matcher(ossia::net::node_base* n, t_obj_base* p) :
 
 t_matcher::~t_matcher()
 {
+  if (m_dead) return;
   if(node)
   {
-    if (parent->x_otype == Type::param)
+    if (parent->m_otype == object_class::param)
     {
-      if (!parent->x_is_deleted)
+      if (!parent->m_is_deleted)
       {
         if (node->get_parent())
+        {
+          auto param = node->get_parameter();
+          if (param && callbackit) param->remove_callback(*callbackit);
+          node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+
           node->get_parent()->remove_child(*node);
+        }
       }
-      // if there vector is empty
-      // remote should be quarantinized
-      if (parent->x_matchers.size() == 0)
+      // if there is no more matcher,
+      // object should be quarantinized
+      if (parent->m_matchers.size() == 0)
       {
-        obj_quarantining<t_param>((t_param*) parent);
+        obj_quarantining<parameter>((parameter*) parent);
       }
     } else {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
-      node->about_to_be_deleted.disconnect<t_obj_base, &t_obj_base::is_deleted>(parent);
+      node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
 
-      // if there vector is empty
-      // remote should be quarantinized
-      if (parent->x_matchers.size() == 0)
+      // if there is no more matcher,
+      // object should be quarantinized
+      if (parent->m_matchers.size() == 0)
       {
-        obj_quarantining<t_remote>((t_remote*) parent);
+        obj_quarantining<remote>((remote*) parent);
       }
     }
   }
   node = nullptr;
 }
 
-void t_matcher::set_value(const ossia::value& v)
+void t_matcher::enqueue_value(const ossia::value& v)
 {
-  outlet_anything(parent->x_dumpout,gensym("address"),1,&m_addr);
+  m_queue_list.enqueue(v);
+}
 
-  auto local_param = node->get_parameter();
-  auto filtered = ossia::net::filter_value(
-        local_param->get_domain(),
-        v,
-        local_param->get_bounding());
-  value_visitor<t_obj_base> vm;
-  vm.x = (t_obj_base*)parent;
-  filtered.apply(vm);
+void t_matcher::output_value()
+{
+  ossia::value val;
+  while(m_queue_list.try_dequeue(val)) {
+
+    outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+
+    auto param = node->get_parameter();
+
+    auto filtered = ossia::net::filter_value(
+          param->get_domain(),
+          val,
+          param->get_bounding());
+
+    ossia::value converted;
+    if ( parent->m_ounit != ossia::none )
+      converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
+    else
+      converted = filtered;
+
+    value_visitor<object_base> vm;
+    vm.x = (object_base*)parent;
+    converted.apply(vm);
+  }
 }
 
 void t_matcher::set_parent_addr()
 {
-  if (parent->x_parent_node){
+  if (parent->m_parent_node){
     std::string addr = ossia::net::address_string_from_node(*node);
-    std::string parent_addr = ossia::net::address_string_from_node(*parent->x_parent_node);
+    std::string parent_addr = ossia::net::address_string_from_node(*parent->m_parent_node);
+    if ( parent_addr.back() != '/' ) parent_addr += "/";
 
     std::regex addr_regex(parent_addr);
     std::smatch addr_match;
@@ -178,73 +216,47 @@ void t_matcher::set_parent_addr()
 
 #pragma mark t_obj_base
 
-void t_obj_base::is_deleted(const ossia::net::node_base& n)
+object_base::object_base(t_eclass* c)
 {
-  if (!x_dead)
+  char buffer[MAXPDSTRING];
+
+  if (c)
   {
-    x_is_deleted= true;
+    m_obj.o_obj.te_g.g_pd = (t_pd)c;
+
+    if(c->c_class.c_patchable)
+    {
+      m_obj.o_obj.te_inlet = 0;
+      m_obj.o_obj.te_outlet = 0;
+    }
+
+    m_obj.o_nproxy = 0;
+    m_obj.o_proxy = NULL;
+    m_obj.o_canvas = canvas_getcurrent();
+
+    sprintf(buffer,"#%s%lx", c->c_class.c_name->s_name, (long unsigned int)this);
+    m_obj.o_id = gensym(buffer);
+    pd_bind(&m_obj.o_obj.ob_pd, m_obj.o_id);
+    sprintf(buffer,".x%lx.c", (long unsigned int)m_obj.o_canvas);
+    c->c_widget.w_dosave = (t_typ_method)eobj_dosave;
+  }
+}
+
+void object_base::is_deleted(const ossia::net::node_base& n)
+{
+  if (!m_dead)
+  {
+    m_is_deleted= true;
     ossia::remove_one_if(
-      x_matchers,
-      [&] (const auto& m) {
+      m_matchers,
+      [&] (auto& m) {
+        m.set_dead();
         return m.get_node() == &n;
     });
-    x_is_deleted = false;
+    m_is_deleted = false;
   }
 }
 
-/**
- * @brief t_obj_base::obj_push : push a value to a node
- * @param x : caller that holds the node to push to
- * @param argc : number of value in the list
- * @param argv :  list of t_atom value(s)
- */
-void t_obj_base::obj_push(t_obj_base* x, t_symbol*, int argc, t_atom* argv)
-{
-  for (auto& m : x->x_matchers)
-  {
-    x->x_node = m.get_node();
-
-    if (x->x_node && x->x_node->get_parameter())
-    {
-      if (argc == 1)
-      {
-        // convert one element array to single element
-        if (argv->a_type == A_SYMBOL)
-          x->x_node->get_parameter()->push_value(
-                std::string(atom_getsymbol(argv)->s_name));
-        else if (argv->a_type == A_FLOAT)
-          x->x_node->get_parameter()->push_value(atom_getfloat(argv));
-      }
-      else
-      {
-        std::vector<ossia::value> list;
-        for (; argc > 0; argc--, argv++)
-        {
-          if (argv->a_type == A_SYMBOL)
-            list.push_back(std::string(atom_getsymbol(argv)->s_name));
-          else if (argv->a_type == A_FLOAT)
-            list.push_back(atom_getfloat(argv));
-          else
-            pd_error(x, "value type not handled");
-        }
-        x->x_node->get_parameter()->push_value(list);
-      }
-    }
-  }
-  x->x_node = nullptr;
-}
-
-/**
- * @brief t_obj_base::obj_bang send out the current value of the parameter
- * @param x
- */
-void t_obj_base::obj_bang(t_obj_base* x)
-{
-  for (auto& matcher : x->x_matchers)
-  {
-    matcher.set_value(matcher.get_node()->get_parameter()->value());
-  }
-}
 
 /**
  * @brief list_all_child : list all node childs recursively
@@ -259,85 +271,190 @@ void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::n
   }
 }
 
-/**
- * @brief obj_namespace : send namespace trought dump output
- * @details each message is prepend with "namespace"
- * and adresses start with a '/' to make it each to parse with OSC tool
- * @param x
- */
-void obj_namespace(t_obj_base* x)
+void ossia::pd::object_base::get_namespace(object_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
-  list_all_child(*x->x_node, list);
-  int pos = ossia::net::osc_parameter_string(*x->x_node).length();
-  for (ossia::net::node_base* child : list)
+  for (auto n : x->m_nodes)
   {
-    if (child->get_parameter())
+    list_all_child(*n, list);
+    int pos = ossia::net::osc_parameter_string(*n).length();
+    for (ossia::net::node_base* child : list)
     {
-      ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-      ossia::value val = child->get_parameter()->fetch_value();
+      if (child->get_parameter())
+      {
+        ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
+        ossia::value val = child->get_parameter()->fetch_value();
 
-      std::vector<t_atom> va;
-      value2atom vm{va};
+        std::vector<t_atom> va;
+        value2atom vm{va};
 
-      name.apply(vm);
-      val.apply(vm);
+        name.apply(vm);
+        val.apply(vm);
 
-      outlet_anything(x->x_dumpout, prependsym, va.size(), va.data());
+        outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
+      }
     }
   }
 }
 
-/**
- * @brief obj_set send value to given address
- * @details For view and model, used to send value to a given address
- * @param x
- * @param s
- * @param argc
- * @param argv
- */
-void obj_set(t_obj_base* x, t_symbol* s, int argc, t_atom* argv)
+void object_base::set(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYMBOL)
   {
-    std::string addr = argv[0].a_w.w_symbol->s_name;
+    ossia::string_view addr = argv[0].a_w.w_symbol->s_name;
     argv++;
     argc--;
-    if (x->x_node)
+    for (auto n : x->m_nodes)
     {
-      auto tmp = x->x_node;
-      auto nodes = ossia::net::find_nodes(*x->x_node, addr);
-      for (auto n : nodes)
+      auto nodes = ossia::net::find_nodes(*n, addr);
+      x->m_matchers.reserve(x->m_matchers.size() + nodes.size());
+      for (auto& no : nodes)
       {
-        if (n->get_parameter()){
-          t_matcher matcher{n,x};
-          x->x_matchers.push_back(std::move(matcher));
+        if (no->get_parameter()){
+          x->m_matchers.emplace_back(no, x);
         }
       }
-      t_obj_base::obj_push(x,gensym(""),argc, argv);
-      x->x_matchers.clear();
-      x->x_node = tmp;
+      parameter_base::push(x,nullptr, argc, argv);
+      x->m_matchers.clear();
     }
   }
 }
 
-/**
- * @brief find_and_display_friend : find the object that defined the node and display it
- * @param x : object that hold the node we are looking for
- * @param patcher : starting point to seach a friend
- * @return true if we found a friend to display
- */
-bool find_and_display_friend(t_obj_base* x)
+void object_base::set_description()
+{
+  std::stringstream description;
+  for (int i = 0; i < m_description_size; i++)
+  {
+    switch(m_description[i].a_type)
+    {
+      case A_SYMBOL:
+        description << m_description[i].a_w.w_symbol->s_name << " ";
+        break;
+      case A_FLOAT:
+        {
+          description << m_description[i].a_w.w_float << " ";
+          break;
+        }
+      default:
+        ;
+    }
+  }
+
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_description(*node, description.str());
+  }
+}
+
+void object_base::set_tags()
+{
+  std::vector<std::string> tags;
+  for (int i = 0; i < m_tags_size; i++)
+  {
+    switch(m_tags[i].a_type)
+    {
+      case A_SYMBOL:
+        tags.push_back(m_tags[i].a_w.w_symbol->s_name);
+        break;
+      case A_FLOAT:
+        {
+          std::stringstream ss;
+          ss << m_tags[i].a_w.w_float;
+          tags.push_back(ss.str());
+          break;
+        }
+      default:
+        ;
+    }
+  }
+
+  for (t_matcher& m : m_matchers)
+    ossia::net::set_tags(*m.get_node(), tags);
+}
+
+void object_base::set_priority()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_priority(*node, m_priority);
+  }
+}
+
+void object_base::set_hidden()
+{
+  for (t_matcher& m : m_matchers)
+  {
+    ossia::net::node_base* node = m.get_node();
+    ossia::net::set_hidden(*node, m_hidden);
+  }
+}
+
+void object_base::get_tags(object_base*x)
+{
+  outlet_anything(x->m_dumpout, gensym("tags"),
+                  x->m_tags_size, x->m_tags);
+}
+
+void object_base::get_description(object_base*x)
+{
+  outlet_anything(x->m_dumpout, gensym("description"),
+                  x->m_description_size, x->m_description);
+}
+
+void object_base::get_priority(object_base*x)
+{
+  t_atom a;
+  SETFLOAT(&a, x->m_priority);
+  outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
+}
+
+void object_base::get_hidden(object_base*x)
+{
+  t_atom a;
+  SETFLOAT(&a, x->m_hidden);
+  outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);;
+}
+
+void object_base::get_address(object_base *x)
+{
+  if (!x->m_matchers.empty())
+  {
+    t_symbol* sym_address = gensym("global_address");
+    for (auto& m : x->m_matchers)
+    {
+      std::string addr = ossia::net::address_string_from_node(*m.get_node());
+      t_atom a;
+      SETSYMBOL(&a, gensym(addr.c_str()));
+      outlet_anything(x->m_dumpout, sym_address, 1, &a);
+    }
+  }
+  else if (!x->m_nodes.empty())
+  {
+    for (auto n : x->m_nodes)
+    {
+      std::string addr = ossia::net::address_string_from_node(*n);
+      t_atom a;
+      SETSYMBOL(&a, gensym(addr.c_str()));
+      outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
+    }
+  }
+  else
+    outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
+}
+
+bool ossia::pd::object_base::find_and_display_friend(object_base* x)
 {
   int found = 0;
-  if (x->x_otype == Type::remote)
+  if (x->m_otype == object_class::remote)
   {
-    for (auto& rm_matcher : x->x_matchers)
+    for (auto& rm_matcher : x->m_matchers)
     {
-      for (auto param : ossia_pd::instance().params.copy())
+      for (auto param : ossia_pd::instance().params.reference())
       {
-        for (auto& pa_matcher : param->x_matchers)
+        for (auto& pa_matcher : param->m_matchers)
         {
           if ( rm_matcher == pa_matcher )
           {
@@ -348,8 +465,8 @@ bool find_and_display_friend(t_obj_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              t_obj_base* obj = pa_matcher.get_parent();
-              t_canvas* patcher = obj->x_obj.o_canvas;
+              object_base* obj = pa_matcher.get_parent();
+              t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
               glist_select(patcher, (t_gobj*) obj);
@@ -363,13 +480,13 @@ bool find_and_display_friend(t_obj_base* x)
       }
     }
   }
-  else if (x->x_otype == Type::view)
+  else if (x->m_otype == object_class::view)
   {
-    for (auto& vw_matcher : x->x_matchers)
+    for (auto& vw_matcher : x->m_matchers)
     {
-      for (auto model : ossia_pd::instance().models.copy())
+      for (auto model : ossia_pd::instance().models.reference())
       {
-        for (auto& md_matcher : model->x_matchers)
+        for (auto& md_matcher : model->m_matchers)
         {
           if ( vw_matcher == md_matcher )
           {
@@ -380,8 +497,8 @@ bool find_and_display_friend(t_obj_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              t_obj_base* obj = md_matcher.get_parent();
-              t_canvas* patcher = obj->x_obj.o_canvas;
+              object_base* obj = md_matcher.get_parent();
+              t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
               glist_select(patcher, (t_gobj*) obj);
@@ -397,6 +514,22 @@ bool find_and_display_friend(t_obj_base* x)
   }
   return found;
 }
+
+void object_base::declare_attributes(t_eclass*c)
+{
+  CLASS_ATTR_INT(         c, "priority",          0, object_base, m_priority);
+  eclass_addmethod(c, (method) object_base   ::get_priority,          "getpriority",          A_NULL, 0);
+
+  CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, object_base, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
+  eclass_addmethod(c, (method) object_base   ::get_description,       "getdescription",       A_NULL, 0);
+
+  CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
+  eclass_addmethod(c, (method) object_base   ::get_tags,              "gettags",              A_NULL, 0);
+
+  CLASS_ATTR_INT(         c, "hidden",            0, object_base, m_hidden);
+  eclass_addmethod(c, (method) parameter_base::get_hidden,            "gethidden",            A_NULL, 0);
+}
+
 
 }
 } // namespace

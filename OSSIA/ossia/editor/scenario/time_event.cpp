@@ -1,16 +1,16 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/expression/expression.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 
 namespace ossia
 {
 time_event::time_event(
-    time_event::exec_callback callback, time_node& aTimeNode,
+    time_event::exec_callback callback, time_sync& aTimeSync,
     expression_ptr anExpression)
     : m_callback(callback)
-    , m_timenode(aTimeNode)
+    , m_timesync(aTimeSync)
     , m_status(time_event::status::NONE)
     , m_expression(std::move(anExpression))
 {
@@ -35,18 +35,18 @@ void time_event::happen(ossia::state& st)
 
   m_status = time_event::status::HAPPENED;
 
-  // stop previous TimeConstraints
-  for (auto& timeConstraint : previous_time_constraints())
+  // stop previous TimeIntervals
+  for (auto& timeInterval : previous_time_intervals())
   {
-    timeConstraint->stop();
+    timeInterval->stop();
   }
 
   ossia::flatten_and_filter(st, this->get_state());
 
-  // setup next TimeConstraints
-  for (auto& timeConstraint : next_time_constraints())
+  // setup next TimeIntervals
+  for (auto& timeInterval : next_time_intervals())
   {
-    timeConstraint->start(st);
+    timeInterval->start(st);
   }
 
   if (m_callback)
@@ -65,21 +65,21 @@ void time_event::dispose()
 
   m_status = time_event::status::DISPOSED;
 
-  // stop previous TimeConstraints
-  for (auto& timeConstraint : previous_time_constraints())
+  // stop previous TimeIntervals
+  for (auto& timeInterval : previous_time_intervals())
   {
-    timeConstraint->stop();
+    timeInterval->stop();
   }
 
-  // dispose next TimeConstraints end event if everything is disposed before
-  for (auto& nextTimeConstraint : next_time_constraints())
+  // dispose next TimeIntervals end event if everything is disposed before
+  for (auto& nextTimeInterval : next_time_intervals())
   {
     bool dispose = true;
 
-    for (auto& previousTimeConstraint :
-         nextTimeConstraint->get_end_event().previous_time_constraints())
+    for (auto& previousTimeInterval :
+         nextTimeInterval->get_end_event().previous_time_intervals())
     {
-      if (previousTimeConstraint->get_start_event().get_status()
+      if (previousTimeInterval->get_start_event().get_status()
           != time_event::status::DISPOSED)
       {
         dispose = false;
@@ -88,7 +88,7 @@ void time_event::dispose()
     }
 
     if (dispose)
-      nextTimeConstraint->get_end_event().dispose();
+      nextTimeInterval->get_end_event().dispose();
   }
 
   if (m_callback)
@@ -105,9 +105,9 @@ void time_event::remove_state(const state_element& state)
   m_state.remove(state);
 }
 
-time_node& time_event::get_time_node() const
+time_sync& time_event::get_time_sync() const
 {
-  return m_timenode;
+  return m_timesync;
 }
 
 const state& time_event::get_state() const
@@ -159,7 +159,7 @@ void time_event::reset()
 
 void time_event::cleanup()
 {
-  m_previous_time_constraints.clear();
-  m_next_time_constraints.clear();
+  m_previous_time_intervals.clear();
+  m_next_time_intervals.clear();
 }
 }

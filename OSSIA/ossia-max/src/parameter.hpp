@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/parameter_base.hpp>
 
 namespace ossia
 {
@@ -8,73 +8,42 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark t_parameter structure declaration
-
-struct t_parameter : t_object_base
+class parameter : public parameter_base
 {
-  t_symbol* m_type{};
-  long m_type_size{};
-  t_atom m_default[64]{};
+public:
+  using is_model = std::true_type;
 
-  // TODO use optional for range
-  t_atom m_range[2]{};
-  t_symbol* m_bounding_mode{};
-  t_symbol* m_access_mode{};
-  long m_repetition_filter{};
-  t_symbol* m_unit{};
-  t_symbol* m_tags[64];
-  long m_tags_size{};
-  t_symbol* m_description{};
-  long m_priority{};
-  long m_hidden{};
-
-
-  bool register_node(ossia::net::node_base* node);
-
-  bool do_registration(ossia::net::node_base* node);
-
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
-  void is_deleted(const ossia::net::node_base& n);
+  static ossia::safe_set<parameter*>& quarantine();
 
-  static ossia::safe_vector<t_parameter*>& quarantine();
+  // attribute setting method
+
+  void set_mute();
+  void set_unit();
+  void set_rate();
+
+  static void get_mute(parameter*x);
+  static void get_rate(parameter*x);
+  static void get_unit(parameter*x);
+
+  static void update_attribute(parameter* x, ossia::string_view attribute);
+
+  // attributes
+  float m_rate;
+  long m_mute;
+
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::parameter*);
+
+  static void assist(
+      ossia::max::parameter*, void*, long, long, char*);
+  static t_max_err notify(ossia::max::parameter *x,
+      t_symbol *s, t_symbol *msg, void *sender, void *data);
+
 };
-
-#pragma mark -
-#pragma mark Utilities
-
-static void push_default_value(t_parameter* x)
-{
-  int i = 0;
-
-  for (; i < x->m_type_size; i++)
-  {
-    if (x->m_default[i].a_type == A_NOTHING)
-      break;
-  }
-
-  if (i > 0)
-    t_object_base::push(x, nullptr, i, x->m_default);
-}
 
 } // max namespace
 } // ossia namespace
-
-#pragma mark -
-#pragma mark ossia_parameter class declaration
-
-extern "C" {
-void* ossia_parameter_new(t_symbol*, long, t_atom*);
-void ossia_parameter_free(ossia::max::t_parameter*);
-
-void ossia_parameter_assist(
-    ossia::max::t_parameter*, void*, long, long, char*);
-void ossia_parameter_in_float(ossia::max::t_parameter*, double f);
-void ossia_parameter_in_int(ossia::max::t_parameter*, long int f);
-void ossia_parameter_in_bang(ossia::max::t_parameter*);
-void ossia_parameter_in_symbol(ossia::max::t_parameter*, t_symbol*);
-void ossia_parameter_in_char(ossia::max::t_parameter*, char);
-void ossia_parameter_in_anything(
-    ossia::max::t_parameter*, t_symbol*, long, t_atom*);
-}

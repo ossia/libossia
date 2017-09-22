@@ -3,6 +3,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -93,23 +94,64 @@ void match_with_regex(
     }
   }
 }
+
+struct regex_cache
+{
+  static regex_cache& instance()
+  {
+    static regex_cache c;
+    return c;
+  }
+
+  ossia::string_map<std::regex> map;
+  std::mutex mutex;
+};
+
 void add_relative_path(
-    std::string& part, path& p, const std::string& ossia_chars)
+    std::string& part, path& p)
 {
   if (part != "..")
   {
-    // Perform the various regex-like replacements
-    boost::replace_all(part, "(", "\\(");
-    boost::replace_all(part, ")", "\\)");
-    boost::replace_all(part, "{", "(");
-    boost::replace_all(part, "}", ")");
-    boost::replace_all(part, ",", "|");
+    {
+      auto& map = regex_cache::instance();
+      std::lock_guard<std::mutex> _(map.mutex);
 
-    boost::replace_all(part, "?", "[" + ossia_chars + "]?");
-    boost::replace_all(part, "*", "[" + ossia_chars + "]*");
+      auto it = map.map.find(part);
+      if(it != map.map.end())
+      {
+        p.child_functions.push_back([r=it->second](auto& v) { match_with_regex(v, r); });
+      }
+      else
+      {
+        std::string orig = part;
 
-    std::regex r(part);
-    p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
+        // Perform the various regex-like replacements
+        // note: seriously, don't do this with regex if possible
+        net::expand_ranges(part);
+        std::string res = "^";
+        res.reserve(part.size() + 16);
+
+        static const auto qmark = "[" + std::string(ossia::net::name_characters()) + "]?";
+        static const auto smark = "[" + std::string(ossia::net::name_characters()) + "]*";
+        for(std::size_t i = 0, N = part.size(); i < N; i++)
+        {
+          if(part[i] == '(') res.append("\\(");
+          else if(part[i] == ')') res.append("\\)");
+          else if(part[i] == '{') res.append("(");
+          else if(part[i] == '}') res.append(")");
+          else if(part[i] == ',') res.append("|");
+          else if(part[i] == '?') res.append(qmark);
+          else if(part[i] == '*') res.append(smark);
+          else if(part[i] == '!') res.append(regex_path::any_instance::instance_regex());
+          else res += part[i];
+        }
+        res += "$";
+        
+        std::regex r(res);
+        p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
+        map.map.insert(std::make_pair(std::move(orig), std::move(r)));
+      }
+    }
   }
   else
   {
@@ -117,11 +159,11 @@ void add_relative_path(
   }
 }
 
-bool is_pattern(const std::string& address)
+bool is_pattern(ossia::string_view address)
 {
   if(boost::starts_with(address, "//"))
     return true;
-  const auto pred = boost::is_any_of("?*[]{}");
+  static const auto pred = boost::is_any_of("?*[]{}!");
   for(char c : address)
   {
     if(pred(c))
@@ -131,12 +173,11 @@ bool is_pattern(const std::string& address)
   return false;
 }
 
-ossia::optional<path> make_path(const std::string& address) try
+ossia::optional<path> make_path(ossia::string_view address) try
 {
-  path p{address, {}};
+  path p{std::string(address), {}};
 
   const bool starts_any = boost::starts_with(p.pattern, "//");
-  const std::string ossia_chars = std::string(ossia::net::name_characters());
   if (!starts_any)
   {
     // Split on "/"
@@ -148,7 +189,7 @@ ossia::optional<path> make_path(const std::string& address) try
 
     for (auto part : parts)
     {
-      add_relative_path(part, p, ossia_chars);
+      add_relative_path(part, p);
     }
   }
   else
@@ -165,7 +206,7 @@ ossia::optional<path> make_path(const std::string& address) try
 
     for (auto part : parts)
     {
-      add_relative_path(part, p, ossia_chars);
+      add_relative_path(part, p);
     }
   }
 

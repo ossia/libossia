@@ -78,7 +78,7 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
 
   switch (val.getType())
   {
-    case ossia::val_type::TUPLE:
+    case ossia::val_type::LIST:
     case ossia::val_type::VEC2F:
     case ossia::val_type::VEC3F:
     case ossia::val_type::VEC4F:
@@ -156,7 +156,7 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
       break;
   }
 
-  return ossia::val_type::TUPLE;
+  return ossia::val_type::LIST;
 }
 
 void set_osc_typetag(net::node_base& n, ossia::string_view tag)

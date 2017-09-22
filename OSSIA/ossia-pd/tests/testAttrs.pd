@@ -1,0 +1,45 @@
+#N canvas 505 163 445 320 10;
+#X declare -lib ossia;
+#X obj 112 262 ossia.remote foo;
+#X floatatom 93 175 5 0 0 0 - - -, f 5;
+#X floatatom 59 102 5 0 0 0 - - -, f 5;
+#X floatatom 102 124 5 0 0 0 - - -, f 5;
+#X msg 101 75 dump;
+#X obj 335 133 print;
+#X msg 155 77 range -1 2;
+#X msg 112 216 range -1 2;
+#X msg 197 216 range 0 1;
+#X msg 240 77 range 0 1;
+#X msg 70 49 enable \$1;
+#X obj 73 25 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 102 102 ossia.param foo @range 0 1 @enable 0;
+#X obj 177 25 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 174 49 mute \$1;
+#X obj 38 187 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 35 211 mute \$1;
+#X msg 287 216 enable \$1;
+#X obj 290 192 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X floatatom 104 294 5 0 0 0 - - -, f 5;
+#X obj 184 157 declare -lib ossia;
+#X connect 0 0 19 0;
+#X connect 1 0 0 0;
+#X connect 2 0 12 0;
+#X connect 4 0 12 0;
+#X connect 6 0 12 0;
+#X connect 7 0 0 0;
+#X connect 8 0 0 0;
+#X connect 9 0 12 0;
+#X connect 10 0 12 0;
+#X connect 11 0 10 0;
+#X connect 12 0 3 0;
+#X connect 12 1 5 0;
+#X connect 13 0 14 0;
+#X connect 14 0 12 0;
+#X connect 15 0 16 0;
+#X connect 16 0 0 0;
+#X connect 17 0 0 0;
+#X connect 18 0 17 0;

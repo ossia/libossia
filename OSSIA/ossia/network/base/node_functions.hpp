@@ -84,6 +84,13 @@ OSSIA_EXPORT std::string
 address_string_from_node(const ossia::net::parameter_base&);
 
 /**
+ * @brief Get the address of a node relative to parent
+ */
+OSSIA_EXPORT std::string
+relative_address_string_from_nodes(const ossia::net::node_base& node, const ossia::net::node_base& parent);
+
+
+/**
  * @brief Get the OSC address of a node: /an/address
  */
 OSSIA_EXPORT std::string osc_parameter_string(const ossia::net::parameter_base&);
@@ -102,13 +109,13 @@ osc_parameter_string_with_device(const ossia::net::node_base&);
 /**
  * @brief Get the value associated with a destination
  */
-OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::Destination& addr);
+OSSIA_EXPORT ossia::value_with_unit get_value(const ossia::destination& addr);
 
 /**
  * @brief Send a value to a given destination
  */
 OSSIA_EXPORT void
-push_value(const ossia::Destination& addr, const ossia::value_with_unit&);
+push_value(const ossia::destination& addr, const ossia::value_with_unit&);
 
 template<typename Address>
 auto create_parameter(ossia::net::node_base& root, std::string name)
@@ -120,5 +127,7 @@ auto create_parameter(ossia::net::node_base& root, std::string name)
 }
 
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
+
+void expand_ranges(std::string& str);
 }
 }

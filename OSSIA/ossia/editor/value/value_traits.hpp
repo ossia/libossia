@@ -75,7 +75,7 @@ struct value_trait<std::vector<ossia::value>>
 {
   using ossia_type = std::vector<ossia::value>;
   using value_type = std::vector<value>;
-  static const constexpr auto ossia_enum = val_type::TUPLE;
+  static const constexpr auto ossia_enum = val_type::LIST;
   static const constexpr bool is_numeric = false;
   static const constexpr bool is_array = true;
 };
@@ -128,7 +128,7 @@ bool is_numeric(const ossia::value& v);
 
 /**
  * @brief is_numeric True if the value is of an array type
- * (tuple, vec...)
+ * (list, vec...)
  */
 OSSIA_EXPORT
 bool is_array(const ossia::value& v);

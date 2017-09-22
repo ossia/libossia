@@ -1,14 +1,14 @@
 #pragma once
-#include <ossia/ossia.hpp>
-#include <ossia/network/common/websocket_log_sink.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/detail/safe_vec.hpp>
 
-#include "parameter.hpp"
-#include "model.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "device.hpp"
-#include "client.hpp"
+#include <ossia-pd/src/attribute.hpp>
+#include <ossia-pd/src/parameter.hpp>
+#include <ossia-pd/src/model.hpp>
+#include <ossia-pd/src/remote.hpp>
+#include <ossia-pd/src/view.hpp>
+#include <ossia-pd/src/device.hpp>
+#include <ossia-pd/src/client.hpp>
 
 extern "C" {
 #include <cicm_wrapper.h>
@@ -16,11 +16,14 @@ extern "C" {
 
 namespace ossia
 {
+struct websocket_threaded_connection;
 namespace pd
 {
 
+extern "C" void setup_ossia0x2eattribute(void);
 extern "C" void setup_ossia0x2eclient(void);
 extern "C" void setup_ossia0x2edevice(void);
+extern "C" void setup_ossia0x2elogger(void);
 extern "C" void setup_ossia0x2emodel(void);
 extern "C" void setup_ossia0x2eparam(void);
 extern "C" void setup_ossia0x2eremote(void);
@@ -35,23 +38,34 @@ public:
       return &instance().m_device;
     }
 
-    t_eclass* client{};
-    t_eclass* device{};
-    t_eclass* logger{};
-    t_eclass* model{};
-    t_eclass* param{};
-    t_eclass* remote{};
-    t_eclass* view{};
-    t_eclass* ossia{};
+    static t_eclass* attribute_class;
+    static t_eclass* client_class;
+    static t_eclass* device_class;
+    static t_eclass* logger_class;
+    static t_eclass* model_class;
+    static t_eclass* param_class;
+    static t_eclass* remote_class;
+    static t_eclass* view_class;
+    static t_eclass* ossia_class;
 
-    ossia::safe_vector<t_param*> params;
-    ossia::safe_vector<t_remote*> remotes;
-    ossia::safe_vector<t_model*> models;
-    ossia::safe_vector<t_view*> views;
-    ossia::safe_vector<t_device*> devices;
-    ossia::safe_vector<t_client*> clients;
+    ossia::safe_vector<attribute*> attributes;
+    ossia::safe_vector<parameter*> params;
+    ossia::safe_vector<remote*> remotes;
+    ossia::safe_vector<model*> models;
+    ossia::safe_vector<view*> views;
+    ossia::safe_vector<device*> devices;
+    ossia::safe_vector<client*> clients;
 
     ossia::safe_vector<t_select_clock*> select_clocks;
+
+    t_symbol* sym_addr;
+    t_symbol* sym_set;
+
+    ossia::safe_set<attribute*> attribute_quarantine;
+    ossia::safe_set<model*> model_quarantine;
+    ossia::safe_set<view*> view_quarantine;
+    ossia::safe_set<parameter*> parameter_quarantine;
+    ossia::safe_set<remote*> remote_quarantine;
 
 private:
     ossia_pd(); // constructor

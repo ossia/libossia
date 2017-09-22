@@ -36,11 +36,11 @@
 	<outletlist>
 		<outlet id="0" name="Value output" type="any">
 			<digest>Value the parameter was set to.</digest>
-			<description>Value to set the parameter to.</description>
+			<description>Value the parameter was set to.</description>
 		</outlet>
 		<outlet id="1" name="Dump outlet" type="any">
 			<digest>Various information messages</digest>
-			<description>Messages and information in reply to various messages, such as dump</description>
+			<description>Messages and information in reply to various messages</description>
 		</outlet>
 	</outletlist>
 	
@@ -51,7 +51,7 @@
 				Name in ossia namespace
 			</digest>
 			<description>
-				ossia.parameter requires an argument defining a node name in the ossia namespace.  This is ma,datory, and each <o>ossia.parameter</o> within an ossia model must have a unique name - if several  nodes are named similarly, instances (such as name.1, name.2, etc...) will be created.
+				ossia.parameter requires an argument defining a node name in the ossia namespace.  This is mandatory, and each <o>ossia.parameter</o> within an ossia model must have a unique name - if several  nodes are named similarly, instances (such as name.1, name.2, etc...) will be created.
 			</description>
 		</objarg>
 	</objarglist>
@@ -64,7 +64,7 @@
 				Output current value
 			</digest>
 			<description>
-				A bang at leftmost inlet outputs its current value
+				A bang at leftmost inlet outputs ossia.parameter's current value
 			</description>
 		</method>
 		<method name="int">
@@ -92,6 +92,7 @@
 
 			</description>
 		</method>
+
 <!--		<method name="address">
 			<arglist>
 				<arg name="address" type="symbol" optional="0"/>
@@ -103,7 +104,7 @@
 				The message <m>address</m> followed by a symbol sets the name of the node. This replaces the name provided initially as an argument to the object and allows to create nodes dynamically
 			</description>
 		</method>
--->
+
 		<method name="dump">
 			<arglist/>
 			<digest>
@@ -113,29 +114,27 @@
 				The message <m>dump</m> outputs all attribute settings to rightmost outlet
 			</description>
 		</method>
+-->
 
-<!--
 		<method name="reset">
 			<arglist/>
 			<digest>
 				Reset to default value
 			</digest>
 			<description>
-				The message <m>reset</m> sent to the leftmost inlet reset the current value to the value defined by the <at>@default</at> attribute
+				The message <m>reset</m> sent to the leftmost inlet reset the current value to the value defined by the <at>@defval</at> attribute
 			</description>
 		</method>
--->
+
 
 		<method name="anything">
 			<arglist>
 				<arg name="input" optional="0" type="list"/>
 			</arglist>
-			<digest>
-				
-<!--				or access attributes by their names -->
+			<digest> Feed values to ossia.parameter or access attributes by their names 
 			</digest>
 			<description>
-<!--				If the first symbol equals the name of a setable attribute, the value for that attribute can be updated. Else --> the incoming message is interpreted as a new value for <o>ossia.parameter</o>. Depending on the <m>@type</m> it might be converted to one or more floats (<m>@type float</m> or <m>tuple</m>) or an int (<m>@type int</m>).
+				If the first symbol equals the name of a setable attribute, the value for that attribute can be updated. Else the incoming message is interpreted as a new value for <o>ossia.parameter</o>. Depending on the <m>@type</m> it might be converted to one or more floats (<m>@type float</m> or <m>tuple</m>) or an int (<m>@type int</m>).
 			</description>
 		</method>
 	</methodlist>
@@ -143,7 +142,7 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="access_mode" get="1" set="1" type="symbol" size="1">
+		<attribute name="mode" get="1" set="1" type="symbol" size="1">
 			<digest>
 			Define access mode of parameter : GET, SET, or both (BI)
 			</digest>
@@ -151,7 +150,8 @@
 			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
 			</description>
 		</attribute>
-<!--		<attribute name="enable" get="1" set="1" type="int" size="1">
+
+		<attribute name="enable" get="1" set="1" type="int" size="1">
 			<digest>
 				Enable node
 			</digest>
@@ -159,13 +159,13 @@
 				The <at>@enable</at> attribute allows to enable (default: 1) or disable a node
 			</description>
 		</attribute>  
--->
-		<attribute name="default" get="1" set="1" type="int" size="1">
+
+		<attribute name="defval" get="1" set="1" type="int" size="1">
 			<digest>
 				Default value
 			</digest>
 			<description>
-				The <at>@default</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
+				The <at>@defval</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
 			</description>
 		</attribute>	
 
@@ -184,16 +184,16 @@
 				Value range
 			</digest>
 			<description>
-				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range.
+				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range.
 			</description>
 		</attribute>		
-<!--
+
 		<attribute name="min" get="1" set="1" type="list" size="2">
 			<digest>
 				Value range minimum
 			</digest>
 			<description>
-				The <at>@min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
+				The <at>@min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
 			</description>
 		</attribute>	
 
@@ -202,27 +202,64 @@
 				Value range maximum
 			</digest>
 			<description>
-				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@bounding_mode</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
+				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
 			</description>
 		</attribute>	
--->
-		<attribute name="bounding_mode" get="1" set="1" type="symbol" size="1">
+
+		<attribute name="clip" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Set how values exceeding range will be clipped
 			</digest>
 			<description>
-				The <at>@bounding_mode</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
-				<ul><li><m>free</m>: when set to free (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>clip</m>: when set to <m>clip</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
+				The <at>@clip</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
+				<ul><li><m>free</m>: when set to <m>free</m> (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>both</m>: when set to <m>both</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
+			</description>
+			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Clip Mode" />
+			</attributelist>
+		</attribute>
+
+		<attribute name="unit" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Unit used by the parameter
+			</digest>
+			<description>
+				The <at>@unit</at> attribute defines the unit used by this parameter. Values will get output according to this unit.
 			</description>
 		</attribute>
 
-		<attribute name="repetition_filter" get="1" set="1" type="boolean" size="1">
+		<attribute name="rate" get="1" set="1" type="integer" size="1">
 			<digest>
-				Filter out value repetitions
+				Determine the update rate at which values will be set and get
 			</digest>
 			<description>
-				The <at>@repetition_filter</at> attribute defines whether repeated values will be filtered out or not (off by default)
+				The <at>@range</at> attribute defines at which rates values will be set and get from/to the parameter
 			</description>
+		</attribute>
+
+		<attribute name="mute" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Mute parameter (off by default)
+			</digest>
+			<description>
+				The <at>@mute</at> attribute allows to prevent the parameter from outputting local (i.e. fed from the input) values - Remotely sent values will still come out
+			</description>
+		</attribute>
+
+		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Allow value repetitions (on by default)
+			</digest>
+			<description>
+				The <at>@repetitions</at> attribute defines whether identical values will be repeated (on by default)
+			</description>
+			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Allow Repetitions" />
+			</attributelist>
 		</attribute>
 
 		<attribute name="tags" get="1" set="1" type="atom" size="1">
@@ -234,12 +271,12 @@
 			</description>
 		</attribute>
 
-		<attribute name="unit" get="1" set="1" type="symbol" size="1">
+		<attribute name="description" get="1" set="1" type="atom" size="1">
 			<digest>
-				unit used by the node
+				Descrption of this node
 			</digest>
 			<description>
-				The <at>@unit</at> attribute defines the unit used by this node. Values will get output according to this unit.
+				The <at>@description</at> attribute allows to agive a textual description for this node. This helps documenting the parameter.
 			</description>
 		</attribute>
 

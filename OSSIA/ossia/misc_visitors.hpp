@@ -23,7 +23,7 @@ auto apply(
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type1:
@@ -39,7 +39,7 @@ auto apply(
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type2:
@@ -55,7 +55,7 @@ auto apply(
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type3:
@@ -71,7 +71,7 @@ auto apply(
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type4:
@@ -87,7 +87,7 @@ auto apply(
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type5:
@@ -103,7 +103,7 @@ auto apply(
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type6:
@@ -119,7 +119,7 @@ auto apply(
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type7:
@@ -135,7 +135,7 @@ auto apply(
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type8:
@@ -151,7 +151,7 @@ auto apply(
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     case value_variant_type::Type::Type9:
@@ -167,11 +167,11 @@ auto apply(
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
         }
         default:
-          throw;
+          throw std::runtime_error("misc_visitors: bad type");
       }
     }
     default:
-      throw;
+      throw std::runtime_error("misc_visitors: bad type");
   }
 }
 }

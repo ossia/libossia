@@ -1,28 +1,28 @@
 #pragma once
-
-#include "device.hpp"
-#include "ossia_obj_base.hpp"
+#include <ossia-pd/src/node_base.hpp>
 
 namespace ossia
 {
 namespace pd
 {
 
-struct t_model : t_obj_base
+class model : public node_base
 {
+public:
   using is_model = std::true_type;
+  model();
 
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
   void register_children();
 
-  static ossia::safe_vector<t_model*>& quarantine();
+  static ossia::safe_set<model*>& quarantine();
 
-  void is_deleted(const ossia::net::node_base& n);
+  static void destroy(model* x);
+  static void* create(t_symbol* name, int argc, t_atom* argv);
+  static t_pd_err notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
-  t_symbol* x_tags;
-  t_symbol* x_description;
 };
 }
 } // namespace

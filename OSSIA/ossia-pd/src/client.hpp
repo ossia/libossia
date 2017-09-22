@@ -1,22 +1,22 @@
 #pragma once
-#include "ossia_obj_base.hpp"
+#include <ossia-pd/src/device_base.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 namespace ossia
 {
 namespace pd
 {
 
-struct t_client : t_obj_base
+class client : public device_base
 {
-  ossia::net::generic_device* x_device{};
-  ossia::net::local_protocol x_local_proto;
+public:
+  client();
 
-  static void register_children(t_client* x);
+  static void register_children(client* x);
   void unregister_children();
-  static void loadbang(t_client* x, t_float type);
-
-  // void parameterCreationHandler(const ossia::net::parameter_base& n);
-  // void nodeCreationHandler(const ossia::net::node_base& n);
+  static void loadbang(client* x, t_float type);
 
   static void print_protocol_help()
   {
@@ -33,6 +33,27 @@ struct t_client : t_obj_base
         "\twsurl (symbol) : url to connect to (default : "
         "ws://127.0.0.1:5678)\n");
   }
+
+  std::vector<ossia::net::minuit_connection_data> m_minuit_devices{};
+  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices{};
+
+  std::thread* m_async_thread{};
+
+  ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
+
+  bool m_done{true};
+  t_symbol* m_looking_for{}; // the device's name we are looking for
+
+  static void disconnect(client* x);
+  static void connect(client* x, t_symbol*, int argc, t_atom* argv);
+  static void getdevices(client* x);
+  static void check_thread_status(client* x);
+  static void update(client* x);
+  static void poll_message(client* x);
+  static void destroy(client* x);
+  static void* create(t_symbol* name, int argc, t_atom* argv);
+  static void find_devices_async(client* x);
+
 };
 }
 } // namespace

@@ -32,20 +32,26 @@ endif()
 set(PROJECT_SRCS
     src/ossia-max.cpp
     src/ossia-max.hpp
-    src/ossia_object_base.cpp
-    src/ossia_object_base.hpp
+    src/object_base.cpp
+    src/object_base.hpp
     src/ossia_object.cpp
     src/ossia_object.hpp
-    src/parameter.hpp
-    src/parameter.cpp
     src/client.hpp
     src/client.cpp
     src/device.hpp
     src/device.cpp
-    src/model.hpp
-    src/model.cpp
+    src/device_base.hpp
+    src/device_base.cpp
     src/logger.hpp
     src/logger.cpp
+    src/model.hpp
+    src/model.cpp
+    src/node_base.cpp
+    src/node_base.hpp
+    src/parameter.hpp
+    src/parameter.cpp
+    src/parameter_base.hpp
+    src/parameter_base.cpp
     src/remote.hpp
     src/remote.cpp
     src/utils.hpp
@@ -56,6 +62,9 @@ set(PROJECT_SRCS
     )
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
+# add_custom_target just to display sources files in qtcreator
+add_custom_target(source SOURCES ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 
@@ -73,6 +82,11 @@ if(APPLE)
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN_VERSION _CRT_SECURE_NO_WARNINGS)
+    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".dll64")
+    else()
+        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".dll")
+    endif()
 endif()
 
 function(setup_max_external theTarget)
@@ -111,6 +125,7 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/init"
         "${CMAKE_CURRENT_SOURCE_DIR}/interfaces"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs"
+        "${CMAKE_CURRENT_SOURCE_DIR}/patchers"
     DESTINATION
         ${OSSIA_MAX_INSTALL_FOLDER}
     COMPONENT

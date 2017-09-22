@@ -26,6 +26,21 @@ private Q_SLOTS:
         QVERIFY(res.find("foo") != res.end());
         QVERIFY(res.find("foo").value() == "bar");
       }
+
+      {
+        auto res = ossia::oscquery::parse_http_methods_encoded("LISTEN=1");
+        QVERIFY(res.size() == 1);
+        QVERIFY(res.find("LISTEN") != res.end());
+        QVERIFY(res.find("LISTEN").value() == "1");
+      }
+
+      {
+        auto res = ossia::oscquery::parse_http_methods_encoded("VALUE");
+        QVERIFY(res.size() == 1);
+        QVERIFY(res.find("VALUE") != res.end());
+        QVERIFY(res.find("VALUE").value() == "");
+      }
+
       {
         auto res = ossia::oscquery::parse_http_methods_encoded("foo=bar&baz=blu");
         QVERIFY(res.size() == 2);
@@ -115,7 +130,7 @@ private Q_SLOTS:
         QCOMPARE(get_unit(n), ossia::unit_t(meter_per_second_u{}));
 
         QVERIFY((bool)get_priority(n));
-        QCOMPARE(*get_priority(n), 50);
+        QCOMPARE(*get_priority(n), 50.f);
 
         QVERIFY((bool)get_description(n));
         QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));

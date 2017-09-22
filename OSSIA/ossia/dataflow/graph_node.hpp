@@ -20,7 +20,7 @@ public:
   void set_executed(bool b);
 
   virtual bool consumes(const std::string&) const;
-  virtual bool consumes(const Destination&) const;
+  virtual bool consumes(const destination&) const;
   virtual bool consumes(const execution_state&) const;
 
   virtual void run(execution_state&);

@@ -1,194 +1,212 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-// A starter for Pd objects
-#include "model.hpp"
-#include "parameter.hpp"
-#include "remote.hpp"
-#include "utils.hpp"
-#include "view.hpp"
+#include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia-pd/src/model.hpp>
+#include <ossia-pd/src/ossia-pd.hpp>
+#include <ossia-pd/src/node_base.hpp>
+#include <ossia-pd/src/utils.hpp>
 
 namespace ossia
 {
 namespace pd
 {
 
-static void model_free(t_model* x);
+model::model():
+  node_base{ossia_pd::model_class}
+{ }
 
-bool t_model::register_node(ossia::net::node_base* node)
+bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {
-  bool res = do_registration(node);
+  if (m_dead) return true;
+  bool res = do_registration(nodes);
   if (res)
   {
+    fill_selection();
+    obj_dequarantining<model>(this);
     register_children();
   }
   else
-    obj_quarantining<t_model>(this);
+    obj_quarantining<model>(this);
 
   return res;
 }
 
-bool t_model::do_registration(ossia::net::node_base* node)
+bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 {
-
-  if (x_node && x_node->get_parent() == node)
-    return true; // already register to this node;
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the parameter
-  if (!node)
-    return false;
 
-  std::string name(x_name->s_name);
+  std::string name(m_name->s_name);
 
-  x_parent_node = node;
+  for (auto node : nodes)
+  {
+    m_parent_node = node;
 
-  if (node->find_child(name))
-  { // we have to check if a node with the same name already exists to avoid
-    // auto-incrementing name
-    std::vector<t_obj_base*> obj
-        = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
-    for (auto v : obj)
+    if (node->find_child(name))
     {
-      if (v->x_otype == Type::param)
+      // TODO : check if node has a parameter
+      // in that case it is an ø.param, with no doubts
+      // then remove it (and associated ø.param
+      // and ø.remote will be unregistered automatically)
+
+      // we have to check if a node with the same name already exists to avoid
+      // auto-incrementing name
+      std::vector<object_base*> obj
+          = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+      for (auto v : obj)
       {
-        t_param* param = (t_param*)v;
-        if (std::string(param->x_name->s_name) == name)
+        if (v->m_otype == object_class::param)
         {
-          param->unregister(); // if we already have a t_param node of that
-                               // name, unregister it
-          // we will register it again after node creation
-          continue;
+          parameter* param = (parameter*)v;
+          if (ossia::string_view(param->m_name->s_name) == name)
+          {
+            // if we already have a t_param node of that
+            // name, unregister it
+            // we will register it again after node creation
+            param->unregister();
+            continue;
+          }
         }
       }
     }
+
+    m_nodes = ossia::net::create_nodes(*node, name);
+    for (auto n : m_nodes)
+    {
+      m_matchers.emplace_back(n, this);
+    }
+
+    set_priority();
+    set_description();
+    set_tags();
+    set_hidden();
   }
-
-  x_node = &ossia::net::create_node(*node, name);
-  x_node->about_to_be_deleted.connect<t_model, &t_model::is_deleted>(this);
-
-  ossia::net::set_description(*x_node, std::string(x_description->s_name));
-  ossia::net::set_tags(*x_node, parse_tags_symbol(x_tags));
 
   return true;
 }
 
-void t_model::register_children()
+void model::register_children()
 {
-  obj_dequarantining<t_model>(this);
-  std::vector<t_obj_base*> obj
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
+  std::vector<object_base*> obj
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : obj)
   {
-    if (v->x_otype == Type::model)
+    if (v->m_otype == object_class::model)
     {
-      t_model* model = (t_model*)v;
+      ossia::pd::model* model = (ossia::pd::model*)v;
+
+      // not registering itself
       if (model == this)
-      {
-        // not registering itself
         continue;
-      }
-      model->register_node(x_node);
+
+      obj_register<ossia::pd::model>(model);
     }
-    else if (v->x_otype == Type::param)
+    else if (v->m_otype == object_class::param)
     {
-      t_param* param = (t_param*)v;
-      param->register_node(x_node);
+      parameter* param = (parameter*)v;
+      // param->register_node(m_nodes);
+      obj_register<ossia::pd::parameter>(param);
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
-      remote->register_node(x_node);
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
+      // remote->register_node(m_nodes);
+      obj_register<ossia::pd::remote>(remote);
     }
   }
 
-  for (auto view : t_view::quarantine().copy())
+  for (auto view : view::quarantine().copy())
   {
-    obj_register(static_cast<t_view*>(view));
+    obj_register(static_cast<ossia::pd::view*>(view));
   }
 
   // then try to register quarantinized remote
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : remote::quarantine().copy())
   {
-    obj_register(static_cast<t_remote*>(remote));
+    obj_register(static_cast<ossia::pd::remote*>(remote));
   }
 }
 
-bool t_model::unregister()
+bool model::unregister()
 {
 
-  clock_unset(x_regclock);
-  if (!x_node)
-    return true; // not registered
+  clock_unset(m_clock);
 
-  x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
+  m_matchers.clear();
+  m_nodes.clear();
 
-  if (x_node && x_node->get_parent())
-  {
-    x_node->get_parent()->remove_child(*x_node); // this calls isDeleted() on
-                                                 // each registered child and
-                                                 // put them into quarantine
-  }
+  obj_quarantining<model>(this);
 
-  // we can't register children to parent node
-  // because it might be deleted soon
-  // (when removing root device for example)
-
-  x_node = nullptr;
-
-  obj_quarantining<t_model>(this);
+  //m_parent_node = find_parent_nodes(x);
 
   register_children();
 
   return true;
 }
 
-ossia::safe_vector<t_model*>& t_model::quarantine()
-{
-  static ossia::safe_vector<t_model*> quarantine;
-  return quarantine;
-}
 
-void t_model::is_deleted(const net::node_base& n)
+t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
-  if (!x_dead)
+  if (msg == gensym("attr_modified"))
   {
-    x_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(this);
-    x_node = nullptr;
-    obj_quarantining<t_model>(this);
+      if ( s == gensym("priority") )
+        x->set_priority();
+      else if ( s == gensym("tags") )
+        x->set_tags();
+      else if ( s == gensym("description") )
+        x->set_description();
+      else if ( s == gensym("hidden") )
+        x->set_hidden();
   }
+  return 0;
 }
 
-static void* model_new(t_symbol* name, int argc, t_atom* argv)
+ossia::safe_set<model*>& model::quarantine()
+{
+    return ossia_pd::instance().model_quarantine;
+}
+
+void* model::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_model* x = (t_model*)eobj_new(ossia_pd.model);
+  ossia::pd::model* x = new ossia::pd::model();
   if(x)
   {
     ossia_pd.models.push_back(x);
 
-    x->x_otype = Type::model;
+    x->m_otype = object_class::model;
 
     t_binbuf* d = binbuf_via_atoms(argc, argv);
     if (d)
     {
-      x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-      x->x_regclock = clock_new(x, (t_method)obj_register<t_model>);
+      x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+      x->m_clock = clock_new(x, (t_method)obj_register<model>);
 
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
-        x->x_name = atom_getsymbol(argv);
-        x->x_addr_scope = get_address_scope(x->x_name->s_name);
+        t_symbol* address = atom_getsymbol(argv);
+        std::string name = replace_brackets(address->s_name);
+        x->m_name = gensym(name.c_str());
+        x->m_addr_scope = get_address_scope(x->m_name->s_name);
       }
       else
       {
-        x->x_name = gensym("untitledModel");
-        pd_error(x, "You have to pass a name as the first argument");
+        std::string cur = canvas_getcurrent()->gl_name->s_name;
+        if(cur.find(".pd") != std::string::npos)
+        {
+          cur.resize(cur.size() - 3);
+        }
+        if(cur.empty())
+        {
+          x->m_name = gensym("unnamedModel");
+          pd_error(x, "You have to pass a name as the first argument");
+        }
+        else
+        {
+          x->m_name = gensym(cur.c_str());
+        }
       }
-
-      x->x_description = gensym("");
-      x->x_tags = gensym("");
-      x->x_node = nullptr;
-      x->x_parent_node = nullptr;
 
       ebox_attrprocess_viabinbuf(x, d);
 
@@ -196,15 +214,16 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
       // to check address validity
       // and object will be added to patcher's objects list (aka canvas g_list)
       // after model_new() returns.
-      // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->x_regclock, 0);
+      // clock_set uses ticks as time unit
+      clock_set(x->m_clock, 1);
     }
 
     if (find_peer(x))
     {
       error(
             "Only one [ø.model]/[ø.view] intance per patcher is allowed.");
-      model_free(x);
+      model::destroy(x);
+      free(x);
       x = nullptr;
     }
   }
@@ -212,37 +231,36 @@ static void* model_new(t_symbol* name, int argc, t_atom* argv)
   return x;
 }
 
-static void model_free(t_model* x)
+void model::destroy(model* x)
 {
-  x->x_dead = true;
+  x->m_dead = true;
   x->unregister();
-  obj_dequarantining<t_model>(x);
+  obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);
-  clock_free(x->x_regclock);
+  clock_free(x->m_clock);
+  x->m_clock = nullptr;
+
+  x->~model();
 }
 
 extern "C" void setup_ossia0x2emodel(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.model", (method)model_new, (method)model_free,
-      (short)sizeof(t_model), CLASS_DEFAULT, A_GIMME, 0);
+      "ossia.model", (method)model::create, (method)model::destroy,
+      (short)sizeof(model), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)model_new,gensym("ø.model"), A_GIMME, 0);
+    class_addcreator((t_newmethod)model::create,gensym("ø.model"), A_GIMME, 0);
 
-    eclass_addmethod(c, (method)obj_dump<t_model>, "dump", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_set, "set", A_GIMME, 0);
+    node_base::class_setup(c);
 
-    CLASS_ATTR_SYMBOL(c, "description", 0, t_model, x_description);
-    CLASS_ATTR_SYMBOL(c, "tags", 0, t_model, x_tags);
+    eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy
   }
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.model = c;
+  ossia_pd::model_class = c;
 }
 } // pd namespace
 } // ossia namespace

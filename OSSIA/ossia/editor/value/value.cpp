@@ -4,12 +4,14 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/value/detail/value_conversion_impl.hpp>
+#include <ossia/editor/value/detail/value_parse_impl.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/editor/value/value_algorithms.hpp>
 #include <ossia/editor/value/value_comparison.hpp>
 #include <ossia/editor/value/value_traits.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <sstream>
 
 namespace ossia
@@ -39,87 +41,100 @@ convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
 template OSSIA_EXPORT std::array<float, 4>
 convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
-Destination::Destination(const Destination& other) = default;
-Destination::Destination(Destination&& other) = default;
+destination::destination(const destination& other) = default;
+destination::destination(destination&& other) = default;
 
-Destination& Destination::operator=(const Destination&) = default;
-Destination& Destination::operator=(Destination&&) = default;
+destination& destination::operator=(const destination&) = default;
+destination& destination::operator=(destination&&) = default;
 
-value Destination::pull() const
+value destination::pull() const
 {
-  // TODO unit conversion
-  return value.get().value(index);
+  ossia::net::parameter_base& param = value.get();
+  if(unit)
+  {
+    auto other = param.get_unit();
+    if(other && other != unit)
+    {
+      auto res = ossia::convert(param.value(), other, unit);
+      if(res.valid())
+      {
+        return get_value_at_index(res, index);
+      }
+    }
+  }
+
+  return param.value(index);
 }
 
-Destination::Destination(ossia::net::parameter_base& v) : value(v)
+destination::destination(ossia::net::parameter_base& v) : value(v)
 {
   // TODO should we also copy the unit of the address ?
 }
 
-Destination::Destination(ossia::net::parameter_base& v, destination_index idx)
+destination::destination(ossia::net::parameter_base& v, destination_index idx)
     : value(v), index(std::move(idx))
 {
   // TODO should we also copy the unit of the address ?
 }
 
-Destination::Destination(
+destination::destination(
     ossia::net::parameter_base& v, destination_index idx, const ossia::unit_t& u)
     : value(v), index(std::move(idx)), unit{u}
 {
 }
 
-Destination::Destination(net::parameter_base& v, const unit_t& u)
+destination::destination(net::parameter_base& v, const unit_t& u)
     : value(v), unit{u}
 {
 }
 
-bool Destination::operator==(const ossia::value& v) const
+bool destination::operator==(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
-bool Destination::operator!=(const ossia::value& v) const
+bool destination::operator!=(const ossia::value& v) const
 {
   return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
-bool Destination::operator>(const ossia::value& v) const
+bool destination::operator>(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
 }
 
-bool Destination::operator>=(const ossia::value& v) const
+bool destination::operator>=(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(
       *this, v, std::greater_equal<>{});
 }
 
-bool Destination::operator<(const ossia::value& v) const
+bool destination::operator<(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::less<>{});
 }
 
-bool Destination::operator<=(const ossia::value& v) const
+bool destination::operator<=(const ossia::value& v) const
 {
   return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
 }
 
-bool operator==(const Destination& lhs, const Destination& rhs)
+bool operator==(const destination& lhs, const destination& rhs)
 {
   return lhs.value == rhs.value && lhs.index == rhs.index;
 }
 
-bool operator!=(const Destination& lhs, const Destination& rhs)
+bool operator!=(const destination& lhs, const destination& rhs)
 {
   return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
-bool operator==(const Destination& lhs, const ossia::net::parameter_base& rhs)
+bool operator==(const destination& lhs, const ossia::net::parameter_base& rhs)
 {
   return lhs.value == rhs && lhs.index.empty();
 }
 
-bool operator!=(const Destination& lhs, const ossia::net::parameter_base& rhs)
+bool operator!=(const destination& lhs, const ossia::net::parameter_base& rhs)
 {
   return lhs.value != rhs || !lhs.index.empty();
 }
@@ -144,7 +159,7 @@ std::string to_pretty_string(const destination_index& index)
   return str;
 }
 
-std::string to_pretty_string(const Destination& d)
+std::string to_pretty_string(const destination& d)
 {
   using namespace std::literals;
   return ossia::net::address_string_from_node(d.value.get())
@@ -262,7 +277,7 @@ struct value_comparison_visitor2
     return Comparator{}(v, comparisons::String_T{});
   }
 
-  // Tuple
+  // List
   template <typename T>
   bool operator()(const T& lhs, const std::vector<ossia::value>& v) const
   {
@@ -500,8 +515,9 @@ struct value_prettyprint_visitor
   {
     s << "char: " << c;
   }
-  void operator()(const std::string& str) const
+  void operator()(std::string str) const
   {
+    boost::algorithm::replace_all(str, "\"", "\\\"");
     s << "string: " << str;
   }
   void operator()(vec2f vec) const
@@ -518,7 +534,7 @@ struct value_prettyprint_visitor
   }
   void operator()(const std::vector<ossia::value>& t) const
   {
-    s.write("tuple: {}", t);
+    s.write("list: {}", t);
   }
   void operator()() const
   {
@@ -532,6 +548,19 @@ std::string value_to_pretty_string(const ossia::value& val)
   fmt::MemoryWriter s;
   val.apply(value_prettyprint_visitor<fmt::MemoryWriter>{s});
   return s.str();
+}
+
+ossia::value parse_pretty_value(ossia::string_view str)
+{
+  ossia::value val;
+
+  using boost::spirit::x3::phrase_parse;
+  using ossia::detail::parse::value_;
+  auto first = str.cbegin(), last = str.cend();
+  bool r = phrase_parse(first, last, value_, boost::spirit::x3::ascii::space, val);
+  if(!r)
+    ossia::logger().error("ossia::parse_pretty_value error: {}", str);
+  return val;
 }
 
 ossia::value get_value_at_index(
@@ -577,12 +606,33 @@ bool is_array(const ossia::value& val)
   return false;
 }
 
+ossia::value convert(const ossia::value& val, const ossia::value& cur)
+{
+  auto t = cur.getType();
+  switch(t)
+  {
+    case ossia::val_type::NONE:
+      return {};
+    case ossia::val_type::IMPULSE:
+      return cur;
+    default:
+      return lift(t, [&](auto t) -> ossia::value {
+        using ossia_type = typename decltype(t)::ossia_type;
+        return convert<ossia_type>(val);
+      });
+  }
+}
+
 ossia::value convert(const ossia::value& val, ossia::val_type newtype)
 {
-  return lift(newtype, [&](auto t) -> ossia::value {
-    using ossia_type = typename decltype(t)::ossia_type;
-    return convert<ossia_type>(val);
-  });
+  if(newtype != ossia::val_type::NONE)
+  {
+    return lift(newtype, [&](auto t) -> ossia::value {
+      using ossia_type = typename decltype(t)::ossia_type;
+      return convert<ossia_type>(val);
+    });
+  }
+  return ossia::value{};
 }
 
 value::~value() noexcept
@@ -593,15 +643,15 @@ value::~value() noexcept
 namespace std
 {
 std::ostream&
-operator<<(std::ostream& s, const std::vector<ossia::value>& tuple)
+operator<<(std::ostream& s, const std::vector<ossia::value>& list)
 {
 
-  const int n = tuple.size();
+  const int n = list.size();
 
   s << "[";
   for (int i = 0; i < n; i++)
   {
-    const auto& val = tuple[i];
+    const auto& val = list[i];
 
     if (val.valid())
     {
@@ -621,34 +671,34 @@ operator<<(std::ostream& s, const std::vector<ossia::value>& tuple)
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 2>& vec)
 {
-  s << "[" << vec[0] << " " << vec[1] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << "]";
   return s;
 }
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 3>& vec)
 {
-  s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << "]";
   return s;
 }
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 4>& vec)
 {
-  s << "[" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << "]";
   return s;
 }
 
 std::ostream&
-operator<<(std::ostream& s, const std::vector<std::string>& tuple)
+operator<<(std::ostream& s, const std::vector<std::string>& list)
 {
-  const int n = tuple.size();
+  const int n = list.size();
 
   s << "[";
-  if (!tuple.empty())
+  if (!list.empty())
   {
-    s << tuple[0];
+    s << list[0];
     for (int i = 1; i < n; i++)
     {
-      s << ", " << tuple[i];
+      s << ", " << list[i];
     }
   }
   s << "]";
@@ -657,7 +707,7 @@ operator<<(std::ostream& s, const std::vector<std::string>& tuple)
 }
 
 std::istream&
-operator>>(std::istream& s, std::vector<std::string>& tuple)
+operator>>(std::istream& s, std::vector<std::string>& list)
 {
   // TODO
   return s;

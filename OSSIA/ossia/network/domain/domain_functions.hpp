@@ -26,6 +26,8 @@ OSSIA_EXPORT void set_max(domain& dom, const ossia::value& val);
 
 OSSIA_EXPORT void
 set_values(domain& dom, const std::vector<ossia::value>& val);
+OSSIA_EXPORT std::vector<ossia::value>
+get_values(const ossia::domain& dom);
 
 OSSIA_EXPORT domain make_domain(
     const ossia::value& min,
@@ -36,6 +38,12 @@ OSSIA_EXPORT domain make_domain(
 OSSIA_EXPORT domain make_domain(
     const ossia::value& min, const ossia::value& max,
     const std::vector<ossia::value>& vals);
+
+OSSIA_EXPORT
+ossia::domain make_domain_from_minmax(
+    const std::vector<ossia::value>& min,
+    const std::vector<ossia::value>& max,
+    ossia::val_type v);
 
 OSSIA_EXPORT domain init_domain(ossia::val_type type);
 

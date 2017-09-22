@@ -26,24 +26,24 @@ class parameter_base;
  */
 struct OSSIA_EXPORT message
 {
-  ossia::Destination destination;
+  ossia::destination dest;
   ossia::value message_value;
 
   const ossia::unit_t& get_unit() const
   {
-    return destination.unit;
+    return dest.unit;
   }
   void launch() const;
 
   friend bool operator==(const message& lhs, const message& rhs)
   {
-    return lhs.destination == rhs.destination
+    return lhs.dest == rhs.dest
            && lhs.message_value == rhs.message_value;
   }
 
   friend bool operator!=(const message& lhs, const message& rhs)
   {
-    return lhs.destination != rhs.destination
+    return lhs.dest != rhs.dest
            || lhs.message_value != rhs.message_value;
   }
 
@@ -53,20 +53,20 @@ struct OSSIA_EXPORT message
   message& operator=(const message&) = default;
   message& operator=(message&&) = default;
 
-  message(const Destination& d, const ossia::value& v)
-      : destination{d}, message_value{v}
+  message(const destination& d, const ossia::value& v)
+      : dest{d}, message_value{v}
   {
   }
-  message(const Destination& d, ossia::value&& v)
-      : destination{d}, message_value{std::move(v)}
+  message(const destination& d, ossia::value&& v)
+      : dest{d}, message_value{std::move(v)}
   {
   }
-  message(const Destination& d, const ossia::value& v, const ossia::unit_t& u)
-      : destination{d.value, d.index, u}, message_value{v}
+  message(const destination& d, const ossia::value& v, const ossia::unit_t& u)
+      : dest{d.value, d.index, u}, message_value{v}
   {
   }
-  message(const Destination& d, ossia::value&& v, const ossia::unit_t& u)
-      : destination{d.value, d.index, u}, message_value{std::move(v)}
+  message(const destination& d, ossia::value&& v, const ossia::unit_t& u)
+      : dest{d.value, d.index, u}, message_value{std::move(v)}
   {
   }
 };

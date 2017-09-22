@@ -31,13 +31,14 @@ int main()
     ossia::websocket_heartbeat heartbeat{
                 connection,
                 "the app name",
-                std::chrono::seconds(5)};
+                std::chrono::seconds(2)};
 
     heartbeat.send_init({
                           {"pid", getpid()}
                         , {"cmd", "c:\\myapp\\app.exe"}
                         });
 
-    // Now an "alive" message will be sent every five seconds as long as
+    // Now an "alive" message will be sent every 2 seconds as long as
     // the heartbeat is in scope.
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 }

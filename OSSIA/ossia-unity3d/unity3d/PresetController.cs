@@ -8,172 +8,140 @@ using System.Text;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-unsafe public class PresetController : MonoBehaviour {
-	
-	public string jsonname = "Assets/preset.json";
-	public Preset p;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using System.Reflection;
 
-	Vector3 getVector(Ossia.Node node, Vector3 basevec) {
-		Vector3 result = new Vector3 (basevec.x, basevec.y, basevec.z);
+[System.AttributeUsage (System.AttributeTargets.Field)]
+public class InspectorButtonAttribute : PropertyAttribute
+{
+  public static float kDefaultButtonWidth = 80;
 
-		string rootname = "/" + node.GetName ();
-		IntPtr leafptr;
-		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/x", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
-				result.x = addr.GetValue ().GetFloat ();
-			}
-		}
-		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/y", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
-				result.y = addr.GetValue ().GetFloat ();
-			}
-		}
-		if (BlueYetiAPI.ossia_devices_get_child(node.GetNode(), rootname + "/z", &leafptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-			IntPtr addrptr;
-			if (BlueYetiAPI.ossia_devices_get_node_parameter(leafptr, &addrptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Ossia.Parameter addr = new Ossia.Parameter(addrptr);
-				result.z = addr.GetValue ().GetFloat ();
-			}
-		}
-		return result;	
-	}
+  public readonly string MethodName;
 
-	void createCube(Ossia.Node node) {
+  private float _buttonWidth = kDefaultButtonWidth;
 
-		/// Create a cube \\\
+  public float ButtonWidth {
+    get { return _buttonWidth; }
+    set { _buttonWidth = value; }
+  }
 
-		Debug.Log ("Creating " + node.GetName ());
-		GameObject createdgo = GameObject.CreatePrimitive (PrimitiveType.Cube);
-		createdgo.name = node.GetName ();
-		createdgo.AddComponent<Ossia.Object> ();
+  public InspectorButtonAttribute (string MethodName)
+  {
+    this.MethodName = MethodName;
+  }
+}
 
-		/// Import parameters \\\
+[CustomPropertyDrawer (typeof(InspectorButtonAttribute))]
+public class InspectorButtonPropertyDrawer : PropertyDrawer
+{
+  private MethodInfo _eventMethodInfo = null;
 
-		for (int i = 0; i < node.ChildSize(); ++i) {
-			Ossia.Node child = node.GetChild (i);
-			switch (child.GetName ()) {
-			case "position":
-				createdgo.transform.position = getVector (child, createdgo.transform.position);
-				break;
-			case "rotation":
-				createdgo.transform.rotation = Quaternion.Euler(getVector (child, createdgo.transform.eulerAngles));
-				break;
-			case "scale":
-				createdgo.transform.localScale = getVector (child, createdgo.transform.localScale);
-				break;
-			default:
-				break;
-			}
-		}
+  public override void OnGUI (Rect position, SerializedProperty prop, GUIContent label)
+  {
+    InspectorButtonAttribute inspectorButtonAttribute = (InspectorButtonAttribute)attribute;
+    Rect buttonRect = new Rect (position.x + (position.width - inspectorButtonAttribute.ButtonWidth) * 0.5f, position.y, inspectorButtonAttribute.ButtonWidth, position.height);
+    if (GUI.Button (buttonRect, label.text)) {
+      System.Type eventOwnerType = prop.serializedObject.targetObject.GetType ();
+      string eventName = inspectorButtonAttribute.MethodName;
 
-		/// Remove the node containing the parameters, now useless \\\
+      if (_eventMethodInfo == null)
+        _eventMethodInfo = eventOwnerType.GetMethod (eventName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
-		GameObject controller = GameObject.Find ("OssiaController");
-		var dev = controller.GetComponent<Ossia.Controller> ();
-		var local_device = dev.GetDevice ();
-		local_device.GetRootNode().GetChild(0).RemoveChild(node);
-	}
+      if (_eventMethodInfo != null)
+        _eventMethodInfo.Invoke (prop.serializedObject.targetObject, null);
+      else
+        Debug.LogWarning (string.Format ("InspectorButton: Unable to find method {0} in {1}", eventName, eventOwnerType));
+    }
+  }
+}
 
-	// Use this for initialization
-	void Start () {
-			 
-		string jsontext = System.IO.File.ReadAllText (jsonname);
-		Debug.Log (jsontext);
 
-		p = new Preset (jsontext);
+unsafe public class PresetController : MonoBehaviour
+{
+  public bool loadPresetOnStart = false;
+  public string presetPath = "Assets/preset.json";
+  public string devicePath = "Assets/device.json";
 
-		try {
-			Debug.Log("Loaded preset " + p.ToString() + " (" + p.Size() + " elements)");
-		}
-		catch (Exception e) {
-			Debug.Log (e.Message);
-		}
 
-		try {
+  [InspectorButton ("OnWriteDevice")]
+  public bool writeDevice;
+  [InspectorButton ("OnReadPreset")]
+  public bool readPreset;
+  [InspectorButton ("OnWritePreset")]
+  public bool writePreset;
 
-			GameObject controller = GameObject.Find ("OssiaController");
-			if (controller == null) {
-				throw new Exception("Controller not found");
-			}
+  Ossia.Device getDevice ()
+  {
+    var dev = Controller.Get ();
+    Ossia.Device local_device = dev.GetDevice ();
+    if (local_device == null) {
+      throw new Exception ("LocalDevice is null");
+    }
+    return local_device;
+  }
 
-			var dev = controller.GetComponent<Ossia.Controller> ();
-			if (dev == null) {
-				throw new Exception("Device is null");
-			}
-				
-			Ossia.Device local_device = dev.GetDevice();
-			if (local_device == null) {
-				throw new Exception("LocalDevice is null");
-			}
+  void OnReadPreset ()
+  {
+    string jsontext = System.IO.File.ReadAllText (presetPath);
 
-			IntPtr dev_ptr = local_device.GetDevice();
-			if(dev_ptr == IntPtr.Zero) {
-				throw new Exception("DevPtr is null");
-			}
+    Preset p = new Preset (jsontext);
 
-			IntPtr res;
-			BlueYetiAPI.ossia_devices_to_string(dev_ptr, &res);
-			Debug.Log("Before applying: " + Marshal.PtrToStringAuto(res));
+    Ossia.Device dev = getDevice ();
+    p.ApplyToDevice (dev, true);
 
-			p.ApplyToDevice(local_device, false);
-			BlueYetiAPI.ossia_devices_to_string(dev_ptr, &res);
-			Debug.Log("After applying: " + Marshal.PtrToStringAuto(res));
+    {
+      var objects = UnityEngine.Object.FindObjectsOfType<Ossia.ExposeAttributes> ();
+      foreach (Ossia.ExposeAttributes obj in objects) {
+        obj.ReceiveUpdates ();
+      }
+    }
+    {
+      var exposed = UnityEngine.Object.FindObjectsOfType<Ossia.ExposeComponents> ();
+      foreach (Ossia.ExposeComponents obj in exposed) {
+        obj.ReceiveUpdates ();
+      }
+    }
+  }
 
-			/// Building instances as Unity objects from values imported in the device \\\
+  void OnWritePreset ()
+  {
+    IntPtr preset;
+    BlueYetiAPI.ossia_devices_make_preset (getDevice().GetDevice (), out preset);
 
-			bool endOfInstances = false;
-			int currentInstance = 1;
-			int numberOfInstances = 2;
-			while (!endOfInstances && currentInstance <= numberOfInstances) {
-				string currentIntanceKeys = "/" + local_device.GetName() + "/scene/cube." + currentInstance.ToString();
-				try {
-					Debug.Log("Fetching node " + currentIntanceKeys);
-					IntPtr fetchednode; 
-					ossia_preset_result_enum code = BlueYetiAPI.ossia_devices_get_node(local_device.GetDevice(), currentIntanceKeys, &fetchednode);
-					if (code != ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-						Debug.Log(code);
-						endOfInstances = true;
-					}
-					else {
-						createCube(new Ossia.Node(fetchednode));
-					}
-				}
-				catch (Exception e) {
-					Debug.Log("Error occured: " + e.Message);
-					endOfInstances = true;
-				}
-				++currentInstance;
-			}
-		}
-		catch (Exception e) {
-			Debug.Log (e.Message);
-		}
-	}
+    IntPtr str;
+    var res = BlueYetiAPI.ossia_presets_write_json (preset, Controller.Get ().appName, out str);
 
-	// Update is called once per frame
-	void Update () {
+    if (res == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+       System.IO.File.WriteAllText (presetPath, Marshal.PtrToStringAuto (str));
+    }
+  }
 
-		/// Print device when Space bar is pressed \\\
+  void OnWriteDevice ()
+  {
+    var dev = getDevice ();
+    IntPtr dev_ptr = dev.GetDevice ();
 
-		GameObject controller = GameObject.Find ("OssiaController");
-		var dev = controller.GetComponent<Ossia.Controller> ();
-		Ossia.Device local_device = dev.GetDevice();
-		IntPtr dev_ptr = local_device.GetDevice();
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			IntPtr strptr;
-			if (BlueYetiAPI.ossia_devices_to_string (dev_ptr, &strptr) == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-				Debug.Log (Marshal.PtrToStringAuto (strptr));
-			} else {
-				Debug.Log ("can't display device");
-			}
-		}
-	}
+    IntPtr str;
+    var res = BlueYetiAPI.ossia_devices_write_json (dev_ptr, out str);
 
-	void OnApplicationQuit() {
-		p.Free ();
-	}
+    if (res == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
+       System.IO.File.WriteAllText (devicePath, Marshal.PtrToStringAuto (str));
+    }
+  }
+
+  // Use this for initialization
+  void Start ()
+  {
+    if (loadPresetOnStart) {
+      OnReadPreset ();
+    }
+  }
+
+  // Update is called once per frame
+  void Update ()
+  {
+  }
+
 }

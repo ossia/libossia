@@ -25,7 +25,7 @@ class parameter_base;
  * \see \ref node_base
  * \see \ref destination_index
  */
-class OSSIA_EXPORT Destination final
+class OSSIA_EXPORT destination final
 {
 public:
   std::reference_wrapper<net::parameter_base> value;
@@ -42,15 +42,15 @@ public:
     return value.get();
   }
 
-  Destination(net::parameter_base& v);
-  Destination(net::parameter_base& v, destination_index);
-  Destination(net::parameter_base& v, destination_index, const ossia::unit_t&);
-  Destination(net::parameter_base& v, const ossia::unit_t&);
+  destination(net::parameter_base& v);
+  destination(net::parameter_base& v, destination_index);
+  destination(net::parameter_base& v, destination_index, const ossia::unit_t&);
+  destination(net::parameter_base& v, const ossia::unit_t&);
 
-  Destination(const Destination& other);
-  Destination(Destination&& other);
-  Destination& operator=(const Destination&);
-  Destination& operator=(Destination&&);
+  destination(const destination& other);
+  destination(destination&& other);
+  destination& operator=(const destination&);
+  destination& operator=(destination&&);
 
   bool operator==(const ossia::value&) const;
   bool operator!=(const ossia::value&) const;
@@ -60,12 +60,12 @@ public:
   bool operator<=(const ossia::value&) const;
 };
 
-OSSIA_EXPORT bool operator==(const Destination&, const Destination&);
-OSSIA_EXPORT bool operator!=(const Destination&, const Destination&);
+OSSIA_EXPORT bool operator==(const destination&, const destination&);
+OSSIA_EXPORT bool operator!=(const destination&, const destination&);
 OSSIA_EXPORT bool
-operator==(const Destination&, const ossia::net::parameter_base&);
+operator==(const destination&, const ossia::net::parameter_base&);
 OSSIA_EXPORT bool
-operator!=(const Destination&, const ossia::net::parameter_base&);
+operator!=(const destination&, const ossia::net::parameter_base&);
 
-OSSIA_EXPORT std::string to_pretty_string(const Destination& d);
+OSSIA_EXPORT std::string to_pretty_string(const destination& d);
 }

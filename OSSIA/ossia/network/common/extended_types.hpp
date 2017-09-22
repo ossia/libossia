@@ -34,8 +34,8 @@ OSSIA_EXPORT extended_type integer_list_type();
 //! Means that the array should be interpreted as a dynamic string list
 OSSIA_EXPORT extended_type string_list_type();
 
-//! Means that the array is a dynamic array (e.g. ossia::val_type::TUPLE)
-OSSIA_EXPORT extended_type tuple_type();
+//! Means that the array is a dynamic array (e.g. ossia::val_type::LIST)
+OSSIA_EXPORT extended_type list_type();
 
 //! Returns the possible implementation types for this high-level type.
 OSSIA_EXPORT std::vector<ossia::val_type>

@@ -17,38 +17,31 @@ namespace net
 {
 
 generic_parameter::generic_parameter(ossia::net::node_base& node)
-    : m_node{node}
+    : ossia::net::parameter_base{node}
     , m_protocol{node.get_device().get_protocol()}
     , m_valueType(ossia::val_type::IMPULSE)
     , m_accessMode(ossia::access_mode::BI)
     , m_boundingMode(ossia::bounding_mode::FREE)
-    , m_repetitionFilter(ossia::repetition_filter::OFF)
     , m_value(ossia::impulse{})
 {
 }
 
 generic_parameter::generic_parameter(
     const parameter_data& data, ossia::net::node_base& node)
-    : m_node{node}
+    : ossia::net::parameter_base{node}
     , m_protocol{node.get_device().get_protocol()}
     , m_valueType(ossia::val_type::IMPULSE)
     , m_accessMode(get_value_or(data.access, ossia::access_mode::BI))
     , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
-    , m_repetitionFilter(
-          get_value_or(data.rep_filter, ossia::repetition_filter::OFF))
     , m_value(init_value(m_valueType))
 {
+  m_repetitionFilter = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
   update_parameter_type(data.type, *this);
 }
 
 generic_parameter::~generic_parameter()
 {
   callback_container<value_callback>::callbacks_clear();
-}
-
-ossia::net::node_base& generic_parameter::get_node() const
-{
-  return m_node;
 }
 
 void generic_parameter::pull_value()
@@ -134,7 +127,7 @@ void generic_parameter::set_value_quiet(const ossia::value& val)
   else
   {
     m_previousValue = m_value;
-    m_value = ossia::convert(val, m_value.getType());
+    m_value = ossia::convert(val, m_previousValue);
   }
 }
 
@@ -153,11 +146,11 @@ void generic_parameter::set_value_quiet(ossia::value&& val)
   else
   {
     m_previousValue = std::move(m_value);
-    m_value = ossia::convert(std::move(val), m_previousValue.getType());
+    m_value = ossia::convert(std::move(val), m_previousValue);
   }
 }
 
-void generic_parameter::set_value_quiet(const Destination& destination)
+void generic_parameter::set_value_quiet(const destination& destination)
 {
   lock_t lock(m_valueMutex);
   if (destination.address().get_value_type() == m_valueType)
@@ -249,27 +242,11 @@ generic_parameter::set_bounding(ossia::bounding_mode boundingMode)
   return *this;
 }
 
-ossia::repetition_filter generic_parameter::get_repetition_filter() const
+bool generic_parameter::filter_value(const ossia::value& val) const
 {
-  return m_repetitionFilter;
-}
-
-ossia::net::generic_parameter& generic_parameter::set_repetition_filter(
-    ossia::repetition_filter repetitionFilter)
-{
-  if (m_repetitionFilter != repetitionFilter)
-  {
-    m_repetitionFilter = repetitionFilter;
-    m_node.get_device().on_attribute_modified(
-        m_node, text_repetition_filter());
-  }
-  return *this;
-}
-
-bool generic_parameter::filter_repetition(const ossia::value& val) const
-{
-  return get_repetition_filter() == ossia::repetition_filter::ON
-         && val == m_previousValue;
+  return m_disabled || m_muted ||
+      (get_repetition_filter() == ossia::repetition_filter::ON
+       && val == m_previousValue);
 }
 
 void generic_parameter::on_first_callback_added()
@@ -280,11 +257,6 @@ void generic_parameter::on_first_callback_added()
 void generic_parameter::on_removing_last_callback()
 {
   m_protocol.observe(*this, false);
-}
-
-unit_t generic_parameter::get_unit() const
-{
-  return m_unit;
 }
 
 generic_parameter& generic_parameter::set_unit(const unit_t& v)
@@ -312,34 +284,5 @@ generic_parameter& generic_parameter::set_unit(const unit_t& v)
   return *this;
 }
 
-bool generic_parameter::get_muted() const
-{
-  return m_muted;
-}
-
-generic_parameter& generic_parameter::set_muted(bool v)
-{
-  if (m_muted != v)
-  {
-    m_muted = v;
-    m_node.get_device().on_attribute_modified(m_node, text_muted());
-  }
-  return *this;
-}
-
-bool generic_parameter::get_critical() const
-{
-  return m_critical;
-}
-
-generic_parameter& generic_parameter::set_critical(bool v)
-{
-  if (m_critical != v)
-  {
-    m_critical = v;
-    m_node.get_device().on_attribute_modified(m_node, text_critical());
-  }
-  return *this;
-}
 }
 }

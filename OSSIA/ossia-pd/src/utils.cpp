@@ -3,11 +3,58 @@
 #include "utils.hpp"
 
 #include <ossia/network/common/path.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace ossia
 {
 namespace pd
 {
+
+ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
+{
+    if (argc == 1 && !s)
+    {
+      ossia::value v;
+      // convert one element array to single element
+      switch(argv->a_type)
+      {
+        case A_SYMBOL:
+          v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
+          break;
+        case A_FLOAT:
+          v = ossia::value(atom_getfloat(argv));
+          break;
+        default:
+          ;
+      }
+
+      return v;
+    }
+    else
+    {
+      std::vector<ossia::value> list;
+      list.reserve(argc+1);
+      if ( s && s != gensym("list") )
+        list.push_back(std::string(s->s_name));
+
+      for (; argc > 0; argc--, argv++)
+      {
+        switch (argv->a_type)
+        {
+          case A_SYMBOL:
+            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          default:
+            ;
+        }
+      }
+
+      return ossia::value(list);
+    }
+}
 
 std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
 {
@@ -49,25 +96,25 @@ std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWrit
 
 void register_quarantinized()
 {
-  for (auto model : t_model::quarantine().copy())
+  for (auto model : ossia::pd::model::quarantine().copy())
   {
-    obj_register<t_model>(model);
+    obj_register<ossia::pd::model>(model);
   }
-  for (auto param : t_param::quarantine().copy())
+  for (auto param : ossia::pd::parameter::quarantine().copy())
   {
-    obj_register<t_param>(param);
+    obj_register<ossia::pd::parameter>(param);
   }
-  for (auto view : t_view::quarantine().copy())
+  for (auto view : ossia::pd::view::quarantine().copy())
   {
-    obj_register<t_view>(view);
+    obj_register<ossia::pd::view>(view);
   }
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register<t_remote>(remote);
+    obj_register<ossia::pd::remote>(remote);
   }
 }
 
-t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* level)
+object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level)
 {
   t_canvas* canvas = x->o_canvas;
 
@@ -89,10 +136,10 @@ t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* 
     t_gobj* list = canvas->gl_list;
     while (list)
     {
-      std::string current = list->g_pd->c_name->s_name;
+      const ossia::string_view current = list->g_pd->c_name->s_name;
       if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
       { // check if type match and not the same intance...
-        return (t_obj_base*) &(list->g_pd);
+        return (object_base*) &(list->g_pd);
       }
       list = list->g_next;
     }
@@ -103,83 +150,83 @@ t_obj_base* find_parent(t_eobj* x, std::string classname, int start_level, int* 
 }
 
 
-ossia::net::node_base* find_parent_node(t_obj_base* x){
+std::vector<ossia::net::node_base*> find_parent_node(object_base* x)
+{
   int l;
-  t_device* device = (t_device*)find_parent_alive(&x->x_obj, "ossia.device", 0, &l);
-  t_client* client = (t_client*)find_parent_alive(&x->x_obj, "ossia.client", 0, &l);
+  ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
+  ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
 
-  t_model* model = nullptr;
-  t_view* view = nullptr;
+  ossia::pd::model* model = nullptr;
+  ossia::pd::view* view = nullptr;
   int view_level = 0, model_level = 0;
   int start_level = 0;
 
-  if (x->x_otype == Type::view || x->x_otype == Type::model)
+  if (x->m_otype == object_class::view || x->m_otype == object_class::model)
   {
     start_level = 1;
   }
 
-  if (x->x_addr_scope == AddrScope::relative)
+  if (x->m_addr_scope == address_scope::relative)
   {
     // then try to locate a parent view or model
-    if (x->x_otype == Type::view || x->x_otype == Type::remote)
+    if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
     {
       view
-          = (t_view*)find_parent_alive(&x->x_obj, "ossia.view", start_level, &view_level);
+          = (ossia::pd::view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
     }
 
     if (!view)
     {
-      model = (t_model*)find_parent_alive(
-          &x->x_obj, "ossia.model", 0, &model_level);
+      model = (ossia::pd::model*)find_parent_alive(
+          &x->m_obj, "ossia.model", 0, &model_level);
     }
   }
 
-  ossia::net::node_base* node = nullptr;
-
   if (view)
   {
-    node = view->x_node;
+    return view->m_nodes;
   }
   else if (model)
   {
-    node = model->x_node;
+    return model->m_nodes;
   }
   else if (client)
   {
-    node = client->x_node;
+    return client->m_nodes;
   }
   else if (device)
   {
-    node = device->x_node;
+    return device->m_nodes;
   }
   else
   {
-    node = &ossia_pd::get_default_device()->get_root_node();
+    return {&ossia_pd::get_default_device()->get_root_node()};
   }
 
-  return node;
+  return std::vector<ossia::net::node_base*>{};
 }
 
-std::vector<t_obj_base*> find_child_to_register(
-    t_obj_base* x, t_gobj* start_list, const std::string& classname, bool* found_dev)
+std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, string_view classname, bool* found_dev)
 {
-  std::string subclassname
+  const ossia::string_view subclassname
       = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
 
   t_gobj* list = start_list;
-  std::vector<t_obj_base*> found;
+  std::vector<object_base*> found;
+  found.reserve(4);
+
   bool found_model = false;
   bool found_view = false;
 
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
   {
-    std::string current = list->g_pd->c_name->s_name;
+    const ossia::string_view current = list->g_pd->c_name->s_name;
     if (current == classname)
     {
-      t_obj_base* o;
-      o = (t_obj_base*)&list->g_pd;
-      if (x != o && !o->x_dead)
+      object_base* o;
+      o = (object_base*)&list->g_pd;
+      if (x != o && !o->m_dead)
       {
         found.push_back(o);
       }
@@ -195,9 +242,9 @@ std::vector<t_obj_base*> find_child_to_register(
     // don't register anything
     if ( found_dev && (current == "ossia.device" || current == "ossia.client") )
     {
-      t_obj_base* o;
-      o = (t_obj_base*)&list->g_pd;
-      if (x != o && !o->x_dead)
+      object_base* o;
+      o = (object_base*)&list->g_pd;
+      if (x != o && !o->m_dead)
       {
         *found_dev = true;
       }
@@ -216,7 +263,7 @@ std::vector<t_obj_base*> find_child_to_register(
     list = start_list;
     while (list && list->g_pd)
     {
-      std::string current = list->g_pd->c_name->s_name;
+      const ossia::string_view current = list->g_pd->c_name->s_name;
       if (current == "canvas")
       {
         t_canvas* canvas = (t_canvas*)&list->g_pd;
@@ -224,7 +271,7 @@ std::vector<t_obj_base*> find_child_to_register(
         {
           t_gobj* _list = canvas->gl_list;
           bool _found_dev = false;
-          std::vector<t_obj_base*> found_tmp
+          std::vector<object_base*> found_tmp
               = find_child_to_register(x, _list, classname, &_found_dev);
           if (!_found_dev)
           {
@@ -239,15 +286,15 @@ std::vector<t_obj_base*> find_child_to_register(
     list = start_list;
     while (list && list->g_pd)
     {
-      std::string current = list->g_pd->c_name->s_name;
+      const ossia::string_view current = list->g_pd->c_name->s_name;
 
       // if there is no view next to model, then take also remote into account
       if ( current == subclassname
           || ( !found_view && current == "ossia.remote" ) )
       {
-        t_obj_base* o;
-        o = (t_obj_base*)&list->g_pd;
-        if (x != o && !o->x_dead)
+        object_base* o;
+        o = (object_base*)&list->g_pd;
+        if (x != o && !o->m_dead)
         {
           found.push_back(o);
         }
@@ -259,27 +306,28 @@ std::vector<t_obj_base*> find_child_to_register(
   return found;
 }
 
-bool find_peer(t_obj_base* x)
+bool find_peer(object_base* x)
 {
-  t_symbol* classname = x->x_obj.o_obj.te_g.g_pd->c_name;
+  t_symbol* classname = x->m_obj.o_obj.te_g.g_pd->c_name;
   t_symbol* derived_classname = nullptr;
 
-  if (x->x_otype == Type::view)
+  if (x->m_otype == object_class::view)
     derived_classname = gensym("ossia.model");
-  else if (x->x_otype == Type::model)
+  else if (x->m_otype == object_class::model)
     derived_classname = gensym("ossia.view");
-  else if (x->x_otype == Type::device)
+  else if (x->m_otype == object_class::device)
     derived_classname = gensym("ossia.client");
-  else if (x->x_otype == Type::client)
+  else if (x->m_otype == object_class::client)
     derived_classname = gensym("ossia.device");
 
-  t_gobj* list = x->x_obj.o_canvas->gl_list;
+  // go through all patcher's objects to check there is an incompatibility
+  t_gobj* list = x->m_obj.o_canvas->gl_list;
   while (list)
   {
     t_symbol* current = list->g_pd->c_name;
     if (current == classname)
     {
-      if (x != (t_obj_base*)&list->g_pd)
+      if (x != (object_base*)&list->g_pd)
       {
         return true;
       }
@@ -291,24 +339,24 @@ bool find_peer(t_obj_base* x)
   return false;
 }
 
-std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
+std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
 {
-  std::vector<ossia::net::node_base*> nodes{};
-  auto& instance = ossia_pd::instance();
+  std::vector<ossia::net::node_base*> nodes;
+  ossia_pd& instance = ossia_pd::instance();
   size_t pos = addr.find(":");
   if (pos == std::string::npos) return nodes;
 
-  std::string prefix = addr.substr(0,pos);
+  auto prefix = addr.substr(0,pos);
   // remove 'device_name:/' prefix
-  std::string osc_name = addr.substr(pos+2);
+  auto osc_name = addr.substr(pos+2);
 
   bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-  std::regex pattern(prefix.c_str());
+  std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
 
-  for (auto device : instance.devices.copy())
+  for (auto device : instance.devices.reference())
   {
-    auto dev = device->x_device;
+    auto dev = device->m_device;
     if (!dev) continue;
 
     std::string name = dev->get_name();
@@ -319,7 +367,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
       try {
         match = std::regex_match(name, pattern);
       } catch (std::exception& e) {
-        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        error("'%s' bad regex: %s", prefix.data(), e.what());
         return nodes;
       }
     } else match = (name == prefix);
@@ -339,9 +387,9 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
     }
   }
 
-  for (auto client : instance.clients.copy())
+  for (auto client : instance.clients.reference())
   {
-    auto dev = client->x_device;
+    auto dev = client->m_device;
     if (!dev) continue;
 
     std::string name = dev->get_name();
@@ -352,7 +400,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
       try {
         match = std::regex_match(name, pattern);
       } catch (std::exception& e) {
-        error("'%s' bad regex: %s", prefix.c_str(), e.what());
+        error("'%s' bad regex: %s", prefix.data(), e.what());
         return nodes;
       }
     } else match = (name == prefix);
@@ -374,23 +422,22 @@ std::vector<ossia::net::node_base*> find_global_nodes(const std::string& addr)
   return nodes;
 }
 
-ossia::pd::AddrScope get_address_scope(const std::string& addr)
+ossia::pd::address_scope get_address_scope(ossia::string_view addr)
 {
-  AddrScope type = AddrScope::relative;
-  if ( addr.length() > 0 )
-  {
-    if (addr[0] == '/'
-        && addr.length() > 1 && addr[1] != '/') // escape the '//' special combinaison
-      type = AddrScope::absolute;
-    else if ( addr.find(":/") != std::string::npos )
-      type = AddrScope::global;
-  }
+  address_scope type = address_scope::relative;
+  if (boost::starts_with(addr, "//") )
+    type = address_scope::relative;
+  else if ( boost::starts_with(addr, "/") )
+    type = address_scope::absolute;
+  else if ( addr.find(":/") != std::string::npos )
+      type = address_scope::global;
   return type;
 }
 
 std::vector<ossia::value> attribute2value(t_atom* atom, long size)
 {
   std::vector<ossia::value> list;
+  list.reserve(size);
 
   for (int i = 0; i < size; i++)
   {
@@ -400,6 +447,193 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
       list.push_back(std::string(atom_getsymbol(&atom[i])->s_name));
   }
   return list;
+}
+
+ossia::val_type symbol2val_type(t_symbol* s)
+{
+  const ossia::string_view type = s->s_name;
+
+  if (type == "float")
+    return ossia::val_type::FLOAT;
+  else if (type == "symbol" || type == "string")
+    return ossia::val_type::STRING;
+  else if (type == "int")
+    return ossia::val_type::INT;
+  else if (type == "vec2f")
+    return ossia::val_type::VEC2F;
+  else if (type == "vec3f")
+    return ossia::val_type::VEC3F;
+  else if (type == "vec4f")
+    return ossia::val_type::VEC4F;
+  else if (type == "impulse")
+    return ossia::val_type::IMPULSE;
+  else if (type == "bool")
+    return ossia::val_type::BOOL;
+  else if (type == "list")
+    return ossia::val_type::LIST;
+  else if (type == "char")
+    return ossia::val_type::CHAR;
+  else
+    return ossia::val_type::NONE;
+}
+
+t_symbol* val_type2symbol(ossia::val_type type)
+{
+  switch (type)
+  {
+    case ossia::val_type::FLOAT:
+      return gensym("float");
+      break;
+    case ossia::val_type::INT:
+      return gensym("int");
+      break;
+    case ossia::val_type::VEC2F:
+      return gensym("vec2f");
+      break;
+    case ossia::val_type::VEC3F:
+      return gensym("vec3f");
+      break;
+    case ossia::val_type::VEC4F:
+      return gensym("vec4f");
+      break;
+    case ossia::val_type::IMPULSE:
+      return gensym("impulse");
+      break;
+    case ossia::val_type::BOOL:
+      return gensym("bool");
+      break;
+    case ossia::val_type::STRING:
+      return gensym("string");
+      break;
+    case ossia::val_type::LIST:
+      return gensym("list");
+      break;
+    case ossia::val_type::CHAR:
+      return gensym("char");
+      break;
+    case ossia::val_type::NONE:
+    default:
+      return gensym("none");
+  }
+}
+
+// see https://www.reddit.com/r/cpp_questions/comments/6z10d6/getting_that_sweet_zerooverhead_optimization/
+std::string replace_brackets(const ossia::string_view sv) {
+  std::string str(sv);
+  for(std::size_t i = 0, N = str.size(); i < N; i++) {
+    switch(str[i])
+    {
+      case '<':
+        str[i] = '{';
+        break;
+      case '>':
+        str[i] = '}';
+        break;
+      case '|':
+        str[i] = ',';
+        break;
+      default:
+        ;
+    }
+  }
+  return str;
+}
+
+ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
+{
+  if (bounding_mode == gensym("free"))
+    return ossia::bounding_mode::FREE;
+  else if (bounding_mode == gensym("both"))
+    return ossia::bounding_mode::CLIP;
+  else if (bounding_mode == gensym("wrap"))
+    return ossia::bounding_mode::WRAP;
+  else if (bounding_mode == gensym("fold"))
+    return ossia::bounding_mode::FOLD;
+  else if (bounding_mode == gensym("low"))
+    return ossia::bounding_mode::LOW;
+  else if (bounding_mode == gensym("high"))
+    return ossia::bounding_mode::HIGH;
+  else
+  {
+    error("unknown bounding mode: %s", bounding_mode->s_name);
+    return ossia::bounding_mode::FREE;
+  }
+}
+
+t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
+{
+  switch (bm)
+  {
+    case ossia::bounding_mode::FREE:
+      return gensym("free");
+    case ossia::bounding_mode::CLIP:
+      return gensym("both");
+    case ossia::bounding_mode::WRAP:
+      return gensym("wrap");
+    case ossia::bounding_mode::FOLD:
+      return gensym("fold");
+    case ossia::bounding_mode::LOW:
+      return gensym("low");
+    case ossia::bounding_mode::HIGH:
+      return gensym("high");
+    default :
+      return nullptr;
+  }
+}
+
+ossia::access_mode symbol2access_mode(t_symbol* access_mode)
+{
+  if (access_mode == gensym("bi") || access_mode == gensym("rw"))
+    return ossia::access_mode::BI;
+  else if (access_mode == gensym("get") || access_mode == gensym("r"))
+    return ossia::access_mode::GET;
+  else if (access_mode == gensym("set") || access_mode == gensym("w"))
+    return ossia::access_mode::SET;
+  else
+  {
+    error("unknown access mode: %s", access_mode->s_name);
+    return ossia::access_mode::BI;
+  }
+}
+
+t_symbol* access_mode2symbol(ossia::access_mode mode)
+{
+  switch(mode)
+  {
+    case ossia::access_mode::SET:
+      return gensym("set");
+    case ossia::access_mode::GET:
+      return gensym("get");
+    default:
+      return gensym("bi");
+  }
+}
+
+std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
+{
+  std::vector<ossia::pd::t_matcher*> matchers;
+  if (node)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      if (node == m.get_node())
+      {
+        matchers.push_back(&m);
+        break;
+      }
+    }
+  }
+
+  /*
+  if (matchers.empty())
+  {
+    matchers.reserve(x->m_matchers.size());
+    for (auto& m : x->m_matchers)
+      matchers.push_back(&m);
+  }
+  */
+
+  return matchers;
 }
 
 }

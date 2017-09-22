@@ -425,7 +425,7 @@ void qml_device::savePreset(const QUrl& file)
       QFile f(file.toLocalFile());
       if (f.open(QIODevice::WriteOnly))
       {
-        auto preset = ossia::devices::make_preset(device());
+        auto preset = ossia::presets::make_preset(device().get_root_node());
 
         auto str = ossia::presets::write_json(device().get_name(), preset);
         f.write(str.data(), str.size());
@@ -514,8 +514,8 @@ void qml_device::loadPreset(QObject* root, QString file)
 
       // Then load the preset
       auto kv = ossia::presets::read_json(f.readAll().toStdString());
-      ossia::devices::apply_preset(
-          device(), kv, ossia::devices::keep_arch_off);
+      ossia::presets::apply_preset(
+          device().get_root_node(), kv, ossia::presets::keep_arch_off);
 
       // Clear empty elements that may have been removed
       clearEmptyElements();
@@ -575,7 +575,7 @@ void qml_device::saveDevice(const QUrl& file)
         QFile f(file.toLocalFile());
         if (f.open(QIODevice::WriteOnly))
         {
-          auto d = ossia::devices::write_json(device());
+          auto d = ossia::presets::write_json(device());
           f.write(d.data(), d.size());
           return;
         }

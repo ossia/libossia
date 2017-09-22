@@ -23,7 +23,8 @@ struct address_info
     CC,        // /12/CC 64 123
     CC_N,      // /12/CC/64 123,
     PC,        // /12/PC 32
-    PC_N       // /12/PC/32 Impulse
+    PC_N,      // /12/PC/32 Impulse
+    PB         // /12/PB -8192 -> 8191
   };
 
   ossia::val_type matchingType()
@@ -33,11 +34,12 @@ struct address_info
       case Type::NoteOn:
       case Type::NoteOff:
       case Type::CC:
-        return ossia::val_type::TUPLE;
+        return ossia::val_type::LIST;
       case Type::NoteOn_N:
       case Type::NoteOff_N:
       case Type::CC_N:
       case Type::PC:
+      case Type::PB:
         return ossia::val_type::INT;
       case Type::PC_N:
         return ossia::val_type::IMPULSE;
@@ -69,11 +71,13 @@ struct address_info
       case Type::PC_N:
         return "/" + boost::lexical_cast<std::string>(channel) + "/PC/"
                + boost::lexical_cast<std::string>(note);
+      case Type::PB:
+        return "/" + boost::lexical_cast<std::string>(channel) + "/PB";
     }
     return {};
   }
 
-  ossia::value defaultValue(midi_size_t val)
+  ossia::value defaultValue(int32_t val)
   {
     switch (type)
     {
@@ -85,6 +89,7 @@ struct address_info
       case Type::NoteOff_N:
       case Type::CC_N:
       case Type::PC:
+      case Type::PB:
         return int32_t{val};
       case Type::PC_N:
         return ossia::impulse{};
@@ -94,8 +99,9 @@ struct address_info
 
   ossia::domain defaultDomain()
   {
-
-    return ossia::make_domain(defaultValue(0), defaultValue(127));
+    if(type != Type::PB)
+      return ossia::make_domain(defaultValue(0), defaultValue(127));
+    return ossia::make_domain(-8192, 8191);
   }
 
   address_info(Type t) : type{t}
@@ -118,7 +124,6 @@ struct address_info
 class midi_parameter : public ossia::net::parameter_base
 {
   address_info m_info;
-  ossia::net::node_base& m_parent;
   midi_protocol& m_protocol;
   ossia::domain m_domain;
 
@@ -129,8 +134,6 @@ public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
 
   const address_info& info() const;
-
-  ossia::net::node_base& get_node() const final override;
 
   void pull_value() final override;
   parameter_base& push_value(const ossia::value& val) final override;
@@ -153,9 +156,6 @@ public:
 
   ossia::bounding_mode get_bounding() const final override;
   parameter_base& set_bounding(ossia::bounding_mode) final override;
-
-  ossia::repetition_filter get_repetition_filter() const final override;
-  parameter_base& set_repetition_filter(ossia::repetition_filter) final override;
 
   void on_first_callback_added() final override;
   void on_removing_last_callback() final override;

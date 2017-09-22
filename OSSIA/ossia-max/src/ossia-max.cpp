@@ -10,10 +10,13 @@
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/view.hpp>
 #include <ossia-max/src/utils.hpp>
+#include <ossia-max/src/object_base.hpp>
 
 #include <commonsyms.h>
 #pragma mark -
 #pragma mark library
+
+#include <git_info.h>
 
 using namespace ossia::max;
 
@@ -23,24 +26,32 @@ ossia_max::ossia_max():
     m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
 {
   common_symbols_init();
+
+  parameters.reserve(2048);
+  remotes.reserve(1024);
+  models.reserve(512);
+  views.reserve(512);
+  devices.reserve(4);
+  clients.reserve(4);
+
   post("OSSIA library for Max is loaded");
-  post("build on %s at %s", __DATE__, __TIME__);
+  post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
 }
 
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
     for (auto x : views.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_view, &t_view::is_deleted>(x);
+      x->m_matchers.clear();
     }
     for (auto x : remotes.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_remote, &t_remote::is_deleted>(x);
+      x->m_matchers.clear();
     }
     for (auto x : models.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_model, &t_model::is_deleted>(x);
+      x->m_matchers.clear();
     }
     for (auto x : parameters.copy()){
-      x->m_node->about_to_be_deleted.disconnect<t_parameter, &t_parameter::is_deleted>(x);
+      x->m_matchers.clear();
     }
 }
 
@@ -56,99 +67,31 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark Templates
-
-template <typename T>
-bool max_object_register(T* x)
-{
-  if (x->m_node)
-    return true; // already registered
-  if (x->m_dead)
-    return false; // object will be removed soon
-
-  ossia::net::node_base* node = nullptr;
-
-  if (x->m_parameter_type == AddrType::global)
-  {
-    node = ossia::max::find_global_node(x->m_name->s_name);
-  }
-  else
-  {
-    int l;
-    t_device* device = (t_device*) find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
-    t_client* client = (t_client*) find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
-
-    t_model* model = nullptr;
-    t_view* view = nullptr;
-    int view_level = 0, model_level = 0;
-    int start_level = 0;
-
-    if (std::is_same<T, t_view>::value || std::is_same<T, t_model>::value)
-    {
-      start_level = 1;
-    }
-
-    if (x->m_parameter_type == AddrType::relative)
-    {
-      // then try to locate a parent view or model
-      if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
-      {
-        view = (t_view*) find_parent_box_alive(
-              &x->m_object, gensym("ossia.view"), start_level, &view_level);
-      }
-
-      if (!view)
-      {
-        model = (t_model*)find_parent_box_alive(
-              &x->m_object, gensym("ossia.model"), start_level, &model_level);
-      }
-    }
-
-    if (view)
-      node = view->m_node;
-    else if (model)
-      node = model->m_node;
-    else if (client)
-      node = client->m_node;
-    else if (device)
-      node = device->m_node;
-    else
-      node = &ossia_max::get_default_device()->get_root_node();
-  }
-
-  return x->register_node(node);
-}
-
-template bool max_object_register<t_parameter>(t_parameter*);
-template bool max_object_register<t_model>(t_model*);
-template bool max_object_register<t_remote>(t_remote*);
-template bool max_object_register<t_view>(t_view*);
-
 template <typename T>
 std::string object_path_absolute(T* x)
 {
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
+  vs.reserve(8);
 
-  if (std::is_same<T, t_view>::value || std::is_same<T, t_remote>::value)
+  if (std::is_same<T, view>::value || std::is_same<T, remote>::value)
   {
     int start_level = 0;
     int view_level = 0;
-    t_view* view = nullptr;
+    view* view = nullptr;
 
-    if (std::is_same<T, t_view>::value)
+    if (std::is_same<T, ossia::max::view>::value)
       start_level = 1;
 
-    view = (t_view*)find_parent_box_alive(
+    view = (ossia::max::view*)find_parent_box_alive(
         &x->m_object, gensym("ossia.view"), start_level, &view_level);
-    t_view* tmp = nullptr;
+    ossia::max::view* tmp = nullptr;
 
     while (view)
     {
       tmp = view;
       vs.push_back(tmp->m_name->s_name);
-      view = (t_view*)find_parent_box_alive(
+      view = (ossia::max::view*)find_parent_box_alive(
           &tmp->m_object, gensym("ossia.view"), 1, &view_level);
     }
 
@@ -160,10 +103,10 @@ std::string object_path_absolute(T* x)
       object = &x->m_object;
 
     int l = 0;
-    t_device* device
-        = (t_device*) find_parent_box(object, gensym("ossia.device"), 0, &l);
-    t_client* client
-        = (t_client*) find_parent_box(object, gensym("ossia.client"), 0, &l);
+    ossia::max::device* device = (ossia::max::device*)
+        find_parent_box(object, gensym("ossia.device"), 0, &l);
+    ossia::max::client* client = (ossia::max::client*)
+        find_parent_box(object, gensym("ossia.client"), 0, &l);
 
     if (client)
       fullpath << client->m_name->s_name
@@ -180,21 +123,21 @@ std::string object_path_absolute(T* x)
     int start_level = 0;
     int model_level = 0;
 
-    t_model* model = nullptr;
+    ossia::max::model* model = nullptr;
 
-    if (std::is_same<T, t_model>::value)
+    if (std::is_same<T, ossia::max::model>::value)
       start_level = 1;
 
-    model = (t_model*) find_parent_box_alive(
+    model = (ossia::max::model*) find_parent_box_alive(
         &x->m_object, gensym("ossia.model"), start_level, &model_level);
-    t_model* tmp = nullptr;
+    ossia::max::model* tmp = nullptr;
 
     while (model)
     {
       tmp = model;
 
       vs.push_back(tmp->m_name->s_name);
-      model = (t_model*) find_parent_box_alive(
+      model = (ossia::max::model*) find_parent_box_alive(
           &tmp->m_object, gensym("ossia.model"), 1, &model_level);
     }
 
@@ -205,7 +148,8 @@ std::string object_path_absolute(T* x)
       object = &x->m_object;
 
     int l = 0;
-    t_device* device = (t_device*)find_parent_box(object, gensym("ossia.device"), 0, &l);
+    ossia::max::device* device = (ossia::max::device*)
+        find_parent_box(object, gensym("ossia.device"), 0, &l);
 
     if (device)
       fullpath << device->m_name->s_name
@@ -227,10 +171,10 @@ std::string object_path_absolute(T* x)
   return fullpath.str();
 }
 
-template std::string object_path_absolute<t_parameter>(t_parameter*);
-template std::string object_path_absolute<t_model>(t_model*);
-template std::string object_path_absolute<t_remote>(t_remote*);
-template std::string object_path_absolute<t_view>(t_view*);
+template std::string object_path_absolute<parameter>(parameter*);
+template std::string object_path_absolute<model>(model*);
+template std::string object_path_absolute<remote>(remote*);
+template std::string object_path_absolute<view>(view*);
 
 template <typename T>
 void object_quarantining(T* x)
@@ -239,10 +183,10 @@ void object_quarantining(T* x)
     x->quarantine().push_back(x);
 }
 
-template void object_quarantining<t_parameter>(t_parameter*);
-template void object_quarantining<t_model>(t_model*);
-template void object_quarantining<t_remote>(t_remote*);
-template void object_quarantining<t_view>(t_view*);
+template void object_quarantining<parameter>(parameter*);
+template void object_quarantining<model>(model*);
+template void object_quarantining<remote>(remote*);
+template void object_quarantining<view>(view*);
 
 template <typename T>
 void object_dequarantining(T* x)
@@ -250,10 +194,10 @@ void object_dequarantining(T* x)
   x->quarantine().remove_all(x);
 }
 
-template void object_dequarantining<t_parameter>(t_parameter*);
-template void object_dequarantining<t_model>(t_model*);
-template void object_dequarantining<t_remote>(t_remote*);
-template void object_dequarantining<t_view>(t_view*);
+template void object_dequarantining<parameter>(parameter*);
+template void object_dequarantining<model>(model*);
+template void object_dequarantining<remote>(remote*);
+template void object_dequarantining<view>(view*);
 
 template <typename T>
 bool object_is_quarantined(T* x)
@@ -261,216 +205,47 @@ bool object_is_quarantined(T* x)
   return x->quarantine().contains(x);
 }
 
-template bool object_is_quarantined<t_parameter>(t_parameter*);
-template bool object_is_quarantined<t_model>(t_model*);
-template bool object_is_quarantined<t_remote>(t_remote*);
-template bool object_is_quarantined<t_view>(t_view*);
-
-template <typename T>
-void object_dump(T* x)
-{
-  t_atom a;
-  std::string fullpath;
-
-  if (x->m_node)
-  {
-    fullpath = ossia::net::address_string_from_node(*x->m_node);
-    atom_setsym(&a, gensym(fullpath.c_str()));
-    outlet_anything(x->m_dump_out, gensym("fullpath"), 1, &a);
-  }
-
-  fullpath = object_path_absolute(x);
-  if (fullpath.back() != '/')
-    fullpath += "/";
-
-  fullpath += x->m_name->s_name;
-  atom_setsym(&a, gensym(fullpath.c_str()));
-  outlet_anything(x->m_dump_out, gensym("maxpath"), 1, &a);
-
-  if (x->m_node)
-    atom_setfloat(&a, 1.);
-  else
-    atom_setfloat(&a, 0.);
-
-  outlet_anything(x->m_dump_out, gensym("registered"), 1, &a);
-
-  atom_setfloat(&a, object_is_quarantined(x));
-  outlet_anything(x->m_dump_out, gensym("quarantined"), 1, &a);
-
-  if (x->m_node)
-  {
-    ossia::net::parameter_base* address = x->m_node->get_parameter();
-    if (address)
-    {
-      // type
-      std::string type = "unknown";
-      switch (address->get_value_type())
-      {
-        case ossia::val_type::FLOAT:
-          type = "float";
-          break;
-        case ossia::val_type::INT:
-          type = " int";
-          break;
-        case ossia::val_type::VEC2F:
-          type = "vec2f";
-          break;
-        case ossia::val_type::VEC3F:
-          type = "vec3f";
-          break;
-        case ossia::val_type::VEC4F:
-          type = "vec4f";
-          break;
-        case ossia::val_type::IMPULSE:
-          type = "impulse";
-          break;
-        case ossia::val_type::BOOL:
-          type = "bool";
-          break;
-        case ossia::val_type::STRING:
-          type = "string";
-          break;
-        case ossia::val_type::TUPLE:
-          type = "tuple";
-          break;
-        case ossia::val_type::CHAR:
-          type = "char";
-          break;
-        default:
-          type = "unknown";
-      }
-
-      atom_setsym(&a, gensym(type.c_str()));
-      outlet_anything(x->m_dump_out, gensym("type"), 1, &a);
-
-      // domain
-      ossia::domain domain = address->get_domain();
-      atom_setsym(&a, gensym(domain.to_pretty_string().c_str()));
-      outlet_anything(x->m_dump_out, gensym("domain"), 1, &a);
-
-      // bounding mode
-      std::string bounding_mode;
-      switch (address->get_bounding())
-      {
-        case ossia::bounding_mode::FREE:
-          bounding_mode = "free";
-          break;
-        case ossia::bounding_mode::CLIP:
-          bounding_mode = "clip";
-          break;
-        case ossia::bounding_mode::WRAP:
-          bounding_mode = "wrap";
-          break;
-        case ossia::bounding_mode::FOLD:
-          bounding_mode = "fold";
-          break;
-        case ossia::bounding_mode::LOW:
-          bounding_mode = "low";
-          break;
-        case ossia::bounding_mode::HIGH:
-          bounding_mode = "high";
-          break;
-        default:
-          bounding_mode = "unknown";
-      }
-
-      atom_setsym(&a, gensym(bounding_mode.c_str()));
-      outlet_anything(x->m_dump_out, gensym("bounding_mode"), 1, &a);
-
-      // access mode
-      std::string access_mode;
-      switch (address->get_access())
-      {
-        case ossia::access_mode::BI:
-          access_mode = "bi";
-          break;
-        case ossia::access_mode::GET:
-          access_mode = "get";
-          break;
-        case ossia::access_mode::SET:
-          access_mode = "set";
-          break;
-        default:
-          access_mode = "unknown";
-      }
-
-      atom_setsym(&a, gensym(access_mode.c_str()));
-      outlet_anything(x->m_dump_out, gensym("access_mode"), 1, &a);
-
-      // repetition filter
-      bool rep = address->get_repetition_filter();
-      atom_setfloat(&a, rep);
-      outlet_anything(x->m_dump_out, gensym("repetition_filter"), 1, &a);
-
-      // unit
-      // TODO
-      address->get_unit();
-    }
-
-    // description
-    auto description = ossia::net::get_description(*(x->m_node));
-    if (description)
-    {
-      atom_setsym(&a, gensym((*description).c_str()));
-      outlet_anything(x->m_dump_out, gensym("description"), 1, &a);
-    }
-    else
-      outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
-
-    // tags
-    auto tags = ossia::net::get_tags(*x->m_node);
-    if (tags)
-    {
-      std::size_t N = (*tags).size();
-      std::vector<t_atom> l(N);
-      for (std::size_t i = 0; i < N; i++)
-      {
-        atom_setsym(&l[i], gensym((*tags)[i].c_str()));
-      }
-      outlet_anything(x->m_dump_out, gensym("tags"), N, l.data());
-    }
-    else
-      outlet_anything(x->m_dump_out, gensym("tags"), 0, nullptr);
-  }
-}
-
-template void object_dump<t_parameter>(t_parameter*);
-template void object_dump<t_model>(t_model*);
-template void object_dump<t_remote>(t_remote*);
-template void object_dump<t_view>(t_view*);
+template bool object_is_quarantined<parameter>(parameter*);
+template bool object_is_quarantined<model>(model*);
+template bool object_is_quarantined<remote>(remote*);
+template bool object_is_quarantined<view>(view*);
 
 #pragma mark -
 #pragma mark Utilities
 
 void register_quarantinized()
 {
-  for (auto model : t_model::quarantine().copy())
+  for (auto model : model::quarantine().copy())
   {
-    max_object_register<t_model>(static_cast<t_model*>(model));
+    max_object_register<ossia::max::model>(
+          static_cast<ossia::max::model*>(model));
   }
 
-  for (auto parameter : t_parameter::quarantine().copy())
+  for (auto parameter : parameter::quarantine().copy())
   {
-    max_object_register<t_parameter>(static_cast<t_parameter*>(parameter));
+    max_object_register<ossia::max::parameter>(
+          static_cast<ossia::max::parameter*>(parameter));
   }
 
-  for (auto view : t_view::quarantine().copy())
+  for (auto view : view::quarantine().copy())
   {
-    max_object_register<t_view>(static_cast<t_view*>(view));
+    max_object_register<ossia::max::view>(
+          static_cast<ossia::max::view*>(view));
   }
 
-  for (auto remote : t_remote::quarantine().copy())
+  for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<t_remote>(static_cast<t_remote*>(remote));
+    max_object_register<ossia::max::remote>(
+          static_cast<ossia::max::remote*>(remote));
   }
 }
 
-t_object_base* find_parent_box(
+object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level)
 {
 
   t_object* patcher = get_patcher(object);
-  t_object_base* parent = nullptr;
+  object_base* parent = nullptr;
 
   // look upper if there is an upper level and if it is not the level where to
   // start the research
@@ -492,7 +267,7 @@ t_object_base* find_parent_box(
         // the object itself cannot be its own parent
         if (box != object_box)
         {
-          parent = (t_object_base*)jbox_get_object(box);
+          parent = (object_base*)jbox_get_object(box);
           *level = start_level;
           break;
         }
@@ -506,10 +281,10 @@ t_object_base* find_parent_box(
   return parent;
 }
 
-t_object_base* find_parent_box_alive(
+object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level)
 {
-  t_object_base* parent
+  object_base* parent
       = find_parent_box(object, classname, start_level, level);
 
   while (parent && parent->m_dead)
@@ -521,22 +296,24 @@ t_object_base* find_parent_box_alive(
   return parent;
 }
 
-std::vector<t_object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname)
+std::vector<object_base*> find_children_to_register(
+    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev)
 {
   t_symbol* subclassname = classname == gensym("ossia.model")
                                ? gensym("ossia.parameter")
                                : gensym("ossia.remote");
 
-  std::vector<t_object_base*> found;
-  t_object* next_box;
+  std::vector<object_base*> found;
+  bool found_model = false;
+  bool found_view = false;
 
   // 1: look for [classname] objects into the patcher
-  next_box = object_attr_getobj(patcher, _sym_firstobject);
+  t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
 
   while (next_box)
   {
-    if (object_attr_getsym(next_box, _sym_maxclass) == classname)
+    t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
+    if (curr_classname == classname)
     {
       t_object* object_box = NULL;
       object_obex_lookup(object, gensym("#B"), &object_box);
@@ -544,7 +321,34 @@ std::vector<t_object_base*> find_children_to_register(
       // the object itself cannot be stored into the hierachy
       if (next_box != object_box && next_box != nullptr)
       {
-        t_object_base* o = (t_object_base*) jbox_get_object(next_box);
+        object_base* o = (object_base*) jbox_get_object(next_box);
+
+        // ignore dying object
+        if (!o->m_dead)
+          found.push_back(o);
+      }
+    }
+
+    // if we're looking for ossia.view but found a model, remind it
+    if ( classname == gensym("ossia.view")
+         && curr_classname == gensym("ossia.model") )
+      found_model = true;
+    else if ( classname == gensym("ossia.model")
+              && curr_classname == gensym("ossia.view") )
+      found_view = true;
+
+    // if there is a client or device in the current patcher
+    // don't register anything
+    if ( found_dev
+         && (curr_classname == gensym("ossia.device")
+             || curr_classname == gensym("ossia.client")) )
+    {
+      t_object* object_box = NULL;
+      object_obex_lookup(object, gensym("#B"), &object_box);
+      // the object itself cannot be stored into the hierachy
+      if (next_box != object_box && next_box != nullptr)
+      {
+        object_base* o = (object_base*) jbox_get_object(next_box);
 
         // ignore dying object
         if (!o->m_dead)
@@ -571,13 +375,13 @@ std::vector<t_object_base*> find_children_to_register(
           || next_box_classname == _sym_bpatcher)
       {
         t_object* patcher = jbox_get_object(next_box);
+        bool _found_dev = false;
+        std::vector<object_base*> found_tmp
+            = find_children_to_register(object, patcher, classname, &_found_dev);
 
-        std::vector<t_object_base*> found_tmp
-            = find_children_to_register(object, patcher, classname);
-
-        for (auto obj : found_tmp)
+        if (!_found_dev)
         {
-          found.push_back(obj);
+          found.insert(found.end(),found_tmp.begin(), found_tmp.end());
         }
       }
 
@@ -589,7 +393,9 @@ std::vector<t_object_base*> find_children_to_register(
 
     while (next_box)
     {
-      if (object_attr_getsym(next_box, _sym_maxclass) == subclassname)
+      t_symbol* current = object_attr_getsym(next_box, _sym_maxclass);
+      if (current == subclassname
+          || ( !found_view && current == gensym("ossia.remote") ) )
       {
         t_object* object_box = NULL;
         object_obex_lookup(object, gensym("#B"), &object_box);
@@ -597,7 +403,7 @@ std::vector<t_object_base*> find_children_to_register(
         // the object itself shouln't be stored
         if (object_box)
         {
-          t_object_base* o = (t_object_base*) jbox_get_object(next_box);
+          object_base* o = (object_base*) jbox_get_object(next_box);
           found.push_back(o);
         }
       }

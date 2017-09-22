@@ -4,6 +4,7 @@
 #include "json_parser.hpp"
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
@@ -382,7 +383,7 @@ static ossia::val_type VecTypetag(ossia::string_view typetag)
   else if (typetag == "ffff" || typetag == "[ffff]")
     return ossia::val_type::VEC4F;
   else
-    return ossia::val_type::TUPLE;
+    return ossia::val_type::LIST;
 }
 
 //! Used to check if an actual value with multiple elements,
@@ -414,7 +415,7 @@ static ossia::val_type VecTypetag(const rapidjson::Value& val)
       }
     }
   }
-  return ossia::val_type::TUPLE;
+  return ossia::val_type::LIST;
 }
 
 void json_parser_impl::readObject(
@@ -477,16 +478,16 @@ void json_parser_impl::readObject(
       }
       else if (ext_type)
       {
-        ossia::val_type actual_type = ossia::val_type::TUPLE; // Generic worse
+        ossia::val_type actual_type = ossia::val_type::LIST; // Generic worse
                                                               // case; also
-                                                              // "tuple_type()"
+                                                              // "list_type()"
         const auto& e_type = *ext_type;
         if (e_type == generic_buffer_type()
             || e_type == filesystem_path_type())
         {
           actual_type = ossia::val_type::STRING;
         }
-        else if (e_type == tuple_type())
+        else if (e_type == list_type())
         {
           // nothing to do, but don't remove so that
           // we don't go into the float_array case
@@ -495,7 +496,7 @@ void json_parser_impl::readObject(
         {
           // Look for Vec2f, Vec3f, Vec4f
           actual_type = VecTypetag(typetag);
-          if (actual_type == ossia::val_type::TUPLE)
+          if (actual_type == ossia::val_type::LIST)
           {
             // We try to find through the actual values
             if (value_it != obj.MemberEnd())
@@ -611,18 +612,12 @@ int json_parser::get_port(const rapidjson::Value& obj)
 ossia::oscquery::message_type
 json_parser::message_type(const rapidjson::Value& obj)
 {
-  static string_view_map<ossia::oscquery::message_type> map{
+  static const string_view_map<ossia::oscquery::message_type> map{
       {detail::path_added(), ossia::oscquery::message_type::PathAdded},
       {detail::path_changed(), ossia::oscquery::message_type::PathChanged},
       {detail::path_removed(), ossia::oscquery::message_type::PathRemoved},
-      {detail::attributes_changed(),
-       ossia::oscquery::message_type::AttributesChanged}};
+      {detail::attributes_changed(), ossia::oscquery::message_type::AttributesChanged}};
   using namespace detail;
-  auto val_it = obj.FindMember(detail::attribute_value());
-  if (val_it != obj.MemberEnd())
-  {
-    return ossia::oscquery::message_type::Value;
-  }
 
   auto it = obj.FindMember(detail::command());
   if (it != obj.MemberEnd())
@@ -632,12 +627,19 @@ json_parser::message_type(const rapidjson::Value& obj)
       return mt_it.value();
   }
 
+  {
+    if (obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
+    {
+      return ossia::oscquery::message_type::Namespace;
+    }
+  }
+
   if (obj.FindMember(detail::osc_port()) != obj.MemberEnd())
   {
     return ossia::oscquery::message_type::Device;
   }
 
-  return ossia::oscquery::message_type::Namespace; // TODO More checks needed
+  return ossia::oscquery::message_type::Value; // TODO More checks needed
 }
 
 void json_parser::parse_namespace(
@@ -679,7 +681,8 @@ void json_parser::parse_value(
 }
 
 void json_parser::parse_parameter_value(
-    net::node_base& root, const rapidjson::Value& obj)
+    net::node_base& root, const rapidjson::Value& obj,
+    ossia::net::device_base& dev)
 {
   for(auto it = obj.MemberBegin(), end = obj.MemberEnd(); it != end; ++it)
   {
@@ -697,9 +700,13 @@ void json_parser::parse_parameter_value(
 
           // TODO don't push it back to the sender
           addr->push_value(std::move(val));
+          dev.on_message(*addr);
+          continue;
         }
       }
     }
+
+    dev.on_unhandled_message(path, detail::ReadValue(it->value));
   }
 }
 

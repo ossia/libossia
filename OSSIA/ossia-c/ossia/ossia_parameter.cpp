@@ -2,6 +2,10 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_utils.hpp"
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <readerwriterqueue.h>
+#include <unordered_map>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/message_queue.hpp>
 
 extern "C" {
 
@@ -265,7 +269,7 @@ void ossia_parameter_push_s(ossia_parameter_t address, const char* s)
   });
 }
 
-void ossia_parameter_push_in(ossia_parameter_t address, const int* in, int sz)
+void ossia_parameter_push_in(ossia_parameter_t address, const int* in, size_t sz)
 {
   return safe_function(__func__, [=] {
     if (!address)
@@ -276,14 +280,14 @@ void ossia_parameter_push_in(ossia_parameter_t address, const int* in, int sz)
 
     std::vector<ossia::value> v;
     v.resize(sz);
-    for(int i = 0; i < sz; i++)
+    for(size_t i = 0; i < sz; i++)
     {
       v[i] = in[i];
     }
     convert_parameter(address)->push_value(std::move(v));
   });
 }
-void ossia_parameter_push_fn(ossia_parameter_t address, const float* in, int sz)
+void ossia_parameter_push_fn(ossia_parameter_t address, const float* in, size_t sz)
 {
   return safe_function(__func__, [=] {
     if (!address)
@@ -294,14 +298,14 @@ void ossia_parameter_push_fn(ossia_parameter_t address, const float* in, int sz)
 
     std::vector<ossia::value> v;
     v.resize(sz);
-    for(int i = 0; i < sz; i++)
+    for(size_t i = 0; i < sz; i++)
     {
       v[i] = in[i];
     }
     convert_parameter(address)->push_value(std::move(v));
   });
 }
-void ossia_parameter_push_cn(ossia_parameter_t address, const char* in, int sz)
+void ossia_parameter_push_cn(ossia_parameter_t address, const char* in, size_t sz)
 {
   return safe_function(__func__, [=] {
     if (!address)
@@ -327,6 +331,37 @@ ossia_value_t ossia_parameter_fetch_value(ossia_parameter_t address)
   });
 }
 
+void ossia_parameter_set_listening(
+    ossia_parameter_t address,
+    int listening)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_set_listening: address is null");
+      return;
+    }
+
+    auto addr = convert_parameter(address);
+    if(listening)
+    {
+      auto cb_it = addr->get_node().get_attribute(ossia::string_view("_impl_callback"));
+      auto cb_ptr = ossia::any_cast<ossia::net::parameter_base::callback_index>(&cb_it);
+      if(cb_ptr)
+      {
+        addr->remove_callback(*cb_ptr);
+      }
+    }
+    else
+    {
+      auto it = addr->add_callback([] (const ossia::value&) { });
+      ossia::set_attribute(
+            (ossia::extended_attributes&)addr->get_node(),
+            ossia::string_view("_impl_callback"),
+            it);
+    }
+  });
+}
 ossia_value_callback_idx_t ossia_parameter_add_callback(
     ossia_parameter_t address, ossia_value_callback_t callback, void* ctx)
 {
@@ -428,6 +463,91 @@ const char* ossia_parameter_get_unit(
   });
 }
 
+void ossia_parameter_set_disabled(
+    ossia_parameter_t address,
+    int disabled)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_set_disabled: address is null");
+      return;
+    }
+
+    convert_parameter(address)->set_disabled(disabled != 0);
+  });
+}
+
+int ossia_parameter_get_disabled(
+    ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_get_disabled: address is null");
+      return 0;
+    }
+
+    return (int)convert_parameter(address)->get_disabled();
+  });
+}
+void ossia_parameter_set_muted(
+    ossia_parameter_t address,
+    int muted)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_set_muted: address is null");
+      return;
+    }
+
+    convert_parameter(address)->set_muted(muted != 0);
+  });
+}
+
+int ossia_parameter_get_muted(
+    ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_get_muted: address is null");
+      return 0;
+    }
+
+    return (int)convert_parameter(address)->get_muted();
+  });
+}
+void ossia_parameter_set_critical(
+    ossia_parameter_t address,
+    int critical)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_set_critical: address is null");
+      return;
+    }
+
+    convert_parameter(address)->set_critical(critical != 0);
+  });
+}
+
+int ossia_parameter_get_critical(
+    ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!address)
+    {
+      ossia_log_error("ossia_node_get_critical: address is null");
+      return 0;
+    }
+
+    return (int)convert_parameter(address)->get_critical();
+  });
+}
+
 void ossia_parameter_set_repetition_filter(
     ossia_parameter_t address,
     int rf)
@@ -461,4 +581,37 @@ int ossia_parameter_get_repetition_filter(
   });
 }
 
+ossia_mq_t ossia_mq_create(ossia_device_t dev)
+{
+  return new ossia::message_queue{*convert_device(dev)};
+}
+
+void ossia_mq_register(ossia_mq_t mq, ossia_parameter_t p)
+{
+  reinterpret_cast<ossia::message_queue*>(mq)->reg(*convert_parameter(p));
+}
+
+void ossia_mq_unregister(ossia_mq_t mq, ossia_parameter_t p)
+{
+  reinterpret_cast<ossia::message_queue*>(mq)->unreg(*convert_parameter(p));
+}
+
+int ossia_mq_pop(ossia_mq_t mq, ossia_parameter_t* address, ossia_value_t* val)
+{
+  auto messq = reinterpret_cast<ossia::message_queue*>(mq);
+
+  ossia::received_value m;
+  if(messq->try_dequeue(m))
+  {
+    *address = convert(m.address);
+    *val = new ossia_value{std::move(m.value)};
+    return 1;
+  }
+  return 0;
+}
+
+void ossia_mq_free(ossia_mq_t mq)
+{
+  delete reinterpret_cast<ossia::message_queue*>(mq);
+}
 }

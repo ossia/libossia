@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include <ossia-c/preset/preset.h>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia/network/common/path.hpp>
 
 #include <ossia/ossia.hpp>
@@ -25,7 +25,7 @@ TEST_CASE ("Device exceptions") {
     bool b;
     preset.insert(std::make_pair("/root", b));
 
-    REQUIRE_THROWS(ossia::devices::apply_preset(localDevice, preset, ossia::devices::keep_arch_off));
+    REQUIRE_THROWS(ossia::presets::apply_preset(localDevice, preset, ossia::presets::keep_arch_off));
   }
 
   SECTION("Invalid address: keep_arch_type") {
@@ -33,8 +33,8 @@ TEST_CASE ("Device exceptions") {
     bool b;
     preset.insert(std::make_pair ("/root/child_that_does_not_exist", b));
 
-    REQUIRE_THROWS(ossia::devices::apply_preset(localDevice, preset, ossia::devices::keep_arch_on));
-    REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, preset, ossia::devices::keep_arch_off));
+    REQUIRE_THROWS(ossia::presets::apply_preset(localDevice, preset, ossia::presets::keep_arch_on));
+    REQUIRE_NOTHROW(ossia::presets::apply_preset(localDevice, preset, ossia::presets::keep_arch_off));
 
   }
 }
@@ -49,9 +49,9 @@ TEST_CASE ("Building device from preset") {
   p.emplace("/device/a.1/b.1/c", 3);
   p.emplace("/device/a.1/b.1/d", 4);
 
-  REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off));
+  REQUIRE_NOTHROW(ossia::presets::apply_preset(localDevice, p, ossia::presets::keep_arch_off));
 
-  using namespace ossia::devices;
+  using namespace ossia::presets;
   SECTION("Presence of nodes") {
     REQUIRE(get_node(localDevice, "/device/a.0") != nullptr);
     REQUIRE(get_node(localDevice, "/device/a.0/b.0") != nullptr);
@@ -127,7 +127,7 @@ TEST_CASE ("Functions on instances") {
   p.emplace("/device/a.1/b.1/c", 3);
   p.emplace("/device/a.1/b.1/d", 4);
 
-  REQUIRE_NOTHROW(ossia::devices::apply_preset(localDevice, p, ossia::devices::keep_arch_off, funcs));
+  REQUIRE_NOTHROW(ossia::presets::apply_preset(localDevice, p, ossia::presets::keep_arch_off, funcs));
 
   REQUIRE(number_of_a_nodes == 2);
   REQUIRE(number_of_a_nodes_regex == 2);

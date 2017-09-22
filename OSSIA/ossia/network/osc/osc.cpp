@@ -14,34 +14,23 @@
 #include <boost/algorithm/string.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 namespace ossia
 {
 namespace net
 {
+using sender_t = osc::sender<osc_outbound_visitor>;
 
 osc_protocol::osc_protocol(
-    std::string ip, uint16_t remote_port, uint16_t local_port)
-    : m_sender{std::make_unique<osc::sender<osc_outbound_visitor>>(
-          m_logger, ip, remote_port)}
-    , m_receiver{std::make_unique<osc::receiver>(
-          local_port,
-          [=](const oscpack::ReceivedMessage& m,
-              const oscpack::IpEndpointName& ip) {
-            this->on_received_message(m, ip);
-          })}
-    , m_ip{ip}
-    , m_remote_port{remote_port}
-    , m_local_port{local_port}
+    std::string ip, uint16_t remote_port, uint16_t local_port, ossia::optional<std::string> expose)
+  : m_ip{std::move(ip)}
+  , m_remote_port{remote_port}
+  , m_local_port{local_port}
+  , m_expose{std::move(expose)}
 {
-  if (m_receiver->port() != local_port)
-  {
-    ;
-    throw ossia::connection_error{
-        "osc_protocol::osc_protocol: "
-        "Could not connect to port: "
-        + boost::lexical_cast<std::string>(local_port)};
-  }
-  m_receiver->run();
+  update_sender();
+  update_receiver();
+  update_zeroconf();
 }
 
 osc_protocol::~osc_protocol()
@@ -55,9 +44,9 @@ const std::string& osc_protocol::get_ip() const
 
 osc_protocol& osc_protocol::set_ip(std::string ip)
 {
-  m_ip = ip;
-  m_sender = std::make_unique<osc::sender<osc_outbound_visitor>>(
-      m_logger, m_ip, m_remote_port);
+  m_ip = std::move(ip);
+  update_sender();
+  update_zeroconf();
 
   return *this;
 }
@@ -70,8 +59,8 @@ uint16_t osc_protocol::get_remote_port() const
 osc_protocol& osc_protocol::set_remote_port(uint16_t in_port)
 {
   m_remote_port = in_port;
-  m_sender = std::make_unique<osc::sender<osc_outbound_visitor>>(
-      m_logger, m_ip, m_remote_port);
+  update_sender();
+  update_zeroconf();
 
   return *this;
 }
@@ -84,12 +73,58 @@ uint16_t osc_protocol::get_local_port() const
 osc_protocol& osc_protocol::set_local_port(uint16_t out_port)
 {
   m_local_port = out_port;
-  m_receiver = std::make_unique<osc::receiver>(
-      out_port, [=](const oscpack::ReceivedMessage& m,
-                    const oscpack::IpEndpointName& ip) {
-        this->on_received_message(m, ip);
-      });
+  update_receiver();
+  update_zeroconf();
+
   return *this;
+}
+
+void osc_protocol::update_sender()
+{
+  m_sender = std::make_unique<sender_t>(m_logger, m_ip, m_remote_port);
+}
+
+void osc_protocol::update_receiver()
+{
+  m_receiver = std::make_unique<osc::receiver>(
+                 m_local_port, [=] (
+                    const oscpack::ReceivedMessage& m,
+                    const oscpack::IpEndpointName& ip) {
+    this->on_received_message(m, ip);
+  });
+
+  if (m_receiver->port() != m_local_port)
+  {
+    throw ossia::connection_error{
+      "osc_protocol: "
+      "Could not open port: "
+      + boost::lexical_cast<std::string>(m_local_port)};
+  }
+
+  m_receiver->run();
+}
+
+void osc_protocol::update_zeroconf()
+{
+  if(!m_expose)
+    return;
+  try
+  {
+    m_zeroconfServer = net::make_zeroconf_server(
+                         *m_expose,
+                         "_osc._udp",
+                         *m_expose,
+                         m_local_port,
+                         m_remote_port);
+  }
+  catch (const std::exception& e)
+  {
+    logger().error("osc_protocol::update_zeroconf: {}", e.what());
+  }
+  catch (...)
+  {
+    logger().error("osc_protocol::update_zeroconf: error.");
+  }
 }
 
 bool osc_protocol::learning() const
@@ -219,38 +254,7 @@ void osc_protocol::on_received_message(
 {
   if (!m_learning)
   {
-    auto addr_txt = m.AddressPattern();
-    auto addr = m_listening.find(addr_txt);
-    if (addr && *addr)
-    {
-      update_value(**addr, m);
-    }
-    else
-    {
-      // We still want to save the value even if it is not listened to.
-      if (auto n = find_node(m_device->get_root_node(), addr_txt))
-      {
-        if (auto base_addr = n->get_parameter())
-        {
-          update_value_quiet(*base_addr, m);
-        }
-      }
-      else
-      {
-        // Try to handle pattern matching
-        auto nodes = find_nodes(m_device->get_root_node(), addr_txt);
-        for(auto n : nodes)
-        {
-          if (auto addr = n->get_parameter())
-          {
-             if(m_listening.find(net::osc_parameter_string(*n)))
-               net::update_value(*addr, m);
-             else
-               net::update_value_quiet(*addr, m);
-          }
-        }
-      }
-    }
+    handle_osc_message<false>(m, m_listening, *m_device);
   }
   else
   {
@@ -265,8 +269,8 @@ template <std::size_t N>
 static bool is_vec(std::vector<ossia::value>& t)
 {
   return t.size() == N && ossia::all_of(t, [](const ossia::value& val) {
-           return val.getType() == ossia::val_type::FLOAT;
-         });
+    return val.getType() == ossia::val_type::FLOAT;
+  });
 }
 
 void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
@@ -274,6 +278,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
   // TODO put them in a hash map instead.
   // Find-or-add algorithm
   ossia::string_view addr = m.AddressPattern();
+  // TODO string -> string_view
   std::vector<std::string> v = address_parts(addr);
 
   bool is_new = false;
@@ -314,7 +319,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
     case 2:
     {
       auto val
-          = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
+          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount());
       if (is_vec<2>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC2F);
@@ -322,51 +327,51 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       }
       else
       {
-        auto addr = n->create_parameter(ossia::val_type::TUPLE);
-        addr->set_value(osc_utilities::create_tuple(
-            m.ArgumentsBegin(), m.ArgumentCount()));
+        auto addr = n->create_parameter(ossia::val_type::LIST);
+        addr->set_value(osc_utilities::create_list(
+                          m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
     case 3:
     {
       auto val
-          = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
+          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount());
       if (is_vec<3>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC3F);
-        addr->set_value(convert<ossia::vec2f>(val));
+        addr->set_value(convert<ossia::vec3f>(val));
       }
       else
       {
-        auto addr = n->create_parameter(ossia::val_type::TUPLE);
-        addr->set_value(osc_utilities::create_tuple(
-            m.ArgumentsBegin(), m.ArgumentCount()));
+        auto addr = n->create_parameter(ossia::val_type::LIST);
+        addr->set_value(osc_utilities::create_list(
+                          m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
     case 4:
     {
       auto val
-          = osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount());
+          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount());
       if (is_vec<4>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC4F);
-        addr->set_value(convert<ossia::vec2f>(val));
+        addr->set_value(convert<ossia::vec4f>(val));
       }
       else
       {
-        auto addr = n->create_parameter(ossia::val_type::TUPLE);
-        addr->set_value(osc_utilities::create_tuple(
-            m.ArgumentsBegin(), m.ArgumentCount()));
+        auto addr = n->create_parameter(ossia::val_type::LIST);
+        addr->set_value(osc_utilities::create_list(
+                          m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
     default:
     {
-      auto addr = n->create_parameter(ossia::val_type::TUPLE);
+      auto addr = n->create_parameter(ossia::val_type::LIST);
       addr->set_value(
-          osc_utilities::create_tuple(m.ArgumentsBegin(), m.ArgumentCount()));
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
       break;
     }
   }

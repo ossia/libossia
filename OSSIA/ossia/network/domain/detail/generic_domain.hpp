@@ -13,7 +13,7 @@ struct generic_clamp
   ossia::value operator()(bounding_mode b, ossia::value&& v) const;
 
   // TODO should we have the same optimization for Vec?
-  // This will clamp the Tuple component by component with the given value.
+  // This will clamp the List component by component with the given value.
   value
   operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
   value operator()(bounding_mode b, std::vector<ossia::value>&& val) const;

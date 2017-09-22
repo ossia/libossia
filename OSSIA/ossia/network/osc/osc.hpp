@@ -8,6 +8,7 @@
 #include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <atomic>
 #include <hopscotch_map.h>
+#include <ossia/network/zeroconf/zeroconf.hpp>
 
 namespace oscpack
 {
@@ -27,7 +28,10 @@ namespace net
 class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
 public:
-  osc_protocol(std::string ip, uint16_t remote_port, uint16_t local_port);
+  osc_protocol(std::string ip,
+               uint16_t remote_port,
+               uint16_t local_port,
+               ossia::optional<std::string> expose_name = ossia::none);
 
   osc_protocol(const osc_protocol&) = delete;
   osc_protocol(osc_protocol&&) = delete;
@@ -65,10 +69,16 @@ private:
   void on_learn(const oscpack::ReceivedMessage& m);
   void set_device(ossia::net::device_base& dev) override;
 
+  void update_sender();
+  void update_receiver();
+  void update_zeroconf();
+
   listened_parameters m_listening;
 
   std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;
+
+  net::zeroconf_server m_zeroconfServer;
 
   ossia::net::device_base* m_device{};
   std::string m_ip;
@@ -80,6 +90,7 @@ private:
   std::atomic_bool
       m_learning{}; /// if the device is currently learning from inbound
                     /// messages.
+  optional<std::string> m_expose{};
 };
 }
 }

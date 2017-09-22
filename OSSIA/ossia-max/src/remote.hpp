@@ -1,6 +1,7 @@
 #pragma once
-#include "ossia_object_base.hpp"
-#include <boost/optional.hpp>
+#include <ossia-max/src/parameter_base.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {
@@ -10,79 +11,47 @@ namespace max
 #pragma mark -
 #pragma mark t_remote structure declaration
 
-struct t_remote;
-
-class t_matcher
+class remote : public parameter_base
 {
 public:
-  t_matcher(ossia::net::node_base* n, t_remote* p); // constructor
-  ~t_matcher();
-  t_matcher(const t_matcher&) = delete;
-  t_matcher(t_matcher&& other);
-  t_matcher& operator=(const t_matcher&) = delete;
-  t_matcher& operator=(t_matcher&& other);
-
-  void set_value(const ossia::value& v);
-  auto get_node() const { return node; }
-
-  inline bool operator==(const t_matcher& rhs)
-  { return (get_node() == rhs.node); }
-
-
-  private:
-    ossia::net::node_base* node{};
-    t_remote* parent{};
-
-    ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-        callbackit = ossia::none;
-
-};
-
-struct t_remote : t_object_base
-{
-  bool register_node(ossia::net::node_base* node);
-  bool do_registration(ossia::net::node_base* node);
+  bool register_node(const std::vector<ossia::net::node_base*>& node);
+  bool do_registration(const std::vector<ossia::net::node_base*>& node);
   bool unregister();
 
-  std::vector<boost::optional<ossia::callback_container<ossia::value_callback>::iterator> >
-      m_callbackits;
-
-  std::vector<t_matcher> m_matchers{};
-
-  bool m_is_pattern{};
   ossia::net::device_base* m_dev{};
+  float m_rate_min;
 
-  void is_deleted(const ossia::net::node_base& n);
-  static void remote_bind(t_remote* x, t_symbol* address);
+  void set_unit();
+  void set_rate();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
-  static ossia::safe_vector<t_remote*>& quarantine()
-  {
-    static ossia::safe_vector<t_remote*> quarantine;
-    return quarantine;
-  }
+  static void update_attribute(remote* x, ossia::string_view attribute);
+  static void bind(remote* x, t_symbol* address);
+  //static void click( remote* x, t_floatarg xpos, t_floatarg ypos,
+  //                   t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
+  static t_max_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
+
+  //static void destroy(remote* x);
+  //static void* create(t_symbol* name, int argc, t_atom* argv);
+
+  static ossia::safe_set<remote *> &quarantine();
+
+  static void get_unit(remote*x);
+  static void get_mute(remote*x);
+  static void get_rate(remote*x);
+  static void get_enable(remote*x);
+
+  static void assist(ossia::max::remote*, void*, long, long, char*);
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::remote*);
+
+  void on_device_deleted(const ossia::net::node_base&);
+
+private:
+  ossia::optional<ossia::traversal::path> m_path;
+  void update_path(string_view name);
 };
 
 } // max namespace
 } // ossia namespace
-
-#pragma mark -
-#pragma mark ossia_remote class declaration
-
-extern "C" {
-void* ossia_remote_new(t_symbol*, long, t_atom*);
-void ossia_remote_free(ossia::max::t_remote*);
-
-//    void ossia_remote_click(t_remote *x, t_floatarg xpos, t_floatarg ypos,
-//    t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
-void ossia_remote_assist(ossia::max::t_remote*, void*, long, long, char*);
-
-void ossia_remote_in_float(ossia::max::t_remote*, double f);
-void ossia_remote_in_int(ossia::max::t_remote*, long int f);
-void ossia_remote_in_bang(ossia::max::t_remote*);
-void ossia_remote_in_symbol(ossia::max::t_remote*, t_symbol*);
-void ossia_remote_in_char(ossia::max::t_remote*, char);
-void ossia_remote_in_anything(ossia::max::t_remote*, t_symbol*, long, t_atom*);
-
-}

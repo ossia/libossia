@@ -1,13 +1,10 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "device.hpp"
-#include "model.hpp"
-#include "parameter.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "utils.hpp"
+#include <ossia-pd/src/device.hpp>
+#include <ossia-pd/src/utils.hpp>
 
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
 namespace ossia
@@ -15,51 +12,63 @@ namespace ossia
 namespace pd
 {
 
-static void device_free(t_device* x)
+device::device():
+  device_base{ossia_pd::device_class}
+{ }
+
+void device::destroy(device* x)
 {
-  x->x_dead = true;
-  clock_unset(x->x_regclock);
-  clock_free(x->x_regclock);
+  x->m_dead = true;
+  x->m_matchers.clear();
+  clock_unset(x->m_clock);
+  clock_free(x->m_clock);
 
   // TODO why is this necessary since all children
   // should have register to node.about_to_be_deleted() signal
   // x->unregister_children();
 
-  if (x->x_device)
-    delete (x->x_device);
+  x->disconnect_slots();
+
+  delete x->m_device;
+  x->m_device = nullptr;
 
   ossia_pd::instance().devices.remove_all(x);
-  outlet_free(x->x_dumpout);
+  outlet_free(x->m_dumpout);
   register_quarantinized();
+
+  x->~device();
 }
 
-static void* device_new(t_symbol* name, int argc, t_atom* argv)
+void* device::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
-  t_device* x = (t_device*)eobj_new(ossia_pd.device);
+  ossia::pd::device* x = new ossia::pd::device();
   // TODO SANITIZE : Direct leak
   t_binbuf* d = binbuf_via_atoms(argc, argv);
 
   if (x && d)
   {
     ossia_pd.devices.push_back(x);
-    x->x_otype = Type::device;
+    x->m_otype = object_class::device;
 
-    x->x_name = gensym("Pd");
-    x->x_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_name = gensym("Pd");
+    x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
-      x->x_name = atom_getsymbol(argv);
+      x->m_name = atom_getsymbol(argv);
     }
 
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-    x->x_device = new ossia::net::generic_device{std::move(local_proto_ptr),
-                                                 x->x_name->s_name};
-    x->x_node = &x->x_device->get_root_node();
-    x->x_parent_node = nullptr;
-    x->x_regclock = clock_new(x, (t_method)t_device::register_children);
-    clock_delay(x->x_regclock, 0);
+    x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
+                                                 x->m_name->s_name};
+
+    x->connect_slots();
+
+    x->m_nodes = {&x->m_device->get_root_node()};
+
+    x->m_clock = clock_new(x, (t_method)device::register_children);
+    clock_delay(x->m_clock, 0);
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -67,7 +76,8 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
     {
       error(
             "Only one [ø.device]/[ø.client] instance per patcher is allowed.");
-      device_free(x);
+      device::destroy(x);
+      free(x);
       x = nullptr;
     }
   }
@@ -75,91 +85,112 @@ static void* device_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-void t_device::register_children(t_device* x)
+void device::register_children(device* x)
 {
 
-  std::vector<t_obj_base*> modelnodes
-      = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.model");
+  std::vector<object_base*> modelnodes
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
   {
-    if (v->x_otype == Type::model)
+    if (v->m_otype == object_class::model)
     {
-      t_model* model = (t_model*)v;
-      model->register_node(x->x_node);
+      ossia::pd::model* model = (ossia::pd::model*)v;
+      model->register_node(x->m_nodes);
     }
-    else if (v->x_otype == Type::param)
+    else if (v->m_otype == object_class::param)
     {
-      t_param* param = (t_param*)v;
-      param->register_node(x->x_node);
+      parameter* param = (parameter*)v;
+      param->register_node(x->m_nodes);
     }
   }
 
-  std::vector<t_obj_base*> viewnodes
-      = find_child_to_register(x, x->x_obj.o_canvas->gl_list, "ossia.view");
+  std::vector<object_base*> viewnodes
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnodes)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)v;
-      view->register_node(x->x_node);
+      ossia::pd::view* view = (ossia::pd::view*)v;
+      view->register_node(x->m_nodes);
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
-      remote->register_node(x->x_node);
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
+      remote->register_node(x->m_nodes);
     }
   }
 
   // then go through all remote objects with pattern matching name
   // to register them to device's address creation callback
   for (auto x : ossia_pd::instance().remotes.copy()){
-    if (x->x_is_pattern)
-      obj_register<t_remote>(x);
+    if (x->m_is_pattern)
+      obj_register<remote>(x);
   }
 }
 
-void t_device::unregister_children()
+void device::unregister_children()
 {
-  std::vector<t_obj_base*> node
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.model");
+  std::vector<object_base*> node
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+
   for (auto v : node)
   {
-    if (v->x_otype == Type::model)
+    if (v->m_otype == object_class::model)
     {
-      t_model* model = (t_model*)v;
+      ossia::pd::model* model = (ossia::pd::model*)v;
       model->unregister();
     }
-    else if (v->x_otype == Type::param)
+    else if (v->m_otype == object_class::param)
     {
-      t_param* param = (t_param*)v;
+      ossia::pd::parameter* param = (ossia::pd::parameter*)v;
       param->unregister();
     }
   }
 
-  std::vector<t_obj_base*> viewnode
-      = find_child_to_register(this, x_obj.o_canvas->gl_list, "ossia.view");
+  std::vector<object_base*> viewnode
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
   for (auto v : viewnode)
   {
-    if (v->x_otype == Type::view)
+    if (v->m_otype == object_class::view)
     {
-      t_view* view = (t_view*)v;
+      ossia::pd::view* view = (ossia::pd::view*)v;
       view->unregister();
     }
-    else if (v->x_otype == Type::remote)
+    else if (v->m_otype == object_class::remote)
     {
-      t_remote* remote = (t_remote*)v;
+      ossia::pd::remote* remote = (ossia::pd::remote*)v;
       remote->unregister();
     }
   }
 }
 
-void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
+void device::on_parameter_created_callback(const ossia::net::parameter_base& param)
+{
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("create"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
+}
+
+void device::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
+{
+  auto& node = param.get_node();
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("delete"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
+}
+
+void device::expose(device* x, t_symbol*, int argc, t_atom* argv)
 {
 
   if (argc && argv->a_type == A_SYMBOL)
   {
-    auto& proto = static_cast<ossia::net::local_protocol&>(
-        x->x_device->get_protocol());
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+        x->m_device->get_protocol());
     std::string protocol = argv->a_w.w_symbol->s_name;
     if (protocol == "Minuit")
     {
@@ -176,9 +207,16 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::minuit_protocol>(
-            x->x_name->s_name, settings.remoteip, settings.remoteport,
+        multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
+            x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
+        std::vector<t_atom> a;
+        a.resize(4);
+        SETSYMBOL(&a[0], gensym("Minuit"));
+        SETSYMBOL(&a[1], gensym(settings.remoteip.c_str()));
+        SETFLOAT(&a[2], settings.remoteport);
+        SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -204,9 +242,18 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(
-            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-                settings.oscport, settings.wsport));
+        auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+              settings.oscport, settings.wsport);
+        oscq_proto->set_echo(true);
+
+        multiplex.expose_to(std::move(oscq_proto));
+
+        std::vector<t_atom> a;
+        a.resize(3);
+        SETSYMBOL(&a[0], gensym("oscquery"));
+        SETFLOAT(&a[1], settings.oscport);
+        SETFLOAT(&a[2], settings.wsport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -234,8 +281,15 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::osc_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport));
+        std::vector<t_atom> a;
+        a.resize(4);
+        SETSYMBOL(&a[0], gensym("osc"));
+        SETSYMBOL(&a[1], gensym(settings.remoteip.c_str()));
+        SETFLOAT(&a[2], settings.remoteport);
+        SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -257,42 +311,79 @@ void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv)
     Protocol_Settings::print_protocol_help();
 }
 
-void device_name(t_device *x, t_symbol* s, int argc, t_atom* argv){
+void device::name(device *x, t_symbol* s, int argc, t_atom* argv){
   if( argc == 0 )
   {
     t_atom a;
-    SETSYMBOL(&a,gensym(x->x_device->get_name().c_str()));
-    outlet_anything(x->x_dumpout,gensym("name"),1,&a);
+    SETSYMBOL(&a,gensym(x->m_device->get_name().c_str()));
+    outlet_anything(x->m_dumpout,gensym("name"),1,&a);
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* name = argv[0].a_w.w_symbol;
-    x->x_device->set_name(name->s_name);
+    x->m_device->set_name(name->s_name);
   } else {
     pd_error(x,"bad argument to message 'name'");
   }
 }
 
+void device::getprotocols(device* x)
+{
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+      x->m_device->get_protocol());
+  auto& protos = multiplex.get_protocols();
+
+  t_atom a;
+  SETFLOAT(&a,protos.size());
+  outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
+
+  for (auto& v : x->m_protocols)
+  {
+    t_atom ar[4];
+    for (int i = 0 ; i<v.size() ; i++)
+      ar[i] = v[i];
+
+    outlet_anything(x->m_dumpout, gensym("protocol"), v.size(), ar);
+  }
+
+}
+
+void device::stop_expose(device*x, int index)
+{
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+      x->m_device->get_protocol());
+  auto& protos = multiplex.get_protocols();
+
+  if ( index < protos.size() )
+    multiplex.stop_expose_to(*protos[index]);
+  else
+    pd_error(x, "Index %d out of bound.", index);
+}
+
+
 extern "C" void setup_ossia0x2edevice(void)
 {
   t_eclass* c = eclass_new(
-      "ossia.device", (method)device_new, (method)device_free,
-      (short)sizeof(t_device), CLASS_DEFAULT, A_GIMME, 0);
+      "ossia.device", (method)device::create, (method)device::destroy,
+      (short)sizeof(device), CLASS_DEFAULT, A_GIMME, 0);
 
   if (c)
   {
-    class_addcreator((t_newmethod)device_new,gensym("ø.device"), A_GIMME, 0);
+    class_addcreator((t_newmethod)device::create,gensym("ø.device"), A_GIMME, 0);
+
+    device_base::class_setup(c);
 
       // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
-          c, (method)t_device::register_children,"register", A_NULL, 0);
-    eclass_addmethod(c, (method)obj_namespace, "namespace", A_NULL, 0);
-    eclass_addmethod(c, (method)device_expose, "expose", A_GIMME, 0);
+          c, (method)device::register_children,"register", A_NULL, 0);
+    eclass_addmethod(c, (method) device::expose, "expose", A_GIMME, 0);
     eclass_addmethod(
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
-    eclass_addmethod(c, (method)device_name, "name", A_GIMME, 0);
+    eclass_addmethod(c, (method) device::name, "name", A_GIMME, 0);
+
+    eclass_addmethod(c, (method) device::getprotocols, "getprotocols", A_NULL, 0);
+    eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
   }
 
-  auto& ossia_pd = ossia_pd::instance();
-  ossia_pd.device = c;
+  ossia_pd::device_class = c;
 }
 } // pd namespace
 } // ossia namespace

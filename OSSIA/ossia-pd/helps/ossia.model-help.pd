@@ -1,27 +1,27 @@
-#N canvas 450 393 662 370 10;
-#X msg 103 184 namespace;
-#X obj 41 131 ossia.param foo;
-#N canvas 31 163 233 220 submodel 0;
+#N canvas 450 393 768 507 10;
+#X msg 121 190 namespace;
+#X obj 59 137 ossia.param foo;
+#N canvas 31 244 233 220 submodel 0;
 #X obj 59 38 ø.model my_submodel;
 #X obj 62 92 ø.param foo;
 #N canvas 34 409 230 166 subsubmodel 0;
 #X obj 40 37 ø.model my_subsubmodel;
 #X obj 43 92 ø.param foo;
 #X restore 61 142 pd subsubmodel;
-#X restore 67 258 pd submodel;
-#X text 39 162 The namespace will reflect the patcher hierarchy.;
-#N canvas 0 151 228 212 submodel 0;
+#X restore 63 337 pd submodel;
+#X text 57 168 The namespace will reflect the patcher hierarchy.;
+#N canvas 0 178 228 212 submodel 0;
 #N canvas 0 180 239 183 submodel 0;
 #X obj 42 40 ø.model my_subsubmodel;
 #X obj 45 95 ø.param foo;
 #X restore 45 139 pd submodel;
-#X obj 43 32 ø.model my_submodel;
+#X obj 45 42 ø.model my_submodel;
 #X obj 46 87 ø.param foo;
-#X restore 155 258 pd submodel;
+#X restore 151 337 pd submodel;
 #X text 158 81 You can have only one [ossia.model] per patcher.;
-#X text 59 184 click;
+#X text 77 190 click;
 #X obj 41 80 ø.model my_model;
-#N canvas 0 22 203 171 print-namespace 0;
+#N canvas 0 120 203 171 print-namespace 0;
 #X obj 50 31 inlet;
 #X obj 50 58 ossia;
 #X obj 50 80 route namespace;
@@ -29,27 +29,83 @@
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
-#X restore 103 209 pd print-namespace;
+#X restore 121 215 pd print-namespace;
 #X text 36 38 This helps creating complex and nested address hierarchies
 (a.k.a. namespaces) to sort numerous parameters by functionnality.
 , f 94;
 #X text 36 18 [ø.model] creates a node under which several [ø.param]s
 (and models) can subscribe, f 94;
-#X text 37 108 All params in the same patcher (or supatchers without
+#X text 55 114 All params in the same patcher (or supatchers without
 an [ø.model]) will subscribe under this model, f 99;
-#X text 174 184 to print the namespace in Pd's console;
+#X text 192 190 to print the namespace in Pd's console;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
 #X text 63 76 ø.theNameOftheObject;
-#X restore 569 336 pd ossia/ø;
-#X text 39 232 More [ø.model]s can be added to subpatchers \, and
+#X restore 583 449 pd ossia/ø;
+#X text 35 311 More [ø.model]s can be added to subpatchers \, and
 they will subscribe in lower hierarchical levels., f 99;
-#X text 40 338 Feel free to duplicate/remove params and models and
+#X text 36 417 Feel free to duplicate/remove params and models and
 see the consequences on the namespace, f 90;
-#X text 41 294 Note that \, if 2 or more models have the same name
+#X text 37 373 Note that \, if 2 or more models have the same name
 at the same level (like in this example \, with two submodels being
 named identically) \, they will be registered as the next available
 instance (instances are appended to the node name \, after a dot separator)
 , f 97;
+#N canvas 0 22 361 184 presets 0;
+#X obj 196 126 outlet;
+#X obj 52 60 savepanel;
+#X obj 53 36 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 51 85 preset save \$1.json;
+#X obj 318 36 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 222 59 openpanel;
+#X msg 222 84 preset load \$1;
+#X text 77 35 <- save presets or recall them ->;
+#X connect 1 0 3 0;
+#X connect 2 0 1 0;
+#X connect 3 0 0 0;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 0 0;
+#X restore 39 262 pd presets;
+#X text 125 262 presets of the current values can be saved and recalled
+;
+#N canvas 707 350 676 421 messages_and_attributes 0;
+#X obj 77 235 print foo;
+#X obj 80 178 ø.model bar @priority 12 @tags audio core @description
+"Something meaningful";
+#X msg 80 81 priority 23;
+#X msg 82 113 getpriority;
+#X msg 190 81 tags blah bloh;
+#X msg 192 113 gettags;
+#X msg 312 113 getdescription;
+#X msg 310 81 description Something more meaningful;
+#X obj 284 304 ø.param hop @default 0.1;
+#X floatatom 284 326 5 0 0 0 - - -, f 5;
+#X floatatom 283 285 5 0 0 0 - - -, f 5;
+#X floatatom 87 326 5 0 0 0 - - -, f 5;
+#X floatatom 86 285 5 0 0 0 - - -, f 5;
+#X obj 87 304 ø.param hop @default 0.4;
+#X msg 470 153 reset;
+#X msg 137 282 reset;
+#X msg 331 282 reset;
+#X text 519 154;
+#X connect 1 0 0 0;
+#X connect 2 0 1 0;
+#X connect 3 0 1 0;
+#X connect 4 0 1 0;
+#X connect 5 0 1 0;
+#X connect 6 0 1 0;
+#X connect 7 0 1 0;
+#X connect 8 0 9 0;
+#X connect 10 0 8 0;
+#X connect 12 0 13 0;
+#X connect 13 0 11 0;
+#X connect 14 0 1 0;
+#X connect 15 0 13 0;
+#X connect 16 0 8 0;
+#X restore 53 452 pd messages_and_attributes;
 #X connect 0 0 8 0;
+#X connect 17 0 7 0;

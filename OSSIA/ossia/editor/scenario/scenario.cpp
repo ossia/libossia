@@ -1,9 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_node.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
@@ -18,63 +18,63 @@ namespace ossia
 {
 scenario::scenario()
 {
-  // create the start TimeNode
-  m_nodes.push_back(std::make_shared<time_node>());
+  // create the start TimeSync
+  m_nodes.push_back(std::make_shared<time_sync>());
 }
 
 scenario::~scenario()
 {
-  for (auto& timenode : m_nodes)
+  for (auto& timesync : m_nodes)
   {
-    timenode->cleanup();
+    timesync->cleanup();
   }
 }
 
 void scenario::start(ossia::state& st)
 {
   m_waitingNodes.push_back(m_nodes[0].get());
-  // start each TimeConstraint if possible
-  for (const auto& timeConstraint : m_constraints)
+  // start each TimeInterval if possible
+  for (const auto& timeInterval : m_intervals)
   {
-    time_constraint& cst = *timeConstraint;
+    time_interval& cst = *timeInterval;
     time_event::status startStatus = cst.get_start_event().get_status();
     time_event::status endStatus = cst.get_end_event().get_status();
 
-    // the constraint is in the past
+    // the interval is in the past
     if (startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::HAPPENED)
     {
     }
-    // the start of the constraint is pending
+    // the start of the interval is pending
     else if (
         startStatus == time_event::status::PENDING
         && endStatus == time_event::status::NONE)
     {
     }
-    // the constraint is supposed to be running
+    // the interval is supposed to be running
     else if (
         startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::NONE)
     {
-      m_runningConstraints.insert(&cst);
+      m_runningIntervals.insert(&cst);
       cst.start(st);
     }
-    // the constraint starts in the void and ends on a timenode that did
+    // the interval starts in the void and ends on a timesync that did
     // execute
     else if (
         startStatus == time_event::status::NONE
         && endStatus == time_event::status::HAPPENED)
     {
     }
-    // the end of the constraint is pending
+    // the end of the interval is pending
     else if (
         startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::PENDING)
     {
-      m_runningConstraints.insert(&cst);
+      m_runningIntervals.insert(&cst);
       cst.start(st);
     }
-    // the constraint is in the future
+    // the interval is in the future
     else if (
         startStatus == time_event::status::NONE
         && endStatus == time_event::status::NONE)
@@ -86,17 +86,17 @@ void scenario::start(ossia::state& st)
       throw execution_error(
           "scenario_impl::start: "
           "TimeEvent's status configuration of the "
-          "TimeConstraint is not handled");
+          "TimeInterval is not handled");
     }
   }
 }
 
 void scenario::stop()
 {
-  // stop each running TimeConstraints
-  for (const auto& timeConstraint : m_constraints)
+  // stop each running TimeIntervals
+  for (const auto& timeInterval : m_intervals)
   {
-    time_constraint& cst = *timeConstraint;
+    time_interval& cst = *timeInterval;
     cst.stop();
   }
 
@@ -105,9 +105,9 @@ void scenario::stop()
     node->reset();
   }
 
-  m_runningConstraints.clear();
-  constraints_started.clear();
-  constraints_stopped.clear();
+  m_runningIntervals.clear();
+  intervals_started.clear();
+  intervals_stopped.clear();
   m_waitingNodes.clear();
   m_overticks.clear();
   m_lastDate = time_value{};
@@ -115,74 +115,74 @@ void scenario::stop()
 
 void scenario::pause()
 {
-  // pause all running TimeConstraints
-  for (const auto& timeConstraint : m_constraints)
+  // pause all running TimeIntervals
+  for (const auto& timeInterval : m_intervals)
   {
-    auto& cst = *timeConstraint;
+    auto& cst = *timeInterval;
     cst.pause();
   }
 }
 
 void scenario::resume()
 {
-  // resume all running TimeConstraints
-  for (const auto& timeConstraint : m_constraints)
+  // resume all running TimeIntervals
+  for (const auto& timeInterval : m_intervals)
   {
-    auto& cst = *timeConstraint;
+    auto& cst = *timeInterval;
     cst.resume();
   }
 }
 
-void scenario::add_time_constraint(
-    std::shared_ptr<time_constraint> timeConstraint)
+void scenario::add_time_interval(
+    std::shared_ptr<time_interval> timeInterval)
 {
-  time_constraint& cst = *timeConstraint;
+  time_interval& cst = *timeInterval;
 
-  // store the TimeConstraint if it is not already stored
-  if (!contains(m_constraints, timeConstraint))
+  // store the TimeInterval if it is not already stored
+  if (!contains(m_intervals, timeInterval))
   {
-    m_constraints.push_back(std::move(timeConstraint));
+    m_intervals.push_back(std::move(timeInterval));
   }
 
-  // store TimeConstraint's start node if it is not already stored
-  add_time_node(cst.get_start_event().get_time_node().shared_from_this());
+  // store TimeInterval's start node if it is not already stored
+  add_time_sync(cst.get_start_event().get_time_sync().shared_from_this());
 
-  // store TimeConstraint's end node if it is not already stored
-  add_time_node(cst.get_end_event().get_time_node().shared_from_this());
+  // store TimeInterval's end node if it is not already stored
+  add_time_sync(cst.get_end_event().get_time_sync().shared_from_this());
 }
 
-void scenario::remove_time_constraint(
-    const std::shared_ptr<time_constraint>& timeConstraint)
+void scenario::remove_time_interval(
+    const std::shared_ptr<time_interval>& timeInterval)
 {
-  remove_one(m_constraints, timeConstraint);
+  remove_one(m_intervals, timeInterval);
 }
 
-void scenario::add_time_node(std::shared_ptr<time_node> timeNode)
+void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
 {
-  // store a TimeNode if it is not already stored
-  if (!contains(m_nodes, timeNode))
+  // store a TimeSync if it is not already stored
+  if (!contains(m_nodes, timeSync))
   {
-    m_nodes.push_back(std::move(timeNode));
+    m_nodes.push_back(std::move(timeSync));
   }
 }
 
-void scenario::remove_time_node(const std::shared_ptr<time_node>& timeNode)
+void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
-  remove_one(m_nodes, timeNode);
+  remove_one(m_nodes, timeSync);
 }
 
-const std::shared_ptr<time_node>& scenario::get_start_time_node() const
+const std::shared_ptr<time_sync>& scenario::get_start_time_sync() const
 {
   return m_nodes[0];
 }
 
-const ptr_container<time_node>& scenario::get_time_nodes() const
+const ptr_container<time_sync>& scenario::get_time_syncs() const
 {
   return m_nodes;
 }
 
-const ptr_container<time_constraint>& scenario::get_time_constraints() const
+const ptr_container<time_interval>& scenario::get_time_intervals() const
 {
-  return m_constraints;
+  return m_intervals;
 }
 }

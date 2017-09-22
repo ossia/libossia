@@ -34,7 +34,7 @@ template<>
 struct matching_domain<ossia::val_type::STRING>
 { using type = ossia::domain_base<std::string>; };
 template<>
-struct matching_domain<ossia::val_type::TUPLE>
+struct matching_domain<ossia::val_type::LIST>
 { using type = ossia::vector_domain; };
 template<>
 struct matching_domain<ossia::val_type::VEC2F>
@@ -62,7 +62,7 @@ ossia::domain make_domain(ossia::val_type t)
       return ossia::domain_base<char>{};
     case ossia::val_type::STRING:
       return ossia::domain_base<std::string>();
-    case ossia::val_type::TUPLE:
+    case ossia::val_type::LIST:
       return ossia::vector_domain{};
     case ossia::val_type::VEC2F:
       return ossia::vecf_domain<2>();
@@ -81,8 +81,8 @@ struct remote_data
   remote_data(
       FunProto1 local_proto,
       FunProto2 remote_proto):
-    local_device{local_proto(), "i-score" },
-    remote_device{remote_proto(), "i-score-remote"}
+    local_device{local_proto(), "score" },
+    remote_device{remote_proto(), "score-remote"}
   {
     int N = 10;
 
@@ -230,7 +230,7 @@ private Q_SLOTS:
     }
     {
       ossia::net::generic_device minuit_device{
-        std::make_unique<ossia::net::minuit_protocol>("i-score", "127.0.0.1", 13579, 13580), "test_minuit" };
+        std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 13579, 13580), "test_minuit" };
     }
   }
 
@@ -261,14 +261,14 @@ private Q_SLOTS:
 
   void test_comm_minuit()
   {
-    test_comm_generic([] { return std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13579, 13580); },
-                      [] { return std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13580, 13579); });
+    test_comm_generic([] { return std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13579, 13580); },
+                      [] { return std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13580, 13579); });
 
 
     int N = 10;
     auto proto = std::make_unique<ossia::net::multiplex_protocol>();
     auto proto_p = proto.get();
-    ossia::net::generic_device local_device{std::move(proto), "i-score"};
+    ossia::net::generic_device local_device{std::move(proto), "score"};
 
     for(int i = 0; i < N; i++)
     {
@@ -277,10 +277,10 @@ private Q_SLOTS:
     }
 
     proto_p->expose_to(
-          std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13579, 13580));
+          std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13579, 13580));
 
     ossia::net::generic_device remote_device{
-      std::make_unique<ossia::net::minuit_protocol>("i-score-remote", "127.0.0.1", 13580, 13579), "i-score-remote"};
+      std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13580, 13579), "score-remote"};
     remote_device.get_protocol().update(remote_device);
 
     for(auto n : remote_device.children_copy())

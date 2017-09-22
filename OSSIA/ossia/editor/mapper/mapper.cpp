@@ -4,7 +4,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/mapper/mapper.hpp>
-#include <ossia/editor/scenario/time_constraint.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/misc_visitors.hpp>
 #include <iostream>
 
@@ -16,7 +16,7 @@ mapper::mapper()
 }
 
 mapper::mapper(
-    ossia::Destination driverAddress, ossia::Destination drivenAddress,
+    ossia::destination driverAddress, ossia::destination drivenAddress,
     ossia::behavior drive)
     : m_driverAddress{std::move(driverAddress)}
     , m_drive{std::move(drive)}
@@ -99,7 +99,7 @@ void mapper::resume()
 {
 }
 
-void mapper::set_driver(ossia::Destination d)
+void mapper::set_driver(ossia::destination d)
 {
   bool active{m_callback};
 
@@ -118,11 +118,11 @@ void mapper::set_driver(ossia::Destination d)
   }
 }
 
-void mapper::set_driven(ossia::Destination d)
+void mapper::set_driven(ossia::destination d)
 {
   if (m_lastMessage)
   {
-    m_lastMessage->destination = std::move(d);
+    m_lastMessage->dest = std::move(d);
   }
   else
   {
@@ -348,7 +348,7 @@ mapper::compute_value(const ossia::value& driver, const ossia::behavior& drive)
 
   throw invalid_value_type_error(
       "mapper_impl::computeValue: "
-      "drive.getType() is neither BEHAVIOR nor TUPLE");
+      "drive.getType() is neither BEHAVIOR nor LIST");
   return {};
 }
 

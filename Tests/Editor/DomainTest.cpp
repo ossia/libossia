@@ -147,10 +147,10 @@ class DomainTest : public QObject
     using val_t = T;
     // TODO why couldn't domain operate on dataspaces ?
     // e.g. for a position, we could want to limit its norm ?
-    // Maybe the domain could be a list of constraint :
-    // "default" min max constraint,
-    // constraint added by the unit type (e.g. rgb : between 0 / 1)
-    // additional constraints..
+    // Maybe the domain could be a list of interval :
+    // "default" min max interval,
+    // interval added by the unit type (e.g. rgb : between 0 / 1)
+    // additional intervals..
     std::vector<ossia::value> t{T{(val_t)(min - 100)},
             min,
                 T{(val_t)((min + max) / 2)},
@@ -269,6 +269,79 @@ class DomainTest : public QObject
   }
 private Q_SLOTS:
 
+  void test_visit()
+  {
+    auto range = ossia::make_domain(-1, 1);
+    struct my_vis {
+      void operator()(ossia::domain_base<int>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<float>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<char>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<bool>& d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<impulse>& d)
+      {
+        // nothing to do
+      }
+      void operator()(ossia::domain_base<std::string> d)
+      {
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::domain_base<ossia::value> d)
+      {
+        if(d.min) { }
+        if(d.max) { }
+        if(!d.values.empty()) { }
+      }
+      void operator()(ossia::vecf_domain<2>& d)
+      {
+        for(auto min : d.min) if(min) { }
+        for(auto max : d.max) if(max) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()(ossia::vecf_domain<3>& d)
+      {
+        for(auto min : d.min) if(min) { }
+        for(auto max : d.max) if(max) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()(ossia::vecf_domain<4>& d)
+      {
+        for(auto min : d.min) if(min) { }
+        for(auto max : d.max) if(max) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()(ossia::vector_domain& d)
+      {
+        if(!d.min.empty()) { }
+        if(!d.max.empty()) { }
+        for(auto values : d.values) if(!values.empty()) { }
+      }
+      void operator()()
+      {
+
+      }
+    } my_visitor;
+    ossia::apply(my_visitor, range.v);
+  }
 
   /*! test life cycle and accessors functions */
   void test_basic()

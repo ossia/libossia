@@ -11,10 +11,10 @@ namespace ossia
 {
 void message::launch() const
 {
-  ossia::net::parameter_base& addr = destination.value.get();
-  const auto& unit = destination.unit;
+  ossia::net::parameter_base& addr = dest.value.get();
+  const auto& unit = dest.unit;
   auto addr_unit = addr.get_unit();
-  if (destination.index.empty())
+  if (dest.index.empty())
   {
     if (!unit || unit == addr_unit)
     {
@@ -39,26 +39,26 @@ void message::launch() const
         case ossia::val_type::VEC4F:
         {
           ossia::apply(
-              vec_merger{destination, destination}, cur.v, message_value.v);
+              vec_merger{dest, dest}, cur.v, message_value.v);
 
           addr.push_value(std::move(cur));
           break;
         }
-        case ossia::val_type::TUPLE:
+        case ossia::val_type::LIST:
         {
-          auto& cur_tuple = cur.get<std::vector<ossia::value>>();
+          auto& cur_list = cur.get<std::vector<ossia::value>>();
           // Insert the value of this message in the existing value array
-          value_merger<true>::insert_in_tuple(
-              cur_tuple, message_value, destination.index);
+          value_merger<true>::insert_in_list(
+              cur_list, message_value, dest.index);
           addr.push_value(std::move(cur));
           break;
         }
         default:
         {
-          // Create a tuple and put the existing value at [0]
+          // Create a list and put the existing value at [0]
           std::vector<ossia::value> t{std::move(cur)};
-          value_merger<true>::insert_in_tuple(
-              t, message_value, destination.index);
+          value_merger<true>::insert_in_list(
+              t, message_value, dest.index);
           addr.push_value(std::move(t));
           break;
         }
@@ -66,39 +66,10 @@ void message::launch() const
     }
     else
     {
-      /*
-      {
-        auto v1 = ossia::net::get_value(addr);
-        auto v2 =
-            ossia::convert(
-              v1,
-              unit);
-        auto v3 =
-            ossia::merge(
-              v2,
-              value,
-              destination.index);
-        auto v4 =
-            ossia::convert(
-              v3, addr_unit);
-        auto v5 =
-            ossia::to_value(v4);
-
-        std::cerr << "v: " << ossia::value_to_pretty_string(value) << "\n";
-        std::cerr << "v1: " << ossia::to_pretty_string(v1) << "\n";
-        std::cerr << "v2: " << ossia::to_pretty_string(v2) << "\n";
-        std::cerr << "di: " << ossia::to_pretty_string(destination.index) <<
-      "\n";
-        std::cerr << "v3: " << ossia::to_pretty_string(v3) << "\n";
-        std::cerr << "v4: " << ossia::to_pretty_string(v4) << "\n";
-        std::cerr << "v5: " << ossia::value_to_pretty_string(v5) << "\n\n\n";
-      }
-      */
-
       addr.push_value(ossia::to_value(ossia::convert(
           ossia::merge(
               ossia::convert(ossia::net::get_value(addr), unit), message_value,
-              destination.index),
+              dest.index),
           addr_unit)));
     }
   }
@@ -108,9 +79,9 @@ void piecewise_message::launch() const
 {
   // If values are missing, merge with the existing ones
   auto cur = address.get().value();
-  if (auto cur_tuple = cur.target<std::vector<ossia::value>>())
+  if (auto cur_list = cur.target<std::vector<ossia::value>>())
   {
-    value_merger<true>::merge_tuple(*cur_tuple, message_value);
+    value_merger<true>::merge_list(*cur_list, message_value);
     address.get().push_value(std::move(cur));
   }
   else

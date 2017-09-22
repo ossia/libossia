@@ -233,7 +233,7 @@ struct osc_utilities
     }
   }
 
-  static std::vector<ossia::value> create_tuple(
+  static std::vector<ossia::value> create_list(
       oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
   {
     std::vector<ossia::value> t;
@@ -243,6 +243,17 @@ struct osc_utilities
       ++cur_it;
     }
     return t;
+  }
+
+  static ossia::value create_any(
+      oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
+  {
+    switch(numArguments)
+    {
+      case 0: return ossia::impulse{};
+      case 1: return create_value(cur_it);
+      default: return create_list(cur_it, numArguments);
+    }
   }
 };
 
@@ -354,7 +365,7 @@ struct osc_inbound_visitor
     }
   }
   */
-    return osc_utilities::create_tuple(cur_it, numArguments);
+    return osc_utilities::create_list(cur_it, numArguments);
   }
 
   ossia::value operator()() const
@@ -454,11 +465,11 @@ inline ossia::value filter_value(
 template<typename Addr_T>
 inline ossia::value filter_value(const Addr_T& addr)
 {
-  auto val = addr.value();
-  if (addr.filter_repetition(val))
-    return {};
-
-  return filter_value(addr.get_domain(), std::move(val), addr.get_bounding());
+  auto val = filter_value(addr.get_domain(), addr.value(), addr.get_bounding());
+  auto filtered = addr.filter_value(val);
+  if(!filtered)
+    return val;
+  return {};
 }
 
 inline ossia::value to_value(

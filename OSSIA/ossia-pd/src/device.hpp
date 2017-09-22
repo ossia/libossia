@@ -1,5 +1,5 @@
 #pragma once
-#include "ossia_obj_base.hpp"
+#include "device_base.hpp"
 
 namespace ossia
 {
@@ -52,23 +52,31 @@ static void print_protocol_help()
       "\tlocalport (port): port this device is listening.\n"
       "\tdefault sending on port 9997, listening on 9996");
 }
-};
+}
 
-struct t_device : t_obj_base
+class device : public device_base
 {
-  ossia::net::generic_device* x_device{};
-  ossia::net::local_protocol x_local_proto;
+public:
+  device();
 
-  static void register_children(t_device* x);
+  static void register_children(device* x);
   void unregister_children();
-  static void loadbang(t_device* x, t_float type);
+  static void loadbang(device* x, t_float type);
 
-  // void parameterCreationHandler(const ossia::net::parameter_base& n);
-  // void nodeCreationHandler(const ossia::net::node_base& n);
+  void on_parameter_created_callback(const ossia::net::parameter_base& param);
+  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
+
+  std::vector<std::vector<t_atom>> m_protocols{};
+
+  static void* create(t_symbol* name, int argc, t_atom* argv);
+  static void destroy(device* x);
+  static void expose(device* x, t_symbol*, int argc, t_atom* argv);
+  static void name(device* x, t_symbol*, int argc, t_atom* argv);
+  static void getprotocols(device* x);
+  static void stop_expose(device*x, int index);
+
+
 };
-
-void device_expose(t_device* x, t_symbol*, int argc, t_atom* argv);
-void device_name(t_device* x, t_symbol*, int argc, t_atom* argv);
 
 }
 } // namespace

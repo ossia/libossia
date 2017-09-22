@@ -6,7 +6,7 @@
 
 using namespace ossia;
 
-void constraint_callback(double position, time_value date, const ossia::state_element& element)
+void interval_callback(double position, time_value date, const ossia::state_element& element)
 {
     ;
 }
@@ -25,11 +25,11 @@ private Q_SLOTS:
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        auto node = std::make_shared<time_node>();
+        auto node = std::make_shared<time_sync>();
         auto event = *(node->emplace(node->get_time_events().begin(), &event_callback));
         QVERIFY(event != nullptr);
 
-        QVERIFY(&event->get_time_node() == node.get());
+        QVERIFY(&event->get_time_sync() == node.get());
         QVERIFY(event->get_expression() == expressions::expression_true());
         QVERIFY(event->get_status() == time_event::status::NONE);
 
@@ -49,27 +49,27 @@ private Q_SLOTS:
     /*! test edition functions */
     void test_edition()
     {
-        auto nodeA = std::make_shared<time_node>();
+        auto nodeA = std::make_shared<time_sync>();
         auto eventA = *(nodeA->emplace(nodeA->get_time_events().begin(), &event_callback));
 
-        auto nodeB = std::make_shared<time_node>();
+        auto nodeB = std::make_shared<time_sync>();
         auto eventB = *(nodeB->emplace(nodeB->get_time_events().begin(), &event_callback));
 
-        auto nodeC = std::make_shared<time_node>();
+        auto nodeC = std::make_shared<time_sync>();
         auto eventC = *(nodeC->emplace(nodeC->get_time_events().begin(), &event_callback));
 
-        auto constraint1 = time_constraint::create(&constraint_callback, *eventA, *eventB, 1000._tv);
-        auto constraint2 = time_constraint::create(&constraint_callback, *eventB, *eventC, 1000._tv);
-        auto constraint3 = time_constraint::create(&constraint_callback, *eventA, *eventC, 2000._tv);
+        auto interval1 = time_interval::create(&interval_callback, *eventA, *eventB, 1000._tv);
+        auto interval2 = time_interval::create(&interval_callback, *eventB, *eventC, 1000._tv);
+        auto interval3 = time_interval::create(&interval_callback, *eventA, *eventC, 2000._tv);
 
-        QVERIFY(eventA->previous_time_constraints().size() == 0);
-        QVERIFY(eventA->next_time_constraints().size() == 2);
+        QVERIFY(eventA->previous_time_intervals().size() == 0);
+        QVERIFY(eventA->next_time_intervals().size() == 2);
 
-        QVERIFY(eventB->previous_time_constraints().size() == 1);
-        QVERIFY(eventB->next_time_constraints().size() == 1);
+        QVERIFY(eventB->previous_time_intervals().size() == 1);
+        QVERIFY(eventB->next_time_intervals().size() == 1);
 
-        QVERIFY(eventC->previous_time_constraints().size() == 2);
-        QVERIFY(eventC->next_time_constraints().size() == 0);
+        QVERIFY(eventC->previous_time_intervals().size() == 2);
+        QVERIFY(eventC->next_time_intervals().size() == 0);
     }
 };
 

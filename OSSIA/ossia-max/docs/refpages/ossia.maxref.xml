@@ -4,11 +4,12 @@
 <c74object name="ossia" module="Ossia" category="Ossia">
 
 	<digest>
-		Ossia
+		Ossia allows to configure the global device
 	</digest>
 
 	<description>
-		Ossia
+		Ossia allows to configure the global device that is created by default, and under which 
+all parameters and models will be registered (until an [ossia.device object is added])
 	</description>
 
 	
@@ -22,13 +23,55 @@
 	
 	<!--INLETS-->
 	<inletlist>
+			<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.model</digest>
+			<description>Messages to the node</description>
+		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
+			<outlet id="0" name="Info outlet" type="any">
+			<digest>Various information messages</digest>
+			<description>Messages and information in reply to various messages</description>
+		</outlet>
 	</outletlist>
-	
+
+	<!--METHODS-->	
+	<methodlist>
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				Sending the (namespace) message to the leftmost inlet outputs the list of all parameters registered under this node, and their current values
+			</description>
+		</method>
+
+		<method name="expose">
+			<arglist/>
+			<digest>
+				Expose the global device to the network
+			</digest>
+			<description>
+				Sending the (expose) message to the leftmost inlet will print its configuration parameters for the various available protocols
+				Then, sending it with the appropriate values will expose the global device to the network, and allow it to be explored, queried and remotely-controlled.
+			</description>
+		</method>
+
+		<method name="name">
+			<arglist/>
+			<digest>
+				Set (or retrieve) the global device's name
+			</digest>
+			<description>
+				Sending the (name) message to the leftmost inlet outputs its current name.
+				Sending the (name someName) message to the leftmost inlet will set the global device's name to "someName"
+			</description>
+		</method>
+	</methodlist>
 	
 	<!--ATTRIBUTES-->
 	<attributelist>

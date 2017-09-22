@@ -73,7 +73,7 @@ struct domain_prettyprint_visitor
 
   void operator()(const vector_domain& dom)
   {
-    writer << "tuple";
+    writer << "list";
   }
 };
 
@@ -273,7 +273,7 @@ operator()(bounding_mode b, std::array<float, N> val) const
   }
 }
 
-value tuple_clamp::
+value list_clamp::
 operator()(bounding_mode b, const std::vector<ossia::value>& val) const
 {
   if (b == bounding_mode::FREE)
@@ -395,7 +395,7 @@ operator()(bounding_mode b, const std::vector<ossia::value>& val) const
   return std::move(res);
 }
 
-value tuple_clamp::
+value list_clamp::
 operator()(bounding_mode b, std::vector<ossia::value>&& val) const
 {
   if (b == bounding_mode::FREE)
@@ -983,16 +983,16 @@ ossia::value apply_domain_visitor::operator()(
   return std::move(value);
 }
 
-// Second case : we filter a whole tuple.
+// Second case : we filter a whole list.
 ossia::value apply_domain_visitor::operator()(
     const std::vector<ossia::value>& value, const vector_domain& domain) const
 {
-  return tuple_clamp{domain}(b, value);
+  return list_clamp{domain}(b, value);
 }
 ossia::value apply_domain_visitor::operator()(
     std::vector<ossia::value>&& value, const vector_domain& domain) const
 {
-  return tuple_clamp{domain}(b, std::move(value));
+  return list_clamp{domain}(b, std::move(value));
 }
 
 // Vec : we can either filter each value, or filter the whole shebang
@@ -1031,7 +1031,7 @@ ossia::value apply_domain_visitor::operator()(
     const std::array<float, 2>& value, const vector_domain& domain) const
 {
   return vec_clamp<2>{
-      ossia::domain_conversion<vecf_domain<2>>{}.tuple_func(domain)}(b, value);
+      ossia::domain_conversion<vecf_domain<2>>{}.list_func(domain)}(b, value);
 }
 
 ossia::value apply_domain_visitor::operator()(
@@ -1069,7 +1069,7 @@ ossia::value apply_domain_visitor::operator()(
     const std::array<float, 3>& value, const vector_domain& domain) const
 {
   return vec_clamp<3>{
-      ossia::domain_conversion<vecf_domain<3>>{}.tuple_func(domain)}(b, value);
+      ossia::domain_conversion<vecf_domain<3>>{}.list_func(domain)}(b, value);
 }
 
 ossia::value apply_domain_visitor::operator()(
@@ -1107,7 +1107,7 @@ ossia::value apply_domain_visitor::operator()(
     const std::array<float, 4>& value, const vector_domain& domain) const
 {
   return vec_clamp<4>{
-      ossia::domain_conversion<vecf_domain<4>>{}.tuple_func(domain)}(b, value);
+      ossia::domain_conversion<vecf_domain<4>>{}.list_func(domain)}(b, value);
 }
 }
 namespace std

@@ -23,16 +23,6 @@ namespace Namespace {
 		public static extern ossia_preset_result_enum ossia_presets_read_json (string str, IntPtr * preset);
 
 		/// <summary>
-		/// Read an XML string to build a preset.
-		/// </summary>
-		/// <returns>The result code for the operation.</returns>
-		/// <param name="str">A string containing the XML.</param>
-		/// <param name="preset">A pointer to a preset that will receive the preset built from JSON.</param>
-
-		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_presets_read_xml (string str, IntPtr * preset);
-
-		/// <summary>
 		/// Free a preset
 		/// </summary>
 		/// <returns>The result code for the operation.</returns>
@@ -49,17 +39,8 @@ namespace Namespace {
 		/// <param name="buffer">A string buffer receiving the resulting JSON.</param>
 
 		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_presets_write_json (IntPtr preset, IntPtr* buffer);
+		public static extern ossia_preset_result_enum ossia_presets_write_json (IntPtr preset, string device, out IntPtr buffer);
 
-		/// <summary>
-		/// Write an XML string from a preset
-		/// </summary>
-		/// <returns>The result code for the operation.</returns>
-		/// <param name="preset">A preset containing data to convert to XML.</param>
-		/// <param name="buffer">A pointer to a string buffer receiving the resulting XML.</param>
-
-		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_presets_write_xml (IntPtr preset, IntPtr* buffer);
 
 		/// <summary>
 		/// Get the number of elements in a preset
@@ -94,16 +75,6 @@ namespace Namespace {
 		public static extern ossia_preset_result_enum ossia_devices_read_json (IntPtr * ossia_device, string str);
 
 		/// <summary>
-		/// Read an XML file to fill a device
-		/// </summary>
-		/// <returns>The result code for the operation.</returns>
-		/// <param name="ossia_device">A pointer to a device that will be filled with the XML data</param>
-		/// <param name="str">A string containing the XML data</param>
-
-		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_devices_read_xml (IntPtr * ossia_device, string str);
-
-		/// <summary>
 		/// Write a JSON string corresponding to the device's structure
 		/// </summary>
 		/// <returns>The result code for the operation.</returns>
@@ -111,17 +82,7 @@ namespace Namespace {
 		/// <param name="buffer">A pointer to a string buffer which will receive the resulting JSON.</param>
 
 		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_devices_write_json (IntPtr ossia_device, IntPtr* buffer);
-
-		/// <summary>
-		/// Write an XML string corresponding to the device's structure
-		/// </summary>
-		/// <returns>The result code for the operation.</returns>
-		/// <param name="ossia_device">The device to convert to XML.</param>
-		/// <param name="buffer">A pointer to a string buffer which will receive the resulting XML.</param>
-
-		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_devices_write_xml (IntPtr ossia_device, IntPtr* buffer);
+		public static extern ossia_preset_result_enum ossia_devices_write_json (IntPtr ossia_device, out IntPtr buffer);
 
 		/// <summary>
 		/// Apply a preset to a device
@@ -142,7 +103,7 @@ namespace Namespace {
 		/// <param name="preset">A pointer to a preset buffer that will contain the resulting preset.</param>
 
 		[DllImport ("ossia")]
-		public static extern ossia_preset_result_enum ossia_devices_make_preset (IntPtr ossia_device, IntPtr * preset);
+		public static extern ossia_preset_result_enum ossia_devices_make_preset (IntPtr ossia_device, out IntPtr preset);
 
 		/// <summary>
 		/// Convert a device into a compact string
@@ -233,9 +194,9 @@ namespace Namespace {
 				}
 			}
 		}
-		public string WriteJson() {
+    public string WriteJson(string device) {
 			IntPtr ptr;
-			ossia_preset_result_enum code = BlueYetiAPI.ossia_presets_write_json (preset, &ptr);
+			ossia_preset_result_enum code = BlueYetiAPI.ossia_presets_write_json (preset, device, out ptr);
 			if (code == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
 				string str = Marshal.PtrToStringAuto (ptr);
 				Debug.Log ("Wrote json \"" + str + "\"");

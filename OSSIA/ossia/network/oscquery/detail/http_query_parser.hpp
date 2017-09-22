@@ -1,10 +1,8 @@
 #pragma once
 #include <ossia/detail/string_map.hpp>
-#include <boost/fusion/include/std_pair.hpp>
-#include <boost/spirit/home/qi.hpp>
-#include <boost/spirit/home/qi/directive/omit.hpp>
-#include <boost/spirit/include/qi_repeat.hpp>
-
+#include <boost/spirit/home/x3.hpp>
+#include <boost/fusion/adapted/std_pair.hpp>
+#include<map>
 /**
  * \file http_query_parser.hpp
  *
@@ -19,36 +17,26 @@ namespace ossia
 namespace oscquery
 {
 
-// query_grammar : taken from
-// https://github.com/ssiloti/http/blob/master/http/parsers/request.hpp
-// Copyright (c) 2010 Steven Siloti (ssiloti@gmail.com)
-// Distributed under the Boost Software License, Version 1.0.
-template <typename Iterator>
-struct query_grammar
-    : public boost::spirit::qi::grammar<Iterator, string_map<std::string>()>
-{
-  query_grammar() : query_grammar::base_type(query)
-  {
-    using namespace boost::spirit;
+// See https://stackoverflow.com/questions/45948473/boost-spirit-porting-string-pairs-from-qi-to-x3/
+template <typename T = std::string>
+auto& query() {
+  using namespace boost::spirit::x3;
+  static const auto s_pair
+      = rule<struct pair_, std::pair<std::string, T> > {"pair"}
+      = +~char_("&=") >> -('=' >> *~char_("&"));
+  static const auto s_query
+      = rule<struct query_, string_map<T>  > {"query"}
+      = s_pair % '&';
 
-    query = pair >> *(qi::lit('&') >> pair);
-    pair = +qchar >> -(qi::lit('=') >> +qchar);
-    qchar = ~qi::char_("&=");
-  }
-
-  boost::spirit::qi::rule<Iterator, string_map<std::string>()> query;
-  boost::spirit::qi::rule<Iterator, string_map<std::string>::value_type()> pair;
-  boost::spirit::qi::rule<Iterator, char()> qchar;
-};
+  return s_query;
+}
 
 inline string_map<std::string>
 parse_http_methods_encoded(ossia::string_view str)
 {
   // TODO a vector would be more efficient.
   string_map<std::string> methods;
-  boost::spirit::qi::parse(
-      str.cbegin(), str.cend(),
-      query_grammar<ossia::string_view::const_iterator>(), methods);
+  boost::spirit::x3::parse(str.cbegin(), str.cend(), query(), methods);
   return methods;
 }
 

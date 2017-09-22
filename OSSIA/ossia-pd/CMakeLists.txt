@@ -7,13 +7,11 @@ set(CMAKE_MACOSX_RPATH Off)
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
     message("Downloading and extracting PureData windows binary")
-    # On windows we have to create a .lib file for Pd since the original one is incomplete
-
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
       file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/a0urdqx1xuve5fbh/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     else()
-      return()
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-0.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     endif()
 
     # Extract Pd.
@@ -40,18 +38,28 @@ set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty")
 include_directories(SYSTEM "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include")
 
 set(PROJECT_SRCS
+  src/attribute.cpp
+  src/attribute.hpp
   src/client.cpp
   src/client.hpp
   src/device.cpp
   src/device.hpp
+  src/device_base.cpp
+  src/device_base.hpp
+  src/logger.cpp
+  src/logger.hpp
   src/model.cpp
   src/model.hpp
+  src/node_base.cpp
+  src/node_base.hpp
   src/ossia-pd.cpp
   src/ossia-pd.hpp
-  src/ossia_obj_base.cpp
-  src/ossia_obj_base.hpp
+  src/object_base.cpp
+  src/object_base.hpp
   src/parameter.cpp
   src/parameter.hpp
+  src/parameter_base.cpp
+  src/parameter_base.hpp
   src/remote.cpp
   src/remote.hpp
   src/view.cpp
@@ -62,6 +70,7 @@ set(PROJECT_SRCS
 
 include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
 use_gold(${PROJECT_NAME})
 
 generate_export_header(${PROJECT_NAME} BASE_NAME OSSIA_PD)
@@ -72,7 +81,11 @@ add_custom_target(pd_qml_examples SOURCES ${QMLS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
 if(MSVC)
+  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
     target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd.lib")
+  else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
+  endif()
 endif()
 
 add_linker_warnings_external(${PROJECT_NAME})

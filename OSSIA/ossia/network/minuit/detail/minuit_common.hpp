@@ -96,7 +96,7 @@ inline ossia::string_view to_minuit_type_text(ossia::val_type val)
     case val_type::VEC2F:
     case val_type::VEC3F:
     case val_type::VEC4F:
-    case val_type::TUPLE:
+    case val_type::LIST:
       return make_string_view("array");
     default:
       throw invalid_value_type_error("to_minuit_type_text: Invalid type");
@@ -148,7 +148,7 @@ inline ossia::val_type type_from_minuit_type_text(ossia::string_view str)
       return ossia::val_type::IMPULSE;
     case 'a': // array
     case 'g': // generic
-      return ossia::val_type::TUPLE;
+      return ossia::val_type::LIST;
     default:
       return {};
   }

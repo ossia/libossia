@@ -4,11 +4,11 @@
 <c74object name="ossia.client" module="Ossia" category="Ossia">
 
 	<digest>
-		Client
+		Connect to a distant ossia device
 	</digest>
 
 	<description>
-		Client
+		ossia.client allows to connect to a distant device (either locally or on another computer) through various protcols, and lets you bind to it through <o>ossia.view</o> and <o>ossia.remote</o>
 	</description>
 
 	
@@ -19,15 +19,87 @@
 		<metadata name="tag">Network</metadata>
 	</metadatalist>
 
-	
 	<!--INLETS-->
 	<inletlist>
+			<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.model</digest>
+			<description>Messages to the node</description>
+		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
+			<outlet id="0" name="Info outlet" type="any">
+			<digest>Various information messages</digest>
+			<description>Messages and information in reply to various messages</description>
+		</outlet>
 	</outletlist>
+
+	<!--METHODS-->	
+	<methodlist>
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				Sending the (namespace) message to the leftmost inlet outputs the list of all parameters registered under this node, and their current values
+			</description>
+		</method>
+
+		<method name="getdevices">
+			<arglist/>
+			<digest>
+				Get the list of all discoverable devices on the network
+			</digest>
+			<description>
+				Sending the (getdevices) message to the leftmost inlet will print to all discoverable devices that are present on the network
+			</description>
+		</method>
+
+		<method name="connect">
+			<arglist/>
+			<digest>
+				Connect to a global device to the network
+			</digest>
+			<description>
+				Sending the (connect) message to the leftmost inlet will print its configuration parameters for the various available protocols
+				Then, sending it with the appropriate values will connect to the appropriate device on the network, and allow it to be explored, queried and remotely-controlled.
+				Notice that, if the (getdevices) message has not been sent previously, the object will internally do it, which might take some time, and delay the actual connection accordingly.
+			</description>
+		</method>
+
+		<method name="disconnect">
+			<arglist/>
+			<digest>
+				Disconnect from the currently connected remote device
+			</digest>
+			<description>
+				Sending the (disconnect) message to the leftmost inlet will disconnect ossia.client from the currently connected remote device
+			</description>
+		</method>
+
+		<method name="update">
+			<arglist/>
+			<digest>
+				Update the namespace of the remote device
+			</digest>
+			<description>
+				For some protocols or remote devices, the remote namespace is not automatically updated. Sending the "update" message will do this.
+			</description>
+		</method>
+
+		<method name="preset">
+			<arglist/>
+			<digest>Preset Management
+			</digest>
+			<description>
+				Sending the (preset save /path/to/file.txt) message to the leftmost inlet will write a list of all parameters and their values to the the disk, under the file /path/to/file.txt <!-- - The preset can also be saved under a json format, by replacing the extension by .json -->
+				Sending the (preset load /path/to/file.txt) message to the leftmost inlet will load a list of all parameters and their values from the the file /path/to/file.txt, and recall the values to the parameters
+			</description>
+		</method>
+	</methodlist>	
 	
 	
 	<!--ATTRIBUTES-->
@@ -37,6 +109,9 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.device" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.remote" type="refpage"/>		
 	</seealsolist>
 
 	

@@ -16,13 +16,13 @@ struct apply_ternary_fun_visitor
   }
 #if !defined(FAST_COMPILES)
   template <typename U, typename V>
-  OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min, const V& max)
+  OSSIA_INLINE ossia::value operator()(List&& val, const U& min, const V& max)
   {
     return std::move(val);
   }
   template <typename U, typename V>
   OSSIA_INLINE ossia::value
-  operator()(const Tuple& val, const U& min, const V& max)
+  operator()(const List& val, const U& min, const V& max)
   {
     return val;
   }
@@ -79,7 +79,7 @@ struct apply_ternary_fun_visitor
     return val;
   }
 
-  // TODO handle clamping of Tuple between two values of other types
+  // TODO handle clamping of List between two values of other types
   // (see apply_domain.hpp)
   ossia::value operator()(
       const std::vector<ossia::value>& incoming,
@@ -170,12 +170,12 @@ struct apply_binary_fun_visitor
 
 #if !defined(FAST_COMPILES)
   template <typename U>
-  OSSIA_INLINE ossia::value operator()(Tuple&& val, const U& min)
+  OSSIA_INLINE ossia::value operator()(List&& val, const U& min)
   {
     return std::move(val);
   }
   template <typename U>
-  OSSIA_INLINE ossia::value operator()(const Tuple& val, const U& min)
+  OSSIA_INLINE ossia::value operator()(const List& val, const U& min)
   {
     return val;
   }
@@ -229,7 +229,7 @@ struct apply_binary_fun_visitor
     return val;
   }
 
-  // TODO handle clamping of Tuple between two values of other types
+  // TODO handle clamping of List between two values of other types
   // (see apply_domain.hpp)
   ossia::value operator()(
       const std::vector<ossia::value>& incoming,

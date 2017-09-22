@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QUrl>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 namespace spdlog
 {
@@ -29,7 +29,7 @@ public:
     Impulse, //! \see ossia::impulse
     Bool,    //! \see bool
     String,  //! \see std::string
-    Tuple,   //! \see std::vector<ossia::value>
+    List,   //! \see std::vector<ossia::value>
     Char     //! \see char
   };
   Q_ENUM(val_type)

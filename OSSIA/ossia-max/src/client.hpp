@@ -1,6 +1,9 @@
 #pragma once
 
-#include "ossia_object_base.hpp"
+#include <ossia-max/src/device_base.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 namespace ossia
 {
@@ -10,28 +13,55 @@ namespace max
 #pragma mark -
 #pragma mark t_client structure declaration
 
-struct t_client : t_object_base
+class client : public device_base
 {
-  ossia::net::generic_device* m_device{};
-  ossia::net::local_protocol m_local_proto;
-
-  static void register_children(t_client*);
+public:
+  static void register_children(client*);
   void unregister_children();
+  static void loadbang(client*);
 
-  static void loadbang(t_client*);
+  static void print_protocol_help()
+  {
+    post("connect <protocol> <args> ...");
+    post("Available protocols (case sensitive): Minuit, oscquery");
+    post("Protocols parameters :");
+    post(
+        "Minuit <remoteip> <remoteport> <localport> :\n"
+        "\tremoteip (symbol): ip of target device\n"
+        "\tremoteport (float): port on which packet should be send\n"
+        "\tlocalport (float): port to which this device is listening");
+    post(
+        "oscquery <oscport> <wsurl> :\n"
+        "\twsurl (symbol) : url to connect to (default : "
+        "ws://127.0.0.1:5678)\n");
+  }
 
-  static void explore(const ossia::net::node_base& node);
+  std::vector<ossia::net::minuit_connection_data> m_minuit_devices;
+  std::vector<ossia::net::oscquery_connection_data> m_oscq_devices;
+
+  std::thread* m_async_thread;
+
+  ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
+
+  bool m_done{true};
+  t_symbol* m_looking_for{}; // the name of the device we are looking for
+
+  static void connect(ossia::max::client*, t_symbol*, int, t_atom*);
+  static void disconnect(ossia::max::client*);
+  static void getdevices(client*x);
+  static void check_thread_status(client* x);
+  static void update(client* x);
+  static void poll_message(client* x);
+  // static void destroy(client* x);
+  // static void* create(t_symbol* name, int argc, t_atom* argv);
+  static void find_devices_async(client* x);
+  static void assist(client*, void*, long, long, char*);
+
+  static void* create(t_symbol*, long, t_atom*);
+  static void destroy(ossia::max::client*);
+
 };
 
 } // max namespace
 } // ossia namespace
 
-#pragma mark -
-#pragma mark ossia_client class declaration
-
-extern "C" {
-void* ossia_client_new(t_symbol*, long, t_atom*);
-void ossia_client_free(ossia::max::t_client*);
-void ossia_client_dump(ossia::max::t_client*);
-void ossia_client_connect(ossia::max::t_client*, t_symbol*, int, t_atom*);
-}

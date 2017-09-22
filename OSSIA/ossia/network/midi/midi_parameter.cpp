@@ -10,24 +10,19 @@ namespace net
 namespace midi
 {
 midi_parameter::midi_parameter(address_info info, node_base& parent)
-    : m_info{info}
-    , m_parent{parent}
+  : ossia::net::parameter_base{parent}
+    , m_info{info}
     , m_protocol{dynamic_cast<midi_protocol&>(
           parent.get_device().get_protocol())}
     , m_domain{m_info.defaultDomain()}
     , m_type{m_info.matchingType()}
-    , m_value{m_info.defaultValue(64)}
+    , m_value{m_info.defaultValue(m_info.type == address_info::Type::PB ? 0 : 64)}
 {
 }
 
 const address_info& midi_parameter::info() const
 {
   return m_info;
-}
-
-node_base& midi_parameter::get_node() const
-{
-  return m_parent;
 }
 
 void midi_parameter::pull_value()
@@ -123,16 +118,6 @@ bounding_mode midi_parameter::get_bounding() const
 }
 
 parameter_base& midi_parameter::set_bounding(bounding_mode)
-{
-  return *this;
-}
-
-repetition_filter midi_parameter::get_repetition_filter() const
-{
-  return ossia::repetition_filter::OFF;
-}
-
-parameter_base& midi_parameter::set_repetition_filter(repetition_filter)
 {
   return *this;
 }

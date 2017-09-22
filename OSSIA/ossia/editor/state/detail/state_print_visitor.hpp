@@ -32,7 +32,7 @@ struct state_print_visitor
 
   void operator()(const message& m)
   {
-    out << padding << "message: " << ossia::to_pretty_string(m.destination)
+    out << padding << "message: " << ossia::to_pretty_string(m.dest)
         << " => " << ossia::value_to_pretty_string(m.message_value);
 
     out << "\n";

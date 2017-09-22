@@ -4,7 +4,6 @@
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_parse.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <boost/spirit/include/qi.hpp>
 #include <brigand/algorithms/for_each.hpp>
 #include <brigand/algorithms/wrap.hpp>
 namespace ossia
@@ -235,6 +234,7 @@ struct matching_unit_list<time_list>
 template <>
 struct dataspace_traits<angle_u_list>
 {
+    using neutral_unit = radian_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("angle");
@@ -244,6 +244,7 @@ struct dataspace_traits<angle_u_list>
 template <>
 struct dataspace_traits<color_u_list>
 {
+  using neutral_unit = argb_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("color");
@@ -253,6 +254,7 @@ struct dataspace_traits<color_u_list>
 template <>
 struct dataspace_traits<distance_u_list>
 {
+  using neutral_unit = meter_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("distance");
@@ -262,6 +264,7 @@ struct dataspace_traits<distance_u_list>
 template <>
 struct dataspace_traits<gain_u_list>
 {
+  using neutral_unit = linear_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("gain");
@@ -271,6 +274,7 @@ struct dataspace_traits<gain_u_list>
 template <>
 struct dataspace_traits<orientation_u_list>
 {
+  using neutral_unit = quaternion_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("orientation");
@@ -279,6 +283,7 @@ struct dataspace_traits<orientation_u_list>
 template <>
 struct dataspace_traits<position_u_list>
 {
+  using neutral_unit = cartesian_3d_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("position");
@@ -288,6 +293,7 @@ struct dataspace_traits<position_u_list>
 template <>
 struct dataspace_traits<speed_u_list>
 {
+  using neutral_unit = meter_per_second_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("speed");
@@ -297,6 +303,7 @@ struct dataspace_traits<speed_u_list>
 template <>
 struct dataspace_traits<timing_u_list>
 {
+  using neutral_unit = second_u;
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
     return ossia::make_string_array("time");
@@ -462,7 +469,7 @@ struct unit_factory_visitor
     static const auto units = brigand::wrap<
         typename matching_unit_u_list<Dataspace_T>::type, make_unit_map>{}();
     auto it = units.find(text);
-    return it != units.end() ? it->second : arg;
+    return it != units.end() ? it->second : ossia::unit_t{};
   }
 
   OSSIA_INLINE ossia::unit_t operator()()

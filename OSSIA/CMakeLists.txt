@@ -101,6 +101,23 @@ if(OSSIA_PROTOCOL_PHIDGETS)
   endif()
 endif()
 
+if (NOT OSSIA_CI)
+  include(ossia_git_info)
+  get_commit_sha(GIT_SHA)
+  get_commit_date(GIT_DATE)
+else()
+  if ( $ENV{TRAVIS} MATCHES True )
+    set(GIT_SHA $ENV{TRAVIS_COMMIT})
+    string(SUBSTRING ${GIT_SHA} 0 7 GIT_SHA)
+  elseif ( $ENV{APPVEYOR} MATCHES True )
+    set(GIT_SHA $ENV{APPVEYOR_REPO_COMMIT})
+    string(SUBSTRING ${GIT_SHA} 0 7 GIT_SHA)
+    set(GIT_DATE $ENV{APPVEYOR_REPO_COMMIT_TIMESTAMP})
+  endif()
+endif()
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/git_info.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/git_info.cpp" @ONLY)
+list(APPEND SRCS "${CMAKE_CURRENT_BINARY_DIR}/git_info.cpp" git_info.h)
+
 ### Library ###
 if(APPLE AND OSSIA_FRAMEWORK)
   add_library(ossia MODULE ${SRCS})
@@ -203,8 +220,9 @@ if(OSSIA_DNSSD)
   target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
   get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
   get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
+  get_target_property(SERVUS_INCLUDE_DIRS Servus INTERFACE_INCLUDE_DIRECTORIES)
   target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
-  target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/Servus)
+  target_include_directories(ossia PRIVATE ${SERVUS_INCLUDE_DIRS})
   target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS})
 endif()
 
@@ -260,10 +278,14 @@ if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
   set_target_properties(ossia PROPERTIES
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
-      VERSION ${ossia_VERSION}
-      SOVERSION 1)
+      )
   if(${OSSIA_NO_SONAME})
-      set_target_properties(ossia PROPERTIES NO_SONAME 1)
+      #set_target_properties(ossia PROPERTIES NO_SONAME 1)
+  else()
+    set_target_properties(ossia PROPERTIES
+      VERSION ${ossia_VERSION}
+      SOVERSION 1
+      )
   endif()
 
 else()

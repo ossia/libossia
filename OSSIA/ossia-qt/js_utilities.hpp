@@ -26,7 +26,7 @@
 #include <QtGui/QVector2D>
 #include <QtGui/QVector3D>
 #include <QtGui/QVector4D>
-#include <ossia-c/preset/preset.hpp>
+#include <ossia/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>
 #include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/name_utils.hpp>
@@ -336,7 +336,7 @@ struct OSSIA_EXPORT js_value_outbound_visitor
 
   QJSValue operator()(const std::string& val) const;
 
-  QJSValue make_tuple(const std::vector<ossia::value>& arr) const;
+  QJSValue make_list(const std::vector<ossia::value>& arr) const;
 
   QJSValue operator()(const std::vector<ossia::value>& val) const;
 
@@ -345,7 +345,6 @@ struct OSSIA_EXPORT js_value_outbound_visitor
   {
     auto array = engine.newArray(arr.size());
     int i = 0;
-
     for (auto child : arr)
     {
       array.setProperty(i++, child);

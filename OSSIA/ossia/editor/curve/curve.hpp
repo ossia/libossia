@@ -23,7 +23,7 @@
 
 namespace ossia
 {
-class Destination;
+class destination;
 
 template <typename T>
 const constexpr std::nullptr_t curve_segment_type_map{};
@@ -114,19 +114,19 @@ public:
 
   /*! get initial point abscissa destination
  \return const Destination* */
-  ossia::optional<Destination> get_x0_destination() const;
+  ossia::optional<destination> get_x0_destination() const;
 
   /*! get initial point ordinate destination
  \return const Destination* */
-  ossia::optional<Destination> get_y0_destination() const;
+  ossia::optional<destination> get_y0_destination() const;
 
   /*! set initial curve abscissa using a Destination
  \param const Destination* */
-  void set_x0_destination(const ossia::Destination& destination);
+  void set_x0_destination(const ossia::destination& destination);
 
   /*! set initial curve ordinate using a Destination
  \param const Destination* */
-  void set_y0_destination(const ossia::Destination& destination);
+  void set_y0_destination(const ossia::destination& destination);
 
   /*! get points of the curve
   \return std::map<X, pair<Y, CurveSegment<Y>>> map of {abscissa, {value,
@@ -151,8 +151,8 @@ public:
 private:
   mutable X m_x0;
   mutable Y m_y0;
-  mutable ossia::optional<ossia::Destination> m_x0_destination;
-  mutable ossia::optional<ossia::Destination> m_y0_destination;
+  mutable ossia::optional<ossia::destination> m_x0_destination;
+  mutable ossia::optional<ossia::destination> m_y0_destination;
 
   mutable map_type m_points;
 
@@ -175,11 +175,11 @@ private:
  * A curve that always return a same single value.
  *
  * It is useful if for instance one wants to automate on the
- * first value of the following tuple :
+ * first value of the following list :
  *
  * [ 1, "a string", [ "another", 'c' ] ]
  *
- * while keeping the reste of the tuple intact.
+ * while keeping the reste of the list intact.
  */
 class constant_curve final : public curve_abstract
 {

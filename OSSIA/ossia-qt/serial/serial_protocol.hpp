@@ -13,7 +13,7 @@ namespace ossia
 {
 namespace net
 {
-class serial_wrapper : public QObject
+class OSSIA_EXPORT serial_wrapper : public QObject
 {
   Q_OBJECT
 
@@ -33,6 +33,7 @@ public:
         &mSerialPort, &QSerialPort::readyRead, this, &serial_wrapper::on_read,
         Qt::QueuedConnection);
   }
+  ~serial_wrapper();
 
 signals:
   void write(QByteArray);
@@ -48,8 +49,9 @@ public slots:
   }
 };
 
+
 class serial_device;
-class serial_protocol final : public QObject, public ossia::net::protocol_base
+class OSSIA_EXPORT serial_protocol final : public QObject, public ossia::net::protocol_base
 {
 public:
   // Param : the name of the serial port

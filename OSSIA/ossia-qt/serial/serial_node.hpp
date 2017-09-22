@@ -9,7 +9,7 @@ namespace net
 
 class serial_device;
 class serial_parameter;
-class serial_node : public ossia::net::node_base
+class OSSIA_EXPORT serial_node : public ossia::net::node_base
 {
 protected:
   serial_device& m_device;

@@ -4,11 +4,11 @@
 <c74object name="ossia.device" module="Ossia" category="Ossia">
 
 	<digest>
-		Device
+		Create a local device
 	</digest>
 
 	<description>
-		Device
+		ossia.device creates a local device under which all models and parameters in the same patcher or below will register. Then namespace of this device can then be exposed to local or distant applications through various protocoles
 	</description>
 
 	
@@ -22,21 +22,104 @@
 	
 	<!--INLETS-->
 	<inletlist>
+			<inlet id="0" name="Message input" type="any">
+			<digest>Messages to ossia.model</digest>
+			<description>Messages to the node</description>
+		</inlet>
 	</inletlist>
 
 
 	<!--OUTLETS-->
 	<outletlist>
+			<outlet id="0" name="Info outlet" type="any">
+			<digest>Various information messages</digest>
+			<description>Messages and information in reply to various messages</description>
+		</outlet>
 	</outletlist>
-	
-	
+
+	<!--METHODS-->	
+	<methodlist>
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				Sending the (namespace) message to the leftmost inlet outputs the list of all parameters registered under this node, and their current values
+			</description>
+		</method>
+	</methodlist>
+
+	<methodlist>
+		<method name="expose">
+			<arglist/>
+			<digest>
+				Expose the device to the network
+			</digest>
+			<description>
+				Sending the (expose) message to the leftmost inlet will print its configuration parameters for the various available protocols
+				Then, sending it with the appropriate values will expose the  device to the network, and allow it to be explored, queried and remotely-controlled.
+			</description>
+		</method>
+
+		<method name="name">
+			<arglist/>
+			<digest>
+				Set (or retrieve) the global device's name
+			</digest>
+			<description>
+				Sending the (name) message to the leftmost inlet outputs its current name.
+				Sending the (name someName) message to the leftmost inlet will set the global device's name to "someName"
+			</description>
+		</method>
+
+		<method name="preset">
+			<arglist/>
+			<digest>Preset Management
+			</digest>
+			<description>
+				Sending the (preset save /path/to/file.txt) message to the leftmost inlet will write a list of all parameters and their values to the the disk, under the file /path/to/file.txt <!-- - The preset can also be saved under a json format, by replacing the extension by .json -->
+				Sending the (preset load /path/to/file.txt) message to the leftmost inlet will load a list of all parameters and their values from the the file /path/to/file.txt, and recall the values to the parameters
+			</description>
+		</method>
+	</methodlist>	
+
 	<!--ATTRIBUTES-->
 	<attributelist>
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with this node
+			</digest>
+			<description>
+				The <at>@tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+
+		<attribute name="description" get="1" set="1" type="atom" size="1">
+			<digest>
+				Descirption of this node
+			</digest>
+			<description>
+				The <at>@description</at> attribute allows to give a textual description for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+
+		<attribute name="priority" get="1" set="1" type="int" size="1">
+			<digest>
+				Set priority
+			</digest>
+			<description>
+				The <at>@priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+			</description>
+		</attribute>
 	</attributelist>
 	
 
 	<!--SEEALSO-->
 	<seealsolist>
+		<seealso name="ossia.model" type="refpage"/>
+		<seealso name="ossia.view" type="refpage"/>
+		<seealso name="ossia.client" type="refpage"/>		
 	</seealsolist>
 
 	

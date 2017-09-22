@@ -169,28 +169,28 @@ inline const ossia::degree& angle::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::radian& angle::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::degree& angle::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::radian& angle::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const angle& var)
@@ -202,7 +202,7 @@ auto apply_nonnull(Visitor&& functor, const angle& var)
     case angle::Type::Type1:
       return functor(var.m_impl.m_value1);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -215,7 +215,7 @@ auto apply_nonnull(Visitor&& functor, angle& var)
     case angle::Type::Type1:
       return functor(var.m_impl.m_value1);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -228,7 +228,7 @@ auto apply_nonnull(Visitor&& functor, angle&& var)
     case angle::Type::Type1:
       return functor(std::move(var.m_impl.m_value1));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -702,112 +702,112 @@ inline const ossia::argb& color::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::rgba& color::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::rgb& color::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::bgr& color::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::argb8& color::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::hsv& color::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::cmy8& color::get() const
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::xyz& color::get() const
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::argb& color::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::rgba& color::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::rgb& color::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::bgr& color::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::argb8& color::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::hsv& color::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::cmy8& color::get()
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::xyz& color::get()
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const color& var)
@@ -831,7 +831,7 @@ auto apply_nonnull(Visitor&& functor, const color& var)
     case color::Type::Type7:
       return functor(var.m_impl.m_value7);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -856,7 +856,7 @@ auto apply_nonnull(Visitor&& functor, color& var)
     case color::Type::Type7:
       return functor(var.m_impl.m_value7);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -881,7 +881,7 @@ auto apply_nonnull(Visitor&& functor, color&& var)
     case color::Type::Type7:
       return functor(std::move(var.m_impl.m_value7));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -1624,154 +1624,154 @@ inline const ossia::meter& distance::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::kilometer& distance::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::decimeter& distance::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::centimeter& distance::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::millimeter& distance::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::micrometer& distance::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::nanometer& distance::get() const
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::picometer& distance::get() const
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::inch& distance::get() const
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::foot& distance::get() const
 {
   if (m_type == Type9)
     return m_impl.m_value9;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::mile& distance::get() const
 {
   if (m_type == Type10)
     return m_impl.m_value10;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::meter& distance::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::kilometer& distance::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::decimeter& distance::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::centimeter& distance::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::millimeter& distance::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::micrometer& distance::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::nanometer& distance::get()
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::picometer& distance::get()
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::inch& distance::get()
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::foot& distance::get()
 {
   if (m_type == Type9)
     return m_impl.m_value9;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::mile& distance::get()
 {
   if (m_type == Type10)
     return m_impl.m_value10;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const distance& var)
@@ -1801,7 +1801,7 @@ auto apply_nonnull(Visitor&& functor, const distance& var)
     case distance::Type::Type10:
       return functor(var.m_impl.m_value10);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -1832,7 +1832,7 @@ auto apply_nonnull(Visitor&& functor, distance& var)
     case distance::Type::Type10:
       return functor(var.m_impl.m_value10);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -1863,7 +1863,7 @@ auto apply_nonnull(Visitor&& functor, distance&& var)
     case distance::Type::Type10:
       return functor(std::move(var.m_impl.m_value10));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -2449,56 +2449,56 @@ inline const ossia::linear& gain::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::midigain& gain::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::decibel& gain::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::decibel_raw& gain::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::linear& gain::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::midigain& gain::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::decibel& gain::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::decibel_raw& gain::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const gain& var)
@@ -2514,7 +2514,7 @@ auto apply_nonnull(Visitor&& functor, const gain& var)
     case gain::Type::Type3:
       return functor(var.m_impl.m_value3);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -2531,7 +2531,7 @@ auto apply_nonnull(Visitor&& functor, gain& var)
     case gain::Type::Type3:
       return functor(var.m_impl.m_value3);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -2548,7 +2548,7 @@ auto apply_nonnull(Visitor&& functor, gain&& var)
     case gain::Type::Type3:
       return functor(std::move(var.m_impl.m_value3));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -2911,42 +2911,42 @@ inline const ossia::quaternion& orientation::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::euler& orientation::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::axis& orientation::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::quaternion& orientation::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::euler& orientation::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::axis& orientation::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const orientation& var)
@@ -2960,7 +2960,7 @@ auto apply_nonnull(Visitor&& functor, const orientation& var)
     case orientation::Type::Type2:
       return functor(var.m_impl.m_value2);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -2975,7 +2975,7 @@ auto apply_nonnull(Visitor&& functor, orientation& var)
     case orientation::Type::Type2:
       return functor(var.m_impl.m_value2);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -2990,7 +2990,7 @@ auto apply_nonnull(Visitor&& functor, orientation&& var)
     case orientation::Type::Type2:
       return functor(std::move(var.m_impl.m_value2));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -3444,84 +3444,84 @@ inline const ossia::cartesian_3d& position::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::cartesian_2d& position::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::spherical& position::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::polar& position::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::opengl& position::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::cylindrical& position::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::cartesian_3d& position::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::cartesian_2d& position::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::spherical& position::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::polar& position::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::opengl& position::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::cylindrical& position::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const position& var)
@@ -3541,7 +3541,7 @@ auto apply_nonnull(Visitor&& functor, const position& var)
     case position::Type::Type5:
       return functor(var.m_impl.m_value5);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -3562,7 +3562,7 @@ auto apply_nonnull(Visitor&& functor, position& var)
     case position::Type::Type5:
       return functor(var.m_impl.m_value5);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -3583,7 +3583,7 @@ auto apply_nonnull(Visitor&& functor, position&& var)
     case position::Type::Type5:
       return functor(std::move(var.m_impl.m_value5));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -4107,84 +4107,84 @@ inline const ossia::meter_per_second& speed::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::miles_per_hour& speed::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::kilometer_per_hour& speed::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::knot& speed::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::foot_per_second& speed::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::foot_per_hour& speed::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::meter_per_second& speed::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::miles_per_hour& speed::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::kilometer_per_hour& speed::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::knot& speed::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::foot_per_second& speed::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::foot_per_hour& speed::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const speed& var)
@@ -4204,7 +4204,7 @@ auto apply_nonnull(Visitor&& functor, const speed& var)
     case speed::Type::Type5:
       return functor(var.m_impl.m_value5);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -4225,7 +4225,7 @@ auto apply_nonnull(Visitor&& functor, speed& var)
     case speed::Type::Type5:
       return functor(var.m_impl.m_value5);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -4246,7 +4246,7 @@ auto apply_nonnull(Visitor&& functor, speed&& var)
     case speed::Type::Type5:
       return functor(std::move(var.m_impl.m_value5));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -4865,126 +4865,126 @@ inline const ossia::second& timing::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::bark& timing::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::bpm& timing::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::cent& timing::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::frequency& timing::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::mel& timing::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::midi_pitch& timing::get() const
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::millisecond& timing::get() const
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::playback_speed& timing::get() const
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::second& timing::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::bark& timing::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::bpm& timing::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::cent& timing::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::frequency& timing::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::mel& timing::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::midi_pitch& timing::get()
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::millisecond& timing::get()
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::playback_speed& timing::get()
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const timing& var)
@@ -5010,7 +5010,7 @@ auto apply_nonnull(Visitor&& functor, const timing& var)
     case timing::Type::Type8:
       return functor(var.m_impl.m_value8);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -5037,7 +5037,7 @@ auto apply_nonnull(Visitor&& functor, timing& var)
     case timing::Type::Type8:
       return functor(var.m_impl.m_value8);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -5064,7 +5064,7 @@ auto apply_nonnull(Visitor&& functor, timing&& var)
     case timing::Type::Type8:
       return functor(std::move(var.m_impl.m_value8));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -5767,126 +5767,126 @@ inline const ossia::value& strong_value_variant::get() const
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::distance& strong_value_variant::get() const
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::position& strong_value_variant::get() const
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::speed& strong_value_variant::get() const
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::orientation& strong_value_variant::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::angle& strong_value_variant::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::color& strong_value_variant::get() const
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::gain& strong_value_variant::get() const
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline const ossia::timing& strong_value_variant::get() const
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::value& strong_value_variant::get()
 {
   if (m_type == Type0)
     return m_impl.m_value0;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::distance& strong_value_variant::get()
 {
   if (m_type == Type1)
     return m_impl.m_value1;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::position& strong_value_variant::get()
 {
   if (m_type == Type2)
     return m_impl.m_value2;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::speed& strong_value_variant::get()
 {
   if (m_type == Type3)
     return m_impl.m_value3;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::orientation& strong_value_variant::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::angle& strong_value_variant::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::color& strong_value_variant::get()
 {
   if (m_type == Type6)
     return m_impl.m_value6;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::gain& strong_value_variant::get()
 {
   if (m_type == Type7)
     return m_impl.m_value7;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <>
 inline ossia::timing& strong_value_variant::get()
 {
   if (m_type == Type8)
     return m_impl.m_value8;
-  throw;
+  throw std::runtime_error("dataspace_strong_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const strong_value_variant& var)
@@ -5912,7 +5912,7 @@ auto apply_nonnull(Visitor&& functor, const strong_value_variant& var)
     case strong_value_variant::Type::Type8:
       return functor(var.m_impl.m_value8);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -5939,7 +5939,7 @@ auto apply_nonnull(Visitor&& functor, strong_value_variant& var)
     case strong_value_variant::Type::Type8:
       return functor(var.m_impl.m_value8);
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>
@@ -5966,7 +5966,7 @@ auto apply_nonnull(Visitor&& functor, strong_value_variant&& var)
     case strong_value_variant::Type::Type8:
       return functor(std::move(var.m_impl.m_value8));
     default:
-      throw;
+      throw std::runtime_error("dataspace_strong_variant: bad type");
   }
 }
 template <typename Visitor>

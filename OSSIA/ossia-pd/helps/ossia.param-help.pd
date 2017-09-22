@@ -1,4 +1,4 @@
-#N canvas 16 171 1166 778 10;
+#N canvas 240 113 1166 778 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
 #X text 668 119 bool : bollean value \, 0 or 1;
@@ -9,37 +9,26 @@
 \, RGB color;
 #X text 668 207 vec4f : list of 4 float values \, useful for RGBA color
 ;
-#X text 653 623 @tags <symbol> string list to decribe some key features
+#X text 653 649 @tags <symbol> string list to decribe some key features
 (like audio \, video \, synthesis \, effect...);
-#X text 653 652 @description <symbol> textual decription of the parameter
+#X text 653 678 @description <symbol> textual decription of the parameter
 ;
 #X text 649 51 @type <symbol> define value type \, could be one of
 :;
-#X text 651 288 @default <atoms> define default value \, fired at loading
+#X text 649 287 @default <atoms> define default value \, fired at loading
 ;
-#X text 652 560 @priority <int> defines recall order \, higher priority
+#X text 652 586 @priority <int> defines recall order \, higher priority
 comes first, f 66;
-#N canvas 1533 499 285 538 unit 0;
-#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
-distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
-position.cart3D position.cart2D position.spherical position.polar position.openGL
-position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
-speed.ft/h orientation.quaternion orientation.euler orientation.axis
-angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
-color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
-gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
-time.mel time.midinote time.ms time.speed, f 24;
-#X restore 932 444 pd unit list;
 #X text 651 444 @unit <symbol> defines unit \, see list :;
 #X text 52 94 Needed argument : parameter name with no special character
 ;
-#X obj 373 402 print bar-dumpout;
-#X obj 58 397 unpack 0 0 0 0, f 22;
-#X floatatom 58 421 5 0 0 0 - - -, f 5;
-#X floatatom 101 420 5 0 0 0 - - -, f 5;
-#X floatatom 144 420 5 0 0 0 - - -, f 5;
-#X floatatom 187 421 5 0 0 0 - - -, f 5;
-#X msg 86 288 dump;
+#X obj 368 420 print bar-dumpout;
+#X obj 53 415 unpack 0 0 0 0, f 22;
+#X floatatom 53 439 5 0 0 0 - - -, f 5;
+#X floatatom 96 438 5 0 0 0 - - -, f 5;
+#X floatatom 139 438 5 0 0 0 - - -, f 5;
+#X floatatom 182 439 5 0 0 0 - - -, f 5;
+#X msg 81 306 dump;
 #N canvas 0 151 450 300 set 0;
 #X obj 161 163 pack 0 0 0 0;
 #X floatatom 161 105 5 0 0 0 - - -, f 5;
@@ -62,27 +51,17 @@ time.mel time.midinote time.ms time.speed, f 24;
 #X connect 7 0 1 0;
 #X connect 7 1 0 1;
 #X coords 0 -1 1 1 220 25 1 100 100;
-#X restore 58 254 pd set;
-#X text 125 287 send attribute values and parameter state through right
-most output;
-#X obj 86 323 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+#X restore 53 272 pd set;
+#X obj 81 341 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
-#X text 103 321 get current value;
+#X text 98 339 get current value;
 #X text 52 192 this is the simplest form of creating an ossia parameter
 in Pd., f 66;
-#X text 242 533 see also :;
-#X floatatom 201 578 5 0 0 0 - - -, f 5;
-#X text 652 581 @hidden <float> enable/disable hidden attribute \,
+#X text 240 642 see also :;
+#X floatatom 199 687 5 0 0 0 - - -, f 5;
+#X text 652 607 @hidden <float> enable/disable hidden attribute \,
 could be 0 or 1, f 65;
-#X text 651 484 @repetition_filter <float> enable/disable repetition
-filter \, could be 0 or 1 - default: 0 when none specified;
-#X text 652 527 @access_mode <symbol> defines if the value can be read
-\, write or both \, could be : BI (default) \, GET \, SET \, RW \,
-R \, W;
-#X text 651 409 @bounding_mode <symbol> defines behavior when value
-go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
-\, FOLD \, LOW \, HIGH, f 68;
-#X obj 238 554 ossia.model param-help;
+#X obj 236 663 ossia.model param-help;
 #X floatatom 115 166 5 0 0 0 - - -, f 5;
 #X floatatom 115 124 5 0 0 0 - - -, f 5;
 #X obj 115 144 ossia.param foo;
@@ -90,20 +69,20 @@ go out of range \, could be one of : FREE (default) \, CLIP \, WRAP
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
 #X text 63 76 ø.theNameOftheObject;
-#X restore 44 579 pd ossia/ø;
+#X restore 53 686 pd ossia/ø;
 #X text 11 13 ossia.parameter defines a parameter and allows to declare
 its properties as attributes, f 88;
-#X obj 238 578 ossia.remote foo;
+#X obj 236 687 ossia.remote foo;
 #X text 668 71 float : most common \, simple float value - default
 type when none specified;
-#X obj 408 577 ossia;
-#X msg 408 553 expose oscquery;
-#X text 666 246 impulse : bang (only useful with SET or GET access_modes
-, f 61;
+#X obj 406 686 ossia;
+#X msg 406 662 expose oscquery;
+#X text 666 246 impulse : bang (only useful with SET or GET mode,
+f 61;
 #X text 668 227 list : list of anything, f 61;
-#X text 653 702 @enable <0|1> enable/disable the parameter \, default:
+#X text 653 728 @enable <0|1> enable/disable the parameter \, default:
 1;
-#X text 653 671 @hidden <0|1> hide the parameter to the user (e.g.
+#X text 653 697 @hidden <0|1> hide the parameter to the user (e.g.
 in i-score) \, default: 0;
 #X text 651 368 @min <list of float> / @max <list of float> define
 minimum and maximum values. For vector \, min/max are defined for each
@@ -112,9 +91,9 @@ vector element., f 61;
 ;
 #X text 650 306 @range <float> <float> define min and max at the same
 time for all elements for list or vector type;
-#X obj 58 349 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
-bi @range 0 2;
+#X obj 53 367 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
+"My beautiful red" @tags color beautiful @clip both @mode bi @range
+0 2;
 #N canvas 749 93 740 913 more_about_range_and_minmax 0;
 #X obj 93 234 list prepend set;
 #X obj 93 255 list trim;
@@ -134,14 +113,13 @@ bi @range 0 2;
 #X msg 40 344 getrange;
 #X obj 98 822 list prepend set;
 #X obj 98 843 list trim;
-#X msg 98 864 0 0 0 0;
+#X msg 98 864 6 16 16 16;
 #X floatatom 98 691 5 0 0 0 - - -, f 5;
 #X msg 214 744 dump;
 #X obj 524 858 print;
 #X obj 449 829 route address;
-#X msg 75 666 bounding_mode free;
 #X obj 98 771 ossia.param my_list @type vec4f @min -1 -2 -3 -4 @max
-1 2 3 4 @bounding_mode clip, f 62;
+1 2 3 4 @clip both, f 62;
 #X msg 98 721 \$1 \$1 \$1 \$1 \$1;
 #X msg 274 715 min 0 0 0 0;
 #X msg 262 680 max 10 20 30 40;
@@ -151,9 +129,9 @@ bi @range 0 2;
 #X msg 58 369 range;
 #X msg 126 600 string;
 #X obj 126 524 ossia.param my_string @type string @range bikini caleçon
-string culotte sling @bounding_mode clip @default string;
-#X obj 93 198 ossia.param my_list @type list @range -10 10 @bounding_mode
-clip @default 26 37 18 -20 2;
+string culotte sling @clip both @default string;
+#X obj 93 198 ossia.param my_list @type list @range -10 10 @clip both
+@default 26 37 18 -20 2;
 #X text 137 349 range attribute define a list of possible value for
 a string parameter.;
 #X msg 95 416 range bikini caleçon string culotte sling;
@@ -162,44 +140,45 @@ float-list minimum and maximum.;
 #X msg 93 114 \$1 \$1 \$1 \$1 \$1;
 #X msg 108 140 range 0 1;
 #X msg 117 166 range 0 127;
+#X msg 75 666 clip wrap;
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
-#X connect 3 0 38 0;
+#X connect 3 0 37 0;
 #X connect 4 0 5 0;
-#X connect 5 0 32 0;
+#X connect 5 0 31 0;
 #X connect 7 1 6 0;
 #X connect 8 0 11 0;
 #X connect 9 0 11 0;
 #X connect 10 0 11 0;
-#X connect 11 0 33 0;
+#X connect 11 0 32 0;
 #X connect 12 0 11 0;
 #X connect 13 0 11 0;
-#X connect 14 0 33 0;
-#X connect 15 0 33 0;
+#X connect 14 0 32 0;
+#X connect 15 0 32 0;
 #X connect 16 0 17 0;
 #X connect 17 0 18 0;
-#X connect 19 0 25 0;
-#X connect 20 0 24 0;
+#X connect 19 0 24 0;
+#X connect 20 0 23 0;
 #X connect 22 1 21 0;
-#X connect 23 0 24 0;
-#X connect 24 0 16 0;
-#X connect 24 1 22 0;
-#X connect 25 0 24 0;
-#X connect 26 0 24 0;
-#X connect 27 0 24 0;
+#X connect 23 0 16 0;
+#X connect 23 1 22 0;
+#X connect 24 0 23 0;
+#X connect 25 0 23 0;
+#X connect 26 0 23 0;
+#X connect 27 0 11 0;
 #X connect 28 0 11 0;
 #X connect 29 0 11 0;
-#X connect 30 0 11 0;
-#X connect 31 0 33 0;
-#X connect 33 0 4 0;
-#X connect 33 1 7 0;
-#X connect 34 0 0 0;
-#X connect 36 0 33 0;
-#X connect 38 0 34 0;
-#X connect 39 0 34 0;
-#X connect 40 0 34 0;
-#X restore 43 482 pd more_about_range_and_minmax;
-#N canvas 543 365 677 647 attributes_get/set 1;
+#X connect 30 0 32 0;
+#X connect 32 0 4 0;
+#X connect 32 1 7 0;
+#X connect 33 0 0 0;
+#X connect 35 0 32 0;
+#X connect 37 0 33 0;
+#X connect 38 0 33 0;
+#X connect 39 0 33 0;
+#X connect 40 0 23 0;
+#X restore 54 492 pd more_about_range_and_minmax;
+#N canvas 543 365 677 647 attributes_get/set 0;
 #X obj 30 148 s \$0-param_bar;
 #X obj 30 451 r \$0-param_bar;
 #X obj 150 148 s \$0-param_bar;
@@ -207,12 +186,11 @@ float-list minimum and maximum.;
 #X obj 390 148 s \$0-param_bar;
 #X obj 30 268 s \$0-param_bar;
 #X obj 180 268 s \$0-param_bar;
-#X obj 410 268 s \$0-param_bar;
-#X obj 530 268 s \$0-param_bar;
+#X obj 539 264 s \$0-param_bar;
+#X obj 537 411 s \$0-param_bar;
 #X obj 30 378 s \$0-param_bar;
 #X obj 210 378 s \$0-param_bar;
-#X msg 400 329 unit speed.m/s;
-#X obj 390 378 s \$0-param_bar;
+#X obj 356 378 s \$0-param_bar;
 #X msg 30 59 range 0 1;
 #X msg 40 79 range -10 10;
 #X msg 55 123 getrange;
@@ -253,10 +231,6 @@ float-list minimum and maximum.;
 #X obj 398 581 route address;
 #X obj 486 606 print;
 #X msg 50 99 range;
-#X msg 390 49 bounding_mode clip;
-#X msg 400 70 bounding_mode low;
-#X msg 415 91 bounding_mode free;
-#X msg 428 112 getbounding_mode;
 #X msg 55 243 getdefault;
 #X msg 40 219 default blah fruh;
 #X msg 30 199 default 0 1 1 1;
@@ -264,88 +238,229 @@ float-list minimum and maximum.;
 #X msg 205 243 gethidden;
 #X obj 180 198 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 410 219 priority \$1;
-#X msg 435 243 getpriority;
-#X floatatom 410 197 5 0 0 0 - - -, f 5;
-#X msg 530 199 access_mode bi;
-#X msg 555 243 getaccess_mode;
-#X msg 540 219 access_mode get;
-#X msg 30 329 repetition_filter \$1;
-#X msg 45 353 getrepetition_filter;
+#X msg 539 215 priority \$1;
+#X msg 564 239 getpriority;
+#X floatatom 539 193 5 0 0 0 - - -, f 5;
 #X obj 30 310 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 235 353 gettags;
 #X msg 210 331 tags graphic core;
-#X msg 415 353 getdescription;
+#X msg 381 353 getdescription;
 #X obj 290 268 s \$0-param_bar;
 #X obj 290 198 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 290 219 enable \$1;
 #X msg 315 243 getenable;
-#X msg 390 309 description Something meaningful;
+#X msg 356 309 description Something meaningful;
 #X obj 30 524 ossia.param bar @unit color.rgba @default 1 0 0 1 @description
-"My beautiful red" @tags color beautiful @bounding_mode clip @access_mode
-bi @range 0 2;
+"My beautiful red" @tags color beautiful @clip both @mode bi @range
+0 2;
 #X text 20 6 Each attribute can be set and get via a message from the
 patcher.;
-#X connect 1 0 58 0;
-#X connect 11 0 12 0;
+#X obj 410 268 s \$0-param_bar;
+#X obj 410 198 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 435 243 getmute;
+#X msg 410 219 mute \$1;
+#X msg 537 342 mode bi;
+#X msg 547 364 mode get;
+#X msg 561 386 getmode;
+#X msg 366 329 description nothing;
+#X obj 530 539 s \$0-param_bar;
+#X msg 554 514 getrate;
+#X msg 530 489 rate \$1;
+#X floatatom 530 466 5 0 0 0 - - -, f 5;
+#X obj 504 149 s \$0-param_bar;
+#X msg 427 112 getclip;
+#X msg 534 113 gettype;
+#X msg 30 329 repetitions \$1;
+#X msg 45 353 getrepetitions;
+#X msg 389 49 clip both;
+#X msg 400 70 clip low;
+#X msg 415 91 clip free;
+#X connect 1 0 48 0;
+#X connect 12 0 0 0;
 #X connect 13 0 0 0;
 #X connect 14 0 0 0;
-#X connect 15 0 0 0;
+#X connect 15 0 2 0;
 #X connect 16 0 2 0;
 #X connect 17 0 2 0;
-#X connect 18 0 2 0;
-#X connect 19 0 58 0;
-#X connect 20 0 21 0;
-#X connect 20 1 22 0;
-#X connect 20 2 23 0;
-#X connect 20 3 24 0;
+#X connect 18 0 48 0;
+#X connect 19 0 20 0;
+#X connect 19 1 21 0;
+#X connect 19 2 22 0;
+#X connect 19 3 23 0;
+#X connect 24 0 3 0;
 #X connect 25 0 3 0;
 #X connect 26 0 3 0;
-#X connect 27 0 3 0;
-#X connect 28 1 29 0;
-#X connect 30 0 0 0;
-#X connect 31 0 4 0;
-#X connect 32 0 4 0;
-#X connect 33 0 4 0;
-#X connect 34 0 4 0;
-#X connect 35 0 5 0;
-#X connect 36 0 5 0;
-#X connect 37 0 5 0;
-#X connect 38 0 6 0;
-#X connect 39 0 6 0;
-#X connect 40 0 38 0;
-#X connect 41 0 7 0;
-#X connect 42 0 7 0;
-#X connect 43 0 41 0;
-#X connect 44 0 8 0;
-#X connect 45 0 8 0;
-#X connect 46 0 8 0;
-#X connect 47 0 9 0;
-#X connect 48 0 9 0;
-#X connect 49 0 47 0;
-#X connect 50 0 10 0;
-#X connect 51 0 10 0;
-#X connect 52 0 12 0;
-#X connect 54 0 55 0;
-#X connect 55 0 53 0;
-#X connect 56 0 53 0;
-#X connect 57 0 12 0;
-#X connect 58 0 20 0;
-#X connect 58 1 28 0;
-#X restore 43 511 pd attributes_get/set;
-#X connect 16 0 17 0;
-#X connect 16 1 18 0;
-#X connect 16 2 19 0;
-#X connect 16 3 20 0;
-#X connect 21 0 50 0;
-#X connect 22 0 50 0;
-#X connect 24 0 50 0;
-#X connect 28 0 39 0;
-#X connect 35 0 36 0;
-#X connect 36 0 34 0;
-#X connect 39 0 28 0;
-#X connect 42 0 41 0;
-#X connect 50 0 16 0;
-#X connect 50 1 15 0;
+#X connect 27 1 28 0;
+#X connect 29 0 0 0;
+#X connect 30 0 5 0;
+#X connect 31 0 5 0;
+#X connect 32 0 5 0;
+#X connect 33 0 6 0;
+#X connect 34 0 6 0;
+#X connect 35 0 33 0;
+#X connect 36 0 7 0;
+#X connect 37 0 7 0;
+#X connect 38 0 36 0;
+#X connect 39 0 65 0;
+#X connect 40 0 10 0;
+#X connect 41 0 10 0;
+#X connect 42 0 11 0;
+#X connect 44 0 45 0;
+#X connect 45 0 43 0;
+#X connect 46 0 43 0;
+#X connect 47 0 11 0;
+#X connect 48 0 19 0;
+#X connect 48 1 27 0;
+#X connect 51 0 53 0;
+#X connect 52 0 50 0;
+#X connect 53 0 50 0;
+#X connect 54 0 8 0;
+#X connect 55 0 8 0;
+#X connect 56 0 8 0;
+#X connect 57 0 11 0;
+#X connect 59 0 58 0;
+#X connect 60 0 58 0;
+#X connect 61 0 60 0;
+#X connect 63 0 4 0;
+#X connect 64 0 62 0;
+#X connect 65 0 9 0;
+#X connect 66 0 9 0;
+#X connect 67 0 4 0;
+#X connect 68 0 4 0;
+#X connect 69 0 4 0;
+#X restore 55 536 pd attributes_get/set;
+#X msg 253 335 reset;
+#X text 120 305 send attribute values and parameter state through rightmost
+output, f 66;
+#N canvas 777 353 649 398 declaring_multiple_parameters_in_1_object
+0;
+#X floatatom 50 150 5 0 0 0 - - -, f 5;
+#X floatatom 50 97 5 0 0 0 - - -, f 5;
+#X obj 425 156 route address;
+#X obj 425 178 symbol;
+#X symbolatom 425 200 25 0 0 0 - - -, f 25;
+#X obj 50 117 ø.param test.[0-5]/bar.[1-3]/b[a-c]r.[0-1] @type float
+@default 12 @clip both;
+#X text 43 32 Several parameters can be created in a row in one ossia.param
+object., f 74;
+#X text 44 58 This is done by using brackets for defining a range of
+numbers or characters, f 76;
+#X text 41 225 (note that this will work only with one character at
+a time);
+#X text 42 258 in order to do the same for numbers \, a different syntax
+has to be used (brace expansion - notice that due to limitations of
+the UI framework of pd \, tcl/tk \, curly braces are replaced by <>
+):, f 78;
+#X obj 48 327 ø.param moreTest.<1..32>;
+#X obj 383 332 ø;
+#X msg 383 309 namespace;
+#X obj 383 354 print;
+#X connect 1 0 5 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 5 0 0 0;
+#X connect 5 1 2 0;
+#X connect 11 0 13 0;
+#X connect 12 0 11 0;
+#X restore 56 584 pd declaring_multiple_parameters_in_1_object;
+#X text 303 335 will reset to default value(s);
+#X text 652 553 @mode <symbol> defines if the value can be read \,
+write or both \, could be : BI (default) \, GET \, SET \, RW \, R \,
+W;
+#X text 651 484 @repetitions <float> enable/disable repetitions \,
+could be 0 or 1 - default: 1 when none specified;
+#X text 651 409 @both <symbol> defines behavior when value go out of
+range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
+LOW \, HIGH, f 68;
+#X text 652 519 @rate: how often (in ms) the value is output - default
+10;
+#N canvas 530 67 495 609 units 0;
+#X obj 35 85 ossia.param aParam @unit gain.db;
+#X obj 39 289 ossia.param myGain @unit db;
+#X obj 40 204 ossia.param aParam @type float @unit db;
+#X obj 35 385 ossia.param myGain @type db;
+#X msg 181 356 getunit;
+#X msg 113 355 gettype;
+#X obj 232 385 print;
+#X msg 91 263 gettype;
+#N canvas 0 120 239 256 (subpatch) 0;
+#X obj 45 37 inlet;
+#X obj 46 140 outlet, f 7;
+#X obj 45 64 list prepend set;
+#X obj 47 99 list trim list;
+#X connect 0 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X restore 236 290 pd;
+#X msg 266 291 rate 10;
+#X obj 41 541 ossia.param aGain @unit db;
+#X floatatom 41 569 5 0 0 0 - - -, f 5;
+#X floatatom 40 483 5 0 0 0 - - -, f 5;
+#X obj 87 482 ossia.remote aGain @unit linear;
+#X text 31 27 Units can be specified \, with the @unit argument \,
+by providing their full names \, i.e. by using the syntax "category.unit"
+;
+#X text 37 120 see full unit list here:;
+#N canvas 1533 499 285 538 unit_list 0;
+#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
+distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
+position.cart3D position.cart2D position.spherical position.polar position.openGL
+position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
+speed.ft/h orientation.quaternion orientation.euler orientation.axis
+angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
+color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
+gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
+time.mel time.midinote time.ms time.speed, f 24;
+#X restore 221 118 pd unit_list;
+#X text 35 162 They can also be provided by their unit name only (unit
+names being unique), f 50;
+#X text 30 422 Remotes can be specified a unit belonging to the same
+category as the parameter's unit and they will automatically convert
+parameter values to/from this unit, f 57;
+#X floatatom 41 517 5 0 0 0 - - -, f 5;
+#X text 37 235 As the type is deduced from the unit \, we can omit
+it.;
+#X text 35 322 Or even provide the unit directly under the @type attribute:
+;
+#X text 34 355 check:;
+#X text 38 262 check:;
+#X connect 1 1 8 0;
+#X connect 3 1 6 0;
+#X connect 4 0 3 0;
+#X connect 5 0 3 0;
+#X connect 7 0 1 0;
+#X connect 8 0 9 0;
+#X connect 10 0 11 0;
+#X connect 12 0 13 0;
+#X connect 13 0 12 0;
+#X connect 19 0 10 0;
+#X restore 262 539 pd units;
+#N canvas 1533 499 285 538 unit_list 0;
+#X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
+distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
+position.cart3D position.cart2D position.spherical position.polar position.openGL
+position.cylindrical speed.m/s speed.mph speed.km/h speed.kn speed.ft/s
+speed.ft/h orientation.quaternion orientation.euler orientation.axis
+angle.degree angle.radian color.argb color.rgba color.rgb color.bgr
+color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
+gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
+time.mel time.midinote time.ms time.speed, f 24;
+#X restore 932 444 pd unit_list;
+#X connect 15 0 16 0;
+#X connect 15 1 17 0;
+#X connect 15 2 18 0;
+#X connect 15 3 19 0;
+#X connect 20 0 45 0;
+#X connect 21 0 45 0;
+#X connect 22 0 45 0;
+#X connect 26 0 34 0;
+#X connect 30 0 31 0;
+#X connect 31 0 29 0;
+#X connect 34 0 26 0;
+#X connect 37 0 36 0;
+#X connect 45 0 15 0;
+#X connect 45 1 14 0;
+#X connect 48 0 45 0;

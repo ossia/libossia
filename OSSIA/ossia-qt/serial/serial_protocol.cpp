@@ -15,6 +15,12 @@ namespace ossia
 {
 namespace net
 {
+
+serial_wrapper::~serial_wrapper()
+{
+    
+}
+
 serial_protocol::serial_protocol(
     const QByteArray& code, const QSerialPortInfo& bot)
     : mEngine{new QQmlEngine}
@@ -75,7 +81,7 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr)
     case ossia::val_type::IMPULSE:
       break;
     default:
-      throw;
+      throw std::runtime_error("serial_protocol::push: bad type");
   }
 
   str += '\n';

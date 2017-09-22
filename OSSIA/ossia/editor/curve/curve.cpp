@@ -92,7 +92,7 @@ Y curve<X, Y>::get_y0() const
     if (m_y0_cacheUsed)
       return m_y0_cache;
 
-    const Destination& dest = *m_y0_destination;
+    const destination& dest = *m_y0_destination;
     m_y0_cacheUsed = true;
     m_y0_cache = convert_to_template_type_value(
         dest.address().fetch_value(), dest.index.begin());
@@ -151,25 +151,25 @@ void curve<X, Y>::set_y0(Y value)
 }
 
 template <typename X, typename Y>
-ossia::optional<Destination> curve<X, Y>::get_x0_destination() const
+ossia::optional<destination> curve<X, Y>::get_x0_destination() const
 {
   return m_x0_destination;
 }
 
 template <typename X, typename Y>
-ossia::optional<Destination> curve<X, Y>::get_y0_destination() const
+ossia::optional<destination> curve<X, Y>::get_y0_destination() const
 {
   return m_y0_destination;
 }
 
 template <typename X, typename Y>
-void curve<X, Y>::set_x0_destination(const Destination& destination)
+void curve<X, Y>::set_x0_destination(const destination& destination)
 {
   m_x0_destination = destination;
 }
 
 template <typename X, typename Y>
-void curve<X, Y>::set_y0_destination(const Destination& destination)
+void curve<X, Y>::set_y0_destination(const destination& destination)
 {
   m_y0_destination = destination;
 }

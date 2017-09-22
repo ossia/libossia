@@ -19,7 +19,7 @@ using namespace std;
 int main()
 {
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "i-score"};
+    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "score"};
 
     // Local tree building
     auto localImpulseNode1 = device.create_child("my_impulse.1");
@@ -48,9 +48,9 @@ int main()
     auto localStringAddress2 = localStringNode2->create_parameter(val_type::STRING);
 
     auto localTupleNode1 = device.create_child("my_tuple.1");
-    auto localTupleAddress1 = localTupleNode1->create_parameter(val_type::TUPLE);
+    auto localTupleAddress1 = localTupleNode1->create_parameter(val_type::LIST);
     auto localTupleNode2 = device.create_child("my_tuple.2");
-    auto localTupleAddress2 = localTupleNode2->create_parameter(val_type::TUPLE);
+    auto localTupleAddress2 = localTupleNode2->create_parameter(val_type::LIST);
 
     // evaluate expression with Impulse
     auto testImpulseExprA = make_expression_atom(impulse(),
