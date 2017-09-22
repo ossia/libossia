@@ -13,7 +13,6 @@ import time
 print("OSSIA LIBRARY EXAMPLE")
 
 ### LOCAL DEVICE SETUP
-
 # create a device for this python program
 local_device = ossia.LocalDevice("newDevice")
 
