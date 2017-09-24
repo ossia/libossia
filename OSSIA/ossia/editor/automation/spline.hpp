@@ -56,7 +56,7 @@ public:
   void set_destination(ossia::destination a);
   void set_spline(const spline_data& t);
 
-  ossia::state_element state(ossia::time_value date, double pos) override;
+  ossia::state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
   void start(ossia::state& st) override;
   void stop() override;

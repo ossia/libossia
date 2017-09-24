@@ -11,6 +11,7 @@ using audio_vector = std::vector<chobo::small_vector<double, 64>>;
 
 struct audio_port
 {
+  bool upmix{};
   audio_vector samples;
 };
 
@@ -95,19 +96,100 @@ struct mix
       in.push_back(data);
   }
 
-  void operator()(const audio_vector& src_vec, audio_vector& sink_vec)
+  void copy_audio(const chobo::small_vector<double, 64>& src, chobo::small_vector<double, 64>& sink)
   {
-    if(sink_vec.size() < src_vec.size())
-      sink_vec.resize(src_vec.size());
-
-    for(std::size_t chan = 0; chan < src_vec.size(); chan++)
+    if(sink.size() < src.size())
+      sink.resize(src.size());
+    std::size_t N = src.size();
+    for(std::size_t i = 0; i < N; i++)
+      sink[i] += src[i];
+  }
+  void operator()(const audio_vector& src_vec, audio_vector& sink_vec, bool upmix)
+  {
+    const auto src_chans = src_vec.size();
+    const auto sink_chans = sink_vec.size();
+    if(upmix && src_chans != sink_chans && sink_chans != 0)
     {
-      auto& src = src_vec[chan];
-      auto& sink = sink_vec[chan];
-      std::size_t N = std::min(sink.size(), src.size());
-      for(std::size_t i = 0; i < N; i++)
-        sink[i] += src[i];
+      // Try to mix input data "meaningfully" without loosing information
+      if(src_vec.size() > sink_vec.size())
+      {
+        // Upmix sink_vec in src_vec
+        // OPTIMIZEME by resizing and copying in one go instead of the two steps here
+        switch(sink_chans)
+        {
+          case 1:
+          {
+            sink_vec.resize(src_chans);
+            for(std::size_t i = 1; i < src_chans; i++)
+              sink_vec[i] = sink_vec[0];
+          }
+          case 2:
+          {
+            // LRL2R2
+            sink_vec.resize(src_chans);
+            for(std::size_t i = 1; i < src_chans; i+=2)
+            {
+              sink_vec[i] = sink_vec[0];
+              sink_vec[i+1] = sink_vec[1];
+            }
+          }
+          default:
+            // Nothing really meaningful can be done
+            break;
+        }
+
+        for(std::size_t chan = 0; chan < src_chans; chan++)
+        {
+          auto& src = src_vec[chan];
+          auto& sink = sink_vec[chan];
+          copy_audio(src, sink);
+        }
+      }
+      else
+      {
+        // Upmix src_vec in sink_vec
+        switch(src_chans)
+        {
+          case 1:
+          {
+            auto& src = src_vec[0];
+            for(std::size_t chan = 0; chan < sink_chans; chan++)
+            {
+              auto& sink = sink_vec[chan];
+              copy_audio(src, sink);
+            }
+          }
+          case 2:
+          {
+            // LRL2R2
+            auto& src_l = src_vec[0];
+            auto& src_r = src_vec[1];
+            for(std::size_t chan = 0; chan < sink_chans; chan+=2)
+            {
+              copy_audio(src_l, sink_vec[chan]);
+              copy_audio(src_r, sink_vec[chan+1]);
+            }
+          }
+          default:
+            // Nothing really meaningful can be done
+            break;
+        }
+      }
     }
+    else
+    {
+      // Just copy the channels without much thoughts
+      if(sink_chans < src_chans)
+        sink_vec.resize(src_chans);
+
+      for(std::size_t chan = 0; chan < src_chans; chan++)
+      {
+        auto& src = src_vec[chan];
+        auto& sink = sink_vec[chan];
+        copy_audio(src, sink);
+      }
+    }
+
   }
 
   void operator()(const value_vector<mm::MidiMessage>& out, value_vector<mm::MidiMessage>& in)
@@ -146,7 +228,7 @@ struct copy_data
 
   void operator()(const audio_port& out, audio_port& in)
   {
-    mix{}(out.samples, in.samples);
+    mix{}(out.samples, in.samples, in.upmix);
   }
 
   void operator()(const midi_port& out, midi_port& in)
@@ -176,7 +258,7 @@ struct copy_data_pos
   {
     if (pos < out.samples.size())
     {
-      mix{}(out.samples[pos], in.samples);
+      mix{}(out.samples[pos], in.samples, in.upmix);
     }
   }
 

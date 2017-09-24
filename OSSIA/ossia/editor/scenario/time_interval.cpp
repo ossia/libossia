@@ -10,10 +10,11 @@
 #include <iostream>
 namespace ossia
 {
-ossia::state_element time_interval::tick(time_value usec)
+ossia::state_element time_interval::tick(time_value date, double ratio)
 {
-  m_date += std::llround(usec.impl * m_speed);
+  m_date += std::llround(date.impl * m_speed / ratio);
   m_position = double(m_date) / double(m_nominal);
+  node->set_date(m_date, m_position);
 
   auto st = state();
   if (m_callback)
@@ -21,15 +22,23 @@ ossia::state_element time_interval::tick(time_value usec)
   return st;
 }
 
-ossia::state_element time_interval::tick(time_value usec, double ratio)
+ossia::state_element time_interval::tick(time_value date)
 {
-  m_date += std::llround(usec.impl * m_speed / ratio);
-  m_position = double(m_date) / double(m_nominal);
+  return tick(date, 1.0);
+}
 
-  auto st = state();
-  if (m_callback)
-    (m_callback)(m_position, m_date, st);
-  return st;
+ossia::state_element time_interval::tick_offset(time_value date, time_value offset)
+{
+  node->set_tick_offset(offset);
+  m_tick_offset = offset;
+  return tick(date);
+}
+
+ossia::state_element time_interval::tick_offset(time_value date, double ratio, time_value offset)
+{
+  node->set_tick_offset(offset);
+  m_tick_offset = offset;
+  return tick(date, ratio);
 }
 
 std::shared_ptr<time_interval> time_interval::create(
@@ -55,6 +64,7 @@ time_interval::time_interval(
     , m_min(min)
     , m_max(max)
 {
+  node = std::make_shared<ossia::interval_node>();
 }
 
 time_interval::~time_interval()
@@ -73,6 +83,7 @@ void time_interval::start(ossia::state& pstate)
   if (!m_running)
   {
     m_running = true;
+    node->set_enabled(true);
     // start all time processes
     for (const auto& timeProcess : get_time_processes())
     {
@@ -98,6 +109,7 @@ void time_interval::stop()
 {
   if (m_running)
   {
+    node->set_enabled(false);
     // stop all time processes
     for (const auto& timeProcess : get_time_processes())
     {
@@ -160,7 +172,7 @@ ossia::state_element time_interval::state()
       auto& p = *timeProcess;
       if (p.enabled())
       {
-        if (auto res = p.state(date, pos))
+        if (auto res = p.state(date, pos, m_tick_offset))
           state.add(std::move(res));
       }
     }
@@ -282,4 +294,38 @@ void time_interval::remove_time_process(time_process* timeProcess)
     m_processes.erase(it);
   }
 }
+
+interval_node::interval_node()
+{
+  m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
+  m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
+  m_inlets.push_back(ossia::make_inlet<ossia::midi_port>());
+
+  m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+  m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+  m_outlets.push_back(ossia::make_outlet<ossia::midi_port>());
+}
+
+
+void interval_node::run(execution_state&)
+{
+  {
+    auto i = m_inlets[0]->data.target<ossia::audio_port>();
+    auto o = m_outlets[0]->data.target<ossia::audio_port>();
+    o->samples = std::move(i->samples);
+  }
+
+  {
+    auto i = m_inlets[1]->data.target<ossia::value_port>();
+    auto o = m_outlets[1]->data.target<ossia::value_port>();
+    o->data = std::move(i->data);
+  }
+
+  {
+    auto i = m_inlets[2]->data.target<ossia::midi_port>();
+    auto o = m_outlets[2]->data.target<ossia::midi_port>();
+    o->messages = std::move(i->messages);
+  }
+}
+
 }

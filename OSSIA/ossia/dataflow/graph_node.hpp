@@ -30,6 +30,11 @@ public:
   {
     set_date(ossia::time_value(d), pos);
   }
+  void set_tick_offset(ossia::time_value pos)
+  {
+    m_offset = pos;
+  }
+
   ossia::time_value time() const
   {
     return m_date;
@@ -62,6 +67,7 @@ protected:
   double m_position{};
   ossia::time_value m_prev_date{};
   ossia::time_value m_date{};
+  ossia::time_value m_offset{};
 
   bool m_enabled{};
   bool m_executed{};

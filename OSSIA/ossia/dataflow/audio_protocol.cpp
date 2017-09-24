@@ -151,7 +151,7 @@ int audio_protocol::PortAudioCallback(
   self.main_audio_out->audio.resize(n_out_channels);
   for(int i = 0; i < n_out_channels; i++)
   {
-    self.main_audio_out->audio[i] = {float_input[i], fc};
+    self.main_audio_out->audio[i] = {float_output[i], fc};
     self.audio_outs[i]->audio.resize(1);
     self.audio_outs[i]->audio[0] = {float_output[i], fc};
 

@@ -44,6 +44,7 @@ public:
 
   void connect(const std::shared_ptr<graph_edge>& edge);
   void disconnect(const std::shared_ptr<graph_edge>& edge);
+  void disconnect(graph_edge* edge);
 
   void clear();
 

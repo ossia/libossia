@@ -27,7 +27,7 @@ void spline_automation::set_spline(const spline_data& t)
 }
 
 ossia::state_element
-spline_automation::state(ossia::time_value date, double pos)
+spline_automation::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   if (m_parameter)
   {

@@ -198,6 +198,15 @@ void graph::add_node(node_ptr n)
 
 void graph::remove_node(const node_ptr& n)
 {
+  for(auto& port : n->inputs())
+    for(auto edge : port->sources)
+      disconnect(edge);
+  for(auto& port : n->outputs())
+    for(auto edge : port->targets)
+      disconnect(edge);
+
+
+  m_user_enabled_nodes.erase(n.get());
   auto it = m_nodes.right.find(n);
   if (it != m_nodes.right.end())
   {
@@ -245,6 +254,15 @@ void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
     boost::remove_edge(it->second, m_graph);
     m_edge_map.erase(
         std::make_pair(edge->in_node.get(), edge->out_node.get()));
+  }
+}
+
+void graph::disconnect(graph_edge* edge)
+{
+  auto ptr_it = m_edge_map.find(std::make_pair(edge->in_node.get(), edge->out_node.get()));
+  if(ptr_it != m_edge_map.end())
+  {
+    disconnect(ptr_it->second);
   }
 }
 

@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
@@ -19,6 +20,14 @@ class time_event;
 class time_process;
 struct time_value;
 
+class interval_node : public ossia::graph_node
+{
+public:
+  interval_node();
+  void run(ossia::execution_state&) override;
+};
+
+
 /**
  * @brief The time_interval class
  *
@@ -32,8 +41,9 @@ struct time_value;
  */
 class OSSIA_EXPORT time_interval
 {
-
 public:
+  std::shared_ptr<ossia::interval_node> node;
+
   auto get_date() const
   {
     return m_date;
@@ -58,8 +68,10 @@ public:
   {
     m_speed = g;
   }
-  ossia::state_element tick(ossia::time_value usec);
-  ossia::state_element tick(ossia::time_value usec, double ratio);
+  ossia::state_element tick(ossia::time_value);
+  ossia::state_element tick(ossia::time_value, double ratio);
+  ossia::state_element tick_offset(ossia::time_value, time_value offset);
+  ossia::state_element tick_offset(ossia::time_value, double ratio, time_value offset);
 
   /*! to get the interval execution back
    \param const #TimeValue process clock position
@@ -202,7 +214,8 @@ private:
   /// factor consideration)
   time_value m_date{};
 
-  time_value m_offset{}; /// the date (in ms) the clock will run from
+  time_value m_offset{}; /// the date the clock will run from
+  time_value m_tick_offset{}; /// offset in the current tick
   double m_speed{1.};    /// the speed factor of the clock
   bool m_running{};
 };

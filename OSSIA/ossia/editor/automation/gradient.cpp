@@ -22,7 +22,7 @@ void color_automation::set_gradient(color_automation::grad_type t)
   m_data = std::move(t);
 }
 
-state_element color_automation::state(ossia::time_value, double pos)
+state_element color_automation::state(ossia::time_value, double pos, ossia::time_value tick_offset)
 {
   if (m_parameter)
   {

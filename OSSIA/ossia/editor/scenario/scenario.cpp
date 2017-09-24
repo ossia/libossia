@@ -16,10 +16,47 @@
 
 namespace ossia
 {
+
+scenario_node::scenario_node()
+{
+  // todo maybe we can optimize by having m_outlets == m_inlets
+  // this way no copy.
+  m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
+  m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
+  m_inlets.push_back(ossia::make_inlet<ossia::midi_port>());
+
+  m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+  m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+  m_outlets.push_back(ossia::make_outlet<ossia::midi_port>());
+}
+
+
+void scenario_node::run(execution_state&)
+{
+  {
+    auto i = m_inlets[0]->data.target<ossia::audio_port>();
+    auto o = m_outlets[0]->data.target<ossia::audio_port>();
+    o->samples = std::move(i->samples);
+  }
+
+  {
+    auto i = m_inlets[1]->data.target<ossia::value_port>();
+    auto o = m_outlets[1]->data.target<ossia::value_port>();
+    o->data = std::move(i->data);
+  }
+
+  {
+    auto i = m_inlets[2]->data.target<ossia::midi_port>();
+    auto o = m_outlets[2]->data.target<ossia::midi_port>();
+    o->messages = std::move(i->messages);
+  }
+}
+
 scenario::scenario()
 {
   // create the start TimeSync
   m_nodes.push_back(std::make_shared<time_sync>());
+  node = std::make_shared<scenario_node>();
 }
 
 scenario::~scenario()
@@ -32,6 +69,7 @@ scenario::~scenario()
 
 void scenario::start(ossia::state& st)
 {
+  node->set_enabled(true);
   m_waitingNodes.push_back(m_nodes[0].get());
   // start each TimeInterval if possible
   for (const auto& timeInterval : m_intervals)
@@ -93,6 +131,7 @@ void scenario::start(ossia::state& st)
 
 void scenario::stop()
 {
+  node->set_enabled(false);
   // stop each running TimeIntervals
   for (const auto& timeInterval : m_intervals)
   {

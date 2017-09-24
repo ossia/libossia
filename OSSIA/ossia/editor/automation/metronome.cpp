@@ -30,7 +30,7 @@ struct fun_on_destruction
 template<typename Fun>
 static auto on_destruction(Fun fun) { return fun_on_destruction<Fun>{std::move(fun)}; }
 
-state_element metronome::state(ossia::time_value date, double pos)
+state_element metronome::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   auto _{on_destruction([&] { m_lastDate = date; })};
   if (m_parameter)

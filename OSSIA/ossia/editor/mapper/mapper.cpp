@@ -34,7 +34,7 @@ ossia::state_element mapper::offset(ossia::time_value offset, double pos)
   return {}; // TODO why not state ?
 }
 
-ossia::state_element mapper::state(ossia::time_value date, double pos)
+ossia::state_element mapper::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   // if date hasn't been processed already
   if (date != m_lastDate)

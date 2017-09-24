@@ -1,5 +1,7 @@
 #pragma once
+
 #include <ossia/dataflow/data.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ModernMIDI/midi_input.h>
@@ -209,5 +211,25 @@ public:
   {
     return *this;
   }
+};
+
+
+struct execution_state;
+class OSSIA_EXPORT sound_node final :
+    public ossia::graph_node
+{
+public:
+  sound_node();
+  ~sound_node();
+
+  void set_start(int v) { start = v; }
+  void set_upmix(int v) { upmix = v; }
+  void set_sound(std::vector<std::vector<float>> vec);
+private:
+  void run(ossia::execution_state& e) override;
+
+  std::vector<std::vector<float>> m_data;
+  int start{};
+  int upmix{};
 };
 }

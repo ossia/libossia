@@ -5,6 +5,7 @@
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia_export.h>
 #include <set>
 namespace ossia
@@ -19,6 +20,15 @@ struct overtick
   ossia::time_value max;
 };
 using overtick_map = boost::container::flat_map<time_sync*, overtick>;
+
+class scenario_node : public ossia::graph_node
+{
+public:
+  scenario_node();
+  void run(ossia::execution_state&) override;
+};
+
+
 class OSSIA_EXPORT scenario final : public time_process
 {
 public:
@@ -28,7 +38,7 @@ public:
 
   state_element offset(ossia::time_value, double pos) override;
 
-  state_element state(ossia::time_value date, double pos) override;
+  state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
   void start(ossia::state& st) override;
   void stop() override;
@@ -86,6 +96,6 @@ private:
   void make_happen(
       time_event& event, interval_set& started, interval_set& stopped, ossia::state& st);
   void make_dispose(time_event& event, interval_set& stopped);
-  ossia::state_element tick_interval(time_interval& c, time_value tick);
+  ossia::state_element tick_interval(time_interval& c, time_value tick, time_value offset);
 };
 }

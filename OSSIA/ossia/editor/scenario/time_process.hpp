@@ -5,6 +5,7 @@
 #include <memory>
 #include <ossia_export.h>
 #include <string>
+#include <ossia/dataflow/graph_node.hpp>
 
 /**
  * \file time_process.hpp
@@ -23,6 +24,7 @@ class OSSIA_EXPORT time_process
   friend class time_interval;
 
 public:
+  std::shared_ptr<ossia::graph_node> node;
   /*! destructor */
   virtual ~time_process();
 
@@ -38,7 +40,7 @@ public:
    #time_interval date
    \details don't call state when the parent #time_interval is not running
    \return state_element */
-  virtual state_element state(ossia::time_value date, double pos) = 0;
+  virtual state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) = 0;
 
   /**
   * @brief start

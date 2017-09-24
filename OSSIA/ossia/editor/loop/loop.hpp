@@ -49,7 +49,7 @@ public:
   void resume() override;
 
   state_element offset(ossia::time_value, double pos) override;
-  state_element state(ossia::time_value date, double pos) override;
+  state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
   /*! get the pattern #time_interval
    \return std::shared_ptr<TimeInterval> */

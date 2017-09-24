@@ -192,6 +192,41 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c1->get_date(), 500_tv);
     }
 
+
+
+    void test_inter_tick()
+    {
+      std::cerr << "\n\ntest_inter_tick\n";
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      std::shared_ptr<time_event> e2 = create_event(scenario);
+      std::shared_ptr<time_event> e3 = create_event(scenario);
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 500_tv, 500_tv, 500_tv);
+      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 3000_tv, 3000_tv, 3000_tv);
+
+      scenario.add_time_interval(c0);
+      scenario.add_time_interval(c1);
+      scenario.add_time_interval(c2);
+
+      s.interval->start();
+      s.interval->tick(1000_tv);
+      QCOMPARE(c0->get_date(), 1000_tv);
+      QCOMPARE(c1->get_date(), 0_tv);
+      QCOMPARE(c2->get_date(), 0_tv);
+      s.interval->tick(3000_tv); // Go past the max and way into c2
+      QCOMPARE(c0->get_date(), 0_tv);
+      QCOMPARE(c1->get_date(), 0_tv);
+      QCOMPARE(c2->get_date(), 500_tv);
+    }
+
     void test_unconnected()
     {
       std::cerr << "\n\ntest_unconnected\n";
