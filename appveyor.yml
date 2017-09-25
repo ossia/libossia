@@ -23,8 +23,8 @@ environment:
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
       CMAKE_GENERATOR_NAME_32BIT: Visual Studio 15 2017
     - configuration: Release
-      APPVEYOR_BUILD_TYPE: python-32bit
-      CMAKE_GENERATOR_NAME: Visual Studio 15 2017
+      APPVEYOR_BUILD_TYPE: python
+      CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
     - configuration: Release
       APPVEYOR_BUILD_TYPE: qml
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
