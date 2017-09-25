@@ -72,15 +72,43 @@ before_install:
 script:
 - "./ci/build.sh"
 deploy:
-  provider: releases
-  api_key:
-    secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
-  file:
-    - ossia-pd-linux_x86_64.tar.gz
-    - ossia-pd-linux_arm.tar.gz
-    - ossia-pd-osx.tar.gz
-    - ossia-max-osx.tar.gz
-  skip_cleanup: true
-  on:
-    repo: OSSIA/libossia
-    tags: true
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
+      - ossia-pd-linux_x86_64.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $CAN_DEPLOY = True && $BUILD_TYPE = PdRelease && $TRAVIS_OS_NAME = linux
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
+      - ossia-pd-linux_x86_64.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $CAN_DEPLOY = True && $BUILD_TYPE = RpiPdRelease
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
+      - ossia-pd-osx.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $CAN_DEPLOY = True && $BUILD_TYPE = PdRelease && $TRAVIS_OS_NAME = osx
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
+      - ossia-max-osx.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $CAN_DEPLOY = True && $BUILD_TYPE = MaxRelease
