@@ -34,7 +34,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
 
   $LogFile = "C:\projects\libossia\install-pd.log"
-  cmake --build . --target install > "$LogFile"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
   ls ../install
@@ -49,13 +49,13 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   cd c:\projects\libossia\build
 
   $LogFile = "C:\projects\libossia\install-max.log"
-  cmake --build . --target install > "$LogFile"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
   cd c:\projects\libossia\build-32bit
 
   $LogFile = "C:\projects\libossia\install-max-32bit.log"
-  cmake --build . --target install > "$LogFile"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
   ls ../install
