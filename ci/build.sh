@@ -95,10 +95,8 @@ case "$TRAVIS_OS_NAME" in
              -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
 
-        cd "$TRAVIS_BUILD_DIR/ossia-python"
-        tar -czf $TRAVIS_BUILD_DIR/ossia-python-$TRAVIS_PYTHON_VERSION-linux_x86_64.tar.gz
+        tar -czf $TRAVIS_BUILD_DIR/ossia-python-$TRAVIS_PYTHON_VERSION-linux_x86_64.tar.gz ossia_python.so
 
       ;;
       qml)
@@ -247,11 +245,8 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                  ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install > /dev/null
-      echo List TRAVIS_BUILD_DIR content
-      cd $TRAVIS_BUILD_DIR
-      ls
-      tar -czf ossia-python-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-python/ossia
+
+      tar -czf $TRAVIS_BUILD_DIR/ossia-python-$TRAVIS_PYTHON_VERSION-osx.tar.gz ossia_python.so
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
