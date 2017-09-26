@@ -220,7 +220,7 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_QT=0 \
                  -DOSSIA_PYTHON=1 \
                  -DOSSIA_PD=0 \
-                 -DOSSIA_MAX=1 \
+                 -DOSSIA_MAX=0 \
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                  ..
       $CMAKE_BIN --build . -- -j2
