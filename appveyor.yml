@@ -34,6 +34,19 @@ environment:
 
     - APPVEYOR_BUILD_TYPE: python
       configuration: Release
+      python: Python27-x64
+
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python27
+
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python36-x64
+
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python36
 
     - APPVEYOR_BUILD_TYPE: qml
       configuration: Release

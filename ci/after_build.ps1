@@ -67,12 +67,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   cd c:\projects\libossia\build
 
-  $LogFile = "C:\projects\libossia\install-qml.log"
-  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
-  CheckLastExitCode
-
-  ls ../install
-  7z a ossia-python-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia\*
+  7z a ..\ossia-${env:python}-windows.zip "ossia_python.so"
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
