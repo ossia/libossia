@@ -30,9 +30,19 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     mkdir c:\projects\libossia\build\Test\Debug
     copy c:\projects\libossia\build\OSSIA\Debug\ossia.dll c:\projects\libossia\build\Tests\Debug\
   }
-}
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Release" ){
+  cd c:\projects\libossia\build
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-${env:platform}.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  ls ../install
+  ls ../install/ossia-pd-package/*
+
+  7z a ossia-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia\*
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
 
   $LogFile = "C:\projects\libossia\install-pd.log"
@@ -41,12 +51,30 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
 
   ls ../install
   ls ../install/ossia-pd-package/*
-  # install target fails with error MSB3073, see https://ci.appveyor.com/project/JeanMichalCelerier/libossia/build/job/65o4lytwm9gr74n2
-  # cmake --build . --target install
-  # 7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\ossia-pd-package\*
-}
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
+  7z a ossia-pd-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia-pd-package\*
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
+  cd c:\projects\libossia\build
+
+  $LogFile = "C:\projects\libossia\install-qml.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  ls ../install
+  7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\install\ossia\*
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
+  cd c:\projects\libossia\build
+
+  $LogFile = "C:\projects\libossia\install-qml.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  ls ../install
+  7z a ossia-python-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia\*
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
   cd c:\projects\libossia\build
 
@@ -62,4 +90,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
   ls ../install
   ls ../install/ossia-max-package/*
+
+  7z a ossia-max-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia-max-package\*
 }

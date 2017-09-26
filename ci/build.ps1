@@ -21,7 +21,7 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 }
 
 cd C:\projects\libossia\build\
-$LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}.log"
+$LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-${env:platform}.log"
 cmake --build . --config "${env:configuration}" > "$LogFile"
 CheckLastExitCode
 

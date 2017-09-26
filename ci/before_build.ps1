@@ -36,11 +36,24 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     set $env:PATH=${env:QTDIR}\bin;${env:PATH};
   }
 
-  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\${env:APPVEYOR_BUILD_TYPE}-${env:configuration}.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-${env:configuration}.log"
   if ( $env:configuration -eq "Release" ){
     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
   } else {
     cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug   -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
+  }
+  CheckLastExitCode
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Release" ){
+  if ( Test-Path ${env:QTDIR}\bin\ ) {
+    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
+  }
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-${env:platform}.log"
+  if ( "${env:platform}" -eq "x64" ){
+    cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
+  } else {
+    cmake -G "Visual Studio 15 2017"       -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
   }
   CheckLastExitCode
 
@@ -62,12 +75,18 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   $LogFile = "c:\projects\libossia\configure-pd.log"
   cmake -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
   CheckLastExitCode
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
   cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=1 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
   CheckLastExitCode
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
+  if ( Test-Path ${env:QTDIR}\bin\ ) {
+    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
+  }
+
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
-  cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=1 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+  cmake -G ${env:CMAKE_GENERATOR_NAME} -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5"  -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=1 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
   CheckLastExitCode
 }
