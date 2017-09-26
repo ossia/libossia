@@ -97,12 +97,35 @@ deploy:
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
     file:
+      - libossia-linux_x86_64-static.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $BUILD_TYPE = Release && $TRAVIS_OS_NAME = linux && $OSSIA_STATIC = 1
+
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
+      - libossia-linux_x86_64.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $BUILD_TYPE = Release && $TRAVIS_OS_NAME = linux && $OSSIA_STATIC = 0
+
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
       - ossia-pd-linux_x86_64.tar.gz
     skip_cleanup: true
     on:
       repo: OSSIA/libossia
       tags: true
       condition: $BUILD_TYPE = PdRelease && $TRAVIS_OS_NAME = linux
+
   - provider: releases
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
@@ -113,6 +136,7 @@ deploy:
       repo: OSSIA/libossia
       tags: true
       condition: $BUILD_TYPE = RpiPdRelease
+
   - provider: releases
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
@@ -123,6 +147,7 @@ deploy:
       repo: OSSIA/libossia
       tags: true
       condition: $BUILD_TYPE = PdRelease && $TRAVIS_OS_NAME = osx
+
   - provider: releases
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
@@ -133,7 +158,8 @@ deploy:
       repo: OSSIA/libossia
       tags: true
       condition: $BUILD_TYPE = MaxRelease
-    - provider: releases
+
+  - provider: releases
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
     file:
