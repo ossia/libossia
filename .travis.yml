@@ -56,6 +56,11 @@ matrix:
     python: 2.7
 
   - os: linux
+    env: BUILD_TYPE=python
+    dist: trusty
+    python: 3.6
+
+  - os: linux
     env: BUILD_TYPE=qml
     dist: trusty
 
@@ -128,3 +133,13 @@ deploy:
       repo: OSSIA/libossia
       tags: true
       condition: $BUILD_TYPE = MaxRelease
+    - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file:
+      - ossia-python-$TRAVIS_PYTHON_VERSION-linux_x86_64.tar.gz
+    skip_cleanup: true
+    on:
+      repo: OSSIA/libossia
+      tags: true
+      condition: $BUILD_TYPE = python

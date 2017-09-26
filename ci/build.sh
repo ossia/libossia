@@ -44,10 +44,9 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_PYTHON=0 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
-        echo List TRAVIS_BUILD_DIR content
-        cd $TRAVIS_BUILD_DIR
-        ls
-        tar -czf ossia-pd-linux_x86_64.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+
+        cd $TRAVIS_BUILD_DIR/ossia-pd-package
+        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_x86_64.tar.gz ossia
       ;;
       RpiPdRelease)
         #setup some environment variable to help CMAKE to find libraries
@@ -58,12 +57,11 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" -DBOOST_ROOT="/usr/include/boost" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_PYTHON=0 -DOSSIA_NO_QT=1 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
-        echo List TRAVIS_BUILD_DIR content
-        cd $TRAVIS_BUILD_DIR
-        ls
-        tar -czf ossia-pd-linux_arm.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+
+        cd $TRAVIS_BUILD_DIR/ossia-pd-package
+        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_arm.tar.gz ossia
       ;;
-      ossia-python)
+      python)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
              -DCMAKE_BUILD_TYPE=Release \
              -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
@@ -78,9 +76,10 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
-        cd $TRAVIS_BUILD_DIR
-        ls
-        tar -czf ossia-python-linux_x86_64.tar.gz
+
+        cd "$TRAVIS_BUILD_DIR/ossia-python"
+        tar -czf $TRAVIS_BUILD_DIR/ossia-python-$TRAVIS_PYTHON_VERSION-linux_x86_64.tar.gz
+
       ;;
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
@@ -97,6 +96,10 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
+
+
+        cd "$TRAVIS_BUILD_DIR/ossia-qml"
+        tar -czf $TRAVIS_BUILD_DIR/ossia-qml-linux_x86_64.tar.gz Ossia
       ;;
       RpiDocker)
         echo "Building for Rpi in Docker"
@@ -237,7 +240,7 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_TESTING=0 \
                  -DOSSIA_EXAMPLES=0 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
-                 -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR"/ossia-qml-package \
+                 -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR"/ossia-qml \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
                  -DOSSIA_QT=0 \
@@ -249,10 +252,9 @@ case "$TRAVIS_OS_NAME" in
                  ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
-      echo List $TRAVIS_BUILD_DIR content
-      cd $TRAVIS_BUILD_DIR
-      ls
-      tar -czf ossia-qml-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-qml-package/ossia
+
+      cd "$TRAVIS_BUILD_DIR/ossia-qml"
+      tar -czf $TRAVIS_BUILD_DIR/ossia-qml-osx.tar.gz Ossia
 
     else
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
