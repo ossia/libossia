@@ -51,20 +51,20 @@ matrix:
     dist: trusty
 
   - os: linux
-    env: BUILD_TYPE=python OSSIA_STATIC=1
+    env: BUILD_TYPE=python
     dist: trusty
     python: 2.7
 
   - os: linux
-    env: BUILD_TYPE=qml OSSIA_STATIC=1
+    env: BUILD_TYPE=qml
     dist: trusty
 
   - os: osx
-    env: BUILD_TYPE=python OSSIA_STATIC=1
+    env: BUILD_TYPE=python
     python: 2.7
 
   - os: osx
-    env: BUILD_TYPE=qml OSSIA_STATIC=1
+    env: BUILD_TYPE=qml
 
   - os: osx
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
