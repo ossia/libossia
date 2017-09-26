@@ -50,6 +50,22 @@ matrix:
     env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
     dist: trusty
 
+  - os: linux
+    env: BUILD_TYPE=python OSSIA_STATIC=1
+    dist: trusty
+    python: 2.7
+
+  - os: linux
+    env: BUILD_TYPE=qml OSSIA_STATIC=1
+    dist: trusty
+
+  - os: osx
+    env: BUILD_TYPE=python OSSIA_STATIC=1
+    python: 2.7
+
+  - os: osx
+    env: BUILD_TYPE=qml OSSIA_STATIC=1
+
   - os: osx
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
   - os: osx
