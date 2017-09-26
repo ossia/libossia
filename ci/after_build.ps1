@@ -62,7 +62,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   CheckLastExitCode
 
   ls ../install
-  7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\install\ossia\*
+  7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\install\*
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   cd c:\projects\libossia\build
