@@ -37,10 +37,10 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  ls ../install
-  ls ../install/ossia-pd-package/*
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install
+  ls
 
-  7z a ossia-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia\*
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-c-cpp-unity-windows-${env:platform}.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
@@ -49,10 +49,10 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  ls ../install
-  ls ../install/ossia-pd-package/*
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
+  ls .
 
-  7z a ossia-pd-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia-pd-package\*
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-windows.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd c:\projects\libossia\build
@@ -61,13 +61,15 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  ls ../install
-  7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\install\*
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\
+  ls
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-windows-x86_64.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   cd c:\projects\libossia\build
 
-  7z a ..\ossia-${env:python}-windows.zip "ossia_python.so"
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-windows.zip "ossia_python.so"
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
@@ -83,8 +85,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  ls ../install
-  ls ../install/ossia-max-package/*
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-max-package\
+  ls
 
-  7z a ossia-max-windows.zip %APPVEYOR_BUILD_FOLDER%\install\ossia-max-package\*
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-max-windows.zip .
 }

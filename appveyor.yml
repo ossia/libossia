@@ -79,11 +79,14 @@ artifacts:
   - path: ossia-qml-windows.zip
     name: ossia-qml-windonws
     type: zip
-  - path: ossia-windows.zip
+  - path: ossia-c-cpp-unity-windows-*.zip
     name: ossia-windonws
     type: zip
-  - path: ossia-python-windows.zip
+  - path: ossia-python-*-windows.zip
     name: ossia-python-windows
+    type: zip
+  - path: ossia-qml-windows-x86_64.zip
+    name: ossia-qml-windows-x86_64
     type: zip
 
 deploy:
