@@ -239,7 +239,7 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_EXAMPLES=0 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                 -DPYBIND11_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
+                 -DPYBIND11_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
                  -DOSSIA_QT=0 \
