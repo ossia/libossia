@@ -24,31 +24,33 @@ matrix:
   - os: osx
 
   include:
-  - os: linux
-    env: BUILD_TYPE=Docs
+  # - os: linux
+  #   env: BUILD_TYPE=Docs
 
-  - os: linux
-    env: BUILD_TYPE=Debug OSSIA_STATIC=0
-    dist: trusty
-  - os: linux
-    env: BUILD_TYPE=Debug OSSIA_STATIC=1
-    dist: trusty
-  - os: linux
-    env: BUILD_TYPE=Release OSSIA_STATIC=0
-    dist: trusty
-  - os: linux
-    env: BUILD_TYPE=Release OSSIA_STATIC=1
-    dist: trusty
-  - os: linux
-    env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
-    dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=Debug OSSIA_STATIC=0
+  #   dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=Debug OSSIA_STATIC=1
+  #   dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=Release OSSIA_STATIC=0
+  #   dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=Release OSSIA_STATIC=1
+  #   dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
+  #   dist: trusty
+
+## RpiDocker build is tooooooo slow
 #  - os: linux
 #    env: BUILD_TYPE=RpiDocker OSSIA_STATIC=1
 #    dist: trusty
 
-  - os: linux
-    env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
-    dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
+  #   dist: trusty
 
   - os: linux
     env: BUILD_TYPE=python
@@ -60,32 +62,36 @@ matrix:
     dist: trusty
     python: 3.6
 
-  - os: linux
-    env: BUILD_TYPE=qml
-    dist: trusty
+  # - os: linux
+  #   env: BUILD_TYPE=qml
+  #   dist: trusty
 
   - os: osx
     env: BUILD_TYPE=python
     python: 2.7
 
   - os: osx
-    env: BUILD_TYPE=qml
+    env: BUILD_TYPE=python
+    python: 3.6
 
-  - os: osx
-    env: BUILD_TYPE=Debug OSSIA_STATIC=0
-  - os: osx
-    env: BUILD_TYPE=Debug OSSIA_STATIC=1
-  - os: osx
-    env: BUILD_TYPE=Release OSSIA_STATIC=0
-  - os: osx
-    env: BUILD_TYPE=Release OSSIA_STATIC=1
-  - os: osx
-    env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
-  - os: osx
-    env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
+  # - os: osx
+  #   env: BUILD_TYPE=qml
 
-  - os: linux
-    env: BUILD_TYPE=Coverage
+  # - os: osx
+  #   env: BUILD_TYPE=Debug OSSIA_STATIC=0
+  # - os: osx
+  #   env: BUILD_TYPE=Debug OSSIA_STATIC=1
+  # - os: osx
+  #   env: BUILD_TYPE=Release OSSIA_STATIC=0
+  # - os: osx
+  #   env: BUILD_TYPE=Release OSSIA_STATIC=1
+  # - os: osx
+  #   env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
+  # - os: osx
+  #   env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
+
+  # - os: linux
+  #   env: BUILD_TYPE=Coverage
 
 before_install:
 - "./ci/deps.sh"

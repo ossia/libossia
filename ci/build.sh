@@ -86,6 +86,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
              -DCMAKE_BUILD_TYPE=Release \
              -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
+             -DPYBIND11_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION \
              -DOSSIA_STATIC=0 \
              -DOSSIA_TESTING=0 \
              -DOSSIA_EXAMPLES=0 \
@@ -96,6 +97,7 @@ case "$TRAVIS_OS_NAME" in
              -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
+        ls
 
         tar -czf $TRAVIS_BUILD_DIR/ossia-python-$TRAVIS_PYTHON_VERSION-linux_x86_64.tar.gz ossia_python.so
 
@@ -237,6 +239,7 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_EXAMPLES=0 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                 -DPYBIND11_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
                  -DOSSIA_QT=0 \
@@ -245,7 +248,9 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_MAX=0 \
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                  ..
+
       $CMAKE_BIN --build . -- -j2
+      ls
 
       tar -czf $TRAVIS_BUILD_DIR/ossia-python-$TRAVIS_PYTHON_VERSION-osx.tar.gz ossia_python.so
 
