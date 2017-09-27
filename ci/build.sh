@@ -1,6 +1,17 @@
 #!/bin/bash -x
 # Note : to make the tests work under travis, they have to be changed in order not to require QApplication but only QCoreApplication
 
+which python
+which python2
+which python2.7
+which python3
+which python3.6
+
+locate python
+locate python2.7
+locate python3
+locate python3.6
+
 case "$TRAVIS_OS_NAME" in
   linux)
   export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
