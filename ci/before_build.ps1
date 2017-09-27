@@ -57,7 +57,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   mkdir build-32bit
   cd build-32bit
 
-  cmake -G "Visual Studio 15 2015"       -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install-32bit" -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR-32bit}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 14 2015"       -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install-32bit" -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DCMAKE_PREFIX_PATH="${env:QTDIR-32bit}\lib\cmake\Qt5" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
