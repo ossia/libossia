@@ -24,7 +24,7 @@ using node_bimap_v = node_bimap::value_type;
 using edge_bimap_v = edge_bimap::value_type;
 
 using edge_map_t
-    = std::unordered_map<std::pair<graph_node*, graph_node*>, graph_edge*>;
+    = std::unordered_map<graph_edge*, std::shared_ptr<graph_edge>>;
 
 enum class node_ordering
 {

@@ -239,9 +239,7 @@ void graph::connect(const std::shared_ptr<graph_edge>& edge)
     if (res.second)
     {
       m_edges.insert(edge_bimap_v{res.first, edge});
-      m_edge_map.insert(std::make_pair(
-          std::make_pair(edge->in_node.get(), edge->out_node.get()),
-          edge.get()));
+      m_edge_map.insert(std::make_pair(edge.get(), edge));
     }
   }
 }
@@ -252,14 +250,13 @@ void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
   if (it != m_edges.right.end())
   {
     boost::remove_edge(it->second, m_graph);
-    m_edge_map.erase(
-        std::make_pair(edge->in_node.get(), edge->out_node.get()));
+    m_edge_map.erase(edge.get());
   }
 }
 
 void graph::disconnect(graph_edge* edge)
 {
-  auto ptr_it = m_edge_map.find(std::make_pair(edge->in_node.get(), edge->out_node.get()));
+  auto ptr_it = m_edge_map.find(edge);
   if(ptr_it != m_edge_map.end())
   {
     disconnect(ptr_it->second);
