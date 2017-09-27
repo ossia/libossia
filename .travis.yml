@@ -1,5 +1,9 @@
 language: cpp
 
+python:
+  - "2.7"
+  - "3.6"
+
 branches:
   except:
   - gh-pages
@@ -55,12 +59,12 @@ matrix:
   - os: linux
     env: BUILD_TYPE=python
     dist: trusty
-    python: 2.7
+    python: "2.7"
 
   - os: linux
     env: BUILD_TYPE=python
     dist: trusty
-    python: 3.5
+    python: "3.6"
 
   # - os: linux
   #   env: BUILD_TYPE=qml
@@ -68,11 +72,11 @@ matrix:
 
   - os: osx
     env: BUILD_TYPE=python
-    python: 2.7
+    python: "2.7"
 
   - os: osx
     env: BUILD_TYPE=python
-    python: 3.6
+    python: "3.6"
 
   # - os: osx
   #   env: BUILD_TYPE=qml
