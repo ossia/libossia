@@ -40,7 +40,26 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install
   ls
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-c-cpp-unity-windows-${env:platform}.zip .
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win64.zip .
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
+  ls
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win32.zip .
+
+  # make unity3d package
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia
+  cp ${env:APPVEYOR_BUILD_FOLDER}/OSSIA/ossia-unity3d/* ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia
+  mv ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\README.md ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
+  cp ${env:APPVEYOR_BUILD_FOLDER}\install\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
+  cp ${env:APPVEYOR_BUILD_FOLDER}\install-32bit\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-unity3d-win.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
@@ -52,7 +71,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
   ls .
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-windows.zip .
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd c:\projects\libossia\build
@@ -64,12 +83,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\
   ls
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-windows-x86_64.zip .
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-win64.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   cd c:\projects\libossia\build
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-windows.zip "ossia_python.so"
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win.zip "ossia_python.so"
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
@@ -88,5 +107,5 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-max-package\
   ls
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-max-windows.zip .
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-max-win.zip .
 }

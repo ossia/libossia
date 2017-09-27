@@ -16,13 +16,9 @@ environment:
       QTDIR: C:\Qt\5.9\msvc2017_64
 
     - APPVEYOR_BUILD_TYPE: Release
-      platform: x64
       configuration: Release
       QTDIR: C:\Qt\5.9\msvc2017_64
-
-    - APPVEYOR_BUILD_TYPE: Release
-      configuration: Release
-      QTDIR: C:\Qt\5.9\msvc2017_64
+      QTDIR-32bit: C:\Qt\5.9\msvc2015
 
     - APPVEYOR_BUILD_TYPE: pd
       configuration: Release
@@ -70,23 +66,23 @@ test_script:
   - ps: C:\projects\libossia\ci\test.ps1
 
 artifacts:
-  - path: ossia-pd-windows.zip
-    name: ossia-pd-windows
+  - path: ossia-pd-win32.zip
+    name: ossia-pd-win32
     type: zip
-  - path: ossia-max-windows.zip
-    name: ossia-max-windows
+  - path: ossia-max-win.zip
+    name: ossia-max-win
     type: zip
-  - path: ossia-qml-windows.zip
-    name: ossia-qml-windonws
+  - path: ossia-qml-win64.zip
+    name: ossia-qml-win64
     type: zip
-  - path: ossia-c-cpp-unity-windows-*.zip
+  - path: libossia-native-win*.zip
     name: ossia-windonws
     type: zip
-  - path: ossia-python-*-windows.zip
-    name: ossia-python-windows
+  - path: ossia-python-*-win.zip
+    name: ossia-python-win
     type: zip
-  - path: ossia-qml-windows-x86_64.zip
-    name: ossia-qml-windows-x86_64
+  - path: ossia-unity3d-win.zip
+    name: ossia-unity3d-win
     type: zip
 
 deploy:
@@ -94,7 +90,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: moePiJbJVxE0xx/iyPjZ4yAWJe+ZiJeVroktPbW6ybfamReA+oNojo3l23+/LtHt
-  artifact: ossia-pd-windows.zip, ossia-max-windows.zip
+  artifact: /.*\.zip/
   draft: false
   prerelease: true
   on:
