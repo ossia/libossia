@@ -38,7 +38,7 @@ case "$TRAVIS_OS_NAME" in
         pushd /etc/apt
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
         sudo sed -i -- 's/trusty/yakkety/g' sources.list
-        sudo apt-get update
+        sudo apt-get update -qq
         sudo apt-get install -qq g++-6-arm-linux-gnueabihf
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
         popd
@@ -52,7 +52,9 @@ case "$TRAVIS_OS_NAME" in
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
     elif [[ "x$BUILD_TYPE" == "xpython" ]]; then
-      sudo apt install python${PYTHON_VERSION}
+      sudo add-apt-repository --yes ppa:jonathonf/python-3.6
+      sudo apt-get update -qq
+      sudo apt install -qq python${PYTHON_VERSION}
     fi
 
   ;;
