@@ -56,7 +56,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia
-  cp ${env:APPVEYOR_BUILD_FOLDER}/OSSIA/ossia-unity3d/* ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia
+  xcopy ${env:APPVEYOR_BUILD_FOLDER}\OSSIA\ossia-unity3d\* ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\ /s /e
   mv ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\README.md ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
   cp ${env:APPVEYOR_BUILD_FOLDER}\install\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
   cp ${env:APPVEYOR_BUILD_FOLDER}\install-32bit\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
