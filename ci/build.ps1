@@ -25,7 +25,7 @@ $LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-${env:platform
 cmake --build . --config "${env:configuration}" > "$LogFile"
 CheckLastExitCode
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "max"){
+if ( $env:APPVEYOR_BUILD_TYPE -eq "max" -Or $env:APPVEYOR_BUILD_TYPE -eq "Release"){
   cd C:\projects\libossia\build-32bit
   $LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-32bit.log"
   cmake --build . --config "${env:configuration}" > "$LogFile"
