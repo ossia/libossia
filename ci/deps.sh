@@ -51,7 +51,10 @@ case "$TRAVIS_OS_NAME" in
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
+    elif [[ "$BUILD_TYPE" == "python" ]]; then
+      sudo apt install python${python}
     fi
+
   ;;
   osx)
     # work around a homebrew bug
@@ -69,6 +72,12 @@ case "$TRAVIS_OS_NAME" in
       wget -nv "https://cycling74.s3.amazonaws.com/download/$MAXSDKARCHIVE"
       tar xf "$MAXSDKARCHIVE"
       ls
+    elif [[ "$BUILD_TYPE" == "python" ]]; then
+      if [[ "$python" == "2.*"]]; then
+        brew install python2
+      else
+        brew install python3
+      fi
     fi
 
     set -e
