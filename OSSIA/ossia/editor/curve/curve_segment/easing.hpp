@@ -53,7 +53,7 @@ struct quadraticIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t, 2);
+    return ipow(t, 2);
   }
 };
 
@@ -80,7 +80,7 @@ struct cubicIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t, 3);
+    return ipow(t, 3);
   }
 };
 
@@ -89,7 +89,7 @@ struct cubicOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t - 1., 3) + 1.;
+    return ipow(t - 1., 3) + 1.;
   }
 };
 
@@ -98,8 +98,8 @@ struct cubicInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < T(0.5)) ? 4. * std::pow(t, 3)
-                        : 0.5 * std::pow((2. * t) - 2, 3) + 1.;
+    return (t < T(0.5)) ? 4. * ipow(t, 3)
+                        : 0.5 * ipow((2. * t) - 2, 3) + 1.;
   }
 };
 
@@ -108,7 +108,7 @@ struct quarticIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t, 4);
+    return ipow(t, 4);
   }
 };
 
@@ -117,7 +117,7 @@ struct quarticOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t - 1., 3) * (1. - t) + 1.;
+    return ipow(t - 1., 3) * (1. - t) + 1.;
   }
 };
 
@@ -126,7 +126,7 @@ struct quarticInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < 0.5) ? 8. * std::pow(t, 4) : -8. * std::pow(t - 1., 4) + 1.;
+    return (t < 0.5) ? 8. * ipow(t, 4) : -8. * ipow(t - 1., 4) + 1.;
   }
 };
 
@@ -135,7 +135,7 @@ struct quinticIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t, 5);
+    return ipow(t, 5);
   }
 };
 
@@ -144,7 +144,7 @@ struct quinticOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t - 1., 5) + 1.;
+    return ipow(t - 1., 5) + 1.;
   }
 };
 
@@ -153,8 +153,8 @@ struct quinticInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < 0.5) ? 16. * std::pow(t, 5)
-                     : 0.5 * std::pow((2. * t) - 2., 5) + 1.;
+    return (t < 0.5) ? 16. * ipow(t, 5)
+                     : 0.5 * ipow((2. * t) - 2., 5) + 1.;
   }
 };
 
@@ -281,7 +281,7 @@ struct backIn
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return std::pow(t, 3) - t * std::sin(t * pi);
+    return ipow(t, 3) - t * std::sin(t * pi);
   }
 };
 
@@ -290,7 +290,7 @@ struct backOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return 1. - (std::pow(1. - t, 3) - (1. - t) * std::sin((1. - t) * pi));
+    return 1. - (ipow(1. - t, 3) - (1. - t) * std::sin((1. - t) * pi));
   }
 };
 
@@ -300,9 +300,9 @@ struct backInOut
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
-               ? 0.5 * (std::pow(2. * t, 3)
+               ? 0.5 * (ipow(2. * t, 3)
                         - (2. * t) * std::sin((2. * t) * pi))
-               : 0.5 * (1. - (std::pow(1. - (2. * t - 1.), 3)
+               : 0.5 * (1. - (ipow(1. - (2. * t - 1.), 3)
                               - (1. - (2. * t - 1.))
                                     * std::sin((1. - (2. * t - 1.)) * pi)))
                      + 0.5;
@@ -350,7 +350,7 @@ struct perlinInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return 6. * std::pow(t, 5) - 15. * std::pow(t, 4) + 10. * std::pow(t, 3);
+    return 6. * ipow(t, 5) - 15. * ipow(t, 4) + 10. * ipow(t, 3);
   }
 };
 }

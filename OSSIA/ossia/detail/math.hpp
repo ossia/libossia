@@ -37,16 +37,24 @@ const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad
 const OSSIA_DECL_RELAXED_CONSTEXPR auto ln_2
     = 6.931471805599453094172321214581765680e-01;
 
+template<typename T>
+T ipow(T x, int N)
+{
+    T res = x;
+    for(int i = 1; i < N; i++) { res *= x; }
+    return res;
+}
+
 template <typename T>
 auto norm(T x, T y)
 {
-  return std::sqrt(std::pow(x, 2) + std::pow(y, 2));
+  return std::sqrt(ipow(x, 2) + ipow(y, 2));
 }
 
 template <typename T>
 auto norm(T x, T y, T z)
 {
-  return std::sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
+  return std::sqrt(ipow(x, 2) + ipow(y, 2) + ipow(z, 2));
 }
 
 /**

@@ -262,11 +262,11 @@ spherical_u::from_neutral(strong_value<spherical_u::neutral_unit> self)
   const auto y = self.dataspace_value[1];
   const auto z = self.dataspace_value[2];
 
-  const auto temp = std::pow(x, 2.) + std::pow(y, 2.);
+  const auto temp = ipow(x, 2) + ipow(y, 2);
 
   return {(float)(std::atan2(y, x) * rad_to_deg),
           (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
-          (float)(std::sqrt(temp + std::pow(z, 2.)))};
+          (float)(std::sqrt(temp + ipow(z, 2)))};
 }
 
 strong_value<cylindrical_u::neutral_unit>
