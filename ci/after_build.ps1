@@ -31,17 +31,20 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     copy c:\projects\libossia\build\OSSIA\Debug\ossia.dll c:\projects\libossia\build\Tests\Debug\
   }
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Release" ){
-  cd c:\projects\libossia\build
 
-  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-${env:platform}.log"
+  cd c:\projects\libossia\build
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
-
   cd ${env:APPVEYOR_BUILD_FOLDER}\install
   ls
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win64.zip .
 
+  cd c:\projects\libossia\build-32bit
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
   cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
   ls
 
