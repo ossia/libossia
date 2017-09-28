@@ -91,7 +91,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   cd c:\projects\libossia\build
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win.zip "ossia_python.so"
+  if ( ${env:platform} = x64){
+    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win64.zip "ossia_python.so"
+  } else {
+    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win32.zip "ossia_python.so"
+  }
+
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
