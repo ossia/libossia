@@ -332,24 +332,26 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . --target ExperimentalTest
       $CMAKE_BIN --build . --target install
 
-      if [[ "$BUILD_TYPE" == "Release" ] && [ "$OSSIA_STATIC" == "1" ]]; then
-        # make unity3d package
-        mkdir $TRAVIS_BUILD_DIR/unity3d
-        mkdir $TRAVIS_BUILD_DIR/unity3d/Assets
-        mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
-        mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/ossia
-        cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/
-        mv $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/README.md $TRAVIS_BUILD_DIR/unity3d/
-        cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
+      if [[ "$BUILD_TYPE" == "Release" ]]; then
+        if [[ "$OSSIA_STATIC" == "1" ]]; then
+          # make unity3d package
+          mkdir $TRAVIS_BUILD_DIR/unity3d
+          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets
+          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
+          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/ossia
+          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/
+          mv $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/README.md $TRAVIS_BUILD_DIR/unity3d/
+          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
 
-        cd $TRAVIS_BUILD_DIR/unity3d/
-        tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz .
+          cd $TRAVIS_BUILD_DIR/unity3d/
+          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz .
 
-        cd $TRAVIS_BUILD_DIR/install
-        tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz .
-      else
-        cd $TRAVIS_BUILD_DIR/install
-        tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz .
+          cd $TRAVIS_BUILD_DIR/install
+          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz .
+        else
+          cd $TRAVIS_BUILD_DIR/install
+          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz .
+        fi
       fi
     fi
   ;;
