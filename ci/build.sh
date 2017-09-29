@@ -55,7 +55,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install
 
 
-        if [[ $OSSIA_STATIC == 1 ]]; then
+        if [[ "$OSSIA_STATIC" == "1" ]]; then
           cd $TRAVIS_BUILD_DIR/install
           tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64-static.tar.gz .
 
@@ -109,7 +109,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd $TRAVIS_BUILD_DIR/install
-        if [[ $OSSIA_STATIC ==  1]]; then
+        if [[ "$OSSIA_STATIC" ==  "1" ]]; then
           tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_arm-static.tar.gz .
         else
           tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_arm.tar.gz .
@@ -332,7 +332,7 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . --target ExperimentalTest
       $CMAKE_BIN --build . --target install
 
-      if [[ "$BUILD_TYPE" == "Release" ] && [ $OSSIA_STATIC == 1 ]]; then
+      if [[ "$BUILD_TYPE" == "Release" ] && [ "$OSSIA_STATIC" == "1" ]]; then
         # make unity3d package
         mkdir $TRAVIS_BUILD_DIR/unity3d
         mkdir $TRAVIS_BUILD_DIR/unity3d/Assets
@@ -346,11 +346,10 @@ case "$TRAVIS_OS_NAME" in
         tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz .
 
         cd $TRAVIS_BUILD_DIR/install
-        if [[ $OSSIA_STATIC == 1 ]]; then
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz .
-        else
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz .
-        fi
+        tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz .
+      else
+        cd $TRAVIS_BUILD_DIR/install
+        tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz .
       fi
     fi
   ;;
