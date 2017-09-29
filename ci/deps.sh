@@ -54,7 +54,7 @@ case "$TRAVIS_OS_NAME" in
     elif [[ "x$BUILD_TYPE" == "xpython" ]]; then
       sudo add-apt-repository --yes ppa:jonathonf/python-3.6
       sudo apt-get update -qq
-      sudo apt install -qq python${PYTHON_VERSION}
+      sudo apt install -qq python${PYTHON_VERSION} python${PYTHON_VERSION}-dev
     fi
 
   ;;
