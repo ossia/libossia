@@ -33,7 +33,7 @@ case "$TRAVIS_OS_NAME" in
       mv cmake-*-x86_64 cmake
     fi
 
-    if [[ "$BUILD_TYPE" == "RpiPdRelease" ]]; then
+    if [[ "$BUILD_TYPE" == Rpi* ]]; then
         # install arm-linux-gnueabihf-g++-6 from yaketty
         pushd /etc/apt
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
@@ -75,7 +75,7 @@ case "$TRAVIS_OS_NAME" in
       tar xf "$MAXSDKARCHIVE"
       ls
     elif [[ "x$BUILD_TYPE" == "xpython" ]]; then
-      if [[ "x$PYTHON_VERSION" == "x2.*" ]]; then
+      if [[ "x$PYTHON_VERSION" == x2.* ]]; then
         brew install python2
       else
         brew install python3
