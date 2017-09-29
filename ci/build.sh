@@ -58,6 +58,7 @@ case "$TRAVIS_OS_NAME" in
           tar -czf $TRAVIS_BUILD_DIR/libossia-linux_x86_64-static.tar.gz .
         else
           tar -czf $TRAVIS_BUILD_DIR/libossia-linux_x86_64.tar.gz .
+        fi
 
       ;;
       PdRelease)

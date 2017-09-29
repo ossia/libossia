@@ -19,6 +19,7 @@ namespace pybind11
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
 
 #include <ossia/network/common/network_logger.hpp>
@@ -261,6 +262,46 @@ public:
     return false;
   }
 
+
+  bool create_minuit_server(std::string local_name, std::string ip, int remote_port, int local_port, bool log=false)
+  {
+    try
+    {
+      auto proto = std::make_unique<ossia::net::minuit_protocol>(
+              local_name, ip, remote_port, local_port);
+
+      if (log)
+      {
+        ossia::net::network_logger logger;
+
+        logger.inbound_logger = spdlog::stderr_logger_mt("minuit input");
+        logger.inbound_logger->set_pattern("minuit input: %v");
+        logger.inbound_logger->set_level(spdlog::level::info);
+
+        logger.outbound_logger = spdlog::stderr_logger_mt("minuit output");
+        logger.outbound_logger->set_pattern("minuit output: %v");
+        logger.outbound_logger->set_level(spdlog::level::info);
+
+        proto->set_logger(std::move(logger));
+      }
+
+      m_local_protocol.expose_to(std::move(proto));
+      return true;
+    }
+    catch (std::exception& e)
+    {
+      ossia::logger().error(
+          "ossia_local_device: error when creating Minuit client: {}",
+          e.what());
+    }
+    catch (...)
+    {
+      ossia::logger().error(
+          "ossia_local_device: error when creating Minuit client: {}");
+    }
+    return false;
+  }
+
   ossia::net::node_base* add_node(const std::string& address)
   {
     return &ossia::net::find_or_create_node(m_device.get_root_node(), address);
@@ -300,9 +341,47 @@ public:
   {
   }
 
+  operator ossia::net::generic_device&() { return m_device; }
+
   bool update()
   {
     return m_oscquery_protocol.update(m_device.get_root_node());
+  }
+
+  ossia::net::node_base* find_node(const std::string& address)
+  {
+    return ossia::net::find_node(m_device.get_root_node(), address);
+  }
+
+  ossia::net::node_base* get_root_node()
+  {
+    return &m_device.get_root_node();
+  }
+};
+
+
+class ossia_minuit_device
+{
+  ossia::net::generic_device m_device;
+  ossia::net::minuit_protocol& m_protocol;
+
+public:
+  ossia_minuit_device(
+      std::string name, std::string host, uint16_t remote_port, uint16_t local_port)
+      : m_device{std::make_unique<ossia::net::minuit_protocol>(
+                     name, host, remote_port, local_port),
+                 name}
+      , m_protocol{
+            static_cast<ossia::net::minuit_protocol&>(
+                m_device.get_protocol())}
+  {
+  }
+
+  operator ossia::net::generic_device&() { return m_device; }
+
+  bool update()
+  {
+    return m_protocol.update(m_device.get_root_node());
   }
 
   ossia::net::node_base* find_node(const std::string& address)
@@ -338,6 +417,8 @@ public:
                 m_device.get_protocol())}
   {
   }
+
+  operator ossia::net::generic_device&() { return m_device; }
 
   bool get_learning()
   {
@@ -392,12 +473,25 @@ PYBIND11_MODULE(ossia_python, m)
           "create_osc_server",
           &ossia_local_device::create_osc_server)
       .def(
+          "create_minuit_server",
+          &ossia_local_device::create_minuit_server)
+      .def(
           "add_node", &ossia_local_device::add_node,
           py::return_value_policy::reference)
       .def(
           "find_node", &ossia_local_device::find_node,
           py::return_value_policy::reference)
       ;
+
+  py::class_<ossia_minuit_device>(m, "MinuitDevice")
+      .def(py::init<std::string, std::string, uint16_t, uint16_t>())
+      .def("update", &ossia_minuit_device::update)
+      .def(
+          "find_node", &ossia_minuit_device::find_node,
+          py::return_value_policy::reference)
+      .def_property_readonly(
+          "root_node", &ossia_minuit_device::get_root_node,
+          py::return_value_policy::reference);
 
   py::class_<ossia_oscquery_device>(m, "OSCQueryDevice")
       .def(py::init<std::string, std::string, uint16_t>())
@@ -614,6 +708,9 @@ PYBIND11_MODULE(ossia_python, m)
 
   py::class_<ossia::message_queue>(m, "MessageQueue")
       .def(py::init<ossia_local_device&>())
+      .def(py::init<ossia_osc_device&>())
+      .def(py::init<ossia_oscquery_device&>())
+      .def(py::init<ossia_minuit_device&>())
       .def("register", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
     mq.reg(p);
   })
@@ -633,6 +730,9 @@ PYBIND11_MODULE(ossia_python, m)
 
   py::class_<ossia::global_message_queue>(m, "GlobalMessageQueue")
       .def(py::init<ossia_local_device&>())
+      .def(py::init<ossia_osc_device&>())
+      .def(py::init<ossia_oscquery_device&>())
+      .def(py::init<ossia_minuit_device&>())
       .def("pop", [] (ossia::global_message_queue& mq) -> py::object {
      ossia::received_value v;
      bool res = mq.try_dequeue(v);

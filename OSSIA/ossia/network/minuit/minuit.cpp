@@ -264,9 +264,6 @@ bool minuit_protocol::pull(ossia::net::parameter_base& address)
 
 bool minuit_protocol::push_raw(const full_parameter_data& addr)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
-
   auto val = filter_value(addr);
   if (val.valid())
   {
@@ -281,9 +278,6 @@ bool minuit_protocol::push_raw(const full_parameter_data& addr)
 
 bool minuit_protocol::push(const ossia::net::parameter_base& addr)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
-
   auto val = filter_value(addr);
   if (val.valid())
   {
