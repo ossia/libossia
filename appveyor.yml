@@ -5,34 +5,58 @@ environment:
   CTEST_OUTPUT_ON_FAILURE: 1
 
   matrix:
-    - platform: x64
+    - APPVEYOR_BUILD_TYPE: testing
+      platform: x64
       configuration: Debug
-      APPVEYOR_BUILD_TYPE: testing
       QTDIR: C:\Qt\5.9\msvc2017_64
-      CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
-    - platform: x64
+
+    - APPVEYOR_BUILD_TYPE: testing
+      platform: x64
       configuration: Release
-      APPVEYOR_BUILD_TYPE: testing
       QTDIR: C:\Qt\5.9\msvc2017_64
-      CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
-    - configuration: Release
-      APPVEYOR_BUILD_TYPE: pd
-      CMAKE_GENERATOR_NAME: Visual Studio 15 2017
-    - configuration: Release
-      APPVEYOR_BUILD_TYPE: max
+
+    - APPVEYOR_BUILD_TYPE: Release
+      configuration: Release
+      QTDIR: C:\Qt\5.9\msvc2017_64
+      QTDIR-32bit: C:\Qt\5.9\msvc2015
+
+    - APPVEYOR_BUILD_TYPE: pd
+      configuration: Release
+
+    - APPVEYOR_BUILD_TYPE: max
+      configuration: Release
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
       CMAKE_GENERATOR_NAME_32BIT: Visual Studio 15 2017
 
-before_build:
-  - git submodule update --init --recursive
-  - ps: C:\projects\libossia\ci\before_build.ps1
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python27
+      platform: x64
 
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python27
+      platform: x86
+
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python36
+      platform: x64
+
+    - APPVEYOR_BUILD_TYPE: python
+      configuration: Release
+      python: Python36
+      platform: x86
+
+    - APPVEYOR_BUILD_TYPE: qml
+      configuration: Release
+      QTDIR: C:\Qt\5.9\msvc2017_64
+
+before_build:
+  - ps: C:\projects\libossia\ci\before_build.ps1
 
 build_script:
   - ps: C:\projects\libossia\ci\build.ps1
-#build:
-#  project: C:\projects\libossia\build\OSSIA.sln
-#  parallel: true
 
 after_build:
   - ps: C:\projects\libossia\ci\after_build.ps1
@@ -41,21 +65,48 @@ test_script:
   - ps: C:\projects\libossia\ci\test.ps1
 
 artifacts:
-  - path: install\ossia-pd-package
-    name: ossia-pd-windows
+  - path: ossia-pd-win32.zip
+    name: ossia-pd-win32
     type: zip
-  - path: install\ossia-max-package
-    name: ossia-max-windows
+  - path: ossia-max-win.zip
+    name: ossia-max-win
+    type: zip
+  - path: ossia-qml-win64.zip
+    name: ossia-qml-win64
+    type: zip
+  - path: libossia-native-win*.zip
+    name: ossia-windonws
+    type: zip
+  - path: ossia-python-*-win.zip
+    name: ossia-python-win
+    type: zip
+  - path: ossia-unity3d-win.zip
+    name: ossia-unity3d-win
     type: zip
 
 deploy:
-  description: 'Release description'
+  description: |+
+    * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
+    * Packages ending in `win32` are 32-bit, `win64` are 64-bit and `win` work on both architectures.
+    * All Windows packages are built with VS2017.
+    * Python packages are built with Python 2.7 and 3.6 version on macOS (from Homebrew), Ubuntu and Windows.
+    * QML packages are built with Homebrew's Qt version on macOS.
+    * QML packages are built with Qt 5.9.1 VS2017 64 on Windows.
+    * QML packages are meant to be put in the [QML Import Path](http://doc.qt.io/qt-5/qtqml-syntax-imports.html). For instance on macOS it should look like `/usr/local/Cellar/qt/5.9.1/qml/Ossia/qmldir`.
+
+    Please consult [this wiki page](https://github.com/OSSIA/libossia/wiki/Integrations) to see what's here and what's missing.
+
+    * [Documentation](https://ossia.github.io)
+    * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation)
+    * [Building from source](https://github.com/OSSIA/libossia/wiki/Building)
+    * ***Do note use the Github source package ("Source code" link below) to build; instead do a git clone or use `libossia-src-unix.tgz`. Else the build won't work due to Github not putting submodules in the archive.***
+
   provider: GitHub
   auth_token:
     secure: moePiJbJVxE0xx/iyPjZ4yAWJe+ZiJeVroktPbW6ybfamReA+oNojo3l23+/LtHt
-  artifact: ossia-pd-windows.zip, ossia-max-windows.zip
-  draft: false
-  prerelease: true
+  artifact: /.*\.zip/
+  draft: true
+  prerelease: false
   on:
     branch: master                 # release from master branch only
     appveyor_repo_tag: true        # deploy on tag push only
