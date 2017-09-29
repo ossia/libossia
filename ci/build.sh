@@ -336,12 +336,8 @@ case "$TRAVIS_OS_NAME" in
         if [[ "$OSSIA_STATIC" == "1" ]]; then
           # make unity3d package
           mkdir $TRAVIS_BUILD_DIR/unity3d
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/ossia
-          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/
-          mv $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/README.md $TRAVIS_BUILD_DIR/unity3d/
-          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
+          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d
+          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/ossia.bundle
 
           cd $TRAVIS_BUILD_DIR/unity3d/
           tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz .
