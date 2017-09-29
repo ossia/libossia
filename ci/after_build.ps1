@@ -92,7 +92,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd c:\projects\libossia\build
   dir
 
-  if ( ${env:platform} -eq x64){
+  if ( "${env:platform}" -eq "x64" ){
     7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win64.zip "ossia_python.so"
   } else {
     7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win32.zip "ossia_python.so"

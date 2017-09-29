@@ -84,7 +84,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}-${env:platform}.log"
 
-  if ( $env:platform -eq "x64" ){
+  if ( "${env:platform}" -eq "x64" ){
 
     dir C:\${env:python}-x64\
 
