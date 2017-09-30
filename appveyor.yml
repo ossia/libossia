@@ -107,7 +107,7 @@ deploy:
   auth_token:
     secure: Zl/uqZozGXtvixbEP89fyT3oQW6uKclpRGOa1Rwsdryt7zrGk0pQBRXUwUSzNrA2
   artifact: /.*\.zip/
-  draft: true
-  prerelease: false
+  draft: false
+  prerelease: true
   on:
     appveyor_repo_tag: true        # deploy on tag push only

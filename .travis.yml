@@ -98,7 +98,8 @@ deploy:
     file_glob: true
     file: ossia-*.tar.gz
     skip_cleanup: true
-    draft: true
+    draft: false
+    prerelease: true
     description: |+
       # Draft release of OSSIA $TRAVIS_TAG
 
