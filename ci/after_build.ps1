@@ -50,16 +50,29 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win32.zip .
 
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Unity3d" ){
+
+  cd c:\projects\libossia\build
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install
+  ls
+
+  cd c:\projects\libossia\build-32bit
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
+  ls
+
   # make unity3d package
-  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
   mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia
   xcopy ${env:APPVEYOR_BUILD_FOLDER}\OSSIA\ossia-unity3d\* ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\ /s /e
   mv ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\README.md ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
-  cp ${env:APPVEYOR_BUILD_FOLDER}\install\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
-  cp ${env:APPVEYOR_BUILD_FOLDER}\install-32bit\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-unity3d-win.zip .
