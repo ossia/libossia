@@ -68,6 +68,8 @@ case "$TRAVIS_OS_NAME" in
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
         tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_x86_64.tar.gz ossia
+
+        $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       RpiPdRelease)
         #setup some environment variable to help CMAKE to find libraries
@@ -81,6 +83,8 @@ case "$TRAVIS_OS_NAME" in
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
         tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_arm.tar.gz ossia
+
+        $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       python)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
@@ -204,6 +208,8 @@ case "$TRAVIS_OS_NAME" in
       cd $TRAVIS_BUILD_DIR
       ls
       tar -czf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+
+      $TRAVIS_BUILD_DIR/ci/push_deken.sh
 
     elif [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
