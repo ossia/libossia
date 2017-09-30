@@ -105,6 +105,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd c:\projects\libossia\build
   dir
 
+  Get-ChildItem -Recurse .
+
   if ( "${env:platform}" -eq "x64" ){
     7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win64.zip "ossia_python.so"
   } else {
