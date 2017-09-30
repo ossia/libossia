@@ -85,8 +85,9 @@ artifacts:
     type: zip
 
 deploy:
-  release: "Draft release of OSSIA $APPVEYOR_REPO_TAG_NAME"
   description: |+
+    # Draft release of libossia $APPVEYOR_REPO_TAG_NAME
+
     * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
     * Packages ending in `win32` are 32-bit, `win64` are 64-bit and `win` work on both architectures.
     * All Windows packages are built with VS2017.
@@ -109,5 +110,4 @@ deploy:
   draft: true
   prerelease: false
   on:
-    branch: master                 # release from master branch only
     appveyor_repo_tag: true        # deploy on tag push only

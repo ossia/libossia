@@ -29,19 +29,14 @@ matrix:
 
   - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=1
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=Release OSSIA_STATIC=0
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=Release OSSIA_STATIC=1
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
-    dist: trusty
 
 ## RpiDocker build is tooooooo slow
 #  - os: linux
@@ -50,27 +45,21 @@ matrix:
 
   - os: linux
     env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
-    dist: trusty
 
   - os: linux
     env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0
-    dist: trusty
 
   - os: linux
     env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
-    dist: trusty
 
   - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=2.7
-    dist: trusty
 
   - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=3.6
-    dist: trusty
 
   - os: linux
     env: BUILD_TYPE=qml
-    dist: trusty
 
   - os: osx
     env: BUILD_TYPE=python PYTHON_VERSION=2.7
@@ -107,12 +96,12 @@ deploy:
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
     file_glob: true
-    file:
-      - ossia-*.tar.gz
+    file: ossia-*.tar.gz
     skip_cleanup: true
     draft: true
-    name: "Draft release of OSSIA $TRAVIS_TAG"
     description: |+
+      # Draft release of OSSIA $TRAVIS_TAG
+
       * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
       * Packages ending in `win32` are 32-bit, `win64` are 64-bit and `win` work on both architectures.
       * All Windows packages are built with VS2017.
@@ -131,4 +120,3 @@ deploy:
     on:
       repo: OSSIA/libossia
       tags: true
-      condition: $BUILD_TYPE = RpiRelease
