@@ -19,7 +19,10 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   gpg --fast-import ${0%/*}/codesigning.asc
 
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
-  ~/bin/deken upload -v $TRAVIS_TAG ossia
-
+  if [[ "$TRAVIS_TAG" != ""]]; then
+    ~/bin/deken upload -v $TRAVIS_TAG ossia
+  else
+    ~/bin/deken upload -v 0.0-test1 ossia
+  fi
 fi
 
