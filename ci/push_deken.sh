@@ -20,9 +20,9 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
   if [[ "$TRAVIS_TAG" != ""]]; then
-    ~/bin/deken upload -v $TRAVIS_TAG ossia
-  else
     ~/bin/deken upload -v 0.0-test1 ossia
+  else
+    ~/bin/deken upload -v $TRAVIS_TAG ossia
   fi
 fi
 
