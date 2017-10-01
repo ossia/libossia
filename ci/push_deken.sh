@@ -2,7 +2,7 @@
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
-if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
+if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   curl https://raw.githubusercontent.com/pure-data/deken/master/developer/deken > ~/bin/deken
   chmod 755 ~/bin/deken
