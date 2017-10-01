@@ -2,12 +2,12 @@
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
-if [[ "$BUILD_TYPE" == "RpiPdRelease" "$TRAVIS_TAG" != "" ]]; then
+if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
 
   curl https://raw.githubusercontent.com/pure-data/deken/master/developer/deken > ~/bin/deken
   chmod 755 ~/bin/deken
   # dry run to configure and create ~/.deken
-  deken
+  deken || true
 
   # decrypt deken configuration file
   openssl aes-256-cbc -K $encrypted_7a0fc0b5101e_key -iv $encrypted_7a0fc0b5101e_iv -in ${0%/*}/deken.config.enc -out ~/.deken/config -d
