@@ -5,7 +5,6 @@
 #include <string>
 
 #include <ossia/detail/ptr_container.hpp>
-#include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia_export.h>
@@ -28,7 +27,7 @@ struct time_value;
  *
  * \details The duration can be fixed or between a minimal and a maximal
  * duration. \n
- * #time_interval is also a #Clock and a #TimeProcess container.
+ * #time_interval is a #TimeProcess container.
  */
 class OSSIA_EXPORT time_interval
 {
@@ -58,12 +57,12 @@ public:
   {
     m_speed = g;
   }
-  ossia::state_element tick(ossia::time_value usec);
-  ossia::state_element tick(ossia::time_value usec, double ratio);
+  ossia::state_element tick(ossia::time_value count);
+  ossia::state_element tick(ossia::time_value count, double ratio);
 
   /*! to get the interval execution back
-   \param const #TimeValue process clock position
-   \param const #TimeValue process clock date
+   \param const #TimeValue position
+   \param const #TimeValue date
    \param std::shared_ptr<#State> */
   using exec_callback = std::function<void(
       double, ossia::time_value, const ossia::state_element&)>;
@@ -90,20 +89,20 @@ public:
   /*! desctructor */
   ~time_interval();
 
-  /*! start #time_interval's #Clock */
+  /*! start #time_interval */
   void start();
   void start(ossia::state&);
 
-  /*! stop #time_interval's #Clock */
+  /*! stop #time_interval */
   void stop();
 
-  /*! start #time_interval's #Clock */
+  /*! start #time_interval */
   void pause();
 
-  /*! stop #time_interval's #Clock */
+  /*! stop #time_interval */
   void resume();
 
-  /*! set #time_interval's #Clock offset and process a state at offset date
+  /*! set #time_interval's offset and process a state at offset date
    \details the returned #State is made of as many as sub States for each
    TimeProcess the #time_interval manages
    \details don't call offset when the #time_interval is running
@@ -111,7 +110,7 @@ public:
    \return std::shared_ptr<#State> */
   ossia::state_element offset(ossia::time_value);
 
-  /*! get a #State from the interval depending on its #Clock date
+  /*! get a #State from the interval depending on its date
    \details the returned #State is made of as many as sub States for each
    TimeProcess the #time_interval manages
    \details don't call state when the #time_interval is not running
@@ -194,16 +193,14 @@ private:
   time_value m_min{};
   time_value m_max{};
 
-  /// the progression of the clock between the beginning
-  /// and the end [0. :: 1.]
+  /// the progression of the interval between the beginning
+  /// and the nominal duration [0. :: 1.]
   double m_position{};
 
-  /// how many time the clock is running (without no speed
-  /// factor consideration)
   time_value m_date{};
 
-  time_value m_offset{}; /// the date (in ms) the clock will run from
-  double m_speed{1.};    /// the speed factor of the clock
+  time_value m_offset{}; /// the date the clock will run from
+  double m_speed{1.}; /// tick length is multiplied by this
   bool m_running{};
 };
 }
