@@ -23,22 +23,22 @@ qml_interval::~qml_interval()
 
 }
 
-qint64 qml_interval::nominalDuration() const
+qint32 qml_interval::nominalDuration() const
 {
   return m_nominalDuration;
 }
 
-qint64 qml_interval::minDuration() const
+qint32 qml_interval::minDuration() const
 {
   return m_minDuration;
 }
 
-qint64 qml_interval::maxDuration() const
+qint32 qml_interval::maxDuration() const
 {
   return m_maxDuration;
 }
 
-qint64 qml_interval::playDuration() const
+qint32 qml_interval::playDuration() const
 {
   return m_playDuration;
 }
@@ -110,7 +110,7 @@ void qml_interval::unregisterProcess(qml_process*)
 
 }
 
-void qml_interval::setNominalDuration(qint64 nominalDuration)
+void qml_interval::setNominalDuration(qint32 nominalDuration)
 {
   if (m_nominalDuration == nominalDuration)
     return;
@@ -119,7 +119,7 @@ void qml_interval::setNominalDuration(qint64 nominalDuration)
   emit nominalDurationChanged(m_nominalDuration);
 }
 
-void qml_interval::setMinDuration(qint64 minDuration)
+void qml_interval::setMinDuration(qint32 minDuration)
 {
   if (m_minDuration == minDuration)
     return;
@@ -128,7 +128,7 @@ void qml_interval::setMinDuration(qint64 minDuration)
   emit minDurationChanged(m_minDuration);
 }
 
-void qml_interval::setMaxDuration(qint64 maxDuration)
+void qml_interval::setMaxDuration(qint32 maxDuration)
 {
   if (m_maxDuration == maxDuration)
     return;
@@ -137,7 +137,7 @@ void qml_interval::setMaxDuration(qint64 maxDuration)
   emit maxDurationChanged(m_maxDuration);
 }
 
-void qml_interval::setPlayDuration(qint64 playDuration)
+void qml_interval::setPlayDuration(qint32 playDuration)
 {
   if (m_playDuration == playDuration)
     return;

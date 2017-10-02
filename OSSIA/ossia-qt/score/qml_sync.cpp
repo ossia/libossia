@@ -9,6 +9,7 @@ namespace qt
 qml_sync::qml_sync(QQuickItem* parent):
   QQuickItem{parent}
 {
+  m_impl = std::make_shared<ossia::time_sync>();
   connect(this, &QQuickItem::parentChanged,
           this, &qml_sync::reset);
   reset();
@@ -26,11 +27,12 @@ QQmlScriptString qml_sync::expr() const
 
 void qml_sync::setup()
 {
-  m_impl = std::make_shared<ossia::time_sync>();
-  for(auto ev : m_conds)
+  for(qml_cond* ev : this->findChildren<qml_cond*>(QString{}, Qt::FindDirectChildrenOnly))
   {
+    ev->setSync(this);
     ev->setup();
-    m_impl->insert(m_impl->get_time_events().end(), ev->cond());
+    if(auto c = ev->cond())
+      m_impl->insert(m_impl->get_time_events().end(), c);
   }
 }
 

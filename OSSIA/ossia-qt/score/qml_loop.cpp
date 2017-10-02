@@ -41,6 +41,11 @@ qml_sync* qml_loop::endSync() const
   return m_endSync;
 }
 
+std::shared_ptr<time_process> qml_loop::process() const
+{
+  return m_impl;
+}
+
 void qml_loop::setInterval(qml_interval* interval)
 {
   if (m_interval == interval)

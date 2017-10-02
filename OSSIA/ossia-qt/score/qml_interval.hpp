@@ -1,6 +1,8 @@
 #pragma once
 #include <QQuickItem>
 #include <QQmlListProperty>
+#include <ossia-qt/score/qml_sync.hpp>
+#include <ossia-qt/score/qml_cond.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 namespace ossia
 {
@@ -24,10 +26,10 @@ T findParent(QObject* obj)
 class qml_interval : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(qint64 nominalDuration READ nominalDuration WRITE setNominalDuration NOTIFY nominalDurationChanged)
-    Q_PROPERTY(qint64 minDuration READ minDuration WRITE setMinDuration NOTIFY minDurationChanged)
-    Q_PROPERTY(qint64 maxDuration READ maxDuration WRITE setMaxDuration NOTIFY maxDurationChanged)
-    Q_PROPERTY(qint64 playDuration READ playDuration WRITE setPlayDuration NOTIFY playDurationChanged)
+    Q_PROPERTY(qint32 nominalDuration READ nominalDuration WRITE setNominalDuration NOTIFY nominalDurationChanged)
+    Q_PROPERTY(qint32 minDuration READ minDuration WRITE setMinDuration NOTIFY minDurationChanged)
+    Q_PROPERTY(qint32 maxDuration READ maxDuration WRITE setMaxDuration NOTIFY maxDurationChanged)
+    Q_PROPERTY(qint32 playDuration READ playDuration WRITE setPlayDuration NOTIFY playDurationChanged)
     Q_PROPERTY(double speed READ speed WRITE setSpeed NOTIFY speedChanged)
     Q_PROPERTY(qml_cond* follows READ follows WRITE setFollows NOTIFY followsChanged)
     Q_PROPERTY(qml_cond* precedes READ precedes WRITE setPrecedes NOTIFY precedesChanged)
@@ -35,10 +37,10 @@ class qml_interval : public QQuickItem
     qml_interval(QQuickItem* parent = nullptr);
     ~qml_interval() override;
 
-    qint64 nominalDuration() const;
-    qint64 minDuration() const;
-    qint64 maxDuration() const;
-    qint64 playDuration() const;
+    qint32 nominalDuration() const;
+    qint32 minDuration() const;
+    qint32 maxDuration() const;
+    qint32 playDuration() const;
     qml_cond* follows() const;
     qml_cond* precedes() const;
 
@@ -50,10 +52,10 @@ class qml_interval : public QQuickItem
     void unregisterProcess(qml_process*);
     std::shared_ptr<ossia::time_interval> m_interval;
 public slots:
-    void setNominalDuration(qint64 nominalDuration);
-    void setMinDuration(qint64 minDuration);
-    void setMaxDuration(qint64 maxDuration);
-    void setPlayDuration(qint64 playDuration);
+    void setNominalDuration(qint32 nominalDuration);
+    void setMinDuration(qint32 minDuration);
+    void setMaxDuration(qint32 maxDuration);
+    void setPlayDuration(qint32 playDuration);
     void setFollows(qml_cond* follows);
     void setPrecedes(qml_cond* precedes);
     void setSpeed(double speed);
@@ -63,20 +65,20 @@ public slots:
     void stop();
 
 signals:
-    void nominalDurationChanged(qint64 nominalDuration);
-    void minDurationChanged(qint64 minDuration);
-    void maxDurationChanged(qint64 maxDuration);
-    void playDurationChanged(qint64 playDuration);
+    void nominalDurationChanged(qint32 nominalDuration);
+    void minDurationChanged(qint32 minDuration);
+    void maxDurationChanged(qint32 maxDuration);
+    void playDurationChanged(qint32 playDuration);
     void followsChanged(qml_cond* follows);
     void precedesChanged(qml_cond* precedes);
     void speedChanged(double speed);
 
 private:
     void reset();
-    qint64 m_nominalDuration{};
-    qint64 m_minDuration{};
-    qint64 m_maxDuration{};
-    qint64 m_playDuration{};
+    qint32 m_nominalDuration{};
+    qint32 m_minDuration{};
+    qint32 m_maxDuration{};
+    qint32 m_playDuration{};
     qml_cond* m_follows{};
     qml_cond* m_precedes{};
     qml_process* m_parent{};

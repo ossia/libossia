@@ -13,9 +13,6 @@ namespace qt
 qml_scenario::qml_scenario(QQuickItem* parent)
   : qml_process{parent}
 {
-  m_startSync = new qml_sync{this};
-  registerSync(m_startSync);
-
   m_impl = std::make_shared<ossia::scenario>();
   reset();
 }
@@ -27,6 +24,7 @@ qml_scenario::~qml_scenario()
 
 void qml_scenario::registerInterval(qml_interval* itv)
 {
+  return;
   if(m_intervals.find(itv) == m_intervals.end())
   {
     m_intervals.insert(itv);
@@ -50,6 +48,7 @@ void qml_scenario::registerInterval(qml_interval* itv)
 
 void qml_scenario::unregisterInterval(qml_interval* itv)
 {
+  return;
   auto it = m_intervals.find(itv);
   if(it != m_intervals.end())
   {
@@ -68,6 +67,7 @@ void qml_scenario::unregisterInterval(qml_interval* itv)
 
 void qml_scenario::registerSync(qml_sync* s)
 {
+  return;
   if(m_syncs.find(s) == m_syncs.end())
   {
     m_syncs.insert(s);
@@ -76,6 +76,7 @@ void qml_scenario::registerSync(qml_sync* s)
 
 void qml_scenario::unregisterSync(qml_sync* s)
 {
+  return;
   auto it = m_syncs.find(s);
   if(it != m_syncs.end())
   {
@@ -85,13 +86,25 @@ void qml_scenario::unregisterSync(qml_sync* s)
 
 void qml_scenario::setup()
 {
-  for(auto sync : m_syncs)
+  m_impl = std::make_shared<ossia::scenario>();
+  if(!m_startSync)
+    return;
+  for(qml_sync* sync : this->findChildren<qml_sync*>(QString{}, Qt::FindDirectChildrenOnly))
   {
-    sync->setup();
-    if(auto s = sync->sync())
-      m_impl->add_time_sync(s);
+    if(sync != m_startSync)
+    {
+      sync->setup();
+      if(auto s = sync->sync())
+        m_impl->add_time_sync(s);
+    }
+    else
+    {
+      sync->setSync(m_impl->get_start_time_sync());
+      sync->setup();
+    }
   }
-  for(auto ival : m_intervals)
+
+  for(qml_interval* ival: this->findChildren<qml_interval*>(QString{}, Qt::FindDirectChildrenOnly))
   {
     ival->setup();
     if(auto iv = ival->interval())
@@ -102,6 +115,22 @@ void qml_scenario::setup()
 std::shared_ptr<time_process> qml_scenario::process() const
 {
   return m_impl;
+}
+
+qml_sync* qml_scenario::startSync() const
+{
+  return m_startSync;
+}
+
+void qml_scenario::setStartSync(qml_sync* s)
+{
+  if(s != m_startSync)
+  {
+    m_startSync = s;
+    m_startSync->setParent(this);
+    m_startSync->setParentItem(this);
+    emit startSyncChanged(s);
+  }
 }
 
 void qml_scenario::reset_impl()

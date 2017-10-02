@@ -21,7 +21,7 @@ class qml_process : public QQuickItem
     qml_interval* interval() const;
     virtual void setup();
 
-    virtual std::shared_ptr<ossia::time_process> process() const;
+    virtual std::shared_ptr<ossia::time_process> process() const = 0;
   protected:
     void reset();
     virtual void reset_impl();
@@ -31,13 +31,13 @@ class qml_process : public QQuickItem
 
 class qml_breakpoint : public QQuickItem
 {
-  Q_OBJECT
+    Q_OBJECT
   public: using QQuickItem::QQuickItem;
 };
 
 class qml_segment : public QQuickItem
 {
-  Q_OBJECT
+    Q_OBJECT
   public: using QQuickItem::QQuickItem;
 
     std::function<float(double,float,float)> segment();
@@ -48,10 +48,10 @@ class qml_autom : public qml_process
     Q_OBJECT
 
     Q_PROPERTY(qml_node_base* target READ target WRITE setTarget NOTIFY targetChanged)
-  Q_PROPERTY(double xMin READ xMin WRITE setXMin NOTIFY xMinChanged)
-  Q_PROPERTY(double xMax READ xMax WRITE setXMax NOTIFY xMaxChanged)
-  Q_PROPERTY(double yMin READ yMin WRITE setYMin NOTIFY yMinChanged)
-  Q_PROPERTY(double yMax READ yMax WRITE setYMax NOTIFY yMaxChanged)
+    Q_PROPERTY(double xMin READ xMin WRITE setXMin NOTIFY xMinChanged)
+    Q_PROPERTY(double xMax READ xMax WRITE setXMax NOTIFY xMaxChanged)
+    Q_PROPERTY(double yMin READ yMin WRITE setYMin NOTIFY yMinChanged)
+    Q_PROPERTY(double yMax READ yMax WRITE setYMax NOTIFY yMaxChanged)
   public:
     qml_autom(QQuickItem* parent = nullptr);
     ~qml_autom() override;
@@ -62,22 +62,22 @@ class qml_autom : public qml_process
     double xMax() const;
     double yMin() const;
     double yMax() const;
-
-public slots:
+    std::shared_ptr<ossia::time_process> process() const override;
+  public slots:
     void setTarget(qml_node_base* target);
     void setXMin(double xMin);
     void setXMax(double xMax);
     void setYMin(double yMin);
     void setYMax(double yMax);
 
-signals:
+  signals:
     void targetChanged(qml_node_base* target);
     void xMinChanged(double xMin);
     void xMaxChanged(double xMax);
     void yMinChanged(double yMin);
     void yMaxChanged(double yMax);
 
-private:
+  private:
     void reset_impl() override;
     std::shared_ptr<ossia::automation> m_impl;
     qml_node_base* m_target;

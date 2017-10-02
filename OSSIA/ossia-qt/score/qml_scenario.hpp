@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia-qt/score/qml_autom.hpp>
+#include <ossia-qt/score/qml_sync.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <hopscotch_set.h>
 
@@ -13,7 +14,7 @@ class qml_scenario : public qml_process
 {
     Q_OBJECT
 
-    Q_PROPERTY(qml_sync* startSync READ startSync)
+    Q_PROPERTY(qml_sync* startSync READ startSync WRITE setStartSync NOTIFY startSyncChanged)
   public:
     qml_scenario(QQuickItem* parent = nullptr);
     ~qml_scenario() override;
@@ -27,10 +28,12 @@ class qml_scenario : public qml_process
     void setup() override;
     std::shared_ptr<ossia::time_process> process() const override;
 
-    qml_sync* startSync() const
-    {
-      return m_startSync;
-    }
+    qml_sync* startSync() const;
+  public slots:
+    void setStartSync(qml_sync* s);
+
+  signals:
+    void startSyncChanged(qml_sync*);
 
 private:
     void reset_impl() override;

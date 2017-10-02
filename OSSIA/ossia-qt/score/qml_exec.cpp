@@ -73,7 +73,9 @@ void qml_exec::play(qml_interval* itvl)
   defaultTime(itvl->maxDuration())
   );
   m_cur->m_interval = itv;
-  m_clock = std::make_unique<ossia::clock>(*m_cur->interval());
+  m_cur->setup();
+  m_clock = std::make_unique<ossia::clock>(*m_cur->interval(), 1.0);
+  m_clock->set_granularity(std::chrono::microseconds(8000));
   m_clock->start();
 }
 

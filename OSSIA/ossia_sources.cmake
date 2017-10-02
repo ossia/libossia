@@ -423,6 +423,7 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_scenario.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_exec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_loop.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_util.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/name_utils.hpp"

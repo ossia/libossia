@@ -31,6 +31,7 @@ public:
   qml_sync* endSync() const;
 
   void setup() override { }
+  std::shared_ptr<ossia::time_process> process() const override;
 
 public slots:
   void setInterval(qml_interval* interval);

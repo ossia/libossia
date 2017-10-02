@@ -54,6 +54,7 @@ void qml_process::reset_impl()
 qml_autom::qml_autom(QQuickItem* parent)
   : qml_process{parent}
 {
+  m_impl = std::make_shared<ossia::automation>();
   reset();
 }
 
@@ -76,7 +77,7 @@ void qml_autom::setup()
     return;
 
   auto curve = std::make_shared<ossia::curve<double, float>>();
-  curve->set_scale_bounds(0, 1, 1);
+  //curve->set_scale_bounds(0, 1, 1);
   const auto items = childItems();
   if(items.empty())
   {
@@ -105,6 +106,8 @@ void qml_autom::setup()
     }
   }
 
+  m_impl->set_behavior(curve);
+  m_impl->set_destination(*p);
 }
 
 qml_node_base*qml_autom::target() const
@@ -130,6 +133,11 @@ double qml_autom::yMin() const
 double qml_autom::yMax() const
 {
   return m_yMax;
+}
+
+std::shared_ptr<time_process> qml_autom::process() const
+{
+  return m_impl;
 }
 
 void qml_autom::setTarget(qml_node_base* target)

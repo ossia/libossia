@@ -72,6 +72,8 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_loop>(uri, 1, 0, "Loop");
   qmlRegisterType<qt::qml_mapping>(uri, 1, 0, "Mapping");
   qmlRegisterType<qt::qml_autom>(uri, 1, 0, "Automation");
+  qmlRegisterType<qt::qml_breakpoint>(uri, 1, 0, "Breakpoint");
+  qmlRegisterType<qt::qml_segment>(uri, 1, 0, "Segment");
 }
 #if !defined(OSSIA_DISABLE_QT_PLUGIN)
 void qml_plugin::registerTypes(const char* uri)
