@@ -33,12 +33,12 @@ case "$TRAVIS_OS_NAME" in
       mv cmake-*-x86_64 cmake
     fi
 
-    if [[ "$BUILD_TYPE" == "RpiPdRelease" ]]; then
+    if [[ "$BUILD_TYPE" == Rpi* ]]; then
         # install arm-linux-gnueabihf-g++-6 from yaketty
         pushd /etc/apt
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
         sudo sed -i -- 's/trusty/yakkety/g' sources.list
-        sudo apt-get update
+        sudo apt-get update -qq
         sudo apt-get install -qq g++-6-arm-linux-gnueabihf
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
         popd
@@ -51,7 +51,12 @@ case "$TRAVIS_OS_NAME" in
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
+    elif [[ "x$BUILD_TYPE" == "xpython" ]]; then
+      sudo add-apt-repository --yes ppa:jonathonf/python-3.6
+      sudo apt-get update -qq
+      sudo apt install -qq python${PYTHON_VERSION} python${PYTHON_VERSION}-dev
     fi
+
   ;;
   osx)
     # work around a homebrew bug
@@ -69,6 +74,12 @@ case "$TRAVIS_OS_NAME" in
       wget -nv "https://cycling74.s3.amazonaws.com/download/$MAXSDKARCHIVE"
       tar xf "$MAXSDKARCHIVE"
       ls
+    elif [[ "x$BUILD_TYPE" == "xpython" ]]; then
+      if [[ "x$PYTHON_VERSION" == x2.* ]]; then
+        brew install python2
+      else
+        brew install python3
+      fi
     fi
 
     set -e
