@@ -76,6 +76,10 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip .
 
+  appveyor DownloadFile https://raw.githubusercontent.com/pure-data/deken/master/developer/deken
+
+  C:\cygwin\bin\bash ./deken upload -v test ossia
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd c:\projects\libossia\build
 
