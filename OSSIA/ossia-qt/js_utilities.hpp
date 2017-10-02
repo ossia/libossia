@@ -114,7 +114,29 @@ public:
   ossia::value operator()() const;
 };
 
-struct qt_to_ossia
+
+struct OSSIA_EXPORT variant_inbound_visitor
+{
+  const QVariant& val;
+
+public:
+  ossia::value operator()(impulse) const;
+
+  ossia::value operator()(int32_t v) const;
+  ossia::value operator()(float v) const;
+  ossia::value operator()(bool v) const;
+  ossia::value operator()(char v) const;
+
+  ossia::value operator()(const std::string& v) const;
+  ossia::value operator()(const std::vector<ossia::value>& v) const;
+
+  ossia::value operator()(vec2f v) const;
+  ossia::value operator()(vec3f v) const;
+  ossia::value operator()(vec4f v) const;
+
+  ossia::value operator()() const;
+};
+struct OSSIA_EXPORT qt_to_ossia
 {
   ossia::value operator()()
   {

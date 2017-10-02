@@ -5,6 +5,7 @@
 #include <ossia-qt/device/qml_node_base.hpp>
 #include <QQuickItem>
 #include <QPointer>
+#include <QEasingCurve>
 
 namespace ossia
 {
@@ -22,6 +23,7 @@ class qml_process : public QQuickItem
     virtual void setup();
 
     virtual std::shared_ptr<ossia::time_process> process() const = 0;
+
   protected:
     void reset();
     virtual void reset_impl();

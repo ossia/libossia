@@ -28,9 +28,15 @@ class qml_exec : public QObject
   private:
     qml_exec();
     ~qml_exec() override;
+
+    void timerEvent(QTimerEvent* event) override;
+
     QPointer<qml_interval> m_cur{};
     std::unique_ptr<ossia::clock> m_clock;
     moodycamel::ReaderWriterQueue<std::function<void()>> m_queue;
+    optional<int> m_timer;
+    std::chrono::high_resolution_clock::time_point m_cur_t;
+
 };
 
 }

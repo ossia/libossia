@@ -37,14 +37,15 @@ void qml_exec::play(qml_interval* itvl)
   if(!itvl)
     return;
 
-  if(m_clock && itvl == m_cur)
+  if(m_timer && itvl == m_cur)
   {
-    m_clock->resume();
+    m_timer = this->startTimer(8, Qt::PreciseTimer);
     return;
   }
-  else if(m_clock && itvl != m_cur)
+  else if(m_timer && itvl != m_cur)
   {
-    m_clock->stop();
+    this->killTimer(*m_timer);
+    return;
   }
 
   m_cur = itvl;
@@ -53,14 +54,13 @@ void qml_exec::play(qml_interval* itvl)
   auto se = std::make_shared<ossia::time_event>([] (const ossia::time_event::status) {}, *sn, ossia::expressions::make_expression_true());
   auto ee = std::make_shared<ossia::time_event>([] (const ossia::time_event::status) {}, *en, ossia::expressions::make_expression_true());
   auto itv = std::make_shared<ossia::time_interval>(
-        [this,  &score_cst = m_cur](
-        double position,
-        ossia::time_value date,
-        const ossia::state_element& state)
-  {
+               [this](
+               double position,
+               ossia::time_value date,
+               const ossia::state_element& state) {
     ossia::launch(state);
 
-    score_cst->setPlayDuration(reverseTime(date));
+    m_cur->setPlayDuration(reverseTime(date));
 
     std::function<void()> c;
     while(m_queue.try_dequeue(c))
@@ -72,11 +72,13 @@ void qml_exec::play(qml_interval* itvl)
   defaultTime(itvl->minDuration()),
   defaultTime(itvl->maxDuration())
   );
+  this->startTimer(16, Qt::PreciseTimer);
   m_cur->m_interval = itv;
   m_cur->setup();
-  m_clock = std::make_unique<ossia::clock>(*m_cur->interval(), 1.0);
-  m_clock->set_granularity(std::chrono::microseconds(8000));
-  m_clock->start();
+  ossia::state st;
+  itv->start(st);
+  ossia::launch(st);
+  m_cur_t = std::chrono::high_resolution_clock::now();
 }
 
 void qml_exec::pause(qml_interval* itvl)
@@ -105,6 +107,17 @@ qml_exec::qml_exec()
 qml_exec::~qml_exec()
 {
 
+}
+
+void qml_exec::timerEvent(QTimerEvent* event)
+{
+  auto new_t = std::chrono::high_resolution_clock::now();
+  auto last = m_cur_t;
+  m_cur_t = new_t;
+
+  auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(m_cur_t - last).count();
+
+  m_cur->m_interval->tick(time_value(elapsed));
 }
 
 }

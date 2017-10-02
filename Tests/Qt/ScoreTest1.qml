@@ -3,10 +3,6 @@ import Ossia 1.0 as Ossia
 
 Item
 {
-    Ossia.OSCQueryServer {
-        id: dev
-    }
-
     Rectangle {
         color: "red"
         height: 200
@@ -15,6 +11,8 @@ Item
         Ossia.Property on width { id: rec_width }
         x: 100
         y: 100
+        Ossia.Property on x {  }
+        Ossia.Property on y {  }
         Ossia.Property on rotation { id: rec_rot }
     }
 
@@ -70,10 +68,10 @@ Item
                 minDuration: 1000
                 maxDuration: 1000
 
-                Ossia.Automation {
-                    target: rec_rot
-                    yMin: 500
-                    yMax: 100
+                Ossia.Script {
+                    script: {
+                        return [ Ossia.Make.message(Ossia.SingleDevice, "/x", 10 * Math.random()) ];
+                    }
                 }
             }
 
@@ -82,9 +80,13 @@ Item
                     id: c3
                 }
             }
-
         }
     }
 
-    Component.onCompleted: root.play()
+    id: rt
+    Component.onCompleted: {
+        Ossia.SingleDevice.recreate(rt);
+        Ossia.SingleDevice.openOSCQueryServer(5678, 1234);
+        root.play()
+    }
 }

@@ -23,6 +23,7 @@
 #include <ossia-qt/score/qml_loop.hpp>
 #include <ossia-qt/js_utilities.hpp>
 #include <qqml.h>
+#include <score/qml_script.hpp>
 
 namespace ossia
 {
@@ -31,6 +32,7 @@ namespace qt
 
 void qml_plugin::reg(const char* uri)
 {
+  qRegisterMetaType<ossia::qt::qml_message>();
   // See ossia_global_init
   qmlRegisterUncreatableType<qt::qml_val_type>(
       uri, 1, 0, "Type", "Value type");
@@ -65,7 +67,8 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_interval>(uri, 1, 0, "Interval");
   qmlRegisterType<qt::qml_cond>(uri, 1, 0, "Condition");
   qmlRegisterType<qt::qml_sync>(uri, 1, 0, "Sync");
-  qmlRegisterSingletonType<qt::qml_exec>(uri, 1, 0, "Exec", [] (QQmlEngine *, QJSEngine *) -> QObject* {
+  qmlRegisterSingletonType<qt::qml_exec>(uri, 1, 0, "Exec",
+                                         [] (QQmlEngine *, QJSEngine *) -> QObject* {
     return &qt::qml_exec::instance();
   });
   qmlRegisterType<qt::qml_scenario>(uri, 1, 0, "Scenario");
@@ -74,6 +77,11 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_autom>(uri, 1, 0, "Automation");
   qmlRegisterType<qt::qml_breakpoint>(uri, 1, 0, "Breakpoint");
   qmlRegisterType<qt::qml_segment>(uri, 1, 0, "Segment");
+  qmlRegisterType<qt::qml_script>(uri, 1, 0, "Script");
+  qmlRegisterSingletonType<qt::qml_utils>(uri, 1, 0, "Make",
+                                            [] (QQmlEngine *, QJSEngine *) -> QObject* {
+    return new qt::qml_utils{};
+  });
 }
 #if !defined(OSSIA_DISABLE_QT_PLUGIN)
 void qml_plugin::registerTypes(const char* uri)
