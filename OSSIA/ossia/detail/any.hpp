@@ -4,6 +4,8 @@
 #define OSSIA_USE_BOOST_ANY 1
 #elif defined(_MSC_VER)
 #define OSSIA_USE_BOOST_ANY 1
+#elif defined(__APPLE__) && (__cplusplus < 201703L)
+#define OSSIA_USE_BOOST_ANY 1
 
 #else
 

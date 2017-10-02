@@ -13,7 +13,6 @@
 namespace ossia
 {
 class value;
-struct time_value;
 namespace net
 {
 class parameter_base;

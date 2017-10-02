@@ -1,4 +1,7 @@
 #pragma once
+#if defined(__APPLE__)
+#include <mach/time_value.h>
+#endif
 #include <cinttypes>
 #include <cmath>
 #include <limits>

@@ -20,7 +20,6 @@ namespace ossia
 class expression_base;
 class state;
 class time_event;
-struct time_value;
 class scenario;
 /**
  * \brief #time_sync is use to describe temporal structure to synchronize each

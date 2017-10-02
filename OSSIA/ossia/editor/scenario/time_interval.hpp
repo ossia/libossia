@@ -16,7 +16,6 @@ namespace ossia
 {
 class time_event;
 class time_process;
-struct time_value;
 
 /**
  * @brief The time_interval class
