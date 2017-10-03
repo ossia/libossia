@@ -27,6 +27,7 @@ QQmlScriptString qml_sync::expr() const
 
 void qml_sync::setup()
 {
+  m_impl->set_expression(make_expression(m_expr, this));
   for(qml_cond* ev : this->findChildren<qml_cond*>(QString{}, Qt::FindDirectChildrenOnly))
   {
     ev->setSync(this);

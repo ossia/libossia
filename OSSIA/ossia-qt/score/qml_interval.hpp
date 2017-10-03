@@ -3,6 +3,7 @@
 #include <QQmlListProperty>
 #include <ossia-qt/score/qml_sync.hpp>
 #include <ossia-qt/score/qml_cond.hpp>
+#include <ossia-qt/score/qml_util.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 namespace ossia
 {
@@ -76,8 +77,8 @@ signals:
 private:
     void reset();
     qint32 m_nominalDuration{};
-    qint32 m_minDuration{};
-    qint32 m_maxDuration{};
+    qint32 m_minDuration{0};
+    qint32 m_maxDuration{ossia::qt::infinite()};
     qint32 m_playDuration{};
     qml_cond* m_follows{};
     qml_cond* m_precedes{};

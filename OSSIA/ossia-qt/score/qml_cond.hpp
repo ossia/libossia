@@ -4,6 +4,7 @@
 #include <QQmlScriptString>
 #include <QQmlListProperty>
 #include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/expression/expression_generic.hpp>
 namespace ossia
 {
 namespace qt
@@ -11,6 +12,31 @@ namespace qt
 class qml_interval;
 class qml_sync;
 class qml_state;
+class qml_expr final : public ossia::expressions::expression_generic_base
+{
+  public:
+    qml_expr(QQmlExpression* e): m_expr{e} { }
+
+    void update() override
+    {
+    }
+    bool evaluate() const override
+    {
+      return m_expr->evaluate().toBool();
+    }
+    void on_first_callback_added(expressions::expression_generic&) override
+    {
+    }
+    void on_removing_last_callback(expressions::expression_generic&) override
+    {
+    }
+
+  private:
+    std::unique_ptr<QQmlExpression> m_expr;
+};
+
+
+ossia::expression_ptr make_expression(const QQmlScriptString& script, QObject* obj);
 class qml_cond : public QQuickItem
 {
     Q_OBJECT

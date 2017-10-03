@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Controls 2.2
 import Ossia 1.0 as Ossia
 
 Item
@@ -16,11 +17,15 @@ Item
         Ossia.Property on rotation { id: rec_rot }
     }
 
+    Slider {
+        id: sld
+    }
+
     Ossia.Interval {
         id: root
         nominalDuration: 2000
         minDuration: 2000
-        maxDuration: 2000
+        maxDuration: Ossia.Duration.Infinite
 
         Ossia.Automation {
             target: rec_height
@@ -46,7 +51,7 @@ Item
                 precedes: c2
                 nominalDuration: 1000
                 minDuration: 1000
-                maxDuration: 1000
+                maxDuration: Ossia.Duration.Infinite
 
                 Ossia.Automation {
                     target: rec_rot
@@ -56,6 +61,7 @@ Item
             }
 
             Ossia.Sync {
+                expr: sld.position > 0.5
                 Ossia.Condition {
                     id: c2
                 }

@@ -6,7 +6,7 @@ namespace ossia
 {
 namespace qt
 {
-inline qint32 infinite() { return std::numeric_limits<qint32>::lowest(); }
+constexpr inline qint32 infinite() { return std::numeric_limits<qint32>::lowest(); }
 
 inline bool isInfinite(qint32 t) { return t == infinite(); }
 
