@@ -88,6 +88,8 @@ void qml_interval::setup()
     if(!m_interval)
       return;
   }
+  m_interval->set_min_duration(defaultTime(m_minDuration));
+  m_interval->set_max_duration(defaultTime(m_maxDuration));
 
   auto cld = this->findChildren<qml_process*>(QString{}, Qt::FindDirectChildrenOnly);
   for(auto child : cld)
@@ -162,6 +164,40 @@ void qml_interval::setPrecedes(qml_cond* precedes)
 
   m_precedes = precedes;
   emit precedesChanged(m_precedes);
+}
+
+void qml_interval::setFollows(qml_sync* follows)
+{
+  if (m_follows == follows->defaultCond())
+    return;
+
+  m_follows = follows->defaultCond();
+  emit followsChanged(m_follows);
+}
+
+void qml_interval::setPrecedes(qml_sync* precedes)
+{
+  if (m_precedes == precedes->defaultCond())
+    return;
+
+  m_precedes = precedes->defaultCond();
+  emit precedesChanged(m_precedes);
+}
+
+void qml_interval::setFollows(QObject* follows)
+{
+  if(auto sync = qobject_cast<qml_sync*>(follows))
+    return setFollows(sync);
+  else if(auto cond = qobject_cast<qml_cond*>(follows))
+    return setFollows(cond);
+}
+
+void qml_interval::setPrecedes(QObject* precedes)
+{
+  if(auto sync = qobject_cast<qml_sync*>(precedes))
+    return setPrecedes(sync);
+  else if(auto cond = qobject_cast<qml_cond*>(precedes))
+    return setPrecedes(cond);
 }
 
 void qml_interval::play()

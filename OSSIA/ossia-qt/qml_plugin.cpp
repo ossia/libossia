@@ -78,7 +78,6 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_mapping>(uri, 1, 0, "Mapping");
   qmlRegisterType<qt::qml_autom>(uri, 1, 0, "Automation");
   qmlRegisterType<qt::qml_breakpoint>(uri, 1, 0, "Breakpoint");
-  qmlRegisterType<qt::qml_segment>(uri, 1, 0, "Segment");
   qmlRegisterType<qt::qml_script>(uri, 1, 0, "Script");
   qmlRegisterSingletonType<qt::qml_utils>(uri, 1, 0, "Make",
                                             [] (QQmlEngine *, QJSEngine *) -> QObject* {

@@ -166,7 +166,7 @@ std::vector<ossia::net::node_base*> find_parent_node(object_base* x)
     start_level = 1;
   }
 
-  if (x->m_addr_scope == address_scope::relative)
+  if (x->m_addr_scope == net::address_scope::relative)
   {
     // then try to locate a parent view or model
     if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
@@ -420,18 +420,6 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
     }
   }
   return nodes;
-}
-
-ossia::pd::address_scope get_address_scope(ossia::string_view addr)
-{
-  address_scope type = address_scope::relative;
-  if (boost::starts_with(addr, "//") )
-    type = address_scope::relative;
-  else if ( boost::starts_with(addr, "/") )
-    type = address_scope::absolute;
-  else if ( addr.find(":/") != std::string::npos )
-      type = address_scope::global;
-  return type;
 }
 
 std::vector<ossia::value> attribute2value(t_atom* atom, long size)

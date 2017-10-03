@@ -30,7 +30,7 @@ public:
   qml_sync* startSync() const;
   qml_sync* endSync() const;
 
-  void setup() override { }
+  void setup() override;
   std::shared_ptr<ossia::time_process> process() const override;
 
 public slots:
@@ -50,11 +50,11 @@ signals:
 private:
   void reset_impl() override;
   std::shared_ptr<ossia::loop> m_impl;
-  qml_interval* m_interval;
-  qml_cond* m_startCond;
-  qml_cond* m_endCond;
-  qml_sync* m_startSync;
-  qml_sync* m_endSync;
+  qml_interval* m_interval{};
+  qml_cond* m_startCond{};
+  qml_cond* m_endCond{};
+  qml_sync* m_startSync{};
+  qml_sync* m_endSync{};
 };
 }
 }

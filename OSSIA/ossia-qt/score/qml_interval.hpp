@@ -32,8 +32,8 @@ class qml_interval : public QQuickItem
     Q_PROPERTY(qint32 maxDuration READ maxDuration WRITE setMaxDuration NOTIFY maxDurationChanged)
     Q_PROPERTY(qint32 playDuration READ playDuration WRITE setPlayDuration NOTIFY playDurationChanged)
     Q_PROPERTY(double speed READ speed WRITE setSpeed NOTIFY speedChanged)
-    Q_PROPERTY(qml_cond* follows READ follows WRITE setFollows NOTIFY followsChanged)
-    Q_PROPERTY(qml_cond* precedes READ precedes WRITE setPrecedes NOTIFY precedesChanged)
+    Q_PROPERTY(QObject* follows READ follows WRITE setFollows NOTIFY followsChanged)
+    Q_PROPERTY(QObject* precedes READ precedes WRITE setPrecedes NOTIFY precedesChanged)
   public:
     qml_interval(QQuickItem* parent = nullptr);
     ~qml_interval() override;
@@ -59,6 +59,10 @@ public slots:
     void setPlayDuration(qint32 playDuration);
     void setFollows(qml_cond* follows);
     void setPrecedes(qml_cond* precedes);
+    void setFollows(qml_sync* follows);
+    void setPrecedes(qml_sync* precedes);
+    void setFollows(QObject* follows);
+    void setPrecedes(QObject* precedes);
     void setSpeed(double speed);
 
     void play();

@@ -79,7 +79,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
+        x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
       }
     }
 
@@ -426,7 +426,7 @@ void remote::bind(remote* x, t_symbol* address)
   std::lock_guard<std::mutex> lock(x->bindMutex);
   x->m_name = address;
   x->update_path(x->m_name->s_name);
-  x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }

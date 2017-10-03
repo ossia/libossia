@@ -44,16 +44,10 @@ expression_ptr make_expression(const QQmlScriptString& script, QObject* obj)
 }
 void qml_cond::setup()
 {
-  if(!m_sync)
-    return;
-  auto ts = m_sync->sync();
-  if(!ts)
+  if(!m_impl)
     return;
 
-  m_impl = std::make_shared<ossia::time_event>(
-             [] (ossia::time_event::status) {},
-             *ts,
-             make_expression(m_expr, this));
+  m_impl->set_expression(make_expression(m_expr, this));
 }
 
 void qml_cond::setExpr(QQmlScriptString expr)
@@ -71,6 +65,18 @@ void qml_cond::setSync(qml_sync* sync)
     return;
 
   m_sync = sync;
+
+  if(auto ts = m_sync->sync())
+  {
+    m_impl = std::make_shared<ossia::time_event>(
+               [] (ossia::time_event::status) {},
+               *ts,
+               make_expression(m_expr, this));
+  }
+  else
+  {
+    m_impl.reset();
+  }
   emit syncChanged(m_sync);
 }
 

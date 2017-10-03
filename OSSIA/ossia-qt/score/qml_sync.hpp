@@ -3,6 +3,7 @@
 #include <QQmlExpression>
 #include <QQmlScriptString>
 #include <QQmlListProperty>
+#include <ossia-qt/score/qml_cond.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 namespace ossia
 {
@@ -19,6 +20,7 @@ class qml_sync : public QQuickItem
     ~qml_sync() override;
 
     QQmlScriptString expr() const;
+    qml_cond* defaultCond();
 
     void registerCond(qml_cond*);
     void unregisterCond(qml_cond*);
@@ -36,6 +38,7 @@ class qml_sync : public QQuickItem
     void reset();
     QQmlScriptString m_expr;
     std::shared_ptr<ossia::time_sync> m_impl;
+    qml_cond m_default;
     tsl::hopscotch_set<qml_cond*> m_conds;
 };
 }

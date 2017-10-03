@@ -1,5 +1,4 @@
 #include "qml_sync.hpp"
-#include <ossia-qt/score/qml_cond.hpp>
 
 namespace ossia
 {
@@ -8,6 +7,7 @@ namespace qt
 
 qml_sync::qml_sync(QQuickItem* parent):
   QQuickItem{parent}
+, m_default{this}
 {
   m_impl = std::make_shared<ossia::time_sync>();
   connect(this, &QQuickItem::parentChanged,
@@ -23,6 +23,11 @@ qml_sync::~qml_sync()
 QQmlScriptString qml_sync::expr() const
 {
   return m_expr;
+}
+
+qml_cond* qml_sync::defaultCond()
+{
+  return &m_default;
 }
 
 void qml_sync::setup()

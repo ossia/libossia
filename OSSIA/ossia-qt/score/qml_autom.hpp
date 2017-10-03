@@ -34,22 +34,27 @@ class qml_process : public QQuickItem
 class qml_breakpoint : public QQuickItem
 {
     Q_OBJECT
+    Q_PROPERTY(QEasingCurve::Type type READ type WRITE setType NOTIFY typeChanged)
   public: using QQuickItem::QQuickItem;
-};
-
-class qml_segment : public QQuickItem
-{
-    Q_OBJECT
-  public: using QQuickItem::QQuickItem;
-
     std::function<float(double,float,float)> segment();
+
+    QEasingCurve::Type type() const { return m_type; }
+
+  signals:
+    void typeChanged(QEasingCurve::Type);
+
+  public slots:
+    void setType(QEasingCurve::Type t) { if(m_type != t) { m_type = t; emit typeChanged(t); } }
+
+  private:
+    QEasingCurve::Type m_type{QEasingCurve::Linear};
 };
 
 class qml_autom : public qml_process
 {
     Q_OBJECT
 
-    Q_PROPERTY(qml_node_base* target READ target WRITE setTarget NOTIFY targetChanged)
+    Q_PROPERTY(QVariant target READ target WRITE setTarget NOTIFY targetChanged)
     Q_PROPERTY(double xMin READ xMin WRITE setXMin NOTIFY xMinChanged)
     Q_PROPERTY(double xMax READ xMax WRITE setXMax NOTIFY xMaxChanged)
     Q_PROPERTY(double yMin READ yMin WRITE setYMin NOTIFY yMinChanged)
@@ -59,21 +64,21 @@ class qml_autom : public qml_process
     ~qml_autom() override;
     void setup() override;
 
-    qml_node_base* target() const;
+    QVariant target() const;
     double xMin() const;
     double xMax() const;
     double yMin() const;
     double yMax() const;
     std::shared_ptr<ossia::time_process> process() const override;
   public slots:
-    void setTarget(qml_node_base* target);
+    void setTarget(QVariant target);
     void setXMin(double xMin);
     void setXMax(double xMax);
     void setYMin(double yMin);
     void setYMax(double yMax);
 
   signals:
-    void targetChanged(qml_node_base* target);
+    void targetChanged(QVariant target);
     void xMinChanged(double xMin);
     void xMaxChanged(double xMax);
     void yMinChanged(double yMin);
@@ -82,10 +87,11 @@ class qml_autom : public qml_process
   private:
     void reset_impl() override;
     std::shared_ptr<ossia::automation> m_impl;
-    qml_node_base* m_target;
-    double m_xMin{};
+    qml_node_base* m_target{};
+    ossia::net::node_base* m_targetNode{};
+    double m_xMin{0.};
     double m_xMax{1.};
-    double m_yMin{};
+    double m_yMin{0.};
     double m_yMax{1.};
 };
 }

@@ -1,8 +1,11 @@
 #include "qml_autom.hpp"
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia-qt/device/qml_device.hpp>
 
 
 namespace ossia
@@ -65,44 +68,30 @@ qml_autom::~qml_autom()
 
 void qml_autom::setup()
 {
-  if(!m_target)
+  if(!m_targetNode)
     return;
 
-  auto n = m_target->ossiaNode();
-  if(!n)
-    return;
-
-  auto p = n->get_parameter();
+  auto p = m_targetNode->get_parameter();
   if(!p)
     return;
 
   auto curve = std::make_shared<ossia::curve<double, float>>();
   //curve->set_scale_bounds(0, 1, 1);
   const auto items = childItems();
+  curve->set_x0(m_xMin);
+  curve->set_y0(m_yMin);
   if(items.empty())
   {
-    curve->set_x0(0.);
-    curve->set_y0(m_yMin);
-    curve->add_point(ossia::curve_segment_linear<float>{}, 1.0, m_yMax);
+    curve->add_point(ossia::curve_segment_linear<float>{}, m_xMax, m_yMax);
   }
-  else if(items.size() == 1)
+  else
   {
-    if(auto cd = qobject_cast<qml_segment*>(items[0]))
+    for(auto cld : childItems())
     {
-      curve->set_x0(0.);
-      curve->set_y0(m_yMin);
-      curve->add_point(cd->segment(), 1.0, m_yMax);
-    }
-  }
-  for(auto cld : childItems())
-  {
-    if(auto bp = qobject_cast<qml_breakpoint*>(cld))
-    {
-
-    }
-    else if(auto cd = qobject_cast<qml_segment*>(cld))
-    {
-
+      if(auto bp = qobject_cast<qml_breakpoint*>(cld))
+      {
+        curve->add_point(bp->segment(), bp->x(), bp->y());
+      }
     }
   }
 
@@ -110,9 +99,9 @@ void qml_autom::setup()
   m_impl->set_destination(*p);
 }
 
-qml_node_base*qml_autom::target() const
+QVariant qml_autom::target() const
 {
-  return m_target;
+  return QVariant::fromValue(m_target);
 }
 
 double qml_autom::xMin() const
@@ -140,13 +129,42 @@ std::shared_ptr<time_process> qml_autom::process() const
   return m_impl;
 }
 
-void qml_autom::setTarget(qml_node_base* target)
+void qml_autom::setTarget(QVariant var)
 {
-  if (m_target == target)
-    return;
+  if(var.canConvert<qt::qml_node_base*>())
+  {
+    auto target = var.value<qt::qml_node_base*>();
+    if (m_target == target)
+      return;
 
-  m_target = target;
-  emit targetChanged(m_target);
+    m_target = target;
+    m_targetNode = m_target->ossiaNode();
+    emit targetChanged(QVariant::fromValue(m_target));
+  }
+  else if(var.canConvert<QString>())
+  {
+    const auto addr = var.toString().toStdString();
+    ossia::net::address_scope scope = ossia::net::get_address_scope(addr);
+    switch(scope)
+    {
+      case net::address_scope::absolute:
+      {
+        auto& root = qml_singleton_device::instance().device().get_root_node();
+
+        auto node = ossia::net::find_node(root, addr);
+        if(node && node->get_parameter())
+        {
+          m_target = nullptr;
+          m_targetNode = node;
+        }
+        break;
+      }
+      case net::address_scope::relative:
+      case net::address_scope::global:
+        // TODO
+        break;
+    }
+  }
 }
 
 void qml_autom::setXMin(double xMin)
@@ -190,8 +208,124 @@ void qml_autom::reset_impl()
 
 }
 
-std::function<float (double, float, float)> qml_segment::segment()
+std::function<float (double, float, float)> qml_breakpoint::segment()
 {
+  switch(m_type)
+  {
+    case QEasingCurve::Linear:
+      return curve_segment_linear<float>();
+      break;
+
+    case QEasingCurve::InQuad:
+      return ossia::curve_segment_ease<float, easing::quadraticIn>{};
+    case QEasingCurve::OutQuad:
+      return ossia::curve_segment_ease<float, easing::quadraticOut>{};
+    case QEasingCurve::InOutQuad:
+      return ossia::curve_segment_ease<float, easing::quadraticInOut>{};
+    case QEasingCurve::OutInQuad:
+      //TODO return ossia::curve_segment_ease<float, easing::quadraticOutIn>{};
+      break;
+
+    case QEasingCurve::InCubic:
+      return ossia::curve_segment_ease<float, easing::cubicIn>{};
+    case QEasingCurve::OutCubic:
+      return ossia::curve_segment_ease<float, easing::cubicOut>{};
+    case QEasingCurve::InOutCubic:
+      return ossia::curve_segment_ease<float, easing::cubicInOut>{};
+    case QEasingCurve::OutInCubic:
+      //TODO return ossia::curve_segment_ease<float, easing::cubicOutIn>{};
+      break;
+
+    case QEasingCurve::InQuart:
+      return ossia::curve_segment_ease<float, easing::quarticIn>{};
+    case QEasingCurve::OutQuart:
+      return ossia::curve_segment_ease<float, easing::quarticOut>{};
+    case QEasingCurve::InOutQuart:
+      return ossia::curve_segment_ease<float, easing::quarticInOut>{};
+    case QEasingCurve::OutInQuart:
+      //TODO return ossia::curve_segment_ease<float, easing::quarticOutIn>{};
+      break;
+
+    case QEasingCurve::InQuint:
+      return ossia::curve_segment_ease<float, easing::quinticIn>{};
+    case QEasingCurve::OutQuint:
+      return ossia::curve_segment_ease<float, easing::quinticOut>{};
+    case QEasingCurve::InOutQuint:
+      return ossia::curve_segment_ease<float, easing::quinticInOut>{};
+    case QEasingCurve::OutInQuint:
+      //TODO return ossia::curve_segment_ease<float, easing::quinticOutIn>{};
+      break;
+
+    case QEasingCurve::InSine:
+      return ossia::curve_segment_ease<float, easing::sineIn>{};
+    case QEasingCurve::OutSine:
+      return ossia::curve_segment_ease<float, easing::sineOut>{};
+    case QEasingCurve::InOutSine:
+      return ossia::curve_segment_ease<float, easing::sineInOut>{};
+    case QEasingCurve::OutInSine:
+      //TODO return ossia::curve_segment_ease<float, easing::sineOutIn>{};
+      break;
+
+    case QEasingCurve::InExpo:
+      return ossia::curve_segment_ease<float, easing::exponentialIn>{};
+    case QEasingCurve::OutExpo:
+      return ossia::curve_segment_ease<float, easing::exponentialOut>{};
+    case QEasingCurve::InOutExpo:
+      return ossia::curve_segment_ease<float, easing::exponentialInOut>{};
+    case QEasingCurve::OutInExpo:
+      //TODO return ossia::curve_segment_ease<float, easing::exponentialOutIn>{};
+      break;
+
+    case QEasingCurve::InCirc:
+      return ossia::curve_segment_ease<float, easing::circularIn>{};
+    case QEasingCurve::OutCirc:
+      return ossia::curve_segment_ease<float, easing::circularOut>{};
+    case QEasingCurve::InOutCirc:
+      return ossia::curve_segment_ease<float, easing::circularInOut>{};
+    case QEasingCurve::OutInCirc:
+      //TODO return ossia::curve_segment_ease<float, easing::circularOutIn>{};
+      break;
+
+    case QEasingCurve::InElastic:
+      return ossia::curve_segment_ease<float, easing::elasticIn>{};
+    case QEasingCurve::OutElastic:
+      return ossia::curve_segment_ease<float, easing::elasticOut>{};
+    case QEasingCurve::InOutElastic:
+      return ossia::curve_segment_ease<float, easing::elasticInOut>{};
+    case QEasingCurve::OutInElastic:
+      //TODO return ossia::curve_segment_ease<float, easing::elasticOutIn>{};
+      break;
+
+    case QEasingCurve::InBack:
+      return ossia::curve_segment_ease<float, easing::backIn>{};
+    case QEasingCurve::OutBack:
+      return ossia::curve_segment_ease<float, easing::backOut>{};
+    case QEasingCurve::InOutBack:
+      return ossia::curve_segment_ease<float, easing::backInOut>{};
+    case QEasingCurve::OutInBack:
+      //TODO return ossia::curve_segment_ease<float, easing::backOutIn>{};
+      break;
+
+    case QEasingCurve::InBounce:
+      return ossia::curve_segment_ease<float, easing::bounceIn>{};
+    case QEasingCurve::OutBounce:
+      return ossia::curve_segment_ease<float, easing::bounceOut>{};
+    case QEasingCurve::InOutBounce:
+      return ossia::curve_segment_ease<float, easing::bounceInOut>{};
+    case QEasingCurve::OutInBounce:
+      //TODO return ossia::curve_segment_ease<float, easing::bounceOutIn>{};
+      break;
+
+    case QEasingCurve::InCurve:
+    case QEasingCurve::OutCurve:
+    case QEasingCurve::SineCurve:
+    case QEasingCurve::CosineCurve:
+    case QEasingCurve::BezierSpline:
+    case QEasingCurve::TCBSpline:
+    case QEasingCurve::Custom:
+    case QEasingCurve::NCurveTypes:
+      break;
+  }
   return curve_segment_linear<float>();
 }
 
