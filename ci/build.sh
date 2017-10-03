@@ -11,7 +11,7 @@ case "$TRAVIS_OS_NAME" in
 esac
 export CTEST_OUTPUT_ON_FAILURE=1
 
-tar -xzf ossia-src-unix.tar.gz .
+tar -czf ossia-src-unix.tar.gz .
 
 mkdir build
 cd build
