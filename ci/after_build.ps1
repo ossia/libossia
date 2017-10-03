@@ -78,9 +78,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   appveyor DownloadFile https://raw.githubusercontent.com/pure-data/deken/master/developer/deken
 
-  Get-ChildItem -Recurse C:\MinGW\msys\1.0\
+  Get-ChildItem -Recurse C:\msys64
 
-  C:\MinGW\msys\1.0\bin\sh ./deken upload -v test ossia
+  C:\msys64\2.0\bin\sh ./deken upload -v test ossia
   sh ./deken upload -v test ossia
   # C:\cygwin\bin\bash ./deken upload -v test ossia
 
