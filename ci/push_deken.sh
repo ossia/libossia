@@ -23,11 +23,11 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   VERSION=v0.0-test3
 
-  mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz './ossia-v${VERSION}-(Sources)-externals.tgz'
+  mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
 
   #if [[ "$TRAVIS_TAG" != ""]]; then
     ~/bin/deken upload -v $VERSION --no-source-error ossia
-    ~/bin/deken upload "./ossia-v${VERSION}-(Sources)-externals.tgz"
+    ~/bin/deken upload "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
   # else
     # ~/bin/deken upload -v $TRAVIS_TAG ossia
   fi
