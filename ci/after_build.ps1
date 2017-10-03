@@ -82,8 +82,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   Push-AppveyorArtifact msys64tree.log
 
 
-  C:\msys64\2.0\bin\sh ./deken upload -v test ossia
-  sh ./deken upload -v test ossia
+  cd C:\msys64\usr\bin
+  C:\msys64\usr\bin\bash.exe ./deken upload -v test ossia
+
   # C:\cygwin\bin\bash ./deken upload -v test ossia
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
