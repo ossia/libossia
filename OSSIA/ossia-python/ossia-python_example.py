@@ -71,7 +71,7 @@ char_node.default_value = chr(69)
 string_node = local_device.add_node("/test/misc/string")
 string_parameter = string_node.create_parameter(ossia.ValueType.String)
 string_parameter.value = "hello world !"
-string_node.default_value = ['init value']
+string_node.default_value = "init value"
 ### TODO : string_parameter.make_domain(['once', 'loop', 'ping-pong'])
 #string_parameter.apply_domain()
 
@@ -144,13 +144,12 @@ def iterate_on_children(node):
     print('-------------------------------------')
     if child.parameter:
       print('PARAMETER -> ' + str(child))
-      print(str(child.parameter))
+      print(str(child.parameter.value))
       print(str(child.parameter.value_type))
       print(str(child.parameter.access_mode))
       print(str(child.parameter.repetition_filter))
       print('default_value : ' + str(child.default_value))
       print('callbacks : ' + str(child.parameter.callback_count))
-      # displaying the domain bounds for the float parameter crashes ... ???
       if child.parameter.have_domain():
         print('--- -domain- ---')
         print('min : ' + str(child.parameter.domain.min) + ' / max : ' + str(child.parameter.domain.max), str(child.parameter.bounding_mode))
@@ -159,7 +158,7 @@ def iterate_on_children(node):
     else:
       print()
       print('\nNODE -> ' + str(child))
-            #print(getattr(float_parameter, prop))
+
     iterate_on_children(child)
 
 
@@ -191,7 +190,7 @@ remote_bool_node = remote_osc_device.add_node("/test/special/bool")
 remote_bool_parameter = remote_bool_node.create_parameter(ossia.ValueType.Bool)
 remote_bool_parameter.access_mode = ossia.AccessMode.Get
 remote_bool_parameter.value = True
-### TODO : remote_bool_parameter.defaultvalue = True
+remote_bool_node.default_value = True
 
 # learn namespace from message sent by the remote OSC device
 remote_osc_device.learning = True
