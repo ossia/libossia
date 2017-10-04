@@ -2,7 +2,7 @@
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
-if [[ "$BUILD_TYPE" == *Pd* ]]; then
+if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != ""]]; then
 
   mkdir -p ~/bin
   curl https://raw.githubusercontent.com/pure-data/deken/master/developer/deken > ~/bin/deken
@@ -21,15 +21,11 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
 
 
-  VERSION=v0.0-test3
+  VERSION=${TRAVIS_TAG}
 
   mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
 
-  #if [[ "$TRAVIS_TAG" != ""]]; then
-    ~/bin/deken upload -v $VERSION --no-source-error ossia
-    ~/bin/deken upload "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
-  # else
-    # ~/bin/deken upload -v $TRAVIS_TAG ossia
+  ~/bin/deken upload -v $VERSION --no-source-error ossia
+  ~/bin/deken upload "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
   fi
 fi
-
