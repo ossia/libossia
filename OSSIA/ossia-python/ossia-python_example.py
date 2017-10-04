@@ -38,7 +38,6 @@ bool_parameter = bool_node.create_parameter(ossia.ValueType.Bool)
 bool_parameter.access_mode = ossia.AccessMode.Get
 bool_parameter.value = True
 bool_node.default_value = True
-print('TEST : ' + str(bool_node.default_value))
 
 # create a node, create an integer parameter and initialize it
 int_node = local_device.add_node("/test/numeric/int")
@@ -50,7 +49,7 @@ int_parameter.value = 9
 int_parameter.make_domain(-10, 10)
 int_parameter.apply_domain()
 int_parameter.repetition_filter = ossia.RepetitionFilter.Off
-### TODO : int_node.default_value = -3
+int_node.default_value = -3
 
 # create a node, create a float parameter, set its properties and initialize it
 float_node = local_device.add_node("/test/numeric/float")
@@ -60,19 +59,19 @@ float_parameter.bounding_mode = ossia.BoundingMode.Fold
 float_parameter.value = 1.5
 float_parameter.make_domain(-2.0, 2.0)
 float_parameter.apply_domain()
-### TODO : float_node.default_value = 0.123456789
+float_node.default_value = 0.123456789
 
 # create a node, create a char parameter and initialize it
 char_node = local_device.add_node("/test/misc/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
 char_parameter.value = 'a'
-### TODO : char_node.default_value = chr(69)
+char_node.default_value = chr(69)
 
 # create a node, create a string parameter and initialize it
 string_node = local_device.add_node("/test/misc/string")
 string_parameter = string_node.create_parameter(ossia.ValueType.String)
 string_parameter.value = "hello world !"
-### TODO : string_node.default_value = ['init value']
+string_node.default_value = ['init value']
 ### TODO : string_parameter.make_domain(['once', 'loop', 'ping-pong'])
 #string_parameter.apply_domain()
 
@@ -80,7 +79,7 @@ string_parameter.value = "hello world !"
 vec3f_node = local_device.add_node("/test/numeric/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
 vec3f_parameter.value = [0, 146, 207]
-### TODO : vec3f_node.defaultvalue = [0, 146, 207]
+vec3f_node.default_value = [0, 146, 207]
 ### TODO : vec3f_parameter.make_domain([0, 255])
 #vec3f_parameter.apply_domain()
 
@@ -88,7 +87,7 @@ vec3f_parameter.value = [0, 146, 207]
 list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
 list_parameter.value = [44100, "test.wav", 0.9]
-### TODO : list_node.default_value = [44100, "ossia.wav", 0.9]
+list_node.default_value = [44100, "ossia.wav", 0.9]
 
 # attach a callback function to the boolean parameter
 def bool_value_callback(v):
