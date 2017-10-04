@@ -29,7 +29,7 @@ qml_sync* qml_cond::sync() const
   return m_sync;
 }
 
-expression_ptr make_expression(const QQmlScriptString& script, QObject* obj)
+expression_ptr make_expression(const QQmlScriptString& script, QObject* obj, expression_ptr deflt)
 {
   if(!script.isEmpty() && !script.isNullLiteral() && !script.isUndefinedLiteral())
   {
@@ -39,7 +39,7 @@ expression_ptr make_expression(const QQmlScriptString& script, QObject* obj)
   }
   else
   {
-    return ossia::expressions::make_expression_true();
+    return deflt; //return ossia::expressions::make_expression_true();
   }
 }
 void qml_cond::setup()
@@ -47,7 +47,7 @@ void qml_cond::setup()
   if(!m_impl)
     return;
 
-  m_impl->set_expression(make_expression(m_expr, this));
+  m_impl->set_expression(make_expression(m_expr, this, ossia::expressions::make_expression_true()));
 }
 
 void qml_cond::setExpr(QQmlScriptString expr)
@@ -71,7 +71,7 @@ void qml_cond::setSync(qml_sync* sync)
     m_impl = std::make_shared<ossia::time_event>(
                [] (ossia::time_event::status) {},
                *ts,
-               make_expression(m_expr, this));
+               make_expression(m_expr, this, ossia::expressions::make_expression_true()));
   }
   else
   {

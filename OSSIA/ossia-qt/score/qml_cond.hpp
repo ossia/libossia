@@ -36,7 +36,7 @@ class qml_expr final : public ossia::expressions::expression_generic_base
 };
 
 
-ossia::expression_ptr make_expression(const QQmlScriptString& script, QObject* obj);
+ossia::expression_ptr make_expression(const QQmlScriptString& script, QObject* obj, expression_ptr deflt);
 class qml_cond : public QQuickItem
 {
     Q_OBJECT
