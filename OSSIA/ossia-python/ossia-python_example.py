@@ -78,8 +78,8 @@ string_node.default_value = "init value"
 # create a node, create a 3 floats vector parameter and initialize it
 vec3f_node = local_device.add_node("/test/numeric/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
-vec3f_parameter.value = [0, 146, 207]
-vec3f_node.default_value = [0, 146, 207]
+vec3f_parameter.value = [0, 146.5, 207]
+vec3f_node.default_value = [0, 146.5, 207]
 ### TODO : vec3f_parameter.make_domain([0, 255])
 #vec3f_parameter.apply_domain()
 
@@ -87,7 +87,7 @@ vec3f_node.default_value = [0, 146, 207]
 list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
 list_parameter.value = [44100, "test.wav", 0.9]
-list_node.default_value = [44100, "ossia.wav", 0.9]
+list_node.default_value = [44100, "ossia.wav", 0.9]  
 
 # attach a callback function to the boolean parameter
 def bool_value_callback(v):
