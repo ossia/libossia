@@ -71,13 +71,13 @@ ossia::value from_python_value(PyObject* source)
   PyObject *tmp = nullptr;
   if (PyNumber_Check(source))
   {
-    if (PyLong_Check(source))
+    if (PyBool_Check(source))
+      returned_value = (source == Py_True);
+    else if (PyLong_Check(source))
       returned_value = (int)PyLong_AsLong(source);
     else if (PyFloat_Check(source))
       returned_value = (float)PyFloat_AsDouble(source);
   }
-  else if (PyBool_Check(source))
-    returned_value = (source == Py_True);
 #if PY_MAJOR_VERSION >= 3
   else if (PyUnicode_Check(source))
     returned_value = (std::string)PyUnicode_AsUTF8(source);
