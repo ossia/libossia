@@ -129,8 +129,23 @@ std::shared_ptr<time_process> qml_autom::process() const
   return m_impl;
 }
 
+void qml_autom::on_node_deleted(const ossia::net::node_base& n) {
+  m_targetNode = nullptr;
+  qDebug( ) << "deleted: " << n.get_name().c_str();
+}
+
 void qml_autom::setTarget(QVariant var)
 {
+  qDebug() << var;
+  if(m_target)
+  {
+    disconnect(m_death);
+  }
+  if(m_targetNode)
+  {
+    m_targetNode->about_to_be_deleted.disconnect<qml_autom, &qml_autom::on_node_deleted>(*this);
+  }
+
   if(var.canConvert<qt::qml_node_base*>())
   {
     auto target = var.value<qt::qml_node_base*>();
@@ -139,6 +154,11 @@ void qml_autom::setTarget(QVariant var)
 
     m_target = target;
     m_targetNode = m_target->ossiaNode();
+    m_death = connect(m_target, &QObject::destroyed,
+            this, [=] {
+      m_target = nullptr;
+      m_targetNode = nullptr;
+    });
     emit targetChanged(QVariant::fromValue(m_target));
   }
   else if(var.canConvert<QString>())
@@ -164,6 +184,16 @@ void qml_autom::setTarget(QVariant var)
         // TODO
         break;
     }
+  }
+  else
+  {
+    m_target = nullptr;
+    m_targetNode = nullptr;
+  }
+
+  if(m_targetNode)
+  {
+    m_targetNode->about_to_be_deleted.connect<qml_autom, &qml_autom::on_node_deleted>(*this);
   }
 }
 

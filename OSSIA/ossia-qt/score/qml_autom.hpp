@@ -70,6 +70,7 @@ class qml_autom : public qml_process
     double yMin() const;
     double yMax() const;
     std::shared_ptr<ossia::time_process> process() const override;
+    void on_node_deleted(const ossia::net::node_base &n);
   public slots:
     void setTarget(QVariant target);
     void setXMin(double xMin);
@@ -93,6 +94,7 @@ class qml_autom : public qml_process
     double m_xMax{1.};
     double m_yMin{0.};
     double m_yMax{1.};
+    QMetaObject::Connection m_death;
 };
 }
 }
