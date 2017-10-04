@@ -82,8 +82,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   Push-AppveyorArtifact msys64tree.log
 
 
-  cd C:\msys64\usr\bin
-  C:\msys64\usr\bin\bash.exe  C:\projects\libossia\deken upload -v test ossia
+  SET "PATH=C:\msys64\MINGW64\bin;C:\msys64\usr\bin;%PATH%"
+  bash -lc "deken upload -v test ossia"
+  # C:\msys64\usr\bin\bash.exe C:\projects\libossia\deken upload -v test ossia
 
   # C:\cygwin\bin\bash ./deken upload -v test ossia
 
