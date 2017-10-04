@@ -70,7 +70,6 @@ class qml_autom : public qml_process
     double yMin() const;
     double yMax() const;
     std::shared_ptr<ossia::time_process> process() const override;
-    void on_node_deleted(const ossia::net::node_base &n);
   public slots:
     void setTarget(QVariant target);
     void setXMin(double xMin);
@@ -88,8 +87,7 @@ class qml_autom : public qml_process
   private:
     void reset_impl() override;
     std::shared_ptr<ossia::automation> m_impl;
-    qml_node_base* m_target{};
-    ossia::net::node_base* m_targetNode{};
+    QVariant m_target;
     double m_xMin{0.};
     double m_xMax{1.};
     double m_yMin{0.};

@@ -68,10 +68,44 @@ qml_autom::~qml_autom()
 
 void qml_autom::setup()
 {
-  if(!m_targetNode)
-    return;
+  ossia::net::node_base* targetNode{};
 
-  auto p = m_targetNode->get_parameter();
+  if(m_target.canConvert<qt::qml_node_base*>())
+  {
+    auto target = m_target.value<qt::qml_node_base*>();
+    targetNode = target->ossiaNode();
+
+    emit targetChanged(QVariant::fromValue(target));
+  }
+  else if(m_target.canConvert<QString>())
+  {
+    const auto addr = m_target.toString().toStdString();
+    ossia::net::address_scope scope = ossia::net::get_address_scope(addr);
+    switch(scope)
+    {
+      case net::address_scope::absolute:
+      {
+        auto& root = qml_singleton_device::instance().device().get_root_node();
+
+        auto node = ossia::net::find_node(root, addr);
+        if(node && node->get_parameter())
+        {
+          targetNode = node;
+        }
+        break;
+      }
+      case net::address_scope::relative:
+      case net::address_scope::global:
+        // TODO
+        break;
+    }
+  }
+  if(!targetNode) {
+    qDebug() << m_target;
+    return;
+  }
+
+  auto p = targetNode->get_parameter();
   if(!p)
     return;
 
@@ -129,71 +163,12 @@ std::shared_ptr<time_process> qml_autom::process() const
   return m_impl;
 }
 
-void qml_autom::on_node_deleted(const ossia::net::node_base& n) {
-  m_targetNode = nullptr;
-  qDebug( ) << "deleted: " << n.get_name().c_str();
-}
-
 void qml_autom::setTarget(QVariant var)
 {
-  qDebug() << var;
-  if(m_target)
+  if(m_target != var)
   {
-    disconnect(m_death);
-  }
-  if(m_targetNode)
-  {
-    m_targetNode->about_to_be_deleted.disconnect<qml_autom, &qml_autom::on_node_deleted>(*this);
-  }
-
-  if(var.canConvert<qt::qml_node_base*>())
-  {
-    auto target = var.value<qt::qml_node_base*>();
-    if (m_target == target)
-      return;
-
-    m_target = target;
-    m_targetNode = m_target->ossiaNode();
-    m_death = connect(m_target, &QObject::destroyed,
-            this, [=] {
-      m_target = nullptr;
-      m_targetNode = nullptr;
-    });
-    emit targetChanged(QVariant::fromValue(m_target));
-  }
-  else if(var.canConvert<QString>())
-  {
-    const auto addr = var.toString().toStdString();
-    ossia::net::address_scope scope = ossia::net::get_address_scope(addr);
-    switch(scope)
-    {
-      case net::address_scope::absolute:
-      {
-        auto& root = qml_singleton_device::instance().device().get_root_node();
-
-        auto node = ossia::net::find_node(root, addr);
-        if(node && node->get_parameter())
-        {
-          m_target = nullptr;
-          m_targetNode = node;
-        }
-        break;
-      }
-      case net::address_scope::relative:
-      case net::address_scope::global:
-        // TODO
-        break;
-    }
-  }
-  else
-  {
-    m_target = nullptr;
-    m_targetNode = nullptr;
-  }
-
-  if(m_targetNode)
-  {
-    m_targetNode->about_to_be_deleted.connect<qml_autom, &qml_autom::on_node_deleted>(*this);
+    m_target = var;
+    emit targetChanged(var);
   }
 }
 
