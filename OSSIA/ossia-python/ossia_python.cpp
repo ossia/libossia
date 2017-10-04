@@ -26,7 +26,7 @@ namespace pybind11
 #include <ossia/detail/logger.hpp>
 #include <spdlog/spdlog.h>
 #include <ossia/network/base/message_queue.hpp>
-#include <spdlog/spdlog.h>
+#include <ossia/network/base/node_attributes.hpp>
 
 #include <Python.h>
 
@@ -60,7 +60,7 @@ struct to_python_value
 
   py::object operator()()
   {
-    throw std::runtime_error("to_python_value: bad type");
+    return py::none{};
   }
 };
 
@@ -545,6 +545,15 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "parameter", &ossia::net::node_base::get_parameter,
           py::return_value_policy::reference)
+      .def_property(
+          "default_value",
+          [](ossia::net::node_base& node) -> py::object {
+            ossia::value empty{};
+            return ossia::net::get_default_value(node).value_or(empty).apply(ossia::python::to_python_value{});
+          },
+          [](ossia::net::node_base& node, const py::object& v) {
+            ossia::net::set_default_value(node, ossia::python::from_python_value(v.ptr()));
+          })
       .def(
           "add_node",
           [](ossia::net::node_base& node,
