@@ -83,7 +83,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 
   cd C:\msys64\usr\bin
-  C:\msys64\usr\bin\bash.exe ./deken upload -v test ossia
+  C:\msys64\usr\bin\bash.exe  C:\projects\libossia\deken upload -v test ossia
 
   # C:\cygwin\bin\bash ./deken upload -v test ossia
 
