@@ -8,11 +8,7 @@ namespace qt
 qml_loop::qml_loop(QQuickItem* parent)
   : qml_process{parent}
 {
-  m_startSync = new qml_sync{this};
-  m_startCond = new qml_cond{this};
   m_interval = new qml_interval{this};
-  m_endCond = new qml_cond{this};
-  m_endSync = new qml_sync{this};
   reset();
 }
 
@@ -24,26 +20,6 @@ qml_loop::~qml_loop()
 qml_interval* qml_loop::interval() const
 {
   return m_interval;
-}
-
-qml_cond* qml_loop::startCond() const
-{
-  return m_startCond;
-}
-
-qml_cond* qml_loop::endCond() const
-{
-  return m_endCond;
-}
-
-qml_sync* qml_loop::startSync() const
-{
-  return m_startSync;
-}
-
-qml_sync* qml_loop::endSync() const
-{
-  return m_endSync;
 }
 
 void qml_loop::setup()
@@ -59,15 +35,10 @@ void qml_loop::setup()
     m_interval->setPlayDuration(reverseTime(tv));
   });
 
-  m_startSync->setSync(m_impl->get_start_timesync());
-  m_startCond->setCond(m_impl->get_start_timesync()->get_time_events()[0]);
-  m_endSync->setSync(m_impl->get_end_timesync());
-  m_endCond->setCond(m_impl->get_end_timesync()->get_time_events()[0]);
-
-  m_startSync->setup();
-  m_endSync->setup();
-  m_startCond->setup();
-  m_endCond->setup();
+  m_impl->get_start_timesync()->set_expression(make_expression(m_startTrig, this, ossia::expressions::make_expression_true()));
+  m_impl->get_end_timesync()->set_expression(make_expression(m_endTrig, this, ossia::expressions::make_expression_true()));
+  m_impl->get_start_timesync()->get_time_events()[0]->set_expression(make_expression(m_startCond, this, ossia::expressions::make_expression_true()));
+  m_impl->get_end_timesync()->get_time_events()[0]->set_expression(make_expression(m_endCond, this, ossia::expressions::make_expression_true()));
   m_interval->setup();
 }
 
@@ -75,6 +46,14 @@ std::shared_ptr<time_process> qml_loop::process() const
 {
   return m_impl;
 }
+
+QQmlScriptString qml_loop::startCond() const { return m_startCond; }
+
+QQmlScriptString qml_loop::endCond() const { return m_endCond; }
+
+QQmlScriptString qml_loop::startTrig() const { return m_startTrig; }
+
+QQmlScriptString qml_loop::endTrig() const { return m_endTrig; }
 
 void qml_loop::setInterval(qml_interval* interval)
 {
@@ -85,41 +64,34 @@ void qml_loop::setInterval(qml_interval* interval)
   emit intervalChanged(m_interval);
 }
 
-void qml_loop::setStartCond(qml_cond* startCond)
-{
-  if (m_startCond == startCond)
-    return;
-
-  m_startCond = startCond;
-  emit startCondChanged(m_startCond);
+void qml_loop::setStartCond(QQmlScriptString s) {
+  if(s != m_startCond) {
+    m_startCond = s;
+    emit startCondChanged(s);
+  }
 }
 
-void qml_loop::setEndCond(qml_cond* endCond)
-{
-  if (m_endCond == endCond)
-    return;
-
-  m_endCond = endCond;
-  emit endCondChanged(m_endCond);
+void qml_loop::setEndCond(QQmlScriptString s) {
+  if(s != m_endCond) {
+    m_endCond = s;
+    emit endCondChanged(s);
+  }
 }
 
-void qml_loop::setStartSync(qml_sync* startSync)
-{
-  if (m_startSync == startSync)
-    return;
-
-  m_startSync = startSync;
-  emit startSyncChanged(m_startSync);
+void qml_loop::setStartTrig(QQmlScriptString s) {
+  if(s != m_startTrig) {
+    m_startTrig = s;
+    emit startTrigChanged(s);
+  }
 }
 
-void qml_loop::setEndSync(qml_sync* endSync)
-{
-  if (m_endSync == endSync)
-    return;
-
-  m_endSync = endSync;
-  emit endSyncChanged(m_endSync);
+void qml_loop::setEndTrig(QQmlScriptString s) {
+  if(s != m_endTrig) {
+    m_endTrig = s;
+    emit endTrigChanged(s);
+  }
 }
+
 
 void qml_loop::reset_impl() { }
 

@@ -32,13 +32,18 @@ qml_cond* qml_sync::defaultCond()
 
 void qml_sync::setup()
 {
-  m_impl->set_expression(make_expression(m_expr, this));
+  m_impl->set_expression(make_expression(m_expr, this, ossia::expressions::make_expression_true()));
   for(qml_cond* ev : this->findChildren<qml_cond*>(QString{}, Qt::FindDirectChildrenOnly))
   {
     ev->setSync(this);
     ev->setup();
     if(auto c = ev->cond())
-      m_impl->insert(m_impl->get_time_events().end(), c);
+    {
+      if(!ossia::contains(m_impl->get_time_events(), c))
+      {
+        m_impl->insert(m_impl->get_time_events().end(), c);
+      }
+    }
   }
 }
 
