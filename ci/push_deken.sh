@@ -27,5 +27,4 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != ""]]; then
 
   ~/bin/deken upload -v $VERSION --no-source-error ossia
   ~/bin/deken upload "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
-  fi
 fi
