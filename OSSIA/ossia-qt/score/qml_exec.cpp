@@ -21,7 +21,7 @@ qml_exec* qml_exec::get(QObject* obj)
 
 void qml_exec::submitCommand(std::function<void ()> v)
 {
-  if(m_clock)
+  if(m_timer)
   {
     m_queue.enqueue(std::move(v));
   }
@@ -83,20 +83,20 @@ void qml_exec::play(qml_interval* itvl)
 
 void qml_exec::pause(qml_interval* itvl)
 {
-  if(m_clock && itvl == m_cur)
+  if(m_timer && itvl == m_cur)
   {
-    m_clock->pause();
+    this->killTimer(*m_timer);
     return;
   }
 }
 
 void qml_exec::stop(qml_interval* itvl)
 {
-  if(m_clock)
+  if(m_timer)
   {
-    m_clock->stop();
+    this->killTimer(*m_timer);
   }
-  m_clock.reset();
+  m_timer = ossia::none;
 }
 
 qml_exec::qml_exec()
