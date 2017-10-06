@@ -58,7 +58,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
   for (auto node : _nodes)
   {
-    if (m_addr_scope == address_scope::absolute)
+    if (m_addr_scope == net::address_scope::absolute)
     {
       // get root node
       node = &node->get_device().get_root_node();
@@ -70,7 +70,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
     std::vector<ossia::net::node_base*> nodes{};
 
-    if (m_addr_scope == address_scope::global)
+    if (m_addr_scope == net::address_scope::global)
       nodes = ossia::pd::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*node, name);
@@ -294,7 +294,7 @@ void remote::bind(remote* x, t_symbol* address)
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
   x->update_path(name);
-  x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -318,7 +318,7 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
       t_symbol* address = atom_getsymbol(argv);
       std::string name = replace_brackets(address->s_name);
       x->m_name = gensym(name.c_str());
-      x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
+      x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
     else
     {
