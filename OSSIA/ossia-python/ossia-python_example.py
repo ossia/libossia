@@ -38,6 +38,7 @@ bool_parameter = bool_node.create_parameter(ossia.ValueType.Bool)
 bool_parameter.access_mode = ossia.AccessMode.Get
 bool_parameter.value = True
 bool_node.default_value = True
+bool_node.description = "it could be used to enable/disable an effect"
 
 # create a node, create an integer parameter and initialize it
 int_node = local_device.add_node("/test/numeric/int")
@@ -144,17 +145,24 @@ def iterate_on_children(node):
     print('-------------------------------------')
     if child.parameter:
       print('PARAMETER -> ' + str(child))
-      print(str(child.parameter.value))
-      print(str(child.parameter.value_type))
-      print(str(child.parameter.access_mode))
-      print(str(child.parameter.repetition_filter))
-      print('default_value : ' + str(child.default_value))
-      print('callbacks : ' + str(child.parameter.callback_count))
+
+      # display parameter's attributes
+      print('value : ' + str(child.parameter.value))
+      print('type : ' + str(child.parameter.value_type))
+      print('access mode : ' + str(child.parameter.access_mode))
+      print('repetition filter : ' + str(child.parameter.repetition_filter))
+
       if child.parameter.have_domain():
-        print('--- -domain- ---')
-        print('min : ' + str(child.parameter.domain.min) + ' / max : ' + str(child.parameter.domain.max), str(child.parameter.bounding_mode))
+        print('domain : min = ' + str(child.parameter.domain.min) + ' / max = ' + str(child.parameter.domain.max) + ' / bounding mode = ' + str(child.parameter.bounding_mode))
       else:
-        print('--- -no domain- ---')
+        print('domain :')
+
+      print('callbacks : ' + str(child.parameter.callback_count))
+
+      #display node's attributes
+      print('description : ' + str(child.description))
+      print('default_value : ' + str(child.default_value))
+
     else:
       print()
       print('\nNODE -> ' + str(child))

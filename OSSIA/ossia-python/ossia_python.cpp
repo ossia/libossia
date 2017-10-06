@@ -547,6 +547,23 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "parameter", &ossia::net::node_base::get_parameter,
           py::return_value_policy::reference)
+      .def_property("description", 
+        [](ossia::net::node_base& node) -> ossia::net::description {
+          ossia::net::description empty{};
+          return ossia::net::get_description(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::net::description v) {
+          ossia::net::set_description(node, v);
+        })
+/*      .def_property("tags")
+      .def_property("priority")
+      .def_property("refresh_rate")
+      .def_property("step_size")
+      .def_property_readonly("zombie")
+      .def_property("critical")
+      .def_property("enable")
+      .def_property("hidden")
+      .def_property("muted") */
       .def_property(
           "default_value",
           [](ossia::net::node_base& node) -> py::object {
