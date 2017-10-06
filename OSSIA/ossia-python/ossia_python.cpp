@@ -595,6 +595,22 @@ PYBIND11_MODULE(ossia_python, m)
           [](ossia::net::node_base& node, const py::object& v) {
             ossia::net::set_default_value(node, ossia::python::from_python_value(v.ptr()));
           })
+      .def_property("extended_type", 
+        [](ossia::net::node_base& node) -> ossia::extended_type {
+          ossia::extended_type empty{};
+          return ossia::net::get_extended_type(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::extended_type v) {
+          ossia::net::set_extended_type(node, v);
+        })
+      .def_property("instance_bounds", 
+        [](ossia::net::node_base& node) -> ossia::net::instance_bounds {
+          ossia::net::instance_bounds empty{};
+          return ossia::net::get_instance_bounds(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::net::instance_bounds v) {
+          ossia::net::set_instance_bounds(node, v);
+        })
       .def_property_readonly("zombie", 
         [](ossia::net::node_base& node) -> ossia::net::zombie {
           return ossia::net::get_zombie(node);
@@ -785,6 +801,11 @@ PYBIND11_MODULE(ossia_python, m)
           [](ossia::domain& d, const py::object& v) {
             ossia::set_max(d, ossia::python::from_python_value(v.ptr()));
           });
+
+  py::class_<ossia::net::instance_bounds>(m, "InstanceBounds")
+      .def(py::init<int32_t, int32_t>())
+      .def_readwrite("min", &ossia::net::instance_bounds::min_instances)
+      .def_readwrite("max", &ossia::net::instance_bounds::max_instances);
 
   py::class_<ossia::message_queue>(m, "MessageQueue")
       .def(py::init<ossia_local_device&>())

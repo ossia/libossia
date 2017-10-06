@@ -44,7 +44,7 @@ bool_node.tags = ["example", "numeric"]
 bool_node.default_value = True
 bool_node.priority = 1
 bool_node.refresh_rate = 100
-# more attributes exist : value_step_size, zombie, critical, disabled, hidden, muted
+# more attributes exist : value_step_size, instance_bounds, extended_type, zombie, critical, disabled, hidden, muted
 
 # create a node, create an integer parameter and initialize it
 int_node = local_device.add_node("/test/numeric/int")
@@ -93,9 +93,13 @@ string_parameter.value = "hello world !"
 ### TODO : string_parameter.make_domain(['once', 'loop', 'ping-pong'])
 #string_parameter.apply_domain()
 
+string_node.extended_type = "filepath"
+### TODO : have an enumeration for extended types
+
 string_node.description = "it could be used to setup something"
 string_node.tags = ["example", "misc"]
 string_node.default_value = "init value"
+string_node.instance_bounds = ossia.InstanceBounds(1, 10)
 
 # create a node, create a 3 floats vector parameter and initialize it
 vec3f_node = local_device.add_node("/test/numeric/vec3f")
@@ -188,6 +192,8 @@ def iterate_on_children(node):
       print('priority : ' + str(child.priority))
       print('refresh_rate : ' + str(child.refresh_rate))
       print('value_step_size : ' + str(child.value_step_size))
+      print('instance_bounds : {' + str(child.instance_bounds.min) + ', ' + str(child.instance_bounds.max) + '}')
+      print('extended_type : ' + str(child.extended_type))
       print('zombie : ' + str(child.zombie))
       print('critical : ' + str(child.critical))
       print('disabled : ' + str(child.disabled))
