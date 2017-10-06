@@ -555,17 +555,39 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::description v) {
           ossia::net::set_description(node, v);
         })
-/*      .def_property("tags")
-      .def_property("priority")
-      .def_property("refresh_rate")
-      .def_property("step_size")
-      .def_property_readonly("zombie")
-      .def_property("critical")
-      .def_property("enable")
-      .def_property("hidden")
-      .def_property("muted") */
-      .def_property(
-          "default_value",
+      .def_property("tags", 
+        [](ossia::net::node_base& node) -> ossia::net::tags {
+          ossia::net::tags empty{};
+          return ossia::net::get_tags(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::net::tags v) {
+          ossia::net::set_tags(node, v);
+        })
+      .def_property("priority", 
+        [](ossia::net::node_base& node) -> ossia::net::priority {
+          ossia::net::priority empty{};
+          return ossia::net::get_priority(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::net::priority v) {
+          ossia::net::set_priority(node, v);
+        })
+      .def_property("refresh_rate", 
+        [](ossia::net::node_base& node) -> ossia::net::refresh_rate {
+          ossia::net::refresh_rate empty{};
+          return ossia::net::get_refresh_rate(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::net::refresh_rate v) {
+          ossia::net::set_refresh_rate(node, v);
+        })
+      .def_property("value_step_size", 
+        [](ossia::net::node_base& node) -> ossia::net::value_step_size {
+          ossia::net::value_step_size empty{};
+          return ossia::net::get_value_step_size(node).value_or(empty);
+        },
+        [](ossia::net::node_base& node, const ossia::net::value_step_size v) {
+          ossia::net::set_value_step_size(node, v);
+        })
+      .def_property("default_value",
           [](ossia::net::node_base& node) -> py::object {
             ossia::value empty{};
             return ossia::net::get_default_value(node).value_or(empty).apply(ossia::python::to_python_value{});
@@ -573,15 +595,45 @@ PYBIND11_MODULE(ossia_python, m)
           [](ossia::net::node_base& node, const py::object& v) {
             ossia::net::set_default_value(node, ossia::python::from_python_value(v.ptr()));
           })
-      .def(
-          "add_node",
+      .def_property_readonly("zombie", 
+        [](ossia::net::node_base& node) -> ossia::net::zombie {
+          return ossia::net::get_zombie(node);
+        })
+      .def_property("critical", 
+        [](ossia::net::node_base& node) -> ossia::net::critical {
+          return ossia::net::get_critical(node);
+        },
+        [](ossia::net::node_base& node, const ossia::net::critical v) {
+          ossia::net::set_critical(node, v);
+        })
+      .def_property("disabled", 
+        [](ossia::net::node_base& node) -> ossia::net::disabled {
+          return ossia::net::get_disabled(node);
+        },
+        [](ossia::net::node_base& node, const ossia::net::disabled v) {
+          ossia::net::set_disabled(node, v);
+        })
+      .def_property("hidden", 
+        [](ossia::net::node_base& node) -> ossia::net::hidden {
+          return ossia::net::get_hidden(node);
+        },
+        [](ossia::net::node_base& node, const ossia::net::hidden v) {
+          ossia::net::set_hidden(node, v);
+        })
+      .def_property("muted", 
+        [](ossia::net::node_base& node) -> ossia::net::muted {
+          return ossia::net::get_muted(node);
+        },
+        [](ossia::net::node_base& node, const ossia::net::muted v) {
+          ossia::net::set_muted(node, v);
+        })
+      .def("add_node",
           [](ossia::net::node_base& node,
              const std::string& adrs) -> ossia::net::node_base& {
             return ossia::net::find_or_create_node(node, adrs);
           },
           py::return_value_policy::reference)
-      .def(
-          "create_parameter",
+      .def("create_parameter",
           [](ossia::net::node_base& node, int type) {
             return node.create_parameter((ossia::val_type)type);
           },
