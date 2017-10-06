@@ -94,43 +94,36 @@ list_node.default_value = [44100, "ossia.wav", 0.9]
 def bool_value_callback(v):
   print(v)
 bool_parameter.add_callback(bool_value_callback)
-### TODO : v must be a Bool, not a ossia_python.Value
 
 # attach a callback function to the integer parameter
 def int_value_callback(v):
   print(v)
 int_parameter.add_callback(int_value_callback)
-### TODO : v must be an Int, not a ossia_python.Value
 
 # attach a callback function to the float parameter
 def float_value_callback(v):
   print(v)
 float_parameter.add_callback(float_value_callback)
-### TODO : v must be a Float, not a ossia_python.Value
 
 # attach a callback function to the char parameter
 def char_value_callback(v):
   print(v)
 char_parameter.add_callback(char_value_callback)
-### TODO : v must be a Char, not a ossia_python.Value
 
 # attach a callback function to the string parameter
 def string_value_callback(v):
   print(v)
 string_parameter.add_callback(string_value_callback)
-### TODO : v must be a String, not a ossia_python.Value
 
 # attach a callback function to the 3 floats vector parameter
 def vec3f_value_callback(v):
   print(v)
 vec3f_parameter.add_callback(vec3f_value_callback)
-### TODO : v must be a Tuple, not a ossia_python.Value
 
 # attach a callback function to the list parameter
 def list_value_callback(v):
   print(v)
 list_parameter.add_callback(list_value_callback)
-### TODO : v must be a List, not a ossia_python.Value
 
 
 ### LOCAL DEVICE EXPLORATION
