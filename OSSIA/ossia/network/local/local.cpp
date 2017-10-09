@@ -98,7 +98,13 @@ void multiplex_protocol::stop_expose_to(const protocol_base& p)
   m_protocols.erase(
       ossia::remove_if(
           m_protocols, [&](const auto& ptr) { return ptr.get() == &p; }),
-      m_protocols.end());
+              m_protocols.end());
 }
+
+void ossia::net::multiplex_protocol::clear()
+{
+  m_protocols.clear();
+}
+
 }
 }
