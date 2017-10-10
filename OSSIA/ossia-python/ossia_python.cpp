@@ -76,8 +76,10 @@ ossia::value from_python_value(PyObject* source)
   {
     if (PyBool_Check(source))
       returned_value = (source == Py_True);
+#if PY_MAJOR_VERSION < 3
     else if (PyInt_Check(source))
         returned_value = (int)PyInt_AsLong(source);
+#endif
     else if (PyLong_Check(source))
       returned_value = (int)PyLong_AsLong(source);
     else if (PyFloat_Check(source))
