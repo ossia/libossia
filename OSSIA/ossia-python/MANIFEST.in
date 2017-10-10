@@ -1,0 +1,4 @@
+include versioneer.py
+recursive-include . *.py
+include pyossia/ossia_python.so
+include README.md
