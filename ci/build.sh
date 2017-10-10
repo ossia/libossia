@@ -285,6 +285,8 @@ case "$TRAVIS_OS_NAME" in
 
       $CMAKE_BIN --build . -- -j2
       ls
+      pip3 wheel -ve ../OSSIA/ossia-python/
+      pip3 install pyossia-*.whl
 
       tar -czf $TRAVIS_BUILD_DIR/ossia-python-$PYTHON_VERSION-osx.tar.gz ossia_python.so
 
