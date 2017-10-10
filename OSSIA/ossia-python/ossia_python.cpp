@@ -709,10 +709,17 @@ PYBIND11_MODULE(ossia_python, m)
           })
       .def(
           "make_domain",
-          [](ossia::net::parameter_base& addr, const py::object& min, const py::object& max, const std::vector<py::object>& vals) {
-            addr.set_domain(ossia::make_domain(
-                              ossia::python::from_python_value(min.ptr())
-                            , ossia::python::from_python_value(max.ptr())));//, vals));
+          [](ossia::net::parameter_base& addr, const std::vector<py::object>& values) {
+            auto dom = ossia::init_domain(addr.get_value_type());
+            
+            std::vector<ossia::value> vec;
+            vec.reserve(values.size());
+
+            for (auto& v : values)
+              vec.push_back(ossia::python::from_python_value(v.ptr()));
+
+            ossia::set_values(dom, vec);
+            addr.set_domain(dom);
           })
       .def(
           "apply_domain",

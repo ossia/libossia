@@ -106,8 +106,9 @@ vec3f_node = local_device.add_node("/test/numeric/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
 
 vec3f_parameter.value = [0, 146.5, 207]
-### TODO : vec3f_parameter.make_domain([0, 255])
-#vec3f_parameter.apply_domain()
+vec3f_parameter.bounding_mode = ossia.BoundingMode.Clip
+vec3f_parameter.make_domain([50, 100, 150], [100, 150, 200])
+vec3f_parameter.apply_domain()
 
 vec3f_node.description = "it could be used to setup something"
 vec3f_node.tags = ["example", "numeric", "vector"]
