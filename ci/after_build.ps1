@@ -83,8 +83,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 
   SET "PATH=C:\msys64\MINGW64\bin;C:\msys64\usr\bin;%PATH%"
-  make -v
-  bash -lc "make -v"
   bash -lc "export PATH=/c/msys64/MINGW64/bin:/c/msys64/usr/bin:$PATH ; cd C:/projects/libossia/install/ossia-pd-package/ ; ./deken upload -v test ossia"
   # C:\msys64\usr\bin\bash.exe C:\projects\libossia\deken upload -v test ossia
 
