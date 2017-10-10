@@ -139,7 +139,6 @@ void remote::set_unit()
 {
   if ( m_unit !=  gensym("") )
   {
-    // TODO check for unit compatibility with parameter
     ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
     if (unit)
       m_ounit = unit;
@@ -151,9 +150,10 @@ void remote::set_unit()
       return;
     }
 
-    if ( !m_matchers.empty() )
+    bool break_flag = false;
+    for (auto& m : m_matchers)
     {
-      auto dst_unit = m_matchers[0].get_node()->get_parameter()->get_unit();
+      auto dst_unit = m.get_node()->get_parameter()->get_unit();
       if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
         auto src = ossia::get_pretty_unit_text(*m_ounit);
         auto dst = ossia::get_pretty_unit_text(dst_unit);
@@ -161,8 +161,13 @@ void remote::set_unit()
                  src.c_str(), dst.c_str() );
         m_ounit = ossia::none;
         m_unit = gensym("");
+        break_flag = true;
+        break;
       }
     }
+    if (!break_flag)
+      parameter_base::bang(this);
+
   } else {
     m_ounit = ossia::none;
   }
