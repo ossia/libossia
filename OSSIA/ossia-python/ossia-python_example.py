@@ -68,6 +68,7 @@ float_parameter = float_node.create_parameter(ossia.ValueType.Float)
 float_parameter.access_mode = ossia.AccessMode.Bi
 float_parameter.bounding_mode = ossia.BoundingMode.Fold
 float_parameter.value = 1.5
+float_parameter.unit = "db"
 float_parameter.make_domain(-2.0, 2.0)
 float_parameter.apply_domain()
 
@@ -80,7 +81,7 @@ char_node = local_device.add_node("/test/misc/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
 
 char_parameter.value = 'z'
-char_parameter.make_domain(['a', 'b', 'c', 'd'})
+char_parameter.make_domain(['a', 'b', 'c', 'd'])
 char_parameter.apply_domain()
 
 char_node.description = "it could be used to setup something"
@@ -108,6 +109,7 @@ vec3f_node = local_device.add_node("/test/numeric/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
 
 vec3f_parameter.value = [0, 146.5, 207]
+vec3f_parameter.unit = "cart3D"
 vec3f_parameter.bounding_mode = ossia.BoundingMode.Clip
 vec3f_parameter.make_domain([50, 100, 150], [100, 150, 200])
 vec3f_parameter.apply_domain()
@@ -180,6 +182,7 @@ def iterate_on_children(node):
       print('type : ' + str(child.parameter.value_type))
       print('access mode : ' + str(child.parameter.access_mode))
       print('repetition filter : ' + str(child.parameter.repetition_filter))
+      print('unit : ' + child.parameter.unit)
 
       if child.parameter.have_domain():
         print('domain : min = ' + str(child.parameter.domain.min) + ' / max = ' + str(child.parameter.domain.max) + ' / bounding mode = ' + str(child.parameter.bounding_mode))

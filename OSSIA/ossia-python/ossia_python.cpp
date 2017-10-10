@@ -28,6 +28,9 @@ namespace pybind11
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+
 #include <Python.h>
 
 namespace py = pybind11;
@@ -689,8 +692,12 @@ PYBIND11_MODULE(ossia_python, m)
           &ossia::net::parameter_base::get_repetition_filter,
           &ossia::net::parameter_base::set_repetition_filter)
       .def_property(
-          "unit", &ossia::net::parameter_base::get_unit,
-          &ossia::net::parameter_base::set_unit)
+          "unit",
+          [](ossia::net::parameter_base& addr) -> std::string { 
+            return ossia::get_pretty_unit_text(addr.get_unit()); },
+          [](ossia::net::parameter_base& addr, std::string u) {
+            addr.set_unit(ossia::parse_pretty_unit(u));
+          })
       .def_property_readonly(
           "domain", &ossia::net::parameter_base::get_domain,
           py::return_value_policy::reference)
