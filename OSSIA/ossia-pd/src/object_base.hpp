@@ -2,8 +2,10 @@
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/base/value_callback.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
+
 extern "C" {
 #include <cicm_wrapper.h>
 }
@@ -31,13 +33,6 @@ enum class object_class {
   view,
   device,
   client
-};
-
-enum class address_scope
-{
-  relative = 0,
-  absolute,
-  global
 };
 
 struct object_base;
@@ -105,7 +100,7 @@ public:
 
   object_class m_otype{};
   t_symbol* m_name{};
-  address_scope m_addr_scope{};
+  ossia::net::address_scope m_addr_scope{};
   bool m_is_pattern{}; // whether the address is a pattern or not
   bool m_dead{false}; // whether this object is being deleted or not
   bool m_is_deleted{false}; // true during the is_deleted callback method

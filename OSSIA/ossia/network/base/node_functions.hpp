@@ -120,5 +120,19 @@ push_value(const ossia::destination& addr, const ossia::value_with_unit&);
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
 
 void expand_ranges(std::string& str);
+
+enum class address_scope
+{
+  relative = 0,
+  absolute,
+  global
+};
+
+/**
+ * @brief get_address_scope: return address scope (relative, absolute or globale)
+ * @param addr: the address to process
+ * @return the scope
+ */
+address_scope get_address_scope(ossia::string_view addr);
 }
 }

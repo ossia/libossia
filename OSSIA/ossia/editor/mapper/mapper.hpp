@@ -21,7 +21,6 @@ namespace net
 class parameter_base;
 }
 class value;
-struct time_value;
 
 /**
  * @brief The mapper class

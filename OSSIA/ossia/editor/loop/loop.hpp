@@ -11,8 +11,6 @@
  */
 namespace ossia
 {
-
-struct time_value;
 /**
  * @brief The loop class
  *

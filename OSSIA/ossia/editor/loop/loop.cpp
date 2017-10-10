@@ -79,13 +79,16 @@ state_element loop::state(ossia::time_value date, double pos)
   if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
+
     m_lastDate = date;
+
 
     // reset internal State
     m_currentState.clear();
 
     // process the loop from the pattern start TimeSync
     std::vector<time_event*> statusChangedEvents;
+
     if(unmuted())
     {
         m_startNode->process(statusChangedEvents, m_currentState);
@@ -95,7 +98,6 @@ state_element loop::state(ossia::time_value date, double pos)
         ossia::state st;
         m_startNode->process(statusChangedEvents, st);
     }
-
     // make time flow for the pattern interval
     // don't tick if the pattern interval is starting to avoid double
     // ticks

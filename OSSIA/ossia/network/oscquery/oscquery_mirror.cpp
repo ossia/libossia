@@ -585,6 +585,32 @@ bool oscquery_mirror_protocol::on_WSMessage(
             m_getWSPromises.pop();
           }
 
+          else // if update from critical param
+          {
+              for(auto it = data->MemberBegin(), end = data->MemberEnd(); it != end; ++it)
+              {
+                auto path = get_string_view(it->name);
+                if(!path.empty() && path[0] == '/')
+                {
+                    auto node = ossia::net::find_node(m_device->get_root_node(), path);
+                    if(node)
+                  {
+                    auto addr = node->get_parameter();
+                    if (addr)
+                    {
+                      auto val = addr->value();
+                      json_parser::parse_value(*addr, it->value);
+                      //val.apply(detail::json_to_value_unchecked{it->value});
+                      m_device->on_message(*addr);
+                      continue;
+                    }
+                  }
+                }
+
+                m_device->on_unhandled_message(path, detail::ReadValue(it->value));
+              }
+          }
+
           break;
         }
         case message_type::PathAdded:

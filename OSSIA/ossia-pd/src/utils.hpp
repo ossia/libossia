@@ -488,14 +488,6 @@ bool find_peer(object_base* x);
  */
 std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
 
-
-/**
- * @brief get_address_scope: return address scope (relative, absolute or globale)
- * @param addr: the address to process
- * @return the scope
- */
-ossia::pd::address_scope get_address_scope(ossia::string_view addr);
-
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
  * @param atom : array of atom

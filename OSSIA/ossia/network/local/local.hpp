@@ -44,6 +44,8 @@ public:
   //! Stop exposition to a protocol. It will be deleted.
   void stop_expose_to(const ossia::net::protocol_base& p);
 
+  void clear();
+
   //! The protocols we are currently exposing this device through.
   const auto& get_protocols() const
   {

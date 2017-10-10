@@ -146,7 +146,12 @@ public:
 
   void stop()
   {
-    m_server.stop();
+      // (temporarily?) changed to stop_listening()
+      // "Straight up stop forcibly stops a bunch of things
+      // in a way that bypasses most, if not all, of the cleanup routines"
+
+      //m_server.stop();
+      m_server.stop_listening();
   }
 
   void close(connection_handler hdl)

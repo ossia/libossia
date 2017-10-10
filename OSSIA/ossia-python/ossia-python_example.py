@@ -33,11 +33,18 @@ for data in ossia.list_oscquery_devices():
   print(data.name + ": host = " + data.host + ", port = " + str(data.port))
 
 # create a node, create a boolean parameter and initialize it
-bool_node = local_device.add_node("/test/special/bool")
+bool_node = local_device.add_node("/test/numeric/bool")
 bool_parameter = bool_node.create_parameter(ossia.ValueType.Bool)
+
 bool_parameter.access_mode = ossia.AccessMode.Get
 bool_parameter.value = True
-### TODO : bool_parameter.defaultvalue = True
+
+bool_node.description = "it could be used to enable/disable an effect"
+bool_node.tags = ["example", "numeric"]
+bool_node.default_value = True
+bool_node.priority = 1
+bool_node.refresh_rate = 100
+# more attributes exist : value_step_size, instance_bounds, extended_type, zombie, critical, disabled, hidden, muted
 
 # create a node, create an integer parameter and initialize it
 int_node = local_device.add_node("/test/numeric/int")
@@ -49,87 +56,107 @@ int_parameter.value = 9
 int_parameter.make_domain(-10, 10)
 int_parameter.apply_domain()
 int_parameter.repetition_filter = ossia.RepetitionFilter.Off
-### TODO : int_parameter.defaultvalue = -3
+
+int_node.description = "it could be used to setup something"
+int_node.tags = ["example", "numeric"]
+int_node.default_value = -3
 
 # create a node, create a float parameter, set its properties and initialize it
 float_node = local_device.add_node("/test/numeric/float")
 float_parameter = float_node.create_parameter(ossia.ValueType.Float)
+
 float_parameter.access_mode = ossia.AccessMode.Bi
 float_parameter.bounding_mode = ossia.BoundingMode.Fold
 float_parameter.value = 1.5
 float_parameter.make_domain(-2.0, 2.0)
 float_parameter.apply_domain()
-### TODO : float_parameter.defaultvalue = 0.123456789
+
+float_node.description = "it could be used to setup something"
+float_node.tags = ["example", "numeric"]
+float_node.default_value = 0.123456789
 
 # create a node, create a char parameter and initialize it
 char_node = local_device.add_node("/test/misc/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
+
 char_parameter.value = 'a'
-### TODO : char_parameter.defaultvalue = chr(69)
+
+char_node.description = "it could be used to setup something"
+char_node.tags = ["example", "misc"]
+char_node.default_value = chr(69)
 
 # create a node, create a string parameter and initialize it
 string_node = local_device.add_node("/test/misc/string")
 string_parameter = string_node.create_parameter(ossia.ValueType.String)
+
 string_parameter.value = "hello world !"
-### TODO : string_parameter.defaultvalue = ['init value']
 ### TODO : string_parameter.make_domain(['once', 'loop', 'ping-pong'])
 #string_parameter.apply_domain()
+
+string_node.extended_type = "filepath"
+### TODO : have an enumeration for extended types
+
+string_node.description = "it could be used to setup something"
+string_node.tags = ["example", "misc"]
+string_node.default_value = "init value"
+string_node.instance_bounds = ossia.InstanceBounds(1, 10)
 
 # create a node, create a 3 floats vector parameter and initialize it
 vec3f_node = local_device.add_node("/test/numeric/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
-vec3f_parameter.value = [0, 146, 207]
-### TODO : vec3f_parameter.defaultvalue = [0, 146, 207]
+
+vec3f_parameter.value = [0, 146.5, 207]
 ### TODO : vec3f_parameter.make_domain([0, 255])
 #vec3f_parameter.apply_domain()
+
+vec3f_node.description = "it could be used to setup something"
+vec3f_node.tags = ["example", "numeric", "vector"]
+vec3f_node.default_value = [0, 146.5, 207]
 
 # create a node, create a list parameter and initialize it
 list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
+
 list_parameter.value = [44100, "test.wav", 0.9]
-### TODO : list_parameter.defaultvalue = [44100, "ossia.wav", 0.9]
+
+list_node.description = "it could be used to setup something"
+list_node.tags = ["example", "misc"]
+list_node.default_value = [44100, "ossia.wav", 0.9] 
 
 # attach a callback function to the boolean parameter
 def bool_value_callback(v):
   print(v)
 bool_parameter.add_callback(bool_value_callback)
-### TODO : v must be a Bool, not a ossia_python.Value
 
 # attach a callback function to the integer parameter
 def int_value_callback(v):
   print(v)
 int_parameter.add_callback(int_value_callback)
-### TODO : v must be an Int, not a ossia_python.Value
 
 # attach a callback function to the float parameter
 def float_value_callback(v):
   print(v)
 float_parameter.add_callback(float_value_callback)
-### TODO : v must be a Float, not a ossia_python.Value
 
 # attach a callback function to the char parameter
 def char_value_callback(v):
   print(v)
 char_parameter.add_callback(char_value_callback)
-### TODO : v must be a Char, not a ossia_python.Value
 
 # attach a callback function to the string parameter
 def string_value_callback(v):
   print(v)
 string_parameter.add_callback(string_value_callback)
-### TODO : v must be a String, not a ossia_python.Value
 
 # attach a callback function to the 3 floats vector parameter
 def vec3f_value_callback(v):
   print(v)
 vec3f_parameter.add_callback(vec3f_value_callback)
-### TODO : v must be a Tuple, not a ossia_python.Value
 
 # attach a callback function to the list parameter
 def list_value_callback(v):
   print(v)
 list_parameter.add_callback(list_value_callback)
-### TODO : v must be a List, not a ossia_python.Value
 
 
 ### LOCAL DEVICE EXPLORATION
@@ -144,21 +171,39 @@ def iterate_on_children(node):
     print('-------------------------------------')
     if child.parameter:
       print('PARAMETER -> ' + str(child))
-      print(str(child.parameter))
-      print(str(child.parameter.value_type))
-      print(str(child.parameter.access_mode))
-      print(str(child.parameter.repetition_filter))
-      print('callbacks : ' + str(child.parameter.callback_count))
-      # displaying the domain bounds for the float parameter crashes ... ???
+
+      # display parameter's attributes
+      print('value : ' + str(child.parameter.value))
+      print('type : ' + str(child.parameter.value_type))
+      print('access mode : ' + str(child.parameter.access_mode))
+      print('repetition filter : ' + str(child.parameter.repetition_filter))
+
       if child.parameter.have_domain():
-        print('--- -domain- ---')
-        print('min : ' + str(child.parameter.domain.min) + ' / max : ' + str(child.parameter.domain.max), str(child.parameter.bounding_mode))
+        print('domain : min = ' + str(child.parameter.domain.min) + ' / max = ' + str(child.parameter.domain.max) + ' / bounding mode = ' + str(child.parameter.bounding_mode))
       else:
-        print('--- -no domain- ---')
+        print('domain :')
+
+      print('callbacks : ' + str(child.parameter.callback_count))
+
+      #display node's attributes
+      print('description : ' + str(child.description))
+      print('tags : ' + str(child.tags))
+      print('default_value : ' + str(child.default_value))
+      print('priority : ' + str(child.priority))
+      print('refresh_rate : ' + str(child.refresh_rate))
+      print('value_step_size : ' + str(child.value_step_size))
+      print('instance_bounds : {' + str(child.instance_bounds.min) + ', ' + str(child.instance_bounds.max) + '}')
+      print('extended_type : ' + str(child.extended_type))
+      print('zombie : ' + str(child.zombie))
+      print('critical : ' + str(child.critical))
+      print('disabled : ' + str(child.disabled))
+      print('hidden : ' + str(child.hidden))
+      print('muted : ' + str(child.muted))
+
     else:
       print()
       print('\nNODE -> ' + str(child))
-            #print(getattr(float_parameter, prop))
+
     iterate_on_children(child)
 
 
@@ -190,7 +235,7 @@ remote_bool_node = remote_osc_device.add_node("/test/special/bool")
 remote_bool_parameter = remote_bool_node.create_parameter(ossia.ValueType.Bool)
 remote_bool_parameter.access_mode = ossia.AccessMode.Get
 remote_bool_parameter.value = True
-### TODO : remote_bool_parameter.defaultvalue = True
+remote_bool_node.default_value = True
 
 # learn namespace from message sent by the remote OSC device
 remote_osc_device.learning = True

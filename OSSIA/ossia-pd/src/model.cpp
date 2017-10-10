@@ -188,7 +188,7 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
         t_symbol* address = atom_getsymbol(argv);
         std::string name = replace_brackets(address->s_name);
         x->m_name = gensym(name.c_str());
-        x->m_addr_scope = get_address_scope(x->m_name->s_name);
+        x->m_addr_scope = net::get_address_scope(x->m_name->s_name);
       }
       else
       {
