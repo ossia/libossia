@@ -79,7 +79,10 @@ float_node.default_value = 0.123456789
 char_node = local_device.add_node("/test/misc/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
 
-char_parameter.value = 'a'
+char_parameter.value = 'z'
+char_parameter.bounding_mode = ossia.BoundingMode.Clip
+char_parameter.make_domain(['a', 'b', 'c', 'd'})
+char_parameter.apply_domain()
 
 char_node.description = "it could be used to setup something"
 char_node.tags = ["example", "misc"]
