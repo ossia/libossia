@@ -29,6 +29,7 @@ ossia_max::ossia_max():
 
   parameters.reserve(2048);
   remotes.reserve(1024);
+  attributes.reserve(512);
   models.reserve(512);
   views.reserve(512);
   devices.reserve(4);
@@ -184,6 +185,7 @@ void object_quarantining(T* x)
 }
 
 template void object_quarantining<parameter>(parameter*);
+template void object_quarantining<attribute>(attribute*);
 template void object_quarantining<model>(model*);
 template void object_quarantining<remote>(remote*);
 template void object_quarantining<view>(view*);
@@ -194,6 +196,7 @@ void object_dequarantining(T* x)
   x->quarantine().remove_all(x);
 }
 
+template void object_dequarantining<attribute>(attribute*);
 template void object_dequarantining<parameter>(parameter*);
 template void object_dequarantining<model>(model*);
 template void object_dequarantining<remote>(remote*);

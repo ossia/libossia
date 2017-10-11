@@ -36,6 +36,8 @@ set(PROJECT_SRCS
     src/object_base.hpp
     src/ossia_object.cpp
     src/ossia_object.hpp
+    src/attribute.cpp
+    src/attribute.hpp
     src/client.hpp
     src/client.cpp
     src/device.hpp

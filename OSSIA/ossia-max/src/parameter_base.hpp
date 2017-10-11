@@ -9,7 +9,7 @@ namespace max
 class parameter_base : public object_base
 {
 public:
-  static void update_attribute(parameter_base* x, ossia::string_view attribute);
+  static void update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
 
   parameter_base();
 
@@ -22,19 +22,26 @@ public:
   void set_bounding_mode();
   void set_default();
   void set_type();
+  void set_rate();
+  void set_unit();
+  void set_mute();
 
   static void class_setup(t_class*c);
 
-  static void get_range(parameter_base* x);
-  static void get_min(parameter_base* x);
-  static void get_max(parameter_base* x);
-  static void get_bounding_mode(parameter_base* x);
-  static void get_default(parameter_base* x);
-  static void get_type(parameter_base* x);
-  static void get_priority(parameter_base* x);
-  static void get_access_mode(parameter_base* x);
-  static void get_repetition_filter(parameter_base* x);
-  static void get_enable(parameter_base* x);
+  static void get_mess_cb(parameter_base* x, t_symbol* s);
+  static void get_unit(parameter_base*x, std::vector<t_matcher*> nodes);
+  static void get_rate(parameter_base*x, std::vector<t_matcher*> nodes);
+  static void get_mute(parameter_base*x, std::vector<t_matcher*> nodes);
+  static void get_domain(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_min(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_max(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_bounding_mode(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_default(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_type(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_priority(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
 
   // attributes
   t_symbol* m_type{};
