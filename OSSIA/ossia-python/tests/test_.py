@@ -24,15 +24,15 @@ class TestAll(unittest.TestCase):
     # then through OSC
     my_device.expose(protocol='osc', listening_port=9996, sending_port=9997, logger=False)
     # create a bunch of parameters under different nodes
-    my_int = my_device.add_param('int', value_type='int', default=66, domain=[-100, 100])
-    my_float = my_device.add_param('float', value_type='float', default=0.123456789, domain=[-2, 2])
-    my_bool = my_device.add_param('special/bool', value_type='bool', default=True)
-    my_string = my_device.add_param('string',value_type='string', default='Hello world !', domain=['once', 'loop'])
-    my_vec2f = my_device.add_param('list/vec2f', value_type='vec2f', default=(0.5, 0.5),  domain=[0, 1])
-    my_vec3f = my_device.add_param('list/vec3f', value_type='vec3f', default=(0, 0.57, 0.81),  domain=[0, 360])
-    my_vec4f = my_device.add_param('list/vec4f', value_type='vec4f', default=(0, 146, 207),  domain=[0, 255])
-    my_list = my_device.add_param('list/list', value_type='list', default=[44100, "my_track.wav", 0.6])
-    my_char = my_device.add_param('special/char', value_type='char', default=chr(97))
+    my_int = my_device.add_param('int', value_type='int', default_value=66, domain=[-100, 100])
+    my_float = my_device.add_param('float', value_type='float', default_value=0.123456789, domain=[-2, 2])
+    my_bool = my_device.add_param('special/bool', value_type='bool', default_value=True)
+    my_string = my_device.add_param('string',value_type='string', default_value='Hello world !', domain=['once', 'loop'])
+    my_vec2f = my_device.add_param('list/vec2f', value_type='vec2f', default_value=[0.5, 0.5],  domain=[0, 1])
+    my_vec3f = my_device.add_param('list/vec3f', value_type='vec3f', default_value=[0, 0.57, 0.81],  domain=[0, 360])
+    my_vec4f = my_device.add_param('list/vec4f', value_type='vec4f', default_value=[0, 146, 207],  domain=[0, 255])
+    my_list = my_device.add_param('list/list', value_type='list', default_value=[44100, "my_track.wav", 0.6])
+    my_char = my_device.add_param('special/char', value_type='char', default_value=chr(97))
 
     def test_version(self):
         """
@@ -73,8 +73,9 @@ class TestAll(unittest.TestCase):
         """
         self.assertCountEqual(self.my_vec2f.value, [0.0, 0.0])
         self.assertEqual(self.my_vec2f.value_type, ossia.ValueType.Vec2f)
-        self.my_vec2f.value = [-1, 1]
-        self.assertCountEqual(self.my_vec2f.value, [-1, 1])
+        self.my_vec2f.value = [-1, 1.2]
+        self.assertAlmostEqual(self.my_vec2f.value[0], -1)
+        self.assertAlmostEqual(self.my_vec2f.value[1], 1.2)
 
     def test_device(self):
         """
