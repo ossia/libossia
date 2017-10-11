@@ -70,6 +70,14 @@ t_symbol* bounding_mode2symbol(ossia::bounding_mode bm);
 ossia::access_mode symbol2access_mode(t_symbol* access_mode);
 t_symbol* access_mode2symbol(ossia::access_mode mode);
 
+/**
+ * @brief make_matchers_vector return one matcher that matches node
+ * @param x
+ * @param node
+ * @return
+ */
+std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
+
 // put templates after prototype so we can use them
 
 template <typename T>
