@@ -21,6 +21,7 @@ namespace pybind11
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/midi/midi.hpp>
 
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/detail/logger.hpp>
@@ -366,7 +367,12 @@ public:
   }
 };
 
-
+/**
+ * @brief Minuit device class
+ *
+ * A Minuit device is required to deal with a remote application using
+ * Minuit protocol
+ */
 class ossia_minuit_device
 {
   ossia::net::generic_device m_device;
@@ -441,6 +447,37 @@ public:
   {
     return &ossia::net::find_or_create_node(m_device.get_root_node(), address);
   }
+
+  ossia::net::node_base* find_node(const std::string& address)
+  {
+    return ossia::net::find_node(m_device.get_root_node(), address);
+  }
+
+  ossia::net::node_base* get_root_node()
+  {
+    return &m_device.get_root_node();
+  }
+};
+
+/**
+ * @brief MIDI device class
+ *
+ * A MIDI device is required to deal with a controller using
+ * MIDI protocol
+ */
+class ossia_midi_device
+{
+  ossia::net::generic_device m_device;
+  ossia::net::midi::midi_protocol& m_protocol;
+
+public:
+  ossia_midi_device(std::string name, ossia::net::midi::midi_info::Type t, std::string d, int p)
+      : m_device{std::make_unique<ossia::net::midi::midi_protocol>(ossia::net::midi::midi_info{t, d, p}), name}
+      , m_protocol{static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol())}
+  {
+  }
+
+  operator ossia::net::generic_device&() { return m_device; }
 
   ossia::net::node_base* find_node(const std::string& address)
   {
@@ -530,6 +567,19 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "root_node", &ossia_osc_device::get_root_node,
           py::return_value_policy::reference);
+
+  py::class_<ossia_midi_device>(m, "MidiDevice")
+      .def(py::init<std::string , ossia::net::midi::midi_info::Type, std::string, int>())
+      .def("find_node", &ossia_midi_device::find_node,
+          py::return_value_policy::reference)
+      .def_property_readonly(
+          "root_node", &ossia_midi_device::get_root_node,
+          py::return_value_policy::reference);
+
+  py::enum_<ossia::net::midi::midi_info::Type>(m, "MidiDeviceType", py::arithmetic())
+      .value("RemoteInput", ossia::net::midi::midi_info::Type::RemoteInput)
+      .value("RemoteOutput", ossia::net::midi::midi_info::Type::RemoteOutput)
+      .export_values();
 
   py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
       .def(py::init<>())
