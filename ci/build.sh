@@ -133,10 +133,12 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install > /dev/null
         ls
         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+          pip install wheel
           pip wheel -ve ../OSSIA/ossia-python/
           pip install pyossia-*.whl
           python ../OSSIA/ossia-python/tests/test_.py
         else
+          pip3 install wheel
           pip3 wheel -ve ../OSSIA/ossia-python/
           pip3 install pyossia-*.whl
           python3 ../OSSIA/ossia-python/tests/test_.py
