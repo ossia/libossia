@@ -114,7 +114,7 @@ public:
   ossia::value operator()() const;
 };
 
-struct qt_to_ossia
+struct OSSIA_EXPORT qt_to_ossia
 {
   ossia::value operator()()
   {

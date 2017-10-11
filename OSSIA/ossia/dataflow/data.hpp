@@ -122,6 +122,7 @@ struct mix
             sink_vec.resize(src_chans);
             for(std::size_t i = 1; i < src_chans; i++)
               sink_vec[i] = sink_vec[0];
+            break;
           }
           case 2:
           {
@@ -132,6 +133,7 @@ struct mix
               sink_vec[i] = sink_vec[0];
               sink_vec[i+1] = sink_vec[1];
             }
+            break;
           }
           default:
             // Nothing really meaningful can be done
@@ -158,6 +160,7 @@ struct mix
               auto& sink = sink_vec[chan];
               copy_audio(src, sink);
             }
+            break;
           }
           case 2:
           {
@@ -169,6 +172,7 @@ struct mix
               copy_audio(src_l, sink_vec[chan]);
               copy_audio(src_r, sink_vec[chan+1]);
             }
+            break;
           }
           default:
             // Nothing really meaningful can be done

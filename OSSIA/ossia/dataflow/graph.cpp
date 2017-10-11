@@ -384,6 +384,11 @@ void graph::state(execution_state& e)
   for (auto& node : m_nodes.right)
   {
     node.first->set_executed(false);
+    for (const outlet_ptr& out : node.first->outputs())
+    {
+      if (out->data)
+        eggs::variants::apply(clear_data{}, out->data);
+    }
   }
 }
 
