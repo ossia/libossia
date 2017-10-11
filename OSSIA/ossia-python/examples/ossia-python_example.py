@@ -164,7 +164,7 @@ def list_value_callback(v):
 list_parameter.add_callback(list_value_callback)
 
 
-### LOCAL DEVICE EXPLORATION
+### DEVICE EXPLORATION
 
 ### TODO : MAYBE THIS FUNCTION COULD BE DONE IN C++ ???
 ### TODO : IT CAN BE GET_NODES, AND GET_PARAMS WITH A DEPTH ATTRIBUTE
@@ -262,17 +262,14 @@ iterate_on_children(remote_osc_device.root_node)
 
 
 ### REMOTE MIDI DEVICE FEATURES
-'''
-# try to connect to a remote device using MIDI protocol
-remote_midi_device = ossia.MidiDevice("remoteMidiDevice")
 
-# load the remote MIDI device map
-remote_midi_device.load("/path/to/map/file")
+# try to connect to an output midi device using MIDI protocol
+output_midi_device = ossia.MidiDevice("outputMidiDevice", ossia.MidiDeviceType.RemoteOutput, "BCF2000 Port1", 0)
 
 # iterate on remote MIDI device namespace
 print("\nREMOTE MIDI DEVICE NAMESPACE")
-iterate_on_children(remote_midi_device.root_node)
-'''
+iterate_on_children(output_midi_device.root_node)
+
 
 # MAIN LOOP
 # wait and use Ossia Score to change the value remotely

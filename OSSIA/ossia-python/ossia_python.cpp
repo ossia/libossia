@@ -467,17 +467,19 @@ public:
  */
 class ossia_midi_device
 {
-  ossia::net::generic_device m_device;
+  ossia::net::midi::midi_device m_device;
   ossia::net::midi::midi_protocol& m_protocol;
 
 public:
-  ossia_midi_device(std::string name, ossia::net::midi::midi_info::Type t, std::string d, int p)
-      : m_device{std::make_unique<ossia::net::midi::midi_protocol>(ossia::net::midi::midi_info{t, d, p}), name}
-      , m_protocol{static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol())}
+    ossia_midi_device(std::string name, ossia::net::midi::midi_info::Type t, std::string d, int p)
+    : m_device{ std::make_unique<ossia::net::midi::midi_protocol>(ossia::net::midi::midi_info{t, d, p}) },
+    m_protocol{ static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol()) }
   {
+      m_device.set_name(name);
+      m_device.update_namespace();
   }
 
-  operator ossia::net::generic_device&() { return m_device; }
+  operator ossia::net::midi::midi_device&() { return m_device; }
 
   ossia::net::node_base* find_node(const std::string& address)
   {
