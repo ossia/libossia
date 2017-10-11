@@ -134,15 +134,15 @@ case "$TRAVIS_OS_NAME" in
         ls
          if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           pip wheel ../OSSIA/ossia-python/
-          sudo pip install pyossia-*.whl
+          pip install -ve .
           python ../OSSIA/ossia-python/tests/test_.py
         elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-          pip3.5 wheel ../OSSIA/ossia-python/
-          sudo pip3.5 install pyossia-*.whl
+          python3.5 -m pip wheel ../OSSIA/ossia-python/
+          python3.5 -m pip install -ve .
           python3.5 ../OSSIA/ossia-python/tests/test_.py
         elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
-          pip3 wheel ../OSSIA/ossia-python/
-          sudo pip3 install pyossia-*.whl
+          python3.6 -m pip wheel ../OSSIA/ossia-python/
+          python3.6 -m pip install -ve .
           python3 ../OSSIA/ossia-python/tests/test_.py
         fi
       ;;
@@ -299,15 +299,15 @@ case "$TRAVIS_OS_NAME" in
       ls
        if [[ "$PYTHON_VERSION" == "2.7" ]]; then
         pip wheel ../OSSIA/ossia-python/
-        sudo pip install pyossia-*.whl
+        pip install -ve .
         python ../OSSIA/ossia-python/tests/test_.py
       elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        pip3.5 wheel ../OSSIA/ossia-python/
-        sudo pip3.5 install pyossia-*.whl
+        python3.5 -m pip wheel ../OSSIA/ossia-python/
+        python3.5 -m pip install -ve .
         python3.5 ../OSSIA/ossia-python/tests/test_.py
       elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
-        pip3 wheel ../OSSIA/ossia-python/
-        sudo pip3 install pyossia-*.whl
+        python3.6 -m pip wheel ../OSSIA/ossia-python/
+        python3.6 -m pip install -ve .
         python3 ../OSSIA/ossia-python/tests/test_.py
       fi
 

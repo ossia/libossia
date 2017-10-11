@@ -55,7 +55,7 @@ case "$TRAVIS_OS_NAME" in
       sudo add-apt-repository --yes ppa:jonathonf/python-3.6
       sudo add-apt-repository --yes ppa:fkrull/deadsnakes
       sudo apt-get update -qq
-      sudo apt install -qq python python-dev python3.5 python3.5-dev python3.6 python3.6-dev
+      sudo apt install -qq python python-dev python3.5 python3.5-dev python3.6 python3.6-dev python3-pip
     fi
 
   ;;
