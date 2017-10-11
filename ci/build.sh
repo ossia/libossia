@@ -130,9 +130,18 @@ case "$TRAVIS_OS_NAME" in
              -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
-        ls
 
-        tar -czf $TRAVIS_BUILD_DIR/ossia-python-$PYTHON_VERSION-linux_x86_64.tar.gz ossia_python.so
+        ls
+        if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+          pip wheel -ve ../OSSIA/ossia-python/
+          pip install pyossia-*.whl
+          python ../OSSIA/ossia-python/tests/test_.py
+        else
+          pip3 wheel -ve ../OSSIA/ossia-python/
+          pip3 install pyossia-*.whl
+          python3 ../OSSIA/ossia-python/tests/test_.py
+        fi
+        mv ossia_python* ../OSSIA/ossia-python/pyossia
 
       ;;
       qml)
@@ -285,10 +294,16 @@ case "$TRAVIS_OS_NAME" in
 
       $CMAKE_BIN --build . -- -j2
       ls
-      pip3 wheel -ve ../OSSIA/ossia-python/
-      pip3 install pyossia-*.whl
-
-      tar -czf $TRAVIS_BUILD_DIR/ossia-python-$PYTHON_VERSION-osx.tar.gz ossia_python.so
+       if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+        pip wheel -ve ../OSSIA/ossia-python/
+        pip install pyossia-*.whl
+        python ../OSSIA/ossia-python/tests/test_.py
+      else
+        pip3 wheel -ve ../OSSIA/ossia-python/
+        pip3 install pyossia-*.whl
+        python3 ../OSSIA/ossia-python/tests/test_.py
+      fi
+      mv ossia_python* ../OSSIA/ossia-python/pyossia
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \

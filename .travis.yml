@@ -127,3 +127,13 @@ deploy:
     on:
       repo: OSSIA/libossia
       tags: true
+
+  - provider: pypi
+    skip_cleanup: true
+    user: $PyPiUser
+    password: $PyPiWord
+    file: ./*.whl
+    distributions: bdist_wheel
+    on:
+      tags: true
+      branch: master
