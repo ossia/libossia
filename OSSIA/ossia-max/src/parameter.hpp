@@ -19,22 +19,6 @@ public:
 
   static ossia::safe_set<parameter*>& quarantine();
 
-  // attribute setting method
-
-  void set_mute();
-  void set_unit();
-  void set_rate();
-
-  static void get_mute(parameter*x);
-  static void get_rate(parameter*x);
-  static void get_unit(parameter*x);
-
-  static void update_attribute(parameter* x, ossia::string_view attribute);
-
-  // attributes
-  float m_rate;
-  long m_mute;
-
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::parameter*);
 

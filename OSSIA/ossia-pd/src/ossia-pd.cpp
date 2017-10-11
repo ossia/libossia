@@ -80,6 +80,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   inst.params.reserve(2048);
   inst.remotes.reserve(1024);
   inst.models.reserve(512);
+  inst.attributes.reserve(512);
   inst.views.reserve(512);
   inst.devices.reserve(4);
   inst.clients.reserve(4);

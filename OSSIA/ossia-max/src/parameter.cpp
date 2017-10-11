@@ -225,6 +225,8 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       m_nodes.push_back(n);
     }
 
+    fill_selection();
+
     set_description();
     set_tags();
     set_access_mode();
@@ -257,97 +259,6 @@ bool parameter::unregister()
   object_quarantining(this);
 
   return true;
-}
-
-void parameter::set_unit()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    if ( m_unit !=  gensym("") )
-    {
-      ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
-      if (unit)
-      {
-        param->set_unit(unit);
-        // update m_type since set_unit() may have changed it
-        auto val_type = param->get_value_type();
-        m_type = val_type2symbol(val_type);
-      }
-      else
-        object_error((t_object*)this, "wrong unit: %s", m_unit->s_name);
-    }
-  }
-}
-
-void parameter::set_rate()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_refresh_rate(*node,m_rate);
-  }
-}
-
-void parameter::set_mute()
-{
-  for (t_matcher& m : m_matchers)
-  {
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::set_muted(*node,m_mute);
-  }
-}
-
-void parameter::update_attribute(parameter* x, ossia::string_view attribute)
-{
-  if ( attribute == ossia::net::text_refresh_rate() ){
-    parameter::get_rate(x);
-  } else if ( attribute == ossia::net::text_muted() ){
-    parameter::get_mute(x);
-  } else if ( attribute == ossia::net::text_unit() ){
-    parameter::get_unit(x);
-  } else {
-    parameter_base::update_attribute(x, attribute);
-  }
-}
-
-void parameter::get_rate(parameter*x)
-{
-  if (!x->m_matchers.empty())
-  {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
-    auto rate = ossia::net::get_refresh_rate(*node);
-
-    if (rate)
-    {
-      x->m_rate = *rate;
-    }
-  }
-}
-
-void parameter::get_mute(parameter*x)
-{
-  if (!x->m_matchers.empty())
-  {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    x->m_mute = param->get_muted();
-  }
-}
-
-void parameter::get_unit(parameter*x)
-{
-  if (!x->m_matchers.empty())
-  {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
-
-    std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-    x->m_unit = gensym(unit.c_str());
-  }
 }
 
 ossia::safe_set<parameter *> &parameter::quarantine()

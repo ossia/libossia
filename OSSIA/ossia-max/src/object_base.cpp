@@ -215,6 +215,11 @@ void t_matcher::set_parent_addr()
   }
 }
 
+object_base::object_base()
+{
+  m_selection_pattern = gensym("");
+}
+
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
     m_is_deleted= true;
@@ -266,7 +271,7 @@ void object_base::defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* 
   outlet_anything(x->m_set_out, s, argc, argv);
 }
 
-void object_base::update_attribute(object_base* x, ossia::string_view attribute)
+void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   if ( attribute == ossia::net::text_priority() ){
     get_priority(x);
@@ -364,6 +369,25 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
 
   class_addmethod(c, (method) object_base::get_address, "getaddress", A_NOTHING,  0);
+}
+
+void object_base::fill_selection()
+{
+  m_node_selection.clear();
+  if ( m_selection_pattern != gensym("*") )
+  {
+    // TODO should support pattern matching in selection
+    for (auto& m : m_matchers)
+    {
+      if ( m_selection_pattern == m.get_atom_addr_ptr()->a_w.w_sym )
+        m_node_selection.push_back(&m);
+    }
+  } else {
+    for (auto& m : m_matchers)
+    {
+      m_node_selection.push_back(&m);
+    }
+  }
 }
 
 void object_base::get_address(object_base *x)

@@ -30,7 +30,8 @@ enum class object_class
   model,
   view,
   device,
-  client
+  client,
+  attribute
 };
 
 struct object_base;
@@ -49,6 +50,7 @@ public:
   void output_value();
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_parent() const { return parent; }
+  t_atom* get_atom_addr_ptr() { return &m_addr; }
   void set_parent_addr();
 
   inline bool operator==(const t_matcher& rhs)
@@ -97,8 +99,12 @@ public:
   std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
+  std::vector<t_matcher*> m_node_selection{};
+  t_symbol* m_selection_pattern{};
 
   static void class_setup(t_class*c);
+
+  void fill_selection();
 
   void set_description();
   void set_tags();
@@ -120,9 +126,12 @@ public:
   long m_tags_size{};
   long m_description_size{};
 
+  // constructor
+  object_base();
+
   std::mutex bindMutex;
 
-  static void update_attribute(object_base* x, ossia::string_view attribute);
+  static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
   void is_deleted(const ossia::net::node_base& n);
 
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);

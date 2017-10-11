@@ -26,7 +26,7 @@ public:
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
-  static void update_attribute(remote* x, ossia::string_view attribute);
+  static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static void bind(remote* x, t_symbol* address);
   //static void click( remote* x, t_floatarg xpos, t_floatarg ypos,
   //                   t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
