@@ -57,7 +57,7 @@ if(OSSIA_PYTHON)
     target_link_libraries(ossia_python PRIVATE ossia)
     use_gold(ossia_python)
     add_linker_warnings_external(ossia_python)
-    install(TARGETS ossia_python DESTINATION ossia-python COMPONENT ossia-python)
+    install(TARGETS ossia_python DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/OSSIA/ossia-python/pyossia COMPONENT ossia-python)
 endif()
 endif()
 
