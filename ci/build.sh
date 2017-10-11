@@ -130,7 +130,7 @@ case "$TRAVIS_OS_NAME" in
              -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
-
+        $CMAKE_BIN --build . --target install > /dev/null
         ls
         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           pip wheel -ve ../OSSIA/ossia-python/
@@ -141,8 +141,6 @@ case "$TRAVIS_OS_NAME" in
           pip3 install pyossia-*.whl
           python3 ../OSSIA/ossia-python/tests/test_.py
         fi
-        mv ossia_python* ../OSSIA/ossia-python/pyossia
-
       ;;
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
@@ -293,6 +291,7 @@ case "$TRAVIS_OS_NAME" in
                  ..
 
       $CMAKE_BIN --build . -- -j2
+      $CMAKE_BIN --build . --target install > /dev/null
       ls
        if [[ "$PYTHON_VERSION" == "2.7" ]]; then
         pip wheel -ve ../OSSIA/ossia-python/
@@ -303,7 +302,6 @@ case "$TRAVIS_OS_NAME" in
         pip3 install pyossia-*.whl
         python3 ../OSSIA/ossia-python/tests/test_.py
       fi
-      mv ossia_python* ../OSSIA/ossia-python/pyossia
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \

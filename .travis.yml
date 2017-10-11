@@ -136,4 +136,4 @@ deploy:
     distributions: bdist_wheel
     on:
       tags: true
-      branch: master
+      repo: OSSIA/libossia
