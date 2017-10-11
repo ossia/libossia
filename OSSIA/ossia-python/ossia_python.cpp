@@ -465,14 +465,20 @@ public:
  * A MIDI device is required to deal with a controller using
  * MIDI protocol
  */
+std::vector<ossia::net::midi::midi_info> list_midi_devices()
+{
+  ossia::net::midi::midi_protocol midi_protocol{};
+  return midi_protocol.scan();
+}
+
 class ossia_midi_device
 {
   ossia::net::midi::midi_device m_device;
   ossia::net::midi::midi_protocol& m_protocol;
 
 public:
-    ossia_midi_device(std::string name, ossia::net::midi::midi_info::Type t, std::string d, int p)
-    : m_device{ std::make_unique<ossia::net::midi::midi_protocol>(ossia::net::midi::midi_info{t, d, p}) },
+    ossia_midi_device(std::string name, ossia::net::midi::midi_info d)
+    : m_device{ std::make_unique<ossia::net::midi::midi_protocol>(d) },
     m_protocol{ static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol()) }
   {
       m_device.set_name(name);
@@ -570,13 +576,21 @@ PYBIND11_MODULE(ossia_python, m)
           "root_node", &ossia_osc_device::get_root_node,
           py::return_value_policy::reference);
 
+  m.def("list_midi_devices", &list_midi_devices);
+
   py::class_<ossia_midi_device>(m, "MidiDevice")
-      .def(py::init<std::string , ossia::net::midi::midi_info::Type, std::string, int>())
+      .def(py::init<std::string, ossia::net::midi::midi_info>())
       .def("find_node", &ossia_midi_device::find_node,
           py::return_value_policy::reference)
       .def_property_readonly(
           "root_node", &ossia_midi_device::get_root_node,
           py::return_value_policy::reference);
+
+  py::class_<ossia::net::midi::midi_info>(m, "MidiInfo")
+      .def(py::init())
+      .def_readonly("type", &ossia::net::midi::midi_info::type)
+      .def_readonly("device", &ossia::net::midi::midi_info::device)
+      .def_readonly("port", &ossia::net::midi::midi_info::port);
 
   py::enum_<ossia::net::midi::midi_info::Type>(m, "MidiDeviceType", py::arithmetic())
       .value("RemoteInput", ossia::net::midi::midi_info::Type::RemoteInput)

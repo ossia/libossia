@@ -263,12 +263,18 @@ iterate_on_children(remote_osc_device.root_node)
 
 ### REMOTE MIDI DEVICE FEATURES
 
-# try to connect to an output midi device using MIDI protocol
-output_midi_device = ossia.MidiDevice("outputMidiDevice", ossia.MidiDeviceType.RemoteOutput, "BCF2000 Port1", 0)
+# list all MIDI devices
+print('\nSCAN FOR MIDI DEVICES\n')
+midi_devices = ossia.list_midi_devices()
+for data in midi_devices:
+    print(str(data.type) + ": device = " + data.device + ", port = " + str(data.port))
+
+# try to connect to the first device using MIDI protocol
+remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
 
 # iterate on remote MIDI device namespace
 print("\nREMOTE MIDI DEVICE NAMESPACE")
-iterate_on_children(output_midi_device.root_node)
+iterate_on_children(remote_midi_device.root_node)
 
 
 # MAIN LOOP
