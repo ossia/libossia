@@ -120,7 +120,7 @@ case "$TRAVIS_OS_NAME" in
              -DCMAKE_BUILD_TYPE=Release \
              -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
              -DPYTHON_EXECUTABLE=`which python${PYTHON_VERSION}` \
-             -DOSSIA_STATIC=0 \
+             -DOSSIA_STATIC=1 \
              -DOSSIA_TESTING=0 \
              -DOSSIA_EXAMPLES=0 \
              -DOSSIA_CI=1 \
