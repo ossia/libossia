@@ -115,6 +115,7 @@ public:
   static void get_tags(object_base* x);
   static void get_priority(object_base* x);
   static void get_hidden(object_base* x);
+  static void get_mess_cb(object_base* x, t_symbol* s);
 
   // default attributes
   t_symbol* m_name{};
@@ -136,7 +137,7 @@ public:
 
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
-  static void get_address(object_base *x);
+  static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
 };
 
 #pragma mark -
