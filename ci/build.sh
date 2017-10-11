@@ -134,16 +134,19 @@ case "$TRAVIS_OS_NAME" in
         ls
          if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           pip wheel ../OSSIA/ossia-python/
-          pip install -ve ../OSSIA/ossia-python/
-          python ../OSSIA/ossia-python/tests/test_.py
+          pip install twine
+          #pip install -ve ../OSSIA/ossia-python/
+          #python ../OSSIA/ossia-python/tests/test_.py
         elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
           python3.5 -m pip wheel ../OSSIA/ossia-python/
-          python3.5 -m pip install -ve ../OSSIA/ossia-python/
-          python3.5 ../OSSIA/ossia-python/tests/test_.py
+          pip3 install twine
+          #python3.5 -m pip install -ve ../OSSIA/ossia-python/
+          #python3.5 ../OSSIA/ossia-python/tests/test_.py
         elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
           python3.6 -m pip wheel ../OSSIA/ossia-python/
-          python3.6 -m pip install -ve ../OSSIA/ossia-python/
-          python3 ../OSSIA/ossia-python/tests/test_.py
+          pip3 install twine
+          #python3.6 -m pip install -ve ../OSSIA/ossia-python/
+          #python3 ../OSSIA/ossia-python/tests/test_.py
         fi
       ;;
       qml)
@@ -299,16 +302,19 @@ case "$TRAVIS_OS_NAME" in
       ls
        if [[ "$PYTHON_VERSION" == "2.7" ]]; then
         pip wheel ../OSSIA/ossia-python/
-        pip install -ve ../OSSIA/ossia-python/
-        python ../OSSIA/ossia-python/tests/test_.py
+        pip install twine
+        #pip install -ve ../OSSIA/ossia-python/
+        #python ../OSSIA/ossia-python/tests/test_.py
       elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
         python3.5 -m pip wheel ../OSSIA/ossia-python/
-        python3.5 -m pip install -ve ../OSSIA/ossia-python/
-        python3.5 ../OSSIA/ossia-python/tests/test_.py
+        pip3 install twine
+        #python3.5 -m pip install -ve ../OSSIA/ossia-python/
+        #python3.5 ../OSSIA/ossia-python/tests/test_.py
       elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
         python3.6 -m pip wheel ../OSSIA/ossia-python/
-        python3.6 -m pip install -ve ../OSSIA/ossia-python/
-        python3 ../OSSIA/ossia-python/tests/test_.py
+        pip3 install twine
+        #python3.6 -m pip install -ve ../OSSIA/ossia-python/
+        #python3 ../OSSIA/ossia-python/tests/test_.py
       fi
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then

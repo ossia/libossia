@@ -132,7 +132,7 @@ deploy:
     skip_cleanup: true
     user: $PyPiUser
     password: $PyPiWord
-    file: ./*.whl
+    file: OSSIA/ossia-python/*.whl
     distributions: bdist_wheel
     on:
       tags: true
