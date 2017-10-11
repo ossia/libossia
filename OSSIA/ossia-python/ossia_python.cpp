@@ -28,6 +28,9 @@ namespace pybind11
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+
 #include <Python.h>
 
 namespace py = pybind11;
@@ -77,8 +80,6 @@ ossia::value from_python_value(PyObject* source)
     else if (PyInt_Check(source))
         returned_value = (int)PyInt_AsLong(source);
 #endif
-    else if (PyLong_Check(source))
-        returned_value = (int)PyLong_AsLong(source);
     else if (PyLong_Check(source))
       returned_value = (int)PyLong_AsLong(source);
     else if (PyFloat_Check(source))
@@ -693,8 +694,12 @@ PYBIND11_MODULE(ossia_python, m)
           &ossia::net::parameter_base::get_repetition_filter,
           &ossia::net::parameter_base::set_repetition_filter)
       .def_property(
-          "unit", &ossia::net::parameter_base::get_unit,
-          &ossia::net::parameter_base::set_unit)
+          "unit",
+          [](ossia::net::parameter_base& addr) -> std::string { 
+            return ossia::get_pretty_unit_text(addr.get_unit()); },
+          [](ossia::net::parameter_base& addr, std::string u) {
+            addr.set_unit(ossia::parse_pretty_unit(u));
+          })
       .def_property_readonly(
           "domain", &ossia::net::parameter_base::get_domain,
           py::return_value_policy::reference)
@@ -713,10 +718,17 @@ PYBIND11_MODULE(ossia_python, m)
           })
       .def(
           "make_domain",
-          [](ossia::net::parameter_base& addr, const py::object& min, const py::object& max, const std::vector<py::object>& vals) {
-            addr.set_domain(ossia::make_domain(
-                              ossia::python::from_python_value(min.ptr())
-                            , ossia::python::from_python_value(max.ptr())));//, vals));
+          [](ossia::net::parameter_base& addr, const std::vector<py::object>& values) {
+            auto dom = ossia::init_domain(addr.get_value_type());
+            
+            std::vector<ossia::value> vec;
+            vec.reserve(values.size());
+
+            for (auto& v : values)
+              vec.push_back(ossia::python::from_python_value(v.ptr()));
+
+            ossia::set_values(dom, vec);
+            addr.set_domain(dom);
           })
       .def(
           "apply_domain",
