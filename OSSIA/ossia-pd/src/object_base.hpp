@@ -129,6 +129,8 @@ public:
   void set_priority();
   void set_hidden();
 
+  static void get_mess_cb(object_base* x, t_symbol* s);
+
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
   static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
@@ -160,7 +162,7 @@ public:
    * @brief obj_get_address return global address through dump outlet
    * @param x
    */
-  static void get_address(object_base *x);
+  static void get_address(object_base *x, std::vector<t_matcher*> nodes);
 
   static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 
