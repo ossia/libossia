@@ -132,15 +132,17 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
         ls
-        if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-          pip install wheel
+         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           pip wheel ../OSSIA/ossia-python/
-          pip install -e pyossia-*.whl
+          sudo pip install pyossia-*.whl
           python ../OSSIA/ossia-python/tests/test_.py
-        else
-          pip3 install wheel
+        elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
+          pip3.5 wheel ../OSSIA/ossia-python/
+          sudo pip3.5 install pyossia-*.whl
+          python3.5 ../OSSIA/ossia-python/tests/test_.py
+        elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
           pip3 wheel ../OSSIA/ossia-python/
-          pip3 install -e pyossia-*.whl
+          sudo pip3 install pyossia-*.whl
           python3 ../OSSIA/ossia-python/tests/test_.py
         fi
       ;;
@@ -297,11 +299,15 @@ case "$TRAVIS_OS_NAME" in
       ls
        if [[ "$PYTHON_VERSION" == "2.7" ]]; then
         pip wheel ../OSSIA/ossia-python/
-        pip install -e pyossia-*.whl
+        sudo pip install pyossia-*.whl
         python ../OSSIA/ossia-python/tests/test_.py
-      else
+      elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
+        pip3.5 wheel ../OSSIA/ossia-python/
+        sudo pip3.5 install pyossia-*.whl
+        python3.5 ../OSSIA/ossia-python/tests/test_.py
+      elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
         pip3 wheel ../OSSIA/ossia-python/
-        pip3 install -e pyossia-*.whl
+        sudo pip3 install pyossia-*.whl
         python3 ../OSSIA/ossia-python/tests/test_.py
       fi
 
