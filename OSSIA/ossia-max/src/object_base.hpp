@@ -33,13 +33,6 @@ enum class object_class
   client
 };
 
-enum class address_scope
-{
-  relative = 0,
-  absolute,
-  global
-};
-
 struct object_base;
 
 class t_matcher
@@ -90,7 +83,7 @@ public:
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted;
-  address_scope m_addr_scope{};
+  ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
 
 
