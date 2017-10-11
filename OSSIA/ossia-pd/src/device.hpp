@@ -72,7 +72,8 @@ public:
   static void destroy(device* x);
   static void expose(device* x, t_symbol*, int argc, t_atom* argv);
   static void name(device* x, t_symbol*, int argc, t_atom* argv);
-  static void getprotocols(device* x);
+  static void get_mess_cb(device* x, t_symbol* s);
+  static void get_protocols(device* x);
   static void stop_expose(device*x, int index);
 
 

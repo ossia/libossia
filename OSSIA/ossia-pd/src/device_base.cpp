@@ -92,6 +92,9 @@ void device_base::connect_slots()
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
     m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
+
+    m_matchers.emplace_back(&m_device->get_root_node(), nullptr);
+    m_node_selection.push_back(&m_matchers[0]);
   }
 }
 
@@ -105,6 +108,9 @@ void device_base::disconnect_slots()
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
     m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
+
+    m_node_selection.clear();
+    m_matchers.clear();
   }
 }
 

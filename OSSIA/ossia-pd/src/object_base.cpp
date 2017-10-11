@@ -69,7 +69,8 @@ t_matcher::t_matcher(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      set_parent_addr();
+      if(parent)
+        set_parent_addr();
     }
   }
 }
@@ -103,7 +104,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      set_parent_addr();
+      if(parent)
+        set_parent_addr();
     }
   }
 
@@ -117,10 +119,12 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
     callbackit = param->add_callback(
       [=](const ossia::value& v) { enqueue_value(v); });
 
-  node->about_to_be_deleted.connect<object_base, &object_base::is_deleted>(
-        parent);
-
-  set_parent_addr();
+  if (parent)
+  {
+    node->about_to_be_deleted.connect<object_base, &object_base::is_deleted>(
+          parent);
+    set_parent_addr();
+  }
 
   //clock_delay(x_regclock, 0);
 }
@@ -459,30 +463,20 @@ void object_base::fill_selection()
   }
 }
 
-void object_base::get_address(object_base *x)
+void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+
+  t_symbol* sym_address = gensym("global_address");
+
+  for (auto m : nodes)
   {
-    t_symbol* sym_address = gensym("global_address");
-    for (auto& m : x->m_matchers)
-    {
-      std::string addr = ossia::net::address_string_from_node(*m.get_node());
-      t_atom a;
-      SETSYMBOL(&a, gensym(addr.c_str()));
-      outlet_anything(x->m_dumpout, sym_address, 1, &a);
-    }
+    std::string addr = ossia::net::address_string_from_node(*m->get_node());
+    t_atom a;
+    SETSYMBOL(&a, gensym(addr.c_str()));
+    outlet_anything(x->m_dumpout, sym_address, 1, &a);
   }
-  else if (!x->m_nodes.empty())
-  {
-    for (auto n : x->m_nodes)
-    {
-      std::string addr = ossia::net::address_string_from_node(*n);
-      t_atom a;
-      SETSYMBOL(&a, gensym(addr.c_str()));
-      outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
-    }
-  }
-  else
+
+  if (nodes.empty())
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
 }
 
@@ -574,8 +568,12 @@ void object_base::class_setup(t_eclass*c)
   CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
   CLASS_ATTR_INT         (c, "hidden",            0, object_base, m_hidden);
 
-  eclass_addmethod(c, (method) object_base::get_address,     "getaddress", A_NULL,  0);
   eclass_addmethod(c, (method) object_base::address_mess_cb, "address",    A_GIMME, 0);
+}
+
+void object_base::get_mess_cb(object_base* x, t_symbol* s){
+  if (s == gensym("address"))
+    get_address(x,x->m_node_selection);
 }
 
 void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)

@@ -44,9 +44,11 @@ public:
   bool m_done{true};
   t_symbol* m_looking_for{}; // the device's name we are looking for
 
+  static void get_mess_cb(client* x, t_symbol* s);
+  static void get_devices(client* x);
+
   static void disconnect(client* x);
   static void connect(client* x, t_symbol*, int argc, t_atom* argv);
-  static void getdevices(client* x);
   static void check_thread_status(client* x);
   static void update(client* x);
   static void poll_message(client* x);

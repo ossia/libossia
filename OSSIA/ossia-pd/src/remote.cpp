@@ -407,6 +407,19 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   }
 }
 
+
+void remote::get_mess_cb(remote* x, t_symbol* s)
+{
+  if ( s == gensym("unit") )
+    remote::get_unit(x);
+  if ( s == gensym("mute") )
+    remote::get_mute(x);
+  if ( s == gensym("rate") )
+    remote::get_rate(x);
+  else
+    parameter_base::get_mess_cb(x,s);
+}
+
 extern "C" void setup_ossia0x2eremote(void)
 {
   t_eclass* c = eclass_new("ossia.remote",
@@ -418,19 +431,16 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote::create,gensym("ø.remote"), A_GIMME, 0);
 
+    parameter_base::class_setup(c);
+
     eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
-    parameter_base::class_setup(c);
-
     // remote special attributes
-    eclass_addmethod(c, (method) remote::get_unit,        "getunit",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote::get_mute,        "getmute",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote::get_rate,        "rate",        A_NULL, 0);
-
+    eclass_addmethod(c, (method) remote::get_mess_cb, "get", A_SYMBOL, 0);
   }
 
   ossia_pd::remote_class = c;
