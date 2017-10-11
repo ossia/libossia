@@ -40,7 +40,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
  * @param addr: the address to process
  * @return
  */
-ossia::max::address_scope get_address_scope(ossia::string_view addr);
+ossia::net::address_scope get_address_scope(ossia::string_view addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value
@@ -80,7 +80,7 @@ bool max_object_register(T* x)
 
   std::vector<ossia::net::node_base*> nodes{};
 
-  if (x->m_addr_scope == address_scope::global)
+  if (x->m_addr_scope == ossia::net::address_scope::global)
   {
     nodes = {ossia::max::find_global_nodes(x->m_name->s_name)};
   }
@@ -102,7 +102,7 @@ bool max_object_register(T* x)
       start_level = 1;
     }
 
-    if (x->m_addr_scope == address_scope::relative)
+    if (x->m_addr_scope == ossia::net::address_scope::relative)
     {
       // then try to locate a parent view or model
       if (x->m_otype == object_class::view || x->m_otype == object_class::remote)

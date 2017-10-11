@@ -125,15 +125,15 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   return nodes;
 }
 
-ossia::max::address_scope get_address_scope(ossia::string_view addr)
+ossia::net::address_scope get_address_scope(ossia::string_view addr)
 {
-  address_scope type = address_scope::relative;
+  ossia::net::address_scope type = ossia::net::address_scope::relative;
   if (boost::starts_with(addr, "//") )
-    type = address_scope::relative;
+    type = ossia::net::address_scope::relative;
   else if ( boost::starts_with(addr, "/") )
-    type = address_scope::absolute;
+    type = ossia::net::address_scope::absolute;
   else if ( addr.find(":/") != std::string::npos )
-      type = address_scope::global;
+      type = ossia::net::address_scope::global;
   return type;
 }
 

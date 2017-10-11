@@ -188,7 +188,7 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
   {
     std::string name = m_name->s_name;
 
-    if (m_addr_scope == address_scope::absolute)
+    if (m_addr_scope == ossia::net::address_scope::absolute)
     {
       // get root node
       _node = &_node->get_device().get_root_node();
@@ -200,7 +200,7 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
     std::vector<ossia::net::node_base*> nodes{};
 
-    if (m_addr_scope == address_scope::global)
+    if (m_addr_scope == ossia::net::address_scope::global)
       nodes = ossia::max::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*_node, name);
