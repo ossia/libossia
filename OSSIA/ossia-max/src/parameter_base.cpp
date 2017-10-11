@@ -862,9 +862,9 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_LABEL(c, "mode", 0, "Acces Mode");
   
   CLASS_ATTR_ATOM_VARSIZE(
-        c, "defval", 0, parameter_base,
+        c, "default", 0, parameter_base,
         m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
-  CLASS_ATTR_LABEL(c, "defval", 0, "Default Value");
+  CLASS_ATTR_LABEL(c, "default", 0, "Default Value");
   
   CLASS_ATTR_ATOM_VARSIZE(
         c, "range", 0, parameter_base,
