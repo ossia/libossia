@@ -273,11 +273,30 @@ for data in midi_devices:
 remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
 
 # iterate on remote MIDI device namespace
-print("\nREMOTE MIDI DEVICE NAMESPACE")
-iterate_on_children(remote_midi_device.root_node)
+#print("\nREMOTE MIDI DEVICE NAMESPACE")
+#iterate_on_children(remote_midi_device.root_node)
 
+# create a message queue to focus on a MIDI parameter
+remote_midi_messageq = ossia.MessageQueue(remote_midi_device)
+remote_midi_parameter = remote_midi_device.find_node("/1/control/32").parameter
+remote_midi_messageq.register(remote_midi_parameter)
 
 # MAIN LOOP
-# wait and use Ossia Score to change the value remotely
+print("\nMAIN LOOP ...")
+# observe all local device messages
+local_device_messageq = ossia.GlobalMessageQueue(local_device)
+
+# wait and change the value remotely
 while True:
-  time.sleep(0.1)
+
+  message = remote_midi_messageq.pop()
+  if message != None:
+    parameter, value = message
+    print("remote_midi_messageq : " +  str(parameter.node) + " " + str(value))
+
+  message = local_device_messageq.pop()
+  if(message != None):
+    parameter, value = message
+    print("local_device_messageq : " +  str(parameter.node) + " " + str(value))
+
+  time.sleep(0.01)
