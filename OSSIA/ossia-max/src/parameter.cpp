@@ -25,6 +25,9 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
+  class_addmethod(
+      c, (method)parameter::push_default_value,
+      "loadbang", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -144,7 +147,7 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
       x->set_bounding_mode();
     else if ( attrname == gensym("min") || attrname == gensym("max") )
       x->set_minmax();
-    else if ( attrname == gensym("defval") )
+    else if ( attrname == gensym("default") )
       x->set_default();
     else if ( attrname == gensym("unit") )
       x->set_unit();

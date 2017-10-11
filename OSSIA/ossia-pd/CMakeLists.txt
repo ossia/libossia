@@ -91,7 +91,7 @@ endif()
 add_linker_warnings_external(${PROJECT_NAME})
 
 if(NOT MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++1z)
+    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
 endif()
 
 # Win32 uses DLL as a suffix for pd externals

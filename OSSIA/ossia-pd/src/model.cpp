@@ -77,6 +77,8 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
       m_matchers.emplace_back(n, this);
     }
 
+    fill_selection();
+
     set_priority();
     set_description();
     set_tags();
