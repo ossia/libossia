@@ -193,7 +193,14 @@ def reset(self):
     if self.parameter:
         self.value = self.node.default_value
     for param in self.get_parameters():
-        param.value = param.node.default_value
+        if param.node.default_value:
+            print()
+            print('----')
+            print(param)
+            print(param.value)
+            print(param.node.default_value)
+            param.value = param.node.default_value
+            print(param.value)
 
 
 # customize a bit LocalDevice
