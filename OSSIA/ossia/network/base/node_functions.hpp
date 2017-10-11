@@ -133,6 +133,7 @@ enum class address_scope
  * @param addr: the address to process
  * @return the scope
  */
+OSSIA_EXPORT
 address_scope get_address_scope(ossia::string_view addr);
 }
 }
