@@ -57,6 +57,8 @@ public:
   t_symbol* m_unit{};
   ossia::optional<ossia::unit_t> m_ounit;
 
+  std::vector<ossia::value> m_set_pool;
+
   // size of size-variable attribute
   long m_default_size{};
   long m_range_size{};

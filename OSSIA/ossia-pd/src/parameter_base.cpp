@@ -551,8 +551,14 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     {
       std::vector<ossia::value> list;
       list.reserve(argc+1);
-      if ( s && s != gensym("list") )
-        list.push_back(std::string(s->s_name));
+      bool set_flag = false;
+      if ( s )
+      {
+        if ( s == gensym("set") )
+          set_flag = true;
+        else if ( s != gensym("list") )
+          list.push_back(std::string(s->s_name));
+      }
 
       for (; argc > 0; argc--, argv++)
       {
@@ -568,6 +574,9 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
             pd_error(x, "value type not handled");
         }
       }
+
+      if (set_flag)
+        x->m_set_pool.push_back(list);
 
       ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
 
@@ -662,6 +671,7 @@ void parameter_base::class_setup(t_eclass* c)
   if (c != ossia_pd::attribute_class)
   {
     eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) push,               "set",      A_GIMME, 0);
     eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
   }

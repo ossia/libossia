@@ -116,6 +116,8 @@ public:
   static void get_priority(object_base* x);
   static void get_hidden(object_base* x);
   static void get_mess_cb(object_base* x, t_symbol* s);
+  static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+
 
   // default attributes
   t_symbol* m_name{};

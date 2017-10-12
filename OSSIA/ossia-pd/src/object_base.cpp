@@ -232,6 +232,26 @@ void t_matcher::output_value()
 {
   ossia::value val;
   while(m_queue_list.try_dequeue(val)) {
+    bool break_flag = false;
+
+    if(   parent->m_otype == object_class::param
+       || parent->m_otype == object_class::remote )
+    {
+      parameter_base* x = (parameter_base*)parent;
+      for (auto v : x->m_set_pool)
+      {
+        if (v == val)
+        {
+          break_flag = true;
+          ossia::remove_one(x->m_set_pool, v);
+          break;
+        }
+      }
+    }
+
+    if( break_flag )
+      continue;
+
     outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
 
     value_visitor<object_base> vm;

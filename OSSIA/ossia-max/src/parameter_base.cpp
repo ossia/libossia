@@ -597,18 +597,25 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     }
     else
     {
-      switch(argc)
-      {
-        case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr); return; } break;
-        case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr); return; } break;
-        case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr); return; } break;
-      }
       
       std::vector<ossia::value> list;
-      list.reserve(argc+1);
-      
-      if ( s && s != gensym("list") )
-        list.push_back(std::string(s->s_name));
+
+      bool set_flag = false;
+      if ( s )
+      {
+        list.reserve(argc+1);
+        if ( s == gensym("set") )
+          set_flag = true;
+        else if ( s != gensym("list") )
+          list.push_back(std::string(s->s_name));
+      } else {
+        switch(argc)
+        {
+          case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr); return; } break;
+          case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr); return; } break;
+          case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr); return; } break;
+        }
+      }
       
       for (; argc > 0; argc--, argv++)
       {
@@ -627,6 +634,9 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
             object_error((t_object*)x, "value type not handled");
         }
       }
+
+      if (set_flag)
+        x->m_set_pool.push_back(list);
       
       convert_or_push(x, std::move(list));      
     }
@@ -773,35 +783,11 @@ void parameter_base::in_symbol(parameter_base* x, t_symbol* f)
   parameter_base::push(x,nullptr,1,&a);
 }
 
-void parameter_base::set(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
-{
-  if (argc > 0 && argv[0].a_type == A_SYM)
-  {
-    ossia::string_view addr = argv[0].a_w.w_sym->s_name;
-    argv++;
-    argc--;
-    for (auto n : x->m_nodes)
-    {
-      auto nodes = ossia::net::find_nodes(*n, addr);
-      x->m_matchers.reserve(x->m_matchers.size() + nodes.size());
-      for (auto& no : nodes)
-      {
-        if (no->get_parameter()){
-          x->m_matchers.emplace_back(no, x);
-        }
-      }
-      parameter_base::push(x,nullptr, argc, argv);
-      x->m_matchers.clear();
-    }
-  }
-}
-
 void parameter_base::class_setup(t_class* c)
 {
   object_base :: class_setup(c);
   
-  class_addmethod(c, (method) parameter_base::set,  "set",      A_GIMME, 0);
-  
+  class_addmethod(c, (method) parameter_base::push,  "set",     A_GIMME, 0);
   class_addmethod(c, (method) parameter_base::push, "anything", A_GIMME, 0);
   class_addmethod(c, (method) parameter_base::push_one, "send", A_GIMME, 0);
   class_addmethod(c, (method) parameter_base::bang, "bang",     A_NOTHING,  0);
