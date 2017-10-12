@@ -86,8 +86,10 @@ case "$TRAVIS_OS_NAME" in
     elif [[ "x$BUILD_TYPE" == "xpython" ]]; then
       if [[ "x$PYTHON_VERSION" == x2.* ]]; then
         brew install python2
+        pip install wheel
       else
         brew install python3
+        pip3 install wheel
       fi
     fi
 

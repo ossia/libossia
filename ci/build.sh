@@ -4,9 +4,11 @@
 case "$TRAVIS_OS_NAME" in
   linux)
   export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
+  export PYTHON_BIN=$(which python${PYTHON_VERSION})
   ;;
   osx)
   export CMAKE_BIN=$(which cmake)
+  export PYTHON_BIN=/usr/local/bin/python${PYTHON_VERSION}
   ;;
 esac
 export CTEST_OUTPUT_ON_FAILURE=1
@@ -123,7 +125,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
              -DCMAKE_BUILD_TYPE=Release \
              -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
-             -DPYTHON_EXECUTABLE=`which python${PYTHON_VERSION}` \
+             -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
              -DOSSIA_STATIC=1 \
              -DOSSIA_TESTING=0 \
              -DOSSIA_EXAMPLES=0 \
@@ -292,7 +294,7 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_EXAMPLES=0 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                 -DPYTHON_EXECUTABLE=/usr/local/bin/python${PYTHON_VERSION} \
+                 -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
                  -DPYTHON_LIBRARY=/usr/local/opt/python/Frameworks/Python.framework/Versions/${python}/lib/libpython${python}.dylib \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
