@@ -32,6 +32,8 @@ namespace pybind11
 #include <ossia/editor/dataspace/dataspace.hpp>
 #include <ossia/editor/dataspace/dataspace_visitors.hpp>
 
+#include <ossia/network/common/path.hpp>
+
 #include <Python.h>
 
 namespace py = pybind11;
@@ -498,11 +500,6 @@ public:
   }
 };
 
-// TODO : add explorations tools functions
-// get_nodes
-// get_params
-// .. cf __init__ pyossia
-
 // to get children of a node
 PYBIND11_MAKE_OPAQUE(std::vector<ossia::net::node_base*>);
 
@@ -896,19 +893,19 @@ PYBIND11_MODULE(ossia_python, m)
       .def(py::init<ossia_minuit_device&>())
       .def(py::init<ossia_midi_device&>())
       .def("register", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
-    mq.reg(p);
-  })
+        mq.reg(p);
+      })
       .def("unregister", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
-    mq.unreg(p);
-  })
+        mq.unreg(p);
+      })
       .def("pop", [] (ossia::message_queue& mq) -> py::object {
-     ossia::received_value v;
-     bool res = mq.try_dequeue(v);
-     if(res)
-     {
-       return py::make_tuple(py::cast(v.address), v.value.apply(ossia::python::to_python_value{}));
-     }
-     return py::none{};
+        ossia::received_value v;
+        bool res = mq.try_dequeue(v);
+        if (res)
+        {
+          return py::make_tuple(py::cast(v.address), v.value.apply(ossia::python::to_python_value{}));
+        }
+        return py::none{};
   });
 
   py::class_<ossia::global_message_queue>(m, "GlobalMessageQueue")
@@ -918,12 +915,29 @@ PYBIND11_MODULE(ossia_python, m)
       .def(py::init<ossia_minuit_device&>())
       .def(py::init<ossia_midi_device&>())
       .def("pop", [] (ossia::global_message_queue& mq) -> py::object {
-     ossia::received_value v;
-     bool res = mq.try_dequeue(v);
-     if(res)
-     {
-       return py::make_tuple(py::cast(v.address), v.value.apply(ossia::python::to_python_value{}));
-     }
-     return py::none{};
+        ossia::received_value v;
+        bool res = mq.try_dequeue(v);
+        if(res)
+        {
+          return py::make_tuple(py::cast(v.address), v.value.apply(ossia::python::to_python_value{}));
+        }
+        return py::none{};
+        });
+
+  m.def("list_node_pattern", [] (const std::vector<py::object>& start_nodes, std::string pattern) -> std::vector<py::object> {
+
+      std::vector<ossia::net::node_base*> vec;
+      vec.reserve(start_nodes.size());
+      for (auto node : start_nodes)
+        vec.push_back(node.cast<ossia::net::node_base*>());
+
+      if (auto path = ossia::traversal::make_path(pattern))
+        ossia::traversal::apply(*path, vec);
+
+      std::vector<py::object> res;
+      for (auto node : vec)
+        res.push_back(py::cast(node));
+
+      return res;
   });
 }

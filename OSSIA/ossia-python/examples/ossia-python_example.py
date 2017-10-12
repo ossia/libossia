@@ -270,10 +270,12 @@ remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
 #print("\nREMOTE MIDI DEVICE NAMESPACE")
 #iterate_on_children(remote_midi_device.root_node)
 
-# create a message queue to focus on a MIDI parameter
+# create a message queue to focus on all control parameters of channel 1
 remote_midi_messageq = ossia.MessageQueue(remote_midi_device)
-remote_midi_parameter = remote_midi_device.find_node("/1/control/32").parameter
-remote_midi_messageq.register(remote_midi_parameter)
+
+node_vector = ossia.list_node_pattern([remote_midi_device.root_node], "/1/control/*")
+for node in node_vector:
+  remote_midi_messageq.register(node.parameter)
 
 # MAIN LOOP
 print("\nMAIN LOOP ...")
