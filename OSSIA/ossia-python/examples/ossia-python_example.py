@@ -24,9 +24,6 @@ local_device.create_oscquery_server(3456, 5678, False)
 # enable OSC communication for that device without messages logging
 local_device.create_osc_server("127.0.0.1", 9997, 9996, False)
 
-# enable MIDI communication for that device
-### TODO : enable MIDI communication
-
 # list all devices on the network
 print('\nSCAN FOR OSCQUERY DEVICES\n')
 for data in ossia.list_oscquery_devices():
