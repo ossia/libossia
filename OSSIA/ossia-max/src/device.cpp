@@ -226,7 +226,8 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
-        object_error((t_object*)x, "%s", e.what());
+        object_error((t_object*)x, "can't connect, port might be already in use");
+        object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
 
@@ -257,7 +258,8 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
-        object_error((t_object*)x, "%s", e.what());
+        object_error((t_object*)x, "can't connect, port might be already in use");
+        object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
 
@@ -289,7 +291,8 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
-        object_error((t_object*)x, "%s", e.what());
+        object_error((t_object*)x, "can't connect, port might be already in use");
+        object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
 
