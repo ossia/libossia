@@ -35,10 +35,10 @@ bool_parameter = bool_node.create_parameter(ossia.ValueType.Bool)
 
 bool_parameter.access_mode = ossia.AccessMode.Get
 bool_parameter.value = True
+bool_parameter.default_value = True
 
 bool_node.description = "it could be used to enable/disable an effect"
 bool_node.tags = ["example", "numeric"]
-bool_node.default_value = True
 bool_node.priority = 1
 bool_node.refresh_rate = 100
 # more attributes exist : value_step_size, instance_bounds, extended_type, zombie, critical, disabled, hidden, muted
@@ -50,13 +50,13 @@ int_parameter = int_node.create_parameter(ossia.ValueType.Int)
 int_parameter.access_mode = ossia.AccessMode.Set
 int_parameter.bounding_mode = ossia.BoundingMode.Clip
 int_parameter.value = 9
+int_parameter.default_value = -3
 int_parameter.make_domain(-10, 10)
 int_parameter.apply_domain()
 int_parameter.repetition_filter = ossia.RepetitionFilter.Off
 
 int_node.description = "it could be used to setup something"
 int_node.tags = ["example", "numeric"]
-int_node.default_value = -3
 
 # create a node, create a float parameter, set its properties and initialize it
 float_node = local_device.add_node("/test/numeric/float")
@@ -65,40 +65,38 @@ float_parameter = float_node.create_parameter(ossia.ValueType.Float)
 float_parameter.access_mode = ossia.AccessMode.Bi
 float_parameter.bounding_mode = ossia.BoundingMode.Fold
 float_parameter.value = 1.5
+float_parameter.default_value = 0.123456789
 float_parameter.unit = "db"
 float_parameter.make_domain(-2.0, 2.0)
 float_parameter.apply_domain()
 
 float_node.description = "it could be used to setup something"
 float_node.tags = ["example", "numeric"]
-float_node.default_value = 0.123456789
 
 # create a node, create a char parameter and initialize it
 char_node = local_device.add_node("/test/misc/char")
 char_parameter = char_node.create_parameter(ossia.ValueType.Char)
 
 char_parameter.value = 'z'
+char_parameter.default_value = chr(69)
 char_parameter.make_domain(['a', 'b', 'c', 'd'])
 char_parameter.apply_domain()
 
 char_node.description = "it could be used to setup something"
 char_node.tags = ["example", "misc"]
-char_node.default_value = chr(69)
 
 # create a node, create a string parameter and initialize it
 string_node = local_device.add_node("/test/misc/string")
 string_parameter = string_node.create_parameter(ossia.ValueType.String)
 
 string_parameter.value = "hello world !"
-### TODO : string_parameter.make_domain(['once', 'loop', 'ping-pong'])
-#string_parameter.apply_domain()
+string_parameter.default_value = "init value"
+string_parameter.make_domain(['once', 'loop', 'ping-pong'])
+string_parameter.apply_domain()
 
-string_node.extended_type = "filepath"
-### TODO : have an enumeration for extended types
-
+string_node.extended_type = "filepath" ### TODO : have an enumeration for extended types
 string_node.description = "it could be used to setup something"
 string_node.tags = ["example", "misc"]
-string_node.default_value = "init value"
 string_node.instance_bounds = ossia.InstanceBounds(1, 10)
 
 # create a node, create a 3 floats vector parameter and initialize it
@@ -106,6 +104,7 @@ vec3f_node = local_device.add_node("/test/numeric/vec3f")
 vec3f_parameter = vec3f_node.create_parameter(ossia.ValueType.Vec3f)
 
 vec3f_parameter.value = [0, 146.5, 207]
+vec3f_parameter.default_value = [0, 146.5, 207]
 vec3f_parameter.unit = "cart3D"
 vec3f_parameter.bounding_mode = ossia.BoundingMode.Clip
 vec3f_parameter.make_domain([50, 100, 150], [100, 150, 200])
@@ -113,17 +112,16 @@ vec3f_parameter.apply_domain()
 
 vec3f_node.description = "it could be used to setup something"
 vec3f_node.tags = ["example", "numeric", "vector"]
-vec3f_node.default_value = [0, 146.5, 207]
 
 # create a node, create a list parameter and initialize it
 list_node = local_device.add_node("/test/misc/list")
 list_parameter = list_node.create_parameter(ossia.ValueType.List)
 
 list_parameter.value = [44100, "test.wav", 0.9]
+list_parameter.default_value = [44100, "ossia.wav", 0.9] 
 
 list_node.description = "it could be used to setup something"
 list_node.tags = ["example", "misc"]
-list_node.default_value = [44100, "ossia.wav", 0.9] 
 
 # attach a callback function to the boolean parameter
 def bool_value_callback(v):
@@ -176,6 +174,7 @@ def iterate_on_children(node):
 
       # display parameter's attributes
       print('value : ' + str(child.parameter.value))
+      print('default_value : ' + str(child.parameter.default_value))
       print('type : ' + str(child.parameter.value_type))
       print('access mode : ' + str(child.parameter.access_mode))
       print('repetition filter : ' + str(child.parameter.repetition_filter))
@@ -191,7 +190,6 @@ def iterate_on_children(node):
       #display node's attributes
       print('description : ' + str(child.description))
       print('tags : ' + str(child.tags))
-      print('default_value : ' + str(child.default_value))
       print('priority : ' + str(child.priority))
       print('refresh_rate : ' + str(child.refresh_rate))
       print('value_step_size : ' + str(child.value_step_size))
@@ -238,8 +236,7 @@ remote_bool_node = remote_osc_device.add_node("/test/special/bool")
 remote_bool_parameter = remote_bool_node.create_parameter(ossia.ValueType.Bool)
 remote_bool_parameter.access_mode = ossia.AccessMode.Get
 remote_bool_parameter.value = True
-remote_bool_node.default_value = True
-
+remote_bool_parameter.default_value = True
 # learn namespace from message sent by the remote OSC device
 remote_osc_device.learning = True
 
@@ -273,10 +270,12 @@ remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
 #print("\nREMOTE MIDI DEVICE NAMESPACE")
 #iterate_on_children(remote_midi_device.root_node)
 
-# create a message queue to focus on a MIDI parameter
+# create a message queue to focus on all control parameters of channel 1
 remote_midi_messageq = ossia.MessageQueue(remote_midi_device)
-remote_midi_parameter = remote_midi_device.find_node("/1/control/32").parameter
-remote_midi_messageq.register(remote_midi_parameter)
+
+node_vector = ossia.list_node_pattern([remote_midi_device.root_node], "/1/control/*")
+for node in node_vector:
+  remote_midi_messageq.register(node.parameter)
 
 # MAIN LOOP
 print("\nMAIN LOOP ...")
