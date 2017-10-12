@@ -25,7 +25,7 @@ from . import ossia_python as ossia
 
 # these few lines are used to get versionning from git
 from ._version import get_versions
-__version__ = get_versions()['version']
+__version__ = get_versions()
 del get_versions
 __release__ = __version__
 
@@ -112,8 +112,7 @@ def add_param(self, name, **kwargs):
     if 'domain' in kwargs.keys():
         param.make_domain(kwargs['domain'][0], kwargs['domain'][1])
     if 'default_value' in kwargs.keys():
-        if param.node:
-            param.node.default_value = kwargs['default_value']
+        param.default_value = kwargs['default_value']
     if 'clipmode' in kwargs.keys():
         param.clipmode = kwargs['clipmode]']
     # TODO : Checks kwargs and please set value as required
@@ -193,13 +192,13 @@ def reset(self):
     if self.parameter:
         self.value = self.node.default_value
     for param in self.get_parameters():
-        if param.node.default_value:
+        if param.default_value:
             print()
             print('----')
             print(param)
             print(param.value)
-            print(param.node.default_value)
-            param.value = param.node.default_value
+            print(param.default_value)
+            param.value = param.default_value
             print(param.value)
 
 
