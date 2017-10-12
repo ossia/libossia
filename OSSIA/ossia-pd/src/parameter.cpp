@@ -87,6 +87,8 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       m_nodes.push_back(n);
     }
 
+    fill_selection();
+
     set_description();
     set_tags();
     set_access_mode();
@@ -98,7 +100,7 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
     set_rate();
   }
 
-  clock_delay(m_clock, 0);
+  clock_set(m_clock, 1);
 
   return true;
 }
@@ -159,7 +161,7 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
       t_symbol* address = atom_getsymbol(argv);
       std::string name = replace_brackets(address->s_name);
       x->m_name = gensym(name.c_str());
-      x->m_addr_scope = get_address_scope(x->m_name->s_name);
+      x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
     else
     {
@@ -256,8 +258,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "clip", 0, "free");
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
-    // eclass_register(CLASS_OBJ, c); // disable property dialog since it's
-    // buggy
+    eclass_register(CLASS_OBJ, c); // disable property dialog since it's
   }
 
   ossia_pd::param_class = c;

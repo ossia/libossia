@@ -64,11 +64,6 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->m_poll_clock = clock_new((t_object*)x, (t_method) client::poll_message);
 
-    if (argc != 0 && argv[0].a_type == A_SYMBOL)
-    {
-      x->m_name = atom_getsymbol(argv);
-    }
-
     x->m_rate = 100;
 
     ebox_attrprocess_viabinbuf(x, d);
@@ -80,6 +75,12 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
       client::destroy(x);
       free(x);
       x = nullptr;
+    }
+
+    if (argc != 0 && argv[0].a_type == A_SYMBOL)
+    {
+      x->m_name = atom_getsymbol(argv);
+      connect(x,gensym("connect"),argc,argv);
     }
   }
 
@@ -240,7 +241,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
             return;
           }
           x->m_looking_for = gensym(name.c_str());
-          client::getdevices(x);
+          client::get_devices(x);
           return;
         }
       } else {
@@ -341,6 +342,8 @@ void client::check_thread_status(client* x)
     delete x->m_async_thread;
     x->m_async_thread = nullptr;
 
+    x->m_done = false;
+
     clock_free(x->m_clock);
     x->m_clock = nullptr;
 
@@ -396,7 +399,7 @@ void client::find_devices_async(client* x)
   x->m_done = true;
 }
 
-void client::getdevices(client* x)
+void client::get_devices(client* x)
 {
   if (x->m_async_thread)
   {
@@ -406,7 +409,14 @@ void client::getdevices(client* x)
     x->m_clock = clock_new(x, (t_method)client::check_thread_status);
     clock_delay(x->m_clock,1000);
   }
+}
 
+void client::get_mess_cb(client* x, t_symbol* s)
+{
+  if ( s == gensym("devices") )
+    client::get_devices(x);
+  else
+    device_base::get_mess_cb(x,s);
 }
 
 extern "C" void setup_ossia0x2eclient(void)
@@ -427,7 +437,9 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(c, (method)client::loadbang, "loadbang", A_NULL, 0);
     eclass_addmethod(c, (method)client::connect, "connect", A_GIMME, 0);
     eclass_addmethod(c, (method)client::disconnect, "disconnect", A_NULL, 0);
-    eclass_addmethod(c, (method) client::getdevices, "getdevices", A_NULL, 0);
+
+    eclass_addmethod(c, (method)client::get_mess_cb, "get", A_SYMBOL, 0);
+
   }
 
   ossia_pd::client_class = c;

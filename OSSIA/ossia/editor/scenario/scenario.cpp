@@ -70,7 +70,24 @@ scenario::~scenario()
 void scenario::start(ossia::state& st)
 {
   node->set_enabled(true);
-  m_waitingNodes.push_back(m_nodes[0].get());
+
+  for(auto& node : m_nodes)
+  {
+    auto bool_expr = node->get_expression().target<ossia::expressions::expression_bool>();
+    if(!bool_expr || !bool_expr->evaluate() || node == m_nodes[0])
+    {
+      auto ok = ossia::all_of(
+            node->get_time_events(),
+            [] (const std::shared_ptr<ossia::time_event>& ev) {
+        return ev->previous_time_intervals().empty();
+      });
+      if(ok)
+      {
+        m_waitingNodes.push_back(node.get());
+      }
+    }
+  }
+
   // start each TimeInterval if possible
   for (const auto& timeInterval : m_intervals)
   {

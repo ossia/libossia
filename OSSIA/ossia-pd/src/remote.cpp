@@ -58,7 +58,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
   for (auto node : _nodes)
   {
-    if (m_addr_scope == address_scope::absolute)
+    if (m_addr_scope == net::address_scope::absolute)
     {
       // get root node
       node = &node->get_device().get_root_node();
@@ -70,7 +70,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
     std::vector<ossia::net::node_base*> nodes{};
 
-    if (m_addr_scope == address_scope::global)
+    if (m_addr_scope == net::address_scope::global)
       nodes = ossia::pd::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*node, name);
@@ -96,6 +96,8 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       }
     }
   }
+
+  fill_selection();
 
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
@@ -139,7 +141,6 @@ void remote::set_unit()
 {
   if ( m_unit !=  gensym("") )
   {
-    // TODO check for unit compatibility with parameter
     ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
     if (unit)
       m_ounit = unit;
@@ -151,9 +152,10 @@ void remote::set_unit()
       return;
     }
 
-    if ( !m_matchers.empty() )
+    bool break_flag = false;
+    for (auto& m : m_matchers)
     {
-      auto dst_unit = m_matchers[0].get_node()->get_parameter()->get_unit();
+      auto dst_unit = m.get_node()->get_parameter()->get_unit();
       if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
         auto src = ossia::get_pretty_unit_text(*m_ounit);
         auto dst = ossia::get_pretty_unit_text(dst_unit);
@@ -161,8 +163,13 @@ void remote::set_unit()
                  src.c_str(), dst.c_str() );
         m_ounit = ossia::none;
         m_unit = gensym("");
+        break_flag = true;
+        break;
       }
     }
+    if (!break_flag)
+      parameter_base::bang(this);
+
   } else {
     m_ounit = ossia::none;
   }
@@ -294,7 +301,7 @@ void remote::bind(remote* x, t_symbol* address)
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
   x->update_path(name);
-  x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);
 }
@@ -318,7 +325,7 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
       t_symbol* address = atom_getsymbol(argv);
       std::string name = replace_brackets(address->s_name);
       x->m_name = gensym(name.c_str());
-      x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
+      x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
     else
     {
@@ -402,6 +409,19 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   }
 }
 
+
+void remote::get_mess_cb(remote* x, t_symbol* s)
+{
+  if ( s == gensym("unit") )
+    remote::get_unit(x);
+  if ( s == gensym("mute") )
+    remote::get_mute(x);
+  if ( s == gensym("rate") )
+    remote::get_rate(x);
+  else
+    parameter_base::get_mess_cb(x,s);
+}
+
 extern "C" void setup_ossia0x2eremote(void)
 {
   t_eclass* c = eclass_new("ossia.remote",
@@ -413,19 +433,16 @@ extern "C" void setup_ossia0x2eremote(void)
   {
     class_addcreator((t_newmethod)remote::create,gensym("ø.remote"), A_GIMME, 0);
 
+    parameter_base::class_setup(c);
+
     eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 
-    parameter_base::class_setup(c);
-
     // remote special attributes
-    eclass_addmethod(c, (method) remote::get_unit,        "getunit",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote::get_mute,        "getmute",     A_NULL, 0);
-    eclass_addmethod(c, (method) remote::get_rate,        "rate",        A_NULL, 0);
-
+    eclass_addmethod(c, (method) remote::get_mess_cb, "get", A_SYMBOL, 0);
   }
 
   ossia_pd::remote_class = c;

@@ -14,7 +14,7 @@ class OSSIA_EXPORT midi_node : public ossia::net::node_base
 {
 protected:
   midi_device& m_device;
-  node_base& m_parent;
+  node_base* m_parent{};
   std::unique_ptr<parameter_base> m_parameter;
 
 public:
@@ -23,6 +23,7 @@ public:
       = ossia::ptr_container<ossia::net::node_base>::const_iterator;
   ~midi_node();
   midi_node(midi_device& aDevice, ossia::net::node_base& aParent);
+  midi_node(midi_device& aDevice);
 
   device_base& get_device() const final override;
   node_base* get_parent() const final override;

@@ -61,7 +61,7 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
   {
     std::string name = m_name->s_name;
 
-    if (m_addr_scope == address_scope::absolute)
+    if (m_addr_scope == ossia::net::address_scope::absolute)
     {
       // get root node
       _node = &_node->get_device().get_root_node();
@@ -73,7 +73,7 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
     std::vector<ossia::net::node_base*> nodes{};
 
-    if (m_addr_scope == address_scope::global)
+    if (m_addr_scope == ossia::net::address_scope::global)
       nodes = ossia::pd::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*_node, name);
@@ -91,6 +91,8 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       }
     }
   }
+
+  fill_selection();
 
   return (!m_matchers.empty() || m_is_pattern);
 }
@@ -190,7 +192,7 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
       t_symbol* address = atom_getsymbol(argv);
       std::string name = replace_brackets(address->s_name);
       x->m_name = gensym(name.c_str());
-      x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
+      x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
 
       // we need to delay registration because object may use patcher hierarchy
       // to check address validity
@@ -233,7 +235,7 @@ void view::bind(view* x, t_symbol* address)
 {
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
-  x->m_addr_scope = ossia::pd::get_address_scope(x->m_name->s_name);
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->unregister();
   obj_register(x);
 }

@@ -125,15 +125,15 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   return nodes;
 }
 
-ossia::max::address_scope get_address_scope(ossia::string_view addr)
+ossia::net::address_scope get_address_scope(ossia::string_view addr)
 {
-  address_scope type = address_scope::relative;
+  ossia::net::address_scope type = ossia::net::address_scope::relative;
   if (boost::starts_with(addr, "//") )
-    type = address_scope::relative;
+    type = ossia::net::address_scope::relative;
   else if ( boost::starts_with(addr, "/") )
-    type = address_scope::absolute;
+    type = ossia::net::address_scope::absolute;
   else if ( addr.find(":/") != std::string::npos )
-      type = address_scope::global;
+      type = ossia::net::address_scope::global;
   return type;
 }
 
@@ -294,6 +294,33 @@ t_symbol* access_mode2symbol(ossia::access_mode mode)
     default:
       return gensym("bi");
   }
+}
+
+std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
+{
+  std::vector<ossia::max::t_matcher*> matchers;
+  if (node)
+  {
+    for (auto& m : x->m_matchers)
+    {
+      if (node == m.get_node())
+      {
+        matchers.push_back(&m);
+        break;
+      }
+    }
+  }
+
+  /*
+  if (matchers.empty())
+  {
+    matchers.reserve(x->m_matchers.size());
+    for (auto& m : x->m_matchers)
+      matchers.push_back(&m);
+  }
+  */
+
+  return matchers;
 }
 
 } // namespace max

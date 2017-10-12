@@ -55,8 +55,8 @@ extern "C" void ossia_client_setup()
       "disconnect", A_GIMME, 0);
 
   class_addmethod(
-      c, (method)client::getdevices,
-      "getdevices", A_NOTHING, 0);
+      c, (method)client::get_mess_cb,
+      "get", A_SYM, 0);
 
   class_addmethod(
       c, (method)client::assist,
@@ -107,6 +107,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
+        connect(x,gensym("connect"),argc,argv);
       }
     }
 
@@ -155,6 +156,14 @@ void client::assist(client*, void*, long m, long a, char* s)
         ;
     }
   }
+}
+
+void client::get_mess_cb(client* x, t_symbol* s)
+{
+  if ( s == gensym("devices") )
+    client::get_devices(x);
+  else
+    device_base::get_mess_cb(x,s);
 }
 
 void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
@@ -236,7 +245,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
             return;
           }
           x->m_looking_for = gensym(name.data());
-          client::getdevices(x);
+          client::get_devices(x);
           return;
         }
       } else {
@@ -393,7 +402,7 @@ void client::find_devices_async(client* x)
   x->m_done = true;
 }
 
-void client::getdevices(client* x)
+void client::get_devices(client* x)
 {
   if (x->m_async_thread)
   {

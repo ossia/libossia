@@ -160,7 +160,7 @@ value js_value_inbound_visitor::operator()(char v) const
 
 value js_value_inbound_visitor::operator()(const std::string& v) const
 {
-  return std::string(val.toString().toStdString());
+  return val.toString().toStdString();
 }
 
 value js_value_inbound_visitor::
@@ -233,6 +233,100 @@ value js_value_inbound_visitor::operator()() const
 {
   return {};
 }
+
+
+
+value variant_inbound_visitor::operator()(impulse) const
+{
+  return impulse{};
+}
+
+value variant_inbound_visitor::operator()(int32_t v) const
+{
+  return int32_t(val.toInt());
+}
+
+value variant_inbound_visitor::operator()(float v) const
+{
+  return float(val.toFloat());
+}
+
+value variant_inbound_visitor::operator()(bool v) const
+{
+  return bool(val.toBool());
+}
+
+value variant_inbound_visitor::operator()(char v) const
+{
+  return val.toChar().toLatin1();
+}
+
+value variant_inbound_visitor::operator()(const std::string& v) const
+{
+  return val.toString().toStdString();
+}
+
+value variant_inbound_visitor::
+operator()(const std::vector<ossia::value>& v) const
+{
+  auto qv = val.toList();
+  std::vector<ossia::value> t;
+  t.reserve(qv.size());
+  for(auto& e : qv)
+  {
+    t.push_back(ossia::qt::qt_to_ossia{}(e));
+  }
+
+  return t;
+}
+
+value variant_inbound_visitor::operator()(vec2f v) const
+{
+  if(val.canConvert<QVector2D>())
+    return qt_to_ossia{}(val.value<QVector2D>());
+  else if(val.canConvert<QPoint>())
+    return qt_to_ossia{}(val.value<QPoint>());
+  else if(val.canConvert<QPointF>())
+    return qt_to_ossia{}(val.value<QPointF>());
+  else if(val.canConvert<QSize>())
+    return qt_to_ossia{}(val.value<QSize>());
+  else if(val.canConvert<QSizeF>())
+    return qt_to_ossia{}(val.value<QSizeF>());
+  return ossia::vec2f{};
+}
+
+value variant_inbound_visitor::operator()(vec3f v) const
+{
+  if(val.canConvert<QVector3D>())
+    return qt_to_ossia{}(val.value<QVector3D>());
+  return ossia::vec3f{};
+}
+
+value variant_inbound_visitor::operator()(vec4f v) const
+{
+  if(val.canConvert<QVector4D>())
+    return qt_to_ossia{}(val.value<QVector4D>());
+  if(val.canConvert<QColor>())
+    return qt_to_ossia{}(val.value<QColor>());
+  if(val.canConvert<QQuaternion>())
+    return qt_to_ossia{}(val.value<QQuaternion>());
+  if(val.canConvert<QLine>())
+    return qt_to_ossia{}(val.value<QLine>());
+  if(val.canConvert<QLineF>())
+    return qt_to_ossia{}(val.value<QLineF>());
+  if(val.canConvert<QRect>())
+    return qt_to_ossia{}(val.value<QRect>());
+  if(val.canConvert<QRectF>())
+    return qt_to_ossia{}(val.value<QRectF>());
+  return ossia::vec4f{};
+}
+value variant_inbound_visitor::operator()() const
+{
+  return ossia::impulse{};
+}
+
+
+
 
 ossia::complex_type get_type(const QJSValue& val)
 {

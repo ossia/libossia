@@ -27,6 +27,7 @@ option(OSSIA_C "Build C bindings" OFF)
 option(OSSIA_CPP "Build CPP bindings" OFF)
 option(OSSIA_UNITY3D "Build Unity3D bindings" OFF)
 option(OSSIA_QML "Build QML bindings" OFF)
+option(OSSIA_QML_SCORE "Build QML bindings to scoring parts" OFF)
 
 # Protocols :
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
@@ -136,14 +137,14 @@ if(${CMAKE_VERSION} VERSION_LESS 3.8.0 OR ANDROID OR APPLE)
 else()
   set(CMAKE_CXX_STANDARD 17)
   if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS "-std=c++1z ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS}")
   endif()
 endif()
 # So that make install after make all_unity does not rebuild everything :
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 
 if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
-    set(CMAKE_CXX_FLAGS "-std=c++1z ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS}")
 endif()
 
 # We disable debug infos on OS X on travis because it takes up too much space

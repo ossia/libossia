@@ -3,14 +3,14 @@ language: cpp
 branches:
   except:
   - gh-pages
-  - feature/appveyor_pd
+  - /.*appveyor.*/
 
 env:
   global:
   - GH_REPO_NAME: libossia
   - GH_REPO_REF: github.com/OSSIA/libossia.git
 
-osx_image: xcode8.3
+osx_image: xcode9
 dist: trusty
 sudo: required
 
@@ -29,26 +29,52 @@ matrix:
 
   - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=Debug OSSIA_STATIC=1
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=Release OSSIA_STATIC=0
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=Release OSSIA_STATIC=1
-    dist: trusty
   - os: linux
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
-    dist: trusty
+
+## RpiDocker build is tooooooo slow
 #  - os: linux
 #    env: BUILD_TYPE=RpiDocker OSSIA_STATIC=1
 #    dist: trusty
 
   - os: linux
     env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
-    dist: trusty
+
+  - os: linux
+    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0
+
+  - os: linux
+    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
+
+  - os: linux
+    env: BUILD_TYPE=python PYTHON_VERSION=2.7
+
+  - os: linux
+    env: BUILD_TYPE=python PYTHON_VERSION=3.5
+
+  - os: linux
+    env: BUILD_TYPE=python PYTHON_VERSION=3.6
+
+  - os: linux
+    env: BUILD_TYPE=qml
+
+  - os: osx
+    env: BUILD_TYPE=python PYTHON_VERSION=2.7
+
+  - os: osx
+    env: BUILD_TYPE=python PYTHON_VERSION=3.5
+
+  - os: osx
+    env: BUILD_TYPE=python PYTHON_VERSION=3.6
+
+  - os: osx
+    env: BUILD_TYPE=qml
 
   - os: osx
     env: BUILD_TYPE=Debug OSSIA_STATIC=0
@@ -69,18 +95,37 @@ matrix:
 before_install:
 - "./ci/deps.sh"
 
+after_success: if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${PyPiUser} -p ${PyPiWord} OSSIA/ossia-python/pyossia-*.whl; fi
+
 script:
 - "./ci/build.sh"
 deploy:
-  provider: releases
-  api_key:
-    secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
-  file:
-    - ossia-pd-linux_x86_64.tar.gz
-    - ossia-pd-linux_arm.tar.gz
-    - ossia-pd-osx.tar.gz
-    - ossia-max-osx.tar.gz
-  skip_cleanup: true
-  on:
-    repo: OSSIA/libossia
-    tags: true
+  - provider: releases
+    api_key:
+      secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
+    file_glob: true
+    file: ossia-*.tar.gz
+    skip_cleanup: true
+    draft: false
+    prerelease: true
+    description: |+
+      # Draft release of OSSIA $TRAVIS_TAG
+
+      * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
+      * Packages ending in '`win32`' are 32-bit, '`win64`' are 64-bit and '`win`' work on both architectures.
+      * All Windows packages are built with VS2017.
+      * Python packages are built with Python 2.7, 3.5 and 3.6 version on macOS (from Homebrew), Ubuntu and Windows.
+      * QML packages are built with Homebrew's Qt version on macOS.
+      * QML packages are built with Qt 5.9.1 VS2017 64 on Windows.
+      * QML packages are meant to be put in the [QML Import Path](http://doc.qt.io/qt-5/qtqml-syntax-imports.html). For instance on macOS it should look like '`/usr/local/Cellar/qt/5.9.1/qml/Ossia/qmldir`'.
+
+      Please consult [this wiki page](https://github.com/OSSIA/libossia/wiki/Integrations) to see what's here and what's missing.
+
+      * [Documentation](https://ossia.github.io)
+      * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation)
+      * [Building from source](https://github.com/OSSIA/libossia/wiki/Building)
+      * ***Do note use the Github source package ("Source code" link below) to build; instead do a git clone or use '`ossia-src-unix.tar.gz`'. Else the build won't work due to Github not putting submodules in the archive.***
+
+    on:
+      repo: OSSIA/libossia
+      tags: true

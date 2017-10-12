@@ -21,7 +21,6 @@ public:
   bool unregister();
 
   ossia::net::device_base* m_dev{};
-  float m_rate_min;
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   static void update_attribute(attribute* x, ossia::string_view attribute, const ossia::net::node_base* node);

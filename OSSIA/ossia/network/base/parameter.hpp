@@ -114,6 +114,9 @@ public:
     set_value(std::move(v));
   }
 
+  optional<ossia::value> get_default_value() const;
+  void set_default_value(const ossia::value& v);
+
   virtual val_type get_value_type() const = 0;
   virtual parameter_base& set_value_type(val_type) = 0;
 

@@ -79,7 +79,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
+        x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
       }
     }
 
@@ -131,7 +131,7 @@ void remote::destroy(remote* x)
 
   outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
-  outlet_delete(x->m_data_out);  
+  outlet_delete(x->m_data_out);
   x->~remote();
 }
 
@@ -189,7 +189,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       x->set_bounding_mode();
     else if ( attrname == gensym("min") || attrname == gensym("max") )
       x->set_minmax();
-    else if ( attrname == gensym("defval") )
+    else if ( attrname == gensym("default") )
       x->set_default();
     else if ( attrname == gensym("unit") )
       x->set_unit();
@@ -239,9 +239,10 @@ void remote::set_unit()
       return;
     }
 
-    if ( !m_matchers.empty() )
+    bool break_flag = false;
+    for (auto& m : m_matchers)
     {
-      auto dst_unit = m_matchers[0].get_node()->get_parameter()->get_unit();
+      auto dst_unit = m.get_node()->get_parameter()->get_unit();
       if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
         auto src = ossia::get_pretty_unit_text(*m_ounit);
         auto dst = ossia::get_pretty_unit_text(dst_unit);
@@ -249,8 +250,13 @@ void remote::set_unit()
                  src.c_str(), dst.c_str() );
         m_ounit = ossia::none;
         m_unit = gensym("");
+        break_flag = true;
+        break;
       }
     }
+    if (!break_flag)
+      parameter_base::bang(this);
+
   } else {
     m_ounit = ossia::none;
   }
@@ -347,7 +353,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
   for (auto node : _nodes)
   {
 
-    if (m_addr_scope == address_scope::absolute)
+    if (m_addr_scope == ossia::net::address_scope::absolute)
     {
       // get root node
       node = &node->get_device().get_root_node();
@@ -359,7 +365,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
     std::vector<ossia::net::node_base*> nodes{};
 
-    if (m_addr_scope == address_scope::global)
+    if (m_addr_scope == ossia::net::address_scope::global)
       nodes = ossia::max::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*node, name);
@@ -384,6 +390,8 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       }
     }
   }
+
+  fill_selection();
 
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
@@ -426,12 +434,12 @@ void remote::bind(remote* x, t_symbol* address)
   std::lock_guard<std::mutex> lock(x->bindMutex);
   x->m_name = address;
   x->update_path(x->m_name->s_name);
-  x->m_addr_scope = ossia::max::get_address_scope(x->m_name->s_name);
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->unregister();
   max_object_register(x);
 }
 
-void remote::update_attribute(remote* x, ossia::string_view attribute)
+void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   // @mute and @unit attributes are specific to each remote
   // it makes no sens to sens to change when an attribute changes
@@ -463,7 +471,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
     }
 
   } else {
-    parameter_base::update_attribute(x, attribute);
+    parameter_base::update_attribute(x, attribute, node);
   }
 }
 

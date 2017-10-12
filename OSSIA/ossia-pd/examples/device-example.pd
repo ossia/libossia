@@ -1,4 +1,4 @@
-#N canvas 25 925 2830 394 10;
+#N canvas 15 281 546 689 10;
 #X obj 26 372 osc~;
 #X obj 26 504 *~;
 #X obj 106 448 phasor~;
@@ -12,7 +12,7 @@
 #X obj 175 424 line~;
 #X obj 26 219 mtof;
 #X floatatom 26 248 5 0 0 0 - - -, f 5;
-#N canvas 614 110 589 423 envelope 0;
+#N canvas 614 110 610 440 envelope 0;
 #X obj 105 15 inlet;
 #X floatatom 145 105 5 0 0 0 - - -, f 5;
 #X obj 145 124 / 127;

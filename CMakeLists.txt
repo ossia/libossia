@@ -52,11 +52,7 @@ endif()
 
 if(NOT WIN32)
 if(OSSIA_PYTHON)
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11")
-    pybind11_add_module(ossia_python OSSIA/ossia-python/ossia_python.cpp)
-    target_link_libraries(ossia_python PRIVATE ossia)
-    use_gold(ossia_python)
-    add_linker_warnings_external(ossia_python)
+    add_subdirectory(OSSIA/ossia-python OSSIA/ossia-python/pyossia)
 endif()
 endif()
 

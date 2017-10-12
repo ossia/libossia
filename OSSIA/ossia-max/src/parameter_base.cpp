@@ -15,25 +15,26 @@
 namespace ossia {
 namespace max {
 
-void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute)
+void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
+  auto matchers = make_matchers_vector(x,node);
+
   if ( attribute == ossia::net::text_value_type() ){
-    get_type(x);
+    get_type(x, matchers);
   } else if ( attribute == ossia::net::text_domain() ){
-    // get_domain(x);
-    // object_post((t_object*)x, "update domain attribute");
+    get_domain(x, matchers);
   } else if ( attribute == ossia::net::text_access_mode() ){
-    get_access_mode(x);
+    get_access_mode(x, matchers);
   } else if ( attribute == ossia::net::text_bounding_mode() ){
-    get_bounding_mode(x);
+    get_bounding_mode(x, matchers);
   } else if ( attribute == ossia::net::text_disabled() ){
-    get_enable(x);
+    get_enable(x, matchers);
   } else if ( attribute == ossia::net::text_repetition_filter() ){
-    get_repetition_filter(x);
+    get_repetition_filter(x, matchers);
   } else if ( attribute == ossia::net::text_default_value() ) {
-    get_default(x);
+    get_default(x, matchers);
   } else {
-    object_base::update_attribute((node_base*)x, attribute);
+    object_base::update_attribute((node_base*)x, attribute, node);
   }
 }
 
@@ -79,6 +80,15 @@ void parameter_base::set_type()
   {
     ossia::net::node_base* node = m.get_node();
     ossia::try_setup_parameter(m_type->s_name, *node);
+  }
+}
+
+void parameter_base::set_rate()
+{
+  for (t_matcher* m : m_node_selection)
+  {
+    ossia::net::node_base* node = m->get_node();
+    ossia::net::set_refresh_rate(*node,m_rate);
   }
 }
 
@@ -143,6 +153,38 @@ void parameter_base::set_minmax(){
     
     if (!min.empty() && !max.empty())
       param->set_domain(ossia::make_domain(min,max));
+  }
+}
+
+void parameter_base::set_unit()
+{
+  for (t_matcher* m : m_node_selection)
+  {
+    ossia::net::node_base* node = m->get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    if ( m_unit !=  gensym("") )
+    {
+      ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
+      if (unit)
+      {
+        param->set_unit(unit);
+        // update m_type since set_unit() may have changed it
+        auto val_type = param->get_value_type();
+        m_type = val_type2symbol(val_type);
+      }
+      else
+        object_error((t_object*)this, "wrong unit: %s", m_unit->s_name);
+    }
+  }
+}
+
+void parameter_base::set_mute()
+{
+  for (t_matcher* m : m_node_selection)
+  {
+    ossia::net::node_base* node = m->get_node();
+    ossia::net::set_muted(*node,m_mute);
   }
 }
 
@@ -325,22 +367,47 @@ void parameter_base::set_default()
   }
 }
 
-void parameter_base::get_range(parameter_base*x)
+void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
+{
+  if ( s == gensym("enable") )
+    parameter_base::get_enable(x,x->m_node_selection);
+  else if ( s == gensym("default") )
+    parameter_base::get_default(x,x->m_node_selection);
+  else if ( s == gensym("range") || s == gensym("min") || s == gensym("max") )
+    parameter_base::get_domain(x,x->m_node_selection);
+  else if ( s == gensym("clip") )
+    parameter_base::get_bounding_mode(x,x->m_node_selection);
+  else if ( s == gensym("type") )
+    parameter_base::get_type(x,x->m_node_selection);
+  else if ( s == gensym("mode") )
+    parameter_base::get_access_mode(x,x->m_node_selection);
+  else if ( s == gensym("repetitions") )
+    parameter_base::get_repetition_filter(x,x->m_node_selection);
+  else if ( s == gensym("mute") )
+    parameter_base::get_mute(x,x->m_node_selection);
+  else if ( s == gensym("unit") )
+    parameter_base::get_unit(x,x->m_node_selection);
+  else if ( s == gensym("rate") )
+    parameter_base::get_rate(x,x->m_node_selection);
+
+}
+
+void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
 }
 
-void parameter_base::get_min(parameter_base*x)
+void parameter_base::get_min(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
 }
 
-void parameter_base::get_max(parameter_base*x)
+void parameter_base::get_max(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
 }
 
-void parameter_base::get_bounding_mode(parameter_base*x)
+void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // assume all matchers have the same bounding_mode
   ossia::max::t_matcher& m = x->m_matchers[0];
@@ -349,7 +416,7 @@ void parameter_base::get_bounding_mode(parameter_base*x)
   x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
 }
 
-void parameter_base::get_default(parameter_base*x)
+void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // assume all matchers have the same default value
   ossia::max::t_matcher& m = x->m_matchers[0];
@@ -373,7 +440,7 @@ void parameter_base::get_default(parameter_base*x)
   }
 }
 
-void parameter_base::get_type(parameter_base*x)
+void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   
   // assume all matchers have the same type
@@ -384,7 +451,7 @@ void parameter_base::get_type(parameter_base*x)
   x->m_type = val_type2symbol(param->get_value_type());
 }
 
-void parameter_base::get_access_mode(parameter_base*x)
+void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // assume all matchers have the same bounding_mode
   ossia::max::t_matcher& m = x->m_matchers[0];
@@ -394,7 +461,7 @@ void parameter_base::get_access_mode(parameter_base*x)
   x->m_access_mode = access_mode2symbol(param->get_access());
 }
 
-void parameter_base::get_repetition_filter(parameter_base*x)
+void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // assume all matchers have the same bounding_mode
   ossia::max::t_matcher& m = x->m_matchers[0];
@@ -404,7 +471,7 @@ void parameter_base::get_repetition_filter(parameter_base*x)
   x->m_repetition = !param->get_repetition_filter();
 }
 
-void parameter_base::get_enable(parameter_base*x)
+void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   // assume all matchers have the same bounding_mode
   ossia::max::t_matcher& m = x->m_matchers[0];
@@ -412,6 +479,44 @@ void parameter_base::get_enable(parameter_base*x)
   ossia::net::parameter_base* param = node->get_parameter();
   
   x->m_enable = !param->get_disabled();
+}
+
+
+void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
+{
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    auto rate = ossia::net::get_refresh_rate(*node);
+
+    if (rate)
+    {
+      x->m_rate = *rate;
+    }
+  }
+}
+
+void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
+{
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    x->m_mute = param->get_muted();
+  }
+}
+
+void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
+{
+  if (!x->m_matchers.empty())
+  {
+    ossia::net::node_base* node = x->m_matchers[0].get_node();
+    ossia::net::parameter_base* param = node->get_parameter();
+
+    std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+    x->m_unit = gensym(unit.c_str());
+  }
 }
 
 template<std::size_t N>
@@ -757,9 +862,9 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_LABEL(c, "mode", 0, "Acces Mode");
   
   CLASS_ATTR_ATOM_VARSIZE(
-        c, "defval", 0, parameter_base,
+        c, "default", 0, parameter_base,
         m_default, m_default_size, OSSIA_MAX_MAX_ATTR_SIZE);
-  CLASS_ATTR_LABEL(c, "defval", 0, "Default Value");
+  CLASS_ATTR_LABEL(c, "default", 0, "Default Value");
   
   CLASS_ATTR_ATOM_VARSIZE(
         c, "range", 0, parameter_base,

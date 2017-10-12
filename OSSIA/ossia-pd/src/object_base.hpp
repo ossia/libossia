@@ -2,8 +2,10 @@
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/base/value_callback.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/editor/dataspace/dataspace.hpp>
+
 extern "C" {
 #include <cicm_wrapper.h>
 }
@@ -31,13 +33,6 @@ enum class object_class {
   view,
   device,
   client
-};
-
-enum class address_scope
-{
-  relative = 0,
-  absolute,
-  global
 };
 
 struct object_base;
@@ -105,7 +100,7 @@ public:
 
   object_class m_otype{};
   t_symbol* m_name{};
-  address_scope m_addr_scope{};
+  ossia::net::address_scope m_addr_scope{};
   bool m_is_pattern{}; // whether the address is a pattern or not
   bool m_dead{false}; // whether this object is being deleted or not
   bool m_is_deleted{false}; // true during the is_deleted callback method
@@ -133,6 +128,8 @@ public:
   void set_tags();
   void set_priority();
   void set_hidden();
+
+  static void get_mess_cb(object_base* x, t_symbol* s);
 
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
@@ -165,7 +162,7 @@ public:
    * @brief obj_get_address return global address through dump outlet
    * @param x
    */
-  static void get_address(object_base *x);
+  static void get_address(object_base *x, std::vector<t_matcher*> nodes);
 
   static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 

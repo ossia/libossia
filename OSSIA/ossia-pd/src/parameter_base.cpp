@@ -155,26 +155,42 @@ void parameter_base::set_range()
 
     else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
     {
-      switch( param->get_value_type() )
+      float fmin = m_range[0].a_w.w_float;
+      float fmax = m_range[1].a_w.w_float;
+      std::vector<ossia::value> min{};
+      std::vector<ossia::value> max{};
+
+      switch(param->get_value_type())
       {
-        case ossia::val_type::INT:
         case ossia::val_type::FLOAT:
+        case ossia::val_type::INT:
         case ossia::val_type::CHAR:
-          param->set_domain(
-                ossia::make_domain(m_range[0].a_w.w_float,m_range[1].a_w.w_float));
+          min={fmin};
+          max={fmax};
+          break;
+        case ossia::val_type::VEC2F:
+          min={fmin,fmin};
+          max={fmax,fmax};
+          break;
+        case ossia::val_type::VEC3F:
+          min={fmin,fmin,fmin};
+          max={fmax,fmax,fmax};
+          break;
+        case ossia::val_type::VEC4F:
+          min={fmin,fmin,fmin,fmin};
+          max={fmax,fmax,fmax,fmax};
+          break;
+        case ossia::val_type::LIST:
+          min.resize(OSSIA_PD_MAX_ATTR_SIZE);
+          max.resize(OSSIA_PD_MAX_ATTR_SIZE);
+          ossia::fill(min,fmin);
+          ossia::fill(max,fmax);
           break;
         default:
-          {
-            std::vector<ossia::value> omin, omax;
-            // TODO check param size
-            std::array<float, OSSIA_PD_MAX_ATTR_SIZE> min, max;
-            min.fill(m_range[0].a_w.w_float);
-            max.fill(m_range[1].a_w.w_float);
-            omin.assign(min.begin(), min.end());
-            omax.assign(max.begin(), max.end());
-            param->set_domain(ossia::make_domain(std::move(omin), std::move(omax)));
-          }
+          ;
       }
+      auto domain = make_domain_from_minmax({min}, max, param->get_value_type());
+      param->set_domain(domain);
     }
     else
     {
@@ -321,8 +337,6 @@ void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
       dv.x = x;
       ossia::apply(dv, domain.v);
     } else {
-      // TODO we have to think about how to display attributes for pattern matching object
-      // when all matchers attribute doesn't have the same value
       x->m_range_size = 0;
       x->m_min_size = 0;
       x->m_max_size = 0;
@@ -637,7 +651,8 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_unit(x,x->m_node_selection);
   else if ( s == gensym("rate") )
     parameter_base::get_rate(x,x->m_node_selection);
-
+  else
+    object_base::get_mess_cb(x,s);
 }
 
 void parameter_base::class_setup(t_eclass* c)

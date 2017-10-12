@@ -216,6 +216,10 @@ if(OSSIA_QT)
  endif()
 endif()
 
+if(OSSIA_QML_SCORE)
+    target_sources(ossia PRIVATE ${OSSIA_QT_SCORE_HEADERS} ${OSSIA_QT_SCORE_SRCS})
+endif()
+
 if(OSSIA_DNSSD)
   target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
   get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)

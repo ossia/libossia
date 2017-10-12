@@ -539,5 +539,25 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
 
   return v;
 }
+
+address_scope get_address_scope(ossia::string_view addr)
+{
+  address_scope type = address_scope::relative;
+  if (boost::starts_with(addr, "//"))
+  {
+    type = address_scope::relative;
+  }
+  else if (boost::starts_with(addr, "/"))
+  {
+    type = address_scope::absolute;
+  }
+  else
+  {
+    auto first_slash = addr.find("/");
+    if (first_slash != std::string::npos && first_slash > 1 && addr[first_slash - 1] == ':')
+      type = address_scope::global;
+  }
+  return type;
+}
 }
 }

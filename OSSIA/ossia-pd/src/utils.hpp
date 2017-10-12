@@ -237,6 +237,7 @@ struct domain_visitor {
   }
   void operator()(ossia::domain_base<ossia::value> d)
   {
+    // TODO
     if(d.min) { }
     if(d.max) { }
     if(!d.values.empty()) { }
@@ -245,16 +246,52 @@ struct domain_visitor {
   template<std::size_t N>
   void operator()(ossia::vecf_domain<N>& d)
   {
-    for(const auto& min : d.min) if(min) { }
-    for(const auto& max : d.max) if(max) { }
-    for(const auto& values : d.values) if(!values.empty()) { }
+    x->m_min_size = d.min.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.min.size();
+    x->m_max_size = d.max.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.max.size();
+
+    for (int i=0; i<x->m_max_size; i++)
+      atom_setfloat(&x->m_max[i], *d.max[i]);
+
+    for (int i=0; i<x->m_min_size; i++)
+      atom_setfloat(&x->m_min[i], *d.min[i]);
+
+    x->m_range_size = 0;
+    if ( x->m_min_size == x->m_max_size && x->m_min_size > 1 )
+    {
+      bool flag = true;
+      for (int i=1; i < x->m_min_size && flag; i++)
+      {
+        flag |= *d.min[0] == *d.min[i];
+        flag |= *d.max[0] == *d.max[i];
+      }
+      if (flag)
+      {
+        x->m_range_size = 2;
+        atom_setfloat(&x->m_range[0], *d.min[0]);
+        atom_setfloat(&x->m_range[1], *d.max[0]);
+      }
+    }
   }
 
   void operator()(ossia::vector_domain& d)
   {
-    if(!d.min.empty()) { }
-    if(!d.max.empty()) { }
-    for(const auto& values : d.values) if(!values.empty()) { }
+    x->m_min_size = d.min.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.min.size();
+    x->m_max_size = d.max.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.max.size();
+
+    std::vector<t_atom> vamin, vamax;
+    value2atom minvisitor{vamin}, maxvisitor{vamax};
+    for (const auto& v : d.min)
+      v.apply(minvisitor);
+    for (int i=0; i<x->m_min_size; i++)
+      x->m_min[i] = vamin[i];
+
+    for (const auto& v : d.max)
+      v.apply(maxvisitor);
+    for (int i=0; i<x->m_max_size; i++)
+      x->m_max[i] = vamax[i];
+
+    // TODO range
+
   }
   void operator()()
   {
@@ -450,14 +487,6 @@ bool find_peer(object_base* x);
  * @return vector of pointers to matching nodes
  */
 std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
-
-
-/**
- * @brief get_address_scope: return address scope (relative, absolute or globale)
- * @param addr: the address to process
- * @return the scope
- */
-ossia::pd::address_scope get_address_scope(ossia::string_view addr);
 
 /**
  * @brief attribute2value : convert t_atom array from attribute to vector of ossia::value

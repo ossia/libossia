@@ -12,7 +12,7 @@ namespace net
 namespace midi
 {
 midi_device::midi_device(std::unique_ptr<protocol_base> prot)
-    : ossia::net::device_base{std::move(prot)}, midi_node{*this, *this}
+    : ossia::net::device_base{std::move(prot)}, midi_node{*this}
 {
   m_protocol->set_device(*this);
 }
@@ -31,7 +31,7 @@ bool midi_device::update_namespace()
   {
     for (int i = 1; i <= 16; i++)
     {
-      auto ptr = std::make_unique<channel_node>(i, *this);
+      auto ptr = std::make_unique<channel_node>(i, *this, *this);
 
       write_lock_t lock{m_mutex};
       m_children.push_back(std::move(ptr));

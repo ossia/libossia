@@ -4,6 +4,8 @@ function CheckLastExitCode {
     param ([int[]]$SuccessCodes = @(0), [scriptblock]$CleanupScript=$null)
 
     Push-AppveyorArtifact "$LogFile"
+    Push-AppveyorArtifact "C:/projects/libossia/build/CMakeFiles/CMakeOutput.log"
+    Push-AppveyorArtifact "C:/projects/libossia/build/CMakeFiles/CMakeError.log"
 
     if ($SuccessCodes -notcontains $LastExitCode) {
         if ($CleanupScript) {
@@ -28,36 +30,103 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     mkdir c:\projects\libossia\build\Test\Debug
     copy c:\projects\libossia\build\OSSIA\Debug\ossia.dll c:\projects\libossia\build\Tests\Debug\
   }
-}
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Release" ){
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
+  cd c:\projects\libossia\build
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install
+  ls
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win64.zip .
+
+  cd c:\projects\libossia\build-32bit
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
+  ls
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win32.zip .
+
+  # make unity3d package
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
+  mkdir ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia
+  xcopy ${env:APPVEYOR_BUILD_FOLDER}\OSSIA\ossia-unity3d\* ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\ /s /e
+  mv ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\ossia\README.md ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
+  cp ${env:APPVEYOR_BUILD_FOLDER}\install\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86_64
+  cp ${env:APPVEYOR_BUILD_FOLDER}\install-32bit\bin\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\unity3d\Assets\Plugins\x86
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-unity3d-win.zip .
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd c:\projects\libossia\build
 
-  $LogFile = C:\projects\libossia\install-pd.log
-  cmake --build . --target install > "$LogFile"
+  $LogFile = "C:\projects\libossia\install-pd.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  ls ../install
-  ls ../install/ossia-pd-package/*
-  # install target fails with error MSB3073, see https://ci.appveyor.com/project/JeanMichalCelerier/libossia/build/job/65o4lytwm9gr74n2
-  # cmake --build . --target install
-  # 7z a ossia-pd-windows-x86_64.zip %APPVEYOR_BUILD_FOLDER%\ossia-pd-package\*
-}
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
+  ls .
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip .
+
+  appveyor DownloadFile https://raw.githubusercontent.com/pure-data/deken/master/developer/deken
+
+  Get-ChildItem -Recurse C:\msys64 > msys64tree.log
+  Push-AppveyorArtifact msys64tree.log
+
+
+  SET "PATH=C:\msys64\MINGW64\bin;C:\msys64\usr\bin;%PATH%"
+  bash -lc "export PATH=/c/msys64/MINGW64/bin:/c/msys64/usr/bin:$PATH ; cd C:/projects/libossia/install/ossia-pd-package/ ; ./deken upload -v test ossia"
+  # C:\msys64\usr\bin\bash.exe C:\projects\libossia\deken upload -v test ossia
+
+  # C:\cygwin\bin\bash ./deken upload -v test ossia
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
+  cd c:\projects\libossia\build
+
+  $LogFile = "C:\projects\libossia\install-qml.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\
+  ls
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-win64.zip .
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
+  cd c:\projects\libossia\build
+  dir
+
+  if ( "${env:platform}" -eq "x64" ){
+    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win64.zip "ossia_python.so"
+  } else {
+    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win32.zip "ossia_python.so"
+  }
+
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
   cd c:\projects\libossia\build
 
-  $LogFile = C:\projects\libossia\install-max.log
-  cmake --build . --target install > "$LogFile"
+  $LogFile = "C:\projects\libossia\install-max.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
   cd c:\projects\libossia\build-32bit
 
-  $LogFile = C:\projects\libossia\install-max-32bit.log
-  cmake --build . --target install > "$LogFile"
+  $LogFile = "C:\projects\libossia\install-max-32bit.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  ls ../install
-  ls ../install/ossia-max-package/*
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-max-package\
+  ls
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-max-win.zip .
 }

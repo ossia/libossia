@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <ossia/preset/preset.hpp>
 #include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/score/qml_util.hpp>
 namespace spdlog
 {
 class logger;
@@ -76,6 +77,18 @@ public:
 
   Q_ENUM(repetition_filter)
 };
+
+class qml_duration
+{
+  Q_GADGET
+public:
+  enum duration: qint32
+  {
+    Infinite = ossia::qt::infinite()
+  };
+
+  Q_ENUM(duration)
+};
 }
 }
 
@@ -83,3 +96,4 @@ Q_DECLARE_METATYPE(ossia::qt::qml_val_type::val_type)
 Q_DECLARE_METATYPE(ossia::qt::qml_access_mode::access_mode)
 Q_DECLARE_METATYPE(ossia::qt::qml_bounding_mode::bounding_mode)
 Q_DECLARE_METATYPE(ossia::qt::qml_rep_filter::repetition_filter)
+Q_DECLARE_METATYPE(ossia::qt::qml_duration::duration)

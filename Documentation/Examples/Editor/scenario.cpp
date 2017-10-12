@@ -20,9 +20,9 @@ using namespace std;
 void local_play_callback(const value& v);
 void local_test_callback(const value& v);
 
-void main_interval_callback(double position, time_value date, const ossia::state_element& element);
-void first_interval_callback(double position, time_value date, const ossia::state_element& element);
-void second_interval_callback(double position, time_value date, const ossia::state_element& element);
+void main_interval_callback(double position, ossia::time_value date, const ossia::state_element& element);
+void first_interval_callback(double position, ossia::time_value date, const ossia::state_element& element);
+void second_interval_callback(double position, ossia::time_value date, const ossia::state_element& element);
 void event_callback(time_event::status newStatus);
 
 ossia::clock* main_clock{};
@@ -66,7 +66,7 @@ int main()
     auto main_end_event = *(main_end_node->emplace(main_end_node->get_time_events().begin(), &event_callback));
 
     // create the main time_interval
-    time_value main_duration(5000.);
+    ossia::time_value main_duration(5000.);
     auto main_interval = std::make_shared<time_interval>(
                              main_interval_callback,
                              *main_start_event,
@@ -99,7 +99,7 @@ int main()
     auto first_end_event = *(first_end_node->emplace(first_end_node->get_time_events().begin(), &event_callback));
 
     // create a time_interval between the two time_events
-    time_value first_duration(1500.);
+    ossia::time_value first_duration(1500.);
     std::shared_ptr<time_interval> first_interval = std::make_shared<time_interval>(
                               first_interval_callback,
                               *first_start_event,
@@ -118,7 +118,7 @@ int main()
     auto second_end_event = *(second_end_node->emplace(second_end_node->get_time_events().begin(), &event_callback));
 
     // create a time_interval between the two time_events
-    time_value second_duration(2000.);
+    ossia::time_value second_duration(2000.);
     auto second_interval = std::make_shared<time_interval>(
                                second_interval_callback,
                                *first_end_event,
@@ -291,20 +291,20 @@ void local_test_callback(const value& v)
     cout << endl;
 }
 
-void main_interval_callback(double position, time_value date, const ossia::state_element& element)
+void main_interval_callback(double position, ossia::time_value date, const ossia::state_element& element)
 {
     ossia::launch(element);
     cout << "Main Constraint : " << double(position) << ", " << double(date) << endl;
 }
 
-void first_interval_callback(double position, time_value date, const ossia::state_element& element)
+void first_interval_callback(double position, ossia::time_value date, const ossia::state_element& element)
 {
     cout << "First Constraint : " << double(position) << ", " << double(date) << endl;
 
     // don't launch element here as the element produced by the first time_interval is handled by the main time_interval
 }
 
-void second_interval_callback(double position, time_value date, const ossia::state_element& element)
+void second_interval_callback(double position, ossia::time_value date, const ossia::state_element& element)
 {
     cout << "Second Constraint : " << double(position) << ", " << double(date) << endl;
 

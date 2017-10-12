@@ -237,25 +237,42 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
 
 void oscquery_server_protocol::stop()
 {
-  try
-  {
-    m_oscServer->stop();
-  }
-  catch (...)
-  {
-    logger().error("Error when stopping osc server");
-  }
+    try
+    {
+        m_oscServer->stop();
+    }
+    catch (...)
+    {
+        logger().error("Error when stopping osc server");
+    }
 
-  try
-  {
-    m_websocketServer->stop();
-  }
-  catch (...)
-  {
-    logger().error("Error when stopping WS server");
-  }
-  if (m_serverThread.joinable())
-    m_serverThread.join();
+    try
+    {
+        // close client-connections before stopping
+        auto it = m_clients.begin();
+        while (it != m_clients.end())
+        {
+            auto con = m_websocketServer->impl().get_con_from_hdl(it->connection);
+            con->close(websocketpp::close::status::going_away, "Server shutdown");
+            it = m_clients.erase(it);
+        }
+    }
+    catch (...)
+    {
+        logger().error("Error when freeing connections");
+    }
+
+    try
+    {
+        m_websocketServer->stop();
+    }
+
+    catch (...)
+    {
+        logger().error("Error when stopping WS server");
+    }
+    if (m_serverThread.joinable())
+        m_serverThread.join();
 }
 
 oscquery_client*

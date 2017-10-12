@@ -325,7 +325,7 @@ void device::name(device *x, t_symbol* s, int argc, t_atom* argv){
   }
 }
 
-void device::getprotocols(device* x)
+void device::get_protocols(device* x)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
@@ -343,7 +343,14 @@ void device::getprotocols(device* x)
 
     outlet_anything(x->m_dumpout, gensym("protocol"), v.size(), ar);
   }
+}
 
+void device::get_mess_cb(device* x, t_symbol* s)
+{
+  if ( s == gensym("protocols") )
+    device::get_protocols(x);
+  else
+    device_base::get_mess_cb(x,s);
 }
 
 void device::stop_expose(device*x, int index)
@@ -379,8 +386,8 @@ extern "C" void setup_ossia0x2edevice(void)
           c, (method)Protocol_Settings::print_protocol_help, "help", A_NULL, 0);
     eclass_addmethod(c, (method) device::name, "name", A_GIMME, 0);
 
-    eclass_addmethod(c, (method) device::getprotocols, "getprotocols", A_NULL, 0);
     eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
+    eclass_addmethod(c, (method)client::get_mess_cb, "get", A_SYMBOL, 0);
   }
 
   ossia_pd::device_class = c;

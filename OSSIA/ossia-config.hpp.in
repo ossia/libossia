@@ -14,3 +14,4 @@
 #cmakedefine OSSIA_QT
 #cmakedefine OSSIA_DATAFLOW
 #cmakedefine OSSIA_C
+#cmakedefine OSSIA_QML_SCORE
