@@ -319,8 +319,9 @@ state_element scenario::state(ossia::time_value date, double pos)
     ossia::state nullState;
     auto& writeState = is_unmuted ? cur_state : nullState;
     std::vector<time_event*> statusChangedEvents;
-    for (time_sync* n : m_waitingNodes)
+    for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
     {
+      auto& n = *it;
       process_this(
           *n, statusChangedEvents, m_runningIntervals, m_runningIntervals, writeState);
       if (!statusChangedEvents.empty())
@@ -336,9 +337,13 @@ state_element scenario::state(ossia::time_value date, double pos)
         }
 
         statusChangedEvents.clear();
+        it = m_waitingNodes.erase(it);
+      }
+      else
+      {
+        ++it;
       }
     }
-    m_waitingNodes.clear();
 
     for (time_interval* interval : m_runningIntervals)
     {
