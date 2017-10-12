@@ -894,6 +894,7 @@ PYBIND11_MODULE(ossia_python, m)
       .def(py::init<ossia_osc_device&>())
       .def(py::init<ossia_oscquery_device&>())
       .def(py::init<ossia_minuit_device&>())
+      .def(py::init<ossia_midi_device&>())
       .def("register", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
     mq.reg(p);
   })
@@ -910,12 +911,12 @@ PYBIND11_MODULE(ossia_python, m)
      return py::none{};
   });
 
-
   py::class_<ossia::global_message_queue>(m, "GlobalMessageQueue")
       .def(py::init<ossia_local_device&>())
       .def(py::init<ossia_osc_device&>())
       .def(py::init<ossia_oscquery_device&>())
       .def(py::init<ossia_minuit_device&>())
+      .def(py::init<ossia_midi_device&>())
       .def("pop", [] (ossia::global_message_queue& mq) -> py::object {
      ossia::received_value v;
      bool res = mq.try_dequeue(v);

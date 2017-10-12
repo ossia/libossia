@@ -33,7 +33,12 @@ midi_node::~midi_node()
 }
 
 midi_node::midi_node(midi_device& aDevice, node_base& aParent)
-    : m_device{aDevice}, m_parent{aParent}
+    : m_device{aDevice}, m_parent{&aParent}
+{
+}
+
+midi_node::midi_node(midi_device& aDevice)
+    : m_device{aDevice}
 {
 }
 
@@ -44,7 +49,7 @@ device_base& midi_node::get_device() const
 
 node_base* midi_node::get_parent() const
 {
-  return &m_parent;
+  return m_parent;
 }
 
 node_base& midi_node::set_name(std::string)
