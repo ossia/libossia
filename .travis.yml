@@ -92,13 +92,15 @@ matrix:
   - os: linux
     env: BUILD_TYPE=Coverage
 
-before_install:
-- "./ci/deps.sh"
+# work around https://github.com/travis-ci/travis-ci/issues/8363
+before_script: pyenv global $TRAVIS_PYTHON_VERSION
+
+before_install: "./ci/deps.sh"
+
+script: "./ci/build.sh"
 
 after_success: if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${PyPiUser} -p ${PyPiWord} OSSIA/ossia-python/pyossia-*.whl; fi
 
-script:
-- "./ci/build.sh"
 deploy:
   - provider: releases
     api_key:
