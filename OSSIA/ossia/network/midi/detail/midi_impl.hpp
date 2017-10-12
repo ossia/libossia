@@ -244,19 +244,19 @@ public:
     m_children.reserve(4);
 
     m_children.push_back(
-          std::make_unique<note_on_node>(m_channel, m_device, aParent));
+          std::make_unique<note_on_node>(m_channel, m_device, *this));
 
     m_children.push_back(
-          std::make_unique<note_off_node>(m_channel, m_device, aParent));
+          std::make_unique<note_off_node>(m_channel, m_device, *this));
 
     m_children.push_back(
-          std::make_unique<control_node>(m_channel, m_device, aParent));
+          std::make_unique<control_node>(m_channel, m_device, *this));
 
     m_children.push_back(
-          std::make_unique<program_node>(m_channel, m_device, aParent));
+          std::make_unique<program_node>(m_channel, m_device, *this));
 
     m_children.push_back(
-          std::make_unique<pitch_bend_node>(m_channel, m_device, aParent));
+          std::make_unique<pitch_bend_node>(m_channel, m_device, *this));
   }
 
   ~channel_node()
