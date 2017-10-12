@@ -286,7 +286,8 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
-        object_error((t_object*)x, "%s", e.what());
+        object_error((t_object*)x, "can't connect, port might be already in use");
+        object_error((t_object*)x, "libossia error: '%s'", e.what());
         A_SETFLOAT(connection_status,0);
       }
 
@@ -318,7 +319,8 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
-        object_error((t_object*)x, "%s", e.what());
+        object_error((t_object*)x, "can't connect, port might be already in use");
+        object_error((t_object*)x, "libossia error: '%s'", e.what());
         A_SETFLOAT(connection_status,0);
       }
 

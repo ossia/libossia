@@ -234,7 +234,7 @@ ossia::bounding_mode generic_parameter::get_bounding() const
 ossia::net::generic_parameter&
 generic_parameter::set_bounding(ossia::bounding_mode boundingMode)
 {
-  if (m_boundingMode != boundingMode)
+  if (m_boundingMode != boundingMode && m_valueType != ossia::val_type::BOOL)
   {
     m_boundingMode = boundingMode;
     m_node.get_device().on_attribute_modified(m_node, text_bounding_mode());
