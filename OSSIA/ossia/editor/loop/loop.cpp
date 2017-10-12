@@ -107,9 +107,8 @@ state_element loop::state(ossia::time_value date, double pos)
              && ev == &startEvent;
     });
 
-    if (not_starting)
+    if (not_starting && startEvent.get_status() == time_event::status::HAPPENED)
     {
-      // no such event found : not starting
       // no such event found : not starting
       if (prev_last_date == Infinite)
         m_interval->tick(date);
