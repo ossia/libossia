@@ -34,14 +34,18 @@ void scenario::start(ossia::state& st)
 {
   for(auto& node : m_nodes)
   {
-    auto ok = ossia::all_of(
-          node->get_time_events(),
-          [] (const std::shared_ptr<ossia::time_event>& ev) {
-      return ev->previous_time_intervals().empty();
-    });
-    if(ok)
+    auto bool_expr = node->get_expression().target<ossia::expressions::expression_bool>();
+    if(!bool_expr || !bool_expr->evaluate() || node == m_nodes[0])
     {
-      m_waitingNodes.push_back(node.get());
+      auto ok = ossia::all_of(
+            node->get_time_events(),
+            [] (const std::shared_ptr<ossia::time_event>& ev) {
+        return ev->previous_time_intervals().empty();
+      });
+      if(ok)
+      {
+        m_waitingNodes.push_back(node.get());
+      }
     }
   }
 
