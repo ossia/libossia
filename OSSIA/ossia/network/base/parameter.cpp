@@ -165,7 +165,7 @@ optional<ossia::value> parameter_base::get_default_value() const
   return ossia::net::get_default_value(get_node());
 }
 
-void parameter_base::set_default_value(optional<ossia::value> v)
+void parameter_base::set_default_value(const ossia::value& v)
 {
   ossia::net::set_default_value(get_node(), std::move(v));
 }

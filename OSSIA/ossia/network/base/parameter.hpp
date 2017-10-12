@@ -115,7 +115,7 @@ public:
   }
 
   optional<ossia::value> get_default_value() const;
-  void set_default_value(optional<ossia::value> v);
+  void set_default_value(const ossia::value& v);
 
   virtual val_type get_value_type() const = 0;
   virtual parameter_base& set_value_type(val_type) = 0;
