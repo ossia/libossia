@@ -19,6 +19,7 @@ namespace pybind11
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/midi/midi.hpp>
@@ -500,6 +501,43 @@ public:
   }
 };
 
+class ossia_device_signal
+: public Nano::Observer
+{
+  ossia::net::device_base& m_device;
+  std::function<void(const ossia::net::node_base&)> m_on_node_created;
+  //std::function<void(const ossia::net::node_base&)>m_on_node_renamed;
+  //std::function<void(const ossia::net::node_base&)> m_on_node_removing;
+
+public:
+  ossia_device_signal(ossia::net::device_base& device, 
+                      std::function<void(const ossia::net::node_base&)> on_node_created
+                      /*, void* on_node_renamed, void* on_node_removing*/)
+  : m_device{device}, m_on_node_created(on_node_created)//, m_on_node_renamed(on_node_renamed), m_on_node_removing(on_node_removing)
+  {
+    device.on_node_created.connect<ossia_device_signal, &ossia_device_signal::on_node_created>(*this);
+    //device->on_node_created.connect<ossia_device_signal, &ossia_device_signal::m_on_node_renamed>(*this);
+    //device->on_node_removing.connect<ossia_device_signal, &ossia_device_signal::m_on_node_removing>(*this);
+  }
+
+private:
+  void on_node_created(const ossia::net::node_base& node)
+  { 
+    m_on_node_created(node);
+  }
+/*
+  void on_node_renamed(const ossia::net::node_base&)
+  { 
+    m_on_node_renamed();
+  }
+
+  void node_removing(const ossia::net::node_base&)
+  {
+    m_on_node_removing();
+  }
+  */
+};
+
 // to get children of a node
 PYBIND11_MAKE_OPAQUE(std::vector<ossia::net::node_base*>);
 
@@ -924,8 +962,8 @@ PYBIND11_MODULE(ossia_python, m)
         return py::none{};
         });
 
-  m.def("list_node_pattern", [] (const std::vector<py::object>& start_nodes, std::string pattern) -> std::vector<py::object> {
-
+  m.def("list_node_pattern", 
+    [] (const std::vector<py::object>& start_nodes, std::string pattern) -> std::vector<py::object> {
       std::vector<ossia::net::node_base*> vec;
       vec.reserve(start_nodes.size());
       for (auto node : start_nodes)
@@ -939,5 +977,5 @@ PYBIND11_MODULE(ossia_python, m)
         res.push_back(py::cast(node));
 
       return res;
-  });
+    });
 }
