@@ -86,7 +86,7 @@ class OSSIA_EXPORT program_N_node final : public midi_node, public midi_paramete
 {
 public:
   program_N_node(
-      midi_size_t channel, midi_size_t param, midi_device& aDevice,
+      midi_size_t channel, midi_size_t param, midi_device& aDevice, 
       ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
       , midi_parameter{address_info{channel, address_info::Type::PC_N, param},
@@ -106,8 +106,9 @@ public:
 class OSSIA_EXPORT program_node final : public midi_node, public midi_parameter
 {
 public:
-  program_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice)
+  program_node(midi_size_t channel, midi_device& aDevice, 
+    ossia::net::node_base& aParent)
+      : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::PC, 0}, *this}
   {
     using namespace std::literals;
@@ -131,8 +132,9 @@ public:
 class OSSIA_EXPORT note_on_node final : public midi_node, public midi_parameter
 {
 public:
-  note_on_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice)
+  note_on_node(midi_size_t channel, midi_device& aDevice, 
+    ossia::net::node_base& aParent)
+      : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::NoteOn, 0},
                      *this}
   {
@@ -157,8 +159,9 @@ public:
 class OSSIA_EXPORT note_off_node final : public midi_node, public midi_parameter
 {
 public:
-  note_off_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice)
+  note_off_node(midi_size_t channel, midi_device& aDevice, 
+    ossia::net::node_base& aParent)
+      : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::NoteOff, 0},
                      *this}
   {
@@ -185,8 +188,9 @@ public:
 class OSSIA_EXPORT control_node final : public midi_node, public midi_parameter
 {
 public:
-  control_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice)
+  control_node(midi_size_t channel, midi_device& aDevice, 
+    ossia::net::node_base& aParent)
+      : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::CC, 0}, *this}
   {
     using namespace std::literals;
@@ -211,8 +215,8 @@ public:
 class OSSIA_EXPORT pitch_bend_node final : public midi_node, public midi_parameter
 {
 public:
-  pitch_bend_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice)
+  pitch_bend_node(midi_size_t channel, midi_device& aDevice, ossia::net::node_base& aParent)
+      : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::PB, 0}, *this}
   {
     using namespace std::literals;
@@ -232,26 +236,27 @@ class OSSIA_EXPORT channel_node final : public midi_node
   const midi_size_t m_channel;
 
 public:
-  channel_node(midi_size_t channel, midi_device& aDevice)
-      : midi_node(aDevice, aDevice), m_channel{channel}
+  channel_node(midi_size_t channel, midi_device& aDevice, 
+    ossia::net::node_base& aParent)
+      : midi_node(aDevice, aParent), m_channel{channel}
   {
     m_name = midi_node_name(channel);
     m_children.reserve(4);
 
     m_children.push_back(
-          std::make_unique<note_on_node>(m_channel, m_device));
+          std::make_unique<note_on_node>(m_channel, m_device, aParent));
 
     m_children.push_back(
-          std::make_unique<note_off_node>(m_channel, m_device));
+          std::make_unique<note_off_node>(m_channel, m_device, aParent));
 
     m_children.push_back(
-          std::make_unique<control_node>(m_channel, m_device));
+          std::make_unique<control_node>(m_channel, m_device, aParent));
 
     m_children.push_back(
-          std::make_unique<program_node>(m_channel, m_device));
+          std::make_unique<program_node>(m_channel, m_device, aParent));
 
     m_children.push_back(
-          std::make_unique<pitch_bend_node>(m_channel, m_device));
+          std::make_unique<pitch_bend_node>(m_channel, m_device, aParent));
   }
 
   ~channel_node()

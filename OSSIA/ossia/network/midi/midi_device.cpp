@@ -31,7 +31,7 @@ bool midi_device::update_namespace()
   {
     for (int i = 1; i <= 16; i++)
     {
-      auto ptr = std::make_unique<channel_node>(i, *this);
+      auto ptr = std::make_unique<channel_node>(i, *this, *this);
 
       write_lock_t lock{m_mutex};
       m_children.push_back(std::move(ptr));
