@@ -6,10 +6,56 @@
 
 #include <ossia/network/common/path.hpp>
 
+using namespace ossia::max;
+
+extern "C" void ossia_attribute_setup()
+{
+  auto c = class_new( "ossia.attribute",
+      (method)attribute::create,
+      (method)attribute::destroy,
+      (long)sizeof(ossia::max::attribute), 0L,
+      A_GIMME, 0);
+
+  parameter_base::class_setup(c);
+
+  class_addmethod(
+        c, (method)attribute::assist,
+        "assist", A_CANT, 0);
+  class_addmethod(
+        c, (method)attribute::notify,
+        "notify", A_CANT, 0);
+
+  class_addmethod(c, (method) attribute::bind,             "bind", A_SYM, 0);
+  class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
+
+  auto& ossia_library = ossia::max::ossia_max::instance();
+  ossia_library.ossia_attribute_class = c;
+}
+
 namespace ossia
 {
 namespace max
 {
+
+
+void attribute::assist(attribute* x, void* b, long m, long a, char* s)
+{
+  if (m == ASSIST_INLET)
+  {
+    sprintf(s, "All purpose input");
+  }
+  else
+  {
+    switch(a)
+    {
+      case 0:
+        sprintf(s, "Dumpout");
+        break;
+      default:
+        ;
+    }
+  }
+}
 
 bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
 {
@@ -206,7 +252,6 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     x->m_otype = object_class::attribute;
     x->m_dumpout = outlet_new(x, NULL);
 
-    /////////
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 
@@ -239,10 +284,6 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     // start registration
     max_object_register<attribute>(x);
     ossia_max::instance().attributes.push_back(x);
-
-
-    ///////
-
 
     x->update_path(x->m_name->s_name);
   }
@@ -301,31 +342,6 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr, const os
   } else {
     parameter_base::update_attribute(x, attr, node);
   }
-}
-
-extern "C" void setup_ossia0x2eattribute(void)
-{
-  auto c = class_new("ossia.attribute",
-      (method)attribute::create,
-      (method)attribute::destroy,
-      (long)sizeof(ossia::max::attribute), 0L, A_GIMME, 0);
-
-  parameter_base::class_setup(c);
-
-  class_addmethod(
-        c, (method)parameter::assist,
-        "assist", A_CANT, 0);
-  class_addmethod(
-        c, (method)parameter::notify,
-        "notify", A_CANT, 0);
-
-
-
-  class_addmethod(c, (method) attribute::bind,            "bind", A_SYM, 0);
-  class_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYM, 0);
-
-  auto& ossia_library = ossia::max::ossia_max::instance();
-  ossia_library.ossia_attribute_class = c;
 }
 
 ossia::safe_set<attribute*>& attribute::quarantine()

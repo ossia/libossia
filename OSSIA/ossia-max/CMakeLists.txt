@@ -106,7 +106,7 @@ function(setup_max_external theTarget)
 endfunction()
 
 # Shim externals to allow objects to be found by Max search box
-set(OSSIA_EXT_LIST ossia.parameter ossia.model ossia.view ossia.remote ossia.device ossia.client ossia.logger ossia.ossia)
+set(OSSIA_EXT_LIST ossia.attribute ossia.parameter ossia.model ossia.view ossia.remote ossia.device ossia.client ossia.logger ossia.ossia)
 foreach(ossiaExt ${OSSIA_EXT_LIST})
     string(REPLACE "." "_" ossia_lib_name ${ossiaExt})
     configure_file(src/empty_external.c.in ${CMAKE_CURRENT_BINARY_DIR}/${ossiaExt}.c)

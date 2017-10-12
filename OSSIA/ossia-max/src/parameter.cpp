@@ -12,9 +12,10 @@ using namespace ossia::max;
 extern "C" void ossia_parameter_setup()
 {
   // instantiate the ossia.parameter class
-  auto c = class_new(
-      "ossia.parameter", (method)parameter::create,
-      (method)parameter::destroy, (long)sizeof(ossia::max::parameter), 0L,
+  auto c = class_new( "ossia.parameter",
+      (method)parameter::create,
+      (method)parameter::destroy,
+      (long)sizeof(ossia::max::parameter), 0L,
       A_GIMME, 0);
 
   parameter_base::class_setup(c);

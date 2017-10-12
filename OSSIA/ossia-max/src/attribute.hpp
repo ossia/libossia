@@ -19,12 +19,12 @@ public:
   bool unregister();
 
   ossia::net::device_base* m_dev{};
-  float m_rate_min;
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
+
   static void update_attribute(attribute* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static void bind(attribute* x, t_symbol* address);
-
+  static void assist(attribute*, void*, long, long, char*);
   static t_max_err notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
   static void destroy(attribute* x);
