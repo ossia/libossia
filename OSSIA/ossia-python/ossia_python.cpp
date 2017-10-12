@@ -658,14 +658,6 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::value_step_size v) {
           ossia::net::set_value_step_size(node, v);
         })
-      .def_property("default_value",
-          [](ossia::net::node_base& node) -> py::object {
-            ossia::value empty{};
-            return ossia::net::get_default_value(node).value_or(empty).apply(ossia::python::to_python_value{});
-          },
-          [](ossia::net::node_base& node, const py::object& v) {
-            ossia::net::set_default_value(node, ossia::python::from_python_value(v.ptr()));
-          })
       .def_property("extended_type", 
         [](ossia::net::node_base& node) -> ossia::extended_type {
           ossia::extended_type empty{};
@@ -745,6 +737,14 @@ PYBIND11_MODULE(ossia_python, m)
           },
           [](ossia::net::parameter_base& addr, const py::object& v) {
             addr.push_value(ossia::python::from_python_value(v.ptr()));
+          })
+      .def_property("default_value",
+          [](ossia::net::parameter_base& addr) -> py::object {
+            ossia::value empty{};
+            return addr.get_default_value().value_or(empty).apply(ossia::python::to_python_value{});
+          },
+          [](ossia::net::parameter_base& addr, const py::object& v) {
+            addr.set_default_value(ossia::python::from_python_value(v.ptr()));
           })
       .def_property(
           "value_type", &ossia::net::parameter_base::get_value_type,
