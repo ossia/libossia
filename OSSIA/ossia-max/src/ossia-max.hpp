@@ -59,6 +59,7 @@ public:
     if(std::is_same<T, view>::value) return ossia_view_class;
     if(std::is_same<T, device>::value) return ossia_device_class;
     if(std::is_same<T, client>::value) return ossia_client_class;
+    if(std::is_same<T, attribute>::value) return ossia_attribute_class;
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
     return nullptr;

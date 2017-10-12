@@ -64,11 +64,6 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->m_poll_clock = clock_new((t_object*)x, (t_method) client::poll_message);
 
-    if (argc != 0 && argv[0].a_type == A_SYMBOL)
-    {
-      x->m_name = atom_getsymbol(argv);
-    }
-
     x->m_rate = 100;
 
     ebox_attrprocess_viabinbuf(x, d);
@@ -80,6 +75,12 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
       client::destroy(x);
       free(x);
       x = nullptr;
+    }
+
+    if (argc != 0 && argv[0].a_type == A_SYMBOL)
+    {
+      x->m_name = atom_getsymbol(argv);
+      connect(x,gensym("connect"),argc,argv);
     }
   }
 
@@ -412,7 +413,7 @@ void client::get_devices(client* x)
 
 void client::get_mess_cb(client* x, t_symbol* s)
 {
-  if ( s == gensym("unit") )
+  if ( s == gensym("devices") )
     client::get_devices(x);
   else
     device_base::get_mess_cb(x,s);
