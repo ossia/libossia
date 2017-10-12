@@ -24,9 +24,6 @@ local_device.create_oscquery_server(3456, 5678, False)
 # enable OSC communication for that device without messages logging
 local_device.create_osc_server("127.0.0.1", 9997, 9996, False)
 
-# enable MIDI communication for that device
-### TODO : enable MIDI communication
-
 # list all devices on the network
 print('\nSCAN FOR OSCQUERY DEVICES\n')
 for data in ossia.list_oscquery_devices():
@@ -164,7 +161,7 @@ def list_value_callback(v):
 list_parameter.add_callback(list_value_callback)
 
 
-### LOCAL DEVICE EXPLORATION
+### DEVICE EXPLORATION
 
 ### TODO : MAYBE THIS FUNCTION COULD BE DONE IN C++ ???
 ### TODO : IT CAN BE GET_NODES, AND GET_PARAMS WITH A DEPTH ATTRIBUTE
@@ -262,19 +259,41 @@ iterate_on_children(remote_osc_device.root_node)
 
 
 ### REMOTE MIDI DEVICE FEATURES
-'''
-# try to connect to a remote device using MIDI protocol
-remote_midi_device = ossia.MidiDevice("remoteMidiDevice")
 
-# load the remote MIDI device map
-remote_midi_device.load("/path/to/map/file")
+# list all MIDI devices
+print('\nSCAN FOR MIDI DEVICES\n')
+midi_devices = ossia.list_midi_devices()
+for data in midi_devices:
+    print(str(data.type) + ": device = " + data.device + ", port = " + str(data.port))
+
+# try to connect to the first device using MIDI protocol
+remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
 
 # iterate on remote MIDI device namespace
-print("\nREMOTE MIDI DEVICE NAMESPACE")
-iterate_on_children(remote_midi_device.root_node)
-'''
+#print("\nREMOTE MIDI DEVICE NAMESPACE")
+#iterate_on_children(remote_midi_device.root_node)
+
+# create a message queue to focus on a MIDI parameter
+remote_midi_messageq = ossia.MessageQueue(remote_midi_device)
+remote_midi_parameter = remote_midi_device.find_node("/1/control/32").parameter
+remote_midi_messageq.register(remote_midi_parameter)
 
 # MAIN LOOP
-# wait and use Ossia Score to change the value remotely
+print("\nMAIN LOOP ...")
+# observe all local device messages
+local_device_messageq = ossia.GlobalMessageQueue(local_device)
+
+# wait and change the value remotely
 while True:
-  time.sleep(0.1)
+
+  message = remote_midi_messageq.pop()
+  if message != None:
+    parameter, value = message
+    print("remote_midi_messageq : " +  str(parameter.node) + " " + str(value))
+
+  message = local_device_messageq.pop()
+  if(message != None):
+    parameter, value = message
+    print("local_device_messageq : " +  str(parameter.node) + " " + str(value))
+
+  time.sleep(0.01)

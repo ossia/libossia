@@ -1,3 +1,4 @@
+max objectfile ø.attribute ossia.attribute;
 max objectfile ø.parameter ossia.parameter;
 max objectfile ø.param ossia.parameter;
 max objectfile ø.model ossia.model;
@@ -8,6 +9,7 @@ max objectfile ø.client ossia.client;
 max objectfile ø.logger ossia.logger;
 max objectfile ø ossia;
 
+max objectfile io.attribute ossia.attribute;
 max objectfile io.parameter ossia.parameter;
 max objectfile io.param ossia.parameter;
 max objectfile io.model ossia.model;
@@ -18,6 +20,7 @@ max objectfile io.client ossia.client;
 max objectfile io.logger ossia.logger;
 max objectfile io ossia;
 
+max objectfile 0.attribute ossia.attribute;
 max objectfile 0.parameter ossia.parameter;
 max objectfile 0.param ossia.parameter;
 max objectfile 0.model ossia.model;

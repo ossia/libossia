@@ -92,6 +92,8 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     }
   }
 
+  fill_selection();
+
   return (!m_matchers.empty() || m_is_pattern);
 }
 

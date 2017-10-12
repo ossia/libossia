@@ -1,19 +1,61 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-pd/src/attribute.hpp>
-#include <ossia-pd/src/ossia-pd.hpp>
-#include <ossia-pd/src/utils.hpp>
+#include <ossia-max/src/attribute.hpp>
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/utils.hpp>
 
 #include <ossia/network/common/path.hpp>
 
+using namespace ossia::max;
+
+extern "C" void ossia_attribute_setup()
+{
+  auto c = class_new( "ossia.attribute",
+      (method)attribute::create,
+      (method)attribute::destroy,
+      (long)sizeof(ossia::max::attribute), 0L,
+      A_GIMME, 0);
+
+  parameter_base::class_setup(c);
+
+  class_addmethod(
+        c, (method)attribute::assist,
+        "assist", A_CANT, 0);
+  class_addmethod(
+        c, (method)attribute::notify,
+        "notify", A_CANT, 0);
+
+  class_addmethod(c, (method) attribute::bind,             "bind", A_SYM, 0);
+  class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
+
+  auto& ossia_library = ossia::max::ossia_max::instance();
+  ossia_library.ossia_attribute_class = c;
+}
+
 namespace ossia
 {
-namespace pd
+namespace max
 {
 
-attribute::attribute():
-  parameter_base{ossia_pd::attribute_class}
-{ }
+
+void attribute::assist(attribute* x, void* b, long m, long a, char* s)
+{
+  if (m == ASSIST_INLET)
+  {
+    sprintf(s, "All purpose input");
+  }
+  else
+  {
+    switch(a)
+    {
+      case 0:
+        sprintf(s, "Dumpout");
+        break;
+      default:
+        ;
+    }
+  }
+}
 
 bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
 {
@@ -23,10 +65,10 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     fill_selection();
-    obj_dequarantining<attribute>(this);
+    object_dequarantining<attribute>(this);
   }
   else
-    obj_quarantining<attribute>(this);
+    object_dequarantining<attribute>(this);
 
   if (!node.empty() && m_is_pattern){
     // assume all nodes refer to the same device
@@ -67,7 +109,7 @@ bool attribute::do_registration(const std::vector<ossia::net::node_base*>& _node
     std::vector<ossia::net::node_base*> nodes{};
 
     if (m_addr_scope == net::address_scope::global)
-      nodes = ossia::pd::find_global_nodes(name);
+      nodes = ossia::max::find_global_nodes(name);
     else
       nodes = ossia::net::find_nodes(*node, name);
 
@@ -106,7 +148,7 @@ bool attribute::unregister()
   m_matchers.clear();
   m_nodes.clear();
 
-  obj_quarantining<attribute>(this);
+  object_quarantining<attribute>(this);
 
   m_parent_node = nullptr;
   if(m_dev)
@@ -151,7 +193,7 @@ void attribute::update_path(string_view name)
     }
 }
 
-t_pd_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_max_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
     // TODO : forward notification to parent class
     if (msg == gensym("attr_modified"))
@@ -190,75 +232,60 @@ t_pd_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender,
   return {};
 }
 
-void attribute::click(
-    attribute* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
-    t_floatarg ctrl, t_floatarg alt)
-{
-
-  using namespace std::chrono;
-  milliseconds ms
-      = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-  milliseconds diff = (ms - x->m_last_click);
-  if (diff.count() < 200)
-  {
-    x->m_last_click = milliseconds(0);
-
-    int l;
-
-    ossia::pd::device* device
-        = (ossia::pd::device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
-
-    if (!object_base::find_and_display_friend(x))
-      pd_error(x, "sorry I can't find a connected friend :-(");
-  }
-  else
-  {
-    x->m_last_click = ms;
-  }
-}
-
 void attribute::bind(attribute* x, t_symbol* address)
 {
   // TODO maybe instead use a temporary local char array.
-  std::string name = replace_brackets(address->s_name);
+  std::string name = address->s_name;
   x->m_name = gensym(name.c_str());
   x->update_path(name);
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->unregister();
-  obj_register(x);
+  max_object_register(x);
 }
 
 void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 {
-  auto& ossia_pd = ossia_pd::instance();
-  attribute* x = new attribute();
+  auto x = make_ossia<attribute>();
 
-  t_binbuf* d = binbuf_via_atoms(argc, argv);
-
-  if (x && d)
+  if (x)
   {
     x->m_otype = object_class::attribute;
-    x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
+    x->m_dumpout = outlet_new(x, NULL);
 
-    if (argc != 0 && argv[0].a_type == A_SYMBOL)
+    // parse arguments
+    long attrstart = attr_args_offset(argc, argv);
+
+    // check name argument
+    x->m_name = _sym_nothing;
+    if (attrstart && argv)
     {
-      t_symbol* address = atom_getsymbol(argv);
-      std::string name = replace_brackets(address->s_name);
-      x->m_name = gensym(name.c_str());
-      x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+      if (atom_gettype(argv) == A_SYM)
+      {
+        x->m_name = atom_getsym(argv);
+        x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+      }
     }
-    else
+
+    if (x->m_name == _sym_nothing)
     {
-      error("You have to pass a name as the first argument");
-      x->m_name = gensym("untitled_attribute");
+      object_error((t_object*)x, "needs a name as first argument");
+      x->m_name = gensym("untitledParameter");
+      return x;
     }
+
+    // process attr args, if any
+    attr_args_process(x, argc - attrstart, argv + attrstart);
+
+    // Register object to istself so it can receive notification when attribute changed
+    // This is not documented anywhere, please look at :
+    // https://cycling74.com/forums/notify-when-attribute-changes
+    object_attach_byptr_register(x, x, CLASS_BOX);
+
+    // start registration
+    max_object_register<attribute>(x);
+    ossia_max::instance().attributes.push_back(x);
 
     x->update_path(x->m_name->s_name);
-
-    ebox_attrprocess_viabinbuf(x, d);
-
-    obj_register<attribute>(x);
-    ossia_pd.attributes.push_back(x);
   }
 
   return (x);
@@ -268,8 +295,8 @@ void attribute::destroy(attribute* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<attribute>(x);
-  ossia_pd::instance().attributes.remove_all(x);
+  object_dequarantining<attribute>(x);
+  ossia_max::instance().attributes.remove_all(x);
 
   if(x->m_is_pattern && x->m_dev)
   {
@@ -277,8 +304,7 @@ void attribute::destroy(attribute* x)
     x->m_dev->get_root_node().about_to_be_deleted.disconnect<attribute, &attribute::on_device_deleted>(x);
   }
 
-  outlet_free(x->m_dumpout);
-
+  outlet_delete(x->m_dumpout);
   x->~attribute();
 }
 
@@ -297,7 +323,7 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr, const os
       }
 
       t_atom a;
-      SETFLOAT(&a,x->m_rate);
+      A_SETFLOAT(&a,x->m_rate);
       outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
     }
   } else if ( attr == ossia::net::text_unit()) {
@@ -310,7 +336,7 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr, const os
       x->m_unit = gensym(unit.c_str());
 
       t_atom a;
-      SETSYMBOL(&a,x->m_unit);
+      A_SETSYM(&a,x->m_unit);
       outlet_anything(x->m_dumpout, gensym("unit"),1,&a);
     }
   } else {
@@ -318,34 +344,9 @@ void attribute::update_attribute(attribute* x, ossia::string_view attr, const os
   }
 }
 
-extern "C" void setup_ossia0x2eattribute(void)
-{
-  t_eclass* c = eclass_new("ossia.attribute",
-      (method)ossia::pd::attribute::create,
-      (method)ossia::pd::attribute::destroy,
-      (short)sizeof(attribute), CLASS_DEFAULT, A_GIMME, 0);
-
-  if (c)
-  {
-    class_addcreator((t_newmethod)attribute::create,gensym("ø.attribute"), A_GIMME, 0);
-    class_addcreator((t_newmethod)attribute::create,gensym("ossia.attr"), A_GIMME, 0);
-    class_addcreator((t_newmethod)attribute::create,gensym("ø.attr"), A_GIMME, 0);
-
-    parameter_base::class_setup(c);
-
-    eclass_addmethod(c, (method) attribute::click,           "click",       A_NULL,   0);
-    eclass_addmethod(c, (method) attribute::notify,          "notify",      A_NULL,   0);
-    eclass_addmethod(c, (method) attribute::bind,            "bind",        A_SYMBOL, 0);
-    eclass_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYMBOL, 0);
-  }
-
-  eclass_register(CLASS_OBJ, c);
-  ossia_pd::attribute_class = c;
-}
-
 ossia::safe_set<attribute*>& attribute::quarantine()
 {
-  return ossia_pd::instance().attribute_quarantine;
+  return ossia_max::instance().attribute_quarantine;
 }
 
 } // pd namespace

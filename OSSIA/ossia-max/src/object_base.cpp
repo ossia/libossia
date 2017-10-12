@@ -215,6 +215,11 @@ void t_matcher::set_parent_addr()
   }
 }
 
+object_base::object_base()
+{
+  m_selection_pattern = gensym("");
+}
+
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
     m_is_deleted= true;
@@ -266,7 +271,7 @@ void object_base::defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* 
   outlet_anything(x->m_set_out, s, argc, argv);
 }
 
-void object_base::update_attribute(object_base* x, ossia::string_view attribute)
+void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   if ( attribute == ossia::net::text_priority() ){
     get_priority(x);
@@ -366,30 +371,43 @@ void object_base::class_setup(t_class*c)
   class_addmethod(c, (method) object_base::get_address, "getaddress", A_NOTHING,  0);
 }
 
-void object_base::get_address(object_base *x)
+void object_base::fill_selection()
 {
-  if (!x->m_matchers.empty())
+  m_node_selection.clear();
+  if ( m_selection_pattern != gensym("*") )
   {
-    t_symbol* sym_address = gensym("global_address");
-    for (auto& m : x->m_matchers)
+    // TODO should support pattern matching in selection
+    for (auto& m : m_matchers)
     {
-      std::string addr = ossia::net::address_string_from_node(*m.get_node());
-      t_atom a;
-      A_SETSYM(&a, gensym(addr.c_str()));
-      outlet_anything(x->m_dumpout, sym_address, 1, &a);
+      if ( m_selection_pattern == m.get_atom_addr_ptr()->a_w.w_sym )
+        m_node_selection.push_back(&m);
+    }
+  } else {
+    for (auto& m : m_matchers)
+    {
+      m_node_selection.push_back(&m);
     }
   }
-  else if (!x->m_nodes.empty())
+}
+
+void object_base::get_mess_cb(object_base* x, t_symbol* s){
+  if (s == gensym("address"))
+    get_address(x,x->m_node_selection);
+}
+
+void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
+{
+
+  t_symbol* sym_address = gensym("global_address");
+  for (auto m : nodes)
   {
-    for (auto n : x->m_nodes)
-    {
-      std::string addr = ossia::net::address_string_from_node(*n);
-      t_atom a;
-      A_SETSYM(&a, gensym(addr.c_str()));
-      outlet_anything(x->m_dumpout, gensym("address"), 1, &a);
-    }
+    std::string addr = ossia::net::address_string_from_node(*m->get_node());
+    t_atom a;
+    A_SETSYM(&a, gensym(addr.c_str()));
+    outlet_anything(x->m_dumpout, sym_address, 1, &a);
   }
-  else
+
+  if (nodes.empty())
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
 }
 

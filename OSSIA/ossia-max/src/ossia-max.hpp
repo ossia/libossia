@@ -11,6 +11,7 @@
 #include <ossia/detail/safe_vec.hpp>
 #include <ossia-max_export.h>
 
+#include "attribute.hpp"
 #include "parameter.hpp"
 #include "model.hpp"
 #include "remote.hpp"
@@ -22,6 +23,7 @@
 
 extern "C"
 {
+    OSSIA_MAX_EXPORT void ossia_attribute_setup();
     OSSIA_MAX_EXPORT void ossia_client_setup();
     OSSIA_MAX_EXPORT void ossia_device_setup();
     OSSIA_MAX_EXPORT void ossia_logger_setup();
@@ -57,12 +59,14 @@ public:
     if(std::is_same<T, view>::value) return ossia_view_class;
     if(std::is_same<T, device>::value) return ossia_device_class;
     if(std::is_same<T, client>::value) return ossia_client_class;
+    if(std::is_same<T, attribute>::value) return ossia_attribute_class;
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
     return nullptr;
   }
 
   t_class* ossia_client_class{};
+  t_class* ossia_attribute_class{};
   t_class* ossia_device_class{};
   t_class* ossia_logger_class{};
   t_class* ossia_model_class{};
@@ -78,11 +82,13 @@ public:
   ossia::safe_vector<view*> views;
   ossia::safe_vector<device*> devices;
   ossia::safe_vector<client*> clients;
+  ossia::safe_vector<attribute*> attributes;
 
   ossia::safe_set<model*> model_quarantine;
   ossia::safe_set<view*> view_quarantine;
   ossia::safe_set<parameter*> parameter_quarantine;
   ossia::safe_set<remote*> remote_quarantine;
+  ossia::safe_set<attribute*> attribute_quarantine;
 
 private:
   ossia_max();

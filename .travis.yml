@@ -95,6 +95,8 @@ matrix:
 before_install:
 - "./ci/deps.sh"
 
+after_success: if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${PyPiUser} -p ${PyPiWord} OSSIA/ossia-python/pyossia-*.whl; fi
+
 script:
 - "./ci/build.sh"
 deploy:
@@ -127,13 +129,3 @@ deploy:
     on:
       repo: OSSIA/libossia
       tags: true
-
-  - provider: pypi
-    skip_cleanup: true
-    user: $PyPiUser
-    password: $PyPiWord
-    file: ./*.whl
-    distributions: bdist_wheel
-    on:
-      tags: true
-      repo: OSSIA/libossia

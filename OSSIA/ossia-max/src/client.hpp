@@ -48,7 +48,7 @@ public:
 
   static void connect(ossia::max::client*, t_symbol*, int, t_atom*);
   static void disconnect(ossia::max::client*);
-  static void getdevices(client*x);
+  static void get_devices(client*x);
   static void check_thread_status(client* x);
   static void update(client* x);
   static void poll_message(client* x);
@@ -56,6 +56,7 @@ public:
   // static void* create(t_symbol* name, int argc, t_atom* argv);
   static void find_devices_async(client* x);
   static void assist(client*, void*, long, long, char*);
+  static void get_mess_cb(client*, t_symbol*);
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::client*);

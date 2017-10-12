@@ -189,7 +189,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       x->set_bounding_mode();
     else if ( attrname == gensym("min") || attrname == gensym("max") )
       x->set_minmax();
-    else if ( attrname == gensym("defval") )
+    else if ( attrname == gensym("default") )
       x->set_default();
     else if ( attrname == gensym("unit") )
       x->set_unit();
@@ -391,6 +391,8 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     }
   }
 
+  fill_selection();
+
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
   return (!m_matchers.empty() || m_is_pattern);
@@ -437,7 +439,7 @@ void remote::bind(remote* x, t_symbol* address)
   max_object_register(x);
 }
 
-void remote::update_attribute(remote* x, ossia::string_view attribute)
+void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   // @mute and @unit attributes are specific to each remote
   // it makes no sens to sens to change when an attribute changes
@@ -469,7 +471,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute)
     }
 
   } else {
-    parameter_base::update_attribute(x, attribute);
+    parameter_base::update_attribute(x, attribute, node);
   }
 }
 

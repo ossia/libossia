@@ -52,10 +52,18 @@ case "$TRAVIS_OS_NAME" in
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
     elif [[ "x$BUILD_TYPE" == "xpython" ]] ; then
-      sudo add-apt-repository --yes ppa:jonathonf/python-3.6
-      sudo add-apt-repository --yes ppa:fkrull/deadsnakes
-      sudo apt-get update -qq
-      sudo apt install -qq python python-dev python3.5 python3.5-dev python3.6 python3.6-dev python3-pip
+      if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+        sudo apt-get update -qq
+        sudo apt install -qq python python-dev python-pip
+      elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
+        sudo add-apt-repository --yes ppa:fkrull/deadsnakes
+        sudo apt-get update -qq
+        sudo apt install -qq python3 python3-dev python3-pip
+      elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
+        sudo add-apt-repository --yes ppa:jonathonf/python-3.6
+        sudo apt-get update -qq
+        sudo apt install -qq python3 python3-dev python3-pip
+      fi
     fi
 
   ;;

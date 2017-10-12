@@ -21,12 +21,16 @@ namespace pybind11
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/midi/midi.hpp>
 
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/detail/logger.hpp>
 #include <spdlog/spdlog.h>
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+
+#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/editor/dataspace/dataspace_visitors.hpp>
 
 #include <Python.h>
 
@@ -77,8 +81,6 @@ ossia::value from_python_value(PyObject* source)
     else if (PyInt_Check(source))
         returned_value = (int)PyInt_AsLong(source);
 #endif
-    else if (PyLong_Check(source))
-        returned_value = (int)PyLong_AsLong(source);
     else if (PyLong_Check(source))
       returned_value = (int)PyLong_AsLong(source);
     else if (PyFloat_Check(source))
@@ -365,7 +367,12 @@ public:
   }
 };
 
-
+/**
+ * @brief Minuit device class
+ *
+ * A Minuit device is required to deal with a remote application using
+ * Minuit protocol
+ */
 class ossia_minuit_device
 {
   ossia::net::generic_device m_device;
@@ -440,6 +447,45 @@ public:
   {
     return &ossia::net::find_or_create_node(m_device.get_root_node(), address);
   }
+
+  ossia::net::node_base* find_node(const std::string& address)
+  {
+    return ossia::net::find_node(m_device.get_root_node(), address);
+  }
+
+  ossia::net::node_base* get_root_node()
+  {
+    return &m_device.get_root_node();
+  }
+};
+
+/**
+ * @brief MIDI device class
+ *
+ * A MIDI device is required to deal with a controller using
+ * MIDI protocol
+ */
+std::vector<ossia::net::midi::midi_info> list_midi_devices()
+{
+  ossia::net::midi::midi_protocol midi_protocol{};
+  return midi_protocol.scan();
+}
+
+class ossia_midi_device
+{
+  ossia::net::midi::midi_device m_device;
+  ossia::net::midi::midi_protocol& m_protocol;
+
+public:
+    ossia_midi_device(std::string name, ossia::net::midi::midi_info d)
+    : m_device{ std::make_unique<ossia::net::midi::midi_protocol>(d) },
+    m_protocol{ static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol()) }
+  {
+      m_device.set_name(name);
+      m_device.update_namespace();
+  }
+
+  operator ossia::net::midi::midi_device&() { return m_device; }
 
   ossia::net::node_base* find_node(const std::string& address)
   {
@@ -529,6 +575,27 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "root_node", &ossia_osc_device::get_root_node,
           py::return_value_policy::reference);
+
+  m.def("list_midi_devices", &list_midi_devices);
+
+  py::class_<ossia_midi_device>(m, "MidiDevice")
+      .def(py::init<std::string, ossia::net::midi::midi_info>())
+      .def("find_node", &ossia_midi_device::find_node,
+          py::return_value_policy::reference)
+      .def_property_readonly(
+          "root_node", &ossia_midi_device::get_root_node,
+          py::return_value_policy::reference);
+
+  py::class_<ossia::net::midi::midi_info>(m, "MidiInfo")
+      .def(py::init())
+      .def_readonly("type", &ossia::net::midi::midi_info::type)
+      .def_readonly("device", &ossia::net::midi::midi_info::device)
+      .def_readonly("port", &ossia::net::midi::midi_info::port);
+
+  py::enum_<ossia::net::midi::midi_info::Type>(m, "MidiDeviceType", py::arithmetic())
+      .value("RemoteInput", ossia::net::midi::midi_info::Type::RemoteInput)
+      .value("RemoteOutput", ossia::net::midi::midi_info::Type::RemoteOutput)
+      .export_values();
 
   py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
       .def(py::init<>())
@@ -693,8 +760,12 @@ PYBIND11_MODULE(ossia_python, m)
           &ossia::net::parameter_base::get_repetition_filter,
           &ossia::net::parameter_base::set_repetition_filter)
       .def_property(
-          "unit", &ossia::net::parameter_base::get_unit,
-          &ossia::net::parameter_base::set_unit)
+          "unit",
+          [](ossia::net::parameter_base& addr) -> std::string { 
+            return ossia::get_pretty_unit_text(addr.get_unit()); },
+          [](ossia::net::parameter_base& addr, std::string u) {
+            addr.set_unit(ossia::parse_pretty_unit(u));
+          })
       .def_property_readonly(
           "domain", &ossia::net::parameter_base::get_domain,
           py::return_value_policy::reference)
@@ -713,10 +784,17 @@ PYBIND11_MODULE(ossia_python, m)
           })
       .def(
           "make_domain",
-          [](ossia::net::parameter_base& addr, const py::object& min, const py::object& max, const std::vector<py::object>& vals) {
-            addr.set_domain(ossia::make_domain(
-                              ossia::python::from_python_value(min.ptr())
-                            , ossia::python::from_python_value(max.ptr())));//, vals));
+          [](ossia::net::parameter_base& addr, const std::vector<py::object>& values) {
+            auto dom = ossia::init_domain(addr.get_value_type());
+            
+            std::vector<ossia::value> vec;
+            vec.reserve(values.size());
+
+            for (auto& v : values)
+              vec.push_back(ossia::python::from_python_value(v.ptr()));
+
+            ossia::set_values(dom, vec);
+            addr.set_domain(dom);
           })
       .def(
           "apply_domain",
@@ -816,6 +894,7 @@ PYBIND11_MODULE(ossia_python, m)
       .def(py::init<ossia_osc_device&>())
       .def(py::init<ossia_oscquery_device&>())
       .def(py::init<ossia_minuit_device&>())
+      .def(py::init<ossia_midi_device&>())
       .def("register", [] (ossia::message_queue& mq, ossia::net::parameter_base& p) {
     mq.reg(p);
   })
@@ -832,12 +911,12 @@ PYBIND11_MODULE(ossia_python, m)
      return py::none{};
   });
 
-
   py::class_<ossia::global_message_queue>(m, "GlobalMessageQueue")
       .def(py::init<ossia_local_device&>())
       .def(py::init<ossia_osc_device&>())
       .def(py::init<ossia_oscquery_device&>())
       .def(py::init<ossia_minuit_device&>())
+      .def(py::init<ossia_midi_device&>())
       .def("pop", [] (ossia::global_message_queue& mq) -> py::object {
      ossia::received_value v;
      bool res = mq.try_dequeue(v);
