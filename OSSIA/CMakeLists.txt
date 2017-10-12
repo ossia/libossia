@@ -232,7 +232,37 @@ endif()
 
 if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
-  target_link_libraries(ossia PRIVATE portaudio)
+
+  find_path(PortAudio_INCLUDE_DIR portaudio.h
+    HINTS /opt/portaudio/
+    PATH_SUFFIXES include
+    )
+
+  find_library(PortAudio_LIBRARIES
+      NAMES libportaudio_static.a libportaudio.a portaudio
+      HINTS /opt/portaudio/lib)
+  target_include_directories(ossia PRIVATE ${PortAudio_INCLUDE_DIR})
+  target_link_libraries(ossia PRIVATE ${PortAudio_LIBRARIES})
+
+  if(APPLE)
+      find_library(Foundation_FK Foundation)
+      find_library(AVFoundation_FK AVFoundation)
+      find_library(CoreMedia_FK CoreMedia)
+      find_library(CoreFoundation_FK CoreFoundation)
+      find_library(AudioToolbox_FK AudioToolbox)
+      find_library(AudioUnit_FK AudioUnit)
+      find_library(CoreServices_FK CoreServices)
+
+      target_link_libraries(ossia PRIVATE
+          ${Foundation_FK}
+          ${AVFoundation_FK}
+          ${CoreMedia_FK}
+          ${CoreFoundation_FK}
+          ${AudioToolbox_FK}
+          ${AudioUnit_FK}
+          ${CoreServices_FK}
+          )
+  endif()
 endif()
 # Useful properties
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
