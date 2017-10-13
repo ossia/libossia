@@ -2,8 +2,8 @@
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
-#if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
-if [[ "$BUILD_TYPE" == *Pd* ]]; then
+if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
+#if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   export python=$PYTHON_BIN
   mkdir -p ~/bin
@@ -21,7 +21,6 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   # gpg --fast-import ${0%/*}/codesigning.asc
 
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
-
 
   VERSION=${TRAVIS_TAG}
 
