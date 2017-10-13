@@ -506,41 +506,44 @@ public:
   }
 };
 
-class ossia_device_signal
+class ossia_device_callback
 : public Nano::Observer
 {
-  ossia::net::device_base& m_device;
-  std::function<void(const ossia::net::node_base&)> m_on_node_created;
-  //std::function<void(const ossia::net::node_base&)>m_on_node_renamed;
-  //std::function<void(const ossia::net::node_base&)> m_on_node_removing;
+  ossia::net::generic_device& m_device;
+  std::function<void(const py::object&)> m_on_node_created;
+  std::function<void(const py::object&)> m_on_node_renamed;
+  std::function<void(const py::object&)> m_on_node_removing;
 
 public:
-  ossia_device_signal(ossia::net::device_base& device, 
-                      std::function<void(const ossia::net::node_base&)> on_node_created
-                      /*, void* on_node_renamed, void* on_node_removing*/)
-  : m_device{device}, m_on_node_created(on_node_created)//, m_on_node_renamed(on_node_renamed), m_on_node_removing(on_node_removing)
+  ossia_device_callback(ossia::net::generic_device& device, 
+                        std::function<void(const py::object&)> on_node_created_clbk,
+                        std::function<void(const py::object&)> on_node_renamed_clbk, 
+                        std::function<void(const py::object&)> on_node_removing_clbk)
+  : m_device{device}, 
+  m_on_node_created(on_node_created_clbk), 
+  m_on_node_renamed(on_node_renamed_clbk), 
+  m_on_node_removing(on_node_removing_clbk)
   {
-    device.on_node_created.connect<ossia_device_signal, &ossia_device_signal::on_node_created>(*this);
-    //device->on_node_created.connect<ossia_device_signal, &ossia_device_signal::m_on_node_renamed>(*this);
-    //device->on_node_removing.connect<ossia_device_signal, &ossia_device_signal::m_on_node_removing>(*this);
+    device.on_node_created.connect<ossia_device_callback, &ossia_device_callback::on_node_created>(*this);
+    device.on_node_created.connect<ossia_device_callback, &ossia_device_callback::on_node_renamed>(*this);
+    device.on_node_removing.connect<ossia_device_callback, &ossia_device_callback::on_node_removing>(*this);
   }
 
 private:
   void on_node_created(const ossia::net::node_base& node)
   { 
-    m_on_node_created(node);
-  }
-/*
-  void on_node_renamed(const ossia::net::node_base&)
-  { 
-    m_on_node_renamed();
+    m_on_node_created(py::cast(&node));
   }
 
-  void node_removing(const ossia::net::node_base&)
-  {
-    m_on_node_removing();
+  void on_node_renamed(const ossia::net::node_base& node)
+  { 
+    m_on_node_renamed(py::cast(&node));
   }
-  */
+
+  void on_node_removing(const ossia::net::node_base& node)
+  {
+    m_on_node_removing(py::cast(&node));
+  }
 };
 
 // to get children of a node
@@ -636,6 +639,24 @@ PYBIND11_MODULE(ossia_python, m)
       .value("RemoteInput", ossia::net::midi::midi_info::Type::RemoteInput)
       .value("RemoteOutput", ossia::net::midi::midi_info::Type::RemoteOutput)
       .export_values();
+
+  py::class_<ossia_device_callback>(m, "DeviceCallback")
+      .def(py::init<ossia_local_device&, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>>())
+      .def(py::init<ossia_oscquery_device&, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>>())
+      .def(py::init<ossia_osc_device&, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>>())
+      .def(py::init<ossia_minuit_device&, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>, 
+        std::function<void(const py::object&)>>());
 
   py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
       .def(py::init<>())
