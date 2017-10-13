@@ -39,6 +39,7 @@
 #include <list>
 #include <stdlib.h>
 
+#include "faust/dsp/llvm-dsp.h"
 #include "faust/audio/portaudio-dsp.h"
 #include "faust/gui/FUI.h"
 #include "faust/gui/GUI.h"
@@ -46,26 +47,6 @@
 #include "faust/misc.h"
 
 #include "OssiaUI.h"
-
-/**************************BEGIN USER SECTION **************************/
-/******************************************************************************
-*******************************************************************************
-
-                                                               VECTOR
-INTRINSICS
-
-*******************************************************************************
-*******************************************************************************/
-
-<<includeIntrinsic>>
-
-<<includeclass>>
-
-/***************************END USER SECTION ***************************/
-
-/*******************BEGIN ARCHITECTURE SECTION (part 2/2)***************/
-
-mydsp* DSP;
 
 std::list<GUI*> GUI::fGuiList;
 ztimedmap GUI::gTimedZoneMap;
@@ -75,9 +56,16 @@ ztimedmap GUI::gTimedZoneMap;
 //-------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    char* appname = basename(argv[0]);
+    cout << "Libfaust version : " << getCLibFaustVersion () << endl;
 
-    DSP = new mydsp();
+    string error_msg;
+    dsp_factory* factory = createDSPFactoryFromFile(argv[argc-1], 0, nullptr, "", error_msg, -1);
+    if (factory == 0) {
+        std::cerr << "Unable to crate Faust DSP factory" << std::endl;
+        exit(1);
+    }
+    
+    dsp* DSP = factory->createDSPInstance();
     if (DSP == 0) {
         std::cerr << "Unable to allocate Faust DSP object" << std::endl;
         exit(1);
@@ -87,7 +75,7 @@ int main(int argc, char* argv[])
     DSP->buildUserInterface(&ossia);
 
     portaudio audio(44100, 256);
-    audio.init(appname, DSP);
+    audio.init("FaustDSP", DSP);
     audio.start();
 
     ossia.run(50);
