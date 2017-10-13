@@ -101,6 +101,7 @@ private:
   void on_nodeCreated(const ossia::net::node_base&);
   void on_nodeRemoved(const ossia::net::node_base&);
   void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+  void on_nodeRenamed(const ossia::net::node_base &n, std::string oldname);
 
   template<typename T>
   bool push_impl(const T& addr);

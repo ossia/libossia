@@ -84,6 +84,9 @@ oscquery_server_protocol::~oscquery_server_protocol()
     dev.on_attribute_modified
        .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
             this);
+    dev.on_node_renamed
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRenamed>(
+           this);
   }
   stop();
 }
@@ -243,6 +246,9 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
     old.on_attribute_modified
        .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
            this);
+    old.on_node_renamed
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRenamed>(
+           this);
   }
   m_device = &dev;
 
@@ -255,6 +261,9 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
           this);
   dev.on_attribute_modified
       .connect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
+          this);
+  dev.on_node_renamed
+      .connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRenamed>(
           this);
 
   update_zeroconf();
@@ -528,6 +537,28 @@ catch (const std::exception& e)
 catch (...)
 {
   logger().error("oscquery_server_protocol::on_attributeChanged: error.");
+}
+
+void oscquery_server_protocol::on_nodeRenamed(
+    const net::node_base& n, std::string oldname) try
+{
+  /* TODO
+  const auto mess = json_writer::attributes_changed(n, attr);
+  lock_t lock(m_clientsMutex);
+  for (auto& client : m_clients)
+  {
+    m_websocketServer->send_message(client.connection, mess);
+  }
+  */
+}
+catch (const std::exception& e)
+{
+  logger().error(
+      "oscquery_server_protocol::on_nodeRenamed: {}", e.what());
+}
+catch (...)
+{
+  logger().error("oscquery_server_protocol::on_nodeRenamed: error.");
 }
 
 void oscquery_server_protocol::update_zeroconf()

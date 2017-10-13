@@ -52,6 +52,8 @@ public:
 
   const inlets& inputs() const;
   const outlets& outputs() const;
+  inlets& inputs();
+  outlets& outputs();
 
   void clear();
 

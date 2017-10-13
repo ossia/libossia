@@ -102,12 +102,12 @@ bool graph_node::has_local_inputs(const execution_state& st) const
         if (st.in_local_scope(**dest))
           return true;
       }
-      // else if(auto pattern = pt.target<std::string>())
-      // {
+      else if(auto pattern = inlet->address.target<std::string>())
+      {
       // what happens if a pattern matches anotehr pattern. c.f. notes
       //   if( n.consumes(*pattern))
       //     return true;
-      // }
+      }
 
       if (consumes(st))
         return true;
@@ -122,6 +122,16 @@ const inlets& graph_node::inputs() const
 }
 
 const outlets& graph_node::outputs() const
+{
+  return m_outlets;
+}
+
+inlets& graph_node::inputs()
+{
+  return m_inlets;
+}
+
+outlets& graph_node::outputs()
 {
   return m_outlets;
 }
