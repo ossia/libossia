@@ -35,7 +35,7 @@ enum class object_class {
   client
 };
 
-struct object_base;
+class object_base;
 
 class t_select_clock
 {
@@ -71,9 +71,11 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
-  void set_dead(){ m_dead = true; };
+  void set_dead(){ m_dead = true; }
 
   bool m_dead{};
+
+  std::vector<ossia::value> m_set_pool;
 
 private:
   ossia::net::node_base* node{};
