@@ -57,7 +57,6 @@ public:
   int m_mute{0};
   int m_enable{1};
   ossia::optional<ossia::unit_t> m_ounit;
-  std::vector<ossia::value> m_set_pool;
 
   // size of size-variable attribute
   long m_default_size{};

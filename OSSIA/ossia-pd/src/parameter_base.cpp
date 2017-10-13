@@ -544,6 +544,10 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         } else
           converted = v;
 
+        if(s && s == gensym("set"))
+        {
+          m.m_set_pool.push_back(converted);
+        }
         node->get_parameter()->push_value(converted);
       }
     }
@@ -575,9 +579,6 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         }
       }
 
-      if (set_flag)
-        x->m_set_pool.push_back(list);
-
       ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
 
       for (auto& m : x->m_matchers)
@@ -592,8 +593,13 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
           auto dst_unit = param->get_unit();
 
           auto converted = ossia::convert(list, src_unit, dst_unit);
+          if (set_flag)
+            m.m_set_pool.push_back(converted);
+
           node->get_parameter()->push_value(converted);
         } else {
+          if (set_flag)
+            m.m_set_pool.push_back(list);
           node->get_parameter()->push_value(list);
         }
       }
