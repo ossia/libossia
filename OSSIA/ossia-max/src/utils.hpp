@@ -78,6 +78,8 @@ t_symbol* access_mode2symbol(ossia::access_mode mode);
  */
 std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
 
+ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
+
 // put templates after prototype so we can use them
 
 template <typename T>

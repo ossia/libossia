@@ -52,8 +52,9 @@ setup(
     ],
     keywords = ['creative', 'controls', 'osc', 'oscquery', 'websocket', 'libossia'],
     packages = find_packages(),
+    cmdclass=versioneer.get_cmdclass(),
     package_data={
-        'pyossia': ['ossia_python.so'],
+        'pyossia': ['ossia_python.*.so'],
     },
     zip_safe=False
 )

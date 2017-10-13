@@ -323,5 +323,57 @@ std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const o
   return matchers;
 }
 
+ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
+{
+    if (argc == 1 && !s)
+    {
+      ossia::value v;
+      // convert one element array to single element
+      switch(argv->a_type)
+      {
+        case A_SYM:
+          v = ossia::value(std::string(atom_getsym(argv)->s_name));
+          break;
+        case A_FLOAT:
+          v = ossia::value(atom_getfloat(argv));
+          break;
+        case A_LONG:
+          v = static_cast<int32_t>(atom_getlong(argv));
+          break;
+        default:
+          ;
+      }
+
+      return v;
+    }
+    else
+    {
+      std::vector<ossia::value> list;
+      list.reserve(argc+1);
+      if ( s && s != gensym("list") )
+        list.push_back(std::string(s->s_name));
+
+      for (; argc > 0; argc--, argv++)
+      {
+        switch (argv->a_type)
+        {
+          case A_SYM:
+            list.push_back(std::string(atom_getsym(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          case A_LONG:
+            list.push_back(static_cast<int32_t>(atom_getlong(argv)));
+            break;
+          default:
+            ;
+        }
+      }
+
+      return ossia::value(list);
+    }
+}
+
 } // namespace max
 } // namespace ossia

@@ -56,6 +56,8 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
+  std::vector<ossia::value> m_set_pool;
+
 private:
   ossia::net::node_base* node{};
   object_base* parent{};
@@ -116,6 +118,8 @@ public:
   static void get_priority(object_base* x);
   static void get_hidden(object_base* x);
   static void get_mess_cb(object_base* x, t_symbol* s);
+  static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+
 
   // default attributes
   t_symbol* m_name{};
