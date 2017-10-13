@@ -48,6 +48,11 @@ namespace ossia {
  */
 struct to_python_value
 {
+  py::object operator()(const ossia::impulse& i) const
+  {
+    return py::none{};
+  }
+    
   template <typename T>
   py::object operator()(const T& t) const
   {
