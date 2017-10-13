@@ -27,6 +27,7 @@ void client::destroy(client* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
+  clock_free(x->m_poll_clock);
   x->unregister_children();
   if (x->m_device)
     delete (x->m_device);
