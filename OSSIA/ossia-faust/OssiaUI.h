@@ -98,11 +98,7 @@ private:
 
     void addCheckButton(const char* label, FAUSTFLOAT* zone) override
     {
-        auto n = m_curNode->create_child(label);
-        auto a = n->create_parameter(ossia::val_type::BOOL);
-        a->add_callback([zone] (const ossia::value& val) {
-            *zone = val.get<bool>() ? 1.0 : 0.0;
-        });
+		addButton(label, zone);
     }
 
     void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) override
@@ -140,12 +136,7 @@ private:
     }
     void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
     {
-        auto n = m_curNode->create_child(label);
-        auto a = n->create_parameter(ossia::val_type::FLOAT);
-        ossia::net::set_domain(*n, ossia::make_domain(min, max));
-        ossia::net::set_access_mode(*n, ossia::access_mode::GET);
-
-        m_values.push_back({a, zone});
+		addHorizontalBargraph(label, zone, min, max);
     }
 
     // -- metadata declarations

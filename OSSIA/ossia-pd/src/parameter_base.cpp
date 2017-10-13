@@ -504,55 +504,105 @@ void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
+template<std::size_t N>
+ossia::optional<std::array<float, N>> to_array(t_atom* argv)
+{
+  std::array<float, N> arr;
+  for(std::size_t i = 0; i < N; i++)
+  {
+    switch(argv[i].a_type)
+    {
+      case A_FLOAT:
+        arr[i] = atom_getfloat(&argv[i]);
+        break;
+      default:
+        return ossia::none;
+    }
+  }
+  return arr;
+}
+
+void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
+{
+  for (auto& m : x->m_matchers)
+  {
+    auto node = m.get_node();
+    auto param = node->get_parameter();
+    auto xparam = (parameter_base*)m.get_parent();
+
+    if ( xparam->m_ounit != ossia::none )
+    {
+      const auto& src_unit = *xparam->m_ounit;
+      const auto& dst_unit = param->get_unit();
+
+      auto converted = ossia::convert(std::move(v), src_unit, dst_unit);
+      if (set_flag) m.m_set_pool.push_back(converted);
+      param->push_value(converted);
+    }
+    else
+    {
+      if (set_flag) m.m_set_pool.push_back(v);
+      param->push_value(std::move(v));
+    }
+  }
+}
+
+void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
+{
+  for (auto& m : x->m_matchers)
+  {
+    auto node = m.get_node();
+    auto param = node->get_parameter();
+    if(set_flag) m.m_set_pool.push_back(set_flag);
+    param->push_value(std::move(v));
+  }
+}
+
+
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node;
+  bool set_flag = false;
+  if (s && s == gensym("set"))
+    set_flag = true;
 
   if (!x->m_mute)
   {
-    if (argc == 1)
+    if (argc == 0 && s)
+    {
+      just_push(x, std::string(s->s_name), set_flag);
+    }
+    else if (argc == 1)
     {
       ossia::value v;
       // convert one element array to single element
       switch(argv->a_type)
       {
         case A_SYMBOL:
-          v = ossia::value(std::string(atom_getsymbol(argv)->s_name));
+          just_push(x, std::string(atom_getsymbol(argv)->s_name), set_flag);
           break;
         case A_FLOAT:
-          v = ossia::value(atom_getfloat(argv));
+          convert_or_push(x, atom_getfloat(argv), set_flag);
           break;
         default:
           ;
-      }
-
-      for (auto& m : x->m_matchers)
-      {
-        node = m.get_node();
-        auto parent = m.get_parent();
-        auto param = node->get_parameter();
-
-        ossia::value converted;
-        ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) parent;
-
-        if ( xparam->m_ounit != ossia::none )
-        {
-          auto src_unit = *xparam->m_ounit;
-          auto dst_unit = param->get_unit();
-
-          converted = ossia::convert(v, src_unit, dst_unit);
-        } else
-          converted = v;
-
-        node->get_parameter()->push_value(converted);
       }
     }
     else
     {
       std::vector<ossia::value> list;
       list.reserve(argc+1);
-      if ( s && s != gensym("list") )
+      if ( s && s != gensym("list") && s != gensym("set"))
+      {
         list.push_back(std::string(s->s_name));
+      }
+
+      switch(argc)
+      {
+        case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
+        case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
+        case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
+      }
 
       for (; argc > 0; argc--, argv++)
       {
@@ -571,23 +621,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
       ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
 
-      for (auto& m : x->m_matchers)
-      {
-        node = m.get_node();
-        auto parent = m.get_parent();
-        auto param = node->get_parameter();
-
-        if ( xparam->m_ounit != ossia::none )
-        {
-          auto src_unit = *xparam->m_ounit;
-          auto dst_unit = param->get_unit();
-
-          auto converted = ossia::convert(list, src_unit, dst_unit);
-          node->get_parameter()->push_value(converted);
-        } else {
-          node->get_parameter()->push_value(list);
-        }
-      }
+      convert_or_push(x, std::move(list), set_flag);
     }
   }
 }
@@ -662,6 +696,7 @@ void parameter_base::class_setup(t_eclass* c)
   if (c != ossia_pd::attribute_class)
   {
     eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method) push,               "set",      A_GIMME, 0);
     eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
   }
