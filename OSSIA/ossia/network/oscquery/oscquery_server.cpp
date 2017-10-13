@@ -72,6 +72,19 @@ oscquery_server_protocol::oscquery_server_protocol(
 
 oscquery_server_protocol::~oscquery_server_protocol()
 {
+  if(m_device)
+  {
+    auto& dev = *m_device;
+    dev.on_node_created
+        .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(
+            this);
+    dev.on_node_removing
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(
+            this);
+    dev.on_attribute_modified
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
+            this);
+  }
   stop();
 }
 
@@ -218,7 +231,19 @@ bool oscquery_server_protocol::update(net::node_base&)
 
 void oscquery_server_protocol::set_device(net::device_base& dev)
 {
-  // TODO disconnect in case there is an existing device
+  if(m_device)
+  {
+    auto& old = *m_device;
+    old.on_node_created
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(
+           this);
+    old.on_node_removing
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(
+           this);
+    old.on_attribute_modified
+       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
+           this);
+  }
   m_device = &dev;
 
   // TODO renamed, etc
