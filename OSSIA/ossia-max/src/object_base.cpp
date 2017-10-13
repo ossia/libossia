@@ -180,7 +180,26 @@ void t_matcher::output_value()
   {
     std::lock_guard<std::mutex> lock(parent->bindMutex);
     ossia::value val;
-    while(m_queue_list.try_dequeue(val)) {
+    while(m_queue_list.try_dequeue(val))
+    {
+      bool break_flag = false;
+
+      if(   parent->m_otype == object_class::param
+         || parent->m_otype == object_class::remote )
+      {
+        parameter_base* x = (parameter_base*)parent;
+        for (auto v : m_set_pool)
+        {
+          if (v == val){
+            break_flag = true;
+            ossia::remove_one(m_set_pool, v);
+            break;
+          }
+        }
+      }
+
+      if( break_flag )
+        continue;
 
       if(parent->m_dumpout)
         outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
@@ -368,7 +387,7 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_STYLE(c, "hidden", 0, "onoff");
   CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
 
-  class_addmethod(c, (method) object_base::get_address, "getaddress", A_NOTHING,  0);
+  class_addmethod(c, (method) object_base::address_mess_cb, "address",    A_GIMME, 0);
 }
 
 void object_base::fill_selection()
@@ -409,6 +428,16 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
 
   if (nodes.empty())
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
+}
+
+void object_base::address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if (argc && argv[0].a_type == A_SYM)
+    x->m_selection_pattern = atom_getsym(argv);
+  else
+    x->m_selection_pattern = gensym("*");
+
+  x->fill_selection();
 }
 
 } // max namespace

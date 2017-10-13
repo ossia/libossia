@@ -40,12 +40,17 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Release)
+        OSSIA_UNITY=1
+        if [[ "$OSSIA_STATIC" == "1" ]]; then
+          OSSIA_UNITY=0
+        fi
+
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_C=1 \
           -DOSSIA_CPP=1 \
-          -DOSSIA_UNITY3D=1 \
+          -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
           -DOSSIA_TESTING=1 \
           -DOSSIA_EXAMPLES=1 \
@@ -343,6 +348,11 @@ case "$TRAVIS_OS_NAME" in
       tar -czf $TRAVIS_BUILD_DIR/ossia-qml-osx.tar.gz Ossia
 
     else
+      OSSIA_UNITY=1
+      if [[ "$OSSIA_STATIC" == "1" ]]; then
+        OSSIA_UNITY=0
+      fi
+
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
                -DOSSIA_STATIC=$OSSIA_STATIC \
                -DOSSIA_SANITIZE=1 \
@@ -354,7 +364,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_QT=1 \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
-               -DOSSIA_UNITY3D=1 \
+               -DOSSIA_UNITY3D=$OSSIA_UNITY \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install
                ..
