@@ -85,7 +85,6 @@ private:
         m_curNode = m_curNode->get_parent();
     }
 
-
     // -- active widgets
     void addButton(const char* label, FAUSTFLOAT* zone) override
     {
@@ -122,7 +121,6 @@ private:
     {
         addVerticalSlider(label, zone, init, min, max, step);
     }
-
 
     // -- passive widgets
     void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
