@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -ux
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
