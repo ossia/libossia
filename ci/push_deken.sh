@@ -2,8 +2,8 @@
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
-if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
-#if [[ "$BUILD_TYPE" == *Pd* ]]; then
+#if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
+if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   export python=$PYTHON_BIN
   mkdir -p ~/bin
@@ -16,13 +16,13 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
   openssl aes-256-cbc -K $encrypted_7a0fc0b5101e_key -iv $encrypted_7a0fc0b5101e_iv -in ${0%/*}/deken.config.enc -out ~/.deken/config -d
 
   # decrypt GPG key
-  # openssl aes-256-cbc -K $encrypted_2bca04643b7f_key -iv $encrypted_2bca04643b7f_iv -in ${0%/*}/codesigning.asc.enc -out ${0%/*}/codesigning.asc -d
+  openssl aes-256-cbc -K $encrypted_2bca04643b7f_key -iv $encrypted_2bca04643b7f_iv -in ${0%/*}/codesigning.asc.enc -out ${0%/*}/codesigning.asc -d
 
-  # gpg --fast-import ${0%/*}/codesigning.asc
+  gpg --fast-import ${0%/*}/codesigning.asc
 
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
 
-  VERSION=${TRAVIS_TAG}
+  VERSION="test-${TRAVIS_TAG}"
 
   mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz "./ossia-v${VERSION}-(Sources)-externals.tar.gz"
 
