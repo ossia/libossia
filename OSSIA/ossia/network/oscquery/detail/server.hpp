@@ -135,7 +135,7 @@ public:
 
   void listen(uint16_t port = 9002)
   {
-    m_server.listen(port);
+    m_server.listen(asio::ip::tcp::v4(), port);
     m_server.start_accept();
   }
 
