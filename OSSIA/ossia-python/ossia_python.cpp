@@ -1004,4 +1004,15 @@ PYBIND11_MODULE(ossia_python, m)
 
       return res;
     });
+
+  m.def("create_node_pattern",
+    [] (const py::object& start_node, std::string pattern) -> std::vector<py::object> {
+      std::vector<ossia::net::node_base*> vec = ossia::net::create_nodes(start_node.cast<ossia::net::node_base&>(), pattern);
+
+      std::vector<py::object> res;
+      for (auto node : vec)
+        res.push_back(py::cast(node));
+
+      return res;
+    });
 }
