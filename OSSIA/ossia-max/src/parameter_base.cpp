@@ -540,7 +540,7 @@ ossia::optional<std::array<float, N>> to_array(t_atom* argv)
   return arr;
 }
 
-void convert_or_push(parameter_base* x, ossia::value&& v)
+void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
   for (auto& m : x->m_matchers)
   {
@@ -587,7 +587,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
     if (argc == 0 && s)
     {
-      just_push(x, std::string(s->s_name));
+      just_push(x, std::string(s->s_name), set_flag);
     }
     else if (argc == 1)
     {
@@ -595,11 +595,11 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       switch(argv->a_type)
       {
         case A_SYM:
-          return just_push(x, std::string(atom_getsym(argv)->s_name));
+          return just_push(x, std::string(atom_getsym(argv)->s_name), set_flag);
         case A_FLOAT:
-          return convert_or_push(x, ossia::value(atom_getfloat(argv)));
+          return convert_or_push(x, ossia::value(atom_getfloat(argv)), set_flag);
         case A_LONG:
-          return convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)));
+          return convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)), set_flag);
         default:
           return;
       }
@@ -609,22 +609,20 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
       std::vector<ossia::value> list;
 
-      bool set_flag = false;
       if ( s )
       {
         list.reserve(argc+1);
-        if ( s == gensym("set") )
-          set_flag = true;
-        else if ( s != gensym("list") )
+        if ( s != gensym("list") && s != gensym("set") )
           list.push_back(std::string(s->s_name));
-      } else {
-        switch(argc)
-        {
-          case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr); return; } break;
-          case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr); return; } break;
-          case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr); return; } break;
-        }
       }
+
+      switch(argc)
+      {
+        case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
+        case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
+        case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
+      }
+
 
       for (; argc > 0; argc--, argv++)
       {

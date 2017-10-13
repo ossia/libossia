@@ -56,6 +56,8 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
+  std::vector<ossia::value> m_set_pool;
+
 private:
   ossia::net::node_base* node{};
   object_base* parent{};

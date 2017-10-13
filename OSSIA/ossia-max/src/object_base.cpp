@@ -188,11 +188,11 @@ void t_matcher::output_value()
          || parent->m_otype == object_class::remote )
       {
         parameter_base* x = (parameter_base*)parent;
-        for (auto v : x->m_set_pool)
+        for (auto v : m_set_pool)
         {
           if (v == val){
             break_flag = true;
-            ossia::remove_one(x->m_set_pool, v);
+            ossia::remove_one(m_set_pool, v);
             break;
           }
         }
