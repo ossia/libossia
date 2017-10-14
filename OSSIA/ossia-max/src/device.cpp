@@ -42,7 +42,7 @@ extern "C" void ossia_device_setup()
         "stop", A_LONG, 0);
   class_addmethod(
         c, (method) device::get_mess_cb,
-        "get", A_SYMBOL, 0);
+        "get", A_SYM, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -335,7 +335,7 @@ void device::get_protocols(device* x)
   for (auto& v : x->m_protocols)
   {
     t_atom ar[5];
-    SETLONG(ar,j);
+    A_SETLONG(ar,j);
     for (int i = 0 ; i<v.size() ; i++)
       ar[i+1] = v[i];
 
@@ -352,7 +352,7 @@ void device::get_mess_cb(device* x, t_symbol* s)
     device_base::get_mess_cb(x,s);
 }
 
-void device::stop_expose(device*x, long index)
+void device::stop_expose(device*x, int index)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
