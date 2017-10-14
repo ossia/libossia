@@ -56,9 +56,6 @@ matrix:
     env: BUILD_TYPE=python PYTHON_VERSION=2.7
 
   - os: linux
-    env: BUILD_TYPE=python PYTHON_VERSION=3.5
-
-  - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=3.6
 
   - os: linux
@@ -66,9 +63,6 @@ matrix:
 
   - os: osx
     env: BUILD_TYPE=python PYTHON_VERSION=2.7
-
-  - os: osx
-    env: BUILD_TYPE=python PYTHON_VERSION=3.5
 
   - os: osx
     env: BUILD_TYPE=python PYTHON_VERSION=3.6
