@@ -22,7 +22,7 @@ class TestAll(unittest.TestCase):
     # First with oscquery protocol
     my_device.expose(protocol='oscquery', listening_port=3456, sending_port=5678, logger=False)
     # then through OSC
-    my_device.expose(protocol='osc', listening_port=9996, sending_port=9997, logger=False)
+    #my_device.expose(protocol='osc', listening_port=9996, sending_port=9997, logger=False)
     # create a bunch of parameters under different nodes
     my_int = my_device.add_param('int', value_type='int', default_value=66, domain=[-100, 100])
     my_float = my_device.add_param('float', value_type='float', default_value=0.123456789, domain=[-2, 2])
@@ -38,7 +38,8 @@ class TestAll(unittest.TestCase):
         """
         print the actual version of pyossia
         """
-        self.assertEqual(isinstance(pyossia.__version__, str), True)
+        self.assertEqual(isinstance(pyossia.__version__, dict), True)
+        self.assertEqual(isinstance(pyossia.__version__['version'], str), True)
 
     def test_int(self):
         """
@@ -76,6 +77,30 @@ class TestAll(unittest.TestCase):
         self.my_vec2f.value = [-1, 1.2]
         self.assertAlmostEqual(self.my_vec2f.value[0], -1)
         self.assertAlmostEqual(self.my_vec2f.value[1], 1.2)
+
+    def test_vec3f(self):
+        """
+        test a parameter @value_type float
+        """
+        self.assertCountEqual(self.my_vec3f.value, [0.0, 0.0, 0.0])
+        self.assertEqual(self.my_vec3f.value_type, ossia.ValueType.Vec3f)
+        self.my_vec3f.value = [-1, -270, 360]
+        self.assertEqual(len(self.my_vec3f.value), 3)
+        self.assertAlmostEqual(self.my_vec3f.value[0], -1)
+        self.assertAlmostEqual(self.my_vec3f.value[1], -270)
+        self.assertAlmostEqual(self.my_vec3f.value[2], 360)
+
+    def test_vec4f(self):
+        """
+        test a parameter @value_type float
+        """
+        self.assertCountEqual(self.my_vec4f.value, [0.0, 0.0, 0.0, 0.0])
+        self.assertEqual(self.my_vec4f.value_type, ossia.ValueType.Vec4f)
+        self.my_vec4f.value = [0, 0.6, 0.86, 0.8]
+        self.assertAlmostEqual(self.my_vec4f.value[0], 0)
+        self.assertAlmostEqual(self.my_vec4f.value[1], 0.6)
+        self.assertAlmostEqual(self.my_vec4f.value[2], 0.86)
+        self.assertAlmostEqual(self.my_vec4f.value[3], 0.8)
 
     def test_device(self):
         """

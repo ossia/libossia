@@ -1,5 +1,5 @@
 include versioneer.py
 recursive-include . *.py
-recursive-include pyossia *.so
+recursive-include . *.so
 include README.rst
 include pyossia/_version.py
