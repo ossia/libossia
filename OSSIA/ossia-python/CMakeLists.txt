@@ -11,3 +11,8 @@ add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11" pybind11)
       POST_BUILD
       COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+    add_custom_command(TARGET ${PROJECT_NAME}
+      POST_BUILD
+      COMMAND ${PYTHON_EXECUTABLE} -m pip install pyossia-.*.whl --user
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+    message(STATUS "install pyossia in User Library (pip install --user")
