@@ -491,7 +491,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 36.0, 119.0, 292.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter bar @clip low @defval 12. @min -3"
+									"text" : "ossia.parameter bar @clip low @default 12. @min -3"
 								}
 
 							}

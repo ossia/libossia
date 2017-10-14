@@ -2019,7 +2019,7 @@
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 9.0, 105.0, 358.0, 22.0 ],
 													"style" : "",
-													"text" : "ossia.parameter another_parameter @type float @defval 45.231"
+													"text" : "ossia.parameter another_parameter @type float @default 45.231"
 												}
 
 											}
@@ -2032,7 +2032,7 @@
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 9.0, 77.0, 300.0, 22.0 ],
 													"style" : "",
-													"text" : "ossia.parameter my_parameter @type int @defval 23"
+													"text" : "ossia.parameter my_parameter @type int @default 23"
 												}
 
 											}
@@ -2118,7 +2118,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 470.0, 371.0, 344.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter another_parameter @type bool @defval 1"
+									"text" : "ossia.parameter another_parameter @type bool @default 1"
 								}
 
 							}
@@ -2131,7 +2131,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 470.0, 342.0, 307.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_parameter @type int @defval 123"
+									"text" : "ossia.parameter my_parameter @type int @default 123"
 								}
 
 							}

@@ -1150,7 +1150,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 96.0, 241.0, 518.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_freq @unit time.hz @defval 440 @range 20 20000 @clip both"
+									"text" : "ossia.parameter my_freq @unit time.hz @default 440 @range 20 20000 @clip both"
 								}
 
 							}
@@ -2317,7 +2317,7 @@
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 66.0, 122.0, 63.0, 22.0 ],
 													"style" : "",
-													"text" : "defval 1.2"
+													"text" : "default 1.2"
 												}
 
 											}
@@ -2846,7 +2846,7 @@
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 15.0, 205.0, 186.0, 35.0 ],
 													"style" : "",
-													"text" : "ossia.parameter another_param @defval 0.1 @unit gain.linear"
+													"text" : "ossia.parameter another_param @default 0.1 @unit gain.linear"
 												}
 
 											}
