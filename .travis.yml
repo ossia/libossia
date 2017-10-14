@@ -95,7 +95,7 @@ matrix:
 # work around https://github.com/travis-ci/travis-ci/issues/8363
 before_script: pyenv global $TRAVIS_PYTHON_VERSION
 
-before_install: "./ci/deps.sh"
+before_install: travis_wait 15 "./ci/deps.sh"
 
 script: "./ci/build.sh"
 
