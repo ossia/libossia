@@ -25,7 +25,7 @@ case "$TRAVIS_OS_NAME" in
       sudo apt-get update -qq
       sudo apt-get install -qq --yes --force-yes g++-7 binutils ninja-build gcovr lcov qt59-meta-minimal libasound2-dev clang-4.0 lld-4.0
 
-      wait wget || true
+      wait $wget || true
 
       (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
