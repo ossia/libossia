@@ -8,7 +8,7 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   sudo rm /usr/bin/python
   sudo ln -s $PYTHON_BIN /usr/bin/python
 
-  python --version
+  which python
 
   mkdir -p ~/bin
   curl https://raw.githubusercontent.com/pure-data/deken/master/developer/deken > ~/bin/deken
