@@ -16,6 +16,7 @@ case "$TRAVIS_OS_NAME" in
     export PYTHON_BIN=/usr/local/bin/python3
   else
     export PYTHON_BIN=/usr/local/bin/python2
+  fi
   ;;
 esac
 export CTEST_OUTPUT_ON_FAILURE=1
