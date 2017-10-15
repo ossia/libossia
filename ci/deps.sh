@@ -55,10 +55,6 @@ case "$TRAVIS_OS_NAME" in
       if [[ "$PYTHON_VERSION" == "2.7" ]]; then
         sudo apt-get update -qq
         sudo apt install -qq python python-dev python-pip
-      elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        sudo add-apt-repository --yes ppa:fkrull/deadsnakes
-        sudo apt-get update -qq
-        sudo apt install -qq python3 python3-dev python3-pip
       elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
         sudo add-apt-repository --yes ppa:jonathonf/python-3.6
         sudo apt-get update -qq
@@ -86,10 +82,12 @@ case "$TRAVIS_OS_NAME" in
     elif [[ "x$BUILD_TYPE" == "xpython" || $BUILD_TYPE == *Pd* ]]; then
       if [[ "x$PYTHON_VERSION" == x2.* ]]; then
         brew install python2
-        pip install wheel
+        pip install wheel --user
+        pip install twine --user
       else
         brew install python3
-        pip3 install wheel
+        pip3 install wheel --user
+        pip3 install twine --user
       fi
     fi
 

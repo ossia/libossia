@@ -54,7 +54,7 @@ setup(
     packages = find_packages(),
     cmdclass=versioneer.get_cmdclass(),
     package_data={
-        'pyossia': ['ossia_python.*.so'],
+        'pyossia': ['*.so'],
     },
     zip_safe=False
 )

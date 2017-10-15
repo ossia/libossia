@@ -27,6 +27,7 @@ void client::destroy(client* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
+  clock_free(x->m_poll_clock);
   x->unregister_children();
   if (x->m_device)
     delete (x->m_device);
@@ -168,13 +169,13 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
   client::disconnect(x);
 
   ossia::net::minuit_connection_data minuit_settings;
-  minuit_settings.name = "Pd";
+  minuit_settings.name = x->m_name->s_name;
   minuit_settings.host = "127.0.0.1";
   minuit_settings.remote_port = 6666;
   minuit_settings.local_port = 9999;
 
   ossia::net::oscquery_connection_data oscq_settings;
-  oscq_settings.name = "Pd";
+  oscq_settings.name = x->m_name->s_name;
   oscq_settings.host = "127.0.0.1";
   oscq_settings.port = 5678;
 

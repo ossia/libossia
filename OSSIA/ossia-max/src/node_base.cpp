@@ -151,8 +151,30 @@ void node_base::get_namespace(node_base* x)
 void node_base::class_setup(t_class* c)
 {
   object_base::class_setup(c);
+  class_addmethod(c, (method) node_base::set,           "set",       A_GIMME, 0);
   class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
   class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
+}
+
+void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
+{
+  if (argc > 0 && argv[0].a_type == A_SYM)
+  {
+    std::string addr = argv[0].a_w.w_sym->s_name;
+    argv++;
+    argc--;
+    auto v = atom2value(nullptr,argc,argv);
+    for (auto n : x->m_nodes)
+    {
+      auto nodes = ossia::net::find_nodes(*n, addr);
+      for (auto& node : nodes)
+      {
+        if (auto param = node->get_parameter()){
+          param->push_value(v);
+        }
+      }
+    }
+  }
 }
 
 

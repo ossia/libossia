@@ -3,14 +3,23 @@
 
 case "$TRAVIS_OS_NAME" in
   linux)
-  export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
-  export PYTHON_BIN=$(which python${PYTHON_VERSION})
+    export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
+    if [[ "$PYTHON_VERSION" == "3.6" ]]; then
+      export PYTHON_BIN=$(which python3)
+    else
+      export PYTHON_BIN=$(which python)
+    fi
   ;;
   osx)
-  export CMAKE_BIN=$(which cmake)
-  export PYTHON_BIN=/usr/local/bin/python${PYTHON_VERSION}
+    export CMAKE_BIN=$(which cmake)
+    if [[ "$PYTHON_VERSION" == "3.6" ]]; then
+      export PYTHON_BIN=/usr/local/bin/python3
+    else
+      export PYTHON_BIN=/usr/local/bin/python2
+    fi
   ;;
 esac
+
 export CTEST_OUTPUT_ON_FAILURE=1
 
 tar -czf ossia-src-unix.tar.gz .
@@ -40,12 +49,17 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target ExperimentalTest
       ;;
       Release)
+        OSSIA_UNITY=1
+        if [[ "$OSSIA_STATIC" == "1" ]]; then
+          OSSIA_UNITY=0
+        fi
+
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_C=1 \
           -DOSSIA_CPP=1 \
-          -DOSSIA_UNITY3D=1 \
+          -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
           -DOSSIA_TESTING=1 \
           -DOSSIA_EXAMPLES=1 \
@@ -137,20 +151,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
-        ls
-         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-          pip install twine --user
-          #pip install -ve ../OSSIA/ossia-python/
-          #python ../OSSIA/ossia-python/tests/test_.py
-        elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-          pip3 install twine --user
-          #python3.5 -m pip install -ve ../OSSIA/ossia-python/
-          #python3.5 ../OSSIA/ossia-python/tests/test_.py
-        elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
-          pip3 install twine --user
-          #python3.6 -m pip install -ve ../OSSIA/ossia-python/
-          #python3 ../OSSIA/ossia-python/tests/test_.py
-        fi
       ;;
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
@@ -304,20 +304,6 @@ case "$TRAVIS_OS_NAME" in
 
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
-      ls
-       if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-        pip install twine --user
-        #pip install -ve ../OSSIA/ossia-python/
-        #python ../OSSIA/ossia-python/tests/test_.py
-      elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        pip3 install twine --user
-        #python3.5 -m pip install -ve ../OSSIA/ossia-python/
-        #python3.5 ../OSSIA/ossia-python/tests/test_.py
-      elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
-        pip3 install twine --user
-        #python3.6 -m pip install -ve ../OSSIA/ossia-python/
-        #python3 ../OSSIA/ossia-python/tests/test_.py
-      fi
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
@@ -343,6 +329,11 @@ case "$TRAVIS_OS_NAME" in
       tar -czf $TRAVIS_BUILD_DIR/ossia-qml-osx.tar.gz Ossia
 
     else
+      OSSIA_UNITY=1
+      if [[ "$OSSIA_STATIC" == "1" ]]; then
+        OSSIA_UNITY=0
+      fi
+
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
                -DOSSIA_STATIC=$OSSIA_STATIC \
                -DOSSIA_SANITIZE=1 \
@@ -354,7 +345,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_QT=1 \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
-               -DOSSIA_UNITY3D=1 \
+               -DOSSIA_UNITY3D=$OSSIA_UNITY \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install
                ..
