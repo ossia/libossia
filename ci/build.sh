@@ -7,7 +7,7 @@ case "$TRAVIS_OS_NAME" in
     if [[ "$PYTHON_VERSION" == "3.6" ]]; then
       export PYTHON_BIN=$(which python3)
     else
-      export PYTHON_BIN=$(which python3${PYTHON_VERSION})
+      export PYTHON_BIN=$(which python)
     fi
   ;;
   osx)
