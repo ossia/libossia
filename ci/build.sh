@@ -3,22 +3,23 @@
 
 case "$TRAVIS_OS_NAME" in
   linux)
-  export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
-  if [[ "$PYTHON_VERSION" == "3.6" ]]; then
-    export PYTHON_BIN=$(which python3
-  else
-    export PYTHON_BIN=$(which python3${PYTHON_VERSION})
-  fi
+    export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
+    if [[ "$PYTHON_VERSION" == "3.6" ]]; then
+      export PYTHON_BIN=$(which python3)
+    else
+      export PYTHON_BIN=$(which python3${PYTHON_VERSION})
+    fi
   ;;
   osx)
-  export CMAKE_BIN=$(which cmake)
-  if [[ "$PYTHON_VERSION" == "3.6" ]]; then
-    export PYTHON_BIN=/usr/local/bin/python3
-  else
-    export PYTHON_BIN=/usr/local/bin/python2
-  fi
+    export CMAKE_BIN=$(which cmake)
+    if [[ "$PYTHON_VERSION" == "3.6" ]]; then
+      export PYTHON_BIN=/usr/local/bin/python3
+    else
+      export PYTHON_BIN=/usr/local/bin/python2
+    fi
   ;;
 esac
+
 export CTEST_OUTPUT_ON_FAILURE=1
 
 tar -czf ossia-src-unix.tar.gz .
