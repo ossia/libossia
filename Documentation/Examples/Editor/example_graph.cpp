@@ -1,6 +1,6 @@
 #include <ossia/dataflow/graph.hpp>
 #include <ossia/dataflow/node_process.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
@@ -95,7 +95,7 @@ struct my_node : ossia::graph_node {
 
     void run(ossia::execution_state&) override {
       if(auto a_float = pop_value<float>(this->inputs()[0])) {
-        push_value(this->outputs()[0], std::cos(*a_float) * std::sin(100. * position()));
+        push_value(this->outputs()[0], 100 + 50 * std::cos(*a_float) * std::sin(10. * position()));
       }
     }
 };
@@ -105,14 +105,28 @@ int main()
   using namespace ossia::net;
   using namespace std::literals;
 
-  generic_device device(std::make_unique<oscquery::oscquery_server_protocol>(), "my_device");
+  generic_device device(std::make_unique<oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"), "max");
+
+  device.get_protocol().update(device.get_root_node());
+  auto foo_p = ossia::net::find_node(device.get_root_node(), "/saw");
+  auto bar_p = ossia::net::find_node(device.get_root_node(), "/phasor");
+
+  if(!foo_p || !bar_p)
+    return 1;
+
+  auto foo = foo_p->get_parameter();
+  auto bar = bar_p->get_parameter();
+  /* here we use the Max-created environment instead
+  // Create an environment
   auto& root = device.get_root_node();
 
-  // Create an environment
   auto foo = create_node(root, "/foo").create_parameter(val_type::FLOAT);
   auto bar = create_node(root, "/bar").create_parameter(val_type::FLOAT);
 
   foo->push_value(100.0);
+  */
+  foo->push_value(100.0);
+  bar->push_value(1.0);
 
   // Create nodes
   auto g = std::make_shared<graph>();
@@ -127,14 +141,14 @@ int main()
   g->add_node(node2);
 
   // Create a 5 second score
-  root_scenario score{5000_tv};
+  root_scenario score{15000_tv};
   // A branch lasts 3 seconds
-  auto& itv1 = score.add_interval(3000_tv, *score.scenario_start, score.add_event());
+  auto& itv1 = score.add_interval(7000_tv, *score.scenario_start, score.add_event());
 
   // Another lasts 4
   auto& mid_ev = score.add_event();
-  score.add_interval(1000_tv, *score.scenario_start, mid_ev);
-  auto& itv3 = score.add_interval(3000_tv, mid_ev, score.add_event());
+  score.add_interval(4000_tv, *score.scenario_start, mid_ev);
+  auto& itv3 = score.add_interval(9000_tv, mid_ev, score.add_event());
 
   itv1.add_time_process(std::make_shared<ossia::node_process>(g, node1));
   itv3.add_time_process(std::make_shared<ossia::node_process>(g, node2));

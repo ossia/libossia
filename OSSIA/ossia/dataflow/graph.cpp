@@ -3,6 +3,7 @@
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/graph.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
+#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {
@@ -210,7 +211,9 @@ void graph::remove_node(const node_ptr& n)
   auto it = m_nodes.right.find(n);
   if (it != m_nodes.right.end())
   {
-    boost::remove_vertex(it->second, m_graph);
+    auto vtx = boost::vertices(m_graph);
+    if(std::find(vtx.first, vtx.second, it->second) != vtx.second)
+      boost::remove_vertex(it->second, m_graph);
     m_nodes.right.erase(it);
   }
 }
@@ -249,7 +252,9 @@ void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
   auto it = m_edges.right.find(edge);
   if (it != m_edges.right.end())
   {
-    boost::remove_edge(it->second, m_graph);
+    auto edg = boost::edges(m_graph);
+    if(std::find(edg.first, edg.second, it->second) != edg.second)
+      boost::remove_edge(it->second, m_graph);
     m_edge_map.erase(edge.get());
   }
 }
@@ -517,7 +522,27 @@ void graph::pull_from_parameter(inlet& in, execution_state& e)
   }
   else if (auto pattern = in.address.target<std::string>())
   {
-    // TODO
+    std::vector<ossia::net::node_base*> roots{};
+    for(auto n : e.globalState)
+      roots.push_back(&n->get_root_node());
+    auto path = ossia::traversal::make_path(*pattern);
+
+    if(path)
+    {
+      ossia::traversal::apply(*path, roots);
+      for(auto n : roots) {
+        if(auto addr = n->get_parameter()) {
+          if (in.scope & port::scope_t::local)
+          {
+            e.find_and_copy(*addr, in);
+          }
+          else
+          {
+            e.copy_from_global(*addr, in);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -558,7 +583,11 @@ void graph::teardown_node(graph_node& n, execution_state& e)
   // Copy from output ports to environment
   for (const outlet_ptr& out : n.outputs())
   {
-    if (out->targets.empty())
+    bool all_targets_disabled = !out->targets.empty() && ossia::all_of(out->targets, [] (auto tgt){
+      return tgt->in_node && !tgt->in_node->enabled();
+    });
+
+    if (out->targets.empty() || all_targets_disabled)
     {
       out->write(e);
     }

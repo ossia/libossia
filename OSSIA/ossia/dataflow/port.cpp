@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/graph.hpp>
 #include <ossia/dataflow/port.hpp>
-
+#include <ossia/network/generic/generic_parameter.hpp>
 namespace ossia
 {
 
