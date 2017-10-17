@@ -22,7 +22,7 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   fi
 
   #Create folder on Webdav may fail if folder already exists
-  curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -X MKCOL  'https://puredata.info/Members/ossia/software/ossia/${VERSION}/' || true
+  curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/" || true
 
   if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
 
@@ -32,9 +32,9 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
     echo $HASH > $FILE.sha256
     ${GPG_COMMAND} ${ARCHIVE_NAME}
 
-    curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}"        "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}" --basic
-    curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.sha256" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha256" --basic
-    curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.asc"    "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
+    curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -T "${ARCHIVE_NAME}"        "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}" --basic
+    curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -T "${ARCHIVE_NAME}.sha256" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha256" --basic
+    curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -T "${ARCHIVE_NAME}.asc"    "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
   fi
 
   OS="(Linux-amd64-64)"
@@ -52,8 +52,8 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   echo $HASH > $FILE.sha256
   ${GPG_COMMAND} ${ARCHIVE_NAME}
 
-  curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}"        "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}"        --basic
-  curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.sha256" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha256" --basic
-  curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.asc"    "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
+  curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -T "${ARCHIVE_NAME}"        "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}"        --basic
+  curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -T "${ARCHIVE_NAME}.sha256" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha256" --basic
+  curl --user ${DEKEN_USER}:${DEKEN_PASSWORD}  -T "${ARCHIVE_NAME}.asc"    "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
 
 fi
