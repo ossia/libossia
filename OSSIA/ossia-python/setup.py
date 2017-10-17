@@ -35,11 +35,11 @@ except ImportError:
 setup(
     name = 'pyossia',
     version =__version__,
-    description = 'libossia usefull Classes',
+    description = 'libossia is a modern C++, cross-environment distributed object model for creative coding and interaction scoring Edit',
     long_description = LONG_DESCRIPTION,
-    url = 'https://github.com/PixelStereo/pyossia',
-    author = 'Pixel Stereo',
-    author_email = 'contact@pixelstereo.org',
+    url = 'https://github.com/OSSIA/libossia',
+    author = 'OSSIA team',
+    author_email = 'contact@ossia.io',
     license ='GPLv3+',
     classifiers = [
         'Development Status :: 3 - Alpha',
@@ -50,7 +50,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    keywords = ['creative', 'controls', 'osc', 'oscquery', 'websocket', 'libossia'],
+    keywords = ['creative', 'controls', 'osc', 'oscquery', 'websocket', 'libossia', 'midi'],
     packages = find_packages(),
     cmdclass=versioneer.get_cmdclass(),
     package_data={
