@@ -15,6 +15,13 @@ if(CMAKE_CROSSCOMPILING)
 
     add_linker_warnings_external(${PROJECT_NAME})
 
+    file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
+         DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
+    add_custom_command(TARGET ${PROJECT_NAME}
+      POST_BUILD
+      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+
 else()
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11" pybind11)
     message(STATUS "${PROJECT_NAME} binary is compiled and wrap in a python wheel named pyossia")

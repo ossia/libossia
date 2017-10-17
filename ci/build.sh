@@ -128,10 +128,6 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
-        cd $TRAVIS_BUILD_DIR/ossia-pd-package
-        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_arm.tar.gz ossia
-
-        $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       RpiRelease)
         #setup some environment variable to help CMAKE to find libraries
