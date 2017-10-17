@@ -5,7 +5,10 @@ if [[ "$BUILD_TYPE" == "Docs" ]] ; then
   exit 0
 fi
 
-tar -czf ossia-src-unix.tar.gz .
+push ..
+tar -czf /tmp/ossia-src-unix.tar.gz libossia
+mv /tmp/ossia-src-unix.tar.gz ${TRAVIS_BUILD_DIR}
+popd
 
 case "$TRAVIS_OS_NAME" in
   linux)
