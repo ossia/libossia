@@ -47,7 +47,13 @@ matrix:
 #    dist: trusty
 
   - os: linux
-    env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1 PYTHON_VERSION=3.6
+    env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
+
+  - os: linux
+    env: BUILD_TYPE=RpiPythonRelease OSSIA_STATIC=1 PYTHON_VERSION=3.5
+
+  - os: linux
+    env: BUILD_TYPE=RpiPythonRelease OSSIA_STATIC=1 PYTHON_VERSION=2.7
 
   - os: linux
     env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0

@@ -118,6 +118,21 @@ case "$TRAVIS_OS_NAME" in
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
+      RpiPythonRelease)
+        #setup some environment variable to help CMAKE to find libraries
+        export RPI_ROOT_PATH=/tmp/rpi/root
+        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
+        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" -DBOOST_ROOT="/usr/include/boost" -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_PYTHON=1 -DOSSIA_NO_QT=1 -DOSSIA_PD=0 ..
+        $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install > /dev/null
+
+        cd $TRAVIS_BUILD_DIR/ossia-pd-package
+        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_arm.tar.gz ossia
+
+        $TRAVIS_BUILD_DIR/ci/push_deken.sh
+      ;;
       RpiRelease)
         #setup some environment variable to help CMAKE to find libraries
         export RPI_ROOT_PATH=/tmp/rpi/root
