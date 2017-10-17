@@ -11,29 +11,27 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   gpg --fast-import ${0%/*}/codesigning.asc
 
   GPG_COMMAND="gpg -ab --batch --yes "
-  echo "Test GPG encoding"
-  ${GPG_COMMAND} ${0} # sign current script just to test if it works
-  ls
-  cat ${0}.asc
-  exit 0
 
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
 
-  VERSION="test-${TRAVIS_TAG}"
+  VERSION="test"
   if [[ "$TRAVIS_TAG" != "" ]]; then
     VERSION=${TRAVIS_TAG}
+  else
+    VERSION=git-${TRAVIS_COMMIT:0:7} # get the first 7th char of SHA
   fi
 
-  #Create folder on Webdav
-  curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/$VERSION/"
-
-  ARCHIVE_NAME="./ossia-v${VERSION}-(Sources)-externals.tar.gz"
-  mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz ${ARCHIVE_NAME}
-  read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
-  echo $HASH > $FILE.sha256
-  gpg -ab ${ARCHIVE_NAME}
+  #Create folder on Webdav may fail if folder already exists
+  curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -X MKCOL  'https://puredata.info/Members/ossia/software/ossia/${VERSION}/' || true
 
   if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
+
+    ARCHIVE_NAME="./ossia-v${VERSION}-(Sources)-externals.tar.gz"
+    mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz ${ARCHIVE_NAME}
+    read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
+    echo $HASH > $FILE.sha256
+    ${GPG_COMMAND} ${ARCHIVE_NAME}
+
     curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}"        "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}" --basic
     curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.sha256" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha256" --basic
     curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.asc"    "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
@@ -52,6 +50,7 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   tar -czf ${ARCHIVE_NAME}
   read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
   echo $HASH > $FILE.sha256
+  ${GPG_COMMAND} ${ARCHIVE_NAME}
 
   curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}"        "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}"        --basic
   curl --user '${DEKEN_USER}:${DEKEN_PASSWORD}'  -T "${ARCHIVE_NAME}.sha256" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha256" --basic
