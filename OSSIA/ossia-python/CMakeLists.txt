@@ -15,6 +15,11 @@ if(CMAKE_CROSSCOMPILING)
 
     add_linker_warnings_external(${PROJECT_NAME})
 
+    set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+    if ($ENV{PYTHON_VERSION} MATCHES "3.5")
+      set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".cpython-35m-arm-linux-gnueabihf.so")
+    endif()
+
     file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
          DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
     add_custom_command(TARGET ${PROJECT_NAME}
