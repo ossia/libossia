@@ -44,10 +44,10 @@ case "$TRAVIS_OS_NAME" in
         popd
 
         # download, extract and mount raspberry pi image with gcc-6 installed
-        wget -nv https://www.dropbox.com/s/wknbpnd9pvjxgse/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
-        tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
+        wget -nv https://www.dropbox.com/s/o61vwblh6b5ixu7/raspbian-stretch-ossia-full.img.tar.gz
+        tar -xf raspbian-stretch-ossia-full.img.tar.gz
         mkdir -p /tmp/rpi/root
-        sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
+        sudo mount -o loop,offset=48234496,rw,sync raspbian-stretch-ossia-full.img /tmp/rpi/root/
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
