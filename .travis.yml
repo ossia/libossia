@@ -9,7 +9,6 @@ env:
   global:
   - GH_REPO_NAME: libossia
   - GH_REPO_REF: github.com/OSSIA/libossia.git
-  - secure: "gONXP15Z/nxKNOUgmWeapNKHPOty0mlH1p2N9sQg8n2LUFuP793qFuKJS1A6jMSCASpentOySWnf8/1oSJaHQyr7Wq0RoVtO9+5NFTK+f4SsGQ/vGQv0zDGvOfpBPIba3TtOP854GrXeBRqMzK80PHdl64uJ9x2bGfap2DxatrM="
   - secure: "fHuSuq9OJbvmdb4bSKUenCpmJ3XtYtX9xa+dUncxVbwwGJ02K/OrQ594ON5+vK5AL/co8aOx6e5FdZ4lRyFJglevE4Qn0A6LPdH7RoORk3xZWr34BoBQWYCGykBezEu+AIIic8SFfgE2gP0fPmz9IWcEEDgQTuckLVr6DdjLkQw="
 
 
