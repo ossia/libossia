@@ -94,6 +94,8 @@ case "$TRAVIS_OS_NAME" in
 
       ;;
       PdRelease)
+        $TRAVIS_BUILD_DIR/ci/push_deken.sh
+
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_PYTHON=0 ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
@@ -104,6 +106,8 @@ case "$TRAVIS_OS_NAME" in
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       RpiPdRelease)
+        $TRAVIS_BUILD_DIR/ci/push_deken.sh
+
         #setup some environment variable to help CMAKE to find libraries
         export RPI_ROOT_PATH=/tmp/rpi/root
         export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
@@ -232,6 +236,8 @@ case "$TRAVIS_OS_NAME" in
     export CMAKE_PREFIX_PATH="$QT_PATH"
 
     export CMAKE_BIN=$(which cmake)
+
+    $TRAVIS_BUILD_DIR/ci/push_deken.sh
 
     if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \

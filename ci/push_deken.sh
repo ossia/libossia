@@ -10,6 +10,13 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   gpg --fast-import ${0%/*}/codesigning.asc
 
+  GPG_COMMAND="gpg -ab --batch --yes "
+  echo "Test GPG encoding"
+  ${GPG_COMMAND} ${0} # sign current script just to test if it works
+  ls
+  cat ${0}.asc
+  exit 0
+
   cd $TRAVIS_BUILD_DIR/ossia-pd-package
 
   VERSION="test-${TRAVIS_TAG}"
