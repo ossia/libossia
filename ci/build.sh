@@ -22,8 +22,6 @@ esac
 
 export CTEST_OUTPUT_ON_FAILURE=1
 
-tar -czf ossia-src-unix.tar.gz .
-
 mkdir build
 cd build
 

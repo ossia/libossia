@@ -5,6 +5,8 @@ if [[ "$BUILD_TYPE" == "Docs" ]] ; then
   exit 0
 fi
 
+tar -czf ossia-src-unix.tar.gz .
+
 case "$TRAVIS_OS_NAME" in
   linux)
     if [[ "$BUILD_TYPE" == "RpiDocker" ]]; then
