@@ -47,7 +47,7 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   fi
 
   ARCHIVE_NAME="ossia-v${VERSION}-${OS}-externals.tar.gz"
-  tar -czf ${ARCHIVE_NAME}
+  tar -czf ${ARCHIVE_NAME} ossia
   read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
   echo $HASH > $FILE.sha256
   ${GPG_COMMAND} ${ARCHIVE_NAME}
