@@ -63,6 +63,7 @@ class TestAll(unittest.TestCase):
         """
         test a parameter @value_type float
         """
+        self.assertEqual(isinstance(self.my_string.value, str), True)
         self.assertEqual(self.my_string.value, '')
         self.assertEqual(self.my_string.value_type, ossia.ValueType.String)
         self.my_string.value = 'hello world'
@@ -72,35 +73,41 @@ class TestAll(unittest.TestCase):
         """
         test a parameter @value_type float
         """
+        self.assertEqual(len(self.my_vec2f.value), 2)
         self.assertCountEqual(self.my_vec2f.value, [0.0, 0.0])
         self.assertEqual(self.my_vec2f.value_type, ossia.ValueType.Vec2f)
         self.my_vec2f.value = [-1, 1.2]
         self.assertAlmostEqual(self.my_vec2f.value[0], -1)
         self.assertAlmostEqual(self.my_vec2f.value[1], 1.2)
+        self.assertEqual(len(self.my_vec2f.value), 2)
 
     def test_vec3f(self):
         """
         test a parameter @value_type float
         """
         self.assertCountEqual(self.my_vec3f.value, [0.0, 0.0, 0.0])
+        self.assertEqual(len(self.my_vec3f.value), 3)
         self.assertEqual(self.my_vec3f.value_type, ossia.ValueType.Vec3f)
         self.my_vec3f.value = [-1, -270, 360]
         self.assertEqual(len(self.my_vec3f.value), 3)
         self.assertAlmostEqual(self.my_vec3f.value[0], -1)
         self.assertAlmostEqual(self.my_vec3f.value[1], -270)
         self.assertAlmostEqual(self.my_vec3f.value[2], 360)
+        self.assertEqual(len(self.my_vec3f.value), 3)
 
     def test_vec4f(self):
         """
         test a parameter @value_type float
         """
         self.assertCountEqual(self.my_vec4f.value, [0.0, 0.0, 0.0, 0.0])
+        self.assertEqual(len(self.my_vec4f.value), 4)
         self.assertEqual(self.my_vec4f.value_type, ossia.ValueType.Vec4f)
         self.my_vec4f.value = [0, 0.6, 0.86, 0.8]
         self.assertAlmostEqual(self.my_vec4f.value[0], 0)
         self.assertAlmostEqual(self.my_vec4f.value[1], 0.6)
         self.assertAlmostEqual(self.my_vec4f.value[2], 0.86)
         self.assertAlmostEqual(self.my_vec4f.value[3], 0.8)
+        self.assertEqual(len(self.my_vec4f.value), 4)
 
     def test_device(self):
         """
