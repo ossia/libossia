@@ -4,6 +4,7 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/dataflow/graph.hpp>
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
@@ -52,7 +53,8 @@ void scenario_node::run(execution_state&)
   }
 }
 
-scenario::scenario()
+scenario::scenario(std::shared_ptr<ossia::graph> graph):
+  m_graph{graph}
 {
   // create the start TimeSync
   m_nodes.push_back(std::make_shared<time_sync>());
@@ -69,7 +71,8 @@ scenario::~scenario()
 
 void scenario::start(ossia::state& st)
 {
-  node->set_enabled(true);
+  if(auto g = m_graph.lock())
+    g->enable(*node);
 
   for(auto& node : m_nodes)
   {
@@ -148,7 +151,8 @@ void scenario::start(ossia::state& st)
 
 void scenario::stop()
 {
-  node->set_enabled(false);
+  if(auto g = m_graph.lock())
+    g->disable(*node);
   // stop each running TimeIntervals
   for (const auto& timeInterval : m_intervals)
   {

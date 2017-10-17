@@ -20,13 +20,14 @@ struct root_scenario
   std::shared_ptr<ossia::time_event> end_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *end_node, ossia::expressions::make_expression_true())};
 
   std::shared_ptr<ossia::time_interval> interval;
-  std::shared_ptr<ossia::scenario> scenario{std::make_shared<ossia::scenario>()};
+  std::shared_ptr<ossia::scenario> scenario;
 
   std::shared_ptr<ossia::time_event> scenario_start;
-  root_scenario(ossia::time_value dur):
+  root_scenario(ossia::time_value dur, std::shared_ptr<ossia::graph> g):
     interval{ossia::time_interval::create(
                [] (auto&&...) {},
                *start_event, *end_event, dur, dur, dur)}
+  , scenario{std::make_shared<ossia::scenario>(g)}
   {
     using namespace ossia;
     start_node->insert(start_node->get_time_events().end(), start_event);
@@ -141,7 +142,7 @@ int main()
   g->add_node(node2);
 
   // Create a 5 second score
-  root_scenario score{15000_tv};
+  root_scenario score{15000_tv, g};
   // A branch lasts 3 seconds
   auto& itv1 = score.add_interval(7000_tv, *score.scenario_start, score.add_event());
 

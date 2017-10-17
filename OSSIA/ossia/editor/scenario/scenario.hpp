@@ -10,6 +10,7 @@
 #include <set>
 namespace ossia
 {
+class graph;
 class time_event;
 class time_interval;
 class time_sync;
@@ -32,7 +33,7 @@ public:
 class OSSIA_EXPORT scenario final : public time_process
 {
 public:
-  scenario();
+  scenario(std::shared_ptr<ossia::graph> graph = {});
 
   ~scenario();
 
@@ -89,6 +90,8 @@ private:
   std::vector<time_sync*> m_waitingNodes;
   overtick_map m_overticks;
   boost::container::flat_set<time_sync*> m_endNodes;
+
+  std::weak_ptr<ossia::graph> m_graph;
 
   void process_this(
       time_sync& node, std::vector<time_event*>& statusChangedEvents,

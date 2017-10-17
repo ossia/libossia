@@ -11,6 +11,7 @@
  */
 namespace ossia
 {
+class graph;
 /**
  * @brief The loop class
  *
@@ -36,7 +37,7 @@ public:
    \return a new loop */
   loop(
       time_value, time_interval::exec_callback, time_event::exec_callback,
-      time_event::exec_callback);
+      time_event::exec_callback, std::shared_ptr<ossia::graph> graph = {});
 
   /*! destructor */
   ~loop();
@@ -79,5 +80,7 @@ private:
 
   ossia::state m_currentState; // an internal State to return on state call
   ossia::state m_offsetState;  // an internal State built when offset is called
+
+  std::weak_ptr<ossia::graph> m_graph;
 };
 }

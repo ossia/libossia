@@ -1,19 +1,23 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
-#include <ossia/editor/loop/loop.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/loop/loop.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/dataflow/graph.hpp>
 namespace ossia
 {
-loop::loop(
-    time_value patternDuration,
+loop::loop(time_value patternDuration,
     time_interval::exec_callback patternIntervalCallback,
     time_event::exec_callback patternStartEventCallback,
-    time_event::exec_callback patternEndEventCallback)
+    time_event::exec_callback patternEndEventCallback,
+    std::shared_ptr<ossia::graph> graph
+           )
     : m_startCallback(std::move(patternStartEventCallback))
     , m_endCallback(std::move(patternEndEventCallback))
     , m_intervalCallback(std::move(patternIntervalCallback))
+    , m_graph{graph}
 {
   m_startNode = std::make_shared<time_sync>();
   m_startNode->emplace(
@@ -33,6 +37,8 @@ loop::loop(
       },
       *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
       patternDuration, patternDuration, patternDuration);
+
+  node = std::make_shared<scenario_node>();
 }
 
 loop::~loop()
@@ -141,10 +147,12 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
 
 void loop::start(ossia::state& st)
 {
+  if(auto g = m_graph.lock()) g->enable(*node);
 }
 
 void loop::stop()
 {
+  if(auto g = m_graph.lock()) g->disable(*node);
   m_interval->stop();
 
   m_interval->offset(Zero);
