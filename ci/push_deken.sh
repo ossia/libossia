@@ -43,10 +43,10 @@ if [[ "$BUILD_TYPE" == *Pd* ]]; then
   fi
 
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    OS="(Darwin-x86_64-64)"
+    OS="(Darwin-x86_64-64)(Darwin-x86_64-32)"
   fi
 
-  ARCHIVE_NAME="ossia-v${VERSION}-(${OS})-externals.tar.gz"
+  ARCHIVE_NAME="ossia-v${VERSION}-${OS}-externals.tar.gz"
   tar -czf ${ARCHIVE_NAME}
   read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
   echo $HASH > $FILE.sha256
