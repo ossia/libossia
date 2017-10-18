@@ -81,6 +81,8 @@ state_element loop::offset(ossia::time_value offset, double pos)
 
 state_element loop::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
+  if(auto g = m_graph.lock())
+    g->enable(*node);
   // if date hasn't been processed already
   if (date != m_lastDate)
   {
@@ -117,20 +119,14 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
     {
       // no such event found : not starting
       if (prev_last_date == Infinite)
-        m_interval->tick(date);
+        flatten_and_filter(m_currentState, m_interval->tick(date));
       else
-      {
-        m_interval->tick(ossia::time_value{(date - prev_last_date)});
-      }
+        flatten_and_filter(m_currentState, m_interval->tick(ossia::time_value{(date - prev_last_date)}));
     }
     else
     {
       // TODO we should advance the loop a bit at least.
     }
-
-    flatten_and_filter(
-                m_currentState,
-                m_interval->state());
   }
 
   // if the pattern end event happened : stop and reset the loop
@@ -138,8 +134,6 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
       == time_event::status::HAPPENED)
     stop();
 
-  //! \see mCurrentState is filled below in
-  //! loop::PatternIntervalCallback
   if (unmuted())
     return m_currentState;
   return ossia::state_element{};
@@ -147,12 +141,15 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
 
 void loop::start(ossia::state& st)
 {
-  if(auto g = m_graph.lock()) g->enable(*node);
+  if(auto g = m_graph.lock())
+    g->enable(*node);
 }
 
 void loop::stop()
 {
-  if(auto g = m_graph.lock()) g->disable(*node);
+  if(auto g = m_graph.lock())
+    g->disable(*node);
+
   m_interval->stop();
 
   m_interval->offset(Zero);
