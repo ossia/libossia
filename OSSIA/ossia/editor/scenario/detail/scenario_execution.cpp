@@ -265,7 +265,7 @@ void update_overtick(
   }
 }
 
-ossia::state_element scenario::tick_interval(time_interval& interval, time_value tick, time_value offset)
+ossia::state_element tick_interval(time_interval& interval, time_value tick, time_value offset)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.

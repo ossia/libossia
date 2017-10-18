@@ -9,33 +9,33 @@
 namespace ossia
 {
 loop::loop(time_value patternDuration,
-    time_interval::exec_callback patternIntervalCallback,
-    time_event::exec_callback patternStartEventCallback,
-    time_event::exec_callback patternEndEventCallback,
-    std::shared_ptr<ossia::graph> graph
+           time_interval::exec_callback patternIntervalCallback,
+           time_event::exec_callback patternStartEventCallback,
+           time_event::exec_callback patternEndEventCallback,
+           std::shared_ptr<ossia::graph> graph
            )
-    : m_startCallback(std::move(patternStartEventCallback))
-    , m_endCallback(std::move(patternEndEventCallback))
-    , m_intervalCallback(std::move(patternIntervalCallback))
-    , m_graph{graph}
+  : m_startCallback(std::move(patternStartEventCallback))
+  , m_endCallback(std::move(patternEndEventCallback))
+  , m_intervalCallback(std::move(patternIntervalCallback))
+  , m_graph{graph}
 {
   m_startNode = std::make_shared<time_sync>();
   m_startNode->emplace(
-      m_startNode->get_time_events().begin(),
-      [&](time_event::status result) { start_event_callback(result); });
+        m_startNode->get_time_events().begin(),
+        [&](time_event::status result) { start_event_callback(result); });
 
   m_endNode = std::make_shared<time_sync>();
   m_endNode->emplace(
-      m_endNode->get_time_events().begin(),
-      [&](time_event::status result) { end_event_callback(result); });
+        m_endNode->get_time_events().begin(),
+        [&](time_event::status result) { end_event_callback(result); });
 
   // create a pattern TimeInterval with all durations equal by default
   m_interval = time_interval::create(
-      [=](double position, time_value date,
-          const ossia::state_element& state) {
-        return interval_callback(position, date, state);
-      },
-      *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
+        [=](double position, time_value date,
+        const ossia::state_element& state) {
+    return interval_callback(position, date, state);
+  },
+  *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
       patternDuration, patternDuration, patternDuration);
 
   node = std::make_shared<scenario_node>();
@@ -50,9 +50,9 @@ loop::~loop()
 state_element loop::offset(ossia::time_value offset, double pos)
 {
   time_value patternOffset{
-      std::fmod((double)offset, (double)m_interval->get_nominal_duration())};
+    std::fmod((double)offset, (double)m_interval->get_nominal_duration())};
   m_interval->offset(patternOffset);
-    /*
+  /*
     std::cerr << "Offset: " << offset << std::endl;
    // reset internal mOffsetState
     m_offsetState.clear();
@@ -89,7 +89,16 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
     auto prev_last_date = m_lastDate;
 
     m_lastDate = date;
+    /* todo
+    auto tick_amount = date - prev_last_date;
 
+    auto isSimpleLoop = [] {
+      return m_startNode->get_expression() == ossia::expressions::expression_true() &&
+          m_startNode->get_time_events()[0]->get_expression() == ossia::expressions::expression_true() &&
+          m_endNode->get_expression() == ossia::expressions::expression_true() &&
+          m_endNode->get_time_events()[0]->get_expression() == ossia::expressions::expression_true();
+    };
+    */
 
     // reset internal State
     m_currentState.clear();
@@ -99,29 +108,29 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
 
     if(unmuted())
     {
-        m_startNode->process(statusChangedEvents, m_currentState);
+      m_startNode->process(statusChangedEvents, m_currentState);
     }
     else
     {
-        ossia::state st;
-        m_startNode->process(statusChangedEvents, st);
+      ossia::state st;
+      m_startNode->process(statusChangedEvents, st);
     }
     // make time flow for the pattern interval
     // don't tick if the pattern interval is starting to avoid double
     // ticks
     auto& startEvent = m_interval->get_start_event();
     bool not_starting = none_of(statusChangedEvents, [&](time_event* ev) {
-      return ev->get_status() == time_event::status::HAPPENED
-             && ev == &startEvent;
-    });
+        return ev->get_status() == time_event::status::HAPPENED
+        && ev == &startEvent;
+  });
 
     if (not_starting && startEvent.get_status() == time_event::status::HAPPENED)
     {
       // no such event found : not starting
       if (prev_last_date == Infinite)
-        flatten_and_filter(m_currentState, m_interval->tick(date));
+        flatten_and_filter(m_currentState, m_interval->tick_offset(date, tick_offset));
       else
-        flatten_and_filter(m_currentState, m_interval->tick(ossia::time_value{(date - prev_last_date)}));
+        flatten_and_filter(m_currentState, m_interval->tick_offset(ossia::time_value{(date - prev_last_date)}, tick_offset));
     }
     else
     {
