@@ -2,8 +2,8 @@
 
 # the GPG configuration have been setup thanks to : http://www.debonair.io/post/maven-cd/
 
-#if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
-if [[ "$BUILD_TYPE" == *Pd* ]]; then
+if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
+#if [[ "$BUILD_TYPE" == *Pd* ]]; then
 
   # decrypt GPG key
   openssl aes-256-cbc -K $encrypted_7a0fc0b5101e_key -iv $encrypted_7a0fc0b5101e_iv -in ${0%/*}/codesigning.asc.enc -out ${0%/*}/codesigning.asc -d
