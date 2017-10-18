@@ -74,19 +74,17 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
   ls .
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip .
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ossia
 
-  appveyor DownloadFile https://raw.githubusercontent.com/pure-data/deken/master/developer/deken
+  $env:PATH=C:\msys64\usr\bin;${env:PATH}
+  $env:VERSION=test
 
-  Get-ChildItem -Recurse C:\msys64 > msys64tree.log
-  Push-AppveyorArtifact msys64tree.log
+  curl --user ossia:${env:DEKEN_PASSWORD} -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/"
+  $env:ARCHIVE_NAME="ossia-v${env:VERSION}-(W32-i386-32)-externals.zip"
 
+  copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ${env:ARCHIVE_NAME}
 
-  SET "PATH=C:\msys64\MINGW64\bin;C:\msys64\usr\bin;%PATH%"
-  bash -lc "export PATH=/c/msys64/MINGW64/bin:/c/msys64/usr/bin:$PATH ; cd C:/projects/libossia/install/ossia-pd-package/ ; ./deken upload -v test ossia"
-  # C:\msys64\usr\bin\bash.exe C:\projects\libossia\deken upload -v test ossia
-
-  # C:\cygwin\bin\bash ./deken upload -v test ossia
+  curl --user ossia:${env:DEKEN_PASSWORD} -T ${env:ARCHIVE_NAME} "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/${env:ARCHIVE_NAME}" --basic
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd c:\projects\libossia\build
