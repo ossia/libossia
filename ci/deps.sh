@@ -5,6 +5,11 @@ if [[ "$BUILD_TYPE" == "Docs" ]] ; then
   exit 0
 fi
 
+pushd ..
+tar -czf /tmp/ossia-src-unix.tar.gz libossia
+mv /tmp/ossia-src-unix.tar.gz ${TRAVIS_BUILD_DIR}
+popd
+
 case "$TRAVIS_OS_NAME" in
   linux)
     if [[ "$BUILD_TYPE" == "RpiDocker" ]]; then

@@ -3,6 +3,8 @@ image: Visual Studio 2017
 environment:
   BOOST_ROOT: c:\Libraries\boost_1_64_0
   CTEST_OUTPUT_ON_FAILURE: 1
+  DEKEN_PASSWORD:
+    secure: J57LV7zrVl8xsXC/ng0TgA==
 
   matrix:
     - APPVEYOR_BUILD_TYPE: testing
