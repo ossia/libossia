@@ -102,7 +102,7 @@ before_install: travis_wait 20 "./ci/deps.sh"
 
 script: "./ci/build.sh"
 
-after_success: if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${PyPiUser} -p ${PyPiWord} OSSIA/ossia-python/pyossia-*.whl; fi
+after_success: if [ -n "$TRAVIS_TAG" ]; then twine upload -u ${PyPiUser} -p ${PyPiWord} build/OSSIA/ossia-python/pyossia-*.whl; fi
 
 deploy:
   - provider: releases
