@@ -20,11 +20,13 @@ if(CMAKE_CROSSCOMPILING)
       set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".cpython-35m-arm-linux-gnueabihf.so")
     endif()
 
+    SET(PYTHON_PLATFORM_TAG "linux_arm_32")
+
     file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
          DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
+      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name ${PYTHON_PLATFORM_TAG}
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
 else()
@@ -38,9 +40,26 @@ else()
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
     file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
          DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
+
+    if(APPLE)
+      set(PYTHON_PLATFORM_TAG "macosx") # could be macosx-10.12-x86_64
+    elseif(UNIX)
+      if(${OSSIA_ARCHITECTURE} MATCHES "arm")
+        set(PYTHON_PLATFORM_TAG "linux_arm")
+      elseif(${OSSIA_ARCHITECTURE} MATCHES "x86")
+        set(PYTHON_PLATFORM_TAG "linux_i386")
+      elseif(${OSSIA_ARCHITECTURE} MATCHES "amd64")
+        set(PYTHON_PLATFORM_TAG "linux_x86_64")
+      else()
+        set(PYTHON_PLATFORM_TAG "linux")
+      endif()
+    else()
+      set(PYTHON_PLATFORM_TAG "win")
+    endif()
+
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
+      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name ${PYTHON_PLATFORM_TAG}
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
     #add_custom_command(TARGET ${PROJECT_NAME}
     #  POST_BUILD
@@ -48,4 +67,3 @@ else()
     #  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/dist)
     #message(STATUS "PYOSSIA INSTALL - ${PYTHON_EXECUTABLE} -m pip install --user --upgrade)")
 endif()
-

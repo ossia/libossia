@@ -161,6 +161,7 @@ case "$TRAVIS_OS_NAME" in
              -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
+
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/dist/pyossia*.whl
         ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test_.py
       ;;
