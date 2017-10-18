@@ -26,19 +26,19 @@ matrix:
   - os: osx
 
   include:
-  # - os: linux
-  #   env: BUILD_TYPE=Docs
-
-  # - os: linux
-  #   env: BUILD_TYPE=Debug OSSIA_STATIC=0
-  # - os: linux
-  #   env: BUILD_TYPE=Debug OSSIA_STATIC=1
-  # - os: linux
-  #   env: BUILD_TYPE=Release OSSIA_STATIC=0
-  # - os: linux
-  #   env: BUILD_TYPE=Release OSSIA_STATIC=1
   - os: linux
-    env: BUILD_TYPE=PdRelease OSSIA_STATIC=1 PYTHON_VERSION=3.6
+    env: BUILD_TYPE=Docs
+
+  - os: linux
+    env: BUILD_TYPE=Debug OSSIA_STATIC=0
+  - os: linux
+    env: BUILD_TYPE=Debug OSSIA_STATIC=1
+  - os: linux
+    env: BUILD_TYPE=Release OSSIA_STATIC=0
+  - os: linux
+    env: BUILD_TYPE=Release OSSIA_STATIC=1
+  - os: linux
+    env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
 
 ## RpiDocker build is tooooooo slow
 #  - os: linux
@@ -54,45 +54,45 @@ matrix:
   - os: linux
     env: BUILD_TYPE=RpiPythonRelease OSSIA_STATIC=1 PYTHON_VERSION=2.7
 
-  # - os: linux
-  #   env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0
+  - os: linux
+    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0
 
-  # - os: linux
-  #   env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
+  - os: linux
+    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
 
-  # - os: linux
-  #   env: BUILD_TYPE=python PYTHON_VERSION=2.7
+  - os: linux
+    env: BUILD_TYPE=python PYTHON_VERSION=2.7
 
-  # - os: linux
-  #   env: BUILD_TYPE=python PYTHON_VERSION=3.6
+  - os: linux
+    env: BUILD_TYPE=python PYTHON_VERSION=3.6
 
-  # - os: linux
-  #   env: BUILD_TYPE=qml
+  - os: linux
+    env: BUILD_TYPE=qml
 
-  # - os: osx
-  #   env: BUILD_TYPE=python PYTHON_VERSION=2.7
+  - os: osx
+    env: BUILD_TYPE=python PYTHON_VERSION=2.7
 
-  # - os: osx
-  #   env: BUILD_TYPE=python PYTHON_VERSION=3.6
+  - os: osx
+    env: BUILD_TYPE=python PYTHON_VERSION=3.6
 
-  # - os: osx
-  #   env: BUILD_TYPE=qml
+  - os: osx
+    env: BUILD_TYPE=qml
 
-  # - os: osx
-  #   env: BUILD_TYPE=Debug OSSIA_STATIC=0
-  # - os: osx
-  #   env: BUILD_TYPE=Debug OSSIA_STATIC=1
-  # - os: osx
-  #   env: BUILD_TYPE=Release OSSIA_STATIC=0
-  # - os: osx
-  #   env: BUILD_TYPE=Release OSSIA_STATIC=1
+  - os: osx
+    env: BUILD_TYPE=Debug OSSIA_STATIC=0
+  - os: osx
+    env: BUILD_TYPE=Debug OSSIA_STATIC=1
+  - os: osx
+    env: BUILD_TYPE=Release OSSIA_STATIC=0
+  - os: osx
+    env: BUILD_TYPE=Release OSSIA_STATIC=1
   - os: osx
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1 PYTHON_VERSION=3.6
-  # - os: osx
-  #   env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
+  - os: osx
+    env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
 
-  # - os: linux
-  #   env: BUILD_TYPE=Coverage
+  - os: linux
+    env: BUILD_TYPE=Coverage
 
 # work around https://github.com/travis-ci/travis-ci/issues/8363
 before_script: pyenv global $TRAVIS_PYTHON_VERSION
