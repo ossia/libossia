@@ -207,8 +207,10 @@ case "$TRAVIS_OS_NAME" in
              -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
-         cd "$TRAVIS_BUILD_DIR/ossia-python"
-         tar -czf $TRAVIS_BUILD_DIR/ossia-python-linux_x86_64.tar.gz OSSIA/ossia-python/pyossia*.whl
+        ls
+        ls ..
+        ls ../..
+         tar -czf ossia-python-linux_x86_64.tar.gz OSSIA/ossia-python/pyossia*.whl
       ;;
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
@@ -361,8 +363,12 @@ case "$TRAVIS_OS_NAME" in
                  ..
 
       $CMAKE_BIN --build . -- -j2
-      cd "$TRAVIS_BUILD_DIR/ossia-python"
-      tar -czf $TRAVIS_BUILD_DIR/ossia-python-osx.tar.gz OSSIA/ossia-python/pyossia*.whl
+        ls
+        ls ..
+        ls ../..
+        ls OSSIA
+        ls OSSIA/ossia-python
+         tar -czf ossia-python-linux_x86_64.tar.gz OSSIA/ossia-python/pyossia*.whl
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_STATIC=0 \
