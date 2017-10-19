@@ -15,7 +15,6 @@ Please feel free to come and chat with us ! [![join the chat at https://gitter.i
 
 More about the general project at: http://ossia.io 
 
-
 Documentation :
 * [Lib and Implementations](https://ossia.github.io)
 * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation/Examples)
