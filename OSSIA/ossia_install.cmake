@@ -12,20 +12,36 @@ if(OSSIA_UNITY3D)
             )
         install(
             TARGETS ossia
-            LIBRARY DESTINATION ossia-unity/Plugins/
+            LIBRARY DESTINATION ossia-unity/Assets/Plugins/
             )
     elseif(WIN32)
         install(
             TARGETS ossia
-            RUNTIME DESTINATION ossia-unity/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
+            RUNTIME DESTINATION ossia-unity/Assets/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
             )
     else() # Linux
         install(
             TARGETS ossia
-            LIBRARY DESTINATION ossia-unity/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
+            LIBRARY DESTINATION ossia-unity/Assets/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
             )
     endif()
-    return()
+
+    file(GLOB_RECURSE UNITY3D_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR} "ossia-unity3d/*.cs")
+
+    install(
+        FILES ${UNITY3D_FILES}
+        DESTINATION ossia-unity/Assets/ossia
+    )
+
+    install(
+        FILES ossia-unity3d/README.md
+        DESTINATION ossia-unity/Assets/
+    )
+
+    install(
+        FILES "${CMAKE_CURRENT_LIST_DIR}/../LICENSE"
+        DESTINATION ossia-unity/Assets
+    )
 endif()
 
 if(OSSIA_QML)
@@ -49,7 +65,6 @@ if(OSSIA_QML)
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE
         DESTINATION Ossia)
-    return()
 endif()
 
 

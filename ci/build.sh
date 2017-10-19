@@ -42,9 +42,21 @@ case "$TRAVIS_OS_NAME" in
 
     case "$BUILD_TYPE" in
       Debug)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 -DOSSIA_QT=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DOSSIA_STATIC=$OSSIA_STATIC \
+          -DOSSIA_TESTING=1 \
+          -DOSSIA_EXAMPLES=1 \
+          -DOSSIA_CI=1 \
+          -DOSSIA_QT=1 \
+          -DOSSIA_PD=0 \
+          ..
+
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
+
       ;;
       Release)
         OSSIA_UNITY=1
@@ -52,15 +64,18 @@ case "$TRAVIS_OS_NAME" in
           OSSIA_UNITY=0
         fi
 
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_C=1 \
           -DOSSIA_CPP=1 \
           -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
-          -DOSSIA_TESTING=1 \
-          -DOSSIA_EXAMPLES=1 \
+          -DOSSIA_TESTING=0 \
+          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
           -DOSSIA_QT=1 ..
 
@@ -71,23 +86,15 @@ case "$TRAVIS_OS_NAME" in
 
         if [[ "$OSSIA_STATIC" == "1" ]]; then
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64-static.tar.gz .
-
-          # make unity3d package
-          mkdir $TRAVIS_BUILD_DIR/unity3d
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/ossia
-          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/
-          mv $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/README.md $TRAVIS_BUILD_DIR/unity3d/
-          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
-
-          cd $TRAVIS_BUILD_DIR/unity3d/
-          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-linux_x86_64.tar.gz .
-
+          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64-static.tar.gz *
         else
+          # make unity3d package
+          cd $TRAVIS_BUILD_DIR/install/unity3d/
+          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-linux_x86_64.tar.gz *
+
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64.tar.gz .
+          rm -rf unity3d
+          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64.tar.gz *
         fi
 
       ;;
@@ -225,7 +232,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
-
 
         cd "$TRAVIS_BUILD_DIR/ossia-qml"
         tar -czf $TRAVIS_BUILD_DIR/ossia-qml-linux_x86_64.tar.gz Ossia
@@ -373,7 +379,7 @@ case "$TRAVIS_OS_NAME" in
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR"/ossia-qml \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
-                 -DOSSIA_QT=0 \
+                 -DOSSIA_QT=1 \
                  -DOSSIA_PYTHON=0 \
                  -DOSSIA_PD=0 \
                  -DOSSIA_MAX=0 \
@@ -414,19 +420,15 @@ case "$TRAVIS_OS_NAME" in
 
       if [[ "$BUILD_TYPE" == "Release" ]]; then
         if [[ "$OSSIA_STATIC" == "1" ]]; then
-          # make unity3d package
-          mkdir $TRAVIS_BUILD_DIR/unity3d
-          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d
-          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/ossia.bundle
-
-          cd $TRAVIS_BUILD_DIR/unity3d/
-          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz .
-
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz .
+          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz *
         else
+          cd $TRAVIS_BUILD_DIR/install/unity3d
+          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz *
+
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz .
+          rm -rf unity3d
+          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz *
         fi
       fi
     fi
