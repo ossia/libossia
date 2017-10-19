@@ -76,15 +76,15 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ossia
 
-  $env:PATH=C:\msys64\usr\bin;${env:PATH}
+  $env:PATH="C:\msys64\usr\bin";${env:PATH}
   $env:VERSION=test
 
-  curl --user ossia:${env:DEKEN_PASSWORD} -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/"
+  curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/"
   $env:ARCHIVE_NAME="ossia-v${env:VERSION}-(W32-i386-32)-externals.zip"
 
   copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ${env:ARCHIVE_NAME}
 
-  curl --user ossia:${env:DEKEN_PASSWORD} -T ${env:ARCHIVE_NAME} "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/${env:ARCHIVE_NAME}" --basic
+  curl.exe --user ossia:${env:DEKEN_PASSWORD} -T ${env:ARCHIVE_NAME} "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/${env:ARCHIVE_NAME}" --basic
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd c:\projects\libossia\build
