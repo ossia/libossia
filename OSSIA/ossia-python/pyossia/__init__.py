@@ -185,15 +185,20 @@ def get_parameters(self, node=None):
     # return the filled list
     return parameters
 
+def init(self):
+    """
+    resets all parameters of this node to the default_value
+    """
+    for param in self.get_parameters():
+        if param.default_value:
+            param.value = param.default_value
+
 def reset(self):
     """
     reset a parameter to its default value
     """
-    if self.parameter:
-        self.value = self.node.default_value
-    for param in self.get_parameters():
-        if param.default_value:
-            param.value = param.default_value
+    if self.default_value:
+        self.value = self.default_value
 
 
 # customize a bit LocalDevice
@@ -210,7 +215,7 @@ ossia.OSCQueryDevice.get_parameters = get_parameters
 # A Node has nodes and parameters
 ossia.Node.get_nodes = get_nodes
 ossia.Node.get_parameters = get_parameters
-ossia.Node.reset = reset
+ossia.Node.init = init
 
 # A Parameter can be reset to its default_value
 ossia.Parameter.reset = reset
