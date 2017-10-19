@@ -26,7 +26,9 @@ if(OSSIA_UNITY3D)
             )
     endif()
     return()
-elseif(OSSIA_QML)
+endif()
+
+if(OSSIA_QML)
     install(
         TARGETS ossia
         LIBRARY DESTINATION Ossia/
@@ -45,6 +47,7 @@ elseif(OSSIA_QML)
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE
         DESTINATION Ossia)
     return()
 endif()

@@ -45,6 +45,9 @@ else()
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
     file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
          DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
+    file(COPY ${CMAKE_SOURCE_DIR}/LICENSE
+         DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/LICENSE.txt)
+
 
     if(APPLE)
       set(PYTHON_PLATFORM_TAG "macosx") # could be macosx-10.12-x86_64
