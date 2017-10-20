@@ -322,6 +322,13 @@ case "$TRAVIS_OS_NAME" in
     export CMAKE_BIN=$(which cmake)
 
     if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
+
+      pushd /tmp
+      git clone ${TRAVIS_BUILD_DIR} --recursive
+      tar -czf "${TRAVIS_BUILD_DIR}\libossia-source.tar.gz" --exclude .git libossia
+      rm -rf libossia
+      popd
+
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \

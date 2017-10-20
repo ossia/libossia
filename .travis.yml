@@ -108,7 +108,7 @@ deploy:
     api_key:
       secure: cuMgjuaFGGh7YxpIMP7dLyTzzRkAK6q1//5qZ1wHrnEjwtZK4+XRqQP4uQNCJsk22yrc9iu7AcJ9xsZ72xs3C4EXPLa7GlWLKrQD1M7J4viaZCb1AKiEjFYMEa6iRQf79ip7zDiWEQNV4aL+aJBZBLRZ4I8chvkKnUBaEOnVx6U=
     file_glob: true
-    file: ossia-*.tar.gz
+    file: *ossia-*.tar.gz
     skip_cleanup: true
     draft: false
     prerelease: false

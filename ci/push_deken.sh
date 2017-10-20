@@ -27,7 +27,7 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
   if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
 
     ARCHIVE_NAME="./ossia-v${VERSION}-(Sources)-externals.tar.gz"
-    mv $TRAVIS_BUILD_DIR/ossia-src-unix.tar.gz ${ARCHIVE_NAME}
+    mv $TRAVIS_BUILD_DIR/libossia-source.tar.gz ${ARCHIVE_NAME}
     read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
     echo $HASH > $FILE.sha256
     ${GPG_COMMAND} ${ARCHIVE_NAME}
