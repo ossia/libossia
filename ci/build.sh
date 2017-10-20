@@ -230,6 +230,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
 
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
+        ${PYTHON_BIN} ${TRAVIS_BUILDDIR}/OSSIA/ossia-python/tests/test.py
       ;;
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
@@ -384,6 +385,7 @@ case "$TRAVIS_OS_NAME" in
 
       $CMAKE_BIN --build . -- -j2
       ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
+      ${PYTHON_BIN} ${TRAVIS_BUILDDIR}/OSSIA/ossia-python/tests/test.py
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
