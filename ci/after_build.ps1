@@ -21,18 +21,18 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
   if ( $env:configuration -eq "Release" ){
-    mkdir c:\projects\libossia\build\Test\Release
-    copy c:\projects\libossia\build\OSSIA\Release\ossia.dll c:\projects\libossia\build\Tests\Release\
+    mkdir ${env:APPVEYOR_BUILD_FOLDER}\build\Test\Release
+    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Release\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Release\
   } else {
-    mkdir c:\projects\libossia\build\Test\Debug
-    copy c:\projects\libossia\build\OSSIA\Debug\ossia.dll c:\projects\libossia\build\Tests\Debug\
+    mkdir ${env:APPVEYOR_BUILD_FOLDER}\build\Test\Debug
+    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Debug\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Debug\
   }
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Release" ){
 
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
@@ -41,7 +41,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win64.zip .
 
-  cd c:\projects\libossia\build-32bit
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build-32bit
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
@@ -65,9 +65,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-unity3d-win.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  $LogFile = "C:\projects\libossia\install-pd.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-pd.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
@@ -80,9 +80,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   $VERSION="test"
 
   nuget install secure-file -ExcludeVersion
-  secure-file\tools\secure-file -decrypt C:\projects\libossia\ci\codesigning.asc.appveyor.enc -out C:\projects\libossia\ci\codesigning.asc -secret ${env:GPG_DECODE_KEY}
+  secure-file\tools\secure-file -decrypt ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc.appveyor.enc -out ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc -secret ${env:GPG_DECODE_KEY}
 
-  gpg.exe --fast-import C:\projects\libossia\ci\codesigning.asc
+  gpg.exe --fast-import ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc
 
   curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/"
   $ARCHIVE_NAME="ossia-v${VERSION}-(W32-i386-32)-externals.zip"
@@ -97,9 +97,9 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.sha" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha" --basic
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  $LogFile = "C:\projects\libossia\install-qml.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-qml.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
@@ -109,7 +109,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-win64.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
   dir
 
   if ( "${env:platform}" -eq "x64" ){
@@ -121,15 +121,15 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  $LogFile = "C:\projects\libossia\install-max.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-max.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  cd c:\projects\libossia\build-32bit
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build-32bit
 
-  $LogFile = "C:\projects\libossia\install-max-32bit.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-max-32bit.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
