@@ -100,7 +100,19 @@ case "$TRAVIS_OS_NAME" in
       ;;
       PdRelease)
 
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_PYTHON=0 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+                   -DCMAKE_CXX_COMPILER="$CXX" \
+                   -DBOOST_ROOT="$BOOST_ROOT" \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_STATIC=1 \
+                   -DOSSIA_TESTING=0 \
+                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_QT=0 \
+                   -DOSSIA_NO_QT=1 \
+                   -DOSSIA_PYTHON=0 \
+                   ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
@@ -200,25 +212,29 @@ case "$TRAVIS_OS_NAME" in
         fi
       ;;
       python)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
-             -DCMAKE_BUILD_TYPE=Release \
-             -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
-             -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
-             -DOSSIA_STATIC=1 \
-             -DOSSIA_TESTING=0 \
-             -DOSSIA_EXAMPLES=0 \
-             -DOSSIA_CI=1 \
-             -DOSSIA_PD=0 \
-             -DOSSIA_QT=0 \
-             -DOSSIA_QML=0 \
-             -DOSSIA_PYTHON=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
+          -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
+          -DOSSIA_STATIC=1 \
+          -DOSSIA_TESTING=0 \
+          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_CI=1 \
+          -DOSSIA_PD=0 \
+          -DOSSIA_QT=0 \
+          -DOSSIA_QML=0 \
+          -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
 
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
       ;;
       qml)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-qml" \
           -DOSSIA_STATIC=0 \
@@ -411,7 +427,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_CPP=1 \
                -DOSSIA_UNITY3D=$OSSIA_UNITY \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
-               -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install
+               -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
                ..
 
       $CMAKE_BIN --build . -- -j2
