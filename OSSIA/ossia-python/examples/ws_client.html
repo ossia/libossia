@@ -1,0 +1,136 @@
+<html>
+<head>
+  <title>OSCQuery Remote example</title>
+  <p>This page controls the ossia-python_ws_html_example.py script.</p>
+  <p>Start the script before loading the page</p>
+</head>
+<script>
+    function init() {
+      var ws = new WebSocket("ws://127.0.0.1:5678");
+      ws.onopen = function(mess) {
+          // This way the protocol will always try to send
+          // data through websockets.
+          ws.send("/?SET_PORT=0");
+          ws.send("/color");
+          ws.send("/speed");
+          ws.send("/text");
+          ws.send("/play");
+      }
+      var play = document.getElementById('play');
+      var color = document.getElementById('color');
+      var speed = document.getElementById('speed');
+      var text = document.getElementById('text');
+      var speed_nbx = document.getElementById('speed_nbx');
+
+      ws.onmessage = function(mess) {
+          // An OSCQuery value json looks like
+          // { "/the/addr" : 123 }
+          console.log(mess.data);
+          var json = JSON.parse(mess.data);
+          var keys = Object.keys(json);
+
+          var play_k = keys.findIndex(function(val) { return val == "/play"; });
+          var color_k = keys.findIndex(function(val) { return val == "/color"; });
+          var speed_k = keys.findIndex(function(val) { return val == "/speed"; });
+          var text_k = keys.findIndex(function(val) { return val == "/text"; });
+          var full_path_k = keys.findIndex(function(val) { return val == "FULL_PATH"; });
+          if(color_k != -1)
+          {
+              color.value = rgbToHex(json["/color"][0],json["/color"][1],json["/color"][2]);
+          }
+          if(speed_k != -1)
+          {
+              speed.value = json["/speed"] * 100;
+          }
+          if(play_k != -1)
+          {
+              play.checked = json["/play"];
+          }
+          if(text_k != -1)
+          {
+              text.checked = json["/text"];
+          }
+          if(full_path_k != -1)
+          {
+            path = json["FULL_PATH"];
+            if (path == "/color")
+            {
+              color.value = rgbToHex(json["VALUE"][0],json["VALUE"][1],json["VALUE"][2]);
+            }
+            else if (path == "/speed")
+            {
+              speed.value = json["VALUE"] * 100;
+            }
+            else if (path == "/play")
+            {
+              play.checked = json["VALUE"];
+            }
+            else if (path == "/text")
+            {
+              text.value = json["VALUE"];
+            }
+            else
+            {
+              console.log("please process fullpath " + path)
+            }
+          }
+      }
+      speed.oninput = function(ev) {
+              var val = speed.value / 100.
+              ws.send('{ "/speed": ' + val + '}');
+              speed_nbx.value = val;
+              console.log('{ "/speed": ' + val + '}');
+      };
+      play.oninput = function(ev) {
+              ws.send('{ "/play": ' + play.checked + '}');
+              console.log('{ "/play": ' + play.checked + '}');
+      };
+      text.oninput = function(ev) {
+              ws.send('{ "/text": "' + text.value + '" }');
+              console.log('{ "/text": ' + text.value + '}');
+      };
+      color.oninput = function(ev) {
+              rgb = hexToRGB(color.value);
+              ws.send('{ "/color": [' + rgb + ']}');
+              console.log('{ "/color": ' + rgb + '}');
+      };
+      speed_nbx.oninput = function(ev) {
+              speed.value = speed_nbx.value * 100;
+              console.log('nbx oninput');
+      }
+
+      // from http://www.javascripter.net/faq/hextorgb.htm
+      function hexToRGB(h) {return [ hexToR(h), hexToG(h), hexToB(h) ] }
+      function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+      function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+      function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+      function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+
+      // from http://www.javascripter.net/faq/rgbtohex.htm
+      function rgbToHex(R,G,B) {return '#'+toHex(R)+toHex(G)+toHex(B)}
+      function toHex(n) {
+       n = parseInt(n,10);
+       if (isNaN(n)) return "00";
+       n = Math.max(0,Math.min(n,255));
+       return "0123456789ABCDEF".charAt((n-n%16)/16)
+            + "0123456789ABCDEF".charAt(n%16);
+      }
+
+      function test()
+      {
+        console.log("this is a test");
+      }
+    }
+</script>
+
+<body onload="init()">
+<p>NOTE : the play checkbox have been reported to not work with Chrome 56.0.2924.87 (64-bit) on Ubuntu. It does with Firefox on the same computer.</p>
+<table>
+ <tr><td>Play</td><td>  <input id="play"  type="checkbox" oninput="test()"/></td></tr>
+ <tr><td>Color</td><td> <input id="color" type="color"></td></tr>
+ <tr><td>Speed</td><td> <input id="speed" type="range" min="-200" max="200"></td><td><input id="speed_nbx" type="number" min="-2" max="2" step="0.01" size="5"></td></tr>
+ <tr><td>Text</td><td>  <input id="text"  type="text"/></td></tr>
+</table>
+</body>
+
+</html>
