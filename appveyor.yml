@@ -90,7 +90,7 @@ artifacts:
 
 deploy:
   description: |+
-    # Draft release of libossia $APPVEYOR_REPO_TAG_NAME
+    # Draft release of libossia %APPVEYOR_REPO_TAG_NAME%
 
     * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
     * Packages ending in '`win32`' are 32-bit, '`win64`' are 64-bit and '`win`' work on both architectures.
