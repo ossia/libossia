@@ -5,6 +5,8 @@ environment:
   CTEST_OUTPUT_ON_FAILURE: 1
   DEKEN_PASSWORD:
     secure: J57LV7zrVl8xsXC/ng0TgA==
+  GPG_DECODE_KEY:
+    secure: wQW1TCaei6kT6u2A4fTmANYMSYghDGxnqaBRBcW0/QWxKNdmhAQymYC2srDrLi29I5U1bKoC6fZ9cHWsdNSE5w==
 
   matrix:
     - APPVEYOR_BUILD_TYPE: testing

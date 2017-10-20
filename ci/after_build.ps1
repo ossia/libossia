@@ -76,15 +76,25 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ossia
 
-  $env:PATH="C:\msys64\usr\bin";${env:PATH}
-  $env:VERSION=test
+  $env:PATH="C:\msys64\usr\bin;${env:PATH}"
+  $VERSION="test"
 
-  curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/"
-  $env:ARCHIVE_NAME="ossia-v${env:VERSION}-(W32-i386-32)-externals.zip"
+  nuget install secure-file -ExcludeVersion
+  secure-file\tools\secure-file -decrypt C:\projects\libossia\ci\codesigning.asc.appveyor.enc -out C:\projects\libossia\ci\codesigning.asc -secret ${env:GPG_DECODE_KEY}
 
-  copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ${env:ARCHIVE_NAME}
+  gpg.exe --fast-import C:\projects\libossia\ci\codesigning.asc
 
-  curl.exe --user ossia:${env:DEKEN_PASSWORD} -T ${env:ARCHIVE_NAME} "https://puredata.info/Members/ossia/software/ossia/${env:VERSION}/${env:ARCHIVE_NAME}" --basic
+  curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/"
+  $ARCHIVE_NAME="ossia-v${VERSION}-(W32-i386-32)-externals.zip"
+  copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ${ARCHIVE_NAME}
+  
+  gpg.exe -ab --batch --yes ${ARCHIVE_NAME}
+  $SHA = sha256.exe ${ARCHIVE_NAME}
+  $SHA.substring(0,64) > "${ARCHIVE_NAME}.sha"
+  
+  curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}"     "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}"     --basic
+  curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.asc" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
+  curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.sha" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha" --basic
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd c:\projects\libossia\build
