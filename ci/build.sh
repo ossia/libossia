@@ -22,6 +22,8 @@ esac
 
 export CTEST_OUTPUT_ON_FAILURE=1
 
+mkdir -p ${ARTIFACTS_DIR}
+
 mkdir build
 cd build
 
@@ -86,19 +88,25 @@ case "$TRAVIS_OS_NAME" in
 
         if [[ "$OSSIA_STATIC" == "1" ]]; then
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64-static.tar.gz *
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64-static.tar.gz *
         else
           # make unity3d package
           cd $TRAVIS_BUILD_DIR/install/unity3d/
-          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-linux_x86_64.tar.gz *
+          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-linux_x86_64.tar.gz *
 
           cd $TRAVIS_BUILD_DIR/install
           rm -rf unity3d
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64.tar.gz *
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64.tar.gz *
         fi
 
       ;;
       PdRelease)
+
+        pushd /tmp
+        git clone ${TRAVIS_BUILD_DIR} --recursive
+        tar -czf "${ARTIFACTS_DIR}\libossia-source.tar.gz" --exclude .git libossia
+        rm -rf libossia
+        popd
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
                    -DCMAKE_CXX_COMPILER="$CXX" \
@@ -117,7 +125,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
-        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_x86_64.tar.gz ossia
+        tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_x86_64.tar.gz ossia
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
@@ -147,7 +155,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
-        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_arm.tar.gz ossia
+        tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_arm.tar.gz ossia
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
@@ -209,9 +217,9 @@ case "$TRAVIS_OS_NAME" in
 
         cd $TRAVIS_BUILD_DIR/install
         if [[ "$OSSIA_STATIC" ==  "1" ]]; then
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_arm-static.tar.gz .
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm-static.tar.gz *
         else
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_arm.tar.gz .
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm.tar.gz *
         fi
       ;;
       python)
@@ -258,7 +266,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd "$TRAVIS_BUILD_DIR/ossia-qml"
-        tar -czf $TRAVIS_BUILD_DIR/ossia-qml-linux_x86_64.tar.gz Ossia
+        tar -czf ${ARTIFACTS_DIR}/ossia-qml-linux_x86_64.tar.gz Ossia
       ;;
       RpiDocker)
         echo "Building for Rpi in Docker"
@@ -323,12 +331,6 @@ case "$TRAVIS_OS_NAME" in
 
     if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
 
-      pushd /tmp
-      git clone ${TRAVIS_BUILD_DIR} --recursive
-      tar -czf "${TRAVIS_BUILD_DIR}\libossia-source.tar.gz" --exclude .git libossia
-      rm -rf libossia
-      popd
-
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
@@ -350,7 +352,9 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      tar -czf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+      pushd $TRAVIS_BUILD_DIR/ossia-pd-package/
+      tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia
+      popd
 
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
 
@@ -376,7 +380,9 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      tar -czf ossia-max-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-max-package/ossia
+      pushd $TRAVIS_BUILD_DIR/ossia-max-package/
+      tar -czf $TRAVIS_BUILD_DIR/ossia-pd-package/ossia-max-osx.tar.gz ossia
+      popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
@@ -399,12 +405,14 @@ case "$TRAVIS_OS_NAME" in
 
       $CMAKE_BIN --build . -- -j2
 
-      if [[ "x${TRAVIS_TAG}" != "x"]]; then
-          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
-      fi
 
       ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
       ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+
+      if [[ "x${TRAVIS_TAG}" != "x"]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+          mv ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
+      fi
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
@@ -427,7 +435,7 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . --target install > /dev/null
 
       cd "$TRAVIS_BUILD_DIR/ossia-qml"
-      tar -czf $TRAVIS_BUILD_DIR/ossia-qml-osx.tar.gz Ossia
+      tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
 
     else
       OSSIA_UNITY=1
@@ -458,14 +466,14 @@ case "$TRAVIS_OS_NAME" in
       if [[ "$BUILD_TYPE" == "Release" ]]; then
         if [[ "$OSSIA_STATIC" == "1" ]]; then
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz *
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz *
         else
           cd $TRAVIS_BUILD_DIR/install/unity3d
-          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz *
+          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
 
           cd $TRAVIS_BUILD_DIR/install
           rm -rf unity3d
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz *
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz *
         fi
       fi
     fi
