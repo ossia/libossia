@@ -20,10 +20,6 @@ if(CMAKE_CROSSCOMPILING)
       set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".cpython-35m-arm-linux-gnueabihf.so")
     endif()
 
-
-    file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
-         DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
-
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
       COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv6l
@@ -43,10 +39,6 @@ else()
     message(STATUS "PYTHON_EXECUTABLE - ${PYTHON_EXECUTABLE}")
     message(STATUS "PYTHON_LIBRARY - ${PYTHON_EXECUTABLE}")
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
-    file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
-         DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
-    file(COPY ${CMAKE_SOURCE_DIR}/LICENSE
-         DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/LICENSE.txt)
 
 
     if(APPLE)
@@ -75,3 +67,8 @@ else()
     #  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/dist)
     #message(STATUS "PYOSSIA INSTALL - ${PYTHON_EXECUTABLE} -m pip install --user --upgrade)")
 endif()
+
+file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
+     DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
+file(COPY ${CMAKE_SOURCE_DIR}/LICENSE
+     DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/LICENSE.txt)

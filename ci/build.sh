@@ -175,7 +175,10 @@ case "$TRAVIS_OS_NAME" in
                    ..
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+
+        if [[ "x${TRAVIS_TAG}" != "x"]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+        fi
 
       ;;
       RpiRelease)
@@ -228,6 +231,10 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
+
+        if [[ "x${TRAVIS_TAG}" != "x"]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+        fi
 
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
         ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
@@ -384,6 +391,11 @@ case "$TRAVIS_OS_NAME" in
                  ..
 
       $CMAKE_BIN --build . -- -j2
+
+      if [[ "x${TRAVIS_TAG}" != "x"]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+      fi
+
       ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
       ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
 
