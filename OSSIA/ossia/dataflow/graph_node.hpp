@@ -3,9 +3,24 @@
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <chobo/small_vector.hpp>
 
 namespace ossia
 {
+class graph;
+struct token_request {
+    ossia::time_value date{};
+    double position{};
+    ossia::time_value offset{};
+    bool start_discontinuous{};
+    bool end_discontinuous{};
+
+    friend bool operator==(token_request lhs, token_request rhs) {
+      return lhs.date == rhs.date && lhs.position == rhs.position
+          && lhs.offset == rhs.offset && lhs.start_discontinuous == rhs.start_discontinuous
+          && lhs.end_discontinuous == rhs.end_discontinuous;
+    }
+};
 
 class OSSIA_EXPORT graph_node
 {
@@ -14,37 +29,17 @@ public:
   virtual ~graph_node();
 
   bool enabled() const;
-  void set_enabled(bool b);
 
   bool executed() const;
-  void set_executed(bool b);
+
+  void set_start_discontinuous(bool b) { m_start_discontinuous = b; }
+  void set_end_discontinuous(bool b) { m_end_discontinuous = b; }
 
   virtual bool consumes(const std::string&) const;
   virtual bool consumes(const destination&) const;
   virtual bool consumes(const execution_state&) const;
 
-  virtual void run(execution_state&);
-
-  void set_date(ossia::time_value d, double pos);
-  void set_date(int64_t d, double pos)
-  {
-    set_date(ossia::time_value(d), pos);
-  }
-  void set_tick_offset(ossia::time_value pos)
-  {
-    m_offset = pos;
-  }
-
-  ossia::time_value time() const
-  {
-    return m_date;
-  }
-  double position() const
-  {
-    return m_position;
-  }
-
-  bool can_execute(const execution_state&) const;
+  virtual void run(token_request, execution_state&);
 
   bool has_port_inputs() const;
   bool has_global_inputs() const;
@@ -57,21 +52,37 @@ public:
 
   void clear();
 
+
+  // These methods are only accessed by ossia::graph
+  bool can_execute(const execution_state&) const;
+
+  bool start_discontinuous() const { return m_start_discontinuous; }
+  bool end_discontinuous() const { return m_end_discontinuous; }
+
+  void set_executed(bool b);
+  void set_enabled(bool b);
+
+  void set_prev_date(time_value d) { m_prev_date = d; }
+
+
   // incremented for each process
   int64_t temporal_counter{};
-  std::vector<int64_t> temporal_priority;
-  std::vector<int64_t> custom_priority;
+  chobo::small_vector<int64_t, 2> temporal_priority;
+  chobo::small_vector<int64_t, 2> custom_priority;
 
+  chobo::small_vector<token_request, 4> requested_tokens;
 protected:
   inlets m_inlets;
   outlets m_outlets;
 
-  double m_position{};
   ossia::time_value m_prev_date{};
-  ossia::time_value m_date{};
-  ossia::time_value m_offset{};
 
   bool m_enabled{};
   bool m_executed{};
+
+private:
+
+  bool m_start_discontinuous{};
+  bool m_end_discontinuous{};
 };
 }

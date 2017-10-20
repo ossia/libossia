@@ -32,7 +32,7 @@ scenario_node::scenario_node()
 }
 
 
-void scenario_node::run(execution_state&)
+void scenario_node::run(token_request t, execution_state&)
 {
   {
     auto i = m_inlets[0]->data.target<ossia::audio_port>();
@@ -53,8 +53,7 @@ void scenario_node::run(execution_state&)
   }
 }
 
-scenario::scenario(std::shared_ptr<ossia::graph> graph):
-  m_graph{graph}
+scenario::scenario()
 {
   // create the start TimeSync
   m_nodes.push_back(std::make_shared<time_sync>());
@@ -71,9 +70,6 @@ scenario::~scenario()
 
 void scenario::start(ossia::state& st)
 {
-  if(auto g = m_graph.lock())
-    g->enable(*node);
-
   for(auto& node : m_nodes)
   {
     auto bool_expr = node->get_expression().target<ossia::expressions::expression_bool>();
@@ -151,8 +147,6 @@ void scenario::start(ossia::state& st)
 
 void scenario::stop()
 {
-  if(auto g = m_graph.lock())
-    g->disable(*node);
   // stop each running TimeIntervals
   for (const auto& timeInterval : m_intervals)
   {

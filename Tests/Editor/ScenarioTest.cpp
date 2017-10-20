@@ -13,26 +13,26 @@ class ScenarioTest : public QObject
   Q_OBJECT
 
   std::shared_ptr<time_interval> main_interval;
-  std::vector<time_value> events_date;
+  std::vector<ossia::time_value> events_date;
 
-  void main_interval_callback(double position, time_value date, const state_element& element)
+  void main_interval_callback(double position, ossia::time_value date, const state_element& element)
   {
     std::cout << "Main Interval : " << double(position) << ", " << double(date) << std::endl;
   }
 
-  void first_interval_callback(double position, time_value date, const state_element& element)
+  void first_interval_callback(double position, ossia::time_value date, const state_element& element)
   {
     std::cout << "First Interval : " << double(position) << ", " << double(date) << std::endl;
   }
 
-  void second_interval_callback(double position, time_value date, const state_element& element)
+  void second_interval_callback(double position, ossia::time_value date, const state_element& element)
   {
     std::cout << "Second Interval : " << double(position) << ", " << double(date) << std::endl;
   }
 
   void event_callback(time_event::status newStatus)
   {
-    time_value date = main_interval->get_date();
+    ossia::time_value date = main_interval->get_date();
 
     switch (newStatus)
     {

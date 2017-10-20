@@ -222,14 +222,17 @@ public:
   sound_node();
   ~sound_node();
 
-  void set_start(int v) { start = v; }
-  void set_upmix(int v) { upmix = v; }
-  void set_sound(std::vector<std::vector<float>> vec);
+  void set_start(std::size_t v) { start = v; }
+  void set_upmix(std::size_t v) { upmix = v; }
+  void set_sound(std::vector<std::vector<double>> vec);
 private:
-  void run(ossia::execution_state& e) override;
+  void run(ossia::token_request t, ossia::execution_state& e) override;
 
-  std::vector<std::vector<float>> m_data;
-  int start{};
-  int upmix{};
+  std::vector<std::vector<double>> m_data;
+  std::size_t start{};
+  std::size_t upmix{};
 };
+
+OSSIA_EXPORT
+void do_fade(bool start_discontinuous, bool end_discontinuous, audio_channel& ap, std::size_t start, std::size_t end);
 }

@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 
 namespace ossia
 {

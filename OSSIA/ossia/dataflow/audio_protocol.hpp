@@ -9,7 +9,7 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 {
   public:
     int rate{44100};
-    int bufferSize{64};
+    int bufferSize{512};
     int inputs{};
     int outputs{};
 

@@ -23,11 +23,11 @@ struct root_scenario
   std::shared_ptr<ossia::scenario> scenario;
 
   std::shared_ptr<ossia::time_event> scenario_start;
-  root_scenario(ossia::time_value dur, std::shared_ptr<ossia::graph> g):
+  root_scenario(ossia::time_value dur):
     interval{ossia::time_interval::create(
                [] (auto&&...) {},
                *start_event, *end_event, dur, dur, dur)}
-  , scenario{std::make_shared<ossia::scenario>(g)}
+  , scenario{std::make_shared<ossia::scenario>()}
   {
     using namespace ossia;
     start_node->insert(start_node->get_time_events().end(), start_event);
@@ -94,9 +94,9 @@ struct my_node : ossia::graph_node {
       outputs().push_back(ossia::make_outlet<ossia::value_port>());
     }
 
-    void run(ossia::execution_state&) override {
+    void run(ossia::token_request t, ossia::execution_state&) override {
       if(auto a_float = pop_value<float>(this->inputs()[0])) {
-        push_value(this->outputs()[0], 100 + 50 * std::cos(*a_float) * std::sin(10. * position()));
+        push_value(this->outputs()[0], 100 + 50 * std::cos(*a_float) * std::sin(10. * t.position));
       }
     }
 };
@@ -142,7 +142,7 @@ int main()
   g->add_node(node2);
 
   // Create a 5 second score
-  root_scenario score{15000_tv, g};
+  root_scenario score{15000_tv};
   // A branch lasts 3 seconds
   auto& itv1 = score.add_interval(7000_tv, *score.scenario_start, score.add_event());
 
@@ -151,8 +151,8 @@ int main()
   score.add_interval(4000_tv, *score.scenario_start, mid_ev);
   auto& itv3 = score.add_interval(9000_tv, mid_ev, score.add_event());
 
-  itv1.add_time_process(std::make_shared<ossia::node_process>(g, node1));
-  itv3.add_time_process(std::make_shared<ossia::node_process>(g, node2));
+  itv1.add_time_process(std::make_shared<ossia::node_process>(node1));
+  itv3.add_time_process(std::make_shared<ossia::node_process>(node2));
 
   // What do we do at each tick
   score.interval->set_callback([&] (auto&&...) {

@@ -3,7 +3,6 @@
 #include <ossia/detail/logger.hpp>
 #include <asio.hpp>
 #include <asio/placeholders.hpp>
-#include <boost/bind.hpp>
 #include <utility>
 
 namespace ossia

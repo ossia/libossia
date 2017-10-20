@@ -10,18 +10,11 @@ namespace ossia
 class node_process : public ossia::time_process
 {
 public:
-  node_process(
-      std::shared_ptr<ossia::graph> g, ossia::node_ptr n)
-      : m_graph{std::move(g)}
+  node_process(ossia::node_ptr n)
   {
     node = std::move(n);
   }
-  node_process(
-      std::shared_ptr<ossia::graph> g)
-    : m_graph{std::move(g)}
-  {
-  }
-
+  node_process() = default;
   ossia::state_element offset(ossia::time_value, double pos) override
   {
     return {};
@@ -37,9 +30,7 @@ public:
   {
     if(node)
     {
-      node->set_date(parent_date, relative_position);
-      node->set_tick_offset(tick_offset);
-      m_graph.lock()->enable(*node);
+      node->requested_tokens.push_back({parent_date, relative_position, tick_offset});
     }
     return {};
   }
@@ -47,18 +38,10 @@ public:
   void start(ossia::state& st) override
   {
     // TODO reset all delay buffer positions
-    if(node)
-    {
-      m_graph.lock()->enable(*node);
-    }
   }
 
   void stop() override
   {
-    if(node)
-    {
-      m_graph.lock()->disable(*node);
-    }
   }
 
   void pause() override
@@ -72,8 +55,5 @@ public:
   void mute_impl(bool) override
   {
   }
-
-private:
-  std::weak_ptr<ossia::graph> m_graph;
 };
 }

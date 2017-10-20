@@ -49,15 +49,8 @@ bool graph_node::consumes(const execution_state&) const
   return false;
 }
 
-void graph_node::run(execution_state&)
+void graph_node::run(token_request t, execution_state&)
 {
-}
-
-void graph_node::set_date(ossia::time_value d, double pos)
-{
-  m_prev_date = m_date;
-  m_date = d;
-  m_position = pos;
 }
 
 bool graph_node::can_execute(const execution_state&) const

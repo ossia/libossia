@@ -26,14 +26,14 @@ class scenario_node : public ossia::graph_node
 {
 public:
   scenario_node();
-  void run(ossia::execution_state&) override;
+  void run(ossia::token_request t, ossia::execution_state&) override;
 };
 
 
 class OSSIA_EXPORT scenario final : public time_process
 {
 public:
-  scenario(std::shared_ptr<ossia::graph> graph = {});
+  scenario();
 
   ~scenario();
 
@@ -91,8 +91,6 @@ private:
   overtick_map m_overticks;
   boost::container::flat_set<time_sync*> m_endNodes;
 
-  std::weak_ptr<ossia::graph> m_graph;
-
   void process_this(
       time_sync& node, std::vector<time_event*>& statusChangedEvents,
       interval_set& started, interval_set& stopped, ossia::state& st);
@@ -101,5 +99,5 @@ private:
   void make_dispose(time_event& event, interval_set& stopped);
 };
 
-ossia::state_element tick_interval(time_interval& c, time_value tick, time_value offset);
+ossia::state_element tick_interval(time_interval& c, ossia::time_value tick, ossia::time_value offset);
 }

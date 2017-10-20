@@ -55,6 +55,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/operators.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/continuity.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_interval.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.hpp"

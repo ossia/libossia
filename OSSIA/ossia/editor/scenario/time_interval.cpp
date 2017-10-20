@@ -12,9 +12,9 @@ namespace ossia
 {
 ossia::state_element time_interval::tick(time_value date, double ratio)
 {
-  m_date += std::llround(date.impl * m_speed / ratio);
+  m_date += std::ceil(date.impl * m_speed / ratio);
   m_position = double(m_date) / double(m_nominal);
-  node->set_date(m_date, m_position);
+  node->requested_tokens.push_back({m_date, m_position, 0_tv});
 
   auto st = state();
   if (m_callback)
@@ -27,23 +27,34 @@ ossia::state_element time_interval::tick(time_value date)
   return tick(date, 1.0);
 }
 
-ossia::state_element time_interval::tick_offset(time_value date, time_value offset)
+ossia::state_element time_interval::tick_offset(time_value date, ossia::time_value offset)
 {
-  node->set_tick_offset(offset);
+  m_date += std::ceil(date.impl * m_speed);
+  m_position = double(m_date) / double(m_nominal);
+  node->requested_tokens.push_back({m_date, m_position, offset});
   m_tick_offset = offset;
-  return tick(date);
+  auto st = state();
+  if (m_callback)
+    (m_callback)(m_position, m_date, st);
+  return st;
 }
 
-ossia::state_element time_interval::tick_offset(time_value date, double ratio, time_value offset)
+ossia::state_element time_interval::tick_offset(time_value date, double ratio, ossia::time_value offset)
 {
-  node->set_tick_offset(offset);
+  m_date += std::ceil(date.impl * m_speed / ratio);
+  m_position = double(m_date) / double(m_nominal);
+  node->requested_tokens.push_back({m_date, m_position, offset});
+
   m_tick_offset = offset;
-  return tick(date, ratio);
+  auto st = state();
+  if (m_callback)
+    (m_callback)(m_position, m_date, st);
+  return st;
 }
 
 std::shared_ptr<time_interval> time_interval::create(
     time_interval::exec_callback callback, time_event& startEvent,
-    time_event& endEvent, time_value nominal, time_value min, time_value max)
+    time_event& endEvent, ossia::time_value nominal, ossia::time_value min, ossia::time_value max)
 {
   auto timeInterval = std::make_shared<time_interval>(
       callback, startEvent, endEvent, nominal, min, max);
@@ -56,7 +67,7 @@ std::shared_ptr<time_interval> time_interval::create(
 
 time_interval::time_interval(
     time_interval::exec_callback callback, time_event& startEvent,
-    time_event& endEvent, time_value nominal, time_value min, time_value max)
+    time_event& endEvent, ossia::time_value nominal, ossia::time_value min, ossia::time_value max)
     : m_callback(std::move(callback))
     , m_start(startEvent)
     , m_end(endEvent)
@@ -83,7 +94,6 @@ void time_interval::start(ossia::state& pstate)
   if (!m_running)
   {
     m_running = true;
-    node->set_enabled(true);
     // start all time processes
     for (const auto& timeProcess : get_time_processes())
     {
@@ -98,10 +108,11 @@ void time_interval::start(ossia::state& pstate)
     // set clock at a tick
     m_date = m_offset;
     m_position = double(m_date) / double(m_nominal);
-
+/*
     auto st = state();
     if (m_callback)
       (m_callback)(m_position, m_date, st);
+      */
   }
 }
 
@@ -109,12 +120,12 @@ void time_interval::stop()
 {
   if (m_running)
   {
-    node->set_enabled(false);
     // stop all time processes
-    for (const auto& timeProcess : get_time_processes())
+    for (const std::shared_ptr<ossia::time_process>& timeProcess : get_time_processes())
     {
       timeProcess->stop();
     }
+
     m_date = 0;
     m_position = 0;
     m_running = false;
@@ -307,7 +318,7 @@ interval_node::interval_node()
 }
 
 
-void interval_node::run(execution_state&)
+void interval_node::run(token_request t, execution_state&)
 {
   {
     auto i = m_inlets[0]->data.target<ossia::audio_port>();

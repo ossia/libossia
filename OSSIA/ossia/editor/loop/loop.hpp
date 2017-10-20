@@ -37,7 +37,7 @@ public:
    \return a new loop */
   loop(
       time_value, time_interval::exec_callback, time_event::exec_callback,
-      time_event::exec_callback, std::shared_ptr<ossia::graph> graph = {});
+      time_event::exec_callback);
 
   /*! destructor */
   ~loop();
@@ -63,7 +63,7 @@ public:
   const std::shared_ptr<time_sync> get_end_timesync() const;
 
 private:
-  void interval_callback(double, time_value, const ossia::state_element&);
+  void interval_callback(double, ossia::time_value, const ossia::state_element&);
 
   void start_event_callback(time_event::status);
 
@@ -80,7 +80,5 @@ private:
 
   ossia::state m_currentState; // an internal State to return on state call
   ossia::state m_offsetState;  // an internal State built when offset is called
-
-  std::weak_ptr<ossia::graph> m_graph;
 };
 }

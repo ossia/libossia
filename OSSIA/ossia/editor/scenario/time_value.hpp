@@ -40,7 +40,7 @@ struct OSSIA_EXPORT time_value
   time_value& operator+=(double d) noexcept
   {
     if (infinite())
-      impl = 0.;
+      impl = 0;
     else
       impl += d;
 
@@ -50,7 +50,7 @@ struct OSSIA_EXPORT time_value
   time_value& operator+=(ossia::time_value t) noexcept
   {
     if (infinite() || t.infinite())
-      impl = 0.;
+      impl = 0;
     else
       impl += t.impl;
 
@@ -61,7 +61,7 @@ struct OSSIA_EXPORT time_value
   time_value& operator-=(double d) noexcept
   {
     if (infinite())
-      impl = 0.;
+      impl = 0;
     else
       impl -= d;
 
@@ -71,7 +71,7 @@ struct OSSIA_EXPORT time_value
   time_value& operator-=(ossia::time_value t) noexcept
   {
     if (infinite() || t.infinite())
-      impl = 0.;
+      impl = 0;
     else
       impl -= t.impl;
 
@@ -82,6 +82,22 @@ struct OSSIA_EXPORT time_value
   constexpr time_value operator+(double d) const noexcept
   {
     return time_value(impl + d);
+  }
+  constexpr time_value operator+(int64_t d) const noexcept
+  {
+    return time_value(impl + d);
+  }
+  constexpr time_value operator+(uint64_t d) const noexcept
+  {
+    return time_value(impl + d);
+  }
+  constexpr time_value operator-(int64_t d) const noexcept
+  {
+    return time_value(impl - d);
+  }
+  constexpr time_value operator-(uint64_t d) const noexcept
+  {
+    return time_value(impl - d);
   }
 
   time_value operator+(ossia::time_value t) const noexcept
@@ -141,8 +157,10 @@ struct OSSIA_EXPORT time_value
     return time_value(impl * d);
   }
 
-  /*! double casting operator */
-  constexpr operator double() const noexcept
+  friend double operator/(time_value lhs, time_value rhs) {
+    return double(lhs.impl) / double(rhs.impl);
+  }
+  constexpr operator int64_t() const noexcept
   {
     return impl;
   }
@@ -180,4 +198,14 @@ OSSIA_EXPORT inline time_value operator"" _tv(unsigned long long v)
 const constexpr time_value Infinite{time_value::infinity};
 const constexpr time_value Zero{0};
 const constexpr time_value One{1};
+
+OSSIA_EXPORT inline time_value abs(time_value t) {
+  return time_value(std::abs(t.impl));
+}
+
+OSSIA_EXPORT inline time_value norm(time_value t1, time_value t2) {
+  if(t1.infinite() || t2.infinite())
+    return Infinite;
+  return time_value(std::abs(t1.impl - t2.impl));
+}
 }

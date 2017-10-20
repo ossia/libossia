@@ -9,6 +9,8 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
+#include <ossia/dataflow/graph.hpp>
+#include <ossia/editor/scenario/detail/continuity.hpp>
 #include <cassert>
 #include <hopscotch_map.h>
 #include <iostream>
@@ -32,6 +34,8 @@ void scenario::make_happen(
   for (auto& timeInterval : event.next_time_intervals())
   {
     timeInterval->start(st);
+    mark_start_discontinuous{}(*timeInterval);
+
     started.insert(timeInterval.get());
   }
 
@@ -265,7 +269,7 @@ void update_overtick(
   }
 }
 
-ossia::state_element tick_interval(time_interval& interval, time_value tick, time_value offset)
+ossia::state_element tick_interval(time_interval& interval, ossia::time_value tick, ossia::time_value offset)
 {
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
@@ -283,6 +287,7 @@ ossia::state_element tick_interval(time_interval& interval, time_value tick, tim
 
 state_element scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
+  node->requested_tokens.push_back({date, pos, tick_offset});
   // ossia::logger().info("scenario::state starts");
   if (date != m_lastDate)
   {
@@ -380,6 +385,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       for (time_interval* interval : intervals_stopped)
       {
         interval->stop();
+        mark_end_discontinuous{}(*interval);
       }
 
       for (const auto& timeEvent : statusChangedEvents)

@@ -102,7 +102,6 @@ bool clock::tick()
   if (paused || !running)
     return false;
 
-  int64_t granularityInUs = ossia::llround(m_granularity);
   int64_t droppedTicks = 0;
 
   // how many time since the last tick ?
@@ -110,13 +109,13 @@ bool clock::tick()
       = duration_cast<microseconds>(clock_type::now() - m_lastTime).count();
 
   // how much ticks it represents ?
-  droppedTicks = ossia::llround(std::floor(deltaInUs / granularityInUs));
+  droppedTicks = ossia::llround(std::floor(double(deltaInUs) / double(m_granularity)));
 
   // adjust date and elapsed time considering the dropped ticks
   if (droppedTicks)
   {
     m_date += droppedTicks * m_granularity;
-    m_elapsedTime += droppedTicks * granularityInUs;
+    m_elapsedTime += droppedTicks * m_granularity;
 
     // maybe the clock reaches the end ?
     if (m_duration - m_date < Zero && !m_duration.infinite())
@@ -131,7 +130,7 @@ bool clock::tick()
   }
 
   // how many time to pause to reach the next tick ?
-  int64_t pauseInUs = granularityInUs - m_elapsedTime % granularityInUs;
+  int64_t pauseInUs = m_granularity - m_elapsedTime % m_granularity;
   // std::cerr << m_granularity << " " << m_ratio << " " << deltaInUs << " "<<
   // droppedTicks << " "  << granularityInUs << " " << pauseInUs << std::endl;
   // if too early: wait
@@ -156,7 +155,7 @@ bool clock::tick()
 
     deltaInUs
         = duration_cast<microseconds>(clock_type::now() - m_lastTime).count()
-          - droppedTicks * granularityInUs;
+          - droppedTicks * m_granularity;
   }
 
   // std::cerr << deltaInUs << std::endl;

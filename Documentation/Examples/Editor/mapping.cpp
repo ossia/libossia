@@ -32,7 +32,7 @@ using namespace ossia;
 
 using namespace std;
 
-void interval_callback(ossia::time_value position, time_value date, std::shared_ptr<StateElement> element)
+void interval_callback(ossia::time_value position, ossia::time_value date, std::shared_ptr<StateElement> element)
 {
     element->launch();
 }

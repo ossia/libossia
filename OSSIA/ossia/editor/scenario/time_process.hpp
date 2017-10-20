@@ -5,13 +5,13 @@
 #include <memory>
 #include <ossia_export.h>
 #include <string>
-#include <ossia/dataflow/graph_node.hpp>
 
 /**
  * \file time_process.hpp
  */
 namespace ossia
 {
+class graph_node;
 class time_interval;
 /**
  * @brief The time_process class

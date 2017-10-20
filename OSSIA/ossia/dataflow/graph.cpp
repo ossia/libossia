@@ -137,7 +137,9 @@ struct init_node_visitor
   void operator()() const
   {
     if (edge.out_node->enabled())
+    {
       graph::copy(*edge.out, in);
+    }
     else
     {
       // todo delay, etc
@@ -206,8 +208,6 @@ void graph::remove_node(const node_ptr& n)
     for(auto edge : port->targets)
       disconnect(edge);
 
-
-  m_user_enabled_nodes.erase(n.get());
   auto it = m_nodes.right.find(n);
   if (it != m_nodes.right.end())
   {
@@ -216,19 +216,6 @@ void graph::remove_node(const node_ptr& n)
       boost::remove_vertex(it->second, m_graph);
     m_nodes.right.erase(it);
   }
-}
-
-void graph::enable(graph_node& n)
-{
-  m_user_enabled_nodes.insert(&n);
-  n.set_enabled(true);
-  // TODO handle temporal ordering here.
-}
-
-void graph::disable(graph_node& n)
-{
-  m_user_enabled_nodes.erase(&n);
-  n.set_enabled(false);
 }
 
 void graph::connect(const std::shared_ptr<graph_edge>& edge)
@@ -282,7 +269,6 @@ void graph::clear()
   }
   m_nodes.clear();
   m_edges.clear();
-  m_user_enabled_nodes.clear();
   m_graph.clear();
   m_edge_map.clear();
   m_time = 0;
@@ -322,9 +308,21 @@ void tick(
       // If there is, we run all the nodes
 
       // If there is not we just run the first node
-      auto& first_node = **next_nodes.begin();
+      graph_node& first_node = **next_nodes.begin();
       g.init_node(first_node, e);
-      first_node.run(e);
+      if(first_node.start_discontinuous()) {
+        first_node.requested_tokens.front().start_discontinuous = true;
+        first_node.set_start_discontinuous(false);
+      }
+      if(first_node.end_discontinuous()) {
+        first_node.requested_tokens.front().end_discontinuous = true;
+        first_node.set_end_discontinuous(false);
+      }
+      for(auto request : first_node.requested_tokens) {
+        first_node.run(request, e);
+        first_node.set_prev_date(request.date);
+      }
+      first_node.requested_tokens.clear();
       first_node.set_executed(true);
       g.teardown_node(first_node, e);
       active_nodes.erase(ossia::find(active_nodes, &first_node));
@@ -342,8 +340,20 @@ void graph::state(execution_state& e)
   // processes.
 
   // Filter disabled nodes (through strict relationships).
-  set<graph_node*> enabled(
-      m_user_enabled_nodes.begin(), m_user_enabled_nodes.end());
+  set<graph_node*> enabled;
+
+  for(auto it = boost::vertices(m_graph).first; it != boost::vertices(m_graph).second; ++it)
+  {
+    const auto& ptr = m_graph[*it];
+    if(!ptr->requested_tokens.empty()) {
+      enabled.insert(ptr.get());
+      ptr->set_enabled(true);
+    }
+    else {
+      ptr->set_enabled(false);
+    }
+  }
+
   disable_strict_nodes_rec(enabled);
 
   // Get a total order on nodes
@@ -453,7 +463,7 @@ graph::disable_strict_nodes(const set<graph_node*>& enabled_nodes)
 set<graph_node*> graph::disable_strict_nodes(const set<node_ptr>& n)
 {
   using namespace boost::adaptors;
-  auto res = (n | transformed([](auto p) { return p.get(); }));
+  auto res = (n | transformed([](const auto& p) { return p.get(); }));
   return disable_strict_nodes(set<graph_node*>{res.begin(), res.end()});
 }
 
@@ -465,7 +475,7 @@ void graph::disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node)
     to_disable = disable_strict_nodes(cur_enabled_node);
     for (auto n : to_disable)
     {
-      disable(*n);
+      n->set_enabled(false);
       cur_enabled_node.erase(n);
       // note: we have to add a dependency between all the inlets and outlets
     }

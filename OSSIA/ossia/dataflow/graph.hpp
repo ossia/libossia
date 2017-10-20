@@ -39,9 +39,6 @@ public:
   void add_node(node_ptr n);
   void remove_node(const node_ptr& n);
 
-  void enable(graph_node& n);
-  void disable(graph_node& n);
-
   void connect(const std::shared_ptr<graph_edge>& edge);
   void disconnect(const std::shared_ptr<graph_edge>& edge);
   void disconnect(graph_edge* edge);
@@ -71,8 +68,6 @@ public:
 
   node_bimap m_nodes;
   edge_bimap m_edges;
-
-  set<graph_node*> m_user_enabled_nodes;
 
   graph_t m_graph;
 

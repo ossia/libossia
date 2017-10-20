@@ -22,7 +22,7 @@ class interval_node : public ossia::graph_node
 {
 public:
   interval_node();
-  void run(ossia::execution_state&) override;
+  void run(ossia::token_request t, ossia::execution_state&) override;
 };
 
 
@@ -69,8 +69,8 @@ public:
 
   ossia::state_element tick(ossia::time_value);
   ossia::state_element tick(ossia::time_value, double ratio);
-  ossia::state_element tick_offset(ossia::time_value, time_value offset);
-  ossia::state_element tick_offset(ossia::time_value, double ratio, time_value offset);
+  ossia::state_element tick_offset(ossia::time_value, ossia::time_value offset);
+  ossia::state_element tick_offset(ossia::time_value, double ratio, ossia::time_value offset);
 
   /*! to get the interval execution back
    \param const #TimeValue position
@@ -92,11 +92,11 @@ public:
    \return std::shared_ptr<#time_interval> */
   static std::shared_ptr<time_interval> create(
       time_interval::exec_callback, time_event&, time_event&,
-      time_value = Infinite, time_value = Zero, time_value = Infinite);
+      time_value = Infinite, ossia::time_value = Zero, ossia::time_value = Infinite);
 
   time_interval(
       time_interval::exec_callback, time_event&, time_event&,
-      time_value = Infinite, time_value = Zero, time_value = Infinite);
+      time_value = Infinite, ossia::time_value = Zero, ossia::time_value = Infinite);
 
   /*! desctructor */
   ~time_interval();

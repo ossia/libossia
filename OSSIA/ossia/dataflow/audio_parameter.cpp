@@ -119,7 +119,7 @@ sound_node::sound_node()
   m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
 }
 
-void sound_node::set_sound(std::vector<std::vector<float>> vec)
+void sound_node::set_sound(std::vector<std::vector<double>> vec)
 {
   m_data = std::move(vec);
 }
@@ -129,7 +129,43 @@ sound_node::~sound_node()
 
 }
 
-void sound_node::run(ossia::execution_state& e)
+void do_fade(bool start_discontinuous, bool end_discontinuous, audio_channel& ap, std::size_t start, std::size_t end)
+{
+  using namespace std;
+  if(end < start)
+    swap(start, end);
+  const auto decrement = (1. / (end - start));
+  double gain = 1.0;
+
+  if(!start_discontinuous && !end_discontinuous)
+    return;
+  else if(start_discontinuous && !end_discontinuous)
+  {
+    for(std::size_t j = start; j < end; j++)
+    {
+      ap[j] *=  (1. - gain);
+      gain -= decrement;
+    }
+  }
+  else if(!start_discontinuous && end_discontinuous)
+  {
+    for(std::size_t j = start; j < end; j++)
+    {
+      ap[j] *= std::pow(2., gain) - 1.;
+      gain -= decrement;
+    }
+  }
+  else
+  {
+    for(std::size_t j = start; j < end; j++)
+    {
+      ap[j] *= (2. * (gain * (1. - gain)));
+      gain -= decrement;
+    }
+  }
+}
+
+void sound_node::run(ossia::token_request t, ossia::execution_state& e)
 {
   if(m_data.empty())
     return;
@@ -138,22 +174,28 @@ void sound_node::run(ossia::execution_state& e)
 
   ossia::audio_port& ap = *m_outlets[0]->data.target<ossia::audio_port>();
   ap.samples.resize(chan);
-  int64_t max_N = std::min(m_date.impl, (int64_t)len);
+  int64_t max_N = std::min(t.date.impl, (int64_t)len);
   if(max_N <= 0)
     return;
-  auto samples = max_N - m_prev_date + m_offset.impl;
+  const auto samples = max_N - m_prev_date + t.offset.impl;
   if(samples <= 0)
     return;
 
-  if(m_date > m_prev_date)
+  if(t.date > m_prev_date)
   {
     for(std::size_t i = 0; i < chan; i++)
     {
       ap.samples[i].resize(samples);
       for(int64_t j = m_prev_date; j < max_N; j++)
       {
-        ap.samples[i][j - m_prev_date + m_offset.impl] = m_data[i][j];
+        ap.samples[i][j - m_prev_date + t.offset.impl] = m_data[i][j];
       }
+      do_fade(
+            t.start_discontinuous,
+            t.end_discontinuous,
+            ap.samples[i],
+            t.offset.impl,
+            samples);
     }
   }
   else
@@ -164,16 +206,26 @@ void sound_node::run(ossia::execution_state& e)
       ap.samples[i].resize(samples);
       for(int64_t j = m_prev_date; j < max_N; j++)
       {
-        ap.samples[i][max_N - (j - m_prev_date) + m_offset.impl] = m_data[i][j];
+        ap.samples[i][max_N - (j - m_prev_date) + t.offset.impl] = m_data[i][j];
       }
+
+      do_fade(
+            t.start_discontinuous,
+            t.end_discontinuous,
+            ap.samples[i],
+            max_N + t.offset.impl,
+            m_prev_date + t.offset.impl);
     }
   }
+
+
 
   // Upmix
   if(upmix != 0)
   {
     if(upmix < chan)
     {
+      /*
       // Downmix
       switch(upmix)
       {
@@ -185,13 +237,14 @@ void sound_node::run(ossia::execution_state& e)
               ap.samples[0].resize(ap.samples[i].size());
 
             for(std::size_t j = 0; j < ap.samples[i].size(); j++)
-              ap.samples[0][j] += ap.samples[j].size();
+              ap.samples[0][j] += ap.samples[i][j];
           }
         }
         default:
           // TODO
           break;
       }
+      */
     }
     else if(upmix > chan)
     {
@@ -211,14 +264,12 @@ void sound_node::run(ossia::execution_state& e)
           break;
       }
     }
-
   }
 
   // Move channels
   if(start != 0)
   {
     ap.samples.insert(ap.samples.begin(), start, chobo::small_vector<double, 64>{});
-
   }
 }
 

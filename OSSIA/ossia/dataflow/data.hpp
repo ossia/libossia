@@ -7,7 +7,8 @@ namespace ossia
 template <typename T>
 using value_vector = chobo::small_vector<T, 4>;
 
-using audio_vector = std::vector<chobo::small_vector<double, 64>>;
+using audio_channel = chobo::small_vector<double, 64>;
+using audio_vector = std::vector<audio_channel>;
 
 struct audio_port
 {

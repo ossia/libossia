@@ -91,14 +91,14 @@ void audio_protocol::reload()
   inputParameters.device = Pa_GetDefaultInputDevice();
   inputParameters.channelCount = inputs;
   inputParameters.sampleFormat = paFloat32 | paNonInterleaved;
-  inputParameters.suggestedLatency = 0.01;
+  inputParameters.suggestedLatency = 0.1;
   inputParameters.hostApiSpecificStreamInfo = nullptr;
 
   PaStreamParameters outputParameters;
   outputParameters.device = Pa_GetDefaultOutputDevice();
   outputParameters.channelCount = outputs;
   outputParameters.sampleFormat = paFloat32 | paNonInterleaved;
-  outputParameters.suggestedLatency = 0.01;
+  outputParameters.suggestedLatency = 0.1;
   outputParameters.hostApiSpecificStreamInfo = nullptr;
 
   std::cerr << "=== stream start ===\n";

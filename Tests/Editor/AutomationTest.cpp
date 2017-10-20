@@ -14,7 +14,7 @@ class AutomationTest : public QObject
 
   std::vector<value> m_parameter_values;
 
-  void interval_callback(double position, time_value date, const state_element& element)
+  void interval_callback(double position, ossia::time_value date, const state_element& element)
   {
     std::cerr << position << std::endl;
     ossia::print(std::cerr, element);
