@@ -11,6 +11,20 @@ import unittest
 from pyossia import ossia
 import pyossia
 
+# Python 2 compatibility
+import sys
+if sys.version_info[0] < 3:
+    unittest.TestCase.assertCountEqual = unittest.TestCase.assertItemsEqual
+try:
+    # python 2
+    str = unicode
+    def is_string(test):
+        return isinstance(test, basestring)
+except NameError:
+    # python 3
+    def is_string(test):
+        return isinstance(test, str)
+
 
 class TestAll(unittest.TestCase):
     """
@@ -39,7 +53,7 @@ class TestAll(unittest.TestCase):
         print the actual version of pyossia
         """
         self.assertEqual(isinstance(pyossia.__version__, dict), True)
-        self.assertEqual(isinstance(pyossia.__version__['version'], str), True)
+        self.assertEqual(is_string(pyossia.__version__['version']), True)
 
     def test_int(self):
         """
