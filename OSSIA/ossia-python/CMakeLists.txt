@@ -42,7 +42,7 @@ else()
 
 
     if(APPLE)
-      set(PYTHON_PLATFORM_TAG "macosx") # could be macosx-10.12-x86_64
+      set(PYTHON_PLATFORM_TAG "macosx-10.12-x86_64")
     elseif(UNIX)
       if(${OSSIA_ARCHITECTURE} MATCHES "arm")
         set(PYTHON_PLATFORM_TAG "linux-armv6l")
