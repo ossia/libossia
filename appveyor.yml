@@ -82,8 +82,8 @@ artifacts:
   - path: libossia-native-win*.zip
     name: ossia-windonws
     type: zip
-  - path: ossia-python-*-win.zip
-    name: ossia-python-win
+  - path: pyossia*.whl
+    name: pyossia-wheel-win
     type: zip
   - path: ossia-unity3d-win.zip
     name: ossia-unity3d-win

@@ -102,17 +102,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-win64.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
-  cd c:\projects\libossia\build
-  dir
 
-  Get-ChildItem -Recurse .
-
-  if ( "${env:platform}" -eq "x64" ){
-    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win64.zip "ossia_python.so"
-  } else {
-    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win32.zip "ossia_python.so"
+  if (${env:APPVEYOR_REPO_TAG}){
+    ${env:PYTHON_EXE} -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
   }
 
+  mv ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl ${env:APPVEYOR_BUILD_FOLDER}/
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
