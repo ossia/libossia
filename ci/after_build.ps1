@@ -115,7 +115,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
 
   if (${env:APPVEYOR_REPO_TAG}){
-    ${env:PYTHON_EXE} -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+    ${PYTHON_EXE}="C:\${env:python}\python.exe"
+    if ( "${env:platform}" -eq "x64" ){
+      ${PYTHON_EXE}="C:\${env:python}-x64\python.exe"
+    }
+    ${PYTHON_EXE} -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
   }
 
   mv ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl ${env:APPVEYOR_BUILD_FOLDER}/
