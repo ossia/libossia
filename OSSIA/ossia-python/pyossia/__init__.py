@@ -110,7 +110,8 @@ def add_param(self, name, **kwargs):
     value_type = kwargs['value_type']
     param = node.create_parameter(__value_types__[value_type])
     if 'domain' in kwargs.keys():
-        param.make_domain(kwargs['domain'][0], kwargs['domain'][1])
+    	param.make_domain(tuple(kwargs['domain']))
+        param.apply_domain()
     if 'default_value' in kwargs.keys():
         param.default_value = kwargs['default_value']
     if 'clipmode' in kwargs.keys():
