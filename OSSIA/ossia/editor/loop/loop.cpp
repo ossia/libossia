@@ -8,6 +8,47 @@
 #include <ossia/dataflow/graph.hpp>
 namespace ossia
 {
+class loop_node : public ossia::graph_node
+{
+public:
+  loop_node();
+  void run(ossia::token_request t, ossia::execution_state&) override;
+};
+
+loop_node::loop_node()
+{
+  // todo maybe we can optimize by having m_outlets == m_inlets
+  // this way no copy.
+  m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
+  m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
+  m_inlets.push_back(ossia::make_inlet<ossia::midi_port>());
+
+  m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+  m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+  m_outlets.push_back(ossia::make_outlet<ossia::midi_port>());
+}
+
+
+void loop_node::run(token_request t, execution_state&)
+{
+  {
+    auto i = m_inlets[0]->data.target<ossia::audio_port>();
+    auto o = m_outlets[0]->data.target<ossia::audio_port>();
+    o->samples = i->samples;
+  }
+
+  {
+    auto i = m_inlets[1]->data.target<ossia::value_port>();
+    auto o = m_outlets[1]->data.target<ossia::value_port>();
+    o->data = i->data;
+  }
+
+  {
+    auto i = m_inlets[2]->data.target<ossia::midi_port>();
+    auto o = m_outlets[2]->data.target<ossia::midi_port>();
+    o->messages = i->messages;
+  }
+}
 loop::loop(time_value patternDuration,
            time_interval::exec_callback patternIntervalCallback,
            time_event::exec_callback patternStartEventCallback,
@@ -36,7 +77,7 @@ loop::loop(time_value patternDuration,
   *m_startNode->get_time_events()[0], *m_endNode->get_time_events()[0],
       patternDuration, patternDuration, patternDuration);
 
-  node = std::make_shared<scenario_node>();
+  node = std::make_shared<loop_node>();
 }
 
 loop::~loop()
@@ -120,7 +161,7 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
           flatten_and_filter(m_currentState, m_endNode->get_time_events()[0]->get_state());
           m_interval->stop();
 
-          if(tick_amount > 0 && m_interval->get_date() + tick_amount >= m_interval->get_nominal_duration())
+          if(tick_amount > 0/* && m_interval->get_date() + tick_amount >= m_interval->get_nominal_duration()*/)
           {
             m_interval->offset(time_value{});
             m_interval->start();
@@ -156,7 +197,7 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
     bool not_starting = none_of(statusChangedEvents, [&](time_event* ev) {
         return ev->get_status() == time_event::status::HAPPENED
         && ev == &startEvent;
-  });
+    });
 
     bool discontinuous = m_interval->get_end_event().get_status() == time_event::status::HAPPENED;
     // TODO

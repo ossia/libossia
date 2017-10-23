@@ -318,10 +318,12 @@ void tick(
         first_node.requested_tokens.front().end_discontinuous = true;
         first_node.set_end_discontinuous(false);
       }
+
       for(auto request : first_node.requested_tokens) {
         first_node.run(request, e);
         first_node.set_prev_date(request.date);
       }
+
       first_node.requested_tokens.clear();
       first_node.set_executed(true);
       g.teardown_node(first_node, e);
