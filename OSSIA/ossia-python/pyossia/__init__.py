@@ -25,10 +25,10 @@ from . import ossia_python as ossia
 
 # these few lines are used to get versionning from git
 from ._version import get_versions
-__version__ = get_versions()
+__version__ = get_versions()['version']
 del get_versions
-__release__ = __version__
 
+print('pyossia ' + __version__)
 
 ######################################################
 # Module Constants
