@@ -41,25 +41,9 @@ else()
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
 
 
-    if(APPLE)
-      set(PYTHON_PLATFORM_TAG "macosx-10.12-x86_64")
-    elseif(UNIX)
-      if(${OSSIA_ARCHITECTURE} MATCHES "arm")
-        set(PYTHON_PLATFORM_TAG "linux-armv6l")
-      elseif(${OSSIA_ARCHITECTURE} MATCHES "x86")
-        set(PYTHON_PLATFORM_TAG "linux-i386")
-      elseif(${OSSIA_ARCHITECTURE} MATCHES "amd64")
-        set(PYTHON_PLATFORM_TAG "linux-x86_64")
-      else()
-        set(PYTHON_PLATFORM_TAG "linux")
-      endif()
-    else()
-      set(PYTHON_PLATFORM_TAG "win")
-    endif()
-
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name ${PYTHON_PLATFORM_TAG}
+      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
     #add_custom_command(TARGET ${PROJECT_NAME}
     #  POST_BUILD
