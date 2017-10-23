@@ -57,5 +57,6 @@ setup(
     package_data={
         'pyossia': ['*.so'],
     },
+    include_package_data=True,
     zip_safe=False
 )
