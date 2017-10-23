@@ -160,9 +160,12 @@ def get_nodes(self, node=None, depth=0):
     # return the filled list
     return children
 
-def get_parameters(self, node=None):
+def get_parameters(self, node=None, depth=0):
     """
     return a list of all params for the device
+    depth = 0 returns parameters recursivly for all its children
+    depth = 1 returns only the parameters for this node
+    depth = 2 returns only the parameters for this node and its children
     """
     if not node:
         node = self
@@ -178,8 +181,9 @@ def get_parameters(self, node=None):
             if child.parameter.__class__.__name__ == 'Parameter':
                 # add the child to the children list to return
                 parameters.append(child.parameter)
-            # do the same for each child
-            iterate_parameters(child)
+            if not depth:
+                # do the same for each child
+                iterate_parameters(child)
     # do the walk
     iterate_parameters(node)
     # return the filled list

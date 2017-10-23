@@ -139,6 +139,12 @@ class TestAll(unittest.TestCase):
         self.assertEqual(len(self.my_device.root_node.get_nodes()), 2)
         # How many parameters under this device?
         self.assertEqual(len(self.my_device.root_node.get_parameters()), 9)
+        # How many parameters directly attached to root node?
+        self.assertEqual(len(self.my_device.root_node.get_parameters(depth=1)), 3)
+        # How many parameters directly attached to the first child of root_node?
+        self.assertEqual(len(self.my_device.root_node.get_nodes()[0].get_parameters()), 2)
+        # How many parameters directly attached to the second child of root_node?
+        self.assertEqual(len(self.my_device.root_node.get_nodes()[1].get_parameters()), 4)
 
 
 if __name__ == '__main__':
