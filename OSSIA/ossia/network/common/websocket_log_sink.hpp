@@ -4,6 +4,7 @@
 #include <atomic>
 #include <eggs/variant.hpp>
 #include <readerwriterqueue.h>
+#include <spdlog/spdlog.h>
 
 namespace ossia
 {
@@ -14,6 +15,9 @@ struct websocket_threaded_connection
   {
     running = true;
     thread = std::thread([=] {
+      auto log = spdlog::get("websocket");
+      if(!log)
+        log = spdlog::stderr_logger_mt("websocket");
       try
       {
         while (running)
@@ -22,23 +26,23 @@ struct websocket_threaded_connection
           if (running)
           {
             // Try to reconnect
-            ossia::logger().critical("Logger could not connect to {}.", ip);
+            log->critical("Logger could not connect to {}.", ip);
             std::this_thread::sleep_for(std::chrono::seconds(1));
           }
         }
-        ossia::logger().critical("Logger stopping.");
+        log->critical("Logger stopping.");
       }
       catch (const websocketpp::exception& e)
       {
-        ossia::logger().critical("Logger error: ", e.what());
+        log->critical("Logger error: ", e.what());
       }
       catch (const std::exception& e)
       {
-        ossia::logger().critical("Logger error: ", e.what());
+        log->critical("Logger error: ", e.what());
       }
       catch (...)
       {
-        ossia::logger().critical("Logger error");
+        log->critical("Logger error");
       }
     });
   }

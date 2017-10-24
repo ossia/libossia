@@ -514,6 +514,7 @@ class QmlApiTest : public QObject
         QVERIFY(component.errors().empty());
         auto item = component.create();
         QVERIFY(item);
+        dev.recreate(item);
 
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/x");
