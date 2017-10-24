@@ -192,6 +192,234 @@ class QmlApiTest : public QObject
       }
     }
 
+    void test_sub_item()
+    {
+        int argc{}; char** argv{};
+        QCoreApplication app(argc, argv);
+        ossia::context context;
+        QQmlEngine engine;
+
+        engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+        engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+        auto& dev = ossia::qt::qml_singleton_device::instance();
+
+        QQmlComponent component(&engine);
+        component.setData(R"_(
+                          import Ossia 1.0 as Ossia
+                          import QtQuick 2.5
+
+                          Item {
+                            id: tutu
+                            Ossia.Node { node: "foo." + 0 ; id: n }
+                            Ossia.Property on x { parentNode: n }
+                            Ossia.Property on y { parentNode: n }
+                            Item {
+                              id: tata
+                              parent: tutu
+
+                              Ossia.Node {
+                                  id: sub
+                                  node: "tata"
+                                  parentNode: n
+                                  Component.onCompleted: console.log("fuuu")
+                              }
+                              Ossia.Property on scale { parentNode: sub }
+                            }
+                          }
+                          )_", QUrl{});
+
+        qDebug() << component.errorString();
+        QVERIFY(component.errors().empty());
+        auto item = (QQuickItem*) component.create();
+        QVERIFY(item);
+
+        dev.recreate(item);
+
+        auto child_scale = ossia::net::find_node(dev.device().get_root_node(), "/foo.0/tata/scale");
+        QVERIFY(child_scale);
+        cleanup(item);
+    }
+
+    void test_model_recursive_static()
+    {
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      QQmlEngine engine;
+
+      engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+      engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+
+      {
+        QQmlComponent component(&engine);
+        component.setData(R"_(
+                          import Ossia 1.0 as Ossia
+                          import QtQuick 2.5
+
+                          Item {
+                          Repeater {
+                            model: Ossia.Instances { id: rp; node: "foo"; count: 2 }
+                            Item {
+                              id: tutu
+                              Ossia.Node { node: "foo." + index; id: n }
+                              Ossia.Property on x { parentNode: n }
+                              Ossia.Property on y { parentNode: n }
+                              Item {
+                                id: tata
+                                parent: tutu
+
+                                Ossia.Node {
+                                 id: sub
+                                 node: "tata"
+                                 parentNode: n
+                                }
+                                Repeater {
+                                  model: 2//Ossia.Instances { id: rp2; node: "bar"; parentNode: sub; count: 2  }
+                                  Item {
+                                    Ossia.Node { node: "bar." + index; id: subn; parentNode: sub }
+                                    Ossia.Property on x { parentNode: subn }
+                                    Ossia.Property on y { parentNode: subn }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          }
+                          )_", QUrl{});
+
+        qDebug() << component.errorString();
+        QVERIFY(component.errors().empty());
+        auto item = (QQuickItem*) component.create();
+        QVERIFY(item);
+
+        dev.recreate(item);
+        dev.savePreset(QUrl::fromLocalFile("/tmp/preset.json"));
+
+        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+        qDebug() << c.str().c_str();
+
+        for(auto node : {
+            "/foo.0/x", "/foo.0/y", "/foo.1/x", "/foo.1/y",
+            "/foo.0/tata/bar.0/x",
+            "/foo.0/tata/bar.0/y",
+            "/foo.0/tata/bar.1/x",
+            "/foo.0/tata/bar.1/y",
+            "/foo.1/tata/bar.0/x",
+            "/foo.1/tata/bar.0/y",
+            "/foo.1/tata/bar.1/x",
+            "/foo.1/tata/bar.1/y",
+        })
+        {
+            auto found = ossia::net::find_node(dev.device().get_root_node(), node);
+            QVERIFY(found);
+        }
+
+        cleanup(item);
+      }
+    }
+
+    void test_model_recursive_preset()
+    {
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      QQmlEngine engine;
+
+      engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+      engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+
+      {
+        QQmlComponent component(&engine);
+        component.setData(R"_(
+                          import Ossia 1.0 as Ossia
+                          import QtQuick 2.5
+
+                          Item {
+                          Repeater {
+                            model: Ossia.Instances { id: rp; node: "foo";  }
+                            Item {
+                              id: tutu
+                              Ossia.Node { node: "foo." + index; id: n }
+                              Ossia.Property on x { parentNode: n }
+                              Ossia.Property on y { parentNode: n }
+                              Item {
+                                id: tata
+                                parent: tutu
+
+                                Ossia.Node {
+                                 id: sub
+                                 node: "tata"
+                                 parentNode: n
+                                }
+                                Repeater {
+                                  model: Ossia.Instances { id: rp2; node: "bar"; parentNode: sub;  }
+                                  Item {
+                                    Ossia.Node { node: "bar." + index; id: subn; parentNode: sub }
+                                    Ossia.Property on x { parentNode: subn }
+                                    Ossia.Property on y { parentNode: subn }
+
+                          Item {
+                            Ossia.Node {
+                             id: subsub
+                             node: "papa"
+                             parentNode: subn
+                            }
+                            Repeater {
+                              model: Ossia.Instances { node: "baz"; parentNode: subsub;  }
+                              Item {
+                                Ossia.Node { node: "baz." + index; id: subsubn; parentNode: subsub }
+                                Ossia.Property on x { parentNode: subsubn }
+                                Ossia.Property on y { parentNode: subsubn }
+                              }
+                            }
+                          }
+
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          }
+                          )_", QUrl{});
+
+        qDebug() << component.errorString();
+        QVERIFY(component.errors().empty());
+        auto item = (QQuickItem*) component.create();
+        QVERIFY(item);
+
+        {
+            fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+            qDebug() << "BEFORE => " << c.str().c_str();
+        }
+        dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
+        //dev.recreate(item);
+
+        {
+            fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+            qDebug() << "AFTER => " << c.str().c_str();
+        }
+        for(auto node : {
+            "/foo.0/x", "/foo.0/y", "/foo.1/x", "/foo.1/y",
+            "/foo.0/tata/bar.0/x",
+            "/foo.0/tata/bar.0/y",
+            "/foo.0/tata/bar.1/x",
+            "/foo.0/tata/bar.1/y",
+            "/foo.1/tata/bar.0/x",
+            "/foo.1/tata/bar.0/y",
+            "/foo.1/tata/bar.1/x",
+            "/foo.1/tata/bar.1/y",
+        })
+        {
+            auto found = ossia::net::find_node(dev.device().get_root_node(), node);
+            QVERIFY(found);
+        }
+
+        cleanup(item);
+      }
+    }
+
     /* What we want but not possible due to
      * https://bugreports.qt.io/browse/QTBUG-60121
     void test_model_simpler()
@@ -244,8 +472,13 @@ class QmlApiTest : public QObject
       }
     }
     */
+
+
+
+
     void test_property()
     {
+
       int argc{}; char** argv{};
       QCoreApplication app(argc, argv);
       ossia::context context;

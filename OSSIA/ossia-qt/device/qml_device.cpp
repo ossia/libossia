@@ -378,9 +378,21 @@ void qml_device::recreate(QObject* root)
           }
         });
 
-    // for(auto obj : models)
+    for(auto model : m_models)
     {
-      // TODO ?
+      if (model.second)
+      {
+        qml_model_property* m = model.first;
+        m->updateCount();
+      }
+    }
+  }
+  else
+  {
+    auto it = root->findChildren<QQuickItem*>("", Qt::FindDirectChildrenOnly);
+    for(auto cld : it)
+    {
+      recreate(cld);
     }
   }
 }
@@ -530,28 +542,50 @@ void qml_device::loadPreset(QObject* root, QString file)
 #endif
 
       // Now as long as we are creating new models, update their count
-      std::size_t cur_model_size = m_models.size();
-      std::size_t prev_model_size;
-      do
       {
-        prev_model_size = cur_model_size;
-        auto mlist = m_models;
-        for (auto model : mlist)
-        {
-          if (model.second)
+          std::size_t cur_model_size = m_models.size();
+          std::size_t prev_model_size;
+          do
           {
-            qml_model_property* m = model.first;
-            m->updateCount();
-          }
-          QCoreApplication::processEvents();
-        }
-        cur_model_size = m_models.size();
-      } while (cur_model_size != prev_model_size);
+              prev_model_size = cur_model_size;
+              auto mlist = m_models;
+              for (auto model : mlist)
+              {
+                  if (model.second)
+                  {
+                      qml_model_property* m = model.first;
 
+                      m->updateCount();
+                  }
+                  QCoreApplication::processEvents();
+              }
+              cur_model_size = m_models.size();
+          } while (cur_model_size != prev_model_size);
+      }
       clearEmptyElements();
 
       // Finallt do a push of all properties registered
       recreate(root);
+      {
+          std::size_t cur_model_size = m_models.size();
+          std::size_t prev_model_size;
+          do
+          {
+              prev_model_size = cur_model_size;
+              auto mlist = m_models;
+              for (auto model : mlist)
+              {
+                  if (model.second)
+                  {
+                      qml_model_property* m = model.first;
+
+                      m->updateCount();
+                  }
+                  QCoreApplication::processEvents();
+              }
+              cur_model_size = m_models.size();
+          } while (cur_model_size != prev_model_size);
+      }
       return;
     }
   }
