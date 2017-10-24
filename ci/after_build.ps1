@@ -116,9 +116,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   if (${env:APPVEYOR_REPO_TAG}){
     if ( "${env:platform}" -eq "x64" ){
-      C:\${env:python}-x64\python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
+      cd "C:\${env:python}-x64\"
+      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
     } else {
-      C:\${env:python}\python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
+      cd "C:\${env:python}\"
+      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
     }
   }
 
