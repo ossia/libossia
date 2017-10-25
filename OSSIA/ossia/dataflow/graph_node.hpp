@@ -29,7 +29,6 @@ public:
   virtual ~graph_node();
 
   bool enabled() const;
-
   bool executed() const;
 
   void set_start_discontinuous(bool b) { m_start_discontinuous = b; }
@@ -60,7 +59,6 @@ public:
   bool end_discontinuous() const { return m_end_discontinuous; }
 
   void set_executed(bool b);
-  void set_enabled(bool b);
 
   void set_prev_date(time_value d) { m_prev_date = d; }
 
@@ -70,6 +68,7 @@ public:
   chobo::small_vector<int64_t, 2> temporal_priority;
   chobo::small_vector<int64_t, 2> custom_priority;
 
+  void disable();
   chobo::small_vector<token_request, 4> requested_tokens;
 protected:
   inlets m_inlets;
@@ -77,7 +76,6 @@ protected:
 
   ossia::time_value m_prev_date{};
 
-  bool m_enabled{};
   bool m_executed{};
 
 private:

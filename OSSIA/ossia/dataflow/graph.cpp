@@ -4,188 +4,180 @@
 #include <ossia/dataflow/graph.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
 #include <ossia/network/common/path.hpp>
-
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 struct topological_ordering
 {
-  const graph& gr;
-  const std::vector<graph_node*>& topo_order;
-  const execution_state& st;
-  bool operator()(const graph_node* lhs, const graph_node* rhs) const
-  {
-    // just return the nodes in their topological order
-    for(std::size_t i = 0, N = topo_order.size(); i < N; i++)
+    const graph& gr;
+    const std::vector<graph_node*>& topo_order;
+    bool operator()(const graph_node* lhs, const graph_node* rhs) const
     {
-      if(topo_order[i] == lhs)
-        return true;
-      if(topo_order[i] == rhs)
-        return false;
+      // just return the nodes in their topological order
+      for(std::size_t i = 0, N = topo_order.size(); i < N; i++)
+      {
+        if(topo_order[i] == lhs)
+          return true;
+        if(topo_order[i] == rhs)
+          return false;
+      }
+      throw std::runtime_error("lhs and rhs have to be found");
     }
-    throw std::runtime_error("lhs and rhs have to be found");
-  }
 };
 
 struct temporal_ordering
 {
-  const graph& gr;
-  const std::vector<graph_node*>& topo_order;
-  const execution_state& st;
-  bool operator()(const graph_node* lhs, const graph_node* rhs) const
-  {
-    return boost::range::lexicographical_compare(lhs->temporal_priority, rhs->temporal_priority);
-  }
+    bool operator()(const graph_node* lhs, const graph_node* rhs) const
+    {
+      return boost::range::lexicographical_compare(lhs->temporal_priority, rhs->temporal_priority);
+    }
 };
 
 struct custom_ordering
 {
-  const graph& gr;
-  const std::vector<graph_node*>& topo_order;
-  const execution_state& st;
-  bool operator()(const graph_node* lhs, const graph_node* rhs) const
-  {
-    return boost::range::lexicographical_compare(lhs->custom_priority, rhs->custom_priority);
-  }
+    bool operator()(const graph_node* lhs, const graph_node* rhs) const
+    {
+      return boost::range::lexicographical_compare(lhs->custom_priority, rhs->custom_priority);
+    }
 };
 
 template<typename OrderingPolicy = topological_ordering>
 struct node_sorter
 {
-  const graph& gr;
-  const std::vector<graph_node*>& topo_order;
-  const execution_state& st;
+    OrderingPolicy ord;
+    const execution_state& st;
 
-  bool operator()(const graph_node* lhs, const graph_node* rhs) const
-  {
-    // This sorting method ensures that if for instance
-    // node A produces "/a" and node B consumes "/a",
-    // A executes before B.
-    bool c1 = lhs->has_port_inputs();
-    bool c2 = rhs->has_port_inputs();
-    if (c1 && !c2)
-      return true;
-    else if (!c1 && c2)
-      return false;
-    else if (c1 && c2)
-      // the nodes are already sorted through the toposort
-      // so we can just keep their original order
-      return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
+    bool operator()(const graph_node* lhs, const graph_node* rhs) const
+    {
+      // This sorting method ensures that if for instance
+      // node A produces "/a" and node B consumes "/a",
+      // A executes before B.
+      bool c1 = lhs->has_port_inputs();
+      bool c2 = rhs->has_port_inputs();
+      if (c1 && !c2)
+        return true;
+      else if (!c1 && c2)
+        return false;
+      else if (c1 && c2)
+        // the nodes are already sorted through the toposort
+        // so we can just keep their original order
+        return ord(lhs, rhs);
 
-    bool l1 = lhs->has_local_inputs(st);
-    bool l2 = rhs->has_local_inputs(st);
+      bool l1 = lhs->has_local_inputs(st);
+      bool l2 = rhs->has_local_inputs(st);
 
-    if (l1 && !l2)
-      return true;
-    else if (!l1 && l2)
-      return false;
-    else if (l1 && l2)
-      return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
+      if (l1 && !l2)
+        return true;
+      else if (!l1 && l2)
+        return false;
+      else if (l1 && l2)
+        return ord(lhs, rhs);
 
-    bool g1 = lhs->has_global_inputs();
-    bool g2 = rhs->has_global_inputs();
-    if (g1 && !g2)
-      return true;
-    else if (!g1 && g2)
-      return false;
-    else if (g1 && g2)
-      return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
+      bool g1 = lhs->has_global_inputs();
+      bool g2 = rhs->has_global_inputs();
+      if (g1 && !g2)
+        return true;
+      else if (!g1 && g2)
+        return false;
+      else if (g1 && g2)
+        return ord(lhs, rhs);
 
-    return OrderingPolicy{gr, topo_order, st}(lhs, rhs);
-  }
+      return ord(lhs, rhs);
+    }
 };
 
 struct init_node_visitor
 {
-  inlet& in;
-  graph_edge& edge;
-  execution_state& e;
+    inlet& in;
+    graph_edge& edge;
+    execution_state& e;
 
-  void operator()(immediate_glutton_connection) const
-  {
-    operator()();
-  }
+    void operator()(immediate_glutton_connection) const
+    {
+      operator()();
+    }
 
-  void operator()(immediate_strict_connection) const
-  {
-    graph::copy(*edge.out, in);
-  }
-
-  void operator()(delayed_glutton_connection& con) const
-  {
-    graph::copy(con.buffer, con.pos, in);
-    con.pos++;
-  }
-
-  void operator()(delayed_strict_connection& con) const
-  {
-    graph::copy(con.buffer, con.pos, in);
-    con.pos++;
-  }
-
-  void operator()(reduction_connection) const
-  {
-    operator()();
-  }
-  void operator()(replacing_connection) const
-  {
-    operator()();
-  }
-  void operator()(dependency_connection) const
-  {
-    operator()();
-  }
-  void operator()() const
-  {
-    if (edge.out_node->enabled())
+    void operator()(immediate_strict_connection) const
     {
       graph::copy(*edge.out, in);
     }
-    else
+
+    void operator()(delayed_glutton_connection& con) const
     {
-      // todo delay, etc
-      graph::pull_from_parameter(in, e);
+      graph::copy(con.buffer, con.pos, in);
+      con.pos++;
     }
-  }
+
+    void operator()(delayed_strict_connection& con) const
+    {
+      graph::copy(con.buffer, con.pos, in);
+      con.pos++;
+    }
+
+    void operator()(reduction_connection) const
+    {
+      operator()();
+    }
+    void operator()(replacing_connection) const
+    {
+      operator()();
+    }
+    void operator()(dependency_connection) const
+    {
+      operator()();
+    }
+    void operator()() const
+    {
+      if (edge.out_node->enabled())
+      {
+        graph::copy(*edge.out, in);
+      }
+      else
+      {
+        // todo delay, etc
+        graph::pull_from_parameter(in, e);
+      }
+    }
 };
 
 struct env_writer
 {
-  outlet& out;
-  graph_edge& edge;
-  execution_state& e;
-  void operator()(immediate_glutton_connection) const
-  {
-    if (!edge.in_node->enabled())
-      out.write(e);
-  }
-  void operator()(immediate_strict_connection) const
-  {
-    // Nothing to do : copied on "input" phase
-  }
-  void operator()(delayed_glutton_connection& con) const
-  {
-    // Copy to the buffer
-    if (con.buffer && out.data && con.buffer.which() == out.data.which())
-      eggs::variants::apply(copy_data{}, out.data, con.buffer);
-  }
-  void operator()(delayed_strict_connection& con) const
-  {
-    // Copy to the buffer
-    if (con.buffer && out.data && con.buffer.which() == out.data.which())
-      eggs::variants::apply(copy_data{}, out.data, con.buffer);
-  }
-  void operator()(reduction_connection) const
-  {
-  }
-  void operator()(replacing_connection) const
-  {
-  }
-  void operator()(dependency_connection) const
-  {
-  }
-  void operator()() const
-  {
-  }
+    outlet& out;
+    graph_edge& edge;
+    execution_state& e;
+    void operator()(immediate_glutton_connection) const
+    {
+      if (!edge.in_node->enabled())
+        out.write(e);
+    }
+    void operator()(immediate_strict_connection) const
+    {
+      // Nothing to do : copied on "input" phase
+    }
+    void operator()(delayed_glutton_connection& con) const
+    {
+      // Copy to the buffer
+      if (con.buffer && out.data && con.buffer.which() == out.data.which())
+        eggs::variants::apply(copy_data{}, out.data, con.buffer);
+    }
+    void operator()(delayed_strict_connection& con) const
+    {
+      // Copy to the buffer
+      if (con.buffer && out.data && con.buffer.which() == out.data.which())
+        eggs::variants::apply(copy_data{}, out.data, con.buffer);
+    }
+    void operator()(reduction_connection) const
+    {
+    }
+    void operator()(replacing_connection) const
+    {
+    }
+    void operator()(dependency_connection) const
+    {
+    }
+    void operator()() const
+    {
+    }
 };
 
 graph::~graph()
@@ -324,7 +316,6 @@ void tick(
         first_node.set_prev_date(request.date);
       }
 
-      first_node.requested_tokens.clear();
       first_node.set_executed(true);
       g.teardown_node(first_node, e);
       active_nodes.erase(ossia::find(active_nodes, &first_node));
@@ -336,76 +327,108 @@ void tick(
   }
 }
 
-void graph::state(execution_state& e)
+static
+std::vector<graph_node*> get_sorted_nodes(const graph_t& gr)
 {
-  // TODO in the future, temporal_graph, space_graph that can be used as
-  // processes.
-
-  // Filter disabled nodes (through strict relationships).
-  set<graph_node*> enabled;
-
-  for(auto it = boost::vertices(m_graph).first; it != boost::vertices(m_graph).second; ++it)
-  {
-    const auto& ptr = m_graph[*it];
-    if(!ptr->requested_tokens.empty()) {
-      enabled.insert(ptr.get());
-      ptr->set_enabled(true);
-    }
-    else {
-      ptr->set_enabled(false);
-    }
-  }
-
-  disable_strict_nodes_rec(enabled);
-
   // Get a total order on nodes
   std::vector<graph_node*> active_nodes;
   std::deque<graph_vertex_t> topo_order;
+
+  boost::topological_sort(gr, std::back_inserter(topo_order));
+  active_nodes.reserve(topo_order.size());
+
+  for(auto vtx : topo_order)
+  {
+    auto node = gr[vtx].get();
+    if(node->enabled())
+      active_nodes.push_back(node);
+  }
+
+  return active_nodes;
+}
+
+static
+std::vector<graph_node*> get_enabled_nodes(const graph_t& gr)
+{
+  std::vector<graph_node*> active_nodes;
+
+  auto vtx = boost::vertices(gr);
+  active_nodes.reserve(std::abs(std::distance(vtx.first, vtx.second)));
+
+  for(auto it = vtx.first; it != vtx.second; ++it)
+  {
+    auto node = gr[*it].get();
+    if(node->enabled())
+      active_nodes.push_back(node);
+  }
+
+  return active_nodes;
+}
+
+void graph::state(execution_state& e)
+{
   try
   {
-    boost::topological_sort(m_graph, std::back_inserter(topo_order));
+    // TODO in the future, temporal_graph, space_graph that can be used as
+    // processes.
+
+    // Filter disabled nodes (through strict relationships).
+    set<graph_node*> enabled;
+    enabled.reserve(m_nodes.size());
+
+    for(auto it = boost::vertices(m_graph).first; it != boost::vertices(m_graph).second; ++it)
+    {
+      ossia::graph_node& ptr = *m_graph[*it];
+      if(ptr.enabled()) {
+        enabled.insert(&ptr);
+      }
+    }
+
+    disable_strict_nodes_rec(enabled);
+
+    // Start executing the nodes
+    switch(m_ordering)
+    {
+      case node_ordering::topological:
+      {
+        auto active_nodes = get_sorted_nodes(m_graph);
+        tick(*this, e, active_nodes, node_set<node_sorter<>>{
+               node_sorter<>{topological_ordering{*this, active_nodes}, e}});
+        break;
+      }
+      case node_ordering::temporal:
+      {
+        auto active_nodes = get_enabled_nodes(m_graph);
+        tick(*this, e, active_nodes, node_set<node_sorter<temporal_ordering>>{
+               node_sorter<temporal_ordering>{temporal_ordering{}, e}});
+        break;
+      }
+      case node_ordering::hierarchical:
+      {
+        auto active_nodes = get_enabled_nodes(m_graph);
+        tick(*this, e, active_nodes, node_set<node_sorter<custom_ordering>>{
+               node_sorter<custom_ordering>{custom_ordering{}, e}});
+        break;
+      }
+    };
+
+    for (auto& node : m_nodes.right)
+    {
+      ossia::graph_node& n = *node.first;
+      n.set_executed(false);
+      n.requested_tokens.clear();
+      for (const outlet_ptr& out : node.first->outputs())
+      {
+        if (out->data)
+          eggs::variants::apply(clear_data{}, out->data);
+      }
+    }
+
   }
   catch (const boost::not_a_dag& e)
   {
+    ossia::logger().error("Execution graph is not a DAG.");
     return;
-  }
-
-  for (graph_vertex_t vtx : topo_order)
-  {
-    auto n = m_graph[vtx].get();
-    if (n->enabled())
-      active_nodes.push_back(n);
-  }
-
-  // At this point, active_nodes contains
-  // all the nodes that will run at this tick.
-
-  // Start executing the nodes
-
-  switch(m_ordering)
-  {
-    case node_ordering::topological:
-      tick(*this, e, active_nodes, node_set<node_sorter<>>{
-             node_sorter<>{*this, active_nodes, e}});
-      break;
-    case node_ordering::temporal:
-      tick(*this, e, active_nodes, node_set<node_sorter<temporal_ordering>>{
-             node_sorter<temporal_ordering>{*this, active_nodes, e}});
-      break;
-    case node_ordering::hierarchical:
-      tick(*this, e, active_nodes, node_set<node_sorter<custom_ordering>>{
-             node_sorter<custom_ordering>{*this, active_nodes, e}});
-      break;
-  };
-
-  for (auto& node : m_nodes.right)
-  {
-    node.first->set_executed(false);
-    for (const outlet_ptr& out : node.first->outputs())
-    {
-      if (out->data)
-        eggs::variants::apply(clear_data{}, out->data);
-    }
   }
 }
 
@@ -477,7 +500,7 @@ void graph::disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node)
     to_disable = disable_strict_nodes(cur_enabled_node);
     for (auto n : to_disable)
     {
-      n->set_enabled(false);
+      n->disable();
       cur_enabled_node.erase(n);
       // note: we have to add a dependency between all the inlets and outlets
     }

@@ -16,12 +16,12 @@ graph_node::graph_node()
 
 bool graph_node::enabled() const
 {
-  return m_enabled;
+  return !requested_tokens.empty();
 }
 
-void graph_node::set_enabled(bool b)
+void graph_node::disable()
 {
-  m_enabled = b;
+  requested_tokens.clear();
 }
 
 bool graph_node::executed() const
