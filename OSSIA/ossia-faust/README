@@ -1,5 +1,12 @@
 Example of usage:
 
+Static version:
+
     faust -a portaudio-arch.cpp harpe.dsp > ex.cpp
     g++ -std=c++1z ex.cpp -I/opt/libossia/include/ /opt/libossia/lib/libossia.so.1.0.0 -pthread -lportaudio
 
+Dynamic version (using libfaust and LLVM):
+
+ g++ -std=c++1z portaudio-dynamic-arch.cpp `llvm-config --ldflags --libs all --system-libs` -I/opt/libossia/include/ /opt/libossia/lib/libossia.so.1.0.0 -pthread -lportaudio -o portaudio-dynamic
+
+./portaudio-dynamic foo.dsp

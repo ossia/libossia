@@ -344,6 +344,8 @@ void qml_parameter::setupAddress(bool reading)
 
 void qml_parameter::updateDomain()
 {
+  if(!m_param)
+    return;
   auto val_min = qt_to_ossia{}(m_min);
   auto val_max = qt_to_ossia{}(m_max);
   if (m_values)

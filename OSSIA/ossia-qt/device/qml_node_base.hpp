@@ -7,6 +7,7 @@
 #include <QVariantMap>
 #include <boost/any.hpp>
 #include <nano_observer.hpp>
+#include <QPointer>
 namespace ossia
 {
 namespace net
@@ -117,8 +118,8 @@ protected:
 
   QString m_node;
   QString m_userRequestedNode;
-  qml_device* m_device{};
-  qml_node_base* m_parentNode{};
+  QPointer<qml_device> m_device{};
+  QPointer<qml_node_base> m_parentNode{};
   ossia::net::node_base* m_ossia_node{};
   QString m_path;
 

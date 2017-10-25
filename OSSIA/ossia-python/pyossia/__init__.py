@@ -25,10 +25,10 @@ from . import ossia_python as ossia
 
 # these few lines are used to get versionning from git
 from ._version import get_versions
-__version__ = get_versions()
+__version__ = get_versions()['version']
 del get_versions
-__release__ = __version__
 
+print('pyossia ' + __version__)
 
 ######################################################
 # Module Constants
@@ -110,7 +110,8 @@ def add_param(self, name, **kwargs):
     value_type = kwargs['value_type']
     param = node.create_parameter(__value_types__[value_type])
     if 'domain' in kwargs.keys():
-        param.make_domain(kwargs['domain'][0], kwargs['domain'][1])
+        param.make_domain(tuple(kwargs['domain']))
+        param.apply_domain()
     if 'default_value' in kwargs.keys():
         param.default_value = kwargs['default_value']
     if 'clipmode' in kwargs.keys():
@@ -160,9 +161,12 @@ def get_nodes(self, node=None, depth=0):
     # return the filled list
     return children
 
-def get_parameters(self, node=None):
+def get_parameters(self, node=None, depth=0):
     """
     return a list of all params for the device
+    depth = 0 returns parameters recursivly for all its children
+    depth = 1 returns only the parameters for this node
+    depth = 2 returns only the parameters for this node and its children
     """
     if not node:
         node = self
@@ -178,22 +182,28 @@ def get_parameters(self, node=None):
             if child.parameter.__class__.__name__ == 'Parameter':
                 # add the child to the children list to return
                 parameters.append(child.parameter)
-            # do the same for each child
-            iterate_parameters(child)
+            if not depth:
+                # do the same for each child
+                iterate_parameters(child)
     # do the walk
     iterate_parameters(node)
     # return the filled list
     return parameters
 
+def init(self):
+    """
+    resets all parameters of this node to the default_value
+    """
+    for param in self.get_parameters():
+        if param.default_value:
+            param.value = param.default_value
+
 def reset(self):
     """
     reset a parameter to its default value
     """
-    if self.parameter:
-        self.value = self.node.default_value
-    for param in self.get_parameters():
-        if param.default_value:
-            param.value = param.default_value
+    if self.default_value:
+        self.value = self.default_value
 
 
 # customize a bit LocalDevice
@@ -210,7 +220,7 @@ ossia.OSCQueryDevice.get_parameters = get_parameters
 # A Node has nodes and parameters
 ossia.Node.get_nodes = get_nodes
 ossia.Node.get_parameters = get_parameters
-ossia.Node.reset = reset
+ossia.Node.init = init
 
 # A Parameter can be reset to its default_value
 ossia.Parameter.reset = reset

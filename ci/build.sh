@@ -3,17 +3,26 @@
 
 case "$TRAVIS_OS_NAME" in
   linux)
-  export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
-  export PYTHON_BIN=$(which python${PYTHON_VERSION})
+    export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
+    if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+      export PYTHON_BIN=$(which python)
+    else
+      export PYTHON_BIN=$(which python3)
+    fi
   ;;
   osx)
-  export CMAKE_BIN=$(which cmake)
-  export PYTHON_BIN=/usr/local/bin/python${PYTHON_VERSION}
+    export CMAKE_BIN=$(which cmake)
+    if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+      export PYTHON_BIN=/usr/local/bin/python2
+    else
+      export PYTHON_BIN=/usr/local/bin/python3
+    fi
   ;;
 esac
+
 export CTEST_OUTPUT_ON_FAILURE=1
 
-tar -czf ossia-src-unix.tar.gz .
+mkdir -p ${ARTIFACTS_DIR}
 
 mkdir build
 cd build
@@ -35,9 +44,21 @@ case "$TRAVIS_OS_NAME" in
 
     case "$BUILD_TYPE" in
       Debug)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=1 -DOSSIA_EXAMPLES=1 -DOSSIA_CI=1 -DOSSIA_QT=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
+          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DOSSIA_STATIC=$OSSIA_STATIC \
+          -DOSSIA_TESTING=1 \
+          -DOSSIA_EXAMPLES=1 \
+          -DOSSIA_CI=1 \
+          -DOSSIA_QT=1 \
+          -DOSSIA_PD=0 \
+          ..
+
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
+
       ;;
       Release)
         OSSIA_UNITY=1
@@ -45,15 +66,18 @@ case "$TRAVIS_OS_NAME" in
           OSSIA_UNITY=0
         fi
 
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_C=1 \
           -DOSSIA_CPP=1 \
           -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
-          -DOSSIA_TESTING=1 \
-          -DOSSIA_EXAMPLES=1 \
+          -DOSSIA_TESTING=0 \
+          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
           -DOSSIA_QT=1 ..
 
@@ -64,50 +88,106 @@ case "$TRAVIS_OS_NAME" in
 
         if [[ "$OSSIA_STATIC" == "1" ]]; then
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64-static.tar.gz .
-
-          # make unity3d package
-          mkdir $TRAVIS_BUILD_DIR/unity3d
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
-          mkdir $TRAVIS_BUILD_DIR/unity3d/Assets/ossia
-          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/
-          mv $TRAVIS_BUILD_DIR/unity3d/Assets/ossia/README.md $TRAVIS_BUILD_DIR/unity3d/
-          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/Assets/Plugins
-
-          cd $TRAVIS_BUILD_DIR/unity3d/
-          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-linux_x86_64.tar.gz .
-
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64-static.tar.gz *
         else
+          # make unity3d package
+          cd $TRAVIS_BUILD_DIR/install/unity3d/
+          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-linux_x86_64.tar.gz *
+
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_x86_64.tar.gz .
+          rm -rf unity3d
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64.tar.gz *
         fi
 
       ;;
       PdRelease)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_PYTHON=0 ..
+
+        pushd /tmp
+        git clone ${TRAVIS_BUILD_DIR} --recursive
+        tar -czf "${ARTIFACTS_DIR}\libossia-source.tar.gz" --exclude .git libossia
+        rm -rf libossia
+        popd
+
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+                   -DCMAKE_CXX_COMPILER="$CXX" \
+                   -DBOOST_ROOT="$BOOST_ROOT" \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_STATIC=1 \
+                   -DOSSIA_TESTING=0 \
+                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_QT=0 \
+                   -DOSSIA_NO_QT=1 \
+                   -DOSSIA_PYTHON=0 \
+                   ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
-        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_x86_64.tar.gz ossia
+        tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_x86_64.tar.gz ossia
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       RpiPdRelease)
+
         #setup some environment variable to help CMAKE to find libraries
         export RPI_ROOT_PATH=/tmp/rpi/root
         export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
         export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
 
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" -DBOOST_ROOT="/usr/include/boost" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" -DOSSIA_STATIC=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_PYTHON=0 -DOSSIA_NO_QT=1 ..
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+                   -DBOOST_ROOT="/usr/include/boost" \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_STATIC=1 \
+                   -DOSSIA_TESTING=0 \
+                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_QT=0 \
+                   -DOSSIA_PYTHON=0 \
+                   -DOSSIA_NO_QT=1 \
+                   -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
+                   -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
+                   ..
+
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
-        tar -czf $TRAVIS_BUILD_DIR/ossia-pd-linux_arm.tar.gz ossia
+        tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_arm.tar.gz ossia
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
+      ;;
+      RpiPythonRelease)
+        #setup some environment variable to help CMAKE to find libraries
+        export RPI_ROOT_PATH=/tmp/rpi/root
+        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
+        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+                   -DBOOST_ROOT="/usr/include/boost" \
+                   -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_STATIC=1 \
+                   -DOSSIA_TESTING=0 \
+                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_QT=0 \
+                   -DOSSIA_PYTHON=1 \
+                   -DOSSIA_NO_QT=1 \
+                   -DOSSIA_PD=0 \
+                   -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
+                   -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
+                   ..
+
+        $CMAKE_BIN --build . -- -j2
+
+        if [[ "x${TRAVIS_TAG}" != "x" ]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+        fi
+
       ;;
       RpiRelease)
         #setup some environment variable to help CMAKE to find libraries
@@ -115,50 +195,62 @@ case "$TRAVIS_OS_NAME" in
         export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
         export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
 
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" -DBOOST_ROOT="/usr/include/boost" -DOSSIA_PD=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" -DOSSIA_STATIC=$OSSIA_STATIC -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_QT=0 -DOSSIA_PYTHON=0 -DOSSIA_C=1 -DOSSIA_CPP=1 ..
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+                   -DBOOST_ROOT="/usr/include/boost" \
+                   -DOSSIA_PD=0 \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
+                   -DOSSIA_STATIC=$OSSIA_STATIC \
+                   -DOSSIA_TESTING=0 \
+                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_QT=0 \
+                   -DOSSIA_PYTHON=0 \
+                   -DOSSIA_C=1 \
+                   -DOSSIA_CPP=1 \
+                   -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
+                   -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
+                   ..
+
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
         cd $TRAVIS_BUILD_DIR/install
         if [[ "$OSSIA_STATIC" ==  "1" ]]; then
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_arm-static.tar.gz .
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm-static.tar.gz *
         else
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-linux_arm.tar.gz .
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm.tar.gz *
         fi
       ;;
       python)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
-             -DCMAKE_BUILD_TYPE=Release \
-             -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
-             -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
-             -DOSSIA_STATIC=1 \
-             -DOSSIA_TESTING=0 \
-             -DOSSIA_EXAMPLES=0 \
-             -DOSSIA_CI=1 \
-             -DOSSIA_PD=0 \
-             -DOSSIA_QT=0 \
-             -DOSSIA_QML=0 \
-             -DOSSIA_PYTHON=1 ..
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
+          -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
+          -DOSSIA_STATIC=1 \
+          -DOSSIA_TESTING=0 \
+          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_CI=1 \
+          -DOSSIA_PD=0 \
+          -DOSSIA_QT=0 \
+          -DOSSIA_QML=0 \
+          -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
-        ls
-         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-          pip install twine --user
-          #pip install -ve ../OSSIA/ossia-python/
-          #python ../OSSIA/ossia-python/tests/test_.py
-        elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-          pip3 install twine --user
-          #python3.5 -m pip install -ve ../OSSIA/ossia-python/
-          #python3.5 ../OSSIA/ossia-python/tests/test_.py
-        elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
-          pip3 install twine --user
-          #python3.6 -m pip install -ve ../OSSIA/ossia-python/
-          #python3 ../OSSIA/ossia-python/tests/test_.py
+
+        if [[ "x${TRAVIS_TAG}" != "x" ]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
         fi
+
+        ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
+        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
       ;;
       qml)
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" \
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-qml" \
           -DOSSIA_STATIC=0 \
@@ -173,9 +265,8 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
-
         cd "$TRAVIS_BUILD_DIR/ossia-qml"
-        tar -czf $TRAVIS_BUILD_DIR/ossia-qml-linux_x86_64.tar.gz Ossia
+        tar -czf ${ARTIFACTS_DIR}/ossia-qml-linux_x86_64.tar.gz Ossia
       ;;
       RpiDocker)
         echo "Building for Rpi in Docker"
@@ -239,6 +330,7 @@ case "$TRAVIS_OS_NAME" in
     export CMAKE_BIN=$(which cmake)
 
     if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
+
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
@@ -260,7 +352,9 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      tar -czf ossia-pd-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-pd-package/ossia
+      pushd $TRAVIS_BUILD_DIR/ossia-pd-package/
+      tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia
+      popd
 
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
 
@@ -286,7 +380,9 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      tar -czf ossia-max-osx.tar.gz $TRAVIS_BUILD_DIR/ossia-max-package/ossia
+      pushd $TRAVIS_BUILD_DIR/ossia-max-package/
+      tar -czf $TRAVIS_BUILD_DIR/ossia-pd-package/ossia-max-osx.tar.gz ossia
+      popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
@@ -308,20 +404,14 @@ case "$TRAVIS_OS_NAME" in
                  ..
 
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install > /dev/null
-      ls
-       if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-        pip install twine --user
-        #pip install -ve ../OSSIA/ossia-python/
-        #python ../OSSIA/ossia-python/tests/test_.py
-      elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        pip3 install twine --user
-        #python3.5 -m pip install -ve ../OSSIA/ossia-python/
-        #python3.5 ../OSSIA/ossia-python/tests/test_.py
-      elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
-        pip3 install twine --user
-        #python3.6 -m pip install -ve ../OSSIA/ossia-python/
-        #python3 ../OSSIA/ossia-python/tests/test_.py
+
+
+      ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
+      ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+
+      if [[ "x${TRAVIS_TAG}" != "x" ]]; then
+          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+          mv ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       fi
 
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
@@ -334,7 +424,7 @@ case "$TRAVIS_OS_NAME" in
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR"/ossia-qml \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
-                 -DOSSIA_QT=0 \
+                 -DOSSIA_QT=1 \
                  -DOSSIA_PYTHON=0 \
                  -DOSSIA_PD=0 \
                  -DOSSIA_MAX=0 \
@@ -345,7 +435,7 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . --target install > /dev/null
 
       cd "$TRAVIS_BUILD_DIR/ossia-qml"
-      tar -czf $TRAVIS_BUILD_DIR/ossia-qml-osx.tar.gz Ossia
+      tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
 
     else
       OSSIA_UNITY=1
@@ -366,7 +456,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_CPP=1 \
                -DOSSIA_UNITY3D=$OSSIA_UNITY \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
-               -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install
+               -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
                ..
 
       $CMAKE_BIN --build . -- -j2
@@ -375,19 +465,15 @@ case "$TRAVIS_OS_NAME" in
 
       if [[ "$BUILD_TYPE" == "Release" ]]; then
         if [[ "$OSSIA_STATIC" == "1" ]]; then
-          # make unity3d package
-          mkdir $TRAVIS_BUILD_DIR/unity3d
-          cp $TRAVIS_BUILD_DIR/OSSIA/ossia-unity3d/* $TRAVIS_BUILD_DIR/unity3d
-          cp $TRAVIS_BUILD_DIR/install/lib/libossia.dylib $TRAVIS_BUILD_DIR/unity3d/ossia.bundle
-
-          cd $TRAVIS_BUILD_DIR/unity3d/
-          tar -czf $TRAVIS_BUILD_DIR/ossia-unity3d-macos.tar.gz .
-
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos-static.tar.gz .
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz *
         else
+          cd $TRAVIS_BUILD_DIR/install/unity3d
+          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
+
           cd $TRAVIS_BUILD_DIR/install
-          tar -czf $TRAVIS_BUILD_DIR/ossia-native-macos.tar.gz .
+          rm -rf unity3d
+          tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz *
         fi
       fi
     fi

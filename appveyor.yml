@@ -3,6 +3,10 @@ image: Visual Studio 2017
 environment:
   BOOST_ROOT: c:\Libraries\boost_1_64_0
   CTEST_OUTPUT_ON_FAILURE: 1
+  DEKEN_PASSWORD:
+    secure: J57LV7zrVl8xsXC/ng0TgA==
+  GPG_DECODE_KEY:
+    secure: wQW1TCaei6kT6u2A4fTmANYMSYghDGxnqaBRBcW0/QWxKNdmhAQymYC2srDrLi29I5U1bKoC6fZ9cHWsdNSE5w==
 
   matrix:
     - APPVEYOR_BUILD_TYPE: testing
@@ -77,8 +81,8 @@ artifacts:
   - path: libossia-native-win*.zip
     name: ossia-windonws
     type: zip
-  - path: ossia-python-*-win.zip
-    name: ossia-python-win
+  - path: pyossia*.whl
+    name: pyossia-wheel-win
     type: zip
   - path: ossia-unity3d-win.zip
     name: ossia-unity3d-win
@@ -86,12 +90,12 @@ artifacts:
 
 deploy:
   description: |+
-    # Draft release of libossia $APPVEYOR_REPO_TAG_NAME
+    # Draft release of libossia %APPVEYOR_REPO_TAG_NAME%
 
     * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
     * Packages ending in '`win32`' are 32-bit, '`win64`' are 64-bit and '`win`' work on both architectures.
     * All Windows packages are built with VS2017.
-    * Python packages are built with Python 2.7 and 3.6 version on macOS (from Homebrew), Ubuntu and Windows.
+    * Python packages are built with Python 2.7 and 3.x version on macOS (from Homebrew), Ubuntu, Windows and Raspberry Pi.
     * QML packages are built with Homebrew's Qt version on macOS.
     * QML packages are built with Qt 5.9.1 VS2017 64 on Windows.
     * QML packages are meant to be put in the [QML Import Path](http://doc.qt.io/qt-5/qtqml-syntax-imports.html). For instance on macOS it should look like '`/usr/local/Cellar/qt/5.9.1/qml/Ossia/qmldir`'.
@@ -108,6 +112,6 @@ deploy:
     secure: Zl/uqZozGXtvixbEP89fyT3oQW6uKclpRGOa1Rwsdryt7zrGk0pQBRXUwUSzNrA2
   artifact: /.*\.zip/
   draft: false
-  prerelease: true
+  prerelease: false
   on:
     appveyor_repo_tag: true        # deploy on tag push only

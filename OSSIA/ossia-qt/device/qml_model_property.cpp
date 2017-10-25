@@ -134,7 +134,7 @@ void qml_model_property::setParentNode(QObject* parentNode)
     m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   }
 
-  if(parentNode)
+  if(m_parentNode)
   {
     auto pn = dynamic_cast<qml_node_base*>(parentNode);
 
@@ -163,6 +163,7 @@ void qml_model_property::setParentNode(QObject* parentNode)
     m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   }
 
+  updateCount();
   emit parentNodeChanged(m_parentNode);
 }
 

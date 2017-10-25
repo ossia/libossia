@@ -168,9 +168,9 @@ node_base& create_node(node_base& node, ossia::string_view address)
 }
 
 node_base*
-find_or_create_node(node_base& dev, string_view parameter_base, bool create)
+find_or_create_node(node_base& dev, string_view parameter_base, bool reading)
 {
-  if (create)
+  if (reading)
   {
     return ossia::net::find_node(dev, parameter_base);
   }

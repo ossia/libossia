@@ -93,6 +93,8 @@ public slots:
 
   void setName(QString name);
 
+  void cleanup();
+
 signals:
   void readPresetChanged(bool readPreset);
   void nameChanged(QString name);

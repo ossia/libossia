@@ -38,11 +38,11 @@ extern "C" void ossia_device_setup()
       c, (method)device::name,
       "name", A_GIMME, 0);
   class_addmethod(
-        c, (method) device::getprotocols,
-        "getprotocols", A_NOTHING, 0);
-  class_addmethod(
         c, (method) device::stop_expose,
-        "stop", A_FLOAT, 0);
+        "stop", A_LONG, 0);
+  class_addmethod(
+        c, (method) device::get_mess_cb,
+        "get", A_SYM, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -325,24 +325,31 @@ void device::name(device *x, t_symbol* s, long argc, t_atom* argv){
   }
 }
 
-void device::getprotocols(device* x)
+void device::get_protocols(device* x)
 {
-  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-      x->m_device->get_protocol());
-  auto& protos = multiplex.get_protocols();
-
   t_atom a;
-  A_SETFLOAT(&a,protos.size());
+  A_SETLONG(&a,x->m_protocols.size());
   outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
 
+  int j=0;
   for (auto& v : x->m_protocols)
   {
-    t_atom ar[4];
+    t_atom ar[5];
+    A_SETLONG(ar,j);
     for (int i = 0 ; i<v.size() ; i++)
-      ar[i] = v[i];
+      ar[i+1] = v[i];
 
-    outlet_anything(x->m_dumpout, gensym("protocol"), v.size(), ar);
+    outlet_anything(x->m_dumpout, gensym("protocol"), v.size()+1, ar);
+    j++;
   }
+}
+
+void device::get_mess_cb(device* x, t_symbol* s)
+{
+  if ( s == gensym("protocols") )
+    device::get_protocols(x);
+  else
+    device_base::get_mess_cb(x,s);
 }
 
 void device::stop_expose(device*x, int index)
@@ -352,7 +359,10 @@ void device::stop_expose(device*x, int index)
   auto& protos = multiplex.get_protocols();
 
   if ( index < protos.size() )
+  {
     multiplex.stop_expose_to(*protos[index]);
+    x->m_protocols.erase(x->m_protocols.begin() + index);
+  }
   else
     object_error((t_object*)x, "Index %d out of bound.", index);
 }

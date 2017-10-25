@@ -21,18 +21,18 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
   if ( $env:configuration -eq "Release" ){
-    mkdir c:\projects\libossia\build\Test\Release
-    copy c:\projects\libossia\build\OSSIA\Release\ossia.dll c:\projects\libossia\build\Tests\Release\
+    mkdir ${env:APPVEYOR_BUILD_FOLDER}\build\Test\Release
+    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Release\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Release\
   } else {
-    mkdir c:\projects\libossia\build\Test\Debug
-    copy c:\projects\libossia\build\OSSIA\Debug\ossia.dll c:\projects\libossia\build\Tests\Debug\
+    mkdir ${env:APPVEYOR_BUILD_FOLDER}\build\Test\Debug
+    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Debug\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Debug\
   }
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "Release" ){
 
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
@@ -41,7 +41,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win64.zip .
 
-  cd c:\projects\libossia\build-32bit
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build-32bit
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
@@ -65,33 +65,45 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-unity3d-win.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  $LogFile = "C:\projects\libossia\install-pd.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-pd.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
   ls .
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip .
-
-  appveyor DownloadFile https://raw.githubusercontent.com/pure-data/deken/master/developer/deken
-
-  Get-ChildItem -Recurse C:\msys64 > msys64tree.log
-  Push-AppveyorArtifact msys64tree.log
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ossia
 
 
-  SET "PATH=C:\msys64\MINGW64\bin;C:\msys64\usr\bin;%PATH%"
-  bash -lc "export PATH=/c/msys64/MINGW64/bin:/c/msys64/usr/bin:$PATH ; cd C:/projects/libossia/install/ossia-pd-package/ ; ./deken upload -v test ossia"
-  # C:\msys64\usr\bin\bash.exe C:\projects\libossia\deken upload -v test ossia
 
-  # C:\cygwin\bin\bash ./deken upload -v test ossia
+  if (${env:APPVEYOR_REPO_TAG}){
+    $env:PATH="C:\msys64\usr\bin;${env:PATH}"
 
+    $VERSION=${env:APPVEYOR_REPO_TAG_NAME}
+
+    nuget install secure-file -ExcludeVersion
+    secure-file\tools\secure-file -decrypt ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc.appveyor.enc -out ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc -secret ${env:GPG_DECODE_KEY}
+
+    gpg.exe --fast-import ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc
+
+    curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/"
+    $ARCHIVE_NAME="ossia-v${VERSION}-(W32-i386-32)-externals.zip"
+    copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ${ARCHIVE_NAME}
+
+    gpg.exe -ab --batch --yes ${ARCHIVE_NAME}
+    $SHA = sha256.exe ${ARCHIVE_NAME}
+    $SHA.substring(0,64) > "${ARCHIVE_NAME}.sha"
+
+    curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}"     "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}"     --basic
+    curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.asc" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
+    curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.sha" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha" --basic
+  }
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  $LogFile = "C:\projects\libossia\install-qml.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-qml.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
@@ -101,27 +113,30 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-qml-win64.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
-  cd c:\projects\libossia\build
-  dir
 
-  if ( "${env:platform}" -eq "x64" ){
-    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win64.zip "ossia_python.so"
-  } else {
-    7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-${env:python}-win32.zip "ossia_python.so"
+  if (${env:APPVEYOR_REPO_TAG}){
+    if ( "${env:platform}" -eq "x64" ){
+      cd "C:\${env:python}-x64\"
+      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
+    } else {
+      cd "C:\${env:python}\"
+      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
+    }
   }
 
+  mv ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl ${env:APPVEYOR_BUILD_FOLDER}/
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 
-  cd c:\projects\libossia\build
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  $LogFile = "C:\projects\libossia\install-max.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-max.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 
-  cd c:\projects\libossia\build-32bit
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build-32bit
 
-  $LogFile = "C:\projects\libossia\install-max-32bit.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-max-32bit.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
 

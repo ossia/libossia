@@ -33,6 +33,7 @@ case "$TRAVIS_OS_NAME" in
       mv cmake-*-x86_64 cmake
     fi
 
+    shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
         # install arm-linux-gnueabihf-g++-6 from yaketty
         pushd /etc/apt
@@ -44,25 +45,23 @@ case "$TRAVIS_OS_NAME" in
         popd
 
         # download, extract and mount raspberry pi image with gcc-6 installed
-        wget -nv https://www.dropbox.com/s/wknbpnd9pvjxgse/raspbian-jessie-lite%2Bof%2Bofnode_dependency%2Bgcc-6.img.tar.gz
-        tar -xf raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img.tar.gz
+        wget -nv https://www.dropbox.com/s/o61vwblh6b5ixu7/raspbian-stretch-ossia-full.img.tar.gz
+        tar -xf raspbian-stretch-ossia-full.img.tar.gz
         mkdir -p /tmp/rpi/root
-        sudo mount -o loop,offset=70254592,rw,sync raspbian-jessie-lite+of+ofnode_dependency+gcc-6.img /tmp/rpi/root/
+        sudo mount -o loop,offset=48234496,rw,sync raspbian-stretch-ossia-full.img /tmp/rpi/root/
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
-    elif [[ "x$BUILD_TYPE" == "xpython" || $BUILD_TYPE == *Pd* ]] ; then
+    elif [[ $BUILD_TYPE == *python* ]] ; then
       if [[ "$PYTHON_VERSION" == "2.7" ]]; then
         sudo apt-get update -qq
         sudo apt install -qq python python-dev python-pip
-      elif [[ "$PYTHON_VERSION" == "3.5" ]]; then
-        sudo add-apt-repository --yes ppa:fkrull/deadsnakes
-        sudo apt-get update -qq
-        sudo apt install -qq python3 python3-dev python3-pip
-      elif [[ "$PYTHON_VERSION" == "3.6" ]]; then
+        sudo pip install twine
+      else
         sudo add-apt-repository --yes ppa:jonathonf/python-3.6
         sudo apt-get update -qq
         sudo apt install -qq python3 python3-dev python3-pip
+        sudo pip3 install twine
       fi
     fi
 
@@ -86,10 +85,12 @@ case "$TRAVIS_OS_NAME" in
     elif [[ "x$BUILD_TYPE" == "xpython" || $BUILD_TYPE == *Pd* ]]; then
       if [[ "x$PYTHON_VERSION" == x2.* ]]; then
         brew install python2
-        pip install wheel
+        pip install wheel --user
+        pip install twine --user
       else
         brew install python3
-        pip3 install wheel
+        pip3 install wheel --user
+        pip3 install twine --user
       fi
     fi
 

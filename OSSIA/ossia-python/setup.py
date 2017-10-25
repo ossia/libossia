@@ -6,14 +6,12 @@ setup for the pyossia project
 """
 
 # Always prefer setuptools over distutils
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages
+
 # To use a consistent encoding
 from codecs import open
 from os import path
-import subprocess
-from distutils.command.build import build as _build
 HERE = path.abspath(path.dirname(__file__))
-
 # Get the long description from the README file
 with open(path.join(HERE, 'README.rst'), encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
@@ -35,11 +33,11 @@ except ImportError:
 setup(
     name = 'pyossia',
     version =__version__,
-    description = 'libossia usefull Classes',
+    description = 'libossia is a modern C++, cross-environment distributed object model for creative coding and interaction scoring Edit',
     long_description = LONG_DESCRIPTION,
-    url = 'https://github.com/PixelStereo/pyossia',
-    author = 'Pixel Stereo',
-    author_email = 'contact@pixelstereo.org',
+    url = 'https://github.com/OSSIA/libossia/ossia-python',
+    author = 'OSSIA team',
+    author_email = 'contact@ossia.io',
     license ='GPLv3+',
     classifiers = [
         'Development Status :: 3 - Alpha',
@@ -50,11 +48,15 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    keywords = ['creative', 'controls', 'osc', 'oscquery', 'websocket', 'libossia'],
+    keywords = ['creative', 'controls', 'osc', 'oscquery', 'websocket', 'libossia', 'midi'],
     packages = find_packages(),
-    cmdclass=versioneer.get_cmdclass(),
-    package_data={
-        'pyossia': ['ossia_python.*.so'],
+    cmdclass={
+    
+    'bdist_wheel': bdist_wheel
     },
+    package_data={
+        'pyossia': ['*.so'],
+    },
+    include_package_data=True,
     zip_safe=False
 )

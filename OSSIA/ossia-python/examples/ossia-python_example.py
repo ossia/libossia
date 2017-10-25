@@ -14,7 +14,7 @@ print("OSSIA LIBRARY EXAMPLE")
 
 ### LOCAL DEVICE SETUP
 # create a device for this python program
-local_device = ossia.LocalDevice("newDevice")
+local_device = ossia.LocalDevice("PythonExample")
 
 print("\nlocal device name: " + local_device.name)
 
@@ -215,8 +215,18 @@ iterate_on_children(local_device.root_node)
 
 ### REMOTE OSCQUERY DEVICE FEATURES
 
-# try to connect to a remote device using OSCQuery protocol
-remote_oscquery_device = ossia.OSCQueryDevice("remoteOSCQueryDevice", "ws://127.0.0.1:5678", 9998)
+# try to connect to a remote device using OSCQuery protocol ()
+remote_oscquery_device = ossia.OSCQueryDevice("remoteOSCQueryDevice", "ws://127.0.0.1:5678", 3456)
+
+# attach callbacks to remote_oscquery_device
+def on_creation_callback(n):
+    print("remote_oscquery_device : " + str(n) + " created")
+def on_renamed_callback(n):
+    print("remote_oscquery_device : " + str(n) + " renamed")
+def on_removing_callback(n):
+    print("remote_oscquery_device : " + str(n) + " removed")
+
+device_callback = ossia.DeviceCallback(remote_oscquery_device, on_creation_callback, on_renamed_callback, on_removing_callback)
 
 # update the remote OSCQuery device namespace
 remote_oscquery_device.update()
@@ -260,22 +270,24 @@ iterate_on_children(remote_osc_device.root_node)
 # list all MIDI devices
 print('\nSCAN FOR MIDI DEVICES\n')
 midi_devices = ossia.list_midi_devices()
-for data in midi_devices:
+
+if len(midi_devices) > 0:
+  for data in midi_devices:
     print(str(data.type) + ": device = " + data.device + ", port = " + str(data.port))
 
-# try to connect to the first device using MIDI protocol
-remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
+  # try to connect to the first device using MIDI protocol
+  remote_midi_device = ossia.MidiDevice("remoteMidiDevice", midi_devices[0])
 
-# iterate on remote MIDI device namespace
-#print("\nREMOTE MIDI DEVICE NAMESPACE")
-#iterate_on_children(remote_midi_device.root_node)
+  # iterate on remote MIDI device namespace
+  #print("\nREMOTE MIDI DEVICE NAMESPACE")
+  #iterate_on_children(remote_midi_device.root_node)
 
-# create a message queue to focus on all control parameters of channel 1
-remote_midi_messageq = ossia.MessageQueue(remote_midi_device)
+  # create a message queue to focus on all control parameters of channel 1
+  remote_midi_messageq = ossia.MessageQueue(remote_midi_device)
 
-node_vector = ossia.list_node_pattern([remote_midi_device.root_node], "/1/control/*")
-for node in node_vector:
-  remote_midi_messageq.register(node.parameter)
+  node_vector = ossia.list_node_pattern([remote_midi_device.root_node], "/1/control/*")
+  for node in node_vector:
+    remote_midi_messageq.register(node.parameter)
 
 # MAIN LOOP
 print("\nMAIN LOOP ...")
@@ -285,10 +297,11 @@ local_device_messageq = ossia.GlobalMessageQueue(local_device)
 # wait and change the value remotely
 while True:
 
-  message = remote_midi_messageq.pop()
-  if message != None:
-    parameter, value = message
-    print("remote_midi_messageq : " +  str(parameter.node) + " " + str(value))
+  if len(midi_devices):
+    message = remote_midi_messageq.pop()
+    if message != None:
+      parameter, value = message
+      print("remote_midi_messageq : " +  str(parameter.node) + " " + str(value))
 
   message = local_device_messageq.pop()
   if(message != None):

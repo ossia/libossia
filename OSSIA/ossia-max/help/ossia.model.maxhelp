@@ -1192,6 +1192,118 @@
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
+									"id" : "obj-27",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 600.0, 581.0, 187.0, 21.0 ],
+									"presentation_rect" : [ 607.0, 584.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "also works with pattern-matching",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-26",
+									"maxclass" : "toggle",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "int" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 470.0, 399.0, 24.0, 24.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-24",
+									"maxclass" : "toggle",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "int" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 470.0, 551.0, 24.0, 24.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-22",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 470.0, 581.0, 124.0, 22.0 ],
+									"presentation_rect" : [ 655.0, 504.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "set *_parameter $1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-21",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 470.0, 444.0, 375.0, 21.0 ],
+									"presentation_rect" : [ 533.0, 469.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "values of parameters can be fed to ossia.model, with the set message:",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-20",
+									"maxclass" : "number",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 470.0, 469.0, 50.0, 22.0 ],
+									"presentation_rect" : [ 469.0, 460.0, 0.0, 0.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-18",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 470.0, 501.0, 124.0, 22.0 ],
+									"style" : "",
+									"text" : "set my_parameter $1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-15",
+									"maxclass" : "number",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 470.0, 331.0, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
 									"id" : "obj-11",
 									"maxclass" : "comment",
 									"numinlets" : 1,
@@ -1525,7 +1637,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 141.0, 175.5, 258.0, 49.0 ],
+									"patching_rect" : [ 141.0, 172.5, 258.0, 49.0 ],
 									"style" : "",
 									"text" : "Click 'namespace' message to get all the model's nodes addresses and values",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1926,7 +2038,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 60.0, 189.0, 73.0, 22.0 ],
+									"patching_rect" : [ 60.0, 186.0, 73.0, 22.0 ],
 									"style" : "",
 									"text" : "namespace"
 								}
@@ -1960,7 +2072,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 470.0, 537.0, 286.0, 50.0 ],
+									"patching_rect" : [ 470.0, 683.0, 286.0, 50.0 ],
 									"style" : "",
 									"text" : "Subpatchers can contains models. Model contained in a_sub_model patchers gets registered under the my_model node",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2019,7 +2131,7 @@
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 9.0, 105.0, 358.0, 22.0 ],
 													"style" : "",
-													"text" : "ossia.parameter another_parameter @type float @defval 45.231"
+													"text" : "ossia.parameter another_parameter @type float @default 45.231"
 												}
 
 											}
@@ -2032,7 +2144,7 @@
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 9.0, 77.0, 300.0, 22.0 ],
 													"style" : "",
-													"text" : "ossia.parameter my_parameter @type int @defval 23"
+													"text" : "ossia.parameter my_parameter @type int @default 23"
 												}
 
 											}
@@ -2064,7 +2176,7 @@
  ]
 									}
 ,
-									"patching_rect" : [ 470.0, 506.0, 93.0, 22.0 ],
+									"patching_rect" : [ 470.0, 652.0, 93.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -2083,11 +2195,11 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-10",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 470.0, 267.0, 276.0, 50.0 ],
+									"patching_rect" : [ 470.0, 255.0, 317.0, 35.0 ],
 									"style" : "",
 									"text" : "All parameters in the same patcher (or supatchers without an [ossia.model]) will subscribe under this node",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2103,7 +2215,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 470.0, 410.0, 257.0, 35.0 ],
+									"patching_rect" : [ 67.5, 640.0, 257.0, 35.0 ],
 									"style" : "",
 									"text" : "Note that you can have only one [ossia.model] (or view) per patcher."
 								}
@@ -2116,9 +2228,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 470.0, 371.0, 344.0, 22.0 ],
+									"patching_rect" : [ 470.0, 369.0, 344.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter another_parameter @type bool @defval 1"
+									"text" : "ossia.parameter another_parameter @type bool @default 1"
 								}
 
 							}
@@ -2129,9 +2241,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 470.0, 342.0, 307.0, 22.0 ],
+									"patching_rect" : [ 470.0, 299.0, 307.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_parameter @type int @defval 123"
+									"text" : "ossia.parameter my_parameter @type int @default 123"
 								}
 
 							}
@@ -2186,6 +2298,14 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 479.5, 539.0, 453.5, 539.0, 453.5, 225.0, 69.5, 225.0 ],
+									"source" : [ "obj-18", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-9", 0 ],
 									"source" : [ "obj-2", 0 ]
 								}
@@ -2193,8 +2313,44 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-18", 0 ],
+									"source" : [ "obj-20", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 483.0, 228.0, 69.5, 228.0 ],
+									"midpoints" : [ 479.5, 609.0, 452.0, 609.0, 452.0, 225.0, 69.5, 225.0 ],
+									"source" : [ "obj-22", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-22", 0 ],
+									"source" : [ "obj-24", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-15", 0 ],
+									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-26", 0 ],
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 483.0, 225.0, 69.5, 225.0 ],
 									"source" : [ "obj-7", 0 ]
 								}
 
