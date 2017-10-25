@@ -20,6 +20,13 @@ class QmlApiTest : public QObject
 {
     Q_OBJECT
 
+    void print_device()
+    {
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+      fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+      qDebug() << c.str().c_str();
+    }
+
     void cleanup(QObject* item)
     {
       QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
@@ -182,8 +189,7 @@ class QmlApiTest : public QObject
         auto item = (QQuickItem*) component.create();
         QVERIFY(item);
 
-        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-        std::cerr << c.str();
+        print_device();
 
         for(int i = 0; i < 10;i ++)
         {
@@ -263,8 +269,6 @@ class QmlApiTest : public QObject
     void test_model_recursive_static()
     {
       auto& dev = ossia::qt::qml_singleton_device::instance();
-      fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-      qDebug() << c.str().c_str();
       int argc{}; char** argv{};
       QCoreApplication app(argc, argv);
       ossia::context context;
@@ -319,8 +323,8 @@ class QmlApiTest : public QObject
         app.processEvents();
         dev.savePreset(QUrl::fromLocalFile("/tmp/preset.json"));
 
-        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-        qDebug() << c.str().c_str();
+        print_device();
+
 
         for(auto node : {
             "/foo.0/x", "/foo.0/y", "/foo.1/x", "/foo.1/y",
@@ -413,17 +417,13 @@ class QmlApiTest : public QObject
         auto item = (QQuickItem*) component.create();
         QVERIFY(item);
 
-        {
-            fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-            qDebug() << "BEFORE => " << c.str().c_str();
-        }
+        print_device();
+
         dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
         //dev.recreate(item);
 
-        {
-            fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-            qDebug() << "AFTER => " << c.str().c_str();
-        }
+        print_device();
+
         for(auto node : {
             "/foo.0/x", "/foo.0/y", "/foo.1/x", "/foo.1/y",
             "/foo.0/tata/bar.0/x",
@@ -531,6 +531,8 @@ class QmlApiTest : public QObject
                           property point thePoint: Qt.point(2, 2);  Ossia.Property on thePoint { }
                           property vector2d theVector2D: Qt.vector2d(2, 2);  Ossia.Property on theVector2D { }
                           property vector3d theVector3D: Qt.vector3d(2, 2, 2); Ossia.Property on theVector3D { }
+
+                          Component.onCompleted: Ossia.SingleDevice.recreate(this)
                           }
                           )_", QUrl{});
 
@@ -538,7 +540,10 @@ class QmlApiTest : public QObject
         QVERIFY(component.errors().empty());
         auto item = component.create();
         QVERIFY(item);
+        qDebug() << "READING PRESET? ?!!" << dev.readPreset();
         dev.recreate(item);
+
+        print_device();
 
         {
           ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/x");
@@ -689,8 +694,8 @@ class QmlApiTest : public QObject
         auto item = component.create();
         QVERIFY(item);
 
-        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-        std::cerr << c.str();
+        print_device();
+
         {
           auto node = ossia::net::find_node(dev.device().get_root_node(), "/foo/x");
           QVERIFY(node);
@@ -791,8 +796,8 @@ class QmlApiTest : public QObject
 
         QVERIFY(item);
 
-        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-        std::cerr << c.str();
+        print_device();
+
         {
           auto node = ossia::net::find_node(dev.device().get_root_node(), "/foo");
           QVERIFY(node);
@@ -831,8 +836,8 @@ class QmlApiTest : public QObject
 
         QVERIFY(item);
 
-        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-        std::cerr << c.str();
+        print_device();
+
         {
           auto node = ossia::net::find_node(dev.device().get_root_node(), "/foo");
           QVERIFY(node);

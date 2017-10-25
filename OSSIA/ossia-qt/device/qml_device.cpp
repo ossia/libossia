@@ -333,11 +333,16 @@ QVariantMap qml_device::getMIDIOutputDevices() const
   return lst;
 }
 
-std::vector<QQuickItem*> items(QQuickItem* root)
+void reset_items(QQuickItem* root)
 {
-  std::vector<QQuickItem*> items;
+  std::vector<QObject*> items;
   items.reserve(4096);
   for (auto cld : root->childItems())
+  {
+    items.push_back(cld);
+  }
+
+  for (auto cld : root->children())
   {
     items.push_back(cld);
   }
@@ -345,27 +350,38 @@ std::vector<QQuickItem*> items(QQuickItem* root)
   std::size_t cur_pos = 0U;
   while (cur_pos < items.size())
   {
-    for (auto cld : items[cur_pos]->childItems())
-      items.push_back(cld);
+      if(auto qqi = qobject_cast<QQuickItem*>(items[cur_pos]))
+      {
+        for (auto cld : qqi->childItems())
+          items.push_back(cld);
+        for (auto cld : qqi->children())
+          items.push_back(cld);
+      }
+      else
+      {
+        for (auto cld : items[cur_pos]->children())
+          items.push_back(cld);
+      }
 
     cur_pos++;
   }
 
-  return items;
+  boost::container::flat_set<QObject*> objs(items.begin(), items.end());
+
+  for(auto ptr : objs)
+  {
+    if (auto qn = qobject_cast<qml_node_base*>(ptr))
+    {
+      qn->resetNode();
+    }
+  }
 }
 
 void qml_device::recreate(QObject* root)
 {
   if (auto item = qobject_cast<QQuickItem*>(root))
   {
-    for (auto cld : items(item))
-    {
-      if (auto qn = qobject_cast<qml_node_base*>(cld))
-      {
-        qn->resetNode();
-      }
-    }
-
+    reset_items(item);
     for_each_in_tuple(
         std::make_tuple(m_properties, m_parameters, m_signals),
         [this](auto& props) {
@@ -586,6 +602,7 @@ void qml_device::loadPreset(QObject* root, QString file)
               cur_model_size = m_models.size();
           } while (cur_model_size != prev_model_size);
       }
+      m_readPreset = false;
       return;
     }
   }
@@ -597,6 +614,7 @@ void qml_device::loadPreset(QObject* root, QString file)
   {
   }
   ossia::logger().error("Could not load preset file: {}", file.toStdString());
+  m_readPreset = false;
 }
 
 void qml_device::saveDevice(const QUrl& file)
