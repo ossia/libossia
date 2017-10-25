@@ -635,6 +635,20 @@ void qml_device::setName(QString name)
   emit nameChanged(name);
 }
 
+void qml_device::cleanup()
+{
+  m_nodes.clear();
+  m_properties.clear();
+  m_parameters.clear();
+  m_signals.clear();
+  m_reader_properties.clear();
+  m_writer_properties.clear();
+  m_models.clear();
+  m_bindings.clear();
+  m_callbacks.clear();
+  m_device->get_root_node().clear_children();
+}
+
 qml_singleton_device::qml_singleton_device()
 {
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);

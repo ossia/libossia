@@ -68,6 +68,9 @@ signals:
   void logLevelChanged(log_level logLevel);
 
 public slots:
+  void connectLogger();
+  void disconnectLogger();
+
   void setAppName(QString appName);
   void setAppVersion(QString appVersion);
   void setAppCreator(QString appCreator);
@@ -87,7 +90,6 @@ public slots:
   void startHeartbeat(QVariantMap);
 
 private:
-  void connectLogger();
   std::shared_ptr<websocket_threaded_connection> m_ws;
   std::shared_ptr<spdlog::logger> m_logger;
   std::shared_ptr<websocket_heartbeat> m_heartbeat;

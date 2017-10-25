@@ -14,6 +14,7 @@
 #include <fmt/format.h>
 #include <QQmlEngine>
 #include <QQmlComponent>
+#include <ossia-qt/device/qml_logger.hpp>
 
 class QmlApiTest : public QObject
 {
@@ -22,14 +23,33 @@ class QmlApiTest : public QObject
     void cleanup(QObject* item)
     {
       QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
+      for(auto cld : item->children()) {
+        QQmlEngine::setObjectOwnership(cld, QQmlEngine::CppOwnership);
+        delete cld;
+      }
       delete item;
-      QCoreApplication::instance()->processEvents();
-      QCoreApplication::instance()->processEvents();
-      QCoreApplication::instance()->processEvents();
-      QCoreApplication::instance()->processEvents();
+      for(int i = 0; i < 10; i++)
+      {
+        QCoreApplication::instance()->processEvents();
+      }
+
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+      dev.cleanup();
     }
 
   private slots:
+    void test_logger()
+    {
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      ossia::qt::qml_logger log;
+      log.setLoggerHost("ws://127.0.0.1:5678");
+      for(int i = 0; i < 1000; i++)
+          log.setAppName(QString::number(i));
+      for(int i = 0; i < 1000; i++)
+          QCoreApplication::processEvents();
+    }
     void test_import()
     {
       int argc{}; char** argv{};
@@ -242,6 +262,9 @@ class QmlApiTest : public QObject
 
     void test_model_recursive_static()
     {
+      auto& dev = ossia::qt::qml_singleton_device::instance();
+      fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+      qDebug() << c.str().c_str();
       int argc{}; char** argv{};
       QCoreApplication app(argc, argv);
       ossia::context context;
@@ -249,7 +272,6 @@ class QmlApiTest : public QObject
 
       engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
       engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
-      auto& dev = ossia::qt::qml_singleton_device::instance();
 
       {
         QQmlComponent component(&engine);
@@ -259,7 +281,7 @@ class QmlApiTest : public QObject
 
                           Item {
                           Repeater {
-                            model: Ossia.Instances { id: rp; node: "foo"; count: 2 }
+                            model: 2
                             Item {
                               id: tutu
                               Ossia.Node { node: "foo." + index; id: n }
@@ -275,9 +297,9 @@ class QmlApiTest : public QObject
                                  parentNode: n
                                 }
                                 Repeater {
-                                  model: 2//Ossia.Instances { id: rp2; node: "bar"; parentNode: sub; count: 2  }
+                                  model: 2
                                   Item {
-                                    Ossia.Node { node: "bar." + index; id: subn; parentNode: sub }
+                                    Ossia.Node { node: "buzz." + index; id: subn; parentNode: sub }
                                     Ossia.Property on x { parentNode: subn }
                                     Ossia.Property on y { parentNode: subn }
                                   }
@@ -294,6 +316,7 @@ class QmlApiTest : public QObject
         QVERIFY(item);
 
         dev.recreate(item);
+        app.processEvents();
         dev.savePreset(QUrl::fromLocalFile("/tmp/preset.json"));
 
         fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
@@ -301,16 +324,17 @@ class QmlApiTest : public QObject
 
         for(auto node : {
             "/foo.0/x", "/foo.0/y", "/foo.1/x", "/foo.1/y",
-            "/foo.0/tata/bar.0/x",
-            "/foo.0/tata/bar.0/y",
-            "/foo.0/tata/bar.1/x",
-            "/foo.0/tata/bar.1/y",
-            "/foo.1/tata/bar.0/x",
-            "/foo.1/tata/bar.0/y",
-            "/foo.1/tata/bar.1/x",
-            "/foo.1/tata/bar.1/y",
+            "/foo.0/tata/buzz.0/x",
+            "/foo.0/tata/buzz.0/y",
+            "/foo.0/tata/buzz.1/x",
+            "/foo.0/tata/buzz.1/y",
+            "/foo.1/tata/buzz.0/x",
+            "/foo.1/tata/buzz.0/y",
+            "/foo.1/tata/buzz.1/x",
+            "/foo.1/tata/buzz.1/y",
         })
         {
+          qDebug() << node;
             auto found = ossia::net::find_node(dev.device().get_root_node(), node);
             QVERIFY(found);
         }
