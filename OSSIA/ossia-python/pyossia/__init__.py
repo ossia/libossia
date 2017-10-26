@@ -110,14 +110,20 @@ def add_param(self, name, **kwargs):
     value_type = kwargs['value_type']
     param = node.create_parameter(__value_types__[value_type])
     if 'domain' in kwargs.keys():
+        # this one needs to receive a tuple, not a list
+        # TODO : this might be changed in ossia_python.cpp to accept a list??
         param.make_domain(tuple(kwargs['domain']))
         param.apply_domain()
     if 'default_value' in kwargs.keys():
         param.default_value = kwargs['default_value']
-    if 'clipmode' in kwargs.keys():
-        param.clipmode = kwargs['clipmode]']
-    # TODO : Checks kwargs and please set value as required
-    # such as domain, clipmode, accessmode etc…
+    if 'description' in kwargs.keys():
+        param.node.description = kwargs['description']
+    if 'bounding_mode' in kwargs.keys():
+        param.bounding_mode = kwargs['bounding_mode']
+    if 'unit' in kwargs.keys():
+        param.unit = kwargs['unit]']
+    if 'repetition_filter_label' in kwargs.keys():
+        param.repetition_filter_label = kwargs['repetition_filter_label']
     return param
 
 def get_nodes(self, node=None, depth=0):
@@ -224,3 +230,4 @@ ossia.Node.init = init
 
 # A Parameter can be reset to its default_value
 ossia.Parameter.reset = reset
+#ossia.Parameter.description = ossia.Node.description
