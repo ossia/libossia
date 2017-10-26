@@ -3,6 +3,7 @@
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/dataflow.hpp>
 #include <ossia/detail/apply.hpp>
 
 namespace ossia
@@ -89,40 +90,37 @@ void execution_state::clear()
 
 void execution_state::commit()
 {
-  // TODO pattern matching
   for (auto& elt : valueState)
   {
-    if (auto addr = elt.first.target<ossia::net::parameter_base*>())
-    {
+    apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* addr) {
       for (auto v : elt.second.data)
       {
-        (*addr)->push_value(v);
+        addr->push_value(v);
       }
-    }
+    });
   }
 
   for (auto& elt : audioState)
   {
-    if (auto base_addr = elt.first.target<ossia::net::parameter_base*>())
-    {
-      auto addr = dynamic_cast<audio_parameter*>(*base_addr);
-      assert(addr);
-      addr->push_value(elt.second);
-    }
+    apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* base_addr) {
+      auto addr = dynamic_cast<audio_parameter*>(base_addr);
+      if(addr)
+        addr->push_value(elt.second);
+    });
   }
 
   for (auto& elt : midiState)
   {
-    if (auto base_addr = elt.first.target<ossia::net::parameter_base*>())
-    {
-      auto addr = dynamic_cast<midi_generic_parameter*>(*base_addr);
-      assert(addr);
-
-      for (auto v : elt.second.messages)
+    apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* base_addr) {
+      auto addr = dynamic_cast<midi_generic_parameter*>(base_addr);
+      if(addr)
       {
-        addr->push_value(v);
+        for (auto v : elt.second.messages)
+        {
+          addr->push_value(v);
+        }
       }
-    }
+    });
   }
 }
 
@@ -169,10 +167,6 @@ bool execution_state::in_local_scope(net::parameter_base& other) const
   bool ok = (valueState.find(dest) != valueState.end())
             || (audioState.find(dest) != audioState.end())
             || (midiState.find(dest) != midiState.end());
-  if (!ok)
-  {
-    // TODO check if there is any pattern matching the current destination
-  }
   return ok;
 }
 }

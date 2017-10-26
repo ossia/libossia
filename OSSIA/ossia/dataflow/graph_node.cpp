@@ -1,6 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/dataflow.hpp>
+
 
 namespace ossia
 {
@@ -90,17 +92,17 @@ bool graph_node::has_local_inputs(const execution_state& st) const
   return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
     if (inlet->scope & port::scope_t::local)
     {
-      if (auto dest = inlet->address.target<ossia::net::parameter_base*>())
-      {
-        if (st.in_local_scope(**dest))
-          return true;
-      }
-      else if(auto pattern = inlet->address.target<std::string>())
-      {
-      // what happens if a pattern matches anotehr pattern. c.f. notes
-      //   if( n.consumes(*pattern))
-      //     return true;
-      }
+      bool b = false;
+
+      // TODO optimize by stopping when found
+      apply_to_destination(inlet->address, st,
+                           [&] (ossia::net::parameter_base* addr) {
+        if (!b || st.in_local_scope(*addr))
+          b = true;
+      });
+
+      if(b)
+        return true;
 
       if (consumes(st))
         return true;

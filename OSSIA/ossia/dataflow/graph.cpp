@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/dataflow.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/detail/logger.hpp>
@@ -543,9 +544,7 @@ void graph::copy_to_global(
 
 void graph::pull_from_parameter(inlet& in, execution_state& e)
 {
-  if (auto addr_ptr = in.address.target<ossia::net::parameter_base*>())
-  {
-    ossia::net::parameter_base* addr = *addr_ptr;
+  apply_to_destination(in.address, e, [&] (ossia::net::parameter_base* addr) {
     if (in.scope & port::scope_t::local)
     {
       e.find_and_copy(*addr, in);
@@ -554,31 +553,7 @@ void graph::pull_from_parameter(inlet& in, execution_state& e)
     {
       e.copy_from_global(*addr, in);
     }
-  }
-  else if (auto pattern = in.address.target<std::string>())
-  {
-    std::vector<ossia::net::node_base*> roots{};
-    for(auto n : e.globalState)
-      roots.push_back(&n->get_root_node());
-    auto path = ossia::traversal::make_path(*pattern);
-
-    if(path)
-    {
-      ossia::traversal::apply(*path, roots);
-      for(auto n : roots) {
-        if(auto addr = n->get_parameter()) {
-          if (in.scope & port::scope_t::local)
-          {
-            e.find_and_copy(*addr, in);
-          }
-          else
-          {
-            e.copy_from_global(*addr, in);
-          }
-        }
-      }
-    }
-  }
+  });
 }
 
 void graph::init_node(graph_node& n, execution_state& e)
