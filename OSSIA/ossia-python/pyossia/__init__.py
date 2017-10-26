@@ -121,7 +121,7 @@ def add_param(self, name, **kwargs):
     if 'bounding_mode' in kwargs.keys():
         param.bounding_mode = kwargs['bounding_mode']
     if 'unit' in kwargs.keys():
-        param.unit = kwargs['unit]']
+        param.unit = kwargs['unit']
     if 'repetition_filter_label' in kwargs.keys():
         param.repetition_filter_label = kwargs['repetition_filter_label']
     return param
