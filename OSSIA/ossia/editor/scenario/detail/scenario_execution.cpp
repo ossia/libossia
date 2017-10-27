@@ -86,7 +86,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 }
 
 void scenario::process_this(
-    time_sync& node, std::vector<time_event*>& statusChangedEvents,
+    time_sync& node, small_event_vec& statusChangedEvents,
     interval_set& started, interval_set& stopped, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
@@ -242,49 +242,6 @@ enum progress_mode
 };
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-void update_overtick(
-    time_interval& interval, time_sync* end_node,
-    ossia::time_value tick_us, ossia::time_value cst_old_date,
-    overtick_map& node_tick_dur)
-{
-  // Store the over-ticking min / max, scaled to speed = 1.
-  // That is : tick - (max_dur - tick_start_dur) / speed
-  auto cst_speed = interval.get_speed();
-  auto ot
-      = tick_us - (interval.get_max_duration() - cst_old_date) / cst_speed;
-
-  auto node_it = node_tick_dur.lower_bound(end_node);
-  if (node_it != node_tick_dur.end() && (end_node == node_it->first))
-  {
-    auto& cur = node_it->second;
-
-    if (ot < cur.min)
-      cur.min = ot;
-    if (ot > cur.max)
-      cur.max = ot;
-  }
-  else
-  {
-    node_tick_dur.insert(node_it, std::make_pair(end_node, overtick{ot, ot}));
-  }
-}
-
-ossia::state_element tick_interval(time_interval& interval, ossia::time_value tick, ossia::time_value offset)
-{
-  // Tick without going over the max
-  // so that the state is not 1.01*automation for instance.
-  auto cst_max_dur = interval.get_max_duration();
-  if (!cst_max_dur.infinite())
-  {
-    auto this_tick = std::min(tick, cst_max_dur - interval.get_date());
-    return interval.tick_offset(this_tick, offset);
-  }
-  else
-  {
-    return interval.tick_offset(tick, offset);
-  }
-}
-
 state_element scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   node->requested_tokens.push_back({date, pos, tick_offset});
@@ -320,7 +277,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
 
     ossia::state nullState;
     auto& writeState = is_unmuted ? cur_state : nullState;
-    std::vector<time_event*> statusChangedEvents;
+    small_event_vec statusChangedEvents;
     for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
     {
       auto& n = *it;
@@ -347,20 +304,56 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       }
     }
 
-    for (time_interval* interval : m_runningIntervals)
+    auto run_interval = [&] (ossia::time_interval& interval, ossia::time_value tick, ossia::time_value offset)
     {
-      auto cst_old_date = interval->get_date();
-      auto st = tick_interval(*interval, tick_ms, tick_offset);
-      if (is_unmuted)
-      {
-        flatten_and_filter(cur_state, std::move(st));
-      }
-
-      auto end_node = &interval->get_end_event().get_time_sync();
+      auto cst_old_date = interval.get_date();
+      auto end_node = &interval.get_end_event().get_time_sync();
       m_endNodes.insert(end_node);
 
-      update_overtick(
-          *interval, end_node, tick_ms, cst_old_date, m_overticks);
+      // Tick without going over the max
+      // so that the state is not 1.01*automation for instance.
+      auto cst_max_dur = interval.get_max_duration();
+      if (!cst_max_dur.infinite())
+      {
+        auto this_tick = std::min(tick, cst_max_dur - interval.get_date());
+        auto st = interval.tick_offset(this_tick, offset);
+
+        if (is_unmuted)
+        {
+          flatten_and_filter(cur_state, std::move(st));
+        }
+
+        auto ot
+            = tick - (interval.get_max_duration() - cst_old_date) / interval.get_speed();
+
+        auto node_it = m_overticks.lower_bound(end_node);
+        if (node_it != m_overticks.end() && (end_node == node_it->first))
+        {
+          auto& cur = node_it->second;
+
+          if (ot < cur.min)
+            cur.min = ot;
+          if (ot > cur.max)
+            cur.max = ot;
+        }
+        else
+        {
+          m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot}));
+        }
+      }
+      else
+      {
+        auto st = interval.tick_offset(tick, offset);
+        if (is_unmuted)
+        {
+          flatten_and_filter(cur_state, std::move(st));
+        }
+      }
+    };
+
+    for (time_interval* interval : m_runningIntervals)
+    {
+      run_interval(*interval, tick_ms, tick_offset);
     }
 
     // Handle time syncs / events... if they are not finished, intervals in
@@ -391,50 +384,32 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       for (const auto& timeEvent : statusChangedEvents)
       {
         time_event& ev = *timeEvent;
-        switch (ev.get_status())
+        if(ev.get_status() == time_event::status::HAPPENED)
         {
-          case time_event::status::HAPPENED:
+          if (is_unmuted)
           {
-            if (is_unmuted)
-            {
-              flatten_and_filter(cur_state, ev.get_state());
-            }
-
-            auto& tn = ev.get_time_sync();
-            if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
-            {
-              // Propagate the remaining tick to the next intervals
-              auto it = m_overticks.find(&tn);
-              if (it == m_overticks.end())
-              {
-                // ossia::logger().info("scenario::state tick_dur not found");
-                continue;
-              }
-
-              time_value remaining_tick
-                  = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
-
-              const auto& next = ev.next_time_intervals();
-              // overticks.reserve(overticks.size() + next.size());
-              for (const auto& interval : next)
-              {
-                auto st = tick_interval(*interval, remaining_tick, tick_offset + tick_ms - remaining_tick);
-                if(is_unmuted)
-                  flatten_and_filter(cur_state, std::move(st));
-
-                auto end_node = &interval->get_end_event().get_time_sync();
-                m_endNodes.insert(end_node);
-
-                update_overtick(
-                    *interval, end_node, remaining_tick, 0._tv, m_overticks);
-              }
-            }
-            break;
+            flatten_and_filter(cur_state, ev.get_state());
           }
 
-          case time_event::status::DISPOSED:
-          default:
-            break;
+          auto& tn = ev.get_time_sync();
+          if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
+          {
+            // Propagate the remaining tick to the next intervals
+            auto it = m_overticks.find(&tn);
+            if (it == m_overticks.end())
+            {
+              ossia::logger().info("scenario::state tick_dur not found");
+              continue;
+            }
+
+            const time_value remaining_tick
+                = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
+
+            for (const auto& interval : ev.next_time_intervals())
+            {
+              run_interval(*interval, remaining_tick, tick_offset + tick_ms - remaining_tick);
+            }
+          }
         }
       }
 
@@ -456,12 +431,6 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       m_endNodes.clear();
 
     } while (!statusChangedEvents.empty());
-
-    // Finally, take the state of the intervals that are still running.
-    /* for (time_interval* interval : m_runningIntervals)
-    {
-      flatten_and_filter(cur_state, interval->state());
-    } */
 
     m_lastState = cur_state;
   }

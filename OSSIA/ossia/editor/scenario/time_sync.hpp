@@ -8,6 +8,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <hopscotch_set.h>
+#include <chobo/small_vector.hpp>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
@@ -145,7 +146,7 @@ private:
   ossia::expression_ptr m_expression;
 
   ptr_container<time_event> m_timeEvents;
-  std::vector<time_event*> m_pending;
+  chobo::small_vector<time_event*, 2> m_pending;
 
   optional<expressions::expression_callback_iterator> m_callback;
 

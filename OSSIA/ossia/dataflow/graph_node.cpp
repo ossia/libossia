@@ -89,7 +89,7 @@ bool graph_node::has_global_inputs() const
 
 bool graph_node::has_local_inputs(const execution_state& st) const
 {
-  return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
+  return ossia::any_of(inputs(), [&] (const inlet_ptr& inlet) {
     if (inlet->scope & port::scope_t::local)
     {
       bool b = false;

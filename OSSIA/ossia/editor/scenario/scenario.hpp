@@ -78,6 +78,10 @@ public:
   const ptr_container<time_interval>& get_time_intervals() const;
 
 private:
+
+  using small_sync_vec = chobo::small_vector<time_sync*, 4>;
+  using small_event_vec = chobo::small_vector<time_event*, 4>;
+
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
                                     // (the first is the start node, the
@@ -87,12 +91,11 @@ private:
 
   interval_set m_runningIntervals;
   interval_set intervals_started, intervals_stopped;
-  std::vector<time_sync*> m_waitingNodes;
+  small_sync_vec m_waitingNodes;
   overtick_map m_overticks;
   boost::container::flat_set<time_sync*> m_endNodes;
-
   void process_this(
-      time_sync& node, std::vector<time_event*>& statusChangedEvents,
+      time_sync& node, small_event_vec& statusChangedEvents,
       interval_set& started, interval_set& stopped, ossia::state& st);
   void make_happen(
       time_event& event, interval_set& started, interval_set& stopped, ossia::state& st);

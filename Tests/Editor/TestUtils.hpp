@@ -47,6 +47,18 @@ inline char* toString(const std::string& str)
     QByteArray ba = QByteArray::fromStdString(str);
     return qstrdup(ba.data());
 }
+template<>
+inline char* toString(const ossia::time_event::status& str)
+{
+  switch(str)
+  {
+    case ossia::time_event::status::DISPOSED: return qstrdup("disposed");
+    case ossia::time_event::status::HAPPENED: return qstrdup("happened");
+    case ossia::time_event::status::NONE: return qstrdup("none");
+    case ossia::time_event::status::PENDING: return qstrdup("pending");
+  }
+  return qstrdup("error");
+}
 }
 
 struct root_scenario
@@ -91,4 +103,8 @@ std::ostream& operator<<(std::ostream& s, ossia::time_event::status st)
     case ossia::time_event::status::DISPOSED: s << "disposed"; break;
   }
   return s;
+}
+inline QDebug operator<<(QDebug d, ossia::time_event::status s)
+{
+  return d << QTest::toString(s);
 }
