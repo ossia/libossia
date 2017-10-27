@@ -221,6 +221,112 @@ class ScenarioAlgoTest : public QObject
       }
     }
 
+
+    void test_exec_two_branch_infinite()
+    {
+      std::cerr << "\n\ntest_exec_chain_multi\n";
+      using namespace ossia;
+
+      root_scenario s;
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario); e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+      std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+      std::shared_ptr<time_event> e3 = create_event(scenario); e3->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+      /*           c0
+       * e0 - - - - - - - - - - e2 - )
+       * |    c1         c2     |      c3
+       * | - - - - e1 - - - - - | ------------ e3
+       */
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e2, 20_tv, 0_tv, 25_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e0, *e1, 15_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e1, *e2, 5_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c3 = time_interval::create([] (auto&&...) {}, *e2, *e3, 100_tv, 100_tv, 100_tv);
+
+      s.scenario->add_time_interval(c0);
+      s.scenario->add_time_interval(c1);
+      s.scenario->add_time_interval(c2);
+      s.scenario->add_time_interval(c3);
+
+      s.interval->start();
+      {
+        s.interval->tick(5_tv);
+        qDebug() << e1->get_status() << " "
+                 << e2->get_status() << " "
+                 << e3->get_status();
+
+        QCOMPARE(c0->get_date(), 5_tv);
+        QCOMPARE(e1->get_status(), time_event::status::PENDING);
+
+        QCOMPARE(c1->get_date(), 5_tv);
+        QCOMPARE(e2->get_status(), time_event::status::NONE);
+
+        QCOMPARE(c2->get_date(), 0_tv);
+        QCOMPARE(e3->get_status(), time_event::status::NONE);
+
+        QCOMPARE(c3->get_date(), 0_tv);
+      }
+
+      {
+        s.interval->tick(30_tv);
+        qDebug() << e1->get_status() << " "
+                 << e2->get_status() << " "
+                 << e3->get_status();
+
+        QCOMPARE(c0->get_date(), 25_tv);
+        QCOMPARE(e1->get_status(), time_event::status::PENDING);
+
+        QCOMPARE(c1->get_date(), 35_tv);
+        QCOMPARE(e2->get_status(), time_event::status::NONE);
+
+        QCOMPARE(c2->get_date(), 0_tv);
+        QCOMPARE(e3->get_status(), time_event::status::NONE);
+
+        QCOMPARE(c3->get_date(), 0_tv);
+      }
+
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_true());
+
+      {
+        s.interval->tick(2_tv);
+        qDebug() << e1->get_status() << " "
+                 << e2->get_status() << " "
+                 << e3->get_status();
+
+        QCOMPARE(c0->get_date(), 0_tv);
+        QCOMPARE(e1->get_status(), time_event::status::HAPPENED);
+
+        QCOMPARE(c1->get_date(), 0_tv);
+        QCOMPARE(e2->get_status(), time_event::status::HAPPENED);
+
+        QCOMPARE(c2->get_date(), 0_tv);
+        QCOMPARE(e3->get_status(), time_event::status::NONE);
+
+        QCOMPARE(c3->get_date(), 2_tv);
+      }
+
+      {
+        s.interval->tick(2_tv);
+        qDebug() << e1->get_status() << " "
+                 << e2->get_status() << " "
+                 << e3->get_status();
+
+        QCOMPARE(c0->get_date(), 0_tv);
+        QCOMPARE(e1->get_status(), time_event::status::HAPPENED);
+
+        QCOMPARE(c1->get_date(), 0_tv);
+        QCOMPARE(e2->get_status(), time_event::status::HAPPENED);
+
+        QCOMPARE(c2->get_date(), 0_tv);
+        QCOMPARE(e3->get_status(), time_event::status::NONE);
+
+        QCOMPARE(c3->get_date(), 4_tv);
+      }
+
+    }
+
     void test_min()
     {
       std::cerr << "\n\ntest_min\n";

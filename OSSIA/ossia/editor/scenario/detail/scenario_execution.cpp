@@ -265,6 +265,14 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
 
     m_endNodes.reserve(m_nodes.size());
     m_overticks.reserve(m_nodes.size());
+
+    for(auto it  = m_runningIntervals.begin(); it != m_runningIntervals.end(); )
+    {
+      if((*it)->get_end_event().get_status() == time_event::status::HAPPENED)
+        it = m_runningIntervals.erase(it);
+      else
+        ++it;
+    }
     // First we should find, for each running interval, the actual maximum
     // tick length
     // that they can be ticked. If it is < tick_us, then they won't execute.
