@@ -37,19 +37,19 @@ void scenario_node::run(token_request t, execution_state&)
   {
     auto i = m_inlets[0]->data.target<ossia::audio_port>();
     auto o = m_outlets[0]->data.target<ossia::audio_port>();
-    o->samples = std::move(i->samples);
+    o->samples = i->samples;
   }
 
   {
     auto i = m_inlets[1]->data.target<ossia::value_port>();
     auto o = m_outlets[1]->data.target<ossia::value_port>();
-    o->data = std::move(i->data);
+    o->data = i->data;
   }
 
   {
     auto i = m_inlets[2]->data.target<ossia::midi_port>();
     auto o = m_outlets[2]->data.target<ossia::midi_port>();
-    o->messages = std::move(i->messages);
+    o->messages = i->messages;
   }
 }
 
