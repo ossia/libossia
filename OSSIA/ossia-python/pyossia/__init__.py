@@ -110,9 +110,7 @@ def add_param(self, name, **kwargs):
     value_type = kwargs['value_type']
     param = node.create_parameter(__value_types__[value_type])
     if 'domain' in kwargs.keys():
-        # this one needs to receive a tuple, not a list
-        # TODO : this might be changed in ossia_python.cpp to accept a list??
-        param.make_domain(tuple(kwargs['domain']))
+        param.make_domain(kwargs['domain'][0], kwargs['domain'][1])
         param.apply_domain()
     if 'default_value' in kwargs.keys():
         param.default_value = kwargs['default_value']
