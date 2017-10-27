@@ -438,7 +438,7 @@ graph::disable_strict_nodes(const set<graph_node*>& enabled_nodes)
 {
   set<graph_node*> ret;
 
-  for (const auto& node : enabled_nodes)
+  for (graph_node* node : enabled_nodes)
   {
     for (const auto& in : node->inputs())
     {
@@ -499,9 +499,12 @@ void graph::disable_strict_nodes_rec(set<graph_node*>& cur_enabled_node)
   do
   {
     to_disable = disable_strict_nodes(cur_enabled_node);
-    for (auto n : to_disable)
+    for (graph_node* n : to_disable)
     {
+      if(!n->requested_tokens.empty())
+        n->set_prev_date(n->requested_tokens.back().date);
       n->disable();
+
       cur_enabled_node.erase(n);
       // note: we have to add a dependency between all the inlets and outlets
     }
