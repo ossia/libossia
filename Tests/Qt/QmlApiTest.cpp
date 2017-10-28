@@ -229,6 +229,7 @@ class QmlApiTest : public QObject
         engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
         auto& dev = ossia::qt::qml_singleton_device::instance();
 
+        print_device();
         QQmlComponent component(&engine);
         component.setData(R"_(
                           import Ossia 1.0 as Ossia
@@ -260,7 +261,9 @@ class QmlApiTest : public QObject
         QVERIFY(item);
 
         dev.recreate(item);
+        app.processEvents();
 
+        print_device();
         auto child_scale = ossia::net::find_node(dev.device().get_root_node(), "/foo.0/tata/scale");
         QVERIFY(child_scale);
         cleanup(item);

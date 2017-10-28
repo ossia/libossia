@@ -8,7 +8,7 @@ template <typename T>
 using value_vector = chobo::small_vector<T, 4>;
 
 using audio_channel = chobo::small_vector<double, 64>;
-using audio_vector = std::vector<audio_channel>;
+using audio_vector = chobo::small_vector<audio_channel, 2>;
 
 struct audio_port
 {
@@ -24,7 +24,7 @@ struct midi_port
 struct value_port
 {
   ossia::complex_type type;
-  value_vector<ossia::value> data;
+  ossia::value data;
 };
 
 struct audio_delay_line
@@ -40,14 +40,14 @@ struct midi_delay_line
 struct value_delay_line
 {
   ossia::complex_type type;
-  std::vector<value_vector<ossia::value>> data;
+  std::vector<ossia::value> data;
 };
 
 struct clear_data
 {
   void operator()(value_port& p) const
   {
-    p.data.clear();
+    p.data = ossia::value{};
   }
 
   void operator()(midi_port& p) const
@@ -91,10 +91,9 @@ struct data_size
 
 struct mix
 {
-  void operator()(const value_vector<ossia::value>& out, value_vector<ossia::value>& in)
+  void operator()(const ossia::value& out, ossia::value& in)
   {
-    for(auto& data : out)
-      in.push_back(data);
+    in = out;
   }
 
   void copy_audio(const chobo::small_vector<double, 64>& src, chobo::small_vector<double, 64>& sink)

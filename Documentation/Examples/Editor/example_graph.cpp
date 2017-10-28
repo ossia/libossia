@@ -68,10 +68,9 @@ ossia::optional<T> pop_value(const ossia::inlet_ptr& p) {
   if(p)
   {
     auto ip = p->data.target<ossia::value_port>();
-    if(ip && !ip->data.empty())
+    if(ip)
     {
-      ossia::value val = ip->data.front();
-      if(auto res = val.target<T>())
+      if(auto res = ip->data.target<T>())
       {
         return *res;
       }
@@ -84,7 +83,7 @@ void push_value(const ossia::outlet_ptr& p, ossia::value val) {
   if(p)
   {
     if(auto op = p->data.target<ossia::value_port>())
-      op->data.push_back(std::move(val));
+      op->data = std::move(val);
   }
 }
 
