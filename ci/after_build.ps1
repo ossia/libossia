@@ -114,6 +114,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
 
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-python.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
   if (${env:APPVEYOR_REPO_TAG}){
     if ( "${env:platform}" -eq "x64" ){
       cd "C:\${env:python}-x64\"
