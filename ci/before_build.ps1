@@ -99,7 +99,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     pip.exe install wheel
     pip.exe install twine
 
-    C:\projects\libossia\build
+    cd C:\projects\libossia\build
     cmake -G "Visual Studio 15 2017" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=1 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
     CheckLastExitCode
   }
