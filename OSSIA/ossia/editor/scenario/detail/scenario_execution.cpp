@@ -90,19 +90,23 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 }
 
 void scenario::process_this(
-    time_sync& node, small_event_vec& statusChangedEvents,
+    time_sync& node, small_event_vec& pendingEvents,
     interval_set& started, interval_set& stopped, ossia::state& st)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
-  auto activeEvents = node.get_time_events().size();
-  node.m_pending.clear();
+  auto activeCount = node.get_time_events().size();
+  std::size_t pendingCount = 0;
+  const auto beginPending = pendingEvents.size();
 
   bool maximalDurationReached = false;
   auto on_pending = [&] (ossia::time_event* timeEvent)
   {
-    if(!ossia::contains(node.m_pending, timeEvent))
-      node.m_pending.push_back(timeEvent);
+    if(!ossia::contains(pendingEvents, timeEvent))
+    {
+      pendingCount++;
+      pendingEvents.push_back(timeEvent);
+    }
 
     for (const std::shared_ptr<ossia::time_interval>& timeInterval :
          timeEvent->previous_time_intervals())
@@ -169,13 +173,13 @@ void scenario::process_this(
         break;
 
       case time_event::status::DISPOSED:
-        activeEvents--;
+        activeCount--;
         break;
     }
   }
 
   // if all TimeEvents are not PENDING
-  if (node.m_pending.size() != activeEvents)
+  if (pendingCount != activeCount)
   {
     if (node.m_evaluating)
     {
@@ -211,10 +215,11 @@ void scenario::process_this(
 
   // trigger the time sync
 
-  // now TimeEvents will happen or be disposed
-  for (auto& timeEvent : node.m_pending)
+  // now TimeEvents will happen or be disposed.
+  // the last added events are necessarily the ones of this node.
+  for (auto it = pendingEvents.begin() + beginPending; it != pendingEvents.end(); ++it)
   {
-    time_event& ev = *timeEvent;
+    time_event& ev = **it;
     auto& expr = ev.get_expression();
     // update any Destination value into the expression
     expressions::update(expr);
@@ -230,12 +235,6 @@ void scenario::process_this(
 
   // notify observers
   node.triggered.send();
-
-  // former PENDING TimeEvents are now HAPPENED or DISPOSED
-  statusChangedEvents.insert(
-      statusChangedEvents.end(), node.m_pending.begin(), node.m_pending.end());
-
-  node.m_pending.clear();
 
   node.m_evaluating = false;
   node.finished_evaluation.send(maximalDurationReached);
