@@ -17,15 +17,6 @@ pyossia methods
 ===============
 """
 
-
-# python2 only
-# (dirty hack to avoid Error "unicode argument without an encoding"
-try:
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-except NameError:
-    pass
-
 # Import libossia python bindings
 # the ossia_python.so file must be in the pyossia module
 from . import ossia_python as ossia
