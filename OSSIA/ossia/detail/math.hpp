@@ -57,6 +57,11 @@ auto norm(T x, T y, T z)
   return std::sqrt(ipow(x, 2) + ipow(y, 2) + ipow(z, 2));
 }
 
+inline constexpr size_t constexpr_log2(size_t n)
+{
+  return ((n < 2) ? 0 : 1 + constexpr_log2(n / 2));
+}
+
 /**
  * @brief clamp_min Returns the value bounded by a min
  */

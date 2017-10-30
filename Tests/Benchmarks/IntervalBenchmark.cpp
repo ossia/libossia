@@ -200,7 +200,6 @@ private Q_SLOTS:
 
   void test_basic()
   {
-    return;
     root_scenario root;
 
     for(int i = 0; i < 10000; i++)
@@ -221,11 +220,11 @@ private Q_SLOTS:
 
   void test_graph_parallel()
   {
-    return;
     std::map<int, double> dur;
     for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
         700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
-        20000, 50000, 100000})
+ //       20000, 50000, 100000
+     })
     {
       root_scenario root;
 
@@ -254,11 +253,11 @@ private Q_SLOTS:
 
   void test_graph_serial()
   {
-    return;
     std::map<int, double> dur;
     for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
         700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
-        20000, 50000, 100000})
+   //     20000, 50000, 100000
+  })
     {
       root_scenario root;
 
@@ -293,7 +292,8 @@ private Q_SLOTS:
     std::map<int, double> dur;
     for(auto k : {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
         700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
-        20000, 50000, 100000})
+     //   20000, 50000, 100000
+  })
     {
       root_scenario root;
 

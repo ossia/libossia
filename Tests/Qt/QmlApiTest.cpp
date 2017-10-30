@@ -324,6 +324,9 @@ class QmlApiTest : public QObject
 
         dev.recreate(item);
         app.processEvents();
+        app.processEvents();
+        app.processEvents();
+        app.processEvents();
         dev.savePreset(QUrl::fromLocalFile("/tmp/preset.json"));
 
         print_device();

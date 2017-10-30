@@ -6,6 +6,7 @@
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/detail/ptr_set.hpp>
 #include <ossia_export.h>
 #include <set>
 namespace ossia
@@ -15,6 +16,7 @@ class time_event;
 class time_interval;
 class time_sync;
 using interval_set = boost::container::flat_set<time_interval*>;
+using sync_set = boost::container::flat_set<time_sync*>;
 struct overtick
 {
   ossia::time_value min;
@@ -27,6 +29,8 @@ class scenario_node : public ossia::graph_node
 public:
   scenario_node();
   void run(ossia::token_request t, ossia::execution_state&) override;
+  // TODO: add here the states to play.
+  // They have to work with inter-ticks.
 };
 
 
@@ -34,8 +38,7 @@ class OSSIA_EXPORT scenario final : public time_process
 {
 public:
   scenario();
-
-  ~scenario();
+  ~scenario() override;
 
   state_element offset(ossia::time_value, double pos) override;
 
@@ -90,10 +93,9 @@ private:
   ossia::state m_lastState;
 
   interval_set m_runningIntervals;
-  interval_set intervals_started, intervals_stopped;
   small_sync_vec m_waitingNodes;
   overtick_map m_overticks;
-  boost::container::flat_set<time_sync*> m_endNodes;
+  sync_set m_endNodes;
   void process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
       interval_set& started, interval_set& stopped, ossia::state& st);

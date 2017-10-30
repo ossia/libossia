@@ -23,34 +23,15 @@ scenario_node::scenario_node()
   // todo maybe we can optimize by having m_outlets == m_inlets
   // this way no copy.
   m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
-  m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
-  m_inlets.push_back(ossia::make_inlet<ossia::midi_port>());
-
   m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
-  m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
-  m_outlets.push_back(ossia::make_outlet<ossia::midi_port>());
 }
 
 
 void scenario_node::run(token_request t, execution_state&)
 {
-  {
-    auto i = m_inlets[0]->data.target<ossia::audio_port>();
-    auto o = m_outlets[0]->data.target<ossia::audio_port>();
-    o->samples = i->samples;
-  }
-
-  {
-    auto i = m_inlets[1]->data.target<ossia::value_port>();
-    auto o = m_outlets[1]->data.target<ossia::value_port>();
-    o->data = i->data;
-  }
-
-  {
-    auto i = m_inlets[2]->data.target<ossia::midi_port>();
-    auto o = m_outlets[2]->data.target<ossia::midi_port>();
-    o->messages = i->messages;
-  }
+  auto i = m_inlets[0]->data.target<ossia::audio_port>();
+  auto o = m_outlets[0]->data.target<ossia::audio_port>();
+  o->samples = i->samples;
 }
 
 scenario::scenario()
@@ -160,8 +141,6 @@ void scenario::stop()
   }
 
   m_runningIntervals.clear();
-  intervals_started.clear();
-  intervals_stopped.clear();
   m_waitingNodes.clear();
   m_overticks.clear();
   m_lastDate = time_value{};

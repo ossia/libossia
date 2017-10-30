@@ -27,7 +27,9 @@ void scenario::make_happen(
   // stop previous TimeIntervals
   for (auto& timeInterval : event.previous_time_intervals())
   {
-    stopped.insert(timeInterval.get());
+    timeInterval->stop();
+    mark_end_discontinuous{}(*timeInterval);
+    stopped.erase(timeInterval.get());
   }
 
   // setup next TimeIntervals
@@ -58,7 +60,9 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
   // stop previous TimeIntervals
   for (auto& timeInterval : event.previous_time_intervals())
   {
-    stopped.insert(timeInterval.get());
+    timeInterval->stop();
+    mark_end_discontinuous{}(*timeInterval);
+    stopped.erase(timeInterval.get());
   }
 
   // dispose next TimeIntervals end event if everything is disposed before
@@ -91,9 +95,25 @@ void scenario::process_this(
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
+  auto activeEvents = node.get_time_events().size();
   node.m_pending.clear();
 
   bool maximalDurationReached = false;
+  auto on_pending = [&] (ossia::time_event* timeEvent)
+  {
+    if(!ossia::contains(node.m_pending, timeEvent))
+      node.m_pending.push_back(timeEvent);
+
+    for (const std::shared_ptr<ossia::time_interval>& timeInterval :
+         timeEvent->previous_time_intervals())
+    {
+      if (timeInterval->get_date() >= timeInterval->get_max_duration())
+      {
+        maximalDurationReached = true;
+        break;
+      }
+    }
+  };
 
   for (const std::shared_ptr<time_event>& timeEvent : node.get_time_events())
   {
@@ -133,39 +153,29 @@ void scenario::process_this(
 
         // access to PENDING status once all previous TimeIntervals allow it
         if (minimalDurationReached)
+        {
           timeEvent->set_status(time_event::status::PENDING);
-        else
-          break;
+          on_pending(timeEvent.get());
+        }
+        break;
       }
 
       // PENDING TimeEvent is ready for evaluation
       case time_event::status::PENDING:
-      {
-        node.m_pending.push_back(timeEvent.get());
-
-        for (const std::shared_ptr<ossia::time_interval>& timeInterval :
-             timeEvent->previous_time_intervals())
-        {
-          if (timeInterval->get_date() >= timeInterval->get_max_duration())
-          {
-            maximalDurationReached = true;
-            break;
-          }
-        }
-
+        on_pending(timeEvent.get());
         break;
-      }
 
       case time_event::status::HAPPENED:
-      case time_event::status::DISPOSED:
-      {
         break;
-      }
+
+      case time_event::status::DISPOSED:
+        activeEvents--;
+        break;
     }
   }
 
   // if all TimeEvents are not PENDING
-  if (node.m_pending.size() != node.m_timeEvents.size())
+  if (node.m_pending.size() != activeEvents)
   {
     if (node.m_evaluating)
     {
@@ -260,8 +270,6 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     ossia::state cur_state;
     m_overticks.clear();
     m_endNodes.clear();
-    intervals_started.clear();
-    intervals_stopped.clear();
 
     m_endNodes.reserve(m_nodes.size());
     m_overticks.reserve(m_nodes.size());
@@ -289,6 +297,9 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
     {
       auto& n = *it;
+      // Note: we pass m_runningIntervals as stopped because it does not matter:
+      // by design, no interval could be stopped at this point since it's the
+      // root scenarios. So this prevents initializing a dummy class.
       process_this(
           *n, statusChangedEvents, m_runningIntervals, m_runningIntervals, writeState);
       if (!statusChangedEvents.empty())
@@ -314,27 +325,27 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
 
     auto run_interval = [&] (ossia::time_interval& interval, ossia::time_value tick, ossia::time_value offset)
     {
-      auto cst_old_date = interval.get_date();
-      auto end_node = &interval.get_end_event().get_time_sync();
+      const auto cst_old_date = interval.get_date();
+      const auto end_node = &interval.get_end_event().get_time_sync();
       m_endNodes.insert(end_node);
 
       // Tick without going over the max
       // so that the state is not 1.01*automation for instance.
-      auto cst_max_dur = interval.get_max_duration();
+      const auto cst_max_dur = interval.get_max_duration();
       if (!cst_max_dur.infinite())
       {
-        auto this_tick = std::min(tick, cst_max_dur - interval.get_date());
-        auto st = interval.tick_offset(this_tick, offset);
+        const auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
+        const auto st = interval.tick_offset(this_tick, offset);
 
         if (is_unmuted)
         {
           flatten_and_filter(cur_state, std::move(st));
         }
 
-        auto ot
-            = tick - (interval.get_max_duration() - cst_old_date) / interval.get_speed();
+        const auto ot
+            = tick - (cst_max_dur - cst_old_date) / interval.get_speed();
 
-        auto node_it = m_overticks.lower_bound(end_node);
+        const auto node_it = m_overticks.lower_bound(end_node);
         if (node_it != m_overticks.end() && (end_node == node_it->first))
         {
           auto& cur = node_it->second;
@@ -351,7 +362,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       }
       else
       {
-        auto st = interval.tick_offset(tick, offset);
+        const auto st = interval.tick_offset(tick, offset);
         if (is_unmuted)
         {
           flatten_and_filter(cur_state, std::move(st));
@@ -371,24 +382,13 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     for (time_sync* node : m_endNodes)
     {
       process_this(
-          *node, statusChangedEvents, intervals_started,
-          intervals_stopped, writeState);
+          *node, statusChangedEvents, m_runningIntervals,
+          m_runningIntervals, writeState);
     }
-
-    for (auto c : intervals_stopped)
-      m_runningIntervals.erase(c);
-    m_runningIntervals.insert(
-        intervals_started.begin(), intervals_started.end());
 
     m_endNodes.clear();
     do
     {
-      for (time_interval* interval : intervals_stopped)
-      {
-        interval->stop();
-        mark_end_discontinuous{}(*interval);
-      }
-
       for (const auto& timeEvent : statusChangedEvents)
       {
         time_event& ev = *timeEvent;
@@ -422,20 +422,14 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       }
 
       statusChangedEvents.clear();
-      intervals_started.clear();
-      intervals_stopped.clear();
 
       for (auto node : m_endNodes)
       {
         process_this(
-            *node, statusChangedEvents, intervals_started,
-            intervals_stopped, writeState);
+            *node, statusChangedEvents, m_runningIntervals,
+            m_runningIntervals, writeState);
       }
 
-      for (time_interval* c : intervals_stopped)
-        m_runningIntervals.erase(c);
-      m_runningIntervals.insert(
-          intervals_started.begin(), intervals_started.end());
       m_endNodes.clear();
 
     } while (!statusChangedEvents.empty());

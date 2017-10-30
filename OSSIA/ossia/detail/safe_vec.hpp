@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <hopscotch_set.h>
+#include <ossia/detail/ptr_set.hpp>
 #include <vector>
 
 namespace ossia
@@ -118,15 +118,7 @@ public:
     return impl;
   }
 
-  // https://stackoverflow.com/q/20953390/1495627
-  template<typename Tval>
-  struct EgurHash {
-      size_t operator()(const Tval val) const {
-          static const size_t shift = (size_t)log2(1 + sizeof(Tval));
-          return (size_t)(val) >> shift;
-      }
-  };
 private:
-  tsl::hopscotch_set<T, EgurHash<T>> impl;
+  ossia::ptr_set<T> impl;
 };
 }
