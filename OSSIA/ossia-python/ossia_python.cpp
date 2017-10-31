@@ -1015,4 +1015,30 @@ PYBIND11_MODULE(ossia_python, m)
 
       return res;
     });
+
+  m.def("save_preset", [] (const py::object& start_node, std::string filename, std::string name) -> void {
+      try {
+        auto preset = ossia::presets::make_preset(start_node.cast<ossia::net::node_base&>());
+        auto json = ossia::presets::write_json(name, preset);
+        ossia::presets::write_file(json, filename);
+      } catch (std::ifstream::failure e) {
+        ossia::logger().error("Can't open file {}, error: {}", filename, e.what());
+      }
+
+      return;
+    });
+
+  m.def("load_preset", [] (const py::object& start_node, std::string filename) -> void {
+      try {
+        auto json = ossia::presets::read_file(filename);
+        auto preset = ossia::presets::read_json(json);
+        ossia::presets::apply_preset(start_node.cast<ossia::net::node_base&>(), preset,  ossia::presets::keep_arch_on, {}, true);
+      } catch (std::ifstream::failure e) {
+        ossia::logger().error("Can't open file {}, error: {}", filename, e.what());
+      } catch (...) {
+        ossia::logger().error("Can't apply preset to current node.");
+      }
+
+      return;
+    });
 }
