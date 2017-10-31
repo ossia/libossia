@@ -105,7 +105,7 @@ void logger::reset()
 
   logpost(&m_obj, 4, "logger connected");
   m_log = std::make_shared<spdlog::logger>(
-       "max_logger", std::make_shared<websocket_log_sink>(m_con, appname));
+       "pd_logger", std::make_shared<websocket_log_sink>(m_con, appname));
 
   logpost(&m_obj, 4, "logger created");
   m_beat = std::make_shared<websocket_heartbeat>(
