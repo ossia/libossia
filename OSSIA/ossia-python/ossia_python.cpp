@@ -11,6 +11,8 @@ namespace pybind11
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#include <ossia/preset/preset.hpp>
+
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
