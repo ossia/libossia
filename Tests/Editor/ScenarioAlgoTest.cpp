@@ -2,13 +2,33 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <QtTest>
 
+#include <ossia/dataflow/node_process.hpp>
+
 #include "TestUtils.hpp"
 
-namespace ossia {
-char* toString(const ossia::time_value& val)
+namespace ossia
 {
-  return QTest::toString(QByteArray::number((qint64)val.impl));
+class message_node : public ossia::graph_node
+{
+  public:
+    message_node()
+    {
+
+    }
+
+    void run(ossia::token_request, ossia::execution_state& e) override
+    {
+      for(auto& msg : data)
+      {
+        e.insert(&msg.dest.address(), value_port{{}, { msg.message_value }});
+      }
+    }
+
+    std::vector<ossia::message> data;
+};
 }
+
+namespace ossia {
 }
 
 class ScenarioAlgoTest : public QObject
@@ -458,6 +478,53 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c0->get_position(), 0.);
       QVERIFY(e0->get_status() == time_event::status::NONE);
       QVERIFY(e1->get_status() == time_event::status::NONE);
+    }
+
+
+    void test_simulated_state()
+    {
+      std::cerr << "\n\test_simulated_state\n";
+      using namespace ossia;
+      root_scenario s;
+      TestDevice utils;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      std::shared_ptr<time_event> e2 = create_event(scenario);
+      std::shared_ptr<time_event> e3 = create_event(scenario);
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_interval(c0);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 0_tv, 0_tv, 0_tv);
+      s.scenario->add_time_interval(c1);
+      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 20_tv, 20_tv, 20_tv);
+      s.scenario->add_time_interval(c2);
+
+      auto msg_node = std::make_shared<message_node>();
+      msg_node->data.push_back({*utils.float_addr, ossia::value(1.234)});
+
+      auto msg_proc = std::make_shared<ossia::node_process>(msg_node);
+
+      c1->add_time_process(msg_proc);
+      s.interval->start();
+      s.interval->tick(10_tv);
+
+      QCOMPARE((int)msg_node->requested_tokens.size(), (int) 1);
+
+      QVERIFY(utils.float_addr->value() == ossia::value(float(0.)));
+
+      ossia::graph g;
+      g.add_node(msg_node);
+      g.state();
+
+      QVERIFY(utils.float_addr->value() == ossia::value(float(1.234)));
+      QCOMPARE(c2->get_date(), 8_tv);
+    }
+
+    void test_speed()
+    {
+
     }
 
     void test_autom()

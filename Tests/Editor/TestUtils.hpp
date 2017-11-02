@@ -35,19 +35,16 @@ struct TestDeviceRef
 };
 }
 namespace QTest {
-template<>
 inline char* toString(const ossia::value &point)
 {
     QByteArray ba = QByteArray::fromStdString(ossia::value_to_pretty_string(point));
     return qstrdup(ba.data());
 }
-template<>
 inline char* toString(const std::string& str)
 {
     QByteArray ba = QByteArray::fromStdString(str);
     return qstrdup(ba.data());
 }
-template<>
 inline char* toString(const ossia::time_event::status& str)
 {
   switch(str)
@@ -58,6 +55,10 @@ inline char* toString(const ossia::time_event::status& str)
     case ossia::time_event::status::PENDING: return qstrdup("pending");
   }
   return qstrdup("error");
+}
+inline char* toString(const ossia::time_value& val)
+{
+  return QTest::toString(QByteArray::number((qint64)val.impl));
 }
 }
 
