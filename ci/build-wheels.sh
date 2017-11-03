@@ -20,3 +20,9 @@ for PYBIN in /opt/python/*/bin/; do
     "${PYBIN}/pip" install pyossia --no-index -f /io/wheelhouse
     (cd "$HOME"; "${PYBIN}" /io/)
 done
+
+if [[ "x${TRAVIS_TAG}" != "x" ]]; then
+	for WHEEL in /io/wheelhouse; do
+  		python -m twine upload -u ${PyPiUser} -p ${PyPiWord} WHEEL
+  	done
+fi

@@ -232,8 +232,41 @@ case "$TRAVIS_OS_NAME" in
         fi
       ;;
       python_manylinux)
-        docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
+        # _version.py is not valid in a non-git folder
+        # When making a wheel, we write the git tag which it has been build from
+        # request the version
+        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        echo "#! /usr/bin/env python
+        # -*- coding: utf-8 -*-
+
+        def get_versions():
+            return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
+          -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
+          -DOSSIA_STATIC=1 \
+          -DOSSIA_TESTING=0 \
+          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_CI=1 \
+          -DOSSIA_PD=0 \
+          -DOSSIA_QT=0 \
+          -DOSSIA_QML=0 \
+          -DOSSIA_PYTHON=1 ..
+
+        $CMAKE_BIN --build . -- -j2
+        # now we just want to install the wheel and run the tests
+        ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
+        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+
+        docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/ci/build-wheels.sh
+
         ls wheelhouse/
+        cp wheelhouse/*.whl ${ARTIFACTS_DIR}/
+        
       ;;
       python)
         # _version.py is not valid in a non-git folder
