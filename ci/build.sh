@@ -223,6 +223,16 @@ case "$TRAVIS_OS_NAME" in
         fi
       ;;
       python)
+        # _version.py is not valid in a non-git folder
+        # When making a wheel, we write the git tag which it has been build from
+        # request the version
+        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        echo "#! /usr/bin/env python
+         # -*- coding: utf-8 -*-
+
+        def get_versions():
+            return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBOOST_ROOT="$BOOST_ROOT" \
@@ -239,6 +249,9 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_PYTHON=1 ..
 
         $CMAKE_BIN --build . -- -j2
+        # now we just want to install the wheel and run the tests
+        ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
+        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
           ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
@@ -385,6 +398,16 @@ case "$TRAVIS_OS_NAME" in
       popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
+      # _version.py is not valid in a non-git folder
+      # When making a wheel, we write the git tag which it has been build from
+      # request the version
+      WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+      echo "#! /usr/bin/env python
+       # -*- coding: utf-8 -*-
+
+      def get_versions():
+          return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+      cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_STATIC=1 \
                  -DOSSIA_SANITIZE=1 \
@@ -404,8 +427,7 @@ case "$TRAVIS_OS_NAME" in
                  ..
 
       $CMAKE_BIN --build . -- -j2
-
-
+      # now we just want to install the wheel and run the tests
       ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
       ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
 
