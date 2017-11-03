@@ -241,7 +241,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
         fi
 
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
