@@ -1,13 +1,12 @@
 PyOssia
 =======
 
-|Build Status|
+PyOssia is a python package for `libossia <http://ossia.io>`, a modern C++, cross-environment distributed object model for creative coding and interaction scoring Edit.
 
-| PyOssia is a python package for
-  `libossia <http://ossia.io>`__
-| thanks to pybind11
+thanks to pybind11
+
 
 Change Log
 -------------
-``0.0.X`` - First alpha version
+* ``1.0.0`` - First alpha version
 

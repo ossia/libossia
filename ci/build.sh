@@ -196,7 +196,7 @@ case "$TRAVIS_OS_NAME" in
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
           ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p {PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
         fi
-
+        cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       ;;
       RpiRelease)
         #setup some environment variable to help CMAKE to find libraries
@@ -272,6 +272,9 @@ case "$TRAVIS_OS_NAME" in
 
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
         ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+
+        cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
+
       ;;
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
@@ -448,7 +451,7 @@ case "$TRAVIS_OS_NAME" in
           ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
           mv ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       fi
-
+      cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_STATIC=0 \
