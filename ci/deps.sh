@@ -67,6 +67,13 @@ case "$TRAVIS_OS_NAME" in
     if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
       docker pull $DOCKER_IMAGE
     fi
+    if [[ "$BUILD_TYPE" == "RpiPythonRelease" ]]; then
+      if [[ "$PYTHON_VERSION" == "2.7" ]]; then
+        sudo pip install twine
+      else
+        sudo pip3 install twine
+      fi
+    fi
   ;;
   osx)
     # work around a homebrew bug
