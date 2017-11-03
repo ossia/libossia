@@ -64,7 +64,9 @@ case "$TRAVIS_OS_NAME" in
         sudo pip3 install twine
       fi
     fi
-
+    if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
+      docker pull $DOCKER_IMAGE
+    fi
   ;;
   osx)
     # work around a homebrew bug

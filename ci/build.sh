@@ -231,6 +231,10 @@ case "$TRAVIS_OS_NAME" in
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm.tar.gz *
         fi
       ;;
+      python_manylinux)
+        docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/build-wheels.sh
+        ls wheelhouse/
+      ;;
       python)
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
