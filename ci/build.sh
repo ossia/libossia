@@ -381,7 +381,7 @@ case "$TRAVIS_OS_NAME" in
       cd $TRAVIS_BUILD_DIR
       ls
       pushd $TRAVIS_BUILD_DIR/ossia-max-package/
-      tar -czf $TRAVIS_BUILD_DIR/ossia-pd-package/ossia-max-osx.tar.gz ossia
+      tar -czf $TRAVIS_BUILD_DIR/ossia-max-package/ossia-max-osx.tar.gz ossia
       popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
