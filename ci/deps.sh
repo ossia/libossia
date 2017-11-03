@@ -55,6 +55,10 @@ case "$TRAVIS_OS_NAME" in
     elif [[ $BUILD_TYPE == *python* ]] ; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
         docker pull $DOCKER_IMAGE
+        # Install setupttols (need for build wheel)
+        for PYBIN in /opt/python/*/bin/; do
+            "${PYBIN}/pip" install setuptools
+        done
       else
         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           sudo apt-get update -qq
