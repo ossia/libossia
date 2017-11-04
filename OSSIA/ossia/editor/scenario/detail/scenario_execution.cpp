@@ -292,7 +292,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
 
     ossia::state nullState;
     auto& writeState = is_unmuted ? cur_state : nullState;
-    small_event_vec statusChangedEvents;
+    small_event_vec pendingEvents;
     for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
     {
       auto& n = *it;
@@ -300,20 +300,20 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.
       process_this(
-          *n, statusChangedEvents, m_runningIntervals, m_runningIntervals, writeState);
-      if (!statusChangedEvents.empty())
+          *n, pendingEvents, m_runningIntervals, m_runningIntervals, writeState);
+      if (!pendingEvents.empty())
       {
         // TODO won't work if there are multiple waiting nodes
 
         if (is_unmuted)
         {
-          for (const auto& ev : statusChangedEvents)
+          for (const auto& ev : pendingEvents)
           {
             flatten_and_filter(cur_state, ev->get_state());
           }
         }
 
-        statusChangedEvents.clear();
+        pendingEvents.clear();
         it = m_waitingNodes.erase(it);
       }
       else
@@ -381,14 +381,14 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     for (time_sync* node : m_endNodes)
     {
       process_this(
-          *node, statusChangedEvents, m_runningIntervals,
+          *node, pendingEvents, m_runningIntervals,
           m_runningIntervals, writeState);
     }
 
     m_endNodes.clear();
     do
     {
-      for (const auto& timeEvent : statusChangedEvents)
+      for (const auto& timeEvent : pendingEvents)
       {
         time_event& ev = *timeEvent;
         if(ev.get_status() == time_event::status::HAPPENED)
@@ -420,18 +420,18 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
         }
       }
 
-      statusChangedEvents.clear();
+      pendingEvents.clear();
 
       for (auto node : m_endNodes)
       {
         process_this(
-            *node, statusChangedEvents, m_runningIntervals,
+            *node, pendingEvents, m_runningIntervals,
             m_runningIntervals, writeState);
       }
 
       m_endNodes.clear();
 
-    } while (!statusChangedEvents.empty());
+    } while (!pendingEvents.empty());
 
     m_lastState = cur_state;
   }
@@ -440,111 +440,4 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
   return m_lastState;
 }
 
-/// Old execution algorithm ///
-
-/*
-state_element scenario::state(ossia::time_value date, double pos)
-{
-  // if date hasn't been processed already
-  if (date != m_lastDate)
-  {
-    auto prev_last_date = m_lastDate;
-    m_lastDate = date;
-
-    ossia::state cur_state;
-    // reset internal mCurrentState
-
-    // process the scenario from the first TimeSync to the running intervals
-    std::vector<time_event*> statusChangedEvents;
-    time_sync& n = *m_nodes[0];
-    n.process(statusChangedEvents);
-
-    // add the state of each newly HAPPENED TimeEvent
-    if(unmuted())
-    {
-      for (const auto& timeEvent : statusChangedEvents)
-      {
-        time_event& ev = *timeEvent;
-        if (ev.get_status() == time_event::status::HAPPENED)
-          flatten_and_filter(cur_state, ev.get_state());
-      }
-    }
-
-    // make the time of each running TimeInterval flows and add their state
-    // note : this means TimeInterval's state can overwrite TimeEvent's state
-    for (const auto& timeInterval : m_intervals)
-    {
-      time_interval& cst = *timeInterval;
-      if (cst.get_drive_mode() != clock::drive_mode::EXTERNAL)
-      {
-        throw execution_error("scenario_impl::state: "
-            "the pattern interval clock is supposed to "
-            "be in EXTERNAL drive mode");
-        return {};
-      }
-
-      if (cst.running())
-      {
-        // don't tick if the TimeInterval is starting to avoid double ticks
-        auto& startEvent = cst.get_start_event();
-        bool not_starting = none_of(
-            statusChangedEvents, [&](auto ev) {
-              return ev->get_status() == time_event::status::HAPPENED
-                     && ev == &startEvent;
-            });
-
-        if (not_starting)
-        {
-          // no such event found : not starting
-          if (prev_last_date == Infinite)
-            cst.tick(date * 1000.);
-          else
-            cst.tick(ossia::time_value{(date - prev_last_date) * 1000.});
-        }
-        else
-        {
-
-          // We advance the interval so that we don't loose time
-          // TODO getDate is worst-case linear, maybe we should cache it to
-          // have the executedDate in constant time ?
-//          if(prev_last_date == Infinite)
-//              cst.tick();
-//          else
-//              cst.tick(((date -
-cst.get_start_event().get_time_sync()->get_date())*
-//          1000.));
-
-        }
-      }
-
-      // if the time interval is still running after the tick
-      if (cst.running())
-      {
-        flatten_and_filter(cur_state, cst.state());
-      }
-    }
-    m_lastState = cur_state;
-
-    // if all the TimeEvents are not NONE : the Scenario is done
-    bool done = !any_of(m_nodes, [](const std::shared_ptr<time_sync>& tn) {
-      return any_of(
-          tn->get_time_events(), [](const std::shared_ptr<time_event>& ev) {
-            return ev->get_status() == time_event::status::NONE;
-          });
-    });
-
-    // if the Scenario is done : stop the parent TimeInterval
-    if (done)
-    {
-      if (date > parent()->get_min_duration())
-      {
-        ; //! \todo mParent->stop(); // if the parent TimeInterval's Clock is
-          //! in EXTERNAL drive mode, it creates a deadlock.
-      }
-    }
-  }
-
-  return m_lastState;
-}
-*/
 }
