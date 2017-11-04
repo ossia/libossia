@@ -170,7 +170,6 @@ case "$TRAVIS_OS_NAME" in
         WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
         # -*- coding: utf-8 -*-
-
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
@@ -238,7 +237,6 @@ case "$TRAVIS_OS_NAME" in
         WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
         # -*- coding: utf-8 -*-
-
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
@@ -415,8 +413,7 @@ case "$TRAVIS_OS_NAME" in
       # request the version
       WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
       echo "#! /usr/bin/env python
-       # -*- coding: utf-8 -*-
-
+      # -*- coding: utf-8 -*-
       def get_versions():
           return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
       cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
