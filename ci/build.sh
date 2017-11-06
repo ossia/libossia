@@ -178,7 +178,7 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="/usr/include/boost" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
-                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_STATIC=1 \
                    -DOSSIA_TESTING=0 \
                    -DOSSIA_EXAMPLES=0 \
@@ -275,7 +275,7 @@ case "$TRAVIS_OS_NAME" in
         WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
         # -*- coding: utf-8 -*-
-
+        
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
