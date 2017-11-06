@@ -4,9 +4,11 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
-#include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_message.h>
+#if defined(OSSIA_PROTOCOL_MIDI)
+#include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
+#endif
 #include <gsl/span>
 
 namespace ossia
@@ -45,9 +47,10 @@ public:
 
 class OSSIA_EXPORT midi_generic_parameter : public ossia::net::parameter_base
 {
+#if defined(OSSIA_PROTOCOL_MIDI)
   std::unique_ptr<mm::MidiInput> m_input;
   std::unique_ptr<mm::MidiOutput> m_output;
-
+#endif
 public:
   midi_generic_parameter(ossia::net::node_base& n)
     : ossia::net::parameter_base{n}
@@ -65,10 +68,12 @@ public:
 
   void push_value(const mm::MidiMessage& mess)
   {
+#if defined(OSSIA_PROTOCOL_MIDI)
     if (m_output)
     {
       m_output->send(mess);
     }
+#endif
   }
 
   void pull_value() override

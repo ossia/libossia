@@ -1,7 +1,15 @@
 #pragma once
+#include <ossia-config.hpp>
+#if defined(OSSIA_PROTOCOL_AUDIO)
+#include <portaudio.h>
+#else
+using PaStream = int;
+using PaStreamCallbackTimeInfo = int;
+using PaStreamCallbackFlags = int;
+#endif
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/dataflow/audio_parameter.hpp>
-#include <portaudio.h>
+
 
 namespace ossia
 {
@@ -25,7 +33,7 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     audio_protocol();
 
-    ~audio_protocol();
+    ~audio_protocol() override;
 
     bool pull(ossia::net::parameter_base&) override;
     bool push(const ossia::net::parameter_base&) override;

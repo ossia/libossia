@@ -4,14 +4,18 @@ namespace ossia
 {
 audio_protocol::audio_protocol()
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   if(Pa_Initialize() != paNoError)
     throw std::runtime_error("Audio error");
+#endif
 }
 
 audio_protocol::~audio_protocol()
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
   Pa_Terminate();
+#endif
 }
 
 bool audio_protocol::pull(ossia::net::parameter_base&)
@@ -56,15 +60,18 @@ void audio_protocol::set_device(ossia::net::device_base& dev)
 
 void audio_protocol::stop()
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   if(m_stream)
   {
     Pa_StopStream(m_stream);
     m_stream = nullptr;
   }
+#endif
 }
 
 void audio_protocol::reload()
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
 
   auto inputInfo = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
@@ -114,7 +121,7 @@ void audio_protocol::reload()
     Pa_StartStream( m_stream );
   else
     std::cerr << "Error while opening audio stream: " << ec << std::endl;
-
+#endif
 }
 
 PaStream*audio_protocol::stream() { return m_stream; }
@@ -128,6 +135,7 @@ int audio_protocol::PortAudioCallback(
     PaStreamCallbackFlags statusFlags,
     void* userData)
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   using idx_t = gsl::span<float>::index_type;
   const idx_t fc = frameCount;
   auto& self = *static_cast<audio_protocol*>(userData);
@@ -174,5 +182,8 @@ int audio_protocol::PortAudioCallback(
     self.audio_tick(frameCount);
   }
   return paContinue;
+#else
+  return {};
+#endif
 }
 }

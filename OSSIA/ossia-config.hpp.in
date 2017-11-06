@@ -1,6 +1,7 @@
 #pragma once
 
 // Protocols supported by the build
+#cmakedefine OSSIA_PROTOCOL_AUDIO
 #cmakedefine OSSIA_PROTOCOL_MIDI
 #cmakedefine OSSIA_PROTOCOL_OSC
 #cmakedefine OSSIA_PROTOCOL_MINUIT
@@ -8,6 +9,7 @@
 #cmakedefine OSSIA_PROTOCOL_HTTP
 #cmakedefine OSSIA_PROTOCOL_WEBSOCKETS
 #cmakedefine OSSIA_PROTOCOL_SERIAL
+#cmakedefine OSSIA_PROTOCOL_PHIDGETS
 
 // Additional features
 #cmakedefine OSSIA_DNSSD
