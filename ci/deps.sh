@@ -58,7 +58,7 @@ case "$TRAVIS_OS_NAME" in
         wget https://bootstrap.pypa.io/get-pip.py
         # Install setuptools (need for build wheel)
         for PYBIN in /opt/python/*/bin/; do
-            "${PYBIN}" get-pip.py
+            "${PYBIN}/python" get-pip.py
             "${PYBIN}/pip" install setuptools
         done
       else
