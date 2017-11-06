@@ -55,6 +55,9 @@ case "$TRAVIS_OS_NAME" in
     elif [[ $BUILD_TYPE == *python* ]] ; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
         docker pull $DOCKER_IMAGE
+        sudo yum install -y python-setuptools python-setuptools-devel
+        sudo easy_install pip
+        "${PYBIN}/pip" install pip
       else
         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           sudo apt-get update -qq
