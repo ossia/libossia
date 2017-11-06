@@ -177,7 +177,7 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="/usr/include/boost" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
-                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_STATIC=1 \
                    -DOSSIA_TESTING=0 \
                    -DOSSIA_EXAMPLES=0 \
