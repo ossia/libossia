@@ -127,6 +127,7 @@ state_element loop::state(ossia::time_value date, double pos, ossia::time_value 
           if(m_interval->get_date() == 0)
           {
             flatten_and_filter(m_currentState, m_startNode->get_time_events()[0]->get_state());
+            m_interval->start(m_currentState);
           }
           flatten_and_filter(m_currentState, m_interval->tick_offset(tick_amount, tick_offset));
           break;
