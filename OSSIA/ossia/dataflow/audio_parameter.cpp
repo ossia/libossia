@@ -119,6 +119,14 @@ sound_node::sound_node()
   m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
 }
 
+void sound_node::set_sound(const std::vector<std::vector<float>>& vec)
+{
+  m_data.resize(vec.size());
+  for(std::size_t i = 0; i < vec.size(); i++)
+  {
+    m_data[i].assign(vec[i].begin(), vec[i].end());
+  }
+}
 void sound_node::set_sound(std::vector<std::vector<double>> vec)
 {
   m_data = std::move(vec);

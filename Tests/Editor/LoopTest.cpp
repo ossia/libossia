@@ -84,7 +84,7 @@ private Q_SLOTS:
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
-        snd->set_sound({ {0.1, 0.2, 0.3, 0.4} });
+        snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval()->add_time_process(std::make_shared<ossia::node_process>(snd));
 
         ossia::state s;
@@ -99,7 +99,7 @@ private Q_SLOTS:
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
-        snd->set_sound({ {0.1, 0.2, 0.3, 0.4} });
+        snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval()->add_time_process(std::make_shared<ossia::node_process>(snd));
 
         ossia::state s;
@@ -117,7 +117,7 @@ private Q_SLOTS:
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
-        snd->set_sound({ {0.1, 0.2, 0.3, 0.4} });
+        snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval()->add_time_process(std::make_shared<ossia::node_process>(snd));
 
         ossia::state s;
