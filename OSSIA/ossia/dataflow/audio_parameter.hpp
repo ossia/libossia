@@ -224,10 +224,11 @@ public:
 
   void set_start(std::size_t v) { start = v; }
   void set_upmix(std::size_t v) { upmix = v; }
+  void set_sound(const std::vector<std::vector<float>>& vec);
   void set_sound(std::vector<std::vector<double>> vec);
-private:
   void run(ossia::token_request t, ossia::execution_state& e) override;
 
+private:
   std::vector<std::vector<double>> m_data;
   std::size_t start{};
   std::size_t upmix{};
