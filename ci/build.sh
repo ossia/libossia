@@ -173,7 +173,6 @@ case "$TRAVIS_OS_NAME" in
 
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DBOOST_ROOT="/usr/include/boost" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
@@ -241,28 +240,8 @@ case "$TRAVIS_OS_NAME" in
 
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
-          -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
-          -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
-          -DOSSIA_STATIC=1 \
-          -DOSSIA_TESTING=0 \
-          -DOSSIA_EXAMPLES=0 \
-          -DOSSIA_CI=1 \
-          -DOSSIA_PD=0 \
-          -DOSSIA_QT=0 \
-          -DOSSIA_QML=0 \
-          -DOSSIA_PYTHON=1 ..
 
-        $CMAKE_BIN --build . -- -j2
-        # now we just want to install the wheel and run the tests
-        ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
-        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
-
-        docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/ci/build-wheels.sh
+        docker run --rm -v `pwd`:/ $DOCKER_IMAGE $PRE_CMD ci/build-wheels.sh
 
         ls wheelhouse/
         cp wheelhouse/*.whl ${ARTIFACTS_DIR}/
@@ -278,7 +257,6 @@ case "$TRAVIS_OS_NAME" in
         
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBOOST_ROOT="$BOOST_ROOT" \
@@ -456,7 +434,6 @@ case "$TRAVIS_OS_NAME" in
 
       def get_versions():
           return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-      cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_STATIC=1 \
                  -DOSSIA_SANITIZE=1 \
