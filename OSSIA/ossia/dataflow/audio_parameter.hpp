@@ -232,6 +232,8 @@ public:
   void set_sound(const std::vector<std::vector<float>>& vec);
   void set_sound(std::vector<std::vector<double>> vec);
   void run(ossia::token_request t, ossia::execution_state& e) override;
+  std::size_t channels() const { return m_data.size(); }
+  std::size_t duration() const { return m_data.empty() ? 0 : m_data[0].size(); }
 
 private:
   std::vector<std::vector<double>> m_data;
