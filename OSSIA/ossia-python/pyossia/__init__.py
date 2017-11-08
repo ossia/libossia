@@ -17,10 +17,6 @@ pyossia methods
 ===============
 """
 
-# Import libossia python bindings
-# the ossia_python.so file must be in the pyossia module
-from . import ossia_python as ossia
-
 # these few lines are used to get versionning from git
 from ._version import get_versions
 __version__ = get_versions()['version']
@@ -28,23 +24,10 @@ del get_versions
 
 print('pyossia ' + __version__)
 
+
 ######################################################
 # Module Constants
 ######################################################
-
-# create a list of value_types available in OSSIA
-# maybe this is not necessary, just because 8'm a bit lazy
-__value_types__ = {'float':ossia.ValueType.Float,
-                   'int':ossia.ValueType.Int,
-                   'bool':ossia.ValueType.Bool,
-                   'string':ossia.ValueType.String,
-                   'impulse':ossia.ValueType.Impulse,
-                   'list':ossia.ValueType.List,
-                   'vec2f':ossia.ValueType.Vec2f,
-                   'vec3f':ossia.ValueType.Vec3f,
-                   'vec4f':ossia.ValueType.Vec4f,
-                   'char':ossia.ValueType.Char,
-                  }
 
 # create a list of devices
 # access to __devices__ must be done only by using
@@ -208,22 +191,42 @@ def reset(self):
         self.value = self.default_value
 
 
-# customize a bit LocalDevice
-# add a new_param /message / return method
-# with kwargs as desired (optional)
-ossia.LocalDevice.add_param = add_param
-ossia.LocalDevice.expose = expose
 
-# OSCQueryDevice is a mirror
-# your cannot create nodes and parameters
-ossia.OSCQueryDevice.get_nodes = get_nodes
-ossia.OSCQueryDevice.get_parameters = get_parameters
+# Import libossia python bindings
+# the ossia_python.so file must be in the pyossia module
+try:
+    from . import ossia_python as ossia
+    # create a list of value_types available in OSSIA
+    # maybe this is not necessary, just because 8'm a bit lazy
+    __value_types__ = {'float':ossia.ValueType.Float,
+                       'int':ossia.ValueType.Int,
+                       'bool':ossia.ValueType.Bool,
+                       'string':ossia.ValueType.String,
+                       'impulse':ossia.ValueType.Impulse,
+                       'list':ossia.ValueType.List,
+                       'vec2f':ossia.ValueType.Vec2f,
+                       'vec3f':ossia.ValueType.Vec3f,
+                       'vec4f':ossia.ValueType.Vec4f,
+                       'char':ossia.ValueType.Char,
+                      }
+    # customize a bit LocalDevice
+    # add a new_param /message / return method
+    # with kwargs as desired (optional)
+    ossia.LocalDevice.add_param = add_param
+    ossia.LocalDevice.expose = expose
 
-# A Node has nodes and parameters
-ossia.Node.get_nodes = get_nodes
-ossia.Node.get_parameters = get_parameters
-ossia.Node.init = init
+    # OSCQueryDevice is a mirror
+    # your cannot create nodes and parameters
+    ossia.OSCQueryDevice.get_nodes = get_nodes
+    ossia.OSCQueryDevice.get_parameters = get_parameters
 
-# A Parameter can be reset to its default_value
-ossia.Parameter.reset = reset
-#ossia.Parameter.description = ossia.Node.description
+    # A Node has nodes and parameters
+    ossia.Node.get_nodes = get_nodes
+    ossia.Node.get_parameters = get_parameters
+    ossia.Node.init = init
+
+    # A Parameter can be reset to its default_value
+    ossia.Parameter.reset = reset
+    #ossia.Parameter.description = ossia.Node.description
+except(ImportError):
+    pass
