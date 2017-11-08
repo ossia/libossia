@@ -74,7 +74,7 @@ def expose(self, protocol='oscquery', host='localhost', listening_port=3456, sen
     if protocol == 'oscquery':
         self.create_oscquery_server(listening_port, sending_port, logger)
     elif protocol == 'osc':
-        self.create_osc_server(host, listening_port, sending_port, logger)
+        self.create_osc_server(host, sending_port, listening_port, logger)
     else:
         print('ossia warning : ' + protocol + ' is not implemented')
 
@@ -194,6 +194,10 @@ def reset(self):
 
 # Import libossia python bindings
 # the ossia_python.so file must be in the pyossia module
+
+# try / except is needed to import module without so binding to access version.
+# this is need for building wheel.
+
 try:
     from . import ossia_python as ossia
     # create a list of value_types available in OSSIA
