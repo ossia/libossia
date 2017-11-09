@@ -64,7 +64,7 @@ public:
   static void pull_from_parameter(inlet& in, execution_state& e);
 
   void init_node(graph_node& n, execution_state& e);
-  void teardown_node(graph_node& n, execution_state& e);
+  void teardown_node(const graph_node& n, execution_state& e);
 
   node_bimap m_nodes;
   edge_bimap m_edges;

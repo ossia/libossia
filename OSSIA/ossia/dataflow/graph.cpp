@@ -585,7 +585,7 @@ void graph::init_node(graph_node& n, execution_state& e)
   }
 }
 
-void graph::teardown_node(graph_node& n, execution_state& e)
+void graph::teardown_node(const graph_node& n, execution_state& e)
 {
   for (const inlet_ptr& in : n.inputs())
   {
@@ -596,7 +596,7 @@ void graph::teardown_node(graph_node& n, execution_state& e)
   // Copy from output ports to environment
   for (const outlet_ptr& out : n.outputs())
   {
-    bool all_targets_disabled = !out->targets.empty() && ossia::all_of(out->targets, [] (auto tgt){
+    bool all_targets_disabled = !out->targets.empty() && ossia::all_of(out->targets, [] (auto tgt) {
       return tgt->in_node && !tgt->in_node->enabled();
     });
 
