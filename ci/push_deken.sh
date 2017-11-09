@@ -44,6 +44,8 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
 
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     OS="(Darwin-x86_64-64)(Darwin-x86_64-32)"
+    brew install coreutils
+    alias sha256sum='gsha256sum'
   fi
 
   ARCHIVE_NAME="ossia-v${VERSION}-${OS}-externals.tar.gz"
