@@ -51,7 +51,7 @@ class OSSIA_EXPORT midi_generic_parameter : public ossia::net::parameter_base
   std::unique_ptr<mm::MidiInput> m_input;
   std::unique_ptr<mm::MidiOutput> m_output;
 #endif
-public:
+  public:
   midi_generic_parameter(ossia::net::node_base& n)
     : ossia::net::parameter_base{n}
   {

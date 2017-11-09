@@ -2,7 +2,8 @@
 
 namespace ossia
 {
-audio_protocol::audio_protocol()
+audio_protocol::audio_protocol():
+  bufferSize{128}
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
   if(Pa_Initialize() != paNoError)
@@ -98,14 +99,14 @@ void audio_protocol::reload()
   inputParameters.device = Pa_GetDefaultInputDevice();
   inputParameters.channelCount = inputs;
   inputParameters.sampleFormat = paFloat32 | paNonInterleaved;
-  inputParameters.suggestedLatency = 0.1;
+  inputParameters.suggestedLatency = 0.01;
   inputParameters.hostApiSpecificStreamInfo = nullptr;
 
   PaStreamParameters outputParameters;
   outputParameters.device = Pa_GetDefaultOutputDevice();
   outputParameters.channelCount = outputs;
   outputParameters.sampleFormat = paFloat32 | paNonInterleaved;
-  outputParameters.suggestedLatency = 0.1;
+  outputParameters.suggestedLatency = 0.01;
   outputParameters.hostApiSpecificStreamInfo = nullptr;
 
   std::cerr << "=== stream start ===\n";
