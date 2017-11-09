@@ -170,9 +170,9 @@ case "$TRAVIS_OS_NAME" in
         WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
         # -*- coding: utf-8 -*-
+
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DBOOST_ROOT="/usr/include/boost" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
@@ -230,6 +230,23 @@ case "$TRAVIS_OS_NAME" in
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm.tar.gz *
         fi
       ;;
+      python_manylinux)
+        # _version.py is not valid in a non-git folder
+        # When making a wheel, we write the git tag which it has been build from
+        # request the version
+        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        echo "#! /usr/bin/env python
+        # -*- coding: utf-8 -*-
+
+        def get_versions():
+            return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+
+        docker run --rm -v `pwd`:/ $DOCKER_IMAGE $PRE_CMD ci/build-wheels.sh
+
+        ls wheelhouse/
+        cp wheelhouse/*.whl ${ARTIFACTS_DIR}/
+        
+      ;;
       python)
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
@@ -237,9 +254,9 @@ case "$TRAVIS_OS_NAME" in
         WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
         # -*- coding: utf-8 -*-
+        
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBOOST_ROOT="$BOOST_ROOT" \
@@ -414,9 +431,9 @@ case "$TRAVIS_OS_NAME" in
       WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
       echo "#! /usr/bin/env python
       # -*- coding: utf-8 -*-
+
       def get_versions():
           return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-      cat ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_STATIC=1 \
                  -DOSSIA_SANITIZE=1 \
