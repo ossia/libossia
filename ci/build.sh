@@ -104,7 +104,7 @@ case "$TRAVIS_OS_NAME" in
 
         pushd /tmp
         git clone ${TRAVIS_BUILD_DIR} --recursive
-        tar -czf "${ARTIFACTS_DIR}\libossia-source.tar.gz" --exclude .git libossia
+        tar -czf ${ARTIFACTS_DIR}/libossia-source.tar.gz --exclude .git libossia
         rm -rf libossia
         popd
 
