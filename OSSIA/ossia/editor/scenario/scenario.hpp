@@ -96,7 +96,7 @@ private:
   small_sync_vec m_waitingNodes;
   overtick_map m_overticks;
   sync_set m_endNodes;
-  void process_this(
+  bool process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
       interval_set& started, interval_set& stopped, ossia::state& st);
   void make_happen(

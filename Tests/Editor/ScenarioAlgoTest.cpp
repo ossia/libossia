@@ -26,6 +26,20 @@ class message_node : public ossia::graph_node
 
     std::vector<ossia::message> data;
 };
+
+class percentage_node : public ossia::graph_node
+{
+  public:
+    percentage_node(ossia::destination d)
+    {
+      outputs().push_back(ossia::make_outlet<ossia::value_port>(&d.address()));
+    }
+
+    void run(ossia::token_request tok, ossia::execution_state& e) override
+    {
+      outputs().back()->data.target<ossia::value_port>()->data = (float)tok.position;
+    }
+};
 }
 
 namespace ossia {
@@ -600,6 +614,113 @@ class ScenarioAlgoTest : public QObject
       s.interval->tick(1000_tv);
       s.interval->tick(999_tv);
       s.interval->tick(1_tv);
+    }
+
+
+    void test_percentage()
+    {
+      std::cerr << "\n\ntest_percentage\n";
+      using namespace ossia;
+      root_scenario s;
+      TestDevice utils;
+      ossia::graph g;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      s.scenario->add_time_interval(c0);
+
+      auto node = std::make_shared<percentage_node>(*utils.float_addr);
+      auto proc = std::make_shared<ossia::node_process>(node);
+      c0->add_time_process(proc);
+      g.add_node(node);
+
+
+      s.interval->start();
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.size() == 1);
+        QVERIFY(s.valueState.begin()->second.data == ossia::value(0.f));
+      }
+
+      s.interval->tick(1_tv);
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.size() == 1);
+        QVERIFY(s.valueState.begin()->second.data == ossia::value(0.5f));
+      }
+
+      s.interval->tick(1_tv);
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.size() == 1);
+        QVERIFY(s.valueState.begin()->second.data == ossia::value(1.f));
+      }
+
+      s.interval->tick(1_tv);
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.empty());
+      }
+    }
+
+    void test_percentage_long()
+    {
+      std::cerr << "\n\ntest_percentage_long\n";
+      using namespace ossia;
+      root_scenario s;
+      TestDevice utils;
+      ossia::graph g;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+      s.scenario->add_time_interval(c0);
+
+      auto node = std::make_shared<percentage_node>(*utils.float_addr);
+      auto proc = std::make_shared<ossia::node_process>(node);
+      c0->add_time_process(proc);
+      g.add_node(node);
+
+
+      s.interval->start();
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.size() == 1);
+        QVERIFY(s.valueState.begin()->second.data == ossia::value(0.f));
+      }
+
+      s.interval->tick(3_tv);
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.size() == 1);
+        QVERIFY(s.valueState.begin()->second.data == ossia::value(3./5.));
+      }
+
+      s.interval->tick(7_tv);
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.size() == 1);
+        QVERIFY(s.valueState.begin()->second.data == ossia::value(1.f));
+      }
+
+      s.interval->tick(1_tv);
+      {
+        ossia::execution_state s;
+        g.state(s);
+        QVERIFY(s.valueState.empty());
+      }
     }
 
     void test_offset()

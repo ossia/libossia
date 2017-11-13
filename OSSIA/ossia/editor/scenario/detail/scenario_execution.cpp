@@ -89,7 +89,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
     (event.m_callback)(event.m_status);
 }
 
-void scenario::process_this(
+bool scenario::process_this(
     time_sync& node, small_event_vec& pendingEvents,
     interval_set& started, interval_set& stopped, ossia::state& st)
 {
@@ -187,7 +187,7 @@ void scenario::process_this(
       node.left_evaluation.send();
     }
 
-    return;
+    return false;
   }
 
   if (!node.m_evaluating)
@@ -210,7 +210,7 @@ void scenario::process_this(
     if (node.trigger_request)
       node.trigger_request = false;
     else if (!expressions::evaluate(*node.m_expression))
-      return;
+      return false;
   }
 
   // trigger the time sync
@@ -242,6 +242,8 @@ void scenario::process_this(
     node.m_status = time_sync::DONE_MAX_REACHED;
   else
     node.m_status = time_sync::DONE_TRIGGERED;
+
+  return true;
 }
 
 enum progress_mode
@@ -299,9 +301,9 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       // Note: we pass m_runningIntervals as stopped because it does not matter:
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.
-      process_this(
+      bool res = process_this(
           *n, pendingEvents, m_runningIntervals, m_runningIntervals, writeState);
-      if (!pendingEvents.empty())
+      if (res)
       {
         // TODO won't work if there are multiple waiting nodes
 
@@ -321,6 +323,8 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
         ++it;
       }
     }
+
+    pendingEvents.clear();
 
     auto run_interval = [&] (ossia::time_interval& interval, ossia::time_value tick, ossia::time_value offset)
     {
