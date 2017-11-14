@@ -10,7 +10,9 @@ struct init_delay_line
   delay_line_type& delay_line;
   void operator ()(const audio_port&) { delay_line = audio_delay_line{}; }
   void operator ()(const value_port&) { delay_line = value_delay_line{}; }
+#if defined(OSSIA_PROTOCOL_MIDI)
   void operator ()(const midi_port&) { delay_line = midi_delay_line{}; }
+#endif
   void operator ()() { }
 };
 

@@ -34,6 +34,7 @@ struct local_pull_visitor
     return false;
   }
 
+#if defined(OSSIA_PROTOCOL_MIDI)
   bool operator()(midi_port& val)
   {
     auto it = st.midiState.find(addr);
@@ -44,6 +45,7 @@ struct local_pull_visitor
     }
     return false;
   }
+#endif
 
   bool operator()()
   {
@@ -68,12 +70,14 @@ struct global_pull_visitor
     aa->clone_value(val.samples);
   }
 
+#if defined(OSSIA_PROTOCOL_MIDI)
   void operator()(midi_port& val)
   {
     auto ma = dynamic_cast<const midi_generic_parameter*>(&out);
     assert(ma);
     ma->clone_value(val.messages);
   }
+#endif
 
   void operator()()
   {
@@ -84,7 +88,9 @@ void execution_state::clear()
 {
   valueState.clear();
   audioState.clear();
+#if defined(OSSIA_PROTOCOL_MIDI)
   midiState.clear();
+#endif
 }
 
 void execution_state::commit()
@@ -111,6 +117,7 @@ void execution_state::commit()
     }
   }
 
+#if defined(OSSIA_PROTOCOL_MIDI)
   for (auto& elt : midiState)
   {
     if (auto base_addr = elt.first.target<ossia::net::parameter_base*>())
@@ -124,6 +131,8 @@ void execution_state::commit()
       }
     }
   }
+#endif
+
 }
 
 void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
@@ -149,10 +158,12 @@ void execution_state::insert(const destination_t& dest, data_type v)
   {
     insert(dest, std::move(*audio));
   }
+#if defined(OSSIA_PROTOCOL_MIDI)
   else if (auto midi = eggs::variants::get_if<midi_port>(&v))
   {
     insert(dest, std::move(*midi));
   }
+#endif
   else if (auto val = eggs::variants::get_if<value_port>(&v))
   {
     insert(dest, std::move(*val));
@@ -166,9 +177,14 @@ void execution_state::insert(const destination_t& dest, data_type v)
 bool execution_state::in_local_scope(net::parameter_base& other) const
 {
   destination_t dest{&other};
+#if defined(OSSIA_PROTOCOL_MIDI)
   bool ok = (valueState.find(dest) != valueState.end())
             || (audioState.find(dest) != audioState.end())
             || (midiState.find(dest) != midiState.end());
+#else
+  bool ok = (valueState.find(dest) != valueState.end())
+            || (audioState.find(dest) != audioState.end());
+#endif
   if (!ok)
   {
     // TODO check if there is any pattern matching the current destination
