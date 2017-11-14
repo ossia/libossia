@@ -178,6 +178,7 @@ case "$TRAVIS_OS_NAME" in
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
                    -DOSSIA_STATIC=1 \
                    -DOSSIA_TESTING=0 \
                    -DOSSIA_EXAMPLES=0 \

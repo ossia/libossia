@@ -8,6 +8,7 @@ if(CMAKE_CROSSCOMPILING)
     include_directories("${PYTHON_INCLUDE_DIR}/../")
 
     message(STATUS "PYTHON_INCLUDE_DIR ${PYTHON_INCLUDE_DIR}")
+    message(STATUS "PYTHON_EXECUTABLE - ${PYTHON_EXECUTABLE}")
 
     add_library(${PROJECT_NAME} SHARED ${PROJECT_NAME}.cpp)
     target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
@@ -21,12 +22,12 @@ if(CMAKE_CROSSCOMPILING)
     endif()
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND sudo ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/setup.py bdist_wheel --plat-name linux-armv6l
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/setup.py bdist_wheel --plat-name linux-armv6l
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND sudo ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
+      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
 else()
@@ -35,8 +36,10 @@ else()
     pybind11_add_module(${PROJECT_NAME} ${PROJECT_NAME}.cpp)
     use_gold(${PROJECT_NAME})
     add_linker_warnings_external(${PROJECT_NAME})
+
     message(STATUS "PYTHON_EXECUTABLE - ${PYTHON_EXECUTABLE}")
-    message(STATUS "PYTHON_LIBRARY - ${PYTHON_EXECUTABLE}")
+    message(STATUS "PYTHON_LIBRARY - ${PYTHON_LIBRARY}")
+
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
 
     add_custom_command(TARGET ${PROJECT_NAME}
