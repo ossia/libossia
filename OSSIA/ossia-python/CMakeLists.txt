@@ -21,12 +21,12 @@ if(CMAKE_CROSSCOMPILING)
     endif()
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/setup.py bdist_wheel --plat-name linux-armv6l
+      COMMAND sudo ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/setup.py bdist_wheel --plat-name linux-armv6l
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
+      COMMAND sudo ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
 else()
