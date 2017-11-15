@@ -242,7 +242,9 @@ case "$TRAVIS_OS_NAME" in
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
 
-        docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD ci/build-wheels.sh
+        ls
+        ls ../
+        docker run --rm -v $TRAVIS_BUILD_DIR/ci/build-wheels.sh $DOCKER_IMAGE $PRE_CMD ci/build-wheels.sh
 
         ls wheelhouse/
         cp wheelhouse/*.whl ${ARTIFACTS_DIR}/
