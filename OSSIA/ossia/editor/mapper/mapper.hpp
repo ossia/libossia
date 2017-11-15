@@ -29,6 +29,8 @@ class value;
  * The driver address is where the input value is taken from;
  * The driven address is where the output value is sent to.
  */
+
+/*
 class OSSIA_EXPORT mapper final : public ossia::time_process
 {
 public:
@@ -48,7 +50,7 @@ private:
 
   ossia::state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
-  void start(ossia::state& st) override;
+  void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
@@ -70,4 +72,5 @@ private:
 
   friend struct mapper_compute_visitor;
 };
+*/
 }

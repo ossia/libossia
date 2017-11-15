@@ -7,6 +7,7 @@
 namespace ossia
 {
 
+/*
 spline_automation::spline_automation()
 {
 }
@@ -42,7 +43,7 @@ spline_automation::state(ossia::time_value date, double pos, ossia::time_value t
   return {};
 }
 
-void spline_automation::start(ossia::state& st)
+void spline_automation::start()
 {
 }
 
@@ -57,4 +58,5 @@ void spline_automation::pause()
 void spline_automation::resume()
 {
 }
+*/
 }

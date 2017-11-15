@@ -119,9 +119,15 @@ void audio_protocol::reload()
                           &PortAudioCallback,
                           this);
   if(ec == PaErrorCode::paNoError)
-    Pa_StartStream( m_stream );
+  {
+    ec = Pa_StartStream( m_stream );
+    if(ec != PaErrorCode::paNoError)
+    {
+      std::cerr << "Error while starting audio stream: " << Pa_GetErrorText(ec) << std::endl;
+    }
+  }
   else
-    std::cerr << "Error while opening audio stream: " << ec << std::endl;
+    std::cerr << "Error while opening audio stream: " << Pa_GetErrorText(ec) << std::endl;
 #endif
 }
 
@@ -145,7 +151,7 @@ int audio_protocol::PortAudioCallback(
   auto float_output = ((float **) output);
 
   // Prepare audio inputs
-  const int n_in_channels = self.audio_ins.size();
+  const int n_in_channels = (int)self.audio_ins.size();
   self.main_audio_in->audio.resize(n_in_channels);
   for(int i = 0; i < n_in_channels; i++)
   {
@@ -156,7 +162,7 @@ int audio_protocol::PortAudioCallback(
   }
 
   // Prepare audio outputs
-  const int n_out_channels = self.audio_outs.size();
+  const int n_out_channels = (int)self.audio_outs.size();
   self.main_audio_out->audio.resize(n_out_channels);
   for(int i = 0; i < n_out_channels; i++)
   {

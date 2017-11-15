@@ -114,7 +114,7 @@ void process_offset(
   }
 }
 
-state_element scenario::offset(ossia::time_value offset, double pos)
+void scenario::offset(ossia::time_value offset, double pos)
 {
   // reset internal offset list and state
 
@@ -123,7 +123,6 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   past_events_map pastEvents;
 
   m_runningIntervals.clear();
-  ossia::state cur_state;
 
   // Precompute the default date of every timesync.
   tsl::hopscotch_map<time_sync*, ossia::time_value> time_map;
@@ -178,6 +177,7 @@ state_element scenario::offset(ossia::time_value offset, double pos)
   process_offset(*m_nodes[0], offset, pastEvents);
 
   // build offset state from all ordered past events
+  /*
   if (unmuted())
   {
     for (const auto& p : pastEvents)
@@ -185,6 +185,8 @@ state_element scenario::offset(ossia::time_value offset, double pos)
       merge_flatten_and_filter(cur_state, p.second->get_state());
     }
   }
+  */
+
 
   // offset all TimeIntervals
   for (const auto& timeInterval : m_intervals)
@@ -206,14 +208,11 @@ state_element scenario::offset(ossia::time_value offset, double pos)
 
     if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration())
     {
-      flatten_and_filter(cur_state, cst.offset(intervalOffset));
+      cst.offset(intervalOffset);
       m_runningIntervals.insert(&cst);
     }
   }
 
-  m_lastState = cur_state;
   m_lastDate = offset;
-
-  return m_lastState;
 }
 }

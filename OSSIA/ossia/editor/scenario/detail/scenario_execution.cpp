@@ -20,12 +20,12 @@
 namespace ossia
 {
 void scenario::make_happen(
-    time_event& event, interval_set& started, interval_set& stopped, ossia::state& st)
+    time_event& event, interval_set& started, interval_set& stopped)
 {
   event.m_status = time_event::status::HAPPENED;
 
   // stop previous TimeIntervals
-  for (auto& timeInterval : event.previous_time_intervals())
+  for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.previous_time_intervals())
   {
     timeInterval->stop();
     mark_end_discontinuous{}(*timeInterval);
@@ -33,9 +33,10 @@ void scenario::make_happen(
   }
 
   // setup next TimeIntervals
-  for (auto& timeInterval : event.next_time_intervals())
+  for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.next_time_intervals())
   {
-    timeInterval->start(st);
+    timeInterval->start();
+    timeInterval->tick();
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());
@@ -82,7 +83,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
     }
 
     if (dispose)
-      nextTimeInterval->get_end_event().dispose();
+      make_dispose(nextTimeInterval->get_end_event(), stopped);
   }
 
   if (event.m_callback)
@@ -91,7 +92,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 
 bool scenario::process_this(
     time_sync& node, small_event_vec& pendingEvents,
-    interval_set& started, interval_set& stopped, ossia::state& st)
+    interval_set& started, interval_set& stopped)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
@@ -225,7 +226,7 @@ bool scenario::process_this(
     expressions::update(expr);
 
     if (expressions::evaluate(expr))
-      make_happen(ev, started, stopped, st);
+      make_happen(ev, started, stopped);
     else
       make_dispose(ev, stopped);
   }
@@ -253,7 +254,7 @@ enum progress_mode
 };
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-state_element scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
+void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   node->requested_tokens.push_back({date, pos, tick_offset});
   // ossia::logger().info("scenario::state starts");
@@ -268,7 +269,6 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     time_value tick_ms
         = (prev_last_date == Infinite) ? date : (date - prev_last_date);
 
-    ossia::state cur_state;
     m_overticks.clear();
     m_endNodes.clear();
 
@@ -292,8 +292,6 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     // state at 0.5
     // * the ones we're finishing in : we take their state where we finish
 
-    ossia::state nullState;
-    auto& writeState = is_unmuted ? cur_state : nullState;
     small_event_vec pendingEvents;
     for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
     {
@@ -302,7 +300,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.
       bool res = process_this(
-          *n, pendingEvents, m_runningIntervals, m_runningIntervals, writeState);
+          *n, pendingEvents, m_runningIntervals, m_runningIntervals);
       if (res)
       {
         // TODO won't work if there are multiple waiting nodes
@@ -311,7 +309,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
         {
           for (const auto& ev : pendingEvents)
           {
-            flatten_and_filter(cur_state, ev->get_state());
+            //flatten_and_filter(cur_state, ev->get_state());
           }
         }
 
@@ -330,6 +328,8 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     {
       const auto cst_old_date = interval.get_date();
       const auto end_node = &interval.get_end_event().get_time_sync();
+
+      // TODO only insert it if we are past min bound ?
       m_endNodes.insert(end_node);
 
       // Tick without going over the max
@@ -338,12 +338,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       if (!cst_max_dur.infinite())
       {
         const auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
-        const auto st = interval.tick_offset(this_tick, offset);
-
-        if (is_unmuted)
-        {
-          flatten_and_filter(cur_state, std::move(st));
-        }
+        interval.tick_offset(this_tick, offset);
 
         const auto ot
             = tick - (cst_max_dur - cst_old_date) / interval.get_speed();
@@ -365,11 +360,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       }
       else
       {
-        const auto st = interval.tick_offset(tick, offset);
-        if (is_unmuted)
-        {
-          flatten_and_filter(cur_state, std::move(st));
-        }
+        interval.tick_offset(tick, offset);
       }
     };
 
@@ -386,7 +377,7 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
     {
       process_this(
           *node, pendingEvents, m_runningIntervals,
-          m_runningIntervals, writeState);
+          m_runningIntervals);
     }
 
     m_endNodes.clear();
@@ -397,10 +388,12 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
         time_event& ev = *timeEvent;
         if(ev.get_status() == time_event::status::HAPPENED)
         {
+          /*
           if (is_unmuted)
           {
             flatten_and_filter(cur_state, ev.get_state());
           }
+          */
 
           auto& tn = ev.get_time_sync();
           if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
@@ -430,18 +423,16 @@ state_element scenario::state(ossia::time_value date, double pos, ossia::time_va
       {
         process_this(
             *node, pendingEvents, m_runningIntervals,
-            m_runningIntervals, writeState);
+            m_runningIntervals);
       }
 
       m_endNodes.clear();
 
     } while (!pendingEvents.empty());
 
-    m_lastState = cur_state;
   }
 
   // ossia::logger().info("scenario::state ends");
-  return m_lastState;
 }
 
 }

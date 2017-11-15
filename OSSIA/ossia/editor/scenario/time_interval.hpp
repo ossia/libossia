@@ -7,7 +7,6 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/editor/state/state_element_fwd.hpp>
 #include <ossia_export.h>
 
 /**
@@ -67,17 +66,19 @@ public:
     m_speed = g;
   }
 
-  ossia::state_element tick(ossia::time_value);
-  ossia::state_element tick(ossia::time_value, double ratio);
-  ossia::state_element tick_offset(ossia::time_value, ossia::time_value offset);
-  ossia::state_element tick_offset(ossia::time_value, double ratio, ossia::time_value offset);
+
+  void tick();
+  void tick(ossia::time_value);
+  void tick(ossia::time_value, double ratio);
+  void tick_offset(ossia::time_value, ossia::time_value offset);
+  void tick_offset(ossia::time_value, double ratio, ossia::time_value offset);
 
   /*! to get the interval execution back
    \param const #TimeValue position
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
   using exec_callback = std::function<void(
-      double, ossia::time_value, const ossia::state_element&)>;
+      double, ossia::time_value)>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no
@@ -103,7 +104,7 @@ public:
 
   /*! start #time_interval */
   void start();
-  void start(ossia::state&);
+  void start_and_tick();
 
   /*! stop #time_interval */
   void stop();
@@ -120,14 +121,14 @@ public:
    \details don't call offset when the #time_interval is running
    \param const #TimeValue offset date
    \return std::shared_ptr<#State> */
-  ossia::state_element offset(ossia::time_value);
+  void offset(ossia::time_value);
 
   /*! get a #State from the interval depending on its date
    \details the returned #State is made of as many as sub States for each
    TimeProcess the #time_interval manages
    \details don't call state when the #time_interval is not running
    \return std::shared_ptr<#State> */
-  ossia::state_element state();
+  void state();
 
   /*! sets a new callback for the interval
     \param #time_interval::ExecutionCallback to use to be notified at each
@@ -193,8 +194,6 @@ public:
   }
 
 private:
-  ossia::state make_state();
-
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
 

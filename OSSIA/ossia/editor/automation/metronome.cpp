@@ -7,6 +7,7 @@
 
 namespace ossia
 {
+/*
 metronome::metronome()
 {
 }
@@ -75,7 +76,7 @@ state_element metronome::state(ossia::time_value date, double pos, ossia::time_v
   return {};
 }
 
-void metronome::start(ossia::state& st)
+void metronome::start()
 {
   m_lastDate = 0_tv;
   m_lastTick = 0_tv;
@@ -92,4 +93,5 @@ void metronome::pause()
 void metronome::resume()
 {
 }
+*/
 }

@@ -6,6 +6,7 @@
 
 namespace ossia
 {
+/*
 class OSSIA_EXPORT metronome : public ossia::time_process
 {
 public:
@@ -16,7 +17,7 @@ public:
 
   ossia::state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
-  void start(ossia::state& st) override;
+  void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
@@ -26,4 +27,5 @@ private:
   std::shared_ptr<curve<double,float>> m_curve;
   time_value m_lastTick;
 };
+*/
 }

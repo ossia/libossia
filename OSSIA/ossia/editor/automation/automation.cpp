@@ -10,7 +10,7 @@
 
 namespace ossia
 {
-
+/*
 automation::automation()
 {
 }
@@ -39,7 +39,7 @@ void automation::update_message(double t)
   }
 }
 
-ossia::state_element automation::offset(ossia::time_value offset, double pos)
+void automation::offset(ossia::time_value offset, double pos)
 {
   // edit a Message handling the new Value
   update_message(pos);
@@ -49,7 +49,7 @@ ossia::state_element automation::offset(ossia::time_value offset, double pos)
   return ossia::state_element{};
 }
 
-ossia::state_element automation::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
+void automation::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
 {
   // if date hasn't been processed already
   if (date != m_lastDate)
@@ -65,7 +65,7 @@ ossia::state_element automation::state(ossia::time_value date, double pos, ossia
   return ossia::state_element{};
 }
 
-void automation::start(ossia::state& st)
+void automation::start()
 {
   m_drive.reset();
 }
@@ -114,4 +114,5 @@ ossia::value automation::compute_value(
         detail::compute_value_visitor{position, drivenType}, drive);
   return {};
 }
+*/
 }

@@ -32,8 +32,7 @@ public:
   ~clock();
 
   /*! start the clock */
-  void start(ossia::state& st);
-  void start();
+  void start_and_tick();
 
   /*! halt the clock */
   void stop();

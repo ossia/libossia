@@ -42,6 +42,8 @@ class parameter_base;
  *
  * \see \ref Behavior \ref curve \ref curve_segment
  */
+
+/*
 class OSSIA_EXPORT automation final : public ossia::time_process
 {
 public:
@@ -57,10 +59,10 @@ public:
   void clean();
 
 private:
-  ossia::state_element offset(ossia::time_value, double pos) override;
-  ossia::state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
+  void offset(ossia::time_value, double pos) override;
+  void state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
-  void start(ossia::state& st) override;
+  void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
@@ -74,4 +76,5 @@ private:
   optional<ossia::message> m_lastMessage;
   ossia::val_type m_drivenType{};
 };
+*/
 }

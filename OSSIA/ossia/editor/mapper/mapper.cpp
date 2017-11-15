@@ -11,6 +11,7 @@
 namespace ossia
 {
 
+/*
 mapper::mapper()
 {
 }
@@ -67,7 +68,7 @@ ossia::state_element mapper::state(ossia::time_value date, double pos, ossia::ti
   return ossia::state_element{};
 }
 
-void mapper::start(ossia::state& st)
+void mapper::start()
 {
   // start driver address value observation
   if (m_driverAddress && !m_callback)
@@ -198,4 +199,5 @@ void mapper::driver_value_callback(ossia::value value)
     }
   }
 }
+*/
 }

@@ -40,11 +40,11 @@ public:
   scenario();
   ~scenario() override;
 
-  state_element offset(ossia::time_value, double pos) override;
+  void offset(ossia::time_value, double pos) override;
 
-  state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
+  void state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
-  void start(ossia::state& st) override;
+  void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
@@ -90,19 +90,15 @@ private:
                                     // (the first is the start node, the
                                     // second is the end node)
 
-  ossia::state m_lastState;
-
   interval_set m_runningIntervals;
   small_sync_vec m_waitingNodes;
   overtick_map m_overticks;
   sync_set m_endNodes;
-  bool process_this(
+  static bool process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
-      interval_set& started, interval_set& stopped, ossia::state& st);
-  void make_happen(
-      time_event& event, interval_set& started, interval_set& stopped, ossia::state& st);
-  void make_dispose(time_event& event, interval_set& stopped);
+      interval_set& started, interval_set& stopped);
+  static void make_happen(
+      time_event& event, interval_set& started, interval_set& stopped);
+  static void make_dispose(time_event& event, interval_set& stopped);
 };
-
-ossia::state_element tick_interval(time_interval& c, ossia::time_value tick, ossia::time_value offset);
 }

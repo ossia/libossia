@@ -4,7 +4,6 @@
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/editor/scenario/clock.hpp>
-#include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <cassert>
 #include <iostream>
@@ -29,14 +28,7 @@ clock::~clock()
   stop();
 }
 
-void clock::start()
-{
-  ossia::state st;
-  start(st);
-  ossia::launch(st);
-}
-
-void clock::start(ossia::state& st)
+void clock::start_and_tick()
 {
   if (m_running)
     return;
@@ -52,7 +44,7 @@ void clock::start(ossia::state& st)
   m_elapsedTime = 0.;
 
   // notify the owner
-  m_interval.start(st);
+  m_interval.start_and_tick();
 
   if (m_thread.joinable())
     m_thread.join();

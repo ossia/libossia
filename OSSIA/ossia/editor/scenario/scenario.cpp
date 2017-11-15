@@ -49,7 +49,7 @@ scenario::~scenario()
   }
 }
 
-void scenario::start(ossia::state& st)
+void scenario::start()
 {
   for(auto& node : m_nodes)
   {
@@ -92,7 +92,8 @@ void scenario::start(ossia::state& st)
         && endStatus == time_event::status::NONE)
     {
       m_runningIntervals.insert(&cst);
-      cst.start(st);
+      cst.start();
+      cst.tick();
     }
     // the interval starts in the void and ends on a timesync that did
     // execute
@@ -107,7 +108,8 @@ void scenario::start(ossia::state& st)
         && endStatus == time_event::status::PENDING)
     {
       m_runningIntervals.insert(&cst);
-      cst.start(st);
+      cst.start();
+      cst.tick();
     }
     // the interval is in the future
     else if (
@@ -129,13 +131,13 @@ void scenario::start(ossia::state& st)
 void scenario::stop()
 {
   // stop each running TimeIntervals
-  for (const auto& timeInterval : m_intervals)
+  for (const std::shared_ptr<ossia::time_interval>& timeInterval : m_intervals)
   {
     time_interval& cst = *timeInterval;
     cst.stop();
   }
 
-  for (const auto& node : m_nodes)
+  for (const std::shared_ptr<ossia::time_sync>& node : m_nodes)
   {
     node->reset();
   }

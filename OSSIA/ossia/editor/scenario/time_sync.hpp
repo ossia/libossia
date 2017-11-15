@@ -22,6 +22,7 @@ class expression_base;
 class state;
 class time_event;
 class scenario;
+class loop;
 /**
  * \brief #time_sync is use to describe temporal structure to synchronize each
  * attached #time_event evaluation.
@@ -35,18 +36,17 @@ class OSSIA_EXPORT time_sync final
     : public std::enable_shared_from_this<time_sync>
 {
   friend class ossia::scenario;
+  friend class ossia::loop;
 
 public:
   using iterator = ptr_container<time_event>::iterator;
   using const_iterator = ptr_container<time_event>::const_iterator;
 
   time_sync();
-
   ~time_sync();
 
   /*! evaluate all #time_event's to make them to happen or to dispose them
  \return boolean true if the operation succeeded */
-  bool trigger(ossia::state& st);
   std::atomic_bool trigger_request{};
 
   /*! get the date
@@ -95,11 +95,6 @@ public:
   }
 
   // Interface to be used for set-up by other time processes
-  /* process all TimeEvents to propagate execution */
-  void process(std::vector<time_event*>& statusChangedEvents, ossia::state& st);
-
-  void process_this(std::vector<time_event*>& statusChangedEvents);
-
   /* is the TimeSync observing its Expression ? */
   bool is_observing_expression() const;
 
@@ -144,9 +139,7 @@ public:
 
 private:
   ossia::expression_ptr m_expression;
-
   ptr_container<time_event> m_timeEvents;
-  chobo::small_vector<time_event*, 2> m_pending;
 
   optional<expressions::expression_callback_iterator> m_callback;
 

@@ -15,17 +15,17 @@ class ScenarioTest : public QObject
   std::shared_ptr<time_interval> main_interval;
   std::vector<ossia::time_value> events_date;
 
-  void main_interval_callback(double position, ossia::time_value date, const state_element& element)
+  void main_interval_callback(double position, ossia::time_value date)
   {
     std::cout << "Main Interval : " << double(position) << ", " << double(date) << std::endl;
   }
 
-  void first_interval_callback(double position, ossia::time_value date, const state_element& element)
+  void first_interval_callback(double position, ossia::time_value date)
   {
     std::cout << "First Interval : " << double(position) << ", " << double(date) << std::endl;
   }
 
-  void second_interval_callback(double position, ossia::time_value date, const state_element& element)
+  void second_interval_callback(double position, ossia::time_value date)
   {
     std::cout << "Second Interval : " << double(position) << ", " << double(date) << std::endl;
   }
@@ -75,7 +75,7 @@ private Q_SLOTS:
 
     QVERIFY(scenar->get_start_time_sync()->get_date() == 0.);
 
-    auto mc_callback = std::bind(&ScenarioTest::main_interval_callback, this, _1, _2, _3);
+    auto mc_callback = std::bind(&ScenarioTest::main_interval_callback, this, _1, _2);
     auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
     auto start_event = *(scenar->get_start_time_sync()->emplace(
                            scenar->get_start_time_sync()->get_time_events().begin(),
@@ -91,7 +91,7 @@ private Q_SLOTS:
   /*! test edition functions */
   void test_edition()
   {
-    auto mc_callback = std::bind(&ScenarioTest::main_interval_callback, this, _1, _2, _3);
+    auto mc_callback = std::bind(&ScenarioTest::main_interval_callback, this, _1, _2);
     auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
 
     auto scenar = std::make_shared<scenario>();
@@ -126,9 +126,9 @@ private Q_SLOTS:
   void test_execution()
   {
     using namespace ossia;
-    auto mc_callback = std::bind(&ScenarioTest::main_interval_callback, this, _1, _2, _3);
-    auto fc_callback = std::bind(&ScenarioTest::first_interval_callback, this, _1, _2, _3);
-    auto sc_callback = std::bind(&ScenarioTest::second_interval_callback, this, _1, _2, _3);
+    auto mc_callback = std::bind(&ScenarioTest::main_interval_callback, this, _1, _2);
+    auto fc_callback = std::bind(&ScenarioTest::first_interval_callback, this, _1, _2);
+    auto sc_callback = std::bind(&ScenarioTest::second_interval_callback, this, _1, _2);
     auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
 
     auto main_start_node = std::make_shared<time_sync>();
@@ -164,7 +164,7 @@ private Q_SLOTS:
     second_interval->set_speed(1._tv);
 
     events_date.clear();
-    c.start();
+    c.start_and_tick();
 
     while (c.running())
       ;

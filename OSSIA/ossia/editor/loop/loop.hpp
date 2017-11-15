@@ -2,6 +2,7 @@
 
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia_export.h>
@@ -40,45 +41,53 @@ public:
       time_event::exec_callback);
 
   /*! destructor */
-  ~loop();
+  ~loop() override;
 
-  void start(ossia::state& st) override;
+  void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
 
-  state_element offset(ossia::time_value, double pos) override;
-  state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
+  void offset(ossia::time_value, double pos) override;
+  void state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
   /*! get the pattern #time_interval
    \return std::shared_ptr<TimeInterval> */
-  const std::shared_ptr<time_interval> get_time_interval() const;
+  time_interval& get_time_interval();
+  const time_interval& get_time_interval() const;
 
   /*! get the pattern start #time_sync
    \return std::shared_ptr<TimeSync> */
-  const std::shared_ptr<time_sync> get_start_timesync() const;
+  const time_sync& get_start_timesync() const;
+  time_sync& get_start_timesync();
 
   /*! get the pattern end #time_sync
    \return std::shared_ptr<TimeSync> */
-  const std::shared_ptr<time_sync> get_end_timesync() const;
+  const time_sync& get_end_timesync() const;
+  time_sync& get_end_timesync();
 
 private:
-  void interval_callback(double, ossia::time_value, const ossia::state_element&);
+  void interval_callback(double, ossia::time_value);
 
   void start_event_callback(time_event::status);
 
   void end_event_callback(time_event::status);
 
-  std::shared_ptr<time_sync> m_startNode;
+  time_sync m_startNode;
   time_event::exec_callback m_startCallback;
 
-  std::shared_ptr<time_sync> m_endNode;
+  time_sync m_endNode;
   time_event::exec_callback m_endCallback;
 
-  std::shared_ptr<time_interval> m_interval;
+  time_event& m_startEvent;
+  time_event& m_endEvent;
+
+  time_interval m_interval;
   time_interval::exec_callback m_intervalCallback;
 
-  ossia::state m_currentState; // an internal State to return on state call
-  ossia::state m_offsetState;  // an internal State built when offset is called
+
+  bool process_sync(ossia::time_sync& node, ossia::time_event& event, bool pending, bool maxReached);
+  void make_happen(time_event& event);
+  void make_dispose(time_event& event);
 };
 }

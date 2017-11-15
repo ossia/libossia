@@ -78,7 +78,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_interval> c = time_interval::create([] (auto&&...) {}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
       s.scenario->add_time_interval(c);
 
-      s.interval->start();
+      s.interval->start_and_tick();
       QVERIFY(se->get_status() == time_event::status::HAPPENED);
       QCOMPARE(c->get_date(), 0_tv);
 
@@ -117,7 +117,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
 
-      s.interval->start();
+      s.interval->start_and_tick();
       s.interval->tick(500_tv);
       QCOMPARE(c0->get_date(), 500_tv);
       QCOMPARE(c1->get_date(), 0_tv);
@@ -152,7 +152,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c3);
 
       std::cerr << c0.get() << " " << c1.get() << " " << c2.get() << " " << c3.get() << std::endl;
-      s.interval->start();
+      s.interval->start_and_tick();
       s.interval->tick(5_tv);
       std::cerr << e0->get_status() << " "
                 << e1->get_status() << " "
@@ -190,7 +190,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c3);
 
       std::cerr << c0.get() << " " << c1.get() << " " << c2.get() << " " << c3.get() << std::endl;
-      s.interval->start();
+      s.interval->start_and_tick();
       {
         s.interval->tick(5_tv);
         qDebug() << e1->get_status() << " "
@@ -284,7 +284,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c2);
       s.scenario->add_time_interval(c3);
 
-      s.interval->start();
+      s.interval->start_and_tick();
       {
         s.interval->tick(5_tv);
         qDebug() << e1->get_status() << " "
@@ -379,7 +379,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
 
-      s.interval->start();
+      s.interval->start_and_tick();
       s.interval->tick(1000_tv);
       QCOMPARE(c0->get_date(), 1000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
@@ -413,7 +413,7 @@ class ScenarioAlgoTest : public QObject
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
 
-      s.interval->start();
+      s.interval->start_and_tick();
       s.interval->tick(3000_tv);
       QCOMPARE(c0->get_date(), 3000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
@@ -446,7 +446,7 @@ class ScenarioAlgoTest : public QObject
       scenario.add_time_interval(c1);
       scenario.add_time_interval(c2);
 
-      s.interval->start();
+      s.interval->start_and_tick();
       s.interval->tick(1000_tv);
       QCOMPARE(c0->get_date(), 1000_tv);
       QCOMPARE(c1->get_date(), 0_tv);
@@ -475,7 +475,7 @@ class ScenarioAlgoTest : public QObject
       QVERIFY(e0->get_status() == time_event::status::NONE);
       QVERIFY(e1->get_status() == time_event::status::NONE);
 
-      s.interval->start();
+      s.interval->start_and_tick();
 
       QCOMPARE(c0->get_position(), 0.);
       QVERIFY(e0->get_status() == time_event::status::NONE);
@@ -521,7 +521,7 @@ class ScenarioAlgoTest : public QObject
       auto msg_proc = std::make_shared<ossia::node_process>(msg_node);
 
       c1->add_time_process(msg_proc);
-      s.interval->start();
+      s.interval->start_and_tick();
       s.interval->tick(10_tv);
 
       QCOMPARE((int)msg_node->requested_tokens.size(), (int) 1);
@@ -543,77 +543,71 @@ class ScenarioAlgoTest : public QObject
 
     void test_autom()
     {
-      std::cerr << "\n\ntest_autom\n";
-      using namespace ossia;
-      root_scenario s;
-      TestDevice utils;
+//      std::cerr << "\n\ntest_autom\n";
+//      using namespace ossia;
+//      root_scenario s;
+//      TestDevice utils;
 
-      ossia::scenario& scenario = *s.scenario;
-      std::shared_ptr<time_event> e0 = start_event(scenario);
-      std::shared_ptr<time_event> e1 = create_event(scenario);
+//      ossia::scenario& scenario = *s.scenario;
+//      std::shared_ptr<time_event> e0 = start_event(scenario);
+//      std::shared_ptr<time_event> e1 = create_event(scenario);
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
-      s.scenario->add_time_interval(c0);
+//      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+//      s.scenario->add_time_interval(c0);
 
-      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
-      proc->set_destination(*utils.float_addr);
+//      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
+//      proc->set_destination(*utils.float_addr);
 
-      auto crv = std::make_shared<curve<double, float>>();
-      curve_segment_linear<float> linearSegment;
+//      auto crv = std::make_shared<curve<double, float>>();
+//      curve_segment_linear<float> linearSegment;
 
-      crv->set_x0(0.);
-      crv->set_y0(0.);
-      crv->add_point(linearSegment, 1., 1.);
+//      crv->set_x0(0.);
+//      crv->set_y0(0.);
+//      crv->add_point(linearSegment, 1., 1.);
 
-      proc->set_behavior(crv);
-      c0->add_time_process(proc);
+//      proc->set_behavior(crv);
+//      c0->add_time_process(proc);
 
-      s.interval->set_callback([] (double, ossia::time_value, const state_element& s) {
-        ossia::print(std::cerr, s);
-      });
-      s.interval->start();
-      s.interval->tick(1000_tv);
-      s.interval->tick(999_tv);
-      s.interval->tick(1_tv);
+//      s.interval->start_and_tick();
+//      s.interval->tick(1000_tv);
+//      s.interval->tick(999_tv);
+//      s.interval->tick(1_tv);
     }
 
     void test_autom_and_state()
     {
-      std::cerr << "\n\ntest_autom_and_state\n";
-      using namespace ossia;
-      root_scenario s;
-      TestDevice utils;
+//      std::cerr << "\n\ntest_autom_and_state\n";
+//      using namespace ossia;
+//      root_scenario s;
+//      TestDevice utils;
 
-      ossia::scenario& scenario = *s.scenario;
-      std::shared_ptr<time_event> e0 = start_event(scenario);
-      std::shared_ptr<time_event> e1 = create_event(scenario);
-      e0->add_state(ossia::message{*utils.float_addr, ossia::value{36.}});
-      e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
+//      ossia::scenario& scenario = *s.scenario;
+//      std::shared_ptr<time_event> e0 = start_event(scenario);
+//      std::shared_ptr<time_event> e1 = create_event(scenario);
+//      e0->add_state(ossia::message{*utils.float_addr, ossia::value{36.}});
+//      e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
-      s.scenario->add_time_interval(c0);
+//      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+//      s.scenario->add_time_interval(c0);
 
-      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
-      proc->set_destination(*utils.float_addr);
+//      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
+//      proc->set_destination(*utils.float_addr);
 
-      auto crv = std::make_shared<curve<double, float>>();
-      curve_segment_linear<float> linearSegment;
+//      auto crv = std::make_shared<curve<double, float>>();
+//      curve_segment_linear<float> linearSegment;
 
-      crv->set_x0(0.);
-      crv->set_y0(0.);
-      crv->add_point(linearSegment, 1., 1.);
+//      crv->set_x0(0.);
+//      crv->set_y0(0.);
+//      crv->add_point(linearSegment, 1., 1.);
 
-      proc->set_behavior(crv);
-      c0->add_time_process(proc);
+//      proc->set_behavior(crv);
+//      c0->add_time_process(proc);
 
-      s.interval->set_callback([] (double, ossia::time_value, const state_element& s) {
-        ossia::print(std::cerr, s);
-      });
-      s.interval->start();
-      s.interval->tick(1000_tv);
-      s.interval->tick(999_tv);
-      s.interval->tick(1_tv);
+//      s.interval->start_and_tick();
+//      s.interval->tick(1000_tv);
+//      s.interval->tick(999_tv);
+//      s.interval->tick(1_tv);
     }
 
 
@@ -638,7 +632,7 @@ class ScenarioAlgoTest : public QObject
       g.add_node(node);
 
 
-      s.interval->start();
+      s.interval->start_and_tick();
       {
         ossia::execution_state s;
         g.state(s);
@@ -691,7 +685,7 @@ class ScenarioAlgoTest : public QObject
       g.add_node(node);
 
 
-      s.interval->start();
+      s.interval->start_and_tick();
       {
         ossia::execution_state s;
         g.state(s);
@@ -725,75 +719,75 @@ class ScenarioAlgoTest : public QObject
 
     void test_offset()
     {
-        using namespace ossia;
-        root_scenario s;
-        TestDevice utils;
+//        using namespace ossia;
+//        root_scenario s;
+//        TestDevice utils;
 
-        ossia::scenario& scenario = *s.scenario;
-        std::shared_ptr<time_event> e0 = start_event(scenario);
-        std::shared_ptr<time_event> e1 = create_event(scenario);
-        std::shared_ptr<time_event> e2 = create_event(scenario);
-        std::shared_ptr<time_event> e3 = create_event(scenario);
+//        ossia::scenario& scenario = *s.scenario;
+//        std::shared_ptr<time_event> e0 = start_event(scenario);
+//        std::shared_ptr<time_event> e1 = create_event(scenario);
+//        std::shared_ptr<time_event> e2 = create_event(scenario);
+//        std::shared_ptr<time_event> e3 = create_event(scenario);
 
-        e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
-        e2->add_state(ossia::message{*utils.float_addr, ossia::value{31.}});
+//        e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
+//        e2->add_state(ossia::message{*utils.float_addr, ossia::value{31.}});
 
-        std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
-        s.scenario->add_time_interval(c0);
-        std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 5_tv, 5_tv, 5_tv);
-        s.scenario->add_time_interval(c1);
-        std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 5_tv, 5_tv, 5_tv);
-        s.scenario->add_time_interval(c1);
+//        std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+//        s.scenario->add_time_interval(c0);
+//        std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 5_tv, 5_tv, 5_tv);
+//        s.scenario->add_time_interval(c1);
+//        std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 5_tv, 5_tv, 5_tv);
+//        s.scenario->add_time_interval(c1);
 
-        {
-            auto st = s.interval->offset(7_tv);
-            ossia::print(std::cerr, st);
+//        {
+//            auto st = s.interval->offset(7_tv);
+//            ossia::print(std::cerr, st);
 
-            ossia::state expected;
-            {
-                ossia::state sub;
-                sub.add(ossia::message{*utils.float_addr, ossia::value{24.}});
-                expected.add(sub);
-            }
-            QVERIFY(st == expected);
-        }
+//            ossia::state expected;
+//            {
+//                ossia::state sub;
+//                sub.add(ossia::message{*utils.float_addr, ossia::value{24.}});
+//                expected.add(sub);
+//            }
+//            QVERIFY(st == expected);
+//        }
 
-        {
-            ossia::state st;
+//        {
+//            ossia::state st;
 
-            ossia::state expected;
+//            ossia::state expected;
 
-            s.interval->start(st);
-            ossia::print(std::cerr, st);
+//            s.interval->start_and_tick(st);
+//            ossia::print(std::cerr, st);
 
-            QVERIFY(st == expected);
-        }
+//            QVERIFY(st == expected);
+//        }
 
-        s.interval->stop();
+//        s.interval->stop();
 
-        {
-            auto st = s.interval->offset(13_tv);
-            ossia::print(std::cerr, st);
+//        {
+//            auto st = s.interval->offset(13_tv);
+//            ossia::print(std::cerr, st);
 
-            ossia::state expected;
-            {
-                ossia::state sub;
-                sub.add(ossia::message{*utils.float_addr, ossia::value{31.}});
-                expected.add(sub);
-            }
-            QVERIFY(st == expected);
-        }
+//            ossia::state expected;
+//            {
+//                ossia::state sub;
+//                sub.add(ossia::message{*utils.float_addr, ossia::value{31.}});
+//                expected.add(sub);
+//            }
+//            QVERIFY(st == expected);
+//        }
 
-        {
-            ossia::state st;
+//        {
+//            ossia::state st;
 
-            ossia::state expected;
+//            ossia::state expected;
 
-            s.interval->start(st);
-            ossia::print(std::cerr, st);
+//            s.interval->start_and_tick(st);
+//            ossia::print(std::cerr, st);
 
-            QVERIFY(st == expected);
-        }
+//            QVERIFY(st == expected);
+//        }
 
     }
 };

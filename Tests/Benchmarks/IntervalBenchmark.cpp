@@ -73,7 +73,7 @@ private Q_SLOTS:
       std::cout << "\nBefore start:\n";
       print_states(*root.scenario);
 
-      root.interval->start();
+      root.interval->start_and_tick();
 
       std::cout << "\nAfter start:\n";
       print_states(*root.scenario);
@@ -105,7 +105,7 @@ private Q_SLOTS:
       std::cout << "\nBefore start:\n";
       print_states(*root.scenario);
 
-      root.interval->start();
+      root.interval->start_and_tick();
 
       std::cout << "\nAfter start:\n";
       print_states(*root.scenario);
@@ -140,7 +140,7 @@ private Q_SLOTS:
       std::cout << "\nBefore start:\n";
       print_states(*root.scenario);
 
-      root.interval->start();
+      root.interval->start_and_tick();
 
       std::cout << "\nAfter start:\n";
       print_states(*root.scenario);
@@ -175,7 +175,7 @@ private Q_SLOTS:
       std::cout << "\nBefore start:\n";
       print_states(*root.scenario);
 
-      root.interval->start();
+      root.interval->start_and_tick();
 
       std::cout << "\nAfter start:\n";
       print_states(*root.scenario);
@@ -211,7 +211,7 @@ private Q_SLOTS:
       add_interval_parallel(*root.scenario);
 
     const int N = 1000;
-    root.interval->start();
+    root.interval->start_and_tick();
     auto t0 = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < N; i++)
     {
@@ -238,7 +238,7 @@ private Q_SLOTS:
         add_interval_parallel(*root.scenario);
 
       const int N = 1000;
-      root.interval->start();
+      root.interval->start_and_tick();
       auto t0 = std::chrono::high_resolution_clock::now();
       for(int i = 0; i < N; i++)
       {
@@ -273,7 +273,7 @@ private Q_SLOTS:
         start = add_interval_serial(*root.scenario, *start);
 
       const int N = 1000;
-      root.interval->start();
+      root.interval->start_and_tick();
       auto t0 = std::chrono::high_resolution_clock::now();
       for(int i = 0; i < N; i++)
       {
@@ -319,7 +319,7 @@ private Q_SLOTS:
         }
       }
       const int N = 1000;
-      root.interval->start();
+      root.interval->start_and_tick();
       auto t0 = std::chrono::high_resolution_clock::now();
       for(int i = 0; i < N; i++)
       {

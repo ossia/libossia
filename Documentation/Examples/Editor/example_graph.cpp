@@ -165,7 +165,7 @@ int main()
   // Start execution in a thread
   ossia::clock clck{*score.interval};
   clck.set_granularity(100ms);
-  clck.start();
+  clck.start_and_tick();
 
   while(clck.running()) ;
 }

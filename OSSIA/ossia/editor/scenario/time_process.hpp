@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/editor/state/state_element_fwd.hpp>
 #include <memory>
 #include <ossia_export.h>
 #include <string>
@@ -31,15 +30,14 @@ public:
    offset
    \details don't call offset when the parent #time_interval is running
    \param date offset date
-   \param pos offset position (in [0;1] relative to parent nominal duration)
-   \return state_element */
-  virtual state_element offset(ossia::time_value date, double pos);
+   \param pos offset position (in [0;1] relative to parent nominal duration) */
+  virtual void offset(ossia::time_value date, double pos);
 
   /*! get a #StateElement from the process depending on its parent
    #time_interval date
    \details don't call state when the parent #time_interval is not running
-   \return state_element */
-  virtual state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) = 0;
+   */
+  virtual void state(ossia::time_value date, double pos, ossia::time_value tick_offset) = 0;
 
   /**
   * @brief start
@@ -47,7 +45,7 @@ public:
   * Will be called when
   * the parent time interval is started.
   */
-  virtual void start(ossia::state& st);
+  virtual void start();
 
   /**
   * @brief stop

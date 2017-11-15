@@ -11,7 +11,7 @@ struct mark_discontinuous
     void operator()(loop& l) const
     {
       (l.node.get()->*fun_T)(true);
-      (*this)(*l.get_time_interval());
+      (*this)(l.get_time_interval());
     }
     void operator()(scenario& s) const
     {

@@ -7,6 +7,7 @@
 
 namespace ossia
 {
+/*
 color_automation::color_automation()
 {
 }
@@ -70,7 +71,7 @@ state_element color_automation::state(ossia::time_value, double pos, ossia::time
   return {};
 }
 
-void color_automation::start(ossia::state& st)
+void color_automation::start()
 {
 }
 
@@ -85,4 +86,5 @@ void color_automation::pause()
 void color_automation::resume()
 {
 }
+*/
 }

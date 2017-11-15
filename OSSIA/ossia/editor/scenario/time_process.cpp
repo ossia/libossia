@@ -1,7 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/state/state_element.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 
 namespace ossia
@@ -10,12 +9,12 @@ time_process::~time_process()
 {
 }
 
-state_element time_process::offset(time_value date, double pos)
+void time_process::offset(time_value date, double pos)
 {
-  return state(date, pos, ossia::Zero);
+  state(date, pos, ossia::Zero);
 }
 
-void time_process::start(ossia::state& st)
+void time_process::start()
 {
 }
 

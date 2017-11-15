@@ -20,6 +20,7 @@ class state;
 class time_interval;
 class time_sync;
 class scenario;
+class loop;
 /**
  * @brief The time_event class
  *
@@ -33,6 +34,7 @@ class scenario;
 class OSSIA_EXPORT time_event
 {
   friend class ossia::scenario;
+  friend class ossia::loop;
 
 public:
   /*! event status */
@@ -73,22 +75,6 @@ public:
    \param #time_event::ExecutionCallback to get #time_event's status back
    \details this may be unsafe to do during execution */
   void set_callback(time_event::exec_callback);
-
-  /*! make the event happen to propagate the execution to next TimeIntervals
-   \details the event have to be in PENDING status to call this method
-   otherwise
-   it will raise a runtime_error
-   \details turning the event' status into HAPPENED will call the callback to
-   notify its owner */
-  void happen(ossia::state& st);
-
-  /*! dispose the event to not propagate the execution to next TimeIntervals
-   \details the event have to be in PENDING status to call this method
-   otherwise
-   it will raise a runtime_error
-   \details turning the event' status into DISPOSED will call the callback to
-   notify its owner */
-  void dispose();
 
   /*! add a sub state into the state of the event
    \param std::shared_ptr<#State> to add */

@@ -6,6 +6,7 @@
 
 namespace ossia
 {
+/*
 class OSSIA_EXPORT color_automation : public ossia::time_process
 {
 public:
@@ -18,7 +19,7 @@ public:
 
   ossia::state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
 
-  void start(ossia::state& st) override;
+  void start() override;
   void stop() override;
   void pause() override;
   void resume() override;
@@ -27,4 +28,5 @@ private:
   optional<ossia::destination> m_parameter;
   grad_type m_data;
 };
+*/
 }

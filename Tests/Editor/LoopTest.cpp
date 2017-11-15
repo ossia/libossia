@@ -24,12 +24,11 @@ class LoopTest : public QObject
 {
     Q_OBJECT
 
-    void interval_callback(double position, ossia::time_value date, const state_element& element)
+    static void interval_callback(double position, ossia::time_value date)
     {
-        ossia::launch(element);
     }
 
-    void event_callback(time_event::status newStatus)
+    static void event_callback(time_event::status newStatus)
     {
         std::cout << "Event : " << "new status received" << std::endl;
     }
@@ -40,14 +39,7 @@ private Q_SLOTS:
     void test_basic()
     {
         //using namespace std::placeholders;
-        auto interval_callback = std::bind(&LoopTest::interval_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        auto event_callback = std::bind(&LoopTest::event_callback, this, std::placeholders::_1);
-
         loop l(25._tv, interval_callback, event_callback, event_callback);
-
-        QVERIFY(l.get_time_interval() != nullptr);
-        QVERIFY(l.get_start_timesync() != nullptr);
-        QVERIFY(l.get_end_timesync() != nullptr);
 
         //! \todo test clone()
     }
@@ -56,9 +48,6 @@ private Q_SLOTS:
     //! \todo test state()
     void test_execution()
     {
-        auto interval_callback = std::bind(&LoopTest::interval_callback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        auto event_callback = std::bind(&LoopTest::event_callback, this, std::placeholders::_1);
-
         auto start_node = std::make_shared<time_sync>();
         auto end_node = std::make_shared<time_sync>();
 
@@ -72,7 +61,7 @@ private Q_SLOTS:
         interval->add_time_process(
               std::make_unique<loop>(25._tv, interval_callback, event_callback, event_callback));
 
-        c.start();
+        c.start_and_tick();
 
         while (c.running())
             ;
@@ -85,10 +74,9 @@ private Q_SLOTS:
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
         snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
-        l.get_time_interval()->add_time_process(std::make_shared<ossia::node_process>(snd));
+        l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
-        ossia::state s;
-        l.start(s);
+        l.start();
         l.state(1_tv, 0, 0_tv);
         qDebug() << snd->requested_tokens[0];
         QVERIFY((snd->requested_tokens[0] == token_request{1_tv, 0.25, 0_tv, false, false}));
@@ -100,10 +88,9 @@ private Q_SLOTS:
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
         snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
-        l.get_time_interval()->add_time_process(std::make_shared<ossia::node_process>(snd));
+        l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
-        ossia::state s;
-        l.start(s);
+        l.start();
         l.state(5_tv, 0, 0_tv);
         qDebug() << snd->requested_tokens;
         QCOMPARE((int)snd->requested_tokens.size(), (int)3);
@@ -118,10 +105,9 @@ private Q_SLOTS:
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
         snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
-        l.get_time_interval()->add_time_process(std::make_shared<ossia::node_process>(snd));
+        l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
-        ossia::state s;
-        l.start(s);
+        l.start();
         l.state(9_tv, 0, 0_tv);
         ossia::execution_state e;
         for(auto tk : snd->requested_tokens)
