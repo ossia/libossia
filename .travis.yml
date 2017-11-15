@@ -25,7 +25,7 @@ matrix:
   exclude:
   - os: linux
   - os: osx
-  
+  include:
   - sudo: required
     services:
       - docker
