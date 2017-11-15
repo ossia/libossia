@@ -22,7 +22,7 @@ void time_interval::tick()
 void time_interval::tick(time_value date, double ratio)
 {
   m_date += std::ceil(date.impl * m_speed / ratio);
-  m_position = double(m_date) / double(m_nominal);
+  compute_position();
   node->requested_tokens.push_back({m_date, m_position, 0_tv});
 
   state();
@@ -38,7 +38,7 @@ void time_interval::tick(time_value date)
 void time_interval::tick_offset(time_value date, ossia::time_value offset)
 {
   m_date += std::ceil(date.impl * m_speed);
-  m_position = double(m_date) / double(m_nominal);
+  compute_position();
   node->requested_tokens.push_back({m_date, m_position, offset});
   m_tick_offset = offset;
   state();
@@ -49,7 +49,7 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset)
 void time_interval::tick_offset(time_value date, double ratio, ossia::time_value offset)
 {
   m_date += std::ceil(date.impl * m_speed / ratio);
-  m_position = double(m_date) / double(m_nominal);
+  compute_position();
   node->requested_tokens.push_back({m_date, m_position, offset});
 
   m_tick_offset = offset;
@@ -109,7 +109,7 @@ void time_interval::start()
 
   // set clock at a tick
   m_date = m_offset;
-  m_position = double(m_date) / double(m_nominal);
+  compute_position();
   if (m_callback)
     (m_callback)(m_position, m_date);
 }
@@ -122,8 +122,16 @@ void time_interval::stop()
     timeProcess->stop();
   }
 
-  m_date = 0;
-  m_position = 0;
+  m_date = Zero;
+  m_position = 0.;
+}
+
+void time_interval::compute_position()
+{
+  if (m_nominal != Zero)
+    m_position = double(m_date) / m_nominal;
+  else
+    m_position = 0.0;
 }
 
 void time_interval::offset(ossia::time_value date)
@@ -131,23 +139,18 @@ void time_interval::offset(ossia::time_value date)
   m_offset = date;
   m_date = date;
 
-  if (m_nominal != Zero)
-    m_position = m_date / m_nominal;
-  else
-    m_position = Zero;
+  compute_position();
 
   const auto& processes = get_time_processes();
   const auto N = processes.size();
   if (N > 0)
   {
-    const auto pos = date / get_nominal_duration();
-
     // get the state of each TimeProcess at current clock position and date
     for (const auto& timeProcess : processes)
     {
       if (timeProcess->enabled())
       {
-        timeProcess->offset(date, pos);
+        timeProcess->offset(m_date, m_position);
       }
     }
   }
@@ -159,18 +162,16 @@ void time_interval::state()
 {
   const auto& processes = get_time_processes();
   const auto N = processes.size();
+
   if (N > 0)
   {
-    const auto date = get_date();
-    const auto pos = date / get_nominal_duration();
-
     // get the state of each TimeProcess at current clock position and date
     for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
     {
-      auto& p = *timeProcess;
+      time_process& p = *timeProcess;
       if (p.enabled())
       {
-        p.state(date, pos, m_tick_offset);
+        p.state(m_date, m_position, m_tick_offset);
       }
     }
   }
@@ -288,6 +289,7 @@ void time_interval::remove_time_process(time_process* timeProcess)
     m_processes.erase(it);
   }
 }
+
 
 interval_node::interval_node()
 {

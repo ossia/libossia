@@ -78,8 +78,12 @@ private Q_SLOTS:
 
         l.start();
         l.state(1_tv, 0, 0_tv);
+        qDebug() << snd->requested_tokens.size();
         qDebug() << snd->requested_tokens[0];
-        QVERIFY((snd->requested_tokens[0] == token_request{1_tv, 0.25, 0_tv, false, false}));
+        qDebug() << snd->requested_tokens[1];
+        QCOMPARE((int)snd->requested_tokens.size(), (int)2);
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, false, false}));
+        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, false, false}));
         l.stop();
       }
 
@@ -93,10 +97,11 @@ private Q_SLOTS:
         l.start();
         l.state(5_tv, 0, 0_tv);
         qDebug() << snd->requested_tokens;
-        QCOMPARE((int)snd->requested_tokens.size(), (int)3);
-        QVERIFY((snd->requested_tokens[0] == token_request{4_tv, 1, 0_tv, false, false}));
-        QVERIFY((snd->requested_tokens[1] == token_request{0_tv, 0, 0_tv, false, false}));
-        QVERIFY((snd->requested_tokens[2] == token_request{1_tv, 0.25, 4_tv, false, false}));
+        QCOMPARE((int)snd->requested_tokens.size(), (int)4);
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, false, false}));
+        QVERIFY((snd->requested_tokens[1] == token_request{4_tv, 1, 0_tv, false, false}));
+        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0, 0_tv, false, false}));
+        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0.25, 4_tv, false, false}));
         l.stop();
       }
 
@@ -104,7 +109,7 @@ private Q_SLOTS:
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
-        snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
+        snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();

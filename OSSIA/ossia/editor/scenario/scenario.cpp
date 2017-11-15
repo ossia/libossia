@@ -171,19 +171,11 @@ void scenario::resume()
 void scenario::add_time_interval(
     std::shared_ptr<time_interval> timeInterval)
 {
-  time_interval& cst = *timeInterval;
-
   // store the TimeInterval if it is not already stored
   if (!contains(m_intervals, timeInterval))
   {
     m_intervals.push_back(std::move(timeInterval));
   }
-
-  // store TimeInterval's start node if it is not already stored
-  add_time_sync(cst.get_start_event().get_time_sync().shared_from_this());
-
-  // store TimeInterval's end node if it is not already stored
-  add_time_sync(cst.get_end_event().get_time_sync().shared_from_this());
 }
 
 void scenario::remove_time_interval(

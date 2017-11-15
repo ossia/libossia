@@ -100,6 +100,7 @@ private Q_SLOTS:
     auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), e_callback));
 
     auto end_node = std::make_shared<time_sync>();
+    scenar->add_time_sync(end_node);
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), e_callback));
 
     auto interval = time_interval::create(mc_callback, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
@@ -149,12 +150,14 @@ private Q_SLOTS:
     auto first_end_event = *(first_end_node->emplace(first_end_node->get_time_events().begin(), e_callback));
     auto first_interval = time_interval::create(fc_callback, *first_start_event, *first_end_event, 1500._tv, 1500._tv, 1500._tv);
 
+    main_scenario->add_time_sync(first_end_node);
     main_scenario->add_time_interval(first_interval);
 
     auto second_end_node = std::make_shared<time_sync>();
     auto second_end_event = *(second_end_node->emplace(second_end_node->get_time_events().begin(), e_callback));
     auto second_interval = time_interval::create(sc_callback, *first_end_event, *second_end_event, 2000._tv, 2000._tv, 2000._tv);
 
+    main_scenario->add_time_sync(second_end_node);
     main_scenario->add_time_interval(second_interval);
 
     main_interval->add_time_process(std::move(main_scenario));

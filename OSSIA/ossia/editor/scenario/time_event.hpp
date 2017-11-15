@@ -7,6 +7,7 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
 #include <cstdint>
 #include <ossia_export.h>
 
@@ -76,21 +77,17 @@ public:
    \details this may be unsafe to do during execution */
   void set_callback(time_event::exec_callback);
 
-  /*! add a sub state into the state of the event
-   \param std::shared_ptr<#State> to add */
-  void add_state(state_element&&);
+  void add_time_process(std::shared_ptr<time_process>);
+  void remove_time_process(time_process*);
+  const std::vector<std::shared_ptr<time_process>>& get_time_processes() const
+  {
+    return m_processes;
+  }
 
-  /*! remove a sub state from the state of the event
-   \param std::shared_ptr<#State> to remove */
-  void remove_state(const state_element&);
 
   /*! get the #time_sync where the event is
    \return std::shared_ptr<#time_sync> */
   time_sync& get_time_sync() const;
-
-  /*! get the state of the event
-  \return std::shared_ptr<#State> */
-  const state& get_state() const;
 
   /*! get the expression of the event
   \return std::shared_ptr<expression> */
@@ -156,7 +153,7 @@ private:
   time_event::exec_callback m_callback;
 
   time_sync& m_timesync;
-  state m_state;
+  std::vector<std::shared_ptr<time_process>> m_processes;
   status m_status;
   offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};
 

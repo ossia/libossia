@@ -1,15 +1,11 @@
 #pragma once
-
-#include <memory>
-#include <string>
-
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <hopscotch_set.h>
-#include <chobo/small_vector.hpp>
-#include <nano_signal_slot.hpp>
+#include <functional>
+#include <memory>
+#include <string>
 #include <ossia_export.h>
 
 /**
@@ -33,7 +29,6 @@ class loop;
  * or replaced with intrusive_ptr ?
  */
 class OSSIA_EXPORT time_sync final
-    : public std::enable_shared_from_this<time_sync>
 {
   friend class ossia::scenario;
   friend class ossia::loop;
@@ -126,7 +121,7 @@ public:
   //! Boolean : true if the evaluation was finished due to the max bound
   callback_container<std::function<void(bool)>> finished_evaluation;
 
-  enum status
+  enum status: int8_t
   {
     NOT_DONE,
     DONE_TRIGGERED,

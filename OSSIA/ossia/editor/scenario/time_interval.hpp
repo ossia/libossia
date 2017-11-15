@@ -194,6 +194,8 @@ public:
   }
 
 private:
+  void compute_position();
+
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
 
@@ -209,11 +211,9 @@ private:
   double m_position{};
 
   time_value m_date{};
-
   time_value m_offset{}; /// the date the clock will run from
 
   time_value m_tick_offset{}; /// offset in the current tick
   double m_speed{1.}; /// tick length is multiplied by this
-  bool m_running{};
 };
 }

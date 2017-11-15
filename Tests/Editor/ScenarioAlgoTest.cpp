@@ -525,6 +525,9 @@ class ScenarioAlgoTest : public QObject
       s.interval->tick(10_tv);
 
       QCOMPARE((int)msg_node->requested_tokens.size(), (int) 1);
+      auto t0 = msg_node->requested_tokens[0];
+      auto expected = token_request{0_tv, 0., 2_tv};
+      QCOMPARE(t0, expected);
 
       QVERIFY(utils.float_addr->value() == ossia::value(float(0.)));
 

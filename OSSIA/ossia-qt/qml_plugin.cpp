@@ -47,7 +47,7 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterUncreatableType<qt::qml_rep_filter>(
       uri, 1, 0, "Repetitions", "Repetition filter");
   qmlRegisterUncreatableType<qt::qml_duration>(
-        uri, 1, 0, "Duration", "Duration");
+      uri, 1, 0, "Duration", "Duration");
 
   qmlRegisterSingletonType<qt::qml_singleton_device>(
       uri, 1, 0, "SingleDevice", [](QQmlEngine* e, QJSEngine*) -> QObject* {

@@ -23,24 +23,32 @@ void time_event::set_callback(time_event::exec_callback callback)
   m_callback = callback;
 }
 
-void time_event::add_state(state_element&& state)
+void time_event::add_time_process(
+    std::shared_ptr<time_process> timeProcess)
 {
-  m_state.add(std::move(state));
+  if (!timeProcess)
+    return;
+
+  // store a TimeProcess if it is not already stored
+  if (find(m_processes, timeProcess) == m_processes.end())
+  {
+    m_processes.push_back(std::move(timeProcess));
+  }
 }
 
-void time_event::remove_state(const state_element& state)
+void time_event::remove_time_process(time_process* timeProcess)
 {
-  m_state.remove(state);
+  auto it = find_if(m_processes, [=](const auto& other) {
+    return other.get() == timeProcess;
+  });
+  if (it != m_processes.end())
+  {
+    m_processes.erase(it);
+  }
 }
-
 time_sync& time_event::get_time_sync() const
 {
   return m_timesync;
-}
-
-const state& time_event::get_state() const
-{
-  return m_state;
 }
 
 const expression& time_event::get_expression() const
