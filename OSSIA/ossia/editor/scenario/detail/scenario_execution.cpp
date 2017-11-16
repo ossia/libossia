@@ -36,7 +36,6 @@ void scenario::make_happen(
   for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.next_time_intervals())
   {
     timeInterval->start();
-    timeInterval->tick();
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());

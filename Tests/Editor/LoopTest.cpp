@@ -79,9 +79,9 @@ private Q_SLOTS:
         l.start();
         l.state(1_tv, 0, 0_tv);
         qDebug() << snd->requested_tokens.size();
+        QCOMPARE((int)snd->requested_tokens.size(), (int)2);
         qDebug() << snd->requested_tokens[0];
         qDebug() << snd->requested_tokens[1];
-        QCOMPARE((int)snd->requested_tokens.size(), (int)2);
         QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, false, false}));
         QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, false, false}));
         l.stop();

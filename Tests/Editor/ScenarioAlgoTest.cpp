@@ -524,6 +524,7 @@ class ScenarioAlgoTest : public QObject
       s.interval->start_and_tick();
       s.interval->tick(10_tv);
 
+      for(auto tr : msg_node->requested_tokens) qDebug() << tr;
       QCOMPARE((int)msg_node->requested_tokens.size(), (int) 1);
       auto t0 = msg_node->requested_tokens[0];
       auto expected = token_request{0_tv, 0., 2_tv};

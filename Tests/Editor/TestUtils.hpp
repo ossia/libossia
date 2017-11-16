@@ -118,3 +118,7 @@ inline QDebug operator<<(QDebug d, ossia::time_event::status s)
 {
   return d << QTest::toString(s);
 }
+inline QDebug operator<<(QDebug d, const ossia::token_request&  s)
+{
+  return d << QTest::toString(s);
+}
