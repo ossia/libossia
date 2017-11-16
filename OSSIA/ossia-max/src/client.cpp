@@ -381,7 +381,7 @@ void client::check_thread_status(client* x)
     if ( x->m_looking_for )
     {
       t_atom a;
-      (&a, x->m_looking_for);
+      A_SETSYM(&a, x->m_looking_for);
       client::connect(x, gensym("connect"), 1, &a);
     }
 

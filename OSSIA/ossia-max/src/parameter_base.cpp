@@ -197,7 +197,6 @@ void parameter_base::push_default_value(parameter_base* x)
     for (auto& m : x->m_matchers)
     {
       node = m.get_node();
-      auto parent = m.get_parent();
       auto param = node->get_parameter();
 
       auto def_val = ossia::net::get_default_value(*node);
@@ -421,7 +420,6 @@ void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes
   // assume all matchers have the same default value
   ossia::max::t_matcher& m = x->m_matchers[0];
   ossia::net::node_base* node = m.get_node();
-  ossia::net::parameter_base* param = node->get_parameter();
 
   auto def_val = ossia::net::get_default_value(*node);
 
