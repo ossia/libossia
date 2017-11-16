@@ -16,6 +16,40 @@
 #include <QQmlComponent>
 #include <ossia-qt/device/qml_logger.hpp>
 
+static int n = 0;
+void dumpTree(QQuickItem* root);
+void dumpTree(QObject* root)
+{
+  QString sep(n, ' ');
+  qDebug() << qPrintable(sep) << root;
+  n++;
+  for(auto cld : root->children())
+  {
+    dumpTree(cld);
+    if(auto item = qobject_cast<QQuickItem*>(cld))
+    {
+      dumpTree(item);
+    }
+  }
+  n--;
+}
+void dumpTree(QQuickItem* root)
+{
+  QString sep(n, ' ');
+  qDebug() << qPrintable(sep) << root;
+  if(auto obj = qobject_cast<ossia::qt::qml_node_base*>(root))
+    qDebug() << qPrintable(sep) << obj->node();
+  n++;
+  for(auto cld : root->children())
+  {
+    dumpTree(cld);
+  }
+  for(auto cld : root->childItems())
+  {
+    dumpTree(cld);
+  }
+  n--;
+}
 class QmlApiTest : public QObject
 {
     Q_OBJECT
@@ -265,6 +299,10 @@ class QmlApiTest : public QObject
 
         print_device();
         auto child_scale = ossia::net::find_node(dev.device().get_root_node(), "/foo.0/tata/scale");
+        qDebug() << child_scale;
+
+        dumpTree(item);
+
         QVERIFY(child_scale);
         cleanup(item);
     }
@@ -294,6 +332,7 @@ class QmlApiTest : public QObject
                               Ossia.Node { node: "foo." + index; id: n }
                               Ossia.Property on x { parentNode: n }
                               Ossia.Property on y { parentNode: n }
+
                               Item {
                                 id: tata
                                 parent: tutu
@@ -306,7 +345,10 @@ class QmlApiTest : public QObject
                                 Repeater {
                                   model: 2
                                   Item {
-                                    Ossia.Node { node: "buzz." + index; id: subn; parentNode: sub }
+                                    Ossia.Node {
+                                      node: "buzz." + index; id: subn; parentNode: sub;
+                                      Component.onCompleted: console.log("Build  buzz", index)
+                                    }
                                     Ossia.Property on x { parentNode: subn }
                                     Ossia.Property on y { parentNode: subn }
                                   }
@@ -323,12 +365,13 @@ class QmlApiTest : public QObject
         QVERIFY(item);
 
         dev.recreate(item);
-        app.processEvents();
-        app.processEvents();
-        app.processEvents();
-        app.processEvents();
+
+        //item->dumpObjectTree();
+        //dumpTree(item);
+
         dev.savePreset(QUrl::fromLocalFile("/tmp/preset.json"));
 
+        dev.saveDevice(QUrl::fromLocalFile("/tmp/device.json"));
         print_device();
 
 
@@ -800,6 +843,7 @@ class QmlApiTest : public QObject
         QVERIFY(component.errors().empty());
         auto item = component.create();
 
+        dev.recreate(item);
         QVERIFY(item);
 
         print_device();
@@ -840,6 +884,7 @@ class QmlApiTest : public QObject
         QVERIFY(component.errors().empty());
         auto item = component.create();
 
+        dev.recreate(item);
         QVERIFY(item);
 
         print_device();
@@ -866,16 +911,16 @@ class QmlApiTest : public QObject
 
                           Item {
                           Ossia.Node { node: "/foo" }
-                          Item {
-                          Ossia.Node { node: "bar" }
-                          Ossia.Property on x { }
-                          Ossia.Property on y { }
-                          }
-                          Item {
-                          Ossia.Node { node: "bar" }
-                          Ossia.Property on x { }
-                          Ossia.Property on y { }
-                          }
+                            Item {
+                              Ossia.Node { node: "bar" }
+                              Ossia.Property on x { }
+                              Ossia.Property on y { }
+                            }
+                            Item {
+                              Ossia.Node { node: "bar" }
+                              Ossia.Property on x { }
+                              Ossia.Property on y { }
+                            }
 
                           Component.onCompleted: Ossia.SingleDevice.recreate(this)
                           }
@@ -886,6 +931,9 @@ class QmlApiTest : public QObject
         auto item = component.create();
         QVERIFY(item);
 
+        dev.recreate(item);
+        dumpTree(item);
+        print_device();
         {
           auto node = ossia::net::find_node(dev.device().get_root_node(), "/foo/bar/x");
           QVERIFY(node);

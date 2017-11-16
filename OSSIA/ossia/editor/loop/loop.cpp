@@ -93,6 +93,7 @@ void loop::make_happen(time_event& event)
   if(&event == &m_startEvent)
   {
     m_interval.start();
+    m_interval.tick();
     mark_start_discontinuous{}(m_interval);
   }
   else if(&event == &m_endEvent)
@@ -220,18 +221,17 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
     {
       if(tick_amount >= 0)
       {
-        if(m_interval.get_date() == 0)
-        {
-          // flatten_and_filter(m_currentState, start_ev.get_state());
-          m_interval.start();
-          m_interval.tick();
-        }
-
         while(tick_amount > 0)
         {
           const auto cur_date = m_interval.get_date();
           if(cur_date + tick_amount < itv_dur)
           {
+            if(cur_date == 0)
+            {
+              start_ev.tick();
+              m_interval.start();
+              m_interval.tick();
+            }
             m_interval.tick_offset(tick_amount, tick_offset);
             break;
           }
@@ -243,15 +243,14 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
             m_interval.tick_offset(this_tick, tick_offset);
             tick_offset += this_tick;
 
-            // flatten_and_filter(m_currentState, end_ev.get_state());
+            end_ev.tick();
             m_interval.stop();
 
             if(tick_amount > 0)
             {
               m_interval.offset(time_value{});
-              m_interval.start();
-              m_interval.tick();
-              // flatten_and_filter(m_currentState, start_ev.get_state());
+              m_interval.start_and_tick();
+              start_ev.tick();
             }
           }
         }
@@ -274,14 +273,14 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
             m_interval.tick_offset(this_tick, tick_offset);
             tick_offset += this_tick;
 
-            // flatten_and_filter(m_currentState, end_ev.get_state());
+            end_ev.tick();
             //m_interval.stop();
 
             if(tick_amount < 0)
             {
               m_interval.offset(itv_dur);
               //m_interval.start();
-              // flatten_and_filter(m_currentState, start_ev.get_state());
+              start_ev.tick();
             }
           }
         }

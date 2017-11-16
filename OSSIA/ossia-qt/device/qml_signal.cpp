@@ -83,10 +83,7 @@ void qml_signal::resetNode()
   // Creation may not have finished yet.
   if (m_parentNode && !m_parentNode->ossiaNode())
   {
-    setPath({});
-    m_param = nullptr;
-    m_callback = ossia::none;
-    return;
+    m_parentNode->resetNode();
   }
 
   if (m_device)

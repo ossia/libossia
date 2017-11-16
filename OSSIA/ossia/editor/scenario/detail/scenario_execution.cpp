@@ -36,6 +36,7 @@ void scenario::make_happen(
   for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.next_time_intervals())
   {
     timeInterval->start();
+    timeInterval->tick();
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());
@@ -302,14 +303,9 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
           *n, pendingEvents, m_runningIntervals, m_runningIntervals);
       if (res)
       {
-        // TODO won't work if there are multiple waiting nodes
-
-        if (is_unmuted)
+        for (const auto& ev : pendingEvents)
         {
-          for (const auto& ev : pendingEvents)
-          {
-            //flatten_and_filter(cur_state, ev->get_state());
-          }
+          ev->tick();
         }
 
         pendingEvents.clear();
@@ -387,12 +383,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
         time_event& ev = *timeEvent;
         if(ev.get_status() == time_event::status::HAPPENED)
         {
-          /*
-          if (is_unmuted)
-          {
-            flatten_and_filter(cur_state, ev.get_state());
-          }
-          */
+          ev.tick();
 
           auto& tn = ev.get_time_sync();
           if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)

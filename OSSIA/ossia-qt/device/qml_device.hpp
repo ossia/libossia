@@ -73,6 +73,8 @@ public:
 
   QString name() const;
 
+  const ptr_set<qml_model_property>& models() const { return m_models; }
+
 public slots:
   bool openOSC(QString ip, int localPort, int remotePort);
   bool openOSCQueryServer(int WSport, int oscPort);

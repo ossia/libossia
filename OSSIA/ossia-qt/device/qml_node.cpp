@@ -48,8 +48,7 @@ void qml_node::resetNode()
   // Creation may not have finished yet.
   if (m_parentNode && !m_parentNode->ossiaNode())
   {
-    setPath({});
-    return;
+    m_parentNode->resetNode();
   }
 
   if (m_device)

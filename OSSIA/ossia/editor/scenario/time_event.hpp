@@ -85,6 +85,8 @@ public:
   }
 
 
+  void tick();
+
   /*! get the #time_sync where the event is
    \return std::shared_ptr<#time_sync> */
   time_sync& get_time_sync() const;

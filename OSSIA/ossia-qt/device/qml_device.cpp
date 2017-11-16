@@ -19,6 +19,7 @@
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_signal.hpp>
 #include <ossia-qt/qml_context.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
 #include <ossia/network/common/debug.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/network/midi/midi.hpp>
@@ -367,13 +368,72 @@ void reset_items(QQuickItem* root)
   }
 
   boost::container::flat_set<QObject*> objs(items.begin(), items.end());
+  boost::range::remove_erase_if(items, [&objs] (auto ptr) {
+      return objs.find(ptr) != objs.end();
+  });
 
-  for(auto ptr : objs)
+  for(auto ptr : items)
   {
     if (auto qn = qobject_cast<qml_node_base*>(ptr))
     {
+      qDebug() << "RESETTING" << qn << qn->node();
       qn->resetNode();
     }
+  }
+}
+
+static bool processing_models = false;
+void setup_models(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
+
+  auto mlist = device.models();
+  for (auto model : mlist)
+  {
+    if (model.second)
+    {
+      qml_model_property* m = model.first;
+
+      m->updateCount();
+    }
+    QCoreApplication::processEvents();
+  }
+  cur_model_size = device.models().size();
+
+  if(cur_model_size != prev_model_size)
+  {
+    QTimer::singleShot(0, [=,&device] {
+      setup_models(cur_model_size, prev_model_size, device);
+    });
+  }
+  else
+  {
+    processing_models = false;
+  }
+}
+void setup_models_preset(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
+
+  auto mlist = device.models();
+  for (auto model : mlist)
+  {
+    if (model.second)
+    {
+      qml_model_property* m = model.first;
+
+      m->updateCount();
+    }
+    QCoreApplication::processEvents();
+  }
+  cur_model_size = device.models().size();
+
+  if(cur_model_size != prev_model_size)
+  {
+    QTimer::singleShot(0, [=,&device] {
+      setup_models_preset(cur_model_size, prev_model_size, device);
+    });
+  }
+  else
+  {
+    device.setReadPreset(false);
+    processing_models = false;
   }
 }
 
@@ -394,14 +454,12 @@ void qml_device::recreate(QObject* root)
           }
         });
 
-    for(auto model : m_models)
-    {
-      if (model.second)
-      {
-        qml_model_property* m = model.first;
-        m->updateCount();
-      }
-    }
+    setup_models_preset(m_models.size(), m_models.size(), *this);
+    while(processing_models)
+      qApp->processEvents();
+    qApp->processEvents();
+    qApp->processEvents();
+    qApp->processEvents();
   }
   else
   {
@@ -583,8 +641,18 @@ void qml_device::loadPreset(QObject* root, QString file)
       // Finallt do a push of all properties registered
       recreate(root);
       {
-          std::size_t cur_model_size = m_models.size();
-          std::size_t prev_model_size;
+
+          processing_models = true;
+          setup_models_preset(m_models.size(), m_models.size(), *this);
+          while(processing_models)
+            qApp->processEvents();
+          qApp->processEvents();
+          qApp->processEvents();
+          qApp->processEvents();
+
+/*
+          std::function<void(...)> do_later =
+              [this] ;
           do
           {
               prev_model_size = cur_model_size;
@@ -601,8 +669,9 @@ void qml_device::loadPreset(QObject* root, QString file)
               }
               cur_model_size = m_models.size();
           } while (cur_model_size != prev_model_size);
+          */
       }
-      m_readPreset = false;
+      //m_readPreset = false;
       return;
     }
   }

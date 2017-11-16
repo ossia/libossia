@@ -46,6 +46,16 @@ void time_event::remove_time_process(time_process* timeProcess)
     m_processes.erase(it);
   }
 }
+
+void time_event::tick()
+{
+  for(auto& proc : m_processes)
+  {
+    proc->start();
+    proc->state(0_tv, 0., 0_tv);
+    proc->stop();
+  }
+}
 time_sync& time_event::get_time_sync() const
 {
   return m_timesync;
