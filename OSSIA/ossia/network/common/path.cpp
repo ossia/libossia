@@ -177,6 +177,11 @@ ossia::optional<path> make_path(ossia::string_view address) try
 {
   path p{std::string(address), {}};
 
+  if(address.empty())
+  {
+    return p;
+  }
+
   const bool starts_any = boost::starts_with(p.pattern, "//");
   if (!starts_any)
   {
