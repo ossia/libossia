@@ -7,6 +7,67 @@
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/node_process.hpp>
 
+namespace ossia
+{
+
+struct test_loop
+{
+    ossia::net::generic_device d;
+    ossia::graph g;
+    loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
+
+    ossia::audio_parameter* aparam{};
+    test_loop()
+    {
+      auto& root = d.get_root_node();
+      auto foo = root.create_child("foo");
+      aparam = new audio_parameter{*foo};
+      auto param = std::unique_ptr<ossia::net::parameter_base>{aparam};
+      foo->set_parameter(std::move(param));
+
+      parent.node->outputs()[0]->address = foo->get_parameter();
+      auto scenar = std::make_shared<scenario>();
+      parent.get_time_interval().add_time_process(scenar);
+
+      auto ts0 = scenar->get_start_time_sync(); auto e0 = ts0->emplace(ts0->get_time_events().begin(), {});
+      auto ts1 = std::make_shared<ossia::time_sync>(); scenar->add_time_sync(ts1); auto e1 = ts1->emplace(ts1->get_time_events().begin(), {});
+      auto ts2 = std::make_shared<ossia::time_sync>(); scenar->add_time_sync(ts2); auto e2 = ts2->emplace(ts2->get_time_events().begin(), {});
+      auto i1 = time_interval::create({}, **e0, **e1, 4_tv, 4_tv, 4_tv); scenar->add_time_interval(i1);
+      auto i2 = time_interval::create({}, **e1, **e2, 3_tv, 3_tv, 3_tv); scenar->add_time_interval(i2);
+
+      g.add_node(parent.node);
+      g.add_node(scenar->node);
+      g.add_node(i1->node);
+      g.add_node(i2->node);
+
+      {
+        auto child = std::make_shared<loop>(1_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
+
+        auto snd = std::make_shared<ossia::sound_node>();
+        snd->set_sound(std::vector<std::vector<double>>{ {1., 2., 3., 4.} });
+        child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
+        i1->add_time_process(child);
+
+        g.add_node(snd);
+        g.connect(ossia::make_edge(ossia::immediate_glutton_connection{}, snd->outputs()[0], parent.node->inputs()[0], snd, parent.node));
+      }
+
+      {
+        auto child = std::make_shared<loop>(2_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
+
+        auto snd = std::make_shared<ossia::sound_node>();
+        snd->set_sound(std::vector<std::vector<double>>{ {5.,6.,7.,8.} });
+        child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
+        i2->add_time_process(child);
+
+        g.add_node(snd);
+        g.connect(ossia::make_edge(ossia::immediate_glutton_connection{}, snd->outputs()[0], parent.node->inputs()[0], snd, parent.node));
+      }
+
+    }
+};
+
+}
 QDebug operator<<(QDebug d, ossia::token_request t)
 {
   d << (int64_t)t.date << t.position << (int64_t)t.offset << t.start_discontinuous << t.end_discontinuous;
@@ -34,6 +95,7 @@ class LoopTest : public QObject
     }
 
 private Q_SLOTS:
+
 
     /*! test life cycle and accessors functions */
     void test_basic()
@@ -73,7 +135,7 @@ private Q_SLOTS:
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
-        snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
+        snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
@@ -91,7 +153,7 @@ private Q_SLOTS:
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
         auto snd = std::make_shared<ossia::sound_node>();
-        snd->set_sound(std::vector<std::vector<float>>{ {0.1, 0.2, 0.3, 0.4} });
+        snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
@@ -118,11 +180,9 @@ private Q_SLOTS:
         for(auto tk : snd->requested_tokens)
           ((ossia::graph_node*)snd.get())->run(tk, e);
         auto op = snd->outputs()[0]->data.target<audio_port>()->samples;
-        for(auto v : op) for(auto val : v) qDebug() << val;
         audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.4, 0.1, 0.2, 0.3, 0.4, 0.1}};
         for(int i = 0; i < 9; i++)
         {
-          qDebug() << expected[0][i] - op[0][i];
           QCOMPARE(expected[0][i], op[0][i]);
         }
         QCOMPARE(op, expected);
@@ -144,6 +204,89 @@ private Q_SLOTS:
       }
 
     }
+
+    void test_subloop()
+    {
+      loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
+      auto child = std::make_shared<loop>(3_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
+      parent.get_time_interval().add_time_process(child);
+
+      auto snd = std::make_shared<ossia::sound_node>();
+      snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
+      child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
+
+      parent.start();
+      parent.state(14_tv, 0., 0_tv);
+
+      ossia::execution_state e;
+      for(auto tk : snd->requested_tokens)
+        ((ossia::graph_node*)snd.get())->run(tk, e);
+
+
+      audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1}};
+
+      auto op = snd->outputs()[0]->data.target<audio_port>()->samples;
+
+      for(int i = 0; i < 14; i++)
+      {
+        QCOMPARE(expected[0][i], op[0][i]);
+      }
+      QCOMPARE(op, expected);
+    }
+
+
+    void test_subloops_in_scenario()
+    {
+      test_loop l;
+      l.parent.start();
+      l.parent.state(14_tv, 0., 0_tv);
+
+
+      audio_vector expected{ossia::audio_channel{1., 1., 1., 1., 5., 6., 5., 1., 1., 1., 1., 5., 6., 5.}};
+
+      ossia::execution_state e;
+      l.g.state(e);
+      e.commit();
+
+      QVERIFY(e.audioState.size() > 0);
+      auto op = (*e.audioState.begin()).second.samples;
+
+      QVERIFY(op.size() > 0);
+      QVERIFY(op[0].size() == 14);
+
+      for(int i = 0; i < 14; i++)
+      {
+        QCOMPARE(expected[0][i], op[0][i]);
+      }
+      QCOMPARE(op, expected);
+    }
+
+    void test_subloops_in_scenario_1by1()
+    {
+      test_loop l;
+
+      float audio_data[2][64] {{}};
+      l.parent.start();
+      ossia::execution_state e;
+      e.globalState = {&l.d};
+      for(int i = 1; i <= 14; i++) {
+
+        float* chan = audio_data[0] + i - 1 ;
+        l.aparam->audio = {{chan, 64 - i}};
+        l.parent.state(time_value{i}, 0., time_value{0});
+        l.g.state(e);
+        e.commit();
+      }
+
+
+      audio_vector expected{ossia::audio_channel{1., 1., 1., 1., 5., 6., 5., 1., 1., 1., 1., 5., 6., 5.}};
+
+      for(int i = 0; i < 14; i++)
+      {
+        QCOMPARE( audio_data[0][i], expected[0][i]);
+      }
+    }
+
 };
 
 QTEST_APPLESS_MAIN(LoopTest)

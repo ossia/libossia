@@ -8,6 +8,7 @@ if(CMAKE_CROSSCOMPILING)
     include_directories("${PYTHON_INCLUDE_DIR}/../")
 
     message(STATUS "PYTHON_INCLUDE_DIR ${PYTHON_INCLUDE_DIR}")
+    message(STATUS "PYTHON_EXECUTABLE - ${PYTHON_EXECUTABLE}")
 
     add_library(${PROJECT_NAME} SHARED ${PROJECT_NAME}.cpp)
     target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
@@ -19,10 +20,9 @@ if(CMAKE_CROSSCOMPILING)
     if ($ENV{PYTHON_VERSION} MATCHES "3.5")
       set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".cpython-35m-arm-linux-gnueabihf.so")
     endif()
-
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv6l
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/setup.py bdist_wheel --plat-name linux-armv6l
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
     add_custom_command(TARGET ${PROJECT_NAME}
@@ -36,20 +36,16 @@ else()
     pybind11_add_module(${PROJECT_NAME} ${PROJECT_NAME}.cpp)
     use_gold(${PROJECT_NAME})
     add_linker_warnings_external(${PROJECT_NAME})
-    message(STATUS "PYTHON_EXECUTABLE - ${PYTHON_EXECUTABLE}")
-    message(STATUS "PYTHON_LIBRARY - ${PYTHON_EXECUTABLE}")
-    target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
 
+    message(STATUS "PYTHON_EXECUTABLE - ${PYTHON_EXECUTABLE}")
+    message(STATUS "PYTHON_LIBRARY - ${PYTHON_LIBRARY}")
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
 
     add_custom_command(TARGET ${PROJECT_NAME}
       POST_BUILD
       COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
-    #add_custom_command(TARGET ${PROJECT_NAME}
-    #  POST_BUILD
-    #  COMMAND ${PYTHON_EXECUTABLE} -m pip install pyossia*.whl --user --upgrade
-    #  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/dist)
-    #message(STATUS "PYOSSIA INSTALL - ${PYTHON_EXECUTABLE} -m pip install --user --upgrade)")
 endif()
 
 file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python

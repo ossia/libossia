@@ -1,0 +1,25 @@
+{
+    "MyPreset": {
+        "test": {
+            "misc": {
+                "char": "i",
+                "list": [
+                    44100,
+                    "test.wav",
+                    0.8999999761581421
+                ],
+                "string": "preset 2"
+            },
+            "numeric": {
+                "bool": false,
+                "float": 10.4,
+                "int": -4,
+                "vec3f": [
+                    1.0,
+                    2.5,
+                    30.0
+                ]
+            }
+        }
+    }
+}

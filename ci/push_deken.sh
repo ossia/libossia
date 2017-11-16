@@ -27,7 +27,7 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
   if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
 
     ARCHIVE_NAME="./ossia-v${VERSION}-(Sources)-externals.tar.gz"
-    mv $TRAVIS_BUILD_DIR/libossia-source.tar.gz ${ARCHIVE_NAME}
+    mv "${ARTIFACTS_DIR}/libossia-source.tar.gz" ${ARCHIVE_NAME}
     read HASH FILE <<< `sha256sum "${ARCHIVE_NAME}"`
     echo $HASH > $FILE.sha256
     ${GPG_COMMAND} ${ARCHIVE_NAME}
@@ -44,6 +44,8 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
 
   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     OS="(Darwin-x86_64-64)(Darwin-x86_64-32)"
+    brew install coreutils
+    alias sha256sum='gsha256sum'
   fi
 
   ARCHIVE_NAME="ossia-v${VERSION}-${OS}-externals.tar.gz"

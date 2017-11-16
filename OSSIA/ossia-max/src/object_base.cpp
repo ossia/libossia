@@ -187,8 +187,7 @@ void t_matcher::output_value()
       if(   parent->m_otype == object_class::param
          || parent->m_otype == object_class::remote )
       {
-        parameter_base* x = (parameter_base*)parent;
-        for (auto v : m_set_pool)
+        for (const auto& v : m_set_pool)
         {
           if (v == val){
             break_flag = true;
