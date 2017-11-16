@@ -39,6 +39,7 @@ class IntervalBenchmark : public QObject
     auto sn = s.get_start_time_sync();
     auto se = *sn->get_time_events().begin();
     auto en = std::make_shared<ossia::time_sync>();
+    s.add_time_sync(en);
     en->set_expression(ossia::expressions::make_expression_false());
     auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
     en->insert(en->get_time_events().end(), ee);

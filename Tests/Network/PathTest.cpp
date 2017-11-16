@@ -131,6 +131,11 @@ private Q_SLOTS:
     QVERIFY(!ossia::traversal::is_pattern("/foo/r/"));
   }
 
+  void test_root_only()
+  {
+    auto path = ossia::traversal::make_path("/");
+  }
+
   void test_traversal()
   {
     // Note : to allow access to character classes, we have to change :
@@ -252,6 +257,14 @@ private Q_SLOTS:
       std::vector<ossia::net::node_base*> expected{&n1, &n2};
       QVERIFY(vec == expected);
     }
+    {
+      auto p = traversal::make_path("//bar!");
+      std::vector<ossia::net::node_base*> vec{&foo};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&bar, &n1, &n2};
+      QVERIFY(vec == expected);
+    }
 
     {
       auto p = traversal::make_path("//bar*");
@@ -279,7 +292,26 @@ private Q_SLOTS:
       std::vector<ossia::net::node_base*> expected{n1.get_parent()};
       QVERIFY(vec == expected);
     }
+  }
 
+
+  void test_traversal_relative2()
+  {
+    ossia::net::generic_device device1{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+
+    auto& foo = ossia::net::find_or_create_node(device1, "model");
+    auto& t1= ossia::net::find_or_create_node(device1, "model/tutu.1");
+    auto& t2= ossia::net::find_or_create_node(device1, "model/tutu.2");
+    auto& t3= ossia::net::find_or_create_node(device1, "model/tutu.3");
+
+    {
+      auto p = traversal::make_path("//tutu!");
+      std::vector<ossia::net::node_base*> vec{&device1.get_root_node()};
+      traversal::apply(*p, vec);
+      debug(vec);
+      std::vector<ossia::net::node_base*> expected{&t1, &t2, &t3};
+      QVERIFY(vec == expected);
+    }
   }
 
   void test_match()
