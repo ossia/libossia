@@ -540,6 +540,42 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c2->get_date(), 8_tv);
     }
 
+    void test_trigger()
+    {
+      std::cerr << "\n\ntest_trigger\n";
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      std::shared_ptr<time_event> e2 = create_event(scenario);
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(1, ossia::expressions::comparator::EQUAL, 1));
+
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 30_tv, 20_tv, 40_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+
+      scenario.add_time_interval(c0);
+      scenario.add_time_interval(c1);
+
+      s.interval->start_and_tick();
+      s.interval->tick(15_tv);
+      QCOMPARE(c0->get_date(), 15_tv);
+      QCOMPARE(c1->get_date(), 0_tv);
+
+      s.interval->tick(15_tv);
+      qDebug() << c0->get_date() << c1->get_date();
+      QCOMPARE(c0->get_date(), 0_tv); // executed, we go on to the next one
+      QCOMPARE(c1->get_date(), 0_tv);
+      QVERIFY(e1->get_status() == ossia::time_event::status::HAPPENED);
+
+      s.interval->tick(15_tv);
+      qDebug() << c0->get_date() << c1->get_date();
+      QCOMPARE(c0->get_date(), 0_tv);
+      QCOMPARE(c1->get_date(), 15_tv);
+
+    }
     void test_speed()
     {
 

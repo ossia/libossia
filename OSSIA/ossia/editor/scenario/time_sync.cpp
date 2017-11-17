@@ -117,6 +117,7 @@ void time_sync::reset()
     timeEvent->reset();
   }
 
+  m_trigger_date = Infinite;
   m_observe = false;
   m_evaluating = false;
 }

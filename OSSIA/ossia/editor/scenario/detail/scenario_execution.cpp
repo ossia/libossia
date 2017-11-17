@@ -202,15 +202,75 @@ bool scenario::process_this(
   if (*node.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
-    if (!node.is_observing_expression())
-      expressions::update(*node.m_expression);
+    if(!node.has_trigger_date())
+    {
+      if (!node.is_observing_expression())
+        expressions::update(*node.m_expression);
 
-    node.observe_expression(true);
+      node.observe_expression(true);
 
-    if (node.trigger_request)
-      node.trigger_request = false;
-    else if (!expressions::evaluate(*node.m_expression))
+      if (node.trigger_request)
+        node.trigger_request = false;
+      else if (!expressions::evaluate(*node.m_expression))
+        return false;
+    }
+
+    // at this point we can assume we are going to trigger.
+
+    const auto& cur_date = this->node->requested_tokens.back().date;
+    if(node.has_trigger_date())
+    {
+      bool ok = true;
+      for(const auto& ev : node.get_time_events())
+      {
+        for(const auto& cst : ev->previous_time_intervals())
+        {
+          if(cst->get_start_event().get_status() == ossia::time_event::status::HAPPENED)
+          {
+            ok &= (cst->get_date() == m_itv_end_map.find(cst.get())->second);
+          }
+          if(!ok)
+            break;
+        }
+        if(!ok)
+          break;
+      }
+
+      if(!ok)
+        return false;
+      else
+      {
+        maximalDurationReached = true;
+
+        for(const auto& ev : node.get_time_events())
+        {
+          for(const auto& cst : ev->previous_time_intervals())
+          {
+            m_itv_end_map.erase(cst.get());
+          }
+        }
+      }
+    }
+    else if(node.has_sync_rate())
+    {
+      // compute absolute date at which it should execute,
+      // assuming we start at the next tick
+      // TODO div by zero
+      time_value expected_date{node.get_sync_rate().impl * (1 + cur_date.impl / node.get_sync_rate().impl)};
+      node.set_trigger_date(expected_date);
+      auto diff_date = expected_date - cur_date;
+
+      // compute the "fake max" date at which intervals must end for this to work
+      for(const auto& ev : node.get_time_events())
+      {
+        for(const auto& cst : ev->previous_time_intervals())
+        {
+          m_itv_end_map.insert(std::make_pair(cst.get(), cst->get_date() + diff_date));
+        }
+      }
+      node.observe_expression(false);
       return false;
+    }
   }
 
   // trigger the time sync
@@ -239,9 +299,9 @@ bool scenario::process_this(
   node.m_evaluating = false;
   node.finished_evaluation.send(maximalDurationReached);
   if (maximalDurationReached)
-    node.m_status = time_sync::DONE_MAX_REACHED;
+    node.m_status = time_sync::status::DONE_MAX_REACHED;
   else
-    node.m_status = time_sync::DONE_TRIGGERED;
+    node.m_status = time_sync::status::DONE_TRIGGERED;
 
   return true;
 }
@@ -259,8 +319,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
   // ossia::logger().info("scenario::state starts");
   if (date != m_lastDate)
   {
-    const bool is_unmuted = unmuted();
-
     auto prev_last_date = m_lastDate;
     m_lastDate = date;
 
@@ -320,15 +378,21 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
 
     auto run_interval = [&] (ossia::time_interval& interval, ossia::time_value tick, ossia::time_value offset)
     {
-      const auto cst_old_date = interval.get_date();
+      const auto& cst_old_date = interval.get_date();
+      auto cst_max_dur = interval.get_max_duration();
       const auto end_node = &interval.get_end_event().get_time_sync();
 
       // TODO only insert it if we are past min bound ?
       m_endNodes.insert(end_node);
 
+      auto it = m_itv_end_map.find(&interval);
+      if(it != m_itv_end_map.end() && it->second < cst_max_dur)
+      {
+        cst_max_dur = it->second;
+      }
+
       // Tick without going over the max
       // so that the state is not 1.01*automation for instance.
-      const auto cst_max_dur = interval.get_max_duration();
       if (!cst_max_dur.infinite())
       {
         const auto this_tick = std::min(tick, cst_max_dur - cst_old_date);

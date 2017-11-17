@@ -145,6 +145,7 @@ void scenario::stop()
   m_runningIntervals.clear();
   m_waitingNodes.clear();
   m_overticks.clear();
+  m_itv_end_map.clear();
   m_lastDate = time_value{};
 }
 

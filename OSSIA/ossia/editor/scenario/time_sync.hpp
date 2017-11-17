@@ -121,7 +121,7 @@ public:
   //! Boolean : true if the evaluation was finished due to the max bound
   callback_container<std::function<void(bool)>> finished_evaluation;
 
-  enum status: int8_t
+  enum class status: int8_t
   {
     NOT_DONE,
     DONE_TRIGGERED,
@@ -132,13 +132,22 @@ public:
     return m_status;
   }
 
+  void set_sync_rate(time_value v) { m_sync_rate = v; }
+  time_value get_sync_rate() const { return m_sync_rate; }
+  bool has_sync_rate() const { return !m_sync_rate.infinite(); }
+
+  void set_trigger_date(time_value v) { m_trigger_date = v; }
+  time_value get_trigger_date() const { return m_trigger_date;}
+  bool has_trigger_date() const { return !m_trigger_date.infinite();}
 private:
   ossia::expression_ptr m_expression;
   ptr_container<time_event> m_timeEvents;
 
   optional<expressions::expression_callback_iterator> m_callback;
 
-  status m_status = NOT_DONE;
+  time_value m_sync_rate = Infinite;
+  time_value m_trigger_date = Infinite;
+  status m_status = status::NOT_DONE;
   bool m_observe = false;
   bool m_evaluating = false;
 };

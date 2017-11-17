@@ -93,8 +93,9 @@ private:
   interval_set m_runningIntervals;
   small_sync_vec m_waitingNodes;
   overtick_map m_overticks;
+  boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_endNodes;
-  static bool process_this(
+  bool process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
       interval_set& started, interval_set& stopped);
   static void make_happen(

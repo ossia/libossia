@@ -186,9 +186,9 @@ bool loop::process_sync(ossia::time_sync& node, ossia::time_event& ev, bool even
   node.finished_evaluation.send(maximalDurationReached);
 
   if (maximalDurationReached)
-    node.m_status = time_sync::DONE_MAX_REACHED;
+    node.m_status = time_sync::status::DONE_MAX_REACHED;
   else
-    node.m_status = time_sync::DONE_TRIGGERED;
+    node.m_status = time_sync::status::DONE_TRIGGERED;
 
   return true;
 }
