@@ -61,7 +61,7 @@ struct global_pull_visitor
   const net::parameter_base& out;
   void operator()(value_port& val)
   {
-    val.data = out.value();
+    val.add_value(out.value());
   }
 
   void operator()(audio_port& val)
@@ -99,7 +99,8 @@ void execution_state::commit()
   for (auto& elt : valueState)
   {
     apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* addr) {
-      addr->push_value(elt.second.data);
+      for(auto& val : elt.second)
+        addr->push_value(val.value);
     });
   }
 

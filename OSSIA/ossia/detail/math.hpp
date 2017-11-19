@@ -117,4 +117,11 @@ fold(const T val, const T low, const T high)
           ossia::remainder(val - low, 2. * std::fabs(low - high)));
   }
 }
+
+template <class T>
+OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR
+std::pair<T,T> div(T num, T denom)
+{
+  return { num / denom, num % denom };
+}
 }

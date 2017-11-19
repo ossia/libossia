@@ -66,3 +66,9 @@
 [submodule "3rdparty/whereami"]
 	path = 3rdparty/whereami
 	url = https://github.com/gpakosz/whereami
+[submodule "3rdparty/frozen"]
+	path = 3rdparty/frozen
+	url = https://github.com/serge-sans-paille/frozen
+[submodule "3rdparty/bitset2"]
+	path = 3rdparty/bitset2
+	url = https://github.com/ClaasBontus/bitset2

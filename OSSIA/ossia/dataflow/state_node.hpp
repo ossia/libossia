@@ -16,7 +16,7 @@ struct state_exec_visitor
 
     void operator()(const ossia::message& msg)
     {
-      e.insert(&msg.dest.address(), value_port{{}, { msg.message_value }});
+      e.insert(&msg.dest.address(), {ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit }});
     }
 
     void operator()(const ossia::custom_state& st)

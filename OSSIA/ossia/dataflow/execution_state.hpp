@@ -8,7 +8,7 @@ struct OSSIA_EXPORT execution_state
 {
   std::vector<ossia::net::device_base*> globalState;
 
-  std::unordered_map<destination_t, value_port> valueState;
+  std::unordered_map<destination_t, std::vector<tvalue>> valueState;
   std::unordered_map<destination_t, audio_port> audioState;
 
 #if defined(OSSIA_PROTOCOL_MIDI)
@@ -25,9 +25,9 @@ struct OSSIA_EXPORT execution_state
 
   // todo separate rvalue & cref
   void insert(const destination_t& dest, data_type v);
-  void insert(const destination_t& dest, value_port v)
+  void insert(const destination_t& dest, tvalue v)
   {
-    valueState[dest] = std::move(v);
+    valueState[dest].push_back(std::move(v));
   }
   void insert(const destination_t& dest, audio_port v)
   {

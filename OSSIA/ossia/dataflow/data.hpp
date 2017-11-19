@@ -2,6 +2,7 @@
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <chobo/small_vector.hpp>
+#include <ossia/network/domain/domain_base.hpp>
 namespace ossia
 {
 template <typename T>
@@ -23,10 +24,60 @@ struct midi_port
 };
 #endif
 
+struct tvalue {
+  tvalue(ossia::value&& v): value{std::move(v)} { }
+  tvalue(ossia::value&& v, const destination_index& d): value{std::move(v)}, index{d} { }
+  tvalue(ossia::value&& v, const destination_index& d, const unit_t& u): value{std::move(v)}, index{d}, type{u} { }
+  tvalue(const ossia::value& v): value{v} { }
+  tvalue(const ossia::value& v, const destination_index& d): value{v}, index{d} { }
+  tvalue(const ossia::value& v, const destination_index& d, const unit_t& u): value{v}, index{d}, type{u} { }
+
+  tvalue() = default;
+  tvalue(const tvalue&) = default;
+  tvalue(tvalue&&) = default;
+  tvalue& operator=(const tvalue&) = default;
+  tvalue& operator=(tvalue&&) = default;
+
+  ossia::value value{};
+  destination_index index{};
+  ossia::complex_type type{};
+  int64_t timestamp{};
+};
+
 struct value_port
 {
+  value_port() = default;
+  value_port(const value_port&) = default;
+  value_port(value_port&&) = default;
+  value_port& operator=(const value_port&) = default;
+  value_port& operator=(value_port&&) = default;
+
+  void add_value(const ossia::tvalue& v)
+  {
+    data.emplace_back(v);
+  }
+  void add_value(ossia::tvalue&& v)
+  {
+    data.emplace_back(std::move(v));
+  }
+  void add_value(ossia::value&& v)
+  {
+    data.emplace_back(std::move(v));
+  }
+
+  void clear()
+  {
+    data.clear();
+  }
+
+  const auto& get_data() const { return data; }
+
+  ossia::domain domain;
+  ossia::bounding_mode bounding{};
   ossia::complex_type type;
-  ossia::value data;
+
+private:
+  value_vector<ossia::tvalue> data;
 };
 
 struct audio_delay_line
@@ -43,15 +94,19 @@ struct midi_delay_line
 
 struct value_delay_line
 {
+  std::vector<value_vector<ossia::tvalue>> data;
+
+  ossia::domain domain;
+  ossia::bounding_mode bounding{};
+  ossia::repetition_filter rep_filter{};
   ossia::complex_type type;
-  std::vector<ossia::value> data;
 };
 
 struct clear_data
 {
   void operator()(value_port& p) const
   {
-    p.data = ossia::value{};
+    p.clear();
   }
 
 #if defined(OSSIA_PROTOCOL_MIDI)
@@ -99,9 +154,10 @@ struct data_size
 
 struct mix
 {
-  void operator()(const ossia::value& out, ossia::value& in)
+  void operator()(const value_vector<ossia::tvalue>& out, value_port& in)
   {
-    in = out;
+    for(auto& val : out)
+      in.add_value(val);
   }
 
   void copy_audio(const chobo::small_vector<double, 64>& src, chobo::small_vector<double, 64>& sink)
@@ -222,7 +278,7 @@ struct copy_data
 
   void operator()(const value_port& out, value_delay_line& in)
   {
-    in.data.push_back(out.data);
+    in.data.push_back(out.get_data());
   }
 
   void operator()(const audio_port& out, audio_delay_line& in)
@@ -239,7 +295,7 @@ struct copy_data
 
   void operator()(const value_port& out, value_port& in)
   {
-    mix{}(out.data, in.data);
+    mix{}(out.get_data(), in);
   }
 
   void operator()(const audio_port& out, audio_port& in)
@@ -268,7 +324,7 @@ struct copy_data_pos
   {
     if (pos < out.data.size())
     {
-      mix{}(out.data[pos], in.data);
+      mix{}(out.data[pos], in);
     }
   }
 
