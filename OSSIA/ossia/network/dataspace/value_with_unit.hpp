@@ -1,12 +1,12 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace_base.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <brigand/algorithms/fold.hpp>
 namespace ossia
 {
 
-#include <ossia/editor/dataspace/dataspace_strong_variants.hpp>
+#include <ossia/network/dataspace/dataspace_strong_variants.hpp>
 //! Unit attached with a corresponding value. e.g. a specific color, or position.
 struct OSSIA_EXPORT value_with_unit final
 {

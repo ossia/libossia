@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace_base.hpp>
+#include <ossia/network/dataspace/dataspace_base.hpp>
 
 namespace ossia
 {

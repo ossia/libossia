@@ -2,7 +2,7 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/editor/dataspace/dataspace_fwd.hpp>
+#include <ossia/network/dataspace/dataspace_fwd.hpp>
 #include <ossia/editor/value/destination.hpp>
 #include <ossia/network/base/value_callback.hpp>
 #include <ossia/network/common/parameter_properties.hpp>

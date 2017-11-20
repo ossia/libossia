@@ -1,15 +1,15 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
-#include <ossia/editor/dataspace/dataspace_variant_visitors.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/dataspace/detail/dataspace_convert.hpp>
-#include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
-#include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
-#include <ossia/editor/dataspace/detail/list_units.hpp>
-#include <ossia/editor/dataspace/detail/make_unit.hpp>
-#include <ossia/editor/dataspace/detail/make_value.hpp>
-#include <ossia/editor/dataspace/value_with_unit.hpp>
+#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/detail/dataspace_convert.hpp>
+#include <ossia/network/dataspace/detail/dataspace_merge.hpp>
+#include <ossia/network/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/network/dataspace/detail/list_units.hpp>
+#include <ossia/network/dataspace/detail/make_unit.hpp>
+#include <ossia/network/dataspace/detail/make_value.hpp>
+#include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/editor/value/detail/value_conversion_impl.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <hopscotch_map.h>

@@ -3,7 +3,7 @@
 #include <ossia/editor/automation/automation.hpp>
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/curve.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <iostream>

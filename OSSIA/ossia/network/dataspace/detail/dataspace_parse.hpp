@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/detail/string_map.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/dataspace_parse.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace_parse.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <brigand/algorithms/for_each.hpp>
 #include <brigand/algorithms/wrap.hpp>
 namespace ossia

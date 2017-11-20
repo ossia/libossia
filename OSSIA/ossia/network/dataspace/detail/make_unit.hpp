@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <brigand/algorithms/for_each.hpp>
 
 namespace ossia

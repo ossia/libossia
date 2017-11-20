@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/dataspace/value_with_unit.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 #include <ossia/editor/value/value_traits.hpp>
 

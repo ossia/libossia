@@ -1,19 +1,19 @@
 #pragma once
-#include <ossia/editor/dataspace/angle.hpp>
-#include <ossia/editor/dataspace/color.hpp>
-#include <ossia/editor/dataspace/dataspace_fwd.hpp>
-#include <ossia/editor/dataspace/distance.hpp>
-#include <ossia/editor/dataspace/gain.hpp>
-#include <ossia/editor/dataspace/orientation.hpp>
-#include <ossia/editor/dataspace/position.hpp>
-#include <ossia/editor/dataspace/speed.hpp>
-#include <ossia/editor/dataspace/temperature.hpp>
-#include <ossia/editor/dataspace/time.hpp>
+#include <ossia/network/dataspace/angle.hpp>
+#include <ossia/network/dataspace/color.hpp>
+#include <ossia/network/dataspace/dataspace_fwd.hpp>
+#include <ossia/network/dataspace/distance.hpp>
+#include <ossia/network/dataspace/gain.hpp>
+#include <ossia/network/dataspace/orientation.hpp>
+#include <ossia/network/dataspace/position.hpp>
+#include <ossia/network/dataspace/speed.hpp>
+#include <ossia/network/dataspace/temperature.hpp>
+#include <ossia/network/dataspace/time.hpp>
 #include <brigand/algorithms/fold.hpp>
 #include <functional>
 namespace ossia
 {
-#include <ossia/editor/dataspace/dataspace_base_variants.hpp>
+#include <ossia/network/dataspace/dataspace_base_variants.hpp>
 //! A unit
 struct OSSIA_EXPORT unit_t final
 {

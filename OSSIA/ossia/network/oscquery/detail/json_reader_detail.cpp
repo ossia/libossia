@@ -2,8 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "json_reader_detail.hpp"
 #include "json_parser.hpp"
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/domain/domain.hpp>

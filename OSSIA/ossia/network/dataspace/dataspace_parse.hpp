@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <boost/spirit/include/qi_symbols.hpp>
 
 #include <ossia/editor/state/message.hpp>

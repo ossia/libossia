@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/value_with_unit.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/value_with_unit.hpp>
 namespace ossia
 {
 template <typename Functor>

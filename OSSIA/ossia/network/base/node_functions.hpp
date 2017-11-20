@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
 
-#include <ossia/editor/dataspace/value_with_unit.hpp>
+#include <ossia/network/dataspace/value_with_unit.hpp>
 
 #include <ossia/editor/value/destination.hpp>
 

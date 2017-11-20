@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
-#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/editor/value/value.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <functional>

@@ -1,8 +1,8 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/dataspace_base_fwd.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace_base_fwd.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 namespace ossia

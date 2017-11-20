@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/editor/value/value_conversion.hpp>
 
 namespace ossia
