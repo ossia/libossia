@@ -22,9 +22,11 @@ for PYBIN in /opt/python/*/bin/; do
       -DOSSIA_PD=0 \
       -DOSSIA_QT=0 \
       -DOSSIA_QML=0 \
-      -DOSSIA_PYTHON=1 ..
+      -DOSSIA_PYTHON=1
+      -DOSSIA_EDITOR=OFF \
+      -DOSSIA_DATAFLOW=OFF \ ..
 
-	$CMAKE_BIN --build . -- -j2	
+	$CMAKE_BIN --build . -- -j2
 	# now we just want to install the wheel and run the tests
 	${PYBIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
 	${PYBIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py

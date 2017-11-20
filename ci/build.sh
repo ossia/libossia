@@ -120,6 +120,8 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_QT=0 \
                    -DOSSIA_NO_QT=1 \
                    -DOSSIA_PYTHON=0 \
+                   -DOSSIA_EDITOR=OFF \
+                   -DOSSIA_DATAFLOW=OFF \
                    ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
@@ -149,6 +151,8 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_NO_QT=1 \
                    -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
+                   -DOSSIA_EDITOR=OFF \
+                   -DOSSIA_DATAFLOW=OFF \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -189,6 +193,8 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_PD=0 \
                    -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
+                   -DOSSIA_EDITOR=OFF \
+                   -DOSSIA_DATAFLOW=OFF \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -246,7 +252,7 @@ case "$TRAVIS_OS_NAME" in
 
         ls wheelhouse/
         cp wheelhouse/*.whl ${ARTIFACTS_DIR}/
-        
+
       ;;
       python)
         # _version.py is not valid in a non-git folder
@@ -255,7 +261,7 @@ case "$TRAVIS_OS_NAME" in
         WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
         # -*- coding: utf-8 -*-
-        
+
         def get_versions():
             return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
@@ -271,7 +277,10 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_PD=0 \
           -DOSSIA_QT=0 \
           -DOSSIA_QML=0 \
-          -DOSSIA_PYTHON=1 ..
+          -DOSSIA_PYTHON=1 \
+          -DOSSIA_EDITOR=OFF \
+          -DOSSIA_DATAFLOW=OFF \
+          ..
 
         $CMAKE_BIN --build . -- -j2
         # now we just want to install the wheel and run the tests
@@ -301,7 +310,10 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_PD=0 \
           -DOSSIA_QT=1 \
           -DOSSIA_QML=1 \
-          -DOSSIA_PYTHON=0 ..
+          -DOSSIA_PYTHON=0 \
+          -DOSSIA_EDITOR=OFF \
+          -DOSSIA_DATAFLOW=OFF \
+          ..
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
@@ -387,6 +399,8 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_PD=1 \
                -DOSSIA_MAX=0 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+               -DOSSIA_EDITOR=OFF \
+               -DOSSIA_DATAFLOW=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -415,6 +429,8 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_PD=0 \
                -DOSSIA_MAX=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+               -DOSSIA_EDITOR=OFF \
+               -DOSSIA_DATAFLOW=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -451,6 +467,8 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_PD=0 \
                  -DOSSIA_MAX=0 \
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+                 -DOSSIA_EDITOR=OFF \
+                 -DOSSIA_DATAFLOW=OFF \
                  ..
 
       $CMAKE_BIN --build . -- -j2
@@ -479,6 +497,8 @@ case "$TRAVIS_OS_NAME" in
                  -DOSSIA_MAX=0 \
                  -DOSSIA_QML=1 \
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+                 -DOSSIA_EDITOR=OFF \
+                 -DOSSIA_DATAFLOW=OFF \
                  ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
