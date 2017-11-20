@@ -10,8 +10,8 @@
 #include <ossia/network/dataspace/detail/make_unit.hpp>
 #include <ossia/network/dataspace/detail/make_value.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
-#include <ossia/editor/value/detail/value_conversion_impl.hpp>
-#include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/network/value/detail/value_conversion_impl.hpp>
+#include <ossia/network/value/value_conversion.hpp>
 #include <hopscotch_map.h>
 
 namespace ossia

@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <ossia/editor/expression/expression_fwd.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia_export.h>

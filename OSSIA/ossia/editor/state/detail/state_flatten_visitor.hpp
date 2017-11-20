@@ -3,8 +3,8 @@
 #include <ossia/detail/apply.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/value/value_algorithms.hpp>
-#include <ossia/editor/value/value_traits.hpp>
+#include <ossia/network/value/value_algorithms.hpp>
+#include <ossia/network/value/value_traits.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <iostream>
 namespace ossia

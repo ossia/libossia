@@ -4,7 +4,7 @@
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/value/destination.hpp>
+#include <ossia/network/value/destination.hpp>
 #include <ossia_export.h>
 
 /**

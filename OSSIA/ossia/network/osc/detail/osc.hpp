@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>

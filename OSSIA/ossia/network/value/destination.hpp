@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <functional>
 #include <initializer_list>
@@ -20,7 +20,7 @@ namespace net
 class parameter_base;
 }
 /**
- * @class Destination destination.hpp ossia/editor/value/value.hpp
+ * @class Destination destination.hpp ossia/network/value/value.hpp
  *
  * \see \ref node_base
  * \see \ref destination_index

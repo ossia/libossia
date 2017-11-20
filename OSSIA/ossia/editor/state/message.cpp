@@ -4,7 +4,7 @@
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/message.hpp>
-#include <ossia/editor/value/value_traits.hpp>
+#include <ossia/network/value/value_traits.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_functions.hpp>
 namespace ossia

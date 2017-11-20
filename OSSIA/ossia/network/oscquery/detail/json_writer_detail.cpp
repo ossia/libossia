@@ -4,7 +4,7 @@
 #include "json_writer.hpp"
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>

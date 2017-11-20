@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>

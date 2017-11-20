@@ -5,8 +5,8 @@
 #include <ossia/editor/curve/curve_abstract.hpp>
 #include <ossia/editor/curve/curve_segment.hpp>
 #include <ossia/editor/curve/curve_segment/easing.hpp>
-#include <ossia/editor/value/destination.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/destination.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
 #include <boost/container/flat_map.hpp>

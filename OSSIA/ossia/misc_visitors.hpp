@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/editor/curve/behavior.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 namespace ossia
 {
 template <typename Functor>

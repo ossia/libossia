@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_base.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <brigand/algorithms/fold.hpp>
 namespace ossia
 {

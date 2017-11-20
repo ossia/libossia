@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/value/destination.hpp>
+#include <ossia/network/value/destination.hpp>
 #include <ossia/editor/curve/curve.hpp>
 
 namespace ossia

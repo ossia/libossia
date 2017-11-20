@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/json.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <oscpack/osc/OscTypes.h>
 
 namespace ossia

@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/editor/value/vec.hpp>
+#include <ossia/network/value/vec.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <bitset>
 #include <ossia_export.h>

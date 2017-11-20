@@ -7,7 +7,7 @@
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
 #include <ossia/detail/mutex.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <atomic>
 #include <future>

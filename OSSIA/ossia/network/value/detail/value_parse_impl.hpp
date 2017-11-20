@@ -9,7 +9,7 @@
 #include <ossia/network/base/name_validation.hpp>
 #include <boost/fusion/adapted.hpp>
 #include <boost/spirit/home/x3.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #endif
 BOOST_FUSION_ADAPT_STRUCT(ossia::impulse)
 namespace ossia

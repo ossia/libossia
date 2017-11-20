@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/node.hpp>

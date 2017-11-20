@@ -3,7 +3,7 @@
 
 #include <ossia/network/dataspace/value_with_unit.hpp>
 
-#include <ossia/editor/value/destination.hpp>
+#include <ossia/network/value/destination.hpp>
 
 /**
  * \file node_functions.hpp

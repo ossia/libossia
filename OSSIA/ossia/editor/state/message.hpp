@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/editor/state/destination_qualifiers.hpp>
-#include <ossia/editor/value/destination.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/destination.hpp>
+#include <ossia/network/value/value.hpp>
 #include <bitset>
 #include <memory>
 #include <ossia_export.h>

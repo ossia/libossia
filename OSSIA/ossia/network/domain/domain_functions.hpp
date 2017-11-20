@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/value/value_base.hpp>
+#include <ossia/network/value/value_base.hpp>
 #include <chobo/small_vector.hpp>
 #include <vector>
 #include <ossia_export.h>

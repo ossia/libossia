@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace.hpp>
-#include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/network/value/value_conversion.hpp>
 
 namespace ossia
 {
