@@ -4,7 +4,7 @@
 #include <ossia/network/base/value_callback.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/detail/callback_container.hpp>
-#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 
 extern "C" {
 #include <cicm_wrapper.h>

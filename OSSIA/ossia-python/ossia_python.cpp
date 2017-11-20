@@ -32,8 +32,8 @@ namespace pybind11
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
-#include <ossia/editor/dataspace/dataspace.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 #include <ossia/network/common/path.hpp>
 

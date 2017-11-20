@@ -3,7 +3,7 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <iostream>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/parameter.hpp>
 using namespace ossia;
 

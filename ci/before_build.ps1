@@ -64,7 +64,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
   $LogFile = c:\projects\libossia\configure-max.log
-  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -73,12 +73,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "c:\projects\libossia\configure-max-32bit.log"
-  cmake -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ){
@@ -91,7 +91,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     pip.exe install twine
 
     cd C:\projects\libossia\build
-    cmake -G "Visual Studio 15 2017 Win64" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}-x64\python.exe -DPYTHON_LIBRARY=C:\${env:python}-x64\lib${env:python}.a -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=1 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+    cmake -G "Visual Studio 15 2017 Win64" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}-x64\python.exe -DPYTHON_LIBRARY=C:\${env:python}-x64\lib${env:python}.a -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=1 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
     CheckLastExitCode
   } else {
 
@@ -100,7 +100,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     pip.exe install twine
 
     cd C:\projects\libossia\build
-    cmake -G "Visual Studio 15 2017" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=1 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+    cmake -G "Visual Studio 15 2017" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PD=0 -DOSSIA_QT=0 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=1 -DOSSIA_QML=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
     CheckLastExitCode
   }
 
@@ -110,6 +110,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
-  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5"  -DOSSIA_STATIC=0 -DOSSIA_PD=0 -DOSSIA_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=1 -DBOOST_ROOT="${env:BOOST_ROOT}" c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5"  -DOSSIA_STATIC=0 -DOSSIA_PD=0 -DOSSIA_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_PYTHON=0 -DOSSIA_QML=1 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 }

@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia-java.hpp"
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 
 #define METHOD(MethodPtr, name) \
   jni::MakeNativePeerMethod<decltype(MethodPtr), (MethodPtr)>(name)

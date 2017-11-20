@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_utils.hpp"
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <readerwriterqueue.h>
 #include <unordered_map>
 #include <ossia/network/base/node_functions.hpp>

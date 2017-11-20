@@ -14,6 +14,7 @@ option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
 option(OSSIA_DATAFLOW "Dataflow features" ON)
+option(OSSIA_EDITOR "Editor features" ON)
 option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
 

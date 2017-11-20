@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
-#include <ossia/editor/value/value_conversion.hpp>
-#include <ossia/editor/value/value_traits.hpp>
+#include <ossia/network/value/value_conversion.hpp>
+#include <ossia/network/value/value_traits.hpp>
 #include <boost/container/flat_set.hpp>
 #include <type_traits>
 

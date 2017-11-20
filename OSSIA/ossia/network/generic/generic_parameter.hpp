@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/callback_container.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/domain/domain.hpp>

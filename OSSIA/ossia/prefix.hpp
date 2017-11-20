@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/domain/domain.hpp>
 
 #include <ossia/network/base/device.hpp>

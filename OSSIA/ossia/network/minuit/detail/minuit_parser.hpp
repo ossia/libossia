@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/minuit.hpp>

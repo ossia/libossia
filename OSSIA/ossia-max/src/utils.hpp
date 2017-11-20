@@ -14,7 +14,7 @@
 #include <ossia-max/src/object_base.hpp>
 #include <ossia/network/domain/domain.hpp>
 
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <fmt/format.h>
 namespace ossia
 {

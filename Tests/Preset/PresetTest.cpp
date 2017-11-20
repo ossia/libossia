@@ -6,10 +6,10 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <ossia/editor/value/detail/value_parse_impl.hpp>
+#include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <QQmlEngine>
 #include <QQmlComponent>
 
