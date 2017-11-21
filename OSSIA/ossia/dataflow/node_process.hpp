@@ -2,7 +2,6 @@
 #include <ossia/dataflow/graph.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/state/state_element.hpp>
 
 namespace ossia
 {
