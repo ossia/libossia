@@ -3,9 +3,9 @@
 #include <brigand/algorithms/for_each.hpp>
 #include <brigand/algorithms/transform.hpp>
 #include <brigand/sequences/list.hpp>
-#include <ossia/editor/value/impulse.hpp>
-#include <ossia/editor/value/vec.hpp>
-#include <ossia/editor/dataspace/dataspace_base_defs_fwd.hpp>
+#include <ossia/network/value/impulse.hpp>
+#include <ossia/network/value/vec.hpp>
+#include <ossia/network/dataspace/dataspace_base_defs_fwd.hpp>
 #include <fmt/ostream.h>
 namespace ossia
 {
@@ -965,7 +965,7 @@ int main()
   {
 
     // Value variant generation
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/editor/value/value_variant_impl.hpp");
+    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/value/value_variant_impl.hpp");
 
     gen_var<float, int, ossia::vec2f, ossia::vec3f, ossia::vec4f,
             ossia::impulse,
@@ -1011,7 +1011,7 @@ int main()
                          });
 
     f << "#pragma once\n";
-    f << "#include <ossia/editor/value/value.hpp>\n";
+    f << "#include <ossia/network/value/value.hpp>\n";
     f << "#include <ossia/editor/curve/behavior.hpp>\n";
     f << "namespace ossia {\n";
     f << r.str.str();
@@ -1020,7 +1020,7 @@ int main()
   using namespace ossia;
 
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/editor/dataspace/dataspace_base_variants.hpp");
+    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/dataspace/dataspace_base_variants.hpp");
     {
       gen_var<degree_u, radian_u> u("angle_u");
       u.write_class();
@@ -1085,7 +1085,7 @@ int main()
     }
   }
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/editor/dataspace/dataspace_strong_variants.hpp");
+    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/dataspace/dataspace_strong_variants.hpp");
     // Strong value form
     {
       gen_var<degree, radian> u("angle");
@@ -1154,7 +1154,7 @@ int main()
   }
 
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/editor/dataspace/dataspace_variant_visitors.hpp");
+    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/dataspace/dataspace_variant_visitors.hpp");
     apply_writer r;
     r.write_apply_switch({ class_info{"strong_value_variant", 9, class_info::Cref},
                            class_info{"unit_variant", 8, class_info::Cref}
@@ -1240,8 +1240,8 @@ int main()
 
 
     f << "#pragma once\n";
-    f << "#include <ossia/editor/dataspace/dataspace.hpp>\n";
-    f << "#include <ossia/editor/dataspace/value_with_unit.hpp>\n";
+    f << "#include <ossia/network/dataspace/dataspace.hpp>\n";
+    f << "#include <ossia/network/dataspace/value_with_unit.hpp>\n";
     f << "namespace ossia {\n";
     f << r.str.str();
     f << "}\n";

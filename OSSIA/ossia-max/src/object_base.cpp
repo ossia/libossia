@@ -3,7 +3,7 @@
 #include <ossia-max/src/object_base.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/preset/preset.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <regex>
 

@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #if defined(QT_CORE_LIB)
 #include "js_utilities.hpp"
-#include <ossia/editor/value/value_conversion.hpp>
+#include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/complex_type.hpp>
 

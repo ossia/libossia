@@ -2,8 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <QtTest>
 #include <iostream>
-#include <ossia/editor/value/value.hpp>
-#include <ossia/editor/value/detail/value_parse_impl.hpp>
+#include <ossia/network/value/value.hpp>
+#include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/local/local.hpp>
 #include "TestUtils.hpp"

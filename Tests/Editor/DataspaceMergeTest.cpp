@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/editor/dataspace/detail/dataspace_merge.hpp>
-#include <ossia/editor/dataspace/dataspace_parse.hpp>
+#include <ossia/network/dataspace/detail/dataspace_merge.hpp>
+#include <ossia/network/dataspace/dataspace_parse.hpp>
 #include <QtTest>
 #include "TestUtils.hpp"
 class DataspaceMergeTest : public QObject

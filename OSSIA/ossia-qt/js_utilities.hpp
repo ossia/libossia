@@ -1,8 +1,8 @@
 #pragma once
 #if defined(QT_CORE_LIB)
 #include <ossia/detail/optional.hpp>
-#include <ossia/editor/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/value/value.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/base/parameter_data.hpp>

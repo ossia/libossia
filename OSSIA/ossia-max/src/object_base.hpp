@@ -5,7 +5,7 @@
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/base/value_callback.hpp>
 #include <ossia/detail/callback_container.hpp>
-#include <ossia/editor/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
