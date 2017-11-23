@@ -5,6 +5,10 @@ set(CMAKE_MODULE_PATH
 cmake_minimum_required(VERSION 3.5)
 project(OSSIA CXX)
 
+
+# Dependencies
+set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
+
 # Configuration
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
@@ -12,24 +16,51 @@ cmake_policy(SET CMP0063 NEW)
 
 include(OssiaConfiguration)
 
-# Dependencies
-set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
-
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_64_0")
 else()
-  find_package(Boost REQUIRED)
+  find_package(Boost QUIET)
+  if ( NOT Boost_FOUND )
+    set(BOOST_VERSION "boost_1_65_1")
+    if ( NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../${BOOST_VERSION}/")
+      message(STATUS "Downloading boost to ${CMAKE_CURRENT_LIST_DIR}/../boost.tar.gz")
+      file(DOWNLOAD
+        https://dl.bintray.com/boostorg/release/1.65.1/source/${BOOST_VERSION}.tar.gz
+        ${CMAKE_CURRENT_LIST_DIR}/../boost.tar.gz )
+      execute_process(
+         COMMAND ${CMAKE_COMMAND} -E tar xzf boost.tar.gz
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../
+         )
+    endif()
+    set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../${BOOST_VERSION}/" )
+    find_package(Boost REQUIRED)
+  endif()
   add_library(boost INTERFACE IMPORTED)
   set_property(TARGET boost PROPERTY
                INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
 endif()
+
 if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
+  if(OSSIA_PROTOCOL_MIDI)
+    message(STATUS "Update OSSIA Midi Protocol dependency : ModernMIDI")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/ModernMIDI
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
+  endif()
 endif()
 
-add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
+if (OSSIA_PROTOCOL_OSC OR 1) # FIXME is OSC really mandatory ?
+  message(STATUS "Update OSSIA OSC Protocol dependency : oscpack")
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/oscpack
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
+endif()
+
 if(OSSIA_DNSSD)
+  message(STATUS "Update OSSIA DNSSD dependency : servus")
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/Servus
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
 endif()
 
