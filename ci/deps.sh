@@ -54,7 +54,11 @@ case "$TRAVIS_OS_NAME" in
         sudo ln -s /opt/boost/boost /usr/include/boost
     elif [[ $BUILD_TYPE == *python* ]] ; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
-        docker pull $DOCKER_IMAGE
+        if [[ "$PRE_CMD" == "linux32"]];then
+          docker pull quay.io/pypa/manylinux1_i686
+        else  
+          docker pull quay.io/pypa/manylinux1_x86_64
+        fi
         wget https://bootstrap.pypa.io/get-pip.py
         # Install setuptools (need for build wheel)
         for PYBIN in /opt/python/*/bin/; do

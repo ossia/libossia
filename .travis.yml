@@ -67,16 +67,11 @@ matrix:
   - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=3.4
 
-  - sudo: required
-    services:
-      - docker
-    env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 BUILD_TYPE=python_manylinux
+  - services: docker
+    env: BUILD_TYPE=python_manylinux
 
-  - sudo: required
-    services:
-      - docker
-    env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 BUILD_TYPE=python_manylinux
-         PRE_CMD=linux32
+  - services: docker
+    env: BUILD_TYPE=python_manylinux PRE_CMD=linux32
 
   - os: linux
     env: BUILD_TYPE=qml
