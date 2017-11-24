@@ -226,12 +226,6 @@ endif()
 
 if(OSSIA_DNSSD)
   target_link_libraries(ossia PRIVATE Servus)
-  get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
-  get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
-  get_target_property(SERVUS_INCLUDE_DIRS Servus INTERFACE_INCLUDE_DIRECTORIES)
-  target_link_libraries(ossia PRIVATE ${SERVUS_LINK_LIBRARIES})
-  target_include_directories(ossia PRIVATE ${SERVUS_INCLUDE_DIRS})
-  target_compile_definitions(ossia PRIVATE ${SERVUS_COMPILE_DEFINITIONS})
 endif()
 
 if(OSSIA_DATAFLOW)
