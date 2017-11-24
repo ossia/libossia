@@ -6,15 +6,32 @@ cmake_minimum_required(VERSION 3.5)
 project(OSSIA CXX)
 
 # Configuration
+
+# activate select policies
+
 cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0025 NEW)
+cmake_policy(SET CMP0026 NEW)
+cmake_policy(SET CMP0038 NEW)
+cmake_policy(SET CMP0039 NEW)
+cmake_policy(SET CMP0040 NEW)
 cmake_policy(SET CMP0042 NEW)
+cmake_policy(SET CMP0045 NEW)
+cmake_policy(SET CMP0046 NEW)
+cmake_policy(SET CMP0049 NEW)
+cmake_policy(SET CMP0050 NEW)
+cmake_policy(SET CMP0051 NEW)
+cmake_policy(SET CMP0053 NEW)
+cmake_policy(SET CMP0054 NEW)
+cmake_policy(SET CMP0055 NEW)
 cmake_policy(SET CMP0063 NEW)
+cmake_policy(SET CMP0071 NEW)
 
 include(OssiaConfiguration)
 
 # Dependencies
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
-
+find_package(Qt5 5.3 COMPONENTS Core)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_64_0")

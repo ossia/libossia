@@ -225,7 +225,7 @@ if(OSSIA_QML_SCORE)
 endif()
 
 if(OSSIA_DNSSD)
-  target_sources(ossia PRIVATE $<TARGET_OBJECTS:Servus>)
+  target_link_libraries(ossia PRIVATE Servus)
   get_target_property(SERVUS_LINK_LIBRARIES Servus INTERFACE_LINK_LIBRARIES)
   get_target_property(SERVUS_COMPILE_DEFINITIONS Servus INTERFACE_COMPILE_DEFINITIONS)
   get_target_property(SERVUS_INCLUDE_DIRS Servus INTERFACE_INCLUDE_DIRECTORIES)
