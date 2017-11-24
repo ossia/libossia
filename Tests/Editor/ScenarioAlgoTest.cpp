@@ -129,7 +129,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_exec_chain_multi()
     {
-      std::cerr << "\n\ntest_exec_chain_multi\n";
+
       using namespace ossia;
 
       root_scenario s;
@@ -151,7 +151,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c2);
       s.scenario->add_time_interval(c3);
 
-      std::cerr << c0.get() << " " << c1.get() << " " << c2.get() << " " << c3.get() << std::endl;
+
       s.interval->start_and_tick();
       s.interval->tick(5_tv);
       std::cerr << e0->get_status() << " "
@@ -167,7 +167,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_exec_chain_multi_infinite()
     {
-      std::cerr << "\n\ntest_exec_chain_multi\n";
+
       using namespace ossia;
 
       root_scenario s;
@@ -189,7 +189,7 @@ class ScenarioAlgoTest : public QObject
       s.scenario->add_time_interval(c2);
       s.scenario->add_time_interval(c3);
 
-      std::cerr << c0.get() << " " << c1.get() << " " << c2.get() << " " << c3.get() << std::endl;
+
       s.interval->start_and_tick();
       {
         s.interval->tick(5_tv);
@@ -258,7 +258,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_exec_two_branch_infinite()
     {
-      std::cerr << "\n\ntest_exec_chain_multi\n";
+
       using namespace ossia;
 
       root_scenario s;
@@ -363,7 +363,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_min()
     {
-      std::cerr << "\n\ntest_min\n";
+
       using namespace ossia;
       root_scenario s;
 
@@ -396,7 +396,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_max()
     {
-      std::cerr << "\n\ntest_max\n";
+
       using namespace ossia;
       root_scenario s;
 
@@ -426,7 +426,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_inter_tick()
     {
-      std::cerr << "\n\ntest_inter_tick\n";
+
       using namespace ossia;
       root_scenario s;
 
@@ -459,7 +459,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_unconnected()
     {
-      std::cerr << "\n\ntest_unconnected\n";
+
 
       root_scenario s;
       using namespace ossia;
@@ -497,7 +497,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_simulated_state()
     {
-      std::cerr << "\n\test_simulated_state\n";
+
       using namespace ossia;
       root_scenario s;
       TestDevice utils;
@@ -521,10 +521,11 @@ class ScenarioAlgoTest : public QObject
       auto msg_proc = std::make_shared<ossia::node_process>(msg_node);
 
       c1->add_time_process(msg_proc);
-      s.interval->start_and_tick();
+      s.interval->start();
       s.interval->tick(10_tv);
 
-      for(auto tr : msg_node->requested_tokens) qDebug() << tr;
+      for(auto tr : msg_node->requested_tokens)
+        qDebug() << tr;
       QCOMPARE((int)msg_node->requested_tokens.size(), (int) 1);
       auto t0 = msg_node->requested_tokens[0];
       auto expected = token_request{0_tv, 0., 2_tv};
@@ -542,7 +543,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_trigger()
     {
-      std::cerr << "\n\ntest_trigger\n";
+
       using namespace ossia;
       root_scenario s;
 
@@ -584,7 +585,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_tokens()
     {
-      std::cerr << "\n\ntest_tokens\n";
+
       using namespace ossia;
       root_scenario s;
 
@@ -614,9 +615,94 @@ class ScenarioAlgoTest : public QObject
 
     }
 
+
+
+    void test_tokens_max()
+    {
+
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 300_tv, 300_tv, 300_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e0, *e1, 500_tv, 100_tv, 1000_tv);
+
+      scenario.add_time_interval(c0);
+      scenario.add_time_interval(c1);
+      s.interval->start();
+      s.interval->tick(700_tv);
+
+      // In this case (when there are flexible bounsd) we go as far as possible in the tick.
+      // Else this would cause deadlocks if one interval reached its max before another reached its min
+      chobo::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
+      QVERIFY(c0->node->requested_tokens == expected0);
+      qDebug() << c1->node->requested_tokens.size();
+      qDebug() << c1->node->requested_tokens[0];
+      QVERIFY(c1->node->requested_tokens.size() == 2);
+      qDebug() << c1->node->requested_tokens[1];
+      chobo::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {700_tv, 7./5., 0_tv}};
+      QVERIFY(c1->node->requested_tokens == expected1);
+    }
+
+
+    void test_tokens_min()
+    {
+
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 30_tv, 30_tv, 30_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+
+      scenario.add_time_interval(c0);
+      scenario.add_time_interval(c1);
+      s.interval->start();
+
+      {
+        s.interval->tick(20_tv);
+        chobo::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {20_tv, 2./3., 0_tv}};
+        QVERIFY(c0->node->requested_tokens == expected0);
+        qDebug() << c1->node->requested_tokens.size();
+        qDebug() << c1->node->requested_tokens[0];
+        QVERIFY(c1->node->requested_tokens.size() == 2);
+        qDebug() << c1->node->requested_tokens[1];
+        chobo::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {10_tv, 1., 0_tv}};
+        QVERIFY(c1->node->requested_tokens == expected1);
+      }
+      c0->node->requested_tokens.clear();
+      c1->node->requested_tokens.clear();
+
+      QVERIFY(e1->get_status() == time_event::status::NONE);
+      {
+        s.interval->tick(20_tv);
+        chobo::small_vector<token_request, 4> expected0{{30_tv, 1., 0_tv}};
+        qDebug() << c0->node->requested_tokens;
+        qDebug() << c1->node->requested_tokens;
+        QVERIFY(c0->node->requested_tokens.size() == 1);
+        QVERIFY(c0->node->requested_tokens == expected0);
+
+        QVERIFY(c1->node->requested_tokens.size() == 0);
+      }
+
+      QVERIFY(e1->get_status() == time_event::status::HAPPENED);
+
+    }
+
+
     void test_autom()
     {
-//      std::cerr << "\n\ntest_autom\n";
+//
 //      using namespace ossia;
 //      root_scenario s;
 //      TestDevice utils;
@@ -649,7 +735,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_autom_and_state()
     {
-//      std::cerr << "\n\ntest_autom_and_state\n";
+//
 //      using namespace ossia;
 //      root_scenario s;
 //      TestDevice utils;
@@ -686,7 +772,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_percentage()
     {
-      std::cerr << "\n\ntest_percentage\n";
+
       using namespace ossia;
       root_scenario s;
       TestDevice utils;
@@ -739,7 +825,7 @@ class ScenarioAlgoTest : public QObject
 
     void test_percentage_long()
     {
-      std::cerr << "\n\ntest_percentage_long\n";
+
       using namespace ossia;
       root_scenario s;
       TestDevice utils;

@@ -69,6 +69,16 @@ inline char* toString(const ossia::time_value& val)
 {
   return QTest::toString(QByteArray::number((qint64)val.impl));
 }
+
+inline char* toString(const chobo::small_vector<ossia::token_request, 4>& val)
+{
+  QString s = "[";
+  for(auto& token : val)
+    s += toString(token) + QString(", ");
+  s += "]";
+  QByteArray ba = s.toLatin1();
+  return qstrdup(ba.data());
+}
 }
 
 struct root_scenario
@@ -119,6 +129,10 @@ inline QDebug operator<<(QDebug d, ossia::time_event::status s)
   return d << QTest::toString(s);
 }
 inline QDebug operator<<(QDebug d, const ossia::token_request&  s)
+{
+  return d << QTest::toString(s);
+}
+inline QDebug operator<<(QDebug d, const chobo::small_vector<ossia::token_request, 4>&  s)
 {
   return d << QTest::toString(s);
 }

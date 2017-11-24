@@ -397,7 +397,10 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       if (!cst_max_dur.infinite())
       {
         const auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
-        interval.tick_offset(this_tick, offset);
+        if(this_tick != 0)
+        {
+          interval.tick_offset(this_tick, offset);
+        }
 
         const auto ot
             = tick - (cst_max_dur - cst_old_date) / interval.get_speed();
@@ -410,11 +413,14 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
           if (ot < cur.min)
             cur.min = ot;
           if (ot > cur.max)
+          {
             cur.max = ot;
+            cur.offset = tick_offset + tick_ms - cur.max;
+          }
         }
         else
         {
-          m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot, ossia::Zero}));
+          m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
         }
       }
       else
@@ -432,14 +438,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     // running_interval are in cur_cst
     // else, add the next intervals
 
-    for (time_sync* node : m_endNodes)
-    {
-      process_this(
-          *node, pendingEvents, m_runningIntervals,
-          m_runningIntervals, tick_offset);
-    }
-
-    m_endNodes.clear();
     do
     {
       for (const auto& timeEvent : pendingEvents)
@@ -477,7 +475,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       {
         process_this(
             *node, pendingEvents, m_runningIntervals,
-            m_runningIntervals, tick_offset);
+            m_runningIntervals, m_overticks.find(node)->second.offset);
       }
 
       m_endNodes.clear();
