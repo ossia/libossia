@@ -581,6 +581,39 @@ class ScenarioAlgoTest : public QObject
 
     }
 
+
+    void test_tokens()
+    {
+      std::cerr << "\n\ntest_tokens\n";
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      std::shared_ptr<time_event> e2 = create_event(scenario);
+      e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 300_tv, 300_tv, 300_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 500_tv, 500_tv, 500_tv);
+
+      scenario.add_time_interval(c0);
+      scenario.add_time_interval(c1);
+      s.interval->start();
+      s.interval->tick(700_tv);
+
+      chobo::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
+      QVERIFY(c0->node->requested_tokens == expected0);
+      qDebug() << c1->node->requested_tokens.size();
+      qDebug() << c1->node->requested_tokens[0];
+      QVERIFY(c1->node->requested_tokens.size() == 2);
+      qDebug() << c1->node->requested_tokens[1];
+      chobo::small_vector<token_request, 4> expected1{{0_tv, 0., 300_tv}, {400_tv, 4./5., 300_tv}};
+      QVERIFY(c1->node->requested_tokens == expected1);
+
+    }
+
     void test_autom()
     {
 //      std::cerr << "\n\ntest_autom\n";

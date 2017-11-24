@@ -15,12 +15,15 @@ struct token_request {
     bool start_discontinuous{};
     bool end_discontinuous{};
 
-    friend bool operator==(token_request lhs, token_request rhs) {
-      return lhs.date == rhs.date && lhs.position == rhs.position
-          && lhs.offset == rhs.offset && lhs.start_discontinuous == rhs.start_discontinuous
-          && lhs.end_discontinuous == rhs.end_discontinuous;
-    }
 };
+inline bool operator==(const token_request& lhs, const token_request& rhs) {
+  return lhs.date == rhs.date && lhs.position == rhs.position
+      && lhs.offset == rhs.offset && lhs.start_discontinuous == rhs.start_discontinuous
+      && lhs.end_discontinuous == rhs.end_discontinuous;
+}
+inline bool operator!=(const token_request& lhs, const token_request& rhs) {
+  return !(lhs == rhs);
+}
 
 class OSSIA_EXPORT graph_node
 {

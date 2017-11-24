@@ -47,12 +47,12 @@ void time_event::remove_time_process(time_process* timeProcess)
   }
 }
 
-void time_event::tick()
+void time_event::tick(ossia::time_value offset)
 {
   for(auto& proc : m_processes)
   {
     proc->start();
-    proc->state(0_tv, 0., 0_tv);
+    proc->state(0_tv, 0., offset);
     proc->stop();
   }
 }

@@ -21,6 +21,7 @@ struct overtick
 {
   ossia::time_value min;
   ossia::time_value max;
+  ossia::time_value offset;
 };
 using overtick_map = boost::container::flat_map<time_sync*, overtick>;
 
@@ -97,9 +98,11 @@ private:
   sync_set m_endNodes;
   bool process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
-      interval_set& started, interval_set& stopped);
+      interval_set& started, interval_set& stopped,
+      ossia::time_value tick_offset);
   static void make_happen(
-      time_event& event, interval_set& started, interval_set& stopped);
+      time_event& event, interval_set& started, interval_set& stopped,
+      ossia::time_value tick_offset);
   static void make_dispose(time_event& event, interval_set& stopped);
 };
 }

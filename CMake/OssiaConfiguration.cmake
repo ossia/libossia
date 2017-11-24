@@ -140,7 +140,7 @@ if(${CMAKE_VERSION} VERSION_LESS 3.8.0 OR ANDROID OR APPLE)
 else()
   set(CMAKE_CXX_STANDARD 17)
   if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS "-std=c++1z ${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
   endif()
 endif()
 # So that make install after make all_unity does not rebuild everything :

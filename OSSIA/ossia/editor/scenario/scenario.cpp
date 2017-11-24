@@ -93,7 +93,7 @@ void scenario::start()
     {
       m_runningIntervals.insert(&cst);
       cst.start();
-      cst.tick();
+      // TODO cst.tick_current();
     }
     // the interval starts in the void and ends on a timesync that did
     // execute

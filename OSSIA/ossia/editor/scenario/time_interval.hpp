@@ -67,6 +67,8 @@ public:
   }
 
 
+  void tick_current(ossia::time_value offset);
+
   void tick();
   void tick(ossia::time_value);
   void tick(ossia::time_value, double ratio);

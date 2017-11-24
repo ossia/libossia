@@ -10,6 +10,15 @@
 namespace ossia
 {
 
+void time_interval::tick_current(ossia::time_value offset)
+{
+  node->requested_tokens.push_back({m_date, m_position, offset});
+
+  state();
+  if (m_callback)
+    (m_callback)(m_position, m_date);
+}
+
 void time_interval::tick()
 {
   node->requested_tokens.push_back({m_date, m_position, 0_tv});

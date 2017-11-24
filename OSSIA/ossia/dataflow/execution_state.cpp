@@ -162,7 +162,8 @@ void execution_state::insert(const destination_t& dest, data_type v)
 #endif
   else if (auto val = eggs::variants::get_if<value_port>(&v))
   {
-    insert(dest, std::move(*val));
+    for(auto& v : val->get_data())
+      insert(dest, v);
   }
 
   // thanks mr skeltal:

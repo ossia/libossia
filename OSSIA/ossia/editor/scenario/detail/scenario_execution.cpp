@@ -20,7 +20,9 @@
 namespace ossia
 {
 void scenario::make_happen(
-    time_event& event, interval_set& started, interval_set& stopped)
+    time_event& event,
+    interval_set& started, interval_set& stopped,
+    ossia::time_value tick_offset)
 {
   event.m_status = time_event::status::HAPPENED;
 
@@ -32,10 +34,13 @@ void scenario::make_happen(
     stopped.erase(timeInterval.get());
   }
 
+  event.tick(tick_offset);
+
   // setup next TimeIntervals
   for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.next_time_intervals())
   {
     timeInterval->start();
+    timeInterval->tick_current(tick_offset);
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());
@@ -91,7 +96,8 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 
 bool scenario::process_this(
     time_sync& node, small_event_vec& pendingEvents,
-    interval_set& started, interval_set& stopped)
+    interval_set& started, interval_set& stopped,
+    ossia::time_value tick_offset)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
@@ -285,7 +291,7 @@ bool scenario::process_this(
     expressions::update(expr);
 
     if (expressions::evaluate(expr))
-      make_happen(ev, started, stopped);
+      make_happen(ev, started, stopped, tick_offset);
     else
       make_dispose(ev, stopped);
   }
@@ -357,14 +363,9 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.
       bool res = process_this(
-          *n, pendingEvents, m_runningIntervals, m_runningIntervals);
+          *n, pendingEvents, m_runningIntervals, m_runningIntervals, tick_offset);
       if (res)
       {
-        for (const auto& ev : pendingEvents)
-        {
-          ev->tick();
-        }
-
         pendingEvents.clear();
         it = m_waitingNodes.erase(it);
       }
@@ -413,7 +414,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
         }
         else
         {
-          m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot}));
+          m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot, ossia::Zero}));
         }
       }
       else
@@ -435,7 +436,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     {
       process_this(
           *node, pendingEvents, m_runningIntervals,
-          m_runningIntervals);
+          m_runningIntervals, tick_offset);
     }
 
     m_endNodes.clear();
@@ -446,8 +447,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
         time_event& ev = *timeEvent;
         if(ev.get_status() == time_event::status::HAPPENED)
         {
-          ev.tick();
-
           auto& tn = ev.get_time_sync();
           if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
           {
@@ -462,9 +461,11 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
             const time_value remaining_tick
                 = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
 
+            const auto offset = tick_offset + tick_ms - remaining_tick;
+            it->second.offset = offset;
             for (const auto& interval : ev.next_time_intervals())
             {
-              run_interval(*interval, remaining_tick, tick_offset + tick_ms - remaining_tick);
+              run_interval(*interval, remaining_tick, offset);
             }
           }
         }
@@ -476,7 +477,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       {
         process_this(
             *node, pendingEvents, m_runningIntervals,
-            m_runningIntervals);
+            m_runningIntervals, tick_offset);
       }
 
       m_endNodes.clear();

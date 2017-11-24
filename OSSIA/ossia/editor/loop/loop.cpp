@@ -222,9 +222,9 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
       {
         if(m_interval.get_date() == 0)
         {
-          start_ev.tick();
+          start_ev.tick(tick_offset);
           m_interval.start();
-          m_interval.tick();
+          m_interval.tick_current(tick_offset);
         }
 
         while(tick_amount > 0)
@@ -243,15 +243,15 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
             m_interval.tick_offset(this_tick, tick_offset);
             tick_offset += this_tick;
 
-            end_ev.tick();
+            end_ev.tick(tick_offset);
             m_interval.stop();
 
             if(tick_amount > 0)
             {
               m_interval.offset(time_value{});
               m_interval.start();
-              m_interval.tick();
-              start_ev.tick();
+              m_interval.tick_current(tick_offset);
+              start_ev.tick(tick_offset);
             }
           }
         }
@@ -274,14 +274,14 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
             m_interval.tick_offset(this_tick, tick_offset);
             tick_offset += this_tick;
 
-            end_ev.tick();
+            end_ev.tick(tick_offset);
             //m_interval.stop();
 
             if(tick_amount < 0)
             {
               m_interval.offset(itv_dur);
               //m_interval.start();
-              start_ev.tick();
+              start_ev.tick(tick_offset);
             }
           }
         }
