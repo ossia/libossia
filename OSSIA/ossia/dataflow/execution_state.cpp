@@ -120,7 +120,7 @@ void execution_state::commit()
       auto addr = dynamic_cast<midi_generic_parameter*>(base_addr);
       if(addr)
       {
-        for (auto v : elt.second.messages)
+        for (const auto& v : elt.second)
         {
           addr->push_value(v);
         }

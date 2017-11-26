@@ -12,7 +12,7 @@ struct OSSIA_EXPORT execution_state
   std::unordered_map<destination_t, audio_port> audioState;
 
 #if defined(OSSIA_PROTOCOL_MIDI)
-  std::unordered_map<destination_t, midi_port> midiState;
+  std::unordered_map<destination_t, value_vector<mm::MidiMessage>> midiState;
 #endif
 
   void clear();
@@ -29,14 +29,14 @@ struct OSSIA_EXPORT execution_state
   {
     valueState[dest].push_back(std::move(v));
   }
-  void insert(const destination_t& dest, audio_port v)
+  void insert(const destination_t& dest, const audio_port& v)
   {
-    audioState[dest] = std::move(v);
+    audioState[dest] = v;
   }
 #if defined(OSSIA_PROTOCOL_MIDI)
-  void insert(const destination_t& dest, midi_port v)
+  void insert(const destination_t& dest, const midi_port& v)
   {
-    midiState[dest] = std::move(v);
+    midiState[dest] = v.messages;
   }
 #endif
   bool in_local_scope(ossia::net::parameter_base& other) const;

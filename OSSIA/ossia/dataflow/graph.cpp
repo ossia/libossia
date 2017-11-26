@@ -148,8 +148,7 @@ struct env_writer
     execution_state& e;
     void operator()(immediate_glutton_connection) const
     {
-      if (!edge.in_node->enabled())
-        out.write(e);
+      out.write(e);
     }
     void operator()(immediate_strict_connection) const
     {

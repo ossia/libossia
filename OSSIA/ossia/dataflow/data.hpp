@@ -21,6 +21,20 @@ struct audio_port
 struct midi_port
 {
   value_vector<mm::MidiMessage> messages;
+
+  midi_port() = default;
+  midi_port(const midi_port& p)
+    : messages{p.messages}
+  {
+
+  }
+  midi_port(midi_port&& p)
+    : messages{std::move(p.messages)}
+  {
+
+  }
+  midi_port& operator=(const midi_port&) = delete;
+  midi_port& operator=(midi_port&&) = delete;
 };
 #endif
 
