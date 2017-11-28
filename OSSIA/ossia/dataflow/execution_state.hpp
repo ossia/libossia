@@ -1,11 +1,64 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/message_queue.hpp>
 #include <unordered_map>
 namespace ossia
 {
 struct OSSIA_EXPORT execution_state
+    : public Nano::Observer
 {
+    void clear_devices()
+    {
+      globalState.clear();
+      messages.clear();
+    }
+
+    void register_device(ossia::net::device_base* d)
+    {
+      globalState.push_back(d);
+      messages.emplace_back(*d);
+    }
+
+    void register_parameter(ossia::net::parameter_base& p)
+    {
+      for(std::size_t i = 0; i < globalState.size(); i++)
+      {
+        if(&p.get_node().get_device() == globalState[i])
+        {
+          auto it = messages.begin();
+          std::advance(it, i);
+          it->reg(p);
+        }
+      }
+    }
+    void unregister_parameter(ossia::net::parameter_base& p)
+    {
+      for(std::size_t i = 0; i < globalState.size(); i++)
+      {
+        if(&p.get_node().get_device() == globalState[i])
+        {
+          auto it = messages.begin();
+          std::advance(it, i);
+          it->unreg(p);
+        }
+      }
+    }
+
+    void get_new_values()
+    {
+      mess_values.clear();
+      for(auto& mq : messages)
+      {
+        ossia::received_value recv;
+        while(mq.try_dequeue(recv))
+          mess_values.insert({recv.address, recv.value});
+      }
+    }
+
+  std::list<message_queue> messages;
+  std::unordered_map<ossia::net::parameter_base*, ossia::value> mess_values;
+
   std::vector<ossia::net::device_base*> globalState;
 
   std::unordered_map<destination_t, std::vector<tvalue>> valueState;

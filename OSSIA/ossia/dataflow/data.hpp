@@ -90,6 +90,7 @@ struct value_port
   ossia::bounding_mode bounding{};
   ossia::complex_type type;
 
+  bool is_event{};
 private:
   value_vector<ossia::tvalue> data;
 };

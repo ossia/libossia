@@ -58,10 +58,22 @@ struct local_pull_visitor
 // Else how to create a custom address
 struct global_pull_visitor
 {
+  ossia::execution_state& state;
   const net::parameter_base& out;
   void operator()(value_port& val)
   {
-    val.add_value(out.value());
+    if(!val.is_event)
+    {
+      val.add_value(out.value());
+    }
+    else
+    {
+      auto it = state.mess_values.find(const_cast<net::parameter_base*>(&out));
+      if(it != state.mess_values.end())
+      {
+        val.add_value(it->second);
+      }
+    }
   }
 
   void operator()(audio_port& val)
@@ -143,7 +155,7 @@ void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
 {
   if (in.scope & port::scope_t::global)
   {
-    ossia::apply(global_pull_visitor{addr}, in.data);
+    ossia::apply(global_pull_visitor{*this, addr}, in.data);
   }
 }
 
