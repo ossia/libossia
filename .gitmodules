@@ -72,3 +72,6 @@
 [submodule "3rdparty/bitset2"]
 	path = 3rdparty/bitset2
 	url = https://github.com/ClaasBontus/bitset2
+[submodule "3rdparty/exprtk"]
+	path = 3rdparty/exprtk
+	url = https://github.com/ArashPartow/exprtk
