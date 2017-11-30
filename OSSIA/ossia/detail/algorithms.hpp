@@ -171,6 +171,24 @@ void for_each_in_tuple(const std::tuple<Ts...>& tuple, F func)
   for_each_in_tuple(tuple, func, std::make_index_sequence<sizeof...(Ts)>());
 }
 
+
+template<std::size_t N>
+struct num { static const constexpr auto value = N; };
+
+template <class F, std::size_t... Is>
+void for_each_in_range(F func, std::index_sequence<Is...>)
+{
+  using expander = int[];
+  (void)expander{0, ((void)func(num<Is>{}), 0)...};
+}
+
+template <std::size_t N, typename F>
+void for_each_in_range(F func)
+{
+  for_each_in_range(func, std::make_index_sequence<N>());
+}
+
+
 template <typename... Args>
 constexpr std::array<ossia::string_view, sizeof...(Args)>
 make_string_array(Args&&... args)
