@@ -499,10 +499,10 @@ struct make_unit_symbols_sub_helper
       {
         res.clear();
 
-        res += ds;  // color
+        res.append(ds.data(), ds.size());  // color
         res += '.'; // color.
 
-        res += un; // color.rgb
+        res.append(un.data(), un.size()); // color.rgb
 
         // Add the unit in long form
         map.add(res, {{}, unit_type{}});
@@ -529,10 +529,10 @@ struct
       {
         res.clear();
 
-        res += ds;  // color
+        res.append(ds.data(), ds.size());  // color
         res += '.'; // color.
 
-        res += un; // color.rgb
+        res.append(un.data(), un.size()); // color.rgb
 
         // Add the unit in long form
         map.add(res, {{}, unit_type{}});

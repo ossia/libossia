@@ -2,6 +2,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
 #include <readerwriterqueue.h>
+#include <unordered_map>
 
 namespace ossia
 {

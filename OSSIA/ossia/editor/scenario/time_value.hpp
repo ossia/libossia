@@ -200,12 +200,12 @@ const constexpr time_value Zero{0};
 const constexpr time_value One{1};
 
 OSSIA_EXPORT inline time_value abs(time_value t) {
-  return time_value(std::abs(t.impl));
+  return time_value(t.impl >= 0 ? t.impl : -t.impl);
 }
 
 OSSIA_EXPORT inline time_value norm(time_value t1, time_value t2) {
   if(t1.infinite() || t2.infinite())
     return Infinite;
-  return time_value(std::abs(t1.impl - t2.impl));
+  return time_value(t1.impl > t2.impl ? t1.impl - t2.impl : t2.impl - t1.impl);
 }
 }
