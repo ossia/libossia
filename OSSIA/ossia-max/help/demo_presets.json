@@ -1,0 +1,53 @@
+{
+	"preset1" : 	{
+		"my_synth/voice.1/pan" : 0.0,
+		"my_synth/voice.1/cutoff/frequency" : 10000.0,
+		"my_synth/voice.1/gain" : -3.858269,
+		"my_synth/voice.1/modulation/index" : 1000.0,
+		"my_synth/voice.1/modulation/ratio" : 7.165634,
+		"my_synth/voice.1/ramptime" : 1000.0,
+		"my_synth/voice.1/carrier/frequency" : 199.630554,
+		"my_synth/voice.2/pan" : 0.661417,
+		"my_synth/voice.2/cutoff/frequency" : 540.952576,
+		"my_synth/voice.2/gain" : -5.511811,
+		"my_synth/voice.2/modulation/index" : 1000.0,
+		"my_synth/voice.2/modulation/ratio" : 2.677898,
+		"my_synth/voice.2/ramptime" : 1000.0,
+		"my_synth/voice.2/carrier/frequency" : 1089.0896
+	}
+,
+	"preset2" : 	{
+		"my_synth/voice.1/pan" : 0.0,
+		"my_synth/voice.1/cutoff/frequency" : 4905.14209,
+		"my_synth/voice.1/gain" : -12.677168,
+		"my_synth/voice.1/modulation/index" : 1000.0,
+		"my_synth/voice.1/modulation/ratio" : 0.079728,
+		"my_synth/voice.1/ramptime" : 1000.0,
+		"my_synth/voice.1/carrier/frequency" : 4830.938965,
+		"my_synth/voice.2/pan" : 0.661417,
+		"my_synth/voice.2/cutoff/frequency" : 574.267883,
+		"my_synth/voice.2/gain" : -5.511811,
+		"my_synth/voice.2/modulation/index" : 1000.0,
+		"my_synth/voice.2/modulation/ratio" : 1.418182,
+		"my_synth/voice.2/ramptime" : 1000.0,
+		"my_synth/voice.2/carrier/frequency" : 290.530334
+	}
+,
+	"preset3" : 	{
+		"my_synth/voice.1/pan" : 0.0,
+		"my_synth/voice.1/cutoff/frequency" : 1736.159668,
+		"my_synth/voice.1/gain" : -4.960631,
+		"my_synth/voice.1/modulation/index" : 1000.0,
+		"my_synth/voice.1/modulation/ratio" : 0.079728,
+		"my_synth/voice.1/ramptime" : 1000.0,
+		"my_synth/voice.1/carrier/frequency" : 4830.938965,
+		"my_synth/voice.2/pan" : 0.661417,
+		"my_synth/voice.2/cutoff/frequency" : 574.267883,
+		"my_synth/voice.2/gain" : -5.511811,
+		"my_synth/voice.2/modulation/index" : 1000.0,
+		"my_synth/voice.2/modulation/ratio" : 1.418182,
+		"my_synth/voice.2/ramptime" : 1000.0,
+		"my_synth/voice.2/carrier/frequency" : 141.952698
+	}
+
+}
