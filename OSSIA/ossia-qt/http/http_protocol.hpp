@@ -53,7 +53,7 @@ public:
 signals:
   void sig_push(const http_parameter*);
 
-private slots:
+private Q_SLOTS:
   void slot_push(const http_parameter*);
 
 private:
