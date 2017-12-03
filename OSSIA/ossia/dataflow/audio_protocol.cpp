@@ -114,7 +114,7 @@ void audio_protocol::reload()
                           &inputParameters,
                           &outputParameters,
                           rate,
-                          bufferSize,
+                          bufferSize, //paFramesPerBufferUnspecified,
                           paNoFlag,
                           &PortAudioCallback,
                           this);

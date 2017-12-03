@@ -8,6 +8,19 @@ namespace ossia
 struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
+    int sampleRate{44100};
+    int bufferSize{64};
+
+    ossia::net::node_base* find_node(std::string_view name)
+    {
+      for(auto dev : globalState)
+      {
+        if(auto res = ossia::net::find_node(dev->get_root_node(), name))
+          return res;
+      }
+      return nullptr;
+    }
+
     void clear_devices()
     {
       globalState.clear();
