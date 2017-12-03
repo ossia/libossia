@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/dataflow.hpp>
-
+#include <ossia/dataflow/fx_node.hpp>
 
 namespace ossia
 {
@@ -11,7 +11,10 @@ graph_node::~graph_node()
 {
   // TODO moveme in cpp
 }
+audio_fx_node::~audio_fx_node()
+{
 
+}
 graph_node::graph_node()
 {
 }

@@ -239,6 +239,7 @@ if(OSSIA_DATAFLOW)
   find_library(PortAudio_LIBRARIES
       NAMES libportaudio_static.a libportaudio.a portaudio
       HINTS /opt/portaudio/lib)
+
   target_include_directories(ossia PRIVATE ${PortAudio_INCLUDE_DIR})
   target_link_libraries(ossia PRIVATE ${PortAudio_LIBRARIES})
 
