@@ -8,7 +8,7 @@
 	</digest>
 
 	<description>
-		ossia.device creates a local device under which all models and parameters in the same patcher or below will register. Then namespace of this device can then be exposed to local or distant applications through various protocoles
+		ossia.device creates a local device under which all models and parameters in the same patcher or below will register. Namespace of this device can then be exposed to local or distant applications through various protocoles
 	</description>
 
 	
@@ -17,6 +17,8 @@
 		<metadata name="author">Ossia</metadata>
 		<metadata name="tag">Ossia</metadata>
 		<metadata name="tag">Network</metadata>
+		<metadata name="tag">Protocole</metadata>
+		<metadata name="tag">osc</metadata>
 	</metadatalist>
 
 	
@@ -45,41 +47,48 @@
 				Output list of all parameters and their current values
 			</digest>
 			<description>
-				Sending the (namespace) message to the leftmost inlet outputs the list of all parameters registered under this node, and their current values
+				Sending the <m>namespace</m> message to the leftmost inlet outputs the list of all parameters registered under this node, and their current value
 			</description>
 		</method>
 	</methodlist>
 
 	<methodlist>
 		<method name="expose">
-			<arglist/>
+			<arglist>
+				<arg name="protocole-name" optional="1" type="list" />
+			</arglist>
 			<digest>
 				Expose the device to the network
 			</digest>
 			<description>
-				Sending the (expose) message to the leftmost inlet will print its configuration parameters for the various available protocols
-				Then, sending it with the appropriate values will expose the  device to the network, and allow it to be explored, queried and remotely-controlled.
+				Sending the <m>expose</m> message without any argument will print in Max Console various protocole and configuration options available
+				Sending the <m>expose</m> message followed by a protocole name will explose the device to the network using the optional configuration option (ie. network ports)
 			</description>
 		</method>
 
 		<method name="name">
-			<arglist/>
+			<arglist>
+				<arg name="device-name" optional="1" type="symbol" />
+			</arglist>
 			<digest>
-				Set (or retrieve) the global device's name
+				Set and get the global device's name
 			</digest>
 			<description>
-				Sending the (name) message to the leftmost inlet outputs its current name.
-				Sending the (name someName) message to the leftmost inlet will set the global device's name to "someName"
+				Sending the <m>name</m> message will output the current device's name out of <o>ossia.device</o> outlet
+				Sending the <m>name</m> message followed by a symbol argument specifying new name will set the device's name
 			</description>
 		</method>
 
 		<method name="preset">
-			<arglist/>
-			<digest>Preset Management
+			<arglist>
+				<arg name="save or load" optional="0" type="symbol" />
+				<arg name="path" optional="0" type="symbol" />
+			</arglist>
+			<digest>Save & recall presets
 			</digest>
 			<description>
-				Sending the (preset save /path/to/file.txt) message to the leftmost inlet will write a list of all parameters and their values to the the disk, under the file /path/to/file.txt <!-- - The preset can also be saved under a json format, by replacing the extension by .json -->
-				Sending the (preset load /path/to/file.txt) message to the leftmost inlet will load a list of all parameters and their values from the the file /path/to/file.txt, and recall the values to the parameters
+				Sending the <m>preset save /path/to/file.txt</m> message to the leftmost inlet will write a list of all parameters and their values to the the disk, under the file /path/to/file.txt <!-- - The preset can also be saved under a json format, by replacing the extension by .json -->
+				Sending the <m>preset load /path/to/file.txt</m> message to the leftmost inlet will load a list of all parameters and their values from the the file /path/to/file.txt, and recall the values to the parameters
 			</description>
 		</method>
 	</methodlist>	
@@ -91,7 +100,7 @@
 				Tags associated with this node
 			</digest>
 			<description>
-				The <at>@tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
 			</description>
 		</attribute>
 
@@ -100,7 +109,7 @@
 				Descirption of this node
 			</digest>
 			<description>
-				The <at>@description</at> attribute allows to give a textual description for this node. This helps documenting the parameter.
+				The <at>description</at> attribute allows to give a textual description for this node. This helps documenting the parameter.
 			</description>
 		</attribute>
 
@@ -109,7 +118,7 @@
 				Set priority
 			</digest>
 			<description>
-				The <at>@priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+				The <at>priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
 			</description>
 		</attribute>
 	</attributelist>
