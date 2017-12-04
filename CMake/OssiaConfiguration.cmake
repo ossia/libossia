@@ -42,7 +42,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJEC
 
 
 message("Update general OSSIA dependecies :")
-execute_process(COMMAND git submodule update --init -- CMake/cmake-modules
+execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/GSL
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
