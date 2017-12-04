@@ -97,6 +97,7 @@ public:
 
   /* enable observation of the Expression */
   void observe_expression(bool);
+  void observe_expression(bool, ossia::expressions::expression_result_callback cb);
 
   //! Resets the internal state. Necessary when restarting an execution.
   void reset();

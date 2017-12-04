@@ -4,6 +4,7 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/scenario/detail/scenario_graph.hpp>
 #include <ossia/dataflow/graph.hpp>
 
 #include <ossia/detail/algorithms.hpp>
@@ -17,7 +18,6 @@
 
 namespace ossia
 {
-
 scenario_node::scenario_node()
 {
   // todo maybe we can optimize by having m_outlets == m_inlets
@@ -49,24 +49,26 @@ scenario::~scenario()
   }
 }
 
+bool scenario::is_root_sync(ossia::time_sync& sync) const
+{
+  auto bool_expr = sync.get_expression().target<ossia::expressions::expression_bool>();
+
+  auto res = !bool_expr || !bool_expr->evaluate() || &sync == m_nodes[0].get();
+  res &= ossia::all_of(
+            sync.get_time_events(),
+            [] (const std::shared_ptr<ossia::time_event>& ev) {
+        return ev->previous_time_intervals().empty();
+      });
+  return res;
+}
 void scenario::start()
 {
   for(auto& node : m_nodes)
   {
-    auto bool_expr = node->get_expression().target<ossia::expressions::expression_bool>();
-    if(!bool_expr || !bool_expr->evaluate() || node == m_nodes[0])
-    {
-      auto ok = ossia::all_of(
-            node->get_time_events(),
-            [] (const std::shared_ptr<ossia::time_event>& ev) {
-        return ev->previous_time_intervals().empty();
-      });
-      if(ok)
-      {
-        m_waitingNodes.push_back(node.get());
-      }
-    }
+    if(is_root_sync(*node))
+      m_waitingNodes.insert(node.get());
   }
+  m_rootNodes = sgraph{*this}.get_roots();
 
   // start each TimeInterval if possible
   for (const auto& timeInterval : m_intervals)
@@ -212,5 +214,23 @@ const ptr_container<time_sync>& scenario::get_time_syncs() const
 const ptr_container<time_interval>& scenario::get_time_intervals() const
 {
   return m_intervals;
+}
+
+void scenario::reset_subgraph(
+    const ptr_container<time_sync>& syncs
+    , const ptr_container<time_interval>& itvs
+    , time_sync& root)
+{
+  for(const std::shared_ptr<ossia::time_sync>& sync : syncs)
+  {
+    sync->reset();
+  }
+
+  for(const std::shared_ptr<ossia::time_interval>& itv : itvs)
+  {
+    itv->stop();
+    m_runningIntervals.erase(itv.get());
+    m_itv_end_map.erase(itv.get());
+  }
 }
 }

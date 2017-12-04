@@ -81,6 +81,13 @@ bool time_sync::is_observing_expression() const
 
 void time_sync::observe_expression(bool observe)
 {
+  // start expression observation; dummy callback used.
+  // Do not remove it : else the expressions will stop listening.
+  return observe_expression(observe, [] (bool) {});
+}
+
+void time_sync::observe_expression(bool observe, ossia::expressions::expression_result_callback cb)
+{
   if (!m_expression || *m_expression == expressions::expression_true()
       || *m_expression == expressions::expression_false())
     return;
@@ -92,11 +99,7 @@ void time_sync::observe_expression(bool observe)
 
     if (m_observe)
     {
-      // pull value
-
-      // start expression observation; dummy callback used.
-      // Do not remove it : else the expressions will stop listening.
-      m_callback = expressions::add_callback(*m_expression, [](bool) {});
+      m_callback = expressions::add_callback(*m_expression, cb);
     }
     else
     {

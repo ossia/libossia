@@ -11,6 +11,7 @@
 #include <boost/container/flat_set.hpp>
 #include <ossia/dataflow/graph.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
+#include <ossia/editor/scenario/detail/scenario_graph.hpp>
 #include <cassert>
 #include <hopscotch_map.h>
 #include <iostream>
@@ -92,6 +93,126 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 
   if (event.m_callback)
     (event.m_callback)(event.m_status);
+}
+
+bool scenario::trigger_sync(
+    time_sync& node, small_event_vec::iterator pendingBegin, small_event_vec::iterator pendingEnd,
+    interval_set& started, interval_set& stopped,
+    ossia::time_value tick_offset, bool maximalDurationReached)
+{
+  if (!node.m_evaluating)
+  {
+    node.m_evaluating = true;
+    node.entered_evaluation.send();
+  }
+
+  // update the expression one time
+  // then observe and evaluate TimeSync's expression before to trig
+  // only if no maximal duration have been reached
+  if (*node.m_expression != expressions::expression_true()
+      && !maximalDurationReached)
+  {
+    if(!node.has_trigger_date())
+    {
+      if (!node.is_observing_expression())
+        expressions::update(*node.m_expression);
+
+      node.observe_expression(true);
+
+      if (node.trigger_request)
+        node.trigger_request = false;
+      else if (!expressions::evaluate(*node.m_expression))
+        return false;
+    }
+
+    // at this point we can assume we are going to trigger.
+    const auto& cur_date = this->node->requested_tokens.back().date;
+    if(node.has_trigger_date())
+    {
+      bool ok = true;
+      for(const auto& ev : node.get_time_events())
+      {
+        for(const auto& cst : ev->previous_time_intervals())
+        {
+          if(cst->get_start_event().get_status() == ossia::time_event::status::HAPPENED)
+          {
+            ok &= (cst->get_date() == m_itv_end_map.find(cst.get())->second);
+          }
+          if(!ok)
+            break;
+        }
+        if(!ok)
+          break;
+      }
+
+      if(!ok)
+        return false;
+      else
+      {
+        maximalDurationReached = true;
+
+        for(const auto& ev : node.get_time_events())
+        {
+          for(const auto& cst : ev->previous_time_intervals())
+          {
+            m_itv_end_map.erase(cst.get());
+          }
+        }
+      }
+    }
+    else if(node.has_sync_rate())
+    {
+      // compute absolute date at which it should execute,
+      // assuming we start at the next tick
+      // TODO div by zero
+      time_value expected_date{node.get_sync_rate().impl * (1 + cur_date.impl / node.get_sync_rate().impl)};
+      node.set_trigger_date(expected_date);
+      auto diff_date = expected_date - cur_date;
+
+      // compute the "fake max" date at which intervals must end for this to work
+      for(const auto& ev : node.get_time_events())
+      {
+        for(const auto& cst : ev->previous_time_intervals())
+        {
+          m_itv_end_map.insert(std::make_pair(cst.get(), cst->get_date() + diff_date));
+        }
+      }
+      node.observe_expression(false);
+      return false;
+    }
+  }
+
+  // trigger the time sync
+
+  // now TimeEvents will happen or be disposed.
+  // the last added events are necessarily the ones of this node.
+  for (auto it = pendingBegin; it != pendingEnd; ++it)
+  {
+    time_event& ev = **it;
+    auto& expr = ev.get_expression();
+    // update any Destination value into the expression
+    expressions::update(expr);
+
+    if (expressions::evaluate(expr))
+      make_happen(ev, started, stopped, tick_offset);
+    else
+      make_dispose(ev, stopped);
+  }
+
+  // stop expression observation now the TimeSync has been processed
+  node.observe_expression(false);
+
+  // notify observers
+  node.triggered.send();
+
+  node.m_evaluating = false;
+  node.finished_evaluation.send(maximalDurationReached);
+  if (maximalDurationReached)
+    node.m_status = time_sync::status::DONE_MAX_REACHED;
+  else
+    node.m_status = time_sync::status::DONE_TRIGGERED;
+
+  return true;
 }
 
 bool scenario::process_this(
@@ -196,120 +317,11 @@ bool scenario::process_this(
     return false;
   }
 
-  if (!node.m_evaluating)
-  {
-    node.m_evaluating = true;
-    node.entered_evaluation.send();
-  }
-
-  // update the expression one time
-  // then observe and evaluate TimeSync's expression before to trig
-  // only if no maximal duration have been reached
-  if (*node.m_expression != expressions::expression_true()
-      && !maximalDurationReached)
-  {
-    if(!node.has_trigger_date())
-    {
-      if (!node.is_observing_expression())
-        expressions::update(*node.m_expression);
-
-      node.observe_expression(true);
-
-      if (node.trigger_request)
-        node.trigger_request = false;
-      else if (!expressions::evaluate(*node.m_expression))
-        return false;
-    }
-
-    // at this point we can assume we are going to trigger.
-
-    const auto& cur_date = this->node->requested_tokens.back().date;
-    if(node.has_trigger_date())
-    {
-      bool ok = true;
-      for(const auto& ev : node.get_time_events())
-      {
-        for(const auto& cst : ev->previous_time_intervals())
-        {
-          if(cst->get_start_event().get_status() == ossia::time_event::status::HAPPENED)
-          {
-            ok &= (cst->get_date() == m_itv_end_map.find(cst.get())->second);
-          }
-          if(!ok)
-            break;
-        }
-        if(!ok)
-          break;
-      }
-
-      if(!ok)
-        return false;
-      else
-      {
-        maximalDurationReached = true;
-
-        for(const auto& ev : node.get_time_events())
-        {
-          for(const auto& cst : ev->previous_time_intervals())
-          {
-            m_itv_end_map.erase(cst.get());
-          }
-        }
-      }
-    }
-    else if(node.has_sync_rate())
-    {
-      // compute absolute date at which it should execute,
-      // assuming we start at the next tick
-      // TODO div by zero
-      time_value expected_date{node.get_sync_rate().impl * (1 + cur_date.impl / node.get_sync_rate().impl)};
-      node.set_trigger_date(expected_date);
-      auto diff_date = expected_date - cur_date;
-
-      // compute the "fake max" date at which intervals must end for this to work
-      for(const auto& ev : node.get_time_events())
-      {
-        for(const auto& cst : ev->previous_time_intervals())
-        {
-          m_itv_end_map.insert(std::make_pair(cst.get(), cst->get_date() + diff_date));
-        }
-      }
-      node.observe_expression(false);
-      return false;
-    }
-  }
-
-  // trigger the time sync
-
-  // now TimeEvents will happen or be disposed.
-  // the last added events are necessarily the ones of this node.
-  for (auto it = pendingEvents.begin() + beginPending; it != pendingEvents.end(); ++it)
-  {
-    time_event& ev = **it;
-    auto& expr = ev.get_expression();
-    // update any Destination value into the expression
-    expressions::update(expr);
-
-    if (expressions::evaluate(expr))
-      make_happen(ev, started, stopped, tick_offset);
-    else
-      make_dispose(ev, stopped);
-  }
-
-  // stop expression observation now the TimeSync has been processed
-  node.observe_expression(false);
-
-  // notify observers
-  node.triggered.send();
-
-  node.m_evaluating = false;
-  node.finished_evaluation.send(maximalDurationReached);
-  if (maximalDurationReached)
-    node.m_status = time_sync::status::DONE_MAX_REACHED;
-  else
-    node.m_status = time_sync::status::DONE_TRIGGERED;
-
-  return true;
+  return trigger_sync(node,
+                      pendingEvents.begin() + beginPending,
+                      pendingEvents.end(),
+                      started, stopped,
+                      tick_offset, maximalDurationReached);
 }
 
 enum progress_mode
@@ -356,9 +368,47 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     // * the ones we're finishing in : we take their state where we finish
 
     small_event_vec pendingEvents;
+
+    sgraph sg{*this};
+    auto comps = sg.components();
+    for(auto& n : m_rootNodes)
+    {
+      if(!n->is_observing_expression())
+      {
+        n->observe_expression(true, [n] (bool b) {
+          if(b)
+            n->trigger_request = true;
+        });
+      }
+
+      if(n->trigger_request)
+      {
+        if(m_waitingNodes.find(n) != m_waitingNodes.end())
+        {
+          // it will execute soon after
+          continue;
+        }
+        else
+        {
+          auto& evs = n->get_time_events();
+          for(auto& e : evs)
+          {
+            const auto st = e->get_status();
+            if(st == ossia::time_event::status::HAPPENED || st == ossia::time_event::status::DISPOSED)
+            {
+              sg.reset_component(comps, *n);
+              break;
+            }
+          }
+          m_waitingNodes.insert(n);
+        }
+      }
+
+    }
+
     for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
     {
-      auto& n = *it;
+      auto n = *it;
       // Note: we pass m_runningIntervals as stopped because it does not matter:
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.

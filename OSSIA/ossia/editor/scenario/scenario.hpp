@@ -17,6 +17,8 @@ class time_interval;
 class time_sync;
 using interval_set = boost::container::flat_set<time_interval*>;
 using sync_set = boost::container::flat_set<time_sync*>;
+using small_sync_vec = chobo::small_vector<time_sync*, 4>;
+using small_event_vec = chobo::small_vector<time_event*, 4>;
 struct overtick
 {
   ossia::time_value min;
@@ -81,10 +83,14 @@ public:
    \return #Container<#time_interval> */
   const ptr_container<time_interval>& get_time_intervals() const;
 
+  void reset_subgraph(
+      const ptr_container<time_sync>&
+      , const ptr_container<time_interval>&
+      , time_sync& root);
+
+  bool is_root_sync(ossia::time_sync& sync) const;
 private:
 
-  using small_sync_vec = chobo::small_vector<time_sync*, 4>;
-  using small_event_vec = chobo::small_vector<time_event*, 4>;
 
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
@@ -92,10 +98,11 @@ private:
                                     // second is the end node)
 
   interval_set m_runningIntervals;
-  small_sync_vec m_waitingNodes;
-  overtick_map m_overticks;
+  sync_set m_waitingNodes;
+  small_sync_vec m_rootNodes;
+  overtick_map m_overticks; // used as cache
   boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
-  sync_set m_endNodes;
+  sync_set m_endNodes; // used as cache
   bool process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
       interval_set& started, interval_set& stopped,
@@ -104,5 +111,9 @@ private:
       time_event& event, interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset);
   static void make_dispose(time_event& event, interval_set& stopped);
+  bool trigger_sync(time_sync& node,
+                    small_event_vec::iterator pendingBegin, small_event_vec::iterator pendingEnd,
+                    interval_set& started, interval_set& stopped,
+                    ossia::time_value tick_offset, bool maxReached);
 };
 }
