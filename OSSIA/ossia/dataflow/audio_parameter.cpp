@@ -261,7 +261,7 @@ void sound_node::run(ossia::token_request t, ossia::execution_state& e)
         case 1:
         {
           ap.samples.resize(upmix);
-          for(int i = 1; i < upmix; i++)
+          for(std::size_t i = 1; i < upmix; i++)
           {
             ap.samples[i] = ap.samples[0];
           }
