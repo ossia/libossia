@@ -5,7 +5,7 @@
 export PATH=/opt/gcc-6/bin:/opt/cmake/bin:$PATH
 export LD_LIBRARY_PATH=/opt/gcc-6/lib
 
-git clone --recursive https://github.com/OSSIA/libossia
+git clone --depth=1 https://github.com/OSSIA/libossia
 
 (
   mkdir -p build; cd build
