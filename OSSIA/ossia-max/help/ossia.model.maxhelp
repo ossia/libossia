@@ -4,8 +4,8 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x64",
+			"revision" : 5,
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
@@ -50,8 +50,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -113,8 +113,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -296,8 +296,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -776,8 +776,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -851,7 +851,7 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
@@ -899,8 +899,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -974,7 +974,7 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
@@ -1155,8 +1155,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -1197,7 +1197,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 600.0, 581.0, 187.0, 21.0 ],
-									"presentation_rect" : [ 607.0, 584.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "also works with pattern-matching",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1238,7 +1237,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 470.0, 581.0, 124.0, 22.0 ],
-									"presentation_rect" : [ 655.0, 504.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "set *_parameter $1"
 								}
@@ -1253,7 +1251,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 470.0, 444.0, 375.0, 21.0 ],
-									"presentation_rect" : [ 533.0, 469.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "values of parameters can be fed to ossia.model, with the set message:",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1269,7 +1266,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 470.0, 469.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 469.0, 460.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -1327,8 +1323,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -1656,8 +1652,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -2090,8 +2086,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -2129,9 +2125,9 @@
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
-													"patching_rect" : [ 9.0, 105.0, 358.0, 22.0 ],
+													"patching_rect" : [ 9.0, 105.0, 376.0, 22.0 ],
 													"style" : "",
-													"text" : "ossia.parameter another_parameter @type float @default 45.231"
+													"text" : "ossia.parameter another_parameter @type float @default 45.230999"
 												}
 
 											}
@@ -2150,7 +2146,7 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 													"id" : "obj-2",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
@@ -2249,7 +2245,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-2",
 									"linecount" : 2,
 									"maxclass" : "newobj",

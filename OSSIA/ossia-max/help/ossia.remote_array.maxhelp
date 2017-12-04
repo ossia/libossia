@@ -4,12 +4,12 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x64",
+			"revision" : 5,
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 298.0, 111.0, 1196.0, 694.0 ],
+		"rect" : [ 298.0, 111.0, 688.0, 694.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -63,12 +63,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1196.0, 668.0 ],
+						"rect" : [ 0.0, 26.0, 688.0, 668.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -126,12 +126,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 298.0, 137.0, 1196.0, 668.0 ],
+						"rect" : [ 298.0, 137.0, 688.0, 668.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -244,6 +244,7 @@
 							}
 , 							{
 								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-35",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -304,6 +305,7 @@
 							}
 , 							{
 								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-30",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -351,6 +353,7 @@
 							}
 , 							{
 								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-20",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -501,7 +504,7 @@
 			}
 , 			{
 				"name" : "ossia.remote_array.maxpat",
-				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
+				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
 				"patcherrelativepath" : "../patchers",
 				"type" : "JSON",
 				"implicit" : 1

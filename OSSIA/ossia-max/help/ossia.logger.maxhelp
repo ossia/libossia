@@ -4,8 +4,8 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x64",
+			"revision" : 5,
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
@@ -208,7 +208,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.988235, 0.415686, 0.031373, 1.0 ],
+					"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 					"id" : "obj-1",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
