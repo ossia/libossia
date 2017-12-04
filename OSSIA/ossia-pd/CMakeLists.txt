@@ -4,6 +4,12 @@ project("ossia-pd")
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 
+message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
     message("Downloading and extracting PureData windows binary")
