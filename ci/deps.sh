@@ -52,11 +52,11 @@ case "$TRAVIS_OS_NAME" in
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
-    elif [[ $BUILD_TYPE == *python* ]] ; then
+    elif [[ $BUILD_TYPE == *python* ]]; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
-        if [[ "$PRE_CMD" == "linux32"]];then
+        if [[ "$PRE_CMD" == "linux32" ]]; then
           docker pull quay.io/pypa/manylinux1_i686
-        else  
+        else
           docker pull quay.io/pypa/manylinux1_x86_64
         fi
         wget https://bootstrap.pypa.io/get-pip.py
