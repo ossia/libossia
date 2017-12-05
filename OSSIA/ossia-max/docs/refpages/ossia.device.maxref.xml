@@ -84,7 +84,7 @@
 				<arg name="save or load" optional="0" type="symbol" />
 				<arg name="path" optional="0" type="symbol" />
 			</arglist>
-			<digest>Save & recall presets
+			<digest>Save and recall presets
 			</digest>
 			<description>
 				Sending the <m>preset save /path/to/file.txt</m> message to the leftmost inlet will write a list of all parameters and their values to the the disk, under the file /path/to/file.txt <!-- - The preset can also be saved under a json format, by replacing the extension by .json -->
