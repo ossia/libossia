@@ -10,7 +10,12 @@ if(APPLE)
 elseif(WIN32)
     set(CMAKE_INSTALL_RPATH  "\$ORIGIN/../support;\$ORIGIN")
 endif()
-find_package(MaxSDK REQUIRED)
+find_package(MaxSDK QUIET)
+if(NOT MaxSDK_FOUND)
+	execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	find_package(MaxSDK REQUIRED)
+endif()
 
 if(APPLE)
     FIND_PATH(FILE_H_DIR Files.h

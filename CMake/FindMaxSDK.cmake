@@ -10,10 +10,12 @@ file(GLOB MAXSDK_DIRS "$ENV{HOME}/Documents/Max 7/Packages/max-sdk*/source")
 if(NOT MAXSDK_DIRS)
     file(GLOB MAXSDK_DIRS "$ENV{USERPROFILE}/Documents/Max 7/Packages/max-sdk*/source")
 endif()
+list(APPEND MAXSDK_DIRS ${OSSIA_3RDPARTY_FOLDER}/max-sdk/source)
+message(STATUS "Looking for MaxSDK into : " ${MAXSDK_DIRS})
 find_path(
     MAXSDK_MAINPATH "c74support"
     HINTS "${MAXSDK_DIRS}"
-    DOC "Insert main path to MaxSDK/source/c74support (download it from http://cycling74.com/products/sdk/ for both MacOSX and Windows)")
+    DOC "Insert main path to MaxSDK/source (download it from http://cycling74.com/products/sdk/ for both MacOSX and Windows)")
 
 # Just to test if Max/MSP found!!
 if(MAXSDK_MAINPATH)
