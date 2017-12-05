@@ -156,70 +156,7 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="mode" get="1" set="1" type="symbol" size="1">
-			<digest>
-			Define access mode of parameter : GET, SET, or both (BI)
-			</digest>
-			<description>
-			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
-			</description>
-		</attribute>
-
-		<attribute name="enable" get="1" set="1" type="int" size="1">
-			<digest>
-				Enable node
-			</digest>
-			<description>
-				The <at>enable</at> attribute allows to enable (default: 1) or disable a node
-			</description>
-		</attribute>  
-
-		<attribute name="default" get="1" set="1" type="int" size="1">
-			<digest>
-				Default value
-			</digest>
-			<description>
-				The <at>default</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
-			</description>
-		</attribute>	
-
-		<attribute name="type" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Value type
-			</digest>
-			<description>
-				The <at>type</at> attribute defines the type of the value. Possible types are:
-				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
-			</description>
-		</attribute>
-
-		<attribute name="range" get="1" set="1" type="list" size="2">
-			<digest>
-				Value range
-			</digest>
-			<description>
-				The <at>range</at> attribute defines the expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range.
-			</description>
-		</attribute>		
-
-		<attribute name="min" get="1" set="1" type="list" size="2">
-			<digest>
-				Value range minimum
-			</digest>
-			<description>
-				The <at>min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
-			</description>
-		</attribute>	
-
-		<attribute name="max" get="1" set="1" type="list" size="2">
-			<digest>
-				Value range maximum
-			</digest>
-			<description>
-				The <at>max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
-			</description>
-		</attribute>	
-
+		
 		<attribute name="clip" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Set how values exceeding range will be clipped
@@ -235,6 +172,88 @@
 			</attributelist>
 		</attribute>
 
+		<attribute name="default" get="1" set="1" type="int" size="1">
+			<digest>
+				Default value
+			</digest>
+			<description>
+				The <at>default</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
+			</description>
+		</attribute>	
+
+		<attribute name="description" get="1" set="1" type="atom" size="1">
+			<digest>
+				Descrption of this node
+			</digest>
+			<description>
+				The <at>description</at> attribute allows to agive a textual description for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+		
+		<attribute name="enable" get="1" set="1" type="int" size="1">
+			<digest>
+				Enable node
+			</digest>
+			<description>
+				The <at>enable</at> attribute allows to enable (default: 1) or disable a node
+			</description>
+		</attribute>  
+
+		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Hide parameter node in remote client
+			</digest>
+			<description>
+				The <at>hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+			</description>
+		</attribute>
+		
+		<attribute name="max" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range maximum
+			</digest>
+			<description>
+				The <at>max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="min" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range minimum
+			</digest>
+			<description>
+				The <at>min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="mode" get="1" set="1" type="symbol" size="1">
+			<digest>
+			Define access mode of parameter : GET, SET, or both (BI)
+			</digest>
+			<description>
+			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
+			</description>
+		</attribute>
+		
+		<attribute name="mute" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Mute parameter (off by default)
+			</digest>
+			<description>
+				The <at>mute</at> attribute allows to prevent the parameter from outputting local (i.e. fed from the input) values - Remotely sent values will still come out
+			</description>
+		</attribute>
+
+		<attribute name="type" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Value type
+			</digest>
+			<description>
+				The <at>type</at> attribute defines the type of the value. Possible types are:
+				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
+			</description>
+		</attribute>
+
 		<attribute name="unit" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Unit used by the parameter
@@ -244,21 +263,30 @@
 			</description>
 		</attribute>
 
+		<attribute name="priority" get="1" set="1" type="int" size="1">
+			<digest>
+				Set priority
+			</digest>
+			<description>
+				The <at>priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+			</description>
+		</attribute>
+
+		<attribute name="range" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range
+			</digest>
+			<description>
+				The <at>range</at> attribute defines the expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range.
+			</description>
+		</attribute>
+
 		<attribute name="rate" get="1" set="1" type="integer" size="1">
 			<digest>
 				Determine the update rate at which values will be set and get
 			</digest>
 			<description>
 				The <at>rate</at> attribute defines at which rates values will be set and get from/to the parameter
-			</description>
-		</attribute>
-
-		<attribute name="mute" get="1" set="1" type="boolean" size="1">
-			<digest>
-				Mute parameter (off by default)
-			</digest>
-			<description>
-				The <at>mute</at> attribute allows to prevent the parameter from outputting local (i.e. fed from the input) values - Remotely sent values will still come out
 			</description>
 		</attribute>
 
@@ -275,7 +303,7 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Allow Repetitions" />
 			</attributelist>
 		</attribute>
-
+		
 		<attribute name="tags" get="1" set="1" type="atom" size="1">
 			<digest>
 				Tags associated with this node
@@ -285,32 +313,6 @@
 			</description>
 		</attribute>
 
-		<attribute name="description" get="1" set="1" type="atom" size="1">
-			<digest>
-				Descrption of this node
-			</digest>
-			<description>
-				The <at>description</at> attribute allows to agive a textual description for this node. This helps documenting the parameter.
-			</description>
-		</attribute>
-
-		<attribute name="priority" get="1" set="1" type="int" size="1">
-			<digest>
-				Set priority
-			</digest>
-			<description>
-				The <at>priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
-			</description>
-		</attribute>
-
-		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Hide parameter node in remote client
-			</digest>
-			<description>
-				The <at>hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
-			</description>
-		</attribute>
 	</attributelist>
 
 
