@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 194.0, 206.0, 1096.0, 768.0 ],
+		"rect" : [ 102.0, 147.0, 1096.0, 768.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1320,7 +1320,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 194.0, 232.0, 1096.0, 742.0 ],
+						"rect" : [ 102.0, 173.0, 1096.0, 742.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1408,7 +1408,7 @@
 									"numoutlets" : 0,
 									"patching_rect" : [ 471.0, 446.0, 186.0, 92.0 ],
 									"style" : "",
-									"text" : "ossia.remote placed within the scope defined by ossia.view automatically bind to the addressed parameter",
+									"text" : "ossia.remote placed within the scope defined by ossia.view automatically binds to the addressed parameter",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -1420,9 +1420,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 763.0, 219.0, 117.0, 22.0 ],
+									"patching_rect" : [ 770.0, 219.0, 137.0, 22.0 ],
 									"style" : "",
-									"text" : "bind another_model"
+									"text" : "address another_model"
 								}
 
 							}
@@ -1433,9 +1433,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 659.0, 219.0, 89.0, 22.0 ],
+									"patching_rect" : [ 659.0, 219.0, 109.0, 22.0 ],
 									"style" : "",
-									"text" : "bind submodel"
+									"text" : "address submodel"
 								}
 
 							}

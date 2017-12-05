@@ -4,11 +4,11 @@
 <c74object name="ossia.remote" module="Ossia" category="Ossia">
 
 	<digest>
-		Monitor and remote control values from ossia.parameter's
+		Monitor and remote control values from ossia.parameter
 	</digest>
 
 	<description>
-		ossia.remote allows to bind to an ossia.parameter for remote control or monitoring. It can bind to local devices, or distant ones with ossia.client.
+		<o>ossia.remote</o> allows to bind to an <o>ossia.parameter</o> for remote control or monitoring. It can bind to local devices, or distant ones through <o>ossia.client</o>.
 	</description>
 
 	
@@ -45,10 +45,201 @@
 		</outlet>
 	</outletlist>
 	
-	
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="node to bind to" optional="0" type="symbol">
+			<digest>
+				Parameter name to bind to
+			</digest>
+			<description>
+				<o>ossia.remote</o> requires an argument defining a node name in the ossia namespace it will bind to.
+			</description>
+		</objarg>
+	</objarglist>
+
+	<!--METHODS-->
+	<methodlist>
+		<method name="address">
+			<arglist>
+				<arg name="node address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Set node name
+			</digest>
+			<description>
+				The message <m>address</m> followed by a symbol sets the name of the bound node. This temporary replaces the name provided initially as an argument to the object and allows to address nodes dynamically. Without any argument, <m>address</m> message will set the node address back to as defined as argument to the object.
+			</description>
+		</method>
+		
+		<method name="anything">
+			<arglist>
+				<arg name="input" optional="0" type="list"/>
+			</arglist>
+			<digest> Feed values to ossia.parameter or access attributes by their names
+			</digest>
+			<description>
+				If the first symbol equals the name of a setable attribute, the value for that attribute can be updated. Else the incoming message is interpreted as a new value for <o>ossia.parameter</o>. Depending on the <m>type</m> it might be converted to one or more floats (<m>type float</m> or <m>tuple</m>) or an int (<m>type int</m>).
+			</description> 
+		</method>
+
+		<method name="bang">
+			<arglist/>
+			<digest>
+				Output current value
+			</digest>
+			<description>
+				A bang at leftmost inlet outputs ossia.parameter's current value
+			</description>
+		</method>
+
+		<method name="dump">
+			<arglist/>
+			<digest>
+				Dump all attributes settings to rightmost outlet
+			</digest>
+			<description>
+				The message <m>dump</m> outputs all attribute settings to rightmost outlet
+			</description>
+		</method>
+
+		<method name="float">
+			<digest>
+				Set and output value
+			</digest>
+			<description>
+				A float at leftmost inlet sets and outputs the value. Depending on the <at>type</at> attribute, the value might get converted into a int value if the <at>type</at> attribute is <m>int</m> or into a symbol if the <at>type</at> attribute is <m>symbol</m>
+			</description>
+		</method>
+		
+		<method name="int">
+			<digest>
+				Set and output value
+			</digest>
+			<description>
+				An int at leftmost inlet sets and outputs the value. Depending on the <at>type</at> attribute, the value might get converted into a float value if the <at>type</at> attribute is <m>float</m> or <m>tuple</m> or into a symbol if the <at>type</at> attribute is <m>symbol</m>
+			</description>
+		</method>
+		
+		<method name="list">
+			<digest>
+				Set and output value
+			</digest>
+			<description>
+				A list at the leftmost inlet sets and outputs the value. If the <at>type</at> is <m>float</m>, <m>int</m> or <m>symbol</m>, only the first list member will be used to set the value, and the type of this list member might be converted to fit the specified <at>type</at> of the parameter<br/>
+
+			</description>
+		</method>
+
+		<method name="reset">
+			<arglist/>
+			<digest>
+				Reset to default value
+			</digest>
+			<description>
+				The message <m>reset</m> sent to the leftmost inlet reset the current value to the value defined by the <at>default</at> attribute
+			</description>
+		</method>
+
+		<method name="send">
+			<arglist>
+				<arg name="node address" optional="0" type="symbol" />
+				<arg name="value" optional="0" type="any" />
+			</arglist>
+			<digest>
+				Send value to a particular parameter instance
+			</digest>
+			<description>
+				When using addresses pattern in <o>ossia.remote</o> such as 'my_spat/source.{1..3}/gain', the <m>send</m> message followed by a node address and value (ie <m>send my_spat/source.2/gain 0.5</m>) send the value of that particular parameter instance
+			</description>
+		</method>
+		
+		<method name="set">
+			<arglist>
+				<arg name="value" optional="0" type="any" />
+			</arglist>
+			<digest>
+				Send value to parameter without causing output
+			</digest>
+			<description>
+				<m>set</m> message followed by a value will send this value to the bound parameter without causing output at the remote's outlet
+			</description>
+		</method>
+
+
+	</methodlist>
 
 	<!--ATTRIBUTES-->
 	<attributelist>
+		
+		<attribute name="clip" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Set how values exceeding range will be clipped
+			</digest>
+			<description>
+				The <at>clip</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
+				<ul><li><m>free</m>: when set to <m>free</m> (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>both</m>: when set to <m>both</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
+			</description>
+			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Clip Mode" />
+			</attributelist>
+		</attribute>
+
+		<attribute name="default" get="1" set="1" type="int" size="1">
+			<digest>
+				Default value
+			</digest>
+			<description>
+				The <at>default</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
+			</description>
+		</attribute>	
+
+		<attribute name="description" get="1" set="1" type="atom" size="1">
+			<digest>
+				Descrption of this node
+			</digest>
+			<description>
+				The <at>description</at> attribute allows to agive a textual description for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+		
+		<attribute name="enable" get="1" set="1" type="int" size="1">
+			<digest>
+				Enable node
+			</digest>
+			<description>
+				The <at>enable</at> attribute allows to enable (default: 1) or disable a node
+			</description>
+		</attribute>  
+
+		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Hide parameter node in remote client
+			</digest>
+			<description>
+				The <at>hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+			</description>
+		</attribute>
+		
+		<attribute name="max" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range maximum
+			</digest>
+			<description>
+				The <at>max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="min" get="1" set="1" type="list" size="2">
+			<digest>
+				Value range minimum
+			</digest>
+			<description>
+				The <at>min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
 		<attribute name="mode" get="1" set="1" type="symbol" size="1">
 			<digest>
 			Define access mode of parameter : GET, SET, or both (BI)
@@ -57,114 +248,32 @@
 			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
 			</description>
 		</attribute>
-
-		<attribute name="enable" get="1" set="1" type="int" size="1">
+		
+		<attribute name="mute" get="1" set="1" type="boolean" size="1">
 			<digest>
-				Enable node
+				Mute output
 			</digest>
 			<description>
-				The <at>@enable</at> attribute allows to enable (default: 1) or disable the bound parameter.
+				The <at>mute</at> attribute allows to mute the output of <o>ossia.remote</o>. Note that this attribute affects the remote only. Bound parameter will still output values
 			</description>
-		</attribute>  
-
-		<attribute name="default" get="1" set="1" type="int" size="1">
-			<digest>
-				Default value of parameter
-			</digest>
-			<description>
-				The <at>@default</at> attribute sets the value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
-			</description>
-		</attribute>	
+		</attribute>
 
 		<attribute name="type" get="1" set="1" type="symbol" size="1">
 			<digest>
-				Value type of parameter
+				Value type
 			</digest>
 			<description>
-				The <at>@type</at> attribute defines the type of the value. Possible types are:
+				The <at>type</at> attribute defines the type of the value. Possible types are:
 				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
-			</description>
-		</attribute>
-
-		<attribute name="range" get="1" set="1" type="list" size="2">
-			<digest>
-				Value range of parameter
-			</digest>
-			<description>
-				The <at>@range</at> attribute defines the expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range.
-			</description>
-		</attribute>		
-
-		<attribute name="min" get="1" set="1" type="list" size="2">
-			<digest>
-				Value range minimum of parameter
-			</digest>
-			<description>
-				The <at>@min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
-			</description>
-		</attribute>	
-
-		<attribute name="max" get="1" set="1" type="list" size="2">
-			<digest>
-				Value range maximum of parameter
-			</digest>
-			<description>
-				The <at>@max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>@clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
-			</description>
-		</attribute>	
-
-		<attribute name="clip" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Set how values exceeding range of the parameter will be clipped
-			</digest>
-			<description>
-				The <at>@clip</at> attribute defines how values exceeding the range will be managed. Available clipmodes are:
-				<ul><li><m>free</m>: when set to free (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>both</m>: when set to <m>both</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
-			</description>
-		</attribute>
-
-		<attribute name="mute" get="1" set="1" type="boolean" size="1">
-			<digest>
-				Mute remote (off by default)
-			</digest>
-			<description>
-				The <at>@mute</at> attribute allows to mute the remote (i.e. prevent it from receiving or sending values to the bound parameter.)
-			</description>
-		</attribute>
-
-		<attribute name="rate" get="1" set="1" type="integer" size="1">
-			<digest>
-				Determine the update rate at which values will be set and get
-			</digest>
-			<description>
-				The <at>@range</at> attribute defines at which rates values will be set and get from/to the bound parameter
-			</description>
-		</attribute>
-
-		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
-			<digest>
-				Allow value repetitions (on by default)
-			</digest>
-			<description>
-				The <at>@repetitions</at> attribute defines whether identical values will berepeated (on by default)
-			</description>
-		</attribute>
-
-		<attribute name="tags" get="1" set="1" type="atom" size="1">
-			<digest>
-				Tags associated with the bound parameter
-			</digest>
-			<description>
-				The <at>@tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
 			</description>
 		</attribute>
 
 		<attribute name="unit" get="1" set="1" type="symbol" size="1">
 			<digest>
-				unit used by the remote
+				Unit used by the remote
 			</digest>
 			<description>
-				The <at>@unit</at> attribute defines the unit used by this remote. Values will get converted into this unit before being sent to the bound parameter.
+				The <at>unit</at> attribute defines the unit used by the remote to communicate with the bound parameter. Values at the remote input will get converted to the bound parameter. Values received from the bound parameter will get converted to the specified remote unit.
 			</description>
 		</attribute>
 
@@ -173,19 +282,53 @@
 				Set priority
 			</digest>
 			<description>
-				The <at>@priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+				The <at>priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
 			</description>
 		</attribute>
 
-		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+		<attribute name="range" get="1" set="1" type="list" size="2">
 			<digest>
-				Hide parameter node in remote client
+				Value range
 			</digest>
 			<description>
-				The <at>@hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+				The <at>range</at> attribute defines the expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range.
 			</description>
 		</attribute>
+
+		<attribute name="rate" get="1" set="1" type="integer" size="1">
+			<digest>
+				Determine the refresh interval at which values will be set and get
+			</digest>
+			<description>
+				The <at>rate</at> attribute defines the interval at which values will be set and get from/to the parameter
+			</description>
+		</attribute>
+
+		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Allow value repetitions (on by default)
+			</digest>
+			<description>
+				The <at>repetitions</at> attribute defines whether identical values will be repeated (on by default)
+			</description>
+			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Allow Repetitions" />
+			</attributelist>
+		</attribute>
+		
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with this node
+			</digest>
+			<description>
+				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+
 	</attributelist>
+
 	
 
 	<!--SEEALSO-->
