@@ -8,7 +8,7 @@
 	</digest>
 
 	<description>
-		ossia.client allows to connect to a distant device (either locally or on another computer) through various protcols, and lets you bind to it through <o>ossia.view</o> and <o>ossia.remote</o>
+		<o>ossia.client</o> allows to connect to a distant device (either locally or on another computer) through various protcols, and lets you bind to it through <o>ossia.view</o> and <o>ossia.remote</o>
 	</description>
 
 	
