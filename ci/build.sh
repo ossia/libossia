@@ -116,6 +116,7 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_PYTHON=0 \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
+                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
 
         # make a clone after initializing submodules (with Cmake)
@@ -156,6 +157,7 @@ case "$TRAVIS_OS_NAME" in
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
+                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -404,6 +406,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_EDITOR=OFF \
                -DOSSIA_DATAFLOW=OFF \
+               -DOSSIA_PROTOCOL_MIDI=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -433,6 +436,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_MAX=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_EDITOR=OFF \
+               -DOSSIA_PROTOCOL_MIDI=OFF \
                -DOSSIA_DATAFLOW=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
