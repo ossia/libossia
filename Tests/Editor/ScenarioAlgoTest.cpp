@@ -37,7 +37,7 @@ class percentage_node : public ossia::graph_node
 
     void run(ossia::token_request tok, ossia::execution_state& e) override
     {
-      outputs().back()->data.target<ossia::value_port>()->add_value(ossia::tvalue{(float)tok.position});
+      outputs().back()->data.target<ossia::value_port>()->add_raw_value(ossia::tvalue{(float)tok.position});
     }
 };
 }

@@ -599,7 +599,7 @@ void qml_device::loadPreset(QObject* root, QString file)
       m_readPreset = true;
 
       // Then load the preset
-      auto kv = ossia::presets::read_json(f.readAll().toStdString());
+      auto kv = ossia::presets::read_json(f.readAll().toStdString(), false);
       ossia::presets::apply_preset(
           device().get_root_node(), kv, ossia::presets::keep_arch_off);
 
