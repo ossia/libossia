@@ -137,6 +137,7 @@ public:
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
   static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
   static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
+  static void address_mess_cb(object_base* x, t_symbol* address);
 
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
@@ -166,7 +167,7 @@ public:
    */
   static void get_address(object_base *x, std::vector<t_matcher*> nodes);
 
-  static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+  static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 
 };
 

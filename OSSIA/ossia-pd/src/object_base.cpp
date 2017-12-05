@@ -496,7 +496,7 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
 }
 
-void object_base::address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
+void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc && argv[0].a_type == A_SYMBOL)
     x->m_selection_pattern = atom_getsymbol(argv);
@@ -584,9 +584,8 @@ void object_base::class_setup(t_eclass*c)
   CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
   CLASS_ATTR_INT         (c, "hidden",            0, object_base, m_hidden);
 
-  eclass_addmethod(c, (method) object_base::address_mess_cb, "select",    A_GIMME, 0);
-  eclass_addmethod(c, (method) object_base::address_mess_cb, "unselect",  A_NULL,  0);
-
+  eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
+  eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,   0);
 }
 
 void object_base::get_mess_cb(object_base* x, t_symbol* s){

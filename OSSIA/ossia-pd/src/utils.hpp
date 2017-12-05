@@ -546,6 +546,16 @@ bool obj_register(T* x)
 }
 
 template <typename T>
+void address_mess_cb(T* x, t_symbol* address)
+{
+  std::string name = replace_brackets(address->s_name);
+  x->m_name = gensym(name.c_str());
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+  x->unregister();
+  obj_register(x);
+}
+
+template <typename T>
 bool obj_is_quarantined(T* x)
 {
   return x->quarantine().contains(x);

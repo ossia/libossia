@@ -252,6 +252,7 @@ extern "C" void setup_ossia0x2eparam(void)
 
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     eclass_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYMBOL, 0);
 
     // special attributes
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");

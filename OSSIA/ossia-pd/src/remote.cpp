@@ -438,6 +438,7 @@ extern "C" void setup_ossia0x2eremote(void)
     eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
     eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
+    eclass_addmethod(c, (method) address_mess_cb<remote>, "address",   A_SYMBOL, 0);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");
 

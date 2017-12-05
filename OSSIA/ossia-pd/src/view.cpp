@@ -231,15 +231,6 @@ void view::destroy(view* x)
   x->~view();
 }
 
-void view::bind(view* x, t_symbol* address)
-{
-  std::string name = replace_brackets(address->s_name);
-  x->m_name = gensym(name.c_str());
-  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-  x->unregister();
-  obj_register(x);
-}
-
 extern "C" void setup_ossia0x2eview(void)
 {
   t_eclass* c = eclass_new(
@@ -253,7 +244,7 @@ extern "C" void setup_ossia0x2eview(void)
     node_base::class_setup(c);
 
     eclass_addmethod(c, (method) view::click,                    "click",         A_NULL,   0);
-    eclass_addmethod(c, (method) view::bind,                     "bind",          A_SYMBOL, 0);
+    eclass_addmethod(c, (method) address_mess_cb<view>, "address",   A_SYMBOL, 0);
   }
 
   ossia_pd::view_class = c;

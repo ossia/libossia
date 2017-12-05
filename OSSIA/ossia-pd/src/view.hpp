@@ -23,7 +23,6 @@ public:
 
   static void* create(t_symbol* name, int argc, t_atom* argv);
   static void destroy(view* x);
-  static void bind(view* x, t_symbol* address);
   static void click(view* x, t_floatarg xpos, t_floatarg ypos,
     t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
 
