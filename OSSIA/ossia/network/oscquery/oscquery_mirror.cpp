@@ -148,6 +148,7 @@ void oscquery_mirror_protocol::cleanup_connections()
   {
     try
     {
+      query_stop();
       m_wsThread.join();
     }
     catch (std::exception& e)

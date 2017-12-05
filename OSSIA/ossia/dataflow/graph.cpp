@@ -8,6 +8,18 @@
 #include <ossia/detail/logger.hpp>
 namespace ossia
 {
+//MOVEME
+OSSIA_EXPORT
+void value_port::add_value(value&& v, int64_t timestamp)
+{
+  this->data.emplace_back(std::move(v));
+  tvalue& tval = this->data.back();
+  tval.timestamp = timestamp;
+  tval.index = this->index;
+  if(auto u = this->type.target<ossia::unit_t>())
+    tval.type = *u;
+}
+
 struct topological_ordering
 {
     const graph& gr;

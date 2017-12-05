@@ -5,6 +5,7 @@
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/detail/apply.hpp>
+#include <ossia/editor/state/state_element.hpp>
 
 namespace ossia
 {
@@ -64,14 +65,14 @@ struct global_pull_visitor
   {
     if(!val.is_event)
     {
-      val.add_value(out.value());
+      val.add_raw_value(out.value());
     }
     else
     {
       auto it = state.mess_values.find(const_cast<net::parameter_base*>(&out));
       if(it != state.mess_values.end())
       {
-        val.add_value(it->second);
+        val.add_raw_value(it->second);
       }
     }
   }
@@ -106,15 +107,26 @@ void execution_state::clear()
 #endif
 }
 
+ossia::state_element to_state_element(ossia::net::parameter_base& p, ossia::tvalue&& v)
+{
+  ossia::message m{p, std::move(v.value)};
+  if(auto u = v.type.target<ossia::unit_t>())
+    m.dest.unit = std::move(*u);
+  m.dest.index = std::move(v.index);
+  return m;
+}
 void execution_state::commit()
 {
+  ossia::state st;
+  st.reserve(valueState.size());
   for (auto& elt : valueState)
   {
     apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* addr) {
       for(auto& val : elt.second)
-        addr->push_value(val.value);
+        ossia::flatten_and_filter(st, to_state_element(*addr, std::move(val)));
     });
   }
+  st.launch();
 
   for (auto& elt : audioState)
   {

@@ -53,9 +53,10 @@ struct tvalue {
   tvalue& operator=(tvalue&&) = default;
 
   ossia::value value{};
+  int64_t timestamp{};
   destination_index index{};
   ossia::complex_type type{};
-  int64_t timestamp{};
+
 };
 
 struct value_port
@@ -66,19 +67,20 @@ struct value_port
   value_port& operator=(const value_port&) = default;
   value_port& operator=(value_port&&) = default;
 
-  void add_value(const ossia::tvalue& v)
+  void add_raw_value(const ossia::tvalue& v)
   {
     data.emplace_back(v);
   }
-  void add_value(ossia::tvalue&& v)
+  void add_raw_value(ossia::tvalue&& v)
   {
     data.emplace_back(std::move(v));
   }
-  void add_value(ossia::value&& v)
+  void add_raw_value(ossia::value&& v)
   {
     data.emplace_back(std::move(v));
   }
 
+  void add_value(ossia::value&& v, int64_t timestamp);
   void clear()
   {
     data.clear();
@@ -89,6 +91,7 @@ struct value_port
   ossia::domain domain;
   ossia::bounding_mode bounding{};
   ossia::complex_type type;
+  ossia::destination_index index;
 
   bool is_event{};
 private:
@@ -172,7 +175,7 @@ struct mix
   void operator()(const value_vector<ossia::tvalue>& out, value_port& in)
   {
     for(auto& val : out)
-      in.add_value(val);
+      in.add_raw_value(val);
   }
 
   void copy_audio(const chobo::small_vector<double, 64>& src, chobo::small_vector<double, 64>& sink)
@@ -361,4 +364,5 @@ struct copy_data_pos
   }
 #endif
 };
+
 }
