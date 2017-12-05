@@ -524,11 +524,11 @@ ossia::optional<std::array<float, N>> to_array(t_atom* argv)
 
 void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto& m : x->m_matchers)
+  for (auto& m : x->m_node_selection)
   {
-    auto node = m.get_node();
+    auto node = m->get_node();
     auto param = node->get_parameter();
-    auto xparam = (parameter_base*)m.get_parent();
+    auto xparam = (parameter_base*)m->get_parent();
 
     if ( xparam->m_ounit != ossia::none )
     {
@@ -536,12 +536,12 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(std::move(v), src_unit, dst_unit);
-      if (set_flag) m.m_set_pool.push_back(converted);
+      if (set_flag) m->m_set_pool.push_back(converted);
       param->push_value(converted);
     }
     else
     {
-      if (set_flag) m.m_set_pool.push_back(v);
+      if (set_flag) m->m_set_pool.push_back(v);
       param->push_value(std::move(v));
     }
   }
@@ -549,11 +549,11 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto& m : x->m_matchers)
+  for (auto& m : x->m_node_selection)
   {
-    auto node = m.get_node();
+    auto node = m->get_node();
     auto param = node->get_parameter();
-    if(set_flag) m.m_set_pool.push_back(set_flag);
+    if(set_flag) m->m_set_pool.push_back(set_flag);
     param->push_value(std::move(v));
   }
 }
@@ -619,7 +619,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         }
       }
 
-      ossia::pd::parameter_base* xparam = (ossia::pd::parameter_base*) x;
+      ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
 
       convert_or_push(x, std::move(list), set_flag);
     }
@@ -628,10 +628,10 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
 void parameter_base::bang(parameter_base* x)
 {
-  for (auto& matcher : x->m_matchers)
+  for (auto& matcher : x->m_node_selection)
   {
-    matcher.enqueue_value(matcher.get_node()->get_parameter()->value());
-    matcher.output_value();
+    matcher->enqueue_value(matcher->get_node()->get_parameter()->value());
+    matcher->output_value();
   }
 }
 
@@ -650,10 +650,10 @@ void parameter_base::push_default_value(parameter_base* x)
 
   if (!x->m_mute)
   {
-    for (auto& m : x->m_matchers)
+    for (auto& m : x->m_node_selection)
     {
-      node = m.get_node();
-      auto parent = m.get_parent();
+      node = m->get_node();
+      auto parent = m->get_parent();
       auto param = node->get_parameter();
 
       auto def_val = ossia::net::get_default_value(*node);

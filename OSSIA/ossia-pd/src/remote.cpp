@@ -153,9 +153,9 @@ void remote::set_unit()
     }
 
     bool break_flag = false;
-    for (auto& m : m_matchers)
+    for (auto& m : m_node_selection)
     {
-      auto dst_unit = m.get_node()->get_parameter()->get_unit();
+      auto dst_unit = m->get_node()->get_parameter()->get_unit();
       if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
         auto src = ossia::get_pretty_unit_text(*m_ounit);
         auto dst = ossia::get_pretty_unit_text(dst_unit);
