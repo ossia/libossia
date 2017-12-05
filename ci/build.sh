@@ -102,12 +102,6 @@ case "$TRAVIS_OS_NAME" in
       ;;
       PdRelease)
 
-        pushd /tmp
-        git clone ${TRAVIS_BUILD_DIR} --recursive
-        tar -czf ${ARTIFACTS_DIR}/libossia-source.tar.gz --exclude .git libossia
-        rm -rf libossia
-        popd
-
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
                    -DCMAKE_CXX_COMPILER="$CXX" \
                    -DBOOST_ROOT="$BOOST_ROOT" \
@@ -123,6 +117,15 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
                    ..
+
+        # make a clone after initializing submodules (with Cmake)
+        # and before build
+        pushd /tmp
+          git clone ${TRAVIS_BUILD_DIR} --recursive
+          tar -czf ${ARTIFACTS_DIR}/libossia-source.tar.gz --exclude .git libossia
+          rm -rf libossia
+        popd
+
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
