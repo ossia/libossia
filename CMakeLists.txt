@@ -35,6 +35,7 @@ if(OSSIA_DNSSD)
 endif()
 
 # Main library
+find_package(PortAudio)
 add_definitions(-DFMT_HEADER_ONLY=1)
 add_subdirectory(OSSIA)
 

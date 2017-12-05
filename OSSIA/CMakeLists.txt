@@ -57,6 +57,10 @@ if(NOT TARGET ModernMIDI)
   set(OSSIA_DATAFLOW OFF)
 endif()
 
+if(NOT TARGET PortAudio)
+  set(OSSIA_DATAFLOW OFF)
+endif()
+
 include(ossia_sources.cmake)
 
 if(OSSIA_PROTOCOL_HTTP)
@@ -230,18 +234,7 @@ endif()
 
 if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
-
-  find_path(PortAudio_INCLUDE_DIR portaudio.h
-    HINTS /opt/portaudio/
-    PATH_SUFFIXES include
-    )
-
-  find_library(PortAudio_LIBRARIES
-      NAMES libportaudio_static.a libportaudio.a portaudio
-      HINTS /opt/portaudio/lib)
-
-  target_include_directories(ossia PRIVATE ${PortAudio_INCLUDE_DIR})
-  target_link_libraries(ossia PRIVATE ${PortAudio_LIBRARIES})
+  target_link_libraries(ossia PRIVATE PortAudio)
 
   if(APPLE)
       find_library(Foundation_FK Foundation)
