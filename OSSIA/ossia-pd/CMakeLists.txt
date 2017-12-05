@@ -119,6 +119,10 @@ elseif(UNIX)
     endif()
 endif()
 
+if(APPLE)
+  target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
+endif()
+
 set(OSSIA_PD_INSTALL_FOLDER "ossia-pd-package/ossia" CACHE STRING "PD Package Install folder")
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
