@@ -66,3 +66,6 @@
 [submodule "3rdparty/whereami"]
 	path = 3rdparty/whereami
 	url = https://github.com/gpakosz/whereami
+[submodule "3rdparty/max-sdk"]
+	path = 3rdparty/max-sdk
+	url = https://github.com/Cycling74/max-sdk.git
