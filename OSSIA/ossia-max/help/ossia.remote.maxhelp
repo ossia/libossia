@@ -92,7 +92,6 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 652.0, 582.0, 160.0, 22.0 ],
-									"presentation_rect" : [ 376.0, 311.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_parameter"
 								}
@@ -123,7 +122,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 46.0, 561.0, 143.0, 64.0 ],
-									"presentation_rect" : [ 35.0, 569.5, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Set time intervals between remote outputs",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -140,7 +138,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 197.5, 609.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 197.0, 609.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -170,7 +167,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 277.5, 383.0, 80.0, 35.0 ],
-									"presentation_rect" : [ 443.5, 454.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -183,7 +179,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"patching_rect" : [ 277.5, 354.0, 24.0, 22.0 ],
-									"presentation_rect" : [ 443.5, 421.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "t b"
 								}
@@ -657,7 +652,6 @@
 					}
 ,
 					"patching_rect" : [ 242.0, 246.0, 148.0, 22.0 ],
-					"presentation_rect" : [ 242.0, 246.0, 0.0, 0.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -714,7 +708,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
+						"rect" : [ 275.0, 206.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -781,9 +775,9 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 791.0, 449.5, 245.0, 49.0 ],
+									"patching_rect" : [ 805.0, 463.0, 245.0, 49.0 ],
 									"style" : "",
-									"text" : "values can be sent to individual addresses with the push_one message",
+									"text" : "values can be sent to one or several addresses",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -797,7 +791,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 563.0, 432.0, 50.0, 22.0 ],
+									"patching_rect" : [ 563.0, 476.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -809,9 +803,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 563.0, 463.0, 214.0, 22.0 ],
+									"patching_rect" : [ 627.0, 476.0, 176.0, 22.0 ],
 									"style" : "",
-									"text" : "send my_spat.1/source.2/gain $1"
+									"text" : "select my_spat.1/source.2/gain"
 								}
 
 							}
@@ -1091,20 +1085,6 @@
 							}
 , 							{
 								"box" : 								{
-									"format" : 6,
-									"id" : "obj-17",
-									"maxclass" : "flonum",
-									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "bang" ],
-									"parameter_enable" : 0,
-									"patching_rect" : [ 588.0, 531.5, 50.0, 22.0 ],
-									"style" : ""
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-20",
 									"maxclass" : "newobj",
@@ -1297,13 +1277,6 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-20", 0 ],
-									"source" : [ "obj-17", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-3", 1 ],
 									"source" : [ "obj-2", 1 ]
 								}
@@ -1388,13 +1361,14 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-20", 0 ],
+									"midpoints" : [ 636.5, 531.5, 572.5, 531.5 ],
 									"source" : [ "obj-32", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-32", 0 ],
+									"destination" : [ "obj-20", 0 ],
 									"source" : [ "obj-33", 0 ]
 								}
 
@@ -2701,7 +2675,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 275.0, 206.0, 1108.0, 746.0 ],
+						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -3355,7 +3329,7 @@
 , 			{
 				"name" : "ossia.remote_array.maxpat",
 				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
-				"patcherrelativepath" : "../patchers",
+				"patcherrelativepath" : "../../../../../../Documents/Max 7/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
