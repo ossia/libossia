@@ -8,7 +8,7 @@
 	</digest>
 
 	<description>
-		ossia.device creates a local device under which all models and parameters in the same patcher or below will register. Namespace of this device can then be exposed to local or distant applications through various protocoles
+		ossia.device creates a local device under which all models and parameters in the same patcher or below will register. Namespace of this device can then be exposed to local or distant applications through various protocols
 	</description>
 
 	
@@ -17,7 +17,7 @@
 		<metadata name="author">Ossia</metadata>
 		<metadata name="tag">Ossia</metadata>
 		<metadata name="tag">Network</metadata>
-		<metadata name="tag">Protocole</metadata>
+		<metadata name="tag">Protocol</metadata>
 		<metadata name="tag">osc</metadata>
 	</metadatalist>
 
@@ -55,14 +55,14 @@
 	<methodlist>
 		<method name="expose">
 			<arglist>
-				<arg name="protocole-name" optional="1" type="list" />
+				<arg name="protocol-name" optional="1" type="list" />
 			</arglist>
 			<digest>
 				Expose the device to the network
 			</digest>
 			<description>
-				Sending the <m>expose</m> message without any argument will print in Max Console various protocole and configuration options available
-				Sending the <m>expose</m> message followed by a protocole name will explose the device to the network using the optional configuration option (ie. network ports)
+				Sending the <m>expose</m> message without any argument will print in Max Console various protocol and configuration options available
+				Sending the <m>expose</m> message followed by a protocol name will explose the device to the network using the optional configuration option (ie. network ports)
 			</description>
 		</method>
 
