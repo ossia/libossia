@@ -33,7 +33,7 @@ using instance_functions = std::
 
 using preset_pair = std::pair<std::string, ossia::value>;
 
-OSSIA_EXPORT preset read_json(const std::string&);
+OSSIA_EXPORT preset read_json(const std::string&, bool skip_first_level = true);
 OSSIA_EXPORT std::string
 write_json(const std::string& devicename, const preset&);
 
@@ -66,7 +66,9 @@ read_file(const std::string& filename);
 
 OSSIA_EXPORT void apply_preset(
     ossia::net::node_base&, const presets::preset&,
-    keep_arch_type t = keep_arch_on, presets::instance_functions = {}, bool allow_nonterminal = false);
+    keep_arch_type t = keep_arch_on,
+    presets::instance_functions = {},
+    bool allow_nonterminal = false);
 
 OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&);
 

@@ -58,7 +58,7 @@ ossia_presets_read_json(const char* str, ossia_preset_t* presetptr)
     try
     {
       *presetptr
-          = new ossia_preset(ossia::presets::read_json(std::string(str)));
+          = new ossia_preset(ossia::presets::read_json(std::string(str), true));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -421,7 +421,6 @@ void explore(
     std::string root, const rapidjson::Value& jsonval,
     ossia::presets::preset* preset)
 {
-
   if (is_nested(jsonval))
   {
     if (jsonval.IsObject())
@@ -450,7 +449,9 @@ void explore(
   }
 }
 
-ossia::presets::preset ossia::presets::read_json(const std::string& str)
+ossia::presets::preset ossia::presets::read_json(
+    const std::string& str,
+    bool skip_first_level)
 {
   preset prst;
 
@@ -459,7 +460,21 @@ ossia::presets::preset ossia::presets::read_json(const std::string& str)
 
   if (!doc.HasParseError())
   {
-    explore("", doc, &prst);
+    if(!skip_first_level)
+    {
+      explore("", doc, &prst);
+    }
+    else
+    {
+      if(doc.IsObject())
+      {
+        const auto& obj = doc.GetObject();
+        if(obj.MemberCount() > 0)
+        {
+          explore("", obj.MemberBegin()->value, &prst);
+        }
+      }
+    }
     return prst;
   }
   else
@@ -1085,7 +1100,7 @@ void ossia::presets::apply_preset(
     }
     if(node.get_parent())
       keys.erase(keys.begin()); // remove another one in case node is not a root
-    
+
     apply_preset_node(
         node, keys, itpp->second, keeparch, created_nodes, allow_nonterminal);
   }
