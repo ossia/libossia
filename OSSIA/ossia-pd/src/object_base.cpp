@@ -584,7 +584,9 @@ void object_base::class_setup(t_eclass*c)
   CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
   CLASS_ATTR_INT         (c, "hidden",            0, object_base, m_hidden);
 
-  eclass_addmethod(c, (method) object_base::address_mess_cb, "address",    A_GIMME, 0);
+  eclass_addmethod(c, (method) object_base::address_mess_cb, "select",    A_GIMME, 0);
+  eclass_addmethod(c, (method) object_base::address_mess_cb, "unselect",  A_NULL,  0);
+
 }
 
 void object_base::get_mess_cb(object_base* x, t_symbol* s){
