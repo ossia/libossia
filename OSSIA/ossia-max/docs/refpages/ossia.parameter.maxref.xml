@@ -59,6 +59,29 @@
 
 	<!--METHODS-->	
 	<methodlist>
+		<method name="address">
+			<arglist>
+				<arg name="node address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Set node name
+			</digest>
+			<description>
+				The message <m>address</m> followed by a symbol sets the name of the node. This temporary replaces the name provided initially as an argument to the object and allows to address nodes dynamically. Without any argument, <m>address</m> message will set the node address back to as defined as argument to the object.
+			</description>
+		</method>
+		
+		<method name="anything">
+			<arglist>
+				<arg name="input" optional="0" type="list"/>
+			</arglist>
+			<digest> Feed values to ossia.parameter or access attributes by their names
+			</digest>
+			<description>
+				If the first symbol equals the name of a setable attribute, the value for that attribute can be updated. Else the incoming message is interpreted as a new value for <o>ossia.parameter</o>. Depending on the <m>type</m> it might be converted to one or more floats (<m>type float</m> or <m>tuple</m>) or an int (<m>type int</m>).
+			</description> 
+		</method>
+
 		<method name="bang">
 			<arglist/>
 			<digest>
@@ -66,43 +89,6 @@
 			</digest>
 			<description>
 				A bang at leftmost inlet outputs ossia.parameter's current value
-			</description>
-		</method>
-		<method name="int">
-			<digest>
-				Set and output value
-			</digest>
-			<description>
-				An int at leftmost inlet sets and outputs the value. Depending on the <at>type</at> attribute, the value might get converted into a float value if the <at>type</at> attribute is <m>float</m> or <m>tuple</m> or into a symbol if the <at>type</at> attribute is <m>symbol</m>
-			</description>
-		</method>
-		<method name="float">
-			<digest>
-				Set and output value
-			</digest>
-			<description>
-				A float at leftmost inlet sets and outputs the value. Depending on the <at>type</at> attribute, the value might get converted into a int value if the <at>type</at> attribute is <m>int</m> or into a symbol if the <at>type</at> attribute is <m>symbol</m>
-			</description>
-		</method>
-		<method name="list">
-			<digest>
-				Set and output value
-			</digest>
-			<description>
-				A list at the leftmost inlet sets and outputs the value. If the <at>type</at> is <m>float</m>, <m>int</m> or <m>symbol</m>, only the first list member will be used to set the value, and the type of this list member might be converted to fit the specified <at>type</at> of the parameter<br/>
-
-			</description>
-		</method>
-
-<!--		<method name="address">
-			<arglist>
-				<arg name="address" type="symbol" optional="0"/>
-			</arglist>
-			<digest>
-				Set node name
-			</digest>
-			<description>
-				The message <m>address</m> followed by a symbol sets the name of the node. This replaces the name provided initially as an argument to the object and allows to create nodes dynamically
 			</description>
 		</method>
 
@@ -115,7 +101,34 @@
 				The message <m>dump</m> outputs all attribute settings to rightmost outlet
 			</description>
 		</method>
--->
+
+		<method name="float">
+			<digest>
+				Set and output value
+			</digest>
+			<description>
+				A float at leftmost inlet sets and outputs the value. Depending on the <at>type</at> attribute, the value might get converted into a int value if the <at>type</at> attribute is <m>int</m> or into a symbol if the <at>type</at> attribute is <m>symbol</m>
+			</description>
+		</method>
+		
+		<method name="int">
+			<digest>
+				Set and output value
+			</digest>
+			<description>
+				An int at leftmost inlet sets and outputs the value. Depending on the <at>type</at> attribute, the value might get converted into a float value if the <at>type</at> attribute is <m>float</m> or <m>tuple</m> or into a symbol if the <at>type</at> attribute is <m>symbol</m>
+			</description>
+		</method>
+		
+		<method name="list">
+			<digest>
+				Set and output value
+			</digest>
+			<description>
+				A list at the leftmost inlet sets and outputs the value. If the <at>type</at> is <m>float</m>, <m>int</m> or <m>symbol</m>, only the first list member will be used to set the value, and the type of this list member might be converted to fit the specified <at>type</at> of the parameter<br/>
+
+			</description>
+		</method>
 
 		<method name="reset">
 			<arglist/>
@@ -127,17 +140,6 @@
 			</description>
 		</method>
 
-
-		<method name="anything">
-			<arglist>
-				<arg name="input" optional="0" type="list"/>
-			</arglist>
-			<digest> Feed values to ossia.parameter or access attributes by their names 
-			</digest>
-			<description>
-				If the first symbol equals the name of a setable attribute, the value for that attribute can be updated. Else the incoming message is interpreted as a new value for <o>ossia.parameter</o>. Depending on the <m>type</m> it might be converted to one or more floats (<m>type float</m> or <m>tuple</m>) or an int (<m>type int</m>).
-			</description>
-		</method>
 		<method name="send">
 			<arglist>
 				<arg name="node address" optional="0" type="symbol" />
@@ -279,7 +281,7 @@
 			<description>
 				The <at>range</at> attribute defines the expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range.
 			</description>
-		</attribute>
+		</attribute>		
 
 		<attribute name="rate" get="1" set="1" type="integer" size="1">
 			<digest>
