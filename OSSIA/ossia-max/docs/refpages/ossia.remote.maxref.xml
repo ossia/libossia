@@ -152,6 +152,19 @@
 				When using addresses pattern in <o>ossia.remote</o> such as 'my_spat/source.{1..3}/gain', the <m>send</m> message followed by a node address and value (ie <m>send my_spat/source.2/gain 0.5</m>) send the value of that particular parameter instance
 			</description>
 		</method>
+		
+		<method name="set">
+			<arglist>
+				<arg name="value" optional="0" type="any" />
+			</arglist>
+			<digest>
+				Send value to parameter without causing output
+			</digest>
+			<description>
+				<m>set</m> message followed by a value will send this value to the bound parameter without causing output at the remote's outlet
+			</description>
+		</method>
+
 
 	</methodlist>
 
