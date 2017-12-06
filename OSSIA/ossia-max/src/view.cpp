@@ -18,9 +18,7 @@ extern "C" void ossia_view_setup()
 
   if (c)
   {
-    class_addmethod(
-          c,(method)view::bind, "bind", A_SYM, 0);
-
+    class_addmethod(c, (method) address_mess_cb<view>, "address",   A_SYM, 0);
 
     //        class_addmethod(c,
     //        (method)ossia_view_click,       "click",      A_NOTHING,   0);
@@ -153,8 +151,8 @@ bool view::register_node(const std::vector<ossia::net::node_base*>& nodes)
 
   if (res)
   {
+    fill_selection();
     object_dequarantining<view>(this);
-
     std::vector<object_base*> children_view = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
@@ -277,14 +275,6 @@ bool view::unregister()
   register_children(this);
 
   return true;
-}
-
-void view::bind(view* x, t_symbol* address)
-{
-  x->m_name = address;
-  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-  x->unregister();
-  max_object_register(x);
 }
 
 ossia::safe_set<view*>& view::quarantine()

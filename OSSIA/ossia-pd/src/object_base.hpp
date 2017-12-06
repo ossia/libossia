@@ -126,6 +126,7 @@ public:
   static void class_setup(t_eclass*c);
 
   void fill_selection();
+  void update_path();
 
   void set_description();
   void set_tags();
@@ -169,8 +170,6 @@ public:
   static void get_address(object_base *x, std::vector<t_matcher*> nodes);
 
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
-
-  void update_path();
 protected:
   ossia::optional<ossia::traversal::path> m_path;
 };

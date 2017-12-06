@@ -2,7 +2,6 @@
 
 #include <ossia-pd/src/parameter_base.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {

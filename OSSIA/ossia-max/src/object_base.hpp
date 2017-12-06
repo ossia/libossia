@@ -8,6 +8,7 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/common/path.hpp>
 
 #include <readerwriterqueue.h>
 
@@ -107,6 +108,7 @@ public:
   static void class_setup(t_class*c);
 
   void fill_selection();
+  void update_path();
 
   void set_description();
   void set_tags();
@@ -118,7 +120,7 @@ public:
   static void get_priority(object_base* x);
   static void get_hidden(object_base* x);
   static void get_mess_cb(object_base* x, t_symbol* s);
-  static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+  static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 
 
   // default attributes
@@ -142,6 +144,8 @@ public:
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
+protected:
+  ossia::optional<ossia::traversal::path> m_path;
 };
 
 #pragma mark -

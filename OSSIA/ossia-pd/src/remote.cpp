@@ -278,17 +278,6 @@ void remote::click(
   }
 }
 
-void remote::bind(remote* x, t_symbol* address)
-{
-  // TODO maybe instead use a temporary local char array.
-  std::string name = replace_brackets(address->s_name);
-  x->m_name = gensym(name.c_str());
-  x->update_path();
-  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-  x->unregister();
-  obj_register(x);
-}
-
 void* remote::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -420,7 +409,6 @@ extern "C" void setup_ossia0x2eremote(void)
 
     eclass_addmethod(c, (method) remote::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) remote::notify,          "notify",      A_NULL,   0);
-    eclass_addmethod(c, (method) remote::bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) address_mess_cb<remote>, "address",   A_SYMBOL, 0);
 
     CLASS_ATTR_DEFAULT(c, "unit", 0, "");

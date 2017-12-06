@@ -143,5 +143,15 @@ bool max_object_register(T* x)
   return x->register_node(nodes);
 }
 
+template <typename T>
+void address_mess_cb(T* x, t_symbol* address)
+{
+  x->m_name = address;
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+  x->update_path();
+  x->unregister();
+  max_object_register(x);
+}
+
 } // namespace max
 } // namespace ossia

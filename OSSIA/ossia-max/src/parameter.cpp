@@ -30,6 +30,8 @@ extern "C" void ossia_parameter_setup()
       c, (method)parameter::push_default_value,
       "loadbang", A_CANT, 0);
 
+  class_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYM, 0);
+
   class_register(CLASS_BOX, c);
 
   auto& ossia_library = ossia::max::ossia_max::instance();
@@ -179,6 +181,7 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   bool res = do_registration(nodes);
   if (res)
   {
+    fill_selection();
     object_dequarantining<parameter>(this);
     for (auto remote : remote::quarantine().copy())
     {
@@ -228,8 +231,6 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       m_matchers.emplace_back(n, this);
       m_nodes.push_back(n);
     }
-
-    fill_selection();
 
     set_description();
     set_tags();

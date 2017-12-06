@@ -25,14 +25,13 @@ extern "C" void ossia_remote_setup()
   {
     parameter_base::class_setup(c);
     class_addmethod(
-          c, (method)remote::bind,
-          "bind", A_SYM, 0);
-    class_addmethod(
         c, (method)remote::assist,
         "assist", A_CANT, 0);
     class_addmethod(
         c, (method)remote::notify,
         "notify", A_CANT, 0);
+    class_addmethod(c, (method) address_mess_cb<remote>, "address",   A_SYM, 0);
+
   }
 
   class_register(CLASS_BOX, c);
@@ -87,11 +86,11 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     {
       object_error((t_object*)x, "needs a name as first argument");
       x->m_name = gensym("untitledRemote");
-      x->update_path(x->m_name->s_name);
+      x->update_path();
       return x;
     }
 
-    x->update_path(x->m_name->s_name);
+    x->update_path();
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
@@ -133,20 +132,6 @@ void remote::destroy(remote* x)
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);
   x->~remote();
-}
-
-void remote::update_path(string_view name)
-{
-  bool is_pattern = ossia::traversal::is_pattern(name);
-
-  if(is_pattern)
-  {
-    m_path = ossia::traversal::make_path(name);
-  }
-  else
-  {
-    m_path = ossia::none;
-  }
 }
 
 void remote::assist(remote* x, void* b, long m, long a, char* s)
@@ -240,9 +225,9 @@ void remote::set_unit()
     }
 
     bool break_flag = false;
-    for (auto& m : m_matchers)
+    for (auto& m : m_node_selection)
     {
-      auto dst_unit = m.get_node()->get_parameter()->get_unit();
+      auto dst_unit = m->get_node()->get_parameter()->get_unit();
       if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
         auto src = ossia::get_pretty_unit_text(*m_ounit);
         auto dst = ossia::get_pretty_unit_text(dst_unit);
@@ -314,6 +299,7 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 
   if (res)
   {
+    fill_selection();
     object_dequarantining<remote>(this);
     parameter_base::bang(this);
     clock_delay(m_poll_clock,1);
@@ -391,11 +377,9 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     }
   }
 
-  fill_selection();
-
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
-  return (!m_matchers.empty() || m_is_pattern);
+  return true;
 }
 
 bool remote::unregister()
@@ -419,24 +403,13 @@ bool remote::unregister()
 void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
-  if (!m_name) return;
-  update_path(m_name->s_name);
 
-  // FIXME check for path validity
   if ( m_path && ossia::traversal::match(*m_path, node) )
   {
     m_matchers.emplace_back(&node,this);
+    m_nodes.push_back(&node);
+    fill_selection();
   }
-}
-
-void remote::bind(remote* x, t_symbol* address)
-{
-  std::lock_guard<std::mutex> lock(x->bindMutex);
-  x->m_name = address;
-  x->update_path(x->m_name->s_name);
-  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-  x->unregister();
-  max_object_register(x);
 }
 
 void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)

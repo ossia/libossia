@@ -235,7 +235,7 @@ void t_matcher::set_parent_addr()
 
 object_base::object_base()
 {
-  m_selection_pattern = gensym("");
+  m_selection_pattern = gensym("*");
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
@@ -278,9 +278,9 @@ void object_base::set_tags()
 
 void object_base::set_hidden()
 {
-  for (t_matcher& m : m_matchers)
+  for (auto m : m_node_selection)
   {
-    ossia::net::node_base* node = m.get_node();
+    ossia::net::node_base* node = m->get_node();
     ossia::net::set_hidden(*node, m_hidden);
   }
 }
@@ -386,7 +386,8 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_STYLE(c, "hidden", 0, "onoff");
   CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
 
-  class_addmethod(c, (method) object_base::address_mess_cb, "address",    A_GIMME, 0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NOTHING,   0);
 }
 
 void object_base::fill_selection()
@@ -429,7 +430,7 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
     outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
 }
 
-void object_base::address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
+void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc && argv[0].a_type == A_SYM)
     x->m_selection_pattern = atom_getsym(argv);
@@ -437,6 +438,20 @@ void object_base::address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom*
     x->m_selection_pattern = gensym("*");
 
   x->fill_selection();
+}
+
+void object_base::update_path()
+{
+    m_is_pattern = ossia::traversal::is_pattern(m_name->s_name);
+
+    if(m_is_pattern)
+    {
+        m_path = ossia::traversal::make_path(m_name->s_name);
+    }
+    else
+    {
+        m_path = ossia::none;
+    }
 }
 
 } // max namespace

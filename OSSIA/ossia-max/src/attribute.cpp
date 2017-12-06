@@ -25,8 +25,9 @@ extern "C" void ossia_attribute_setup()
         c, (method)attribute::notify,
         "notify", A_CANT, 0);
 
-  class_addmethod(c, (method) attribute::bind,             "bind", A_SYM, 0);
   class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
+  class_addmethod(c, (method) address_mess_cb<attribute>, "address",   A_SYM, 0);
+
 
   class_register(CLASS_BOX, c);
 
@@ -137,8 +138,6 @@ bool attribute::do_registration(const std::vector<ossia::net::node_base*>& _node
     }
   }
 
-  fill_selection();
-
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
   return (!m_matchers.empty() || m_is_pattern);
@@ -181,20 +180,6 @@ void attribute::on_device_deleted(const net::node_base &)
   m_dev = nullptr;
 }
 
-void attribute::update_path(string_view name)
-{
-    m_is_pattern = ossia::traversal::is_pattern(name);
-
-    if(m_is_pattern)
-    {
-        m_path = ossia::traversal::make_path(name);
-    }
-    else
-    {
-        m_path = ossia::none;
-    }
-}
-
 t_max_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
     // TODO : forward notification to parent class
@@ -232,17 +217,6 @@ t_max_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender
         x->set_mute();
   }
   return {};
-}
-
-void attribute::bind(attribute* x, t_symbol* address)
-{
-  // TODO maybe instead use a temporary local char array.
-  std::string name = address->s_name;
-  x->m_name = gensym(name.c_str());
-  x->update_path(name);
-  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-  x->unregister();
-  max_object_register(x);
 }
 
 void* attribute::create(t_symbol* name, int argc, t_atom* argv)
@@ -287,7 +261,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     max_object_register<attribute>(x);
     ossia_max::instance().attributes.push_back(x);
 
-    x->update_path(x->m_name->s_name);
+    x->update_path();
   }
 
   return (x);

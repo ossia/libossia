@@ -180,6 +180,7 @@ template std::string object_path_absolute<view>(view*);
 template <typename T>
 void object_quarantining(T* x)
 {
+  x->m_node_selection.clear();
   if (!object_is_quarantined<T>(x))
     x->quarantine().push_back(x);
 }

@@ -29,6 +29,9 @@ extern "C" void ossia_model_setup()
       c, (method)model::assist,
         "assist", A_CANT, 0);
 
+  class_addmethod(c, (method) address_mess_cb<model>, "address",   A_SYM, 0);
+
+
   class_register(CLASS_BOX, c);
   ossia_library.ossia_model_class = c;
 }
@@ -130,6 +133,8 @@ bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 
   if (res)
   {
+    fill_selection();
+    object_dequarantining<model>(this);
     register_children();
   }
   else
