@@ -1,4 +1,4 @@
-#N canvas 1066 135 576 563 10;
+#N canvas 412 22 576 563 10;
 #X text 35 19 [ossia.client] connects to a remote OSSIA device and
 let you access its nodes with [ossia.view] and [ossia.remote].;
 #X msg 41 84 connect oscquery;
@@ -25,7 +25,6 @@ let you access its nodes with [ossia.view] and [ossia.remote].;
 , f 66;
 #X text 78 355 after properly connecting to the remote device \, the
 ø.remotes below should be connected;
-#X obj 41 329 ø.client max-device-help;
 #N canvas 0 120 361 184 presets 0;
 #X obj 196 126 outlet;
 #X obj 52 60 savepanel;
@@ -45,10 +44,8 @@ let you access its nodes with [ossia.view] and [ossia.remote].;
 #X connect 6 0 0 0;
 #X restore 100 297 pd presets;
 #X text 186 297 preset management in here;
-#X text 72 137 this may take a while since we have to scan the network
-for devices;
-#X msg 87 253 getdevices;
-#X text 167 253 scan network for oscquery and minuit devices;
+#X text 60 136 this may take a while since we have to scan the network
+for devices, f 69;
 #X text 228 106 connect by giving a device name (only for oscquery
 or minuit), f 34;
 #X obj 33 449 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
@@ -56,16 +53,23 @@ or minuit), f 34;
 #X obj 59 448 ø.remote bar;
 #X obj 58 398 ø.remote foo;
 #X obj 61 481 ø.remote sub/aParam;
-#X msg 51 114 connect pd-device-help;
-#X connect 1 0 18 0;
-#X connect 2 0 18 0;
-#X connect 4 0 27 0;
-#X connect 6 0 18 0;
-#X connect 14 0 28 0;
-#X connect 19 0 18 0;
-#X connect 22 0 18 0;
-#X connect 25 0 26 0;
-#X connect 26 0 25 0;
-#X connect 27 0 4 0;
-#X connect 28 0 14 0;
-#X connect 29 0 18 0;
+#X msg 51 114 connect max-device-help;
+#X obj 41 329 ø.client pd-device-help;
+#X msg 87 253 get devices;
+#X text 183 253 scan network for oscquery devices;
+#X obj 26 360 print;
+#X msg 56 155 connect pd-device-help;
+#X connect 1 0 27 0;
+#X connect 2 0 27 0;
+#X connect 4 0 24 0;
+#X connect 6 0 27 0;
+#X connect 14 0 25 0;
+#X connect 18 0 27 0;
+#X connect 22 0 23 0;
+#X connect 23 0 22 0;
+#X connect 24 0 4 0;
+#X connect 25 0 14 0;
+#X connect 26 0 27 0;
+#X connect 27 0 30 0;
+#X connect 28 0 27 0;
+#X connect 31 0 27 0;

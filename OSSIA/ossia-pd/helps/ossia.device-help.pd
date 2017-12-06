@@ -1,4 +1,4 @@
-#N canvas 236 23 1018 489 10;
+#N canvas 708 22 810 466 10;
 #X text 44 20 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
 #X obj 74 291 print device_dump;
