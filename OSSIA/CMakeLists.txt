@@ -234,7 +234,7 @@ endif()
 
 if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
-  target_link_libraries(ossia PRIVATE PortAudio)
+  target_link_libraries(ossia PUBLIC PortAudio)
 
   if(APPLE)
       find_library(Foundation_FK Foundation)

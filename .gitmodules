@@ -56,7 +56,7 @@
 	url = https://github.com/chriskohlhoff/asio
 [submodule "3rdparty/websocketpp"]
 	path = 3rdparty/websocketpp
-	url = https://github.com/jcelerier/websocketpp
+	url = https://github.com/zaphoyd/websocketpp
 [submodule "3rdparty/Servus"]
 	path = 3rdparty/Servus
 	url = https://github.com/jcelerier/Servus

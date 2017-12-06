@@ -18,11 +18,7 @@ struct string_hash
   }
   std::size_t operator()(ossia::string_view s) const
   {
-#if !defined(_MSC_VER)
     return std::hash<ossia::string_view>{}(s);
-#else
-    return std::hash<std::string>{}(s.to_string()); // TODO fixme with VS2017
-#endif
   }
   template <std::size_t N>
   std::size_t operator()(const char (&str)[N]) const

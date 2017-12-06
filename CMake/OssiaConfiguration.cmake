@@ -132,23 +132,15 @@ endif()
 # Common setup
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-if(${CMAKE_VERSION} VERSION_LESS 3.8.0 OR ANDROID OR APPLE)
-  set(CMAKE_CXX_STANDARD 14)
-  if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS "-std=c++1z ${CMAKE_CXX_FLAGS}")
-  endif()
+set(CMAKE_CXX_STANDARD 17)
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 else()
-  set(CMAKE_CXX_STANDARD 17)
-  if(NOT MSVC)
-    set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
-  endif()
+  set(CMAKE_CXX_FLAGS "/std:c++latest ${CMAKE_CXX_FLAGS}")
 endif()
+  
 # So that make install after make all_unity does not rebuild everything :
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
-
-if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
-    set(CMAKE_CXX_FLAGS "-std=c++1z ${CMAKE_CXX_FLAGS}")
-endif()
 
 # We disable debug infos on OS X on travis because it takes up too much space
 if(OSSIA_CI AND APPLE OR OSSIA_NO_DEBUG_INFO)
@@ -187,7 +179,6 @@ if(MSVC)
         "/wd4503" # decorated name length exceeded
         "/wd4305" # argument : truncation from double to float
         "/bigobj"
-#        "/std:c++latest"
         ${OSSIA_LINK_OPTIONS}
     )
 else()
