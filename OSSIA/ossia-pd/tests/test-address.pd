@@ -1,4 +1,4 @@
-#N canvas 658 473 450 300 10;
+#N canvas 1282 48 636 1011 10;
 #X obj 144 62 ossia.param foo.<1..4>;
 #X obj 319 98 ossia;
 #X msg 319 73 namespace;
@@ -14,6 +14,7 @@
 #X msg 51 24 select foo.3;
 #X floatatom 10 28 5 0 0 0 - - -, f 5;
 #X msg 52 53 unselect;
+#X msg 204 202 select foo.<2..3>;
 #X connect 0 0 4 0;
 #X connect 0 1 4 0;
 #X connect 1 0 3 0;
@@ -28,3 +29,4 @@
 #X connect 12 0 0 0;
 #X connect 13 0 0 0;
 #X connect 14 0 0 0;
+#X connect 15 0 11 0;
