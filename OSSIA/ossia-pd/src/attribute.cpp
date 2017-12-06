@@ -4,8 +4,6 @@
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-#include <ossia/network/common/path.hpp>
-
 namespace ossia
 {
 namespace pd
@@ -126,7 +124,7 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
   {
     m_matchers.emplace_back(&node,this);
     m_nodes.push_back(&node);
-    // TODO optimize : don't clear and iterate through all matchers
+    // TODO optimize : don't clear selection and iterate through all matchers
     // just add it if it matches instead
     fill_selection();
   }
@@ -135,20 +133,6 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 void attribute::on_device_deleted(const net::node_base &)
 {
   m_dev = nullptr;
-}
-
-void attribute::update_path(string_view name)
-{
-    m_is_pattern = ossia::traversal::is_pattern(name);
-
-    if(m_is_pattern)
-    {
-        m_path = ossia::traversal::make_path(name);
-    }
-    else
-    {
-        m_path = ossia::none;
-    }
 }
 
 t_pd_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
@@ -217,17 +201,6 @@ void attribute::click(
   }
 }
 
-void attribute::bind(attribute* x, t_symbol* address)
-{
-  // TODO maybe instead use a temporary local char array.
-  std::string name = replace_brackets(address->s_name);
-  x->m_name = gensym(name.c_str());
-  x->update_path(name);
-  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-  x->unregister();
-  obj_register(x);
-}
-
 void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -253,7 +226,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
       x->m_name = gensym("untitled_attribute");
     }
 
-    x->update_path(x->m_name->s_name);
+    x->update_path();
 
     ebox_attrprocess_viabinbuf(x, d);
 
@@ -335,7 +308,6 @@ extern "C" void setup_ossia0x2eattribute(void)
 
     eclass_addmethod(c, (method) attribute::click,           "click",       A_NULL,   0);
     eclass_addmethod(c, (method) attribute::notify,          "notify",      A_NULL,   0);
-    eclass_addmethod(c, (method) attribute::bind,            "bind",        A_SYMBOL, 0);
     eclass_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYMBOL, 0);
     eclass_addmethod(c, (method) address_mess_cb<attribute>, "address",   A_SYMBOL, 0);
   }

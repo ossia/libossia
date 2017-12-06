@@ -305,6 +305,11 @@ void object_base::is_deleted(const ossia::net::node_base& n)
   {
     m_is_deleted= true;
     ossia::remove_one_if(
+      m_node_selection,
+      [&] (auto m) {
+        return m->get_node() == &n;
+    });
+    ossia::remove_one_if(
       m_matchers,
       [&] (auto& m) {
         m.set_dead();
@@ -504,6 +509,20 @@ void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* 
     x->m_selection_pattern = gensym("*");
 
   x->fill_selection();
+}
+
+void object_base::update_path()
+{
+    m_is_pattern = ossia::traversal::is_pattern(m_name->s_name);
+
+    if(m_is_pattern)
+    {
+        m_path = ossia::traversal::make_path(m_name->s_name);
+    }
+    else
+    {
+        m_path = ossia::none;
+    }
 }
 
 bool ossia::pd::object_base::find_and_display_friend(object_base* x)

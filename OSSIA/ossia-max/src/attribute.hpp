@@ -33,10 +33,6 @@ public:
   static ossia::safe_set<attribute*>& quarantine();
 
   void on_device_deleted(const ossia::net::node_base&);
-private:
-  void update_path(ossia::string_view name);
-  ossia::optional<ossia::traversal::path> m_path;
-
 };
 } // namespace pd
 } // namespace ossia

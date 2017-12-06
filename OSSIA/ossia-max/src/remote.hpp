@@ -47,10 +47,6 @@ public:
   static void destroy(ossia::max::remote*);
 
   void on_device_deleted(const ossia::net::node_base&);
-
-private:
-  ossia::optional<ossia::traversal::path> m_path;
-  void update_path(string_view name);
 };
 
 } // max namespace

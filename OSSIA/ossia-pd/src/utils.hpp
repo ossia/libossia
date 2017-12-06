@@ -548,9 +548,11 @@ bool obj_register(T* x)
 template <typename T>
 void address_mess_cb(T* x, t_symbol* address)
 {
+  // TODO maybe instead use a temporary local char array.
   std::string name = replace_brackets(address->s_name);
   x->m_name = gensym(name.c_str());
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+  x->update_path();
   x->unregister();
   obj_register(x);
 }

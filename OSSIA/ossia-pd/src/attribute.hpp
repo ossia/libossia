@@ -24,7 +24,6 @@ public:
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   static void update_attribute(attribute* x, ossia::string_view attribute, const ossia::net::node_base* node);
-  static void bind(attribute* x, t_symbol* address);
   static void click( attribute* x, t_floatarg xpos, t_floatarg ypos,
                      t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
   static t_pd_err notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
@@ -35,10 +34,6 @@ public:
   static ossia::safe_set<attribute*>& quarantine();
 
   void on_device_deleted(const ossia::net::node_base&);
-private:
-  void update_path(ossia::string_view name);
-  ossia::optional<ossia::traversal::path> m_path;
-
 };
 } // namespace pd
 } // namespace ossia

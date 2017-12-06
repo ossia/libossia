@@ -5,6 +5,7 @@
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/common/path.hpp>
 
 extern "C" {
 #include <cicm_wrapper.h>
@@ -169,6 +170,9 @@ public:
 
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 
+  void update_path();
+protected:
+  ossia::optional<ossia::traversal::path> m_path;
 };
 
 }
