@@ -305,17 +305,22 @@ void object_base::is_deleted(const ossia::net::node_base& n)
   {
     m_is_deleted= true;
     ossia::remove_one_if(
-      m_node_selection,
-      [&] (auto m) {
-        return m->get_node() == &n;
-    });
-    ossia::remove_one_if(
       m_matchers,
       [&] (auto& m) {
         m.set_dead();
         return m.get_node() == &n;
     });
     ossia::remove_one(m_nodes, &n);
+    // FIXME purge m_node_selection doesn't work well
+    // rebuild it from scratch instead
+    /*
+    ossia::remove_one_if(
+      m_node_selection,
+      [&] (auto m) {
+        return m->get_node() == &n;
+    });
+    */
+    fill_selection();
     m_is_deleted = false;
   }
 }
