@@ -103,7 +103,7 @@ public:
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
-  t_symbol* m_selection_pattern{};
+  ossia::optional<ossia::traversal::path> m_selection_path{};
 
   static void class_setup(t_class*c);
 

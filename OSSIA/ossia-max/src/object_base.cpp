@@ -235,7 +235,6 @@ void t_matcher::set_parent_addr()
 
 object_base::object_base()
 {
-  m_selection_pattern = gensym("*");
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
@@ -393,12 +392,12 @@ void object_base::class_setup(t_class*c)
 void object_base::fill_selection()
 {
   m_node_selection.clear();
-  if ( m_selection_pattern != gensym("*") )
+  if ( m_selection_path )
   {
     // TODO should support pattern matching in selection
     for (auto& m : m_matchers)
     {
-      if ( m_selection_pattern == m.get_atom_addr_ptr()->a_w.w_sym )
+      if ( ossia::traversal::match(*m_selection_path, *m.get_node()) )
         m_node_selection.push_back(&m);
     }
   } else {
@@ -433,9 +432,9 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
 void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc && argv[0].a_type == A_SYM)
-    x->m_selection_pattern = atom_getsym(argv);
+    x->m_selection_path  = ossia::traversal::make_path(atom_getsym(argv)->s_name);
   else
-    x->m_selection_pattern = gensym("*");
+    x->m_selection_path = ossia::none;
 
   x->fill_selection();
 }
