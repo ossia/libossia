@@ -41,7 +41,7 @@ option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
 
-message("Update general OSSIA dependecies :")
+message("Update general OSSIA dependencies :")
 execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/GSL
