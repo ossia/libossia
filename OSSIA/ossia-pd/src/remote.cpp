@@ -97,8 +97,6 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     }
   }
 
-  fill_selection();
-
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
   return (!m_matchers.empty() || m_is_pattern);

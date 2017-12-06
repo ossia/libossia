@@ -87,8 +87,6 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       m_nodes.push_back(n);
     }
 
-    fill_selection();
-
     set_description();
     set_tags();
     set_access_mode();
