@@ -295,8 +295,6 @@ object_base::object_base(t_eclass* c)
     sprintf(buffer,".x%lx.c", (long unsigned int)m_obj.o_canvas);
     c->c_widget.w_dosave = (t_typ_method)eobj_dosave;
   }
-
-  m_selection_pattern = gensym("*");
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
@@ -473,12 +471,11 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
 void object_base::fill_selection()
 {
   m_node_selection.clear();
-  if ( m_selection_pattern != gensym("*") )
+  if ( m_selection_path )
   {
-    // TODO should support pattern matching in selection
     for (auto& m : m_matchers)
     {
-      if ( m_selection_pattern == m.get_atom_addr_ptr()->a_w.w_symbol )
+      if ( ossia::traversal::match(*m_selection_path, *m.get_node()) )
         m_node_selection.push_back(&m);
     }
   } else {
@@ -509,9 +506,12 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
 void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (argc && argv[0].a_type == A_SYMBOL)
-    x->m_selection_pattern = atom_getsymbol(argv);
+  {
+    std::string name = replace_brackets(atom_getsymbol(argv)->s_name);
+    x->m_selection_path  = ossia::traversal::make_path(name);
+  }
   else
-    x->m_selection_pattern = gensym("*");
+    x->m_selection_path = ossia::none;
 
   x->fill_selection();
 }
