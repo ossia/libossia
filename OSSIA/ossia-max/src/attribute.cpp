@@ -13,7 +13,7 @@ extern "C" void ossia_attribute_setup()
   auto c = class_new( "ossia.attribute",
       (method)attribute::create,
       (method)attribute::destroy,
-      (long)sizeof(ossia::max::attribute), 0L,
+      (long)sizeof(attribute), 0L,
       A_GIMME, 0);
 
   parameter_base::class_setup(c);
@@ -28,7 +28,9 @@ extern "C" void ossia_attribute_setup()
   class_addmethod(c, (method) attribute::bind,             "bind", A_SYM, 0);
   class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
 
-  auto& ossia_library = ossia::max::ossia_max::instance();
+  class_register(CLASS_BOX, c);
+
+  auto& ossia_library = ossia_max::instance();
   ossia_library.ossia_attribute_class = c;
 }
 
