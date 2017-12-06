@@ -134,9 +134,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_CXX_STANDARD 17)
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
-else()
   set(CMAKE_CXX_FLAGS "/std:c++latest ${CMAKE_CXX_FLAGS}")
+else()
+  set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 endif()
   
 # So that make install after make all_unity does not rebuild everything :
