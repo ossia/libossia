@@ -17,6 +17,8 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   if (m_mute) return false;
 
+  update_path();
+
   bool res = do_registration(node);
   if (res)
   {
@@ -224,8 +226,6 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
       error("You have to pass a name as the first argument");
       x->m_name = gensym("untitled_attribute");
     }
-
-    x->update_path();
 
     ebox_attrprocess_viabinbuf(x, d);
 

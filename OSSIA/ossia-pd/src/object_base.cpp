@@ -518,16 +518,18 @@ void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* 
 
 void object_base::update_path()
 {
-    m_is_pattern = ossia::traversal::is_pattern(m_name->s_name);
+  std::string name =  get_absolute_path(this);
 
-    if(m_is_pattern)
-    {
-        m_path = ossia::traversal::make_path(m_name->s_name);
-    }
-    else
-    {
-        m_path = ossia::none;
-    }
+  m_is_pattern = ossia::traversal::is_pattern(name);
+
+  if(m_is_pattern)
+  {
+    m_path = ossia::traversal::make_path(name);
+  }
+  else
+  {
+    m_path = ossia::none;
+  }
 }
 
 bool ossia::pd::object_base::find_and_display_friend(object_base* x)

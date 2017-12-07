@@ -366,12 +366,14 @@ static object_base* find_parent_alive(
  * @return std::string with full path to object from root device in an OSC
  * style (with '/')
  */
-
+/*
 template<typename T>
 std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
 {
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
+
+  vs.push_back(x->m_name->s_name);
 
   model* m = nullptr;
   int model_level = 0;
@@ -410,51 +412,9 @@ std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
 
   return string_from_path(vs, fullpath);
 }
+*/
 
-template<typename T>
-std::string get_absolute_path(T* x, typename T::is_view* = nullptr)
-{
-  fmt::MemoryWriter fullpath;
-  std::vector<std::string> vs;
-
-  ossia::pd::view* view = nullptr;
-  int view_level = 0;
-
-  int start_level = 0;
-  if (std::is_same<T, ossia::pd::view>::value)
-    start_level = 1;
-
-  view =  (ossia::pd::view*)find_parent_alive(
-      &x->m_obj, "ossia.view", start_level, &view_level);
-  ossia::pd::view* tmp = nullptr;
-
-  while (view)
-  {
-    vs.push_back(view->m_name->s_name);
-    tmp = view;
-    view
-        = (ossia::pd::view*) find_parent_alive(&tmp->m_obj, "ossia.view", 1, &view_level);
-  }
-
-  t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
-
-
-  int device_level = 0;
-  int client_level = 0;
-
-  // FIXme TODO use get root device instead
-  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
-  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
-
-  if (client)
-    fullpath << client->m_name->s_name << ":";
-  if (device)
-    fullpath << device->m_name->s_name << ":";
-  else
-    fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
-
-  return string_from_path(vs, fullpath);
-}
+std::string get_absolute_path(object_base* x);
 
 /**
  * @brief find_parent_node : find first active node above

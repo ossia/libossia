@@ -114,6 +114,75 @@ void register_quarantinized()
   }
 }
 
+std::string get_absolute_path(object_base* x)
+{
+  fmt::MemoryWriter fullpath;
+  std::vector<std::string> vs;
+
+  vs.push_back(x->m_name->s_name);
+
+  ossia::pd::view* view = nullptr;
+  ossia::pd::model* model = nullptr;
+
+  int view_level = 0;
+  int start_level = 0;
+
+  if (x->m_otype == object_class::view)
+    start_level = 1;
+
+  view =  (ossia::pd::view*)find_parent_alive(
+      &x->m_obj, "ossia.view", start_level, &view_level);
+
+  if (x->m_otype == object_class::model)
+  {
+    model =  (ossia::pd::model*)find_parent_alive(
+        &x->m_obj, "ossia.model", start_level, &view_level);
+  }
+
+  t_eobj* obj = nullptr;
+
+  ossia::pd::view* tmp_view = nullptr;
+  while (view)
+  {
+    vs.push_back(view->m_name->s_name);
+    tmp_view = view;
+    view
+        = (ossia::pd::view*) find_parent_alive(&tmp_view->m_obj, "ossia.view", 1, &view_level);
+  }
+
+  ossia::pd::model* tmp_model = nullptr;
+  while (model)
+  {
+    vs.push_back(model->m_name->s_name);
+    tmp_model = model;
+    model
+        = (ossia::pd::model*) find_parent_alive(&tmp_model->m_obj, "ossia.model", 1, &view_level);
+  }
+
+  if(tmp_model)
+    obj = &tmp_model->m_obj;
+  else if (tmp_view)
+    obj = &tmp_view->m_obj;
+  else
+    obj = &x->m_obj;
+
+  int device_level = 0;
+  int client_level = 0;
+
+  // FIXme TODO use get root device instead
+  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
+  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
+
+  if (client)
+    fullpath << client->m_name->s_name << ":";
+  if (device)
+    fullpath << device->m_name->s_name << ":";
+  else
+    fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
+
+  return string_from_path(vs, fullpath);
+}
+
 object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level)
 {
   t_canvas* canvas = x->o_canvas;

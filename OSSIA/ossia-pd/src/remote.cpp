@@ -21,6 +21,8 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   if (m_mute) return false;
 
+  update_path();
+
   bool res = do_registration(node);
   if (res)
   {
@@ -305,8 +307,6 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
       error("You have to pass a name as the first argument");
       x->m_name = gensym("untitledRemote");
     }
-
-    x->update_path();
 
     x->m_clock = clock_new(x, (t_method)parameter_base::bang);
     x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
