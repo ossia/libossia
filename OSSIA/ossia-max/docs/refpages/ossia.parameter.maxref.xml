@@ -59,7 +59,7 @@
 
 	<!--METHODS-->	
 	<methodlist>
-		<!-- 
+		 
 		<method name="address">
 			<arglist>
 				<arg name="node address" type="symbol" optional="0"/>
@@ -71,7 +71,7 @@
 				The message <m>address</m> followed by a symbol sets the name of the node. This temporary replaces the name provided initially as an argument to the object and allows to address nodes dynamically. Without any argument, <m>address</m> message will set the node address back to as defined as argument to the object.
 			</description>
 		</method> 
-		-->
+		
 		
 		<method name="anything">
 			<arglist>
