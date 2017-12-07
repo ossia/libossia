@@ -1447,13 +1447,14 @@
 									"bgfillcolor_type" : "color",
 									"gradient" : 1,
 									"id" : "obj-23",
+									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 499.0, 727.0, 460.0, 22.0 ],
+									"patching_rect" : [ 499.0, 727.0, 460.0, 49.0 ],
 									"style" : "",
-									"text" : "title \"OSCQuery Remote example\"",
+									"text" : "url file:///Users/jln/@Developments/Git_repositories/libossia/OSSIA/ossia-max/help/remote_control.html",
 									"textcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ]
 								}
 
@@ -1748,7 +1749,8 @@
 											"parameter_type" : 0,
 											"parameter_mmin" : -70.0,
 											"parameter_mmax" : 6.0,
-											"parameter_initial" : [ 0.0 ],
+											"parameter_initial_enable" : 1,
+											"parameter_initial" : [ -69.401573 ],
 											"parameter_unitstyle" : 4
 										}
 
@@ -1768,7 +1770,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 499.0, 425.0, 491.0, 324.0 ],
 									"rendermode" : 0,
-									"url" : "file:///Users/jln/Documents/Max%207/Packages/ossia/help/remote_control.html"
+									"url" : "file:///Users/jln/@Developments/Git_repositories/libossia/OSSIA/ossia-max/help/remote_control.html"
 								}
 
 							}
@@ -2031,7 +2033,7 @@
 , 			{
 				"name" : "fm_synth.maxpat",
 				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
-				"patcherrelativepath" : "../patchers",
+				"patcherrelativepath" : "../../../../../../Documents/Max 7/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
