@@ -184,10 +184,10 @@ static void LogQtToOssia(
 
   auto basename_arr = QFileInfo(context.file).baseName().toUtf8();
   auto filename = basename_arr.constData();
-
-  if(qml_logger::instance().logFilter().contains(msg))
+  auto& logger = qml_logger::instance();
+  if(logger.logFilter().contains(msg))
   {
-    emit qml_logger::instance().filteredLog(type,filename,context.line,msg);
+    emit logger.filteredLog(type,filename,context.line,msg);
     return;
   }
 
