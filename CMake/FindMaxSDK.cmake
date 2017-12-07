@@ -14,7 +14,7 @@ list(APPEND MAXSDK_DIRS ${OSSIA_3RDPARTY_FOLDER}/max-sdk/source)
 message(STATUS "Looking for MaxSDK into : ${MAXSDK_DIRS}")
 find_path(
     MAXSDK_MAINPATH "c74support"
-    HINTS "${MAXSDK_DIRS}"
+    HINTS ${MAXSDK_DIRS}
     DOC "Insert main path to MaxSDK/source (download it from http://cycling74.com/products/sdk/ for both MacOSX and Windows)")
 
 # Just to test if Max/MSP found!!
