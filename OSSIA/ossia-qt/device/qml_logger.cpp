@@ -15,6 +15,7 @@ namespace qt
 {
 
 static std::shared_ptr<spdlog::logger> m_globalQtLogger;
+static QStringList m_globalLogfilter;
 qml_logger::qml_logger()
   : m_logger{spdlog::get("ossia")}
   , m_appName{"The App"}
@@ -22,6 +23,7 @@ qml_logger::qml_logger()
   , m_heartbeatDur{5}
 {
   m_globalQtLogger = m_logger;
+  m_globalLogfilter = m_logFilter;
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
@@ -53,6 +55,11 @@ QString qml_logger::appCreator() const
 QString qml_logger::loggerHost() const
 {
   return m_loggerHost;
+}
+
+QStringList qml_logger::logFilter() const
+{
+  return m_logFilter;
 }
 
 bool qml_logger::logQtMessages() const
@@ -117,17 +124,17 @@ void qml_logger::connectLogger()
     return;
 
   m_ws = std::make_shared<websocket_threaded_connection>(
-        m_loggerHost.toStdString());
+           m_loggerHost.toStdString());
   m_logger = std::make_shared<spdlog::logger>(
-        "qml-logger",
-        std::make_shared<websocket_log_sink>(m_ws, m_appName.toStdString()));
+               "qml-logger",
+               std::make_shared<websocket_log_sink>(m_ws, m_appName.toStdString()));
   m_globalQtLogger = m_logger;
   m_logger->set_level((spdlog::level::level_enum)m_logLevel);
 
   if (m_heartbeatDur > 0)
   {
     m_heartbeat = std::make_shared<websocket_heartbeat>(
-          m_ws, m_appName.toStdString(), std::chrono::seconds(m_heartbeatDur));
+                    m_ws, m_appName.toStdString(), std::chrono::seconds(m_heartbeatDur));
   }
 }
 
@@ -180,6 +187,12 @@ static void LogQtToOssia(
   auto basename_arr = QFileInfo(context.file).baseName().toUtf8();
   auto filename = basename_arr.constData();
 
+ if(m_globalLogfilter.contains(msg))
+ {
+     emit qml_logger::instance().filteredLog(type,filename,context.line,msg);//type,context,msg);
+     return;
+  }
+
   QByteArray localMsg = msg.toLocal8Bit();
   switch (type)
   {
@@ -222,7 +235,16 @@ void qml_logger::setLogQtMessages(bool logQtMessages)
     qInstallMessageHandler(nullptr);
   }
 }
+void qml_logger::setLogFilter(QStringList logFilter)
+{
+  if (m_logFilter == logFilter)
+    return;
 
+  m_logFilter = logFilter;
+  m_globalLogfilter = m_logFilter;
+
+  emit logFilterChanged(m_logFilter);
+}
 void qml_logger::setHeartbeat(quint32 heartbeat)
 {
   if (m_heartbeatDur == heartbeat)

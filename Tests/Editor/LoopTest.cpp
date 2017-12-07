@@ -12,7 +12,7 @@ class LoopTest : public QObject
 {
     Q_OBJECT
 
-    void interval_callback(double position, time_value date, const state_element& element)
+    void interval_callback(double position, ossia::time_value date, const state_element& element)
     {
         ossia::launch(element);
     }

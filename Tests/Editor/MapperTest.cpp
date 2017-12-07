@@ -21,7 +21,7 @@ class MapperTest : public QObject
   parameter_base* m_int_address{};
   std::vector<value> m_int_parameter_values;
 
-  void interval_callback(double position, time_value date, const state_element& st)
+  void interval_callback(double position, ossia::time_value date, const state_element& st)
   {
     ossia::launch(st);
   }

@@ -256,7 +256,7 @@ class ScenarioAlgoTest : public QObject
       proc->set_behavior(crv);
       c0->add_time_process(proc);
 
-      s.interval->set_callback([] (double, time_value, const state_element& s) {
+      s.interval->set_callback([] (double, ossia::time_value, const state_element& s) {
         ossia::print(std::cerr, s);
       });
       s.interval->start();
@@ -295,7 +295,7 @@ class ScenarioAlgoTest : public QObject
       proc->set_behavior(crv);
       c0->add_time_process(proc);
 
-      s.interval->set_callback([] (double, time_value, const state_element& s) {
+      s.interval->set_callback([] (double, ossia::time_value, const state_element& s) {
         ossia::print(std::cerr, s);
       });
       s.interval->start();

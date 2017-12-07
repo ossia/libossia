@@ -57,6 +57,7 @@ class QmlApiTest : public QObject
       for(int i = 0; i < 1000; i++)
           QCoreApplication::processEvents();
     }
+
     void test_import()
     {
       int argc{}; char** argv{};
@@ -81,6 +82,66 @@ class QmlApiTest : public QObject
         QVERIFY(component.errors().empty());
         auto item = component.create();
         QVERIFY(item);
+        cleanup(item);
+      }
+    }
+
+
+    void test_logFilter()
+    {
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      QQmlEngine engine;
+
+      engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+      engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+
+      {
+        QQmlComponent component(&engine);
+        component.setData(R"_(
+                          import Ossia 1.0 as Ossia
+                          import QtQuick 2.5
+                          Item{
+                          Connections{
+                          target: Ossia.Logger
+                          onFilteredLog :
+                          {
+                               console.log('filtered: ' + msg + ' '+ type+ ' '+fileName + ' '+line );
+                          }
+
+                          }
+                          Component.onCompleted:{
+                          console.log("test")
+
+                          Ossia.Logger.logFilter= ["cameraBin","touchpoint"];
+                          Ossia.Logger.loggerHost = 'ws://127.0.0.1:1337';
+                          Ossia.Logger.logQtMessages = true;
+
+                          Ossia.Logger.startHeartbeat({});
+
+
+                          console.log("avant")
+                          console.log('touchpoint')
+
+                          console.log("touchy")
+                          console.log("cameraBin");
+                          console.log("autre")
+                          }
+
+
+
+                          }
+                          )_", QUrl{});
+
+        qDebug() << component.errorString();
+        QVERIFY(component.errors().empty());
+        auto item = component.create();
+        QVERIFY(item);
+        QTimer::singleShot(2000, [&] {
+          app.exit();
+        });
+        app.exec();
         cleanup(item);
       }
     }
