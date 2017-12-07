@@ -120,6 +120,7 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 
   if ( m_path && ossia::traversal::match(*m_path, node) )
   {
+    m_parent_node = node.get_parent();
     m_matchers.emplace_back(&node,this);
     m_nodes.push_back(&node);
     // TODO optimize : don't clear selection and iterate through all matchers

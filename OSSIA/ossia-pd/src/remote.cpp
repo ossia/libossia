@@ -128,6 +128,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& par
 
   if ( m_path && ossia::traversal::match(*m_path, node) )
   {
+    m_parent_node = node.get_parent();
     m_matchers.emplace_back(&node,this);
     m_nodes.push_back(&node);
     fill_selection();
