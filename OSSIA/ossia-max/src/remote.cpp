@@ -367,7 +367,8 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
         fmt::MemoryWriter path;
-        path << name << "/" << name;
+        fmt::BasicStringRef<char> name_fmt(name.data(), name.size());
+        path << name_fmt << "/" << name_fmt;
         auto node = ossia::net::find_node(*n, path.str());
         if (node){
           m_matchers.emplace_back(node, this);
@@ -379,7 +380,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node
-  return true;
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 bool remote::unregister()
