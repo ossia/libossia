@@ -15,7 +15,6 @@ namespace qt
 {
 
 static std::shared_ptr<spdlog::logger> m_globalQtLogger;
-static QStringList m_globalLogfilter;
 qml_logger::qml_logger()
   : m_logger{spdlog::get("ossia")}
   , m_appName{"The App"}
@@ -23,7 +22,6 @@ qml_logger::qml_logger()
   , m_heartbeatDur{5}
 {
   m_globalQtLogger = m_logger;
-  m_globalLogfilter = m_logFilter;
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
@@ -187,10 +185,10 @@ static void LogQtToOssia(
   auto basename_arr = QFileInfo(context.file).baseName().toUtf8();
   auto filename = basename_arr.constData();
 
- if(m_globalLogfilter.contains(msg))
- {
-     emit qml_logger::instance().filteredLog(type,filename,context.line,msg);//type,context,msg);
-     return;
+  if(qml_logger::instance().logFilter().contains(msg))
+  {
+    emit qml_logger::instance().filteredLog(type,filename,context.line,msg);
+    return;
   }
 
   QByteArray localMsg = msg.toLocal8Bit();
@@ -240,8 +238,7 @@ void qml_logger::setLogFilter(QStringList logFilter)
   if (m_logFilter == logFilter)
     return;
 
-  m_logFilter = logFilter;
-  m_globalLogfilter = m_logFilter;
+  m_logFilter = std::move(logFilter);
 
   emit logFilterChanged(m_logFilter);
 }

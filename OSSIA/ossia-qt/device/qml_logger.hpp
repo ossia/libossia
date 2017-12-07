@@ -70,8 +70,9 @@ signals:
   void logQtMessagesChanged(bool logQtMessages);
   void heartbeatChanged(quint32 heartbeat);
   void logLevelChanged(log_level logLevel);
-  void logFilterChanged(QStringList logFilter);
+  void logFilterChanged(const QStringList& logFilter);
   void filteredLog( int type, const QString& fileName, int line, const QString& msg);
+
 public slots:
   void connectLogger();
   void disconnectLogger();
@@ -95,8 +96,6 @@ public slots:
 
   void startHeartbeat(QVariantMap);
 
-//signals:
-  //void filteredLog( QtMsgType type, const QMessageLogContext& context, const QString& msg);
 private:
   std::shared_ptr<websocket_threaded_connection> m_ws;
   std::shared_ptr<spdlog::logger> m_logger;

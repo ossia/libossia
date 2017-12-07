@@ -102,15 +102,22 @@ class QmlApiTest : public QObject
         component.setData(R"_(
                           import Ossia 1.0 as Ossia
                           import QtQuick 2.5
-                          Item{
-                          Connections{
-                          target: Ossia.Logger
-                          onFilteredLog :
-                          {
-                               console.log('filtered: ' + msg + ' '+ type+ ' '+fileName + ' '+line );
-                          }
 
-                          }
+                          Item{
+
+                          property var msgFiltered: []
+                          property var logTypeFiltered: []
+
+                            Connections{
+                            target: Ossia.Logger
+                            onFilteredLog : {
+                               msgFiltered.push(msg);
+                               logTypeFiltered.push(type);
+
+                               console.log('filtered: ' + msg + ' '+ type+ ' '+fileName + ' '+line );
+                             }
+
+                            }
                           Component.onCompleted:{
                           console.log("test")
 
@@ -128,9 +135,6 @@ class QmlApiTest : public QObject
                           console.log("cameraBin");
                           console.log("autre")
                           }
-
-
-
                           }
                           )_", QUrl{});
 
@@ -138,6 +142,15 @@ class QmlApiTest : public QObject
         QVERIFY(component.errors().empty());
         auto item = component.create();
         QVERIFY(item);
+        QList<QVariant> listMsgFiltered = QQmlProperty::read(item, "msgFiltered").toList();
+        QVERIFY(listMsgFiltered.length() ==2);
+        QVERIFY(listMsgFiltered[1].toString() == "cameraBin");
+        QVERIFY(listMsgFiltered[0].toString() =="touchpoint");
+
+        QList<QVariant> listLogTypeFiltered = QQmlProperty::read(item, "logTypeFiltered").toList();
+        QVERIFY(listLogTypeFiltered.length() ==2);
+        QVERIFY(listLogTypeFiltered[1].toInt() == 0);
+
         QTimer::singleShot(2000, [&] {
           app.exit();
         });
