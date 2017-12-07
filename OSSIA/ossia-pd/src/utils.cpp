@@ -133,7 +133,8 @@ std::string get_absolute_path(object_base* x)
   view =  (ossia::pd::view*)find_parent_alive(
       &x->m_obj, "ossia.view", start_level, &view_level);
 
-  if (x->m_otype == object_class::model)
+  if (x->m_otype == object_class::model
+      || x->m_otype == object_class::remote)
   {
     model =  (ossia::pd::model*)find_parent_alive(
         &x->m_obj, "ossia.model", start_level, &view_level);
@@ -166,6 +167,7 @@ std::string get_absolute_path(object_base* x)
   else
     obj = &x->m_obj;
 
+  /*
   int device_level = 0;
   int client_level = 0;
 
@@ -179,6 +181,7 @@ std::string get_absolute_path(object_base* x)
     fullpath << device->m_name->s_name << ":";
   else
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
+  */
 
   return string_from_path(vs, fullpath);
 }
