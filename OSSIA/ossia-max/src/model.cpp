@@ -201,8 +201,6 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
 void model::register_children()
 {
-  object_dequarantining<model>(this);
-
   std::vector<object_base*> children = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
@@ -222,6 +220,11 @@ void model::register_children()
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
       max_object_register<ossia::max::parameter>(parameter);
+    }
+    else if (child->m_otype == object_class::remote)
+    {
+      ossia::max::remote* remote = (ossia::max::remote*)child;
+      max_object_register<ossia::max::remote>(remote);
     }
   }
 
