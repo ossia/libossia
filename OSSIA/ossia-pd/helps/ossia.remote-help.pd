@@ -29,7 +29,7 @@ osssia.param;
 param;
 #X text 37 227 when using units in params \, ossia.remote can do some
 conversion \, see in:, f 65;
-#N canvas 901 310 473 305 units 0;
+#N canvas 901 310 473 305 units 1;
 #X floatatom 36 80 5 0 0 0 - - -, f 5;
 #X floatatom 36 138 5 0 0 0 - - -, f 5;
 #X floatatom 191 198 5 0 0 0 - - -, f 5;
@@ -40,7 +40,7 @@ conversion \, see in:, f 65;
 #X obj 35 237 ø.remote freq @unit time.s, f 16;
 #X floatatom 319 274 5 0 0 0 - - -, f 5;
 #X obj 306 236 ø.remote freq @unit time.mel, f 16;
-#N canvas 1533 499 285 538 unit 0;
+#N canvas 93 336 285 538 unit 1;
 #X text 50 43 distance.m distance.km distance.dm distance.cm distance.mm
 distance.um distance.nm distance.pm distance.inches distance.feet distance.miles
 position.cart3D position.cart2D position.spherical position.polar position.openGL
@@ -58,6 +58,10 @@ can use another (convertible unit) - see;
 #X obj 36 180 ø.remote freq;
 #X obj 37 100 ø.param freq @unit time.Hz @default 440 @range 20 20000
 @clip both, f 42;
+#X msg 239 64 get unit;
+#X obj 308 144 print;
+#X msg 311 64 unit Hz;
+#X msg 360 134 unit midinote;
 #X connect 0 0 15 0;
 #X connect 2 0 3 0;
 #X connect 3 0 2 0;
@@ -70,6 +74,10 @@ can use another (convertible unit) - see;
 #X connect 13 0 14 0;
 #X connect 14 0 13 0;
 #X connect 15 0 1 0;
+#X connect 15 1 17 0;
+#X connect 16 0 15 0;
+#X connect 18 0 15 0;
+#X connect 19 0 3 0;
 #X restore 92 245 pd units;
 #X text 119 131 _______________________________;
 #X text 120 190 _______________________________;
