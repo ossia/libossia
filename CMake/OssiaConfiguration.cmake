@@ -17,6 +17,8 @@ option(OSSIA_DATAFLOW "Dataflow features" ON)
 option(OSSIA_EDITOR "Editor features" ON)
 option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
+#option(OSSIA_SUBMODULE_AUTOUPDATE "Auto update submodule" ON)
+set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
@@ -40,8 +42,8 @@ option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
-
-message("Update general OSSIA dependencies :")
+if(OSSIA_SUBMODULE_AUTOUPDATE)
+message(STATUS "Update general OSSIA dependencies :")
 execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/GSL
@@ -70,6 +72,9 @@ execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/fmt
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+message(STATUS "...done")
+set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
+endif()
 
 include(Sanitize)
 include(DebugMode)
