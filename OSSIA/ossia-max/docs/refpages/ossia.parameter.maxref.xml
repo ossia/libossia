@@ -302,10 +302,10 @@
 
 		<attribute name="rate" get="1" set="1" type="integer" size="1">
 			<digest>
-				Determine the update rate at which values will be set and get
+				Determine the interval at which values will be set and get
 			</digest>
 			<description>
-				The <at>rate</at> attribute defines at which rates values will be set and get from/to the parameter
+				The <at>rate</at> attribute defines the interval at which values will be set and get from/to the parameter
 			</description>
 		</attribute>
 
