@@ -155,7 +155,7 @@
 				<br/>Note that contrary to the <m>address</m> message which destroys and recreates the namespace as needed to set the remote address, <m>select</m> only scan through the addresses already matched by the remote and is thus much faster.
 			</description>
 		</method>
-		<!--
+
 		<method name="send">
 			<arglist>
 				<arg name="node address" optional="0" type="symbol" />
@@ -168,7 +168,7 @@
 				When using addresses pattern in <o>ossia.parameter</o> such as 'my_spat/source.{1..3}/gain', the <m>send</m> message followed by a node address and value (ie <m>send my_spat/source.2/gain 0.5</m>) send the value of that particular parameter instance
 			</description>
 		</method>
-		-->
+
 
 	</methodlist>
 

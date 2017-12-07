@@ -67,7 +67,7 @@
 				Set node name
 			</digest>
 			<description>
-				The message <m>address</m> followed by a symbol sets the name of the bound node. This temporary replaces the name provided initially as an argument to the object and allows to address nodes dynamically. Without any argument, <m>address</m> message will set the node address back to as defined as argument to the object.
+				The message <m>address</m> followed by a symbol sets the name of the bound node or group of node matched by an addresses pattern. This temporary replaces the name provided initially as an argument to the object and allows to address nodes dynamically. Without any argument, <m>address</m> message will set the node address back to as defined as argument to the object.
 			</description>
 		</method>
 		
@@ -137,6 +137,20 @@
 			</digest>
 			<description>
 				The message <m>reset</m> sent to the leftmost inlet reset the current value to the value defined by the <at>default</at> attribute
+			</description>
+		</method>
+
+		<method name="select">
+			<arglist>
+				<arg name="node address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Select node(s) 
+			</digest>
+			<description>
+				The message <m>select</m> followed by a symbol specifying a node address or address pattern, select one or many addresses within the addresses matched by the pattern set as argument to the object. This can be useful for example to send value only to one or several addresses of the one matched by the pattern defined as argument to the object box. 
+				<br/>
+				<br/>Note that contrary to the <m>address</m> message which destroys and recreates the namespace as needed to set the remote address, <m>select</m> only scan through the addresses already matched by the remote and is thus much faster.
 			</description>
 		</method>
 
