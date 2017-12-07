@@ -510,7 +510,7 @@ void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* 
 
 void object_base::update_path()
 {
-  std::string name =  get_absolute_path(this);
+  std::string name = get_absolute_path(this);
 
   m_is_pattern = ossia::traversal::is_pattern(name);
 

@@ -47,7 +47,8 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
     }
-  }
+  } else
+    obj_quarantining<remote>(this);
 
   return res;
 }
