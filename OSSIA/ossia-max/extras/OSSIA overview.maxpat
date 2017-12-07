@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 142.0, 162.0, 1384.0, 778.0 ],
+		"rect" : [ 202.0, 99.0, 1384.0, 778.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -93,7 +93,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 555.5, 197.5, 150.0, 35.0 ],
-									"presentation_rect" : [ 570.5, 193.5, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Store presets in a dict",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1059,14 +1058,14 @@
 									"patching_rect" : [ 948.0, 332.5, 48.0, 136.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
+											"parameter_type" : 0,
 											"parameter_mmin" : -70.0,
 											"parameter_mmax" : 6.0,
 											"parameter_initial_enable" : 1,
 											"parameter_longname" : "live.gain~[2]",
 											"parameter_initial" : [ -70.0 ],
 											"parameter_shortname" : "live.gain~[1]",
-											"parameter_unitstyle" : 4,
-											"parameter_type" : 0
+											"parameter_unitstyle" : 4
 										}
 
 									}
@@ -1086,14 +1085,14 @@
 									"patching_rect" : [ 1049.0, 519.0, 48.0, 136.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
+											"parameter_type" : 0,
 											"parameter_mmin" : -70.0,
 											"parameter_mmax" : 6.0,
 											"parameter_initial_enable" : 1,
 											"parameter_longname" : "live.gain~[1]",
 											"parameter_initial" : [ -70.0 ],
 											"parameter_shortname" : "live.gain~[1]",
-											"parameter_unitstyle" : 4,
-											"parameter_type" : 0
+											"parameter_unitstyle" : 4
 										}
 
 									}
@@ -1664,7 +1663,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 142.0, 188.0, 1384.0, 752.0 ],
+						"rect" : [ 0.0, 26.0, 1384.0, 752.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2615,7 +2614,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1384.0, 752.0 ],
+						"rect" : [ 202.0, 125.0, 1384.0, 752.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2669,6 +2668,8 @@
 									"prototypename" : "freq",
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
+											"parameter_type" : 0,
+											"parameter_exponent" : 3.333333,
 											"parameter_mmax" : 10000.0,
 											"parameter_speedlim" : 0.0,
 											"parameter_linknames" : 1,
@@ -2676,9 +2677,7 @@
 											"parameter_longname" : "live.dial[1]",
 											"parameter_initial" : [ 0 ],
 											"parameter_shortname" : "live.dial",
-											"parameter_unitstyle" : 3,
-											"parameter_type" : 0,
-											"parameter_exponent" : 3.333333
+											"parameter_unitstyle" : 3
 										}
 
 									}
@@ -2862,14 +2861,14 @@
 									"patching_rect" : [ 37.0, 467.0, 101.0, 144.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
+											"parameter_type" : 0,
 											"parameter_mmin" : -70.0,
 											"parameter_mmax" : 6.0,
 											"parameter_initial_enable" : 1,
 											"parameter_longname" : "live.gain~",
 											"parameter_initial" : [ -20.0 ],
 											"parameter_shortname" : "live.gain~",
-											"parameter_unitstyle" : 4,
-											"parameter_type" : 0
+											"parameter_unitstyle" : 4
 										}
 
 									}
@@ -3003,6 +3002,7 @@
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
+															"parameter_type" : 0,
 															"parameter_mmin" : -70.0,
 															"parameter_mmax" : 30.0,
 															"parameter_speedlim" : 0.0,
@@ -3011,8 +3011,7 @@
 															"parameter_longname" : "Gain1[3]",
 															"parameter_initial" : [ 0 ],
 															"parameter_shortname" : "Gain 4",
-															"parameter_unitstyle" : 4,
-															"parameter_type" : 0
+															"parameter_unitstyle" : 4
 														}
 
 													}
@@ -3033,6 +3032,7 @@
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
+															"parameter_type" : 0,
 															"parameter_mmin" : -70.0,
 															"parameter_mmax" : 30.0,
 															"parameter_speedlim" : 0.0,
@@ -3041,8 +3041,7 @@
 															"parameter_longname" : "Gain1[2]",
 															"parameter_initial" : [ 0 ],
 															"parameter_shortname" : "Gain 3",
-															"parameter_unitstyle" : 4,
-															"parameter_type" : 0
+															"parameter_unitstyle" : 4
 														}
 
 													}
@@ -3063,6 +3062,7 @@
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
+															"parameter_type" : 0,
 															"parameter_mmin" : -70.0,
 															"parameter_mmax" : 30.0,
 															"parameter_speedlim" : 0.0,
@@ -3071,8 +3071,7 @@
 															"parameter_longname" : "Gain1[1]",
 															"parameter_initial" : [ 0 ],
 															"parameter_shortname" : "Gain 2",
-															"parameter_unitstyle" : 4,
-															"parameter_type" : 0
+															"parameter_unitstyle" : 4
 														}
 
 													}
@@ -3106,6 +3105,7 @@
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
+															"parameter_type" : 0,
 															"parameter_mmin" : -70.0,
 															"parameter_mmax" : 30.0,
 															"parameter_speedlim" : 0.0,
@@ -3114,8 +3114,7 @@
 															"parameter_longname" : "Gain1",
 															"parameter_initial" : [ 0 ],
 															"parameter_shortname" : "Gain 1",
-															"parameter_unitstyle" : 4,
-															"parameter_type" : 0
+															"parameter_unitstyle" : 4
 														}
 
 													}
@@ -3250,6 +3249,8 @@
 									"prototypename" : "freq",
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
+											"parameter_type" : 0,
+											"parameter_exponent" : 3.333333,
 											"parameter_mmax" : 10000.0,
 											"parameter_speedlim" : 0.0,
 											"parameter_linknames" : 1,
@@ -3257,9 +3258,7 @@
 											"parameter_longname" : "live.dial",
 											"parameter_initial" : [ 0 ],
 											"parameter_shortname" : "live.dial",
-											"parameter_unitstyle" : 3,
-											"parameter_type" : 0,
-											"parameter_exponent" : 3.333333
+											"parameter_unitstyle" : 3
 										}
 
 									}
@@ -3329,9 +3328,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 867.0, 338.0, 81.0, 22.0 ],
+									"patching_rect" : [ 867.0, 338.0, 101.0, 22.0 ],
 									"style" : "",
-									"text" : "prepend bind"
+									"text" : "prepend address"
 								}
 
 							}
@@ -3355,13 +3354,13 @@
 									"patching_rect" : [ 867.0, 298.0, 293.0, 26.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
+											"parameter_type" : 2,
 											"parameter_enum" : [ "synth.1", "synth.2", "synth.3", "synth.4" ],
 											"parameter_initial_enable" : 1,
 											"parameter_longname" : "live.tab",
 											"parameter_initial" : [ 0.0 ],
 											"parameter_shortname" : "live.tab",
-											"parameter_unitstyle" : 0,
-											"parameter_type" : 2
+											"parameter_unitstyle" : 0
 										}
 
 									}
@@ -3557,37 +3556,37 @@
  ],
 		"lines" : [  ],
 		"parameters" : 		{
-			"obj-42::obj-41::obj-21" : [ "Gain1[2]", "Gain 3", 0 ],
-			"obj-42::obj-41::obj-15" : [ "Gain1[1]", "Gain 2", 0 ],
-			"obj-42::obj-41::obj-25" : [ "Gain1", "Gain 1", 0 ],
-			"obj-42::obj-10::obj-8" : [ "Ratio", "Ratio", 0 ],
-			"obj-42::obj-10::obj-4" : [ "Gain", "Gain", 0 ],
-			"obj-2::obj-10::obj-6" : [ "Pan[1]", "Pan", 0 ],
 			"obj-42::obj-10::obj-7" : [ "live.numbox", "live.numbox", 0 ],
-			"obj-2::obj-1::obj-4" : [ "Gain[2]", "Gain", 0 ],
 			"obj-42::obj-34" : [ "live.dial", "live.dial", 0 ],
-			"obj-2::obj-1::obj-3" : [ "Index[2]", "Index", 0 ],
+			"obj-42::obj-41::obj-21" : [ "Gain1[2]", "Gain 3", 0 ],
 			"obj-42::obj-1" : [ "live.dial[1]", "live.dial", 0 ],
-			"obj-42::obj-41::obj-23" : [ "Gain1[3]", "Gain 4", 0 ],
-			"obj-42::obj-10::obj-3" : [ "Index", "Index", 0 ],
-			"obj-42::obj-18" : [ "live.gain~", "live.gain~", 0 ],
-			"obj-2::obj-10::obj-2" : [ "Cutoff[1]", "Cutoff", 0 ],
-			"obj-2::obj-1::obj-1" : [ "Carrier frequency[2]", "Carrier frequency", 0 ],
-			"obj-42::obj-11" : [ "live.tab", "live.tab", 0 ],
-			"obj-2::obj-10::obj-4" : [ "Gain[1]", "Gain", 0 ],
-			"obj-2::obj-10::obj-1" : [ "Carrier frequency[1]", "Carrier frequency", 0 ],
-			"obj-2::obj-1::obj-8" : [ "Ratio[2]", "Ratio", 0 ],
+			"obj-42::obj-41::obj-15" : [ "Gain1[1]", "Gain 2", 0 ],
 			"obj-2::obj-10::obj-3" : [ "Index[1]", "Index", 0 ],
-			"obj-2::obj-10::obj-8" : [ "Ratio[1]", "Ratio", 0 ],
 			"obj-42::obj-10::obj-1" : [ "Carrier frequency", "Carrier frequency", 0 ],
-			"obj-2::obj-1::obj-7" : [ "live.numbox[2]", "live.numbox", 0 ],
+			"obj-42::obj-41::obj-25" : [ "Gain1", "Gain 1", 0 ],
+			"obj-42::obj-18" : [ "live.gain~", "live.gain~", 0 ],
+			"obj-2::obj-1::obj-3" : [ "Index[2]", "Index", 0 ],
+			"obj-42::obj-10::obj-8" : [ "Ratio", "Ratio", 0 ],
+			"obj-42::obj-41::obj-23" : [ "Gain1[3]", "Gain 4", 0 ],
+			"obj-42::obj-11" : [ "live.tab", "live.tab", 0 ],
 			"obj-2::obj-3" : [ "live.gain~[1]", "live.gain~[1]", 0 ],
 			"obj-2::obj-5" : [ "live.gain~[2]", "live.gain~[1]", 0 ],
+			"obj-42::obj-10::obj-2" : [ "Cutoff", "Cutoff", 0 ],
+			"obj-2::obj-10::obj-2" : [ "Cutoff[1]", "Cutoff", 0 ],
+			"obj-2::obj-1::obj-2" : [ "Cutoff[2]", "Cutoff", 0 ],
+			"obj-42::obj-10::obj-3" : [ "Index", "Index", 0 ],
+			"obj-2::obj-1::obj-6" : [ "Pan[2]", "Pan", 0 ],
+			"obj-42::obj-10::obj-4" : [ "Gain", "Gain", 0 ],
+			"obj-2::obj-10::obj-6" : [ "Pan[1]", "Pan", 0 ],
+			"obj-2::obj-10::obj-4" : [ "Gain[1]", "Gain", 0 ],
+			"obj-2::obj-1::obj-7" : [ "live.numbox[2]", "live.numbox", 0 ],
+			"obj-2::obj-1::obj-4" : [ "Gain[2]", "Gain", 0 ],
+			"obj-2::obj-10::obj-1" : [ "Carrier frequency[1]", "Carrier frequency", 0 ],
+			"obj-2::obj-10::obj-8" : [ "Ratio[1]", "Ratio", 0 ],
+			"obj-2::obj-1::obj-1" : [ "Carrier frequency[2]", "Carrier frequency", 0 ],
 			"obj-42::obj-10::obj-6" : [ "Pan", "Pan", 0 ],
 			"obj-2::obj-10::obj-7" : [ "live.numbox[1]", "live.numbox", 0 ],
-			"obj-42::obj-10::obj-2" : [ "Cutoff", "Cutoff", 0 ],
-			"obj-2::obj-1::obj-6" : [ "Pan[2]", "Pan", 0 ],
-			"obj-2::obj-1::obj-2" : [ "Cutoff[2]", "Cutoff", 0 ]
+			"obj-2::obj-1::obj-8" : [ "Ratio[2]", "Ratio", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
