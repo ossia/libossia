@@ -134,6 +134,18 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/interfaces"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs"
         "${CMAKE_CURRENT_SOURCE_DIR}/patchers"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extras"
+        "${CMAKE_CURRENT_SOURCE_DIR}/media"
+    DESTINATION
+        ${OSSIA_MAX_INSTALL_FOLDER}
+    COMPONENT
+        ${PROJECT_NAME}
+)
+
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/package-info.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/icon.png"
     DESTINATION
         ${OSSIA_MAX_INSTALL_FOLDER}
     COMPONENT
