@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet href="./_c74_ref.xsl" type="text/xsl"?>
+
+<c74object name="ossia.attribute" module="Ossia" category="Ossia">
+
+	<digest>
+		Access a parameter's attributes remotely
+	</digest>
+
+	<description>
+				<o>ossia.attribute</o> allows to get or set a parameter's attribute remotely 
+	</description>
+	<discussion>
+  </discussion>
+	
+	<!--METADATA-->
+	<metadatalist>
+		<metadata name="author">Ossia</metadata>
+		<metadata name="tag">Ossia</metadata>
+		<metadata name="tag">Network</metadata>
+	</metadatalist>
+
+	
+	<!--INLETS-->
+	<inletlist>
+		<inlet id="0" name="Value input" type="any">
+			<digest>Get or set a parameter attribute</digest>
+			<description>Get or set a parameter attribute</description>
+		</inlet>
+	</inletlist>
+
+
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" name="Value output" type="any">
+			<digest>Parameter attrbute value</digest>
+			<description>Parameter attrbute value</description>
+		</outlet>
+	</outletlist>
+	
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="node-name" optional="0" type="symbol">
+			<digest>
+				Parameter name
+			</digest>
+			<description>
+				<o>ossia.attribute</o> requires an argument defining a parameter name to bind to
+			</description>
+		</objarg>
+	</objarglist>
+
+	<!--METHODS-->	
+	<methodlist>
+		 
+		<method name="address">
+			<arglist>
+				<arg name="bound parameter address" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Set bound parameter name
+			</digest>
+			<description>
+				The message <m>address</m> followed by a symbol sets the name of the node. This temporary replaces the name provided initially as an argument to the object and allows to address nodes dynamically. Without any argument, <m>address</m> message will set the node address back to as defined as argument to the object.
+			</description>
+		</method> 
+		
+		
+		<method name="get">
+			<arglist>
+				<arg name="attribute name" optional="0" type="list"/>
+			</arglist>
+			<digest> Get the remote parameter attribute value
+			</digest>
+			<description>
+				The <m>get</m> message followed by a parameter attribute name will ask the parameter <o>ossia.attribute</o> currently bind its request attribute value and output the result at its outlet. Possible <m>get</m> arguments are:<br/><br/>
+				<ul>
+					<li>clip</li>
+					<li>default</li>
+					<li>description</li>
+					<li>enable</li>
+					<li>hidden</li>
+					<li>max</li>
+					<li>min</li>
+					<li>mode</li>
+					<li>mute</li>
+					<li>type</li>
+					<li>unit</li>
+					<li>priority</li>
+					<li>range</li>
+					<li>rate</li>
+					<li>repetitions</li>
+					<li>tags</li>
+				</ul>
+			</description> 
+		</method>
+		<method name="select">
+			<arglist>
+				<arg name="node address to bind to" type="symbol" optional="0"/>
+			</arglist>
+			<digest>
+				Select node(s) 
+			</digest>
+			<description>
+				The message <m>select</m> followed by a symbol specifying a node address or address pattern, select one or many addresses within the addresses matched by the pattern set as argument to the object. This can be useful for example to send value only to one or several addresses of the one matched by the pattern defined as argument to the object box. 
+				<br/>
+				<br/>Note that contrary to the <m>address</m> message which destroys and recreates the namespace as needed to set the remote address, <m>select</m> only scan through the addresses already matched by the remote and is thus much faster.
+			</description>
+		</method>
+		<method name="send">
+			<arglist>
+				<arg name="node address" optional="0" type="symbol" />
+				<arg name="value" optional="0" type="any" />
+			</arglist>
+			<digest>
+				Send value to a particular parameter instance
+			</digest>
+			<description>
+				When using addresses pattern in <o>ossia.parameter</o> such as 'my_spat/source.{1..3}/gain', the <m>send</m> message followed by a node address and value (ie <m>send my_spat/source.2/gain 0.5</m>) send the value of that particular parameter instance
+			</description>
+		</method>
+
+	</methodlist>
+
+
+	<!--ATTRIBUTES-->
+	<attributelist>
+		
+		<attribute name="clip" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Set how bound parameter values exceeding range will be clipped
+			</digest>
+			<description>
+				The <at>clip</at> attribute defines how values exceeding the bound parameter range will be managed. Available clipmodes are:
+				<ul><li><m>free</m>: when set to <m>free</m> (default), exceeding values will be left untouched</li><li><m>low</m>: when set to <m>low</m>, values exceeding the lower bound will be clipped. Values exceeding the upper bound will be left untouched</li><li><m>high</m>: when set to <m>high</m>, values exceeding the upper bound will be clipped. Values exceeding the lower bound will be left untouched</li><li><m>both</m>: when set to <m>both</m>, values exceeding lower or upper bounds will be clipped</li><li><m>wrap</m>: when set to <m>wrap</m>, values exceeding lower or upper bound will wrapped around the opposite bound</li><li><m>fold</m>: when set to <m>fold</m>, values exceeding lower or upper bound will folded back within the defined range</li></ul>
+			</description>
+			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Clip Mode" />
+			</attributelist>
+		</attribute>
+
+		<attribute name="default" get="1" set="1" type="int" size="1">
+			<digest>
+				Bound parameter default value
+			</digest>
+			<description>
+				The <at>default</at> attribute sets the bound parameter value to output at the leftmost outlet on model initialization. The default value can be overridden by the default model preset
+			</description>
+		</attribute>	
+
+		<attribute name="description" get="1" set="1" type="atom" size="1">
+			<digest>
+				Descrption of bound parameter 
+			</digest>
+			<description>
+				The <at>description</at> attribute allows to give the bound parameter a textual description. This helps documenting the parameter.
+			</description>
+		</attribute>
+		
+		<attribute name="enable" get="1" set="1" type="int" size="1">
+			<digest>
+				Enable or disable bound parameter 
+			</digest>
+			<description>
+				The <at>enable</at> attribute allows to enable (default: 1) or disable a bound parameter 
+			</description>
+		</attribute>  
+
+		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Hide bound parameter in remote client
+			</digest>
+			<description>
+				The <at>hidden</at> attribute allows a remote client to hide the bound parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+			</description>
+		</attribute>
+		
+		<attribute name="max" get="1" set="1" type="list" size="2">
+			<digest>
+				Bound parameter range maximum value
+			</digest>
+			<description>
+				The <at>max</at> attribute defines the maximum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different maximum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="min" get="1" set="1" type="list" size="2">
+			<digest>
+				Bound parameter range minimum value
+			</digest>
+			<description>
+				The <at>min</at> attribute defines the minimum value of expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range. In the case of Vecnf's and tuples, this can be a list of floats in order to set different minimum values for each Vec/tuple member.
+			</description>
+		</attribute>	
+
+		<attribute name="mode" get="1" set="1" type="symbol" size="1">
+			<digest>
+			Define access mode of bound parameter : GET, SET, or both (BI)
+			</digest>
+			<description>
+			Defines the way the value of bound <o>ossia.parameter</o> will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
+			</description>
+		</attribute>
+		
+		<attribute name="mute" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Mute bound parameter
+			</digest>
+			<description>
+				The <at>mute</at> attribute (off by default) allows to prevent the bound parameter from outputting local (i.e. fed from the input) values - Remotely sent values will still come out
+			</description>
+		</attribute>
+
+		<attribute name="type" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Bound parameter value type
+			</digest>
+			<description>
+				The <at>type</at> attribute defines the type of the bound parameter value. Possible types are:
+				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
+			</description>
+		</attribute>
+
+		<attribute name="unit" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Unit used by the bound parameter
+			</digest>
+			<description>
+				The <at>unit</at> attribute defines the unit used by the bound parameter. Values will get output according to this unit.
+			</description>
+		</attribute>
+
+		<attribute name="priority" get="1" set="1" type="int" size="1">
+			<digest>
+				Set bound parameter priority
+			</digest>
+			<description>
+				The <at>priority</at> attribute allows to order how several values from a same hierarchical level can be recalled 
+			</description>
+		</attribute>
+
+		<attribute name="range" get="1" set="1" type="list" size="2">
+			<digest>
+				Bound parameter value range
+			</digest>
+			<description>
+				The <at>range</at> attribute defines the expected range of possible values. Depending on the <at>clip</at> attribute, this might be a recommended or mandatory range.
+			</description>
+		</attribute>		
+
+		<attribute name="rate" get="1" set="1" type="integer" size="1">
+			<digest>
+				Determine the interval at which bound parameter values will be set and get
+			</digest>
+			<description>
+				The <at>rate</at> attribute defines at which interval values will be set and get from/to the bound parameter
+			</description>
+		</attribute>
+
+		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Allow value bound parameter repetitions
+			</digest>
+			<description>
+				The <at>repetitions</at> attribute defines whether bound parameter identical values will be repeated (on by default)
+			</description>
+			<attributelist>
+				<attribute name="basic" get="1" set="1" type="int" size="1" value="0" />
+				<attribute name="category" get="1" set="1" type="symbol" size="1" value="ossia" />
+				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Allow Repetitions" />
+			</attributelist>
+		</attribute>
+		
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with bound parameter
+			</digest>
+			<description>
+				The <at>tags</at> attribute allows to associate a variable number of tags to the bound parameter. This helps documenting the parameter.
+			</description>
+		</attribute>
+
+	</attributelist>
+
+
+
+	<!--SEEALSO-->
+	<seealsolist>
+		<seealso name="ossia.parameter"/>
+		<seealso name="ossia.remote"/>
+	</seealsolist>
+
+	
+</c74object>
