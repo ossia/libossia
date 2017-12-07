@@ -134,6 +134,10 @@ t_matcher::~t_matcher()
   if (m_dead) return;
   if(node && parent)
   {
+    // purge selection
+    ossia::remove_one(parent->m_node_selection,this);
+    ossia::remove_one(parent->m_nodes,node);
+
     if (   parent->m_otype == object_class::param
         || parent->m_otype == object_class::model  )
     {
@@ -146,13 +150,11 @@ t_matcher::~t_matcher()
         for (auto remote : ossia_pd::instance().remotes.copy())
         {
           ossia::remove_one(remote->m_matchers,*this);
-          ossia::remove_one(remote->m_node_selection, this);
         }
 
         for (auto attribute : ossia_pd::instance().attributes.copy())
         {
           ossia::remove_one(attribute->m_matchers,*this);
-          ossia::remove_one(attribute->m_node_selection, this);
         }
 
         if (node->get_parent())
@@ -301,6 +303,7 @@ void object_base::is_deleted(const ossia::net::node_base& n)
 {
   if (!m_dead)
   {
+    // TODO is this flag really needed ?
     m_is_deleted= true;
     ossia::remove_one_if(
       m_matchers,
@@ -308,17 +311,6 @@ void object_base::is_deleted(const ossia::net::node_base& n)
         m.set_dead();
         return m.get_node() == &n;
     });
-    ossia::remove_one(m_nodes, &n);
-    // FIXME purge m_node_selection doesn't work well
-    // rebuild it from scratch instead
-    /*
-    ossia::remove_one_if(
-      m_node_selection,
-      [&] (auto m) {
-        return m->get_node() == &n;
-    });
-    */
-    fill_selection();
     m_is_deleted = false;
   }
 }
