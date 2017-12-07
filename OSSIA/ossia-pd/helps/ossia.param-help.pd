@@ -1,4 +1,4 @@
-#N canvas 240 113 1166 778 10;
+#N canvas 240 96 1166 778 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
 #X text 668 119 bool : bollean value \, 0 or 1;
@@ -372,9 +372,6 @@ write or both \, could be : BI (default) \, GET \, SET \, RW \, R \,
 W;
 #X text 651 484 @repetitions <float> enable/disable repetitions \,
 could be 0 or 1 - default: 1 when none specified;
-#X text 651 409 @both <symbol> defines behavior when value go out of
-range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
-LOW \, HIGH, f 68;
 #X text 652 519 @rate: how often (in ms) the value is output - default
 10;
 #N canvas 530 67 495 609 units 0;
@@ -449,6 +446,9 @@ color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
 gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
 time.mel time.midinote time.ms time.speed, f 24;
 #X restore 932 444 pd unit_list;
+#X text 651 409 @clip <symbol> defines behavior when value go out of
+range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
+LOW \, HIGH, f 68;
 #X connect 15 0 16 0;
 #X connect 15 1 17 0;
 #X connect 15 2 18 0;
