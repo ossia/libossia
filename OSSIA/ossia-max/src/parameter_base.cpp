@@ -832,7 +832,7 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_SYM(
         c, "type", 0, parameter_base, m_type);
   CLASS_ATTR_ENUM (
-        c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse");
+        c, "type", 0, "float int bool symbol vec2f vec3f vec4f list impulse gain.linear gain.midigain gain.db gain.db-raw time.second time.bark time.bpm time.cents time.hz time.mel time.midinote time.ms color.argb color.rgba color.rgb color.bgr color.argb8 color.hsv color.cmy8 color.xyz position.cart3D position.cart2D position.spherical position.polar position.openGL position.cylindrical orientation.quaternion orientation.euler orientation.axis angle.degree angle.radian  time.speed distance.m distance.km distance.dm distance.cm distance.mm distance.um distance.nm distance.pm distance.inches distance.feet distance.miles speed.m/s speed.mph speed.km/h speed.kn speed.ft/s speed.ft/h");
   CLASS_ATTR_LABEL(c, "type", 0, "Value Type");
 
   CLASS_ATTR_SYM(
