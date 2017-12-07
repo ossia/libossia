@@ -524,7 +524,7 @@ ossia::optional<std::array<float, N>> to_array(t_atom* argv)
 
 void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto& m : x->m_node_selection)
+  for (auto m : x->m_node_selection)
   {
     auto node = m->get_node();
     auto param = node->get_parameter();
@@ -549,7 +549,7 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto& m : x->m_node_selection)
+  for (auto m : x->m_node_selection)
   {
     auto node = m->get_node();
     auto param = node->get_parameter();
@@ -628,10 +628,10 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
 void parameter_base::bang(parameter_base* x)
 {
-  for (auto& matcher : x->m_node_selection)
+  for (auto m : x->m_node_selection)
   {
-    matcher->enqueue_value(matcher->get_node()->get_parameter()->value());
-    matcher->output_value();
+    m->enqueue_value(m->get_node()->get_parameter()->value());
+    m->output_value();
   }
 }
 
@@ -650,7 +650,7 @@ void parameter_base::push_default_value(parameter_base* x)
 
   if (!x->m_mute)
   {
-    for (auto& m : x->m_node_selection)
+    for (auto m : x->m_node_selection)
     {
       node = m->get_node();
       auto parent = m->get_parent();
