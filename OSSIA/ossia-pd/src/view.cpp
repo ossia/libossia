@@ -225,6 +225,9 @@ void view::destroy(view* x)
   obj_dequarantining<view>(x);
   ossia_pd::instance().views.remove_all(x);
   clock_free(x->m_clock);
+  x->m_clock = nullptr;
+  outlet_free(x->m_dumpout);
+  x->m_dumpout = nullptr;
 
   x->~view();
 }

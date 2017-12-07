@@ -241,6 +241,8 @@ void model::destroy(model* x)
   ossia_pd::instance().models.remove_all(x);
   clock_free(x->m_clock);
   x->m_clock = nullptr;
+  outlet_free(x->m_dumpout);
+  x->m_dumpout = nullptr;
 
   x->~model();
 }
