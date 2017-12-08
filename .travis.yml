@@ -67,11 +67,11 @@ matrix:
   - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=3.4
 
-  - services: docker
-    env: BUILD_TYPE=python_manylinux
+#  - services: docker
+#    env: BUILD_TYPE=python_manylinux
 
-  - services: docker
-    env: BUILD_TYPE=python_manylinux PRE_CMD=linux32
+#  - services: docker
+#    env: BUILD_TYPE=python_manylinux PRE_CMD=linux32
 
   - os: linux
     env: BUILD_TYPE=qml
