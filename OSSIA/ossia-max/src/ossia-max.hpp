@@ -102,15 +102,6 @@ private:
 #pragma mark -
 #pragma mark Templates
 
-/**
- * @brief get absolute path to an object
- * @param t_object_base
- * @return std::string with full path to object from root device in an OSC
- * style (with '/')
- */
-template <typename T>
-extern std::string object_path_absolute(T*);
-
 template <typename T>
 extern void object_quarantining(T*);
 

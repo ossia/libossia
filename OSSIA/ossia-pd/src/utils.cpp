@@ -118,6 +118,7 @@ std::string get_absolute_path(object_base* x)
 {
   fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
+  vs.reserve(8);
 
   vs.push_back(x->m_name->s_name);
 
@@ -142,6 +143,9 @@ std::string get_absolute_path(object_base* x)
 
   t_eobj* obj = nullptr;
 
+  // FIXME this will fail as soon as https://github.com/OSSIA/libossia/issues/208 is implemented
+  // or if model and view are mixed in the same hierarchy
+
   ossia::pd::view* tmp_view = nullptr;
   while (view)
   {
@@ -159,7 +163,7 @@ std::string get_absolute_path(object_base* x)
     model
         = (ossia::pd::model*) find_parent_alive(&tmp_model->m_obj, "ossia.model", 1, &view_level);
   }
-
+/*
   if(tmp_model)
     obj = &tmp_model->m_obj;
   else if (tmp_view)
@@ -167,7 +171,6 @@ std::string get_absolute_path(object_base* x)
   else
     obj = &x->m_obj;
 
-  /*
   int device_level = 0;
   int client_level = 0;
 

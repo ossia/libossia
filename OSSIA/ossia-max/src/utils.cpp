@@ -2,7 +2,7 @@
 
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-
+#include "ossia-max.hpp"
 
 namespace ossia
 {
@@ -373,6 +373,70 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
 
       return ossia::value(list);
     }
+}
+
+std::string object_path_absolute(object_base* x)
+{
+  fmt::MemoryWriter fullpath;
+  std::vector<std::string> vs;
+  vs.reserve(8);
+
+  vs.push_back(x->m_name->s_name);
+
+  ossia::max::view* view = nullptr;
+  ossia::max::model* model = nullptr;
+
+  int start_level = 0;
+  int view_level = 0;
+  int model_level = 0;
+
+  if (x->m_otype == object_class::view)
+    start_level = 1;
+
+  view = (ossia::max::view*)find_parent_box_alive(
+        &x->m_object, gensym("ossia.view"), start_level, &view_level);
+
+  if (x->m_otype == object_class::model
+      || x->m_otype == object_class::remote)
+  {
+    model =  (ossia::max::model*)find_parent_box_alive(
+          &x->m_object, gensym("ossia.model"), start_level, &model_level);
+  }
+
+  t_object* object = nullptr;
+  ossia::max::view* tmp = nullptr;
+
+  // FIXME this will fail as soon as https://github.com/OSSIA/libossia/issues/208 is implemented
+  // or if model and view are mixed in the same hierarchy
+
+  while (view)
+  {
+    vs.push_back(view->m_name->s_name);
+    tmp = view;
+    view = (ossia::max::view*)find_parent_box_alive(
+          &tmp->m_object, gensym("ossia.view"), 1, &view_level);
+  }
+
+  ossia::max::model* tmp_model = nullptr;
+  while (model)
+  {
+    vs.push_back(model->m_name->s_name);
+    tmp_model = model;
+    model
+        = (ossia::max::model*) find_parent_box_alive(
+          &tmp_model->m_object, gensym("ossia.model"), 1, &model_level);
+  }
+
+  auto rit = vs.rbegin();
+  for (; rit != vs.rend(); ++rit)
+  {
+    fullpath << "/" << *rit;
+  }
+
+  if (vs.empty())
+    fullpath << "/";
+
+  return fullpath.str();
 }
 
 } // namespace max

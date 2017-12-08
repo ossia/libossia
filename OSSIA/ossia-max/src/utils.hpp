@@ -58,6 +58,7 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size);
 ossia::val_type symbol2val_type(t_symbol* s);
 t_symbol* val_type2symbol(ossia::val_type t);
 
+std::string object_path_absolute(object_base* x);
 
 /**
  * @brief symbol2bounding_mode convert t_symbol* to corresponging ossia::bounding_mode
