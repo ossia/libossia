@@ -29,15 +29,15 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   x->m_otype = object_class::device;
   x->m_name = gensym(x->m_device->get_name().c_str());
 
-  x->m_device->on_parameter_created.connect<device, &device::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.connect<device, &device::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
 
   x->m_nodes = {&x->m_device->get_root_node()};
 
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
-      x->m_name = argv[0].a_w.w_symbol;
-      x->m_device->set_name(x->m_name->s_name);
-    }
+    x->m_name = argv[0].a_w.w_symbol;
+    x->m_device->set_name(x->m_name->s_name);
+  }
 
   return (x);
 }
@@ -46,8 +46,8 @@ static void ossia_free(t_ossia *x)
 {
   outlet_free(x->m_dumpout);
 
-  x->m_device->on_parameter_created.disconnect<device, &device::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.disconnect<device, &device::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.disconnect<device_base, &device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.disconnect<device_base, &device_base::on_parameter_deleted_callback>(x);
 
   ossia_pd::instance().devices.remove_all(x);
 }

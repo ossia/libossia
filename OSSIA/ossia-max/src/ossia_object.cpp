@@ -35,6 +35,9 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
   x->m_device = ossia_library.get_default_device();
   x->m_nodes = {&x->m_device->get_root_node()};
 
+  x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
+
   return (x);
 }
 

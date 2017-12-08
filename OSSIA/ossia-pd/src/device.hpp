@@ -63,9 +63,6 @@ public:
   void unregister_children();
   static void loadbang(device* x, t_float type);
 
-  void on_parameter_created_callback(const ossia::net::parameter_base& param);
-  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
-
   std::vector<std::vector<t_atom>> m_protocols{};
 
   static void* create(t_symbol* name, int argc, t_atom* argv);

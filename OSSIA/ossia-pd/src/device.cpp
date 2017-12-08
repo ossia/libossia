@@ -164,26 +164,6 @@ void device::unregister_children()
   }
 }
 
-void device::on_parameter_created_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  SETSYMBOL(a, gensym("create"));
-  SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
-
-void device::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  SETSYMBOL(a, gensym("delete"));
-  SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
-
 void device::expose(device* x, t_symbol*, int argc, t_atom* argv)
 {
 
