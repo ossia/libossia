@@ -4,12 +4,12 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 5,
-			"architecture" : "x86",
+			"revision" : 4,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 146.0, 97.0, 1108.0, 772.0 ],
+		"rect" : [ 100.0, 100.0, 1108.0, 772.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -50,8 +50,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -703,12 +703,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 146.0, 123.0, 1108.0, 746.0 ],
+						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -747,8 +747,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 890.0, 327.0, 131.0, 64.0 ],
-									"presentation_rect" : [ 867.0, 318.5, 0.0, 0.0 ],
+									"patching_rect" : [ 890.0, 327.0, 132.0, 64.0 ],
 									"style" : "",
 									"text" : "Select a group of addresses to send value to",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -765,7 +764,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 664.0, 255.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 672.0, 247.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -778,7 +776,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 664.0, 285.0, 187.0, 22.0 ],
-									"presentation_rect" : [ 665.0, 288.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "send my_spat.1/source.2/gain $1"
 								}
@@ -795,7 +792,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 709.0, 669.5, 174.0, 35.0 ],
-									"presentation_rect" : [ 714.0, 665.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "See syntaxe details",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -813,8 +809,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -854,7 +850,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 17.0, 255.0, 502.0, 21.0 ],
-													"presentation_rect" : [ 34.0, 227.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "from: https://hangar.org/webnou/wp-content/uploads/2012/01/Nime09OSCfinal.pdf",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -870,7 +865,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 17.0, 217.0, 502.0, 21.0 ],
-													"presentation_rect" : [ 39.0, 161.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "this wildcard is defined in OSC 1.1 specifications, see 3.4 of:",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -887,7 +881,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 17.0, 297.0, 502.0, 107.0 ],
-													"presentation_rect" : [ 34.0, 238.0, 0.0, 0.0 ],
 													"style" : "",
 													"text" : "OSC 1.1 inherits the path multiple-level wildcard- matching operator ‘//’ from XPath [23]. This overcomes the limitation of the OSC 1.0 ‘*’ operator that only matches up to ‘/’ boundaries. It also gives concrete semantics to the string ‘//’ in an address—which was previously not explicitly forbidden but may have resulted in inconsistent address handling due to ambiguity (e.g., in UNIX style path operations ‘//’ is a no-op equivalent to ‘/’).\rThe ‘//’ operator enables matching across disparate branches of the address tree and at any depth as illustrated",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1110,7 +1103,7 @@
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 885.0, 160.0, 93.0, 22.0 ],
+									"patching_rect" : [ 842.0, 160.0, 93.0, 22.0 ],
 									"style" : "",
 									"text" : "print @popup 1"
 								}
@@ -1137,9 +1130,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 681.0, 160.0, 186.0, 22.0 ],
+									"patching_rect" : [ 652.0, 160.0, 186.0, 22.0 ],
 									"style" : "",
-									"text" : "address my_spat.1/source.1/gain"
+									"text" : "address gain"
 								}
 
 							}
@@ -1183,7 +1176,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 600.0, 120.0, 235.0, 22.0 ],
+									"patching_rect" : [ 600.0, 120.0, 238.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote my_spat.{1..3}/source.1/gain"
 								}
@@ -1653,8 +1646,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -2108,8 +2101,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -2171,8 +2164,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -2314,8 +2307,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -2468,8 +2461,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -2653,8 +2646,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -2874,12 +2867,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1108.0, 746.0 ],
+						"rect" : [ 100.0, 126.0, 1108.0, 746.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -2908,6 +2901,79 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-15",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 277.0, 437.0, 193.0, 22.0 ],
+									"style" : "",
+									"text" : "address submodel/another_param"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-14",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 137.0, 437.0, 134.0, 22.0 ],
+									"style" : "",
+									"text" : "address my_parameter"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbleside" : 3,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-2",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 7.5, 471.5, 201.0, 49.0 ],
+									"style" : "",
+									"text" : "A remote can be bound to different parameters",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"format" : 6,
+									"id" : "obj-11",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 229.0, 514.0, 50.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"id" : "obj-12",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 3,
+									"outlettype" : [ "", "", "" ],
+									"patching_rect" : [ 229.0, 485.0, 79.0, 22.0 ],
+									"style" : "",
+									"text" : "ossia.remote"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-10",
 									"maxclass" : "comment",
@@ -2954,8 +3020,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -3171,8 +3237,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 5,
-											"architecture" : "x86",
+											"revision" : 4,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
@@ -3365,7 +3431,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 228.0, 594.0, 50.0, 22.0 ],
+									"patching_rect" : [ 229.0, 632.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -3379,7 +3445,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 228.0, 525.0, 50.0, 22.0 ],
+									"patching_rect" : [ 229.0, 563.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -3406,7 +3472,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 228.0, 556.0, 254.0, 22.0 ],
+									"patching_rect" : [ 229.0, 594.0, 254.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_parameter @range 0. 1."
 								}
@@ -3430,6 +3496,37 @@
 							}
  ],
 						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-12", 0 ],
+									"midpoints" : [ 238.5, 542.0, 215.0, 542.0, 215.0, 479.0, 238.5, 479.0 ],
+									"source" : [ "obj-11", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-11", 0 ],
+									"source" : [ "obj-12", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-12", 0 ],
+									"midpoints" : [ 146.5, 471.5, 238.5, 471.5 ],
+									"source" : [ "obj-14", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-12", 0 ],
+									"midpoints" : [ 286.5, 471.5, 238.5, 471.5 ],
+									"source" : [ "obj-15", 0 ]
+								}
+
+							}
+, 							{
 								"patchline" : 								{
 									"destination" : [ "obj-21", 0 ],
 									"source" : [ "obj-16", 0 ]
@@ -3532,16 +3629,9 @@
 			}
 , 			{
 				"name" : "ossia.remote_array.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
+				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
 				"patcherrelativepath" : "../patchers",
 				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "OSC11specs-excerpt.png",
-				"bootpath" : "~/Documents/Max 7/Packages/ossia/media",
-				"patcherrelativepath" : "../media",
-				"type" : "PNG ",
 				"implicit" : 1
 			}
 , 			{

@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 271.0, 93.0, 1096.0, 768.0 ],
+		"rect" : [ 100.0, 100.0, 1096.0, 768.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -131,7 +131,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 271.0, 119.0, 1096.0, 742.0 ],
+						"rect" : [ 0.0, 26.0, 1096.0, 742.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -183,7 +183,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 412.0, 349.0, 608.0, 638.0 ],
+										"rect" : [ 479.0, 164.0, 608.0, 638.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -586,7 +586,7 @@
 															"modernui" : 1
 														}
 ,
-														"rect" : [ 1190.0, 355.0, 452.0, 498.0 ],
+														"rect" : [ 699.0, 306.0, 452.0, 498.0 ],
 														"bglocked" : 0,
 														"openinpresentation" : 0,
 														"default_fontsize" : 12.0,
@@ -614,77 +614,6 @@
 														"style" : "",
 														"subpatcher_template" : "",
 														"boxes" : [ 															{
-																"box" : 																{
-																	"hidden" : 1,
-																	"id" : "obj-8",
-																	"maxclass" : "newobj",
-																	"numinlets" : 1,
-																	"numoutlets" : 1,
-																	"outlettype" : [ "" ],
-																	"patching_rect" : [ 63.0, 355.0, 100.0, 22.0 ],
-																	"style" : "",
-																	"text" : "deferlow"
-																}
-
-															}
-, 															{
-																"box" : 																{
-																	"hidden" : 1,
-																	"id" : "obj-11",
-																	"linecount" : 3,
-																	"maxclass" : "comment",
-																	"numinlets" : 1,
-																	"numoutlets" : 0,
-																	"patching_rect" : [ 197.0, 253.0, 226.0, 47.0 ],
-																	"style" : "",
-																	"text" : "This is a workaround to  https://github.com/OSSIA/libossia/issues/223",
-																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
-																}
-
-															}
-, 															{
-																"box" : 																{
-																	"hidden" : 1,
-																	"id" : "obj-10",
-																	"maxclass" : "newobj",
-																	"numinlets" : 1,
-																	"numoutlets" : 1,
-																	"outlettype" : [ "" ],
-																	"patching_rect" : [ 63.0, 319.0, 100.0, 22.0 ],
-																	"style" : "",
-																	"text" : "deferlow"
-																}
-
-															}
-, 															{
-																"box" : 																{
-																	"hidden" : 1,
-																	"id" : "obj-9",
-																	"maxclass" : "message",
-																	"numinlets" : 2,
-																	"numoutlets" : 1,
-																	"outlettype" : [ "" ],
-																	"patching_rect" : [ 63.0, 286.0, 120.0, 22.0 ],
-																	"style" : "",
-																	"text" : "bind submodel.{1..2}"
-																}
-
-															}
-, 															{
-																"box" : 																{
-																	"hidden" : 1,
-																	"id" : "obj-6",
-																	"maxclass" : "newobj",
-																	"numinlets" : 1,
-																	"numoutlets" : 1,
-																	"outlettype" : [ "bang" ],
-																	"patching_rect" : [ 63.0, 252.0, 100.0, 22.0 ],
-																	"style" : "",
-																	"text" : "loadbang"
-																}
-
-															}
-, 															{
 																"box" : 																{
 																	"id" : "obj-3",
 																	"maxclass" : "comment",
@@ -781,14 +710,6 @@
  ],
 														"lines" : [ 															{
 																"patchline" : 																{
-																	"destination" : [ "obj-8", 0 ],
-																	"hidden" : 1,
-																	"source" : [ "obj-10", 0 ]
-																}
-
-															}
-, 															{
-																"patchline" : 																{
 																	"destination" : [ "obj-4", 0 ],
 																	"source" : [ "obj-2", 0 ]
 																}
@@ -798,22 +719,6 @@
 																"patchline" : 																{
 																	"destination" : [ "obj-2", 0 ],
 																	"source" : [ "obj-5", 0 ]
-																}
-
-															}
-, 															{
-																"patchline" : 																{
-																	"destination" : [ "obj-9", 0 ],
-																	"hidden" : 1,
-																	"source" : [ "obj-6", 0 ]
-																}
-
-															}
-, 															{
-																"patchline" : 																{
-																	"destination" : [ "obj-10", 0 ],
-																	"hidden" : 1,
-																	"source" : [ "obj-9", 0 ]
 																}
 
 															}
@@ -1312,7 +1217,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1096.0, 742.0 ],
+						"rect" : [ 100.0, 126.0, 1096.0, 742.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1412,9 +1317,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 763.0, 219.0, 117.0, 22.0 ],
+									"patching_rect" : [ 798.0, 219.0, 137.0, 22.0 ],
 									"style" : "",
-									"text" : "bind another_model"
+									"text" : "address another_model"
 								}
 
 							}
@@ -1425,9 +1330,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 659.0, 219.0, 89.0, 22.0 ],
+									"patching_rect" : [ 659.0, 219.0, 109.0, 22.0 ],
 									"style" : "",
-									"text" : "bind submodel"
+									"text" : "address submodel"
 								}
 
 							}
