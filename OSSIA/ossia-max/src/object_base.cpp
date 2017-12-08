@@ -84,6 +84,34 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
   //clock_delay(x_regclock, 0);
 }
 
+void purge_parent(ossia::net::node_base* node)
+{
+    // remove parent node recursively if they are no used anymore
+  if (auto pn = node->get_parent())
+  {
+    pn->remove_child(*node);
+    if (pn->get_parent() && pn->children().size() == 0)
+    {
+      bool remove_me = true;
+      for (auto model : ossia_pd::instance().models.copy())
+      {
+        for (const auto& m : model->m_matchers)
+        {
+          if (m.get_node() == pn)
+          {
+            remove_me = false;
+            break;
+          }
+        }
+        if(!remove_me)
+          break;
+      }
+      if (remove_me)
+        purge_parent(pn);
+    }
+  }
+}
+
 t_matcher::~t_matcher()
 {
   if(node && parent)
@@ -102,8 +130,7 @@ t_matcher::~t_matcher()
           ossia::remove_one(remote->m_matchers,*this);
         }
 
-        if (node->get_parent())
-          node->get_parent()->remove_child(*node);
+        purge_parent(node);
       }
       // if there vector is empty
       // remote should be quarantinized
