@@ -64,6 +64,8 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   if (m_mute) return false;
 
+  update_path();
+
   bool res = do_registration(node);
   if (res)
   {

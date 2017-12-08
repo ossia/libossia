@@ -5,6 +5,7 @@
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/utils.hpp>
 #include <regex>
 
 namespace ossia
@@ -441,11 +442,15 @@ void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* 
 
 void object_base::update_path()
 {
-    m_is_pattern = ossia::traversal::is_pattern(m_name->s_name);
+    std::string name = object_path_absolute(this);
+
+    object_post((t_object*)this,"path: %s", name.c_str());
+
+    m_is_pattern = ossia::traversal::is_pattern(name);
 
     if(m_is_pattern)
     {
-        m_path = ossia::traversal::make_path(m_name->s_name);
+        m_path = ossia::traversal::make_path(name);
     }
     else
     {

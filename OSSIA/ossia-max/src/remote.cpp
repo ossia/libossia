@@ -295,6 +295,8 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 {
   if(m_mute) return false;
 
+  update_path();
+
   bool res = do_registration(node);
 
   if (res)
@@ -405,12 +407,15 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 {
   auto& node = addr.get_node();
 
-  if ( m_path && ossia::traversal::match(*m_path, node) )
+  if ( m_path )
   {
-    m_parent_node = node.get_parent();
-    m_matchers.emplace_back(&node,this);
-    m_nodes.push_back(&node);
-    fill_selection();
+    if ( ossia::traversal::match(*m_path, node) )
+    {
+      m_parent_node = node.get_parent();
+      m_matchers.emplace_back(&node,this);
+      m_nodes.push_back(&node);
+      fill_selection();
+    }
   }
 }
 
