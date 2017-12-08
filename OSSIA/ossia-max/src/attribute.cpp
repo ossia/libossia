@@ -184,11 +184,12 @@ void attribute::on_device_deleted(const net::node_base &)
   m_dev = nullptr;
 }
 
-t_max_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_max_err attribute::notify(attribute*x, t_symbol*, t_symbol* msg, void* sender, void* data)
 {
-    // TODO : forward notification to parent class
     if (msg == gensym("attr_modified"))
     {
+      t_symbol* s = (t_symbol *)object_method((t_object *)data, gensym("getname"));
+
       if( s == gensym("range") )
         x->set_range();
       else if ( s == gensym("clip") )
@@ -220,7 +221,7 @@ t_max_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender
       else if ( s == gensym("mute") )
         x->set_mute();
   }
-  return {};
+  return 0;
 }
 
 void* attribute::create(t_symbol* name, int argc, t_atom* argv)
@@ -286,42 +287,6 @@ void attribute::destroy(attribute* x)
 
   outlet_delete(x->m_dumpout);
   x->~attribute();
-}
-
-void attribute::update_attribute(attribute* x, ossia::string_view attr, const ossia::net::node_base* node)
-{
-  if ( attr == ossia::net::text_refresh_rate() )
-  {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      auto rate = ossia::net::get_refresh_rate(*node);
-      if (rate)
-      {
-        x->m_rate = *rate;
-      }
-
-      t_atom a;
-      A_SETFLOAT(&a,x->m_rate);
-      outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-    }
-  } else if ( attr == ossia::net::text_unit()) {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
-
-      t_atom a;
-      A_SETSYM(&a,x->m_unit);
-      outlet_anything(x->m_dumpout, gensym("unit"),1,&a);
-    }
-  } else {
-    parameter_base::update_attribute(x, attr, node);
-  }
 }
 
 ossia::safe_set<attribute*>& attribute::quarantine()
