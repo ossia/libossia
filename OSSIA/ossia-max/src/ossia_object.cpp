@@ -30,13 +30,22 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 
   auto x = make_ossia<ossia_object>();
 
+  ossia_library.devices.push_back(x);
+
   x->m_dumpout
       = outlet_new(x, NULL); // anything outlet to dump device state
   x->m_device = ossia_library.get_default_device();
+  x->m_otype = object_class::device;
+  x->m_name = gensym(x->m_device->get_name().c_str());
   x->m_nodes = {&x->m_device->get_root_node()};
 
   x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
   x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
+
+  if (argc > 0 && argv[0].a_type == A_SYM){
+    x->m_name = argv[0].a_w.w_sym;
+    x->m_device->set_name(x->m_name->s_name);
+  }
 
   return (x);
 }
