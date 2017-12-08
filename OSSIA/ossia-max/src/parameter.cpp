@@ -181,7 +181,6 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   bool res = do_registration(nodes);
   if (res)
   {
-    fill_selection();
     object_dequarantining<parameter>(this);
     for (auto remote : remote::quarantine().copy())
     {
@@ -231,17 +230,19 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       m_matchers.emplace_back(n, this);
       m_nodes.push_back(n);
     }
-
-    set_description();
-    set_tags();
-    set_access_mode();
-    set_unit();
-    set_bounding_mode();
-    set_range();
-    set_minmax();
-    set_default();
-    set_repetition_filter();
   }
+
+  fill_selection();
+
+  set_description();
+  set_tags();
+  set_access_mode();
+  set_unit();
+  set_bounding_mode();
+  set_range();
+  set_minmax();
+  set_default();
+  set_repetition_filter();
 
   clock_delay(m_clock, 0);
 

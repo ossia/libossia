@@ -27,7 +27,6 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   bool res = do_registration(nodes);
   if (res)
   {
-    fill_selection();
     obj_dequarantining<parameter>(this);
 
     // TODO should we put this into device_base::on_parameter_deleted_callback ?
@@ -86,17 +85,19 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       m_matchers.emplace_back(n, this);
       m_nodes.push_back(n);
     }
-
-    set_description();
-    set_tags();
-    set_access_mode();
-    set_unit();
-    set_bounding_mode();
-    set_range();
-    set_minmax();
-    set_default();
-    set_rate();
   }
+
+  fill_selection();
+
+  set_description();
+  set_tags();
+  set_access_mode();
+  set_unit();
+  set_bounding_mode();
+  set_range();
+  set_minmax();
+  set_default();
+  set_rate();
 
   clock_set(m_clock, 1);
 
