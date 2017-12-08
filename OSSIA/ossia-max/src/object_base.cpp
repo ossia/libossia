@@ -93,7 +93,7 @@ void purge_parent(ossia::net::node_base* node)
     if (pn->get_parent() && pn->children().size() == 0)
     {
       bool remove_me = true;
-      for (auto model : ossia_pd::instance().models.copy())
+      for (auto model : ossia_max::instance().models.copy())
       {
         for (const auto& m : model->m_matchers)
         {
