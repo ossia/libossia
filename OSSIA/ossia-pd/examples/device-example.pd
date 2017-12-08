@@ -1,9 +1,9 @@
-#N canvas 15 281 546 689 10;
+#N canvas 1282 48 636 1011 10;
 #X obj 26 372 osc~;
 #X obj 26 504 *~;
 #X obj 106 448 phasor~;
 #X floatatom 124 306 5 0 0 0 - - -, f 5;
-#X obj 393 620 print;
+#X obj 382 620 print;
 #X obj 26 551 *~;
 #X obj 105 472 *~;
 #X text 217 359 convert dBFs to Pd's dB \, 100dB Pd = 0dBFS;
@@ -12,7 +12,7 @@
 #X obj 175 424 line~;
 #X obj 26 219 mtof;
 #X floatatom 26 248 5 0 0 0 - - -, f 5;
-#N canvas 614 110 610 440 envelope 0;
+#N canvas 1442 50 476 1011 envelope 0;
 #X obj 105 15 inlet;
 #X floatatom 145 105 5 0 0 0 - - -, f 5;
 #X obj 145 124 / 127;
@@ -103,7 +103,7 @@ time" @tags envelope @default 10, f 51;
 #X connect 11 0 9 0;
 #X connect 12 0 9 0;
 #X restore 25 79 pd randomtest;
-#X obj 393 550 loadbang;
+#X obj 392 550 loadbang;
 #X text 214 23 A simple synth to demonstrate communiation between Ossia
 device and client., f 42;
 #X floatatom 141 197 5 0 0 0 - - -, f 5;
@@ -116,20 +116,31 @@ device and client., f 42;
 "Modulator frequency ratio", f 43;
 #X obj 25 102 ossia.param note @type vec2f @description "Midi note
 and velocity", f 25;
-#X msg 393 572 expose oscquery;
+#X msg 392 572 expose oscquery;
 #X obj 26 578 *~ 0.2;
-#X obj 393 598 ossia.device Pd;
+#X obj 382 598 ossia.device Pd;
 #X msg 317 572 namespace;
 #X floatatom 174 265 5 0 0 0 - - -, f 5;
 #X text 212 95 You can use - the patch "client-example.pd" \, - the
 "client-example.html" web application - or the QML application "client-example.qml"
 to control this device., f 44;
-#X text 180 512 <- open this for more parameters;
+#X text 166 511 <- open this for more parameters;
 #X obj 25 14 ossia.param play @description "Turn on/off random note
 generation" @type bool, f 25;
 #X obj 174 288 ossia.param modgain @default -20 @type float @description
 "Modulator frequency gain" @unit dB @range -100 6 @clip BOTH, f 44
 ;
+#X msg 382 403 save preset1;
+#X msg 392 423 save preset2;
+#X msg 402 453 load preset1;
+#X msg 412 473 load preset2;
+#X obj 382 497 list prepend preset;
+#X obj 382 529 list trim;
+#X obj 512 497 list prepend preset;
+#X msg 512 403 save preset1.txt;
+#X msg 522 423 save preset2.txt;
+#X msg 532 453 load preset1.txt;
+#X msg 542 473 load preset2.txt;
 #X connect 0 0 1 0;
 #X connect 1 0 5 0;
 #X connect 2 0 6 0;
@@ -164,3 +175,14 @@ generation" @type bool, f 25;
 #X connect 33 0 37 0;
 #X connect 36 0 18 0;
 #X connect 37 0 15 0;
+#X connect 38 0 42 0;
+#X connect 39 0 42 0;
+#X connect 40 0 42 0;
+#X connect 41 0 42 0;
+#X connect 42 0 43 0;
+#X connect 43 0 31 0;
+#X connect 44 0 43 0;
+#X connect 45 0 44 0;
+#X connect 46 0 44 0;
+#X connect 47 0 44 0;
+#X connect 48 0 44 0;
