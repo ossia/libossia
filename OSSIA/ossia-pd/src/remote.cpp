@@ -303,18 +303,15 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
       x->m_name = gensym(_name.c_str());
       x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
-    else
-    {
-      error("You have to pass a name as the first argument");
-      x->m_name = gensym("untitledRemote");
-    }
 
     x->m_clock = clock_new(x, (t_method)parameter_base::bang);
     x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
 
     ebox_attrprocess_viabinbuf(x, d);
 
-    obj_register<remote>(x);
+    if (x->m_name)
+      obj_register<remote>(x);
+
     ossia_pd.remotes.push_back(x);
   }
 
