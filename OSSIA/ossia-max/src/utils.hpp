@@ -154,5 +154,106 @@ void address_mess_cb(T* x, t_symbol* address)
   max_object_register(x);
 }
 
+struct domain_visitor {
+  parameter_base* x;
+
+  template<typename T>
+  void operator()(ossia::domain_base<T>& d)
+  {
+    if(d.min && d.max) {
+      x->m_range_size = 2;
+      A_SETFLOAT(x->m_range, *d.min);
+      A_SETFLOAT(x->m_range+1, *d.max);
+    }
+
+    if (d.min) {
+      x->m_min_size = 1;
+      A_SETFLOAT(x->m_min, *d.min);
+    }
+
+    if (d.max) {
+      x->m_max_size = 1;
+      A_SETFLOAT(x->m_max, *d.max);
+    }
+  }
+  void operator()(ossia::domain_base<impulse>& d)
+  {
+    // nothing to do
+  }
+  void operator()(ossia::domain_base<std::string> d)
+  {
+    if(!d.values.empty())
+    {
+      x->m_range_size = d.values.size() > 512 ? 512 : d.values.size();
+      for (int i = 0; i < x->m_range_size; i++)
+      {
+        // SETSYM(x->m_range+i,gensym(d.values[i].c_str()));
+      }
+    }
+  }
+  void operator()(ossia::domain_base<ossia::value> d)
+  {
+    // TODO
+    if(d.min) { }
+    if(d.max) { }
+    if(!d.values.empty()) { }
+  }
+
+  template<std::size_t N>
+  void operator()(ossia::vecf_domain<N>& d)
+  {
+    x->m_min_size = d.min.size() > 512 ? 512 : d.min.size();
+    x->m_max_size = d.max.size() > 512 ? 512 : d.max.size();
+
+    for (int i=0; i<x->m_max_size; i++)
+      atom_setfloat(&x->m_max[i], *d.max[i]);
+
+    for (int i=0; i<x->m_min_size; i++)
+      atom_setfloat(&x->m_min[i], *d.min[i]);
+
+    x->m_range_size = 0;
+    if ( x->m_min_size == x->m_max_size && x->m_min_size > 1 )
+    {
+      bool flag = true;
+      for (int i=1; i < x->m_min_size && flag; i++)
+      {
+        flag |= *d.min[0] == *d.min[i];
+        flag |= *d.max[0] == *d.max[i];
+      }
+      if (flag)
+      {
+        x->m_range_size = 2;
+        atom_setfloat(&x->m_range[0], *d.min[0]);
+        atom_setfloat(&x->m_range[1], *d.max[0]);
+      }
+    }
+  }
+
+  void operator()(ossia::vector_domain& d)
+  {
+    x->m_min_size = d.min.size() > 512 ? 512 : d.min.size();
+    x->m_max_size = d.max.size() > 512 ? 512 : d.max.size();
+
+    std::vector<t_atom> vamin, vamax;
+    value2atom minvisitor{vamin}, maxvisitor{vamax};
+    for (const auto& v : d.min)
+      v.apply(minvisitor);
+    for (int i=0; i<x->m_min_size; i++)
+      x->m_min[i] = vamin[i];
+
+    for (const auto& v : d.max)
+      v.apply(maxvisitor);
+    for (int i=0; i<x->m_max_size; i++)
+      x->m_max[i] = vamax[i];
+
+    // TODO range
+
+  }
+  void operator()()
+  {
+
+  }
+};
+
 } // namespace max
 } // namespace ossia

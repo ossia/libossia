@@ -51,7 +51,7 @@ public:
   t_atom m_range[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_bounding_mode{};
   t_symbol* m_access_mode{};
-  long m_repetition{1};
+  long m_repetitions{1};
   long m_mute{0};
   long m_enable{1};
   t_symbol* m_unit{};

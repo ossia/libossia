@@ -31,6 +31,7 @@ extern "C" void ossia_parameter_setup()
       "loadbang", A_CANT, 0);
 
   class_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYM, 0);
+  class_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYM, 0);
 
   class_register(CLASS_BOX, c);
 
