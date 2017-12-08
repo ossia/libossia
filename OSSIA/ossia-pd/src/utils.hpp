@@ -341,7 +341,7 @@ std::string replace_brackets(const string_view);
  * @param start_level
  * @return
  */
-static object_base* find_parent_alive(
+static inline object_base* find_parent_alive(
     t_eobj* x, ossia::string_view classname, int start_level, int* level)
 {
   object_base* obj = find_parent(x, classname, start_level, level);

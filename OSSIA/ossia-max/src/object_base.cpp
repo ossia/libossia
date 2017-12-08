@@ -444,8 +444,6 @@ void object_base::update_path()
 {
     std::string name = object_path_absolute(this);
 
-    object_post((t_object*)this,"path: %s", name.c_str());
-
     m_is_pattern = ossia::traversal::is_pattern(name);
 
     if(m_is_pattern)
