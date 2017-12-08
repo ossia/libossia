@@ -12,6 +12,7 @@ struct token_request {
     ossia::time_value date{};
     double position{};
     ossia::time_value offset{};
+    double speed{1.};
     bool start_discontinuous{};
     bool end_discontinuous{};
 

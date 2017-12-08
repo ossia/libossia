@@ -139,7 +139,7 @@ private Q_SLOTS:
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
-        l.state(1_tv, 0, 0_tv);
+        l.state(1_tv, 0, 0_tv, 1.);
         qDebug() << snd->requested_tokens.size();
         QCOMPARE((int)snd->requested_tokens.size(), (int)2);
         qDebug() << snd->requested_tokens[0];
@@ -157,7 +157,7 @@ private Q_SLOTS:
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
-        l.state(5_tv, 0, 0_tv);
+        l.state(5_tv, 0, 0_tv, 1.);
         qDebug() << snd->requested_tokens;
         QCOMPARE((int)snd->requested_tokens.size(), (int)4);
         QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, false, false}));
@@ -175,7 +175,7 @@ private Q_SLOTS:
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
-        l.state(9_tv, 0, 0_tv);
+        l.state(9_tv, 0, 0_tv, 1.);
         ossia::execution_state e;
         for(auto tk : snd->requested_tokens)
           ((ossia::graph_node*)snd.get())->run(tk, e);
@@ -216,7 +216,7 @@ private Q_SLOTS:
       child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
       parent.start();
-      parent.state(14_tv, 0., 0_tv);
+      parent.state(14_tv, 0., 0_tv, 1.);
 
       ossia::execution_state e;
       for(auto tk : snd->requested_tokens)
@@ -239,7 +239,7 @@ private Q_SLOTS:
     {
       test_loop l;
       l.parent.start();
-      l.parent.state(14_tv, 0., 0_tv);
+      l.parent.state(14_tv, 0., 0_tv, 1.);
 
 
       audio_vector expected{ossia::audio_channel{1., 1., 1., 1., 5., 6., 5., 1., 1., 1., 1., 5., 6., 5.}};
@@ -273,7 +273,7 @@ private Q_SLOTS:
 
         float* chan = audio_data[0] + i - 1 ;
         l.aparam->audio = {{chan, 64 - i}};
-        l.parent.state(time_value{i}, 0., time_value{0});
+        l.parent.state(time_value{i}, 0., time_value{0}, 1.);
         l.g.state(e);
         e.commit();
       }

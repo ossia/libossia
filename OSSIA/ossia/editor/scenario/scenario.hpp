@@ -45,7 +45,7 @@ public:
 
   void offset(ossia::time_value, double pos) override;
 
-  void state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
+  void state(ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed) override;
 
   void start() override;
   void stop() override;

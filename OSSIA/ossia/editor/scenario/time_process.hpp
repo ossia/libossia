@@ -37,7 +37,9 @@ public:
    #time_interval date
    \details don't call state when the parent #time_interval is not running
    */
-  virtual void state(ossia::time_value date, double pos, ossia::time_value tick_offset) = 0;
+  virtual void state(
+      ossia::time_value date, double pos,
+      ossia::time_value tick_offset, double gspeed) = 0;
 
   /**
   * @brief start

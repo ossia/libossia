@@ -64,6 +64,7 @@ public:
   void set_speed(double g)
   {
     m_speed = g;
+    m_globalSpeed = g * m_speed;
   }
 
 
@@ -195,6 +196,12 @@ public:
     return m_processes;
   }
 
+  void set_parent_speed(double sp)
+  {
+    m_parentSpeed = sp;
+    m_globalSpeed = m_parentSpeed * m_speed;
+  }
+
 private:
   void compute_position();
 
@@ -217,5 +224,7 @@ private:
 
   time_value m_tick_offset{}; /// offset in the current tick
   double m_speed{1.}; /// tick length is multiplied by this
+  double m_globalSpeed{1.};
+  double m_parentSpeed{1.};
 };
 }

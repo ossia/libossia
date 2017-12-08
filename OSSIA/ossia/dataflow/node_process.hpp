@@ -24,11 +24,11 @@ public:
   }
 
   void
-  state(ossia::time_value parent_date, double relative_position, ossia::time_value tick_offset) override
+  state(ossia::time_value parent_date, double relative_position, ossia::time_value tick_offset, double gspeed) override
   {
     if(node)
     {
-      node->requested_tokens.push_back({parent_date, relative_position, tick_offset});
+      node->requested_tokens.push_back({parent_date, relative_position, tick_offset, gspeed});
     }
   }
 

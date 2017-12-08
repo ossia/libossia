@@ -331,9 +331,9 @@ enum progress_mode
 };
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset)
+void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
 {
-  node->requested_tokens.push_back({date, pos, tick_offset});
+  node->requested_tokens.push_back({date, pos, tick_offset, gspeed});
   // ossia::logger().info("scenario::state starts");
   if (date != m_lastDate)
   {
@@ -441,6 +441,8 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       {
         cst_max_dur = it->second;
       }
+
+      interval.set_parent_speed(gspeed);
 
       // Tick without going over the max
       // so that the state is not 1.01*automation for instance.

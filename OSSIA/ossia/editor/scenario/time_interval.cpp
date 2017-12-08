@@ -12,7 +12,7 @@ namespace ossia
 
 void time_interval::tick_current(ossia::time_value offset)
 {
-  node->requested_tokens.push_back({m_date, m_position, offset});
+  node->requested_tokens.push_back({m_date, m_position, offset, m_globalSpeed});
   m_tick_offset = offset;
 
   state();
@@ -22,7 +22,7 @@ void time_interval::tick_current(ossia::time_value offset)
 
 void time_interval::tick()
 {
-  node->requested_tokens.push_back({m_date, m_position, 0_tv});
+  node->requested_tokens.push_back({m_date, m_position, 0_tv, m_globalSpeed});
 
   state();
   if (m_callback)
@@ -33,7 +33,7 @@ void time_interval::tick(time_value date, double ratio)
 {
   m_date += std::ceil(date.impl * m_speed / ratio);
   compute_position();
-  node->requested_tokens.push_back({m_date, m_position, 0_tv});
+  node->requested_tokens.push_back({m_date, m_position, 0_tv, m_globalSpeed});
 
   state();
   if (m_callback)
@@ -49,7 +49,7 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset)
 {
   m_date += std::ceil(date.impl * m_speed);
   compute_position();
-  node->requested_tokens.push_back({m_date, m_position, offset});
+  node->requested_tokens.push_back({m_date, m_position, offset, m_globalSpeed});
   m_tick_offset = offset;
   state();
   if (m_callback)
@@ -60,7 +60,7 @@ void time_interval::tick_offset(time_value date, double ratio, ossia::time_value
 {
   m_date += std::ceil(date.impl * m_speed / ratio);
   compute_position();
-  node->requested_tokens.push_back({m_date, m_position, offset});
+  node->requested_tokens.push_back({m_date, m_position, offset, m_globalSpeed});
 
   m_tick_offset = offset;
   state();
@@ -181,7 +181,7 @@ void time_interval::state()
       time_process& p = *timeProcess;
       if (p.enabled())
       {
-        p.state(m_date, m_position, m_tick_offset);
+        p.state(m_date, m_position, m_tick_offset, m_globalSpeed);
       }
     }
   }

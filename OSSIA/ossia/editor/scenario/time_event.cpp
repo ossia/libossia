@@ -52,7 +52,7 @@ void time_event::tick(ossia::time_value offset)
   for(auto& proc : m_processes)
   {
     proc->start();
-    proc->state(0_tv, 0., offset);
+    proc->state(0_tv, 0., offset, 1.);
     proc->stop();
   }
 }
