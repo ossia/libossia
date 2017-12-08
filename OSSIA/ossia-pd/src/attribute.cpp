@@ -254,42 +254,6 @@ void attribute::destroy(attribute* x)
   x->~attribute();
 }
 
-void attribute::update_attribute(attribute* x, ossia::string_view attr, const ossia::net::node_base* node)
-{
-  if ( attr == ossia::net::text_refresh_rate() )
-  {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      auto rate = ossia::net::get_refresh_rate(*node);
-      if (rate)
-      {
-        x->m_rate = *rate;
-      }
-
-      t_atom a;
-      SETFLOAT(&a,x->m_rate);
-      outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-    }
-  } else if ( attr == ossia::net::text_unit()) {
-    for (auto m : x->m_node_selection)
-    {
-      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
-
-      t_atom a;
-      SETSYMBOL(&a,x->m_unit);
-      outlet_anything(x->m_dumpout, gensym("unit"),1,&a);
-    }
-  } else {
-    parameter_base::update_attribute(x, attr, node);
-  }
-}
-
 extern "C" void setup_ossia0x2eattribute(void)
 {
   t_eclass* c = eclass_new("ossia.attribute",

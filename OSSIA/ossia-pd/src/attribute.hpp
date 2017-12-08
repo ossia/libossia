@@ -22,7 +22,6 @@ public:
   ossia::net::device_base* m_dev{};
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
-  static void update_attribute(attribute* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static void click( attribute* x, t_floatarg xpos, t_floatarg ypos,
                      t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
   static t_pd_err notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
