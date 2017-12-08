@@ -48,11 +48,22 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
       A_SETFLOAT(status+1, 0);
       status[2] = argv[0];
 
+      std::string filename = argv[0].a_w.w_sym->s_name;
+
+      bool make_kiss = filename.size() >= 4 &&
+                 filename.compare(filename.size() - 4, 4, ".txt") == 0;
+
       try {
 
         auto preset = ossia::presets::make_preset(*node);
-        auto json = ossia::presets::to_string(preset);
-        ossia::presets::write_file(json, argv[0].a_w.w_sym->s_name);
+        if (make_kiss)
+        {
+          auto kiss = ossia::presets::to_string(preset);
+          ossia::presets::write_file(kiss, filename);
+        } else {
+          auto json = ossia::presets::write_json(x->m_name->s_name, preset);
+          ossia::presets::write_file(json, filename);
+        }
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
@@ -72,8 +83,13 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
       try {
 
         auto json = ossia::presets::read_file(argv[0].a_w.w_sym->s_name);
-        auto preset = ossia::presets::from_string(json);
-        ossia::presets::apply_preset(*node, preset, ossia::presets::keep_arch_on, {}, true);
+        ossia::presets::preset preset;
+        try {
+          preset = ossia::presets::read_json(json);
+        } catch (...) {
+          preset = ossia::presets::from_string(json);
+        }
+        ossia::presets::apply_preset(*node, preset,  ossia::presets::keep_arch_on, {}, true);
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
