@@ -76,6 +76,11 @@ set(PROJECT_SRCS
 
 include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+
+if(OSSIA_SANITIZE)
+    sanitize_build(${PROJECT_NAME})
+endif()
+
 target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
 use_gold(${PROJECT_NAME})
 
