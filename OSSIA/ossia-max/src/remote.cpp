@@ -82,22 +82,16 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       }
     }
 
-    if (x->m_name == _sym_nothing)
-    {
-      object_error((t_object*)x, "needs a name as first argument");
-      x->m_name = gensym("untitledRemote");
-      x->update_path();
-      return x;
-    }
-
-    x->update_path();
-
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
+    if (x->m_name != _sym_nothing)
+    {
+      x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
+      x->update_path();
+      max_object_register<remote>(x);
+    }
 
-    max_object_register<remote>(x);
     ossia_max::instance().remotes.push_back(x);
   }
 
