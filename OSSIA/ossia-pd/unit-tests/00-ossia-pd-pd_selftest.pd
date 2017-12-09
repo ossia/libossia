@@ -1,0 +1,6 @@
+#N canvas 642 76 316 453 10;
+#X obj 91 79 loadbang;
+#X obj 91 123 s pd;
+#X msg 91 101 quit;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
