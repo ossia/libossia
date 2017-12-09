@@ -20,6 +20,7 @@ struct websocket_threaded_connection;
 namespace pd
 {
 
+extern "C" void setup_ossia0x2eassert(void);
 extern "C" void setup_ossia0x2eattribute(void);
 extern "C" void setup_ossia0x2eclient(void);
 extern "C" void setup_ossia0x2edevice(void);

@@ -72,6 +72,8 @@ set(PROJECT_SRCS
   src/view.hpp
   src/utils.hpp
   src/utils.cpp
+  src/assert.hpp
+  src/assert.cpp
   )
 
 include(GenerateExportHeader)
