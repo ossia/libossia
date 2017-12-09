@@ -147,3 +147,29 @@ install(TARGETS ${PROJECT_NAME}
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../LICENSE
         DESTINATION "${OSSIA_PD_INSTALL_FOLDER}"
         COMPONENT ${PROJECT_NAME})
+
+if(OSSIA_TESTING)
+  # need to call enable_testing() here
+  # to update test on CMakeLists.txt changes
+  # enable_testing()
+  message(STATUS "Define Pd test")
+  message("First a loading test")
+
+  add_test(NAME ossia-pd-lib_loading
+      COMMAND pd -nogui -lib ossia 2>&1 >/dev/null | grep "Welcome to ossia library"
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+      )
+
+  file(GLOB PD_UNIT_TEST
+       LIST_DIRECTORIES false
+       RELATIVE ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+       ${CMAKE_CURRENT_LIST_DIR}/unit-tests/*.pd)
+
+  foreach(patcher ${PD_UNIT_TEST})
+    message("add test patcher: ${patcher}")
+    add_test(NAME ${patcher}
+             COMMAND pd -nogui -lib ossia ${patcher}
+             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+             )
+  endforeach()
+endif()
