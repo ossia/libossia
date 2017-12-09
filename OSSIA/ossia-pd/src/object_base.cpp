@@ -263,7 +263,6 @@ void t_matcher::output_value()
   while(m_queue_list.try_dequeue(val)) {
     bool break_flag = false;
 
-
     for (auto v : m_set_pool)
     {
       if (v == val)
@@ -487,6 +486,18 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
+void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
+{
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    t_atom a;
+    SETFLOAT(&a, ossia::net::get_zombie(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("zombie"), 1, &a);
+  }
+}
+
 void object_base::fill_selection()
 {
   m_node_selection.clear();
@@ -519,7 +530,7 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
   }
 
   if (nodes.empty())
-    outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
+    outlet_anything(x->m_dumpout, gensym("global_address"), 0, NULL);
 }
 
 void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
@@ -634,8 +645,18 @@ void object_base::class_setup(t_eclass*c)
 }
 
 void object_base::get_mess_cb(object_base* x, t_symbol* s){
-  if (s == gensym("address"))
+  if (s == gensym("global_address"))
     get_address(x,x->m_node_selection);
+  else if (s == gensym("tags"))
+    get_tags(x,x->m_node_selection);
+  else if (s == gensym("description"))
+    get_description(x,x->m_node_selection);
+  else if (s == gensym("hidden"))
+    get_hidden(x,x->m_node_selection);
+  else if (s == gensym("zombie"))
+    get_zombie(x,x->m_node_selection);
+  else
+    logpost(x,2,"no attribute %s", s->s_name);
 }
 
 void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)

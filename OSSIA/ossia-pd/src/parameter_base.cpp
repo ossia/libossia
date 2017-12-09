@@ -553,7 +553,7 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
   {
     auto node = m->get_node();
     auto param = node->get_parameter();
-    if(set_flag) m->m_set_pool.push_back(set_flag);
+    if(set_flag) m->m_set_pool.push_back(v);
     param->push_value(std::move(v));
   }
 }

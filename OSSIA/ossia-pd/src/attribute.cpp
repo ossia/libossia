@@ -138,7 +138,6 @@ void attribute::on_device_deleted(const net::node_base &)
 
 t_pd_err attribute::notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
-    // TODO : forward notification to parent class
     if (msg == gensym("attr_modified"))
     {
       if( s == gensym("range") )
