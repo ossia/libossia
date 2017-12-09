@@ -74,7 +74,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 53.0, 475.75, 106.0, 22.0 ],
 					"style" : "",
-					"text" : "prepend send"
+					"text" : "prepend select"
 				}
 
 			}
@@ -493,7 +493,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-64",
-					"index" : 0,
+					"index" : 2,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
@@ -652,7 +652,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 20.25, 556.0, 138.75, 22.0 ],
+					"patching_rect" : [ 20.25, 556.0, 144.75, 22.0 ],
 					"style" : "",
 					"text" : "ossia.remote #1"
 				}
@@ -770,7 +770,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 20.25, 511.0, 138.75, 22.0 ],
+					"patching_rect" : [ 20.25, 511.0, 144.75, 22.0 ],
 					"style" : "",
 					"text" : "ossia.remote #1"
 				}
@@ -923,7 +923,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-2",
-					"index" : 0,
+					"index" : 1,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
@@ -936,7 +936,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-1",
-					"index" : 0,
+					"index" : 1,
 					"maxclass" : "inlet",
 					"numinlets" : 0,
 					"numoutlets" : 1,
@@ -1370,12 +1370,6 @@
 
 			}
  ],
-		"dependency_cache" : [ 			{
-				"name" : "ossia.remote.mxo",
-				"type" : "iLaX"
-			}
- ],
-		"autosave" : 0,
 		"accentcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 		"bgfillcolor_type" : "gradient",
 		"bgfillcolor_color1" : [ 0.238168, 0.193585, 0.215291, 1.0 ],
