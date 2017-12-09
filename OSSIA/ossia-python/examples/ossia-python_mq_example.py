@@ -26,14 +26,16 @@ parameter = node.create_parameter(ossia.ValueType.String)
 parameter.value = "a string"
 
 while(True):
-  res = messq.pop()
-  if(res != None):
-    parameter, value = res
-    print("messq: Got " +  str(parameter.node) + " => " + str(value))
+    res = messq.pop()
+    while res != None:
+        parameter, value = res
+        print("messq: Got " + str(parameter.node) + " => " + str(value))
+        res = messq.pop()
 
-  res = globq.pop()
-  if(res != None):
-    parameter, value = res
-    print("globq: Got " +  str(parameter.node) + " => " + str(value))
+    res = globq.pop()
+    while res != None:
+        parameter, value = res
+        print("globq: Got " + str(parameter.node) + " => " + str(value))
+        res = globq.pop()
+    time.sleep(0.1)
 
-  time.sleep(0.1)
