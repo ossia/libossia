@@ -268,7 +268,7 @@
 				Mute output
 			</digest>
 			<description>
-				The <at>mute</at> attribute allows to mute the output of <o>ossia.remote</o>. Note that this attribute affects the remote only. Bound parameter will still output values
+				The <at>mute</at> attribute allows to mute the output of <o>ossia.remote</o>.<br/><br/> Note that <at>mute</at> attribute temporary unbind remote from the parameter. Hence activating <at>mute</at> will also prevent from addressing distant parameter's attributes for example.
 			</description>
 		</attribute>
 
