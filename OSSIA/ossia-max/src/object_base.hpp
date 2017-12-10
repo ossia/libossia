@@ -135,6 +135,7 @@ public:
 
   // constructor
   object_base();
+  ~object_base();
 
   std::mutex bindMutex;
 
