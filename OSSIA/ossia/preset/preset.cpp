@@ -1,6 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <ossia/detail/json.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <cstdio>
 #include <iostream>
@@ -27,6 +29,10 @@
 #include <ossia/ossia.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
+
+#if defined(GetObject)
+#undef GetObject
+#endif
 
 struct ossia_preset
 {
