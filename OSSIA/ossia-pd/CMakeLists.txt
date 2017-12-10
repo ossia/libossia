@@ -173,4 +173,5 @@ if(OSSIA_TESTING)
              WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
              )
   endforeach()
+  include(CTest)
 endif()
