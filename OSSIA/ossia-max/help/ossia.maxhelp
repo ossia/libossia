@@ -5,11 +5,11 @@
 			"major" : 7,
 			"minor" : 3,
 			"revision" : 4,
-			"architecture" : "x64",
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 348.0, 78.0, 815.0, 901.0 ],
+		"rect" : [ 348.0, 78.0, 938.0, 938.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -38,6 +38,82 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"bubble" : 1,
+					"bubbletextmargin" : 10,
+					"fontname" : "Lato Regular",
+					"fontsize" : 12.0,
+					"id" : "obj-24",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 177.0, 654.5, 280.0, 35.0 ],
+					"presentation_rect" : [ 191.0, 643.0, 0.0, 0.0 ],
+					"style" : "",
+					"text" : "Get a list of available protocols in Max console",
+					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bubble" : 1,
+					"bubbletextmargin" : 10,
+					"fontname" : "Lato Regular",
+					"fontsize" : 12.0,
+					"id" : "obj-23",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 230.0, 439.0, 212.0, 35.0 ],
+					"presentation_rect" : [ 237.0, 446.5, 0.0, 0.0 ],
+					"style" : "",
+					"text" : "Set or get the global device name",
+					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"angle" : 270.0,
+					"bgcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ],
+					"id" : "obj-39",
+					"maxclass" : "panel",
+					"mode" : 0,
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 10.5, 249.0, 14.0, 14.0 ],
+					"proportion" : 0.39,
+					"shape" : 3,
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"bgcolor" : [ 0.376471, 0.384314, 0.4, 1.0 ],
+					"bgcolor2" : [ 0.376471, 0.384314, 0.4, 1.0 ],
+					"bgfillcolor_angle" : 270.0,
+					"bgfillcolor_autogradient" : 0.0,
+					"bgfillcolor_color" : [ 0.290196, 0.309804, 0.301961, 0.0 ],
+					"bgfillcolor_color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
+					"bgfillcolor_color2" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
+					"bgfillcolor_proportion" : 0.39,
+					"bgfillcolor_type" : "color",
+					"gradient" : 1,
+					"id" : "obj-36",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 27.0, 245.0, 599.0, 22.0 ],
+					"style" : "",
+					"text" : "See the OSSIA overview patcher from the extras menu for more information about various objects of the library",
+					"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"border" : 0,
 					"filename" : "helpdetails.js",
 					"id" : "obj-10",
@@ -48,7 +124,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 8.0, 7.0, 400.5, 101.0 ]
+					"patching_rect" : [ 8.0, 7.0, 634.5, 114.0 ]
 				}
 
 			}
@@ -74,7 +150,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 124.0, 680.0, 118.0, 22.0 ],
+					"patching_rect" : [ 124.0, 691.0, 118.0, 22.0 ],
 					"style" : "",
 					"text" : "expose oscquery"
 				}
@@ -89,37 +165,9 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 112.0, 650.0, 58.0, 22.0 ],
+					"patching_rect" : [ 111.0, 661.0, 58.0, 22.0 ],
 					"style" : "",
 					"text" : "expose"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-3",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 29.0, 682.0, 117.0, 20.0 ],
-					"style" : "",
-					"text" : "for example"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-4",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 167.0, 649.0, 186.0, 20.0 ],
-					"style" : "",
-					"text" : "(click to get help in Pd's console)"
 				}
 
 			}
@@ -137,7 +185,7 @@
 							"major" : 7,
 							"minor" : 3,
 							"revision" : 4,
-							"architecture" : "x64",
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -170,53 +218,45 @@
 						"subpatcher_template" : "",
 						"boxes" : [ 							{
 								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
 									"id" : "obj-1",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 109.0, 53.0, 100.0, 20.0 ],
-									"style" : "",
-									"text" : "ø.param dummy"
+									"patching_rect" : [ 109.0, 53.0, 140.0, 22.0 ],
+									"style" : "default",
+									"text" : "ossia.parameter dummy"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
 									"id" : "obj-2",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 109.0, 81.0, 100.0, 20.0 ],
-									"style" : "",
-									"text" : "ø.param foo"
+									"patching_rect" : [ 109.0, 81.0, 118.0, 22.0 ],
+									"style" : "default",
+									"text" : "ossia.parameter foo"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
 									"id" : "obj-3",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 109.0, 106.0, 100.0, 20.0 ],
-									"style" : "",
-									"text" : "ø.param bar"
+									"patching_rect" : [ 109.0, 106.0, 118.0, 22.0 ],
+									"style" : "default",
+									"text" : "ossia.parameter bar"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
 									"id" : "obj-4",
 									"maxclass" : "newobj",
 									"numinlets" : 0,
@@ -227,7 +267,7 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -260,59 +300,51 @@
 										"subpatcher_template" : "",
 										"boxes" : [ 											{
 												"box" : 												{
-													"fontname" : "Arial",
-													"fontsize" : 10.0,
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 102.0, 87.0, 100.0, 20.0 ],
-													"style" : "",
+													"patching_rect" : [ 102.0, 87.0, 119.0, 22.0 ],
+													"style" : "default",
 													"text" : "ossia.model fruh"
 												}
 
 											}
 , 											{
 												"box" : 												{
-													"fontname" : "Arial",
-													"fontsize" : 10.0,
 													"id" : "obj-2",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
-													"patching_rect" : [ 102.0, 164.0, 100.0, 20.0 ],
-													"style" : "",
-													"text" : "ø.param stuck"
+													"patching_rect" : [ 102.0, 164.0, 129.0, 22.0 ],
+													"style" : "default",
+													"text" : "ossia.parameter stuck"
 												}
 
 											}
 , 											{
 												"box" : 												{
-													"fontname" : "Arial",
-													"fontsize" : 10.0,
 													"id" : "obj-3",
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 18.0, 137.0, 258.0, 18.0 ],
-													"style" : "",
+													"patching_rect" : [ 18.0, 137.0, 309.0, 20.0 ],
+													"style" : "default",
 													"text" : "Here, the stuck parameter is placed under the fruh node"
 												}
 
 											}
 , 											{
 												"box" : 												{
-													"fontname" : "Arial",
-													"fontsize" : 10.0,
 													"id" : "obj-4",
 													"linecount" : 3,
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 20.0, 22.0, 322.0, 40.0 ],
-													"style" : "",
+													"patching_rect" : [ 20.0, 22.0, 329.0, 47.0 ],
+													"style" : "default",
 													"text" : "The [ossia.model] object allows to nest (or group) parameters under a sub-node This can be done recursively with sub-models in further sub-patchers"
 												}
 
@@ -321,7 +353,7 @@
 										"lines" : [  ]
 									}
 ,
-									"patching_rect" : [ 109.0, 152.0, 50.0, 20.0 ],
+									"patching_rect" : [ 109.0, 152.0, 58.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -330,21 +362,19 @@
 										"tags" : ""
 									}
 ,
-									"style" : "",
+									"style" : "default",
 									"text" : "p model"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Arial",
-									"fontsize" : 10.0,
 									"id" : "obj-5",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 36.0, 25.0, 225.0, 18.0 ],
-									"style" : "",
+									"patching_rect" : [ 36.0, 25.0, 268.0, 20.0 ],
+									"style" : "default",
 									"text" : "see [ossia.param] help for more info and options"
 								}
 
@@ -353,7 +383,7 @@
 						"lines" : [  ]
 					}
 ,
-					"patching_rect" : [ 355.0, 277.0, 90.0, 22.0 ],
+					"patching_rect" : [ 62.0, 586.0, 90.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -413,9 +443,6 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.941176, 0.690196, 0.196078, 1.0 ],
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
 					"id" : "obj-9",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
@@ -451,7 +478,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 151.0, 710.0, 238.0, 22.0 ],
+					"patching_rect" : [ 151.0, 721.0, 238.0, 22.0 ],
 					"style" : "",
 					"text" : "expose oscquery 1234 9876"
 				}
@@ -459,7 +486,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.941176, 0.690196, 0.196078, 1.0 ],
+					"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-13",
@@ -467,14 +494,15 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 111.0, 746.0, 54.0, 22.0 ],
+					"patching_rect" : [ 111.0, 757.0, 39.0, 22.0 ],
 					"style" : "",
-					"text" : "ø"
+					"text" : "ossia"
 				}
 
 			}
 , 			{
 				"box" : 				{
+					"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-14",
@@ -492,98 +520,14 @@
 				"box" : 				{
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
-					"id" : "obj-15",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 226.0, 459.0, 117.0, 20.0 ],
-					"style" : "",
-					"text" : "or retrieved"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
 					"id" : "obj-16",
 					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 27.0, 116.0, 743.0, 33.0 ],
+					"patching_rect" : [ 27.0, 123.0, 743.0, 33.0 ],
 					"style" : "",
 					"text" : "ossia-Max is the implementation of libossia for Max - several other implementations of libossia are available for various environments, such as openFrameworks, C'74's Max, python, Qt, plain C, etc... for more info, see: https://ossia.github.io"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-17",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 26.0, 278.0, 306.0, 20.0 ],
-					"style" : "",
-					"text" : "Look into that subpatch to see how nodes are declared:"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-18",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 208.0, 430.0, 171.0, 20.0 ],
-					"style" : "",
-					"text" : "its name can also be changed"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-19",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 473.0, 508.0, 284.0, 20.0 ],
-					"style" : "",
-					"text" : "NB: all ossia-pd objects can indifferently be named:"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-20",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 612.0, 530.0, 162.0, 20.0 ],
-					"style" : "",
-					"text" : "[ossia.theNameOftheObject]"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-21",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 613.0, 550.0, 142.0, 20.0 ],
-					"style" : "",
-					"text" : "[ø.theNameOftheObject]"
 				}
 
 			}
@@ -595,51 +539,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 26.0, 373.0, 299.0, 20.0 ],
+					"patching_rect" : [ 27.0, 338.0, 299.0, 20.0 ],
 					"style" : "",
 					"text" : "The ossia object allows to manage this general device"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-23",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 25.0, 306.0, 759.0, 20.0 ],
-					"style" : "",
-					"text" : "________________________________________________________________________________________________________________"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-24",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 24.0, 244.0, 759.0, 20.0 ],
-					"style" : "",
-					"text" : "________________________________________________________________________________________________________________"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-25",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 30.0, 589.0, 759.0, 20.0 ],
-					"style" : "",
-					"text" : "________________________________________________________________________________________________________________"
 				}
 
 			}
@@ -651,7 +553,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 31.0, 623.0, 320.0, 20.0 ],
+					"patching_rect" : [ 31.0, 634.0, 320.0, 20.0 ],
 					"style" : "",
 					"text" : "The global namespace can be exposed over the network :"
 				}
@@ -659,29 +561,31 @@
 			}
 , 			{
 				"box" : 				{
-					"fontname" : "Arial",
+					"fontname" : "Lato Regular",
 					"fontsize" : 12.0,
 					"id" : "obj-27",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 262.0, 679.0, 436.0, 20.0 ],
+					"patching_rect" : [ 262.0, 690.0, 463.0, 21.0 ],
 					"style" : "",
-					"text" : "will use oscquery protocol and default ports (OSC port 9999 and WS port 5678)."
+					"text" : "Expose using oscquery protocol and default ports (OSC port 9999 and WS port 5678)",
+					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"fontname" : "Arial",
+					"fontname" : "Lato Regular",
 					"fontsize" : 12.0,
 					"id" : "obj-28",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 393.0, 710.0, 357.0, 20.0 ],
+					"patching_rect" : [ 393.0, 721.0, 387.0, 21.0 ],
 					"style" : "",
-					"text" : "will use oscquery protocol with OSC port 1234 and WS port 9876"
+					"text" : "Expose using oscquery protocol with OSC port 1234 and WS port 9876",
+					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 				}
 
 			}
@@ -694,9 +598,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 27.0, 194.0, 866.0, 33.0 ],
+					"patching_rect" : [ 27.0, 201.0, 866.0, 33.0 ],
 					"style" : "",
-					"text" : "This tree-based architecture (coined \"device\" in the OSSIA terminology) can then be exposed under several protocols, some of which allow this architecture, and the properties and values of its nodes, to be explored and queried. For now, protocols available in pd are plain OSC, OSCquery, and Minuit - more are to come"
+					"text" : "This tree-based architecture (coined \"device\" in the OSSIA terminology) can then be exposed under several protocols, some of which allow this architecture, and the properties and values of its nodes, to be explored and queried. For now, protocols available are plain OSC, OSCquery, and Minuit - more are to come"
 				}
 
 			}
@@ -709,9 +613,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 26.0, 337.0, 718.0, 33.0 ],
+					"patching_rect" : [ 27.0, 302.0, 718.0, 33.0 ],
 					"style" : "",
-					"text" : "All the nodes (models & params, see subpatch above) in pd that haven't been explicitly registered under an [ossia.device] object, are automatically declared under a general device"
+					"text" : "All the nodes (models & params, see subpatch above) that haven't been explicitly registered under an [ossia.device] object, are automatically declared under a general device"
 				}
 
 			}
@@ -724,7 +628,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 27.0, 157.0, 708.0, 33.0 ],
+					"patching_rect" : [ 27.0, 164.0, 708.0, 33.0 ],
 					"style" : "",
 					"text" : "libossia allows to declare the architecture of a patcher's functions as a tree of nodes and parameters. These nodes/parameters can have attributes, which allow to declare some of their properties, such as their values, types, units, ranges, etc..."
 				}
@@ -739,7 +643,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 29.0, 779.0, 747.0, 33.0 ],
+					"patching_rect" : [ 29.0, 790.0, 747.0, 33.0 ],
 					"style" : "",
 					"text" : "When exposed via OSCquery, one can query the namespace and properties from a web browser, e.g. http://localhost:5678 if you used the default ports More queries are possible in this way, e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE"
 				}
@@ -747,29 +651,18 @@
 			}
 , 			{
 				"box" : 				{
-					"fontname" : "Arial",
+					"bubble" : 1,
+					"bubbletextmargin" : 10,
+					"fontname" : "Lato Regular",
 					"fontsize" : 12.0,
 					"id" : "obj-33",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 147.0, 402.0, 476.0, 20.0 ],
+					"patching_rect" : [ 142.0, 395.5, 369.0, 35.0 ],
 					"style" : "",
-					"text" : "allows to get the namespace, i.e. the list of the adresses registered to the global device."
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"fontname" : "Arial",
-					"fontsize" : 12.0,
-					"id" : "obj-34",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 25.0, 822.0, 759.0, 20.0 ],
-					"style" : "",
-					"text" : "________________________________________________________________________________________________________________"
+					"text" : "Get the namespace (all adresses registered to the global device)",
+					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
 
 			}
