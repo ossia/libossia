@@ -65,12 +65,12 @@ struct OSSIA_EXPORT execution_state
       {
         ossia::received_value recv;
         while(mq.try_dequeue(recv))
-          mess_values.insert({recv.address, recv.value});
+          mess_values[recv.address].push_back(recv.value);
       }
     }
 
   std::list<message_queue> messages;
-  std::unordered_map<ossia::net::parameter_base*, ossia::value> mess_values;
+  std::unordered_map<ossia::net::parameter_base*, value_vector<ossia::value>> mess_values;
 
   std::vector<ossia::net::device_base*> globalState;
 

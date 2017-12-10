@@ -72,7 +72,8 @@ struct global_pull_visitor
       auto it = state.mess_values.find(const_cast<net::parameter_base*>(&out));
       if(it != state.mess_values.end())
       {
-        val.add_raw_value(it->second);
+        for(auto& v : it->second)
+          val.add_raw_value(std::move(v));
       }
     }
   }
