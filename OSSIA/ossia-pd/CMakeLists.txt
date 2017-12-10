@@ -11,7 +11,7 @@ execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(MSVC)
-if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
+if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
     message("Downloading and extracting PureData windows binary")
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")

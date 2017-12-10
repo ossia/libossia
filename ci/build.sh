@@ -477,12 +477,14 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
 
+      mkdir -p ~/Documents/Pd/externals
+      mv $TRAVIS_BUILD_DIR/ossia-pd-package/ossia ~/Documents/Pd/externals
+
       wget http://msp.ucsd.edu/Software/pd-0.48-1test3.mac.tar.gz
       tar xf pd-0.48-1test3.mac.tar.gz
       export PATH="${PWD}/Pd-0.48-1test3.app/Contents/Resources/bin:${PATH}"
 
       $CMAKE_BIN --build . --target test
-
 
     elif [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
