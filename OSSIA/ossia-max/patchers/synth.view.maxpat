@@ -4,12 +4,12 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 5,
-			"architecture" : "x64",
+			"revision" : 4,
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 537.0, 126.0, 435.0, 960.0 ],
+		"rect" : [ 537.0, 56.0, 505.0, 960.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
@@ -56,7 +56,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-10",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "inlet",
 					"numinlets" : 0,
 					"numoutlets" : 1,
@@ -80,15 +80,14 @@
 					"prototypename" : "amount",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_longname" : "Index",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 1000.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "Index",
-							"parameter_unitstyle" : 5,
-							"parameter_type" : 0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "Index",
+							"parameter_shortname" : "Index",
+							"parameter_type" : 0,
+							"parameter_mmax" : 1000.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 5,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -111,16 +110,15 @@
 					"prototypename" : "amount",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_mmin" : 0.001,
-							"parameter_longname" : "Ratio",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 10.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "Ratio",
-							"parameter_unitstyle" : 5,
-							"parameter_type" : 0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "Ratio",
+							"parameter_shortname" : "Ratio",
+							"parameter_type" : 0,
+							"parameter_mmin" : 0.001,
+							"parameter_mmax" : 10.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 5,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -144,16 +142,15 @@
 					"prototypename" : "time",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_steps" : 41,
-							"parameter_longname" : "live.numbox",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 1000.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "live.numbox",
-							"parameter_unitstyle" : 2,
-							"parameter_type" : 0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "live.numbox",
+							"parameter_shortname" : "live.numbox",
+							"parameter_type" : 0,
+							"parameter_mmax" : 1000.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 2,
+							"parameter_steps" : 41,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -177,16 +174,15 @@
 					"prototypename" : "pan",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_mmin" : -1.0,
-							"parameter_longname" : "Pan",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 1.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "Pan",
-							"parameter_unitstyle" : 6,
-							"parameter_type" : 0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "Pan",
+							"parameter_shortname" : "Pan",
+							"parameter_type" : 0,
+							"parameter_mmin" : -1.0,
+							"parameter_mmax" : 1.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 6,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -210,16 +206,15 @@
 					"prototypename" : "gain",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_mmin" : -70.0,
-							"parameter_longname" : "Gain",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 0.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "Gain",
-							"parameter_unitstyle" : 4,
-							"parameter_type" : 0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "Gain",
+							"parameter_shortname" : "Gain",
+							"parameter_type" : 0,
+							"parameter_mmin" : -70.0,
+							"parameter_mmax" : 0.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 4,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -243,16 +238,15 @@
 					"prototypename" : "freq",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_longname" : "Cutoff",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 10000.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "Cutoff",
-							"parameter_unitstyle" : 3,
-							"parameter_type" : 0,
-							"parameter_exponent" : 4.0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "Cutoff",
+							"parameter_shortname" : "Cutoff",
+							"parameter_type" : 0,
+							"parameter_mmax" : 10000.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 3,
+							"parameter_exponent" : 4.0,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -276,16 +270,15 @@
 					"prototypename" : "freq",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
-							"parameter_longname" : "Carrier frequency",
-							"parameter_initial" : [ 0 ],
-							"parameter_mmax" : 10000.0,
-							"parameter_speedlim" : 0.0,
-							"parameter_shortname" : "Carrier frequency",
-							"parameter_unitstyle" : 3,
-							"parameter_type" : 0,
-							"parameter_exponent" : 4.0,
 							"parameter_linknames" : 1,
-							"parameter_initial_enable" : 1
+							"parameter_longname" : "Carrier frequency",
+							"parameter_shortname" : "Carrier frequency",
+							"parameter_type" : 0,
+							"parameter_mmax" : 10000.0,
+							"parameter_initial" : [ 0 ],
+							"parameter_unitstyle" : 3,
+							"parameter_exponent" : 4.0,
+							"parameter_speedlim" : 0.0
 						}
 
 					}
@@ -519,7 +512,27 @@
 				}
 
 			}
- ]
+ ],
+		"parameters" : 		{
+			"obj-2" : [ "Cutoff", "Cutoff", 0 ],
+			"obj-8" : [ "Ratio", "Ratio", 0 ],
+			"obj-4" : [ "Gain", "Gain", 0 ],
+			"obj-7" : [ "live.numbox", "live.numbox", 0 ],
+			"obj-3" : [ "Index", "Index", 0 ],
+			"obj-6" : [ "Pan", "Pan", 0 ],
+			"obj-1" : [ "Carrier frequency", "Carrier frequency", 0 ]
+		}
+,
+		"dependency_cache" : [ 			{
+				"name" : "ossia.view.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.remote.mxo",
+				"type" : "iLaX"
+			}
+ ],
+		"autosave" : 0
 	}
 
 }
