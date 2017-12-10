@@ -9,6 +9,8 @@
 
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/detail/safe_vec.hpp>
+#include <boost/functional/hash.hpp>
+
 #include <ossia-max_export.h>
 
 #include "attribute.hpp"
@@ -34,6 +36,21 @@ extern "C"
     OSSIA_MAX_EXPORT void ossia_ossia_setup();
 }
 
+namespace std
+{
+template <typename T, typename U>
+class hash<std::pair<T*, U*>>
+{
+public:
+  std::size_t operator()(const std::pair<T*, U*>& p) const
+  {
+    std::size_t seed = 0;
+    boost::hash_combine(seed, p.first);
+    boost::hash_combine(seed, p.second);
+    return seed;
+  }
+};
+}
 namespace ossia
 {
 namespace max
@@ -90,6 +107,9 @@ public:
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
 
+  // maps objects with their parents
+  using object_map = tsl::hopscotch_map<std::pair<t_object*, t_symbol*>, object_base*>;
+  object_map obj_map;
 private:
   ossia_max();
   ~ossia_max();

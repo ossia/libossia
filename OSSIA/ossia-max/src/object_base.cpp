@@ -265,6 +265,18 @@ object_base::object_base()
 {
 }
 
+object_base::~object_base()
+{
+  auto& parent_map = ossia_max::instance().obj_map;
+  for(auto it = parent_map.begin(); it != parent_map.end();)
+  {
+    if(it->first.first != &this->m_object)
+      ++it;
+    else
+      it = parent_map.erase(it);
+  }
+}
+
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
     m_is_deleted= true;

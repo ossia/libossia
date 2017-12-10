@@ -11,7 +11,6 @@
 #include <ossia-max/src/view.hpp>
 #include <ossia-max/src/utils.hpp>
 #include <ossia-max/src/object_base.hpp>
-
 #include <commonsyms.h>
 #pragma mark -
 #pragma mark library
@@ -138,6 +137,12 @@ void register_quarantinized()
 object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level)
 {
+  auto& parent_map = ossia_max::instance().obj_map;
+  auto it = parent_map.find({object, classname});
+  if(it != parent_map.end())
+  {
+    return it->second;
+  }
 
   t_object* patcher = get_patcher(object);
   object_base* parent = nullptr;
@@ -172,7 +177,7 @@ object_base* find_parent_box(
     }
     patcher = jpatcher_get_parentpatcher(patcher);
   }
-
+  parent_map[std::make_pair(object, classname)] = parent;
   return parent;
 }
 
