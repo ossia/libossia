@@ -11,6 +11,7 @@
 #include <ossia-max/src/view.hpp>
 #include <ossia-max/src/utils.hpp>
 #include <ossia-max/src/object_base.hpp>
+#include <boost/functional/hash.hpp>
 
 #include <commonsyms.h>
 #pragma mark -
@@ -18,6 +19,21 @@
 
 #include <git_info.h>
 
+namespace std
+{
+template <typename T, typename U>
+class hash<std::pair<T*, U*>>
+{
+public:
+  std::size_t operator()(const std::pair<T*, U*>& p) const
+  {
+    std::size_t seed = 0;
+    boost::hash_combine(seed, p.first);
+    boost::hash_combine(seed, p.second);
+    return seed;
+  }
+};
+}
 using namespace ossia::max;
 
 // ossia-max library constructor
@@ -138,6 +154,12 @@ void register_quarantinized()
 object_base* find_parent_box(
     t_object* object, t_symbol* classname, int start_level, int* level)
 {
+  static tsl::hopscotch_map<std::pair<t_object*, t_symbol*>, object_base*> parent_map;
+  auto it = parent_map.find({object, classname});
+  if(it != parent_map.end())
+  {
+    return it->second;
+  }
 
   t_object* patcher = get_patcher(object);
   object_base* parent = nullptr;
@@ -172,7 +194,7 @@ object_base* find_parent_box(
     }
     patcher = jpatcher_get_parentpatcher(patcher);
   }
-
+  parent_map[std::make_pair(object, classname)] = parent;
   return parent;
 }
 
