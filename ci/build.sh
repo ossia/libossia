@@ -123,7 +123,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
-        pushd "$TRAVIS_BUILD_DIR/libossia/3rdparty/pure-data/src"
+        pushd "$TRAVIS_BUILD_DIR/3rdparty/pure-data/src"
           make -f makefile.gnu -j2
           make -f makefile.gnu install
         popd
