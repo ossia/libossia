@@ -479,7 +479,7 @@ case "$TRAVIS_OS_NAME" in
 
       wget http://msp.ucsd.edu/Software/pd-0.48-1test3.mac.tar.gz
       tar xf pd-0.48-1test3.mac.tar.gz
-      export PATH="${PWD}/Pd-0.48-1test3.app/Contents/Resources/bin/pd:${PATH}"
+      export PATH="${PWD}/Pd-0.48-1test3.app/Contents/Resources/bin:${PATH}"
 
       $CMAKE_BIN --build . --target test
 
