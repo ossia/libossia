@@ -155,15 +155,16 @@ if(OSSIA_TESTING)
   message(STATUS "Define Pd test")
   message("First a loading test")
 
-  add_test(NAME ossia-pd-lib_loading
-      COMMAND pd -nogui -lib ossia 2>&1 >/dev/null | grep "Welcome to ossia library"
+  add_test(NAME ossia-pd-loading-test
+      COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.sh
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
       )
 
   file(GLOB PD_UNIT_TEST
        LIST_DIRECTORIES false
        RELATIVE ${CMAKE_CURRENT_LIST_DIR}/unit-tests
-       ${CMAKE_CURRENT_LIST_DIR}/unit-tests/*.pd)
+       ${CMAKE_CURRENT_LIST_DIR}/unit-tests/*.pd
+       )
 
   foreach(patcher ${PD_UNIT_TEST})
     message("add test patcher: ${patcher}")
