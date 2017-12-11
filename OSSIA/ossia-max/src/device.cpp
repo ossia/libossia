@@ -199,8 +199,8 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
   if (argc && argv->a_type == A_SYM)
   {
-    auto& proto = static_cast<ossia::net::local_protocol&>(
-        x->m_device->get_protocol());
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+          x->m_device->get_protocol());
     const ossia::string_view protocol = atom_getsym(argv)->s_name;
 
     if (protocol == "Minuit")
@@ -220,9 +220,17 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::minuit_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
+
+        std::vector<t_atom> a;
+        a.resize(4);
+        A_SETSYM(&a[0], gensym("Minuit"));
+        A_SETSYM(&a[1], gensym(settings.remoteip.c_str()));
+        A_SETFLOAT(&a[2], settings.remoteport);
+        A_SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -252,9 +260,16 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(
+        multiplex.expose_to(
             std::make_unique<ossia::oscquery::oscquery_server_protocol>(
                 settings.oscport, settings.wsport));
+
+        std::vector<t_atom> a;
+        a.resize(3);
+        A_SETSYM(&a[0], gensym("oscquery"));
+        A_SETFLOAT(&a[1], settings.oscport);
+        A_SETFLOAT(&a[2], settings.wsport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -286,8 +301,16 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::osc_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport));
+
+        std::vector<t_atom> a;
+        a.resize(4);
+        A_SETSYM(&a[0], gensym("osc"));
+        A_SETSYM(&a[1], gensym(settings.remoteip.c_str()));
+        A_SETFLOAT(&a[2], settings.remoteport);
+        A_SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -358,7 +381,7 @@ void device::stop_expose(device*x, int index)
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
-  if ( index < protos.size() )
+  if ( index < x->m_protocols.size() && index < protos.size() )
   {
     multiplex.stop_expose_to(*protos[index]);
     x->m_protocols.erase(x->m_protocols.begin() + index);

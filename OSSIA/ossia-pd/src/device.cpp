@@ -342,7 +342,7 @@ void device::stop_expose(device*x, float f)
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
-  if ( index < protos.size() )
+  if ( index < x->m_protocols.size() && index < protos.size() )
   {
     multiplex.stop_expose_to(*protos[index]);
     x->m_protocols.erase(x->m_protocols.begin() + index);
