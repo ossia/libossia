@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 140.0, 134.0, 1378.0, 801.0 ],
+		"rect" : [ 140.0, 134.0, 1370.0, 773.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -54,7 +54,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1378.0, 775.0 ],
+						"rect" : [ 0.0, 26.0, 1370.0, 747.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1466,7 +1466,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1378.0, 775.0 ],
+						"rect" : [ 0.0, 26.0, 1370.0, 747.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1663,7 +1663,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 140.0, 160.0, 1378.0, 775.0 ],
+						"rect" : [ 140.0, 160.0, 1370.0, 747.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1728,7 +1728,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 339.5, 639.0, 148.5, 35.0 ],
+									"patching_rect" : [ 339.5, 646.5, 148.5, 35.0 ],
 									"style" : "",
 									"text" : "happens both ways",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1745,7 +1745,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 324.5, 608.0, 144.0, 35.0 ],
+									"patching_rect" : [ 324.5, 615.5, 144.0, 35.0 ],
 									"style" : "",
 									"text" : "communication",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1761,7 +1761,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 266.5, 679.5, 50.0, 22.0 ],
+									"patching_rect" : [ 266.5, 687.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1773,7 +1773,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 40.0, 679.5, 214.0, 22.0 ],
+									"patching_rect" : [ 40.0, 687.0, 214.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote voice.1/cutoff/frequency"
 								}
@@ -1788,7 +1788,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 266.5, 641.5, 50.0, 22.0 ],
+									"patching_rect" : [ 266.5, 649.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1800,7 +1800,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 40.0, 641.5, 214.0, 22.0 ],
+									"patching_rect" : [ 40.0, 649.0, 214.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote voice.1/modulation/ratio"
 								}
@@ -1815,7 +1815,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 266.5, 602.5, 50.0, 22.0 ],
+									"patching_rect" : [ 266.5, 610.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1827,7 +1827,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
-									"patching_rect" : [ 40.0, 602.5, 214.0, 22.0 ],
+									"patching_rect" : [ 40.0, 610.0, 214.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote voice.1/carrier/frequency"
 								}
@@ -2436,7 +2436,7 @@
 									"mode" : 0,
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 941.0, 697.0, 14.0, 14.0 ],
+									"patching_rect" : [ 941.0, 691.0, 14.0, 14.0 ],
 									"proportion" : 0.39,
 									"shape" : 3,
 									"style" : ""
@@ -2460,7 +2460,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 960.5, 693.0, 192.0, 22.0 ],
+									"patching_rect" : [ 960.5, 687.0, 192.0, 22.0 ],
 									"style" : "",
 									"text" : "More info on OSCQuery protocole",
 									"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
@@ -2476,7 +2476,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 960.5, 666.0, 257.0, 49.0 ],
+									"patching_rect" : [ 960.5, 660.0, 257.0, 49.0 ],
 									"style" : "",
 									"text" : ";\rmax launchbrowser https://github.com/mrRay/OSCQueryProposal"
 								}
@@ -3296,7 +3296,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1378.0, 775.0 ],
+						"rect" : [ 0.0, 26.0, 1370.0, 747.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,

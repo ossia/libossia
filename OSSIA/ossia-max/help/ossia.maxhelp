@@ -89,7 +89,6 @@
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 336.0, 374.0, 24.0, 24.0 ],
-									"presentation_rect" : [ 341.0, 374.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
