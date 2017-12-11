@@ -21,7 +21,7 @@ struct string_hash
 #if !defined(_MSC_VER)
     return std::hash<ossia::string_view>{}(s);
 #else
-    return std::hash<std::string>{}(s.to_string()); // TODO fixme with VS2017
+    return std::hash<std::string>{}(static_cast<std::string>(s));
 #endif
   }
   template <std::size_t N>
