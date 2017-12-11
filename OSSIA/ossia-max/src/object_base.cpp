@@ -257,19 +257,9 @@ void t_matcher::output_value()
 void t_matcher::set_parent_addr()
 {
   if (parent->m_parent_node){
-    std::string addr = ossia::net::address_string_from_node(*node);
-    std::string parent_addr = ossia::net::address_string_from_node(*parent->m_parent_node);
-    if ( parent_addr.back() != '/' ) parent_addr += "/";
-
-    std::regex addr_regex(parent_addr);
-    std::smatch addr_match;
-
-    if (std::regex_search(addr, addr_match, addr_regex))
-    {
-      A_SETSYM(&m_addr, gensym(addr_match.suffix().str().c_str()));
-    } else {
-      A_SETSYM(&m_addr, gensym(node->get_name().c_str()));
-    }
+    // TODO how to deal with multiple parents ?
+    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *parent->m_parent_node);
+    A_SETSYM(&m_addr, gensym(addr.c_str()));
   }
   else
   {
