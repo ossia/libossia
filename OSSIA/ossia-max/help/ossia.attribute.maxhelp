@@ -4,12 +4,12 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 5,
-			"architecture" : "x86",
+			"revision" : 4,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 211.0, 116.0, 1040.0, 739.0 ],
+		"rect" : [ 100.0, 100.0, 1040.0, 739.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -50,8 +50,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -113,12 +113,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 5,
-							"architecture" : "x86",
+							"revision" : 4,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 211.0, 142.0, 1040.0, 713.0 ],
+						"rect" : [ 100.0, 126.0, 1040.0, 713.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -148,13 +148,36 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-10",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 590.0, 529.0, 100.0, 22.0 ],
+									"style" : "",
+									"text" : "print @popup 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-5",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 52.0, 622.0, 100.0, 22.0 ],
+									"style" : "",
+									"text" : "print @popup 1"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-27",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 611.5, 397.0, 120.0, 22.0 ],
-									"presentation_rect" : [ 628.0, 357.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "select multiples.[1-2]"
 								}
@@ -168,7 +191,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 611.5, 367.0, 103.0, 22.0 ],
-									"presentation_rect" : [ 629.0, 282.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "select multiples.2"
 								}
@@ -186,7 +208,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 766.0, 473.5, 166.0, 49.0 ],
-									"presentation_rect" : [ 762.0, 464.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "ossia.attribute can also accept address patterns",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -201,7 +222,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 590.0, 225.0, 61.0, 22.0 ],
-									"presentation_rect" : [ 544.0, 173.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "get range"
 								}
@@ -215,7 +235,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 590.0, 201.0, 67.0, 22.0 ],
-									"presentation_rect" : [ 544.0, 149.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "get default"
 								}
@@ -229,7 +248,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 590.0, 177.0, 49.0, 22.0 ],
-									"presentation_rect" : [ 544.0, 125.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "get clip"
 								}
@@ -261,7 +279,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 195.75, 416.0, 186.0, 64.0 ],
-									"presentation_rect" : [ 196.0, 424.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Parameter attribute ossia.attribute currently binds to can be remotely set",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -280,7 +297,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 137.0, 295.0, 186.0, 49.0 ],
-									"presentation_rect" : [ 137.0, 296.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "Get any parameter's attribute value",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -295,7 +311,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 52.0, 340.0, 61.0, 22.0 ],
-									"presentation_rect" : [ 53.0, 339.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "get range"
 								}
@@ -309,7 +324,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 52.0, 316.0, 67.0, 22.0 ],
-									"presentation_rect" : [ 55.0, 321.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "get default"
 								}
@@ -322,8 +336,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 52.0, 619.0, 166.0, 22.0 ],
-									"style" : ""
+									"patching_rect" : [ 172.0, 622.0, 166.0, 22.0 ],
+									"style" : "",
+									"text" : "max 100."
 								}
 
 							}
@@ -359,11 +374,11 @@
 									"patching_rect" : [ 76.0, 407.0, 106.0, 18.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
-											"parameter_enum" : [ "free", "low", "high", "both" ],
 											"parameter_longname" : "live.tab",
 											"parameter_shortname" : "live.tab",
-											"parameter_unitstyle" : 0,
-											"parameter_type" : 2
+											"parameter_type" : 2,
+											"parameter_enum" : [ "free", "low", "high", "both" ],
+											"parameter_unitstyle" : 0
 										}
 
 									}
@@ -401,7 +416,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 590.0, 563.0, 362.0, 22.0 ],
+									"patching_rect" : [ 590.0, 599.0, 362.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.parameter multiples.[1-3] @clip both @range 0. 1. @type int"
 								}
@@ -416,7 +431,7 @@
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 52.0, 225.0, 372.0, 22.0 ],
 									"style" : "",
-									"text" : "ossia.parameter my_parameter @clip free @range 0. 1. @type float"
+									"text" : "ossia.parameter my_parameter @clip free @range 0. 2. @type float"
 								}
 
 							}
@@ -463,10 +478,46 @@
 								}
 
 							}
+, 							{
+								"box" : 								{
+									"attr" : "range",
+									"id" : "obj-7",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 125.0, 500.5, 150.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"attr" : "range",
+									"id" : "obj-9",
+									"maxclass" : "attrui",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 52.0, 196.0, 150.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
 									"destination" : [ "obj-15", 1 ],
+									"midpoints" : [ 61.5, 609.0, 328.5, 609.0 ],
+									"order" : 0,
+									"source" : [ "obj-1", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-5", 0 ],
+									"order" : 1,
 									"source" : [ "obj-1", 0 ]
 								}
 
@@ -515,6 +566,13 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-10", 0 ],
+									"source" : [ "obj-24", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-24", 0 ],
 									"midpoints" : [ 621.0, 432.5, 599.5, 432.5 ],
 									"source" : [ "obj-26", 0 ]
@@ -538,8 +596,22 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-1", 0 ],
+									"source" : [ "obj-7", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-12", 0 ],
 									"source" : [ "obj-8", 1 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-3", 0 ],
+									"source" : [ "obj-9", 0 ]
 								}
 
 							}
