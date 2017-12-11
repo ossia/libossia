@@ -186,35 +186,58 @@ void parameter_base::set_range()
           ss << m_range[i].a_w.w_float;
           senum.push_back(ss.str());
         }
+        else if (m_range[i].a_type == A_LONG)
+        {
+          fmt::MemoryWriter ss;
+          ss << m_range[i].a_w.w_long;
+          senum.push_back(ss.str());
+        }
         else
           break;
       }
       param->set_domain(make_domain(senum));
     }
     else if (   ( m_range[0].a_type == A_FLOAT || m_range[0].a_type == A_LONG )
-                && ( m_range[0].a_type == A_FLOAT || m_range[1].a_type == A_LONG ) )
+                && ( m_range[1].a_type == A_FLOAT || m_range[1].a_type == A_LONG ) )
     {
-      auto _min = atom_getfloat(m_range);
-      auto _max = atom_getfloat(m_range+1);
-      switch( param->get_value_type() )
+      float fmin = atom_getfloat(m_range);
+      float fmax = atom_getfloat(m_range+1);
+      std::vector<ossia::value> min{};
+      std::vector<ossia::value> max{};
+
+      switch(param->get_value_type())
       {
-        case ossia::val_type::INT:
         case ossia::val_type::FLOAT:
+        case ossia::val_type::INT:
         case ossia::val_type::CHAR:
-          param->set_domain(ossia::make_domain(_min, _max));
+          min={fmin};
+          max={fmax};
+          break;
+        case ossia::val_type::VEC2F:
+          min={fmin,fmin};
+          max={fmax,fmax};
+          break;
+        case ossia::val_type::VEC3F:
+          min={fmin,fmin,fmin};
+          max={fmax,fmax,fmax};
+          break;
+        case ossia::val_type::VEC4F:
+          min={fmin,fmin,fmin,fmin};
+          max={fmax,fmax,fmax,fmax};
+          break;
+        case ossia::val_type::LIST:
+          // FIXME use something like MAX_ATTR_SIZE instead of arbitrary constant
+          min.resize(OSSIA_MAX_MAX_ATTR_SIZE);
+          max.resize(OSSIA_MAX_MAX_ATTR_SIZE);
+          ossia::fill(min,fmin);
+          ossia::fill(max,fmax);
           break;
         default:
-        {
-          std::vector<ossia::value> omin, omax;
-          // TODO check param size
-          std::array<float, OSSIA_MAX_MAX_ATTR_SIZE> min, max;
-          min.fill(_min);
-          max.fill(_max);
-          omin.assign(min.begin(), min.end());
-          omax.assign(max.begin(), max.end());
-          param->set_domain(ossia::make_domain(std::move(omin),std::move(omax)));
-        }
+          ;
       }
+
+      auto domain = make_domain_from_minmax({min}, max, param->get_value_type());
+      param->set_domain(domain);
     }
   }
 }
@@ -281,7 +304,7 @@ void parameter_base::set_default()
     switch(param->get_value_type())
     {
       case ossia::val_type::VEC4F:
-        ossia::net::set_default_value(*node, to_vec<4>(m_default));
+        ossia::net::set_default_value(*node, max::to_vec<4>(m_default));
         break;
       case ossia::val_type::VEC3F:
         ossia::net::set_default_value(*node, to_vec<3>(m_default));
