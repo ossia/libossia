@@ -62,7 +62,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
-  $LogFile = c:\projects\libossia\configure-max.log
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
   cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF -DOSSIA_PROTOCOL_MIDI=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
@@ -71,7 +71,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   mkdir build-32bit
   cd build-32bit
 
-  $LogFile = "c:\projects\libossia\configure-max-32bit.log"
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
   cmake -G "Visual Studio 15 2017" -DCMAKE_BUILD_TYPE=Release -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_PD=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF -DOSSIA_QT=0 -DOSSIA_NO_QT=1 -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DBOOST_ROOT="${env:BOOST_ROOT}" -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
