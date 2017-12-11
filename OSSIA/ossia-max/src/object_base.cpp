@@ -26,7 +26,14 @@ t_matcher::t_matcher(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
-  if(node)
+  m_addr = other.m_addr;
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(v);
+
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -36,7 +43,8 @@ t_matcher::t_matcher(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      set_parent_addr();
+      if(parent)
+        set_parent_addr();
     }
   }
 }
@@ -52,7 +60,15 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
-  if(node)
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(std::move(v));
+
+  m_addr = other.m_addr;
+
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {

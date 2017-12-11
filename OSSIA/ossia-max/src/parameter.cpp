@@ -27,7 +27,7 @@ extern "C" void ossia_parameter_setup()
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
   class_addmethod(
-      c, (method)parameter::push_default_value,
+      c, (method)parameter_base::push_default_value,
       "loadbang", A_CANT, 0);
 
   class_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYM, 0);
@@ -61,7 +61,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     x->m_access_mode = gensym("bi");
     x->m_bounding_mode = gensym("free");
 
-    x->m_clock = clock_new(x, (method)parameter::push_default_value);
+    x->m_clock = clock_new(x, (method)parameter_base::push_default_value);
     x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
 
     x->m_otype = object_class::param;
