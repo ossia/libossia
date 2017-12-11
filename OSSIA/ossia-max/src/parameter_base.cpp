@@ -92,67 +92,24 @@ void parameter_base::set_rate()
   }
 }
 
-void parameter_base::set_minmax(){
-  for (auto m : m_node_selection)
+void parameter_base::set_minmax()
+{
+  std::vector<ossia::value> min = attribute2value(m_min, m_min_size);
+  std::vector<ossia::value> max = attribute2value(m_max, m_max_size);
+
+  const bool min_empty = min.empty();
+  const bool max_empty = max.empty();
+  if(min_empty && max_empty)
+  {
+    return;
+  }
+
+  for (t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    std::vector<ossia::value> min = attribute2value(m_min, m_min_size);
-    std::vector<ossia::value> max = attribute2value(m_max, m_max_size);
-
-    if (min.empty())
-    {
-      switch( param->get_value_type() )
-      {
-        case ossia::val_type::CHAR:
-          min = {0};
-          break;
-        case ossia::val_type::FLOAT:
-        case ossia::val_type::INT:
-          min = {0.};
-          break;
-        case ossia::val_type::VEC2F:
-          min = {0.,0.};
-          break;
-        case ossia::val_type::VEC3F:
-          min = {0.,0.,0.};
-          break;
-        case ossia::val_type::VEC4F:
-          min = {0.,0.,0.,0.};
-          break;
-        default:
-          ;
-      }
-    }
-
-    if ( max.empty() )
-    {
-      switch( param->get_value_type() )
-      {
-        case ossia::val_type::CHAR:
-          min = {255};
-          break;
-        case ossia::val_type::FLOAT:
-        case ossia::val_type::INT:
-          min = {1.};
-          break;
-        case ossia::val_type::VEC2F:
-          min = {1.,1.};
-          break;
-        case ossia::val_type::VEC3F:
-          min = {1.,1.,1.};
-          break;
-        case ossia::val_type::VEC4F:
-          min = {1.,1.,1.,1.};
-          break;
-        default:
-          ;
-      }
-    }
-
-    if (!min.empty() && !max.empty())
-      param->set_domain(ossia::make_domain(min,max));
+    param->set_domain(make_domain_from_minmax(min, max, param->get_value_type()));
   }
 }
 
@@ -208,6 +165,9 @@ void parameter_base::push_default_value(parameter_base* x)
 
 void parameter_base::set_range()
 {
+  if(m_range_size == 0)
+    return;
+
   for (auto m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
