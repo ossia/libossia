@@ -52,6 +52,9 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 
 void ossia_object::destroy(ossia_object *x)
 {
+  x->m_device->on_parameter_created.disconnect<device_base, &device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.disconnect<device_base, &device_base::on_parameter_deleted_callback>(x);
+
   outlet_delete(x->m_dumpout);
   x->~ossia_object();
 }

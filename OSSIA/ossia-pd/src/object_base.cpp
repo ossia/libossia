@@ -242,7 +242,7 @@ void t_matcher::enqueue_value(ossia::value v)
         std::move(v),
         param->get_bounding());
 
-  if(!param->filter_value(v))
+  if(!param->filter_value(filtered))
   {
     auto x = (ossia::pd::parameter_base*) parent;
 

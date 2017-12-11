@@ -26,7 +26,14 @@ t_matcher::t_matcher(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
-  if(node)
+  m_addr = other.m_addr;
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(v);
+
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -36,7 +43,8 @@ t_matcher::t_matcher(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      set_parent_addr();
+      if(parent)
+        set_parent_addr();
     }
   }
 }
@@ -52,7 +60,15 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
 
-  if(node)
+  ossia::value v;
+  while(other.m_queue_list.try_dequeue(v))
+    m_queue_list.enqueue(std::move(v));
+
+  m_addr = other.m_addr;
+
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
   {
     if(auto param = node->get_parameter())
     {
@@ -182,22 +198,22 @@ t_matcher::~t_matcher()
 void t_matcher::enqueue_value(ossia::value v)
 {
   auto param = node->get_parameter();
-  v = ossia::net::filter_value(
+  auto filtered = ossia::net::filter_value(
         param->get_domain(),
         std::move(v),
         param->get_bounding());
 
-  if(!param->filter_value(v))
+  if(!param->filter_value(filtered))
   {
     auto x = (parameter_base*) parent;
 
     if ( x->m_ounit == ossia::none )
     {
-      m_queue_list.enqueue(std::move(v));
+      m_queue_list.enqueue(std::move(filtered));
     }
     else
     {
-      m_queue_list.enqueue(ossia::convert(std::move(v), param->get_unit(), *x->m_ounit));
+      m_queue_list.enqueue(ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit));
     }
   }
 }
@@ -241,19 +257,9 @@ void t_matcher::output_value()
 void t_matcher::set_parent_addr()
 {
   if (parent->m_parent_node){
-    std::string addr = ossia::net::address_string_from_node(*node);
-    std::string parent_addr = ossia::net::address_string_from_node(*parent->m_parent_node);
-    if ( parent_addr.back() != '/' ) parent_addr += "/";
-
-    std::regex addr_regex(parent_addr);
-    std::smatch addr_match;
-
-    if (std::regex_search(addr, addr_match, addr_regex))
-    {
-      A_SETSYM(&m_addr, gensym(addr_match.suffix().str().c_str()));
-    } else {
-      A_SETSYM(&m_addr, gensym(node->get_name().c_str()));
-    }
+    // TODO how to deal with multiple parents ?
+    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *parent->m_parent_node);
+    A_SETSYM(&m_addr, gensym(addr.c_str()));
   }
   else
   {

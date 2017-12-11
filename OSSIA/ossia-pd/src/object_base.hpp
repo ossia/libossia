@@ -74,8 +74,6 @@ public:
 
   void set_dead(){ m_dead = true; }
 
-  bool m_dead{};
-
   std::vector<ossia::value> m_set_pool;
 
 private:
@@ -87,7 +85,8 @@ private:
 
   moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
-  t_atom m_addr;
+  bool m_dead{};
+  t_atom m_addr{};
 
 };
 
