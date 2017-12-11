@@ -198,22 +198,22 @@ t_matcher::~t_matcher()
 void t_matcher::enqueue_value(ossia::value v)
 {
   auto param = node->get_parameter();
-  v = ossia::net::filter_value(
+  auto filtered = ossia::net::filter_value(
         param->get_domain(),
         std::move(v),
         param->get_bounding());
 
-  if(!param->filter_value(v))
+  if(!param->filter_value(filtered))
   {
     auto x = (parameter_base*) parent;
 
     if ( x->m_ounit == ossia::none )
     {
-      m_queue_list.enqueue(std::move(v));
+      m_queue_list.enqueue(std::move(filtered));
     }
     else
     {
-      m_queue_list.enqueue(ossia::convert(std::move(v), param->get_unit(), *x->m_ounit));
+      m_queue_list.enqueue(ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit));
     }
   }
 }
