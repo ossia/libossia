@@ -86,7 +86,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   inst.devices.reserve(4);
   inst.clients.reserve(4);
   post("Welcome to ossia library");
-  post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
+  post("build SHA %s", ossia::get_commit_sha().c_str());
 }
 
 // initializers

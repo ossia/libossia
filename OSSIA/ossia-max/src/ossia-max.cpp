@@ -32,11 +32,11 @@ ossia_max::ossia_max():
   attributes.reserve(512);
   models.reserve(512);
   views.reserve(512);
-  devices.reserve(4);
-  clients.reserve(4);
+  devices.reserve(8);
+  clients.reserve(8);
 
   post("OSSIA library for Max is loaded");
-  post("build from SHA : %s %s", ossia::get_commit_sha().c_str(), ossia::get_commit_date().c_str());
+  post("build SHA : %s", ossia::get_commit_sha().c_str());
 }
 
 // ossia-max library destructor
