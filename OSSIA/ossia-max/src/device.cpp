@@ -6,6 +6,7 @@
 #include "remote.hpp"
 #include "view.hpp"
 #include "utils.hpp"
+#include "ossia-max.hpp"
 
 #include "ossia/network/osc/osc.hpp"
 #include "ossia/network/oscquery/oscquery_server.hpp"

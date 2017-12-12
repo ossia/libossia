@@ -17,6 +17,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include "ossia-max.hpp"
 
 using namespace ossia::max;
 
