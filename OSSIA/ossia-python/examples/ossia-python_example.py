@@ -7,7 +7,7 @@ This is a low level approach to integrate Ossia architecture into a python progr
 For higher level features use pyossia module.
 """
 
-import pyossia.ossia_python as ossia
+import ossia_python as ossia
 import time
 
 print("OSSIA LIBRARY EXAMPLE")
@@ -296,16 +296,17 @@ local_device_messageq = ossia.GlobalMessageQueue(local_device)
 
 # wait and change the value remotely
 while True:
-
   if len(midi_devices):
     message = remote_midi_messageq.pop()
-    if message != None:
-      parameter, value = message
-      print("remote_midi_messageq : " +  str(parameter.node) + " " + str(value))
+    while message != None:
+        parameter, value = message
+        print("remote_midi_messageq : " +  str(parameter.node) + " " + str(value))
+        message = remote_midi_messageq.pop()
+     
+    message = local_device_messageq.pop()
+    while message != None:
+        parameter, value = message
+        print("local_device_messageq : " +  str(parameter.node) + " " + str(value))
+        message = local_device_messageq.pop()
 
-  message = local_device_messageq.pop()
-  if(message != None):
-    parameter, value = message
-    print("local_device_messageq : " +  str(parameter.node) + " " + str(value))
-
-  time.sleep(0.01)
+    time.sleep(0.01)
