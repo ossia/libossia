@@ -125,7 +125,7 @@ case "$TRAVIS_OS_NAME" in
 
         pushd "$TRAVIS_BUILD_DIR/3rdparty/pure-data/src"
           make -f makefile.gnu -j2
-          make -f makefile.gnu install
+          sudo make -f makefile.gnu install
         popd
 
         mkdir -p ~/pd-externals/
