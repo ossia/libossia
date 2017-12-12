@@ -21,7 +21,6 @@ bool view::register_node(const std::vector<ossia::net::node_base*>& node)
   bool res = do_registration(node);
   if (res)
   {
-    fill_selection();
     obj_dequarantining<view>(this);
     std::vector<object_base*> viewnode
         = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
@@ -91,6 +90,8 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       }
     }
   }
+
+  fill_selection();
 
   return (!m_matchers.empty() || m_is_pattern);
 }

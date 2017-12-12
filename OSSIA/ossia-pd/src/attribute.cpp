@@ -22,7 +22,6 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
   bool res = do_registration(node);
   if (res)
   {
-    fill_selection();
     obj_dequarantining<attribute>(this);
   }
   else
@@ -92,6 +91,8 @@ bool attribute::do_registration(const std::vector<ossia::net::node_base*>& _node
       }
     }
   }
+
+  fill_selection();
 
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node

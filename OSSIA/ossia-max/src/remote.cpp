@@ -295,7 +295,6 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
 
   if (res)
   {
-    fill_selection();
     object_dequarantining<remote>(this);
     parameter_base::bang(this);
     clock_delay(m_poll_clock,1);
@@ -373,6 +372,8 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       }
     }
   }
+
+  fill_selection();
 
   // do not put it in quarantine if it's a pattern
   // and even if it can't find any matching node

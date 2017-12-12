@@ -151,7 +151,6 @@ bool view::register_node(const std::vector<ossia::net::node_base*>& nodes)
 
   if (res)
   {
-    fill_selection();
     object_dequarantining<view>(this);
     std::vector<object_base*> children_view = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.view"));
@@ -216,6 +215,8 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       m_nodes.push_back(n);
     }
   }
+
+  fill_selection();
 
   return (!m_matchers.empty() || m_is_pattern);
 }

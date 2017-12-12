@@ -133,7 +133,6 @@ bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
 
   if (res)
   {
-    fill_selection();
     object_dequarantining<model>(this);
     register_children();
   }
@@ -189,6 +188,8 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     {
       m_matchers.emplace_back(n, this);
     }
+
+    fill_selection();
 
     set_priority();
     set_description();
