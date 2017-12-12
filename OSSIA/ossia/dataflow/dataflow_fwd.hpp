@@ -34,7 +34,8 @@ using set = boost::container::flat_set<T>;
 
 using destination_t = eggs::variant<
 ossia::net::parameter_base*,
-ossia::traversal::path
+ossia::traversal::path,
+ossia::net::node_base*
 >;
 class graph_node;
 struct graph_edge;

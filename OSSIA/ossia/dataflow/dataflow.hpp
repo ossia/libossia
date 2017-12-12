@@ -17,6 +17,9 @@ void apply_to_destination(const destination_t& address, const execution_state& e
       {
         f(addr);
       }
+      void operator()(ossia::net::node_base* addr) const
+      {
+      }
 
       void operator()(const ossia::traversal::path& path) const
       {

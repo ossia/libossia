@@ -6,7 +6,6 @@
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif
-
 namespace ossia
 {
 static void ossia_global_init()
