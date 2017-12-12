@@ -118,6 +118,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\test-pd.log"
   cmake --build . --config "${env:configuration}" --target test > "$LogFile"
+  CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
