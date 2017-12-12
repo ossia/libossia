@@ -100,6 +100,25 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.asc" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
     curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.sha" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha" --basic
   }
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ){
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-pd.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  mkdir -p ${env:APPVEYOR_BUILD_FOLDER}\Documents\Pd\externals
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
+  mv ossia ${env:APPVEYOR_BUILD_FOLDER}\Documents\Pd\externals\
+  
+  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-pd/pd/bin/","Process")            
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\test-pd.log"
+  cmake --build . --config "${env:configuration}" --target test > "$LogFile"
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 

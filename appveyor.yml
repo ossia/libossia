@@ -27,6 +27,9 @@ environment:
     - APPVEYOR_BUILD_TYPE: pd
       configuration: Release
 
+    - APPVEYOR_BUILD_TYPE: pd-test
+      configuration: Debug
+
     - APPVEYOR_BUILD_TYPE: max
       configuration: Release
       CMAKE_GENERATOR_NAME: Visual Studio 15 2017 Win64
