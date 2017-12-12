@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 63.0, 90.0, 1053.0, 846.0 ],
+		"rect" : [ 63.0, 90.0, 970.0, 862.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1053.0, 820.0 ],
+						"rect" : [ 0.0, 26.0, 970.0, 836.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -141,7 +141,6 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
-										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-3",
@@ -514,7 +513,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 298.0, 771.0, 254.0, 21.0 ],
+									"patching_rect" : [ 298.0, 771.0, 204.0, 21.0 ],
 									"style" : "",
 									"text" : "A submodel embedded as a bpatcher",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1435,7 +1434,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1053.0, 820.0 ],
+						"rect" : [ 0.0, 26.0, 970.0, 836.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1498,7 +1497,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 63.0, 116.0, 1053.0, 820.0 ],
+						"rect" : [ 63.0, 116.0, 970.0, 836.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -1529,69 +1528,15 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
-									"id" : "obj-25",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 247.75, 315.5, 79.0, 22.0 ],
-									"presentation_rect" : [ 277.0, 312.5, 0.0, 0.0 ],
-									"style" : "",
-									"text" : "stop"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-21",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 187.0, 315.5, 43.0, 22.0 ],
-									"presentation_rect" : [ 187.0, 316.0, 0.0, 0.0 ],
-									"style" : "",
-									"text" : "stop 0"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-11",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 102.0, 390.0, 103.0, 22.0 ],
-									"style" : "",
-									"text" : "print ossia.device"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-6",
-									"maxclass" : "message",
-									"numinlets" : 2,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 161.0, 285.0, 79.0, 22.0 ],
-									"style" : "",
-									"text" : "get protocols"
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
-									"id" : "obj-4",
-									"linecount" : 2,
+									"id" : "obj-38",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 752.0, 309.0, 175.0, 35.0 ],
+									"patching_rect" : [ 556.5, 733.5, 233.0, 21.0 ],
 									"style" : "",
-									"text" : "the device has to be declared on port 5678 for this to work",
+									"text" : "NB: this looks better in FireFox",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -1602,73 +1547,91 @@
 									"bubbletextmargin" : 10,
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
-									"id" : "obj-24",
-									"linecount" : 4,
+									"id" : "obj-3",
+									"linecount" : 3,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 600.0, 293.0, 145.0, 78.0 ],
+									"patching_rect" : [ 678.5, 667.5, 156.0, 64.0 ],
 									"style" : "",
-									"text" : "Open html example to remote control from jweb or your browser",
+									"text" : "Watch OSCQuery-formatted namespace in browser",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"bgcolor" : [ 0.376471, 0.384314, 0.4, 1.0 ],
-									"bgcolor2" : [ 0.376471, 0.384314, 0.4, 1.0 ],
-									"bgfillcolor_angle" : 270.0,
-									"bgfillcolor_autogradient" : 0.0,
-									"bgfillcolor_color" : [ 0.290196, 0.309804, 0.301961, 0.0 ],
-									"bgfillcolor_color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
-									"bgfillcolor_color2" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
-									"bgfillcolor_proportion" : 0.39,
-									"bgfillcolor_type" : "color",
-									"gradient" : 1,
-									"id" : "obj-23",
+									"id" : "obj-32",
+									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 499.0, 727.0, 460.0, 22.0 ],
+									"patching_rect" : [ 556.5, 675.0, 120.0, 49.0 ],
 									"style" : "",
-									"text" : "title \"OSCQuery Remote example\"",
-									"textcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ]
+									"text" : ";\rmax launchbrowser http://localhost:5678"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"id" : "obj-18",
-									"maxclass" : "live.text",
-									"mode" : 0,
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-29",
+									"maxclass" : "comment",
 									"numinlets" : 1,
-									"numoutlets" : 2,
-									"outlettype" : [ "", "" ],
-									"parameter_enable" : 1,
-									"patching_rect" : [ 499.0, 320.0, 83.0, 24.0 ],
-									"saved_attribute_attributes" : 									{
-										"valueof" : 										{
-											"parameter_longname" : "live.text",
-											"parameter_shortname" : "live.text",
-											"parameter_type" : 2,
-											"parameter_mmax" : 1.0,
-											"parameter_enum" : [ "val1", "val2" ]
-										}
-
-									}
-,
-									"text" : "Open",
-									"varname" : "live.text"
+									"numoutlets" : 0,
+									"patching_rect" : [ 248.0, 304.0, 170.0, 35.0 ],
+									"style" : "",
+									"text" : "stop the first connection",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
 							}
 , 							{
 								"box" : 								{
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-28",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 248.0, 267.5, 213.0, 35.0 ],
+									"style" : "",
+									"text" : "print list of  all active connections",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbleside" : 2,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-26",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 530.0, 160.0, 247.0, 64.0 ],
+									"style" : "",
+									"text" : "Once a device is exposed, it can be remotely monitored or controlled ",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"hidden" : 1,
 									"id" : "obj-16",
 									"maxclass" : "newobj",
-									"numinlets" : 1,
+									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patcher" : 									{
@@ -1681,7 +1644,7 @@
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 841.0, 283.0, 640.0, 480.0 ],
+										"rect" : [ 59.0, 103.0, 528.0, 319.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -1710,40 +1673,15 @@
 										"subpatcher_template" : "",
 										"boxes" : [ 											{
 												"box" : 												{
-													"id" : "obj-9",
-													"maxclass" : "newobj",
-													"numinlets" : 1,
+													"id" : "obj-32",
+													"linecount" : 3,
+													"maxclass" : "message",
+													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 297.0, 250.0, 97.0, 22.0 ],
+													"patching_rect" : [ 148.0, 204.0, 120.0, 49.0 ],
 													"style" : "",
-													"text" : "prepend readfile"
-												}
-
-											}
-, 											{
-												"box" : 												{
-													"comment" : "",
-													"id" : "obj-8",
-													"index" : 1,
-													"maxclass" : "outlet",
-													"numinlets" : 1,
-													"numoutlets" : 0,
-													"patching_rect" : [ 297.0, 288.0, 30.0, 30.0 ],
-													"style" : ""
-												}
-
-											}
-, 											{
-												"box" : 												{
-													"id" : "obj-7",
-													"maxclass" : "newobj",
-													"numinlets" : 2,
-													"numoutlets" : 2,
-													"outlettype" : [ "", "" ],
-													"patching_rect" : [ 297.0, 216.0, 192.0, 22.0 ],
-													"style" : "",
-													"text" : "combine path remote_control.html"
+													"text" : ";\rmax launchbrowser $1"
 												}
 
 											}
@@ -1756,19 +1694,58 @@
 													"numinlets" : 0,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 247.0, 106.0, 30.0, 30.0 ],
+													"patching_rect" : [ 48.5, 126.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
 											}
 , 											{
 												"box" : 												{
-													"id" : "obj-3",
+													"id" : "obj-2",
+													"maxclass" : "newobj",
+													"numinlets" : 1,
+													"numoutlets" : 1,
+													"outlettype" : [ "bang" ],
+													"patching_rect" : [ 48.5, 170.0, 27.0, 22.0 ],
+													"style" : "",
+													"text" : "b 1"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-9",
+													"maxclass" : "newobj",
+													"numinlets" : 1,
+													"numoutlets" : 2,
+													"outlettype" : [ "", "int" ],
+													"patching_rect" : [ 148.0, 162.0, 157.0, 22.0 ],
+													"style" : "",
+													"text" : "conformpath slash absolute"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-31",
+													"maxclass" : "newobj",
+													"numinlets" : 1,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 148.0, 122.5, 317.0, 22.0 ],
+													"style" : "",
+													"text" : "sprintf symout file://%sremote_control.html"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-14",
 													"maxclass" : "message",
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 247.0, 151.0, 34.0, 22.0 ],
+													"patching_rect" : [ 48.5, 204.0, 50.0, 22.0 ],
 													"style" : "",
 													"text" : "path"
 												}
@@ -1776,58 +1753,88 @@
 											}
 , 											{
 												"box" : 												{
-													"id" : "obj-1",
-													"maxclass" : "newobj",
+													"comment" : "",
+													"id" : "obj-36",
+													"index" : 2,
+													"maxclass" : "inlet",
+													"numinlets" : 0,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 148.0, 80.0, 30.0, 30.0 ],
+													"style" : ""
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"comment" : "",
+													"id" : "obj-37",
+													"index" : 1,
+													"maxclass" : "outlet",
 													"numinlets" : 1,
-													"numoutlets" : 2,
-													"outlettype" : [ "", "" ],
-													"patching_rect" : [ 247.0, 178.0, 69.0, 22.0 ],
-													"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
-													"style" : "",
-													"text" : "thispatcher"
+													"numoutlets" : 0,
+													"patching_rect" : [ 48.5, 235.682129, 30.0, 30.0 ],
+													"style" : ""
 												}
 
 											}
  ],
 										"lines" : [ 											{
 												"patchline" : 												{
-													"destination" : [ "obj-7", 0 ],
-													"source" : [ "obj-1", 1 ]
+													"destination" : [ "obj-37", 0 ],
+													"source" : [ "obj-14", 0 ]
 												}
 
 											}
 , 											{
 												"patchline" : 												{
-													"destination" : [ "obj-1", 0 ],
-													"source" : [ "obj-3", 0 ]
-												}
-
-											}
-, 											{
-												"patchline" : 												{
-													"destination" : [ "obj-3", 0 ],
-													"source" : [ "obj-6", 0 ]
+													"destination" : [ "obj-14", 0 ],
+													"source" : [ "obj-2", 0 ]
 												}
 
 											}
 , 											{
 												"patchline" : 												{
 													"destination" : [ "obj-9", 0 ],
-													"source" : [ "obj-7", 0 ]
+													"source" : [ "obj-31", 0 ]
 												}
 
 											}
 , 											{
 												"patchline" : 												{
-													"destination" : [ "obj-8", 0 ],
+													"destination" : [ "obj-31", 0 ],
+													"source" : [ "obj-36", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-2", 0 ],
+													"source" : [ "obj-6", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-32", 0 ],
 													"source" : [ "obj-9", 0 ]
 												}
 
 											}
+ ],
+										"styles" : [ 											{
+												"name" : "Jamoma_highlighted_orange",
+												"default" : 												{
+													"accentcolor" : [ 1.0, 0.5, 0.0, 1.0 ]
+												}
+,
+												"parentstyle" : "",
+												"multi" : 0
+											}
  ]
 									}
 ,
-									"patching_rect" : [ 499.0, 361.0, 99.0, 22.0 ],
+									"patching_rect" : [ 563.0, 551.0, 45.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -1837,7 +1844,120 @@
 									}
 ,
 									"style" : "",
-									"text" : "p open_html_gui"
+									"text" : "p jweb"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"hidden" : 1,
+									"id" : "obj-23",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 563.0, 582.0, 69.0, 22.0 ],
+									"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
+									"style" : "",
+									"text" : "thispatcher"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-21",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 188.0, 310.5, 43.0, 22.0 ],
+									"style" : "",
+									"text" : "stop 0"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-11",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 102.0, 390.0, 103.0, 22.0 ],
+									"style" : "",
+									"text" : "print ossia.device"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 162.0, 274.0, 79.0, 22.0 ],
+									"style" : "",
+									"text" : "get protocols"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-4",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 649.0, 551.0, 175.0, 50.0 ],
+									"style" : "",
+									"text" : "the device has to be declared on port 5678 for this to work (i.e. default)",
+									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bubble" : 1,
+									"bubbletextmargin" : 10,
+									"fontname" : "Lato Regular",
+									"fontsize" : 12.0,
+									"id" : "obj-24",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 664.0, 479.0, 145.0, 64.0 ],
+									"style" : "",
+									"text" : "Open html example to remote control from  your browser",
+									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-18",
+									"maxclass" : "live.text",
+									"mode" : 0,
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"parameter_enable" : 1,
+									"patching_rect" : [ 563.0, 506.0, 83.0, 24.0 ],
+									"saved_attribute_attributes" : 									{
+										"valueof" : 										{
+											"parameter_longname" : "live.text",
+											"parameter_shortname" : "live.text",
+											"parameter_type" : 2,
+											"parameter_mmax" : 1.0,
+											"parameter_enum" : [ "val1", "val2" ]
+										}
+
+									}
+,
+									"text" : "Open",
+									"varname" : "live.text"
 								}
 
 							}
@@ -1850,7 +1970,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 499.0, 193.0, 175.0, 50.0 ],
+									"patching_rect" : [ 563.0, 377.0, 175.0, 50.0 ],
 									"style" : "",
 									"text" : "Remote control can be done locally or from another computer",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1868,7 +1988,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 612.0, 102.0, 145.0, 64.0 ],
+									"patching_rect" : [ 676.0, 286.0, 145.0, 64.0 ],
 									"style" : "",
 									"text" : "Open client patcher to remote control this device's model",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1882,7 +2002,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 499.0, 123.0, 107.0, 22.0 ],
+									"patching_rect" : [ 563.0, 307.0, 107.0, 22.0 ],
 									"style" : "",
 									"text" : "load distant_client"
 								}
@@ -1895,7 +2015,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 499.0, 160.0, 53.0, 22.0 ],
+									"patching_rect" : [ 563.0, 344.0, 53.0, 22.0 ],
 									"style" : "",
 									"text" : "pcontrol"
 								}
@@ -1941,20 +2061,6 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 1.0, 1.0, 1.0 ],
-									"id" : "obj-3",
-									"maxclass" : "jweb",
-									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 499.0, 425.0, 491.0, 324.0 ],
-									"rendermode" : 0,
-									"url" : "file:///Users/bltzr/dev/libossia/OSSIA/ossia-max/help/remote_control.html"
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"id" : "obj-1",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -1975,7 +2081,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 153.0, 236.5, 175.0, 35.0 ],
+									"patching_rect" : [ 181.0, 202.0, 175.0, 35.0 ],
 									"style" : "",
 									"text" : "specific osc & ws ports can be defined (default 9999/5678)",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1989,7 +2095,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 136.0, 208.0, 161.0, 22.0 ],
+									"patching_rect" : [ 148.0, 237.0, 161.0, 22.0 ],
 									"style" : "",
 									"text" : "expose oscquery 1234 9876"
 								}
@@ -2002,11 +2108,11 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-17",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 307.0, 161.0, 136.0, 64.0 ],
+									"patching_rect" : [ 306.0, 139.0, 174.0, 49.0 ],
 									"style" : "",
 									"text" : "expose device through oscquery protocol",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2020,9 +2126,9 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 136.0, 182.0, 161.0, 22.0 ],
+									"patching_rect" : [ 135.0, 160.0, 101.0, 22.0 ],
 									"style" : "",
-									"text" : "expose oscquery 1234 5678"
+									"text" : "expose oscquery"
 								}
 
 							}
@@ -2033,13 +2139,13 @@
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
 									"id" : "obj-10",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 153.0, 79.0, 154.0, 64.0 ],
+									"patching_rect" : [ 153.0, 79.0, 215.0, 49.0 ],
 									"style" : "",
-									"text" : "Print list of available protocoles in Max console",
+									"text" : "Print list of available protocols in Max console",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -2112,14 +2218,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 145.5, 292.5, 111.5, 292.5 ],
+									"midpoints" : [ 144.5, 292.5, 111.5, 292.5 ],
 									"source" : [ "obj-13", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-3", 0 ],
+									"destination" : [ "obj-23", 0 ],
+									"hidden" : 1,
 									"source" : [ "obj-16", 0 ]
 								}
 
@@ -2141,7 +2248,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 145.5, 291.5, 111.5, 291.5 ],
+									"midpoints" : [ 157.5, 291.5, 111.5, 291.5 ],
 									"source" : [ "obj-20", 0 ]
 								}
 
@@ -2149,23 +2256,16 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 197.5, 340.25, 111.5, 340.25 ],
 									"source" : [ "obj-21", 0 ]
 								}
 
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 257.25, 342.75, 111.5, 342.75 ],
-									"source" : [ "obj-25", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
-									"destination" : [ "obj-23", 1 ],
+									"destination" : [ "obj-16", 1 ],
 									"hidden" : 1,
-									"source" : [ "obj-3", 0 ]
+									"source" : [ "obj-23", 1 ]
 								}
 
 							}
@@ -2180,7 +2280,7 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 170.5, 327.5, 111.5, 327.5 ],
+									"midpoints" : [ 171.5, 327.5, 111.5, 327.5 ],
 									"source" : [ "obj-6", 0 ]
 								}
 
@@ -2229,8 +2329,8 @@
  ],
 		"lines" : [  ],
 		"parameters" : 		{
-			"obj-1::obj-18" : [ "live.text", "live.text", 0 ],
-			"obj-1::obj-7" : [ "live.gain~", "live.gain~", 0 ]
+			"obj-1::obj-7" : [ "live.gain~", "live.gain~", 0 ],
+			"obj-1::obj-18" : [ "live.text", "live.text", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
