@@ -42,7 +42,9 @@ struct BoolParse_map : x3::symbols<bool>
   {
     add
         ("bool: true", true)
-        ("bool: false", false);
+        ("bool: false", false)
+        ("bool: 1", true)
+        ("bool: 0", false);
   }
 };
 
