@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 100.0, 100.0, 1053.0, 846.0 ],
+		"rect" : [ 63.0, 90.0, 1053.0, 846.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1498,7 +1498,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1053.0, 820.0 ],
+						"rect" : [ 63.0, 116.0, 1053.0, 820.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -1529,51 +1529,15 @@
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
-									"id" : "obj-31",
-									"linecount" : 3,
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 198.0, 338.0, 150.0, 47.0 ],
-									"style" : "",
-									"text" : "stop connection given by index (as return by get protocols)"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-29",
+									"id" : "obj-25",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 153.0, 338.0, 43.0, 22.0 ],
+									"patching_rect" : [ 247.75, 315.5, 79.0, 22.0 ],
+									"presentation_rect" : [ 277.0, 312.5, 0.0, 0.0 ],
 									"style" : "",
-									"text" : "stop 0"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-27",
-									"maxclass" : "comment",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 210.0, 309.0, 172.0, 20.0 ],
-									"style" : "",
-									"text" : "get status of active connection"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-25",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 102.0, 439.0, 34.0, 22.0 ],
-									"style" : "",
-									"text" : "print"
+									"text" : "stop"
 								}
 
 							}
@@ -1584,7 +1548,33 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 129.0, 309.0, 79.0, 22.0 ],
+									"patching_rect" : [ 187.0, 315.5, 43.0, 22.0 ],
+									"presentation_rect" : [ 187.0, 316.0, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "stop 0"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-11",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 102.0, 390.0, 103.0, 22.0 ],
+									"style" : "",
+									"text" : "print ossia.device"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 161.0, 285.0, 79.0, 22.0 ],
 									"style" : "",
 									"text" : "get protocols"
 								}
@@ -1643,7 +1633,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 499.0, 727.0, 460.0, 22.0 ],
 									"style" : "",
-									"text" : "title remote_control.html",
+									"text" : "title \"OSCQuery Remote example\"",
 									"textcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ]
 								}
 
@@ -2075,7 +2065,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 102.0, 398.0, 149.0, 22.0 ],
+									"patching_rect" : [ 102.0, 349.0, 149.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.device network-help"
 								}
@@ -2143,7 +2133,7 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-25", 0 ],
+									"destination" : [ "obj-11", 0 ],
 									"source" : [ "obj-2", 0 ]
 								}
 
@@ -2159,7 +2149,6 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"midpoints" : [ 138.5, 356.0, 111.5, 356.0 ],
 									"source" : [ "obj-21", 0 ]
 								}
 
@@ -2167,7 +2156,8 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-2", 0 ],
-									"source" : [ "obj-29", 0 ]
+									"midpoints" : [ 257.25, 342.75, 111.5, 342.75 ],
+									"source" : [ "obj-25", 0 ]
 								}
 
 							}
@@ -2184,6 +2174,14 @@
 									"destination" : [ "obj-2", 0 ],
 									"midpoints" : [ 111.5, 291.5, 111.5, 291.5 ],
 									"source" : [ "obj-5", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 170.5, 327.5, 111.5, 327.5 ],
+									"source" : [ "obj-6", 0 ]
 								}
 
 							}
@@ -2231,8 +2229,8 @@
  ],
 		"lines" : [  ],
 		"parameters" : 		{
-			"obj-1::obj-7" : [ "live.gain~", "live.gain~", 0 ],
-			"obj-1::obj-18" : [ "live.text", "live.text", 0 ]
+			"obj-1::obj-18" : [ "live.text", "live.text", 0 ],
+			"obj-1::obj-7" : [ "live.gain~", "live.gain~", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
@@ -2243,7 +2241,7 @@
 			}
 , 			{
 				"name" : "fm_synth.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
+				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
 				"patcherrelativepath" : "../patchers",
 				"type" : "JSON",
 				"implicit" : 1
