@@ -20,8 +20,6 @@ extern "C" void ossia_view_setup()
   {
     class_addmethod(c, (method) address_mess_cb<view>, "address",   A_SYM, 0);
 
-    //        class_addmethod(c,
-    //        (method)ossia_view_click,       "click",      A_NOTHING,   0);
   }
 
   class_register(CLASS_BOX, c);
@@ -104,46 +102,6 @@ void view::destroy(view* x)
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
   x->~view();
 }
-/*
-extern "C"
-void ossia_view_click(t_view *x, t_floatarg xpos, t_floatarg ypos, t_floatarg
-shift, t_floatarg ctrl, t_floatarg alt)
-{
-    using namespace std::chrono;
-
-    milliseconds ms = duration_cast< milliseconds
->(system_clock::now().time_since_epoch());
-    milliseconds diff = (ms - x->m_last_click);
-
-    // 200 ms double click
-    if (diff.count() < 200)
-    {
-        x->m_last_click = milliseconds(0);
-
-        int l;
-        t_device *device = (t_device*) find_parent(&x->m_obj,"ossia.device", 0,
-&l);
-*/
-/*
- if (!device || !x->m_node || obj_isQuarantined<t_remote>(x)){
- pd_error(x, "sorry no device found, or not connected or quarantined...");
- return;
- }
- */
-/*
-        t_canvas *root = x->m_obj.o_canvas;
-        while (root->gl_owner)
-            root = root->gl_owner;
-
-        if (!find_and_display_friend(x, root))
-            pd_error(x,"sorry I can't find a connected friend :-(");
-    }
-    else
-    {
-        x->m_last_click = ms;
-    }
-}
- */
 
 bool view::register_node(const std::vector<ossia::net::node_base*>& nodes)
 {

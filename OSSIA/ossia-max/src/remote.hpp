@@ -26,8 +26,6 @@ public:
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
   static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
-  //static void click( remote* x, t_floatarg xpos, t_floatarg ypos,
-  //                   t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
   static t_max_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
   static ossia::safe_set<remote *> &quarantine();
