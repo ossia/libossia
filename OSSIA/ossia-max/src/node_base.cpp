@@ -93,7 +93,7 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
-        object_error((t_object*)x,"Can't write file %s, error: %s", argv[0].a_w.w_sym->s_name, e.what());
+        object_error((t_object*)x,"Can't open file %s, error: %s", argv[0].a_w.w_sym->s_name, e.what());
       } catch (const std::exception& e) {
         object_error((t_object*)x,"Can't apply preset to current device:  %s", e.what());
       } catch (...) {
