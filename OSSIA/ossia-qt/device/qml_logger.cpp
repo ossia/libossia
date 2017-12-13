@@ -185,10 +185,13 @@ static void LogQtToOssia(
   auto basename_arr = QFileInfo(context.file).baseName().toUtf8();
   auto filename = basename_arr.constData();
   auto& logger = qml_logger::instance();
-  if(logger.logFilter().contains(msg))
+  for(const auto& filter : logger.logFilter())
   {
-    emit logger.filteredLog(type,filename,context.line,msg);
-    return;
+    if(msg.contains(filter, Qt::CaseInsensitive))
+    {
+      emit logger.filteredLog(type,filename,context.line,msg);
+      return;
+    }
   }
 
   QByteArray localMsg = msg.toLocal8Bit();
