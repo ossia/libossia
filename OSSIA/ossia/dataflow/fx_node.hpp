@@ -10,7 +10,7 @@ class OSSIA_EXPORT audio_fx_node : public ossia::graph_node
     virtual void all_notes_off() = 0;
 };
 
-static const ossia::value& last(const ossia::value_vector<ossia::tvalue>& vec)
+inline const ossia::value& last(const ossia::value_vector<ossia::tvalue>& vec)
 {
   auto max = vec[0].timestamp;
   const ossia::tvalue* ptr{&vec[0]};

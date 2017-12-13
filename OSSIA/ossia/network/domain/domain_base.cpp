@@ -4,7 +4,7 @@
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/detail/min_max.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 
 namespace ossia
 {
@@ -114,7 +114,7 @@ domain make_domain(
 }
 
 domain make_domain(
-    const chobo::small_vector<ossia::value, 2>& val, const ossia::value& cur)
+    const ossia::small_vector<ossia::value, 2>& val, const ossia::value& cur)
 {
   if (val.size() == 2 && val[0].valid() && val[1].valid())
   {

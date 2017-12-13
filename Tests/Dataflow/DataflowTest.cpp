@@ -42,7 +42,7 @@ auto pop_front(std::vector<T>& vec)
 }
 
 template<typename T, std::size_t N>
-auto pop_front(chobo::small_vector<T, N>& vec)
+auto pop_front(ossia::small_vector<T, N>& vec)
 {
   if(!vec.empty())
   {

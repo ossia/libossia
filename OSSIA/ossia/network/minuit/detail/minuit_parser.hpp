@@ -5,7 +5,7 @@
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
 
@@ -271,7 +271,7 @@ inline ossia::domain get_domain(
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it)
 {
-  chobo::small_vector<ossia::value, 2> val;
+  ossia::small_vector<ossia::value, 2> val;
   const auto cur = addr.value();
 
   // We read all the values one by one

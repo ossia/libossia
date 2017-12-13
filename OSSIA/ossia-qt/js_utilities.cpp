@@ -55,7 +55,7 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
   sanitize_name(name);
   bool is_here = false;
   ossia::optional<int> name_instance;
-  chobo::small_vector<int, 16> instance_num;
+  ossia::small_vector<int, 16> instance_num;
   const auto b_size = brethren.size();
   instance_num.reserve(b_size);
 

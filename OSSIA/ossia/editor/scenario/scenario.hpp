@@ -17,8 +17,8 @@ class time_interval;
 class time_sync;
 using interval_set = boost::container::flat_set<time_interval*>;
 using sync_set = boost::container::flat_set<time_sync*>;
-using small_sync_vec = chobo::small_vector<time_sync*, 4>;
-using small_event_vec = chobo::small_vector<time_event*, 4>;
+using small_sync_vec = ossia::small_vector<time_sync*, 4>;
+using small_event_vec = ossia::small_vector<time_event*, 4>;
 struct overtick
 {
   ossia::time_value min;

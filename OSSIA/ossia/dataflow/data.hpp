@@ -1,15 +1,15 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
 namespace ossia
 {
 template <typename T>
-using value_vector = chobo::small_vector<T, 4>;
+using value_vector = ossia::small_vector<T, 4>;
 
-using audio_channel = chobo::small_vector<double, 64>;
-using audio_vector = chobo::small_vector<audio_channel, 2>;
+using audio_channel = ossia::small_vector<double, 64>;
+using audio_vector = ossia::small_vector<audio_channel, 2>;
 
 struct audio_port
 {
@@ -178,7 +178,7 @@ struct mix
       in.add_raw_value(val);
   }
 
-  void copy_audio(const chobo::small_vector<double, 64>& src, chobo::small_vector<double, 64>& sink)
+  void copy_audio(const ossia::small_vector<double, 64>& src, ossia::small_vector<double, 64>& sink)
   {
     if(sink.size() < src.size())
       sink.resize(src.size());

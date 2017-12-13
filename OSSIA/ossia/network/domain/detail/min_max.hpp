@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain_base.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 
 namespace ossia
 {
@@ -353,7 +353,7 @@ struct domain_minmax_creation_visitor
  */
 struct domain_value_set_creation_visitor
 {
-  const chobo::small_vector<ossia::value, 2>& values;
+  const ossia::small_vector<ossia::value, 2>& values;
   template <typename T>
   domain operator()(const T&)
   {

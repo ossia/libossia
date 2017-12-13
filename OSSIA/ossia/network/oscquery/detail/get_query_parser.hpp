@@ -4,7 +4,7 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <boost/lexical_cast.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
 namespace ossia
@@ -160,7 +160,7 @@ public:
           }
 
           // All the value-less parameters
-          chobo::small_vector<std::string, 5> attributes;
+          ossia::small_vector<std::string, 5> attributes;
           for (const auto& elt : parameters)
           {
             if (elt.second.empty())

@@ -3,7 +3,7 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/osc/detail/string_view.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 
 #include <array>

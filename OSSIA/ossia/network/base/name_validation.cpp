@@ -1,7 +1,7 @@
 #include "name_validation.hpp"
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/optional.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <algorithm>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
@@ -62,7 +62,7 @@ sanitize_name(std::string name, const std::vector<std::string>& brethren)
   sanitize_name(name);
   bool is_here = false;
   ossia::optional<int> name_instance;
-  chobo::small_vector<int, 16> instance_num;
+  ossia::small_vector<int, 16> instance_num;
   instance_num.reserve(brethren.size());
 
   // First get the root name : the first part of the "a.b"
@@ -141,7 +141,7 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
   sanitize_name(name);
   bool is_here = false;
   ossia::optional<int> name_instance;
-  chobo::small_vector<int, 16> instance_num;
+  ossia::small_vector<int, 16> instance_num;
   instance_num.reserve(brethren.size());
 
   // First get the root name : the first part of the "a.b"

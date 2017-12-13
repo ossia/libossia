@@ -70,7 +70,7 @@ inline char* toString(const ossia::time_value& val)
   return QTest::toString(QByteArray::number((qint64)val.impl));
 }
 
-inline char* toString(const chobo::small_vector<ossia::token_request, 4>& val)
+inline char* toString(const ossia::small_vector<ossia::token_request, 4>& val)
 {
   QString s = "[";
   for(auto& token : val)
@@ -132,7 +132,7 @@ inline QDebug operator<<(QDebug d, const ossia::token_request&  s)
 {
   return d << QTest::toString(s);
 }
-inline QDebug operator<<(QDebug d, const chobo::small_vector<ossia::token_request, 4>&  s)
+inline QDebug operator<<(QDebug d, const ossia::small_vector<ossia::token_request, 4>&  s)
 {
   return d << QTest::toString(s);
 }

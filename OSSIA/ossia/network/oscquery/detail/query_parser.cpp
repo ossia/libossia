@@ -10,7 +10,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/container/static_vector.hpp>
 #include <boost/lexical_cast.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <hopscotch_map.h>
 #include <string>
 #include <vector>

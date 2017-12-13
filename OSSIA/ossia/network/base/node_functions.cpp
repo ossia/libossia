@@ -9,7 +9,7 @@
 #include <vector>
 #include <bitset>
 
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 
 
 namespace ossia
@@ -357,7 +357,7 @@ void expand_ranges(std::string& str)
       std::size_t start{}, length{};
       int64_t first{}, last{}, increment{};
     };
-    chobo::small_vector<rx_triple, 4> positions;
+    ossia::small_vector<rx_triple, 4> positions;
 
     std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
     std::regex_iterator<std::string::iterator> rend;
@@ -414,7 +414,7 @@ void expand_ranges(std::string& str)
       std::size_t start{}, length{};
       int64_t first{}, last{};
     };
-    chobo::small_vector<rx_double, 4> positions;
+    ossia::small_vector<rx_double, 4> positions;
 
     std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
     std::regex_iterator<std::string::iterator> rend;
@@ -461,7 +461,7 @@ std::string canonicalize_str(std::string str)
       std::size_t start{}, length{};
       std::bitset<128> chars;
     };
-    chobo::small_vector<rx_pos, 4> positions;
+    ossia::small_vector<rx_pos, 4> positions;
 
     std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), rx_class);
     std::regex_iterator<std::string::iterator> rend;

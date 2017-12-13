@@ -3,7 +3,7 @@
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <chobo/small_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 
 namespace ossia
 {
@@ -69,11 +69,11 @@ public:
 
   // incremented for each process
   int64_t temporal_counter{};
-  chobo::small_vector<int64_t, 2> temporal_priority;
-  chobo::small_vector<int64_t, 2> custom_priority;
+  ossia::small_vector<int64_t, 2> temporal_priority;
+  ossia::small_vector<int64_t, 2> custom_priority;
 
   void disable();
-  chobo::small_vector<token_request, 4> requested_tokens;
+  ossia::small_vector<token_request, 4> requested_tokens;
 protected:
   inlets m_inlets;
   outlets m_outlets;

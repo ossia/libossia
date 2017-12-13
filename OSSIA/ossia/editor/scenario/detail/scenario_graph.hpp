@@ -82,11 +82,11 @@ struct sgraph
       return reset_component(components(), sync);
     }
 
-    chobo::small_vector<ossia::time_sync*, 2> sibling_roots(
+    ossia::small_vector<ossia::time_sync*, 2> sibling_roots(
         const std::vector<int>& component,
         const ossia::time_sync& sync) const
     {
-      chobo::small_vector<ossia::time_sync*, 4> res;
+      ossia::small_vector<ossia::time_sync*, 2> res;
       auto comp = component[m_vertices.at(&sync)];
 
       for(const auto& s : scenar.get_time_syncs())

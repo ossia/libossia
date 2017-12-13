@@ -604,13 +604,13 @@ class ScenarioAlgoTest : public QObject
       s.interval->start();
       s.interval->tick(700_tv);
 
-      chobo::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
+      ossia::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
       QVERIFY(c0->node->requested_tokens == expected0);
       qDebug() << c1->node->requested_tokens.size();
       qDebug() << c1->node->requested_tokens[0];
       QVERIFY(c1->node->requested_tokens.size() == 2);
       qDebug() << c1->node->requested_tokens[1];
-      chobo::small_vector<token_request, 4> expected1{{0_tv, 0., 300_tv}, {400_tv, 4./5., 300_tv}};
+      ossia::small_vector<token_request, 4> expected1{{0_tv, 0., 300_tv}, {400_tv, 4./5., 300_tv}};
       QVERIFY(c1->node->requested_tokens == expected1);
 
     }
@@ -639,13 +639,13 @@ class ScenarioAlgoTest : public QObject
 
       // In this case (when there are flexible bounsd) we go as far as possible in the tick.
       // Else this would cause deadlocks if one interval reached its max before another reached its min
-      chobo::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
+      ossia::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
       QVERIFY(c0->node->requested_tokens == expected0);
       qDebug() << c1->node->requested_tokens.size();
       qDebug() << c1->node->requested_tokens[0];
       QVERIFY(c1->node->requested_tokens.size() == 2);
       qDebug() << c1->node->requested_tokens[1];
-      chobo::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {700_tv, 7./5., 0_tv}};
+      ossia::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {700_tv, 7./5., 0_tv}};
       QVERIFY(c1->node->requested_tokens == expected1);
     }
 
@@ -671,13 +671,13 @@ class ScenarioAlgoTest : public QObject
 
       {
         s.interval->tick(20_tv);
-        chobo::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {20_tv, 2./3., 0_tv}};
+        ossia::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {20_tv, 2./3., 0_tv}};
         QVERIFY(c0->node->requested_tokens == expected0);
         qDebug() << c1->node->requested_tokens.size();
         qDebug() << c1->node->requested_tokens[0];
         QVERIFY(c1->node->requested_tokens.size() == 2);
         qDebug() << c1->node->requested_tokens[1];
-        chobo::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {10_tv, 1., 0_tv}};
+        ossia::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {10_tv, 1., 0_tv}};
         QVERIFY(c1->node->requested_tokens == expected1);
       }
       c0->node->requested_tokens.clear();
@@ -686,7 +686,7 @@ class ScenarioAlgoTest : public QObject
       QVERIFY(e1->get_status() == time_event::status::NONE);
       {
         s.interval->tick(20_tv);
-        chobo::small_vector<token_request, 4> expected0{{30_tv, 1., 0_tv}};
+        ossia::small_vector<token_request, 4> expected0{{30_tv, 1., 0_tv}};
         qDebug() << c0->node->requested_tokens;
         qDebug() << c1->node->requested_tokens;
         QVERIFY(c0->node->requested_tokens.size() == 1);
