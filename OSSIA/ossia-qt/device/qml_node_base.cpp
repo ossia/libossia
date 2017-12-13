@@ -361,7 +361,7 @@ void qml_node_base::applyNodeAttributes()
 
 net::node_base& qml_node_base::get_parent(QObject* obj, bool relative)
 {
-  if (m_parentNode)
+  if (m_parentNode && m_parentNode->ossiaNode())
     return *m_parentNode->ossiaNode();
 
   if (relative)
