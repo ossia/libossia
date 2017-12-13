@@ -146,7 +146,6 @@ bool model::unregister()
   return true;
 }
 
-
 t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
@@ -260,6 +259,7 @@ extern "C" void setup_ossia0x2emodel(void)
 
     eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
     eclass_addmethod(c, (method) address_mess_cb<model>, "address",   A_SYMBOL, 0);
+    eclass_addmethod(c, (method) model::get_mess_cb, "get",   A_SYMBOL, 0);
 
     // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
     // buggy
