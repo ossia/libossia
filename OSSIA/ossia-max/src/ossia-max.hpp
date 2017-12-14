@@ -150,24 +150,6 @@ object_base* find_parent_box_alive(
     t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
- * @brief The box_hierachy class
- * @details Little class to store object pointer and hierarchy level, useful
- * for iterating object from top to bottom.
- */
-class box_hierachy
-{
-public:
-  t_object* box;
-  int hierarchy;
-  t_symbol* classname;
-
-  friend bool operator<(box_hierachy a, box_hierachy b)
-  {
-    return a.hierarchy < b.hierarchy;
-  }
-};
-
-/**
  * @brief Find all objects [classname] in the current patcher.
  * @param patcher : patcher in which we are looking for objects
  * @param classname : name of the object to search (ossia.model or ossia.view)

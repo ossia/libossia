@@ -74,6 +74,20 @@ private:
   t_atom m_addr{};
 };
 
+struct search_result
+{
+  object_base* object{};
+  t_object* patcher{};
+  t_object* parent{};
+  t_symbol* classname{};
+  int level; // relative hierarchy level
+
+  friend bool operator<(search_result a, search_result b)
+  {
+    return a.level < b.level;
+  }
+};
+
 struct object_base
 {
 public:
@@ -134,6 +148,10 @@ public:
 
   long m_tags_size{};
   long m_description_size{};
+
+  std::vector<search_result> m_found_parameters{};
+  std::vector<search_result> m_found_models{};
+  t_object* m_patcher{};
 
   // constructor
   object_base();

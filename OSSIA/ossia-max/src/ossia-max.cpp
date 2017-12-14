@@ -191,6 +191,49 @@ object_base* find_parent_box_alive(
   return parent;
 }
 
+long object_iteration_callback(t_object *x, t_object *obj)
+{
+  t_object *patcher, *o;
+  t_symbol *s;
+
+  patcher = jbox_get_patcher(obj);
+  o = jbox_get_object(obj);
+  s = jpatcher_get_name(patcher);
+
+  t_object* parent = object_attr_getobj(patcher,gensym("parentpatcher"));
+
+  t_symbol* classname = object_attr_getsym(obj, common_symbols_gettable()->s_maxclass);
+
+  object_base* caller = (object_base*)x;
+  object_base* responder = (object_base*)o;
+
+  if ( classname == gensym("ossia.model") )
+  {
+    t_object* tmp = parent;
+    int i = 0;
+    while (tmp && tmp != caller->m_patcher)
+    {
+      tmp = object_attr_getobj(patcher,gensym("parentpatcher"));
+      i++;
+    }
+
+
+    caller->m_found_models.push_back({responder, patcher, parent, classname, i});
+  } else if ( classname == gensym("ossia.parameter") )
+  {
+    t_object* tmp = parent;
+    int i = 0;
+    while (tmp && tmp != caller->m_patcher)
+    {
+      tmp = object_attr_getobj(tmp,gensym("parentpatcher"));
+      i++;
+    }
+    caller->m_found_parameters.push_back({responder, patcher, parent, classname, i});
+  }
+
+  return 0;
+}
+
 std::vector<object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname)
 {
@@ -205,41 +248,40 @@ std::vector<object_base*> find_children_to_register(
   // 1: look for [classname] objects into the patcher
   t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
 
+  t_object* object_box = NULL;
+  object_obex_lookup(object, gensym("#B"), &object_box);
+
   while (next_box)
   {
-    t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
-    if (curr_classname == classname)
+    if(next_box != object_box)
     {
-      t_object* object_box = NULL;
-      object_obex_lookup(object, gensym("#B"), &object_box);
-
-      // the object itself cannot be stored into the hierachy
-      if (next_box != object_box && next_box != nullptr)
+      t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
+      if (curr_classname == classname)
       {
-        object_base* o = (object_base*) jbox_get_object(next_box);
+          object_base* o = (object_base*) jbox_get_object(next_box);
 
-        // ignore dying object
-        if (!o->m_dead)
-          found.push_back(o);
+          // ignore dying object
+          if (!o->m_dead)
+            found.push_back(o);
+
+      }
+
+      // if we're looking for ossia.view but found a model, remind it
+      if ( classname == gensym("ossia.view")
+           && curr_classname == gensym("ossia.model") )
+        found_model = true;
+      else if ( classname == gensym("ossia.model")
+                && curr_classname == gensym("ossia.view") )
+        found_view = true;
+
+      // if there is a client or device in the current patcher
+      // don't register anything
+      if ( curr_classname == gensym("ossia.device")
+           || curr_classname == gensym("ossia.client"))
+      {
+        return {};
       }
     }
-
-    // if we're looking for ossia.view but found a model, remind it
-    if ( classname == gensym("ossia.view")
-         && curr_classname == gensym("ossia.model") )
-      found_model = true;
-    else if ( classname == gensym("ossia.model")
-              && curr_classname == gensym("ossia.view") )
-      found_view = true;
-
-    // if there is a client or device in the current patcher
-    // don't register anything
-    if ( curr_classname == gensym("ossia.device")
-      || curr_classname == gensym("ossia.client"))
-    {
-      return {};
-    }
-
     next_box = object_attr_getobj(next_box, _sym_nextobject);
   }
 
@@ -248,6 +290,7 @@ std::vector<object_base*> find_children_to_register(
   if (found.empty())
   {
     next_box = object_attr_getobj(patcher, _sym_firstobject);
+    bool poly = false;
 
     while (next_box)
     {
@@ -265,30 +308,74 @@ std::vector<object_base*> find_children_to_register(
         found.insert(found.end(),found_tmp.begin(), found_tmp.end());
 
       }
+      else if (next_box_classname == gensym("poly~"))
+      {
+        poly = true;
+      }
 
       next_box = object_attr_getobj(next_box, _sym_nextobject);
     }
+
+    if (poly)
+    {
+      object_base* x = (object_base*)object;
+      x->m_found_models.clear();
+      x->m_found_parameters.clear();
+      x->m_patcher = jbox_get_patcher(object);
+      long result;
+
+      object_method(patcher, gensym("iterate"), (method)object_iteration_callback, object, PI_DEEP | PI_WANTBOX, &result);
+
+      ossia::sort(x->m_found_models);
+      ossia::sort(x->m_found_parameters);
+
+      for (auto model : x->m_found_models)
+      {
+        auto objs = find_children_to_register((t_object*)model.object, model.patcher, gensym("ossia.model"));
+        for (auto obj : objs)
+        {
+          ossia::remove_one_if(
+                x->m_found_parameters,
+                [&] (const auto p) {
+                  return p.object == obj;
+          });
+          ossia::remove_one_if(
+                x->m_found_models,
+                [&] (const auto p) {
+                  return p.object == obj;
+          });
+
+        }
+        found.push_back(model.object);
+      }
+
+      for (auto param : x->m_found_parameters)
+      {
+        found.push_back(param.object);
+      }
+    }
+
 
     // 3: finally look for ossia.param / ossia.remote in the same pather
     next_box = object_attr_getobj(patcher, _sym_firstobject);
 
     while (next_box)
     {
-      t_symbol* current = object_attr_getsym(next_box, _sym_maxclass);
-      if (current == subclassname
-          || ( !found_view && current == gensym("ossia.remote") ) )
+      if (object_box != next_box)
       {
-        t_object* object_box = NULL;
-        object_obex_lookup(object, gensym("#B"), &object_box);
-
-        // the object itself shouln't be stored
-        if (object_box != next_box)
+        t_symbol* current = object_attr_getsym(next_box, _sym_maxclass);
+        if (current == subclassname
+            || ( !found_view && current == gensym("ossia.remote") ) )
         {
-          object_base* o = (object_base*) jbox_get_object(next_box);
-          found.push_back(o);
+
+          // the object itself shouln't be stored
+          if (object_box != next_box)
+          {
+            object_base* o = (object_base*) jbox_get_object(next_box);
+            found.push_back(o);
+          }
         }
       }
-
       next_box = object_attr_getobj(next_box, _sym_nextobject);
     }
   }
