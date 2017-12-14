@@ -1,8 +1,7 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <boost/spirit/include/qi_symbols.hpp>
-
-#include <ossia/editor/state/message.hpp>
+#include <ossia/editor/state/destination_qualifiers.hpp>
 
 namespace ossia
 {

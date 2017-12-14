@@ -26,7 +26,6 @@
 #include <ossia-c/preset/result.h>
 
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
-#include <ossia/ossia.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
 

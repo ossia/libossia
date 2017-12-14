@@ -1,5 +1,8 @@
 #pragma once
+#include <ossia-config.hpp>
+#if defined(OSSIA_EDITOR)
 #include <ossia/editor/state/state_element.hpp>
+#endif
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
@@ -7,9 +10,11 @@
 #include <ossia/network/common/path.hpp>
 #include <ossia-qt/value_metatypes.hpp>
 
+#if defined(OSSIA_EDITOR)
 Q_DECLARE_METATYPE(ossia::state)
 Q_DECLARE_METATYPE(ossia::custom_state)
 Q_DECLARE_METATYPE(ossia::state_element)
+#endif
 
 Q_DECLARE_METATYPE(ossia::net::parameter_base*)
 Q_DECLARE_METATYPE(ossia::net::node_base*)
