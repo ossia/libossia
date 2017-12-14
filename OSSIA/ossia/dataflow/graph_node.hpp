@@ -32,6 +32,7 @@ public:
   graph_node();
   virtual ~graph_node();
 
+
   bool enabled() const;
   bool executed() const;
 
@@ -43,6 +44,7 @@ public:
   virtual bool consumes(const execution_state&) const;
 
   virtual void run(token_request, execution_state&);
+  virtual std::string_view label() const;
 
   bool has_port_inputs() const;
   bool has_global_inputs() const;

@@ -649,29 +649,8 @@ void qml_device::loadPreset(QObject* root, QString file)
           qApp->processEvents();
           qApp->processEvents();
           qApp->processEvents();
-
-/*
-          std::function<void(...)> do_later =
-              [this] ;
-          do
-          {
-              prev_model_size = cur_model_size;
-              auto mlist = m_models;
-              for (auto model : mlist)
-              {
-                  if (model.second)
-                  {
-                      qml_model_property* m = model.first;
-
-                      m->updateCount();
-                  }
-                  QCoreApplication::processEvents();
-              }
-              cur_model_size = m_models.size();
-          } while (cur_model_size != prev_model_size);
-          */
       }
-      //m_readPreset = false;
+      m_readPreset = false;
       return;
     }
   }

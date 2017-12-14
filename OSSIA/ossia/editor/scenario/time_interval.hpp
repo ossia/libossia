@@ -21,6 +21,7 @@ class interval_node : public ossia::graph_node
 {
 public:
   interval_node();
+  std::string_view label() const override;
   void run(ossia::token_request t, ossia::execution_state&) override;
 };
 

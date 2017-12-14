@@ -307,6 +307,11 @@ interval_node::interval_node()
   m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
 }
 
+std::string_view interval_node::label() const
+{
+  return "Interval";
+}
+
 
 void interval_node::run(token_request t, execution_state&)
 {

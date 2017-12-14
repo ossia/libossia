@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <boost/container/flat_map.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 global_devices& static_devices()
 {

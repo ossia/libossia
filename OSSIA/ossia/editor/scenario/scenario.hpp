@@ -31,6 +31,7 @@ class scenario_node : public ossia::graph_node
 {
 public:
   scenario_node();
+  std::string_view label() const override;
   void run(ossia::token_request t, ossia::execution_state&) override;
   // TODO: add here the states to play.
   // They have to work with inter-ticks.

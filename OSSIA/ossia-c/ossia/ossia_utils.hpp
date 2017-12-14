@@ -1,13 +1,18 @@
 #pragma once
 #include <ossia-c/ossia-c.h>
-#include <boost/container/flat_map.hpp>
 
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <mutex>
 #include <fmt/format.h>
+#include <boost/container/flat_map.hpp>
 #include <ossia-c/log/ossia_log.h>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/protocol.hpp>
+#include <ossia/network/value/value.hpp>
+#include <ossia/network/domain/domain_base.hpp>
 
 struct ossia_protocol
 {

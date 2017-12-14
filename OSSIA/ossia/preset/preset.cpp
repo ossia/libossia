@@ -28,6 +28,10 @@
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/node.hpp>
 
 #if defined(GetObject)
 #undef GetObject

@@ -58,6 +58,11 @@ void graph_node::run(token_request t, execution_state&)
 {
 }
 
+std::string_view graph_node::label() const
+{
+  return {};
+}
+
 bool graph_node::can_execute(const execution_state&) const
 {
   return ossia::all_of(m_inlets, [](const auto& inlet) {

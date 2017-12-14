@@ -64,7 +64,7 @@ struct inlet : public port
   }
 
   destination_t address;
-  std::vector<graph_edge*> sources;
+  ossia::small_vector<graph_edge*, 2> sources;
 };
 
 struct outlet : public port
@@ -102,7 +102,7 @@ struct outlet : public port
   void write(execution_state& e);
 
   destination_t address;
-  std::vector<graph_edge*> targets;
+  ossia::small_vector<graph_edge*, 2> targets;
 };
 
 template <typename T, typename... Args>
@@ -117,6 +117,6 @@ outlet_ptr make_outlet(Args&&... args)
 }
 
 using ports = std::vector<std::shared_ptr<port>>;
-using inlets = std::vector<inlet_ptr>;
-using outlets = std::vector<outlet_ptr>;
+using inlets = ossia::small_vector<inlet_ptr, 2>;
+using outlets = ossia::small_vector<outlet_ptr, 2>;
 }

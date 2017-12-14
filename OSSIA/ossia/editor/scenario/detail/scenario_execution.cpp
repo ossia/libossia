@@ -492,6 +492,8 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
 
     do
     {
+
+      // std::cerr << "BEGIN EVENT" << std::endl;
       for (const auto& timeEvent : pendingEvents)
       {
         time_event& ev = *timeEvent;
@@ -517,9 +519,11 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
             {
               run_interval(*interval, remaining_tick, offset);
             }
+            std::cerr << "remaining tick " <<  remaining_tick << std::endl;
           }
         }
       }
+      // std::cerr << "END EVENT" << std::endl;
 
       pendingEvents.clear();
 

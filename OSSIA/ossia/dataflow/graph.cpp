@@ -240,13 +240,17 @@ void graph::connect(const std::shared_ptr<graph_edge>& edge)
 
 void graph::disconnect(const std::shared_ptr<graph_edge>& edge)
 {
-  auto it = m_edges.right.find(edge);
-  if (it != m_edges.right.end())
+  if(edge)
   {
-    auto edg = boost::edges(m_graph);
-    if(std::find(edg.first, edg.second, it->second) != edg.second)
-      boost::remove_edge(it->second, m_graph);
-    m_edge_map.erase(edge.get());
+    auto it = m_edges.right.find(edge);
+    if (it != m_edges.right.end())
+    {
+      auto edg = boost::edges(m_graph);
+      if(std::find(edg.first, edg.second, it->second) != edg.second)
+        boost::remove_edge(it->second, m_graph);
+      m_edge_map.erase(edge.get());
+    }
+    edge->clear();
   }
 }
 
