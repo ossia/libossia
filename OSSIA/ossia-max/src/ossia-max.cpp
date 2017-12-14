@@ -192,7 +192,7 @@ object_base* find_parent_box_alive(
 }
 
 std::vector<object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev)
+    t_object* object, t_object* patcher, t_symbol* classname)
 {
   t_symbol* subclassname = classname == gensym("ossia.model")
                                ? gensym("ossia.parameter")
@@ -234,21 +234,10 @@ std::vector<object_base*> find_children_to_register(
 
     // if there is a client or device in the current patcher
     // don't register anything
-    if ( found_dev
-         && (curr_classname == gensym("ossia.device")
-             || curr_classname == gensym("ossia.client")) )
+    if ( curr_classname == gensym("ossia.device")
+      || curr_classname == gensym("ossia.client"))
     {
-      t_object* object_box = NULL;
-      object_obex_lookup(object, gensym("#B"), &object_box);
-      // the object itself cannot be stored into the hierachy
-      if (next_box != object_box && next_box != nullptr)
-      {
-        object_base* o = (object_base*) jbox_get_object(next_box);
-
-        // ignore dying object
-        if (!o->m_dead)
-          found.push_back(o);
-      }
+      return {};
     }
 
     next_box = object_attr_getobj(next_box, _sym_nextobject);
@@ -270,14 +259,11 @@ std::vector<object_base*> find_children_to_register(
           || next_box_classname == _sym_bpatcher)
       {
         t_object* patcher = jbox_get_object(next_box);
-        bool _found_dev = false;
         std::vector<object_base*> found_tmp
-            = find_children_to_register(object, patcher, classname, &_found_dev);
+            = find_children_to_register(object, patcher, classname);
 
-        if (!_found_dev)
-        {
-          found.insert(found.end(),found_tmp.begin(), found_tmp.end());
-        }
+        found.insert(found.end(),found_tmp.begin(), found_tmp.end());
+
       }
 
       next_box = object_attr_getobj(next_box, _sym_nextobject);
@@ -296,7 +282,7 @@ std::vector<object_base*> find_children_to_register(
         object_obex_lookup(object, gensym("#B"), &object_box);
 
         // the object itself shouln't be stored
-        if (object_box)
+        if (object_box != next_box)
         {
           object_base* o = (object_base*) jbox_get_object(next_box);
           found.push_back(o);

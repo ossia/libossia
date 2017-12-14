@@ -175,7 +175,7 @@ public:
  * corresponding classname
  */
 std::vector<object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev = nullptr);
+    t_object* object, t_object* patcher, t_symbol* classname);
 
 /**
  * @brief             Convenient method to easily get the patcher where a box

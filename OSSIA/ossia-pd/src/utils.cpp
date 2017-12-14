@@ -281,7 +281,7 @@ std::vector<ossia::net::node_base*> find_parent_node(object_base* x)
   return std::vector<ossia::net::node_base*>{};
 }
 
-std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, string_view classname, bool* found_dev)
+std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, string_view classname)
 {
   const ossia::string_view subclassname
       = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
@@ -315,14 +315,9 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
 
     // if there is a client or device in the current patcher
     // don't register anything
-    if ( found_dev && (current == "ossia.device" || current == "ossia.client") )
+    if (current == "ossia.device" || current == "ossia.client")
     {
-      object_base* o;
-      o = (object_base*)&list->g_pd;
-      if (x != o && !o->m_dead)
-      {
-        *found_dev = true;
-      }
+      return {};
     }
 
     list = list->g_next;
@@ -345,13 +340,10 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
         if (!canvas_istable(canvas))
         {
           t_gobj* _list = canvas->gl_list;
-          bool _found_dev = false;
           std::vector<object_base*> found_tmp
-              = find_child_to_register(x, _list, classname, &_found_dev);
-          if (!_found_dev)
-          {
-            found.insert(found.end(),found_tmp.begin(), found_tmp.end());
-          }
+              = find_child_to_register(x, _list, classname);
+
+          found.insert(found.end(),found_tmp.begin(), found_tmp.end());
         }
       }
       list = list->g_next;

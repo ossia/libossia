@@ -432,7 +432,7 @@ std::vector<ossia::net::node_base*> find_parent_node(object_base* x);
  * corresponding classname
  */
 std::vector<object_base*> find_child_to_register(
-    object_base* x, t_gobj* start_list, ossia::string_view classname, bool* found_dev = nullptr);
+    object_base* x, t_gobj* start_list, ossia::string_view classname);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
