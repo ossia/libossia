@@ -58,7 +58,7 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
       model::destroy(x);
-      free(x);
+      // free(x);
       return nullptr;
     }
 
