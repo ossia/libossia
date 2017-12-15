@@ -165,6 +165,7 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_name = address;
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
+  object_method(x,gensym("unselect"),0);
   x->unregister();
   max_object_register(x);
 }
