@@ -191,53 +191,10 @@ object_base* find_parent_box_alive(
   return parent;
 }
 
-long object_iteration_callback(t_object *x, t_object *obj)
-{
-  t_object *patcher, *o;
-  t_symbol *s;
-
-  patcher = jbox_get_patcher(obj);
-  o = jbox_get_object(obj);
-  s = jpatcher_get_name(patcher);
-
-  t_object* parent = object_attr_getobj(patcher,gensym("parentpatcher"));
-
-  t_symbol* classname = object_attr_getsym(obj, common_symbols_gettable()->s_maxclass);
-
-  object_base* caller = (object_base*)x;
-  object_base* responder = (object_base*)o;
-
-  if ( classname == gensym("ossia.model") )
-  {
-    t_object* tmp = parent;
-    int i = 0;
-    while (tmp && tmp != caller->m_patcher)
-    {
-      tmp = object_attr_getobj(patcher,gensym("parentpatcher"));
-      i++;
-    }
-
-
-    caller->m_found_models.push_back({responder, patcher, parent, classname, i});
-  } else if ( classname == gensym("ossia.parameter") )
-  {
-    t_object* tmp = parent;
-    int i = 0;
-    while (tmp && tmp != caller->m_patcher)
-    {
-      tmp = object_attr_getobj(tmp,gensym("parentpatcher"));
-      i++;
-    }
-    caller->m_found_parameters.push_back({responder, patcher, parent, classname, i});
-  }
-
-  return 0;
-}
-
 std::vector<object_base*> find_children_to_register(
-    t_object* caller, t_object* patcher, t_symbol* classname, bool search_dev)
+    t_object* caller, t_object* root_patcher, t_symbol* search_symbol, bool search_dev)
 {
-  t_symbol* subclassname = classname == gensym("ossia.model")
+  t_symbol* subclassname = search_symbol == gensym("ossia.model")
                                ? gensym("ossia.parameter")
                                : gensym("ossia.remote");
 
@@ -246,7 +203,7 @@ std::vector<object_base*> find_children_to_register(
   bool found_view = false;
 
   // 1: look for [classname] objects into the patcher
-  t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
+  t_object* next_box = object_attr_getobj(root_patcher, _sym_firstobject);
 
   t_object* object_box = NULL;
   object_obex_lookup(caller, gensym("#B"), &object_box);
@@ -256,7 +213,7 @@ std::vector<object_base*> find_children_to_register(
     if(next_box != object_box)
     {
       t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
-      if (curr_classname == classname)
+      if (curr_classname == search_symbol)
       {
           object_base* o = (object_base*) jbox_get_object(next_box);
 
@@ -267,10 +224,10 @@ std::vector<object_base*> find_children_to_register(
       }
 
       // if we're looking for ossia.view but found a model, remind it
-      if ( classname == gensym("ossia.view")
+      if ( search_symbol == gensym("ossia.view")
            && curr_classname == gensym("ossia.model") )
         found_model = true;
-      else if ( classname == gensym("ossia.model")
+      else if ( search_symbol == gensym("ossia.model")
                 && curr_classname == gensym("ossia.view") )
         found_view = true;
 
@@ -290,75 +247,45 @@ std::vector<object_base*> find_children_to_register(
   // the subpatches
   if (found.empty())
   {
-    next_box = object_attr_getobj(patcher, _sym_firstobject);
-    bool poly = false;
+    next_box = object_attr_getobj(root_patcher, _sym_firstobject);
 
     while (next_box)
     {
-      t_symbol* next_box_classname
-          = object_attr_getsym(next_box, _sym_maxclass);
+      t_object* object = jbox_get_object(next_box);
+      t_symbol* classname = object_classname(object);
 
       // jpatcher or bpatcher case
-      if (next_box_classname == _sym_jpatcher
-          || next_box_classname == _sym_bpatcher)
+      if (classname == _sym_jpatcher
+          || classname == _sym_bpatcher)
       {
-        t_object* patcher = jbox_get_object(next_box);
         std::vector<object_base*> found_tmp
-            = find_children_to_register(caller, patcher, classname, true);
+            = find_children_to_register(caller, object, search_symbol, true);
 
         found.insert(found.end(),found_tmp.begin(), found_tmp.end());
 
       }
-      else if (next_box_classname == gensym("poly~"))
+      else if (classname == gensym("poly~"))
       {
-        poly = true;
+        long idx = 0;
+        t_object* subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
+        while(subpatcher)
+        {
+            object_post(object, "this is instance %d", idx);
+
+            std::vector<object_base*> found_tmp
+                = find_children_to_register(caller, subpatcher, search_symbol, true);
+
+            found.insert(found.end(),found_tmp.begin(), found_tmp.end());
+
+            subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
+        }
       }
 
       next_box = object_attr_getobj(next_box, _sym_nextobject);
     }
 
-    if (poly)
-    {
-      object_base* x = (object_base*)object;
-      x->m_found_models.clear();
-      x->m_found_parameters.clear();
-      x->m_patcher = jbox_get_patcher(object);
-      long result;
-
-      object_method(patcher, gensym("iterate"), (method)object_iteration_callback, object, PI_DEEP | PI_WANTBOX, &result);
-
-      ossia::sort(x->m_found_models);
-      ossia::sort(x->m_found_parameters);
-
-      for (auto model : x->m_found_models)
-      {
-        auto objs = find_children_to_register((t_object*)model.object, model.patcher, gensym("ossia.model"));
-        for (auto obj : objs)
-        {
-          ossia::remove_one_if(
-                x->m_found_parameters,
-                [&] (const auto p) {
-                  return p.object == obj;
-          });
-          ossia::remove_one_if(
-                x->m_found_models,
-                [&] (const auto p) {
-                  return p.object == obj;
-          });
-
-        }
-        found.push_back(model.object);
-      }
-
-      for (auto param : x->m_found_parameters)
-      {
-        found.push_back(param.object);
-      }
-    }
-
-
     // 3: finally look for ossia.param / ossia.remote in the same pather
-    next_box = object_attr_getobj(patcher, _sym_firstobject);
+    next_box = object_attr_getobj(root_patcher, _sym_firstobject);
 
     while (next_box)
     {
