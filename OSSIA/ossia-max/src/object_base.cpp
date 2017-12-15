@@ -148,7 +148,7 @@ t_matcher::~t_matcher()
 
         purge_parent(node);
       }
-      // if there vector is empty
+      // if the vector is empty
       // remote should be quarantinized
       if (parent->m_matchers.size() == 0)
       {
@@ -256,7 +256,7 @@ void t_matcher::output_value()
 
 void t_matcher::set_parent_addr()
 {
-  if (parent->m_parent_node){
+  if (parent && parent->m_parent_node){
     // TODO how to deal with multiple parents ?
     std::string addr = ossia::net::relative_address_string_from_nodes(*node, *parent->m_parent_node);
     A_SETSYM(&m_addr, gensym(addr.c_str()));
@@ -279,22 +279,21 @@ void object_base::is_deleted(const ossia::net::node_base& n)
       [&] (const auto& m) {
         return m.get_node() == &n;
     });
-    ossia::remove_one(m_nodes, &n);
     m_is_deleted = false;
 }
 
 void object_base::set_priority()
 {
-  for (auto n : m_nodes)
-    ossia::net::set_priority(*n, m_priority);
+  for (auto m : m_node_selection)
+    ossia::net::set_priority(*m->get_node(), m_priority);
 }
 
 void object_base::set_description()
 {
   if (m_description != gensym(""))
   {
-    for (auto n : m_nodes)
-      ossia::net::set_description(*n, m_description->s_name);
+    for (auto m : m_node_selection)
+      ossia::net::set_description(*m->get_node(), m_description->s_name);
   }
 }
 
@@ -305,8 +304,8 @@ void object_base::set_tags()
   for (int i = 0; i < m_tags_size; i++)
     tags.push_back(m_tags[i]->s_name);
 
-  for (auto n : m_nodes)
-    ossia::net::set_tags(*n, tags);
+  for (auto m : m_node_selection)
+    ossia::net::set_tags(*m->get_node(), tags);
 }
 
 void object_base::set_hidden()

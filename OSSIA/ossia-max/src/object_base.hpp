@@ -115,7 +115,7 @@ public:
   float m_rate{10};
 
   ossia::net::generic_device* m_device{};
-  std::vector<ossia::net::node_base*> m_nodes{};
+  // std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};

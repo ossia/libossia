@@ -20,7 +20,7 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
     case object_class::model:
     case object_class::view:
       // TODO oups how to get that ?
-      node = x->m_nodes[0];
+      node = x->m_matchers[0].get_node();
       break;
     default:
       node = nullptr;
@@ -141,8 +141,9 @@ void node_base::get_namespace(node_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
-  for (auto n : x->m_nodes)
+  for (auto& m : x->m_matchers)
   {
+    auto n = m.get_node();
     list_all_child(*n, list);
     int pos = ossia::net::osc_parameter_string(*n).length();
     for (ossia::net::node_base* child : list)
@@ -180,9 +181,9 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
     argv++;
     argc--;
     auto v = atom2value(nullptr,argc,argv);
-    for (auto n : x->m_nodes)
+    for (auto& m : x->m_matchers)
     {
-      auto nodes = ossia::net::find_nodes(*n, addr);
+      auto nodes = ossia::net::find_nodes(*m.get_node(), addr);
       for (auto& node : nodes)
       {
         if (auto param = node->get_parameter()){

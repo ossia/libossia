@@ -127,9 +127,9 @@ void model::assist(model* x, void* b, long m, long a, char* s)
   }
 }
 
-bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool model::register_node(const std::vector<t_matcher>& matchers)
 {
-  bool res = do_registration(nodes);
+  bool res = do_registration(matchers);
 
   if (res)
   {
@@ -142,7 +142,7 @@ bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
   return res;
 }
 
-bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
+bool model::do_registration(const std::vector<t_matcher>& matchers)
 {
   // we should unregister here because we may have add a node between the
   // registered node and the parameter
@@ -150,9 +150,9 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
   ossia::string_view name(m_name->s_name);
 
-  for (auto node : nodes)
+  for (auto& m : matchers)
   {
-
+    auto node = m.get_node();
     m_parent_node = node;
 
     if (node->find_child(name))
@@ -183,7 +183,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
       }
     }
 
-    m_nodes = ossia::net::create_nodes(*node, name);
+    auto m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
     {
       m_matchers.emplace_back(n, this);
@@ -246,7 +246,6 @@ bool model::unregister()
   if (m_clock) clock_unset(m_clock);
 
   m_matchers.clear();
-  m_nodes.clear();
 
   object_quarantining<model>(this);
 

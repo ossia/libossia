@@ -98,7 +98,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
                                                  x->m_name->s_name};
     x->connect_slots();
 
-    x->m_nodes = {&x->m_device->get_root_node()};
+    x->m_matchers.push_back({&x->m_device->get_root_node(), (object_base*)nullptr});
 
     ossia_library.devices.push_back(x);
     device::register_children(x);
@@ -132,12 +132,12 @@ void device::register_children(device* x)
     if (child->m_otype == object_class::model)
     {
       ossia::max::model* model = (ossia::max::model*)child;
-      model->register_node(x->m_nodes);
+      model->register_node(x->m_matchers);
     }
     else if (child->m_otype == object_class::param)
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-      parameter->register_node(x->m_nodes);
+      parameter->register_node(x->m_matchers);
     }
   }
 
@@ -149,12 +149,12 @@ void device::register_children(device* x)
     if (child->m_otype == object_class::view)
     {
       ossia::max::view* view = (ossia::max::view*)child;
-      view->register_node(x->m_nodes);
+      view->register_node(x->m_matchers);
     }
     else if (child->m_otype == object_class::remote)
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->register_node(x->m_nodes);
+      remote->register_node(x->m_matchers);
     }
   }
 }
@@ -163,6 +163,7 @@ void device::unregister_children()
 {
   std::vector<object_base*> children_model = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
+
 
   for (auto child : children_model)
   {

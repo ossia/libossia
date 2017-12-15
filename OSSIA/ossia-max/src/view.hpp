@@ -12,8 +12,8 @@ namespace max
 class view : public object_base
 {
 public:
-  bool register_node(const std::vector<ossia::net::node_base*>& nodes);
-  bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
+  bool register_node(const std::vector<t_matcher>& nodes);
+  bool do_registration(const std::vector<t_matcher>& nodes);
   bool unregister();
 
   static ossia::safe_set<view*>& quarantine();

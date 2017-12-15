@@ -426,12 +426,12 @@ void client::register_children(client* x)
     if (child->m_otype == object_class::view)
     {
       ossia::max::view* view = (ossia::max::view*)child;
-      view->register_node(x->m_nodes);
+      view->register_node(x->m_matchers);
     }
     else if (child->m_otype == object_class::remote)
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->register_node(x->m_nodes);
+      remote->register_node(x->m_matchers);
     }
   }
 }
@@ -462,10 +462,11 @@ void client::update(client* x)
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
   // for OSC Query
 
+  x->m_matchers.clear();
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_nodes = {&x->m_device->get_root_node()};
+    x->m_matchers.emplace_back(&x->m_device->get_root_node(), (object_base*)nullptr);
 
     client::register_children(x);
   }

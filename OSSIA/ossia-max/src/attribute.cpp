@@ -60,7 +60,7 @@ void attribute::assist(attribute* x, void* b, long m, long a, char* s)
   }
 }
 
-bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
+bool attribute::register_node(const std::vector<t_matcher>& node)
 {
   if (m_mute) return false;
 
@@ -76,7 +76,7 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
 
   if (!node.empty() && m_is_pattern){
     // assume all nodes refer to the same device
-    auto& dev = node[0]->get_device();
+    auto& dev = node[0].get_node()->get_device();
     if (&dev != m_dev)
     {
       if (m_dev) {
@@ -92,14 +92,15 @@ bool attribute::register_node(const std::vector<ossia::net::node_base*>& node)
   return res;
 }
 
-bool attribute::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool attribute::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister();
 
   std::string name = m_name->s_name;
 
-  for (auto node : _nodes)
+  for (auto& m : matchers)
   {
+    auto node = m.get_node();
     if (m_addr_scope == net::address_scope::absolute)
     {
       // get root node
@@ -117,13 +118,11 @@ bool attribute::do_registration(const std::vector<ossia::net::node_base*>& _node
     else
       nodes = ossia::net::find_nodes(*node, name);
 
-    m_nodes.reserve(m_nodes.size() + nodes.size());
     m_matchers.reserve(m_matchers.size() + nodes.size());
 
     for (auto n : nodes){
       if (n->get_parameter()){
         m_matchers.emplace_back(n,this);
-        m_nodes.push_back(n);
       } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
@@ -133,7 +132,6 @@ bool attribute::do_registration(const std::vector<ossia::net::node_base*>& _node
         auto node = ossia::net::find_node(*n, path.str());
         if (node){
           m_matchers.emplace_back(node, this);
-          m_nodes.push_back(n);
         }
       }
     }
@@ -150,7 +148,6 @@ bool attribute::unregister()
 {
 
   m_matchers.clear();
-  m_nodes.clear();
 
   object_quarantining<attribute>(this);
 
@@ -173,7 +170,6 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
     // TODO rethink that parent_node
     m_parent_node = node.get_parent();
     m_matchers.emplace_back(&node,this);
-    m_nodes.push_back(&node);
     // TODO optimize : don't clear and iterate through all matchers
     // just add it if it matches instead
     fill_selection();

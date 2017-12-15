@@ -89,11 +89,18 @@ bool max_object_register(T* x)
   if (x->m_dead)
     return false; // object will be removed soon
 
-  std::vector<ossia::net::node_base*> nodes{};
+  std::vector<t_matcher> tmp;
+  std::vector<t_matcher>* matchers = &tmp;
 
   if (x->m_addr_scope == ossia::net::address_scope::global)
   {
-    nodes = {ossia::max::find_global_nodes(x->m_name->s_name)};
+    auto nodes = ossia::max::find_global_nodes(x->m_name->s_name);
+
+    tmp.reserve(nodes.size());
+    for (auto n : nodes)
+    {
+      tmp.emplace_back(n, (object_base*)nullptr);
+    }
   }
   else
   {
@@ -130,18 +137,31 @@ bool max_object_register(T* x)
     }
 
     if (view)
-      nodes = view->m_nodes;
+    {
+      std::cout << "view" << std::endl;
+      matchers = &view->m_matchers;
+    }
     else if (model)
-      nodes = model->m_nodes;
-    else if (client)
-      nodes = client->m_nodes;
-    else if (device)
-      nodes = device->m_nodes;
+    {
+      std::cout << "model" << std::endl;
+      matchers = &model->m_matchers;
+    } else if (client)
+    {
+      std::cout << "client" << std::endl;
+      matchers = &client->m_matchers;
+    } else if (device)
+    {
+      std::cout << "device" << std::endl;
+      matchers = &device->m_matchers;
+    }
     else
-      nodes = {&ossia_max::get_default_device()->get_root_node()};
+    {
+      std::cout << "else" << std::endl;
+      tmp.emplace_back(&ossia_max::get_default_device()->get_root_node(), (object_base*)nullptr);
+    }
   }
 
-  return x->register_node(nodes);
+  return x->register_node(*matchers);
 }
 
 template <typename T>
