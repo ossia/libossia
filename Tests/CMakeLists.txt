@@ -55,7 +55,7 @@ ossia_add_test(MessageTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Editor/M
 ossia_add_test(ScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
 ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioAlgoTest.cpp")
 ossia_add_test(StateTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/StateTest.cpp")
-ossia_add_test(TimeIntervalTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeIntervalTest.cpp")
+ossia_add_test(TimeIntervalTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeIntervalTest.cpp")
 ossia_add_test(TimeEventTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
 ossia_add_test(TimeSyncTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeSyncTest.cpp")
 ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
@@ -74,6 +74,7 @@ ossia_add_test(PathTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Network/
 ossia_add_test(QtTest                      "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
 ossia_add_test(QmlTest                     "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
 ossia_add_test(QmlApiTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlApiTest.cpp")
+ossia_add_test(QmlPresetTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlPresetTest.cpp")
 
 if("${OSSIA_PROTOCOLS}" MATCHES "WebSockets")
   ossia_add_test(WebSocketTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")

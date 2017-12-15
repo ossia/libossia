@@ -60,6 +60,7 @@ private:
   ossia::net::node_base* m_parentOssiaNode{};
   qml_device* m_device{};
   int m_count{};
+  int m_computedCount{};
 };
 }
 }

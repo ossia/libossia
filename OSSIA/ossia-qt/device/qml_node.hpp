@@ -10,15 +10,16 @@ class qml_node : public qml_node_base
   Q_OBJECT
 public:
   qml_node(QQuickItem* parent = nullptr);
-  ~qml_node();
+  ~qml_node() override;
 
   void resetNode() override;
 
 public slots:
   void reset_parent();
-
+  void node_destroyed();
 private:
   void on_node_deleted(const ossia::net::node_base&);
+  void setDevice(QObject* device) override;
 };
 }
 }

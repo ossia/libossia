@@ -60,7 +60,7 @@ void qml_plugin::reg(const char* uri)
 
   qmlRegisterType<qt::qml_node>(uri, 1, 0, "NodeImpl");
   qmlRegisterType<qt::qml_device>(uri, 1, 0, "Device");
-  qmlRegisterType<qt::qml_property>(uri, 1, 0, "Property");
+  qmlRegisterType<qt::qml_property>(uri, 1, 0, "PropertyImpl");
   qmlRegisterType<qt::qml_parameter>(uri, 1, 0, "Parameter");
   qmlRegisterType<qt::qml_signal>(uri, 1, 0, "Signal");
   qmlRegisterType<qt::qml_property_reader>(uri, 1, 0, "ReaderImpl");

@@ -1,0 +1,44 @@
+{
+  "device": {
+    "chocolateBoxes": {
+      "boxes": [
+        {
+          "boxHeight": 10.7,
+          "boxWidth": 19.1,
+          "imageFile": "ragusa blond.png",
+          "weight": 2.0
+        },
+        {
+          "boxHeight": 5.3,
+          "boxWidth": 13.6,
+          "imageFile": "ragusa classique.png",
+          "weight": 1.0
+        },
+        {
+          "boxHeight": 6.1,
+          "boxWidth": 18.2,
+          "imageFile": "ragusa for friends.png",
+          "weight": 1.7
+        },
+        {
+          "boxHeight": 5.1,
+          "boxWidth": 15.6,
+          "imageFile": "torino classique.png",
+          "weight": 1.2
+        },
+        {
+          "boxHeight": 4.6,
+          "boxWidth": 18.3,
+          "imageFile": "torino noir.png",
+          "weight": 1.5
+        },
+        {
+          "boxHeight": 8.2,
+          "boxWidth": 18.8,
+          "imageFile": "carton.png",
+          "weight": 1.8
+        }
+      ]
+    }
+  }
+}

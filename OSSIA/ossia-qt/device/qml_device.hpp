@@ -118,6 +118,7 @@ private:
   ptr_set<qml_binding> m_bindings;
   ptr_set<qml_callback> m_callbacks;
   bool m_readPreset{false};
+  void recreate_preset(QObject* root);
 };
 
 class OSSIA_EXPORT qml_singleton_device : public qml_device

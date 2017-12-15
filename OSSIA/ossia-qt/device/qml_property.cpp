@@ -77,6 +77,8 @@ void qml_property::setDevice(QObject* device)
 
 void qml_property::resetNode()
 {
+  if(m_was_destroyed)
+    return;
   const bool reading = m_device ? m_device->readPreset() : false;
   clearNode(reading);
 
@@ -114,6 +116,7 @@ void qml_property::resetNode()
           .connect<qml_property_base, &qml_property_base::on_node_deleted>(
               this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
+      emit nodeChanged(m_node);
       m_param = m_ossia_node->get_parameter();
 
       setPath(QString::fromStdString(
@@ -290,6 +293,16 @@ void qml_property::setUnit(QString unit)
   if (m_param)
     m_param->set_unit(ossia::parse_pretty_unit(unit.toStdString()));
   emit unitChanged(unit);
+}
+
+void qml_property::node_destroyed()
+{
+  clearNode(false);
+  disconnect(this, &QQuickItem::parentChanged, this, &qml_property::resetNode);
+  if (m_device)
+    m_device->remove(this);
+  m_was_destroyed = true;
+  deleteLater();
 }
 
 void qml_property::setupAddress(bool reading)

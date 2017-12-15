@@ -135,6 +135,9 @@ protected:
   bool m_hidden{};
   bool m_disabled{};
   bool m_muted{};
+
+
+  bool m_was_destroyed{false};
 };
 
 class OSSIA_EXPORT qml_property_base : public qml_node_base

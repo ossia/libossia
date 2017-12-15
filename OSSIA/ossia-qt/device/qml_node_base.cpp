@@ -448,6 +448,7 @@ void qml_property_base::clearNode(bool reading)
         par->remove_child(*node);
     }
   }
+  emit nodeChanged(m_node);
 }
 }
 }

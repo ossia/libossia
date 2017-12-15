@@ -114,6 +114,7 @@ void qml_signal::resetNode()
           .connect<qml_property_base, &qml_property_base::on_node_deleted>(
               this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
+      emit nodeChanged(m_node);
       m_param = m_ossia_node->get_parameter();
 
       setPath(QString::fromStdString(

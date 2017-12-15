@@ -106,12 +106,19 @@ void qml_model_property::reloadParentNode()
         if(dn)
         {
           m_parentOssiaNode = &dn->device().get_root_node();
+          setDevice(dn);
+        }
+        else
+        {
+          m_parentNode = &qml_singleton_device::instance();
+          m_parentOssiaNode = &qml_singleton_device::instance().device().get_root_node();
         }
       }
     }
     else
     {
-      m_parentOssiaNode = nullptr;
+      m_parentNode = &qml_singleton_device::instance();
+      m_parentOssiaNode = &qml_singleton_device::instance().device().get_root_node();
     }
 
     if (m_parentOssiaNode)
@@ -148,12 +155,19 @@ void qml_model_property::setParentNode(QObject* parentNode)
       if(dn)
       {
         m_parentOssiaNode = &dn->device().get_root_node();
+        setDevice(dn);
+      }
+      else
+      {
+        m_parentNode = &qml_singleton_device::instance();
+        m_parentOssiaNode = &qml_singleton_device::instance().device().get_root_node();
       }
     }
   }
   else
   {
-    m_parentOssiaNode = nullptr;
+    m_parentNode = &qml_singleton_device::instance();
+    m_parentOssiaNode = &qml_singleton_device::instance().device().get_root_node();
   }
 
   if (m_parentOssiaNode)
@@ -163,7 +177,6 @@ void qml_model_property::setParentNode(QObject* parentNode)
     m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   }
 
-  updateCount();
   emit parentNodeChanged(m_parentNode);
 }
 
@@ -240,6 +253,11 @@ void qml_model_property::updateCount()
       if (is_instance(instance_name, name))
         newCount++;
     }
+  }
+
+  if(newCount > 10)
+  {
+    qDebug() << "error" << newCount;
   }
 
   setCount(newCount);

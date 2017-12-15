@@ -378,6 +378,7 @@ void reset_items(QQuickItem* root)
     {
       qDebug() << "RESETTING" << qn << qn->node();
       qn->resetNode();
+      qApp->processEvents();
     }
   }
 }
@@ -409,6 +410,36 @@ void setup_models(std::size_t cur_model_size, std::size_t prev_model_size, qml_d
     processing_models = false;
   }
 }
+
+void clear_models_preset(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
+
+  auto mlist = device.models();
+  for (auto model : mlist)
+  {
+    if (model.second)
+    {
+      qml_model_property* m = model.first;
+
+      m->setCount(0);
+    }
+    QCoreApplication::processEvents();
+  }
+  cur_model_size = device.models().size();
+
+  if(cur_model_size != prev_model_size)
+  {
+    QTimer::singleShot(0, [=,&device] {
+      clear_models_preset(cur_model_size, prev_model_size, device);
+    });
+  }
+  else
+  {
+    device.setReadPreset(false);
+    processing_models = false;
+  }
+}
+
+
 void setup_models_preset(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
 
   auto mlist = device.models();
@@ -448,12 +479,56 @@ void qml_device::recreate(QObject* root)
           for (const auto& obj : props)
           {
             if (obj.second)
+            {
               obj.first->resetNode();
+              qApp->processEvents();
+            }
             else
               this->remove(obj.first);
           }
         });
 
+    setup_models(m_models.size(), m_models.size(), *this);
+    while(processing_models)
+      qApp->processEvents();
+    qApp->processEvents();
+    qApp->processEvents();
+    qApp->processEvents();
+  }
+  else
+  {
+    auto it = root->findChildren<QQuickItem*>("", Qt::FindDirectChildrenOnly);
+    for(auto cld : it)
+    {
+      recreate(cld);
+    }
+  }
+}
+
+void qml_device::recreate_preset(QObject* root)
+{
+  if (auto item = qobject_cast<QQuickItem*>(root))
+  {
+    reset_items(item);
+    for_each_in_tuple(
+        std::make_tuple(m_properties, m_parameters, m_signals),
+        [this](auto& props) {
+          qDebug() << m_properties.size();
+          for (const auto& obj : props)
+          {
+            if (obj.second)
+            {
+              obj.first->resetNode();
+              qApp->processEvents();
+            }
+            else
+              this->remove(obj.first);
+          }
+        });
+
+    clear_models_preset(m_models.size(), m_models.size(), *this);
+    while(processing_models)
+      qApp->processEvents();
     setup_models_preset(m_models.size(), m_models.size(), *this);
     while(processing_models)
       qApp->processEvents();
@@ -552,7 +627,7 @@ void qml_device::clearEmptyElements()
     else
       it = m_models.erase(it);
 }
-
+#define PRESET_DEBUG 1
 void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
@@ -565,7 +640,7 @@ void qml_device::loadPreset(QObject* root, QString file)
   }
 #endif
 
-  recreate(root);
+  recreate_preset(root);
 
 #if defined(PRESET_DEBUG)
   {
@@ -591,11 +666,14 @@ void qml_device::loadPreset(QObject* root, QString file)
         for (auto model : model_list)
         {
           if (model.second)
+          {
             model.first->setCount(0);
+          }
           else
             m_models.erase(model.first);
         }
       }
+
       m_readPreset = true;
 
       // Then load the preset
@@ -650,6 +728,7 @@ void qml_device::loadPreset(QObject* root, QString file)
           qApp->processEvents();
           qApp->processEvents();
       }
+      clearEmptyElements();
       m_readPreset = false;
       return;
     }

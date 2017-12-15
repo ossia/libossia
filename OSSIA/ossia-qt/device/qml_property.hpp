@@ -134,6 +134,7 @@ public slots:
     }
   }
 
+  void node_destroyed();
 private:
   void setupAddress(bool reading);
   void updateDomain();
