@@ -157,7 +157,7 @@ object_base* find_parent_box_alive(
  * corresponding classname
  */
 std::vector<object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname);
+    t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
 
 /**
  * @brief             Convenient method to easily get the patcher where a box

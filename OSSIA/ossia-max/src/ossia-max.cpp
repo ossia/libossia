@@ -235,7 +235,7 @@ long object_iteration_callback(t_object *x, t_object *obj)
 }
 
 std::vector<object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname)
+    t_object* caller, t_object* patcher, t_symbol* classname, bool search_dev)
 {
   t_symbol* subclassname = classname == gensym("ossia.model")
                                ? gensym("ossia.parameter")
@@ -249,7 +249,7 @@ std::vector<object_base*> find_children_to_register(
   t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
 
   t_object* object_box = NULL;
-  object_obex_lookup(object, gensym("#B"), &object_box);
+  object_obex_lookup(caller, gensym("#B"), &object_box);
 
   while (next_box)
   {
@@ -276,8 +276,9 @@ std::vector<object_base*> find_children_to_register(
 
       // if there is a client or device in the current patcher
       // don't register anything
-      if ( curr_classname == gensym("ossia.device")
-           || curr_classname == gensym("ossia.client"))
+      if ( search_dev
+           && ( curr_classname == gensym("ossia.device")
+             || curr_classname == gensym("ossia.client") ))
       {
         return {};
       }
@@ -303,7 +304,7 @@ std::vector<object_base*> find_children_to_register(
       {
         t_object* patcher = jbox_get_object(next_box);
         std::vector<object_base*> found_tmp
-            = find_children_to_register(object, patcher, classname);
+            = find_children_to_register(caller, patcher, classname, true);
 
         found.insert(found.end(),found_tmp.begin(), found_tmp.end());
 
