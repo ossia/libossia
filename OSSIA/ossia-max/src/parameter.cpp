@@ -247,7 +247,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 
   clock_delay(m_clock, 0);
 
-  return true;
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 bool parameter::unregister()

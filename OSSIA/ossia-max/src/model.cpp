@@ -97,7 +97,8 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     // 0 ms delay means that it will be perform on next clock tick
     // defer_low(x,reinterpret_cast<method>(
                 //static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)), nullptr, 0, 0L );
-    clock_delay(x->m_clock, 1);
+    // clock_delay(x->m_clock, 1);
+    max_object_register<model>(x);
     ossia_max::instance().models.push_back(x);
   }
 
@@ -197,7 +198,7 @@ bool model::do_registration(const std::vector<t_matcher>& matchers)
     set_hidden();
   }
 
-  return true;
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 void model::register_children()
