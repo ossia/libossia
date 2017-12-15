@@ -435,7 +435,7 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
 
   class_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
-  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NOTHING,   0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_GIMME,   0);
 }
 
 void object_base::fill_selection()
@@ -480,10 +480,16 @@ void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
 
 void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)
 {
-  if (argc && argv[0].a_type == A_SYM)
+  if ( s == gensym("select")
+       && argc
+       && argv[0].a_type == A_SYM )
+  {
     x->m_selection_path  = ossia::traversal::make_path(atom_getsym(argv)->s_name);
+  }
   else
+  {
     x->m_selection_path = ossia::none;
+  }
 
   x->fill_selection();
 }
