@@ -40,11 +40,13 @@ t_matcher::t_matcher(t_matcher&& other)
       if (callbackit)
         param->remove_callback(*callbackit);
 
-      callbackit = param->add_callback(
-        [=] (const ossia::value& v) { enqueue_value(v); });
+      if (owner)
+      {
+        callbackit = param->add_callback(
+              [=] (const ossia::value& v) { enqueue_value(v); });
 
-      if(owner)
         set_parent_addr();
+      }
     }
   }
 }
@@ -75,10 +77,13 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
       if (callbackit)
         param->remove_callback(*callbackit);
 
-      callbackit = param->add_callback(
-        [=] (const ossia::value& v) { enqueue_value(v); });
+      if (owner)
+      {
+        callbackit = param->add_callback(
+              [=] (const ossia::value& v) { enqueue_value(v); });
 
-      set_parent_addr();
+        set_parent_addr();
+      }
     }
   }
 
@@ -88,19 +93,17 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
   node{n}, owner{p}, callbackit{ossia::none}
 {
-  if (auto param = node->get_parameter())
-    callbackit = param->add_callback(
-      [=](const ossia::value& v) { enqueue_value(v); });
-
   if (owner)
   {
+    if (auto param = node->get_parameter())
+      callbackit = param->add_callback(
+            [=](const ossia::value& v) { enqueue_value(v); });
+
     node->about_to_be_deleted.connect<object_base,
         &object_base::is_deleted>(owner);
   }
 
   set_parent_addr();
-
-  //clock_delay(x_regclock, 0);
 }
 
 void purge_parent(ossia::net::node_base* node)
