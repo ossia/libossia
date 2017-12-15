@@ -125,7 +125,11 @@ void client::destroy(client* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
-  x->unregister_children();
+
+  // No more needed since all children
+  // are connected to node.about_to_be_deleted
+  // x->unregister_children();
+
   object_free((t_object*)x->m_poll_clock);
 
   if (x->m_device)

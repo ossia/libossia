@@ -20,8 +20,8 @@ t_matcher::t_matcher(t_matcher&& other)
   node = other.node;
   other.node = nullptr;
 
-  parent = other.parent;
-  other.parent = nullptr;
+  owner = other.owner;
+  other.owner = nullptr;
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
@@ -43,7 +43,7 @@ t_matcher::t_matcher(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      if(parent)
+      if(owner)
         set_parent_addr();
     }
   }
@@ -54,8 +54,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   node = other.node;
   other.node = nullptr;
 
-  parent = other.parent;
-  other.parent = nullptr;
+  owner = other.owner;
+  other.owner = nullptr;
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
@@ -86,14 +86,17 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 }
 
 t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
-  node{n}, parent{p}, callbackit{ossia::none}
+  node{n}, owner{p}, callbackit{ossia::none}
 {
   if (auto param = node->get_parameter())
     callbackit = param->add_callback(
       [=](const ossia::value& v) { enqueue_value(v); });
 
-  node->about_to_be_deleted.connect<object_base, &object_base::is_deleted>(
-        parent);
+  if (owner)
+  {
+    node->about_to_be_deleted.connect<object_base,
+        &object_base::is_deleted>(owner);
+  }
 
   set_parent_addr();
 
@@ -130,35 +133,43 @@ void purge_parent(ossia::net::node_base* node)
 
 t_matcher::~t_matcher()
 {
-  if(node && parent)
+  if(node && owner)
   {
-    if (   parent->m_otype == object_class::param
-        || parent->m_otype == object_class::model )
+    if (   owner->m_otype == object_class::param
+        || owner->m_otype == object_class::model )
     {
-      if (!parent->m_is_deleted)
+      if (!owner->m_is_deleted)
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
 
+      if ( owner->m_otype == object_class::param )
+      {
         for (auto remote : ossia_max::instance().remotes.copy())
         {
           ossia::remove_one(remote->m_matchers,*this);
         }
+      } else {
+        for (auto view : ossia_max::instance().views.copy())
+        {
+          ossia::remove_one(view->m_matchers,*this);
+        }
+      }
 
-        purge_parent(node);
+      purge_parent(node);
       }
       // if the vector is empty
       // remote should be quarantinized
-      if (parent->m_matchers.size() == 0)
+      if (owner->m_matchers.size() == 0)
       {
-        switch(parent->m_otype)
+        switch(owner->m_otype)
         {
           case object_class::model:
-            object_quarantining<model>((model*) parent);
+            object_quarantining<model>((model*) owner);
             break;
           case object_class::param:
-            object_quarantining<parameter>((parameter*) parent);
+            object_quarantining<parameter>((parameter*) owner);
             break;
           default:
             ;
@@ -166,24 +177,26 @@ t_matcher::~t_matcher()
       }
     } else {
 
-      if (!parent->m_is_deleted)
+      if (!owner->m_is_deleted)
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+        std::cout << "DISconnect node " << static_cast<void*>(node)
+                  << " to is_deleted fn of " << static_cast<void*>(owner) << std::endl;
+        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
       }
 
       // if there vector is empty
       // remote should be quarantinized
-      if (parent->m_matchers.size() == 0)
+      if (owner->m_matchers.size() == 0)
       {
-        switch(parent->m_otype)
+        switch(owner->m_otype)
         {
           case object_class::remote:
-            object_quarantining<remote>((remote*) parent);
+            object_quarantining<remote>((remote*) owner);
             break;
           case object_class::view:
-            object_quarantining<view>((view*) parent);
+            object_quarantining<view>((view*) owner);
             break;
           default:
             ;
@@ -191,7 +204,7 @@ t_matcher::~t_matcher()
       }
     }
     node = nullptr;
-    parent = nullptr;
+    owner = nullptr;
   }
 }
 
@@ -205,7 +218,7 @@ void t_matcher::enqueue_value(ossia::value v)
 
   if(!param->filter_value(filtered))
   {
-    auto x = (parameter_base*) parent;
+    auto x = (parameter_base*) owner;
 
     if ( x->m_ounit == ossia::none )
     {
@@ -220,16 +233,16 @@ void t_matcher::enqueue_value(ossia::value v)
 
 void t_matcher::output_value()
 {
-  if(parent)
+  if(owner)
   {
-    std::lock_guard<std::mutex> lock(parent->bindMutex);
+    std::lock_guard<std::mutex> lock(owner->bindMutex);
     ossia::value val;
     while(m_queue_list.try_dequeue(val))
     {
       bool break_flag = false;
 
-      if(   parent->m_otype == object_class::param
-         || parent->m_otype == object_class::remote )
+      if(   owner->m_otype == object_class::param
+         || owner->m_otype == object_class::remote )
       {
         for (const auto& v : m_set_pool)
         {
@@ -244,11 +257,11 @@ void t_matcher::output_value()
       if( break_flag )
         continue;
 
-      if(parent->m_dumpout)
-        outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+      if(owner->m_dumpout)
+        outlet_anything(owner->m_dumpout,gensym("address"),1,&m_addr);
 
       value_visitor<object_base> vm;
-      vm.x = (object_base*)parent;
+      vm.x = (object_base*)owner;
       val.apply(vm);
     }
   }
@@ -256,9 +269,9 @@ void t_matcher::output_value()
 
 void t_matcher::set_parent_addr()
 {
-  if (parent && parent->m_parent_node){
+  if (owner && owner->m_parent_node){
     // TODO how to deal with multiple parents ?
-    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *parent->m_parent_node);
+    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *owner->m_parent_node);
     A_SETSYM(&m_addr, gensym(addr.c_str()));
   }
   else

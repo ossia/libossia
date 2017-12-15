@@ -111,7 +111,12 @@ void device::destroy(device* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
-  x->unregister_children();
+
+  // This is no more needed since all children
+  // are connected to node.about_to_be_deleted
+  //x->unregister_children();
+
+  x->disconnect_slots();
 
   delete x->m_device;
   x->m_device = nullptr;

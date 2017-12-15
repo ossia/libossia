@@ -116,12 +116,6 @@ void remote::destroy(remote* x)
   object_dequarantining<remote>(x);
   ossia_max::instance().remotes.remove_all(x);
 
-  if(x->m_is_pattern && x->m_dev)
-  {
-    x->m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(x);
-    x->m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(x);
-  }
-
   outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);

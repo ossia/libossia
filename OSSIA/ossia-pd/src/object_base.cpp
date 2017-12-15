@@ -121,8 +121,8 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
 
   if (parent)
   {
-    node->about_to_be_deleted.connect<object_base, &object_base::is_deleted>(
-          parent);
+    node->about_to_be_deleted.connect<object_base,
+        &object_base::is_deleted>(parent);
     set_parent_addr();
   }
 

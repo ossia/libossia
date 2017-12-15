@@ -270,8 +270,6 @@ std::vector<object_base*> find_children_to_register(
         t_object* subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
         while(subpatcher)
         {
-            object_post(object, "this is instance %d", idx);
-
             std::vector<object_base*> found_tmp
                 = find_children_to_register(caller, subpatcher, search_symbol, true);
 

@@ -23,7 +23,7 @@ void device::destroy(device* x)
   clock_unset(x->m_clock);
   clock_free(x->m_clock);
 
-  // TODO why is this necessary since all children
+  // TODO why is this no more necessary since all children
   // should have register to node.about_to_be_deleted() signal
   // x->unregister_children();
 

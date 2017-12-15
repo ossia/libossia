@@ -138,25 +138,20 @@ bool max_object_register(T* x)
 
     if (view)
     {
-      std::cout << "view" << std::endl;
       matchers = &view->m_matchers;
     }
     else if (model)
     {
-      std::cout << "model" << std::endl;
       matchers = &model->m_matchers;
     } else if (client)
     {
-      std::cout << "client" << std::endl;
       matchers = &client->m_matchers;
     } else if (device)
     {
-      std::cout << "device" << std::endl;
       matchers = &device->m_matchers;
     }
     else
     {
-      std::cout << "else" << std::endl;
       tmp.emplace_back(&ossia_max::get_default_device()->get_root_node(), (object_base*)nullptr);
     }
   }

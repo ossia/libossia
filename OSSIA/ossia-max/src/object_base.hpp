@@ -50,7 +50,7 @@ public:
   void enqueue_value(ossia::value v);
   void output_value();
   ossia::net::node_base* get_node() const { return node; }
-  object_base* get_parent() const { return parent; }
+  object_base* get_parent() const { return owner; }
   t_atom* get_atom_addr_ptr() { return &m_addr; }
   void set_parent_addr();
 
@@ -63,7 +63,7 @@ public:
 
 private:
   ossia::net::node_base* node{};
-  object_base* parent{};
+  object_base* owner{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;

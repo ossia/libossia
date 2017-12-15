@@ -215,17 +215,27 @@ void model::register_children()
       if (model == this)
         continue;
 
-      max_object_register<ossia::max::model>(model);
+      if(model->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
+        model->register_node(m_matchers);
+      else
+        max_object_register<ossia::max::model>(model);
     }
     else if (child->m_otype == object_class::param)
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-      max_object_register<ossia::max::parameter>(parameter);
+      if(parameter->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
+        parameter->register_node(m_matchers);
+      else // FIXME is the else statement needed ?
+        max_object_register<ossia::max::parameter>(parameter);
     }
     else if (child->m_otype == object_class::remote)
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
-      max_object_register<ossia::max::remote>(remote);
+
+      if(remote->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
+        remote->register_node(m_matchers);
+      else
+        max_object_register<ossia::max::remote>(remote);
     }
   }
 
