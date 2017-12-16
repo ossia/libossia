@@ -45,24 +45,29 @@ struct scenario_graph
     scenario& scenar;
     graph_t graph;
 
-    tsl::hopscotch_map<
-        const time_sync*,
-        graph_t::vertex_descriptor> vertices;
-    tsl::hopscotch_map<
-        const time_interval*,
-        graph_t::edge_descriptor> edges;
-
     scenario_graph(scenario& sc);
 
     small_sync_vec get_roots() const;
-    std::vector<int> components() const;
+
+    void add_vertice(scenario_graph_vertex timeSync);
+    void add_edge(scenario_graph_edge itv);
+    void remove_vertice(scenario_graph_vertex timeSync);
+    void remove_edge(scenario_graph_edge itv);
 
     void reset_component(ossia::time_sync& sync) const;
-    ossia::small_vector<ossia::time_sync*, 2> sibling_roots(
-        const std::vector<int>& component,
+    ossia::small_vector<ossia::time_sync*, 4> sibling_roots(
         const ossia::time_sync& sync) const;
 
-    void reset_component(const std::vector<int>& component, ossia::time_sync& sync) const;
+  private:
+     void update_components_cache() const;
+     mutable std::vector<int> m_components_cache;
+     mutable bool dirty = false;
+     tsl::hopscotch_map<
+         const time_sync*,
+         graph_t::vertex_descriptor> vertices;
+     tsl::hopscotch_map<
+         const time_interval*,
+         graph_t::edge_descriptor> edges;
 
 };
 

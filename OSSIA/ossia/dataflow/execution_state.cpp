@@ -120,10 +120,10 @@ void execution_state::commit()
 {
   ossia::state st;
   st.reserve(valueState.size());
-  for (auto& elt : valueState)
+  for (auto it = valueState.begin(), end = valueState.end(); it != end; ++it)
   {
-    apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* addr) {
-      for(auto& val : elt.second)
+    apply_to_destination(it->first, *this, [&] (ossia::net::parameter_base* addr) {
+      for(auto& val : it.value())
         ossia::flatten_and_filter(st, to_state_element(*addr, std::move(val)));
     });
   }

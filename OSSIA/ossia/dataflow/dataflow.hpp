@@ -1,7 +1,7 @@
 #pragma once
-#include <ossia/dataflow/graph.hpp>
-#include <ossia/dataflow/node_process.hpp>
+#include <ossia/dataflow/execution_state.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/detail/apply.hpp>
 #include <vector>
 
 namespace ossia

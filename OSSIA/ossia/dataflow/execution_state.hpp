@@ -60,7 +60,9 @@ struct OSSIA_EXPORT execution_state
 
     void get_new_values()
     {
-      mess_values.clear();
+      for(auto it = mess_values.begin(), end = mess_values.end(); it != end; ++it)
+        it.value().clear();
+
       for(auto& mq : messages)
       {
         ossia::received_value recv;
@@ -70,15 +72,15 @@ struct OSSIA_EXPORT execution_state
     }
 
   std::list<message_queue> messages;
-  std::unordered_map<ossia::net::parameter_base*, value_vector<ossia::value>> mess_values;
+  tsl::hopscotch_map<ossia::net::parameter_base*, value_vector<ossia::value>> mess_values;
 
   std::vector<ossia::net::device_base*> globalState;
 
-  std::unordered_map<destination_t, std::vector<tvalue>> valueState;
-  std::unordered_map<destination_t, audio_port> audioState;
+  tsl::hopscotch_map<destination_t, std::vector<tvalue>> valueState;
+  tsl::hopscotch_map<destination_t, audio_port> audioState;
 
 #if defined(OSSIA_PROTOCOL_MIDI)
-  std::unordered_map<destination_t, value_vector<mm::MidiMessage>> midiState;
+  tsl::hopscotch_map<destination_t, value_vector<mm::MidiMessage>> midiState;
 #endif
 
   void clear();

@@ -28,6 +28,10 @@ struct graph_edge
       , out_node{std::move(pout_node)}
       , in_node{std::move(pin_node)}
   {
+  }
+
+  void init()
+  {
     if (in && out)
     {
       out->connect(this);

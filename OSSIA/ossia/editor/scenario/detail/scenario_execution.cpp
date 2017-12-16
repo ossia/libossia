@@ -374,7 +374,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
 
     small_event_vec pendingEvents;
 
-    auto comps = m_sg.components();
     for(auto& n : m_rootNodes)
     {
       if(!n->is_observing_expression())
@@ -400,7 +399,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
             const auto st = e->get_status();
             if(st == ossia::time_event::status::HAPPENED || st == ossia::time_event::status::DISPOSED)
             {
-              m_sg.reset_component(comps, *n);
+              m_sg.reset_component(*n);
               break;
             }
           }
@@ -560,15 +559,15 @@ scenario_graph::scenario_graph(scenario& sc):
 
 small_sync_vec scenario_graph::get_roots() const
 {
-  small_sync_vec res;
-  std::vector<int> component(boost::num_vertices(graph));
-  boost::connected_components(graph, &component[0]);
+  update_components_cache();
 
-  int root_comp = component[vertices.at(scenar.get_start_time_sync().get())];
+  small_sync_vec res;
+
+  int root_comp = m_components_cache[vertices.at(scenar.get_start_time_sync().get())];
 
   for(auto& tn : scenar.get_time_syncs())
   {
-    if(scenar.is_root_sync(*tn) && component[vertices.at(tn.get())] != root_comp)
+    if(scenar.is_root_sync(*tn) && m_components_cache[vertices.at(tn.get())] != root_comp)
     {
       res.push_back(tn.get());
     }
@@ -577,26 +576,27 @@ small_sync_vec scenario_graph::get_roots() const
   return res;
 }
 
-std::vector<int> scenario_graph::components() const
+void scenario_graph::update_components_cache() const
 {
-  std::vector<int> component(boost::num_vertices(graph));
-  boost::connected_components(graph, &component[0]);
-  return component;
+  if(dirty)
+  {
+    m_components_cache.resize(boost::num_vertices(graph));
+    boost::connected_components(graph, m_components_cache.data());
+    dirty = false;
+  }
 }
 
-void scenario_graph::reset_component(time_sync& sync) const
+ossia::small_vector<ossia::time_sync*, 4> scenario_graph::sibling_roots(
+    const time_sync& sync) const
 {
-  return reset_component(components(), sync);
-}
+  update_components_cache();
 
-ossia::small_vector<ossia::time_sync*, 2> scenario_graph::sibling_roots(const std::vector<int>& component, const time_sync& sync) const
-{
-  ossia::small_vector<ossia::time_sync*, 2> res;
-  auto comp = component[vertices.at(&sync)];
+  ossia::small_vector<ossia::time_sync*, 4> res;
+  auto comp = m_components_cache[vertices.at(&sync)];
 
   for(const auto& s : scenar.get_time_syncs())
   {
-    if(component[vertices.at(s.get())] == comp && scenar.is_root_sync(*s))
+    if(m_components_cache[vertices.at(s.get())] == comp && scenar.is_root_sync(*s))
     {
       res.push_back(s.get());
     }
@@ -605,14 +605,16 @@ ossia::small_vector<ossia::time_sync*, 2> scenario_graph::sibling_roots(const st
   return res;
 }
 
-void scenario_graph::reset_component(const std::vector<int>& component, time_sync& sync) const
+void scenario_graph::reset_component(time_sync& sync) const
 {
+  update_components_cache();
+
   std::vector<std::shared_ptr<ossia::time_sync>> to_disable_sync;
   std::vector<std::shared_ptr<ossia::time_interval>> to_disable_itv;
-  auto comp = component[vertices.at(&sync)];
+  auto comp = m_components_cache[vertices.at(&sync)];
   for(auto s : scenar.get_time_syncs())
   {
-    auto this_comp = component[vertices.at(s.get())];
+    auto this_comp = m_components_cache[vertices.at(s.get())];
     if(this_comp == comp)
     {
       to_disable_sync.push_back(s);

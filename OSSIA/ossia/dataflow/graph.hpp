@@ -21,10 +21,10 @@ using graph_edge_t = graph_t::edge_descriptor;
 
 template <typename T, typename U>
 using bimap = boost::bimap<T, U>;
-using node_bimap = bimap<graph_vertex_t, node_ptr>;
-using edge_bimap = bimap<graph_edge_t, std::shared_ptr<graph_edge>>;
-using node_bimap_v = node_bimap::value_type;
-using edge_bimap_v = edge_bimap::value_type;
+using node_map = tsl::hopscotch_map<node_ptr, graph_vertex_t>;
+using edge_map = tsl::hopscotch_map<std::shared_ptr<graph_edge>, graph_edge_t>;
+using node_bimap_v = node_map::value_type;
+using edge_bimap_v = edge_map::value_type;
 
 using edge_map_t
     = std::unordered_map<graph_edge*, std::shared_ptr<graph_edge>>;
@@ -101,12 +101,16 @@ class OSSIA_EXPORT graph_base
   {
     // Get a total order on nodes
     active_nodes.clear();
-    topo_order.clear();
-    topo_order.reserve(m_nodes.size());
     active_nodes.reserve(m_nodes.size());
 
     // TODO this should be doable with a single vector
-    boost::topological_sort(gr, std::back_inserter(topo_order));
+    if(m_topo_dirty)
+    {
+      topo_order.clear();
+      topo_order.reserve(m_nodes.size());
+      boost::topological_sort(gr, std::back_inserter(topo_order));
+      m_topo_dirty = false;
+    }
 
     for(auto vtx : topo_order)
     {
@@ -141,7 +145,8 @@ public:
   void add_node(node_ptr n)
   {
     auto vtx = boost::add_vertex(n, m_graph);
-    m_nodes.insert(node_bimap_v{vtx, std::move(n)});
+    m_nodes.insert({std::move(n), vtx});
+    m_topo_dirty = true;
   }
   void remove_node(const node_ptr& n)
   {
@@ -152,8 +157,8 @@ public:
       for(auto edge : port->targets)
         disconnect(edge);
 
-    auto it = m_nodes.right.find(n);
-    if (it != m_nodes.right.end())
+    auto it = m_nodes.find(n);
+    if (it != m_nodes.end())
     {
       auto vtx = boost::vertices(m_graph);
       if(std::find(vtx.first, vtx.second, it->second) != vtx.second)
@@ -161,22 +166,28 @@ public:
         boost::clear_vertex(it->second, m_graph);
         boost::remove_vertex(it->second, m_graph);
       }
-      m_nodes.right.erase(it);
+      m_nodes.erase(it);
     }
+    m_topo_dirty = true;
   }
 
   void connect(const std::shared_ptr<graph_edge>& edge)
   {
-    auto it1 = m_nodes.right.find(edge->in_node);
-    auto it2 = m_nodes.right.find(edge->out_node);
-    if (it1 != m_nodes.right.end() && it2 != m_nodes.right.end())
+    if(edge)
     {
-      // TODO check that two edges can be added
-      auto res = boost::add_edge(it1->second, it2->second, edge, m_graph);
-      if (res.second)
+      edge->init();
+      auto it1 = m_nodes.find(edge->in_node);
+      auto it2 = m_nodes.find(edge->out_node);
+      if (it1 != m_nodes.end() && it2 != m_nodes.end())
       {
-        m_edges.insert(edge_bimap_v{res.first, edge});
-        m_edge_map.insert(std::make_pair(edge.get(), edge));
+        // TODO check that two edges can be added
+        auto res = boost::add_edge(it1->second, it2->second, edge, m_graph);
+        if (res.second)
+        {
+          m_edge_map.insert(std::make_pair(edge.get(), edge));
+          m_edges.insert({std::move(edge), res.first});
+        }
+        m_topo_dirty = true;
       }
     }
   }
@@ -184,13 +195,15 @@ public:
   {
     if(edge)
     {
-      auto it = m_edges.right.find(edge);
-      if (it != m_edges.right.end())
+      auto it = m_edges.find(edge);
+      if (it != m_edges.end())
       {
         auto edg = boost::edges(m_graph);
         if(std::find(edg.first, edg.second, it->second) != edg.second)
           boost::remove_edge(it->second, m_graph);
         m_edge_map.erase(edge.get());
+        m_topo_dirty = true;
+        m_edges.erase(it);
       }
       edge->clear();
     }
@@ -208,14 +221,15 @@ public:
   {
     // TODO clear all the connections, ports, etc, to ensure that there is no
     // shared_ptr loop
-    for (auto& node : m_nodes.right)
+    for (auto& node : m_nodes)
     {
       node.first->clear();
     }
-    for (auto& edge : m_edges.right)
+    for (auto& edge : m_edges)
     {
       edge.first->clear();
     }
+    m_topo_dirty = true;
     m_nodes.clear();
     m_edges.clear();
     m_graph.clear();
@@ -262,7 +276,7 @@ public:
         tick(*this, e, active_nodes, m_order_cache, node_sorter<Ordering>{Ordering{}, e});
       }
 
-      for (auto& node : m_nodes.right)
+      for (auto& node : m_nodes)
       {
         ossia::graph_node& n = *node.first;
         n.set_executed(false);
@@ -462,8 +476,8 @@ public:
     }
   }
 
-  node_bimap m_nodes;
-  edge_bimap m_edges;
+  node_map m_nodes;
+  edge_map m_edges;
 
   graph_t m_graph;
 
@@ -476,6 +490,7 @@ public:
   node_flat_set m_disabled_cache;
   std::vector<graph_node*> active_nodes;
   std::vector<graph_vertex_t> topo_order;
+  bool m_topo_dirty{};
 
   friend struct inlet;
   friend struct outlet;

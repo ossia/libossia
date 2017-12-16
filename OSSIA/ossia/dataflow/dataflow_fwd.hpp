@@ -48,17 +48,6 @@ using inlet_ptr = std::shared_ptr<inlet>;
 using outlet_ptr = std::shared_ptr<outlet>;
 class graph;
 
-struct base_pair
-{
-  graph_edge* edge{};
-};
-using inlet_pair = base_pair;
-using outlet_pair = base_pair;
-inline bool operator==(base_pair lhs, base_pair rhs)
-{
-  return lhs.edge == rhs.edge;
-}
-
 struct audio_port;
 #if defined(OSSIA_PROTOCOL_MIDI)
 struct midi_port;

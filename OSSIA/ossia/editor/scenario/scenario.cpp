@@ -183,25 +183,16 @@ void scenario::add_time_interval(
   // store the TimeInterval if it is not already stored
   if (!contains(m_intervals, itv))
   {
-    m_sg.edges[itv.get()] = boost::add_edge(
-          m_sg.vertices[&itv->get_start_event().get_time_sync()],
-          m_sg.vertices[&itv->get_end_event().get_time_sync()],
-          itv.get(),
-          m_sg.graph).first;
+    m_sg.add_edge(itv.get());
     m_intervals.push_back(std::move(itv));
   }
 }
 
 void scenario::remove_time_interval(
-    const std::shared_ptr<time_interval>& timeInterval)
+    const std::shared_ptr<time_interval>& itv)
 {
-  auto it = m_sg.edges.find(timeInterval.get());
-  if(it != m_sg.edges.end())
-  {
-    boost::remove_edge(it->second, m_sg.graph);
-    m_sg.edges.erase(it);
-  }
-  remove_one(m_intervals, timeInterval);
+  m_sg.remove_edge(itv.get());
+  remove_one(m_intervals, itv);
 }
 
 void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
@@ -209,20 +200,12 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   // store a TimeSync if it is not already stored
   if (!contains(m_nodes, timeSync))
   {
-    m_sg.vertices[timeSync.get()] = boost::add_vertex(timeSync.get(), m_sg.graph);
     m_nodes.push_back(std::move(timeSync));
   }
 }
 
 void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
-  auto it = m_sg.vertices.find(timeSync.get());
-  if(it != m_sg.vertices.end())
-  {
-    boost::clear_vertex(it->second, m_sg.graph);
-    //boost::remove_vertex(it->second, m_sg.graph);
-    m_sg.vertices.erase(it);
-  }
   remove_one(m_nodes, timeSync);
 }
 
@@ -258,4 +241,44 @@ void scenario::reset_subgraph(
     m_itv_end_map.erase(itv.get());
   }
 }
+
+void scenario_graph::add_vertice(scenario_graph_vertex timeSync)
+{
+  vertices[timeSync] = boost::add_vertex(timeSync, graph);
+  dirty = true;
+}
+
+void scenario_graph::add_edge(scenario_graph_edge itv)
+{
+  edges[itv] = boost::add_edge(
+        vertices[&itv->get_start_event().get_time_sync()],
+      vertices[&itv->get_end_event().get_time_sync()],
+      itv,
+      graph).first;
+  dirty = true;
+}
+
+void scenario_graph::remove_vertice(scenario_graph_vertex timeSync)
+{
+  auto it = vertices.find(timeSync);
+  if(it != vertices.end())
+  {
+    boost::clear_vertex(it->second, graph);
+    //boost::remove_vertex(it->second, graph);
+    vertices.erase(it);
+    dirty = true;
+  }
+}
+
+void scenario_graph::remove_edge(scenario_graph_edge itv)
+{
+  auto it = edges.find(itv);
+  if(it != edges.end())
+  {
+    boost::remove_edge(it->second, graph);
+    edges.erase(it);
+    dirty = true;
+  }
+}
+
 }
