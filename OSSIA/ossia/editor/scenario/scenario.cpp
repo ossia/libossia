@@ -39,7 +39,8 @@ void scenario_node::run(token_request t, execution_state&)
   o->samples = i->samples;
 }
 
-scenario::scenario()
+scenario::scenario():
+  m_sg{*this}
 {
   // create the start TimeSync
   m_nodes.push_back(std::make_shared<time_sync>());
@@ -73,7 +74,7 @@ void scenario::start()
     if(is_root_sync(*node))
       m_waitingNodes.insert(node.get());
   }
-  m_rootNodes = sgraph{*this}.get_roots();
+  m_rootNodes = m_sg.get_roots();
 
   // start each TimeInterval if possible
   for (const auto& timeInterval : m_intervals)
@@ -177,18 +178,29 @@ void scenario::resume()
 }
 
 void scenario::add_time_interval(
-    std::shared_ptr<time_interval> timeInterval)
+    std::shared_ptr<time_interval> itv)
 {
   // store the TimeInterval if it is not already stored
-  if (!contains(m_intervals, timeInterval))
+  if (!contains(m_intervals, itv))
   {
-    m_intervals.push_back(std::move(timeInterval));
+    m_sg.edges[itv.get()] = boost::add_edge(
+          m_sg.vertices[&itv->get_start_event().get_time_sync()],
+          m_sg.vertices[&itv->get_end_event().get_time_sync()],
+          itv.get(),
+          m_sg.graph).first;
+    m_intervals.push_back(std::move(itv));
   }
 }
 
 void scenario::remove_time_interval(
     const std::shared_ptr<time_interval>& timeInterval)
 {
+  auto it = m_sg.edges.find(timeInterval.get());
+  if(it != m_sg.edges.end())
+  {
+    boost::remove_edge(it->second, m_sg.graph);
+    m_sg.edges.erase(it);
+  }
   remove_one(m_intervals, timeInterval);
 }
 
@@ -197,12 +209,20 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   // store a TimeSync if it is not already stored
   if (!contains(m_nodes, timeSync))
   {
+    m_sg.vertices[timeSync.get()] = boost::add_vertex(timeSync.get(), m_sg.graph);
     m_nodes.push_back(std::move(timeSync));
   }
 }
 
 void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
+  auto it = m_sg.vertices.find(timeSync.get());
+  if(it != m_sg.vertices.end())
+  {
+    boost::clear_vertex(it->second, m_sg.graph);
+    //boost::remove_vertex(it->second, m_sg.graph);
+    m_sg.vertices.erase(it);
+  }
   remove_one(m_nodes, timeSync);
 }
 

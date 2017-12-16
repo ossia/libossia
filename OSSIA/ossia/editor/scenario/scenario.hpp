@@ -5,6 +5,7 @@
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
+#include <boost/graph/adjacency_list.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia_export.h>
@@ -26,6 +27,44 @@ struct overtick
   ossia::time_value offset;
 };
 using overtick_map = boost::container::flat_map<time_sync*, overtick>;
+
+class scenario;
+using scenario_graph_vertex = time_sync*;
+using scenario_graph_edge = time_interval*;
+
+
+struct scenario_graph
+{
+    using graph_t = boost::adjacency_list<
+      boost::vecS,
+      boost::vecS,
+      boost::undirectedS,
+      scenario_graph_vertex,
+      scenario_graph_edge>;
+
+    scenario& scenar;
+    graph_t graph;
+
+    tsl::hopscotch_map<
+        const time_sync*,
+        graph_t::vertex_descriptor> vertices;
+    tsl::hopscotch_map<
+        const time_interval*,
+        graph_t::edge_descriptor> edges;
+
+    scenario_graph(scenario& sc);
+
+    small_sync_vec get_roots() const;
+    std::vector<int> components() const;
+
+    void reset_component(ossia::time_sync& sync) const;
+    ossia::small_vector<ossia::time_sync*, 2> sibling_roots(
+        const std::vector<int>& component,
+        const ossia::time_sync& sync) const;
+
+    void reset_component(const std::vector<int>& component, ossia::time_sync& sync) const;
+
+};
 
 class scenario_node : public ossia::graph_node
 {
@@ -104,6 +143,7 @@ private:
   overtick_map m_overticks; // used as cache
   boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_endNodes; // used as cache
+  scenario_graph m_sg; // used as cache
   bool process_this(
       time_sync& node, small_event_vec& statusChangedEvents,
       interval_set& started, interval_set& stopped,

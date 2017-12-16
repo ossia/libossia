@@ -3,6 +3,7 @@
 #include <QtTest>
 
 #include <ossia/dataflow/node_process.hpp>
+#include <ossia/dataflow/graph.hpp>
 
 #include "TestUtils.hpp"
 

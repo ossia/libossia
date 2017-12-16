@@ -46,6 +46,8 @@ struct outlet;
 struct inlet;
 using inlet_ptr = std::shared_ptr<inlet>;
 using outlet_ptr = std::shared_ptr<outlet>;
+class graph;
+
 struct base_pair
 {
   graph_edge* edge{};
@@ -77,7 +79,7 @@ using data_type = eggs::variant<audio_port, value_port>;
 
 #if defined(OSSIA_PROTOCOL_MIDI)
 using delay_line_type = eggs::variant<audio_delay_line, midi_delay_line, value_delay_line>;
-#else 
+#else
 using delay_line_type = eggs::variant<audio_delay_line, value_delay_line>;
 #endif
 }

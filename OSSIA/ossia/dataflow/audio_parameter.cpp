@@ -277,7 +277,7 @@ void sound_node::run(ossia::token_request t, ossia::execution_state& e)
   // Move channels
   if(start != 0)
   {
-    ap.samples.insert(ap.samples.begin(), start, ossia::small_vector<double, 64>{});
+    ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
   }
 }
 

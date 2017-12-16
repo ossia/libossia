@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 

@@ -8,7 +8,7 @@ namespace ossia
 template <typename T>
 using value_vector = ossia::small_vector<T, 4>;
 
-using audio_channel = ossia::small_vector<double, 64>;
+using audio_channel = ossia::small_vector<double, 256>;
 using audio_vector = ossia::small_vector<audio_channel, 2>;
 
 struct audio_port
@@ -80,7 +80,15 @@ struct value_port
     data.emplace_back(std::move(v));
   }
 
-  void add_value(ossia::value&& v, int64_t timestamp);
+  void add_value(ossia::value&& v, int64_t timestamp)
+  {
+    this->data.emplace_back(std::move(v));
+    tvalue& tval = this->data.back();
+    tval.timestamp = timestamp;
+    tval.index = this->index;
+    if(auto u = this->type.target<ossia::unit_t>())
+      tval.type = *u;
+  }
   void clear()
   {
     data.clear();
@@ -178,7 +186,7 @@ struct mix
       in.add_raw_value(val);
   }
 
-  void copy_audio(const ossia::small_vector<double, 64>& src, ossia::small_vector<double, 64>& sink)
+  void copy_audio(const ossia::audio_channel& src, ossia::audio_channel& sink)
   {
     if(sink.size() < src.size())
       sink.resize(src.size());
