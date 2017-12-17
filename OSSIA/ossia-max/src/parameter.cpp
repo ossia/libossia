@@ -187,6 +187,10 @@ bool parameter::register_node(const std::vector<t_matcher>& nodes)
     {
       max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
     }
+    for (auto remote : attribute::quarantine().copy())
+    {
+      max_object_register<ossia::max::attribute>(static_cast<ossia::max::attribute*>(remote));
+    }
 
     clock_delay(m_poll_clock,1);
   }

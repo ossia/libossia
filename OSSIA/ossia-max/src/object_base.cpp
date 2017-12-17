@@ -195,6 +195,9 @@ t_matcher::~t_matcher()
       {
         switch(owner->m_otype)
         {
+          case object_class::attribute:
+            object_quarantining<attribute>((attribute*) owner);
+            break;
           case object_class::remote:
             object_quarantining<remote>((remote*) owner);
             break;
