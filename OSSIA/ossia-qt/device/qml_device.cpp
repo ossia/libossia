@@ -376,7 +376,6 @@ void reset_items(QQuickItem* root)
   {
     if (auto qn = qobject_cast<qml_node_base*>(ptr))
     {
-      qDebug() << "RESETTING" << qn << qn->node();
       qn->resetNode();
       qApp->processEvents();
     }
@@ -473,6 +472,21 @@ void qml_device::recreate(QObject* root)
   if (auto item = qobject_cast<QQuickItem*>(root))
   {
     reset_items(item);
+
+    for (const auto& obj : m_nodes)
+    {
+      if (obj.second)
+      {
+        if(!obj.first->ossiaNode())
+        {
+          qDebug() << "recreate: Resetting: " << obj.first->node();
+          obj.first->resetNode();
+          qApp->processEvents();
+        }
+      }
+      else
+        this->remove(obj.first);
+    }
     for_each_in_tuple(
         std::make_tuple(m_properties, m_parameters, m_signals),
         [this](auto& props) {
@@ -510,10 +524,23 @@ void qml_device::recreate_preset(QObject* root)
   if (auto item = qobject_cast<QQuickItem*>(root))
   {
     reset_items(item);
+    for (const auto& obj : m_nodes)
+    {
+      if (obj.second)
+      {
+        if(!obj.first->ossiaNode())
+        {
+          qDebug() << "recreate_preset: Resetting: " << obj.first->node();
+          obj.first->resetNode();
+          qApp->processEvents();
+        }
+      }
+      else
+        this->remove(obj.first);
+    }
     for_each_in_tuple(
         std::make_tuple(m_properties, m_parameters, m_signals),
         [this](auto& props) {
-          qDebug() << m_properties.size();
           for (const auto& obj : props)
           {
             if (obj.second)
@@ -529,7 +556,7 @@ void qml_device::recreate_preset(QObject* root)
     clear_models_preset(m_models.size(), m_models.size(), *this);
     while(processing_models)
       qApp->processEvents();
-    setup_models_preset(m_models.size(), m_models.size(), *this);
+    //setup_models_preset(m_models.size(), m_models.size(), *this);
     while(processing_models)
       qApp->processEvents();
     qApp->processEvents();
@@ -627,7 +654,7 @@ void qml_device::clearEmptyElements()
     else
       it = m_models.erase(it);
 }
-#define PRESET_DEBUG 1
+//#define PRESET_DEBUG 0
 void qml_device::loadPreset(QObject* root, QString file)
 {
   m_readPreset = false;
@@ -660,19 +687,6 @@ void qml_device::loadPreset(QObject* root, QString file)
 
     if (f.open(QIODevice::ReadOnly))
     {
-      // First reset all item models since they will be in the preset
-      {
-        auto model_list = m_models;
-        for (auto model : model_list)
-        {
-          if (model.second)
-          {
-            model.first->setCount(0);
-          }
-          else
-            m_models.erase(model.first);
-        }
-      }
 
       m_readPreset = true;
 
@@ -694,7 +708,8 @@ void qml_device::loadPreset(QObject* root, QString file)
 #endif
 
       // Now as long as we are creating new models, update their count
-      {
+
+      /*{
           std::size_t cur_model_size = m_models.size();
           std::size_t prev_model_size;
           do
@@ -714,20 +729,12 @@ void qml_device::loadPreset(QObject* root, QString file)
               cur_model_size = m_models.size();
           } while (cur_model_size != prev_model_size);
       }
+      */
       clearEmptyElements();
 
       // Finallt do a push of all properties registered
       recreate(root);
-      {
 
-          processing_models = true;
-          setup_models_preset(m_models.size(), m_models.size(), *this);
-          while(processing_models)
-            qApp->processEvents();
-          qApp->processEvents();
-          qApp->processEvents();
-          qApp->processEvents();
-      }
       clearEmptyElements();
       m_readPreset = false;
       return;

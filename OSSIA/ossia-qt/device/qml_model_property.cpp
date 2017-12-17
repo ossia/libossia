@@ -98,6 +98,8 @@ void qml_model_property::reloadParentNode()
 
       if(pn)
       {
+        if(!pn->ossiaNode())
+          pn->resetNode();
         m_parentOssiaNode = pn->ossiaNode();
       }
       else
@@ -147,6 +149,8 @@ void qml_model_property::setParentNode(QObject* parentNode)
 
     if(pn)
     {
+      if(!pn->ossiaNode())
+        pn->resetNode();
       m_parentOssiaNode = pn->ossiaNode();
     }
     else
@@ -241,12 +245,16 @@ static bool is_instance(const std::string& root, const std::string& child)
 
 void qml_model_property::updateCount()
 {
+  // qDebug() << "updateCount: before" << m_parentNode << (void*)m_parentOssiaNode << m_node;
   reloadParentNode();
+  // qDebug() << "updateCount: after" << m_parentNode << (void*)m_parentOssiaNode << m_node;
   int newCount = 0;
 
   if (m_parentOssiaNode && !m_node.isEmpty())
   {
     const std::string& instance_name = m_node.toStdString();
+
+    // qDebug() << "updateCount: " << instance_name.c_str();
     for (auto& cld : m_parentOssiaNode->children())
     {
       const auto& name = cld->get_name();
@@ -254,10 +262,9 @@ void qml_model_property::updateCount()
         newCount++;
     }
   }
-
-  if(newCount > 10)
+  else
   {
-    qDebug() << "error" << newCount;
+    // qDebug() << "updateCount: no node";
   }
 
   setCount(newCount);
