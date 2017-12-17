@@ -227,5 +227,6 @@ private:
   double m_speed{1.}; /// tick length is multiplied by this
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
+  bool m_running{false};
 };
 }

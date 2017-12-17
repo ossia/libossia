@@ -106,6 +106,10 @@ void time_interval::start_and_tick()
 
 void time_interval::start()
 {
+  // launch the clock
+  if (m_nominal <= m_offset)
+    return stop();
+
   // start all time processes
   for (const auto& timeProcess : get_time_processes())
   {
@@ -113,11 +117,8 @@ void time_interval::start()
       timeProcess->start();
   }
 
-  // launch the clock
-  if (m_nominal <= m_offset)
-    return stop();
-
   // set clock at a tick
+  m_running = true;
   m_date = m_offset;
   compute_position();
   if (m_callback)
@@ -134,6 +135,7 @@ void time_interval::stop()
 
   m_date = Zero;
   m_position = 0.;
+  m_running = false;
 }
 
 void time_interval::compute_position()
@@ -281,6 +283,11 @@ void time_interval::add_time_process(
 {
   if (!timeProcess)
     return;
+
+  // todo what if the interval started
+  if (m_running)
+    timeProcess->start();
+
 
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())

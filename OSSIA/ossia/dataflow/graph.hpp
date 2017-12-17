@@ -144,9 +144,12 @@ public:
 
   void add_node(node_ptr n)
   {
-    auto vtx = boost::add_vertex(n, m_graph);
-    m_nodes.insert({std::move(n), vtx});
-    m_topo_dirty = true;
+    if(m_nodes.find(n) == m_nodes.end())
+    {
+      auto vtx = boost::add_vertex(n, m_graph);
+      m_nodes.insert({std::move(n), vtx});
+      m_topo_dirty = true;
+    }
   }
   void remove_node(const node_ptr& n)
   {

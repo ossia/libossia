@@ -43,7 +43,7 @@ scenario::scenario():
   m_sg{*this}
 {
   // create the start TimeSync
-  m_nodes.push_back(std::make_shared<time_sync>());
+  add_time_sync(std::make_shared<time_sync>());
   node = std::make_shared<scenario_node>();
 }
 
@@ -191,8 +191,15 @@ void scenario::add_time_interval(
 void scenario::remove_time_interval(
     const std::shared_ptr<time_interval>& itv)
 {
-  m_sg.remove_edge(itv.get());
-  remove_one(m_intervals, itv);
+  if(itv)
+  {
+    m_sg.remove_edge(itv.get());
+    auto it = ossia::find(m_runningIntervals, itv.get());
+    if(it != m_runningIntervals.end())
+      m_runningIntervals.erase(it);
+    m_itv_end_map.erase(itv.get());
+    remove_one(m_intervals, itv);
+  }
 }
 
 void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
@@ -200,13 +207,25 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   // store a TimeSync if it is not already stored
   if (!contains(m_nodes, timeSync))
   {
+    m_sg.add_vertice(timeSync.get());
     m_nodes.push_back(std::move(timeSync));
   }
 }
 
 void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
-  remove_one(m_nodes, timeSync);
+  if(timeSync)
+  {
+    m_sg.remove_vertice(timeSync.get());
+    m_waitingNodes.erase(timeSync.get());
+    auto it = ossia::find(m_rootNodes, timeSync.get());
+    if(it != m_rootNodes.end())
+      m_rootNodes.erase(it);
+    m_overticks.erase(timeSync.get());
+    m_endNodes.erase(timeSync.get());
+
+    remove_one(m_nodes, timeSync);
+  }
 }
 
 const std::shared_ptr<time_sync>& scenario::get_start_time_sync() const

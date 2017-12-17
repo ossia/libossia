@@ -105,6 +105,7 @@ void time_event::reset()
 
 void time_event::cleanup()
 {
+  set_callback({});
   m_previous_time_intervals.clear();
   m_next_time_intervals.clear();
 }

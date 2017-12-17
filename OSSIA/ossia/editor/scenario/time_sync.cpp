@@ -131,5 +131,9 @@ void time_sync::cleanup()
     timeevent->cleanup();
 
   m_timeEvents.clear();
+  triggered.callbacks_clear();
+  entered_evaluation.callbacks_clear();
+  left_evaluation.callbacks_clear();
+  finished_evaluation.callbacks_clear();
 }
 }
