@@ -327,18 +327,22 @@ object_base::object_base(t_eclass* c)
 
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
-  if (!m_dead)
-  {
-    // TODO is this flag really needed ?
-    m_is_deleted= true;
-    ossia::remove_one_if(
-      m_matchers,
-      [&] (auto& m) {
-        m.set_dead();
-        return m.get_node() == &n;
-    });
-    m_is_deleted = false;
-  }
+  m_is_deleted= true;
+
+  ossia::remove_one_if(
+        m_node_selection,
+        [&] (const auto& m) {
+    return m->get_node() == &n;
+  });
+
+  ossia::remove_one_if(
+        m_matchers,
+        [&] (auto& m) {
+    m.set_dead();
+    return m.get_node() == &n;
+  });
+
+  m_is_deleted = false;
 }
 
 void object_base::set_description()
