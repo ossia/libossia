@@ -58,7 +58,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     x->m_set_out  = outlet_new(x, NULL);
 
     x->m_dev = nullptr;
-    x->m_clock = clock_new(x, (method)parameter_base::bang);
     x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
 
     x->m_otype = object_class::remote;
@@ -100,11 +99,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
 void remote::destroy(remote* x)
 {
-  if (x->m_clock) {
-    clock_free((t_object*)x->m_clock);
-    x->m_clock = nullptr;
-  }
-
   if (x->m_poll_clock)
   {
     clock_free((t_object*)x->m_poll_clock);
@@ -200,7 +194,6 @@ void remote::set_unit()
 {
   if ( m_unit !=  gensym("") )
   {
-    // TODO check for unit compatibility with parameter
     ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
     if (unit)
       m_ounit = unit;
@@ -212,23 +205,26 @@ void remote::set_unit()
       return;
     }
 
-    bool break_flag = false;
     for (auto& m : m_node_selection)
     {
-      auto dst_unit = m->get_node()->get_parameter()->get_unit();
-      if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
-        auto src = ossia::get_pretty_unit_text(*m_ounit);
-        auto dst = ossia::get_pretty_unit_text(dst_unit);
-        object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
-                 src.c_str(), dst.c_str() );
-        m_ounit = ossia::none;
-        m_unit = gensym("");
-        break_flag = true;
-        break;
+      if ( m->get_node()->get_parameter()->get_value_type()
+           != ossia::val_type::IMPULSE)
+      {
+        auto dst_unit = m->get_node()->get_parameter()->get_unit();
+        if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
+          auto src = ossia::get_pretty_unit_text(*m_ounit);
+          auto dst = ossia::get_pretty_unit_text(dst_unit);
+          object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
+                       src.c_str(), dst.c_str() );
+          m_ounit = ossia::none;
+          m_unit = gensym("");
+          break;
+        } else {
+          m->enqueue_value(m->get_node()->get_parameter()->value());
+          m->output_value();
+        }
       }
     }
-    if (!break_flag)
-      parameter_base::bang(this);
 
   } else {
     m_ounit = ossia::none;
@@ -251,7 +247,6 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
   if (res)
   {
     object_dequarantining<remote>(this);
-    parameter_base::bang(this);
     clock_delay(m_poll_clock,1);
   }
   else
@@ -317,10 +312,20 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
         fmt::MemoryWriter path;
         fmt::BasicStringRef<char> name_fmt(name.data(), name.size());
         path << name_fmt << "/" << name_fmt;
-        auto node = ossia::net::find_node(*n, path.str());
-        if (node){
-          m_matchers.emplace_back(node, this);
+        n = ossia::net::find_node(*n, path.str());
+
+        if (n && n->get_parameter()){
+          m_matchers.emplace_back(n, this);
+        } else {
+          continue;
         }
+      }
+      if (n->get_parameter()->get_value_type()
+          != ossia::val_type::IMPULSE)
+      {
+        auto& m = m_matchers.back();
+        m.enqueue_value(n->get_parameter()->value());
+        m.output_value();
       }
     }
   }
@@ -334,7 +339,6 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
 bool remote::unregister()
 {
-  if(m_clock) clock_unset(m_clock);
   m_matchers.clear();
 
   object_quarantining<remote>(this);

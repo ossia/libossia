@@ -27,7 +27,6 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   if (res)
   {
     obj_dequarantining<remote>(this);
-    parameter_base::bang(this);
     clock_set(m_poll_clock,1);
   }
   else
@@ -90,11 +89,19 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
         fmt::MemoryWriter path;
         fmt::BasicStringRef<char> name_fmt(name.data(), name.size());
         path << name_fmt << "/" << name_fmt;
-        auto node = ossia::net::find_node(*n, path.str());
-        if (node){
+        n = ossia::net::find_node(*n, path.str());
+
+        if (n && n->get_parameter()){
           m_matchers.emplace_back(node, this);
           m_nodes.push_back(n);
         }
+      }
+      if ( n->get_parameter()->get_value_type()
+          != ossia::val_type::IMPULSE )
+      {
+        auto& m = m_matchers.back();
+        m.enqueue_value(n->get_parameter()->value());
+        m.output_value();
       }
     }
   }
@@ -154,23 +161,26 @@ void remote::set_unit()
       return;
     }
 
-    bool break_flag = false;
     for (auto m : m_node_selection)
     {
-      auto dst_unit = m->get_node()->get_parameter()->get_unit();
-      if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
-        auto src = ossia::get_pretty_unit_text(*m_ounit);
-        auto dst = ossia::get_pretty_unit_text(dst_unit);
-        pd_error(this, "sorry I don't know how to convert '%s' into '%s'",
-                 src.c_str(), dst.c_str() );
-        m_ounit = ossia::none;
-        m_unit = gensym("");
-        break_flag = true;
-        break;
+      if ( m->get_node()->get_parameter()->get_value_type()
+           != ossia::val_type::IMPULSE)
+      {
+        auto dst_unit = m->get_node()->get_parameter()->get_unit();
+        if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
+          auto src = ossia::get_pretty_unit_text(*m_ounit);
+          auto dst = ossia::get_pretty_unit_text(dst_unit);
+          pd_error(this, "sorry I don't know how to convert '%s' into '%s'",
+                   src.c_str(), dst.c_str() );
+          m_ounit = ossia::none;
+          m_unit = gensym("");
+          break;
+        } else {
+          m->enqueue_value(m->get_node()->get_parameter()->value());
+          m->output_value();
+        }
       }
     }
-    if (!break_flag)
-      parameter_base::bang(this);
 
   } else {
     m_ounit = ossia::none;

@@ -785,13 +785,15 @@ void parameter_base::bang(parameter_base* x)
 {
   for (auto m : x->m_node_selection)
   {
-    auto node = m->get_node();
+    auto param = m->get_node()->get_parameter();
 
-    if(auto param = node->get_parameter())
-      param->push_value(param->value());
-
-    //m.enqueue_value(m.get_node()->get_parameter()->value());
-    //m.output_value();
+    if (param->get_value_type() == ossia::val_type::IMPULSE)
+      param->push_value(ossia::impulse{});
+    else
+    {
+      m->enqueue_value(param->value());
+      m->output_value();
+    }
   }
 }
 
