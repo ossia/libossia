@@ -29,10 +29,13 @@ void dumpTree(QObject* root)
   n++;
   for(auto cld : root->children())
   {
-    dumpTree(cld);
     if(auto item = qobject_cast<QQuickItem*>(cld))
     {
       dumpTree(item);
+    }
+    else
+    {
+      dumpTree(cld);
     }
   }
   n--;
@@ -174,6 +177,30 @@ class QmlPresetTest : public QObject
 
         cleanup(item);
       }
+    }
+    void test_qml_repeater()
+    {
+
+      int argc{}; char** argv{};
+      QCoreApplication app(argc, argv);
+      ossia::context context;
+      QQmlEngine engine;
+      engine.addImportPath(QDir().absolutePath() + "/testdata/qml");
+      engine.addPluginPath(QDir().absolutePath() + "/testdata/qml");
+
+      QFile f(QDir().absolutePath() + "/testdata/qml/TestQmlRepeater.qml");
+      f.open(QIODevice::ReadOnly);
+      QQmlComponent component(&engine);
+      component.setData(f.readAll(), QUrl());
+
+      qDebug() << component.errorString();
+      QVERIFY(component.errors().empty());
+      auto item = (QQuickItem*) component.create();
+      QVERIFY(item);
+
+      for(int i = 0; i < 100; i++)
+        qApp->processEvents();
+      dumpTree(item);
     }
 
     void test_model_recursive_preset()

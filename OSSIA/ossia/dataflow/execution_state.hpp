@@ -10,6 +10,9 @@ struct OSSIA_EXPORT execution_state
 {
     int sampleRate{44100};
     int bufferSize{64};
+    int64_t samples_since_start{};
+    std::chrono::high_resolution_clock::time_point start_date;
+    std::chrono::high_resolution_clock::time_point cur_date;
 
     ossia::net::node_base* find_node(std::string_view name)
     {
