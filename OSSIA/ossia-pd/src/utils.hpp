@@ -275,11 +275,12 @@ struct domain_visitor {
 
   void operator()(ossia::vector_domain& d)
   {
-    x->m_min_size = d.min.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.min.size();
-    x->m_max_size = d.max.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : d.max.size();
-
     std::vector<t_atom> vamin, vamax;
     value2atom minvisitor{vamin}, maxvisitor{vamax};
+
+    x->m_min_size = vamin.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : vamin.size();
+    x->m_max_size = vamax.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : vamax.size();
+
     for (const auto& v : d.min)
       v.apply(minvisitor);
     for (int i=0; i<x->m_min_size; i++)
