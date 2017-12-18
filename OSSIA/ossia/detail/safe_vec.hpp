@@ -118,6 +118,11 @@ public:
     return impl;
   }
 
+  auto size() const
+  {
+    return impl.size();
+  }
+
   // https://stackoverflow.com/q/20953390/1495627
   template<typename Tval>
   struct EgurHash {
