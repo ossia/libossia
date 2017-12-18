@@ -104,6 +104,9 @@ void parameter_base::set_minmax()
     return;
   }
 
+  min.resize(OSSIA_MAX_MAX_ATTR_SIZE);
+  max.resize(OSSIA_MAX_MAX_ATTR_SIZE);
+
   for (t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
