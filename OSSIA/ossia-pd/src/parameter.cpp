@@ -17,9 +17,6 @@ namespace pd
 parameter::parameter():
   parameter_base{ossia_pd::param_class}
 {
-  m_range_size = 2;
-  SETFLOAT(m_range,0);
-  SETFLOAT(m_range+1,1);
 }
 
 bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
@@ -169,6 +166,14 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
     }
 
     ebox_attrprocess_viabinbuf(x, d);
+
+    if(x->m_min_size == 0 && x->m_max_size == 0 && x->m_range_size == 0)
+    {
+      // set range if not set by attribute min/max or range
+      x->m_range_size = 2;
+      SETFLOAT(x->m_range,0);
+      SETFLOAT(x->m_range+1,1);
+    }
 
     // change some attributes names to lower case
     std::string type = x->m_type->s_name;
