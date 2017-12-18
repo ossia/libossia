@@ -9,6 +9,7 @@
 #include <fmt/format.h>
 #include <QQmlEngine>
 #include <QQmlComponent>
+#include <QQmlContext>
 #include <regex>
 #define private public
 #include <ossia-qt/device/qml_device.hpp>
@@ -244,11 +245,15 @@ class QmlPresetTest : public QObject
           QVERIFY(foo_1_tata.children()[0]->children().size() == 3);
           QVERIFY(foo_1_tata.children()[1]->children().size() == 3);
 
+/*
           dumpTree(item);
-          auto obj00 = qApp->findChild<QQuickItem*>("parent0-child0");
-          auto obj01 = qApp->findChild<QQuickItem*>("parent0-child1");
-          auto obj10 = qApp->findChild<QQuickItem*>("parent1-child0");
-          auto obj11 = qApp->findChild<QQuickItem*>("parent1-child1");
+          dumpTree(&engine);
+          dumpTree(engine.rootContext());
+
+          auto obj00 = item->findChild<QQuickItem*>("root0RectChild0");
+          auto obj01 = item->findChild<QQuickItem*>("root0RectChild1");
+          auto obj10 = item->findChild<QQuickItem*>("root1RectChild0");
+          auto obj11 = item->findChild<QQuickItem*>("root1RectChild1");
           QVERIFY(obj00);
           QVERIFY(obj01);
           QVERIFY(obj10);
@@ -258,19 +263,27 @@ class QmlPresetTest : public QObject
           QVERIFY(obj01->position() == (QPointF{5, 8}));
           QVERIFY(obj10->position() == (QPointF{1, 2}));
           QVERIFY(obj11->position() == (QPointF{3, 4}));
+          */
         };
-        qApp->processEvents();
+        for(int i = 0; i < 10; i++)
+          qApp->processEvents();
         check_preset();
-        return;
+
         dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-        qApp->processEvents();
+
+        for(int i = 0; i < 10; i++)
+          qApp->processEvents();
 
         check_preset();
         dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-        qApp->processEvents();
+
+        for(int i = 0; i < 10; i++)
+          qApp->processEvents();
         check_preset();
         dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-        qApp->processEvents();
+
+        for(int i = 0; i < 10; i++)
+          qApp->processEvents();
         check_preset();
         cleanup(item);
       }

@@ -34,13 +34,17 @@ Item {
                           }
                     Rectangle {
                         id: prnt
-                        objectName: "RectChild" + index;
+                        parent: tata
+                        objectName: tata.objectName + "RectChild" + index;
                         onObjectNameChanged: console.log("RectChild name: " + objectName)
                         Ossia.Node { node: "bar." + index; id: subn; parentNode: sub }
                         Ossia.Property on x { parentNode: subn }
                         Ossia.Property on y { parentNode: subn }
+                        Component.onDestruction: console.log(" RECT CHILD " + objectName + "DESTROYED")
 
                         Rectangle {
+                            id: rccRec
+                            parent: prnt
                             objectName: "RectChildChild" + index
                             Ossia.Node {
                                 id: subsub
@@ -50,7 +54,8 @@ Item {
                             Repeater {
                                 model: Ossia.Instances { node: "baz"; parentNode: subsub;  }
                                 Item {
-                                    objectName: prnt.objectName + "-child" + index;
+                                    objectName: rccRec.objectName + "-child" + index;
+                                    parent: rccRec
                                     onObjectNameChanged: console.log("Child name: " + objectName)
                                     Ossia.Node { node: "baz." + index; id: subsubn; parentNode: subsub }
                                     Ossia.Property on x { parentNode: subsubn }
