@@ -152,13 +152,21 @@ if(OSSIA_TESTING)
   # need to call enable_testing() here
   # to update test on CMakeLists.txt changes
   # enable_testing()
+
   message(STATUS "Define Pd test")
   message("First a loading test")
 
-  add_test(NAME ossia-pd-loading-test
-      COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.sh
-      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
-      )
+  if(MSVC)
+    add_test(NAME ossia-pd-loading-test
+        COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.cmd
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+        )
+  else()
+    add_test(NAME ossia-pd-loading-test
+        COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+        )
+  endif()
 
   file(GLOB PD_UNIT_TEST
        LIST_DIRECTORIES false
