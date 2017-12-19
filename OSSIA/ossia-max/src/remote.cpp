@@ -304,6 +304,22 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
     m_matchers.reserve(m_matchers.size() + nodes.size());
 
     for (auto n : nodes){
+
+      bool continue_flag = false;
+
+      // avoid to register the same node twice
+      for (auto& m : m_matchers)
+      {
+        if ( m.get_node() == n && m.get_parent() == this )
+        {
+          continue_flag = true;
+          break;
+        }
+      }
+
+      if (continue_flag)
+        continue;
+
       if (n->get_parameter()){
         m_matchers.emplace_back(n, this);
       } else {
