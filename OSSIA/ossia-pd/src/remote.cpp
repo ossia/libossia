@@ -17,13 +17,13 @@ remote::remote():
   parameter_base{ossia_pd::remote_class}
 { }
 
-bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
+bool remote::register_node(const std::vector<t_matcher>& matchers)
 {
   if (m_mute) return false;
 
   update_path();
 
-  bool res = do_registration(node);
+  bool res = do_registration(matchers);
   if (res)
   {
     obj_dequarantining<remote>(this);
@@ -32,9 +32,9 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   else
     obj_quarantining<remote>(this);
 
-  if (!node.empty() && m_is_pattern){
+  if (!m_matchers.empty() && m_is_pattern){
     // assume all nodes refer to the same device
-    auto& dev = node[0]->get_device();
+    auto& dev = matchers[0].get_node()->get_device();
     if (&dev != m_dev)
     {
       if (m_dev) {
@@ -51,14 +51,16 @@ bool remote::register_node(const std::vector<ossia::net::node_base*>& node)
   return res;
 }
 
-bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool remote::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister();
 
   std::string name = m_name->s_name;
 
-  for (auto node : _nodes)
+  for (auto& m : matchers)
   {
+    auto node = m.get_node();
+
     if (m_addr_scope == net::address_scope::absolute)
     {
       // get root node
@@ -76,7 +78,6 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     else
       nodes = ossia::net::find_nodes(*node, name);
 
-    m_nodes.reserve(m_nodes.size() + nodes.size());
     m_matchers.reserve(m_matchers.size() + nodes.size());
 
     for (auto n : nodes){
@@ -99,7 +100,6 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       if (n->get_parameter()){
 
         m_matchers.emplace_back(n,this);
-        m_nodes.push_back(n);
 
       } else {
 
@@ -113,7 +113,6 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
 
         if (n && n->get_parameter()){
           m_matchers.emplace_back(node, this);
-          m_nodes.push_back(n);
         }
       }
       if ( n->get_parameter()->get_value_type()
@@ -139,7 +138,6 @@ bool remote::unregister()
   clock_unset(m_poll_clock);
 
   m_matchers.clear();
-  m_nodes.clear();
 
   obj_quarantining<remote>(this);
 
@@ -161,7 +159,6 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& par
   {
     m_parent_node = node.get_parent();
     m_matchers.emplace_back(&node,this);
-    m_nodes.push_back(&node);
     fill_selection();
   }
 }

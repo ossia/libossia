@@ -224,63 +224,6 @@ object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_leve
   return nullptr;
 }
 
-
-std::vector<ossia::net::node_base*> find_parent_node(object_base* x)
-{
-  int l;
-  ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
-  ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
-
-  ossia::pd::model* model = nullptr;
-  ossia::pd::view* view = nullptr;
-  int view_level = 0, model_level = 0;
-  int start_level = 0;
-
-  if (x->m_otype == object_class::view || x->m_otype == object_class::model)
-  {
-    start_level = 1;
-  }
-
-  if (x->m_addr_scope == net::address_scope::relative)
-  {
-    // then try to locate a parent view or model
-    if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
-    {
-      view
-          = (ossia::pd::view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
-    }
-
-    if (!view)
-    {
-      model = (ossia::pd::model*)find_parent_alive(
-          &x->m_obj, "ossia.model", 0, &model_level);
-    }
-  }
-
-  if (view)
-  {
-    return view->m_nodes;
-  }
-  else if (model)
-  {
-    return model->m_nodes;
-  }
-  else if (client)
-  {
-    return client->m_nodes;
-  }
-  else if (device)
-  {
-    return device->m_nodes;
-  }
-  else
-  {
-    return {&ossia_pd::get_default_device()->get_root_node()};
-  }
-
-  return std::vector<ossia::net::node_base*>{};
-}
-
 std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, string_view classname)
 {
   const ossia::string_view subclassname

@@ -422,7 +422,7 @@ std::string get_absolute_path(object_base* x);
  * @param x : starting object object
  * @return active node pointer if found or nullptr
  */
-std::vector<ossia::net::node_base*> find_parent_node(object_base* x);
+const std::vector<t_matcher>& find_parent_node(object_base* x);
 
 /**
  * @brief Find all objects [classname] in the current patcher starting at
@@ -501,9 +501,75 @@ bool obj_register(T* x)
   if (x->m_dead)
     return false; // object will be removed soon
 
-  auto node = find_parent_node(x);
+  std::vector<t_matcher> tmp;
+  std::vector<t_matcher>* matchers = &tmp;
 
-  return x->register_node(node);
+  if (x->m_addr_scope == ossia::net::address_scope::global)
+  {
+    auto nodes = ossia::pd::find_global_nodes(x->m_name->s_name);
+
+    tmp.reserve(nodes.size());
+    for (auto n : nodes)
+    {
+      tmp.emplace_back(n, (object_base*)nullptr);
+    }
+  }
+  else
+  {
+    int l;
+    ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
+    ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
+
+    ossia::pd::model* model = nullptr;
+    ossia::pd::view* view = nullptr;
+    int view_level = 0, model_level = 0;
+    int start_level = 0;
+
+    if (x->m_otype == object_class::view || x->m_otype == object_class::model)
+    {
+      start_level = 1;
+    }
+
+    if (x->m_addr_scope == net::address_scope::relative)
+    {
+      // then try to locate a parent view or model
+      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
+      {
+        view
+            = (ossia::pd::view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
+      }
+
+      if (!view)
+      {
+        model = (ossia::pd::model*)find_parent_alive(
+              &x->m_obj, "ossia.model", 0, &model_level);
+      }
+    }
+
+    if (view)
+    {
+      matchers = &view->m_matchers;
+    }
+    else if (model)
+    {
+      matchers = &model->m_matchers;
+    }
+    else if (client)
+    {
+      matchers = &client->m_matchers;
+    }
+    else if (device)
+    {
+      matchers = &device->m_matchers;
+    }
+    else
+    {
+      tmp.push_back({&ossia_pd::get_default_device()->get_root_node(),
+                      (object_base*) nullptr});
+    }
+  }
+
+  return x->register_node(*matchers);
 }
 
 template <typename T>

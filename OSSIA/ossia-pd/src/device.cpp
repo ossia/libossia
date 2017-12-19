@@ -65,7 +65,7 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
 
     x->connect_slots();
 
-    x->m_nodes = {&x->m_device->get_root_node()};
+    x->m_matchers.push_back({&x->m_device->get_root_node(), (object_base*)nullptr});
 
     x->m_clock = clock_new(x, (t_method)device::register_children);
     clock_delay(x->m_clock, 0);
@@ -95,12 +95,12 @@ void device::register_children(device* x)
     if (v->m_otype == object_class::model)
     {
       ossia::pd::model* model = (ossia::pd::model*)v;
-      model->register_node(x->m_nodes);
+      model->register_node(x->m_matchers);
     }
     else if (v->m_otype == object_class::param)
     {
       parameter* param = (parameter*)v;
-      param->register_node(x->m_nodes);
+      param->register_node(x->m_matchers);
     }
   }
 
@@ -111,12 +111,12 @@ void device::register_children(device* x)
     if (v->m_otype == object_class::view)
     {
       ossia::pd::view* view = (ossia::pd::view*)v;
-      view->register_node(x->m_nodes);
+      view->register_node(x->m_matchers);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      remote->register_node(x->m_nodes);
+      remote->register_node(x->m_matchers);
     }
   }
 

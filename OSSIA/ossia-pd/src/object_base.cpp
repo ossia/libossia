@@ -115,12 +115,12 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
   node{n}, owner{p}, callbackit{ossia::none}
 {
-  if (auto param = node->get_parameter())
-    callbackit = param->add_callback(
-      [=](const ossia::value& v) { enqueue_value(v); });
-
   if (owner)
   {
+    if (auto param = node->get_parameter())
+      callbackit = param->add_callback(
+            [=](const ossia::value& v) { enqueue_value(v); });
+
     node->about_to_be_deleted.connect<object_base,
         &object_base::is_deleted>(owner);
     set_owner_addr();
@@ -162,7 +162,6 @@ t_matcher::~t_matcher()
   {
     // purge selection
     ossia::remove_one(owner->m_node_selection,this);
-    ossia::remove_one(owner->m_nodes,node);
 
     if (   owner->m_otype == object_class::param
         || owner->m_otype == object_class::model  )

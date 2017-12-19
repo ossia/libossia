@@ -114,7 +114,7 @@ public:
   float m_rate{10};
 
   ossia::net::generic_device* m_device{};
-  std::vector<ossia::net::node_base*> m_nodes{};
+
   // TODO m_parent_nodes should be a vector
   // since we may use pattern matching in view and model
   ossia::net::node_base* m_parent_node{};

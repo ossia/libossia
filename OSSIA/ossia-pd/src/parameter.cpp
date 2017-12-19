@@ -19,9 +19,9 @@ parameter::parameter():
 {
 }
 
-bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool parameter::register_node(const std::vector<t_matcher>& matchers)
 {
-  bool res = do_registration(nodes);
+  bool res = do_registration(matchers);
   if (res)
   {
     obj_dequarantining<parameter>(this);
@@ -45,13 +45,14 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   return res;
 }
 
-bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
-  for (auto node : _nodes)
+  for (auto& m : matchers)
   {
+    auto node = m.get_node();
     m_parent_node = node;
 
     auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
@@ -80,7 +81,6 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       ossia::net::set_hidden(local_param->get_node(), m_hidden);
 
       m_matchers.emplace_back(n, this);
-      m_nodes.push_back(n);
     }
   }
 
@@ -107,7 +107,6 @@ bool parameter::unregister()
   clock_unset(m_poll_clock);
 
   m_matchers.clear();
-  m_nodes.clear();
 
   for (auto remote : ossia::pd::remote::quarantine().copy())
   {

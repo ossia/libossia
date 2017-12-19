@@ -16,9 +16,9 @@ view::view():
 //****************//
 // Member methods //
 //****************//
-bool view::register_node(const std::vector<ossia::net::node_base*>& node)
+bool view::register_node(const std::vector<t_matcher>& matchers)
 {
-  bool res = do_registration(node);
+  bool res = do_registration(matchers);
   if (res)
   {
     obj_dequarantining<view>(this);
@@ -34,12 +34,12 @@ bool view::register_node(const std::vector<ossia::net::node_base*>& node)
           // not registering itself
           continue;
         }
-        view->register_node(m_nodes);
+        view->register_node(m_matchers);
       }
       else if (v->m_otype == object_class::remote)
       {
         ossia::pd::remote* remote = (ossia::pd::remote*)v;
-        remote->register_node(m_nodes);
+        remote->register_node(m_matchers);
       }
     }
   }
@@ -49,16 +49,18 @@ bool view::register_node(const std::vector<ossia::net::node_base*>& node)
   return res;
 }
 
-bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool view::do_registration(const std::vector<t_matcher>& matchers)
 {
 
   // we should unregister here because we may have add a node
   // between the registered node and the remote
   unregister();
 
-  for (auto _node : _nodes)
+  for (auto& m : matchers)
   {
     std::string name = m_name->s_name;
+
+    auto _node = m.get_node();
 
     if (m_addr_scope == ossia::net::address_scope::absolute)
     {
@@ -77,7 +79,6 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
     else
       nodes = ossia::net::find_nodes(*_node, name);
 
-    m_nodes.reserve(m_nodes.size() + nodes.size());
     m_matchers.reserve(m_matchers.size() + nodes.size());
 
     for (auto n : nodes){
@@ -86,7 +87,6 @@ bool view::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       // then forget it
       if (!n->get_parameter()){
         m_matchers.emplace_back(n, this);
-        m_nodes.push_back(n);
       }
     }
   }
@@ -121,7 +121,6 @@ static void register_children(view* x)
 bool view::unregister()
 {
   m_matchers.clear();
-  m_nodes.clear();
 
   std::vector<object_base*> viewnode
       = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
