@@ -531,7 +531,7 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
   {
     auto node = m->get_node();
     auto param = node->get_parameter();
-    auto xparam = (parameter_base*)m->get_parent();
+    auto xparam = (parameter_base*)m->get_owner();
 
     if ( xparam->m_ounit != ossia::none )
     {
@@ -663,7 +663,7 @@ void parameter_base::push_default_value(parameter_base* x)
     for (auto m : x->m_node_selection)
     {
       node = m->get_node();
-      auto parent = m->get_parent();
+      auto parent = m->get_owner();
       auto param = node->get_parameter();
 
       auto def_val = ossia::net::get_default_value(*node);

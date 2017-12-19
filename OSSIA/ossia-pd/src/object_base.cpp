@@ -46,8 +46,8 @@ t_matcher::t_matcher(t_matcher&& other)
   node = other.node;
   other.node = nullptr;
 
-  parent = other.parent;
-  other.parent = nullptr;
+  owner = other.owner;
+  other.owner = nullptr;
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
@@ -69,8 +69,8 @@ t_matcher::t_matcher(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      if(parent)
-        set_parent_addr();
+      if(owner)
+        set_owner_addr();
     }
   }
 }
@@ -80,8 +80,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   node = other.node;
   other.node = nullptr;
 
-  parent = other.parent;
-  other.parent = nullptr;
+  owner = other.owner;
+  other.owner = nullptr;
 
   callbackit = other.callbackit;
   other.callbackit = ossia::none;
@@ -104,8 +104,8 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
       callbackit = param->add_callback(
         [=] (const ossia::value& v) { enqueue_value(v); });
 
-      if(parent)
-        set_parent_addr();
+      if(owner)
+        set_owner_addr();
     }
   }
 
@@ -113,20 +113,18 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 }
 
 t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
-  node{n}, parent{p}, callbackit{ossia::none}
+  node{n}, owner{p}, callbackit{ossia::none}
 {
   if (auto param = node->get_parameter())
     callbackit = param->add_callback(
       [=](const ossia::value& v) { enqueue_value(v); });
 
-  if (parent)
+  if (owner)
   {
     node->about_to_be_deleted.connect<object_base,
-        &object_base::is_deleted>(parent);
-    set_parent_addr();
+        &object_base::is_deleted>(owner);
+    set_owner_addr();
   }
-
-  //clock_delay(x_regclock, 0);
 }
 
 void purge_parent(ossia::net::node_base* node)
@@ -160,20 +158,20 @@ void purge_parent(ossia::net::node_base* node)
 t_matcher::~t_matcher()
 {
   if (m_dead) return;
-  if(node && parent)
+  if(node && owner)
   {
     // purge selection
-    ossia::remove_one(parent->m_node_selection,this);
-    ossia::remove_one(parent->m_nodes,node);
+    ossia::remove_one(owner->m_node_selection,this);
+    ossia::remove_one(owner->m_nodes,node);
 
-    if (   parent->m_otype == object_class::param
-        || parent->m_otype == object_class::model  )
+    if (   owner->m_otype == object_class::param
+        || owner->m_otype == object_class::model  )
     {
-      if (!parent->m_is_deleted)
+      if (!owner->m_is_deleted)
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
 
         for (auto remote : ossia_pd::instance().remotes.copy())
         {
@@ -189,15 +187,15 @@ t_matcher::~t_matcher()
       }
       // if there is no more matcher,
       // object should be quarantinized
-      if (parent->m_matchers.size() == 0)
+      if (owner->m_matchers.size() == 0)
       {
-        switch(parent->m_otype)
+        switch(owner->m_otype)
         {
           case object_class::model:
-            obj_quarantining<model>((model*) parent);
+            obj_quarantining<model>((model*) owner);
             break;
           case object_class::param:
-            obj_quarantining<parameter>((parameter*) parent);
+            obj_quarantining<parameter>((parameter*) owner);
             break;
           default:
             ;
@@ -208,22 +206,22 @@ t_matcher::~t_matcher()
     {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
-      node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+      node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
 
       // if there is no more matcher,
       // object should be quarantinized
-      if (parent->m_matchers.size() == 0)
+      if (owner->m_matchers.size() == 0)
       {
-        switch(parent->m_otype)
+        switch(owner->m_otype)
         {
           case object_class::remote:
-            obj_quarantining<remote>((remote*) parent);
+            obj_quarantining<remote>((remote*) owner);
             break;
           case object_class::view:
-            obj_quarantining<view>((view*) parent);
+            obj_quarantining<view>((view*) owner);
             break;
           case object_class::attribute:
-            obj_quarantining<attribute>((attribute*) parent);
+            obj_quarantining<attribute>((attribute*) owner);
             break;
           default:
             ;
@@ -244,7 +242,7 @@ void t_matcher::enqueue_value(ossia::value v)
 
   if(!param->filter_value(filtered))
   {
-    auto x = (ossia::pd::parameter_base*) parent;
+    auto x = (ossia::pd::parameter_base*) owner;
 
     if ( x->m_ounit == ossia::none )
     {
@@ -276,19 +274,19 @@ void t_matcher::output_value()
     if( break_flag )
       continue;
 
-    outlet_anything(parent->m_dumpout,gensym("address"),1,&m_addr);
+    outlet_anything(owner->m_dumpout,gensym("address"),1,&m_addr);
 
     value_visitor<object_base> vm;
-    vm.x = (object_base*)parent;
+    vm.x = (object_base*)owner;
     val.apply(vm);
   }
 }
 
-void t_matcher::set_parent_addr()
+void t_matcher::set_owner_addr()
 {
-  if (parent->m_parent_node){
+  if (owner->m_parent_node){
     // TODO how to deal with multiple parents ?
-    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *parent->m_parent_node);
+    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *owner->m_parent_node);
     SETSYMBOL(&m_addr, gensym(addr.c_str()));
   }
   else
@@ -587,15 +585,11 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              object_base* obj = pa_matcher.get_parent();
+              object_base* obj = pa_matcher.get_owner();
               t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
               glist_select(patcher, (t_gobj*) obj);
-
-              // clock will commit suicide after 1 sec.
-              t_select_clock* clock = new t_select_clock(patcher, obj);
-
             }
           }
         }
@@ -619,15 +613,11 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              object_base* obj = md_matcher.get_parent();
+              object_base* obj = md_matcher.get_owner();
               t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
               glist_select(patcher, (t_gobj*) obj);
-
-              // clock will commit suicide after 1 sec.
-              t_select_clock* clock = new t_select_clock(patcher, obj);
-
             }
           }
         }

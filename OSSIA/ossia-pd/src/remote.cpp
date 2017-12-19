@@ -86,7 +86,7 @@ bool remote::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
       // avoid to register the same node twice
       for (auto& m : m_matchers)
       {
-        if ( m.get_node() == n && m.get_parent() == this )
+        if ( m.get_node() == n && m.get_owner() == this )
         {
           continue_flag = true;
           break;

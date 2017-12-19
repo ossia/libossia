@@ -65,9 +65,9 @@ public:
   void enqueue_value(ossia::value v);
   void output_value();
   auto get_node() const { return node; }
-  auto get_parent() const { return parent; }
+  auto get_owner() const { return owner; }
   t_atom* get_atom_addr_ptr() { return &m_addr; }
-  void set_parent_addr();
+  void set_owner_addr();
 
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
@@ -78,7 +78,7 @@ public:
 
 private:
   ossia::net::node_base* node{};
-  object_base* parent{};
+  object_base* owner{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
