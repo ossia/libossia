@@ -54,23 +54,33 @@ class OSSIA_EXPORT graph_base
   {
     while (!active_nodes.empty())
     {
-      next_nodes.clear();
-
       // Find all the nodes for which the inlets have executed
       // (or without cables on the inlets)
+      graph_node* cur = nullptr;
       for(graph_node* node : active_nodes)
-        if(node->can_execute(e))
-          next_nodes.push_back(node);
-
-      if (!next_nodes.empty())
       {
-        std::sort(next_nodes.begin(), next_nodes.end(), std::move(comp));
+        if(node->can_execute(e))
+        {
+          if(cur)
+          {
+            if(!comp(cur, node))
+              cur = node;
+          }
+          else
+          {
+            cur = node;
+          }
+        }
+      }
+
+      if (cur)
+      {
         // First look if there is a replacement or reduction relationship between
         // the first n nodes
         // If there is, we run all the nodes
 
         // If there is not we just run the first node
-        graph_node& first_node = **next_nodes.begin();
+        graph_node& first_node = *cur;
         g.init_node(first_node, e);
         if(first_node.start_discontinuous()) {
           first_node.requested_tokens.front().start_discontinuous = true;
