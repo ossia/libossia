@@ -15,9 +15,40 @@ struct EgurHash
     {
       return (size_t)(val) >> shift;
     }
+    size_t operator()(const std::shared_ptr<T>& val) const
+    {
+      return (size_t)(val.get()) >> shift;
+    }
 };
 
 template<typename T>
+struct PointerPredicate
+{
+  using is_transparent = std::true_type;
+  bool operator()(const T* lhs, const T* rhs) const
+  {
+    return lhs == rhs;
+  }
+  bool operator()(const std::shared_ptr<T>& lhs, const T* rhs) const
+  {
+    return lhs.get() == rhs;
+  }
+  bool operator()(const T* lhs, const std::shared_ptr<T>& rhs) const
+  {
+    return lhs == rhs.get();
+  }
+  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const
+  {
+    return lhs == rhs;
+  }
+};
+template<typename T>
 using ptr_set = tsl::hopscotch_set<T, EgurHash<std::remove_pointer_t<T>>>;
+template<typename T>
+using shared_ptr_set = tsl::hopscotch_set<
+  std::shared_ptr<T>,
+  EgurHash<T>,
+  PointerPredicate<T>
+>;
 
 }

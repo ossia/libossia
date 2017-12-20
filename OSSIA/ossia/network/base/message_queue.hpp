@@ -37,10 +37,14 @@ class message_queue final : public Nano::Observer
     void reg(ossia::net::parameter_base& p)
     {
       auto ptr = &p;
-      auto it = p.add_callback([=] (const ossia::value& val) {
-        m_queue.enqueue({ptr, val});
-      });
-      m_reg.insert({&p, it});
+      auto reg_it = m_reg.find(&p);
+      if(reg_it == m_reg.end())
+      {
+        auto it = p.add_callback([=] (const ossia::value& val) {
+          m_queue.enqueue({ptr, val});
+        });
+        m_reg.insert({&p, it});
+      }
     }
 
     void unreg(ossia::net::parameter_base& p)

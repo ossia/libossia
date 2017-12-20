@@ -3,12 +3,12 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <boost/bimap.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/range/adaptors.hpp>
 #include <ossia/dataflow/graph_ordering.hpp>
 #include <boost/container/flat_set.hpp>
+#include <ossia/detail/ptr_set.hpp>
 class DataflowTest;
 namespace ossia
 {
@@ -19,15 +19,12 @@ using graph_t = boost::
 using graph_vertex_t = graph_t::vertex_descriptor;
 using graph_edge_t = graph_t::edge_descriptor;
 
-template <typename T, typename U>
-using bimap = boost::bimap<T, U>;
 using node_map = tsl::hopscotch_map<node_ptr, graph_vertex_t>;
-using edge_map = tsl::hopscotch_map<std::shared_ptr<graph_edge>, graph_edge_t>;
-using node_bimap_v = node_map::value_type;
-using edge_bimap_v = edge_map::value_type;
-
-using edge_map_t
-    = std::unordered_map<graph_edge*, std::shared_ptr<graph_edge>>;
+using edge_map = tsl::hopscotch_map<
+  edge_ptr,
+  graph_edge_t,
+  EgurHash<ossia::graph_edge>,
+  PointerPredicate<ossia::graph_edge>>;
 
 enum class node_ordering
 {
@@ -39,7 +36,6 @@ class OSSIA_EXPORT graph_base
 {
   private:
 
-  using node_set = std::vector<graph_node*>;
   using node_flat_set = boost::container::flat_set<graph_node*>;
 
   using Comparator = node_sorter<Ordering>;
@@ -49,7 +45,6 @@ class OSSIA_EXPORT graph_base
       graph_base& g,
       execution_state& e,
       std::vector<graph_node*>& active_nodes,
-      node_set& next_nodes,
       Comp_T&& comp)
   {
     while (!active_nodes.empty())
@@ -107,41 +102,50 @@ class OSSIA_EXPORT graph_base
     }
   }
 
+  template<typename Comp_T>
+  static void tick_static(
+      graph_base& g,
+      execution_state& e,
+      std::vector<graph_node*>& active_nodes,
+      Comp_T&& comp)
+  {
+  }
+
   void get_sorted_nodes(const graph_t& gr)
   {
     // Get a total order on nodes
-    active_nodes.clear();
-    active_nodes.reserve(m_nodes.size());
+    m_active_nodes.clear();
+    m_active_nodes.reserve(m_nodes.size());
 
     // TODO this should be doable with a single vector
     if(m_topo_dirty)
     {
-      topo_order.clear();
-      topo_order.reserve(m_nodes.size());
-      boost::topological_sort(gr, std::back_inserter(topo_order));
+      m_topo_order_cache.clear();
+      m_topo_order_cache.reserve(m_nodes.size());
+      boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
       m_topo_dirty = false;
     }
 
-    for(auto vtx : topo_order)
+    for(auto vtx : m_topo_order_cache)
     {
       auto node = gr[vtx].get();
       if(node->enabled())
-        active_nodes.push_back(node);
+        m_active_nodes.push_back(node);
     }
   }
 
   void get_enabled_nodes(const graph_t& gr)
   {
-    active_nodes.clear();
+    m_active_nodes.clear();
 
     auto vtx = boost::vertices(gr);
-    active_nodes.reserve(m_nodes.size());
+    m_active_nodes.reserve(m_nodes.size());
 
     for(auto it = vtx.first; it != vtx.second; ++it)
     {
       auto node = gr[*it].get();
       if(node->enabled())
-        active_nodes.push_back(node);
+        m_active_nodes.push_back(node);
     }
   }
 
@@ -161,6 +165,7 @@ public:
       m_topo_dirty = true;
     }
   }
+
   void remove_node(const node_ptr& n)
   {
     for(auto& port : n->inputs())
@@ -197,7 +202,6 @@ public:
         auto res = boost::add_edge(it1->second, it2->second, edge, m_graph);
         if (res.second)
         {
-          m_edge_map.insert(std::make_pair(edge.get(), edge));
           m_edges.insert({std::move(edge), res.first});
         }
         m_topo_dirty = true;
@@ -205,6 +209,10 @@ public:
     }
   }
   void disconnect(const std::shared_ptr<graph_edge>& edge)
+  {
+    disconnect(edge.get());
+  }
+  void disconnect(graph_edge* edge)
   {
     if(edge)
     {
@@ -214,19 +222,10 @@ public:
         auto edg = boost::edges(m_graph);
         if(std::find(edg.first, edg.second, it->second) != edg.second)
           boost::remove_edge(it->second, m_graph);
-        m_edge_map.erase(edge.get());
         m_topo_dirty = true;
         m_edges.erase(it);
       }
       edge->clear();
-    }
-  }
-  void disconnect(graph_edge* edge)
-  {
-    auto ptr_it = m_edge_map.find(edge);
-    if(ptr_it != m_edge_map.end())
-    {
-      disconnect(ptr_it->second);
     }
   }
 
@@ -246,8 +245,6 @@ public:
     m_nodes.clear();
     m_edges.clear();
     m_graph.clear();
-    m_edge_map.clear();
-    m_time = 0;
   }
 
   void state()
@@ -281,12 +278,12 @@ public:
       if constexpr(std::is_same<Ordering, topological_ordering>::value)
       {
         get_sorted_nodes(m_graph);
-        tick(*this, e, active_nodes, m_order_cache, node_sorter<>{topological_ordering{active_nodes}, e});
+        tick(*this, e, m_active_nodes, node_sorter<>{topological_ordering{m_active_nodes}, e});
       }
       else
       {
         get_enabled_nodes(m_graph);
-        tick(*this, e, active_nodes, m_order_cache, node_sorter<Ordering>{Ordering{}, e});
+        tick(*this, e, m_active_nodes, node_sorter<Ordering>{Ordering{}, e});
       }
 
       for (auto& node : m_nodes)
@@ -489,20 +486,18 @@ public:
     }
   }
 
+  const graph_t& impl() const { return m_graph; }
+  private:
+
   node_map m_nodes;
   edge_map m_edges;
 
   graph_t m_graph;
 
-  edge_map_t m_edge_map;
-
-  time_value m_time{};
-  node_set m_order_cache;
-
   node_flat_set m_enabled_cache;
   node_flat_set m_disabled_cache;
-  std::vector<graph_node*> active_nodes;
-  std::vector<graph_vertex_t> topo_order;
+  std::vector<graph_node*> m_active_nodes;
+  std::vector<graph_vertex_t> m_topo_order_cache;
   bool m_topo_dirty{};
 
   friend struct inlet;

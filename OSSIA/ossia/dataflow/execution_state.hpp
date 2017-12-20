@@ -45,6 +45,7 @@ struct OSSIA_EXPORT execution_state
           auto it = messages.begin();
           std::advance(it, i);
           it->reg(p);
+          return;
         }
       }
     }
@@ -57,6 +58,7 @@ struct OSSIA_EXPORT execution_state
           auto it = messages.begin();
           std::advance(it, i);
           it->unreg(p);
+          return;
         }
       }
     }
