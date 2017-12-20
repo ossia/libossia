@@ -26,12 +26,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake --build . --target RUN_TESTS --config %configuration%
 }
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
-  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-pd/pd/bin/","Process")            
+if ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ){
 
-  cd ${env:APPVEYOR_BUILD_FOLDER}\build
-
-  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\test-pd.log"
-  cmake --build . --config "${env:configuration}" --target RUN_TESTS > "$LogFile"
-  CheckLastExitCode
 }

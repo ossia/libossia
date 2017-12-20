@@ -111,12 +111,15 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   mv ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\ossia ${env:HOME}\Documents\Pd\externals\
 
+  # add pd/bin folder to environment path variable
+  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-pd/pd/bin/","Process")            
+
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\test-pd.log"
   cmake --build . --config "${env:configuration}" --target RUN_TESTS > "$LogFile"
   CheckLastExitCode
-  
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
