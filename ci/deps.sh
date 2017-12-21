@@ -21,9 +21,9 @@ case "$TRAVIS_OS_NAME" in
       echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
       sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-      sudo add-apt-repository --yes ppa:beineri/opt-qt592-trusty
+      sudo add-apt-repository --yes ppa:beineri/opt-qt510-trusty
       sudo apt-get update -qq
-      sudo apt-get install -qq --yes --force-yes g++-7 binutils ninja-build gcovr lcov qt59-meta-minimal libasound2-dev clang-5.0 lld-5.0 libportaudio-dev
+      sudo apt-get install -qq --yes --force-yes g++-7 binutils ninja-build gcovr lcov qt510-meta-minimal libasound2-dev clang-5.0 lld-5.0 libportaudio-dev
 
       wait wget || true
 
