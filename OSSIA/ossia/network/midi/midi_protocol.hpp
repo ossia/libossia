@@ -15,7 +15,7 @@ namespace mm
 {
 class MidiInput;
 class MidiOutput;
-class MidiMessage;
+struct MidiMessage;
 }
 namespace ossia
 {
