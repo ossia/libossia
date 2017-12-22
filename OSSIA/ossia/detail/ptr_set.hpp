@@ -1,5 +1,6 @@
 #pragma once
 #include <hopscotch_set.h>
+#include <hopscotch_map.h>
 #include <ossia/detail/math.hpp>
 #include <type_traits>
 namespace ossia
@@ -44,6 +45,8 @@ struct PointerPredicate
 };
 template<typename T>
 using ptr_set = tsl::hopscotch_set<T, EgurHash<std::remove_pointer_t<T>>>;
+template<typename T, typename V>
+using ptr_map = tsl::hopscotch_map<T, V, EgurHash<std::remove_pointer_t<T>>>;
 template<typename T>
 using shared_ptr_set = tsl::hopscotch_set<
   std::shared_ptr<T>,

@@ -132,6 +132,7 @@ class midi_parameter : public ossia::net::parameter_base
 
 public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
+  midi_protocol& get_protocol() const { return m_protocol; }
 
   const address_info& info() const;
 

@@ -24,7 +24,7 @@ void apply_to_destination(const destination_t& address, const execution_state& e
       void operator()(const ossia::traversal::path& path) const
       {
         std::vector<ossia::net::node_base*> roots{};
-        for(auto n : e.globalState)
+        for(auto n : e.valueDevices)
           roots.push_back(&n->get_root_node());
 
         ossia::traversal::apply(path, roots);

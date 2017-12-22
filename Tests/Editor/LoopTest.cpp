@@ -130,6 +130,20 @@ private Q_SLOTS:
             ;
     }
 
+    void test_inf()
+    {
+      bool b = false;
+      try {
+      loop l{0_tv, time_interval::exec_callback{}, time_event::exec_callback{},
+             time_event::exec_callback{}};
+      l.start();
+      l.state(1_tv, 0, 0_tv, 1.);
+      } catch(...) {
+        b = true;
+      }
+      QVERIFY(b);
+    }
+
     void test_loop_sound()
     {
       {
@@ -145,8 +159,8 @@ private Q_SLOTS:
         QCOMPARE((int)snd->requested_tokens.size(), (int)2);
         qDebug() << snd->requested_tokens[0];
         qDebug() << snd->requested_tokens[1];
-        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, false, false}));
-        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, false, false}));
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, 1., false, false}));
+        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, 1., false, false}));
         l.stop();
       }
 
@@ -161,10 +175,10 @@ private Q_SLOTS:
         l.state(5_tv, 0, 0_tv, 1.);
         qDebug() << snd->requested_tokens;
         QCOMPARE((int)snd->requested_tokens.size(), (int)4);
-        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, false, false}));
-        QVERIFY((snd->requested_tokens[1] == token_request{4_tv, 1, 0_tv, false, false}));
-        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0, 0_tv, false, false}));
-        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0.25, 4_tv, false, false}));
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, 1., false, false}));
+        QVERIFY((snd->requested_tokens[1] == token_request{4_tv, 1, 0_tv, 1., false, false}));
+        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0, 4_tv, 1., false, false}));
+        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0.25, 4_tv, 1., false, false}));
         l.stop();
       }
 
@@ -249,8 +263,8 @@ private Q_SLOTS:
       l.g.state(e);
       e.commit();
 
-      QVERIFY(e.audioState.size() > 0);
-      auto op = (*e.audioState.begin()).second.samples;
+      QVERIFY(e.m_audioState.size() > 0);
+      auto op = (*e.m_audioState.begin()).second.samples;
 
       QVERIFY(op.size() > 0);
       QVERIFY(op[0].size() == 14);
@@ -269,7 +283,7 @@ private Q_SLOTS:
       float audio_data[2][64] {{}};
       l.parent.start();
       ossia::execution_state e;
-      e.globalState = {&l.d};
+      e.valueDevices = {&l.d};
       for(int i = 1; i <= 14; i++) {
 
         float* chan = audio_data[0] + i - 1 ;

@@ -22,7 +22,7 @@ namespace qt
 {
 
 template <typename T>
-using ptr_set = tsl::hopscotch_map<T*, QPointer<T>>;
+using qpointer_set = tsl::hopscotch_map<T*, QPointer<T>>;
 
 class qml_node;
 class qml_parameter;
@@ -73,7 +73,7 @@ public:
 
   QString name() const;
 
-  const ptr_set<qml_model_property>& models() const { return m_models; }
+  const qpointer_set<qml_model_property>& models() const { return m_models; }
 
 public Q_SLOTS:
   bool openOSC(QString ip, int localPort, int remotePort);
@@ -108,15 +108,15 @@ private:
   QString m_name{"device"};
   std::unique_ptr<ossia::net::device_base> m_device;
 
-  ptr_set<qml_node> m_nodes;
-  ptr_set<qml_property> m_properties;
-  ptr_set<qml_parameter> m_parameters;
-  ptr_set<qml_signal> m_signals;
-  ptr_set<qml_property_reader> m_reader_properties;
-  ptr_set<qml_property_writer> m_writer_properties;
-  ptr_set<qml_model_property> m_models;
-  ptr_set<qml_binding> m_bindings;
-  ptr_set<qml_callback> m_callbacks;
+  qpointer_set<qml_node> m_nodes;
+  qpointer_set<qml_property> m_properties;
+  qpointer_set<qml_parameter> m_parameters;
+  qpointer_set<qml_signal> m_signals;
+  qpointer_set<qml_property_reader> m_reader_properties;
+  qpointer_set<qml_property_writer> m_writer_properties;
+  qpointer_set<qml_model_property> m_models;
+  qpointer_set<qml_binding> m_bindings;
+  qpointer_set<qml_callback> m_callbacks;
   bool m_readPreset{false};
   void recreate_preset(QObject* root);
 };

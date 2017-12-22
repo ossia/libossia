@@ -18,7 +18,7 @@ namespace ossia
 {
 using past_events_map
     = boost::container::flat_map<time_value, std::shared_ptr<time_event>>;
-using DateMap = tsl::hopscotch_map<time_sync*, ossia::time_value>;
+using DateMap = ossia::ptr_map<time_sync*, ossia::time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using IntervalPtr = std::shared_ptr<ossia::time_interval>;
 static void process_timesync_dates(time_sync& t, DateMap& map)
@@ -125,7 +125,7 @@ void scenario::offset(ossia::time_value offset, double pos)
   m_runningIntervals.clear();
 
   // Precompute the default date of every timesync.
-  tsl::hopscotch_map<time_sync*, ossia::time_value> time_map;
+  ossia::ptr_map<time_sync*, ossia::time_value> time_map;
   process_timesync_dates(*m_nodes[0], time_map);
 
   // Set *every* time interval prior to this one to be rigid

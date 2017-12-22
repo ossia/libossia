@@ -62,10 +62,10 @@ struct scenario_graph
      void update_components_cache() const;
      mutable std::vector<int> m_components_cache;
      mutable bool dirty = false;
-     tsl::hopscotch_map<
+     ossia::ptr_map<
          const time_sync*,
          graph_t::vertex_descriptor> vertices;
-     tsl::hopscotch_map<
+     ossia::ptr_map<
          const time_interval*,
          graph_t::edge_descriptor> edges;
 

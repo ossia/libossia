@@ -55,7 +55,12 @@ bool midi_protocol::set_info(midi_info m)
     if (m_info.type == midi_info::Type::RemoteOutput)
     {
       m_input->openPort(m_info.port);
-      m_input->messageCallback = [=](mm::MidiMessage mess) {
+      m_input->messageCallback = [this] (mm::MidiMessage mess) {
+        if(m_registers)
+        {
+          messages.enqueue(mess);
+        }
+
         midi_channel& c = m_channels[mess.getChannel()];
         switch (mess.getMessageType())
         {
@@ -409,6 +414,16 @@ std::vector<midi_info> midi_protocol::scan()
   }
 
   return vec;
+}
+
+void midi_protocol::push_value(const mm::MidiMessage& m)
+{
+  m_output->send(m);
+}
+
+void midi_protocol::enable_registration()
+{
+  m_registers = true;
 }
 }
 }

@@ -340,7 +340,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
 {
   node->requested_tokens.push_back({date, pos, tick_offset, gspeed});
   // ossia::logger().info("scenario::state starts");
-  if (date != m_lastDate)
+  //if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
     m_lastDate = date;
@@ -430,14 +430,14 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
 
     pendingEvents.clear();
 
-    auto run_interval = [&] (ossia::time_interval& interval, ossia::time_value tick, ossia::time_value offset)
+    auto run_interval = [&] (ossia::time_interval& interval,
+                             ossia::time_value tick,
+                             ossia::time_value offset)
     {
       const auto& cst_old_date = interval.get_date();
       auto cst_max_dur = interval.get_max_duration();
       const auto end_node = &interval.get_end_event().get_time_sync();
 
-      // TODO only insert it if we are past min bound ?
-      m_endNodes.insert(end_node);
 
       auto it = m_itv_end_map.find(&interval);
       if(it != m_itv_end_map.end() && it->second < cst_max_dur)
@@ -451,37 +451,47 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       // so that the state is not 1.01*automation for instance.
       if (!cst_max_dur.infinite())
       {
-        const auto this_tick = std::min(tick, cst_max_dur - cst_old_date);
-        if(this_tick != 0)
+        // TODO instead if(tick < cst_max_dur - cst_old_date) while taking speed into account
+        auto max_tick = time_value{(cst_max_dur - cst_old_date) / interval.get_speed()};
+        auto diff = tick - max_tick;
+        if(diff <= 0)
         {
-          interval.tick_offset(this_tick, offset);
-        }
-
-        const auto ot
-            = tick - (cst_max_dur - cst_old_date) / interval.get_speed();
-
-        const auto node_it = m_overticks.lower_bound(end_node);
-        if (node_it != m_overticks.end() && (end_node == node_it->first))
-        {
-          auto& cur = node_it->second;
-
-          if (ot < cur.min)
-            cur.min = ot;
-          if (ot > cur.max)
-          {
-            cur.max = ot;
-            cur.offset = tick_offset + tick_ms - cur.max;
-          }
+          if(tick != 0)
+            interval.tick_offset(tick, offset);
         }
         else
         {
-          m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
+          if(max_tick != 0)
+          {
+            interval.tick_offset(max_tick, offset);
+          }
+
+          const auto ot = ossia::time_value{interval.get_speed() * diff};
+          const auto node_it = m_overticks.lower_bound(end_node);
+          if (node_it != m_overticks.end() && (end_node == node_it->first))
+          {
+            auto& cur = node_it->second;
+
+            if (ot < cur.min)
+              cur.min = ot;
+            if (ot > cur.max)
+            {
+              cur.max = ot;
+              cur.offset = tick_offset + tick_ms - cur.max;
+            }
+          }
+          else
+          {
+            m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
+          }
         }
       }
       else
       {
         interval.tick_offset(tick, offset);
       }
+      if(interval.get_date() >= interval.get_min_duration())
+        m_endNodes.insert(end_node);
     };
 
     for (time_interval* interval : m_runningIntervals)
@@ -495,7 +505,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
 
     do
     {
-
       // std::cerr << "BEGIN EVENT" << std::endl;
       for (const auto& timeEvent : pendingEvents)
       {
@@ -522,7 +531,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
             {
               run_interval(*interval, remaining_tick, offset);
             }
-            std::cerr << "remaining tick " <<  remaining_tick << std::endl;
           }
         }
       }
@@ -540,7 +548,6 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       m_endNodes.clear();
 
     } while (!pendingEvents.empty());
-
   }
 
   // ossia::logger().info("scenario::state ends");

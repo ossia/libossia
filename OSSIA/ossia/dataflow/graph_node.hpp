@@ -20,7 +20,7 @@ struct token_request {
 };
 inline bool operator==(const token_request& lhs, const token_request& rhs) {
   return lhs.date == rhs.date && lhs.position == rhs.position
-      && lhs.offset == rhs.offset && lhs.start_discontinuous == rhs.start_discontinuous
+      && lhs.offset == rhs.offset && lhs.speed == rhs.speed && lhs.start_discontinuous == rhs.start_discontinuous
       && lhs.end_discontinuous == rhs.end_discontinuous;
 }
 inline bool operator!=(const token_request& lhs, const token_request& rhs) {

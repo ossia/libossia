@@ -2,21 +2,17 @@
 #include <ossia/dataflow/data.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/message_queue.hpp>
-#include <unordered_map>
+#include <ossia/detail/ptr_set.hpp>
+#include <ossia/network/midi/midi_device.hpp>
+
 namespace ossia
 {
 struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
-    int sampleRate{44100};
-    int bufferSize{64};
-    int64_t samples_since_start{};
-    std::chrono::high_resolution_clock::time_point start_date;
-    std::chrono::high_resolution_clock::time_point cur_date;
-
     ossia::net::node_base* find_node(std::string_view name)
     {
-      for(auto dev : globalState)
+      for(auto dev : valueDevices)
       {
         if(auto res = ossia::net::find_node(dev->get_root_node(), name))
           return res;
@@ -26,92 +22,64 @@ struct OSSIA_EXPORT execution_state
 
     void clear_devices()
     {
-      globalState.clear();
-      messages.clear();
+      valueDevices.clear();
+      m_valueQueues.clear();
     }
 
-    void register_device(ossia::net::device_base* d)
+    void register_device(ossia::net::device_base* d);
+    void register_device(ossia::net::midi::midi_device* d);
+
+    void register_parameter(ossia::net::parameter_base& p);
+    void unregister_parameter(ossia::net::parameter_base& p);
+    void register_midi_parameter(net::midi::midi_protocol& p);
+    void get_new_values();
+
+    void register_inlet(const ossia::inlet& port);
+
+
+    void clear();
+    void commit();
+    void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
+    void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
+
+    // todo separate rvalue & cref
+    void insert(const destination_t& dest, data_type v);
+    void insert(const destination_t& dest, tvalue v)
     {
-      globalState.push_back(d);
-      messages.emplace_back(*d);
+      m_valueState[dest].push_back(std::move(v));
     }
 
-    void register_parameter(ossia::net::parameter_base& p)
+    void insert(const destination_t& dest, const audio_port& v)
     {
-      for(std::size_t i = 0; i < globalState.size(); i++)
-      {
-        if(&p.get_node().get_device() == globalState[i])
-        {
-          auto it = messages.begin();
-          std::advance(it, i);
-          it->reg(p);
-          return;
-        }
-      }
+      // TODO sum audio
+      m_audioState[dest] = v;
     }
-    void unregister_parameter(ossia::net::parameter_base& p)
+
+    void insert(const destination_t& dest, const midi_port& v)
     {
-      for(std::size_t i = 0; i < globalState.size(); i++)
-      {
-        if(&p.get_node().get_device() == globalState[i])
-        {
-          auto it = messages.begin();
-          std::advance(it, i);
-          it->unreg(p);
-          return;
-        }
-      }
+      // TODO push messages
+      m_midiState[dest] = v.messages;
     }
 
-    void get_new_values()
-    {
-      for(auto it = mess_values.begin(), end = mess_values.end(); it != end; ++it)
-        it.value().clear();
+    bool in_local_scope(ossia::net::parameter_base& other) const;
 
-      for(auto& mq : messages)
-      {
-        ossia::received_value recv;
-        while(mq.try_dequeue(recv))
-          mess_values[recv.address].push_back(recv.value);
-      }
-    }
+    int sampleRate{44100};
+    int bufferSize{64};
+    int64_t samples_since_start{};
+    std::chrono::high_resolution_clock::time_point start_date;
+    std::chrono::high_resolution_clock::time_point cur_date;
 
-  std::list<message_queue> messages;
-  tsl::hopscotch_map<ossia::net::parameter_base*, value_vector<ossia::value>> mess_values;
+    ossia::small_vector<ossia::net::device_base*, 4> valueDevices;
+    ossia::small_vector<ossia::net::midi::midi_protocol*, 2> midiDevices;
 
-  std::vector<ossia::net::device_base*> globalState;
+    // private:// disabled due to tests, but for some reason can't make friend work
+    tsl::hopscotch_map<destination_t, std::vector<tvalue>> m_valueState;
+    tsl::hopscotch_map<destination_t, audio_port> m_audioState;
+    tsl::hopscotch_map<destination_t, value_vector<mm::MidiMessage>> m_midiState;
 
-  tsl::hopscotch_map<destination_t, std::vector<tvalue>> valueState;
-  tsl::hopscotch_map<destination_t, audio_port> audioState;
+    std::list<message_queue> m_valueQueues;
 
-#if defined(OSSIA_PROTOCOL_MIDI)
-  tsl::hopscotch_map<destination_t, value_vector<mm::MidiMessage>> midiState;
-#endif
-
-  void clear();
-
-  void commit();
-
-  void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
-
-  void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
-
-  // todo separate rvalue & cref
-  void insert(const destination_t& dest, data_type v);
-  void insert(const destination_t& dest, tvalue v)
-  {
-    valueState[dest].push_back(std::move(v));
-  }
-  void insert(const destination_t& dest, const audio_port& v)
-  {
-    audioState[dest] = v;
-  }
-#if defined(OSSIA_PROTOCOL_MIDI)
-  void insert(const destination_t& dest, const midi_port& v)
-  {
-    midiState[dest] = v.messages;
-  }
-#endif
-  bool in_local_scope(ossia::net::parameter_base& other) const;
+    ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>> m_receivedValues;
+    ossia::ptr_map<ossia::net::midi::midi_protocol*, value_vector<mm::MidiMessage>> m_receivedMidi;
 };
 }

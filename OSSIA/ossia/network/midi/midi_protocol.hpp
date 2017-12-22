@@ -10,10 +10,12 @@
 #include <cassert>
 
 #include <atomic>
+#include <readerwriterqueue.h>
 namespace mm
 {
 class MidiInput;
 class MidiOutput;
+class MidiMessage;
 }
 namespace ossia
 {
@@ -52,7 +54,21 @@ class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 
     std::vector<midi_info> scan();
 
+    void push_value(const mm::MidiMessage&);
+
+    template<typename T>
+    void clone_value(T& port)
+    {
+      typename T::value_type mess;
+      while(messages.try_dequeue(mess))
+      {
+        port.push_back(mess);
+      }
+    }
+
+    void enable_registration();
   private:
+    moodycamel::ReaderWriterQueue<mm::MidiMessage> messages;
     std::unique_ptr<mm::MidiInput> m_input;
     std::unique_ptr<mm::MidiOutput> m_output;
 
@@ -60,6 +76,7 @@ class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 
     midi_info m_info;
     midi_device* m_dev{};
+    bool m_registers{};
 
     friend class midi_device;
     friend class midi_parameter;

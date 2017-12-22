@@ -8,12 +8,6 @@ audio_parameter::~audio_parameter()
 {
 }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
-midi_generic_parameter::~midi_generic_parameter()
-{
-}
-#endif
-
 texture_generic_parameter::~texture_generic_parameter()
 {
 }

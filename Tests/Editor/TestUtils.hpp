@@ -81,6 +81,10 @@ inline char* toString(const ossia::small_vector<ossia::token_request, 4>& val)
 }
 }
 
+namespace ossia
+{
+using QTest::toString;
+}
 struct root_scenario
 {
   std::shared_ptr<ossia::time_sync> start_node{std::make_shared<ossia::time_sync>()};

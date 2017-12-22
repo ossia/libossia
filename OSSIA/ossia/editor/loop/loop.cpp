@@ -49,6 +49,10 @@ loop::loop(time_value patternDuration,
   , m_intervalCallback(std::move(patternIntervalCallback))
 {
   node = std::make_shared<loop_node>();
+  if(patternDuration <= 0)
+  {
+    throw std::runtime_error{"Loop duration cannot be null"};
+  }
 }
 
 loop::~loop()
@@ -199,7 +203,7 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
   node->requested_tokens.push_back({date, pos, tick_offset, gspeed});
   m_interval.set_parent_speed(gspeed);
   // if date hasn't been processed already
-  if (date != m_lastDate)
+  //if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
 
