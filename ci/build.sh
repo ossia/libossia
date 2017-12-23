@@ -602,6 +602,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_UNITY3D=${OSSIA_UNITY} \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
+               -DOSSIA_PD=0 \
                ..
 
       $CMAKE_BIN --build . -- -j2
