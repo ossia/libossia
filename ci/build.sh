@@ -582,8 +582,10 @@ case "$TRAVIS_OS_NAME" in
 
     else
       OSSIA_UNITY=1
+      OSSIA_QT=1
       if [[ "$OSSIA_STATIC" == "1" ]]; then
         OSSIA_UNITY=0
+        OSSIA_QT=0
       fi
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -594,10 +596,10 @@ case "$TRAVIS_OS_NAME" in
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=1 \
+               -DOSSIA_QT=${OSSIA_QT} \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
-               -DOSSIA_UNITY3D=$OSSIA_UNITY \
+               -DOSSIA_UNITY3D=${OSSIA_UNITY} \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
                ..
