@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/editor/exceptions.hpp>
+#include <ossia_export.h>
+#include <stdexcept>
 
 namespace ossia
 {
@@ -60,6 +61,19 @@ struct OSSIA_EXPORT node_not_found_error : public std::runtime_error
 struct OSSIA_EXPORT bad_request_error : public std::runtime_error
 {
   bad_request_error(std::string e) : std::runtime_error(std::move(e))
+  {
+  }
+};
+
+/**
+ * @brief The invalid_value_type_error class
+ *
+ * Means that an invalid value was passed.
+ * For instance a List where an Impulse is required.
+ */
+struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
+{
+  invalid_value_type_error(const char* e) : std::logic_error(e)
   {
   }
 };

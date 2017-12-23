@@ -1,6 +1,5 @@
 #pragma once
-#include <ossia_export.h>
-#include <stdexcept>
+#include <ossia/network/exceptions.hpp>
 
 /**
  * \file exceptions.hpp
@@ -17,19 +16,6 @@ namespace ossia
 struct OSSIA_EXPORT execution_error : public std::runtime_error
 {
   execution_error(const char* e) : std::runtime_error(e)
-  {
-  }
-};
-
-/**
- * @brief The invalid_value_type_error class
- *
- * Means that an invalid value was passed.
- * For instance a List where an Impulse is required.
- */
-struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
-{
-  invalid_value_type_error(const char* e) : std::logic_error(e)
   {
   }
 };
