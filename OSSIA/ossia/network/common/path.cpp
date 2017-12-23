@@ -146,7 +146,7 @@ void add_relative_path(
           else res += part[i];
         }
         res += "$";
-        
+
         std::regex r(res);
         p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
         map.map.insert(std::make_pair(std::move(orig), std::move(r)));
@@ -155,7 +155,7 @@ void add_relative_path(
   }
   else
   {
-    p.child_functions.push_back(get_parent);
+    p.child_functions.push_back([] (auto& x) { return get_parent(x); });
   }
 }
 
@@ -203,7 +203,7 @@ ossia::optional<path> make_path(ossia::string_view address) try
     //* means all the nodes.
     // We have to pass an array with all the devices ?
     // We can't just make a big regex because of '..'
-    p.child_functions.push_back(get_all_children);
+    p.child_functions.push_back([] (auto& x) { return get_all_children(x); });
 
     // Split on "/"
     auto parts

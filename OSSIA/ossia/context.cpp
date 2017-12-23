@@ -6,6 +6,11 @@
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif
+#include <smallfun.hpp>
+#include <iostream>
+#include <memory>
+#include <QDebug>
+
 namespace ossia
 {
 static void ossia_global_init()

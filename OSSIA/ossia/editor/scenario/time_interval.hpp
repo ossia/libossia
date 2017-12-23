@@ -7,6 +7,8 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <optional>
+#include <smallfun.hpp>
 #include <ossia_export.h>
 
 /**
@@ -81,8 +83,7 @@ public:
    \param const #TimeValue position
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
-  using exec_callback = std::function<void(
-      double, ossia::time_value)>;
+  using exec_callback = optional<smallfun::SmallFun<void(double, ossia::time_value), 32>>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no

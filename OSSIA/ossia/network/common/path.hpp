@@ -3,6 +3,7 @@
 #include <ossia/network/base/name_validation.hpp>
 #include <regex>
 #include <string>
+#include <smallfun.hpp>
 
 namespace ossia
 {
@@ -210,7 +211,7 @@ struct OSSIA_EXPORT path
   /** A list of function for the location of elements.
    * Each function will be called on the next step.
    */
-  using child_function = std::function<void(std::vector<ossia::net::node_base*>&)>;
+  using child_function = smallfun::SmallFun<void(std::vector<ossia::net::node_base*>&), sizeof(std::regex)+sizeof(void*)>;
   std::vector<child_function> child_functions;
 
   friend bool operator==(const path& lhs, const path& rhs)

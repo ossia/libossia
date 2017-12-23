@@ -156,6 +156,7 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   target_compile_definitions(ossia PUBLIC ASIO_STANDALONE=1)
   target_include_directories(ossia SYSTEM PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
       )

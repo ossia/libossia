@@ -17,7 +17,7 @@ void time_interval::tick_current(ossia::time_value offset)
 
   state();
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 void time_interval::tick()
@@ -26,7 +26,7 @@ void time_interval::tick()
 
   state();
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 void time_interval::tick(time_value date, double ratio)
@@ -37,7 +37,7 @@ void time_interval::tick(time_value date, double ratio)
 
   state();
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 void time_interval::tick(time_value date)
@@ -53,7 +53,7 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset)
   m_tick_offset = offset;
   state();
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 void time_interval::tick_offset(time_value date, double ratio, ossia::time_value offset)
@@ -65,7 +65,7 @@ void time_interval::tick_offset(time_value date, double ratio, ossia::time_value
   m_tick_offset = offset;
   state();
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 std::shared_ptr<time_interval> time_interval::create(
@@ -122,7 +122,7 @@ void time_interval::start()
   m_date = m_offset;
   compute_position();
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 void time_interval::stop()
@@ -167,7 +167,7 @@ void time_interval::offset(ossia::time_value date)
     }
   }
   if (m_callback)
-    (m_callback)(m_position, m_date);
+    (*m_callback)(m_position, m_date);
 }
 
 void time_interval::state()

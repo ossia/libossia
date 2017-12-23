@@ -412,7 +412,7 @@ void loop::interval_callback(
   {
     // add the state of the pattern TimeInterval
     //m_interval.state();
-    (m_intervalCallback)(position, date);
+    (*m_intervalCallback)(position, date);
   }
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <functional>
+#include <smallfun.hpp>
 
 /**
  * \file curve_segment.hpp
@@ -26,5 +26,5 @@ template <typename Y>
  *
  * In our case x can sometimes be greater than 1.
  */
-using curve_segment = std::function<Y(double, Y, Y)>;
+using curve_segment = smallfun::SmallFun<Y(double, Y, Y), 24>;
 }

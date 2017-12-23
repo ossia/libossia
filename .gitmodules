@@ -75,3 +75,6 @@
 [submodule "3rdparty/exprtk"]
 	path = 3rdparty/exprtk
 	url = https://github.com/ArashPartow/exprtk
+[submodule "3rdparty/SmallFunction"]
+	path = 3rdparty/SmallFunction
+	url = https://github.com/jcelerier/SmallFunction

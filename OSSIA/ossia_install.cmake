@@ -151,6 +151,9 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
         DESTINATION include
         COMPONENT Devel)
 
+install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.hpp
+        DESTINATION include/
+        COMPONENT Devel)
 install(FILES
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_hash.h
