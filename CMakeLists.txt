@@ -23,17 +23,18 @@ else()
   find_package(Boost QUIET)
   if ( NOT Boost_FOUND )
     set(BOOST_VERSION "boost_1_65_1")
-    if ( NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../${BOOST_VERSION}/")
-      message(STATUS "Downloading boost to ${CMAKE_CURRENT_LIST_DIR}/../boost.tar.gz")
+    if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
+      message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.tar.gz")
       file(DOWNLOAD
         https://dl.bintray.com/boostorg/release/1.65.1/source/${BOOST_VERSION}.tar.gz
-        ${CMAKE_CURRENT_LIST_DIR}/../boost.tar.gz )
+        ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
       execute_process(
-         COMMAND ${CMAKE_COMMAND} -E tar xzf boost.tar.gz
-         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../
+         COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
+         WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}
          )
     endif()
-    set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../${BOOST_VERSION}/" )
+    set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" )
+    set(BOOST_INCLUDEDIR "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/boost")
     find_package(Boost REQUIRED)
   endif()
   add_library(boost INTERFACE IMPORTED)
