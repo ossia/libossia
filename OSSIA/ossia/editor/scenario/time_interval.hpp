@@ -7,7 +7,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <optional>
+#include <ossia/detail/optional.hpp>
 #include <smallfun.hpp>
 #include <ossia_export.h>
 
@@ -140,9 +140,11 @@ public:
     step
     */
   void set_callback(exec_callback);
+  void set_callback(smallfun::SmallFun<void(double, ossia::time_value), 32>);
 
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
+  void set_stateless_callback(smallfun::SmallFun<void(double, ossia::time_value), 32>);
 
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
@@ -205,6 +207,10 @@ public:
   }
 
 private:
+  time_interval(const time_interval&) = delete;
+  time_interval(time_interval&&) = delete;
+  time_interval& operator=(const time_interval&) = delete;
+  time_interval& operator=(time_interval&&) = delete;
   void compute_position();
 
   std::vector<std::shared_ptr<time_process>> m_processes;

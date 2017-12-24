@@ -44,7 +44,7 @@ loop::loop(time_value patternDuration,
   , m_endEvent(**m_endNode.emplace(
                    m_endNode.get_time_events().begin(),
                    [&](time_event::status result) { end_event_callback(result); }))
-  , m_interval{[=](double position, ossia::time_value date) { return interval_callback(position, date); },
+  , m_interval{time_interval::exec_callback{[this](double position, ossia::time_value date) { return interval_callback(position, date); }},
                m_startEvent, m_endEvent, patternDuration, patternDuration, patternDuration}
   , m_intervalCallback(std::move(patternIntervalCallback))
 {
