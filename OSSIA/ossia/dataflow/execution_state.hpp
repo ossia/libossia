@@ -38,6 +38,7 @@ struct OSSIA_EXPORT execution_state
 
 
     void clear();
+    void reset();
     void commit();
     void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
     void copy_from_global(ossia::net::parameter_base& addr, inlet& in);

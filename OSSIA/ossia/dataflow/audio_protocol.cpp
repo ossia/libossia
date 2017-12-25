@@ -1,5 +1,11 @@
 #include <ossia/dataflow/audio_protocol.hpp>
-
+#if defined(__MACH__)
+#include <mach/mach_init.h>
+#include <mach/thread_policy.h>
+#include <mach/clock.h>
+#include <mach/sync.h>
+#include <mach/mach_time.h>
+#endif
 namespace ossia
 {
 audio_protocol::audio_protocol():
@@ -142,6 +148,32 @@ int audio_protocol::PortAudioCallback(
     PaStreamCallbackFlags statusFlags,
     void* userData)
 {
+  /*
+#if defined(__MACH__)
+  static bool set_pol = false;
+  if(!set_pol)
+  {
+    //thread_port_t threadport = pthread_mach_thread_np(pthread_self());
+
+
+    mach_timebase_info_data_t timebase_info;
+    mach_timebase_info(&timebase_info);
+
+    const uint64_t NANOS_PER_MSEC = 1000000ULL;
+    double clock2abs = ((double)timebase_info.denom / (double)timebase_info.numer) * NANOS_PER_MSEC;
+
+    thread_time_constraint_policy_data_t policy;
+    policy.period      = 0;//(uint32_t) (44100 / frameCount) * clock2abs;
+    policy.computation = (uint32_t)((1000 * frameCount / 44100) * clock2abs); // 5 ms of work
+    policy.constraint  = (uint32_t)((1200 * frameCount / 44100) * clock2abs);
+    policy.preemptible = FALSE;
+
+    thread_policy_set( mach_thread_self(), THREAD_TIME_CONSTRAINT_POLICY, (int *)&policy, THREAD_TIME_CONSTRAINT_POLICY_COUNT );
+    set_pol = true;
+
+  }
+#endif
+*/
 #if defined(OSSIA_PROTOCOL_AUDIO)
   using idx_t = gsl::span<float>::index_type;
   const idx_t fc = frameCount;

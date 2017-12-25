@@ -202,14 +202,20 @@ void execution_state::register_inlet(const inlet& port)
 
 void execution_state::clear()
 {
-  // TODO unregister everything ?
   m_valueState.clear();
   m_audioState.clear();
   m_midiState.clear();
 
+}
+void execution_state::reset()
+{
+  // TODO unregister everything ?
+  clear();
   valueDevices.clear();
+  midiDevices.clear();
   m_valueQueues.clear();
   m_receivedValues.clear();
+  m_receivedMidi.clear();
 }
 
 ossia::state_element to_state_element(ossia::net::parameter_base& p, ossia::tvalue&& v)
