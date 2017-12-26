@@ -94,6 +94,7 @@ if(OSSIA_QT)
     ossia_add_test(JSTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/JSTest.cpp")
 endif()
 ossia_add_test(IntervalBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/IntervalBenchmark.cpp")
+ossia_add_test(GraphBenchmark      "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/GraphBenchmark.cpp")
 set(OSSIA_BENCHMARKS 0)
 if(OSSIA_BENCHMARKS)
 ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
