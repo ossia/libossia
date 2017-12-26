@@ -95,7 +95,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
   set(OSSIA_DISABLE_COTIRE 1)
   set(ANDROID 1)
 else()
-  # check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+  check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
   if(LLD_LINKER_SUPPORTED)
     set(LINKER_IS_LLD 1)
@@ -138,7 +138,7 @@ if(MSVC)
 else()
   set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
 endif()
-  
+
 # So that make install after make all_unity does not rebuild everything :
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 

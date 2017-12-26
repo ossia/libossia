@@ -2,7 +2,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
 #include <readerwriterqueue.h>
-#include <unordered_map>
+#include <ossia/detail/ptr_set.hpp>
 
 namespace ossia
 {
@@ -67,7 +67,7 @@ class message_queue final : public Nano::Observer
 
     moodycamel::ReaderWriterQueue<received_value> m_queue;
 
-    std::unordered_map<
+    ossia::ptr_map<
       ossia::net::parameter_base*,
       ossia::net::parameter_base::callback_index> m_reg;
 };
