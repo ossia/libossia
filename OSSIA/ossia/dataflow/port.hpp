@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
-#include <ossia/dataflow/execution_state.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 
 namespace ossia

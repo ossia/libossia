@@ -6,7 +6,6 @@
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
-#include <ossia/dataflow/graph.hpp>
 namespace ossia
 {
 class loop_node : public ossia::graph_node

@@ -37,6 +37,7 @@ ossia::net::parameter_base*,
 ossia::traversal::path,
 ossia::net::node_base*
 >;
+struct execution_state;
 class graph_node;
 struct graph_edge;
 using node_ptr = std::shared_ptr<graph_node>;

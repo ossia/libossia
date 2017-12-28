@@ -3,6 +3,8 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/fx_node.hpp>
+#include <ossia/dataflow/execution_state.hpp>
+#include <ossia/dataflow/dataflow.hpp>
 
 namespace ossia
 {
@@ -41,6 +43,44 @@ void graph_node::run(token_request t, execution_state&)
 std::string_view graph_node::label() const
 {
   return {};
+}
+
+bool graph_node::has_port_inputs() const
+{
+  return ossia::any_of(
+        inputs(), [](const inlet_ptr& inlet) { return !inlet->sources.empty(); });
+}
+
+bool graph_node::has_global_inputs() const
+{
+  return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
+    return (inlet->scope & port::scope_t::global) && bool(inlet->address);
+  });
+}
+
+bool graph_node::has_local_inputs(const execution_state& st) const
+{
+  return ossia::any_of(inputs(), [&] (const inlet_ptr& inlet) {
+    if (inlet->scope & port::scope_t::local)
+    {
+      bool b = false;
+
+      // TODO optimize by stopping when found
+      // TODO valueDevices -> generalize
+      apply_to_destination(inlet->address, st.allDevices,
+                           [&] (ossia::net::parameter_base* addr) {
+        if (!b || st.in_local_scope(*addr))
+          b = true;
+      });
+
+      if(b)
+        return true;
+
+      if (consumes(st))
+        return true;
+    }
+    return false;
+  });
 }
 
 

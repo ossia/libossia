@@ -302,6 +302,11 @@ struct copy_data
   {
   }
 
+  void operator()(const value_vector<ossia::tvalue>& out, value_delay_line& in)
+  {
+    in.data.push_back(out);
+  }
+
   void operator()(const value_port& out, value_delay_line& in)
   {
     in.data.push_back(out.get_data());
@@ -318,6 +323,11 @@ struct copy_data
     in.messages.push_back(out.messages);
   }
 #endif
+
+  void operator()(const value_vector<ossia::tvalue>& out, value_port& in)
+  {
+    mix{}(out, in);
+  }
 
   void operator()(const value_port& out, value_port& in)
   {

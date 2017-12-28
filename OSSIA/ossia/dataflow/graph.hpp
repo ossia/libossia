@@ -1,43 +1,13 @@
 #pragma once
-#include <ossia/dataflow/graph_edge.hpp>
-#include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/dataflow.hpp>
-#include <ossia/editor/scenario/time_value.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/range/adaptors.hpp>
-#include <ossia/dataflow/graph_ordering.hpp>
-#include <boost/container/flat_set.hpp>
-#include <ossia/detail/ptr_set.hpp>
-class DataflowTest;
+#include <ossia/dataflow/graph_static.hpp>
+
 namespace ossia
 {
-
-using graph_t = boost::
-    adjacency_list<boost::vecS, boost::vecS, boost::directedS, node_ptr, std::shared_ptr<graph_edge>>;
-
-using graph_vertex_t = graph_t::vertex_descriptor;
-using graph_edge_t = graph_t::edge_descriptor;
-
-using node_map = tsl::hopscotch_map<node_ptr, graph_vertex_t>;
-using edge_map = tsl::hopscotch_map<
-  edge_ptr,
-  graph_edge_t,
-  EgurHash<ossia::graph_edge>,
-  PointerPredicate<ossia::graph_edge>>;
-
-enum class node_ordering
-{
-  topological, temporal, hierarchical
-};
-
 template<typename Ordering>
 class OSSIA_EXPORT graph_base
+    : private graph_util
 {
-  private:
-
-  using node_flat_set = boost::container::flat_set<graph_node*>;
-
+private:
   using Comparator = node_sorter<Ordering>;
 
   template<typename Comp_T>
@@ -47,53 +17,36 @@ class OSSIA_EXPORT graph_base
       std::vector<graph_node*>& active_nodes,
       Comp_T&& comp)
   {
-    while (!active_nodes.empty())
+    std::size_t executed = 0;
+    while (executed != active_nodes.size())
     {
       // Find all the nodes for which the inlets have executed
       // (or without cables on the inlets)
-      graph_node* cur = nullptr;
-      for(graph_node* node : active_nodes)
+
+      auto end = active_nodes.end();
+      auto cur_it = end;
+      for(auto it = active_nodes.begin(); it != end - executed; ++it)
       {
-        if(node->can_execute(e))
+        auto node = *it;
+        if(cur_it != end)
         {
-          if(cur)
+          if(!comp(*cur_it, node) && can_execute(*node, e))
+            cur_it = it;
+        }
+        else
+        {
+          if(can_execute(*node, e))
           {
-            if(!comp(cur, node))
-              cur = node;
-          }
-          else
-          {
-            cur = node;
+            cur_it = it;
           }
         }
       }
 
-      if (cur)
+      if (cur_it != end)
       {
-        // First look if there is a replacement or reduction relationship between
-        // the first n nodes
-        // If there is, we run all the nodes
-
-        // If there is not we just run the first node
-        graph_node& first_node = *cur;
-        g.init_node(first_node, e);
-        if(first_node.start_discontinuous()) {
-          first_node.requested_tokens.front().start_discontinuous = true;
-          first_node.set_start_discontinuous(false);
-        }
-        if(first_node.end_discontinuous()) {
-          first_node.requested_tokens.front().end_discontinuous = true;
-          first_node.set_end_discontinuous(false);
-        }
-
-        for(auto request : first_node.requested_tokens) {
-          first_node.run(request, e);
-          first_node.set_prev_date(request.date);
-        }
-
-        first_node.set_executed(true);
-        g.teardown_node(first_node, e);
-        active_nodes.erase(ossia::find(active_nodes, &first_node));
+        g.exec_node(**cur_it, e);
+        std::iter_swap(end - executed - 1, cur_it);
+        executed++;
       }
       else
       {
@@ -101,14 +54,99 @@ class OSSIA_EXPORT graph_base
       }
     }
   }
-
+  /*
   template<typename Comp_T>
-  static void tick_static(
+  static void tick_ok(
       graph_base& g,
       execution_state& e,
       std::vector<graph_node*>& active_nodes,
       Comp_T&& comp)
   {
+    while (!active_nodes.empty())
+    {
+      // Find all the nodes for which the inlets have executed
+      // (or without cables on the inlets)
+      const auto end = active_nodes.end();
+      auto cur_it = end;
+      for(auto it = active_nodes.begin(); it != end; ++it)
+      {
+        auto node = *it;
+        if(can_execute(*node, e))
+        {
+          if(cur_it != end)
+          {
+            if(!comp(*cur_it, node))
+              cur_it = it;
+          }
+          else
+          {
+            cur_it = it;
+          }
+        }
+      }
+
+      if (cur_it != end)
+      {
+        g.exec_node(**cur_it, e);
+        active_nodes.erase(cur_it);
+      }
+      else
+      {
+        break; // nothing more to execute
+      }
+    }
+  }*/
+
+  /*
+  template<typename Comp_T>
+  static void tick_slow(
+      graph_base& g,
+      execution_state& e,
+      std::vector<graph_node*>& active_nodes,
+      Comp_T&& comp)
+  {
+    auto it = active_nodes.begin();
+    auto end_it = active_nodes.end();
+
+    while (it != end_it)
+    {
+      // Find all the nodes for which the inlets have executed
+      // (or without cables on the inlets)
+      auto cur_it = end_it;
+      for(auto sub_it = it; sub_it != end_it; ++sub_it)
+      {
+        ossia::graph_node* node = *sub_it;
+        if(can_execute(*node, e))
+        {
+          if(cur_it != end_it)
+          {
+            if(!comp(*cur_it, node))
+              cur_it = sub_it;
+          }
+          else
+          {
+            cur_it = sub_it;
+          }
+        }
+      }
+
+      if (cur_it != end_it)
+      {
+        g.exec_node(**cur_it, e);
+        std::iter_swap(it, cur_it);
+        ++it;
+      }
+      else
+      {
+        break; // nothing more to execute
+      }
+    }
+  }
+  */
+
+  void mark_dirty()
+  {
+    m_topo_dirty = true;
   }
 
   void get_sorted_nodes(const graph_t& gr)
@@ -253,6 +291,7 @@ public:
     state(e);
     e.commit();
   }
+
   void state(execution_state& e)
   {
     try
@@ -272,7 +311,7 @@ public:
         }
       }
 
-      disable_strict_nodes_rec(m_enabled_cache);
+      disable_strict_nodes_rec(m_enabled_cache, m_disabled_cache);
 
       // Start executing the nodes
       if constexpr(std::is_same<Ordering, topological_ordering>::value)
@@ -286,203 +325,12 @@ public:
         tick(*this, e, m_active_nodes, node_sorter<Ordering>{Ordering{}, e});
       }
 
-      for (auto& node : m_nodes)
-      {
-        ossia::graph_node& n = *node.first;
-        n.set_executed(false);
-        n.requested_tokens.clear();
-        for (const outlet_ptr& out : node.first->outputs())
-        {
-          if (out->data)
-            eggs::variants::apply(clear_data{}, out->data);
-        }
-      }
+      finish_nodes(m_nodes);
     }
     catch (const boost::not_a_dag& e)
     {
       ossia::logger().error("Execution graph is not a DAG.");
       return;
-    }
-  }
-
-  void
-  disable_strict_nodes(const node_flat_set& enabled_nodes, node_flat_set& ret)
-  {
-    for (graph_node* node : enabled_nodes)
-    {
-      for (const auto& in : node->inputs())
-      {
-        for (const auto& edge : in->sources)
-        {
-          assert(edge->out_node);
-
-          if (immediate_strict_connection* sc = edge->con.target<immediate_strict_connection>())
-          {
-            if ((sc->required_sides
-                 & immediate_strict_connection::required_sides_t::outbound)
-                && node->enabled() && !edge->out_node->enabled())
-            {
-              ret.insert(node);
-            }
-          }
-          else if (delayed_strict_connection* delay = edge->con.target<delayed_strict_connection>())
-          {
-            const auto n = ossia::apply(data_size{}, delay->buffer);
-            if (n == 0 || delay->pos >= n)
-              ret.insert(node);
-          }
-        }
-      }
-
-      for (const auto& out : node->outputs())
-      {
-        for (const auto& edge : out->targets)
-        {
-          assert(edge->in_node);
-
-          if (auto sc = edge->con.target<immediate_strict_connection>())
-          {
-            if ((sc->required_sides
-                 & immediate_strict_connection::required_sides_t::inbound)
-                && node->enabled() && !edge->in_node->enabled())
-            {
-              ret.insert(node);
-            }
-          }
-        }
-      }
-    }
-  }
-  /*
-  static set<graph_node*> disable_strict_nodes(const set<node_ptr>& n)
-  {
-    using namespace boost::adaptors;
-    auto res = (n | transformed([](const auto& p) { return p.get(); }));
-    return disable_strict_nodes(set<graph_node*>{res.begin(), res.end()});
-  }
-  */
-
-  void disable_strict_nodes_rec(node_flat_set& cur_enabled_node)
-  {
-    do
-    {
-      m_disabled_cache.clear();
-      disable_strict_nodes(cur_enabled_node, m_disabled_cache);
-      for (graph_node* n : m_disabled_cache)
-      {
-        if(!n->requested_tokens.empty())
-          n->set_prev_date(n->requested_tokens.back().date);
-        n->disable();
-
-        cur_enabled_node.erase(n);
-      }
-
-    } while (!m_disabled_cache.empty());
-  }
-
-
-  static void copy_from_local(const data_type& out, inlet& in)
-  {
-    if (out.which() == in.data.which() && out && in.data)
-    {
-      eggs::variants::apply(copy_data{}, out, in.data);
-    }
-  }
-
-  static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
-  {
-    if (out.which() == in.data.which() && out && in.data)
-    {
-      eggs::variants::apply(copy_data_pos{pos}, out, in.data);
-    }
-  }
-
-  static void copy(const outlet& out, inlet& in)
-  {
-    copy_from_local(out.data, in);
-  }
-
-  static void copy_to_local(
-      const data_type& out, const destination& d, execution_state& in)
-  {
-    in.insert(destination_t{&d.address()}, out);
-  }
-
-  static void copy_to_global(
-      const data_type& out, const destination& d, execution_state& in)
-  {
-    // TODO
-  }
-
-  static void pull_from_parameter(inlet& in, execution_state& e)
-  {
-    apply_to_destination(in.address, e, [&] (ossia::net::parameter_base* addr) {
-      if (in.scope & port::scope_t::local)
-      {
-        e.find_and_copy(*addr, in);
-      }
-      else
-      {
-        e.copy_from_global(*addr, in);
-      }
-    });
-  }
-
-  void init_node(graph_node& n, execution_state& e)
-  {
-    // Clear the outputs of the node
-    for (const outlet_ptr& out : n.outputs())
-    {
-      if (out->data)
-        eggs::variants::apply(clear_data{}, out->data);
-    }
-
-    // Copy from environment and previous ports to inputs
-    for (const inlet_ptr& in : n.inputs())
-    {
-      if (!in->sources.empty())
-      {
-        for (auto edge : in->sources)
-        {
-          ossia::apply(init_node_visitor<graph_base>{*in, *edge, e}, edge->con);
-        }
-      }
-      else
-      {
-        pull_from_parameter(*in, e);
-      }
-    }
-  }
-
-
-
-  void teardown_node(const graph_node& n, execution_state& e)
-  {
-    for (const inlet_ptr& in : n.inputs())
-    {
-      if (in->data)
-        eggs::variants::apply(clear_data{}, in->data);
-    }
-
-    // Copy from output ports to environment
-    for (const outlet_ptr& out : n.outputs())
-    {
-      bool all_targets_disabled = !out->targets.empty() && ossia::all_of(out->targets, [] (auto tgt) {
-        return tgt->in_node && !tgt->in_node->enabled();
-      });
-
-      if (out->targets.empty() || all_targets_disabled)
-      {
-        out->write(e);
-      }
-      else
-      {
-        // If the following target has been deactivated
-        for (auto tgt : out->targets)
-        {
-          ossia::apply(env_writer{*out, *tgt, e}, tgt->con);
-        }
-      }
     }
   }
 
@@ -504,6 +352,8 @@ public:
   friend struct outlet;
   friend class ::DataflowTest;
 };
+
+
 
 
 class graph : public graph_base<topological_ordering>

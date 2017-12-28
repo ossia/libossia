@@ -105,15 +105,24 @@ struct global_pull_visitor
   }
 };
 
+void execution_state::clear_devices()
+{
+  valueDevices.clear();
+  allDevices.clear();
+  midiDevices.clear();
+}
+
 void execution_state::register_device(net::device_base* d)
 {
   valueDevices.push_back(d);
+  allDevices.push_back(d);
   m_valueQueues.emplace_back(*d);
 }
 
 void execution_state::register_device(net::midi::midi_device* d)
 {
   valueDevices.push_back(d);
+  allDevices.push_back(d);
   midiDevices.push_back(static_cast<ossia::net::midi::midi_protocol*>(&d->get_protocol()));
   m_valueQueues.emplace_back(*d);
 }
@@ -200,19 +209,17 @@ void execution_state::register_inlet(const inlet& port)
   }
 }
 
-void execution_state::clear()
+void execution_state::clear_local_state()
 {
   m_valueState.clear();
   m_audioState.clear();
   m_midiState.clear();
-
 }
 void execution_state::reset()
 {
   // TODO unregister everything ?
-  clear();
-  valueDevices.clear();
-  midiDevices.clear();
+  clear_local_state();
+  clear_devices();
   m_valueQueues.clear();
   m_receivedValues.clear();
   m_receivedMidi.clear();
@@ -232,7 +239,7 @@ void execution_state::commit()
   st.reserve(m_valueState.size());
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
   {
-    apply_to_destination(it->first, *this, [&] (ossia::net::parameter_base* addr) {
+    apply_to_destination(it->first, allDevices, [&] (ossia::net::parameter_base* addr) {
       for(auto& val : it.value())
         ossia::flatten_and_filter(st, to_state_element(*addr, std::move(val)));
     });
@@ -241,7 +248,7 @@ void execution_state::commit()
 
   for (auto& elt : m_audioState)
   {
-    apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* base_addr) {
+    apply_to_destination(elt.first, allDevices, [&] (ossia::net::parameter_base* base_addr) {
       auto addr = dynamic_cast<audio_parameter*>(base_addr);
       if(addr)
         addr->push_value(elt.second);
@@ -250,7 +257,7 @@ void execution_state::commit()
 
   for (auto& elt : m_midiState)
   {
-    apply_to_destination(elt.first, *this, [&] (ossia::net::parameter_base* base_addr) {
+    apply_to_destination(elt.first, allDevices, [&] (ossia::net::parameter_base* base_addr) {
       if(auto addr = dynamic_cast<ossia::net::midi::midi_parameter*>(base_addr))
       {
         auto& proto = static_cast<ossia::net::midi::midi_protocol&>(addr->get_protocol());
@@ -298,11 +305,28 @@ void execution_state::insert(const destination_t& dest, data_type v)
   }
 }
 
+void execution_state::insert(const destination_t& dest, tvalue v)
+{
+  m_valueState[dest].push_back(std::move(v));
+}
+
+void execution_state::insert(const destination_t& dest, const audio_port& v)
+{
+  mix{}(v.samples, m_audioState[dest].samples, false);
+}
+
+void execution_state::insert(const destination_t& dest, const midi_port& v)
+{
+  auto& vec = m_midiState[dest];
+
+  vec.insert(vec.end(), v.messages.begin(), v.messages.end());
+}
+
 bool execution_state::in_local_scope(net::parameter_base& other) const
 {
   destination_t dest{&other};
   bool ok = (m_valueState.find(dest) != m_valueState.end())
-            || (m_audioState.find(dest) != m_audioState.end())
+      || (m_audioState.find(dest) != m_audioState.end())
             || (m_midiState.find(dest) != m_midiState.end());
   if (!ok)
   {

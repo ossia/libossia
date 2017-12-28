@@ -5,7 +5,6 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/detail/scenario_graph.hpp>
-#include <ossia/dataflow/graph.hpp>
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>

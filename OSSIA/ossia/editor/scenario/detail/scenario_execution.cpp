@@ -9,7 +9,6 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
-#include <ossia/dataflow/graph.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
 #include <ossia/editor/scenario/detail/scenario_graph.hpp>
 #include <cassert>
@@ -518,7 +517,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
             auto it = m_overticks.find(&tn);
             if (it == m_overticks.end())
             {
-              ossia::logger().info("scenario::state tick_dur not found");
+              // ossia::logger().info("scenario::state tick_dur not found");
               continue;
             }
 

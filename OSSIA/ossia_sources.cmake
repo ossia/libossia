@@ -511,6 +511,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_static.hpp"
 )
 
 set(OSSIA_DATAFLOW_SRCS

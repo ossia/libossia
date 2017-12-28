@@ -1,8 +1,6 @@
 #pragma once
-#include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/port.hpp>
-#include <ossia/dataflow/dataflow.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/small_vector.hpp>
 
@@ -53,40 +51,9 @@ public:
   virtual void run(token_request, execution_state&);
   virtual std::string_view label() const;
 
-  bool has_port_inputs() const
-  {
-    return ossia::any_of(
-          inputs(), [](const inlet_ptr& inlet) { return !inlet->sources.empty(); });
-  }
-  bool has_global_inputs() const
-  {
-    return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
-      return (inlet->scope & port::scope_t::global) && bool(inlet->address);
-    });
-  }
-  bool has_local_inputs(const execution_state& st) const
-  {
-    return ossia::any_of(inputs(), [&] (const inlet_ptr& inlet) {
-      if (inlet->scope & port::scope_t::local)
-      {
-        bool b = false;
-
-        // TODO optimize by stopping when found
-        apply_to_destination(inlet->address, st,
-                             [&] (ossia::net::parameter_base* addr) {
-          if (!b || st.in_local_scope(*addr))
-            b = true;
-        });
-
-        if(b)
-          return true;
-
-        if (consumes(st))
-          return true;
-      }
-      return false;
-    });
-  }
+  bool has_port_inputs() const;
+  bool has_global_inputs() const;
+  bool has_local_inputs(const execution_state& st) const;
 
   const inlets& inputs() const { return m_inlets; }
   const outlets& outputs() const { return m_outlets; }
@@ -94,27 +61,6 @@ public:
   outlets& outputs() { return m_outlets; }
 
   void clear();
-
-
-  // These methods are only accessed by ossia::graph
-  bool can_execute(const execution_state&) const
-  {
-    return ossia::all_of(m_inlets, [](const auto& inlet) {
-      // A port can execute if : - it has source ports and all its source ports
-      // have executed
-      bool previous_nodes_executed
-          = ossia::all_of(inlet->sources, [&](graph_edge* edge) {
-          return edge->out_node->executed()
-          || (!edge->out_node->enabled() /* && bool(inlet->address) */
-              /* TODO check that it's in scope */);
-    });
-
-      // it does not have source ports ; we have to check for variables :
-      // find if address available in local / global scope
-      return !inlet->sources.empty() ? previous_nodes_executed : true // TODO
-                                       ;
-    });
-  }
 
   bool start_discontinuous() const { return m_start_discontinuous; }
   bool end_discontinuous() const { return m_end_discontinuous; }

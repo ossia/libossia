@@ -18,6 +18,11 @@ struct TestDevice
   ossia::net::parameter_base* vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);
   ossia::net::parameter_base* vec4f_addr = device.create_child("vec4f")->create_parameter(val_type::VEC4F);
   ossia::net::parameter_base* tuple_addr = device.create_child("tuple")->create_parameter(val_type::LIST);
+
+  ossia::net::parameter_base* a = device.create_child("a")->create_parameter(val_type::LIST);
+  ossia::net::parameter_base* b = device.create_child("b")->create_parameter(val_type::LIST);
+  ossia::net::parameter_base* c = device.create_child("c")->create_parameter(val_type::LIST);
+  ossia::net::parameter_base* d = device.create_child("d")->create_parameter(val_type::LIST);
 };
 struct TestDeviceRef
 {

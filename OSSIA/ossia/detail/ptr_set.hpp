@@ -53,5 +53,11 @@ using shared_ptr_set = tsl::hopscotch_set<
   EgurHash<T>,
   PointerPredicate<T>
 >;
+template<typename T, typename V>
+using shared_ptr_map = tsl::hopscotch_map<
+  std::shared_ptr<T>, V,
+  EgurHash<T>,
+  PointerPredicate<T>
+>;
 
 }

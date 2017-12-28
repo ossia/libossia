@@ -20,12 +20,6 @@ struct OSSIA_EXPORT execution_state
       return nullptr;
     }
 
-    void clear_devices()
-    {
-      valueDevices.clear();
-      m_valueQueues.clear();
-    }
-
     void register_device(ossia::net::device_base* d);
     void register_device(ossia::net::midi::midi_device* d);
 
@@ -37,7 +31,9 @@ struct OSSIA_EXPORT execution_state
     void register_inlet(const ossia::inlet& port);
 
 
-    void clear();
+    void clear_local_state();
+
+    void clear_devices();
     void reset();
     void commit();
     void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
@@ -45,22 +41,9 @@ struct OSSIA_EXPORT execution_state
 
     // todo separate rvalue & cref
     void insert(const destination_t& dest, data_type v);
-    void insert(const destination_t& dest, tvalue v)
-    {
-      m_valueState[dest].push_back(std::move(v));
-    }
-
-    void insert(const destination_t& dest, const audio_port& v)
-    {
-      // TODO sum audio
-      m_audioState[dest] = v;
-    }
-
-    void insert(const destination_t& dest, const midi_port& v)
-    {
-      // TODO push messages
-      m_midiState[dest] = v.messages;
-    }
+    void insert(const destination_t& dest, tvalue v);
+    void insert(const destination_t& dest, const audio_port& v);
+    void insert(const destination_t& dest, const midi_port& v);
 
     bool in_local_scope(ossia::net::parameter_base& other) const;
 
@@ -72,9 +55,12 @@ struct OSSIA_EXPORT execution_state
 
     ossia::small_vector<ossia::net::device_base*, 4> valueDevices;
     ossia::small_vector<ossia::net::midi::midi_protocol*, 2> midiDevices;
+    ossia::small_vector<ossia::net::device_base*, 2> audioDevices;
+
+    ossia::small_vector<ossia::net::device_base*, 4> allDevices;
 
     // private:// disabled due to tests, but for some reason can't make friend work
-    tsl::hopscotch_map<destination_t, std::vector<tvalue>> m_valueState;
+    tsl::hopscotch_map<destination_t, value_vector<tvalue>> m_valueState;
     tsl::hopscotch_map<destination_t, audio_port> m_audioState;
     tsl::hopscotch_map<destination_t, value_vector<mm::MidiMessage>> m_midiState;
 
