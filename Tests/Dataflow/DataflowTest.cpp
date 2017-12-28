@@ -11,6 +11,12 @@ namespace ossia
 class node_mock : public graph_node {
 
 public:
+  const char* lbl{};
+  std::string_view label() const override
+  {
+    return lbl;
+  }
+
   node_mock(inlets in, outlets out)
   {
     m_inlets = std::move(in);
@@ -156,13 +162,13 @@ struct simple_explicit_graph: base_graph
     auto n1_out = make_outlet<value_port>(*test.tuple_addr);
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1";
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
-
-    qDebug() << "N1:" << (void*) n1.get() << "N2: " << (void*) n2.get();
+    n2->lbl = "n2";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -176,7 +182,7 @@ struct simple_explicit_graph: base_graph
 struct simple_implicit_graph: base_graph
 {
   ossia::node_mock* n1, *n2;
-  simple_implicit_graph(ossia::TestDevice& test, ossia::connection c):
+  simple_implicit_graph(ossia::TestDevice& test):
     base_graph{test}
   {
     using namespace ossia;
@@ -184,11 +190,13 @@ struct simple_implicit_graph: base_graph
     auto n1_out = make_outlet<value_port>(*test.tuple_addr);
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1";
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
+    n2->lbl = "n2";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -209,11 +217,13 @@ struct no_parameter_explicit_graph: base_graph
     auto n1_out = make_outlet<value_port>();
     auto n1 = std::make_shared<node_mock>(inlets{}, outlets{n1_out});
     n1->fun = debug_mock{1, n1};
+    n1->lbl = "n1";
 
     auto n2_in = make_inlet<value_port>();
     auto n2_out = make_outlet<value_port>();
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = debug_mock{10, n2};
+    n2->lbl = "n2";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -238,21 +248,25 @@ struct three_outputs_one_input_explicit_graph: base_graph
     auto n1_out = make_outlet<value_port>();
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1";
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>();
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
+    n2->lbl = "n2";
 
     auto n3_in = make_inlet<value_port>(*test.tuple_addr);
     auto n3_out = make_outlet<value_port>();
     auto n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
     n3->fun = execution_mock{100, n3};
+    n3->lbl = "n3";
 
     auto nin_in = make_inlet<value_port>();
     auto nin_out = make_outlet<value_port>(*test.tuple_addr);
     auto nin = std::make_shared<node_mock>(inlets{nin_in}, outlets{nin_out});
     nin->fun = execution_mock{1000, nin};
+    nin->lbl = "nin";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -287,16 +301,19 @@ struct three_serial_nodes_explicit_graph: base_graph
     auto n1_out = make_outlet<value_port>();
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1";
 
     auto n2_in = make_inlet<value_port>();
     auto n2_out = make_outlet<value_port>();
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
+    n2->lbl = "n2";
 
     auto n3_in = make_inlet<value_port>();
     auto n3_out = make_outlet<value_port>(*test.tuple_addr);
     auto n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
     n3->fun = execution_mock{100, n3};
+    n3->lbl = "n3";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -325,16 +342,19 @@ struct three_serial_nodes_implicit_graph: base_graph
     auto n1_out = make_outlet<value_port>(*test.tuple_addr);
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1";
 
     auto n2_in = make_inlet<value_port>(*test.tuple_addr);
     auto n2_out = make_outlet<value_port>(*test.tuple_addr);
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
+    n2->lbl = "n2";
 
     auto n3_in = make_inlet<value_port>(*test.tuple_addr);
     auto n3_out = make_outlet<value_port>(*test.tuple_addr);
     auto n3 = std::make_shared<node_mock>(inlets{n3_in}, outlets{n3_out});
     n3->fun = execution_mock{100, n3};
+    n3->lbl = "n3";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -358,11 +378,13 @@ struct ab_bc_graph: base_graph
     auto n1_out = make_outlet<value_port>(*test.b);
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1 (a->b)";
 
     auto n2_in = make_inlet<value_port>(*test.b);
     auto n2_out = make_outlet<value_port>(*test.c);
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
+    n1->lbl = "n2 (b->c)";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -385,11 +407,13 @@ struct bc_ab_graph: base_graph
     auto n1_out = make_outlet<value_port>(*test.c);
     auto n1 = std::make_shared<node_mock>(inlets{n1_in}, outlets{n1_out});
     n1->fun = execution_mock{1, n1};
+    n1->lbl = "n1 (b->c)";
 
     auto n2_in = make_inlet<value_port>(*test.a);
     auto n2_out = make_outlet<value_port>(*test.b);
     auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
     n2->fun = execution_mock{10, n2};
+    n2->lbl = "n2 (a->b)";
 
     g.add_node(n1);
     g.add_node(n2);
@@ -404,6 +428,21 @@ class DataflowTest : public QObject
   Q_OBJECT
 
 private slots:
+
+  void test_bfs()
+  {
+    using namespace ossia;
+    graph_t g;
+    auto n1 = boost::add_vertex({}, g);
+    auto n2 = boost::add_vertex({}, g);
+    auto n3 = boost::add_vertex({}, g);
+
+    auto e1 = boost::add_edge(n1, n2, g);
+    auto e2 = boost::add_edge(n2, n3, g);
+
+    QVERIFY(ossia::graph_util::find_path(n1, n3, g));
+
+  }
 
   void test_mock()
   {
@@ -623,12 +662,6 @@ private slots:
     g.g.state(); // nothing
     QCOMPARE(test.b->value(), ossia::value(std::vector<ossia::value>{10 * 1}));
     QCOMPARE(test.c->value(), ossia::value(std::vector<ossia::value>{10 * 1, 1 * 1}));
-
-  }
-
-  void strict_implicit_relationship()
-  {
-
   }
 
   void glutton_implicit_relationship()
@@ -636,7 +669,7 @@ private slots:
     using namespace ossia;
     TestDevice test;
 
-    simple_implicit_graph g(test, immediate_glutton_connection{});
+    simple_implicit_graph g{test};
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
     g.n1->requested_tokens.push_back(token_request{0_tv});

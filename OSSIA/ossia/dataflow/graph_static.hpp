@@ -264,6 +264,25 @@ struct OSSIA_EXPORT graph_util
       }
     }
   }
+
+  static bool find_path(int source, int sink, graph_t& graph)
+  {
+    bool ok = false;
+    struct bfs_time_visitor : boost::default_bfs_visitor
+    {
+      int node_to_find{};
+      bool& ok;
+      void discover_vertex(int u, const graph_t&) const
+      {
+        if(u == node_to_find)
+          ok = true;
+        // TODO stop when we found it.
+      }
+    } to_find{{}, sink, ok};
+
+    boost::breadth_first_search(graph, source, boost::visitor(to_find));
+    return ok;
+  }
 };
 
 enum class static_graph_policy { bfs, transitive_closure };
@@ -420,30 +439,13 @@ public:
     return ok;
   }
 
-  static bool find_path(int source, int sink, graph_t& graph)
-  {
-    struct bfs_time_visitor : boost::default_bfs_visitor
-    {
-      int node_to_find{};
-      mutable bool ok = false;
-      void discover_vertex(int u, const graph_t&) const
-      {
-        if(u == node_to_find)
-          ok = true;
-        // TODO stop when we found it.
-      }
-    } to_find{{}, sink, false};
-
-    boost::breadth_first_search(graph, source, boost::visitor(to_find));
-    return to_find.ok;
-  }
-
   template<typename DevicesT>
   void update_graph_bfs(const DevicesT& devices)
   {
     graph_t sub_graph = m_graph;
 
     get_sorted_nodes(m_graph);
+    // return;
     // m_active_nodes is in topo order
 
     for(std::size_t i = 0; i < m_all_nodes.size(); i++)
@@ -455,11 +457,17 @@ public:
 
         auto source_vtx = m_nodes.find(n1)->second;
         auto sink_vtx = m_nodes.find(n2)->second;
-        //if(find_path(source_vtx, sink_vtx, sub_graph))
-        //  continue;
+        if(find_path(source_vtx, sink_vtx, sub_graph))
+          continue;
         if(find_path(sink_vtx, source_vtx, sub_graph))
           continue;
+/*
+        print_graph(sub_graph, std::cout);
 
+        std::cout << n1->label() << " " << n2->label() << " => "
+                  << (! find_path(source_vtx, sink_vtx, sub_graph) && ! find_path(sink_vtx, source_vtx, sub_graph))
+                  << std::endl;
+                  */
         if(find_address_connection(*n1, *n2, devices))
         {
           auto src_it = m_nodes.find(n1);
@@ -470,10 +478,14 @@ public:
                                        src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
 
+          /*
+          auto all_nodes_old = std::move(m_all_nodes);
           m_all_nodes.clear();
           get_sorted_nodes(sub_graph);
+          m_all_nodes = std::move(all_nodes_old);
+          */
+
         }
-        /*
         else if(find_address_connection(*n2, *n1, devices))
         {
           auto src_it = m_nodes.find(n2);
@@ -482,12 +494,14 @@ public:
                                        src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
 
-          print_graph(sub_graph, std::cout);
+          /*
+          auto all_nodes_old = std::move(m_all_nodes);
           m_all_nodes.clear();
           get_sorted_nodes(sub_graph);
-        }
-        */
+          m_all_nodes = std::move(all_nodes_old);
+          */
 
+        }
       }
     }
 
@@ -501,6 +515,7 @@ public:
     graph_t sub_graph = m_graph;
 
     get_sorted_nodes(m_graph);
+
     using transitive_closure_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;
     // m_active_nodes is in topo order
 
@@ -522,8 +537,6 @@ public:
     // So: for each pair: check if there is a path from one to the other.
     // Problem: [a -> b]  [b -> a] : which comes first ? one has to resolve the ambiguity manually.
 
-    // TODO: instead of recomputing the transitive closure, it may be better to just do a DFS
-    // from the source to the sink.
     transitive_closure_t transitive_closure;
     boost::transitive_closure(m_graph, transitive_closure);
 
@@ -536,12 +549,16 @@ public:
 
         auto source_vtx = m_nodes.find(n1)->second;
         auto sink_vtx = m_nodes.find(n2)->second;
-        //if(boost::edge(source_vtx, sink_vtx, transitive_closure).second)
-        //  continue;
+        if(boost::edge(source_vtx, sink_vtx, transitive_closure).second)
+          continue;
 
         if(boost::edge(sink_vtx, source_vtx, transitive_closure).second)
           continue;
-
+/*
+        std::cout << n1->label() << " " << n2->label() << " => "
+                  << "has no edge either way"
+                  << std::endl;
+*/
         if(find_address_connection(*n1, *n2, devices))
         {
           auto src_it = m_nodes.find(n1);
@@ -550,8 +567,12 @@ public:
                                        src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
           boost::transitive_closure(sub_graph, transitive_closure);
+
+          auto all_nodes_old = std::move(m_all_nodes);
+          m_all_nodes.clear();
+          get_sorted_nodes(sub_graph);
+          m_all_nodes = std::move(all_nodes_old);
         }
-        /*
         else if(find_address_connection(*n2, *n1, devices))
         {
           auto src_it = m_nodes.find(n2);
@@ -560,7 +581,12 @@ public:
                                        src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
           boost::transitive_closure(sub_graph, transitive_closure);
-        }*/
+
+          auto all_nodes_old = std::move(m_all_nodes);
+          m_all_nodes.clear();
+          get_sorted_nodes(sub_graph);
+          m_all_nodes = std::move(all_nodes_old);
+        }
       }
     }
 
@@ -570,19 +596,23 @@ public:
 
   void get_sorted_nodes(const graph_t& gr)
   {
-    // Get a total order on nodes
-    m_all_nodes.clear();
-    m_all_nodes.reserve(m_nodes.size());
+    try {
+      // Get a total order on nodes
+      m_all_nodes.clear();
+      m_all_nodes.reserve(m_nodes.size());
 
-    // TODO this should be doable with a single vector
-    m_topo_order_cache.clear();
-    m_topo_order_cache.reserve(m_nodes.size());
-    boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
+      // TODO this should be doable with a single vector
+      m_topo_order_cache.clear();
+      m_topo_order_cache.reserve(m_nodes.size());
+      boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
 
-    for(auto vtx : m_topo_order_cache)
-    {
-      auto node = gr[vtx].get();
-      m_all_nodes.push_back(node);
+      for(auto vtx : m_topo_order_cache)
+      {
+        auto node = gr[vtx].get();
+        m_all_nodes.push_back(node);
+      }
+    } catch(...) {
+      std::cout << "Error: graph isn't a DAG\n";
     }
   }
 
