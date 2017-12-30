@@ -3,6 +3,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/execution_state.hpp>
+#include <ossia/dataflow/breadth_first_search.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
@@ -31,13 +32,15 @@ enum class node_ordering
   topological, temporal, hierarchical
 };
 
-
 template<typename Graph_T, typename IO>
 void print_graph(Graph_T& g, IO& stream)
 {
   std::stringstream s;
-  boost::write_graphviz(s, g, [&] (auto& out, const auto& v) {
-    out << "[label=\"" << g[v]->label() << "\"]";
+  boost::write_graphviz(s, g, [&] (auto& out, auto v) {
+    if(g[v] && !g[v]->label().empty())
+      out << "[label=\"" << g[v]->label() << "\"]";
+    else
+      out << "[]";
   },
   [] (auto&&...) {});
 
@@ -272,22 +275,22 @@ struct OSSIA_EXPORT graph_util
     {
       int node_to_find{};
       bool& ok;
-      void discover_vertex(int u, const graph_t&) const
+      bool discover_vertex(int u, const graph_t&) const
       {
         if(u == node_to_find)
           ok = true;
-        // TODO stop when we found it.
+        return ok;
       }
     } to_find{{}, sink, ok};
 
-    boost::breadth_first_search(graph, source, boost::visitor(to_find));
+    ossia::bfs::breadth_first_search_simple(graph, source, to_find);
     return ok;
   }
 };
 
 enum class static_graph_policy { bfs, transitive_closure };
 template<static_graph_policy Policy>
-class OSSIA_EXPORT graph_static_base
+struct OSSIA_EXPORT graph_static_base
     : private graph_util
 {
   private:
@@ -307,6 +310,10 @@ class OSSIA_EXPORT graph_static_base
   }
 
 public:
+  void mark_dirty()
+  {
+    m_dirty = true;
+  }
   ~graph_static_base()
   {
     clear();
@@ -410,10 +417,6 @@ public:
     e.commit();
   }
 
-  void mark_dirty()
-  {
-    m_dirty = true;
-  }
 
   template<typename DevicesT>
   static auto find_address_connection(ossia::graph_node& source, ossia::graph_node& sink, const DevicesT& devices)
@@ -438,14 +441,13 @@ public:
     }
     return ok;
   }
-
+// #define OSSIA_GRAPH_DEBUG
   template<typename DevicesT>
   void update_graph_bfs(const DevicesT& devices)
   {
-    graph_t sub_graph = m_graph;
+    m_sub_graph = m_graph;
 
     get_sorted_nodes(m_graph);
-    // return;
     // m_active_nodes is in topo order
 
     for(std::size_t i = 0; i < m_all_nodes.size(); i++)
@@ -457,17 +459,11 @@ public:
 
         auto source_vtx = m_nodes.find(n1)->second;
         auto sink_vtx = m_nodes.find(n2)->second;
-        if(find_path(source_vtx, sink_vtx, sub_graph))
+        if(find_path(source_vtx, sink_vtx, m_sub_graph))
           continue;
-        if(find_path(sink_vtx, source_vtx, sub_graph))
+        if(find_path(sink_vtx, source_vtx, m_sub_graph))
           continue;
-/*
-        print_graph(sub_graph, std::cout);
 
-        std::cout << n1->label() << " " << n2->label() << " => "
-                  << (! find_path(source_vtx, sink_vtx, sub_graph) && ! find_path(sink_vtx, source_vtx, sub_graph))
-                  << std::endl;
-                  */
         if(find_address_connection(*n1, *n2, devices))
         {
           auto src_it = m_nodes.find(n1);
@@ -476,15 +472,14 @@ public:
           assert(sink_it != m_nodes.end());
           auto edge = ossia::make_edge(ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
                                        src_it->first, sink_it->first);
-          boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
+          boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
 
-          /*
+#if defined(OSSIA_GRAPH_DEBUG)
           auto all_nodes_old = std::move(m_all_nodes);
           m_all_nodes.clear();
           get_sorted_nodes(sub_graph);
           m_all_nodes = std::move(all_nodes_old);
-          */
-
+#endif
         }
         else if(find_address_connection(*n2, *n1, devices))
         {
@@ -492,31 +487,45 @@ public:
           auto sink_it = m_nodes.find(n1);
           auto edge = ossia::make_edge(ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
                                        src_it->first, sink_it->first);
-          boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
+          boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
 
-          /*
+#if defined(OSSIA_GRAPH_DEBUG)
           auto all_nodes_old = std::move(m_all_nodes);
           m_all_nodes.clear();
           get_sorted_nodes(sub_graph);
           m_all_nodes = std::move(all_nodes_old);
-          */
-
+#endif
         }
       }
     }
 
-    m_all_nodes.clear();
-    get_sorted_nodes(sub_graph);
+    get_sorted_nodes(m_sub_graph);
+  }
+
+  using transitive_closure_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;
+  void compute_transitive_closure(const graph_t& sub_graph, transitive_closure_t& tclos)
+  {
+    tclos = transitive_closure_t{};
+    boost::transitive_closure(sub_graph, tclos);
+
+#if defined(OSSIA_GRAPH_DEBUG)
+    auto vertices = boost::vertices(sub_graph);
+    for(auto i = vertices.first; i != vertices.second; i++)
+    {
+      tclos[*i] = sub_graph[*i].get();
+      assert(tclos[*i]);
+    }
+    print_graph(tclos, std::cout);
+#endif
   }
 
   template<typename DevicesT>
   void update_graph_tclosure(const DevicesT& devices)
   {
-    graph_t sub_graph = m_graph;
+    m_sub_graph = m_graph;
 
-    get_sorted_nodes(m_graph);
+    get_sorted_nodes(m_sub_graph);
 
-    using transitive_closure_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;
     // m_active_nodes is in topo order
 
     // note: this is not enough.
@@ -537,8 +546,7 @@ public:
     // So: for each pair: check if there is a path from one to the other.
     // Problem: [a -> b]  [b -> a] : which comes first ? one has to resolve the ambiguity manually.
 
-    transitive_closure_t transitive_closure;
-    boost::transitive_closure(m_graph, transitive_closure);
+    compute_transitive_closure(m_sub_graph, m_transitive_closure);
 
     for(std::size_t i = 0; i < m_all_nodes.size(); i++)
     {
@@ -549,29 +557,27 @@ public:
 
         auto source_vtx = m_nodes.find(n1)->second;
         auto sink_vtx = m_nodes.find(n2)->second;
-        if(boost::edge(source_vtx, sink_vtx, transitive_closure).second)
+        if(boost::edge(source_vtx, sink_vtx, m_transitive_closure).second)
+          continue;
+        if(boost::edge(sink_vtx, source_vtx, m_transitive_closure).second)
           continue;
 
-        if(boost::edge(sink_vtx, source_vtx, transitive_closure).second)
-          continue;
-/*
-        std::cout << n1->label() << " " << n2->label() << " => "
-                  << "has no edge either way"
-                  << std::endl;
-*/
         if(find_address_connection(*n1, *n2, devices))
         {
           auto src_it = m_nodes.find(n1);
           auto sink_it = m_nodes.find(n2);
           auto edge = ossia::make_edge(ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
                                        src_it->first, sink_it->first);
-          boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
-          boost::transitive_closure(sub_graph, transitive_closure);
+          boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
+          compute_transitive_closure(m_sub_graph, m_transitive_closure);
 
+#if defined(OSSIA_GRAPH_DEBUG)
+          print_graph(transitive_closure, std::cout);
           auto all_nodes_old = std::move(m_all_nodes);
           m_all_nodes.clear();
           get_sorted_nodes(sub_graph);
           m_all_nodes = std::move(all_nodes_old);
+#endif
         }
         else if(find_address_connection(*n2, *n1, devices))
         {
@@ -579,19 +585,20 @@ public:
           auto sink_it = m_nodes.find(n1);
           auto edge = ossia::make_edge(ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
                                        src_it->first, sink_it->first);
-          boost::add_edge(sink_it->second, src_it->second, edge, sub_graph);
-          boost::transitive_closure(sub_graph, transitive_closure);
+          boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
+          compute_transitive_closure(m_sub_graph, m_transitive_closure);
 
+#if defined(OSSIA_GRAPH_DEBUG)
           auto all_nodes_old = std::move(m_all_nodes);
           m_all_nodes.clear();
           get_sorted_nodes(sub_graph);
           m_all_nodes = std::move(all_nodes_old);
+#endif
         }
       }
     }
 
-    m_all_nodes.clear();
-    get_sorted_nodes(sub_graph);
+    get_sorted_nodes(m_sub_graph);
   }
 
   void get_sorted_nodes(const graph_t& gr)
@@ -611,8 +618,13 @@ public:
         auto node = gr[vtx].get();
         m_all_nodes.push_back(node);
       }
-    } catch(...) {
-      std::cout << "Error: graph isn't a DAG\n";
+    }
+    catch(...)
+    {
+      std::cout << "Error: graph isn't a DAG: ";
+      print_graph(gr, std::cout);
+      std::cout << std::endl;
+      exit(1);
     }
   }
 
@@ -679,6 +691,8 @@ public:
   std::vector<graph_vertex_t> m_topo_order_cache;
   bool m_dirty{};
 
+  graph_t m_sub_graph;
+  transitive_closure_t m_transitive_closure;
   friend struct inlet;
   friend struct outlet;
   friend class ::DataflowTest;

@@ -4,10 +4,10 @@
 namespace ossia
 {
 template<typename Ordering>
-class OSSIA_EXPORT graph_base
+struct OSSIA_EXPORT graph_base
     : private graph_util
 {
-private:
+public:
   using Comparator = node_sorter<Ordering>;
 
   template<typename Comp_T>
@@ -144,10 +144,6 @@ private:
   }
   */
 
-  void mark_dirty()
-  {
-    m_topo_dirty = true;
-  }
 
   void get_sorted_nodes(const graph_t& gr)
   {
@@ -189,6 +185,10 @@ private:
 
 
 public:
+  void mark_dirty()
+  {
+    m_topo_dirty = true;
+  }
   ~graph_base()
   {
     clear();

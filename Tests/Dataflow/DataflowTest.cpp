@@ -441,7 +441,40 @@ private slots:
     auto e2 = boost::add_edge(n2, n3, g);
 
     QVERIFY(ossia::graph_util::find_path(n1, n3, g));
+  }
+  void test_bfs_addr()
+  {
+    using namespace ossia;
 
+    TestDevice test;
+
+    ossia::graph_static_base<ossia::static_graph_policy::transitive_closure> g;
+    auto n1 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.a)}, ossia::outlets{make_outlet<value_port>(*test.b)});
+    auto n2 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.b)}, ossia::outlets{make_outlet<value_port>(*test.c)});
+    auto n3 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.c)}, ossia::outlets{make_outlet<value_port>(*test.a)});
+
+    g.add_node(n1);
+    g.add_node(n2);
+    g.add_node(n3);
+
+    g.update_graph_bfs(std::vector<ossia::net::device_base*>{&test.device});
+  }
+  void test_tcl_addr()
+  {
+    using namespace ossia;
+
+    TestDevice test;
+
+    ossia::graph_static_base<ossia::static_graph_policy::transitive_closure> g;
+    auto n1 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.a)}, ossia::outlets{make_outlet<value_port>(*test.b)});
+    auto n2 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.b)}, ossia::outlets{make_outlet<value_port>(*test.c)});
+    auto n3 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.c)}, ossia::outlets{make_outlet<value_port>(*test.a)});
+
+    g.add_node(n1);
+    g.add_node(n2);
+    g.add_node(n3);
+
+    g.update_graph_tclosure(std::vector<ossia::net::device_base*>{&test.device});
   }
 
   void test_mock()

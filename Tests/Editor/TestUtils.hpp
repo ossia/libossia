@@ -7,22 +7,41 @@ namespace ossia
 {
 struct TestDevice
 {
-  ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
-  ossia::net::parameter_base* impulse_addr = device.create_child("impulse")->create_parameter(val_type::IMPULSE);
-  ossia::net::parameter_base* bool_addr = device.create_child("bool")->create_parameter(val_type::BOOL);
-  ossia::net::parameter_base* int_addr = device.create_child("int")->create_parameter(val_type::INT);
-  ossia::net::parameter_base* float_addr = device.create_child("float")->create_parameter(val_type::FLOAT);
-  ossia::net::parameter_base* char_addr = device.create_child("char")->create_parameter(val_type::CHAR);
-  ossia::net::parameter_base* string_addr = device.create_child("string")->create_parameter(val_type::STRING);
-  ossia::net::parameter_base* vec2f_addr = device.create_child("vec2f")->create_parameter(val_type::VEC2F);
-  ossia::net::parameter_base* vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);
-  ossia::net::parameter_base* vec4f_addr = device.create_child("vec4f")->create_parameter(val_type::VEC4F);
-  ossia::net::parameter_base* tuple_addr = device.create_child("tuple")->create_parameter(val_type::LIST);
+  TestDevice():
+    device{std::make_unique<ossia::net::multiplex_protocol>(), "test"}
+  {
+    impulse_addr = device.create_child("impulse")->create_parameter(val_type::IMPULSE);
+    bool_addr = device.create_child("bool")->create_parameter(val_type::BOOL);
+    int_addr = device.create_child("int")->create_parameter(val_type::INT);
+    float_addr = device.create_child("float")->create_parameter(val_type::FLOAT);
+    char_addr = device.create_child("char")->create_parameter(val_type::CHAR);
+    string_addr = device.create_child("string")->create_parameter(val_type::STRING);
+    vec2f_addr = device.create_child("vec2f")->create_parameter(val_type::VEC2F);
+    vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);
+    vec4f_addr = device.create_child("vec4f")->create_parameter(val_type::VEC4F);
+    tuple_addr = device.create_child("tuple")->create_parameter(val_type::LIST);
 
-  ossia::net::parameter_base* a = device.create_child("a")->create_parameter(val_type::LIST);
-  ossia::net::parameter_base* b = device.create_child("b")->create_parameter(val_type::LIST);
-  ossia::net::parameter_base* c = device.create_child("c")->create_parameter(val_type::LIST);
-  ossia::net::parameter_base* d = device.create_child("d")->create_parameter(val_type::LIST);
+    a = device.create_child("a")->create_parameter(val_type::LIST);
+    b = device.create_child("b")->create_parameter(val_type::LIST);
+    c = device.create_child("c")->create_parameter(val_type::LIST);
+    d = device.create_child("d")->create_parameter(val_type::LIST);
+  }
+
+  ossia::net::generic_device device;
+  ossia::net::parameter_base* impulse_addr;
+  ossia::net::parameter_base* bool_addr;
+  ossia::net::parameter_base* int_addr;
+  ossia::net::parameter_base* float_addr;
+  ossia::net::parameter_base* char_addr;
+  ossia::net::parameter_base* string_addr;
+  ossia::net::parameter_base* vec2f_addr;
+  ossia::net::parameter_base* vec3f_addr;
+  ossia::net::parameter_base* vec4f_addr;
+  ossia::net::parameter_base* tuple_addr;
+  ossia::net::parameter_base* a;
+  ossia::net::parameter_base* b;
+  ossia::net::parameter_base* c;
+  ossia::net::parameter_base* d;
 };
 struct TestDeviceRef
 {
