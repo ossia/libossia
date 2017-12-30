@@ -1,16 +1,15 @@
 set(CMAKE_MODULE_PATH
   "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
-cmake_minimum_required(VERSION 3.9)
 project(OSSIA CXX)
 
 # Configuration
 
 # activate select policies
-cmake_policy(SET CMP0069 NEW)
-cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 cmake_policy(VERSION 3.9)
+cmake_policy(SET CMP0069 NEW)
 include(OssiaConfiguration)
 
 # Dependencies
