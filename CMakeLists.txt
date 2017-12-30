@@ -8,7 +8,7 @@ project(OSSIA CXX)
 # Configuration
 
 # activate select policies
-
+cmake_policy(SET CMP0069 NEW)
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 cmake_policy(VERSION 3.9)
 include(OssiaConfiguration)
