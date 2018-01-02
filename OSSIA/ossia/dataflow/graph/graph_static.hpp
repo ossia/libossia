@@ -2,6 +2,9 @@
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
 
+#include <boost/circular_buffer.hpp>
+#include <boost/container/flat_map.hpp>
+
 // #define OSSIA_GRAPH_DEBUG
 
 namespace ossia
@@ -174,7 +177,6 @@ public:
       std::cout << "Error: graph isn't a DAG: ";
       print_graph(gr, std::cout);
       std::cout << std::endl;
-      exit(1);
     }
   }
 
@@ -220,6 +222,7 @@ public:
 
 
   const graph_t& impl() const { return m_graph; }
+  graph_t& impl() { return m_graph; }
   protected:
 
   node_map m_nodes;
@@ -243,6 +246,10 @@ public:
 struct bfs_graph final: public graph_static_base
 {
 public:
+  bfs_graph():
+    m_queue(500)
+  {
+  }
   void state(execution_state& e) override
   {
     return graph_static_base::state(e, [=] (auto& dev) { update_graph_bfs(dev); });
@@ -251,15 +258,18 @@ public:
   template<typename DevicesT>
   void update_graph_bfs(const DevicesT& devices)
   {
+    const auto N = boost::num_vertices(m_graph);
+    m_color.clear();
+    m_color.reserve(N);
     m_sub_graph = m_graph;
 
     get_sorted_nodes(m_graph);
     // m_active_nodes is in topo order
 
-    for(std::size_t i = 0; i < m_all_nodes.size(); i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       ossia::graph_node* n1 = m_all_nodes[i];
-      for(std::size_t j = i + 1; j < m_all_nodes.size(); j++)
+      for(std::size_t j = i + 1; j < N; j++)
       {
         ossia::graph_node* n2 = m_all_nodes[j];
 
@@ -308,7 +318,34 @@ public:
     get_sorted_nodes(m_sub_graph);
   }
 
+
+  bool find_path(graph_vertex_t source, graph_vertex_t sink, graph_t& graph)
+  {
+    bool ok = false;
+    struct bfs_time_visitor : boost::default_bfs_visitor
+    {
+      graph_vertex_t node_to_find{};
+      bool& ok;
+      bool discover_vertex(graph_vertex_t u, const graph_t&) const
+      {
+        if(u == node_to_find)
+          ok = true;
+        return ok;
+      }
+    } to_find{{}, sink, ok};
+
+    m_queue.clear();
+
+    const auto N = boost::num_vertices(m_graph);
+    if(m_queue.capacity() <= N)
+      m_queue.set_capacity(N);
+
+    ossia::bfs::breadth_first_search_simple(graph, source, to_find, m_queue, m_color);
+    return ok;
+  }
 private:
+  boost::circular_buffer<graph_vertex_t> m_queue;
+  boost::container::flat_map<graph_vertex_t, boost::two_bit_color_type> m_color;
 };
 
 struct tc_graph final: public graph_static_base

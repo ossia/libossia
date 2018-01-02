@@ -171,6 +171,7 @@ public:
 
   struct simple_topo_sort
   {
+    simple_topo_sort(const graph_t& g): impl{g} {}
     const graph_t& impl;
     std::vector<graph_vertex_t> m_topo_order_cache;
     std::vector<graph_node*> m_node_cache;
@@ -352,7 +353,7 @@ public:
   }
 
   const graph_t& impl() const { return m_graph; }
-  std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)> sort_fun;
+  std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)> sort_fun{simple_topo_sort{m_graph}};
   private:
 
   node_map m_nodes;

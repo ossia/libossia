@@ -157,13 +157,13 @@ int main()
   itv3.add_time_process(std::make_shared<ossia::node_process>(node2));
 
   // What do we do at each tick
-  score.interval->set_callback([&] (auto&&...) {
+  score.interval->set_callback(ossia::time_interval::exec_callback{[&] (auto&&...) {
     ossia::execution_state e;
     g->state(e);
     e.commit();
     std::cerr << "/foo: " << foo->value() << "\t";
     std::cerr << "/bar: " << bar->value() << "\n";
-  });
+  }});
 
   // Start execution in a thread
   ossia::clock clck{*score.interval};

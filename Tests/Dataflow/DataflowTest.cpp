@@ -433,15 +433,15 @@ private slots:
   void test_bfs()
   {
     using namespace ossia;
-    graph_t g;
-    auto n1 = boost::add_vertex({}, g);
-    auto n2 = boost::add_vertex({}, g);
-    auto n3 = boost::add_vertex({}, g);
+    ossia::bfs_graph g;
+    auto n1 = boost::add_vertex({}, g.impl());
+    auto n2 = boost::add_vertex({}, g.impl());
+    auto n3 = boost::add_vertex({}, g.impl());
 
-    auto e1 = boost::add_edge(n1, n2, g);
-    auto e2 = boost::add_edge(n2, n3, g);
+    auto e1 = boost::add_edge(n1, n2, g.impl());
+    auto e2 = boost::add_edge(n2, n3, g.impl());
 
-    QVERIFY(ossia::graph_util::find_path(n1, n3, g));
+    QVERIFY(g.find_path(n1, n3, g.impl()));
   }
   void test_bfs_addr()
   {

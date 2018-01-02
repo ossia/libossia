@@ -269,24 +269,5 @@ struct OSSIA_EXPORT graph_util
       }
     }
   }
-
-  static bool find_path(int source, int sink, graph_t& graph)
-  {
-    bool ok = false;
-    struct bfs_time_visitor : boost::default_bfs_visitor
-    {
-      int node_to_find{};
-      bool& ok;
-      bool discover_vertex(int u, const graph_t&) const
-      {
-        if(u == node_to_find)
-          ok = true;
-        return ok;
-      }
-    } to_find{{}, sink, ok};
-
-    ossia::bfs::breadth_first_search_simple(graph, source, to_find);
-    return ok;
-  }
 };
 }
