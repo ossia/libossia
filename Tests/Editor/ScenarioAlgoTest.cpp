@@ -3,7 +3,7 @@
 #include <QtTest>
 
 #include <ossia/dataflow/node_process.hpp>
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
 
 #include "TestUtils.hpp"
 
@@ -535,8 +535,9 @@ class ScenarioAlgoTest : public QObject
       QVERIFY(utils.float_addr->value() == ossia::value(float(0.)));
 
       ossia::graph g;
+      ossia::execution_state e;
       g.add_node(msg_node);
-      g.state();
+      g.state(e);
 
       QVERIFY(utils.float_addr->value() == ossia::value(float(1.234)));
       QCOMPARE(c2->get_date(), 8_tv);

@@ -1,7 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <QtTest/QTest>
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
+#include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <Editor/TestUtils.hpp>
@@ -135,7 +136,7 @@ struct execution_mock
 struct base_graph
 {
   //ossia::graph g;
-  ossia::graph_static_base<ossia::static_graph_policy::bfs> g;
+  ossia::bfs_graph g;
   ossia::execution_state e;
 
   base_graph(ossia::TestDevice& test)
@@ -448,7 +449,7 @@ private slots:
 
     TestDevice test;
 
-    ossia::graph_static_base<ossia::static_graph_policy::transitive_closure> g;
+    ossia::bfs_graph g;
     auto n1 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.a)}, ossia::outlets{make_outlet<value_port>(*test.b)});
     auto n2 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.b)}, ossia::outlets{make_outlet<value_port>(*test.c)});
     auto n3 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.c)}, ossia::outlets{make_outlet<value_port>(*test.a)});
@@ -465,7 +466,7 @@ private slots:
 
     TestDevice test;
 
-    ossia::graph_static_base<ossia::static_graph_policy::transitive_closure> g;
+    ossia::tc_graph g;
     auto n1 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.a)}, ossia::outlets{make_outlet<value_port>(*test.b)});
     auto n2 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.b)}, ossia::outlets{make_outlet<value_port>(*test.c)});
     auto n3 = std::make_shared<node_mock>(ossia::inlets{make_inlet<value_port>(*test.c)}, ossia::outlets{make_outlet<value_port>(*test.a)});
@@ -659,7 +660,7 @@ private slots:
     g.n2->requested_tokens.push_back(token_request{0_tv});
     g.n3->requested_tokens.push_back(token_request{0_tv});
 
-    g.g.state(); // nothing
+    g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
 
   }
@@ -676,7 +677,7 @@ private slots:
     g.n1->requested_tokens.push_back(token_request{0_tv});
     g.n2->requested_tokens.push_back(token_request{0_tv});
 
-    g.g.state(); // nothing
+    g.state(); // nothing
     QCOMPARE(test.b->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
     QCOMPARE(test.c->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
@@ -692,7 +693,7 @@ private slots:
     g.n1->requested_tokens.push_back(token_request{0_tv});
     g.n2->requested_tokens.push_back(token_request{0_tv});
 
-    g.g.state(); // nothing
+    g.state(); // nothing
     QCOMPARE(test.b->value(), ossia::value(std::vector<ossia::value>{10 * 1}));
     QCOMPARE(test.c->value(), ossia::value(std::vector<ossia::value>{10 * 1, 1 * 1}));
   }

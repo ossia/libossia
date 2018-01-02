@@ -31,11 +31,11 @@ public:
   graph_node();
   virtual ~graph_node();
 
-
   bool enabled() const
   {
     return !requested_tokens.empty();
   }
+
   bool executed() const
   {
     return m_executed;
@@ -44,10 +44,7 @@ public:
   void set_start_discontinuous(bool b) { m_start_discontinuous = b; }
   void set_end_discontinuous(bool b) { m_end_discontinuous = b; }
 
-  virtual bool consumes(const std::string&) const;
-  virtual bool consumes(const destination&) const;
   virtual bool consumes(const execution_state&) const;
-
   virtual void run(token_request, execution_state&);
   virtual std::string_view label() const;
 
@@ -70,19 +67,18 @@ public:
     m_executed = b;
   }
 
-  void set_prev_date(time_value d) { m_prev_date = d; }
-
-
-  // incremented for each process
-  int64_t temporal_counter{};
-  ossia::small_vector<int64_t, 2> temporal_priority;
-  ossia::small_vector<int64_t, 2> custom_priority;
+  void set_prev_date(time_value d)
+  {
+    m_prev_date = d;
+  }
 
   void disable()
   {
     requested_tokens.clear();
   }
+
   ossia::small_vector<token_request, 4> requested_tokens;
+
 protected:
   inlets m_inlets;
   outlets m_outlets;
@@ -92,7 +88,6 @@ protected:
   bool m_executed{};
 
 private:
-
   bool m_start_discontinuous{};
   bool m_end_discontinuous{};
 };

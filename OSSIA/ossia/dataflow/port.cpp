@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph/graph_utils.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
@@ -13,11 +13,11 @@ void outlet::write(execution_state& e)
   apply_to_destination(address, e.allDevices, [&] (ossia::net::parameter_base* addr) {
     if (scope & port::scope_t::local)
     {
-      graph::copy_to_local(data, *addr, e);
+      graph_util::copy_to_local(data, *addr, e);
     }
     else if (scope & port::scope_t::global)
     {
-      graph::copy_to_global(data, *addr, e);
+      graph_util::copy_to_global(data, *addr, e);
     }
   });
 }

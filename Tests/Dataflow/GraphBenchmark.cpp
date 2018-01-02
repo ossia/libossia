@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
+#include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include "../Editor/TestUtils.hpp"
 #include <valgrind/callgrind.h>
@@ -19,11 +20,6 @@ static std::random_device rd{};
 static std::mt19937 mt{rd()};
 
 using namespace ossia;
-namespace ossia
-{
-using bfs_graph = ossia::graph_static_base<ossia::static_graph_policy::bfs>;
-using tc_graph = ossia::graph_static_base<ossia::static_graph_policy::transitive_closure>;
-}
 std::string graph_kind(const ossia::graph& g)
 {
   return "dynamic";

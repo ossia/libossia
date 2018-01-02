@@ -212,7 +212,7 @@ void time_interval::set_callback(time_interval::exec_callback callback)
   m_callback = callback;
 }
 
-void time_interval::set_callback(smallfun::SmallFun<void (double, time_value), 32> cb)
+void time_interval::set_callback(smallfun::function<void (double, time_value), 32> cb)
 {
   m_callback = cb;
 }
@@ -222,7 +222,7 @@ void time_interval::set_stateless_callback(time_interval::exec_callback cb)
   m_callback = cb;
 }
 
-void time_interval::set_stateless_callback(smallfun::SmallFun<void (double, time_value), 32> cb)
+void time_interval::set_stateless_callback(smallfun::function<void (double, time_value), 32> cb)
 {
   m_callback = cb;
 }

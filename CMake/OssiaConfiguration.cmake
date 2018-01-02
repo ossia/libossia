@@ -237,6 +237,7 @@ else()
         -Wno-unused-parameter
         -Wno-unknown-pragmas
         -Wno-missing-braces
+        -Wno-four-char-constants
         -Wnon-virtual-dtor
         -pedantic
         -Wunused

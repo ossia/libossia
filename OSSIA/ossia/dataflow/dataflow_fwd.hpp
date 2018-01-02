@@ -47,7 +47,7 @@ struct outlet;
 struct inlet;
 using inlet_ptr = std::shared_ptr<inlet>;
 using outlet_ptr = std::shared_ptr<outlet>;
-class graph;
+class graph_interface;
 
 struct audio_port;
 #if defined(OSSIA_PROTOCOL_MIDI)

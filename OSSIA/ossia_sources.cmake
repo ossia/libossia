@@ -19,6 +19,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/optional.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/locked_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mpl.hpp"
@@ -211,6 +212,7 @@ set(OSSIA_EDITOR_HEADERS
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/continuity.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_graph.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_interval.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_sync.hpp"
@@ -500,7 +502,6 @@ set(OSSIA_QT_SCORE_SRCS
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/breadth_first_search.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.hpp"
@@ -511,15 +512,21 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/state_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_static.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_ordering.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_static.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_utils.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_interface.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/breadth_first_search.hpp"
 )
 
 set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_parameter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph.cpp"
 )

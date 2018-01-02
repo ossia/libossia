@@ -211,7 +211,7 @@ struct OSSIA_EXPORT path
   /** A list of function for the location of elements.
    * Each function will be called on the next step.
    */
-  using child_function = smallfun::SmallFun<void(std::vector<ossia::net::node_base*>&), sizeof(std::regex)+sizeof(void*)>;
+  using child_function = smallfun::function<void(std::vector<ossia::net::node_base*>&), sizeof(std::regex)+sizeof(void*)>;
   std::vector<child_function> child_functions;
 
   friend bool operator==(const path& lhs, const path& rhs)

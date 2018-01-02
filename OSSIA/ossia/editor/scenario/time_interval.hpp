@@ -83,7 +83,7 @@ public:
    \param const #TimeValue position
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
-  using exec_callback = optional<smallfun::SmallFun<void(double, ossia::time_value), 32>>;
+  using exec_callback = optional<smallfun::function<void(double, ossia::time_value), 32>>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no
@@ -140,11 +140,11 @@ public:
     step
     */
   void set_callback(exec_callback);
-  void set_callback(smallfun::SmallFun<void(double, ossia::time_value), 32>);
+  void set_callback(smallfun::function<void(double, ossia::time_value), 32>);
 
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
-  void set_stateless_callback(smallfun::SmallFun<void(double, ossia::time_value), 32>);
+  void set_stateless_callback(smallfun::function<void(double, ossia::time_value), 32>);
 
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */

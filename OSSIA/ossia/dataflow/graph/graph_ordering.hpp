@@ -7,48 +7,24 @@
 namespace ossia
 {
 
-struct topological_ordering
+struct node_sorter
 {
-    const std::vector<graph_node*>& topo_order;
-    bool operator()(const graph_node* lhs, const graph_node* rhs) const
+    const std::vector<graph_node*>& node_order;
+    const execution_state& st;
+
+    bool compare(const graph_node* lhs, const graph_node* rhs) const
     {
-      // just return the nodes in their topological order
-      for(std::size_t i = 0, N = topo_order.size(); i < N; i++)
+      for(std::size_t i = 0, N = node_order.size(); i < N; i++)
       {
-        if(topo_order[i] == lhs)
+        if(node_order[i] == lhs)
           return true;
-        if(topo_order[i] == rhs)
+        else if(node_order[i] == rhs)
           return false;
+        else
+          continue;
       }
       throw std::runtime_error("lhs and rhs have to be found");
     }
-};
-
-struct temporal_ordering
-{
-    template<typename... Args>
-    temporal_ordering(Args&&...) { }
-    bool operator()(const graph_node* lhs, const graph_node* rhs) const
-    {
-      return boost::range::lexicographical_compare(lhs->temporal_priority, rhs->temporal_priority);
-    }
-};
-
-struct custom_ordering
-{
-    template<typename... Args>
-    custom_ordering(Args&&...) { }
-    bool operator()(const graph_node* lhs, const graph_node* rhs) const
-    {
-      return boost::range::lexicographical_compare(lhs->custom_priority, rhs->custom_priority);
-    }
-};
-
-template<typename OrderingPolicy = topological_ordering>
-struct node_sorter
-{
-    OrderingPolicy ord;
-    const execution_state& st;
 
     bool operator()(const graph_node* lhs, const graph_node* rhs) const
     {
@@ -64,7 +40,7 @@ struct node_sorter
       else if (c1 && c2)
         // the nodes are already sorted through the toposort
         // so we can just keep their original order
-        return ord(lhs, rhs);
+        return compare(lhs, rhs);
 
       bool l1 = lhs->has_local_inputs(st);
       bool l2 = rhs->has_local_inputs(st);
@@ -74,7 +50,7 @@ struct node_sorter
       else if (!l1 && l2)
         return false;
       else if (l1 && l2)
-        return ord(lhs, rhs);
+        return compare(lhs, rhs);
 
       bool g1 = lhs->has_global_inputs();
       bool g2 = rhs->has_global_inputs();
@@ -83,9 +59,9 @@ struct node_sorter
       else if (!g1 && g2)
         return false;
       else if (g1 && g2)
-        return ord(lhs, rhs);
+        return compare(lhs, rhs);
 
-      return ord(lhs, rhs);
+      return compare(lhs, rhs);
     }
 };
 

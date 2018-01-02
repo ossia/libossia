@@ -1,18 +1,18 @@
 #pragma once
-#include <ossia/dataflow/graph_static.hpp>
+#include <ossia/dataflow/graph/graph_interface.hpp>
+#include <ossia/dataflow/graph/graph_utils.hpp>
 
 namespace ossia
 {
-template<typename Ordering>
-struct OSSIA_EXPORT graph_base
+
+class OSSIA_EXPORT graph
     : private graph_util
+    , public graph_interface
 {
 public:
-  using Comparator = node_sorter<Ordering>;
-
   template<typename Comp_T>
   static void tick(
-      graph_base& g,
+      graph& g,
       execution_state& e,
       std::vector<graph_node*>& active_nodes,
       Comp_T&& comp)
@@ -144,7 +144,7 @@ public:
   }
   */
 
-
+/*
   void get_sorted_nodes(const graph_t& gr)
   {
     // Get a total order on nodes
@@ -167,44 +167,71 @@ public:
         m_active_nodes.push_back(node);
     }
   }
+  */
+
+  struct simple_topo_sort
+  {
+    const graph_t& impl;
+    std::vector<graph_vertex_t> m_topo_order_cache;
+    std::vector<graph_node*> m_node_cache;
+    void operator()(const graph_t& gr, std::vector<graph_node*>& nodes)
+    {
+      const auto N = boost::num_vertices(impl);
+      m_topo_order_cache.clear();
+      m_topo_order_cache.reserve(N);
+      boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
+
+      nodes.clear();
+      nodes.reserve(N);
+      for(auto vtx : m_topo_order_cache)
+      {
+        nodes.push_back(gr[vtx].get());
+      }
+    }
+  };
+
+  void sort_nodes()
+  {
+    assert(sort_fun);
+    assert(m_nodes.size() == boost::num_vertices(m_graph));
+
+    sort_fun(m_graph, m_node_static_sort);
+  }
 
   void get_enabled_nodes(const graph_t& gr)
   {
     m_active_nodes.clear();
-
-    auto vtx = boost::vertices(gr);
     m_active_nodes.reserve(m_nodes.size());
 
-    for(auto it = vtx.first; it != vtx.second; ++it)
+    assert(m_node_static_sort.size() == boost::num_vertices(gr));
+    for(auto node : m_node_static_sort)
     {
-      auto node = gr[*it].get();
       if(node->enabled())
         m_active_nodes.push_back(node);
     }
   }
 
-
 public:
-  void mark_dirty()
+  void mark_dirty() override
   {
-    m_topo_dirty = true;
+    m_dirty = true;
   }
-  ~graph_base()
+  ~graph() override
   {
     clear();
   }
 
-  void add_node(node_ptr n)
+  void add_node(node_ptr n) override
   {
     if(m_nodes.find(n) == m_nodes.end())
     {
       auto vtx = boost::add_vertex(n, m_graph);
       m_nodes.insert({std::move(n), vtx});
-      m_topo_dirty = true;
+      m_dirty = true;
     }
   }
 
-  void remove_node(const node_ptr& n)
+  void remove_node(const node_ptr& n) override
   {
     for(auto& port : n->inputs())
       for(auto edge : port->sources)
@@ -224,10 +251,10 @@ public:
       }
       m_nodes.erase(it);
     }
-    m_topo_dirty = true;
+    m_dirty = true;
   }
 
-  void connect(const std::shared_ptr<graph_edge>& edge)
+  void connect(std::shared_ptr<graph_edge> edge) override
   {
     if(edge)
     {
@@ -242,15 +269,15 @@ public:
         {
           m_edges.insert({std::move(edge), res.first});
         }
-        m_topo_dirty = true;
+        m_dirty = true;
       }
     }
   }
-  void disconnect(const std::shared_ptr<graph_edge>& edge)
+  void disconnect(const std::shared_ptr<graph_edge>& edge) override
   {
     disconnect(edge.get());
   }
-  void disconnect(graph_edge* edge)
+  void disconnect(graph_edge* edge) override
   {
     if(edge)
     {
@@ -260,14 +287,14 @@ public:
         auto edg = boost::edges(m_graph);
         if(std::find(edg.first, edg.second, it->second) != edg.second)
           boost::remove_edge(it->second, m_graph);
-        m_topo_dirty = true;
+        m_dirty = true;
         m_edges.erase(it);
       }
       edge->clear();
     }
   }
 
-  void clear()
+  void clear() override
   {
     // TODO clear all the connections, ports, etc, to ensure that there is no
     // shared_ptr loop
@@ -279,25 +306,23 @@ public:
     {
       edge.first->clear();
     }
-    m_topo_dirty = true;
+    m_dirty = true;
     m_nodes.clear();
     m_edges.clear();
     m_graph.clear();
   }
 
-  void state()
-  {
-    execution_state e;
-    state(e);
-    e.commit();
-  }
-
-  void state(execution_state& e)
+  void state(execution_state& e) override
   {
     try
     {
       // TODO in the future, temporal_graph, space_graph that can be used as
       // processes.
+      if(m_dirty)
+      {
+        sort_nodes();
+        m_dirty = false;
+      }
 
       // Filter disabled nodes (through strict relationships).
       m_enabled_cache.clear();
@@ -314,16 +339,8 @@ public:
       disable_strict_nodes_rec(m_enabled_cache, m_disabled_cache);
 
       // Start executing the nodes
-      if constexpr(std::is_same<Ordering, topological_ordering>::value)
-      {
-        get_sorted_nodes(m_graph);
-        tick(*this, e, m_active_nodes, node_sorter<>{topological_ordering{m_active_nodes}, e});
-      }
-      else
-      {
-        get_enabled_nodes(m_graph);
-        tick(*this, e, m_active_nodes, node_sorter<Ordering>{Ordering{}, e});
-      }
+      get_enabled_nodes(m_graph);
+      tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e});
 
       finish_nodes(m_nodes);
     }
@@ -335,6 +352,7 @@ public:
   }
 
   const graph_t& impl() const { return m_graph; }
+  std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)> sort_fun;
   private:
 
   node_map m_nodes;
@@ -345,19 +363,14 @@ public:
   node_flat_set m_enabled_cache;
   node_flat_set m_disabled_cache;
   std::vector<graph_node*> m_active_nodes;
-  std::vector<graph_vertex_t> m_topo_order_cache;
-  bool m_topo_dirty{};
+
+  std::vector<graph_node*> m_node_static_sort;
+  bool m_dirty{};
 
   friend struct inlet;
   friend struct outlet;
   friend class ::DataflowTest;
 };
-
-
-
-
-class graph : public graph_base<topological_ordering>
-{ public: using graph_base<topological_ordering>::graph_base; };
 
 
 

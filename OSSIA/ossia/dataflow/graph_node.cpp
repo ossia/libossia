@@ -21,16 +21,6 @@ graph_node::graph_node()
 {
 }
 
-bool graph_node::consumes(const std::string&) const
-{
-  return false;
-}
-
-bool graph_node::consumes(const destination&) const
-{
-  return false;
-}
-
 bool graph_node::consumes(const execution_state&) const
 {
   return false;

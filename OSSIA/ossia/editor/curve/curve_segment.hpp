@@ -26,5 +26,5 @@ template <typename Y>
  *
  * In our case x can sometimes be greater than 1.
  */
-using curve_segment = smallfun::SmallFun<Y(double, Y, Y), 24>;
+using curve_segment = smallfun::function<Y(double, Y, Y), 24>;
 }

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/node_process.hpp>
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
 
 namespace ossia
 {

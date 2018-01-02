@@ -1,4 +1,4 @@
-#include <ossia/dataflow/graph.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/generic/generic_device.hpp>
