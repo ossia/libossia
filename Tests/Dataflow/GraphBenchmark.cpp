@@ -12,7 +12,7 @@
 #include <QTextStream>
 #include <QFile>
 
-static const constexpr int NUM_TAKES = 100;
+static const constexpr int NUM_TAKES = 10;
 static const constexpr auto NUM_NODES = {1, 2, 3, 4, 5, 10, 15, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 500, 750, 1000};
 //static const constexpr auto NUM_NODES = {1, 30, 50};
 

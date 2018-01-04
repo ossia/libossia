@@ -34,6 +34,21 @@ enum class node_ordering
   topological, temporal, hierarchical
 };
 
+template<typename T>
+void apply_con(const T& visitor, ossia::connection& con)
+{
+  auto tgt = con.target();
+  switch(con.which())
+  {
+    case 0: visitor(*reinterpret_cast<immediate_glutton_connection*>(tgt)); break;
+    case 1: visitor(*reinterpret_cast<immediate_strict_connection*>(tgt)); break;
+    case 2: visitor(*reinterpret_cast<delayed_glutton_connection*>(tgt)); break;
+    case 3: visitor(*reinterpret_cast<delayed_strict_connection*>(tgt)); break;
+    case 4: visitor(*reinterpret_cast<dependency_connection*>(tgt)); break;
+    default: visitor(); break;
+  }
+}
+
 template<typename Graph_T, typename IO>
 void print_graph(Graph_T& g, IO& stream)
 {
@@ -54,17 +69,29 @@ struct OSSIA_EXPORT graph_util
 {
   static void copy_from_local(const data_type& out, inlet& in)
   {
-    if (out.which() == in.data.which() && out && in.data)
+    const auto w = out.which();
+    if (w == in.data.which() && w != data_type::npos)
     {
-      eggs::variants::apply(copy_data{}, out, in.data);
+      switch(w)
+      {
+        case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
+        case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
+        case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
+      }
     }
   }
 
   static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
   {
-    if (out.which() == in.data.which() && out && in.data)
+    const auto w = out.which();
+    if (w == in.data.which() && w != data_type::npos)
     {
-      eggs::variants::apply(copy_data_pos{pos}, out, in.data);
+      switch(w)
+      {
+        case 0: copy_data_pos{pos}(*reinterpret_cast<const ossia::audio_delay_line*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
+        case 1: copy_data_pos{pos}(*reinterpret_cast<const ossia::midi_delay_line*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
+        case 2: copy_data_pos{pos}(*reinterpret_cast<const ossia::value_delay_line*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
+      }
     }
   }
 
@@ -115,7 +142,7 @@ struct OSSIA_EXPORT graph_util
       {
         for (auto edge : in->sources)
         {
-          ossia::apply(init_node_visitor<graph_util>{*in, *edge, e}, edge->con);
+          ossia::apply_con(init_node_visitor<graph_util>{*in, *edge, e}, edge->con);
         }
       }
       else
@@ -139,56 +166,81 @@ struct OSSIA_EXPORT graph_util
       out->write(e);
       for (auto tgt : out->targets)
       {
-        ossia::apply(env_writer{*out, *tgt, e}, tgt->con);
+        ossia::apply_con(env_writer{*out, *tgt, e}, tgt->con);
       }
     }
+  }
+/*
+  static void disable_strict_nodes_bfs(const graph_t& graph)
+  {
+    // while(Find a non-marked disabled node)
+    // Do a BFS from it
+    std::map<graph_vertex_t, boost::two_bit_color_type> mark;
+    struct disable_visitor : public boost::default_bfs_visitor
+    {
+        void discover_vertex(graph_vertex_t vtx, graph_t& g) const
+        {
+          auto ptr = g[vtx].get();
+
+        }
+    };
+  }
+*/
+  static bool disable_strict_nodes(const graph_node* node)
+  {
+    for (const auto& in : node->inputs())
+    {
+      for (const auto& edge : in->sources)
+      {
+        assert(edge->out_node);
+
+        if (immediate_strict_connection* sc = edge->con.target<immediate_strict_connection>())
+        {
+          if ((sc->required_sides
+               & immediate_strict_connection::required_sides_t::outbound)
+              && node->enabled() && !edge->out_node->enabled())
+          {
+            return true;
+          }
+        }
+        else if (delayed_strict_connection* delay = edge->con.target<delayed_strict_connection>())
+        {
+          const auto n = ossia::apply(data_size{}, delay->buffer);
+          if (n == 0 || delay->pos >= n)
+          {
+            return true;
+          }
+        }
+      }
+    }
+
+    for (const auto& out : node->outputs())
+    {
+      for (const auto& edge : out->targets)
+      {
+        assert(edge->in_node);
+
+        if (auto sc = edge->con.target<immediate_strict_connection>())
+        {
+          if ((sc->required_sides
+               & immediate_strict_connection::required_sides_t::inbound)
+              && node->enabled() && !edge->in_node->enabled())
+          {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   static void disable_strict_nodes(const node_flat_set& enabled_nodes, node_flat_set& ret)
   {
     for (graph_node* node : enabled_nodes)
     {
-      for (const auto& in : node->inputs())
-      {
-        for (const auto& edge : in->sources)
-        {
-          assert(edge->out_node);
-
-          if (immediate_strict_connection* sc = edge->con.target<immediate_strict_connection>())
-          {
-            if ((sc->required_sides
-                 & immediate_strict_connection::required_sides_t::outbound)
-                && node->enabled() && !edge->out_node->enabled())
-            {
-              ret.insert(node);
-            }
-          }
-          else if (delayed_strict_connection* delay = edge->con.target<delayed_strict_connection>())
-          {
-            const auto n = ossia::apply(data_size{}, delay->buffer);
-            if (n == 0 || delay->pos >= n)
-              ret.insert(node);
-          }
-        }
-      }
-
-      for (const auto& out : node->outputs())
-      {
-        for (const auto& edge : out->targets)
-        {
-          assert(edge->in_node);
-
-          if (auto sc = edge->con.target<immediate_strict_connection>())
-          {
-            if ((sc->required_sides
-                 & immediate_strict_connection::required_sides_t::inbound)
-                && node->enabled() && !edge->in_node->enabled())
-            {
-              ret.insert(node);
-            }
-          }
-        }
-      }
+      if(disable_strict_nodes(node))
+        ret.insert(node);
     }
   }
 

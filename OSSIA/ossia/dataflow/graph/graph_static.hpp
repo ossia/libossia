@@ -246,8 +246,7 @@ public:
 struct bfs_graph final: public graph_static_base
 {
 public:
-  bfs_graph():
-    m_queue(500)
+  bfs_graph()
   {
   }
   void state(execution_state& e) override
@@ -259,8 +258,8 @@ public:
   void update_graph_bfs(const DevicesT& devices)
   {
     const auto N = boost::num_vertices(m_graph);
-    m_color.clear();
-    m_color.reserve(N);
+    //m_color.clear();
+    //m_color.reserve(N);
     m_sub_graph = m_graph;
 
     get_sorted_nodes(m_graph);
@@ -322,7 +321,7 @@ public:
   bool find_path(graph_vertex_t source, graph_vertex_t sink, graph_t& graph)
   {
     bool ok = false;
-    struct bfs_time_visitor : boost::default_bfs_visitor
+    struct bfs_find_visitor
     {
       graph_vertex_t node_to_find{};
       bool& ok;
@@ -332,7 +331,7 @@ public:
           ok = true;
         return ok;
       }
-    } to_find{{}, sink, ok};
+    } to_find{sink, ok};
 
     m_queue.clear();
 
@@ -340,12 +339,21 @@ public:
     if(m_queue.capacity() <= N)
       m_queue.set_capacity(N);
 
+    m_color.resize(N);
+
     ossia::bfs::breadth_first_search_simple(graph, source, to_find, m_queue, m_color);
     return ok;
   }
 private:
   boost::circular_buffer<graph_vertex_t> m_queue;
-  boost::container::flat_map<graph_vertex_t, boost::two_bit_color_type> m_color;
+
+  using pmap_type = decltype(boost::make_two_bit_color_map_fast(0, get(boost::vertex_index, m_graph)));
+  pmap_type make_pmap(std::size_t N)
+  {
+    using namespace boost;
+    return make_two_bit_color_map_fast(N, get(vertex_index, m_graph));
+  }
+  pmap_type m_color{make_pmap(0)};
 };
 
 struct tc_graph final: public graph_static_base
