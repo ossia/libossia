@@ -12,8 +12,8 @@
 #include <QTextStream>
 #include <QFile>
 
-static const constexpr int NUM_TAKES = 10;
-static const constexpr auto NUM_NODES = {1, 2, 3, 4, 5, 10, 15, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 500, 750, 1000};
+static const constexpr int NUM_TAKES = 16;
+static const constexpr auto NUM_NODES = {1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 400, 500/*, 600, 700, 800, 900, 1000*/};
 //static const constexpr auto NUM_NODES = {1, 30, 50};
 
 static std::random_device rd{};
@@ -63,11 +63,14 @@ struct benchmarks
   benchmark static_clean;
   benchmark bfs;
   benchmark tc;
+  benchmark boost_tc;
 };
 
 
+struct measure_dirty_tick
+{
 template<typename T, typename U>
-auto measure_dirty_tick(T& g, const U& nodes)
+auto operator()(T& g, const U& nodes)
 {
   ossia::execution_state e;
 
@@ -83,16 +86,19 @@ auto measure_dirty_tick(T& g, const U& nodes)
     CALLGRIND_STOP_INSTRUMENTATION;
     auto t1 = std::chrono::high_resolution_clock::now();
     auto this_count = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-    if(this_count > 1000 * 1000)
+    if(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0) > std::chrono::milliseconds(50))
       throw std::runtime_error("too long");
     count += this_count;
 
   }
   return count / double(NUM_TAKES);
 }
+};
 
+struct measure_clean_tick
+{
 template<typename T, typename U>
-auto measure_clean_tick(T& g, const U& nodes)
+auto operator()(T& g, const U& nodes)
 {
   ossia::execution_state e;
 
@@ -111,54 +117,40 @@ auto measure_clean_tick(T& g, const U& nodes)
     CALLGRIND_STOP_INSTRUMENTATION;
     auto t1 = std::chrono::high_resolution_clock::now();
     auto this_count = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-    if(this_count > 1000 * 1000)
+    if(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0) > std::chrono::milliseconds(50))
       throw std::runtime_error("too long");
     count += this_count;
   }
 
   return count / double(NUM_TAKES);
 }
+};
 
 template<typename Fun>
 auto test_graph(Fun setup_fun)
 {
+  auto do_bench = [&] (auto graph_t, auto measure_fun, auto& bench_kind) {
+    for(int num_nodes : NUM_NODES)
+    {
+      try {
+        double count = 0;
+        for(int i = 0; i < NUM_TAKES; i++)
+        {
+          decltype(graph_t) g;
+          count += measure_fun(g, setup_fun(num_nodes, g));
+        }
+        count = count / double(NUM_TAKES);
+        bench_kind.insert({num_nodes, count});
+      } catch(...) { break; }
+    }
+  };
+
   benchmarks benchs;
-  for(int num_nodes : NUM_NODES)
-  {
-    ossia::graph g;
-    auto nodes = setup_fun(num_nodes, g);
-    try {
-      auto count = measure_dirty_tick(g, nodes);
-      benchs.dynamic.insert({num_nodes, count});
-    } catch(...) { break; }
-  }
-  for(int num_nodes : NUM_NODES)
-  {
-    ossia::bfs_graph g;
-    auto nodes = setup_fun(num_nodes, g);
-    try {
-      auto count = measure_clean_tick(g, nodes);
-      benchs.static_clean.insert({num_nodes, count});
-    } catch(...) { break; }
-  }
-  for(int num_nodes : NUM_NODES)
-  {
-    ossia::bfs_graph g;
-    auto nodes = setup_fun(num_nodes, g);
-    try {
-      auto count = measure_dirty_tick(g, nodes);
-      benchs.bfs.insert({num_nodes, count});
-    } catch(...) { break; }
-  }
-  for(int num_nodes : NUM_NODES)
-  {
-    ossia::tc_graph g;
-    auto nodes = setup_fun(num_nodes, g);
-    try {
-      auto count = measure_dirty_tick(g, nodes);
-      benchs.tc.insert({num_nodes, count});
-    } catch(...) { break; }
-  }
+  do_bench(ossia::graph{}, measure_dirty_tick{}, benchs.dynamic);
+  do_bench(ossia::bfs_graph{}, measure_clean_tick{}, benchs.static_clean);
+  do_bench(ossia::bfs_graph{}, measure_dirty_tick{}, benchs.bfs);
+  do_bench(ossia::tc_graph{}, measure_dirty_tick{}, benchs.tc);
+
   CALLGRIND_DUMP_STATS;
   return benchs;
 }
@@ -406,56 +398,56 @@ int main()
   benchs.insert(std::make_pair("parallel connected", test_graph(setup_parallel_connected{})));
   benchs.insert(std::make_pair("parallel address", test_graph(setup_parallel_address{})));
 
-  benchs.insert(std::make_pair("random edge (10%)", test_graph(setup_random{0.1})));
-  benchs.insert(std::make_pair("random edge (50%)", test_graph(setup_random{0.5})));
-  benchs.insert(std::make_pair("random edge (90%)", test_graph(setup_random{0.9})));
-  benchs.insert(std::make_pair("random edge (100%)", test_graph(setup_random{1.})));
+  benchs.insert(std::make_pair("random edge (10p)", test_graph(setup_random{0.1})));
+  benchs.insert(std::make_pair("random edge (50p)", test_graph(setup_random{0.5})));
+  benchs.insert(std::make_pair("random edge (90p)", test_graph(setup_random{0.9})));
+  benchs.insert(std::make_pair("random edge (100p)", test_graph(setup_random{1.})));
 
-  benchs.insert(std::make_pair("random 10 addresses (10%)", test_graph(setup_random{0., 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (50%)", test_graph(setup_random{0., 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (90%)", test_graph(setup_random{0., 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (100%)", test_graph(setup_random{0., 1., 10})));
+  benchs.insert(std::make_pair("random 10 addresses (10p)", test_graph(setup_random{0., 0.1, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (50p)", test_graph(setup_random{0., 0.5, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (90p)", test_graph(setup_random{0., 0.9, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (100p)", test_graph(setup_random{0., 1., 10})));
 
-  benchs.insert(std::make_pair("random 100 addresses (10%)", test_graph(setup_random{0., 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (50%)", test_graph(setup_random{0., 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (90%)", test_graph(setup_random{0., 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (100%)", test_graph(setup_random{0., 1., 100})));
+  benchs.insert(std::make_pair("random 100 addresses (10p)", test_graph(setup_random{0., 0.1, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (50p)", test_graph(setup_random{0., 0.5, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (90p)", test_graph(setup_random{0., 0.9, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (100p)", test_graph(setup_random{0., 1., 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 10%, addr 10%)", test_graph(setup_random{0.1, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 10%, addr 50%)", test_graph(setup_random{0.1, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 10%, addr 90%)", test_graph(setup_random{0.1, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 10%, addr 100%)", test_graph(setup_random{0.1, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10%, addr 10%)", test_graph(setup_random{0.1, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10%, addr 50%)", test_graph(setup_random{0.1, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10%, addr 90%)", test_graph(setup_random{0.1, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10%, addr 100%)", test_graph(setup_random{0.1, 1.0, 100})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 10p)", test_graph(setup_random{0.1, 0.1, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 50p)", test_graph(setup_random{0.1, 0.5, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 90p)", test_graph(setup_random{0.1, 0.9, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 100p)", test_graph(setup_random{0.1, 1., 10})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 10p)", test_graph(setup_random{0.1, 0.1, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 50p)", test_graph(setup_random{0.1, 0.5, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 90p)", test_graph(setup_random{0.1, 0.9, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 100p)", test_graph(setup_random{0.1, 1.0, 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 50%, addr 10%)", test_graph(setup_random{0.5, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 50%, addr 50%)", test_graph(setup_random{0.5, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 50%, addr 90%)", test_graph(setup_random{0.5, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 50%, addr 100%)", test_graph(setup_random{0.5, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50%, addr 10%)", test_graph(setup_random{0.5, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50%, addr 50%)", test_graph(setup_random{0.5, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50%, addr 90%)", test_graph(setup_random{0.5, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50%, addr 100%)", test_graph(setup_random{0.5, 1.0, 100})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 10p)", test_graph(setup_random{0.5, 0.1, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 50p)", test_graph(setup_random{0.5, 0.5, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 90p)", test_graph(setup_random{0.5, 0.9, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 100p)", test_graph(setup_random{0.5, 1., 10})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 10p)", test_graph(setup_random{0.5, 0.1, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 50p)", test_graph(setup_random{0.5, 0.5, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 90p)", test_graph(setup_random{0.5, 0.9, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 100p)", test_graph(setup_random{0.5, 1.0, 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 90%, addr 10%)", test_graph(setup_random{0.9, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 90%, addr 50%)", test_graph(setup_random{0.9, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 90%, addr 90%)", test_graph(setup_random{0.9, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 90%, addr 100%)", test_graph(setup_random{0.9, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90%, addr 10%)", test_graph(setup_random{0.9, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90%, addr 50%)", test_graph(setup_random{0.9, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90%, addr 90%)", test_graph(setup_random{0.9, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90%, addr 100%)", test_graph(setup_random{0.9, 1.0, 100})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 10p)", test_graph(setup_random{0.9, 0.1, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 50p)", test_graph(setup_random{0.9, 0.5, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 90p)", test_graph(setup_random{0.9, 0.9, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 100p)", test_graph(setup_random{0.9, 1., 10})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 10p)", test_graph(setup_random{0.9, 0.1, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 50p)", test_graph(setup_random{0.9, 0.5, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 90p)", test_graph(setup_random{0.9, 0.9, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 100p)", test_graph(setup_random{0.9, 1.0, 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 100%, addr 10%)", test_graph(setup_random{1.0, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 100%, addr 50%)", test_graph(setup_random{1.0, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 100%, addr 90%)", test_graph(setup_random{1.0, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 100%, addr 100%)", test_graph(setup_random{1.0, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100%, addr 10%)", test_graph(setup_random{1.0, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100%, addr 50%)", test_graph(setup_random{1.0, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100%, addr 90%)", test_graph(setup_random{1.0, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100%, addr 100%)", test_graph(setup_random{1.0, 1.0, 100})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 10p)", test_graph(setup_random{1.0, 0.1, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 50p)", test_graph(setup_random{1.0, 0.5, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 90p)", test_graph(setup_random{1.0, 0.9, 10})));
+  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 100p)", test_graph(setup_random{1.0, 1., 10})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 10p)", test_graph(setup_random{1.0, 0.1, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 50p)", test_graph(setup_random{1.0, 0.5, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 90p)", test_graph(setup_random{1.0, 0.9, 100})));
+  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 100p)", test_graph(setup_random{1.0, 1.0, 100})));
 
   // The plots we want:
   // For each bench: comparison between dynamic, bfs and transitive closure, in the clean and dirty case. So 6 curves
@@ -465,35 +457,34 @@ int main()
     f.open(QIODevice::WriteOnly);
     QTextStream ts(&f);
     // NumNodes Dynamic StaticClean BfsDirty TClosDirty
-    ts << "$N$"   << "\t"
-       << "Dyn" << "\t"
-       << "StaticClean" << "\t"
-       << "BFSDirty" << "\t"
-       << "TCDirty"
-       << "\n";
+    ts << "$N$"          << "\t"
+       << "Dyn"          << "\t"
+       << "StaticClean"  << "\t"
+       << "BFSDirty"     << "\t"
+       << "TCDirty"      << "\n";
 
-    const auto& dyn_bench = bench.second.dynamic;
-    const auto& sta_bench = bench.second.static_clean;
-    const auto& bfs_bench = bench.second.bfs;
-    const auto& tc_bench = bench.second.tc;
     for(int n : NUM_NODES)
     {
+      auto add_value = [&] (const benchmark& bench) {
+        auto it = bench.find(n);
+        if(it != bench.end())
+          ts << it->second;
+        else
+          ts << "nan";
+      };
+
       ts << n << "\t";
 
-      if(dyn_bench.find(n) != dyn_bench.end())
-        ts << dyn_bench.at(n);
+      add_value(bench.second.dynamic);
       ts << "\t";
 
-      if(sta_bench.find(n) != sta_bench.end())
-        ts << sta_bench.at(n);
+      add_value(bench.second.static_clean);
       ts << "\t";
 
-      if(bfs_bench.find(n) != bfs_bench.end())
-        ts << bfs_bench.at(n);
+      add_value(bench.second.bfs);
       ts << "\t";
 
-      if(tc_bench.find(n) != tc_bench.end())
-        ts << tc_bench.at(n);
+      add_value(bench.second.tc);
       ts << "\n";
     }
   }

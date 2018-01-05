@@ -13,7 +13,6 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/graph/graphviz.hpp>
-#include <boost/graph/transitive_closure.hpp>
 
 class DataflowTest;
 

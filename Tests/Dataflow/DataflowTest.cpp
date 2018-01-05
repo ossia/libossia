@@ -136,7 +136,7 @@ struct execution_mock
 struct base_graph
 {
   //ossia::graph g;
-  ossia::bfs_graph g;
+  ossia::tc_graph g;
   ossia::execution_state e;
 
   base_graph(ossia::TestDevice& test)
