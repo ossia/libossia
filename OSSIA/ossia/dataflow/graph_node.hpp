@@ -77,6 +77,9 @@ public:
     requested_tokens.clear();
   }
 
+  void set_logging(bool b) { m_logging = b; }
+  bool logged() const { return m_logging; }
+
   ossia::small_vector<token_request, 4> requested_tokens;
 
 protected:
@@ -90,5 +93,6 @@ protected:
 private:
   bool m_start_discontinuous{};
   bool m_end_discontinuous{};
+  bool m_logging{};
 };
 }

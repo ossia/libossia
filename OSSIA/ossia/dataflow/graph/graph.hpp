@@ -45,6 +45,59 @@ public:
       if (cur_it != end)
       {
         g.exec_node(**cur_it, e);
+
+        std::iter_swap(end - executed - 1, cur_it);
+        executed++;
+      }
+      else
+      {
+        break; // nothing more to execute
+      }
+    }
+  }
+
+
+  template<typename Comp_T>
+  static void tick(
+      graph& g,
+      execution_state& e,
+      std::vector<graph_node*>& active_nodes,
+      Comp_T&& comp,
+      spdlog::logger& log)
+  {
+    std::size_t executed = 0;
+    while (executed != active_nodes.size())
+    {
+      // Find all the nodes for which the inlets have executed
+      // (or without cables on the inlets)
+
+      auto end = active_nodes.end();
+      auto cur_it = end;
+      for(auto it = active_nodes.begin(); it != end - executed; ++it)
+      {
+        auto node = *it;
+        if(cur_it != end)
+        {
+          if(!comp(*cur_it, node) && can_execute(*node, e))
+            cur_it = it;
+        }
+        else
+        {
+          if(can_execute(*node, e))
+          {
+            cur_it = it;
+          }
+        }
+      }
+
+      if (cur_it != end)
+      {
+        ossia::graph_node& node = **cur_it;
+        if(!node.logged())
+          g.exec_node(node, e);
+        else
+          g.exec_node(node, e, log);
+
         std::iter_swap(end - executed - 1, cur_it);
         executed++;
       }
@@ -341,7 +394,10 @@ public:
 
       // Start executing the nodes
       get_enabled_nodes(m_graph);
-      tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e});
+      if(!logger)
+        tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e});
+      else
+        tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e}, *logger);
 
       finish_nodes(m_nodes);
     }
@@ -354,6 +410,8 @@ public:
 
   const graph_t& impl() const { return m_graph; }
   std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)> sort_fun{simple_topo_sort{m_graph}};
+
+  std::shared_ptr<spdlog::logger> logger;
   private:
 
   node_map m_nodes;

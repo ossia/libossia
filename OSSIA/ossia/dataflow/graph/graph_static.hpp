@@ -30,6 +30,25 @@ struct OSSIA_EXPORT graph_static_base
       }
     }
   }
+  static void tick_static(
+      graph_static_base& g,
+      execution_state& e,
+      std::vector<graph_node*>& active_nodes,
+      spdlog::logger& logger)
+  {
+    for(auto node : active_nodes)
+    {
+      if(node->enabled())
+      {
+        assert(can_execute(*node, e));
+        if(!node->logged())
+          g.exec_node(*node, e);
+        else
+          g.exec_node(*node, e, logger);
+      }
+    }
+  }
+
 
 public:
   void mark_dirty() override
@@ -211,7 +230,10 @@ public:
       }
 
       disable_strict_nodes_rec(m_enabled_cache, m_disabled_cache);
-      tick_static(*this, e, m_all_nodes);
+      if(!logger)
+        tick_static(*this, e, m_all_nodes);
+      else
+        tick_static(*this, e, m_all_nodes, *logger);
 
       finish_nodes(m_nodes);
     }
@@ -225,6 +247,7 @@ public:
 
   const graph_t& impl() const { return m_graph; }
   graph_t& impl() { return m_graph; }
+  std::shared_ptr<spdlog::logger> logger;
   protected:
 
   node_map m_nodes;
