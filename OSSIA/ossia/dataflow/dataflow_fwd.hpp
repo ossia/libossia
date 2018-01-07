@@ -50,26 +50,13 @@ using outlet_ptr = std::shared_ptr<outlet>;
 class graph_interface;
 
 struct audio_port;
-#if defined(OSSIA_PROTOCOL_MIDI)
 struct midi_port;
-#endif
 struct value_port;
 
 struct audio_delay_line;
-#if defined(OSSIA_PROTOCOL_MIDI)
 struct midi_delay_line;
-#endif
 struct value_delay_line;
 
-#if defined(OSSIA_PROTOCOL_MIDI)
 using data_type = eggs::variant<audio_port, midi_port, value_port>;
-#else
-using data_type = eggs::variant<audio_port, value_port>;
-#endif
-
-#if defined(OSSIA_PROTOCOL_MIDI)
 using delay_line_type = eggs::variant<audio_delay_line, midi_delay_line, value_delay_line>;
-#else
-using delay_line_type = eggs::variant<audio_delay_line, value_delay_line>;
-#endif
 }

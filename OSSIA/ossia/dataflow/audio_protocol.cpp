@@ -12,8 +12,12 @@ audio_protocol::audio_protocol():
   bufferSize{128}
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
+#if defined(__EMSCRIPTEN__)
+  SDL_Init(SDL_INIT_AUDIO);
+#else
   if(Pa_Initialize() != paNoError)
     throw std::runtime_error("Audio error");
+#endif
 #endif
 }
 
@@ -21,7 +25,11 @@ audio_protocol::~audio_protocol()
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
+#if defined(__EMSCRIPTEN__)
+  SDL_Quit();
+#else
   Pa_Terminate();
+#endif
 #endif
 }
 
@@ -68,11 +76,14 @@ void audio_protocol::set_device(ossia::net::device_base& dev)
 void audio_protocol::stop()
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
+#if defined(__EMSCRIPTEN__)
+#else
   if(m_stream)
   {
     Pa_StopStream(m_stream);
     m_stream = nullptr;
   }
+#endif
 #endif
 }
 
@@ -81,6 +92,8 @@ void audio_protocol::reload()
 #if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
 
+#if defined(__EMSCRIPTEN__)
+#else
   auto inputInfo = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
   auto outputInfo = Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice());
   inputs = inputInfo->maxInputChannels;
@@ -135,11 +148,13 @@ void audio_protocol::reload()
   else
     std::cerr << "Error while opening audio stream: " << Pa_GetErrorText(ec) << std::endl;
 #endif
+#endif
 }
 
+
+#if defined(__EMSCRIPTEN__)
+#else
 PaStream*audio_protocol::stream() { return m_stream; }
-
-
 int audio_protocol::PortAudioCallback(
     const void* input,
     void* output,
@@ -225,4 +240,5 @@ int audio_protocol::PortAudioCallback(
   return {};
 #endif
 }
+#endif
 }

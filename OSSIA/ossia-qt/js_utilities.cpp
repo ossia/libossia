@@ -130,6 +130,7 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
 namespace qt
 {
 
+#if defined(QT_QML_LIB)
 value js_value_inbound_visitor::operator()(impulse) const
 {
   return impulse{};
@@ -233,7 +234,7 @@ value js_value_inbound_visitor::operator()() const
 {
   return {};
 }
-
+#endif
 
 
 value variant_inbound_visitor::operator()(impulse) const
@@ -327,7 +328,7 @@ value variant_inbound_visitor::operator()() const
 
 
 
-
+#if defined(QT_QML_LIB)
 ossia::complex_type get_type(const QJSValue& val)
 {
   // TODO handle other cases ? string, extended, etc...
@@ -601,6 +602,8 @@ value value_from_js(const QJSValue& v)
     return {};
   }
 }
+#endif
+
 
 void set_parameter_type(QVariant::Type type, net::parameter_base& addr)
 {

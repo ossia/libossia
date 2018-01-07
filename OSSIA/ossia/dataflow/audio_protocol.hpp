@@ -1,14 +1,21 @@
 #pragma once
 #include <ossia-config.hpp>
+#include <ossia/network/base/protocol.hpp>
+#include <ossia/dataflow/audio_parameter.hpp>
+
+
 #if defined(OSSIA_PROTOCOL_AUDIO)
-#include <portaudio.h>
+#if defined(__EMSCRIPTEN__)
+  #include <SDL/SDL.h>
+  #include <SDL/SDL_audio.h>
+#else
+  #include <portaudio.h>
+#endif
 #else
 using PaStream = int;
 using PaStreamCallbackTimeInfo = int;
 using PaStreamCallbackFlags = int;
 #endif
-#include <ossia/network/base/protocol.hpp>
-#include <ossia/dataflow/audio_parameter.hpp>
 
 
 namespace ossia
@@ -24,12 +31,17 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     std::atomic_bool replace_tick{false};
     std::function<void(unsigned long)> ui_tick;
     std::function<void(unsigned long)> audio_tick;
+
+#if defined(__EMSCRIPTEN__)
+    static int SDLCallback(void* userData,Uint8* _stream,int _length);
+#else
     static int PortAudioCallback(
         const void *input, void *output,
         unsigned long frameCount,
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags,
         void *userData);
+#endif
 
     audio_protocol();
 
@@ -48,10 +60,14 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     void reload();
 
+#if !defined(__EMSCRIPTEN__)
     PaStream* stream();
+#endif
   private:
     ossia::net::device_base* m_dev{};
+#if !defined(__EMSCRIPTEN__)
     PaStream* m_stream{};
+#endif
 
     ossia::audio_parameter* main_audio_in{};
     ossia::audio_parameter* main_audio_out{};

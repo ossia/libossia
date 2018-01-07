@@ -17,7 +17,6 @@ struct audio_port
   audio_vector samples;
 };
 
-#if defined(OSSIA_PROTOCOL_MIDI)
 struct midi_port
 {
   value_vector<mm::MidiMessage> messages;
@@ -36,7 +35,6 @@ struct midi_port
   midi_port& operator=(const midi_port&) = delete;
   midi_port& operator=(midi_port&&) = delete;
 };
-#endif
 
 struct tvalue {
   tvalue(ossia::value&& v): value{std::move(v)} { }
@@ -111,12 +109,10 @@ struct audio_delay_line
   std::vector<audio_vector> samples;
 };
 
-#if defined(OSSIA_PROTOCOL_MIDI)
 struct midi_delay_line
 {
   std::vector<value_vector<mm::MidiMessage>> messages;
 };
-#endif
 
 struct value_delay_line
 {
@@ -135,12 +131,10 @@ struct clear_data
     p.clear();
   }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
   void operator()(midi_port& p) const
   {
     p.messages.clear();
   }
-#endif
 
   void operator()(audio_port& p) const
   {
@@ -159,12 +153,10 @@ struct data_size
     return p.data.size();
   }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
   std::size_t operator()(const midi_delay_line& p) const
   {
     return p.messages.size();
   }
-#endif
 
   std::size_t operator()(const audio_delay_line& p) const
   {
@@ -286,13 +278,11 @@ struct mix
 
   }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
   void operator()(const value_vector<mm::MidiMessage>& out, value_vector<mm::MidiMessage>& in)
   {
     for (const auto& data : out)
       in.push_back(data);
   }
-#endif
 };
 
 struct copy_data
@@ -317,12 +307,10 @@ struct copy_data
     in.samples.push_back(out.samples);
   }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
   void operator()(const midi_port& out, midi_delay_line& in)
   {
     in.messages.push_back(out.messages);
   }
-#endif
 
   void operator()(const value_vector<ossia::tvalue>& out, value_port& in)
   {
@@ -339,12 +327,10 @@ struct copy_data
     mix{}(out.samples, in.samples, in.upmix);
   }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
   void operator()(const midi_port& out, midi_port& in)
   {
     mix{}(out.messages, in.messages);
   }
-#endif
 };
 
 struct copy_data_pos
@@ -372,7 +358,6 @@ struct copy_data_pos
     }
   }
 
-#if defined(OSSIA_PROTOCOL_MIDI)
   void operator()(const midi_delay_line& out, midi_port& in)
   {
     if (pos < out.messages.size())
@@ -380,7 +365,6 @@ struct copy_data_pos
       mix{}(out.messages[pos], in.messages);
     }
   }
-#endif
 };
 
 }

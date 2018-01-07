@@ -8,14 +8,9 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <QDebug>
 #include <QHash>
-#include <QJSEngine>
-#include <QJSValue>
-#include <QJSValueIterator>
 #include <QLineF>
 #include <QMetaEnum>
 #include <QPoint>
-#include <QQmlExtensionPlugin>
-#include <QQmlProperty>
 #include <QRectF>
 #include <QString>
 #include <QStringBuilder>
@@ -28,9 +23,16 @@
 #include <QtGui/QVector4D>
 #include <ossia/preset/preset.hpp>
 #include <ossia-qt/metatypes.hpp>
-#include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/name_utils.hpp>
 
+#if defined(QT_QML_LIB)
+#include <ossia-qt/qml_context.hpp>
+#include <QJSEngine>
+#include <QJSValue>
+#include <QJSValueIterator>
+#include <QQmlExtensionPlugin>
+#include <QQmlProperty>
+#endif
 namespace ossia
 {
 namespace qt
@@ -57,6 +59,7 @@ struct QArray<4>
   using type = QVector4D;
 };
 
+#if defined(QT_QML_LIB)
 /**
  * @brief The matching_ossia_enum struct
  *
@@ -113,6 +116,7 @@ public:
 
   ossia::value operator()() const;
 };
+#endif
 
 struct OSSIA_EXPORT variant_inbound_visitor
 {
@@ -338,6 +342,7 @@ struct ossia_to_qvariant
   }
 };
 
+#if defined(QT_QML_LIB)
 /**
  * @brief The js_value_outbound_visitor struct
  *
@@ -581,6 +586,7 @@ QMetaObject::Connection connectSignalToMatchingMethod(
   }
   return {};
 }
+#endif
 }
 }
 

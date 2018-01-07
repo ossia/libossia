@@ -2,8 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/thread.hpp>
 #include <string>
-#include <ossia/../../3rdparty/whereami/src/whereami.h>
-#include <ossia/../../3rdparty/whereami/src/whereami.c>
 
 #if defined(_MSC_VER)
 
@@ -33,9 +31,11 @@ namespace ossia
 {
 void set_thread_realtime(std::thread& t)
 {
+#if !defined(__EMSCRIPTEN__)
   sched_param sch_params;
   sch_params.sched_priority = 99;
   pthread_setschedparam(t.native_handle(), SCHED_FIFO, &sch_params);
+#endif
 }
 
 int get_pid()
@@ -48,6 +48,18 @@ int get_pid()
 #endif
 
 
+#if defined(__EMSCRIPTEN__)
+std::string get_exe_path()
+{
+    return "";
+}
+std::string get_module_path()
+{
+    return "";
+}
+#else
+#include <ossia/../../3rdparty/whereami/src/whereami.h>
+#include <ossia/../../3rdparty/whereami/src/whereami.c>
 namespace ossia
 {
 std::string get_exe_path()
@@ -83,3 +95,5 @@ std::string get_module_path()
 }
 
 }
+
+#endif

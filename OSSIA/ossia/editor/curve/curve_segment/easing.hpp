@@ -35,7 +35,11 @@ struct ease
   template <typename T, typename U, typename V>
   constexpr T operator()(T a, U b, V t) const
   {
+#if defined(FP_FAST_FMA)
     return ossia::fma(t, b, ossia::fma(-t, a, a));
+#else
+    return (static_cast<T>(1) - t) * a + t * b;
+#endif
   }
 };
 

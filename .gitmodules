@@ -78,3 +78,6 @@
 [submodule "3rdparty/SmallFunction"]
 	path = 3rdparty/SmallFunction
 	url = https://github.com/jcelerier/SmallFunction
+[submodule "3rdparty/flat_hash_map"]
+	path = 3rdparty/flat_hash_map
+	url = https://github.com/skarupke/flat_hash_map
