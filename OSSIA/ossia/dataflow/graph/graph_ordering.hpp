@@ -74,40 +74,6 @@ struct init_node_visitor
 
     void operator()(immediate_glutton_connection) const
     {
-      operator()();
-    }
-
-    void operator()(immediate_strict_connection) const
-    {
-      Graph_T::copy(*edge.out, in);
-    }
-
-    void operator()(delayed_glutton_connection& con) const
-    {
-      Graph_T::copy(con.buffer, con.pos, in);
-      con.pos++;
-    }
-
-    void operator()(delayed_strict_connection& con) const
-    {
-      Graph_T::copy(con.buffer, con.pos, in);
-      con.pos++;
-    }
-
-    void operator()(reduction_connection) const
-    {
-      operator()();
-    }
-    void operator()(replacing_connection) const
-    {
-      operator()();
-    }
-    void operator()(dependency_connection) const
-    {
-      operator()();
-    }
-    void operator()() const
-    {
       if (edge.out_node->enabled())
       {
         Graph_T::copy(*edge.out, in);
@@ -118,6 +84,35 @@ struct init_node_visitor
         Graph_T::pull_from_parameter(in, e);
       }
     }
+
+    void operator()(immediate_strict_connection) const
+    {
+      // if it's a strict connection then the other node
+      // is necessarily enabled
+      Graph_T::copy(*edge.out, in);
+    }
+
+    void operator()(delayed_glutton_connection& con) const
+    {
+      // TODO If there is data...
+      // Else...
+      Graph_T::copy(con.buffer, con.pos, in);
+      con.pos++;
+    }
+
+    void operator()(delayed_strict_connection& con) const
+    {
+      Graph_T::copy(con.buffer, con.pos, in);
+      con.pos++;
+    }
+
+    void operator()(dependency_connection) const
+    {
+    }
+
+    void operator()() const
+    {
+    }
 };
 
 struct env_writer
@@ -125,37 +120,52 @@ struct env_writer
     outlet& out;
     graph_edge& edge;
     execution_state& e;
-    void operator()(immediate_glutton_connection) const
+    bool operator()(const immediate_glutton_connection&) const
     {
-      out.write(e);
+      return !edge.in_node->enabled();
     }
-    void operator()(immediate_strict_connection) const
+    bool operator()(const immediate_strict_connection& con) const
     {
-      // Nothing to do : copied on "input" phase
+      using rs = immediate_strict_connection::required_sides_t;
+      switch(con.required_sides)
+      {
+        case rs::inbound:
+        case rs::outbound:
+          // TODO
+          break;
+        default:
+        case rs::both:
+          // Nothing to do : copied on "input" phase if the node is active,
+          // or no need to copy if the node isn't
+          break;
+      }
+      return false;
     }
-    void operator()(delayed_glutton_connection& con) const
+    bool operator()(delayed_glutton_connection& con) const
     {
       // Copy to the buffer
       if (con.buffer && out.data && con.buffer.which() == out.data.which())
+      {
         eggs::variants::apply(copy_data{}, out.data, con.buffer);
+      }
+      return false;
     }
-    void operator()(delayed_strict_connection& con) const
+    bool operator()(delayed_strict_connection& con) const
     {
       // Copy to the buffer
       if (con.buffer && out.data && con.buffer.which() == out.data.which())
+      {
         eggs::variants::apply(copy_data{}, out.data, con.buffer);
+      }
+      return false;
     }
-    void operator()(reduction_connection) const
+    bool operator()(const dependency_connection&) const
     {
+      return false;
     }
-    void operator()(replacing_connection) const
+    bool operator()() const
     {
-    }
-    void operator()(dependency_connection) const
-    {
-    }
-    void operator()() const
-    {
+      return false;
     }
 };
 

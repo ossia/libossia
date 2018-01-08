@@ -202,7 +202,7 @@ public:
   }
 
   template<typename T>
-  void state(execution_state& e, T updateFun)
+  void compute_state(execution_state& e, T updateFun)
   {
     try
     {
@@ -276,7 +276,7 @@ public:
   }
   void state(execution_state& e) override
   {
-    return graph_static_base::state(e, [=] (auto& dev) { update_graph_bfs(dev); });
+    return graph_static_base::compute_state(e, [=] (auto& dev) { update_graph_bfs(dev); });
   }
 
   template<typename DevicesT>
@@ -388,7 +388,7 @@ public:
 
   void state(execution_state& e) override
   {
-    return graph_static_base::state(e, [=] (auto& dev) { update_graph_tclosure(dev); });
+    return graph_static_base::compute_state(e, [=] (auto& dev) { update_graph_tclosure(dev); });
   }
 
   using transitive_closure_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;
@@ -502,7 +502,7 @@ public:
 
   void state(execution_state& e) override
   {
-    return graph_static_base::state(e, [=] (auto& dev) { update_graph_tclosure(dev); });
+    return graph_static_base::compute_state(e, [=] (auto& dev) { update_graph_tclosure(dev); });
   }
 
   using transitive_closure_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;

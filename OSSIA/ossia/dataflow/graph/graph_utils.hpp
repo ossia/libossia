@@ -34,17 +34,17 @@ enum class node_ordering
 };
 
 template<typename T>
-void apply_con(const T& visitor, ossia::connection& con)
+auto apply_con(const T& visitor, ossia::connection& con)
 {
   auto tgt = con.target();
   switch(con.which())
   {
-    case 0: visitor(*reinterpret_cast<immediate_glutton_connection*>(tgt)); break;
-    case 1: visitor(*reinterpret_cast<immediate_strict_connection*>(tgt)); break;
-    case 2: visitor(*reinterpret_cast<delayed_glutton_connection*>(tgt)); break;
-    case 3: visitor(*reinterpret_cast<delayed_strict_connection*>(tgt)); break;
-    case 4: visitor(*reinterpret_cast<dependency_connection*>(tgt)); break;
-    default: visitor(); break;
+    case 0: return visitor(*reinterpret_cast<immediate_glutton_connection*>(tgt)); break;
+    case 1: return visitor(*reinterpret_cast<immediate_strict_connection*>(tgt)); break;
+    case 2: return visitor(*reinterpret_cast<delayed_glutton_connection*>(tgt)); break;
+    case 3: return visitor(*reinterpret_cast<delayed_strict_connection*>(tgt)); break;
+    case 4: return visitor(*reinterpret_cast<dependency_connection*>(tgt)); break;
+    default: return visitor(); break;
   }
 }
 
@@ -162,11 +162,18 @@ struct OSSIA_EXPORT graph_util
     // Copy from output ports to environment
     for (const outlet_ptr& out : n.outputs())
     {
-      out->write(e);
-      for (auto tgt : out->targets)
+      bool must_copy = out->targets.empty();
+
+      // If some following glutton nodes aren't enabled, then we copy to the env.
+      for (const auto& tgt : out->targets)
       {
-        ossia::apply_con(env_writer{*out, *tgt, e}, tgt->con);
+        must_copy |= ossia::apply_con(env_writer{*out, *tgt, e}, tgt->con);
       }
+
+      // if there are two outgoing glutton connections, one active, the other inactive
+      // then we want to copy through cable for the first one, and through env for the second one
+      if(must_copy)
+        out->write(e);
     }
   }
 /*

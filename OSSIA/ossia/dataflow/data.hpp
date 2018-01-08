@@ -92,7 +92,7 @@ struct value_port
     data.clear();
   }
 
-  const auto& get_data() const { return data; }
+  const value_vector<ossia::tvalue>& get_data() const { return data; }
 
   ossia::domain domain;
   ossia::bounding_mode bounding{};

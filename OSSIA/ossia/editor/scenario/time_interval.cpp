@@ -317,6 +317,11 @@ void time_interval::remove_time_process(time_process* timeProcess)
   }
 }
 
+void time_interval::cleanup()
+{
+  m_processes.clear();
+}
+
 
 interval_node::interval_node()
 {

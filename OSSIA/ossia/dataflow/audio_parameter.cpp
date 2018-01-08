@@ -1,4 +1,5 @@
 #include "audio_parameter.hpp"
+#include "audio_protocol.hpp"
 #include "execution_state.hpp"
 
 namespace ossia
@@ -279,6 +280,27 @@ void sound_node::run(ossia::token_request t, ossia::execution_state& e)
   {
     ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
   }
+}
+
+virtual_audio_parameter::~virtual_audio_parameter()
+{
+
+}
+
+mapped_audio_parameter::mapped_audio_parameter(bool output, audio_mapping m, net::node_base& n)
+  : audio_parameter{n}
+  , mapping(std::move(m))
+  , is_output{output}
+{
+  auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
+  proto.register_parameter(*this);
+}
+
+mapped_audio_parameter::~mapped_audio_parameter()
+{
+  auto& proto = static_cast<ossia::audio_protocol&>(get_node().get_device().get_protocol());
+  proto.unregister_parameter(*this);
+
 }
 
 

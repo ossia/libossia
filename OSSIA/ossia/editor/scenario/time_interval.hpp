@@ -206,6 +206,8 @@ public:
     m_globalSpeed = m_parentSpeed * m_speed;
   }
 
+  void cleanup();
+
 private:
   time_interval(const time_interval&) = delete;
   time_interval(time_interval&&) = delete;

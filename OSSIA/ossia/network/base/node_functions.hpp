@@ -126,6 +126,21 @@ auto create_parameter(ossia::net::node_base& root, std::string name)
   return addr;
 }
 
+template<typename Address>
+auto find_or_create_parameter(ossia::net::node_base& root, std::string name)
+{
+  auto& node = ossia::net::find_or_create_node(root, std::move(name));
+  if(auto p = dynamic_cast<Address*>(node.get_parameter()))
+  {
+    return p;
+  }
+  else
+  {
+    auto addr = new Address(node);
+    node.set_parameter(std::unique_ptr<Address>(addr));
+    return addr;
+  }
+}
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
 
 void expand_ranges(std::string& str);

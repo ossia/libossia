@@ -60,6 +60,9 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     void reload();
 
+    void register_parameter(mapped_audio_parameter& p);
+    void unregister_parameter(mapped_audio_parameter& p);
+
 #if !defined(__EMSCRIPTEN__)
     PaStream* stream();
 #endif
@@ -73,6 +76,9 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     ossia::audio_parameter* main_audio_out{};
     std::vector<ossia::audio_parameter*> audio_ins;
     std::vector<ossia::audio_parameter*> audio_outs;
+
+    std::vector<ossia::mapped_audio_parameter*> in_mappings;
+    std::vector<ossia::mapped_audio_parameter*> out_mappings;
 };
 
 }

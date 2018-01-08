@@ -1,4 +1,5 @@
 #include <ossia/dataflow/audio_protocol.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #if defined(__MACH__)
 #include <mach/mach_init.h>
 #include <mach/thread_policy.h>
@@ -101,17 +102,16 @@ void audio_protocol::reload()
 
   audio_ins.clear();
   audio_outs.clear();
-  m_dev->get_root_node().clear_children();
 
-  main_audio_in = ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/main");
-  main_audio_out = ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/main");
+  main_audio_in = ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/main");
+  main_audio_out = ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/main");
   for(int i = 0; i < inputs; i++)
   {
-    audio_ins.push_back(ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/" + std::to_string(i)));
+    audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/" + std::to_string(i)));
   }
   for(int i = 0; i < outputs; i++)
   {
-    audio_outs.push_back(ossia::net::create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
+    audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
   }
 
   PaStreamParameters inputParameters;
@@ -149,6 +149,30 @@ void audio_protocol::reload()
     std::cerr << "Error while opening audio stream: " << Pa_GetErrorText(ec) << std::endl;
 #endif
 #endif
+}
+
+void audio_protocol::unregister_parameter(mapped_audio_parameter& p)
+{
+  if(p.is_output)
+  {
+    auto it = ossia::find(out_mappings, &p);
+    if(it != out_mappings.end())
+      out_mappings.erase(it);
+  }
+  else
+  {
+    auto it = ossia::find(in_mappings, &p);
+    if(it != in_mappings.end())
+      in_mappings.erase(it);
+  }
+}
+
+void audio_protocol::register_parameter(mapped_audio_parameter& p)
+{
+  if(p.is_output)
+    out_mappings.push_back(&p);
+  else
+    in_mappings.push_back(&p);
 }
 
 
@@ -208,6 +232,15 @@ int audio_protocol::PortAudioCallback(
     self.audio_ins[i]->audio[0] = {float_input[i], fc};
   }
 
+  for(auto mapped: self.in_mappings)
+  {
+    mapped->audio.resize(mapped->mapping.size());
+    for(std::size_t i = 0; i < mapped->mapping.size(); i++)
+    {
+      mapped->audio[i] = {float_input[mapped->mapping[i]], fc};
+    }
+  }
+
   // Prepare audio outputs
   const int n_out_channels = (int)self.audio_outs.size();
   self.main_audio_out->audio.resize(n_out_channels);
@@ -220,6 +253,15 @@ int audio_protocol::PortAudioCallback(
     for(int j = 0; j < (int)frameCount; j++)
     {
       float_output[i][j] = 0;
+    }
+  }
+
+  for(auto mapped: self.out_mappings)
+  {
+    mapped->audio.resize(mapped->mapping.size());
+    for(std::size_t i = 0; i < mapped->mapping.size(); i++)
+    {
+      mapped->audio[i] = {float_output[mapped->mapping[i]], fc};
     }
   }
 

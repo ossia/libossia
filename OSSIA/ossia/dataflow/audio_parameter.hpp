@@ -44,6 +44,44 @@ public:
   net::parameter_base& set_bounding(bounding_mode) override;
 };
 
+class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
+{
+  // todo use a flat vector instead for perf
+  std::vector<std::vector<float>> m_audio_data;
+
+public:
+  virtual_audio_parameter(int num_channels, ossia::net::node_base& n)
+    : audio_parameter{n}
+    , m_audio_data(num_channels)
+  {
+    set_buffer_size(512);
+  }
+
+  void set_buffer_size(int bs)
+  {
+    const auto chan = m_audio_data.size();
+    audio.resize(chan);
+    for(std::size_t i = 0; i < chan; i++)
+    {
+      m_audio_data[i].resize(bs);
+      audio[i] = m_audio_data[i];
+    }
+  }
+
+  virtual ~virtual_audio_parameter();
+};
+
+using audio_mapping = std::vector<int>;
+class OSSIA_EXPORT mapped_audio_parameter final : public audio_parameter
+{
+public:
+  audio_mapping mapping;
+  bool is_output{false};
+  mapped_audio_parameter(bool output, audio_mapping m, ossia::net::node_base& n);
+
+  virtual ~mapped_audio_parameter();
+};
+
 class OSSIA_EXPORT texture_generic_parameter : public ossia::net::parameter_base
 {
   int32_t m_tex{};
