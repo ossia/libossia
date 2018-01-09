@@ -65,6 +65,7 @@ public:
     {
       m_audio_data[i].resize(bs);
       audio[i] = m_audio_data[i];
+      ossia::fill(m_audio_data[i], 0.f);
     }
   }
 

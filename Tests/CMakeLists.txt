@@ -127,6 +127,8 @@ function(ossia_add_bench TESTNAME TESTSRCS)
 endFunction()
 
 ossia_add_test(IntervalBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/IntervalBenchmark.cpp")
+ossia_add_bench(AutomationBenchmark        "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp")
+ossia_add_bench(OverallBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/OverallBenchmark.cpp")
 ossia_add_bench(GraphBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/GraphBenchmark.cpp")
 set(OSSIA_BENCHMARKS 0)
 if(OSSIA_BENCHMARKS)

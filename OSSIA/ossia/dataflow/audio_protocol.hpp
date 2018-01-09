@@ -2,7 +2,7 @@
 #include <ossia-config.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/dataflow/audio_parameter.hpp>
-
+#include <smallfun.hpp>
 
 #if defined(OSSIA_PROTOCOL_AUDIO)
 #if defined(__EMSCRIPTEN__)
@@ -62,6 +62,8 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     void register_parameter(mapped_audio_parameter& p);
     void unregister_parameter(mapped_audio_parameter& p);
+    void register_parameter(virtual_audio_parameter& p);
+    void unregister_parameter(virtual_audio_parameter& p);
 
 #if !defined(__EMSCRIPTEN__)
     PaStream* stream();
@@ -79,6 +81,8 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     std::vector<ossia::mapped_audio_parameter*> in_mappings;
     std::vector<ossia::mapped_audio_parameter*> out_mappings;
+    std::vector<ossia::virtual_audio_parameter*> virtaudio;
+    moodycamel::ReaderWriterQueue<smallfun::function<void()>> funlist;
 };
 
 }

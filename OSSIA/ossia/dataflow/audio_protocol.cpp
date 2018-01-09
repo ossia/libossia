@@ -151,28 +151,48 @@ void audio_protocol::reload()
 #endif
 }
 
-void audio_protocol::unregister_parameter(mapped_audio_parameter& p)
-{
-  if(p.is_output)
-  {
-    auto it = ossia::find(out_mappings, &p);
-    if(it != out_mappings.end())
-      out_mappings.erase(it);
-  }
-  else
-  {
-    auto it = ossia::find(in_mappings, &p);
-    if(it != in_mappings.end())
-      in_mappings.erase(it);
-  }
-}
-
 void audio_protocol::register_parameter(mapped_audio_parameter& p)
 {
-  if(p.is_output)
-    out_mappings.push_back(&p);
-  else
-    in_mappings.push_back(&p);
+  funlist.enqueue([&] {
+    if(p.is_output)
+      out_mappings.push_back(&p);
+    else
+      in_mappings.push_back(&p);
+  });
+}
+
+void audio_protocol::unregister_parameter(mapped_audio_parameter& p)
+{
+  funlist.enqueue([&] {
+    if(p.is_output)
+    {
+      auto it = ossia::find(out_mappings, &p);
+      if(it != out_mappings.end())
+        out_mappings.erase(it);
+    }
+    else
+    {
+      auto it = ossia::find(in_mappings, &p);
+      if(it != in_mappings.end())
+        in_mappings.erase(it);
+    }
+  });
+}
+
+void audio_protocol::register_parameter(virtual_audio_parameter& p)
+{
+  funlist.enqueue([&] {
+      virtaudio.push_back(&p);
+  });
+}
+
+void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
+{
+  funlist.enqueue([&] {
+    auto it = ossia::find(virtaudio, &p);
+    if(it != virtaudio.end())
+      virtaudio.erase(it);
+  });
 }
 
 
@@ -187,6 +207,13 @@ int audio_protocol::PortAudioCallback(
     PaStreamCallbackFlags statusFlags,
     void* userData)
 {
+  auto& self = *static_cast<audio_protocol*>(userData);
+  {
+    smallfun::function<void()> f;
+    while(self.funlist.try_dequeue(f))
+      f();
+  }
+
   /*
 #if defined(__MACH__)
   static bool set_pol = false;
@@ -216,10 +243,15 @@ int audio_protocol::PortAudioCallback(
 #if defined(OSSIA_PROTOCOL_AUDIO)
   using idx_t = gsl::span<float>::index_type;
   const idx_t fc = frameCount;
-  auto& self = *static_cast<audio_protocol*>(userData);
 
   auto float_input = ((float **) input);
   auto float_output = ((float **) output);
+
+  // Prepare virtual audio inputs
+  for(auto virt : self.virtaudio)
+  {
+    virt->set_buffer_size(frameCount);
+  }
 
   // Prepare audio inputs
   const int n_in_channels = (int)self.audio_ins.size();
