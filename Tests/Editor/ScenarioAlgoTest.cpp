@@ -538,6 +538,7 @@ class ScenarioAlgoTest : public QObject
       ossia::execution_state e;
       g.add_node(msg_node);
       g.state(e);
+      e.commit();
 
       QVERIFY(utils.float_addr->value() == ossia::value(float(1.234)));
       QCOMPARE(c2->get_date(), 8_tv);
@@ -798,7 +799,7 @@ class ScenarioAlgoTest : public QObject
         ossia::execution_state s;
         g.state(s);
         QVERIFY(s.m_valueState.size() == 1);
-        QVERIFY(s.m_valueState.begin()->second.back().value == ossia::value(0.f));
+        QVERIFY(s.m_valueState.begin()->second.back().first.value == ossia::value(0.f));
       }
 
       s.interval->tick(1_tv);
@@ -806,7 +807,7 @@ class ScenarioAlgoTest : public QObject
         ossia::execution_state s;
         g.state(s);
         QVERIFY(s.m_valueState.size() == 1);
-        QVERIFY(s.m_valueState.begin()->second.back().value == ossia::value(0.5f));
+        QVERIFY(s.m_valueState.begin()->second.back().first.value == ossia::value(0.5f));
       }
 
       s.interval->tick(1_tv);
@@ -814,7 +815,7 @@ class ScenarioAlgoTest : public QObject
         ossia::execution_state s;
         g.state(s);
         QVERIFY(s.m_valueState.size() == 1);
-        QVERIFY(s.m_valueState.begin()->second.back().value == ossia::value(1.f));
+        QVERIFY(s.m_valueState.begin()->second.back().first.value == ossia::value(1.f));
       }
 
       s.interval->tick(1_tv);
@@ -851,7 +852,7 @@ class ScenarioAlgoTest : public QObject
         ossia::execution_state s;
         g.state(s);
         QVERIFY(s.m_valueState.size() == 1);
-        QVERIFY(s.m_valueState.begin()->second.back().value == ossia::value(0.f));
+        QVERIFY(s.m_valueState.begin()->second.back().first.value == ossia::value(0.f));
       }
 
       s.interval->tick(3_tv);
@@ -859,7 +860,7 @@ class ScenarioAlgoTest : public QObject
         ossia::execution_state s;
         g.state(s);
         QVERIFY(s.m_valueState.size() == 1);
-        QVERIFY(s.m_valueState.begin()->second.back().value == ossia::value(3./5.));
+        QVERIFY(s.m_valueState.begin()->second.back().first.value == ossia::value(3./5.));
       }
 
       s.interval->tick(7_tv);
@@ -867,7 +868,7 @@ class ScenarioAlgoTest : public QObject
         ossia::execution_state s;
         g.state(s);
         QVERIFY(s.m_valueState.size() == 1);
-        QVERIFY(s.m_valueState.begin()->second.back().value == ossia::value(1.f));
+        QVERIFY(s.m_valueState.begin()->second.back().first.value == ossia::value(1.f));
       }
 
       s.interval->tick(1_tv);

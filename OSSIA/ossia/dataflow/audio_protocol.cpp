@@ -12,6 +12,7 @@ namespace ossia
 audio_protocol::audio_protocol():
   bufferSize{128}
 {
+  audio_tick = [] (auto&&...) { };
 #if defined(OSSIA_PROTOCOL_AUDIO)
 #if defined(__EMSCRIPTEN__)
   SDL_Init(SDL_INIT_AUDIO);
@@ -81,7 +82,14 @@ void audio_protocol::stop()
 #else
   if(m_stream)
   {
-    Pa_StopStream(m_stream);
+    auto ec = Pa_StopStream(m_stream);
+    std::cerr << "=== stream stop ===\n";
+
+    if(ec != PaErrorCode::paNoError)
+    {
+      std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec) << std::endl;
+    }
+
     m_stream = nullptr;
   }
 #endif
@@ -113,6 +121,19 @@ void audio_protocol::reload()
   {
     audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
   }
+
+  main_audio_in->audio.resize(inputs);
+  for(int i = 0; i < inputs; i++)
+  {
+    audio_ins[i]->audio.resize(1);
+  }
+
+  main_audio_out->audio.resize(outputs);
+  for(int i = 0; i < outputs; i++)
+  {
+    audio_outs[i]->audio.resize(1);
+  }
+
 
   PaStreamParameters inputParameters;
   inputParameters.device = Pa_GetDefaultInputDevice();
@@ -214,32 +235,6 @@ int audio_protocol::PortAudioCallback(
       f();
   }
 
-  /*
-#if defined(__MACH__)
-  static bool set_pol = false;
-  if(!set_pol)
-  {
-    //thread_port_t threadport = pthread_mach_thread_np(pthread_self());
-
-
-    mach_timebase_info_data_t timebase_info;
-    mach_timebase_info(&timebase_info);
-
-    const uint64_t NANOS_PER_MSEC = 1000000ULL;
-    double clock2abs = ((double)timebase_info.denom / (double)timebase_info.numer) * NANOS_PER_MSEC;
-
-    thread_time_constraint_policy_data_t policy;
-    policy.period      = 0;//(uint32_t) (44100 / frameCount) * clock2abs;
-    policy.computation = (uint32_t)((1000 * frameCount / 44100) * clock2abs); // 5 ms of work
-    policy.constraint  = (uint32_t)((1200 * frameCount / 44100) * clock2abs);
-    policy.preemptible = FALSE;
-
-    thread_policy_set( mach_thread_self(), THREAD_TIME_CONSTRAINT_POLICY, (int *)&policy, THREAD_TIME_CONSTRAINT_POLICY_COUNT );
-    set_pol = true;
-
-  }
-#endif
-*/
 #if defined(OSSIA_PROTOCOL_AUDIO)
   using idx_t = gsl::span<float>::index_type;
   const idx_t fc = frameCount;
@@ -254,13 +249,10 @@ int audio_protocol::PortAudioCallback(
   }
 
   // Prepare audio inputs
-  const int n_in_channels = (int)self.audio_ins.size();
-  self.main_audio_in->audio.resize(n_in_channels);
+  const int n_in_channels = self.inputs;
   for(int i = 0; i < n_in_channels; i++)
   {
     self.main_audio_in->audio[i] = {float_input[i], fc};
-
-    self.audio_ins[i]->audio.resize(1);
     self.audio_ins[i]->audio[0] = {float_input[i], fc};
   }
 
@@ -274,12 +266,10 @@ int audio_protocol::PortAudioCallback(
   }
 
   // Prepare audio outputs
-  const int n_out_channels = (int)self.audio_outs.size();
-  self.main_audio_out->audio.resize(n_out_channels);
+  const int n_out_channels = self.outputs;
   for(int i = 0; i < n_out_channels; i++)
   {
     self.main_audio_out->audio[i] = {float_output[i], fc};
-    self.audio_outs[i]->audio.resize(1);
     self.audio_outs[i]->audio[0] = {float_output[i], fc};
 
     for(int j = 0; j < (int)frameCount; j++)
@@ -305,10 +295,7 @@ int audio_protocol::PortAudioCallback(
     self.replace_tick = false;
   }
 
-  if(self.audio_tick)
-  {
-    self.audio_tick(frameCount);
-  }
+  self.audio_tick(frameCount, timeInfo->currentTime);
   return paContinue;
 #else
   return {};

@@ -5,6 +5,8 @@
 #include <boost/type_traits/function_traits.hpp>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
+#include <boost/spirit/home/x3.hpp>
+#include <fmt/format.h>
 namespace ossia
 {
 
@@ -77,6 +79,7 @@ struct numeric_value_converter
       return T{};
     }
   }
+
   T operator()(const vec2f& v) const
   {
     return v[0];
@@ -99,14 +102,59 @@ struct numeric_value_converter
 template <>
 struct value_converter<int> : public numeric_value_converter<int>
 {
+    using numeric_value_converter<int>::operator();
+    int operator()(const std::string& v) const
+    {
+      try
+      {
+        using boost::spirit::x3::int_;
+        int x;
+        boost::spirit::x3::parse(v.begin(), v.end(), int_, x);
+        return x;
+      }
+      catch (...)
+      {
+        return int{};
+      }
+    }
 };
 template <>
 struct value_converter<float> : public numeric_value_converter<float>
 {
+    using numeric_value_converter<float>::operator();
+    float operator()(const std::string& v) const
+    {
+      try
+      {
+        using boost::spirit::x3::float_;
+        float x;
+        boost::spirit::x3::parse(v.begin(), v.end(), float_, x);
+        return x;
+      }
+      catch (...)
+      {
+        return int{};
+      }
+    }
 };
 template <>
 struct value_converter<double> : public numeric_value_converter<double>
 {
+    using numeric_value_converter<double>::operator();
+    double operator()(const std::string& v) const
+    {
+      try
+      {
+        using boost::spirit::x3::double_;
+        double x;
+        boost::spirit::x3::parse(v.begin(), v.end(), double_, x);
+        return x;
+      }
+      catch (...)
+      {
+        return int{};
+      }
+    }
 };
 template <>
 struct value_converter<bool> : public numeric_value_converter<bool>
@@ -117,29 +165,92 @@ struct value_converter<char> : public numeric_value_converter<char>
 {
 };
 
+struct fmt_writer
+{
+    fmt::MemoryWriter& wr;
+
+    void operator()(impulse) const
+    {
+      wr << "impulse";
+    }
+    void operator()(int32_t v) const
+    {
+      wr << v;
+    }
+    void operator()(float v) const
+    {
+      wr << v;
+    }
+    void operator()(bool v) const
+    {
+      if(v) wr << "true";
+      else  wr << "false";
+    }
+    void operator()(char v) const
+    {
+      wr << v;
+    }
+    void operator()(const std::string& v) const
+    {
+      wr << v;
+    }
+    void operator()() const
+    {
+    }
+    template <std::size_t N>
+    void operator()(std::array<float, N> v) const
+    {
+      wr << '[' << v[0];
+      for (std::size_t i = 1; i < N; i++)
+        wr << ", " << v[i];
+      wr << ']';
+    }
+    void operator()(const std::vector<ossia::value>& v) const
+    {
+      using namespace std::literals;
+      wr << '[';
+      const auto n = v.size();
+      if (n > 0)
+      {
+        v[0].apply(*this);
+
+        for (std::size_t i = 1; i < n; i++)
+        {
+          wr << ", ";
+          v[i].apply(*this);
+        }
+      }
+      wr << ']';
+    }
+};
+
+
 template <>
 struct value_converter<std::string>
 {
   using T = std::string;
   T operator()(impulse) const
   {
-    return T{};
+    return "impulse";
   }
-  T operator()(int32_t v)
+  T operator()(int32_t v) const
   {
-    return boost::lexical_cast<std::string>(v);
+    return fmt::FormatInt(v).str();
   }
-  T operator()(float v)
+  T operator()(float v) const
   {
-    return boost::lexical_cast<std::string>(v);
+    fmt::MemoryWriter out;
+    out << v;
+    return out.str();
   }
-  T operator()(bool v)
+  T operator()(bool v) const
   {
-    return boost::lexical_cast<std::string>(v);
+    using namespace std::literals;
+    return v ? "true"s : "false"s;
   }
-  T operator()(char v)
+  T operator()(char v) const
   {
-    return boost::lexical_cast<std::string>(v);
+    return std::string(1, v);
   }
   T operator()(const std::string& v) const
   {
@@ -148,34 +259,26 @@ struct value_converter<std::string>
 
   T operator()() const
   {
-    return T{};
+    return {};
   }
 
   template <std::size_t N>
   T operator()(std::array<float, N> v) const
   {
-    std::string s = "[";
-    s += boost::lexical_cast<std::string>(v[0]);
+    fmt::MemoryWriter out;
+    out << '[' << v[0];
     for (std::size_t i = 1; i < N; i++)
-      s += ", " + boost::lexical_cast<std::string>(v[i]);
-    s += "]";
-    return s;
+      out << ", " << v[i];
+    out << ']';
+    return out.str();
   }
 
   T operator()(const std::vector<ossia::value>& v) const
   {
     using namespace std::literals;
-    std::string s = "["s;
-    const auto n = v.size();
-    if (n > 0)
-    {
-      s += convert<std::string>(v[0]);
-
-      for (std::size_t i = 1; i < n; i++)
-        s += ", "s + convert<std::string>(v[i]);
-    }
-    s += "]"s;
-    return s;
+    fmt::MemoryWriter out;
+    fmt_writer{out}(v);
+    return out.str();
   }
 };
 

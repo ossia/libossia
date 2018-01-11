@@ -4,12 +4,16 @@
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/network/midi/midi_device.hpp>
-
+#include <flat_hash_map.hpp>
+#include <ossia/editor/state/flat_state.hpp>
+#include <ossia/editor/state/state.hpp>
+#include <boost/container/flat_map.hpp>
 namespace ossia
 {
 struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
+    execution_state();
     ossia::net::node_base* find_node(std::string_view name)
     {
       for(auto dev : valueDevices)
@@ -18,6 +22,14 @@ struct OSSIA_EXPORT execution_state
           return res;
       }
       return nullptr;
+    }
+
+    template<typename T>
+    auto get_value_or(std::string_view v, T val)
+    {
+      if(auto node = find_node(v))
+        return ossia::convert<T>(node->get_parameter()->value());
+      return val;
     }
 
     void register_device(ossia::net::device_base* d);
@@ -36,12 +48,18 @@ struct OSSIA_EXPORT execution_state
     void clear_devices();
     void reset();
     void commit();
+    void commit_merged();
+    void commit_ordered();
+    void commit_common();
+
     void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
     void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
 
     // todo separate rvalue & cref
-    void insert(const destination_t& dest, data_type v);
-    void insert(const destination_t& dest, tvalue v);
+    void insert(const destination_t& dest, const data_type& v);
+    void insert(const destination_t& dest, data_type&& v);
+    void insert(const destination_t& dest, const tvalue& v);
+    void insert(const destination_t& dest, tvalue&& v);
     void insert(const destination_t& dest, const audio_port& v);
     void insert(const destination_t& dest, const midi_port& v);
 
@@ -50,8 +68,8 @@ struct OSSIA_EXPORT execution_state
     int sampleRate{44100};
     int bufferSize{64};
     int64_t samples_since_start{};
-    std::chrono::high_resolution_clock::time_point start_date;
-    std::chrono::high_resolution_clock::time_point cur_date;
+    double start_date{}; // in ns, for vst
+    double cur_date{};
 
     ossia::small_vector<ossia::net::device_base*, 4> valueDevices;
     ossia::small_vector<ossia::net::midi::midi_protocol*, 2> midiDevices;
@@ -60,13 +78,21 @@ struct OSSIA_EXPORT execution_state
     ossia::small_vector<ossia::net::device_base*, 4> allDevices;
 
     // private:// disabled due to tests, but for some reason can't make friend work
-    tsl::hopscotch_map<destination_t, value_vector<tvalue>> m_valueState;
-    tsl::hopscotch_map<destination_t, audio_port> m_audioState;
-    tsl::hopscotch_map<destination_t, value_vector<mm::MidiMessage>> m_midiState;
+    using value_state_impl = boost::container::flat_multimap<int64_t, std::pair<ossia::value, int>>;
+    ska::flat_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>> m_valueState;
+    ska::flat_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
+    ska::flat_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>> m_midiState;
 
     std::list<message_queue> m_valueQueues;
 
     ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>> m_receivedValues;
     ossia::ptr_map<ossia::net::midi::midi_protocol*, value_vector<mm::MidiMessage>> m_receivedMidi;
+
+    ossia::mono_state m_monoState;
+    ossia::flat_vec_state m_commitOrderedState;
+    boost::container::flat_map<std::pair<int64_t, int>, std::vector<ossia::state_element>> m_flatMessagesCache;
+
+    int m_msgIndex{};
+
 };
 }

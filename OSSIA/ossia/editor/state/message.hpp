@@ -33,7 +33,7 @@ struct OSSIA_EXPORT message
   {
     return dest.unit;
   }
-  void launch() const;
+  void launch();
 
   friend bool operator==(const message& lhs, const message& rhs)
   {
@@ -81,7 +81,7 @@ struct OSSIA_EXPORT piecewise_message
   {
     return unit;
   }
-  void launch() const;
+  void launch();
 
   friend bool
   operator==(const piecewise_message& lhs, const piecewise_message& rhs)
@@ -110,7 +110,7 @@ struct piecewise_vec_message
   {
     return unit;
   }
-  void launch() const;
+  void launch();
 
   friend bool operator==(
       const piecewise_vec_message& lhs, const piecewise_vec_message& rhs)

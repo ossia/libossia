@@ -104,6 +104,11 @@ struct OSSIA_EXPORT graph_util
   {
     in.insert(destination_t{&d.address()}, out);
   }
+  static void copy_to_local(
+      data_type&& out, const destination& d, execution_state& in)
+  {
+    in.insert(destination_t{&d.address()}, std::move(out));
+  }
 
   static void copy_to_global(
       const data_type& out, const destination& d, execution_state& in)
@@ -111,9 +116,15 @@ struct OSSIA_EXPORT graph_util
     // TODO
   }
 
+  static void copy_to_global(
+      data_type&& out, const destination& d, execution_state& in)
+  {
+    // TODO
+  }
+
   static void pull_from_parameter(inlet& in, execution_state& e)
   {
-    apply_to_destination(in.address, e.allDevices, [&] (ossia::net::parameter_base* addr) {
+    apply_to_destination(in.address, e.allDevices, [&] (ossia::net::parameter_base* addr, bool) {
       if (in.scope & port::scope_t::local)
       {
         e.find_and_copy(*addr, in);

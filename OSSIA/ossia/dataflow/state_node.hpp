@@ -2,6 +2,7 @@
 #include <ossia/detail/apply.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/dataflow/execution_state.hpp>
 
 namespace ossia {
 namespace detail
@@ -17,11 +18,6 @@ struct state_exec_visitor
     void operator()(const ossia::message& msg)
     {
       e.insert(&msg.dest.address(), {ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit }});
-    }
-
-    void operator()(const ossia::custom_state& st)
-    {
-      st.launch();
     }
 
     template<std::size_t N>

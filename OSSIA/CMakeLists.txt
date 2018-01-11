@@ -353,6 +353,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/frozen/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/bitset2>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
 )
 
 target_include_directories(ossia SYSTEM

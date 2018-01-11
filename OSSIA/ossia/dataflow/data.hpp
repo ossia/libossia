@@ -54,7 +54,6 @@ struct tvalue {
   int64_t timestamp{};
   destination_index index{};
   ossia::complex_type type{};
-
 };
 
 struct value_port
@@ -93,6 +92,7 @@ struct value_port
   }
 
   const value_vector<ossia::tvalue>& get_data() const { return data; }
+  value_vector<ossia::tvalue>& get_data() { return data; }
 
   ossia::domain domain;
   ossia::bounding_mode bounding{};
@@ -172,6 +172,11 @@ struct data_size
 
 struct mix
 {
+  void operator()(const value_vector<std::pair<ossia::tvalue, int>>& out, value_port& in)
+  {
+    for(auto& val : out)
+      in.add_raw_value(val.first);
+  }
   void operator()(const value_vector<ossia::tvalue>& out, value_port& in)
   {
     for(auto& val : out)
@@ -296,6 +301,14 @@ struct copy_data
   {
     in.data.push_back(out);
   }
+  void operator()(const value_vector<std::pair<ossia::tvalue, int>>& out, value_delay_line& in)
+  {
+    value_vector<ossia::tvalue> v;
+    v.reserve(out.size());
+    for(auto& val : out)
+      v.push_back(val.first);
+    in.data.push_back(std::move(v));
+  }
 
   void operator()(const value_port& out, value_delay_line& in)
   {
@@ -312,6 +325,10 @@ struct copy_data
     in.messages.push_back(out.messages);
   }
 
+  void operator()(const value_vector<std::pair<ossia::tvalue, int>>& out, value_port& in)
+  {
+    mix{}(out, in);
+  }
   void operator()(const value_vector<ossia::tvalue>& out, value_port& in)
   {
     mix{}(out, in);

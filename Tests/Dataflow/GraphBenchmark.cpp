@@ -37,7 +37,7 @@ template<typename Port_T>
 class node_empty_mock final : public graph_node {
 public:
   std::string lbl{};
-  std::string_view label() const override
+  std::string label() const override
   {
     return lbl;
   }

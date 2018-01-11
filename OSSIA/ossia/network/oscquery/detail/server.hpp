@@ -31,7 +31,11 @@ public:
     m_server.set_socket_init_handler(
         [](websocketpp::connection_hdl, asio::ip::tcp::socket& s) {
           asio::ip::tcp::no_delay option(true);
+          try {
           s.set_option(option);
+          } catch(...) {
+            ossia::logger().warn("Could not set TCP nodelay option");
+          }
         });
   }
 

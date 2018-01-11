@@ -13,7 +13,7 @@ class node_mock : public graph_node {
 
 public:
   const char* lbl{};
-  std::string_view label() const override
+  std::string label() const override
   {
     return lbl;
   }
@@ -201,6 +201,8 @@ struct simple_implicit_graph: base_graph
 
     g.add_node(n1);
     g.add_node(n2);
+
+    g.connect(make_edge(ossia::dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
 
     this->n1 = n1.get();
     this->n2 = n2.get();

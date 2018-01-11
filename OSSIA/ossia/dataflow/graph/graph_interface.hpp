@@ -18,5 +18,7 @@ public:
   virtual void state(execution_state& e) = 0;
 
   virtual void clear() = 0;
+
+  virtual void print(std::ostream&) = 0;
 };
 }

@@ -25,6 +25,41 @@ struct TestDevice
     b = device.create_child("b")->create_parameter(val_type::LIST);
     c = device.create_child("c")->create_parameter(val_type::LIST);
     d = device.create_child("d")->create_parameter(val_type::LIST);
+
+    f1 = device.create_child("f1")->create_parameter(val_type::FLOAT);
+    f2 = device.create_child("f2")->create_parameter(val_type::FLOAT);
+    f3 = device.create_child("f3")->create_parameter(val_type::FLOAT);
+    f4 = device.create_child("f4")->create_parameter(val_type::FLOAT);
+
+
+    rgb = device.create_child("argb")->create_parameter(val_type::VEC4F); rgb->set_unit(ossia::argb_u{});
+    hsv = device.create_child("hsv")->create_parameter(val_type::VEC3F); hsv->set_unit(ossia::hsv_u{});
+    rad = device.create_child("rad")->create_parameter(val_type::FLOAT); rad->set_unit(ossia::radian_u{});
+    polar = device.create_child("polar")->create_parameter(val_type::VEC2F); polar->set_unit(ossia::polar_u{});
+    all_params.push_back(impulse_addr);
+    all_params.push_back(bool_addr);
+    all_params.push_back(int_addr);
+    all_params.push_back(float_addr);
+    all_params.push_back(char_addr);
+    all_params.push_back(string_addr);
+    all_params.push_back(vec2f_addr);
+    all_params.push_back(vec3f_addr);
+    all_params.push_back(vec4f_addr);
+    all_params.push_back(tuple_addr);
+    all_params.push_back(a);
+    all_params.push_back(b);
+    all_params.push_back(c);
+    all_params.push_back(d);
+    all_params.push_back(rgb);
+    all_params.push_back(hsv);
+    all_params.push_back(rad);
+    all_params.push_back(polar);
+
+    float_params.push_back(float_addr);
+    float_params.push_back(f1);
+    float_params.push_back(f2);
+    float_params.push_back(f3);
+    float_params.push_back(f4);
   }
 
   ossia::net::generic_device device;
@@ -42,6 +77,18 @@ struct TestDevice
   ossia::net::parameter_base* b;
   ossia::net::parameter_base* c;
   ossia::net::parameter_base* d;
+  ossia::net::parameter_base* f1;
+  ossia::net::parameter_base* f2;
+  ossia::net::parameter_base* f3;
+  ossia::net::parameter_base* f4;
+
+  ossia::net::parameter_base* rgb;
+  ossia::net::parameter_base* hsv;
+  ossia::net::parameter_base* rad;
+  ossia::net::parameter_base* polar;
+
+  std::vector<ossia::net::parameter_base*> all_params;
+  std::vector<ossia::net::parameter_base*> float_params;
 };
 struct TestDeviceRef
 {

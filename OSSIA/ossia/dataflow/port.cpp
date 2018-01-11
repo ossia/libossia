@@ -10,14 +10,28 @@ namespace ossia
 
 void outlet::write(execution_state& e)
 {
-  apply_to_destination(address, e.allDevices, [&] (ossia::net::parameter_base* addr) {
-    if (scope & port::scope_t::local)
+  apply_to_destination(address, e.allDevices, [&] (ossia::net::parameter_base* addr, bool unique) {
+    if(unique)
     {
-      graph_util::copy_to_local(data, *addr, e);
+      if (scope & port::scope_t::local)
+      {
+        graph_util::copy_to_local(std::move(data), *addr, e);
+      }
+      else if (scope & port::scope_t::global)
+      {
+        graph_util::copy_to_global(std::move(data), *addr, e);
+      }
     }
-    else if (scope & port::scope_t::global)
+    else
     {
-      graph_util::copy_to_global(data, *addr, e);
+      if (scope & port::scope_t::local)
+      {
+        graph_util::copy_to_local(data, *addr, e);
+      }
+      else if (scope & port::scope_t::global)
+      {
+        graph_util::copy_to_global(data, *addr, e);
+      }
     }
   });
 }

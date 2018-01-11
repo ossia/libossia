@@ -29,8 +29,8 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     int outputs{};
 
     std::atomic_bool replace_tick{false};
-    std::function<void(unsigned long)> ui_tick;
-    std::function<void(unsigned long)> audio_tick;
+    smallfun::function<void(unsigned long, double)> ui_tick;
+    smallfun::function<void(unsigned long, double)> audio_tick;
 
 #if defined(__EMSCRIPTEN__)
     static int SDLCallback(void* userData,Uint8* _stream,int _length);

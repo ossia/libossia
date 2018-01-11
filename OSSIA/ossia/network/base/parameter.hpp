@@ -137,7 +137,7 @@ public:
     return m_disabled || m_muted;
   } //! by default there is no filter
 
-  ossia::unit_t get_unit() const;
+  const ossia::unit_t& get_unit() const { return m_unit; }
   virtual parameter_base& set_unit(const ossia::unit_t& v);
 
   // Shared across the network

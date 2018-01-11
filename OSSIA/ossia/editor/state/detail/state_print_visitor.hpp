@@ -25,11 +25,6 @@ struct state_print_visitor
     out << "}\n";
   }
 
-  void operator()(const custom_state& e)
-  {
-    out << padding << "custom\n";
-  }
-
   void operator()(const message& m)
   {
     out << padding << "message: " << ossia::to_pretty_string(m.dest)

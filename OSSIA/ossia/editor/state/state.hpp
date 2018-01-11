@@ -59,7 +59,7 @@ public:
   std::size_t size() const;
   bool empty() const;
 
-  void launch() const;
+  void launch();
 
   void add(const state_element& e);
   void add(state_element&& e);
@@ -74,6 +74,8 @@ public:
   }
 
   void remove(const state_element& e);
+  void remove(std::vector<state_element>::iterator e);
+  void remove(std::vector<state_element>::const_iterator e);
 
   void reserve(std::size_t);
   void clear();

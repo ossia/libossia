@@ -19,7 +19,7 @@ void apply_to_destination(
       const DeviceList_T& devices;
       void operator()(ossia::net::parameter_base* addr) const
       {
-        f(addr);
+        f(addr, true);
       }
       void operator()(ossia::net::node_base* addr) const
       {
@@ -33,9 +33,10 @@ void apply_to_destination(
 
         ossia::traversal::apply(path, roots);
 
+        const bool unique = roots.size() == 1;
         for(auto n : roots)
           if(auto addr = n->get_parameter())
-            (*this)(addr);
+            f(addr, unique);
       }
 
       void operator()() const

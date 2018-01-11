@@ -46,7 +46,7 @@ public:
 
   virtual bool consumes(const execution_state&) const;
   virtual void run(token_request, execution_state&);
-  virtual std::string_view label() const;
+  virtual std::string label() const;
 
   bool has_port_inputs() const;
   bool has_global_inputs() const;

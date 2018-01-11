@@ -25,7 +25,7 @@ scenario_node::scenario_node()
   m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
 }
 
-std::string_view scenario_node::label() const
+std::string scenario_node::label() const
 {
   return "Scenario";
 }

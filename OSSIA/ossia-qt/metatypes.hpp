@@ -12,7 +12,6 @@
 
 #if defined(OSSIA_EDITOR)
 Q_DECLARE_METATYPE(ossia::state)
-Q_DECLARE_METATYPE(ossia::custom_state)
 Q_DECLARE_METATYPE(ossia::state_element)
 #endif
 

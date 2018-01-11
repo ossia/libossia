@@ -9,7 +9,7 @@
 #include <ossia/network/base/node_functions.hpp>
 namespace ossia
 {
-void message::launch() const
+void message::launch()
 {
   ossia::net::parameter_base& addr = dest.value.get();
   const auto& unit = dest.unit;
@@ -18,12 +18,12 @@ void message::launch() const
   {
     if (!unit || unit == addr_unit)
     {
-      addr.push_value(message_value);
+      addr.push_value(std::move(message_value));
     }
     else
     {
       // Convert from this message's unit to the address's unit
-      addr.push_value(ossia::convert(message_value, unit, addr_unit));
+      addr.push_value(ossia::convert(std::move(message_value), unit, addr_unit));
     }
   }
   else
@@ -39,7 +39,7 @@ void message::launch() const
         case ossia::val_type::VEC4F:
         {
           ossia::apply(
-              vec_merger{dest, dest}, cur.v, message_value.v);
+              vec_merger{dest, dest}, cur.v, std::move(message_value).v);
 
           addr.push_value(std::move(cur));
           break;
@@ -49,7 +49,7 @@ void message::launch() const
           auto& cur_list = cur.get<std::vector<ossia::value>>();
           // Insert the value of this message in the existing value array
           value_merger<true>::insert_in_list(
-              cur_list, message_value, dest.index);
+              cur_list, std::move(message_value), dest.index);
           addr.push_value(std::move(cur));
           break;
         }
@@ -58,7 +58,7 @@ void message::launch() const
           // Create a list and put the existing value at [0]
           std::vector<ossia::value> t{std::move(cur)};
           value_merger<true>::insert_in_list(
-              t, message_value, dest.index);
+              t, std::move(message_value), dest.index);
           addr.push_value(std::move(t));
           break;
         }
@@ -68,30 +68,30 @@ void message::launch() const
     {
       addr.push_value(ossia::to_value(ossia::convert(
           ossia::merge(
-              ossia::convert(ossia::net::get_value(addr), unit), message_value,
+              ossia::convert(ossia::net::get_value(addr), unit), std::move(message_value),
               dest.index),
           addr_unit)));
     }
   }
 }
 
-void piecewise_message::launch() const
+void piecewise_message::launch()
 {
   // If values are missing, merge with the existing ones
   auto cur = address.get().value();
   if (auto cur_list = cur.target<std::vector<ossia::value>>())
   {
-    value_merger<true>::merge_list(*cur_list, message_value);
+    value_merger<true>::merge_list(*cur_list, std::move(message_value));
     address.get().push_value(std::move(cur));
   }
   else
   {
-    address.get().push_value(message_value);
+    address.get().push_value(std::move(message_value));
   }
 }
 
 template <std::size_t N>
-void piecewise_vec_message<N>::launch() const
+void piecewise_vec_message<N>::launch()
 {
   ossia::net::parameter_base& addr = address.get();
   auto addr_unit = addr.get_unit();
@@ -99,7 +99,7 @@ void piecewise_vec_message<N>::launch() const
   {
     if (used_values.all())
     {
-      addr.push_value(message_value);
+      addr.push_value(std::move(message_value));
     }
     else
     {
@@ -144,7 +144,7 @@ void piecewise_vec_message<N>::launch() const
       }
       */
 
-      addr.push_value(ossia::convert(message_value, unit, addr_unit));
+      addr.push_value(ossia::convert(std::move(message_value), unit, addr_unit));
     }
     else
     {
@@ -169,14 +169,14 @@ void piecewise_vec_message<N>::launch() const
               merge(       // Merge the automation value with the "unit" value
                   convert( // Put the current value in the Unit domain
                       ossia::net::get_value(addr), unit),
-                  message_value, // Compute the output of the automation
+                  std::move(message_value), // Compute the output of the automation
                   used_values),
               addr.get_unit())));
     }
   }
 }
 
-template OSSIA_EXPORT void piecewise_vec_message<2>::launch() const;
-template OSSIA_EXPORT void piecewise_vec_message<3>::launch() const;
-template OSSIA_EXPORT void piecewise_vec_message<4>::launch() const;
+template OSSIA_EXPORT void piecewise_vec_message<2>::launch();
+template OSSIA_EXPORT void piecewise_vec_message<3>::launch();
+template OSSIA_EXPORT void piecewise_vec_message<4>::launch();
 }

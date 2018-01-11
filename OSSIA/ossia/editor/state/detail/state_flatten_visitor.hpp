@@ -2,6 +2,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/editor/state/flat_state.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/value/value_algorithms.hpp>
 #include <ossia/network/value/value_traits.hpp>
@@ -215,10 +216,11 @@ struct vec_merger
   }
 };
 
-template<bool MergeSingleValues>
+template<typename State_T, typename ExistingIt, bool MergeSingleValues>
 struct state_flatten_visitor_merger
 {
-  ossia::state& state;
+  State_T& state;
+  ExistingIt existing_it;
 
   //// Const reference overloads
   //// Message incoming
@@ -240,8 +242,7 @@ struct state_flatten_visitor_merger
 
       if (res)
       {
-        // TODO do this with iterator instead !!
-        state.remove(existing);
+        state.remove(existing_it);
         state.add(res);
       }
     }
@@ -290,7 +291,7 @@ struct state_flatten_visitor_merger
         value_merger<true>::set_first_value(
             pw.message_value, incoming.message_value);
       }
-      state.remove(existing);
+      state.remove(existing_it);
       state.add(std::move(pw));
     }
   }
@@ -382,7 +383,7 @@ struct state_flatten_visitor_merger
           existing.dest.index);
     }
 
-    state.remove(existing);
+    state.remove(existing_it);
     state.remove(incoming);
     state.add(std::move(other));
   }
@@ -436,9 +437,8 @@ struct state_flatten_visitor_merger
 
       if (res)
       {
-        // TODO do this with iterator instead !!
-        state.remove(existing);
-        state.add(res);
+        state.remove(existing_it);
+        state.add(std::move(res));
       }
     }
     else if (to_append_index_empty && source_index_empty)
@@ -451,7 +451,7 @@ struct state_flatten_visitor_merger
       }
       else
       {
-        state.add(incoming);
+        state.add(std::move(incoming));
       }
     }
     else
@@ -486,7 +486,7 @@ struct state_flatten_visitor_merger
             pw.message_value, std::move(incoming.message_value));
       }
 
-      state.remove(existing);
+      state.remove(existing_it);
       state.add(std::move(pw));
     }
   }
@@ -530,7 +530,7 @@ struct state_flatten_visitor_merger
           existing.dest.index);
     }
 
-    state.remove(existing);
+    state.remove(existing_it);
     state.remove(incoming);
     state.add(std::move(other));
   }
@@ -552,13 +552,6 @@ struct state_flatten_visitor_merger
     throw std::runtime_error(
         "state_flatten_visitor_merger: "
         "impossible case (state <- *");
-  }
-  template <typename T>
-  void operator()(ossia::custom_state&, const T&)
-  {
-    throw std::runtime_error(
-        "state_flatten_visitor_merger: "
-        "impossible case (custom_state <- *");
   }
 
   template <std::size_t M>
@@ -607,10 +600,10 @@ struct state_flatten_visitor_merger
   }
 };
 
-template<bool MergeSingleValues>
+template<typename State_T, bool MergeSingleValues, bool AssumeSameAddresses = false>
 struct state_flatten_visitor
 {
-  ossia::state& state;
+  State_T& state;
 
   static ossia::net::parameter_base* param_ptr(const message& m)
   {
@@ -629,36 +622,122 @@ struct state_flatten_visitor
     return &m.address.get();
   }
 
-  template <typename T>
-  auto find_same_param(const T& incoming)
+  template <typename State_U, typename T>
+  static auto find_same_param(State_U& st, const T& incoming)
   {
-    return find_if(state, [&](const state_element& e) {
-      auto address = param_ptr(incoming);
-      if (const message* m = e.target<message>())
-        return &m->dest.value.get() == address
-               && incoming.get_unit() == m->get_unit();
-      else if (auto p = e.target<piecewise_message>())
-        return &p->address.get() == address
-               && incoming.get_unit() == p->get_unit();
-      else if (auto p2 = e.target<piecewise_vec_message<2>>())
-        return &p2->address.get() == address
-               && incoming.get_unit() == p2->get_unit();
-      else if (auto p3 = e.target<piecewise_vec_message<3>>())
-        return &p3->address.get() == address
-               && incoming.get_unit() == p3->get_unit();
-      else if (auto p4 = e.target<piecewise_vec_message<4>>())
-        return &p4->address.get() == address
-               && incoming.get_unit() == p4->get_unit();
-      else
-        return false;
-    });
+    if constexpr(AssumeSameAddresses)
+    {
+      return find_if(st, [&](const state_element& e)
+      {
+        const auto tgt = e.target();
+        switch(e.which())
+        {
+          case 0:
+          {
+            const auto m = static_cast<const message*>(tgt);
+            return incoming.get_unit() == m->get_unit();
+          }
+            // 1 is state
+          case 2:
+          {
+            const auto p = static_cast<const piecewise_message*>(tgt);
+            return incoming.get_unit() == p->get_unit();
+          }
+          case 3:
+          {
+            const auto p = static_cast<const piecewise_vec_message<2>*>(tgt);
+            return incoming.get_unit() == p->get_unit();
+          }
+          case 4:
+          {
+            const auto p = static_cast<const piecewise_vec_message<3>*>(tgt);
+            return incoming.get_unit() == p->get_unit();
+          }
+          case 5:
+          {
+            const auto p = static_cast<const piecewise_vec_message<4>*>(tgt);
+            return incoming.get_unit() == p->get_unit();
+          }
+          default:
+            return false;
+        }
+      });
+    }
+    else
+    {
+      return find_if(st, [&](const state_element& e)
+      {
+        const auto address = param_ptr(incoming);
+        const auto tgt = e.target();
+        switch(e.which())
+        {
+          case 0:
+          {
+            const auto m = static_cast<const message*>(tgt);
+            return &m->dest.value.get() == address && incoming.get_unit() == m->get_unit();
+          }
+            // 1 is state
+          case 2:
+          {
+            const auto p = static_cast<const piecewise_message*>(tgt);
+            return &p->address.get() == address && incoming.get_unit() == p->get_unit();
+          }
+          case 3:
+          {
+            const auto p = static_cast<const piecewise_vec_message<2>*>(tgt);
+            return &p->address.get() == address && incoming.get_unit() == p->get_unit();
+          }
+          case 4:
+          {
+            const auto p = static_cast<const piecewise_vec_message<3>*>(tgt);
+            return &p->address.get() == address && incoming.get_unit() == p->get_unit();
+          }
+          case 5:
+          {
+            const auto p = static_cast<const piecewise_vec_message<4>*>(tgt);
+            return &p->address.get() == address && incoming.get_unit() == p->get_unit();
+          }
+          default:
+            return false;
+        }
+      });
+    }
+  }
+
+  template <typename T>
+  static auto find_same_param(ossia::flat_set_state& st, const T& incoming)
+  {
+    return st.find(incoming);
+  }
+
+  template <typename T>
+  static auto find_same_param(ossia::mono_state& st, const T& incoming)
+  {
+    return st.find(incoming);
+  }
+
+  ossia::state_element& value(ossia::state_element* iterator)
+  {
+    return *iterator;
+  }
+  ossia::state_element& value(std::vector<ossia::state_element>::iterator iterator)
+  {
+    return *iterator;
+  }
+  ossia::state_element& value(ossia::flat_vec_state::iterator iterator)
+  {
+    return *iterator;
+  }
+  ossia::state_element& value(ossia::flat_set_state::iterator iterator)
+  {
+    return iterator->second;
   }
 
   template <typename Message_T>
   void operator()(Message_T&& incoming)
   {
     // find message with the same address to replace it
-    auto it = find_same_param(incoming);
+    auto it = find_same_param(state, incoming);
     if (it == state.end())
     {
       state.add(std::forward<Message_T>(incoming));
@@ -667,44 +746,39 @@ struct state_flatten_visitor
     {
       using namespace eggs::variants;
       // Merge messages
-      state_flatten_visitor_merger<MergeSingleValues> merger{state};
+      state_flatten_visitor_merger<State_T, std::remove_reference_t<decltype(it)>, MergeSingleValues> merger{state, it};
       // Workaround for a GDB bug if we use a generic lambda
       // in a template function (operator() here)
-      switch (it->which())
+      switch (value(it).which())
       {
         case 0:
           merger(
-              *it->template target<state_element_by_index<0>>(),
+              *value(it).template target<state_element_by_index<0>>(),
               std::forward<Message_T>(incoming));
           break;
         case 1:
           merger(
-              *it->template target<state_element_by_index<1>>(),
+              *value(it).template target<state_element_by_index<1>>(),
               std::forward<Message_T>(incoming));
           break;
         case 2:
           merger(
-              *it->template target<state_element_by_index<2>>(),
+              *value(it).template target<state_element_by_index<2>>(),
               std::forward<Message_T>(incoming));
           break;
         case 3:
           merger(
-              *it->template target<state_element_by_index<3>>(),
+              *value(it).template target<state_element_by_index<3>>(),
               std::forward<Message_T>(incoming));
           break;
         case 4:
           merger(
-              *it->template target<state_element_by_index<4>>(),
+              *value(it).template target<state_element_by_index<4>>(),
               std::forward<Message_T>(incoming));
           break;
         case 5:
           merger(
-              *it->template target<state_element_by_index<5>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        case 6:
-          merger(
-              *it->template target<state_element_by_index<6>>(),
+              *value(it).template target<state_element_by_index<5>>(),
               std::forward<Message_T>(incoming));
           break;
         default:
@@ -722,11 +796,6 @@ struct state_flatten_visitor
     }
   }
 
-  void operator()(const custom_state& e)
-  {
-    state.add(e);
-  }
-
   void operator()(ossia::state&& s)
   {
     state.reserve(state.size() + s.size());
@@ -734,11 +803,6 @@ struct state_flatten_visitor
     {
       ossia::apply(*this, std::move(e));
     }
-  }
-
-  void operator()(custom_state&& e)
-  {
-    state.add(std::move(e));
   }
 
   void operator()()

@@ -220,16 +220,15 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/mapper_visitor.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/custom_state.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/destination_qualifiers.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_execution_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_flatten_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_print_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/functional_state.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/flat_state.hpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 

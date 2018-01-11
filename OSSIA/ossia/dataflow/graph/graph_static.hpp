@@ -159,8 +159,8 @@ public:
     {
       for(const ossia::inlet_ptr& inlet : sink.inputs())
       {
-        apply_to_destination(outlet->address, devices, [&] (ossia::net::parameter_base* p1) {
-          apply_to_destination(inlet->address, devices, [&] (ossia::net::parameter_base* p2) {
+        apply_to_destination(outlet->address, devices, [&] (ossia::net::parameter_base* p1, bool) {
+          apply_to_destination(inlet->address, devices, [&] (ossia::net::parameter_base* p2, bool) {
             if(p1 == p2)
               ok = true;
           });
@@ -247,8 +247,14 @@ public:
 
   const graph_t& impl() const { return m_graph; }
   graph_t& impl() { return m_graph; }
+  const graph_t& sub_impl() const { return m_sub_graph; }
+  graph_t& sub_impl() { return m_sub_graph; }
   std::shared_ptr<spdlog::logger> logger;
   protected:
+  void print(std::ostream& stream) override
+  {
+    print_graph(m_graph, stream);
+  }
 
   node_map m_nodes;
   edge_map m_edges;

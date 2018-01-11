@@ -8,101 +8,102 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_parameter.hpp>
+#include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 namespace ossia
 {
 
 struct local_pull_visitor
 {
-  execution_state& st;
-  destination_t addr;
-  bool operator()(value_port& val)
-  {
-    auto it = st.m_valueState.find(addr);
-    if (it != st.m_valueState.end())
+    execution_state& st;
+    ossia::net::parameter_base* addr{};
+    bool operator()(value_port& val)
     {
-      copy_data{}(it->second, val);
-      return true;
+      auto it = st.m_valueState.find(addr);
+      if (it != st.m_valueState.end() && !it->second.empty())
+      {
+        copy_data{}(it->second, val);
+        return true;
+      }
+      return false;
     }
-    return false;
-  }
 
-  bool operator()(audio_port& val)
-  {
-    auto it = st.m_audioState.find(addr);
-    if (it != st.m_audioState.end())
+    bool operator()(audio_port& val)
     {
-      copy_data{}(it->second, val);
-      return true;
+      auto it = st.m_audioState.find(addr);
+      if (it != st.m_audioState.end() && !it->second.samples.empty())
+      {
+        copy_data{}(it->second, val);
+        return true;
+      }
+      return false;
     }
-    return false;
-  }
 
-  bool operator()(midi_port& val)
-  {
-    auto it = st.m_midiState.find(addr);
-    if (it != st.m_midiState.end())
+    bool operator()(midi_port& val)
     {
-      copy_data{}(it->second, val);
-      return true;
+      auto it = st.m_midiState.find(addr);
+      if (it != st.m_midiState.end() && !it->second.empty())
+      {
+        copy_data{}(it->second, val);
+        return true;
+      }
+      return false;
     }
-    return false;
-  }
 
-  bool operator()()
-  {
-    return false;
-  }
+    bool operator()()
+    {
+      return false;
+    }
 };
 
 // TODO if addresses are missing should they be created automatically ?
 // Else how to create a custom address
 struct global_pull_visitor
 {
-  ossia::execution_state& state;
-  const net::parameter_base& out;
-  void operator()(value_port& val)
-  {
-    if(!val.is_event)
+    ossia::execution_state& state;
+    const net::parameter_base& out;
+    void operator()(value_port& val)
     {
-      val.add_raw_value(out.value());
-    }
-    else
-    {
-      auto it = state.m_receivedValues.find(const_cast<net::parameter_base*>(&out));
-      if(it != state.m_receivedValues.end())
+      if(!val.is_event)
       {
-        for(auto& v : it->second)
-          val.add_raw_value(std::move(v));
+        val.add_raw_value(out.value());
       }
-    }
-  }
-
-  void operator()(audio_port& val)
-  {
-    auto aa = dynamic_cast<const audio_parameter*>(&out);
-    assert(aa);
-    aa->clone_value(val.samples);
-  }
-
-  void operator()(midi_port& val)
-  {
-    auto& proto = out.get_node().get_device().get_protocol();
-    if(auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
-    {
-      auto it = state.m_receivedMidi.find(midi);
-      if(it != state.m_receivedMidi.end())
+      else
       {
-        for(auto& v : it->second)
+        auto it = state.m_receivedValues.find(const_cast<net::parameter_base*>(&out));
+        if(it != state.m_receivedValues.end())
         {
-          val.messages.push_back(std::move(v));
+          for(auto& v : it->second)
+            val.add_raw_value(std::move(v));
         }
       }
     }
-  }
 
-  void operator()()
-  {
-  }
+    void operator()(audio_port& val)
+    {
+      auto aa = dynamic_cast<const audio_parameter*>(&out);
+      assert(aa);
+      aa->clone_value(val.samples);
+    }
+
+    void operator()(midi_port& val)
+    {
+      auto& proto = out.get_node().get_device().get_protocol();
+      if(auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
+      {
+        auto it = state.m_receivedMidi.find(midi);
+        if(it != state.m_receivedMidi.end())
+        {
+          for(auto& v : it->second)
+          {
+            val.messages.push_back(std::move(v));
+          }
+        }
+      }
+    }
+
+    void operator()()
+    {
+    }
 };
 
 void execution_state::clear_devices()
@@ -110,6 +111,13 @@ void execution_state::clear_devices()
   valueDevices.clear();
   allDevices.clear();
   midiDevices.clear();
+}
+
+execution_state::execution_state()
+{
+  m_valueState.reserve(1024);
+  m_audioState.reserve(64);
+  m_midiState.reserve(64);
 }
 
 void execution_state::register_device(net::device_base* d)
@@ -211,9 +219,16 @@ void execution_state::register_inlet(const inlet& port)
 
 void execution_state::clear_local_state()
 {
-  m_valueState.clear();
-  m_audioState.clear();
-  m_midiState.clear();
+  m_msgIndex = 0;
+  /*
+  for(auto& st : m_valueState)
+    st.second.clear();
+  for(auto& st : m_audioState)
+    for(auto& samples : st.second.samples)
+      samples.clear();
+  for(auto& st : m_midiState)
+    st.second.clear();
+    */
 }
 void execution_state::reset()
 {
@@ -225,7 +240,7 @@ void execution_state::reset()
   m_receivedMidi.clear();
 }
 
-ossia::state_element to_state_element(ossia::net::parameter_base& p, ossia::tvalue&& v)
+ossia::message to_state_element(ossia::net::parameter_base& p, ossia::tvalue&& v)
 {
   ossia::message m{p, std::move(v.value)};
   if(auto u = v.type.target<ossia::unit_t>())
@@ -233,42 +248,139 @@ ossia::state_element to_state_element(ossia::net::parameter_base& p, ossia::tval
   m.dest.index = std::move(v.index);
   return m;
 }
-void execution_state::commit()
-{
-  ossia::state st;
-  st.reserve(m_valueState.size());
-  for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
-  {
-    apply_to_destination(it->first, allDevices, [&] (ossia::net::parameter_base* addr) {
-      for(auto& val : it.value())
-        ossia::flatten_and_filter(st, to_state_element(*addr, std::move(val)));
-    });
-  }
-  st.launch();
 
+ossia::message to_state_element(ossia::net::parameter_base& p, const ossia::tvalue& v)
+{
+  ossia::message m{p, v.value};
+  if(auto u = v.type.target<ossia::unit_t>())
+    m.dest.unit = std::move(*u);
+  m.dest.index = std::move(v.index);
+  return m;
+}
+
+void execution_state::commit_common()
+{
   for (auto& elt : m_audioState)
   {
-    apply_to_destination(elt.first, allDevices, [&] (ossia::net::parameter_base* base_addr) {
-      auto addr = dynamic_cast<audio_parameter*>(base_addr);
-      if(addr)
-        addr->push_value(elt.second);
-    });
+    auto addr = dynamic_cast<audio_parameter*>(elt.first);
+    if(addr)
+      addr->push_value(elt.second);
+    elt.second.samples.clear();
   }
 
   for (auto& elt : m_midiState)
   {
-    apply_to_destination(elt.first, allDevices, [&] (ossia::net::parameter_base* base_addr) {
-      if(auto addr = dynamic_cast<ossia::net::midi::midi_parameter*>(base_addr))
-      {
-        auto& proto = static_cast<ossia::net::midi::midi_protocol&>(addr->get_protocol());
+    if(auto addr = dynamic_cast<ossia::net::midi::midi_parameter*>(elt.first))
+    {
+      auto& proto = static_cast<ossia::net::midi::midi_protocol&>(addr->get_protocol());
 
-        for (const auto& v : elt.second)
-        {
-          proto.push_value(v);
-        }
+      for (const auto& v : elt.second)
+      {
+        proto.push_value(v);
       }
-    });
+    }
+    elt.second.clear();
   }
+}
+void execution_state::commit_merged()
+{
+  //int i = 0;
+  for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
+  {
+    switch(it->second.size())
+    {
+      case 0:
+        continue;
+      case 1:
+      {
+        to_state_element(*it->first, it->second[0].first).launch();
+        break;
+      }
+      default:
+      {
+        m_monoState.e = ossia::state_element{};
+        state_flatten_visitor<ossia::mono_state, false, true> vis{m_monoState};
+        //i += it->second.size();
+        for(auto& val : it->second)
+        {
+          vis(to_state_element(*it->first, std::move(val.first)));
+        }
+        ossia::launch(m_monoState.e);
+      }
+    }
+    it->second.clear();
+  }
+  //std::cout << "NUM MESSAGES: " << i << std::endl;
+
+  commit_common();
+}
+
+void execution_state::commit()
+{
+  state_flatten_visitor<ossia::flat_vec_state, false, true> vis{m_commitOrderedState};
+  for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
+  {
+    switch(it->second.size())
+    {
+      case 0:
+        continue;
+      case 1:
+      {
+        to_state_element(*it->first, it->second[0].first).launch();
+        break;
+      }
+      default:
+      {
+        m_commitOrderedState.clear();
+        m_commitOrderedState.reserve(it->second.size());
+        for(auto& val : it->second)
+        {
+          vis(to_state_element(*it->first, std::move(val.first)));
+        }
+
+        m_commitOrderedState.launch();
+      }
+    }
+
+    it->second.clear();
+  }
+
+  commit_common();
+}
+
+void execution_state::commit_ordered()
+{
+  // TODO same for midi
+  //m_flatMessagesCache.reserve(m_valueState.size());
+  for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
+  {
+    m_commitOrderedState.clear();
+    m_commitOrderedState.reserve(it->second.size());
+    state_flatten_visitor<ossia::flat_vec_state, false, true> vis{m_commitOrderedState};
+
+    int64_t cur_ts = 0; // timestamp
+    int cur_ms = 0; // message stamp
+    for(auto& val : it->second)
+    {
+      cur_ms = std::max(cur_ms, val.second);
+      cur_ts = std::max(cur_ts, val.first.timestamp);
+      vis(to_state_element(*it->first, std::move(val.first)));
+    }
+
+    for(auto& e : m_commitOrderedState)
+      m_flatMessagesCache[std::make_pair(cur_ts, cur_ms)].push_back(std::move(e));
+
+    it->second.clear();
+  }
+
+  for(auto& vec : m_flatMessagesCache)
+  {
+    for(auto& mess : vec.second)
+      ossia::launch(mess);
+    vec.second.clear();
+  }
+
+  commit_common();
 }
 
 void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
@@ -287,47 +399,119 @@ void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
   }
 }
 
-void execution_state::insert(const destination_t& dest, data_type v)
+void execution_state::insert(const destination_t& dest, const data_type& v)
 {
-  using namespace eggs::variants;
-  if (auto audio = eggs::variants::get_if<audio_port>(&v))
+  switch(v.which())
   {
-    insert(dest, std::move(*audio));
+    case 0:
+    {
+      auto audio = static_cast<const ossia::audio_port*>(v.target());
+      insert(dest, std::move(*audio));
+      break;
+    }
+    case 1:
+    {
+      auto midi = static_cast<const ossia::midi_port*>(v.target());
+      insert(dest, std::move(*midi));
+      break;
+    }
+    case 2:
+    {
+      auto val = static_cast<const ossia::value_port*>(v.target());
+      int idx = m_msgIndex;
+      apply_to_destination(dest, valueDevices, [&] (auto param, bool) {
+        auto& st = m_valueState[param];
+
+        // here reserve is a pessimization if we push only a few values...
+        // just letting log2 growth do its job is much better.
+        for(const auto& v : val->get_data())
+          st.emplace_back(v, idx++);
+        idx = m_msgIndex;
+      });
+      m_msgIndex += val->get_data().size();
+      break;
+    }
   }
-  else if (auto midi = eggs::variants::get_if<midi_port>(&v))
+}
+void execution_state::insert(const destination_t& dest, data_type&& v)
+{
+  switch(v.which())
   {
-    insert(dest, std::move(*midi));
-  }
-  else if (auto val = eggs::variants::get_if<value_port>(&v))
-  {
-    for(auto& v : val->get_data())
-      insert(dest, v);
+    case 0:
+    {
+      auto audio = static_cast<ossia::audio_port*>(v.target());
+      insert(dest, std::move(*audio));
+      break;
+    }
+    case 1:
+    {
+      auto midi = static_cast<ossia::midi_port*>(v.target());
+      insert(dest, std::move(*midi));
+      break;
+    }
+    case 2:
+    {
+      auto val = static_cast<ossia::value_port*>(v.target());
+      int idx = m_msgIndex;
+      apply_to_destination(dest, valueDevices, [&] (auto param, bool unique) {
+        auto& st = m_valueState[param];
+
+        // here reserve is a pessimization if we push only a few values...
+        // just letting log2 growth do its job is much better.
+        if(unique)
+        {
+          for(auto& v : val->get_data())
+            st.emplace_back(v, idx++);
+        }
+        else
+        {
+          for(const auto& v : val->get_data())
+            st.emplace_back(std::move(v), idx++);
+        }
+        idx = m_msgIndex;
+      });
+      m_msgIndex += val->get_data().size();
+      break;
+    }
   }
 }
 
-void execution_state::insert(const destination_t& dest, tvalue v)
+void execution_state::insert(const destination_t& dest, const tvalue& v)
 {
-  m_valueState[dest].push_back(std::move(v));
+  apply_to_destination(dest, valueDevices, [&] (auto param, bool unique) {
+    m_valueState[param].emplace_back(v, m_msgIndex++);
+  });
+}
+void execution_state::insert(const destination_t& dest, tvalue&& v)
+{
+  apply_to_destination(dest, valueDevices, [&] (auto param, bool unique) {
+    if(unique)
+      m_valueState[param].emplace_back(std::move(v), m_msgIndex++);
+    else
+      m_valueState[param].emplace_back(v, m_msgIndex++);
+  });
 }
 
 void execution_state::insert(const destination_t& dest, const audio_port& v)
 {
-  mix{}(v.samples, m_audioState[dest].samples, false);
+  apply_to_destination(dest, allDevices, [&] (auto param, bool unique) {
+    mix{}(v.samples, m_audioState[param].samples, false);
+  });
 }
 
 void execution_state::insert(const destination_t& dest, const midi_port& v)
 {
-  auto& vec = m_midiState[dest];
-
-  vec.insert(vec.end(), v.messages.begin(), v.messages.end());
+  apply_to_destination(dest, allDevices, [&] (auto param, bool unique) {
+    auto& vec = m_midiState[param];
+    vec.insert(vec.end(), v.messages.begin(), v.messages.end());
+  });
 }
 
 bool execution_state::in_local_scope(net::parameter_base& other) const
 {
-  destination_t dest{&other};
-  bool ok = (m_valueState.find(dest) != m_valueState.end())
-      || (m_audioState.find(dest) != m_audioState.end())
-            || (m_midiState.find(dest) != m_midiState.end());
+  bool ok = (m_valueState.find(&other) != m_valueState.end())
+            || (m_audioState.find(&other) != m_audioState.end())
+            || (m_midiState.find(&other) != m_midiState.end());
   if (!ok)
   {
     // TODO check if there is any pattern matching the current destination

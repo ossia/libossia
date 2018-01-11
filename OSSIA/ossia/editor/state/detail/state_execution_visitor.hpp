@@ -5,9 +5,9 @@ namespace ossia
 struct state_execution_visitor
 {
   template <typename T>
-  void operator()(const T& m)
+  void operator()(T&& m)
   {
-    m.launch();
+    std::forward<T>(m).launch();
   }
 
   void operator()()

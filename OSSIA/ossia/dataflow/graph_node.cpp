@@ -30,7 +30,7 @@ void graph_node::run(token_request t, execution_state&)
 {
 }
 
-std::string_view graph_node::label() const
+std::string graph_node::label() const
 {
   return {};
 }
@@ -58,7 +58,7 @@ bool graph_node::has_local_inputs(const execution_state& st) const
       // TODO optimize by stopping when found
       // TODO valueDevices -> generalize
       apply_to_destination(inlet->address, st.allDevices,
-                           [&] (ossia::net::parameter_base* addr) {
+                           [&] (ossia::net::parameter_base* addr, bool) {
         if (!b || st.in_local_scope(*addr))
           b = true;
       });

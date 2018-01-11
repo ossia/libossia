@@ -259,21 +259,27 @@ private Q_SLOTS:
 
       audio_vector expected{ossia::audio_channel{1., 1., 1., 1., 5., 6., 5., 1., 1., 1., 1., 5., 6., 5.}};
 
+      std::vector<float> res(64, 0.);
+      l.aparam->audio.resize(1);
+      l.aparam->audio[0] = gsl::span<float>{res.data(), res.size()};
       ossia::execution_state e;
       l.g.state(e);
       e.commit();
 
       QVERIFY(e.m_audioState.size() > 0);
-      auto op = (*e.m_audioState.begin()).second.samples;
+      auto op = l.aparam->audio;
 
       QVERIFY(op.size() > 0);
-      QVERIFY(op[0].size() == 14);
+      QVERIFY(op[0].size() >= 14);
 
       for(int i = 0; i < 14; i++)
       {
         QCOMPARE(expected[0][i], op[0][i]);
       }
-      QCOMPARE(op, expected);
+      for(int i = 14; i < op[0].size(); i++)
+      {
+        QCOMPARE(0.f, op[0][i]);
+      }
     }
 
     void test_subloops_in_scenario_1by1()
@@ -289,6 +295,7 @@ private Q_SLOTS:
         float* chan = audio_data[0] + i - 1 ;
         l.aparam->audio = {{chan, 64 - i}};
         l.parent.state(time_value{i}, 0., time_value{0}, 1.);
+        e.clear_local_state();
         l.g.state(e);
         e.commit();
       }

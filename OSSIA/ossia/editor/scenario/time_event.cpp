@@ -14,6 +14,8 @@ time_event::time_event(
     , m_status(time_event::status::NONE)
     , m_expression(std::move(anExpression))
 {
+  if(!m_expression)
+    m_expression = ossia::expressions::make_expression_true();
 }
 
 time_event::~time_event() = default;

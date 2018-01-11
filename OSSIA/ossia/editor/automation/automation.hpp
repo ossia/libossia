@@ -1,10 +1,9 @@
 #pragma once
-#include <ossia/detail/optional.hpp>
-#include <ossia/detail/ptr_container.hpp>
+#include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/node_process.hpp>
 #include <ossia/editor/curve/behavior.hpp>
-#include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/state/state_element.hpp>
-#include <ossia/network/value/destination.hpp>
+#include <ossia/editor/automation/curve_value_visitor.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia_export.h>
 
 /**
@@ -12,14 +11,9 @@
  */
 namespace ossia
 {
-class value;
-namespace net
-{
-class parameter_base;
-}
 
 /**
- * \brief The automation class
+ * \brief The automation_node class
  *
  * An automation is a time process that represents a curve of one
  * or multiple parameters.
@@ -40,41 +34,78 @@ class parameter_base;
  * The unit is stored in m_lastMessage.unit.
  *
  *
- * \see \ref Behavior \ref curve \ref curve_segment
+ * \see \ref behavior \ref curve \ref curve_segment
  */
+class OSSIA_EXPORT automation_node final :
+    public ossia::graph_node
+{
+  public:
+    automation_node()
+    {
+      m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+    }
 
-/*
-class OSSIA_EXPORT automation final : public ossia::time_process
+    ~automation_node() override
+    {
+
+    }
+    std::string label() const
+    {
+      return "automation";
+    }
+
+    void set_destination(optional<ossia::destination> d)
+    {
+      auto& port = *m_outlets.front();
+      auto& vp = *port.data.target<ossia::value_port>();
+      if(d)
+      {
+        port.address = &d->address();
+        vp.type = d->unit;
+        vp.index = d->index;
+      }
+      else
+      {
+        port.address = {};
+        vp.type = ossia::val_type::FLOAT;
+        vp.index = {};
+      }
+    }
+
+    void set_behavior(const ossia::behavior& b)
+    {
+      m_drive = b;
+    }
+
+    void reset_drive()
+    {
+      m_drive.reset();
+    }
+
+  private:
+    void run(ossia::token_request t, ossia::execution_state& e) override
+    {
+      if(!m_drive)
+        return;
+
+      auto& outlet = *m_outlets[0];
+      ossia::value_port* vp = outlet.data.target<ossia::value_port>();
+      vp->add_value(
+            ossia::apply(
+              ossia::detail::compute_value_visitor{t.position, ossia::val_type::FLOAT},
+              m_drive), t.date);
+    }
+
+    ossia::behavior m_drive;
+};
+
+class automation_process : public ossia::node_process
 {
 public:
-  automation();
-  automation(destination, const ossia::behavior&);
-  automation(destination, ossia::behavior&&);
-
-  ~automation();
-
-  void set_destination(destination d);
-  void set_behavior(ossia::behavior b);
-
-  void clean();
-
-private:
-  void offset(ossia::time_value, double pos) override;
-  void state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
-
-  void start() override;
-  void stop() override;
-  void pause() override;
-  void resume() override;
-
-  static ossia::value
-  compute_value(double, ossia::val_type drivenType, const ossia::behavior&);
-
-  void update_message(double t);
-
-  ossia::behavior m_drive;
-  optional<ossia::message> m_lastMessage;
-  ossia::val_type m_drivenType{};
+    using ossia::node_process::node_process;
+  void start() override
+  {
+      static_cast<automation_node*>(node.get())->reset_drive();
+  }
 };
-*/
 }

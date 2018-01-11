@@ -194,12 +194,6 @@ ossia::net::parameter_base& parameter_base::set_repetition_filter(
   return *this;
 }
 
-
-unit_t parameter_base::get_unit() const
-{
-  return m_unit;
-}
-
 parameter_base& parameter_base::set_unit(const unit_t& u)
 {
   if (m_unit != u)

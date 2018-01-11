@@ -413,6 +413,10 @@ public:
 
   std::shared_ptr<spdlog::logger> logger;
   private:
+  void print(std::ostream& stream) override
+  {
+    print_graph(m_graph, stream);
+  }
 
   node_map m_nodes;
   edge_map m_edges;

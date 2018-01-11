@@ -7,7 +7,7 @@
 
 namespace ossia
 {
-void launch(const state_element& e)
+void launch(state_element& e)
 {
   ossia::apply(state_execution_visitor{}, e);
 }

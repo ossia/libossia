@@ -17,7 +17,7 @@ class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
 {
 
 public:
-  std::vector<gsl::span<float>> audio;
+  ossia::small_vector<gsl::span<float>, 8> audio;
 
   audio_parameter(ossia::net::node_base& n);
 

@@ -7,7 +7,9 @@
 #include <ossia/editor/state/state.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia_export.h>
+#include <ossia/editor/mapper/detail/mapper_visitor.hpp>
 
 #include <ossia/detail/mutex.hpp>
 
@@ -16,61 +18,87 @@
  */
 namespace ossia
 {
-namespace net
-{
-class parameter_base;
-}
-class value;
-
 /**
- * @brief The mapper class
+ * @brief The mapping_node class
  *
  * Allows to map a value to another following a transfer function.
  * The driver address is where the input value is taken from;
  * The driven address is where the output value is sent to.
  */
 
-/*
-class OSSIA_EXPORT mapper final : public ossia::time_process
+class OSSIA_EXPORT mapping_node final :
+    public ossia::graph_node
 {
-public:
-  mapper();
-  mapper(ossia::destination, ossia::destination, ossia::behavior);
+  public:
+    mapping_node()
+    {
+      m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
+      m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+    }
 
-  ~mapper();
+    std::string label() const
+    {
+      return "mapping";
+    }
 
-  void set_driver(ossia::destination);
-  void set_driven(ossia::destination);
-  void set_behavior(ossia::behavior b);
+    ~mapping_node() override
+    {
 
-  void clean();
+    }
 
-private:
-  ossia::state_element offset(ossia::time_value, double pos) override;
+    void set_driver(optional<ossia::destination> d)
+    {
+      if(d)
+      {
+        m_inlets.front()->address = &d->address();
+      }
+      else
+      {
+        m_inlets.front()->address = {};
+      }
+    }
 
-  ossia::state_element state(ossia::time_value date, double pos, ossia::time_value tick_offset) override;
+    void set_driven(optional<ossia::destination> d)
+    {
+      if(d)
+      {
+        m_outlets.front()->address = &d->address();
+      }
+      else
+      {
+        m_outlets.front()->address = {};
+      }
+    }
 
-  void start() override;
-  void stop() override;
-  void pause() override;
-  void resume() override;
+    void set_behavior(const ossia::behavior& b)
+    {
+      m_drive = b;
+    }
 
-  static ossia::value
-  compute_value(const ossia::value&, const ossia::behavior&);
+  private:
+    void run(ossia::token_request t, ossia::execution_state& e) override
+    {
+      if(!m_drive)
+        return;
 
-  void driver_value_callback(ossia::value value);
+      auto& inlet = *m_inlets[0];
+      auto& outlet = *m_outlets[0];
+      ossia::value_port* ip = inlet.data.target<ossia::value_port>();
+      ossia::value_port* op = outlet.data.target<ossia::value_port>();
 
-  optional<ossia::destination> m_driverAddress;
-  ossia::behavior m_drive;
+      // TODO use correct unit / whatever ?
+      for(auto& tv : ip->get_data())
+      {
+        if(tv.value.valid())
+        {
+          ossia::tvalue newval = tv;
+          newval.value = ossia::apply(ossia::detail::mapper_compute_visitor{}, tv.value, m_drive.v);
 
-  optional<ossia::message> m_lastMessage;
-  ossia::value m_valueToMap;
-  mutable mutex_t m_valueToMapMutex;
-  mutable mutex_t m_driverAddressMutex;
+          op->add_raw_value(std::move(newval));
+        }
+      }
+    }
 
-  optional<ossia::net::parameter_base::callback_index> m_callback;
-
-  friend struct mapper_compute_visitor;
+    ossia::behavior m_drive;
 };
-*/
 }
