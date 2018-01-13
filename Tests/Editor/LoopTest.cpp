@@ -261,7 +261,7 @@ private Q_SLOTS:
 
       std::vector<float> res(64, 0.);
       l.aparam->audio.resize(1);
-      l.aparam->audio[0] = gsl::span<float>{res.data(), res.size()};
+      l.aparam->audio[0] = {res.data(), (int64_t)res.size()};
       ossia::execution_state e;
       l.g.state(e);
       e.commit();

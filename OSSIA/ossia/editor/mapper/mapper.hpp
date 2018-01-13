@@ -36,7 +36,7 @@ class OSSIA_EXPORT mapping_node final :
       m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
     }
 
-    std::string label() const
+    std::string label() const override
     {
       return "mapping";
     }

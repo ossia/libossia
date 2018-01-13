@@ -49,7 +49,7 @@ class OSSIA_EXPORT automation_node final :
     {
 
     }
-    std::string label() const
+    std::string label() const override
     {
       return "automation";
     }
