@@ -11,10 +11,6 @@ namespace ossia
 
 graph_node::~graph_node()
 {
-  // TODO moveme in cpp
-}
-audio_fx_node::~audio_fx_node()
-{
 
 }
 graph_node::graph_node()
@@ -79,4 +75,6 @@ void graph_node::clear()
   m_inlets.clear();
   m_outlets.clear();
 }
+
+void graph_node::all_notes_off() { }
 }

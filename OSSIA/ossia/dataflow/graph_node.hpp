@@ -80,6 +80,7 @@ public:
   void set_logging(bool b) { m_logging = b; }
   bool logged() const { return m_logging; }
 
+  virtual void all_notes_off();
   ossia::small_vector<token_request, 4> requested_tokens;
 
 protected:

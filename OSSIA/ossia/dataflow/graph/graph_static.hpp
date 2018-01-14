@@ -13,7 +13,7 @@ namespace ossia
 {
 struct OSSIA_EXPORT graph_static_base
     : protected graph_util
-    , public graph_interface
+    , public graph_base
 {
   private:
   static void tick_static(
@@ -51,104 +51,9 @@ struct OSSIA_EXPORT graph_static_base
 
 
 public:
-  void mark_dirty() override
-  {
-    m_dirty = true;
-  }
   ~graph_static_base() override
   {
     clear();
-  }
-
-  void add_node(node_ptr n) override
-  {
-    if(m_nodes.find(n) == m_nodes.end())
-    {
-      auto vtx = boost::add_vertex(n, m_graph);
-      m_nodes.insert({std::move(n), vtx});
-      m_dirty = true;
-    }
-  }
-
-  void remove_node(const node_ptr& n) override
-  {
-    for(auto& port : n->inputs())
-      for(auto edge : port->sources)
-        disconnect(edge);
-    for(auto& port : n->outputs())
-      for(auto edge : port->targets)
-        disconnect(edge);
-
-    auto it = m_nodes.find(n);
-    if (it != m_nodes.end())
-    {
-      auto vtx = boost::vertices(m_graph);
-      if(std::find(vtx.first, vtx.second, it->second) != vtx.second)
-      {
-        boost::clear_vertex(it->second, m_graph);
-        boost::remove_vertex(it->second, m_graph);
-      }
-      m_nodes.erase(it);
-    }
-    m_dirty = true;
-  }
-
-  void connect(std::shared_ptr<graph_edge> edge) override
-  {
-    if(edge)
-    {
-      edge->init();
-      auto it1 = m_nodes.find(edge->in_node);
-      auto it2 = m_nodes.find(edge->out_node);
-      if (it1 != m_nodes.end() && it2 != m_nodes.end())
-      {
-        // TODO check that two edges can be added
-        auto res = boost::add_edge(it1->second, it2->second, edge, m_graph);
-        if (res.second)
-        {
-          m_edges.insert({std::move(edge), res.first});
-        }
-        m_dirty = true;
-      }
-    }
-  }
-  void disconnect(const std::shared_ptr<graph_edge>& edge) override
-  {
-    disconnect(edge.get());
-  }
-  void disconnect(graph_edge* edge) override
-  {
-    if(edge)
-    {
-      auto it = m_edges.find(edge);
-      if (it != m_edges.end())
-      {
-        auto edg = boost::edges(m_graph);
-        if(std::find(edg.first, edg.second, it->second) != edg.second)
-          boost::remove_edge(it->second, m_graph);
-        m_dirty = true;
-        m_edges.erase(it);
-      }
-      edge->clear();
-    }
-  }
-
-  void clear() override
-  {
-    // TODO clear all the connections, ports, etc, to ensure that there is no
-    // shared_ptr loop
-    for (auto& node : m_nodes)
-    {
-      node.first->clear();
-    }
-    for (auto& edge : m_edges)
-    {
-      edge.first->clear();
-    }
-    m_dirty = true;
-    m_nodes.clear();
-    m_edges.clear();
-    m_graph.clear();
   }
 
   template<typename DevicesT>
@@ -256,16 +161,10 @@ public:
     print_graph(m_graph, stream);
   }
 
-  node_map m_nodes;
-  edge_map m_edges;
-
-  graph_t m_graph;
-
   node_flat_set m_enabled_cache;
   node_flat_set m_disabled_cache;
   std::vector<graph_node*> m_all_nodes;
   std::vector<graph_vertex_t> m_topo_order_cache;
-  bool m_dirty{};
 
   graph_t m_sub_graph;
   friend struct inlet;

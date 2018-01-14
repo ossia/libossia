@@ -56,12 +56,12 @@ struct OSSIA_EXPORT execution_state
     void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
 
     // todo separate rvalue & cref
-    void insert(const destination_t& dest, const data_type& v);
-    void insert(const destination_t& dest, data_type&& v);
-    void insert(const destination_t& dest, const tvalue& v);
-    void insert(const destination_t& dest, tvalue&& v);
-    void insert(const destination_t& dest, const audio_port& v);
-    void insert(const destination_t& dest, const midi_port& v);
+    void insert(ossia::net::parameter_base& dest, const data_type& v);
+    void insert(ossia::net::parameter_base& dest, data_type&& v);
+    void insert(ossia::net::parameter_base& dest, const tvalue& v);
+    void insert(ossia::net::parameter_base& dest, tvalue&& v);
+    void insert(ossia::net::parameter_base& dest, const audio_port& v);
+    void insert(ossia::net::parameter_base& dest, const midi_port& v);
 
     bool in_local_scope(ossia::net::parameter_base& other) const;
 

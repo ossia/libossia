@@ -17,7 +17,7 @@ struct state_exec_visitor
 
     void operator()(const ossia::message& msg)
     {
-      e.insert(&msg.dest.address(), {ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit }});
+      e.insert(msg.dest.address(), {ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit }});
     }
 
     template<std::size_t N>

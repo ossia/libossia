@@ -399,112 +399,89 @@ void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
   }
 }
 
-void execution_state::insert(const destination_t& dest, const data_type& v)
+void execution_state::insert(ossia::net::parameter_base& param, const data_type& v)
 {
   switch(v.which())
   {
     case 0:
     {
       auto audio = static_cast<const ossia::audio_port*>(v.target());
-      insert(dest, std::move(*audio));
+      insert(param, std::move(*audio));
       break;
     }
     case 1:
     {
       auto midi = static_cast<const ossia::midi_port*>(v.target());
-      insert(dest, std::move(*midi));
+      insert(param, std::move(*midi));
       break;
     }
     case 2:
     {
       auto val = static_cast<const ossia::value_port*>(v.target());
       int idx = m_msgIndex;
-      apply_to_destination(dest, valueDevices, [&] (auto param, bool) {
-        auto& st = m_valueState[param];
+      auto& st = m_valueState[&param];
 
-        // here reserve is a pessimization if we push only a few values...
-        // just letting log2 growth do its job is much better.
-        for(const auto& v : val->get_data())
-          st.emplace_back(v, idx++);
-        idx = m_msgIndex;
-      });
+      // here reserve is a pessimization if we push only a few values...
+      // just letting log2 growth do its job is much better.
+      for(const auto& v : val->get_data())
+        st.emplace_back(v, idx++);
+      idx = m_msgIndex;
       m_msgIndex += val->get_data().size();
       break;
     }
   }
 }
-void execution_state::insert(const destination_t& dest, data_type&& v)
+void execution_state::insert(ossia::net::parameter_base& param, data_type&& v)
 {
   switch(v.which())
   {
     case 0:
     {
       auto audio = static_cast<ossia::audio_port*>(v.target());
-      insert(dest, std::move(*audio));
+      insert(param, std::move(*audio));
       break;
     }
     case 1:
     {
       auto midi = static_cast<ossia::midi_port*>(v.target());
-      insert(dest, std::move(*midi));
+      insert(param, std::move(*midi));
       break;
     }
     case 2:
     {
       auto val = static_cast<ossia::value_port*>(v.target());
       int idx = m_msgIndex;
-      apply_to_destination(dest, valueDevices, [&] (auto param, bool unique) {
-        auto& st = m_valueState[param];
+      auto& st = m_valueState[&param];
 
-        // here reserve is a pessimization if we push only a few values...
-        // just letting log2 growth do its job is much better.
-        if(unique)
-        {
-          for(auto& v : val->get_data())
-            st.emplace_back(v, idx++);
-        }
-        else
-        {
-          for(const auto& v : val->get_data())
-            st.emplace_back(std::move(v), idx++);
-        }
-        idx = m_msgIndex;
-      });
+      // here reserve is a pessimization if we push only a few values...
+      // just letting log2 growth do its job is much better.
+      for(const auto& v : val->get_data())
+        st.emplace_back(std::move(v), idx++);
+      idx = m_msgIndex;
       m_msgIndex += val->get_data().size();
       break;
     }
   }
 }
 
-void execution_state::insert(const destination_t& dest, const tvalue& v)
+void execution_state::insert(ossia::net::parameter_base& param, const tvalue& v)
 {
-  apply_to_destination(dest, valueDevices, [&] (auto param, bool unique) {
-    m_valueState[param].emplace_back(v, m_msgIndex++);
-  });
+    m_valueState[&param].emplace_back(v, m_msgIndex++);
 }
-void execution_state::insert(const destination_t& dest, tvalue&& v)
+void execution_state::insert(ossia::net::parameter_base& param, tvalue&& v)
 {
-  apply_to_destination(dest, valueDevices, [&] (auto param, bool unique) {
-    if(unique)
-      m_valueState[param].emplace_back(std::move(v), m_msgIndex++);
-    else
-      m_valueState[param].emplace_back(v, m_msgIndex++);
-  });
+  m_valueState[&param].emplace_back(std::move(v), m_msgIndex++);
 }
 
-void execution_state::insert(const destination_t& dest, const audio_port& v)
+void execution_state::insert(ossia::net::parameter_base& param, const audio_port& v)
 {
-  apply_to_destination(dest, allDevices, [&] (auto param, bool unique) {
-    mix{}(v.samples, m_audioState[param].samples, false);
-  });
+  mix{}(v.samples, m_audioState[&param].samples, false);
 }
 
-void execution_state::insert(const destination_t& dest, const midi_port& v)
+void execution_state::insert(ossia::net::parameter_base& param, const midi_port& v)
 {
-  apply_to_destination(dest, allDevices, [&] (auto param, bool unique) {
-    auto& vec = m_midiState[param];
-    vec.insert(vec.end(), v.messages.begin(), v.messages.end());
-  });
+  auto& vec = m_midiState[&param];
+  vec.insert(vec.end(), v.messages.begin(), v.messages.end());
 }
 
 bool execution_state::in_local_scope(net::parameter_base& other) const

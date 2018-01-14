@@ -4,6 +4,7 @@
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/breadth_first_search.hpp>
+#include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_ordering.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/ptr_set.hpp>
@@ -97,29 +98,6 @@ struct OSSIA_EXPORT graph_util
   static void copy(const outlet& out, inlet& in)
   {
     copy_from_local(out.data, in);
-  }
-
-  static void copy_to_local(
-      const data_type& out, const destination& d, execution_state& in)
-  {
-    in.insert(destination_t{&d.address()}, out);
-  }
-  static void copy_to_local(
-      data_type&& out, const destination& d, execution_state& in)
-  {
-    in.insert(destination_t{&d.address()}, std::move(out));
-  }
-
-  static void copy_to_global(
-      const data_type& out, const destination& d, execution_state& in)
-  {
-    // TODO
-  }
-
-  static void copy_to_global(
-      data_type&& out, const destination& d, execution_state& in)
-  {
-    // TODO
   }
 
   static void pull_from_parameter(inlet& in, execution_state& e)
@@ -368,5 +346,131 @@ struct OSSIA_EXPORT graph_util
       }
     }
   }
+};
+
+
+struct OSSIA_EXPORT graph_base: graph_interface
+{
+
+    auto add_node_impl(node_ptr n)
+    {
+      auto vtx = boost::add_vertex(n, m_graph);
+      m_nodes.insert({std::move(n), vtx});
+      m_dirty = true;
+      return vtx;
+    }
+
+
+    void add_node(node_ptr n) override
+    {
+      if(m_nodes.find(n) == m_nodes.end())
+      {
+        add_node_impl(std::move(n));
+      }
+    }
+
+    void remove_node(const node_ptr& n) override
+    {
+      for(auto& port : n->inputs())
+        for(auto edge : port->sources)
+          disconnect(edge);
+      for(auto& port : n->outputs())
+        for(auto edge : port->targets)
+          disconnect(edge);
+
+      auto it = m_nodes.find(n);
+      if (it != m_nodes.end())
+      {
+        auto vtx = boost::vertices(m_graph);
+        if(std::find(vtx.first, vtx.second, it->second) != vtx.second)
+        {
+          boost::clear_vertex(it->second, m_graph);
+          boost::remove_vertex(it->second, m_graph);
+        }
+        m_nodes.erase(it);
+      }
+      m_dirty = true;
+    }
+
+    void connect(std::shared_ptr<graph_edge> edge) override
+    {
+      if(edge)
+      {
+        edge->init();
+
+        graph_vertex_t in_vtx, out_vtx;
+        auto it1 = m_nodes.find(edge->in_node);
+        if(it1 == m_nodes.end())
+          in_vtx = add_node_impl(edge->in_node);
+        else
+          in_vtx = it1->second;
+
+        auto it2 = m_nodes.find(edge->out_node);
+        if(it2 == m_nodes.end())
+          out_vtx = add_node_impl(edge->out_node);
+        else
+          out_vtx = it2->second;
+
+        // TODO check that two edges can be added
+        auto res = boost::add_edge(in_vtx, out_vtx, edge, m_graph);
+        if (res.second)
+        {
+          m_edges.insert({std::move(edge), res.first});
+        }
+        m_dirty = true;
+      }
+    }
+
+    void disconnect(const std::shared_ptr<graph_edge>& edge) override
+    {
+      disconnect(edge.get());
+    }
+
+    void disconnect(graph_edge* edge) override
+    {
+      if(edge)
+      {
+        auto it = m_edges.find(edge);
+        if (it != m_edges.end())
+        {
+          auto edg = boost::edges(m_graph);
+          if(std::find(edg.first, edg.second, it->second) != edg.second)
+            boost::remove_edge(it->second, m_graph);
+          m_dirty = true;
+          m_edges.erase(it);
+        }
+        edge->clear();
+      }
+    }
+
+    void clear() override
+    {
+      // TODO clear all the connections, ports, etc, to ensure that there is no
+      // shared_ptr loop
+      for (auto& node : m_nodes)
+      {
+        node.first->clear();
+      }
+      for (auto& edge : m_edges)
+      {
+        edge.first->clear();
+      }
+      m_dirty = true;
+      m_nodes.clear();
+      m_edges.clear();
+      m_graph.clear();
+    }
+
+    void mark_dirty() override
+    {
+      m_dirty = true;
+    }
+
+    bool m_dirty{};
+
+    node_map m_nodes;
+    edge_map m_edges;
+
+    graph_t m_graph;
 };
 }
