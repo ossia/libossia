@@ -211,3 +211,7 @@ inline QDebug operator<<(QDebug d, const ossia::small_vector<ossia::token_reques
 {
   return d << QTest::toString(s);
 }
+inline QDebug operator<<(QDebug d, const ossia::time_value&  s)
+{
+  return d << s.impl;
+}

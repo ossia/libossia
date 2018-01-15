@@ -8,6 +8,39 @@ namespace ossia
 {
 class graph;
 struct token_request {
+    token_request() = default;
+    token_request(const token_request&) = default;
+    token_request(token_request&&) = default;
+    token_request& operator=(const token_request&) = default;
+    token_request& operator=(token_request&&) = default;
+    token_request(ossia::time_value d, double pos, ossia::time_value off, double s)
+      : date{d}
+      , position{pos}
+      , offset{off}
+      , speed{s}
+    {
+      if(offset.impl < 0)
+      {
+        offset.impl = 0;
+      }
+
+    }
+    token_request(ossia::time_value d, double pos, ossia::time_value off)
+      : token_request{d, pos, off, 1.}
+    {
+
+    }
+    token_request(ossia::time_value d, double pos)
+      : token_request{d, pos, time_value{}, 1.}
+    {
+
+    }
+    token_request(ossia::time_value d)
+      : token_request{d, 0., time_value{}, 1.}
+    {
+
+    }
+
     ossia::time_value date{};
     double position{};
     ossia::time_value offset{};

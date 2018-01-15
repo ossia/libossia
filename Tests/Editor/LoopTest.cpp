@@ -159,8 +159,8 @@ private Q_SLOTS:
         QCOMPARE((int)snd->requested_tokens.size(), (int)2);
         qDebug() << snd->requested_tokens[0];
         qDebug() << snd->requested_tokens[1];
-        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, 1., false, false}));
-        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, 1., false, false}));
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, 1.}));
         l.stop();
       }
 
@@ -175,10 +175,10 @@ private Q_SLOTS:
         l.state(5_tv, 0, 0_tv, 1.);
         qDebug() << snd->requested_tokens;
         QCOMPARE((int)snd->requested_tokens.size(), (int)4);
-        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, 1., false, false}));
-        QVERIFY((snd->requested_tokens[1] == token_request{4_tv, 1, 0_tv, 1., false, false}));
-        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0, 4_tv, 1., false, false}));
-        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0.25, 4_tv, 1., false, false}));
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[1] == token_request{4_tv, 1, 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0, 4_tv, 1.}));
+        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0.25, 4_tv, 1.}));
         l.stop();
       }
 
@@ -206,15 +206,15 @@ private Q_SLOTS:
         /*
         l.state(2_tv, 0, 0_tv);
         qDebug() << snd->requested_tokens[1];
-        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0, 1_tv, false, false}));
+        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0, 1_tv}));
         l.state(3_tv, 0, 0_tv);
-        QVERIFY((snd->requested_tokens[2] == token_request{1_tv, 0, 2_tv, false, false}));
+        QVERIFY((snd->requested_tokens[2] == token_request{1_tv, 0, 2_tv}));
         l.state(4_tv, 0, 0_tv);
-        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0, 3_tv, false, false}));
+        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0, 3_tv}));
         l.state(5_tv, 0, 0_tv);
-        QVERIFY((snd->requested_tokens[4] == token_request{1_tv, 0, 4_tv, false, false}));
+        QVERIFY((snd->requested_tokens[4] == token_request{1_tv, 0, 4_tv}));
         l.state(6_tv, 0, 0_tv);
-        QVERIFY((snd->requested_tokens[5] == token_request{1_tv, 0, 5_tv, false, false}));
+        QVERIFY((snd->requested_tokens[5] == token_request{1_tv, 0, 5_tv}));
         */
       }
 
