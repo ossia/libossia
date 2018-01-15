@@ -33,8 +33,11 @@ void qml_script::reset_impl()
 }
 
 
-state_element qml_script_process::state(time_value date, double pos)
+void qml_script_process::state(
+    ossia::time_value date, double pos,
+    ossia::time_value tick_offset, double gspeed)
 {
+  /*
   auto script = static_cast<qml_script*>(expr->scopeObject());
   script->setDate(date);
   script->setPosition(pos);
@@ -74,6 +77,7 @@ state_element qml_script_process::state(time_value date, double pos)
     }
   }
   return {};
+  */
 }
 
 state_element qml_message::toState() const

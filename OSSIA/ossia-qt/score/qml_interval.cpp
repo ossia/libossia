@@ -65,6 +65,7 @@ double qml_interval::speed() const
 
 void qml_interval::setup()
 {
+  /*
   if(!m_interval)
   {
     auto scd = follows();
@@ -100,6 +101,7 @@ void qml_interval::setup()
       m_interval->add_time_process(proc);
     }
   }
+  */
 }
 
 void qml_interval::registerProcess(qml_process*)

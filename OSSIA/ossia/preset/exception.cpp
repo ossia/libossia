@@ -6,7 +6,8 @@
 #include <sstream>
 #include <string>
 
-using namespace ossia;
+namespace ossia
+{
 
 ossiaException::ossiaException(
     int lineno, const std::string& filename, const std::string& details,
@@ -49,4 +50,6 @@ ossiaException_InvalidAddress::ossiaException_InvalidAddress(
     : ossiaException::ossiaException(
           line, filename, details, "Invalid address")
 {
+}
+
 }

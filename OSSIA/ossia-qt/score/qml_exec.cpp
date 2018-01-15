@@ -33,6 +33,7 @@ void qml_exec::submitCommand(std::function<void ()> v)
 
 void qml_exec::play(qml_interval* itvl)
 {
+  /* TODO
   // TODO simulation tool that allows to play by ticking manually and reset like uppaal
   if(!itvl)
     return;
@@ -59,7 +60,6 @@ void qml_exec::play(qml_interval* itvl)
                ossia::time_value date,
                const ossia::state_element& state) {
     ossia::launch(state);
-
     m_cur->setPlayDuration(reverseTime(date));
 
     std::function<void()> c;
@@ -79,6 +79,7 @@ void qml_exec::play(qml_interval* itvl)
   itv->start(st);
   ossia::launch(st);
   m_cur_t = std::chrono::high_resolution_clock::now();
+  */
 }
 
 void qml_exec::pause(qml_interval* itvl)

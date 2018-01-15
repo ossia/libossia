@@ -9,7 +9,9 @@ namespace qt
 class qml_script_process : public ossia::time_process
 {
   public:
-    state_element state(time_value date, double pos) override;
+    void state(
+        ossia::time_value date, double pos,
+        ossia::time_value tick_offset, double gspeed) override;
 
     QQmlExpression* expr{};
 };

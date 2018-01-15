@@ -18,7 +18,9 @@ class qml_mapping : public qml_process
     std::shared_ptr<ossia::time_process> process() const override;
   private:
     void reset_impl() override;
+    /* TODO
     std::shared_ptr<ossia::mapper> m_impl;
+    */
 };
 }
 }

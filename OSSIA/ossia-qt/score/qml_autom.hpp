@@ -86,8 +86,9 @@ class qml_autom : public qml_process
 
   private:
     void reset_impl() override;
+    /*
     std::shared_ptr<ossia::automation> m_impl;
-    QVariant m_target;
+    */QVariant m_target;
     double m_xMin{0.};
     double m_xMax{1.};
     double m_yMin{0.};

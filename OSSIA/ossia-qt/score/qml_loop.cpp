@@ -24,22 +24,24 @@ qml_interval* qml_loop::interval() const
 
 void qml_loop::setup()
 {
+  /* TODO
   m_impl = std::make_shared<ossia::loop>(
              0_tv,
              time_interval::exec_callback{},
              time_event::exec_callback{},
              time_event::exec_callback{});
-  m_interval->m_interval = m_impl->get_time_interval();
+  m_interval->m_interval = &m_impl->get_time_interval();
   m_interval->m_interval->set_callback(
         [=] (double pos, ossia::time_value tv, const ossia::state_element&) {
     m_interval->setPlayDuration(reverseTime(tv));
   });
 
-  m_impl->get_start_timesync()->set_expression(make_expression(m_startTrig, this, ossia::expressions::make_expression_true()));
-  m_impl->get_end_timesync()->set_expression(make_expression(m_endTrig, this, ossia::expressions::make_expression_true()));
-  m_impl->get_start_timesync()->get_time_events()[0]->set_expression(make_expression(m_startCond, this, ossia::expressions::make_expression_true()));
-  m_impl->get_end_timesync()->get_time_events()[0]->set_expression(make_expression(m_endCond, this, ossia::expressions::make_expression_true()));
+  m_impl->get_start_timesync().set_expression(make_expression(m_startTrig, this, ossia::expressions::make_expression_true()));
+  m_impl->get_end_timesync().set_expression(make_expression(m_endTrig, this, ossia::expressions::make_expression_true()));
+  m_impl->get_start_timesync().get_time_events()[0]->set_expression(make_expression(m_startCond, this, ossia::expressions::make_expression_true()));
+  m_impl->get_end_timesync().get_time_events()[0]->set_expression(make_expression(m_endCond, this, ossia::expressions::make_expression_true()));
   m_interval->setup();
+  */
 }
 
 std::shared_ptr<time_process> qml_loop::process() const
