@@ -85,7 +85,7 @@ public:
   }
 
 
-  void tick(ossia::time_value offset);
+  void tick(ossia::time_value date, double pos, ossia::time_value offset);
 
   /*! get the #time_sync where the event is
    \return std::shared_ptr<#time_sync> */
