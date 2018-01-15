@@ -58,7 +58,7 @@ class qml_cond : public QQuickItem
 
     std::shared_ptr<ossia::time_event> cond() const { return m_impl; }
     void setCond(std::shared_ptr<ossia::time_event> c) { m_impl = c; }
-public slots:
+public Q_SLOTS:
     void setExpr(QQmlScriptString expr);
     void setSync(qml_sync* sync);
 

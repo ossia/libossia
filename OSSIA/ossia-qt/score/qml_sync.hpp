@@ -28,7 +28,7 @@ class qml_sync : public QQuickItem
     void setup();
     std::shared_ptr<ossia::time_sync> sync() const { return m_impl; }
     void setSync(std::shared_ptr<ossia::time_sync> s) { m_impl = s; }
-  public slots:
+  public Q_SLOTS:
     void setExpr(QQmlScriptString expr);
 
   signals:

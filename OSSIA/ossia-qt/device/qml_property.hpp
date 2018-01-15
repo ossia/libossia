@@ -69,7 +69,7 @@ signals:
   void valuesChanged(QVariantList values);
   void unitChanged(QString unit);
 
-public slots:
+public Q_SLOTS:
   void qtVariantChanged();
   void setValue_slot(const value&);
 

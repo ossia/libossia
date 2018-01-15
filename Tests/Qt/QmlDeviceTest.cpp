@@ -11,7 +11,7 @@ class QmlDeviceTest : public QObject
 {
   Q_OBJECT
 
-private slots:
+private Q_SLOTS:
   void test_device()
   {
     int argc{}; char** argv{};

@@ -72,7 +72,7 @@ public:
   bool muted() const;
   QString extendedType() const;
 
-public slots:
+public Q_SLOTS:
   void setNode(QString node);
   virtual void setDevice(QObject* device);
 

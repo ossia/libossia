@@ -73,7 +73,7 @@ signals:
 
   void valueChanged(QVariant value);
 
-public slots:
+public Q_SLOTS:
   void setValue_slot(const ossia::value&);
 
   void setValueType(qml_val_type::val_type valueType);

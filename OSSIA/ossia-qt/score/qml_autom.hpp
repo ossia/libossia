@@ -43,7 +43,7 @@ class qml_breakpoint : public QQuickItem
   signals:
     void typeChanged(QEasingCurve::Type);
 
-  public slots:
+  public Q_SLOTS:
     void setType(QEasingCurve::Type t) { if(m_type != t) { m_type = t; emit typeChanged(t); } }
 
   private:
@@ -70,7 +70,7 @@ class qml_autom : public qml_process
     double yMin() const;
     double yMax() const;
     std::shared_ptr<ossia::time_process> process() const override;
-  public slots:
+  public Q_SLOTS:
     void setTarget(QVariant target);
     void setXMin(double xMin);
     void setXMax(double xMax);

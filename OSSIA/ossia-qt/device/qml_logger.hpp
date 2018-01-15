@@ -73,7 +73,7 @@ signals:
   void logFilterChanged(const QStringList& logFilter);
   void filteredLog( int type, const QString& fileName, int line, const QString& msg);
 
-public slots:
+public Q_SLOTS:
   void connectLogger();
   void disconnectLogger();
 

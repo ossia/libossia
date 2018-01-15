@@ -39,7 +39,7 @@ public:
     m_protocol.push(*this);
   }
 
-private slots:
+private Q_SLOTS:
   void qtBoolValueChanged(bool v)
   {
     qtValueChanged(v);

@@ -22,7 +22,7 @@ public:
 
   QQmlProperty& targetProperty;
   ossia::net::parameter_base& address;
-public slots:
+public Q_SLOTS:
   void qtVariantChanged();
 };
 
@@ -67,7 +67,7 @@ public:
 signals:
   void setValue_sig(const value&);
 
-private slots:
+private Q_SLOTS:
   void setValue_slot(const value&);
 
 private:
@@ -93,7 +93,7 @@ public:
 
   QQmlScriptString on() const;
 
-public slots:
+public Q_SLOTS:
   void setOn(QQmlScriptString on);
 
 signals:
@@ -125,7 +125,7 @@ signals:
   void valueChanged(QVariant);
   void setValue_sig(const ossia::value&);
 
-public slots:
+public Q_SLOTS:
   void setValue(QVariant value);
   void setValue_slot(const ossia::value&);
 

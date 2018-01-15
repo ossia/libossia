@@ -55,7 +55,7 @@ public:
 signals:
   void sig_push(const ws_generic_client_parameter*);
 
-private slots:
+private Q_SLOTS:
   void slot_push(const ws_generic_client_parameter*);
 
 private:

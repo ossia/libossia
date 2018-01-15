@@ -29,7 +29,7 @@ class qml_scenario : public qml_process
     std::shared_ptr<ossia::time_process> process() const override;
 
     qml_sync* startSync() const;
-  public slots:
+  public Q_SLOTS:
     void setStartSync(qml_sync* s);
 
   signals:

@@ -20,7 +20,7 @@ class qml_exec : public QObject
     static qml_exec& instance();
     static qml_exec* get(QObject* obj);
     void submitCommand(std::function<void()>);
-  public slots:
+  public Q_SLOTS:
     void play(qml_interval* itvl);
     void pause(qml_interval* itvl);
     void stop(qml_interval* itvl);

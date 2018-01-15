@@ -88,7 +88,7 @@ class QmlPresetTest : public QObject
       dev.cleanup();
     }
 
-  private slots:
+  private Q_SLOTS:
 
     void test_model_recursive_static()
     {

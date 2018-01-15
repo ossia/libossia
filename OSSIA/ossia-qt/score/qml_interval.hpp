@@ -52,7 +52,7 @@ class qml_interval : public QQuickItem
     void registerProcess(qml_process*);
     void unregisterProcess(qml_process*);
     std::shared_ptr<ossia::time_interval> m_interval;
-public slots:
+public Q_SLOTS:
     void setNominalDuration(qint32 nominalDuration);
     void setMinDuration(qint32 minDuration);
     void setMaxDuration(qint32 maxDuration);

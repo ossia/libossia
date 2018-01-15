@@ -31,7 +31,7 @@ public:
   QQmlScriptString endCond() const;
   QQmlScriptString startTrig() const;
   QQmlScriptString endTrig() const;
-public slots:
+public Q_SLOTS:
   void setInterval(qml_interval* interval);
 
   void setStartCond(QQmlScriptString s);

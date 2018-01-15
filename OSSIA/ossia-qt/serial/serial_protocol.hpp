@@ -38,7 +38,7 @@ public:
 signals:
   void write(QByteArray);
 
-public slots:
+public Q_SLOTS:
   void on_write(QByteArray b)
   {
     mSerialPort.write(b);

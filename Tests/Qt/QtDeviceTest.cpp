@@ -38,7 +38,7 @@ int tutu() const
   return m_tutu;
 }
 
-public slots:
+public Q_SLOTS:
 void setVec3(QVector3D vec3)
 {
   if (m_vec3 == vec3)

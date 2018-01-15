@@ -44,7 +44,7 @@ signals:
   void parentNodeChanged(QObject* parentNode);
   void deviceChanged(QObject* device);
 
-public slots:
+public Q_SLOTS:
   void setCount(int count);
   void setNode(QString node);
   void setParentNode(QObject* parentNode);

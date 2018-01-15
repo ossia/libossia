@@ -14,7 +14,7 @@ public:
 
   void resetNode() override;
 
-public slots:
+public Q_SLOTS:
   void reset_parent();
   void node_destroyed();
 private:
