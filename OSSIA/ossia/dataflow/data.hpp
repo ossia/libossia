@@ -86,6 +86,13 @@ struct value_port
     if(auto u = this->type.target<ossia::unit_t>())
       tval.type = *u;
   }
+
+
+  void set_data(const value_vector<ossia::tvalue>& vec)
+  {
+    data = vec;
+  }
+
   void clear()
   {
     data.clear();
