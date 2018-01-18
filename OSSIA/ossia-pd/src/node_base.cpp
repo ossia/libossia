@@ -142,6 +142,7 @@ void ossia::pd::node_base::get_namespace(object_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m.get_node();
+    list.push_back(n);
     list_all_child(*n, list);
     int pos = ossia::net::osc_parameter_string(*n).length();
     for (ossia::net::node_base* child : list)
