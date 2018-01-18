@@ -145,7 +145,6 @@ void client::update(client* x)
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_matchers.push_back({&x->m_device->get_root_node(), (object_base*) nullptr});
 
     client::register_children(x);
   }
