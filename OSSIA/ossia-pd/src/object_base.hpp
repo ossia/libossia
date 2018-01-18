@@ -72,8 +72,6 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
-  void set_dead(){ m_dead = true; }
-
   std::vector<ossia::value> m_set_pool;
 
 private:
@@ -85,9 +83,7 @@ private:
 
   moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
-  bool m_dead{};
   t_atom m_addr{};
-
 };
 
 class object_base

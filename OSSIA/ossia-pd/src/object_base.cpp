@@ -57,9 +57,7 @@ t_matcher::t_matcher(t_matcher&& other)
   while(other.m_queue_list.try_dequeue(v))
     m_queue_list.enqueue(v);
 
-  m_dead = other.m_dead;
-
-  if(node && !m_dead)
+  if(node)
   {
     if(auto param = node->get_parameter())
     {
@@ -92,9 +90,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
   m_addr = other.m_addr;
 
-  m_dead = other.m_dead;
-
-  if(node && !m_dead)
+  if(node)
   {
     if(auto param = node->get_parameter())
     {
@@ -157,7 +153,6 @@ void purge_parent(ossia::net::node_base* node)
 
 t_matcher::~t_matcher()
 {
-  if (m_dead) return;
   if(node && owner)
   {
     // purge selection
@@ -335,7 +330,6 @@ void object_base::is_deleted(const ossia::net::node_base& n)
   ossia::remove_one_if(
         m_matchers,
         [&] (auto& m) {
-    m.set_dead();
     return m.get_node() == &n;
   });
 
