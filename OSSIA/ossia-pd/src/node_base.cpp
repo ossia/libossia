@@ -150,7 +150,7 @@ void ossia::pd::node_base::get_namespace(object_base* x)
       if (child->get_parameter())
       {
         ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-        ossia::value val = child->get_parameter()->fetch_value();
+        ossia::value val = child->get_parameter()->value();
 
         std::vector<t_atom> va;
         value2atom vm{va};
