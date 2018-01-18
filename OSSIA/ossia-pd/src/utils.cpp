@@ -260,7 +260,11 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
     // don't register anything
     if (current == "ossia.device" || current == "ossia.client")
     {
-      return {};
+      // but don't return if an object found itself
+      object_base* o;
+      o = (object_base*)&list->g_pd;
+      if ( x != o )
+        return {};
     }
 
     list = list->g_next;

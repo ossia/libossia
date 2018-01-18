@@ -65,8 +65,6 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
 
     x->connect_slots();
 
-    x->m_matchers.push_back({&x->m_device->get_root_node(), (object_base*)nullptr});
-
     x->m_clock = clock_new(x, (t_method)device::register_children);
     clock_delay(x->m_clock, 0);
 
@@ -87,7 +85,6 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
 
 void device::register_children(device* x)
 {
-
   std::vector<object_base*> modelnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
   for (auto v : modelnodes)
