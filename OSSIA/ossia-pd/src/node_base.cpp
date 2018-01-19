@@ -127,12 +127,27 @@ void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
  * @param node : starting point
  * @param list : reference to a node_base vector to store each node
  */
-static void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::node_base*>& list){
-  for (const auto& child : node.children_copy())
+static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
+{
+  std::vector<ossia::net::node_base*> list;
+  std::vector<ossia::net::node_base*> res;
+
+  for (const auto& child : node->children_copy())
   {
     list.push_back(child);
-    list_all_child(*child,list);
   }
+
+  ossia::sort(list, [](auto n1, auto n2)
+    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+
+  for (auto it = list.begin(); it != list.end(); it++ )
+  {
+    res.push_back(*it);
+    auto nested_list = list_all_child(*it);
+    res.insert(res.end(), nested_list.begin(), nested_list.end());
+  }
+
+  return res;
 }
 
 void ossia::pd::node_base::get_namespace(object_base* x)
@@ -142,8 +157,8 @@ void ossia::pd::node_base::get_namespace(object_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m.get_node();
-    list.push_back(n);
-    list_all_child(*n, list);
+    list = list_all_child(n);
+
     int pos = ossia::net::osc_parameter_string(*n).length();
     for (ossia::net::node_base* child : list)
     {
