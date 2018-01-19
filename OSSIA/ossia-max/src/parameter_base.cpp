@@ -374,6 +374,9 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_unit(x,x->m_node_selection);
   else if ( s == gensym("rate") )
     parameter_base::get_rate(x,x->m_node_selection);
+  else
+    object_base::get_mess_cb(x,s);
+
 
 }
 
