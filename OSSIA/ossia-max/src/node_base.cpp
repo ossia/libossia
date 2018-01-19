@@ -128,25 +128,21 @@ void list_all_child(const ossia::net::node_base& node, std::vector<std::string>&
 
 static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
 {
+  std::vector<ossia::net::node_base*> children
+    = node->children_copy();
   std::vector<ossia::net::node_base*> list;
-  std::vector<ossia::net::node_base*> res;
 
-  for (const auto& child : node->children_copy())
-  {
-    list.push_back(child);
-  }
-
-  ossia::sort(list, [](auto n1, auto n2)
+  ossia::sort(children, [](auto n1, auto n2)
     { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
 
-  for (auto it = list.begin(); it != list.end(); it++ )
+  for (auto it = children.begin(); it != children.end(); it++ )
   {
-    res.push_back(*it);
+    list.push_back(*it);
     auto nested_list = list_all_child(*it);
-    res.insert(res.end(), nested_list.begin(), nested_list.end());
+    list.insert(res.end(), nested_list.begin(), nested_list.end());
   }
 
-  return res;
+  return list;
 }
 
 void node_base::get_namespace(node_base* x)
