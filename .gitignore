@@ -42,3 +42,5 @@ Documentation/Doxygen/API
 3rdparty/libphidgets
 OSSIA/ossia-python/pyossia.egg-info*
 *.whl
+
+3rdparty/boost*
