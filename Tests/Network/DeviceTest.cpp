@@ -3,13 +3,13 @@
 #include <QtTest>
 #include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
-#include <ossia-qt/http/http.hpp>
+//#include <ossia-qt/http/http.hpp>
 #include <ossia/network/midi/midi.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include "../Editor/TestUtils.hpp"
+#include "TestUtils.hpp"
 
 using namespace ossia;
 // TODO move this code where it is useful.

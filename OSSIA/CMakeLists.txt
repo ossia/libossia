@@ -24,6 +24,7 @@ if(OSSIA_QT)
     set(OSSIA_QT OFF)
   else()
     set(CMAKE_AUTOMOC 1)
+    set(OSSIA_EDITOR ON)
   endif()
 endif()
 

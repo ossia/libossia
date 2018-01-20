@@ -4,7 +4,9 @@
 #include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/network/common/path.hpp>
-#include <ossia-qt/js_utilities.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia-qt/name_utils.hpp>
+// #include <ossia-qt/js_utilities.hpp>
 
 using namespace ossia;
 using namespace ossia::net;
