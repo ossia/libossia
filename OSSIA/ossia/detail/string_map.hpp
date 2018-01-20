@@ -24,7 +24,7 @@ struct string_hash
   template <std::size_t N>
   std::size_t operator()(const char (&s)[N]) const
   {
-    return boost::hash_range(s, s + N);
+    return boost::hash_range(s, s + N - 1);
   }
 };
 
