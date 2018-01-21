@@ -35,10 +35,10 @@ case "$TRAVIS_OS_NAME" in
 
     shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
-        # install arm-linux-gnueabihf-g++-6 from yaketty
+        # install arm-linux-gnueabihf-g++-6 from zesty
         pushd /etc/apt
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
-        sudo sed -i -- 's/trusty/yakkety/g' sources.list
+        sudo sed -i -- 's/trusty/zesty/g' sources.list
         sudo apt-get update -qq
         sudo apt-get install -qq g++-6-arm-linux-gnueabihf
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
