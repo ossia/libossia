@@ -34,7 +34,7 @@ void* assert::create(t_symbol* s, int argc, t_atom* argv)
 
 void assert::in_bang(ossia::pd::assert* x)
 {
-  // x->m_armed=true;
+  x->m_armed=true;
 }
 
 void assert::in_anything(ossia::pd::assert* x, t_symbol* s, int argc, t_atom* argv)
