@@ -4,7 +4,7 @@
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <Editor/TestUtils.hpp>
+#include <Network/TestUtils.hpp>
 
 namespace ossia
 {

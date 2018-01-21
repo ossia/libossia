@@ -1,7 +1,6 @@
 #pragma once
 
-#include <ossia/network/base/device.hpp>
-// #include <ossia/network/base/node.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 namespace ossia
 {
