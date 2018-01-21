@@ -15,7 +15,7 @@ struct string_hash
 {
   std::size_t operator()(const std::string& s) const
   {
-    return std::hash<std::string>{}(s);
+    return boost::hash<std::string>{}(s);
   }
   std::size_t operator()(ossia::string_view s) const
   {
