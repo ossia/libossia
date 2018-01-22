@@ -95,6 +95,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_minmax();
   set_default();
   set_rate();
+  set_repetition_filter();
 
   clock_set(m_clock, 1);
 

@@ -152,9 +152,9 @@ void parameter_base::push_default_value(parameter_base* x)
 
   if (!x->m_mute)
   {
-    for (auto& m : x->m_matchers)
+    for (auto& m : x->m_node_selection)
     {
-      node = m.get_node();
+      node = m->get_node();
       auto param = node->get_parameter();
 
       auto def_val = ossia::net::get_default_value(*node);

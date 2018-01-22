@@ -247,9 +247,10 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_range();
   set_minmax();
   set_default();
+  set_rate();
   set_repetition_filter();
 
-  clock_delay(m_clock, 0);
+  clock_delay(m_clock, 1);
 
   return (!m_matchers.empty() || m_is_pattern);
 }

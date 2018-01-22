@@ -661,7 +661,6 @@ void parameter_base::push_default_value(parameter_base* x)
     for (auto m : x->m_node_selection)
     {
       node = m->get_node();
-      auto parent = m->get_owner();
       auto param = node->get_parameter();
 
       auto def_val = ossia::net::get_default_value(*node);
