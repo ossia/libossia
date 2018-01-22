@@ -35,6 +35,8 @@ if(APPLE)
     endif()
 endif()
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 set(PROJECT_SRCS
     src/ossia-max.cpp
     src/ossia-max.hpp
