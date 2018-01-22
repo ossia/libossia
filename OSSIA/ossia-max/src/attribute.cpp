@@ -72,7 +72,7 @@ bool attribute::register_node(const std::vector<t_matcher>& node)
     object_dequarantining<attribute>(this);
   }
   else
-    object_dequarantining<attribute>(this);
+    object_quarantining<attribute>(this);
 
   if (!node.empty() && m_is_pattern){
     // assume all nodes refer to the same device

@@ -89,6 +89,11 @@ void device_base::connect_slots()
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
     m_device->on_attribute_modified.connect<device_base, &device_base::on_attribute_modified_callback>(this);
     // TODO add callback for message
+
+    m_matchers.emplace_back(&m_device->get_root_node(), nullptr);
+    // This is to handle [get address( message only
+    // so is it really needed ?
+    m_node_selection.push_back(&m_matchers[0]);
   }
 }
 

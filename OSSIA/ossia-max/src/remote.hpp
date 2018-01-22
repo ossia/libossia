@@ -30,6 +30,7 @@ public:
 
   static ossia::safe_set<remote *> &quarantine();
 
+  static void get_mess_cb(remote* x, t_symbol* s);
   static void get_unit(remote*x);
   static void get_mute(remote*x);
   static void get_rate(remote*x);

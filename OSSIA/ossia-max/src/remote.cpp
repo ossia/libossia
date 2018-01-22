@@ -32,6 +32,7 @@ extern "C" void ossia_remote_setup()
         "notify", A_CANT, 0);
     class_addmethod(c, (method) address_mess_cb<remote>, "address",   A_SYM, 0);
 
+    class_addmethod(c, (method) remote::get_mess_cb, "get",  A_SYM, 0);
   }
 
   class_register(CLASS_BOX, c);
@@ -236,6 +237,32 @@ void remote::set_rate()
   m_rate = m_rate < m_rate_min ? m_rate_min : m_rate;
 }
 
+
+void remote::get_unit(remote*x)
+{
+  t_atom a;
+  if (x->m_unit)
+  {
+    A_SETSYM(&a,x->m_unit);
+    outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+  } else
+    outlet_anything(x->m_dumpout, gensym("unit"), 0, NULL);
+}
+
+void remote::get_mute(remote*x)
+{
+  t_atom a;
+  A_SETFLOAT(&a,x->m_mute);
+  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+}
+
+void remote::get_rate(remote*x)
+{
+  t_atom a;
+  A_SETFLOAT(&a,x->m_rate);
+  outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
+}
+
 bool remote::register_node(const std::vector<t_matcher>& matchers)
 {
   if(m_mute) return false;
@@ -418,6 +445,18 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   } else {
     parameter_base::update_attribute(x, attribute, node);
   }
+}
+
+void remote::get_mess_cb(remote* x, t_symbol* s)
+{
+  if ( s == gensym("unit") )
+    remote::get_unit(x);
+  if ( s == gensym("mute") )
+    remote::get_mute(x);
+  if ( s == gensym("rate") )
+    remote::get_rate(x);
+  else
+    parameter_base::get_mess_cb(x,s);
 }
 
 ossia::safe_set<remote*>& remote::quarantine()

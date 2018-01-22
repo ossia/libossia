@@ -139,7 +139,7 @@ static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base*
   {
     list.push_back(*it);
     auto nested_list = list_all_child(*it);
-    list.insert(res.end(), nested_list.begin(), nested_list.end());
+    list.insert(list.end(), nested_list.begin(), nested_list.end());
   }
 
   return list;

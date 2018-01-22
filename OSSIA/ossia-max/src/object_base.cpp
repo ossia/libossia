@@ -138,6 +138,10 @@ t_matcher::~t_matcher()
 {
   if(node && owner)
   {
+
+    // purge selection
+    ossia::remove_one(owner->m_node_selection,this);
+
     if (   owner->m_otype == object_class::param
         || owner->m_otype == object_class::model )
     {
@@ -147,20 +151,17 @@ t_matcher::~t_matcher()
         if (param && callbackit) param->remove_callback(*callbackit);
         node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
 
-      if ( owner->m_otype == object_class::param )
-      {
         for (auto remote : ossia_max::instance().remotes.copy())
         {
           ossia::remove_one(remote->m_matchers,*this);
         }
-      } else {
-        for (auto view : ossia_max::instance().views.copy())
-        {
-          ossia::remove_one(view->m_matchers,*this);
-        }
-      }
 
-      purge_parent(node);
+        for (auto attribute : ossia_max::instance().attributes.copy())
+        {
+          ossia::remove_one(attribute->m_matchers,*this);
+        }
+
+        purge_parent(node);
       }
       // if the vector is empty
       // remote should be quarantinized
@@ -494,6 +495,16 @@ void object_base::fill_selection()
 void object_base::get_mess_cb(object_base* x, t_symbol* s){
   if (s == gensym("address"))
     get_address(x,x->m_node_selection);
+  else if (s == gensym("tags"))
+    get_tags(x,x->m_node_selection);
+  else if (s == gensym("description"))
+    get_description(x,x->m_node_selection);
+  else if (s == gensym("hidden"))
+    get_hidden(x,x->m_node_selection);
+  else if (s == gensym("zombie"))
+    get_zombie(x,x->m_node_selection);
+  else
+    object_post((t_object*)x,"nsso attribute %s", s->s_name);
 }
 
 void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
