@@ -112,7 +112,6 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_EXAMPLES=0 \
                    -DOSSIA_CI=1 \
                    -DOSSIA_QT=0 \
-                   -DOSSIA_NO_QT=1 \
                    -DOSSIA_PYTHON=0 \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
