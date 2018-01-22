@@ -29,6 +29,7 @@ environment:
 
     - APPVEYOR_BUILD_TYPE: pd-test
       configuration: Debug
+      QTDIR-32bit: C:\Qt\5.9\msvc2015
 
     - APPVEYOR_BUILD_TYPE: max
       configuration: Release
