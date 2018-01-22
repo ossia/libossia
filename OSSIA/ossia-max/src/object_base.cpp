@@ -347,85 +347,111 @@ void object_base::defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* 
 
 void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
+  auto matchers = make_matchers_vector(x,node);
+
   if ( attribute == ossia::net::text_priority() ){
-    get_priority(x);
+    get_priority(x, matchers);
   } else if ( attribute == ossia::net::text_description() ){
-    get_description(x);
+    get_description(x, matchers);
   } else if ( attribute == ossia::net::text_tags() ){
-    get_tags(x);
+    get_tags(x, matchers);
   } else if ( attribute == ossia::net::text_hidden() ){
-    get_hidden(x);
+    get_hidden(x, matchers);
   } else {
     object_error((t_object*)x, "no attribute %s", std::string(attribute).c_str());
   }
 }
 
-void object_base::get_tags(object_base*x)
+void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
-    auto optags = ossia::net::get_tags(*node);
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    auto optags = ossia::net::get_tags(*m->get_node());
 
     if (optags)
     {
-      std::vector<std::string> tags = *optags;
+      const std::vector<std::string>& tags = *optags;
       x->m_tags_size = tags.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : tags.size();
+      t_atom asym[OSSIA_MAX_MAX_ATTR_SIZE];
       for (int i=0; i < x->m_tags_size; i++)
+      {
         x->m_tags[i] = gensym(tags[i].c_str());
+        A_SETSYM(&asym[i], x->m_tags[i]);
+      }
 
-      //outlet_anything(x->m_dumpout, gensym("tags"),
-      //                x->m_tags_size, x->m_tags);
+      outlet_anything(x->m_dumpout, gensym("tags"),
+                      x->m_tags_size, asym);
     }
   }
 }
 
-void object_base::get_description(object_base*x)
+void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
 {
-  if (!x->m_matchers.empty())
+  for (auto m : nodes)
   {
-    ossia::net::node_base* node = x->m_matchers[0].get_node();
-    auto description = ossia::net::get_description(*node);
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    auto description = ossia::net::get_description(*m->get_node());
 
     if (description)
     {
-      std::string str = *description;
-      x->m_description = gensym(str.c_str());
+      x->m_description = gensym((*description).c_str());
+      x->m_description_size = 1;
+      t_atom adesc;
+      A_SETSYM(&adesc,x->m_description);
 
-      // outlet_anything(x->m_dumpout, gensym("description"),
-      //                x->m_description_size, x->m_description);
+      outlet_anything(x->m_dumpout, gensym("description"),
+                      1, &adesc);
+    } else {
+      outlet_anything(x->m_dumpout, gensym("description"), 0, nullptr);
     }
   }
 }
 
-void object_base::get_priority(object_base*x)
+void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
 {
-  // assume all matchers have the same priority
-  ossia::max::t_matcher& m = x->m_matchers[0];
-  ossia::net::node_base* node = m.get_node();
-
-  auto priority = ossia::net::get_priority(*node);
-  if (priority)
+  for (auto m : nodes)
   {
-    x->m_priority = *priority;
-    /*
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    auto priority = ossia::net::get_priority(*m->get_node());
+    if (priority)
+      x->m_priority = *priority;
+    else
+      x->m_priority = 0;
+
     t_atom a;
     A_SETFLOAT(&a, x->m_priority);
     outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
-    */
   }
 }
 
-void object_base::get_hidden(object_base*x)
+void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
 {
-  // assume all matchers have the same bounding_mode
-  ossia::max::t_matcher& m = x->m_matchers[0];
-  ossia::net::node_base* node = m.get_node();
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
-  x->m_hidden = ossia::net::get_hidden(*node);
-
-  // TODO notify object
+    t_atom a;
+    A_SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+  }
 }
+
+void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
+{
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    t_atom a;
+    A_SETFLOAT(&a, ossia::net::get_zombie(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("zombie"), 1, &a);
+  }
+}
+
 
 void object_base::class_setup(t_class*c)
 {

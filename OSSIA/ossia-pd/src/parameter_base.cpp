@@ -109,9 +109,7 @@ void parameter_base::set_minmax()
   std::vector<ossia::value> min = attribute2value(m_min, m_min_size);
   std::vector<ossia::value> max = attribute2value(m_max, m_max_size);
 
-  const bool min_empty = min.empty();
-  const bool max_empty = max.empty();
-  if(min_empty && max_empty)
+  if(min.empty() && max.empty())
   {
     return;
   }
