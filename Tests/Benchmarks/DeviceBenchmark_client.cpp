@@ -1,35 +1,44 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <QtTest>
-#include <ossia/ossia.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <boost/range/algorithm/find_if.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <iostream>
 #include "Random.hpp"
-#include<thread>
-#include <boost/range/algorithm/find_if.hpp>
+#include <thread>
+#include <cmath>
 Random r;
 using namespace ossia;
 
-std::shared_ptr<OSSIA::Node> goToRandomNode(
-        const std::shared_ptr<OSSIA::Node>& root)
+const ossia::net::node_base* goToRandomNode(
+    const ossia::net::node_base* root)
 {
-    // Get a random number between 1 and 100
-    auto depth = 1 + r.getRandomUInt() % 100;
+  // Get a random number between 1 and 100
+  auto depth = 1 + r.getRandomUInt() % 100;
 
-    // Try to go randomly to a node that deep and return it
-    auto currentNode = root;
-    for(int i = 0; i < depth; i++)
+  // Try to go randomly to a node that deep and return it
+  auto currentNode = root;
+  for(int i = 0; i < depth; i++)
+  {
+    if(currentNode->children().empty())
     {
-        if(currentNode->children().empty())
-        {
-            break;
-        }
-
-        auto node_num = r.getRandomUInt() % currentNode->children().size();
-        currentNode = currentNode->children()[node_num];
-
+      break;
     }
 
-    return currentNode;
+    auto node_num = r.getRandomUInt() % currentNode->children().size();
+    currentNode = currentNode->children()[node_num].get();
+
+  }
+
+  return currentNode;
+}
+
+auto goToRandomNode(std::vector<ossia::net::parameter_base*>& p)
+{
+  return p[r.getRandomUInt() % (p.size() - 1)];
 }
 
 
@@ -37,65 +46,51 @@ class DeviceBenchmark_client : public QObject
 {
     Q_OBJECT
 
-private Q_SLOTS:
+  private Q_SLOTS:
 
     /*! test life cycle and accessors functions */
     void test_basic()
     {
-        // declare this program "A" as Local device
-        auto localProtocol = Local::create();
-        auto localDevice = Device::create(localProtocol, "A");
+      ossia::net::generic_device remote{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"), "B"};
+      remote.get_protocol().update(remote.get_root_node());
+      ossia::net::parameter_base* start_addr{};
+      ossia::net::parameter_base* stop_addr{};
+      std::vector<ossia::net::parameter_base*> other_addr;
+      for(const auto& node : remote.children())
+      {
+        if(node->get_name() == "startTick")
+          start_addr = node->get_parameter();
+        else if(node->get_name() == "stopTick")
+          stop_addr = node->get_parameter();
+        else if(auto p = node->get_parameter())
+          other_addr.push_back(p);
 
-        // declare a distant program "B" as a Minuit device
-        auto minuitProtocol = Minuit::create("127.0.0.1", 6666, 9999);
-        auto minuitDevice = Device::create(minuitProtocol, "B");
+        if(start_addr && stop_addr)
+          break;
+      }
+      QVERIFY(start_addr);
 
-        bool val = minuitDevice->updateNamespace();
+      start_addr->push_value(ossia::impulse{});
+      // Send the "start" tick
+      // Send the messages
+      int iter = 1000000;
+      std::chrono::steady_clock::duration total_dur;
+      for(int i = 0; i < iter; i++)
+      {
+        // Select a new node
+        auto p = goToRandomNode(other_addr);
+        auto start = std::chrono::steady_clock::now();
+        p->push_value(0.f);
+        auto end = std::chrono::steady_clock::now();
 
-        std::shared_ptr<OSSIA::Address> start_addr;
-        std::shared_ptr<OSSIA::Address> stop_addr;
-        for(const auto& node : minuitDevice->children())
-        {
-            if(node->getName() == "startTick")
-                start_addr = node->get_parameter();
-            if(node->getName() == "stopTick")
-                stop_addr = node->get_parameter();
-            if(start_addr && stop_addr)
-                break;
-        }
+        total_dur += end - start;
+      }
 
-        OSSIA::Float f(0);
-
-        start_addr->push_value(new ossia::impulse{});
-        // Send the "start" tick
-        // Send the messages
-        int iter = 1000000;
-        std::chrono::steady_clock::duration total_dur;
-        for(int i = 0; i < iter; i++)
-        {
-            // Select a new node
-            auto n = goToRandomNode(minuitDevice);
-            const auto& name = n->getName();
-            if(name != "startTick" && name != "stopTick")
-            {
-                if(n->get_parameter())
-                {
-                    auto start = std::chrono::steady_clock::now();
-                    n->get_parameter()->push_value(&f);
-                    auto end = std::chrono::steady_clock::now();
-
-                    total_dur += end - start;
-                }
-            }
-        }
-
-        stop_addr->push_value(new ossia::impulse{});
-        std::cout << "Sending: " << iter << ": "
-                  << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
-                  << "" << std::endl;
-
+      stop_addr->push_value(ossia::impulse{});
+      std::cout << "Sending: " << iter << ": "
+                << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
+          << "" << std::endl;
     }
-
 };
 
 

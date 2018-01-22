@@ -14,8 +14,7 @@ class OSSIA_EXPORT generic_node_base : public ossia::net::node_base
 {
 protected:
   ossia::net::device_base& m_device;
-  ossia::net::node_base* m_parent{};
-
+  ossia::net::node_base* const m_parent{};
 public:
   generic_node_base() = delete;
   generic_node_base(const generic_node_base&) = delete;

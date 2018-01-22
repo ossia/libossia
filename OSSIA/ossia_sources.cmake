@@ -165,6 +165,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.cpp"
@@ -263,6 +264,7 @@ set(OSSIA_EDITOR_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/message.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/exceptions.cpp"
 
   )
 

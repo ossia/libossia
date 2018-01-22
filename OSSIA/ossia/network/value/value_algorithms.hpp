@@ -363,7 +363,7 @@ struct destination_index_retriever
     {
       return t;
     }
-    else if (t.size() > *it)
+    else if ((int64_t)t.size() > *it)
     {
       auto& val = t[*it];
       ++it;
@@ -395,7 +395,7 @@ struct destination_index_retriever
     {
       return t;
     }
-    else if (t.size() > *it)
+    else if ((int64_t)t.size() > *it)
     {
       if (it + 1 == index.end())
         return float{t[*it]};

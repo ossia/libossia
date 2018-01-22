@@ -5,7 +5,6 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <boost/container/flat_map.hpp>
-#include <flat_hash_map.hpp>
 #include <ossia_export.h>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
@@ -22,6 +21,7 @@
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <boost/functional/hash.hpp>
+#include <ossia/detail/hash_map.hpp>
 namespace std
 {
 template<>
@@ -221,7 +221,7 @@ class OSSIA_EXPORT flat_set_state
     }
 
 
-    using map_t = ska::flat_hash_map<
+    using map_t = ossia::fast_hash_map<
       std::pair<
         ossia::net::parameter_base*,
         ossia::unit_t>,

@@ -17,28 +17,15 @@ class OSSIA_EXPORT qml_property : public qml_property_base,
 {
   Q_OBJECT
   Q_INTERFACES(QQmlPropertyValueSource)
+    Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged RESET resetUnit FINAL)
+    Q_PROPERTY(ossia::qt::qml_val_type::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
+    Q_PROPERTY(ossia::qt::qml_access_mode::access_mode access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess FINAL)
+    Q_PROPERTY(ossia::qt::qml_bounding_mode::bounding_mode bounding READ bounding WRITE setBounding NOTIFY boundingChanged RESET resetBounding FINAL)
+    Q_PROPERTY(ossia::qt::qml_rep_filter::repetition_filter filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged RESET resetFilterRepetitions FINAL)
 
-  Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged RESET
-                 resetUnit FINAL)
-  Q_PROPERTY(
-      ossia::qt::qml_val_type::val_type valueType READ valueType WRITE
-          setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
-  Q_PROPERTY(ossia::qt::qml_access_mode::access_mode access READ access WRITE
-                 setAccess NOTIFY accessChanged RESET resetAccess FINAL)
-  Q_PROPERTY(
-      ossia::qt::qml_bounding_mode::bounding_mode bounding READ bounding WRITE
-          setBounding NOTIFY boundingChanged RESET resetBounding FINAL)
-  Q_PROPERTY(
-      ossia::qt::qml_rep_filter::repetition_filter filterRepetitions READ
-          filterRepetitions WRITE setFilterRepetitions NOTIFY
-              filterRepetitionsChanged RESET resetFilterRepetitions FINAL)
-
-  Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged RESET
-                 resetMin FINAL)
-  Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged RESET
-                 resetMax FINAL)
-  Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY
-                 valuesChanged RESET resetValues FINAL)
+  Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged RESET resetMin FINAL)
+  Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged RESET resetMax FINAL)
+  Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged RESET resetValues FINAL)
 public:
   qml_property(QQuickItem* parent = nullptr);
   ~qml_property();

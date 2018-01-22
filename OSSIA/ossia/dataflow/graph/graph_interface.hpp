@@ -2,7 +2,7 @@
 #include <ossia/dataflow/dataflow_fwd.hpp>
 namespace ossia
 {
-class graph_interface
+class OSSIA_EXPORT graph_interface
 {
 public:
   virtual ~graph_interface();

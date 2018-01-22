@@ -123,7 +123,7 @@ function(ossia_add_bench TESTNAME TESTSRCS)
     endif()
     use_gold(ossia_${TESTNAME})
 
-    add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
+    # add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
 endFunction()
 
 ossia_add_test(IntervalBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/IntervalBenchmark.cpp")
@@ -134,17 +134,14 @@ ossia_add_bench(MappingStrictBenchmark     "${CMAKE_CURRENT_SOURCE_DIR}/Benchmar
 ossia_add_bench(MappingBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/MappingBenchmark.cpp")
 ossia_add_bench(OverallBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/OverallBenchmark.cpp")
 ossia_add_bench(GraphBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/GraphBenchmark.cpp")
-set(OSSIA_BENCHMARKS 0)
+set(OSSIA_BENCHMARKS 1)
 if(OSSIA_BENCHMARKS)
-ossia_add_test(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
+ossia_add_bench(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
-ossia_add_test(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
-ossia_add_test(DeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_server.cpp")
-ossia_add_test(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
-# ossia_add_test(AutomationBenchmark         "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/AutomationBenchmark.cpp
+ossia_add_bench(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
+ossia_add_bench(DeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_server.cpp")
+ossia_add_bench(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
 endif()
-
-
 
 
 # A command to copy the test data.

@@ -131,7 +131,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest);
-  namespace_refresh(act, ossia::net::osc_parameter_string(node));
+  namespace_refresh(act, node.osc_address());
 
   auto status = fut.wait_for(std::chrono::seconds(5));
   // Won't return as long as the tree exploration request haven't finished.
@@ -232,7 +232,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 void minuit_protocol::request(ossia::net::parameter_base& address)
 {
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::osc_parameter_string(address);
+  auto addr = address.get_node().osc_address();
   addr += ":value";
   this->m_sender->send(act, ossia::string_view(addr));
   m_lastSentMessage = get_time();
@@ -245,7 +245,7 @@ std::future<void> minuit_protocol::pull_async(parameter_base& address)
   auto fut = m_getFinishedPromise.get_future();
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
-  auto addr = ossia::net::osc_parameter_string(address);
+  auto addr = address.get_node().osc_address();
   addr += ":value";
 
   get_refresh(act, addr);
@@ -298,12 +298,12 @@ bool minuit_protocol::observe(ossia::net::parameter_base& address, bool enable)
   if (enable)
   {
     this->m_sender->send(act, address, "enable");
-    m_listening.insert(std::make_pair(osc_parameter_string(address), &address));
+    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
   }
   else
   {
     this->m_sender->send(act, address, "disable");
-    m_listening.erase(osc_parameter_string(address));
+    m_listening.erase(address.get_node().osc_address());
   }
 
   m_lastSentMessage = get_time();
@@ -315,9 +315,9 @@ bool minuit_protocol::observe_quietly(
     ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
-    m_listening.insert(std::make_pair(osc_parameter_string(address), &address));
+    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
   else
-    m_listening.erase(osc_parameter_string(address));
+    m_listening.erase(address.get_node().osc_address());
 
   return true;
 }

@@ -47,6 +47,9 @@ public:
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
+
+  std::future<void> update_future(net::node_base& b);
+
   void set_device(net::device_base& dev) override;
   ossia::net::device_base& get_device() const
   {

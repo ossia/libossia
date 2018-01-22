@@ -8,7 +8,7 @@
 #include <ossia/editor/scenario/detail/continuity.hpp>
 namespace ossia
 {
-class loop_node : public ossia::graph_node
+class loop_node final : public ossia::graph_node
 {
   public:
     loop_node();

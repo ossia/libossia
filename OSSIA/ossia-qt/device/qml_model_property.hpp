@@ -16,8 +16,7 @@ class OSSIA_EXPORT qml_model_property : public QAbstractItemModel
   Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged)
   Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
   Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
-  Q_PROPERTY(QObject* parentNode READ parentNode WRITE setParentNode
-                 NOTIFY parentNodeChanged)
+  Q_PROPERTY(QObject* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged)
 public:
   qml_model_property(QObject* parent = nullptr);
   ~qml_model_property();

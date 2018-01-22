@@ -4,8 +4,19 @@
 #include <ossia/network/midi/midi.hpp>
 
 #include <ossia/detail/logger.hpp>
+#include <ModernMIDI/midi_message.h>
+#if !defined(__EMSCRIPTEN__)
 #include <ModernMIDI/midi_input.h>
 #include <ModernMIDI/midi_output.h>
+#else
+namespace mm
+{
+class MidiInput
+{};
+class MidiOutput
+{};
+}
+#endif
 namespace ossia
 {
 namespace net

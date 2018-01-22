@@ -37,8 +37,7 @@ class qml_callback;
 class OSSIA_EXPORT qml_device : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY
-                 readPresetChanged FINAL)
+  Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged FINAL)
   Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
 
 public:

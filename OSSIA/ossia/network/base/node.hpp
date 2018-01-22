@@ -195,6 +195,8 @@ public:
   //! If childrens are /foo, /bar, bar.1, returns true only for bar.
   bool is_root_instance(const ossia::net::node_base& child) const;
 
+  const std::string& osc_address() const { return m_oscAddressCache; }
+
   //! The node subclasses must call this in their destructor.
   mutable Nano::Signal<void(const node_base&)> about_to_be_deleted;
 
@@ -209,6 +211,8 @@ protected:
   children_t m_children;
   mutable shared_mutex_t m_mutex;
   extended_attributes m_extended{0};
+  std::string m_oscAddressCache;
+
 };
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <chobo/static_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <iterator>
 
 /**
@@ -34,7 +34,6 @@ namespace ossia
  * destination_index{1, 1, 0} => '5'
  * \endcode
  *
- * There are at most 8 nested depth level.
  */
-using destination_index = chobo::static_vector<uint8_t, 8>;
+using destination_index = ossia::small_vector<int32_t, 2>;
 }

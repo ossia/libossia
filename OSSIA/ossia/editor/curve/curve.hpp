@@ -187,6 +187,7 @@ public:
   constant_curve(ossia::value v) : mValue{std::move(v)}
   {
   }
+  ~constant_curve() override;
   constant_curve() = default;
   constant_curve(const constant_curve&) = delete;
   constant_curve(constant_curve&&) = delete;

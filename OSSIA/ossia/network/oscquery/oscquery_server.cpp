@@ -212,11 +212,11 @@ bool oscquery_server_protocol::observe(net::parameter_base& address, bool enable
   if (enable)
   {
     m_listening.insert(
-        std::make_pair(net::osc_parameter_string(address), &address));
+        std::make_pair(address.get_node().osc_address(), &address));
   }
   else
   {
-    m_listening.erase(net::osc_parameter_string(address));
+    m_listening.erase(address.get_node().osc_address());
   }
 
   return true;
@@ -502,7 +502,7 @@ catch (...)
 
 void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n) try
 {
-  const auto mess = json_writer::path_removed(net::osc_parameter_string(n));
+  const auto mess = json_writer::path_removed(n.osc_address());
 
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)

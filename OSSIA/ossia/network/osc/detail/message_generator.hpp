@@ -26,7 +26,7 @@ inline oscpack::OutboundPacketStream& operator<<(
 inline oscpack::OutboundPacketStream& operator<<(
     oscpack::OutboundPacketStream& p, const ossia::net::parameter_base& address)
 {
-  p << ossia::net::osc_parameter_string(address);
+  p << address.get_node().osc_address();
 
   return p;
 }

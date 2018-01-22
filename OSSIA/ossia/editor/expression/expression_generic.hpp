@@ -29,6 +29,7 @@ public:
   expression_generic(expression_generic_base* ptr) : expr{ptr}
   {
   }
+  ~expression_generic() override;
   std::unique_ptr<expression_generic_base> expr;
 
   void update() const

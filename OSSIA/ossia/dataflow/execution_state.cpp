@@ -8,6 +8,7 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_parameter.hpp>
+#include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 namespace ossia
 {

@@ -8,6 +8,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_set.hpp>
+#include <flat_hash_map.hpp>
 #include <ossia_export.h>
 #include <set>
 namespace ossia
@@ -71,7 +72,7 @@ struct scenario_graph
 
 };
 
-class scenario_node : public ossia::graph_node
+class scenario_node final : public ossia::graph_node
 {
 public:
   scenario_node();
@@ -145,6 +146,7 @@ private:
   interval_set m_runningIntervals;
   sync_set m_waitingNodes;
   small_sync_vec m_rootNodes;
+  small_event_vec m_pendingEvents;
   overtick_map m_overticks; // used as cache
   boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_endNodes; // used as cache

@@ -7,6 +7,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/detail/logger.hpp>

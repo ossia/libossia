@@ -371,7 +371,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     // state at 0.5
     // * the ones we're finishing in : we take their state where we finish
 
-    small_event_vec pendingEvents;
+    m_pendingEvents.clear();
 
     for(auto& n : m_rootNodes)
     {
@@ -415,10 +415,10 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.
       bool res = process_this(
-          *n, pendingEvents, m_runningIntervals, m_runningIntervals, tick_offset);
+          *n, m_pendingEvents, m_runningIntervals, m_runningIntervals, tick_offset);
       if (res)
       {
-        pendingEvents.clear();
+        m_pendingEvents.clear();
         it = m_waitingNodes.erase(it);
       }
       else
@@ -427,7 +427,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       }
     }
 
-    pendingEvents.clear();
+    m_pendingEvents.clear();
 
     auto run_interval = [&] (ossia::time_interval& interval,
                              ossia::time_value tick,
@@ -505,7 +505,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     do
     {
       // std::cerr << "BEGIN EVENT" << std::endl;
-      for (const auto& timeEvent : pendingEvents)
+      for (const auto& timeEvent : m_pendingEvents)
       {
         time_event& ev = *timeEvent;
         if(ev.get_status() == time_event::status::HAPPENED)
@@ -535,18 +535,18 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       }
       // std::cerr << "END EVENT" << std::endl;
 
-      pendingEvents.clear();
+      m_pendingEvents.clear();
 
       for (auto node : m_endNodes)
       {
         process_this(
-            *node, pendingEvents, m_runningIntervals,
+            *node, m_pendingEvents, m_runningIntervals,
             m_runningIntervals, m_overticks.find(node)->second.offset);
       }
 
       m_endNodes.clear();
 
-    } while (!pendingEvents.empty());
+    } while (!m_pendingEvents.empty());
   }
 
   // ossia::logger().info("scenario::state ends");

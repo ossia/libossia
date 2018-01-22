@@ -14,6 +14,11 @@ serial_parameter::serial_parameter(
 {
 }
 
+serial_parameter::~serial_parameter()
+{
+
+}
+
 void serial_parameter::valueCallback(const ossia::value& val)
 {
   this->set_value(val);

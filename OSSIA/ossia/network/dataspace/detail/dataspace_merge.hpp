@@ -115,7 +115,7 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
   operator()(T value_unit, const U& value, const ossia::destination_index& idx)
   {
     auto i = idx[0];
-    if (value_unit.dataspace_value.size() > i && value.size() > i)
+    if ((int64_t)value_unit.dataspace_value.size() > i && (int64_t)value.size() > i)
     {
       value_unit.dataspace_value[i]
           = ossia::convert<std::remove_reference_t<decltype(

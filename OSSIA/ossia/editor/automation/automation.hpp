@@ -99,7 +99,7 @@ class OSSIA_EXPORT automation_node final :
     ossia::behavior m_drive;
 };
 
-class automation_process : public ossia::node_process
+class automation_process final : public ossia::node_process
 {
 public:
     using ossia::node_process::node_process;

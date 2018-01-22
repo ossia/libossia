@@ -63,14 +63,14 @@ struct vec_merger
         existing_dest.value, {}, incoming_dest.unit, {}};
 
     auto& existing_index = existing_dest.index;
-    if (existing_index[0] < N)
+    if (existing_index[0] < (int64_t)N)
     {
       mess.message_value[existing_index[0]] = orig;
       mess.used_values.set(existing_index[0]);
     }
 
     auto& incoming_index = incoming_dest.index;
-    if (incoming_index[0] < N)
+    if (incoming_index[0] < (int64_t)N)
     {
       mess.message_value[incoming_index[0]] = incoming;
       mess.used_values.set(incoming_index[0]);
@@ -121,7 +121,7 @@ struct vec_merger
     else
     {
       auto i = incoming_index[0];
-      if (i < N)
+      if (i < (int64_t)N)
         orig[i] = incoming;
 
       if (existing_index != incoming_index && !existing_index.empty())
@@ -156,7 +156,7 @@ struct vec_merger
     else
     {
       auto i = incoming_index[0];
-      if (i < N)
+      if (i < (int64_t)N)
         orig[i] = incoming[i];
 
       if (existing_index != incoming_index && !existing_index.empty())
@@ -192,7 +192,7 @@ struct vec_merger
     else
     {
       auto i = incoming_index[0];
-      if (i < N)
+      if (i < (int64_t)N)
       {
         value_merger<true>::write_float(incoming[i], orig[i]);
       }
@@ -326,7 +326,7 @@ struct state_flatten_visitor_merger
         if (!incoming.dest.index.empty())
         {
           auto i = incoming.dest.index[0];
-          if (i < N)
+          if (i <(int64_t) N)
           {
             existing.message_value[i] = incoming.message_value.get<float>();
             existing.used_values.set(i);
@@ -341,7 +341,7 @@ struct state_flatten_visitor_merger
         if (!incoming.dest.index.empty())
         {
           auto i = incoming.dest.index[0];
-          if (i < N)
+          if (i <(int64_t) N)
           {
             auto& inc = incoming.message_value.get<vec_type>();
             existing.message_value[i] = inc[i];

@@ -2,12 +2,11 @@
 #include <ossia/dataflow/data.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/message_queue.hpp>
-#include <ossia/detail/ptr_set.hpp>
 #include <ossia/network/midi/midi_device.hpp>
-#include <flat_hash_map.hpp>
 #include <ossia/editor/state/flat_state.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
+#include <ossia/detail/hash_map.hpp>
 namespace ossia
 {
 struct OSSIA_EXPORT execution_state
@@ -79,9 +78,9 @@ struct OSSIA_EXPORT execution_state
 
     // private:// disabled due to tests, but for some reason can't make friend work
     using value_state_impl = boost::container::flat_multimap<int64_t, std::pair<ossia::value, int>>;
-    ska::flat_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>> m_valueState;
-    ska::flat_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
-    ska::flat_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>> m_midiState;
+    ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>> m_valueState;
+    ossia::fast_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
+    ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>> m_midiState;
 
     std::list<message_queue> m_valueQueues;
 

@@ -4,7 +4,7 @@
 
 namespace ossia
 {
-struct port
+struct OSSIA_EXPORT port
 {
   data_type data;
 
@@ -30,7 +30,7 @@ protected:
   port& operator=(port&&) = delete;
 };
 
-struct inlet : public port
+struct OSSIA_EXPORT inlet : public port
 {
   inlet(data_type d) : port{std::move(d)}
   {
@@ -66,7 +66,7 @@ struct inlet : public port
   ossia::small_vector<graph_edge*, 2> sources;
 };
 
-struct outlet : public port
+struct OSSIA_EXPORT outlet : public port
 {
   outlet(data_type d) : port{std::move(d)}
   {

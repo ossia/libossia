@@ -17,6 +17,7 @@ generic_node_base::generic_node_base(
     : m_device{aDevice}, m_parent{&aParent}
 {
   m_name = std::move(name);
+  m_oscAddressCache = ossia::net::osc_parameter_string(*this);
 }
 
 generic_node_base::generic_node_base(
@@ -24,6 +25,7 @@ generic_node_base::generic_node_base(
     : m_device{aDevice}
 {
   m_name = std::move(name);
+  m_oscAddressCache = ossia::net::osc_parameter_string(*this);
 }
 
 device_base& generic_node_base::get_device() const

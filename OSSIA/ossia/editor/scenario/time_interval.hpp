@@ -19,7 +19,7 @@ namespace ossia
 class time_event;
 class time_process;
 
-class interval_node : public ossia::graph_node
+class interval_node final : public ossia::graph_node
 {
 public:
   interval_node();

@@ -3,6 +3,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <smallfun.hpp>
+#include <readerwriterqueue.h>
 
 #if defined(OSSIA_PROTOCOL_AUDIO)
 #if defined(__EMSCRIPTEN__)

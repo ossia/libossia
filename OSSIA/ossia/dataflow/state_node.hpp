@@ -35,7 +35,7 @@ struct state_exec_visitor
     }
 };
 }
-struct state_node : public ossia::graph_node
+struct state_node final : public ossia::graph_node
 {
   public:
     state_node(const ossia::state& other): data{other} { }

@@ -228,6 +228,7 @@ else()
     if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)
       set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
         -Wno-gnu-statement-expression
+        -Wweak-vtables
       )
     endif()
     set(OSSIA_COMPILE_OPTIONS

@@ -193,7 +193,7 @@ bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& address
       ossia::value val = filter_value(addr);
       if (val.valid())
       {
-        str << oscpack::BeginMessageN(ossia::net::osc_parameter_string(addr));
+        str << oscpack::BeginMessageN(addr.get_node().osc_address());
         val.apply(osc_outbound_visitor{str});
         str << oscpack::EndMessage();
       }
@@ -224,7 +224,7 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_
       ossia::value val = filter_value(addr);
       if (val.valid())
       {
-        str << oscpack::BeginMessageN(ossia::net::osc_parameter_string(addr));
+        str << oscpack::BeginMessageN(addr.address);
         val.apply(osc_outbound_visitor{str});
         str << oscpack::EndMessage();
       }
@@ -242,9 +242,9 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_
 bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
-    m_listening.insert(std::make_pair(osc_parameter_string(address), &address));
+    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
   else
-    m_listening.erase(osc_parameter_string(address));
+    m_listening.erase(address.get_node().osc_address());
 
   return true;
 }

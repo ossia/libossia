@@ -83,7 +83,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
     }
   }
 
-  ~websocket_log_sink()
+  ~websocket_log_sink() override
   {
     socket->socket.onOpen
         .disconnect<websocket_log_sink, &websocket_log_sink::open_fun>(this);

@@ -81,6 +81,18 @@ struct Random
         }
 
 
+        std::string getRandomAddress()
+        {
+          std::string str;
+          // TODO average depth from stats
+          for(int i = 0; i < std::abs(rand()) % 10; i++)
+          {
+            str.append("/");
+            str.append(random_string(1 + rand() % 20));
+          }
+          return str;
+        }
+
         std::vector<std::vector<std::string>> getRandomAddresses(int num)
         {
             std::vector<std::vector<std::string>> dev;

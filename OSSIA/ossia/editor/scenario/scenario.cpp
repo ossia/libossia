@@ -68,6 +68,11 @@ bool scenario::is_root_sync(ossia::time_sync& sync) const
 }
 void scenario::start()
 {
+  m_runningIntervals.reserve(m_intervals.size());
+  m_pendingEvents.reserve(m_nodes.size() * 2);
+  m_overticks.reserve(m_nodes.size());
+  m_itv_end_map.reserve(m_intervals.size());
+  m_endNodes.reserve(m_nodes.size());
   for(auto& node : m_nodes)
   {
     if(is_root_sync(*node))
@@ -151,6 +156,7 @@ void scenario::stop()
 
   m_runningIntervals.clear();
   m_waitingNodes.clear();
+  m_pendingEvents.clear();
   m_overticks.clear();
   m_itv_end_map.clear();
   m_lastDate = time_value{};

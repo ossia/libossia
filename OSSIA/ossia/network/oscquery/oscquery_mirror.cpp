@@ -268,12 +268,12 @@ oscquery_mirror_protocol::pull_async(net::parameter_base& address)
 {
   std::promise<void> promise;
   auto fut = promise.get_future();
-  auto text = net::osc_parameter_string(address);
+  auto text = address.get_node().osc_address();
   m_getWSPromises.enqueue(get_ws_promise{std::move(promise), text});
   /*
   m_getOSCPromises.insert(
         std::make_pair(
-          ossia::net::osc_parameter_string(address),
+          address.get_node().osc_address(),
           get_promise{std::move(promise), &address}));
   */
   text += detail::query_value();
@@ -283,7 +283,7 @@ oscquery_mirror_protocol::pull_async(net::parameter_base& address)
 
 void oscquery_mirror_protocol::request(net::parameter_base& address)
 {
-  auto text = net::osc_parameter_string(address);
+  auto text = address.get_node().osc_address();
   text += detail::query_value();
   query_send_message(text);
 }
@@ -378,13 +378,13 @@ bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable
 {
   if (enable)
   {
-    auto str = net::osc_parameter_string(address);
+    auto str = address.get_node().osc_address();
     query_send_message(str + std::string(detail::query_listen_true()));
     m_listening.insert(std::make_pair(str, &address));
   }
   else
   {
-    auto str = net::osc_parameter_string(address);
+    auto str = address.get_node().osc_address();
     // TODO for minuit when disconnecting, disable listening for everything.
     query_send_message(str + std::string(detail::query_listen_false()));
     m_listening.erase(str);
@@ -397,21 +397,26 @@ bool oscquery_mirror_protocol::observe_quietly(
 {
   if (enable)
     m_listening.insert(
-        std::make_pair(net::osc_parameter_string(address), &address));
+        std::make_pair(address.get_node().osc_address(), &address));
   else
-    m_listening.erase(net::osc_parameter_string(address));
+    m_listening.erase(address.get_node().osc_address());
 
   return true;
 }
 
 bool oscquery_mirror_protocol::update(net::node_base& b)
 {
-  m_namespacePromise = std::promise<void>{};
-  auto fut = m_namespacePromise.get_future();
-  query_send_message(ossia::net::osc_parameter_string(b));
-
+  auto fut = update_future(b);
   auto status = fut.wait_for(std::chrono::seconds(3));
   return status == std::future_status::ready;
+}
+
+std::future<void> oscquery_mirror_protocol::update_future(net::node_base& b)
+{
+  m_namespacePromise = std::promise<void>{};
+  auto fut = m_namespacePromise.get_future();
+  query_send_message(b.osc_address());
+  return fut;
 }
 
 void oscquery_mirror_protocol::set_device(net::device_base& dev)
@@ -442,7 +447,7 @@ void oscquery_mirror_protocol::request_remove_node(net::node_base& self)
   {
     std::string req;
     req.reserve(64);
-    req = net::osc_parameter_string(*parent);
+    req = parent->osc_address();
     req += '?';
     req += detail::remove_node();
     req += '=';
@@ -467,7 +472,7 @@ void oscquery_mirror_protocol::request_add_node(
 {
   std::string req;
   req.reserve(64);
-  req += net::osc_parameter_string(parent);
+  req += parent.osc_address();
   req += '?';
   req += detail::add_node();
   req += '=';

@@ -51,7 +51,7 @@ inline void handle_osc_message(
       {
         if (auto addr = n->get_parameter())
         {
-          if(!SilentUpdate || listening.find(net::osc_parameter_string(*n)))
+          if(!SilentUpdate || listening.find(n->osc_address()))
           {
             if(net::update_value(*addr, m))
               dev.on_message(*addr);

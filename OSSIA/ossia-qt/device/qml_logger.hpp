@@ -17,21 +17,13 @@ namespace qt
 class OSSIA_EXPORT qml_logger : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(QString appName READ appName WRITE setAppName NOTIFY
-                 appNameChanged FINAL)
-  Q_PROPERTY(QString appVersion READ appVersion WRITE setAppVersion NOTIFY
-                 appVersionChanged FINAL)
-  Q_PROPERTY(QString appCreator READ appCreator WRITE setAppCreator NOTIFY
-                 appCreatorChanged FINAL)
-  Q_PROPERTY(QString loggerHost READ loggerHost WRITE setLoggerHost NOTIFY
-                 loggerHostChanged)
-  Q_PROPERTY(quint32 heartbeat READ heartbeat WRITE setHeartbeat NOTIFY
-                 heartbeatChanged)
-  Q_PROPERTY(bool logQtMessages READ logQtMessages WRITE setLogQtMessages
-                 NOTIFY logQtMessagesChanged)
-  Q_PROPERTY(log_level logLevel READ logLevel WRITE setLogLevel NOTIFY
-                 logLevelChanged)
-
+  Q_PROPERTY(QString appName READ appName WRITE setAppName NOTIFY appNameChanged FINAL)
+  Q_PROPERTY(QString appVersion READ appVersion WRITE setAppVersion NOTIFY appVersionChanged FINAL)
+  Q_PROPERTY(QString appCreator READ appCreator WRITE setAppCreator NOTIFY appCreatorChanged FINAL)
+  Q_PROPERTY(QString loggerHost READ loggerHost WRITE setLoggerHost NOTIFY loggerHostChanged)
+  Q_PROPERTY(quint32 heartbeat READ heartbeat WRITE setHeartbeat NOTIFY heartbeatChanged)
+  Q_PROPERTY(bool logQtMessages READ logQtMessages WRITE setLogQtMessages NOTIFY logQtMessagesChanged)
+  Q_PROPERTY(log_level logLevel READ logLevel WRITE setLogLevel NOTIFY logLevelChanged)
   Q_PROPERTY(QStringList logFilter READ logFilter WRITE setLogFilter NOTIFY logFilterChanged)
 
   public:

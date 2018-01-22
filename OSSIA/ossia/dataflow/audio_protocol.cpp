@@ -1,5 +1,6 @@
 #include <ossia/dataflow/audio_protocol.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/device.hpp>
 #if defined(__MACH__)
 #include <mach/mach_init.h>
 #include <mach/thread_policy.h>
@@ -15,7 +16,7 @@ audio_protocol::audio_protocol():
   audio_tick = [] (auto&&...) { };
 #if defined(OSSIA_PROTOCOL_AUDIO)
 #if defined(__EMSCRIPTEN__)
-  SDL_Init(SDL_INIT_AUDIO);
+  //SDL_Init(SDL_INIT_AUDIO);
 #else
   if(Pa_Initialize() != paNoError)
     throw std::runtime_error("Audio error");
@@ -28,7 +29,7 @@ audio_protocol::~audio_protocol()
 #if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
 #if defined(__EMSCRIPTEN__)
-  SDL_Quit();
+  //SDL_Quit();
 #else
   Pa_Terminate();
 #endif

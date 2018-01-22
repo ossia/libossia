@@ -196,7 +196,7 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   // These attributes are always here
   writeKey(detail::attribute_full_path());
 
-  writer.String(ossia::net::osc_parameter_string(n));
+  writer.String(n.osc_address());
 
   // Handling of the types / values
   if (addr)
@@ -312,7 +312,7 @@ void json_writer::attribute_changed_impl(
     wr.StartObject();
 
     write_json_key(wr, detail::attribute_full_path());
-    wr.String(ossia::net::osc_parameter_string(n));
+    wr.String(n.osc_address());
 
     auto& map = ossia_to_oscquery_key();
     auto it = map.find(attr);
@@ -344,7 +344,7 @@ void json_writer::attributes_changed_impl(
     wr.StartObject();
 
     write_json_key(wr, detail::attribute_full_path());
-    wr.String(ossia::net::osc_parameter_string(n));
+    wr.String(n.osc_address());
 
     for (auto& attr : attributes)
     {
@@ -367,7 +367,7 @@ void json_writer::send_message_impl(
   auto& wr = p.writer;
   wr.StartObject();
 
-  write_json_key(wr, ossia::net::osc_parameter_string(n));
+  write_json_key(wr, n.get_node().osc_address());
   p.writeValue(val);
 
   wr.EndObject();
@@ -378,7 +378,7 @@ void json_writer::send_message_impl(
   auto& wr = p.writer;
   wr.StartObject();
 
-  write_json_key(wr, ossia::net::osc_parameter_string(n));
+  write_json_key(wr, n.address);
   p.writeValue(val);
 
   wr.EndObject();

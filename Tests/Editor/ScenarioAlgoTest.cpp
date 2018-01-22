@@ -9,7 +9,7 @@
 
 namespace ossia
 {
-class message_node : public ossia::graph_node
+class message_node final : public ossia::graph_node
 {
   public:
     message_node()
@@ -28,7 +28,7 @@ class message_node : public ossia::graph_node
     std::vector<ossia::message> data;
 };
 
-class percentage_node : public ossia::graph_node
+class percentage_node final : public ossia::graph_node
 {
   public:
     percentage_node(ossia::destination d)

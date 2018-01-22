@@ -90,7 +90,7 @@ void push_value(const ossia::outlet_ptr& p, ossia::value val) {
   }
 }
 
-struct my_node : ossia::graph_node {
+struct my_node final : ossia::graph_node {
     my_node() {
       inputs().push_back(ossia::make_inlet<ossia::value_port>());
       outputs().push_back(ossia::make_outlet<ossia::value_port>());

@@ -3,12 +3,6 @@
 #include <ossia/dataflow/data.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
-#include <ModernMIDI/midi_message.h>
-#if defined(OSSIA_PROTOCOL_MIDI)
-#include <ModernMIDI/midi_input.h>
-#include <ModernMIDI/midi_output.h>
-#endif
 #include <gsl/span>
 
 namespace ossia

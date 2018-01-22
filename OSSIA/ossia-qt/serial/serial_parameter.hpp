@@ -15,6 +15,7 @@ class serial_parameter final : public ossia::net::generic_parameter
 
 public:
   serial_parameter(const serial_parameter_data& p, serial_node& parent);
+  ~serial_parameter();
 
   serial_parameter() = delete;
   serial_parameter(const serial_parameter& other) = delete;

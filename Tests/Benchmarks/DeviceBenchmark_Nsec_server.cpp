@@ -7,112 +7,94 @@
 #include <thread>
 #include <atomic>
 #include <boost/range/algorithm/find_if.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 Random r;
-using namespace ossia;
 
-std::atomic<int> num_received{0};
-OSSIA::Node* createNodeFromPath(
-        const std::vector<std::string> &path,
-        OSSIA::Device *dev)
+ossia::net::node_base* goToRandomNode(
+    ossia::net::node_base& root)
 {
-    using namespace ossia;
-    // Find the relevant node to add in the device
-    OSSIA::Node* node = dev;
-    for(int i = 0; i < path.size(); i++)
+  // Get a random number between 1 and 100
+  auto depth = 1 + r.getRandomUInt() % 100;
+
+  // Try to go randomly to a node that deep and return it
+  auto currentNode = &root;
+  for(int i = 0; i < depth; i++)
+  {
+    if(currentNode->children().empty())
     {
-        const auto& children = node->children();
-        auto it = boost::range::find_if(
-                    children,
-                    [&] (const std::shared_ptr<OSSIA::Node>& ossia_node) {
-            return ossia_node->getName() == path[i];
-        });
-
-        if(it != children.end())
-        {
-            node = it->get();
-        }
-        else
-        {
-            // We have to start adding sub-nodes from here.
-            for(int k = i; k < path.size(); k++)
-            {
-                auto newNodeIt = node->emplace(node->children().begin(), path[k]);
-                node = newNodeIt->get();
-                auto addr = node->create_parameter(Type::FLOAT);
-                //dev->get_protocol()->observeAddressValue(addr, true);
-                addr->addCallback([&] (const OSSIA::Value* val) {
-                    ++num_received;
-                });
-            }
-
-            break;
-        }
+      break;
     }
 
-    return node;
+    auto node_num = r.getRandomUInt() % currentNode->children().size();
+    currentNode = currentNode->children()[node_num].get();
+
+  }
+
+  return currentNode;
 }
 
-class DeviceBenchmark_Nsec_server : public QObject
+int main(int argc, char** argv)
 {
-    Q_OBJECT
+  std::size_t num_nodes = 1000;
+  if(argc > 1)
+  {
+    auto num = std::atoi(argv[1]);
+    if(num > 0 && num < std::numeric_limits<int32_t>::max())
+      num_nodes = num;
+  }
+  std::atomic_int num_received{0};
+  std::atomic_int received_on_stop{0};
+  ossia::net::generic_device local{
+    std::make_unique<ossia::oscquery::oscquery_server_protocol>(),
+        "A"};
+  auto localDevice = &local.get_root_node();
 
-private Q_SLOTS:
+  for(std::size_t i = 0; i < num_nodes; i++)
+  {
+    auto& node = ossia::net::create_node(*goToRandomNode(local.get_root_node()), r.getRandomAddress());
 
-    /*! test life cycle and accessors functions */
-    void test_basic()
-    {
-        auto localProtocol = Local::create();
-        auto localDevice = Device::create(localProtocol, "B");
+    auto addr = node.create_parameter(ossia::val_type::FLOAT);
+    addr->set_critical(true);
+    addr->add_callback([&] (const auto& val) {
+      ++num_received;
+    });
+  }
 
-        auto addrlist = r.getRandomAddresses(100);
-        for(const auto& addr : addrlist)
-        {
-            createNodeFromPath(addr, localDevice.get());
-        }
+  // Add two nodes for start and stop of the timer.
 
-        // Add two nodes for start and stop of the timer.
+  std::chrono::steady_clock::time_point start_time;
+  std::chrono::steady_clock::time_point stop_time;
 
-        std::chrono::steady_clock::time_point start_time;
-        std::chrono::steady_clock::time_point stop_time;
+  std::atomic_bool b = false;
 
-        bool b = false;
+  auto st = localDevice->create_child("startTick");
+  auto st_addr = st->create_parameter(ossia::val_type::IMPULSE);
+  st_addr->set_critical(true);
+  st_addr->add_callback([&] (const ossia::value& val) {
+    start_time = std::chrono::steady_clock::now();
+    std::cerr << "START received" << std::endl;
+  });
+  auto et = localDevice->create_child("stopTick");
+  auto et_addr = et->create_parameter(ossia::val_type::IMPULSE);
+  et_addr->set_critical(true);
+  et_addr->add_callback([&] (const ossia::value& val) {
+    stop_time = std::chrono::steady_clock::now();
+    received_on_stop.store(num_received);
+    b = true;
+    std::cerr << "STOP received" << std::endl;
+  });
 
-        auto st = localDevice->emplace(localDevice->children().end(), "startTick");
-        auto st_addr = (*st)->create_parameter(OSSIA::Type::IMPULSE);
-        st_addr->addCallback([&] (const OSSIA::Value* val) {
-            start_time = std::chrono::steady_clock::now();
-            std::cerr << "START received" << std::endl;
-        });
-        auto et = localDevice->emplace(localDevice->children().end(), "stopTick");
-        auto et_addr = (*et)->create_parameter(OSSIA::Type::IMPULSE);
-        et_addr->addCallback([&] (const OSSIA::Value* val) {
-            stop_time = std::chrono::steady_clock::now();
-            b = true;
-            std::cerr << "STOP received" << std::endl;
-        });
-
-        auto minuitProtocol = Minuit::create("127.0.0.1", 9999, 6666);
-        auto minuitDevice = Device::create(minuitProtocol, "A");
-
-        while(!b);
-
-        auto t0 = std::chrono::steady_clock::now();
-        while(true)
-        {
-            if(std::chrono::steady_clock::now() - t0 > std::chrono::seconds(10))
-            {
-                break;
-            }
-        }
-
-
-        std::cerr << "Received " << num_received<< " values in 10 seconds" << std::endl;
-    }
-
-};
+  qDebug() << "running with" << num_nodes;
+  while(!b)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  }
 
 
-QTEST_APPLESS_MAIN(DeviceBenchmark_Nsec_server)
+  std::cout << "Received " << received_on_stop
+            << " values in "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(stop_time - start_time).count()
+            << " milliseconds" << std::endl;
+}
 
-#include "DeviceBenchmark_Nsec_server.moc"
 

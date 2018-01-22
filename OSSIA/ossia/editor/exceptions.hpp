@@ -19,6 +19,7 @@ struct OSSIA_EXPORT execution_error : public std::runtime_error
   execution_error(const char* e) : std::runtime_error(e)
   {
   }
+  ~execution_error() override;
 };
 
 /**
@@ -32,6 +33,7 @@ struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
   invalid_value_type_error(const char* e) : std::logic_error(e)
   {
   }
+  ~invalid_value_type_error() override;
 };
 
 /**
@@ -45,5 +47,6 @@ struct OSSIA_EXPORT invalid_access_error : public std::runtime_error
   invalid_access_error(const char* e) : std::runtime_error(e)
   {
   }
+  ~invalid_access_error() override;
 };
 }

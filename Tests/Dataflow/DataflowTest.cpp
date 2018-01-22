@@ -9,7 +9,7 @@
 
 namespace ossia
 {
-class node_mock : public graph_node {
+class node_mock final : public graph_node {
 
 public:
   const char* lbl{};

@@ -38,7 +38,6 @@ protected:
   ossia::domain m_domain;
 
   ossia::value m_previousValue; //! Used for repetition filter.
-
 public:
   generic_parameter(ossia::net::node_base& node_base);
   generic_parameter(const parameter_data&, ossia::net::node_base& node_base);

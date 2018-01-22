@@ -2,19 +2,19 @@
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/network/value/value.hpp>
-#include <chobo/static_vector.hpp>
+#include <ossia/detail/small_vector.hpp>
 namespace ossia
 {
 namespace detail
 {
 
-using vec_behavior = chobo::static_vector<curve<double, float>*, 4>;
+using vec_behavior = ossia::static_vector<curve<double, float>*, 4>;
 static vec_behavior
 list_convertible_to_vec(const std::vector<ossia::behavior>& t)
 {
   const auto n = t.size();
 
-  chobo::static_vector<curve<double, float>*, 4> arr;
+  vec_behavior arr;
   bool ok = false;
   if (n >= 2 && n <= 4)
   {

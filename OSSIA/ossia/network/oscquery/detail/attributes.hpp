@@ -205,7 +205,7 @@ struct OSSIA_EXPORT full_path_attribute
   }
   static auto getter(const ossia::net::node_base& n)
   {
-    return ossia::net::osc_parameter_string(n);
+    return n.osc_address();
   }
 };
 
