@@ -49,6 +49,18 @@ public:
     static t_eclass* view_class;
     static t_eclass* ossia_class;
 
+    static t_symbol* o_sym_attribute;
+    static t_symbol* o_sym_client;
+    static t_symbol* o_sym_device;
+    static t_symbol* o_sym_logger;
+    static t_symbol* o_sym_model;
+    static t_symbol* o_sym_param;
+    static t_symbol* o_sym_remote;
+    static t_symbol* o_sym_view;
+    static t_symbol* o_sym_ossia;
+    static t_symbol* o_sym_set;
+    static t_symbol* o_sym_address;
+
     ossia::safe_vector<attribute*> attributes;
     ossia::safe_vector<parameter*> params;
     ossia::safe_vector<remote*> remotes;
@@ -58,9 +70,6 @@ public:
     ossia::safe_vector<client*> clients;
 
     ossia::safe_vector<t_select_clock*> select_clocks;
-
-    t_symbol* sym_addr;
-    t_symbol* sym_set;
 
     ossia::safe_set<attribute*> attribute_quarantine;
     ossia::safe_set<model*> model_quarantine;

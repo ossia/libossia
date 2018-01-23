@@ -99,13 +99,23 @@ t_eclass* ossia_pd::remote_class;
 t_eclass* ossia_pd::view_class;
 t_eclass* ossia_pd::ossia_class;
 
+t_symbol* ossia_pd::o_sym_attribute = gensym("ossia.attribute");
+t_symbol* ossia_pd::o_sym_client = gensym("ossia.client");
+t_symbol* ossia_pd::o_sym_device = gensym("ossia.device");
+t_symbol* ossia_pd::o_sym_logger = gensym("ossia.logger");
+t_symbol* ossia_pd::o_sym_model = gensym("ossia.model");
+t_symbol* ossia_pd::o_sym_param = gensym("ossia.param");
+t_symbol* ossia_pd::o_sym_remote = gensym("ossia.remote");
+t_symbol* ossia_pd::o_sym_view = gensym("ossia.view");
+t_symbol* ossia_pd::o_sym_ossia = gensym("ossia");
+t_symbol* ossia_pd::o_sym_set = gensym("set");
+t_symbol* ossia_pd::o_sym_address = gensym("address");
+
 // ossia-pd constructor
 ossia_pd::ossia_pd():
   m_localProtocol{new ossia::net::local_protocol},
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
-  sym_addr = gensym("address");
-  sym_set  = gensym("set");
   m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 }
 

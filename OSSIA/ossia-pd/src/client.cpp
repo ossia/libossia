@@ -100,7 +100,7 @@ void client::register_children(client* x)
 {
 
   std::vector<object_base*> viewnodes
-      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnodes)
   {
     if (v->m_otype == object_class::view)
@@ -119,7 +119,7 @@ void client::register_children(client* x)
 void client::unregister_children()
 {
   std::vector<object_base*> viewnode
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnode)
   {
     if (v->m_otype == object_class::view)

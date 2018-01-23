@@ -132,13 +132,13 @@ std::string get_absolute_path(object_base* x)
     start_level = 1;
 
   view =  (ossia::pd::view*)find_parent_alive(
-      &x->m_obj, "ossia.view", start_level, &view_level);
+      &x->m_obj, ossia_pd::o_sym_view, start_level, &view_level);
 
   if (x->m_otype == object_class::model
       || x->m_otype == object_class::remote)
   {
     model =  (ossia::pd::model*)find_parent_alive(
-        &x->m_obj, "ossia.model", start_level, &view_level);
+        &x->m_obj, ossia_pd::o_sym_model, start_level, &view_level);
   }
 
   t_eobj* obj = nullptr;
@@ -152,7 +152,7 @@ std::string get_absolute_path(object_base* x)
     vs.push_back(view->m_name->s_name);
     tmp_view = view;
     view
-        = (ossia::pd::view*) find_parent_alive(&tmp_view->m_obj, "ossia.view", 1, &view_level);
+        = (ossia::pd::view*) find_parent_alive(&tmp_view->m_obj, ossia_pd::o_sym_view, 1, &view_level);
   }
 
   ossia::pd::model* tmp_model = nullptr;
@@ -161,7 +161,7 @@ std::string get_absolute_path(object_base* x)
     vs.push_back(model->m_name->s_name);
     tmp_model = model;
     model
-        = (ossia::pd::model*) find_parent_alive(&tmp_model->m_obj, "ossia.model", 1, &view_level);
+        = (ossia::pd::model*) find_parent_alive(&tmp_model->m_obj, ossia_pd::o_sym_model, 1, &view_level);
   }
 /*
   if(tmp_model)
@@ -189,7 +189,7 @@ std::string get_absolute_path(object_base* x)
   return string_from_path(vs, fullpath);
 }
 
-object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level)
+object_base* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* level)
 {
   t_canvas* canvas = x->o_canvas;
 
@@ -211,7 +211,7 @@ object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_leve
     t_gobj* list = canvas->gl_list;
     while (list)
     {
-      const ossia::string_view current = list->g_pd->c_name->s_name;
+      const t_symbol* current = list->g_pd->c_name;
       if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
       { // check if type match and not the same intance...
         return (object_base*) &(list->g_pd);
@@ -224,10 +224,10 @@ object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_leve
   return nullptr;
 }
 
-std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, string_view classname)
+std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, t_symbol* classname)
 {
-  const ossia::string_view subclassname
-      = classname == "ossia.model" ? "ossia.param" : "ossia.remote";
+  const t_symbol* subclassname
+      = classname == ossia_pd::o_sym_model ? ossia_pd::o_sym_param : ossia_pd::o_sym_remote;
 
   t_gobj* list = start_list;
   std::vector<object_base*> found;
@@ -239,7 +239,7 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
   // 1: iterate object list and look for ossia.model / ossia.view object
   while (list && list->g_pd)
   {
-    const ossia::string_view current = list->g_pd->c_name->s_name;
+    const t_symbol* current = list->g_pd->c_name;
     if (current == classname)
     {
       object_base* o;
@@ -251,14 +251,14 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
     }
 
     // if we're looking for ossia.view but found a model, remind it
-    if ( classname == "ossia.view" && current == "ossia.model" )
+    if ( classname == ossia_pd::o_sym_view && current == ossia_pd::o_sym_model )
       found_model = true;
-    else if ( classname == "ossia.model" && current == "ossia.view" )
+    else if ( classname == ossia_pd::o_sym_model && current == ossia_pd::o_sym_view )
       found_view = true;
 
     // if there is a client or device in the current patcher
     // don't register anything
-    if (current == "ossia.device" || current == "ossia.client")
+    if (current == ossia_pd::o_sym_device || current == ossia_pd::o_sym_client)
     {
       // but don't return if an object found itself
       object_base* o;
@@ -280,8 +280,8 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
     list = start_list;
     while (list && list->g_pd)
     {
-      const ossia::string_view current = list->g_pd->c_name->s_name;
-      if (current == "canvas")
+      const t_symbol* current = list->g_pd->c_name;
+      if (current == gensym("canvas"))
       {
         t_canvas* canvas = (t_canvas*)&list->g_pd;
         if (!canvas_istable(canvas))
@@ -300,11 +300,11 @@ std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_l
     list = start_list;
     while (list && list->g_pd)
     {
-      const ossia::string_view current = list->g_pd->c_name->s_name;
+      const t_symbol* current = list->g_pd->c_name;
 
       // if there is no view next to model, then take also remote into account
       if ( current == subclassname
-          || ( !found_view && current == "ossia.remote" ) )
+          || ( !found_view && current == ossia_pd::o_sym_remote ) )
       {
         object_base* o;
         o = (object_base*)&list->g_pd;
@@ -326,13 +326,13 @@ bool find_peer(object_base* x)
   t_symbol* derived_classname = nullptr;
 
   if (x->m_otype == object_class::view)
-    derived_classname = gensym("ossia.model");
+    derived_classname = ossia_pd::o_sym_model;
   else if (x->m_otype == object_class::model)
-    derived_classname = gensym("ossia.view");
+    derived_classname = ossia_pd::o_sym_view;
   else if (x->m_otype == object_class::device)
-    derived_classname = gensym("ossia.client");
+    derived_classname = ossia_pd::o_sym_client;
   else if (x->m_otype == object_class::client)
-    derived_classname = gensym("ossia.device");
+    derived_classname = ossia_pd::o_sym_device;
 
   // go through all patcher's objects to check there is an incompatibility
   t_gobj* list = x->m_obj.o_canvas->gl_list;

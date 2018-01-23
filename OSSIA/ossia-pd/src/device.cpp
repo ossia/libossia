@@ -86,7 +86,7 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
 void device::register_children(device* x)
 {
   std::vector<object_base*> modelnodes
-      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
   for (auto v : modelnodes)
   {
     if (v->m_otype == object_class::model)
@@ -102,7 +102,7 @@ void device::register_children(device* x)
   }
 
   std::vector<object_base*> viewnodes
-      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnodes)
   {
     if (v->m_otype == object_class::view)
@@ -128,7 +128,7 @@ void device::register_children(device* x)
 void device::unregister_children()
 {
   std::vector<object_base*> node
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
 
   for (auto v : node)
   {
@@ -145,7 +145,7 @@ void device::unregister_children()
   }
 
   std::vector<object_base*> viewnode
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnode)
   {
     if (v->m_otype == object_class::view)

@@ -115,7 +115,7 @@ struct value_visitor
       outlet_float(x->m_dataout, (t_float)i);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
   }
   void operator()(float f) const
   {
@@ -125,7 +125,7 @@ struct value_visitor
       outlet_float(x->m_dataout, (t_float)f);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
   }
   void operator()(bool b) const
   {
@@ -136,7 +136,7 @@ struct value_visitor
       outlet_float(x->m_dataout, f);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
   }
   void operator()(const std::string& str) const
   {
@@ -147,7 +147,7 @@ struct value_visitor
       outlet_symbol(x->m_dataout, s);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
   }
   void operator()(char c) const
   {
@@ -157,7 +157,7 @@ struct value_visitor
       outlet_float(x->m_dataout, (float)c);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, 1, &a);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
   }
 
   template <std::size_t N>
@@ -174,7 +174,7 @@ struct value_visitor
       outlet_list(x->m_dataout, gensym("list"), N, a);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, N, a);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, N, a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
@@ -189,7 +189,7 @@ struct value_visitor
       outlet_list(x->m_dataout, gensym("list"), va.size(), list_ptr);
 
     if (x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::instance().sym_set, va.size(), list_ptr);
+      outlet_anything(x->m_setout, ossia_pd::o_sym_set, va.size(), list_ptr);
   }
 
   void operator()() const
@@ -326,7 +326,7 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-object_base* find_parent(t_eobj* x, ossia::string_view classname, int start_level, int* level);
+object_base* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* level);
 
 /**
  * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
@@ -343,7 +343,7 @@ std::string replace_brackets(const string_view);
  * @return
  */
 static inline object_base* find_parent_alive(
-    t_eobj* x, ossia::string_view classname, int start_level, int* level)
+    t_eobj* x, t_symbol* classname, int start_level, int* level)
 {
   object_base* obj = find_parent(x, classname, start_level, level);
   if (obj)
@@ -433,7 +433,7 @@ const std::vector<t_matcher>& find_parent_node(object_base* x);
  * corresponding classname
  */
 std::vector<object_base*> find_child_to_register(
-    object_base* x, t_gobj* start_list, ossia::string_view classname);
+    object_base* x, t_gobj* start_list, t_symbol* classname);
 
 /**
  * @brief find_peer: iterate through patcher's object list to find a peer
@@ -517,8 +517,8 @@ bool obj_register(T* x)
   else
   {
     int l;
-    ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, "ossia.device", 0, &l);
-    ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, "ossia.client", 0, &l);
+    ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, ossia_pd::o_sym_device, 0, &l);
+    ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, ossia_pd::o_sym_client, 0, &l);
 
     ossia::pd::model* model = nullptr;
     ossia::pd::view* view = nullptr;
@@ -536,13 +536,13 @@ bool obj_register(T* x)
       if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
       {
         view
-            = (ossia::pd::view*)find_parent_alive(&x->m_obj, "ossia.view", start_level, &view_level);
+            = (ossia::pd::view*)find_parent_alive(&x->m_obj, ossia_pd::o_sym_view, start_level, &view_level);
       }
 
       if (!view)
       {
         model = (ossia::pd::model*)find_parent_alive(
-              &x->m_obj, "ossia.model", 0, &model_level);
+              &x->m_obj, ossia_pd::o_sym_model, 0, &model_level);
       }
     }
 

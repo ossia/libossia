@@ -106,9 +106,9 @@ bool max_object_register(T* x)
   {
     int l;
     ossia::max::device* device = (ossia::max::device*)
-        find_parent_box_alive(&x->m_object, gensym("ossia.device"), 0, &l);
+        find_parent_box_alive(&x->m_object, ossia_pd::o_sym_device, 0, &l);
     ossia::max::client* client = (ossia::max::client*)
-        find_parent_box_alive(&x->m_object, gensym("ossia.client"), 0, &l);
+        find_parent_box_alive(&x->m_object, ossia_pd::o_sym_client, 0, &l);
 
     model* model = nullptr;
     view* view = nullptr;

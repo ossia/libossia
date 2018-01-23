@@ -23,7 +23,7 @@ bool view::register_node(const std::vector<t_matcher>& matchers)
   {
     obj_dequarantining<view>(this);
     std::vector<object_base*> viewnode
-        = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
+        = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
     for (auto v : viewnode)
     {
       if (v->m_otype == object_class::view)
@@ -99,7 +99,7 @@ bool view::do_registration(const std::vector<t_matcher>& matchers)
 static void register_children(view* x)
 {
   std::vector<object_base*> viewnode
-      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnode)
   {
     assert(!v->m_dead);
@@ -123,7 +123,7 @@ bool view::unregister()
   m_matchers.clear();
 
   std::vector<object_base*> viewnode
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnode)
   {
     if (v->m_otype == object_class::view)
@@ -161,7 +161,7 @@ void view::click(
 
     int l;
     ossia::pd::device* device
-        = (ossia::pd::device*)find_parent(&x->m_obj, "ossia.device", 0, &l);
+        = (ossia::pd::device*)find_parent(&x->m_obj, ossia_pd::o_sym_device, 0, &l);
 
     if (!ossia::pd::object_base::find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
