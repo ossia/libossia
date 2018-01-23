@@ -195,8 +195,28 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
       auto nodes = ossia::net::find_nodes(*m.get_node(), addr);
       for (auto& node : nodes)
       {
-        if (auto param = node->get_parameter()){
+        if (auto param = node->get_parameter())
+        {
+
           param->push_value(v);
+
+          for(auto param : ossia_max::instance().parameters.reference())
+          {
+            for (auto& m : param->m_matchers)
+            {
+              if ( m.get_node() == node )
+                m.output_value();
+            }
+          }
+
+          for(auto remote : ossia_max::instance().remotes.reference())
+          {
+            for (auto& m : remote->m_matchers)
+            {
+              if ( m.get_node() == node )
+                m.output_value();
+            }
+          }
         }
       }
     }
