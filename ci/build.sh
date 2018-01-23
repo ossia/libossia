@@ -122,9 +122,12 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
-        pushd "$TRAVIS_BUILD_DIR/3rdparty/pure-data/src"
-          make -f makefile.gnu -j2
-          sudo make -f makefile.gnu install
+        pushd "$TRAVIS_BUILD_DIR/3rdparty/pure-data"
+          sudo apt-get install -qq autoconf libtool
+          ./autogen.sh
+          ./configure
+          make -j 2
+          sudo make install
         popd
 
         mkdir -p ~/pd-externals/
