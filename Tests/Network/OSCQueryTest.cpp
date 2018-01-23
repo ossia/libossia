@@ -54,7 +54,8 @@ private Q_SLOTS:
 
         ws_proto->update(ws_clt->get_root_node());
 
-        a->push_value(7.8);
+        double d{7.8};
+        a->push_value(d);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         auto node = find_node(ws_clt->get_root_node(), "/main");
@@ -62,7 +63,8 @@ private Q_SLOTS:
         auto param = node->get_parameter();
         QVERIFY(param);
         auto b = param->value();
-        std::cout << "new value : " << b << std::endl;
+        std::cout << "new value : " << b << " expecting " << d << std::endl;
+        ossia::value expected_value{d};
 
         net::full_parameter_data d2; d2.address = "/int"; d2.set_value(546);
         ws_proto->push_raw(d2);
@@ -72,7 +74,7 @@ private Q_SLOTS:
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         // should use QCOMPARE after device cleaning to avoid hang
-        QCOMPARE(b, 7.8);
+        QCOMPARE(b, expected_value);
     }
 };
 
