@@ -624,6 +624,36 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
       convert_or_push(x, std::move(list), set_flag);
     }
+
+    if (x->m_otype == object_class::param)
+    {
+      for (auto m : x->m_node_selection)
+      {
+        if ( m->get_node() == node )
+          m->output_value();
+      }
+    }
+    else
+    {
+      for(auto param : ossia_pd::instance().params.reference())
+      {
+        for (auto& m : param->m_matchers)
+        {
+          if ( m.get_node() == node )
+            m.output_value();
+        }
+      }
+    }
+
+    for(auto remote : ossia_pd::instance().remotes.reference())
+    {
+      for (auto& m : remote->m_matchers)
+      {
+        if ( m.get_node() == node )
+          m.output_value();
+      }
+    }
+
   }
 }
 
