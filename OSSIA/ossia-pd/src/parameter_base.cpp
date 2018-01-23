@@ -562,85 +562,106 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
-  ossia::net::node_base* node;
+  if (x->m_mute)
+    return;
+
   bool set_flag = false;
   if (s && s == gensym("set"))
     set_flag = true;
 
-  if (!x->m_mute)
+  if (argc == 0 && s)
   {
-    if (argc == 0 && s)
+    just_push(x, std::string(s->s_name), set_flag);
+  }
+  else if (argc == 1)
+  {
+    ossia::value v;
+    // convert one element array to single element
+    switch(argv->a_type)
     {
-      just_push(x, std::string(s->s_name), set_flag);
+      case A_SYMBOL:
+        just_push(x, std::string(atom_getsymbol(argv)->s_name), set_flag);
+        break;
+      case A_FLOAT:
+        convert_or_push(x, atom_getfloat(argv), set_flag);
+        break;
+      default:
+        ;
     }
-    else if (argc == 1)
+  }
+  else
+  {
+    std::vector<ossia::value> list;
+    list.reserve(argc+1);
+    if ( s && s != gensym("list") && s != gensym("set"))
     {
-      ossia::value v;
-      // convert one element array to single element
-      switch(argv->a_type)
+      list.push_back(std::string(s->s_name));
+    }
+
+    switch(argc)
+    {
+      case 2:
+        if(auto arr = to_array<2>(argv)) {
+          convert_or_push(x, *arr, set_flag);
+        }
+        break;
+      case 3:
+        if(auto arr = to_array<3>(argv)) {
+          convert_or_push(x, *arr, set_flag);
+        }
+        break;
+      case 4:
+        if(auto arr = to_array<4>(argv)) {
+          convert_or_push(x, *arr, set_flag);
+        }
+        break;
+    }
+
+    for (; argc > 0; argc--, argv++)
+    {
+      switch (argv->a_type)
       {
         case A_SYMBOL:
-          just_push(x, std::string(atom_getsymbol(argv)->s_name), set_flag);
+          list.push_back(std::string(atom_getsymbol(argv)->s_name));
           break;
         case A_FLOAT:
-          convert_or_push(x, atom_getfloat(argv), set_flag);
+          list.push_back(atom_getfloat(argv));
           break;
         default:
-          ;
+          pd_error(x, "value type not handled");
       }
     }
-    else
+
+    ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
+
+    convert_or_push(x, std::move(list), set_flag);
+  }
+
+  // go through all matchers to fire the new value
+  for (auto node : x->m_node_selection)
+  {
+    // there should be only one param with that node
+    // so break asap
+    if (x->m_otype == object_class::param )
     {
-      std::vector<ossia::value> list;
-      list.reserve(argc+1);
-      if ( s && s != gensym("list") && s != gensym("set"))
-      {
-        list.push_back(std::string(s->s_name));
-      }
-
-      switch(argc)
-      {
-        case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
-        case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
-        case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
-      }
-
-      for (; argc > 0; argc--, argv++)
-      {
-        switch (argv->a_type)
-        {
-          case A_SYMBOL:
-            list.push_back(std::string(atom_getsymbol(argv)->s_name));
-            break;
-          case A_FLOAT:
-            list.push_back(atom_getfloat(argv));
-            break;
-          default:
-            pd_error(x, "value type not handled");
-        }
-      }
-
-      ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
-
-      convert_or_push(x, std::move(list), set_flag);
-    }
-
-    if (x->m_otype == object_class::param)
-    {
-      for (auto m : x->m_node_selection)
-      {
-        if ( m->get_node() == node )
-          m->output_value();
-      }
+      node->output_value();
     }
     else
     {
       for(auto param : ossia_pd::instance().params.reference())
       {
+        bool break_flag = false;
+
         for (auto& m : param->m_matchers)
         {
-          if ( m.get_node() == node )
+          if ( m == *node )
+          {
             m.output_value();
+            break_flag = true;
+            break;
+          }
+          if (break_flag)
+            break;
         }
       }
     }
@@ -649,11 +670,10 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     {
       for (auto& m : remote->m_matchers)
       {
-        if ( m.get_node() == node )
+        if ( m == *node )
           m.output_value();
       }
     }
-
   }
 }
 

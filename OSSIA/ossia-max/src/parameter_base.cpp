@@ -617,71 +617,127 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
-  if (!x->m_mute)
+  if (x->m_mute)
+    return;
+
+  bool set_flag = false;
+
+  if (s && s == gensym("set"))
+    set_flag = true;
+
+  if (argc == 0 && s)
   {
-    bool set_flag = false;
-
-    if (s && s == gensym("set"))
-      set_flag = true;
-
-    if (argc == 0 && s)
+    just_push(x, std::string(s->s_name), set_flag);
+  }
+  else if (argc == 1)
+  {
+    // convert one element array to single element
+    switch(argv->a_type)
     {
-      just_push(x, std::string(s->s_name), set_flag);
+      case A_SYM:
+        just_push(x, std::string(atom_getsym(argv)->s_name), set_flag);
+        break;
+      case A_FLOAT:
+        convert_or_push(x, ossia::value(atom_getfloat(argv)), set_flag);
+        break;
+      case A_LONG:
+        convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)), set_flag);
+        break;
+      default:
+        return;
     }
-    else if (argc == 1)
+  }
+  else
+  {
+
+    std::vector<ossia::value> list;
+
+    if ( s )
     {
-      // convert one element array to single element
-      switch(argv->a_type)
-      {
-        case A_SYM:
-          return just_push(x, std::string(atom_getsym(argv)->s_name), set_flag);
-        case A_FLOAT:
-          return convert_or_push(x, ossia::value(atom_getfloat(argv)), set_flag);
-        case A_LONG:
-          return convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)), set_flag);
-        default:
-          return;
-      }
+      list.reserve(argc+1);
+      if ( s != gensym("list") && s != gensym("set") )
+        list.push_back(std::string(s->s_name));
+    }
+
+    switch(argc)
+    {
+      case 2:
+        if(auto arr = to_array<2>(argv)) {
+          convert_or_push(x, *arr, set_flag);
+        }
+        break;
+      case 3:
+        if(auto arr = to_array<3>(argv)) {
+          convert_or_push(x, *arr, set_flag);
+        }
+        break;
+      case 4:
+        if(auto arr = to_array<4>(argv)) {
+          convert_or_push(x, *arr, set_flag);
+        }
+        break;
+      default:
+        {
+          for (; argc > 0; argc--, argv++)
+          {
+            switch(argv->a_type)
+            {
+              case A_SYM:
+                list.push_back(std::string(atom_getsym(argv)->s_name));
+                break;
+              case A_FLOAT:
+                list.push_back(atom_getfloat(argv));
+                break;
+              case A_LONG:
+                list.push_back(static_cast<long>(atom_getlong(argv)));
+                break;
+              default:
+                object_error((t_object*)x, "value type not handled");
+            }
+          }
+
+          convert_or_push(x, std::move(list), set_flag);
+        }
+    }
+
+  }
+
+  // go through all matchers to fire the new value
+  for (auto node : x->m_node_selection)
+  {
+    // there should be only one param with that node
+    // so break asap
+    if (x->m_otype == object_class::param )
+    {
+      node->output_value();
     }
     else
     {
-
-      std::vector<ossia::value> list;
-
-      if ( s )
+      for(auto param : ossia_max::instance().parameters.reference())
       {
-        list.reserve(argc+1);
-        if ( s != gensym("list") && s != gensym("set") )
-          list.push_back(std::string(s->s_name));
-      }
+        bool break_flag = false;
 
-      switch(argc)
-      {
-        case 2: if(auto arr = to_array<2>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
-        case 3: if(auto arr = to_array<3>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
-        case 4: if(auto arr = to_array<4>(argv)) { convert_or_push(x, *arr, set_flag); return; } break;
-      }
-
-
-      for (; argc > 0; argc--, argv++)
-      {
-        switch(argv->a_type)
+        for (auto& m : param->m_matchers)
         {
-          case A_SYM:
-            list.push_back(std::string(atom_getsym(argv)->s_name));
+          if ( m == *node )
+          {
+            m.output_value();
+            break_flag = true;
             break;
-          case A_FLOAT:
-            list.push_back(atom_getfloat(argv));
+          }
+          if (break_flag)
             break;
-          case A_LONG:
-            list.push_back(static_cast<long>(atom_getlong(argv)));
-            break;
-          default:
-            object_error((t_object*)x, "value type not handled");
         }
       }
+    }
 
-      convert_or_push(x, std::move(list), set_flag);
+    for(auto remote : ossia_max::instance().remotes.reference())
+    {
+      for (auto& m : remote->m_matchers)
+      {
+        if ( m == *node )
+          m.output_value();
+      }
     }
   }
 }
