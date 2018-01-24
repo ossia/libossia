@@ -13,6 +13,8 @@ namespace max
 class remote : public parameter_base
 {
 public:
+  using is_remote = std::true_type;
+
   bool register_node(const std::vector<t_matcher>& node);
   bool do_registration(const std::vector<t_matcher>& node);
   bool unregister();

@@ -117,6 +117,8 @@ public:
   std::vector<t_matcher> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
   ossia::optional<ossia::traversal::path> m_selection_path{};
+  std::vector<t_canvas*> m_patcher_hierarchy; // canvas hierarchy in ascending order
+                                              // starting at current canvas
 
   static void class_setup(t_eclass*c);
 
@@ -129,6 +131,7 @@ public:
   void set_hidden();
 
   static void get_mess_cb(object_base* x, t_symbol* s);
+  static void print_hierarchy(object_base* x);
 
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);

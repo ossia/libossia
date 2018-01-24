@@ -11,7 +11,7 @@ namespace pd
 class attribute : public parameter_base
 {
 public:
-  using is_view = std::true_type;
+  using is_attribute = std::true_type;
 
   attribute();
 

@@ -10,7 +10,7 @@ namespace pd
 class parameter : public parameter_base
 {
 public:
-  using is_model = std::true_type;
+  using is_parameter = std::true_type;
 
   parameter();
 

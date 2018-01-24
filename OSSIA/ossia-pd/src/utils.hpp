@@ -312,6 +312,49 @@ std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWrit
  */
 void register_quarantinized();
 
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_model* = nullptr)
+{
+  return ossia_pd::instance().models.copy();
+}
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_device* = nullptr)
+{
+  return ossia_pd::instance().devices.copy();
+}
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_client* = nullptr)
+{
+  return ossia_pd::instance().clients.copy();
+}
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_attribute* = nullptr)
+{
+  return ossia_pd::instance().attributes.copy();
+}
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_parameter* = nullptr)
+{
+  return ossia_pd::instance().params.copy();
+}
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_remote* = nullptr)
+{
+  return ossia_pd::instance().remotes.copy();
+}
+
+template<typename T>
+std::vector<T*> get_objects(typename T::is_view* = nullptr)
+{
+  return ossia_pd::instance().views.copy();
+}
+
 /**
  * @fn                static t_class* find_parent(t_eobj* x, t_symbol*
  * classname)
@@ -326,7 +369,49 @@ void register_quarantinized();
  * @param level       Return level of the found object
  * @return The instance of the found object.
  */
-object_base* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* level);
+template<typename T>
+T* find_parent(object_base* x, int start_level, int* level)
+{
+  if (start_level > x->m_patcher_hierarchy.size())
+    return nullptr; // if we can't reach start level (because we reach the root
+                    // canvas before the start_level) then abort
+
+  std::vector<T*> objects = get_objects<T>();
+
+  // first remove objects that are deeper in the patcher
+  objects.erase(
+        ossia::remove_if(objects, [&](T* obj){
+          return obj->m_patcher_hierarchy.size() > x->m_patcher_hierarchy.size(); }),
+            objects.end());
+
+
+  // then remove the object itself
+  ossia::remove_one(objects, x);
+
+  // and sort objects by hierarchy size
+  // because the first parent have potentially the same hierarchy depth
+  ossia::sort(objects, [](auto o1, auto o2){
+    return o1->m_patcher_hierarchy.size() > o2->m_patcher_hierarchy.size();});
+
+  for (int i = start_level; i < x->m_patcher_hierarchy.size(); i++)
+  {
+    // remove objects that are deeper than the expected level
+    auto size = x->m_patcher_hierarchy.size() - i;
+    objects.erase(
+          ossia::remove_if(objects, [&](T* obj){
+            return obj->m_patcher_hierarchy.size() > size; }),
+              objects.end());
+
+    for (auto o : objects)
+    {
+      if (x->m_patcher_hierarchy[i] == o->m_patcher_hierarchy[0])
+      {
+        return o;
+      }
+    }
+  }
+  return nullptr;
+}
 
 /**
  * @brief replace_brackets Replace '<' ans '>' with '{' and '}'
@@ -342,15 +427,16 @@ std::string replace_brackets(const string_view);
  * @param start_level
  * @return
  */
-static inline object_base* find_parent_alive(
-    t_eobj* x, t_symbol* classname, int start_level, int* level)
+template<typename T>
+static inline T* find_parent_alive(
+    object_base* x, int start_level, int* level)
 {
-  object_base* obj = find_parent(x, classname, start_level, level);
+  T* obj = find_parent<T>(x, start_level, level);
   if (obj)
   {
     while (obj && obj->m_dead)
     {
-      obj = find_parent_alive(&obj->m_obj, classname, 1, level);
+      obj = find_parent_alive<T>(obj, 1, level);
     }
   }
   assert(!obj || !obj->m_dead);
@@ -517,8 +603,8 @@ bool obj_register(T* x)
   else
   {
     int l;
-    ossia::pd::device* device = (ossia::pd::device*)find_parent_alive(&x->m_obj, ossia_pd::o_sym_device, 0, &l);
-    ossia::pd::client* client = (ossia::pd::client*)find_parent_alive(&x->m_obj, ossia_pd::o_sym_client, 0, &l);
+    ossia::pd::device* device = find_parent_alive<ossia::pd::device>(x, 0, &l);
+    ossia::pd::client* client = find_parent_alive<ossia::pd::client>(x, 0, &l);
 
     ossia::pd::model* model = nullptr;
     ossia::pd::view* view = nullptr;
@@ -535,14 +621,14 @@ bool obj_register(T* x)
       // then try to locate a parent view or model
       if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
       {
-        view
-            = (ossia::pd::view*)find_parent_alive(&x->m_obj, ossia_pd::o_sym_view, start_level, &view_level);
+        view = find_parent_alive<ossia::pd::view>(
+              x, start_level, &view_level);
       }
 
       if (!view)
       {
-        model = (ossia::pd::model*)find_parent_alive(
-              &x->m_obj, ossia_pd::o_sym_model, 0, &model_level);
+        model = find_parent_alive<ossia::pd::model>(
+              x, 0, &model_level);
       }
     }
 

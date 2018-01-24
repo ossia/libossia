@@ -161,7 +161,7 @@ void view::click(
 
     int l;
     ossia::pd::device* device
-        = (ossia::pd::device*)find_parent(&x->m_obj, ossia_pd::o_sym_device, 0, &l);
+        = find_parent<ossia::pd::device>(x, 0, &l);
 
     if (!ossia::pd::object_base::find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");

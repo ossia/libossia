@@ -314,6 +314,15 @@ object_base::object_base(t_eclass* c)
     pd_bind(&m_obj.o_obj.ob_pd, m_obj.o_id);
     sprintf(buffer,".x%lx.c", (long unsigned int)m_obj.o_canvas);
     c->c_widget.w_dosave = (t_typ_method)eobj_dosave;
+
+    t_canvas* canvas = m_obj.o_canvas;
+
+    while (canvas)
+    {
+      m_patcher_hierarchy.push_back(canvas);
+      canvas = canvas->gl_owner; // gl_owner seems to be corrupted on the root
+                                 // canvas : canvas has no value
+    }
   }
 }
 
@@ -620,6 +629,13 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   return found;
 }
 
+void object_base::print_hierarchy(object_base* x)
+{
+  std::cout << x->m_name->s_name << " hierarchy :" << std::endl;
+  for (auto c : x->m_patcher_hierarchy)
+    std::cout << c << std::endl;
+}
+
 void object_base::class_setup(t_eclass*c)
 {
   CLASS_ATTR_INT         (c, "priority",          0, object_base, m_priority);
@@ -629,6 +645,7 @@ void object_base::class_setup(t_eclass*c)
 
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,   0);
+  eclass_addmethod(c, (method) object_base::print_hierarchy, "hierarchy", A_NULL, 0);
 }
 
 void object_base::get_mess_cb(object_base* x, t_symbol* s){

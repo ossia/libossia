@@ -59,6 +59,8 @@ class device : public device_base
 public:
   device();
 
+  using is_device = std::true_type;
+
   static void register_children(device* x);
   void unregister_children();
   static void loadbang(device* x, t_float type);

@@ -33,6 +33,8 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
   x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
 
+  x->m_patcher_hierarchy.push_back(x->m_obj.o_canvas);
+
   if (argc > 0 && argv[0].a_type == A_SYMBOL){
     x->m_name = argv[0].a_w.w_symbol;
     x->m_device->set_name(x->m_name->s_name);

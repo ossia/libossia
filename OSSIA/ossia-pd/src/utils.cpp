@@ -131,14 +131,14 @@ std::string get_absolute_path(object_base* x)
   if (x->m_otype == object_class::view)
     start_level = 1;
 
-  view =  (ossia::pd::view*)find_parent_alive(
-      &x->m_obj, ossia_pd::o_sym_view, start_level, &view_level);
+  view = find_parent_alive<ossia::pd::view>(
+      x, start_level, &view_level);
 
   if (x->m_otype == object_class::model
       || x->m_otype == object_class::remote)
   {
-    model =  (ossia::pd::model*)find_parent_alive(
-        &x->m_obj, ossia_pd::o_sym_model, start_level, &view_level);
+    model = find_parent_alive<ossia::pd::model>(
+        x, start_level, &view_level);
   }
 
   t_eobj* obj = nullptr;
@@ -151,8 +151,7 @@ std::string get_absolute_path(object_base* x)
   {
     vs.push_back(view->m_name->s_name);
     tmp_view = view;
-    view
-        = (ossia::pd::view*) find_parent_alive(&tmp_view->m_obj, ossia_pd::o_sym_view, 1, &view_level);
+    view = find_parent_alive<ossia::pd::view>(tmp_view, 1, &view_level);
   }
 
   ossia::pd::model* tmp_model = nullptr;
@@ -160,8 +159,7 @@ std::string get_absolute_path(object_base* x)
   {
     vs.push_back(model->m_name->s_name);
     tmp_model = model;
-    model
-        = (ossia::pd::model*) find_parent_alive(&tmp_model->m_obj, ossia_pd::o_sym_model, 1, &view_level);
+    model = find_parent_alive<ossia::pd::model>(tmp_model, 1, &view_level);
   }
 /*
   if(tmp_model)
@@ -187,41 +185,6 @@ std::string get_absolute_path(object_base* x)
   */
 
   return string_from_path(vs, fullpath);
-}
-
-object_base* find_parent(t_eobj* x, t_symbol* classname, int start_level, int* level)
-{
-  t_canvas* canvas = x->o_canvas;
-
-  *level = start_level;
-
-  while (canvas && start_level)
-  {
-    canvas = canvas->gl_owner; // gl_owner seems to be corrupted on the root
-                               // canvas : canvas has no value
-    start_level--;
-  }
-
-  if (start_level > 0)
-    return nullptr; // if we can't reach start level (because we reach the root
-                    // canvas before the start_level) then abort
-
-  while (canvas != 0)
-  {
-    t_gobj* list = canvas->gl_list;
-    while (list)
-    {
-      const t_symbol* current = list->g_pd->c_name;
-      if ((current == classname) && (&(list->g_pd) != &(x->o_obj.te_g.g_pd)))
-      { // check if type match and not the same intance...
-        return (object_base*) &(list->g_pd);
-      }
-      list = list->g_next;
-    }
-    canvas = canvas->gl_owner;
-    (*level)++;
-  }
-  return nullptr;
 }
 
 std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, t_symbol* classname)
