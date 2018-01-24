@@ -679,8 +679,7 @@ bool obj_is_quarantined(T* x)
 template <typename T>
 void obj_quarantining(T* x)
 {
-  if (!obj_is_quarantined(x))
-    x->quarantine().push_back(x);
+  x->quarantine().push_back(x);
 }
 
 template <typename T>
