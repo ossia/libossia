@@ -97,19 +97,24 @@ void model::register_children()
       if (model == this)
         continue;
 
-      obj_register<ossia::pd::model>(model);
+      // register only object with a relative scope
+      // other subscribed to on_parameter_created callback
+      if (model->m_addr_scope == ossia::net::address_scope::relative )
+        model->register_node(m_matchers);
     }
     else if (v->m_otype == object_class::param)
     {
       parameter* param = (parameter*)v;
-      // param->register_node(m_nodes);
-      obj_register<ossia::pd::parameter>(param);
+
+      if (param->m_addr_scope == ossia::net::address_scope::relative )
+        param->register_node(m_matchers);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      // remote->register_node(m_nodes);
-      obj_register<ossia::pd::remote>(remote);
+
+      if (remote->m_addr_scope == ossia::net::address_scope::relative )
+        remote->register_node(m_matchers);
     }
   }
 

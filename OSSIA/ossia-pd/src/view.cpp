@@ -29,17 +29,22 @@ bool view::register_node(const std::vector<t_matcher>& matchers)
       if (v->m_otype == object_class::view)
       {
         ossia::pd::view* view = (ossia::pd::view*)v;
+
+        // not registering itself
         if (view == this)
-        {
-          // not registering itself
           continue;
-        }
-        view->register_node(m_matchers);
+
+        // register only object with a relative scope
+        // other subscribed to on_parameter_created callback
+        if (view->m_addr_scope == ossia::net::address_scope::relative)
+          view->register_node(m_matchers);
       }
       else if (v->m_otype == object_class::remote)
       {
         ossia::pd::remote* remote = (ossia::pd::remote*)v;
-        remote->register_node(m_matchers);
+
+        if (remote->m_addr_scope == ossia::net::address_scope::relative )
+          remote->register_node(m_matchers);
       }
     }
   }
