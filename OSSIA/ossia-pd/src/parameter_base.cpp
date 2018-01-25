@@ -91,7 +91,9 @@ void parameter_base::set_type()
   for (t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
-    ossia::try_setup_parameter(m_type->s_name, *node);
+    // ossia::try_setup_parameter(m_type->s_name, *node);
+    auto type = symbol2val_type(m_type);
+    node->get_parameter()->set_value_type(type);
   }
 }
 

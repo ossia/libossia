@@ -59,7 +59,10 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 
     for (auto n : nodes)
     {
-      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
+      // auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
+
+      auto type = symbol2val_type(m_type);
+      auto local_param = n->create_parameter(type);
 
       if (!local_param)
       {
