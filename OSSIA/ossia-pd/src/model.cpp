@@ -20,13 +20,8 @@ bool model::register_node(const std::vector<t_matcher>& matchers)
 {
   if (m_dead) return true;
   bool res = do_registration(matchers);
-  if (res)
-  {
-    obj_dequarantining<model>(this);
-    register_children();
-  }
-  else
-    obj_quarantining<model>(this);
+
+  register_children();
 
   return res;
 }

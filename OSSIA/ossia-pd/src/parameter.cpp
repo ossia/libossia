@@ -22,25 +22,20 @@ parameter::parameter():
 bool parameter::register_node(const std::vector<t_matcher>& matchers)
 {
   bool res = do_registration(matchers);
-  if (res)
+
+  // TODO should we put this into device_base::on_parameter_deleted_callback ?
+  // the drawback is that when the parameter is created, it is not fully configured
+
+  for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_dequarantining<parameter>(this);
-
-    // TODO should we put this into device_base::on_parameter_deleted_callback ?
-    // the drawback is that when the parmater is created, it is not fully configured
-    for (auto remote : ossia::pd::remote::quarantine().copy())
-    {
-      obj_register(remote);
-    }
-    for (auto attribute : ossia::pd::attribute::quarantine().copy())
-    {
-      obj_register(attribute);
-    }
-
-    clock_delay(m_poll_clock,1);
+    obj_register(remote);
   }
-  else
-    obj_quarantining<parameter>(this);
+  for (auto attribute : ossia::pd::attribute::quarantine().copy())
+  {
+    obj_register(attribute);
+  }
+
+  clock_delay(m_poll_clock,1);
 
   return res;
 }
