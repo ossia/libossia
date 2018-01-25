@@ -179,22 +179,6 @@ t_matcher::~t_matcher()
 
         purge_parent(node);
       }
-      // if there is no more matcher,
-      // object should be quarantinized
-      if (owner->m_matchers.size() == 0)
-      {
-        switch(owner->m_otype)
-        {
-          case object_class::model:
-            obj_quarantining<model>((model*) owner);
-            break;
-          case object_class::param:
-            obj_quarantining<parameter>((parameter*) owner);
-            break;
-          default:
-            ;
-        }
-      }
     }
     else
     {

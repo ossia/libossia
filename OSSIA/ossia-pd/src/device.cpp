@@ -361,7 +361,7 @@ extern "C" void setup_ossia0x2edevice(void)
 
     device_base::class_setup(c);
 
-      // TODO delete register method (only for debugging purpose)
+    // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method) device::expose, "expose", A_GIMME, 0);

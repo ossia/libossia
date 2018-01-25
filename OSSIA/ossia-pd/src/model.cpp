@@ -137,8 +137,6 @@ bool model::unregister()
 
   m_matchers.clear();
 
-  obj_quarantining<model>(this);
-
   //m_parent_node = find_parent_nodes(x);
 
   register_children();
@@ -160,11 +158,6 @@ t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* d
         x->set_hidden();
   }
   return 0;
-}
-
-ossia::safe_set<model*>& model::quarantine()
-{
-    return ossia_pd::instance().model_quarantine;
 }
 
 void* model::create(t_symbol* name, int argc, t_atom* argv)
@@ -235,7 +228,6 @@ void model::destroy(model* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);
   clock_free(x->m_clock);
   x->m_clock = nullptr;

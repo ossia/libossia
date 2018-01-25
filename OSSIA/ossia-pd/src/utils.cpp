@@ -96,14 +96,6 @@ std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWrit
 
 void register_quarantinized()
 {
-  for (auto model : ossia::pd::model::quarantine().copy())
-  {
-    obj_register<ossia::pd::model>(model);
-  }
-  for (auto param : ossia::pd::parameter::quarantine().copy())
-  {
-    obj_register<ossia::pd::parameter>(param);
-  }
   for (auto view : ossia::pd::view::quarantine().copy())
   {
     obj_register<ossia::pd::view>(view);

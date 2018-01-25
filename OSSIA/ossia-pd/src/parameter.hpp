@@ -18,8 +18,6 @@ public:
   bool do_registration(const std::vector<t_matcher>& node);
   bool unregister();
 
-  static ossia::safe_set<parameter*>& quarantine();
-
   static t_pd_err notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
   static void* create(t_symbol* name, int argc, t_atom* argv);

@@ -116,14 +116,7 @@ bool parameter::unregister()
     obj_register(attribute);
   }
 
-  obj_quarantining<parameter>(this);
-
   return true;
-}
-
-ossia::safe_set<parameter*>& parameter::quarantine()
-{
-  return ossia_pd::instance().parameter_quarantine;
 }
 
 void* parameter::create(t_symbol* name, int argc, t_atom* argv)
@@ -227,7 +220,6 @@ void parameter::destroy(parameter* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<parameter>(x);
   ossia_pd::instance().params.remove_all(x);
 
   outlet_free(x->m_dataout);
