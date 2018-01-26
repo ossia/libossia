@@ -1,4 +1,4 @@
-#N canvas 708 22 810 466 10;
+#N canvas 630 22 810 466 10;
 #X text 44 20 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
 #X obj 74 291 print device_dump;
@@ -38,7 +38,6 @@ ws: 5678);
 #X text 158 96 get supported protocols and syntax;
 #X text 434 49 (open ossia-device-help.pd if you want to remote-control
 this patcher), f 36;
-#X text 217 181 stop exposing this device;
 #N canvas 0 22 361 184 presets 0;
 #X obj 196 126 outlet;
 #X obj 52 60 savepanel;
@@ -60,18 +59,22 @@ this patcher), f 36;
 #X text 227 235 preset management in here;
 #X obj 630 345 print;
 #X obj 472 319 ø.param foo @type float;
-#X msg 126 209 get protocols;
-#X msg 125 181 stop 0;
+#X msg 128 182 get protocols;
+#X msg 134 209 stop 0;
+#X text 242 182 get a list of all protocols this device is exposed
+through;
+#X text 226 209 stop exposing this device (if it's only exposed once)
+;
 #X connect 3 0 13 0;
 #X connect 5 0 13 0;
 #X connect 7 0 13 0;
-#X connect 8 0 25 0;
+#X connect 8 0 24 0;
 #X connect 10 0 14 0;
 #X connect 12 0 13 0;
 #X connect 13 0 1 0;
 #X connect 14 0 11 0;
-#X connect 22 0 13 0;
-#X connect 25 0 9 0;
-#X connect 25 1 24 0;
+#X connect 21 0 13 0;
+#X connect 24 0 9 0;
+#X connect 24 1 23 0;
+#X connect 25 0 13 0;
 #X connect 26 0 13 0;
-#X connect 27 0 13 0;
