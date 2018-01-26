@@ -106,21 +106,50 @@ void parameter_base::set_rate()
 
 void parameter_base::set_minmax()
 {
-  std::vector<ossia::value> min = attribute2value(m_min, m_min_size);
-  std::vector<ossia::value> max = attribute2value(m_max, m_max_size);
+  std::vector<ossia::value> _min = attribute2value(m_min, m_min_size);
+  std::vector<ossia::value> _max = attribute2value(m_max, m_max_size);
 
-  if(min.empty() && max.empty())
+  if(_min.empty() && _max.empty())
   {
     return;
   }
-
-  min.resize(OSSIA_PD_MAX_ATTR_SIZE);
-  max.resize(OSSIA_PD_MAX_ATTR_SIZE);
 
   for (t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
+
+    auto min = _min;
+    auto max = _max;
+
+    switch(param->get_value_type())
+    {
+      case ossia::val_type::BOOL:
+      case ossia::val_type::CHAR:
+      case ossia::val_type::INT:
+      case ossia::val_type::FLOAT:
+        min.resize(1);
+        max.resize(1);
+        break;
+      case ossia::val_type::VEC2F:
+        min.resize(2);
+        max.resize(2);
+        break;
+      case ossia::val_type::VEC3F:
+        min.resize(3);
+        max.resize(3);
+        break;
+      case ossia::val_type::VEC4F:
+        min.resize(4);
+        max.resize(4);
+        break;
+      case ossia::val_type::LIST:
+        min.resize(OSSIA_PD_MAX_ATTR_SIZE);
+        max.resize(OSSIA_PD_MAX_ATTR_SIZE);
+        break;
+      default:
+        continue;
+    }
 
     param->set_domain(make_domain_from_minmax(min, max, param->get_value_type()));
   }
@@ -156,8 +185,8 @@ void parameter_base::set_range()
 
     else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
     {
-      float fmin = m_range[0].a_w.w_float;
-      float fmax = m_range[1].a_w.w_float;
+      ossia::value fmin{m_range[0].a_w.w_float};
+      ossia::value fmax{m_range[1].a_w.w_float};
       std::vector<ossia::value> min{};
       std::vector<ossia::value> max{};
 
@@ -190,7 +219,7 @@ void parameter_base::set_range()
         default:
           ;
       }
-      auto domain = make_domain_from_minmax({min}, max, param->get_value_type());
+      auto domain = make_domain_from_minmax(min, max, param->get_value_type());
       param->set_domain(domain);
     }
     else
