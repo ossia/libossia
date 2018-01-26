@@ -75,6 +75,8 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 
   eclass_addmethod(c, (method) device::expose, "expose",    A_GIMME, 0);
   eclass_addmethod(c, (method) device::name,   "name",      A_GIMME, 0);
+  eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
+  eclass_addmethod(c, (method) device::get_mess_cb, "get", A_SYMBOL, 0);
 
   ossia_pd::ossia_class = c;
 
