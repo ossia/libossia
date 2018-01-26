@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <brigand/algorithms/for_each.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+#include "../Benchmarks/Random.hpp"
 
 using namespace ossia;
 
@@ -65,6 +67,22 @@ private Q_SLOTS:
           std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
         });
       });
+    }
+
+    void test_try_setup_parameter()
+    {
+      Random r;
+      ossia::net::generic_device device{std::make_unique<ossia::oscquery::oscquery_server_protocol>(6677, 8899), "test"};
+      using namespace std::chrono;
+      for(int i = 0; i < 5000; i++)
+      {
+        auto& node = ossia::net::create_node(device.get_root_node(), "/blah");
+        auto t0 = steady_clock::now();
+        ossia::try_setup_parameter(r.getRandomString(), node);
+        auto t1 = steady_clock::now();
+        std::cout << duration_cast<std::chrono::nanoseconds>(t1 - t0).count() << std::endl;
+      }
+
     }
 };
 

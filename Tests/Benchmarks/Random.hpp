@@ -3,6 +3,8 @@
 #include <random>
 #include <unordered_set>
 #include <vector>
+#include <iostream>
+#include <algorithm>
 
 void print(const std::vector<std::string>& path)
 {

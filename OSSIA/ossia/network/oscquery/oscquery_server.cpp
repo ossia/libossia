@@ -606,4 +606,17 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
   return {};
 }
 }
+
+oscquery_device::oscquery_device(uint16_t osc_port, uint16_t ws_port, std::string name)
+  : device{std::make_unique<oscquery::oscquery_server_protocol>(osc_port, ws_port), name}
+  , protocol{static_cast<oscquery::oscquery_server_protocol&>(device.get_protocol())}
+{
+}
+
+
+oscquery_device::~oscquery_device()
+{
+
+}
+
 }

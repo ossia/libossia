@@ -67,39 +67,6 @@ void print_graph(Graph_T& g, IO& stream)
 
 struct OSSIA_EXPORT graph_util
 {
-  static void copy_from_local(const data_type& out, inlet& in)
-  {
-    const auto w = out.which();
-    if (w == in.data.which() && w != data_type::npos)
-    {
-      switch(w)
-      {
-        case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
-        case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
-        case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
-      }
-    }
-  }
-
-  static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
-  {
-    const auto w = out.which();
-    if (w == in.data.which() && w != data_type::npos)
-    {
-      switch(w)
-      {
-        case 0: copy_data_pos{pos}(*reinterpret_cast<const ossia::audio_delay_line*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
-        case 1: copy_data_pos{pos}(*reinterpret_cast<const ossia::midi_delay_line*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
-        case 2: copy_data_pos{pos}(*reinterpret_cast<const ossia::value_delay_line*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
-      }
-    }
-  }
-
-  static void copy(const outlet& out, inlet& in)
-  {
-    copy_from_local(out.data, in);
-  }
-
   static void pull_from_parameter(inlet& in, execution_state& e)
   {
     apply_to_destination(in.address, e.allDevices, [&] (ossia::net::parameter_base* addr, bool) {
@@ -107,7 +74,7 @@ struct OSSIA_EXPORT graph_util
       {
         e.find_and_copy(*addr, in);
       }
-      else
+      else if (in.scope & port::scope_t::global)
       {
         e.copy_from_global(*addr, in);
       }
@@ -126,17 +93,15 @@ struct OSSIA_EXPORT graph_util
     // Copy from environment and previous ports to inputs
     for (const inlet_ptr& in : n.inputs())
     {
-      if (!in->sources.empty())
+      bool must_copy = in->sources.empty();
+
+      for (auto edge : in->sources)
       {
-        for (auto edge : in->sources)
-        {
-          ossia::apply_con(init_node_visitor<graph_util>{*in, *edge, e}, edge->con);
-        }
+        must_copy |= ossia::apply_con(init_node_visitor{*in, *edge, e}, edge->con);
       }
-      else
-      {
+
+      if(must_copy)
         pull_from_parameter(*in, e);
-      }
     }
   }
 
@@ -472,5 +437,24 @@ struct OSSIA_EXPORT graph_base: graph_interface
     edge_map m_edges;
 
     graph_t m_graph;
+};
+
+struct tick_all_nodes
+{
+    ossia::execution_state& e;
+    ossia::graph_base& g;
+
+    void operator()(unsigned long samples, double) const
+    {
+      e.clear_local_state();
+      e.get_new_values();
+      e.samples_since_start += samples;
+
+      for(auto& node : g.m_nodes)
+        node.first->requested_tokens.push_back(token_request{time_value{e.samples_since_start}});
+
+      g.state(e);
+      e.commit();
+    }
 };
 }

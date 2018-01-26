@@ -190,11 +190,11 @@ int main()
       if(must_break)
         break;
       std::cout << N
-                << "\t" << avg_num_cables / NUM_TAKES
-                << "\t" << avg_msg_count / NUM_TAKES
-                << "\t" << counts[0] / NUM_TAKES
-                << "\t" << counts[1] / NUM_TAKES << "\t"
-                << counts[2]/ NUM_TAKES << std::endl;
+                << "\t" << avg_num_cables / double(NUM_TAKES)
+                << "\t" << avg_msg_count / double(NUM_TAKES)
+                << "\t" << counts[0] / double(NUM_TAKES)
+                << "\t" << counts[1] / double(NUM_TAKES) << "\t"
+                << counts[2] / double(NUM_TAKES) << std::endl;
 
     }
   }

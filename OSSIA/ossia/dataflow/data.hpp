@@ -56,6 +56,12 @@ struct tvalue {
   ossia::complex_type type{};
 };
 
+enum data_mix_method
+{
+  mix_append,
+  mix_replace,
+  mix_merge
+};
 struct value_port
 {
   value_port() = default;
@@ -66,25 +72,113 @@ struct value_port
 
   void add_raw_value(const ossia::tvalue& v)
   {
-    data.emplace_back(v);
+    switch(mix_method)
+    {
+      case data_mix_method::mix_replace:
+      {
+        auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == v.timestamp; });
+        if(it != data.end())
+          *it = v;
+        else
+          data.emplace_back(v);
+        break;
+      }
+      case data_mix_method::mix_append:
+      {
+        data.emplace_back(v);
+        break;
+      }
+      case data_mix_method::mix_merge:
+        // TODO;
+        break;
+    }
   }
   void add_raw_value(ossia::tvalue&& v)
   {
-    data.emplace_back(std::move(v));
+    switch(mix_method)
+    {
+      case data_mix_method::mix_replace:
+      {
+        auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == v.timestamp; });
+        if(it != data.end())
+          *it = std::move(v);
+        else
+          data.emplace_back(std::move(v));
+        break;
+      }
+      case data_mix_method::mix_append:
+      {
+        data.emplace_back(std::move(v));
+        break;
+      }
+      case data_mix_method::mix_merge:
+      {
+        // TODO;
+        break;
+      }
+    }
   }
   void add_raw_value(ossia::value&& v)
   {
-    data.emplace_back(std::move(v));
+    switch(mix_method)
+    {
+      case data_mix_method::mix_replace:
+      {
+        auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == 0; });
+        if(it != data.end())
+          *it = std::move(v);
+        else
+          data.emplace_back(std::move(v));
+        break;
+      }
+      case data_mix_method::mix_append:
+        data.emplace_back(std::move(v));
+        break;
+      case data_mix_method::mix_merge:
+      {
+        // TODO;
+        break;
+      }
+    }
   }
 
   void add_value(ossia::value&& v, int64_t timestamp)
   {
-    this->data.emplace_back(std::move(v));
-    tvalue& tval = this->data.back();
-    tval.timestamp = timestamp;
-    tval.index = this->index;
-    if(auto u = this->type.target<ossia::unit_t>())
-      tval.type = *u;
+    auto setup_value = [=] (ossia::tvalue& tval) {
+      tval.timestamp = timestamp;
+      tval.index = this->index;
+      if(auto u = this->type.target<ossia::unit_t>())
+        tval.type = *u;
+    };
+    switch(mix_method)
+    {
+      case data_mix_method::mix_replace:
+      {
+        auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == timestamp; });
+        if(it != data.end())
+        {
+          it->value = std::move(v);
+          setup_value(*it);
+        }
+        else
+        {
+          data.emplace_back(std::move(v));
+          setup_value(this->data.back());
+        }
+        break;
+      }
+      case data_mix_method::mix_append:
+      {
+        this->data.emplace_back(std::move(v));
+        setup_value(this->data.back());
+        break;
+      }
+      case data_mix_method::mix_merge:
+      {
+        // TODO;
+        break;
+      }
+    }
   }
 
 
@@ -107,6 +201,7 @@ struct value_port
   ossia::destination_index index;
 
   bool is_event{};
+  data_mix_method mix_method{};
 private:
   value_vector<ossia::tvalue> data;
 };

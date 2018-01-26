@@ -386,7 +386,8 @@ void execution_state::commit_ordered()
 
 void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
 {
-  if (!ossia::apply(local_pull_visitor{*this, &addr}, in.data))
+  bool ok = ossia::apply(local_pull_visitor{*this, &addr}, in.data);
+  if (!ok)
   {
     copy_from_global(addr, in);
   }
@@ -424,8 +425,32 @@ void execution_state::insert(ossia::net::parameter_base& param, const data_type&
 
       // here reserve is a pessimization if we push only a few values...
       // just letting log2 growth do its job is much better.
-      for(const auto& v : val->get_data())
-        st.emplace_back(v, idx++);
+      switch(val->mix_method)
+      {
+        case ossia::data_mix_method::mix_replace:
+        {
+          for(const auto& v : val->get_data())
+          {
+            auto it = ossia::find_if(st, [&] (const std::pair<tvalue, int>& val) { return val.first.timestamp == v.timestamp; });
+            if(it != st.end())
+              it->first = v;
+            else
+              st.emplace_back(v, idx++);
+          }
+          break;
+        }
+        case ossia::data_mix_method::mix_append:
+        {
+          for(const auto& v : val->get_data())
+            st.emplace_back(v, idx++);
+          break;
+        }
+        case ossia::data_mix_method::mix_merge:
+        {
+          // TODO;
+          break;
+        }
+      }
       idx = m_msgIndex;
       m_msgIndex += val->get_data().size();
       break;
@@ -455,9 +480,34 @@ void execution_state::insert(ossia::net::parameter_base& param, data_type&& v)
       auto& st = m_valueState[&param];
 
       // here reserve is a pessimization if we push only a few values...
-      // just letting log2 growth do its job is much better.
-      for(const auto& v : val->get_data())
-        st.emplace_back(std::move(v), idx++);
+      // just letting log2 growth do its job is much better.switch(val->mix_method)
+
+      switch(val->mix_method)
+      {
+        case ossia::data_mix_method::mix_replace:
+        {
+          for(auto& v : val->get_data())
+          {
+            auto it = ossia::find_if(st, [&] (const std::pair<tvalue, int>& val) { return val.first.timestamp == v.timestamp; });
+            if(it != st.end())
+              it->first = v;
+            else
+              st.emplace_back(std::move(v), idx++);
+          }
+          break;
+        }
+        case ossia::data_mix_method::mix_append:
+        {
+          for(auto& v : val->get_data())
+            st.emplace_back(std::move(v), idx++);
+          break;
+        }
+        case ossia::data_mix_method::mix_merge:
+        {
+          // TODO;
+          break;
+        }
+      }
       idx = m_msgIndex;
       m_msgIndex += val->get_data().size();
       break;

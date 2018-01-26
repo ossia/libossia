@@ -302,5 +302,30 @@ int audio_protocol::PortAudioCallback(
   return {};
 #endif
 }
+
+audio_device::audio_device(std::string name)
+  : device{std::make_unique<audio_protocol>(), name}
+  , protocol{static_cast<audio_protocol&>(device.get_protocol())}
+{
+  protocol.reload();
+}
+
+
+audio_device::~audio_device()
+{
+  protocol.stop();
+}
+
+
+ossia::audio_parameter& audio_device::get_main_in()
+{
+  return static_cast<ossia::audio_parameter&>(*ossia::net::find_node(device.get_root_node(), "/in/main")->get_parameter());
+}
+
+ossia::audio_parameter& audio_device::get_main_out()
+{
+  return static_cast<ossia::audio_parameter&>(*ossia::net::find_node(device.get_root_node(), "/out/main")->get_parameter());
+}
+
 #endif
 }

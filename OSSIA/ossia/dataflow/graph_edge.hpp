@@ -15,56 +15,20 @@ struct init_delay_line
 };
 
 // A pure dependency edge does not have in/out ports set
-struct graph_edge
+struct OSSIA_EXPORT graph_edge
 {
   graph_edge(
       connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node,
-      node_ptr pin_node)
-      : con{c}
-      , out{std::move(pout)}
-      , in{std::move(pin)}
-      , out_node{std::move(pout_node)}
-      , in_node{std::move(pin_node)}
-  {
-  }
+      node_ptr pin_node);
 
-  void init()
-  {
-    if (in && out)
-    {
-      out->connect(this);
-      in->connect(this);
+  graph_edge(
+      connection c, std::size_t pout, std::size_t pin, node_ptr pout_node, node_ptr pin_node);
 
-      if (auto delay = con.target<delayed_glutton_connection>())
-      {
-        ossia::apply(init_delay_line{delay->buffer}, out->data);
-      }
-      else if (auto sdelay = con.target<delayed_strict_connection>())
-      {
-        ossia::apply(init_delay_line{sdelay->buffer}, out->data);
-      }
-    }
-  }
+  void init();
 
-  ~graph_edge()
-  {
-    clear();
-  }
+  ~graph_edge();
 
-  void clear()
-  {
-    if (in && out)
-    {
-      out->disconnect(this);
-      in->disconnect(this);
-    }
-
-    con = connection{};
-    out.reset();
-    in.reset();
-    out_node.reset();
-    in_node.reset();
-  }
+  void clear();
 
   connection con;
   outlet_ptr out;
@@ -78,4 +42,28 @@ auto make_edge(Args&&... args)
 {
   return std::make_shared<ossia::graph_edge>(std::forward<Args>(args)...);
 }
+
+template <typename... Args>
+auto make_strict_edge(Args&&... args)
+{
+  return std::make_shared<ossia::graph_edge>(ossia::immediate_strict_connection{}, std::forward<Args>(args)...);
+}
+template <typename... Args>
+auto make_glutton_edge(Args&&... args)
+{
+  return std::make_shared<ossia::graph_edge>(ossia::immediate_glutton_connection{}, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+auto make_delayed_strict_edge(Args&&... args)
+{
+  return std::make_shared<ossia::graph_edge>(ossia::delayed_strict_connection{}, std::forward<Args>(args)...);
+}
+template <typename... Args>
+auto make_delayed_glutton_edge(Args&&... args)
+{
+  return std::make_shared<ossia::graph_edge>(ossia::delayed_glutton_connection{}, std::forward<Args>(args)...);
+}
+
+
 }

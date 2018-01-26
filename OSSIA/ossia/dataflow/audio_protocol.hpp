@@ -2,6 +2,7 @@
 #include <ossia-config.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/dataflow/audio_parameter.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <smallfun.hpp>
 #include <readerwriterqueue.h>
 
@@ -48,6 +49,12 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     ~audio_protocol() override;
 
+    void set_tick(smallfun::function<void(unsigned long, double)> t)
+    {
+      ui_tick = std::move(t);
+      replace_tick = true;
+    }
+
     bool pull(ossia::net::parameter_base&) override;
     bool push(const ossia::net::parameter_base&) override;
     bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
@@ -84,6 +91,20 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     std::vector<ossia::mapped_audio_parameter*> out_mappings;
     std::vector<ossia::virtual_audio_parameter*> virtaudio;
     moodycamel::ReaderWriterQueue<smallfun::function<void()>> funlist;
+};
+
+
+class OSSIA_EXPORT audio_device
+{
+  public:
+    audio_device(std::string name = "audio");
+    ~audio_device();
+
+    ossia::audio_parameter& get_main_in();
+    ossia::audio_parameter& get_main_out();
+
+    ossia::net::generic_device device;
+    ossia::audio_protocol& protocol;
 };
 
 }

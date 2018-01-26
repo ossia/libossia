@@ -238,6 +238,19 @@ net::parameter_base* try_setup_parameter(std::string str, net::node_base& node)
   return nullptr;
 }
 
+net::parameter_base* create_parameter(net::node_base& parent, std::string node, std::string str)
+{
+  auto& map = parameter_creation_map();
+  boost::algorithm::to_lower(str);
+  auto it = map.find(str);
+  if(it != map.end())
+  {
+    return setup_parameter(it->second.type, ossia::net::create_node(parent, std::move(node)));
+  }
+  return nullptr;
+}
+
+
 struct update_parameter_visitor
 {
   using ret = void;

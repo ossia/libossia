@@ -34,3 +34,6 @@ ossia_add_example(network_osc_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_send
 ossia_add_example(preset_print_namespace "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PrintNamespace.cpp")
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
 ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
+
+ossia_add_example(mixsines "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSines.cpp")
+ossia_add_example(mixsinesaddr "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSinesAddress.cpp")

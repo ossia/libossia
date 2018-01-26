@@ -147,12 +147,15 @@ private:
   sync_set m_waitingNodes;
   small_sync_vec m_rootNodes;
   small_event_vec m_pendingEvents;
+  small_event_vec m_maxReachedEvents;
   overtick_map m_overticks; // used as cache
   boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_endNodes; // used as cache
   scenario_graph m_sg; // used as cache
   bool process_this(
-      time_sync& node, small_event_vec& statusChangedEvents,
+      time_sync& node,
+      small_event_vec& pendingEvents,
+      small_event_vec& maxReachedEvents,
       interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset);
   static void make_happen(
@@ -160,7 +163,7 @@ private:
       ossia::time_value tick_offset);
   static void make_dispose(time_event& event, interval_set& stopped);
   bool trigger_sync(time_sync& node,
-                    small_event_vec::iterator pendingBegin, small_event_vec::iterator pendingEnd,
+                    small_event_vec& pending, small_event_vec& maxReachedEv,
                     interval_set& started, interval_set& stopped,
                     ossia::time_value tick_offset, bool maxReached);
 };

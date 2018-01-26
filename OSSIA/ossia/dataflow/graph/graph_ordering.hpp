@@ -65,53 +65,92 @@ struct node_sorter
     }
 };
 
-template<typename Graph_T>
 struct init_node_visitor
 {
     inlet& in;
     graph_edge& edge;
     execution_state& e;
 
-    void operator()(immediate_glutton_connection) const
+
+    static void copy_from_local(const data_type& out, inlet& in)
+    {
+      const auto w = out.which();
+      if (w == in.data.which() && w != data_type::npos)
+      {
+        switch(w)
+        {
+          case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
+          case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
+          case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
+        }
+      }
+    }
+
+    static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
+    {
+      const auto w = out.which();
+      if (w == in.data.which() && w != data_type::npos)
+      {
+        switch(w)
+        {
+          case 0: copy_data_pos{pos}(*reinterpret_cast<const ossia::audio_delay_line*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
+          case 1: copy_data_pos{pos}(*reinterpret_cast<const ossia::midi_delay_line*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
+          case 2: copy_data_pos{pos}(*reinterpret_cast<const ossia::value_delay_line*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
+        }
+      }
+    }
+
+    static void copy(const outlet& out, inlet& in)
+    {
+      copy_from_local(out.data, in);
+    }
+
+    bool operator()(immediate_glutton_connection) const
     {
       if (edge.out_node->enabled())
       {
-        Graph_T::copy(*edge.out, in);
+        copy(*edge.out, in);
+        return false;
       }
       else
       {
         // todo delay, etc
-        Graph_T::pull_from_parameter(in, e);
+        return true;
       }
     }
 
-    void operator()(immediate_strict_connection) const
+    bool operator()(immediate_strict_connection) const
     {
       // if it's a strict connection then the other node
       // is necessarily enabled
-      Graph_T::copy(*edge.out, in);
+      copy(*edge.out, in);
+      return false;
     }
 
-    void operator()(delayed_glutton_connection& con) const
+    bool operator()(delayed_glutton_connection& con) const
     {
       // TODO If there is data...
       // Else...
-      Graph_T::copy(con.buffer, con.pos, in);
+      copy(con.buffer, con.pos, in);
       con.pos++;
+      return false;
     }
 
-    void operator()(delayed_strict_connection& con) const
+    bool operator()(delayed_strict_connection& con) const
     {
-      Graph_T::copy(con.buffer, con.pos, in);
+      copy(con.buffer, con.pos, in);
       con.pos++;
+      return false;
     }
 
-    void operator()(dependency_connection) const
+    bool operator()(dependency_connection) const
     {
+      return true;
     }
 
-    void operator()() const
+    bool operator()() const
     {
+      return true;
     }
 };
 

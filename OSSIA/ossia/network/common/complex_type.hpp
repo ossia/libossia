@@ -40,6 +40,10 @@ OSSIA_EXPORT
 ossia::net::parameter_base*
 try_setup_parameter(std::string t, ossia::net::node_base& node);
 
+OSSIA_EXPORT
+ossia::net::parameter_base*
+create_parameter(ossia::net::node_base& parent, std::string name, std::string type);
+
 //! Change the type of a parameter according to a complex type.
 OSSIA_EXPORT
 void update_parameter_type(

@@ -255,6 +255,12 @@ Y curve<X, Y>::convert_to_template_type_value(
 
   return v.apply(vis);
 }
+
+constant_curve::~constant_curve()
+{
+
+}
+
 }
 
 template class ossia::curve<int, int>;

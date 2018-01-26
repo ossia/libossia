@@ -580,6 +580,31 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c1->get_date(), 15_tv);
 
     }
+
+
+    void test_trigger_at_start()
+    {
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+
+      scenario.get_start_time_sync()->set_expression(ossia::expressions::make_expression_false());
+
+      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 30_tv, 30_tv, 30_tv);
+
+      scenario.add_time_interval(c0);
+
+      QVERIFY(!scenario.get_start_time_sync()->is_evaluating());
+      QCOMPARE(c0->get_date(), 0_tv);
+
+      s.interval->start_and_tick();
+      s.interval->tick(15_tv);
+      QCOMPARE(c0->get_date(), 0_tv);
+      QVERIFY(scenario.get_start_time_sync()->is_evaluating());
+    }
     void test_speed()
     {
 

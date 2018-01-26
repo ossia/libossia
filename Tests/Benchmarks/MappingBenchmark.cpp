@@ -123,15 +123,14 @@ int main()
         v = v + (int64_t)1;
 
         counts[k++] += count;
-        counts.push_back(count / double(NUM_TAKES));
       }
     }
 
     std::cout << N
-              << "\t" << avg_msg_count / NUM_TAKES
-              << "\t" << counts[0]
-              << "\t" << counts[1]
-              << "\t" << counts[2]
+              << "\t" << avg_msg_count / double(NUM_TAKES)
+              << "\t" << counts[0] / double(NUM_TAKES)
+              << "\t" << counts[1] / double(NUM_TAKES)
+              << "\t" << counts[2] / double(NUM_TAKES)
               << std::endl;
   }
   CALLGRIND_DUMP_STATS;

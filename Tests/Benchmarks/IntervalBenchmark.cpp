@@ -16,10 +16,10 @@ class IntervalBenchmark : public QObject
 {
   Q_OBJECT
 
+    std::vector<std::vector<double>> data{4};
     static const constexpr int benchmark_range[] = {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
                                                     700, 800, 900, 1000, 2000, 3000, 4000, 5000
                                                      , 6000, 7000, 8000, 9000, 10000
-                                                     , 15000 , 20000, 25000, 30000, 35000, 40000, 45000, 50000
                                                     // , 100000
 
                                                     };
@@ -241,7 +241,7 @@ private Q_SLOTS:
     qDebug() << tick_us;
   }
 
-  void test_graph_parallel()
+  void test_graph_parallel_fixed()
   {
     std::map<int, double> dur;
     for(auto k : benchmark_range)
@@ -249,7 +249,7 @@ private Q_SLOTS:
       root_scenario root;
 
       for(int i = 0; i < k; i++)
-        add_interval_parallel(*root.scenario);
+        add_interval_parallel(*root.scenario, 10000000_tv, 10000000_tv, 10000000_tv);
 
       const int N = 1000;
       root.interval->start_and_tick();
@@ -260,7 +260,7 @@ private Q_SLOTS:
       for(int i = 0; i < N; i++)
       {
         auto t0 = std::chrono::high_resolution_clock::now();
-        root.interval->tick(1000_tv);
+        root.interval->tick(1_tv);
         auto t1 = std::chrono::high_resolution_clock::now();
         total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
 
@@ -281,7 +281,54 @@ private Q_SLOTS:
 
     for(auto e : dur)
     {
-      std::cerr << "XYPoint { x: " << e.first << "; y: " << e.second << " }\n";
+      data[0].push_back(e.second);
+      std::cerr << e.first << " " << e.second << '\n';
+    }
+  }
+
+
+  void test_graph_parallel_infinite()
+  {
+    std::map<int, double> dur;
+    for(auto k : benchmark_range)
+    {
+      root_scenario root;
+
+      for(int i = 0; i < k; i++)
+        add_interval_parallel(*root.scenario, 0_tv, 0_tv, ossia::Infinite);
+
+      const int N = 1000;
+      root.interval->start_and_tick();
+      int64_t total = 0;
+#if USE_CALLGRIND
+      CALLGRIND_START_INSTRUMENTATION;
+#endif
+      for(int i = 0; i < N; i++)
+      {
+        auto t0 = std::chrono::high_resolution_clock::now();
+        root.interval->tick(1_tv);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+
+        cleanup_tokens(root);
+      }
+#if USE_CALLGRIND
+      CALLGRIND_STOP_INSTRUMENTATION;
+#endif
+
+      auto tick_us = total / double(N);
+      dur.insert({k, tick_us});
+      qDebug() << tick_us;
+    }
+#if USE_CALLGRIND
+    CALLGRIND_DUMP_STATS;
+#endif
+
+
+    for(auto e : dur)
+    {
+      data[1].push_back(e.second);
+      std::cerr << e.first << " " << e.second << '\n';
     }
   }
 
@@ -322,11 +369,10 @@ private Q_SLOTS:
     CALLGRIND_DUMP_STATS;
 #endif
 
-
     for(auto e : dur)
     {
-      // XYPoint { x: 0; y: 0 }
-      std::cerr << "XYPoint { x: " << e.first << "; y: " << e.second << " }\n";
+      data[2].push_back(e.second);
+      std::cerr << e.first << " " << e.second << '\n';
     }
   }
 
@@ -361,7 +407,7 @@ private Q_SLOTS:
       for(int i = 0; i < N; i++)
       {
         auto t0 = std::chrono::high_resolution_clock::now();
-        root.interval->tick(1000_tv);
+        root.interval->tick(10_tv);
         auto t1 = std::chrono::high_resolution_clock::now();
         total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
       }
@@ -379,9 +425,28 @@ private Q_SLOTS:
 
     for(auto e : dur)
     {
-      // XYPoint { x: 0; y: 0 }
-      std::cerr << "XYPoint { x: " << e.first << "; y: " << e.second << " }\n";
+      data[3].push_back(e.second);
+      std::cerr << e.first << " " << e.second << '\n';
     }
+  }
+
+  void output()
+  {
+    int i = 0;
+
+    std::cerr << std::endl;
+    std::cerr << "count parfixed parinf serial random\n";
+    for(auto k : benchmark_range)
+    {
+      std::cerr << k << ' '
+                << data[0][i] << ' '
+                << data[1][i] << ' '
+                << data[2][i] << ' '
+                << data[3][i] << '\n';
+      i++;
+
+    }
+    std::cerr << std::endl;
   }
 
 };

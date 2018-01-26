@@ -181,7 +181,7 @@ private:
  *
  * while keeping the reste of the list intact.
  */
-class constant_curve final : public curve_abstract
+class OSSIA_EXPORT constant_curve final : public curve_abstract
 {
 public:
   constant_curve(ossia::value v) : mValue{std::move(v)}

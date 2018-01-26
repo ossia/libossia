@@ -100,7 +100,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 }
 
 bool scenario::trigger_sync(
-    time_sync& node, small_event_vec::iterator pendingBegin, small_event_vec::iterator pendingEnd,
+    time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
     interval_set& started, interval_set& stopped,
     ossia::time_value tick_offset, bool maximalDurationReached)
 {
@@ -190,17 +190,22 @@ bool scenario::trigger_sync(
 
   // now TimeEvents will happen or be disposed.
   // the last added events are necessarily the ones of this node.
-  for (auto it = pendingBegin; it != pendingEnd; ++it)
+  for (time_event* ev : pending)
   {
-    time_event& ev = **it;
-    auto& expr = ev.get_expression();
+    auto& expr = ev->get_expression();
     // update any Destination value into the expression
     expressions::update(expr);
 
     if (expressions::evaluate(expr))
-      make_happen(ev, started, stopped, tick_offset);
+    {
+      make_happen(*ev, started, stopped, tick_offset);
+      if(maximalDurationReached)
+        maxReachedEv.push_back(ev);
+    }
     else
-      make_dispose(ev, stopped);
+    {
+      make_dispose(*ev, stopped);
+    }
   }
 
   // stop expression observation now the TimeSync has been processed
@@ -220,15 +225,17 @@ bool scenario::trigger_sync(
 }
 
 bool scenario::process_this(
-    time_sync& node, small_event_vec& pendingEvents,
+    time_sync& node,
+    small_event_vec& pendingEvents,
+    small_event_vec& maxReachedEvents,
     interval_set& started, interval_set& stopped,
     ossia::time_value tick_offset)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
+  pendingEvents.clear();
   auto activeCount = node.get_time_events().size();
   std::size_t pendingCount = 0;
-  const auto beginPending = pendingEvents.size();
 
   bool maximalDurationReached = false;
   auto on_pending = [&] (ossia::time_event* timeEvent)
@@ -322,8 +329,7 @@ bool scenario::process_this(
   }
 
   return trigger_sync(node,
-                      pendingEvents.begin() + beginPending,
-                      pendingEvents.end(),
+                      pendingEvents, maxReachedEvents,
                       started, stopped,
                       tick_offset, maximalDurationReached);
 }
@@ -372,6 +378,7 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     // * the ones we're finishing in : we take their state where we finish
 
     m_pendingEvents.clear();
+    m_maxReachedEvents.clear();
 
     for(auto& n : m_rootNodes)
     {
@@ -415,16 +422,16 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
       // by design, no interval could be stopped at this point since it's the
       // root scenarios. So this prevents initializing a dummy class.
       bool res = process_this(
-          *n, m_pendingEvents, m_runningIntervals, m_runningIntervals, tick_offset);
+          *n, m_pendingEvents, m_maxReachedEvents, m_runningIntervals, m_runningIntervals, tick_offset);
       if (res)
       {
-        m_pendingEvents.clear();
         it = m_waitingNodes.erase(it);
       }
       else
       {
         ++it;
       }
+      m_pendingEvents.clear();
     }
 
     m_pendingEvents.clear();
@@ -505,48 +512,42 @@ void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_
     do
     {
       // std::cerr << "BEGIN EVENT" << std::endl;
-      for (const auto& timeEvent : m_pendingEvents)
+      for (const auto& timeEvent : m_maxReachedEvents)
       {
         time_event& ev = *timeEvent;
-        if(ev.get_status() == time_event::status::HAPPENED)
+        auto& tn = ev.get_time_sync();
+        // Propagate the remaining tick to the next intervals
+        auto it = m_overticks.find(&tn);
+        if (it == m_overticks.end())
         {
-          auto& tn = ev.get_time_sync();
-          if (tn.get_status() == time_sync::status::DONE_MAX_REACHED)
-          {
-            // Propagate the remaining tick to the next intervals
-            auto it = m_overticks.find(&tn);
-            if (it == m_overticks.end())
-            {
-              // ossia::logger().info("scenario::state tick_dur not found");
-              continue;
-            }
+          // ossia::logger().info("scenario::state tick_dur not found");
+          continue;
+        }
 
-            const time_value remaining_tick
-                = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
+        const time_value remaining_tick
+            = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
 
-            const auto offset = tick_offset + tick_ms - remaining_tick;
-            it->second.offset = offset;
-            for (const auto& interval : ev.next_time_intervals())
-            {
-              run_interval(*interval, remaining_tick, offset);
-            }
-          }
+        const auto offset = tick_offset + tick_ms - remaining_tick;
+        it->second.offset = offset;
+        for (const auto& interval : ev.next_time_intervals())
+        {
+          run_interval(*interval, remaining_tick, offset);
         }
       }
       // std::cerr << "END EVENT" << std::endl;
 
-      m_pendingEvents.clear();
+      m_maxReachedEvents.clear();
 
       for (auto node : m_endNodes)
       {
         process_this(
-            *node, m_pendingEvents, m_runningIntervals,
+            *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
             m_runningIntervals, m_overticks.find(node)->second.offset);
       }
 
       m_endNodes.clear();
 
-    } while (!m_pendingEvents.empty());
+    } while (!m_maxReachedEvents.empty());
   }
 
   // ossia::logger().info("scenario::state ends");

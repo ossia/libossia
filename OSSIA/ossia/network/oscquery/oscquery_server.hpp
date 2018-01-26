@@ -8,6 +8,7 @@
 #include <readerwriterqueue.h>
 #include <nano_signal_slot.hpp>
 #include <atomic>
+#include <ossia/network/generic/generic_device.hpp>
 namespace osc
 {
 template <typename T>
@@ -140,4 +141,16 @@ private:
   bool m_echo{};
 };
 }
+
+class OSSIA_EXPORT oscquery_device
+{
+  public:
+    oscquery_device(uint16_t osc_port = 1234, uint16_t ws_port = 5678, std::string name = "oscquery");
+
+    ~oscquery_device();
+
+    ossia::net::generic_device device;
+    ossia::oscquery::oscquery_server_protocol& protocol;
+};
+
 }

@@ -134,14 +134,13 @@ ossia_add_bench(MappingStrictBenchmark     "${CMAKE_CURRENT_SOURCE_DIR}/Benchmar
 ossia_add_bench(MappingBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/MappingBenchmark.cpp")
 ossia_add_bench(OverallBenchmark           "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/OverallBenchmark.cpp")
 ossia_add_bench(GraphBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/GraphBenchmark.cpp")
-set(OSSIA_BENCHMARKS 1)
-if(OSSIA_BENCHMARKS)
 ossia_add_bench(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
                                            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
 ossia_add_bench(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
 ossia_add_bench(DeviceBenchmark_Nsec_server "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_server.cpp")
 ossia_add_bench(DeviceBenchmark_client      "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_client.cpp")
-endif()
+
+ossia_add_bench(MixNSines             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/MixNSines.cpp")
 
 
 # A command to copy the test data.
