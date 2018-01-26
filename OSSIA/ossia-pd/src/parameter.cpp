@@ -35,6 +35,7 @@ bool parameter::register_node(const std::vector<t_matcher>& matchers)
     obj_register(attribute);
   }
 
+  push_default_value(this);
   clock_delay(m_poll_clock,1);
 
   return res;
@@ -77,6 +78,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
       ossia::net::set_hidden(local_param->get_node(), m_hidden);
 
       m_matchers.emplace_back(n, this);
+
     }
   }
 
@@ -93,14 +95,11 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_rate();
   set_repetition_filter();
 
-  clock_set(m_clock, 1);
-
   return true;
 }
 
 bool parameter::unregister()
 {
-  clock_unset(m_clock);
   clock_unset(m_poll_clock);
 
   m_matchers.clear();
@@ -138,7 +137,6 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
     x->m_unit = gensym("");
     x->m_type = gensym("float");
 
-    x->m_clock = clock_new(x, (t_method)push_default_value);
     x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
@@ -230,7 +228,6 @@ void parameter::destroy(parameter* x)
   outlet_free(x->m_dataout);
   outlet_free(x->m_dumpout);
 
-  clock_free(x->m_clock);
   clock_free(x->m_poll_clock);
 
   x->~parameter();

@@ -27,6 +27,7 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
   if (res)
   {
     obj_dequarantining<remote>(this);
+    bang(this);
     clock_set(m_poll_clock,1);
   }
   else
@@ -134,7 +135,6 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
 bool remote::unregister()
 {
-  clock_unset(m_clock);
   clock_unset(m_poll_clock);
 
   m_matchers.clear();
@@ -332,13 +332,21 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
       x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
 
-    x->m_clock = clock_new(x, (t_method)parameter_base::bang);
     x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
 
     ebox_attrprocess_viabinbuf(x, d);
 
     if (x->m_name)
-      obj_register<remote>(x);
+    {
+
+#ifdef OSSIA_PD_BENCHMARK
+      std::cout << measure<>::execution(obj_register<remote>, x) / 1000. << " ms "
+                << " " << x << " remote " << x->m_name->s_name
+                << " " << x->m_reg_count << std::endl;
+#else
+      obj_register(x);
+#endif
+    }
 
     ossia_pd.remotes.push_back(x);
   }
@@ -359,7 +367,6 @@ void remote::destroy(remote* x)
     x->m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(x);
   }
 
-  clock_free(x->m_clock);
   clock_free(x->m_poll_clock);
 
   outlet_free(x->m_setout);

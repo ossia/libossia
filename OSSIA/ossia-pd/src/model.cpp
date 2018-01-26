@@ -133,11 +133,7 @@ void model::register_children()
 bool model::unregister()
 {
 
-  clock_unset(m_clock);
-
   m_matchers.clear();
-
-  //m_parent_node = find_parent_nodes(x);
 
   register_children();
 
@@ -174,7 +170,6 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
     if (d)
     {
       x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-      x->m_clock = clock_new(x, (t_method)obj_register<model>);
 
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
@@ -202,13 +197,6 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
       }
 
       ebox_attrprocess_viabinbuf(x, d);
-
-      // we need to delay registration because object may use patcher hierarchy
-      // to check address validity
-      // and object will be added to patcher's objects list (aka canvas g_list)
-      // after model_new() returns.
-      // clock_set uses ticks as time unit
-      clock_set(x->m_clock, 1);
     }
 
     if (find_peer(x))
@@ -237,8 +225,6 @@ void model::destroy(model* x)
   x->m_dead = true;
   x->unregister();
   ossia_pd::instance().models.remove_all(x);
-  clock_free(x->m_clock);
-  x->m_clock = nullptr;
   outlet_free(x->m_dumpout);
   x->m_dumpout = nullptr;
 

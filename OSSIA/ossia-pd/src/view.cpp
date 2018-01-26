@@ -188,7 +188,6 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
 
     x->m_otype = object_class::view;
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-    x->m_clock = clock_new(x, (t_method)obj_register<view>);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
@@ -196,13 +195,6 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
       std::string name = replace_brackets(address->s_name);
       x->m_name = gensym(name.c_str());
       x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-
-      // we need to delay registration because object may use patcher hierarchy
-      // to check address validity
-      // and object will be added to patcher's objects list (aka canvas g_list)
-      // after model_new() returns.
-      // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->m_clock, 0);
     }
     else
     {
@@ -218,6 +210,14 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
       free(x);
       x = nullptr;
     }
+
+#ifdef OSSIA_PD_BENCHMARK
+    std::cout << measure<>::execution(obj_register<view>, x) / 1000. << " ms "
+              << " " << x << " view " << x->m_name->s_name
+              << " " << x->m_reg_count << std::endl;
+#else
+    obj_register(x);
+#endif
   }
 
   return x;
@@ -229,8 +229,6 @@ void view::destroy(view* x)
   x->unregister();
   obj_dequarantining<view>(x);
   ossia_pd::instance().views.remove_all(x);
-  clock_free(x->m_clock);
-  x->m_clock = nullptr;
   outlet_free(x->m_dumpout);
   x->m_dumpout = nullptr;
 
