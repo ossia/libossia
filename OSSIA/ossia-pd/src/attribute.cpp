@@ -225,9 +225,15 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     }
 
     ebox_attrprocess_viabinbuf(x, d);
-
-    obj_register<attribute>(x);
     ossia_pd.attributes.push_back(x);
+
+#if OSSIA_PD_BENCHMARK
+    std::cout << measure<>::execution(obj_register<attribute>, x) / 1000. << " ms "
+              << "to register object " << x << " attribute '" << x->m_name->s_name
+              << std::endl;
+#else
+    obj_register<attribute>(x);
+#endif
   }
 
   return (x);

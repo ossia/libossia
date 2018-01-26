@@ -54,10 +54,8 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 
     for (auto n : nodes)
     {
-      // auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
 
-      auto type = symbol2val_type(m_type);
-      auto local_param = n->create_parameter(type);
+      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
 
       if (!local_param)
       {
@@ -171,7 +169,14 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
     boost::algorithm::to_lower(type);
     x->m_type = gensym(type.c_str());
 
-    obj_register<parameter>(x);
+#ifdef OSSIA_PD_BENCHMARK
+    std::cout << measure<>::execution(obj_register<parameter>, x) / 1000. << " ms "
+              << " " << x << " parameter " << x->m_name->s_name
+              << " " << x->m_reg_count << std::endl;
+
+#else
+    obj_register(x);
+#endif
   }
 
   return (x);

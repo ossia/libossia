@@ -4,6 +4,12 @@ project("ossia-pd")
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 
+option(OSSIA_PD_BENCHMARK "Add some process time computation and print it to the console" OFF)
+
+if(OSSIA_PD_BENCHMARK)
+    add_definitions(-DOSSIA_PD_BENCHMARK)
+endif()
+
 message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
 execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

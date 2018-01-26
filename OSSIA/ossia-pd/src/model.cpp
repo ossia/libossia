@@ -221,6 +221,14 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
     }
   }
 
+#ifdef OSSIA_PD_BENCHMARK
+  std::cout << measure<>::execution(obj_register<model>, x) / 1000. << " ms "
+            << " " << x << " model " << x->m_name->s_name
+            << " " << x->m_reg_count << std::endl;
+#else
+  obj_register(x);
+#endif
+
   return x;
 }
 
