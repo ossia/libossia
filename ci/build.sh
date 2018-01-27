@@ -467,7 +467,6 @@ case "$TRAVIS_OS_NAME" in
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
                -DOSSIA_QT=0 \
-               -DOSSIA_NO_QT=1 \
                -DOSSIA_PYTHON=0 \
                -DOSSIA_PD=1 \
                -DOSSIA_MAX=0 \
