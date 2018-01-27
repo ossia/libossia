@@ -1,6 +1,8 @@
 libossia
 ===
 
+[![Join the chat at https://gitter.im/OSSIA/libossia](https://badges.gitter.im/OSSIA/libossia.svg)](https://gitter.im/OSSIA/libossia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 libossia is a modern C++, cross-environment distributed object model for creative coding.
 
 It allows to declare the architecture of your creative coding application's functions as a **tree of OSC nodes and parameters**. These nodes/parameters can have attributes, which allow to declare many of their properties, such as their values, types, units, ranges, etc....
