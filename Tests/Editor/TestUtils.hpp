@@ -4,6 +4,8 @@
 #include <QMetaType>
 #include <QTest>
 
+#include "../Network/TestUtils.hpp"
+
 namespace QTest {
 template<>
 inline char* toString(const ossia::value &point)
