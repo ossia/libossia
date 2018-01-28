@@ -10,7 +10,9 @@ An OSCQuery device available on the network. This example works out-the-box with
 
 You also need `dat.gui` itself, install it with : 
 
+~~~
    npm install dat.gui
+~~~
 
 from this folder.
 
