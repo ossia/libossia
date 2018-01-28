@@ -154,18 +154,22 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 
     ebox_attrprocess_viabinbuf(x, d);
 
-    if(x->m_min_size == 0 && x->m_max_size == 0 && x->m_range_size == 0)
+
+    // change some attributes names to lower case
+    std::string type = x->m_type->s_name;
+    boost::algorithm::to_lower(type);
+    x->m_type = gensym(type.c_str());
+
+    if(x->m_type != gensym("string")
+       && x->m_min_size == 0
+       && x->m_max_size == 0
+       && x->m_range_size == 0)
     {
       // set range if not set by attribute min/max or range
       x->m_range_size = 2;
       SETFLOAT(x->m_range,0);
       SETFLOAT(x->m_range+1,1);
     }
-
-    // change some attributes names to lower case
-    std::string type = x->m_type->s_name;
-    boost::algorithm::to_lower(type);
-    x->m_type = gensym(type.c_str());
 
 #ifdef OSSIA_PD_BENCHMARK
     std::cout << measure<>::execution(obj_register<parameter>, x) / 1000. << " ms "
