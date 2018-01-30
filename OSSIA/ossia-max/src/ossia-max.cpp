@@ -42,18 +42,31 @@ ossia_max::ossia_max():
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-    for (auto x : views.copy()){
-      x->m_matchers.clear();
+  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
+  for (auto x : devices.copy())
+  {
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+                x->m_device->get_protocol());
+    auto& protos = multiplex.get_protocols();
+    for (auto& proto : protos)
+    {
+      multiplex.stop_expose_to(*proto);
     }
-    for (auto x : remotes.copy()){
-      x->m_matchers.clear();
-    }
-    for (auto x : models.copy()){
-      x->m_matchers.clear();
-    }
-    for (auto x : parameters.copy()){
-      x->m_matchers.clear();
-    }
+    x->m_protocols.clear();
+    x->disconnect_slots();
+  }
+  for (auto x : views.copy()){
+    x->m_matchers.clear();
+  }
+  for (auto x : remotes.copy()){
+    x->m_matchers.clear();
+  }
+  for (auto x : models.copy()){
+    x->m_matchers.clear();
+  }
+  for (auto x : parameters.copy()){
+    x->m_matchers.clear();
+  }
 }
 
 // ossia-max library instance

@@ -127,6 +127,14 @@ ossia_pd::~ossia_pd()
 {
   m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
   for (auto x : devices.copy()){
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+        x->m_device->get_protocol());
+    auto& protos = multiplex.get_protocols();
+    for (auto& proto : protos)
+    {
+      multiplex.stop_expose_to(*proto);
+    }
+    x->m_protocols.clear();
     x->disconnect_slots();
   }
   for (auto x : views.copy()){
