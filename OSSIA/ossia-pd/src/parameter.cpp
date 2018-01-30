@@ -89,8 +89,8 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_access_mode();
   set_unit();
   set_bounding_mode();
-  set_minmax();
   set_range();
+  set_minmax();
   set_default();
   set_rate();
   set_repetition_filter();
