@@ -42,7 +42,8 @@ ossia_max::ossia_max():
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
+  // m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
+
   for (auto x : devices.copy())
   {
     auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
