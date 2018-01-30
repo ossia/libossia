@@ -19,7 +19,7 @@ extern "C" void ossia_view_setup()
   if (c)
   {
     class_addmethod(c, (method) address_mess_cb<view>, "address",   A_SYM, 0);
-
+    class_addmethod(c, (method) view::get_mess_cb, "get",   A_SYM, 0);
   }
 
   class_register(CLASS_BOX, c);
