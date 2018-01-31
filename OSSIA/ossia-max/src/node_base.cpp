@@ -174,12 +174,34 @@ void node_base::get_namespace(node_base* x)
   }
 }
 
+void node_base::push_default_value(node_base* x)
+{
+  std::vector<ossia::net::node_base*> list;
+  for (auto& m : x->m_matchers)
+  {
+    auto n = m.get_node();
+    list = list_all_child(n);
+
+    for (ossia::net::node_base* child : list)
+    {
+      if (auto param = child->get_parameter())
+      {
+        auto val = ossia::net::get_default_value(*child);
+        if(val)
+          param->push_value(*val);
+      }
+    }
+  }
+}
+
 void node_base::class_setup(t_class* c)
 {
   object_base::class_setup(c);
   class_addmethod(c, (method) node_base::set,           "set",       A_GIMME, 0);
   class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
   class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
+  class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
+
 }
 
 void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
