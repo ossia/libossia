@@ -77,6 +77,7 @@ public:
   void set_start_discontinuous(bool b) { m_start_discontinuous = b; }
   void set_end_discontinuous(bool b) { m_end_discontinuous = b; }
 
+  virtual void prepare(const execution_state& st) const;
   virtual bool consumes(const execution_state&) const;
   virtual void run(token_request, execution_state&);
   virtual std::string label() const;
@@ -128,5 +129,12 @@ private:
   bool m_start_discontinuous{};
   bool m_end_discontinuous{};
   bool m_logging{};
+};
+
+class OSSIA_EXPORT nonowning_graph_node: public graph_node
+{
+  public:
+    using graph_node::graph_node;
+    ~nonowning_graph_node() override;
 };
 }

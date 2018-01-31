@@ -336,6 +336,7 @@ void execution_state::commit()
         m_commitOrderedState.reserve(it->second.size());
         for(auto& val : it->second)
         {
+          //std::cerr << "mergin : " <<  val.first.value << std::endl;
           vis(to_state_element(*it->first, std::move(val.first)));
         }
 

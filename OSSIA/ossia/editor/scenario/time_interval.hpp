@@ -19,12 +19,17 @@ namespace ossia
 class time_event;
 class time_process;
 
-class interval_node final : public ossia::graph_node
+class interval_node final : public ossia::nonowning_graph_node
 {
 public:
   interval_node();
   std::string label() const override;
   void run(ossia::token_request t, ossia::execution_state&) override;
+
+  ossia::inlet audio_in{ossia::audio_port{}};
+  ossia::inlet midi_in{ossia::midi_port{}};
+  ossia::outlet audio_out{ossia::audio_port{}};
+  ossia::outlet midi_out{ossia::midi_port{}};
 };
 
 
@@ -36,7 +41,8 @@ public:
  * amount of time (the duration) are between two #time_events.
  *
  * \details The duration can be fixed or between a minimal and a maximal
- * duration. \n
+ * duration.
+ *
  * #time_interval is a #TimeProcess container.
  */
 class OSSIA_EXPORT time_interval

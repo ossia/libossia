@@ -330,8 +330,10 @@ void time_interval::cleanup()
 
 interval_node::interval_node()
 {
-  m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
-  m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+  m_inlets.push_back(&audio_in);
+  m_inlets.push_back(&midi_in);
+  m_outlets.push_back(&audio_out);
+  m_outlets.push_back(&midi_out);
 }
 
 std::string interval_node::label() const
@@ -342,9 +344,16 @@ std::string interval_node::label() const
 
 void interval_node::run(token_request t, execution_state&)
 {
-  auto i = m_inlets[0]->data.target<ossia::audio_port>();
-  auto o = m_outlets[0]->data.target<ossia::audio_port>();
-  o->samples = i->samples;
+  {
+    auto i = audio_in.data.target<ossia::audio_port>();
+    auto o = audio_out.data.target<ossia::audio_port>();
+    o->samples = i->samples;
+  }
+  {
+    auto i = midi_in.data.target<ossia::midi_port>();
+    auto o = midi_out.data.target<ossia::midi_port>();
+    o->messages = i->messages;
+  }
 }
 
 }

@@ -37,12 +37,12 @@ namespace ossia
  * \see \ref behavior \ref curve \ref curve_segment
  */
 class OSSIA_EXPORT automation_node final :
-    public ossia::graph_node
+    public ossia::nonowning_graph_node
 {
   public:
     automation_node()
     {
-      m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+      m_outlets.push_back(&value_out);
     }
 
     ~automation_node() override
@@ -56,17 +56,16 @@ class OSSIA_EXPORT automation_node final :
 
     void set_destination(optional<ossia::destination> d)
     {
-      auto& port = *m_outlets.front();
-      auto& vp = *port.data.target<ossia::value_port>();
+      auto& vp = *value_out.data.target<ossia::value_port>();
       if(d)
       {
-        port.address = &d->address();
+        value_out.address = &d->address();
         vp.type = d->unit;
         vp.index = d->index;
       }
       else
       {
-        port.address = {};
+        value_out.address = {};
         vp.type = ossia::val_type::FLOAT;
         vp.index = {};
       }
@@ -88,8 +87,7 @@ class OSSIA_EXPORT automation_node final :
       if(!m_drive)
         return;
 
-      auto& outlet = *m_outlets[0];
-      ossia::value_port* vp = outlet.data.target<ossia::value_port>();
+      ossia::value_port* vp = value_out.data.target<ossia::value_port>();
       vp->add_value(
             ossia::apply(
               ossia::detail::compute_value_visitor{t.position, ossia::val_type::FLOAT},
@@ -97,6 +95,7 @@ class OSSIA_EXPORT automation_node final :
     }
 
     ossia::behavior m_drive;
+    ossia::outlet value_out{ossia::value_port{}};
 };
 
 class automation_process final : public ossia::node_process

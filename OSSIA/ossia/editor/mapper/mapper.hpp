@@ -27,13 +27,13 @@ namespace ossia
  */
 
 class OSSIA_EXPORT mapping_node final :
-    public ossia::graph_node
+    public ossia::nonowning_graph_node
 {
   public:
     mapping_node()
     {
-      m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
-      m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+      m_inlets.push_back(&value_in);
+      m_outlets.push_back(&value_out);
     }
 
     std::string label() const override
@@ -100,5 +100,7 @@ class OSSIA_EXPORT mapping_node final :
     }
 
     ossia::behavior m_drive;
+    ossia::inlet value_in{ossia::value_port{}};
+    ossia::outlet value_out{ossia::value_port{}};
 };
 }

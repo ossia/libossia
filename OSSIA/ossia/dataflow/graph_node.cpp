@@ -54,13 +54,21 @@ void graph_edge::clear()
   }
 
   con = connection{};
-  out.reset();
-  in.reset();
+  out = {};
+  in = {};
   out_node.reset();
   in_node.reset();
 }
 
 graph_node::~graph_node()
+{
+  for(auto inl : m_inlets)
+    delete inl;
+  for(auto outl : m_outlets)
+    delete outl;
+}
+
+void graph_node::prepare(const execution_state& st) const
 {
 
 }
@@ -127,5 +135,15 @@ void graph_node::clear()
   m_outlets.clear();
 }
 
-void graph_node::all_notes_off() { }
+void graph_node::all_notes_off()
+{
+
+}
+
+nonowning_graph_node::~nonowning_graph_node()
+{
+  m_inlets.clear();
+  m_outlets.clear();
+}
+
 }

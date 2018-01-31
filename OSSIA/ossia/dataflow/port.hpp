@@ -107,12 +107,12 @@ struct OSSIA_EXPORT outlet : public port
 template <typename T, typename... Args>
 inlet_ptr make_inlet(Args&&... args)
 {
-  return std::make_shared<inlet>(T{}, std::forward<Args>(args)...);
+  return new inlet(T{}, std::forward<Args>(args)...);
 }
 template <typename T, typename... Args>
 outlet_ptr make_outlet(Args&&... args)
 {
-  return std::make_shared<outlet>(T{}, std::forward<Args>(args)...);
+  return new outlet(T{}, std::forward<Args>(args)...);
 }
 
 using ports = std::vector<std::shared_ptr<port>>;

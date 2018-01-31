@@ -30,11 +30,11 @@ struct OSSIA_EXPORT graph_edge
 
   void clear();
 
-  connection con;
-  outlet_ptr out;
-  inlet_ptr in;
-  node_ptr out_node;
-  node_ptr in_node;
+  connection con{};
+  outlet_ptr out{};
+  inlet_ptr in{};
+  node_ptr out_node{};
+  node_ptr in_node{};
 };
 
 template <typename... Args>

@@ -3,6 +3,7 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
+#include <ModernMIDI/midi_message.h>
 namespace ossia
 {
 template <typename T>
@@ -56,7 +57,7 @@ struct tvalue {
   ossia::complex_type type{};
 };
 
-enum data_mix_method
+enum data_mix_method: int8_t
 {
   mix_append,
   mix_replace,
@@ -240,7 +241,8 @@ struct clear_data
 
   void operator()(audio_port& p) const
   {
-    p.samples.clear();
+    for(auto& vec : p.samples)
+      vec.clear();
   }
 
   void operator()() const

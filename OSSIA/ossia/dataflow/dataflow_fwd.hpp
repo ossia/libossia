@@ -1,8 +1,6 @@
 #pragma once
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <ModernMIDI/midi_message.h>
-#include <boost/container/flat_set.hpp>
 #include <boost/functional/hash.hpp>
 #include <eggs/variant.hpp>
 #include <ossia/network/common/path.hpp>
@@ -28,14 +26,10 @@ public:
 
 namespace ossia
 {
-
-template <typename T>
-using set = boost::container::flat_set<T>;
-
 using destination_t = eggs::variant<
-ossia::net::parameter_base*,
-ossia::traversal::path,
-ossia::net::node_base*
+  ossia::net::parameter_base*,
+  ossia::traversal::path,
+  ossia::net::node_base*
 >;
 struct execution_state;
 class graph_node;
@@ -45,8 +39,8 @@ using edge_ptr = std::shared_ptr<graph_edge>;
 struct port;
 struct outlet;
 struct inlet;
-using inlet_ptr = std::shared_ptr<inlet>;
-using outlet_ptr = std::shared_ptr<outlet>;
+using inlet_ptr = inlet*;
+using outlet_ptr = outlet*;
 class graph_interface;
 
 struct audio_port;
