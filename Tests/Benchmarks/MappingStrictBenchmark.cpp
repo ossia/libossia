@@ -70,28 +70,26 @@ int main()
 
           if(i%2)
           {
-            auto autom = std::make_shared<automation_process>();
             auto node = std::make_shared<automation_node>();
+            auto autom = std::make_shared<automation_process>(node);
 
             auto v = std::make_shared<ossia::curve<double, float>>();
             v->set_x0(0.); v->set_y0(0.);
             v->add_point(ossia::easing::ease{}, 1., 1.);
             node->set_behavior(v);
-            autom->node = node;
             automs.push_back(node);
             tc->add_time_process(std::move(autom));
             g.add_node(std::move(node));
           }
           else
           {
-            auto autom = std::make_shared<node_process>();
             auto node = std::make_shared<mapping_node>();
+            auto autom = std::make_shared<node_process>(node);
 
             auto v = std::make_shared<ossia::curve<float, float>>();
             v->set_x0(0.); v->set_y0(0.);
             v->add_point(ossia::easing::ease{}, 1., 1.);
             node->set_behavior(v);
-            autom->node = node;
             node->set_driven(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
             mappings.push_back(node);
             tc->add_time_process(std::move(autom));

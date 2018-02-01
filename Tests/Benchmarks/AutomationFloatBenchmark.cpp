@@ -42,8 +42,8 @@ int main()
       s.add_time_interval(tc);
       g.add_node(tc->node);
 
-      auto autom = std::make_shared<automation_process>();
       auto node = std::make_shared<automation_node>();
+      auto autom = std::make_shared<automation_process>(node);
       node->set_destination(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
 
       auto v = std::make_shared<ossia::curve<double, float>>();

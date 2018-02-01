@@ -42,15 +42,14 @@ int main()
       s.add_time_interval(tc);
       g.add_node(tc->node);
 
-      auto autom = std::make_shared<automation_process>();
       auto node = std::make_shared<automation_node>();
+      auto autom = std::make_shared<automation_process>(node);
       node->set_destination(destination{*t.all_params[std::abs(rand()) % t.all_params.size()]});
 
       auto v = std::make_shared<ossia::curve<double, float>>();
       v->set_x0(0.); v->set_y0(0.);
       v->add_point(ossia::easing::ease{}, 1., 1.);
       node->set_behavior(v);
-      autom->node = node;
 
       tc->add_time_process(autom);
       g.add_node(node);
