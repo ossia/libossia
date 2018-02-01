@@ -22,6 +22,7 @@ struct OSSIA_EXPORT invalid_callback_error : public std::logic_error
   {
   }
 
+  ~invalid_callback_error();
   invalid_callback_error() : std::logic_error("Bad callback")
   {
   }
@@ -188,4 +189,5 @@ private:
   impl m_callbacks;
   mutable std::mutex m_mutx;
 };
+
 }

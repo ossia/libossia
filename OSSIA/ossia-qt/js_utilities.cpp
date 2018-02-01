@@ -38,7 +38,8 @@ OSSIA_EXPORT void sanitize_device_name(QString& ret)
   }
 }
 
-OSSIA_EXPORT void sanitize_name(QString& ret)
+OSSIA_EXPORT
+void sanitize_name(QString& ret)
 {
   const QChar underscore = '_';
   for (auto& c : ret)
@@ -50,6 +51,7 @@ OSSIA_EXPORT void sanitize_name(QString& ret)
   }
 }
 
+OSSIA_EXPORT
 QString sanitize_name(QString name, const std::vector<QString>& brethren)
 {
   sanitize_name(name);

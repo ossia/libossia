@@ -95,8 +95,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
   set(OSSIA_DISABLE_COTIRE 1)
   set(ANDROID 1)
 else()
-  check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+    if(UNIX AND NOT APPLE)
+        find_program(LSB_RELEASE lsb_release)
+        if(LSB_RELEASE)
+          execute_process(COMMAND ${LSB_RELEASE} -i
+              OUTPUT_VARIABLE RELEASE_CODENAME
+              OUTPUT_STRIP_TRAILING_WHITESPACE
+          )
+        endif()
+    endif()
+
+  # broken in ubuntu 17.10
+  if(NOT "${RELEASE_CODENAME}" MATCHES "Ubuntu")
+    check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+  endif()
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
+
   if(LLD_LINKER_SUPPORTED)
     set(LINKER_IS_LLD 1)
   elseif(GOLD_LINKER_SUPPORTED)
@@ -136,7 +150,7 @@ set(CMAKE_CXX_STANDARD 17)
 if(MSVC)
   set(CMAKE_CXX_FLAGS "/std:c++latest ${CMAKE_CXX_FLAGS}")
 else()
-  set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "-std=c++1z ${CMAKE_CXX_FLAGS}")
 endif()
 
 # So that make install after make all_unity does not rebuild everything :

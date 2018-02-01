@@ -11,8 +11,15 @@
 #include <memory>
 #include <QDebug>
 
+#include <ossia/detail/callback_container.hpp>
+
 namespace ossia
 {
+invalid_callback_error::~invalid_callback_error()
+{
+
+}
+
 static void ossia_global_init()
 {
   static bool init = false;

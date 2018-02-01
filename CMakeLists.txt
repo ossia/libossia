@@ -4,7 +4,7 @@ set(CMAKE_MODULE_PATH
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 project(OSSIA CXX)
-
+find_package(Threads)
 # Configuration
 
 # activate select policies

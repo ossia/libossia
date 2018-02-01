@@ -5,9 +5,60 @@
 #include <ossia/dataflow/fx_node.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/dataflow.hpp>
+#include <ossia/dataflow/node_process.hpp>
 
 namespace ossia
 {
+
+node_process::node_process(node_ptr n)
+{
+  node = std::move(n);
+}
+
+void node_process::offset(time_value, double pos)
+{
+}
+
+void node_process::set_node(std::shared_ptr<graph_node> n)
+{
+  node = std::move(n);
+}
+
+void node_process::state(time_value parent_date, double relative_position, time_value tick_offset, double gspeed)
+{
+  if(node)
+  {
+    node->requested_tokens.push_back({parent_date, relative_position, tick_offset, gspeed});
+  }
+}
+
+void node_process::start()
+{
+  // TODO reset all delay buffer positions
+}
+
+void node_process::stop()
+{
+}
+
+void node_process::pause()
+{
+}
+
+void node_process::resume()
+{
+}
+
+void node_process::mute_impl(bool)
+{
+}
+
+
+node_process::~node_process()
+{
+
+}
+
 graph_edge::graph_edge(connection c, std::size_t pout, std::size_t pin, node_ptr pout_node, node_ptr pin_node)
   : graph_edge{c, pout_node->outputs()[pout], pin_node->inputs()[pin], std::move(pout_node) , std::move(pin_node)}
 {
