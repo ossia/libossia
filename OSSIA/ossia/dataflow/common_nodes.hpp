@@ -37,30 +37,32 @@ struct sine_node final : public ossia::nonowning_graph_node
       m_inlets.push_back(&freq_in);
       m_outlets.push_back(&audio_out);
     }
-    void run(ossia::token_request tk, ossia::execution_state& st) override
+    void run(const ossia::token_request tk, ossia::execution_state& st) override
     {
       auto& vals = freq_in.data.target<ossia::value_port>()->get_data();
       if(!vals.empty())
-        freq = ossia::clamp(ossia::convert<float>(vals.back().value), 20.f, 2000.f);
+        freq = ossia::clamp(ossia::convert<float>(vals.back().value), 0.f, 20000.f);
 
       auto& audio = audio_out.data.target<ossia::audio_port>()->samples;
-      auto N = tk.date - m_prev_date;
-      audio.resize(1);
-      audio[0].resize(tk.offset.impl + N);
-
-      // Uses the method in https://github.com/mbrucher/AudioTK/blob/master/ATK/Tools/SinusGeneratorFilter.cpp
-      const auto frequ_cos = std::cos(2. * M_PI * freq / st.sampleRate);
-      const auto frequ_sin = std::sin(2. * M_PI * freq / st.sampleRate);
-      for(int64_t i = tk.offset.impl; i < tk.offset.impl + N; i++)
+      if(auto N = tk.date - m_prev_date; N > 0)
       {
-        auto new_cos = m_cos * frequ_cos - m_sin * frequ_sin;
-        auto new_sin = m_cos * frequ_sin + m_sin * frequ_cos;
-        auto norm = (new_cos * new_cos + new_sin * new_sin);
+        audio.resize(1);
+        audio[0].resize(tk.offset.impl + N);
 
-        m_cos = new_cos / norm;
-        m_sin = new_sin / norm;
+        // Uses the method in https://github.com/mbrucher/AudioTK/blob/master/ATK/Tools/SinusGeneratorFilter.cpp
+        auto frequ_cos = std::cos(2. * M_PI * freq / st.sampleRate);
+        auto frequ_sin = std::sin(2. * M_PI * freq / st.sampleRate);
+        for(int64_t i = tk.offset.impl; i < tk.offset.impl + N; i++)
+        {
+          auto new_cos = m_cos * frequ_cos - m_sin * frequ_sin;
+          auto new_sin = m_cos * frequ_sin + m_sin * frequ_cos;
+          auto norm = (new_cos * new_cos + new_sin * new_sin);
 
-        audio[0][i] = m_sin;
+          m_cos = new_cos / norm;
+          m_sin = new_sin / norm;
+
+          audio[0][i] = m_sin;
+        }
       }
     }
 };

@@ -266,7 +266,8 @@ void execution_state::commit_common()
     auto addr = dynamic_cast<audio_parameter*>(elt.first);
     if(addr)
       addr->push_value(elt.second);
-    elt.second.samples.clear();
+    for(auto& vec : elt.second.samples)
+      vec.clear();
   }
 
   for (auto& elt : m_midiState)

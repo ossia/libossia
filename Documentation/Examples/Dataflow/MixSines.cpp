@@ -2,6 +2,35 @@
 #include <ossia/dataflow/audio_protocol.hpp>
 #include <ossia/dataflow/common_nodes.hpp>
 
+
+#if __has_include(<valgrind/callgrind.h>)
+#include <valgrind/callgrind.h>
+#endif
+struct tick_all_nodes_bench
+{
+    ossia::execution_state& e;
+    ossia::graph_base& g;
+
+    void operator()(unsigned long samples, double) const
+    {
+#if __has_include(<valgrind/callgrind.h>)
+      CALLGRIND_START_INSTRUMENTATION;
+#endif
+      e.clear_local_state();
+      e.get_new_values();
+      e.samples_since_start += samples;
+
+      for(auto& node : g.m_nodes)
+        node.first->requested_tokens.push_back(ossia::token_request{ossia::time_value{e.samples_since_start}});
+
+      g.state(e);
+      e.commit();
+#if __has_include(<valgrind/callgrind.h>)
+      CALLGRIND_STOP_INSTRUMENTATION;
+#endif
+    }
+};
+
 int main(int argc, char** argv)
 {
   int nodes = 60;
@@ -30,7 +59,7 @@ int main(int argc, char** argv)
   e.register_device(&audio.device);
 
   g.state(e);
-  audio.protocol.set_tick(tick_all_nodes{e, g});
+  audio.protocol.set_tick(tick_all_nodes_bench{e, g});
 
   std::this_thread::sleep_for(10s);
 }
