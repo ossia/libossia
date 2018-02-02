@@ -107,6 +107,7 @@ bool scenario::trigger_sync(
   if (!node.m_evaluating)
   {
     node.m_evaluating = true;
+    node.trigger_request = false;
     node.entered_evaluation.send();
   }
 
@@ -322,6 +323,7 @@ bool scenario::process_this(
     if (node.m_evaluating)
     {
       node.m_evaluating = false;
+      node.trigger_request = false;
       node.left_evaluation.send();
     }
 

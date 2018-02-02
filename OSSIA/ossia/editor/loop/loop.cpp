@@ -140,6 +140,7 @@ bool loop::process_sync(ossia::time_sync& node, ossia::time_event& ev, bool even
     if (node.m_evaluating)
     {
       node.m_evaluating = false;
+      node.trigger_request = false;
       node.left_evaluation.send();
     }
 
@@ -150,6 +151,7 @@ bool loop::process_sync(ossia::time_sync& node, ossia::time_event& ev, bool even
   {
     node.m_evaluating = true;
     node.entered_evaluation.send();
+    node.trigger_request = false;
   }
 
   // update the expression one time
