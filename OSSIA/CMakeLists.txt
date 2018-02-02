@@ -240,6 +240,12 @@ if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
   target_link_libraries(ossia PUBLIC PortAudio)
 
+  find_library(Jack_LIBRARY NAMES jack)
+  if(Jack_LIBRARY)
+    target_link_libraries(ossia PUBLIC Jack_LIBRARY)
+  endif()
+
+
   if(APPLE)
       find_library(Foundation_FK Foundation)
       find_library(AVFoundation_FK AVFoundation)
