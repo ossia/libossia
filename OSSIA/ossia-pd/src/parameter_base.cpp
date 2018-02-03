@@ -515,6 +515,19 @@ void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
+
+void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes)
+{
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    t_atom a;
+    SETFLOAT(&a, x->m_queue_length);
+    outlet_anything(x->m_dumpout, gensym("queue_length"), 1, &a);
+  }
+}
+
 void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
@@ -771,6 +784,8 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_unit(x,x->m_node_selection);
   else if ( s == gensym("rate") )
     parameter_base::get_rate(x,x->m_node_selection);
+  else if ( s == gensym("queue_length") )
+    parameter_base::get_queue_length(x,x->m_node_selection);
   else
     object_base::get_mess_cb(x,s);
 }
@@ -799,6 +814,7 @@ void parameter_base::class_setup(t_eclass* c)
   CLASS_ATTR_INT         (c, "mute",        0, parameter_base, m_mute);
   CLASS_ATTR_SYMBOL      (c, "unit",        0, parameter_base, m_unit);
   CLASS_ATTR_FLOAT       (c, "rate",        0, parameter_base, m_rate);
+  CLASS_ATTR_INT         (c, "queue_length",0, parameter_base, m_queue_length);
 
   // TODO use those to tweak attributes
   // CLASS_ATTR_FILTER_CLIP

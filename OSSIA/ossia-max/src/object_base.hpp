@@ -103,6 +103,7 @@ public:
   //flags
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
+  long m_queue_length{64};
   bool m_is_deleted;
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};

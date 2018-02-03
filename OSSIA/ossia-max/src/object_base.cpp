@@ -235,6 +235,11 @@ void t_matcher::enqueue_value(ossia::value v)
     {
       m_queue_list.enqueue(ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit));
     }
+    if(m_queue_list.size_approx() > owner->m_queue_length)
+    {
+      ossia::value val;
+      m_queue_list.try_dequeue(val);
+    }
   }
 }
 

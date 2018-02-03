@@ -42,6 +42,7 @@ public:
   static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes);
 
   // attributes
   t_symbol* m_type{};
