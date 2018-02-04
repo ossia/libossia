@@ -12,6 +12,29 @@ node_base::node_base(t_eclass* x)
   : object_base{x}
 { }
 
+static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node);
+
+static ossia::presets::preset make_preset(ossia::net::node_base* node)
+{
+  ossia::presets::preset cue;
+  auto nodes = list_all_child(node);
+  for (auto n : nodes)
+  {
+    if (auto param = n->get_parameter())
+    {
+      std::string key = n->get_name();
+      auto n1 = n->get_parent();
+      while ( n1 != node )
+      {
+        key = n1->get_name() + key;
+        n1 = n1->get_parent();
+      }
+      cue.push_back({key,param->value()});
+    }
+  }
+
+  return cue;
+}
 
 void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
 {
@@ -66,7 +89,7 @@ void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
                  filename.compare(filename.size() - 4, 4, ".txt") == 0;
 
       try {
-        auto preset = ossia::presets::make_preset(*node);
+        auto preset = make_preset(node);
         if (make_kiss)
         {
           auto kiss = ossia::presets::to_string(preset);
