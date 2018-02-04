@@ -89,7 +89,18 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
         } catch (...) {
           preset = ossia::presets::from_string(json);
         }
-        ossia::presets::apply_preset(*node, preset,  ossia::presets::keep_arch_on, {}, true);
+
+        for (auto& p : preset)
+        {
+          if(auto n = ossia::net::find_node(*node, p.first))
+          {
+            if (auto param = n->get_parameter())
+            {
+              param->push_value(p.second);
+              trig_output_value(n);
+            }
+          }
+        }
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
@@ -221,24 +232,7 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
         {
 
           param->push_value(v);
-
-          for(auto param : ossia_max::instance().parameters.reference())
-          {
-            for (auto& m : param->m_matchers)
-            {
-              if ( m.get_node() == node )
-                m.output_value();
-            }
-          }
-
-          for(auto remote : ossia_max::instance().remotes.reference())
-          {
-            for (auto& m : remote->m_matchers)
-            {
-              if ( m.get_node() == node )
-                m.output_value();
-            }
-          }
+          trig_output_value(node);
         }
       }
     }

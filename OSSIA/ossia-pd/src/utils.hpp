@@ -589,6 +589,8 @@ t_symbol* access_mode2symbol(ossia::access_mode mode);
  */
 std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
 
+void trig_output_value(ossia::net::node_base* node);
+
 #pragma mark Templates
 
 template<typename T>

@@ -81,6 +81,8 @@ std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const o
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 
+void trig_output_value(ossia::net::node_base* node);
+
 // put templates after prototype so we can use them
 
 template <typename T>

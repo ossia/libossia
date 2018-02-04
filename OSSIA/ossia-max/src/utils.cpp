@@ -439,5 +439,26 @@ std::string object_path_absolute(object_base* x)
   return fullpath.str();
 }
 
+void trig_output_value(ossia::net::node_base* node)
+{
+    for(auto param : ossia_max::instance().parameters.reference())
+    {
+      for (auto& m : param->m_matchers)
+      {
+        if ( m.get_node() == node )
+          m.output_value();
+      }
+    }
+
+    for(auto remote : ossia_max::instance().remotes.reference())
+    {
+      for (auto& m : remote->m_matchers)
+      {
+        if ( m.get_node() == node )
+          m.output_value();
+      }
+    }
+}
+
 } // namespace max
 } // namespace ossia

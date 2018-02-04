@@ -593,5 +593,26 @@ std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const os
   return matchers;
 }
 
+void trig_output_value(net::node_base *node)
+{
+  for(auto param : ossia_pd::instance().params.reference())
+  {
+    for (auto& m : param->m_matchers)
+    {
+      if ( m.get_node() == node )
+        m.output_value();
+    }
+  }
+
+  for(auto remote : ossia_pd::instance().remotes.reference())
+  {
+    for (auto& m : remote->m_matchers)
+    {
+      if ( m.get_node() == node )
+        m.output_value();
+    }
+  }
+}
+
 }
 }
