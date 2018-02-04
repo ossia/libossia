@@ -1122,7 +1122,8 @@ void ossia::presets::apply_preset(
   }
 }
 
-void make_preset_node(
+void
+make_preset_node(
     ossia::net::node_base& node, ossia::presets::preset& preset,
     const std::string& key)
 {
@@ -1131,11 +1132,11 @@ void make_preset_node(
   {
     currentkey += "/" + device_to_preset_key(node, *parent);
   }
-#if !defined(OSSIA_HAS_SHARED_MUTEX)
+
   auto children = node.children_copy();
-#else
-  const auto& children = node.children();
-#endif
+
+  ossia::sort(children, [](auto n1, auto n2)
+    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
 
   if (children.size() == 0)
   {
