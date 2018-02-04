@@ -25,7 +25,7 @@ namespace ossia
 {
 namespace presets
 {
-using preset = std::map<std::string, ossia::value>;
+using preset = std::vector<std::pair<std::string, ossia::value>>;
 
 using instance_functions = std::
     vector<std::

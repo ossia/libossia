@@ -37,6 +37,17 @@ struct ossia_preset
   ossia_preset(const ossia::presets::preset& prst) : impl(prst)
   {
   }
+
+  auto find(const std::string key)
+  {
+    auto it = impl.begin();
+    for (it; it < impl.end(); it++)
+    {
+      if (it->first == key)
+        break;
+    }
+    return it;
+  }
 };
 
 /// C functions ///
@@ -306,7 +317,7 @@ bool ossia_presets_has_key(const ossia_preset_t preset, const char* key)
   {
     try
     {
-      return preset->impl.find(key) != preset->impl.end();
+      return preset->find(key) != preset->impl.end();
     }
     catch (...)
     {
@@ -323,7 +334,7 @@ ossia_preset_result ossia_presets_key_to_string(
   {
     try
     {
-      auto it = preset->impl.find(key);
+      auto it = preset->find(key);
       if (it != preset->impl.end())
       {
         *buffer = copy_string(ossia::convert<std::string>(it->second));
@@ -349,7 +360,7 @@ ossia_preset_result ossia_presets_key_to_value(
   {
     try
     {
-      auto it = preset->impl.find(key);
+      auto it = preset->find(key);
       if (it != preset->impl.end())
       {
         *buffer = convert(it->second);
@@ -445,7 +456,7 @@ void explore(
   else
   {
     ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
-    preset->insert(pp);
+    preset->push_back(pp);
   }
 }
 
@@ -1129,7 +1140,7 @@ void make_preset_node(
   if (children.size() == 0)
   {
     if (auto addr = node.get_parameter())
-      preset.insert(std::make_pair(currentkey, addr->value()));
+      preset.push_back(std::make_pair(currentkey, addr->value()));
   }
   else
   {
