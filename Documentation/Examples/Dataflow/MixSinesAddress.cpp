@@ -37,8 +37,12 @@ class OSSIA_EXPORT simple_device
   public:
     ossia::net::generic_device device;
 };
-int main() {
+int main(int argc, char** argv) {
+  int nodes = 60;
+  if(argc > 1)
+    nodes = std::atoi(argv[1]);
   using namespace ossia;
+  using namespace std::literals;
   oscquery_device osc; // a device to expose parameters over the network
   tc_graph g; // graph implementation with static scheduling
   execution_state e;
@@ -61,7 +65,7 @@ int main() {
 
   // 60 sine generators, each with their frequency controllable by
   // an OSC address of the form /freq.1 /freq.2 /freq.3 ...
-  for(int i = 0; i < 60; i++) {
+  for(int i = 0; i < nodes; i++) {
     auto node = std::make_shared<sine_node>();
     g.connect(make_strict_edge(0, 0, node, gain));
 
@@ -74,5 +78,5 @@ int main() {
   // the tick algorithm adds a token of the buffer size to every node
   audio.protocol.set_tick(tick_all_nodes{e, g});
 
-  while(1);
+  std::this_thread::sleep_for(10s);
 }

@@ -303,12 +303,18 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
         {
           process_sync(m_startNode, m_startEvent, true, false);
           if(m_startEvent.get_status() != time_event::status::HAPPENED)
+          {
+            m_startEvent.set_status(time_event::status::PENDING);
+            m_endEvent.set_status(time_event::status::NONE);
             return;
+          }
           break;
         }
         case time_event::status::HAPPENED:
           break;
         case time_event::status::DISPOSED:
+          m_startEvent.set_status(time_event::status::PENDING);
+          m_endEvent.set_status(time_event::status::NONE);
           return;
       }
 
