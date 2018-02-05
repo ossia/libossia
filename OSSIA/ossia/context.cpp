@@ -61,4 +61,12 @@ spdlog::logger& logger()
 
   return init;
 }
+
+std::shared_ptr<spdlog::logger> logger_ptr()
+{
+  if (auto logger = spdlog::get("ossia"))
+    return logger;
+  else
+    return spdlog::stderr_logger_mt("ossia");
+}
 }
