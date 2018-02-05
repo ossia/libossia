@@ -595,13 +595,17 @@ value value_from_js(const QJSValue& v)
     std::vector<ossia::value> t;
     while (it.hasNext())
     {
-      t.push_back(value_from_js(it.value()));
+      it.next();
+      if(it.hasNext()) // we don't want to copy the last "length" property
+      {
+        t.push_back(value_from_js(it.value()));
+      }
     }
     return std::move(t);
   }
   else
   {
-    return {};
+    return qt_to_ossia{}(v.toVariant());
   }
 }
 #endif
@@ -830,8 +834,8 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toStringList());
     case QVariant::Date:
       return operator()(v.toDate());
-    //    case 1024: // QJSValue -> seems to crash
-    //      return value_from_jsvalue(v.value<QJSValue>());
+    case 1024: // QJSValue -> seems to crash
+      return value_from_js(v.value<QJSValue>());
     default:
       return operator()();
   }
