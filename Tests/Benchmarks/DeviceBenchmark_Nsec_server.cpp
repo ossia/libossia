@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     auto& node = ossia::net::create_node(*goToRandomNode(local.get_root_node()), r.getRandomAddress());
 
     auto addr = node.create_parameter(ossia::val_type::FLOAT);
-    addr->set_critical(true);
+    //addr->set_critical(true);
     addr->add_callback([&] (const auto& val) {
       ++num_received;
     });
@@ -69,14 +69,14 @@ int main(int argc, char** argv)
 
   auto st = localDevice->create_child("startTick");
   auto st_addr = st->create_parameter(ossia::val_type::IMPULSE);
-  st_addr->set_critical(true);
+  //st_addr->set_critical(true);
   st_addr->add_callback([&] (const ossia::value& val) {
     start_time = std::chrono::steady_clock::now();
     std::cerr << "START received" << std::endl;
   });
   auto et = localDevice->create_child("stopTick");
   auto et_addr = et->create_parameter(ossia::val_type::IMPULSE);
-  et_addr->set_critical(true);
+  //et_addr->set_critical(true);
   et_addr->add_callback([&] (const ossia::value& val) {
     stop_time = std::chrono::steady_clock::now();
     received_on_stop.store(num_received);
