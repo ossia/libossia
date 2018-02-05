@@ -90,6 +90,17 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
+    if(x->m_type != gensym("string")
+            && x->m_min_size == 0
+            && x->m_max_size == 0
+            && x->m_range_size == 0)
+    {
+      // set range if not set by attribute min/max or range
+      x->m_range_size = 2;
+      A_SETFLOAT(x->m_range,0);
+      A_SETFLOAT(x->m_range+1,1);
+    }
+
     // Register object to istself so it can receive notification when attribute changed
     // This is not documented anywhere, please look at :
     // https://cycling74.com/forums/notify-when-attribute-changes

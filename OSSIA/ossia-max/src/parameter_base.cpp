@@ -264,6 +264,10 @@ void parameter_base::set_range()
       auto domain = make_domain_from_minmax({min}, max, param->get_value_type());
       param->set_domain(domain);
     }
+    else
+    {
+      param->set_domain({});
+    }
   }
 }
 

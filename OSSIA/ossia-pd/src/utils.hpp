@@ -281,6 +281,8 @@ struct domain_visitor {
       {
         flag |= *d.min[0] == *d.min[i];
         flag |= *d.max[0] == *d.max[i];
+        if (!flag)
+          break;
       }
       if (flag)
       {
@@ -310,6 +312,7 @@ struct domain_visitor {
       x->m_max[i] = vamax[i];
 
     // TODO range
+    x->m_range_size = 0;
 
   }
   void operator()()

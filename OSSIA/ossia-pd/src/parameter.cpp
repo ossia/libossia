@@ -154,7 +154,6 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 
     ebox_attrprocess_viabinbuf(x, d);
 
-
     // change some attributes names to lower case
     std::string type = x->m_type->s_name;
     boost::algorithm::to_lower(type);
@@ -218,7 +217,6 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
         x->set_rate();
       else if ( s == gensym("mute") )
         x->set_mute();
-
   }
   return 0;
 }

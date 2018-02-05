@@ -167,7 +167,6 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_name = address;
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
-  object_method(x,gensym("unselect"),0);
   x->unregister();
   max_object_register(x);
 }
@@ -202,7 +201,7 @@ struct domain_visitor {
   {
     if(!d.values.empty())
     {
-      x->m_range_size = d.values.size() > 512 ? 512 : d.values.size();
+      x->m_range_size = d.values.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.values.size();
       for (int i = 0; i < x->m_range_size; i++)
       {
         // SETSYM(x->m_range+i,gensym(d.values[i].c_str()));
@@ -220,8 +219,8 @@ struct domain_visitor {
   template<std::size_t N>
   void operator()(ossia::vecf_domain<N>& d)
   {
-    x->m_min_size = d.min.size() > 512 ? 512 : d.min.size();
-    x->m_max_size = d.max.size() > 512 ? 512 : d.max.size();
+    x->m_min_size = d.min.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.min.size();
+    x->m_max_size = d.max.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.max.size();
 
     for (int i=0; i<x->m_max_size; i++)
       atom_setfloat(&x->m_max[i], *d.max[i]);
@@ -237,6 +236,8 @@ struct domain_visitor {
       {
         flag |= *d.min[0] == *d.min[i];
         flag |= *d.max[0] == *d.max[i];
+        if (!flag)
+          break;
       }
       if (flag)
       {
@@ -249,8 +250,8 @@ struct domain_visitor {
 
   void operator()(ossia::vector_domain& d)
   {
-    x->m_min_size = d.min.size() > 512 ? 512 : d.min.size();
-    x->m_max_size = d.max.size() > 512 ? 512 : d.max.size();
+    x->m_min_size = d.min.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.min.size();
+    x->m_max_size = d.max.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.max.size();
 
     std::vector<t_atom> vamin, vamax;
     value2atom minvisitor{vamin}, maxvisitor{vamax};
@@ -265,6 +266,7 @@ struct domain_visitor {
       x->m_max[i] = vamax[i];
 
     // TODO range
+    x->m_range_size = 0;
 
   }
   void operator()()
