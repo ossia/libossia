@@ -303,12 +303,12 @@ struct domain_visitor {
 
     for (const auto& v : d.min)
       v.apply(minvisitor);
-    for (int i=0; i<x->m_min_size; i++)
+    for (int i=0; i < vamin.size(); i++)
       x->m_min[i] = vamin[i];
 
     for (const auto& v : d.max)
       v.apply(maxvisitor);
-    for (int i=0; i<x->m_max_size; i++)
+    for (int i=0; i < vamax.size(); i++)
       x->m_max[i] = vamax[i];
 
     // TODO range

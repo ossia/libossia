@@ -97,6 +97,11 @@ void parameter_base::set_minmax()
   std::vector<ossia::value> _min = attribute2value(m_min, m_min_size);
   std::vector<ossia::value> _max = attribute2value(m_max, m_max_size);
 
+  if(_min.empty() && _max.empty())
+  {
+    return;
+  }
+
   for (t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
