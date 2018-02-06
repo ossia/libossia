@@ -23,14 +23,17 @@ static ossia::presets::preset make_preset(ossia::net::node_base* node)
   {
     if (auto param = n->get_parameter())
     {
-      std::string key = n->get_name();
-      auto n1 = n->get_parent();
-      while ( n1 != node )
+      if (param->get_value_type() != ossia::val_type::IMPULSE)
       {
-        key = n1->get_name() + "/" + key;
-        n1 = n1->get_parent();
+        std::string key = n->get_name();
+        auto n1 = n->get_parent();
+        while ( n1 != node )
+        {
+          key = n1->get_name() + "/" + key;
+          n1 = n1->get_parent();
+        }
+        cue.push_back({key,param->value()});
       }
-      cue.push_back({key,param->value()});
     }
   }
 
@@ -44,9 +47,12 @@ void make_json_preset(rapidjson::Document& d, ossia::net::node_base* node)
 
   if(auto param = node->get_parameter())
   {
-    rapidjson::Value v = param->value().apply(ossia::oscquery::detail::value_to_json_value{d.GetAllocator()});
-    rapidjson::Value name(node->get_name(),d.GetAllocator());
-    d.AddMember(name, v, d.GetAllocator());
+    if (param->get_value_type() != ossia::val_type::IMPULSE)
+    {
+      rapidjson::Value v = param->value().apply(ossia::oscquery::detail::value_to_json_value{d.GetAllocator()});
+      rapidjson::Value name(node->get_name(),d.GetAllocator());
+      d.AddMember(name, v, d.GetAllocator());
+    }
   }
 
   std::vector<ossia::net::node_base*> children
