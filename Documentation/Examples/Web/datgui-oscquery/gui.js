@@ -12,7 +12,7 @@ window.onload = function() {
     ws.onmessage = function(mess) {
         // An OSCQuery value json looks like 
         // { "/the/addr" : 123 }
-        console.log(mess.data);
+        // console.log(mess.data);
         var json = JSON.parse(mess.data);
 
         this.ouiouisquery = new Object;
@@ -20,7 +20,7 @@ window.onload = function() {
 
         function parseOSCQuery(json, obj, gui, name)
         {
-            console.log(json);
+            // console.log(json);
 
             if ("CONTENTS" in json)
             {
@@ -121,6 +121,14 @@ window.onload = function() {
                         console.log(json["FULL_PATH"] + " : " + value);
                     })
                 }
+                else if (type == "I") // impulse
+                {
+                    var btn = { add:function(){ 
+                        ws.send('{"' + json["FULL_PATH"] + '":null}');
+                        console.log(json["FULL_PATH"]);
+                    }};
+                    gui.add(btn, 'add').name(name);
+                }
 
 
             }
@@ -128,7 +136,7 @@ window.onload = function() {
             return obj;
         }
 
-        console.log(this.ouiouisquery);
+        // console.log(this.ouiouisquery);
 
     } 
 }
