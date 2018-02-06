@@ -65,6 +65,11 @@ using void_t = void;
 #define RAPIDJSON_HAS_STDSTRING 1
 #endif
 
+// https://github.com/Tencent/rapidjson/issues/1015
+#if !defined(RAPIDJSON_HAS_CXX11_RVALUE_REFS)
+#define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
+#endif
+
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
 #define BOOST_SYSTEM_NO_DEPRECATED
 
