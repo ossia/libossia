@@ -245,6 +245,7 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
     class_addcreator((t_newmethod)parameter::create,gensym("ossia.parameter"), A_GIMME, 0);
+    class_addcreator((t_newmethod)parameter::create,gensym("ø.parameter"), A_GIMME, 0);
 
     parameter_base::class_setup(c);
 
