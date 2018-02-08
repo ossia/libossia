@@ -101,6 +101,10 @@ public:
     m_executed = b;
   }
 
+  const ossia::time_value& prev_date() const
+  {
+    return m_prev_date;
+  }
   void set_prev_date(time_value d)
   {
     m_prev_date = d;

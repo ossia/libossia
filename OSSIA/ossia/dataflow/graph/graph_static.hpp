@@ -15,7 +15,7 @@ struct OSSIA_EXPORT graph_static_base
     : protected graph_util
     , public graph_base
 {
-  private:
+  protected:
   static void tick_static(
       graph_static_base& g,
       execution_state& e,
