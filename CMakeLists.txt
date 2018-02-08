@@ -22,16 +22,32 @@ if(ANDROID)
 else()
   find_package(Boost QUIET)
   if ( NOT Boost_FOUND )
-    set(BOOST_VERSION "boost_1_65_1")
+    set(BOOST_VERSION "boost_1_66_0")
     if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
-      message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.tar.gz")
-      file(DOWNLOAD
-        https://dl.bintray.com/boostorg/release/1.65.1/source/${BOOST_VERSION}.tar.gz
-        ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
-      execute_process(
-         COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
-         WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}
-         )
+
+      if(WIN32)
+        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.zip")
+        
+        file(DOWNLOAD
+          https://dl.bintray.com/boostorg/release/1.66.0/source/${BOOST_VERSION}.zip
+          ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
+
+        execute_process(
+          COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.zip
+          WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
+
+      else()
+        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.tar.gz")
+        
+        file(DOWNLOAD
+          https://dl.bintray.com/boostorg/release/1.66.0/source/${BOOST_VERSION}.tar.gz
+          ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
+        
+        execute_process(
+          COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
+          WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
+
+      endif()
     endif()
     set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" )
     set(BOOST_INCLUDEDIR "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/boost")
