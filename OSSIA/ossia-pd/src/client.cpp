@@ -441,7 +441,9 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(c, (method)client::disconnect, "disconnect", A_NULL, 0);
 
     eclass_addmethod(c, (method)client::get_mess_cb, "get", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) view::notify,    "notify",   A_NULL,  0);
 
+    eclass_register(CLASS_OBJ, c);
   }
 
   ossia_pd::client_class = c;

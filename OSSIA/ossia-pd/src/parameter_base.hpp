@@ -28,6 +28,7 @@ public:
   void set_unit();
 
   static void class_setup(t_eclass*c);
+  static t_pd_err notify(parameter_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
   static void get_mess_cb(parameter_base* x, t_symbol* s);
   static void get_unit(parameter_base*x, std::vector<t_matcher*> nodes);

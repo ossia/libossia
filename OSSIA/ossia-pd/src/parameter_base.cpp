@@ -788,6 +788,34 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     object_base::get_mess_cb(x,s);
 }
 
+t_pd_err parameter_base::notify(parameter_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+{
+  if (msg == gensym("attr_modified"))
+  {
+    if ( s == gensym("mode") )
+      x->set_access_mode();
+    else if ( s == gensym("repetitions") )
+      x->set_repetition_filter();
+    else if ( s == gensym("enable") )
+      x->set_enable();
+    else if ( s == gensym("type") )
+      x->set_type();
+    else if ( s == gensym("rate") )
+      x->set_rate();
+    else if( s == gensym("range") )
+      x->set_range();
+    else if ( s == gensym("clip") )
+      x->set_bounding_mode();
+    else if ( s == gensym("min") || s == gensym("max") )
+      x->set_minmax();
+    else if ( s == gensym("default") )
+      x->set_default();
+    else
+      object_base::notify((object_base*)x, s, msg, sender, data);
+  }
+  return {};
+}
+
 void parameter_base::class_setup(t_eclass* c)
 {
   object_base :: class_setup(c);

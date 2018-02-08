@@ -134,6 +134,7 @@ public:
   void set_recall_safe();
 
   static void get_mess_cb(object_base* x, t_symbol* s);
+  static t_pd_err notify(object_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
   static void print_hierarchy(object_base* x);
 
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);

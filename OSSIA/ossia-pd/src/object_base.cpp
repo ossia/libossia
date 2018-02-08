@@ -655,10 +655,12 @@ void object_base::class_setup(t_eclass*c)
   CLASS_ATTR_INT         (c, "hidden",      0, object_base, m_hidden);
   CLASS_ATTR_INT         (c, "recall_safe", 0, object_base, m_recall_safe);
 
-
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,   0);
   eclass_addmethod(c, (method) object_base::print_hierarchy, "hierarchy", A_NULL, 0);
+
+  // to handle "dialog" message from property page
+  class_addmethod((t_class *)c, (t_method)ebox_dialog, gensym("dialog"), A_GIMME, 0);
 }
 
 void object_base::get_mess_cb(object_base* x, t_symbol* s){
@@ -674,6 +676,8 @@ void object_base::get_mess_cb(object_base* x, t_symbol* s){
     get_recall_safe(x,x->m_node_selection);
   else if (s == gensym("zombie"))
     get_zombie(x,x->m_node_selection);
+  else if (s == gensym("priority"))
+    get_priority(x,x->m_node_selection);
   else
     logpost(x,2,"no attribute %s", s->s_name);
 }
@@ -695,6 +699,24 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
   } else {
     logpost(x, 4, "libossia attribute '%s' is not handled in Pd", std::string(attribute).c_str());
   }
+}
+
+t_pd_err object_base::notify(object_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+{
+  if (msg == gensym("attr_modified"))
+  {
+    if ( s == gensym("hidden") )
+      x->set_hidden();
+    else if ( s == gensym("priority") )
+      x->set_priority();
+    else if ( s == gensym("description") )
+      x->set_description();
+    else if ( s == gensym("tags") )
+      x->set_tags();
+    else if ( s == gensym("recall_safe") )
+      x->set_recall_safe();
+  }
+  return {};
 }
 
 

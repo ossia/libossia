@@ -371,6 +371,9 @@ extern "C" void setup_ossia0x2edevice(void)
 
     eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
     eclass_addmethod(c, (method) device::get_mess_cb, "get", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) device::notify,    "notify",   A_NULL,  0);
+
+    eclass_register(CLASS_OBJ, c);
   }
 
   ossia_pd::device_class = c;

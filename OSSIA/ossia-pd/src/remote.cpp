@@ -241,44 +241,19 @@ void remote::on_device_deleted(const net::node_base &)
 
 t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
-    // TODO : forward notification to parent class
-    if (msg == gensym("attr_modified"))
+  if (msg == gensym("attr_modified"))
+  {
+    if ( s == gensym("unit") )
+      x->set_unit();
+    else if ( s == gensym("mute") )
     {
-        if( s == gensym("range") )
-            x->set_range();
-        else if ( s == gensym("clip") )
-        x->set_bounding_mode();
-      else if ( s == gensym("min") || s == gensym("max") )
-        x->set_minmax();
-      else if ( s == gensym("default") )
-        x->set_default();
-      else if ( s == gensym("unit") )
-        x->set_unit();
-      else if ( s == gensym("hidden") )
-        x->set_hidden();
-      else if ( s == gensym("priority") )
-        x->set_priority();
-      else if ( s == gensym("mode") )
-        x->set_access_mode();
-      else if ( s == gensym("repetitions") )
-        x->set_repetition_filter();
-      else if ( s == gensym("tags") )
-        x->set_tags();
-      else if ( s == gensym("description") )
-        x->set_description();
-      else if ( s == gensym("enable") )
-        x->set_enable();
-      else if ( s == gensym("type") )
-        x->set_type();
-      else if ( s == gensym("rate") )
-        x->set_rate();
-      else if ( s == gensym("mute") )
-      {
-        if (x->m_mute)
-          x->unregister();
-        else
-          obj_register(x);
-      }
+      if (x->m_mute)
+        x->unregister();
+      else
+        obj_register(x);
+    }
+    else
+      parameter_base::notify((parameter_base*)x, s, msg, sender, data);
   }
   return {};
 }
@@ -449,6 +424,8 @@ extern "C" void setup_ossia0x2eremote(void)
 
     // remote special attributes
     eclass_addmethod(c, (method) remote::get_mess_cb, "get", A_SYMBOL, 0);
+
+    eclass_register(CLASS_OBJ, c);
   }
 
   ossia_pd::remote_class = c;

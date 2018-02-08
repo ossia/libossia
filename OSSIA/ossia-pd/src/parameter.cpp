@@ -188,40 +188,14 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
 {
   if (msg == gensym("attr_modified"))
   {
-      if( s == gensym("range") )
-        x->set_range();
-      else if ( s == gensym("clip") )
-        x->set_bounding_mode();
-      else if ( s == gensym("min") || s == gensym("max") )
-        x->set_minmax();
-      else if ( s == gensym("default") )
-        x->set_default();
-      else if ( s == gensym("unit") )
-        x->set_unit();
-      else if ( s == gensym("hidden") )
-        x->set_hidden();
-      else if ( s == gensym("recall_safe") )
-        x->set_recall_safe();
-      else if ( s == gensym("priority") )
-        x->set_priority();
-      else if ( s == gensym("mode") )
-        x->set_access_mode();
-      else if ( s == gensym("repetitions") )
-        x->set_repetition_filter();
-      else if ( s == gensym("tags") )
-        x->set_tags();
-      else if ( s == gensym("description") )
-        x->set_description();
-      else if ( s == gensym("enable") )
-        x->set_enable();
-      else if ( s == gensym("type") )
-        x->set_type();
-      else if ( s == gensym("rate") )
-        x->set_rate();
-      else if ( s == gensym("mute") )
-        x->set_mute();
+    if ( s == gensym("unit") )
+      x->set_unit();
+    else if ( s == gensym("mute") )
+      x->set_mute();
+    else
+      parameter_base::notify((parameter_base*)x,s,msg,sender,data);
   }
-  return 0;
+  return {};
 }
 
 void parameter::destroy(parameter* x)
@@ -261,7 +235,7 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "clip", 0, "free");
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
-    eclass_register(CLASS_OBJ, c); // disable property dialog since it's
+    eclass_register(CLASS_OBJ, c);
   }
 
   ossia_pd::param_class = c;
