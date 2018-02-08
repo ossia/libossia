@@ -4,6 +4,8 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 
+#include <boost/algorithm/string/case_conv.hpp>
+
 #include <rapidjson/allocators.h>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -307,6 +309,17 @@ static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base*
   std::vector<ossia::net::node_base*> children
       = node->children_copy();
   std::vector<ossia::net::node_base*> list;
+
+  ossia::sort(children, [](auto n1, auto n2)
+    {
+      std::string s1 = n1->get_name();
+      std::string s2 = n2->get_name();
+
+      boost::algorithm::to_lower(s1);
+      boost::algorithm::to_lower(s2);
+
+      return s1 < s2;
+    });
 
   ossia::sort(children, [](auto n1, auto n2)
     { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
