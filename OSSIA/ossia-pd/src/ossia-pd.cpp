@@ -22,8 +22,6 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   auto& opd = ossia_pd::instance();
   t_ossia* x = (t_ossia*) eobj_new(opd.ossia_class);
 
-  opd.devices.push_back(x);
-
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->m_device = opd.get_default_device();
   x->m_otype = object_class::device;
