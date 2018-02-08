@@ -197,10 +197,7 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
       x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
     else
-    {
-      x->m_name = gensym("untitledModel");
-      pd_error(x, "You have to pass a name as the first argument");
-    }
+      x->m_name = nullptr;
 
     if (find_peer(x))
     {

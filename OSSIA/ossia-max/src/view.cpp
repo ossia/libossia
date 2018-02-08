@@ -66,21 +66,15 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+
+
+        // we need to delay registration because object may use patcher hierarchy
+        // to check address validity
+        // and object will be added to patcher's objects list (aka canvas g_list)
+        // after model_new() returns.
+        // 0 ms delay means that it will be perform on next clock tick
+        clock_delay(x->m_clock, 0);
       }
-
-      // we need to delay registration because object may use patcher hierarchy
-      // to check address validity
-      // and object will be added to patcher's objects list (aka canvas g_list)
-      // after model_new() returns.
-      // 0 ms delay means that it will be perform on next clock tick
-      clock_delay(x->m_clock, 0);
-    }
-
-    if (x->m_name == _sym_nothing)
-    {
-      object_error((t_object*)x, "needs a name as first argument");
-      x->m_name = gensym("untitledView");
-      return x;
     }
 
     // process attr args, if any
