@@ -103,6 +103,7 @@ bool parameter::unregister()
 {
   clock_unset(m_poll_clock);
 
+  m_node_selection.clear();
   m_matchers.clear();
 
   for (auto remote : ossia::pd::remote::quarantine().copy())

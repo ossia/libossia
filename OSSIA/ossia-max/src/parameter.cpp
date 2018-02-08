@@ -283,11 +283,16 @@ bool parameter::unregister()
   clock_unset(m_clock);
   clock_unset(m_poll_clock);
 
+  m_node_selection.clear();
   m_matchers.clear();
 
   for (auto remote : remote::quarantine().copy())
   {
     max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+  }
+  for (auto attribute : attribute::quarantine().copy())
+  {
+    max_object_register(attribute);
   }
 
   object_quarantining(this);
