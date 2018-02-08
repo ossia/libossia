@@ -30,8 +30,6 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 
   auto x = make_ossia<ossia_object>();
 
-  ossia_library.devices.push_back(x);
-
   x->m_dumpout
       = outlet_new(x, NULL); // anything outlet to dump device state
   x->m_device = ossia_library.get_default_device();

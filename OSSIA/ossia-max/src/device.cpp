@@ -98,8 +98,6 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
                                                  x->m_name->s_name};
     x->connect_slots();
 
-    x->m_matchers.push_back({&x->m_device->get_root_node(), (object_base*)nullptr});
-
     ossia_library.devices.push_back(x);
     device::register_children(x);
   }
