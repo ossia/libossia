@@ -103,6 +103,7 @@ public:
   bool m_dead{false}; // whether this object is being deleted or not
   bool m_is_deleted{false}; // true during the is_deleted callback method
   int m_queue_length{64};
+  int m_recall_safe{0};
 
   t_clock* m_clock{};   // multi-purpose clock
   std::chrono::milliseconds m_last_click{};
@@ -130,6 +131,7 @@ public:
   void set_tags();
   void set_priority();
   void set_hidden();
+  void set_recall_safe();
 
   static void get_mess_cb(object_base* x, t_symbol* s);
   static void print_hierarchy(object_base* x);
@@ -138,6 +140,7 @@ public:
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
   static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
   static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_recall_safe(object_base* x, std::vector<t_matcher*> nodes);
   static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
   static void address_mess_cb(object_base* x, t_symbol* address);
 

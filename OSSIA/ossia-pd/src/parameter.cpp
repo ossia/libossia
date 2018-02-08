@@ -94,6 +94,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_default();
   set_rate();
   set_repetition_filter();
+  set_recall_safe();
 
   return true;
 }
@@ -199,6 +200,8 @@ t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender,
         x->set_unit();
       else if ( s == gensym("hidden") )
         x->set_hidden();
+      else if ( s == gensym("recall_safe") )
+        x->set_recall_safe();
       else if ( s == gensym("priority") )
         x->set_priority();
       else if ( s == gensym("mode") )

@@ -75,8 +75,6 @@ void parameter_base::set_repetition_filter()
   }
 }
 
-
-
 void parameter_base::set_enable()
 {
   for (t_matcher* m : m_node_selection)

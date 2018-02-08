@@ -82,6 +82,9 @@ using priority = float;
 //! How often a node is refreshed
 using refresh_rate = int32_t;
 
+//! Should the value be untouched on preset loading
+using recall_safe = bool;
+
 //! Granularity of the space
 using value_step_size = double;
 
@@ -153,6 +156,11 @@ OSSIA_EXPORT ossia::string_view text_hidden();
 OSSIA_EXPORT hidden get_hidden(const extended_attributes& n);
 OSSIA_EXPORT void set_hidden(extended_attributes& n, hidden v);
 OSSIA_EXPORT void set_hidden(ossia::net::node_base& n, hidden v);
+
+OSSIA_EXPORT ossia::string_view text_recall_safe();
+OSSIA_EXPORT recall_safe get_recall_safe(const extended_attributes& n);
+OSSIA_EXPORT void set_recall_safe(extended_attributes& n, recall_safe v);
+OSSIA_EXPORT void set_recall_safe(ossia::net::node_base& n, recall_safe v);
 
 OSSIA_EXPORT ossia::string_view text_extended_type();
 OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);

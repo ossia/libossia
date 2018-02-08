@@ -122,7 +122,7 @@ static void apply_json(rapidjson::Value::ConstMemberIterator object, ossia::net:
     {
       std::string name = it->name.GetString();
       auto n = ossia::net::find_node(*node,it->name.GetString());
-      if (n)
+      if (n && !ossia::net::get_recall_safe(*n))
       {
           apply_json(it, n);
       }
@@ -130,7 +130,7 @@ static void apply_json(rapidjson::Value::ConstMemberIterator object, ossia::net:
   }
   else
   {
-    if (node)
+    if (node && !ossia::net::get_recall_safe(*node))
     {
       if (auto param = node->get_parameter())
       {
@@ -264,6 +264,9 @@ void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
             std::cout << p.first << std::endl;
             if(auto n = ossia::net::find_node(*node, p.first))
             {
+              if (ossia::net::get_recall_safe(*n))
+                continue;
+
               if (auto param = n->get_parameter())
               {
                 param->push_value(p.second);

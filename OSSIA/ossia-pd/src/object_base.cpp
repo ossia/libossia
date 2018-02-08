@@ -405,6 +405,15 @@ void object_base::set_hidden()
   }
 }
 
+void object_base::set_recall_safe()
+{
+  for (t_matcher* m : m_node_selection)
+  {
+    ossia::net::node_base* node = m->get_node();
+    ossia::net::set_recall_safe(*node, m_recall_safe);
+  }
+}
+
 void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
@@ -476,6 +485,19 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
     t_atom a;
     SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
     outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+  }
+}
+
+void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
+{
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    t_atom a;
+
+    SETFLOAT(&a, ossia::net::get_recall_safe(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("recall_safe"), 1, &a);
   }
 }
 
@@ -627,10 +649,12 @@ void object_base::print_hierarchy(object_base* x)
 
 void object_base::class_setup(t_eclass*c)
 {
-  CLASS_ATTR_INT         (c, "priority",          0, object_base, m_priority);
+  CLASS_ATTR_INT         (c, "priority",    0, object_base, m_priority);
   CLASS_ATTR_ATOM_VARSIZE(c, "description", 0, object_base, m_description, m_description_size, OSSIA_PD_MAX_ATTR_SIZE);
-  CLASS_ATTR_ATOM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
-  CLASS_ATTR_INT         (c, "hidden",            0, object_base, m_hidden);
+  CLASS_ATTR_ATOM_VARSIZE(c, "tags",        0, object_base, m_tags, m_tags_size, OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_INT         (c, "hidden",      0, object_base, m_hidden);
+  CLASS_ATTR_INT         (c, "recall_safe", 0, object_base, m_recall_safe);
+
 
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,   0);
@@ -646,6 +670,8 @@ void object_base::get_mess_cb(object_base* x, t_symbol* s){
     get_description(x,x->m_node_selection);
   else if (s == gensym("hidden"))
     get_hidden(x,x->m_node_selection);
+  else if (s == gensym("recall_safe"))
+    get_recall_safe(x,x->m_node_selection);
   else if (s == gensym("zombie"))
     get_zombie(x,x->m_node_selection);
   else
@@ -664,6 +690,8 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
     get_tags(x, matchers);
   } else if ( attribute == ossia::net::text_hidden() ){
     get_hidden(x, matchers);
+  } else if ( attribute == ossia::net::text_recall_safe() ){
+    get_recall_safe(x, matchers);
   } else {
     logpost(x, 4, "libossia attribute '%s' is not handled in Pd", std::string(attribute).c_str());
   }

@@ -89,6 +89,7 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(recall_safe, recall_safe, "recallSafe")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
     value_step_size, value_step_size, "valueStepsize")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(zombie, zombie, "zombie")
