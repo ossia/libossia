@@ -184,6 +184,18 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
+void parameter::update_attribute(parameter* x, string_view attribute, const net::node_base* node)
+{
+  auto matchers = make_matchers_vector(x,node);
+
+  if ( attribute == ossia::net::text_muted() ){
+    get_mute(x, matchers);
+  } else if ( attribute == ossia::net::text_unit() ){
+    get_unit(x, matchers);
+  } else
+    parameter_base::update_attribute((parameter_base*)x, attribute, node);
+}
+
 t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))

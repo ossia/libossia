@@ -18,7 +18,10 @@ public:
   bool do_registration(const std::vector<t_matcher>& node);
   bool unregister();
 
-  static t_pd_err notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
+  static t_pd_err notify(
+      parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
+  static void update_attribute(
+      parameter* x, string_view attribute, const net::node_base* node);
 
   static void* create(t_symbol* name, int argc, t_atom* argv);
   static void destroy(parameter* x);

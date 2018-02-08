@@ -19,7 +19,9 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
 {
   auto matchers = make_matchers_vector(x,node);
 
-  if ( attribute == ossia::net::text_value_type() ){
+  if ( attribute == ossia::net::text_refresh_rate() ){
+    get_rate(x, matchers);
+  } else if ( attribute == ossia::net::text_value_type() ){
     get_type(x, matchers);
   } else if ( attribute == ossia::net::text_domain() ){
     get_domain(x, matchers);

@@ -26,6 +26,8 @@ public:
       ossia::max::parameter*, void*, long, long, char*);
   static t_max_err notify(ossia::max::parameter *x,
       t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static void update_attribute(
+      parameter* x, string_view attribute, const net::node_base* node);
 
 };
 

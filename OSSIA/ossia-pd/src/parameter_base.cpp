@@ -25,10 +25,6 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
 
   if ( attribute == ossia::net::text_refresh_rate() ){
     get_rate(x, matchers);
-  } else if ( attribute == ossia::net::text_muted() ){
-    get_mute(x, matchers);
-  } else if ( attribute == ossia::net::text_unit() ){
-    get_unit(x, matchers);
   } else if ( attribute == ossia::net::text_value_type() ){
     get_type(x, matchers);
   } else if ( attribute == ossia::net::text_domain() ){
