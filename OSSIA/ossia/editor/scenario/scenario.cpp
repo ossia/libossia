@@ -19,6 +19,7 @@ namespace ossia
 {
 scenario_node::scenario_node()
 {
+  m_passthrough = true;
   // todo maybe we can optimize by having m_outlets == m_inlets
   // this way no copy.
   m_inlets.push_back(&audio_in);

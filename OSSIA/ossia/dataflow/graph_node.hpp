@@ -121,6 +121,7 @@ public:
   virtual void all_notes_off();
   ossia::small_vector<token_request, 4> requested_tokens;
 
+  bool m_passthrough{};
 protected:
   inlets m_inlets;
   outlets m_outlets;

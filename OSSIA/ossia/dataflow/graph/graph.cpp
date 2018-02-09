@@ -37,7 +37,7 @@ struct rescale_in
       value_vector<mm::MidiMessage> values;
       for(auto& val : port.messages)
       {
-        if(val.timestamp >= request.offset && val.timestamp < request.offset + request.date - prev_date)
+         if(val.timestamp >= request.offset && val.timestamp < request.offset + (request.date - prev_date) * request.speed)
         {
           values.push_back(val);
           values.back().timestamp *= request.speed;
@@ -50,7 +50,7 @@ struct rescale_in
       value_vector<ossia::tvalue> values;
       for(auto& val : port.get_data())
       {
-        if(val.timestamp >= request.offset && val.timestamp < request.offset + request.date - prev_date)
+        if(val.timestamp >= request.offset && val.timestamp < request.offset + (request.date - prev_date) * request.speed)
         {
           values.push_back(val);
           values.back().timestamp *= request.speed;
@@ -83,12 +83,35 @@ struct init_data
       return {};
     }
 };
+struct replace_data
+{
+    void operator()(ossia::audio_port& port, ossia::audio_port& copy)
+    {
+    }
+    void operator()(ossia::value_port& port, ossia::value_port& copy)
+    {
+      port = std::move(copy);
+    }
+    void operator()(ossia::midi_port& port, ossia::midi_port& copy)
+    {
+      port = std::move(copy);
+    }
+    template<typename T, typename U>
+    void operator()(const T&, const U& unscaled)
+    {
+
+    }
+    ossia::data_type operator()()
+    {
+      return {};
+    }
+};
 struct rescale_out
 {
     const ossia::time_value& prev_date;
     const ossia::token_request& request;
     void operator()(ossia::audio_port& scaled, ossia::audio_port& unscaled)
-    {
+    {/*
       auto chans = scaled.samples.size();
       if(unscaled.samples.size() < chans)
         unscaled.samples.resize(chans);
@@ -102,7 +125,7 @@ struct rescale_out
         {
           unscaled.samples[chan][prev_size + i] = scaled.samples[chan][i];
         }
-      }
+      }*/
     }
 
     void operator()(ossia::midi_port& scaled, ossia::midi_port& unscaled)
@@ -112,6 +135,7 @@ struct rescale_out
         unscaled.messages.push_back(val);
         unscaled.messages.back().timestamp /= request.speed;
       }
+      scaled.messages.clear();
     }
 
     void operator()(ossia::value_port& scaled, ossia::value_port& unscaled)
@@ -121,6 +145,7 @@ struct rescale_out
         val.timestamp /= request.speed;
         unscaled.get_data().push_back(val);
       }
+      scaled.get_data().clear();
     }
 
     template<typename T, typename U>
@@ -136,6 +161,16 @@ struct rescale_out
 
 void graph_util::run_scaled(graph_node& first_node, execution_state& e)
 {
+  if(first_node.m_passthrough)
+  {
+    for(const auto& request : first_node.requested_tokens)
+    {
+      first_node.run(request, e);
+      first_node.set_prev_date(request.date);
+    }
+    return;
+  }
+
   std::vector<ossia::data_type> orig_ins;
   orig_ins.reserve(first_node.inputs().size());
   for(auto& n : first_node.inputs())
@@ -152,8 +187,9 @@ void graph_util::run_scaled(graph_node& first_node, execution_state& e)
 
   for(const auto& request : first_node.requested_tokens)
   {
-    if(request.speed  > 0)
+    if(request.speed > 0)
     {
+      std::cerr << first_node.label()<< " : " <<first_node.prev_date() << " " << request.date << " " << request.offset << " " << request.speed << std::endl;
       for(auto& n : first_node.inputs())
         ossia::apply(rescale_in{first_node.prev_date(), request}, n->data);
 
@@ -170,7 +206,7 @@ void graph_util::run_scaled(graph_node& first_node, execution_state& e)
     }
   }
   for(std::size_t i = 0; i < first_node.outputs().size(); i++)
-    first_node.outputs()[i]->data = final_outs[i];
+    eggs::variants::apply(replace{}, first_node.outputs()[i]->data, final_outs[i]);
 }
 
 

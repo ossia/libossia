@@ -330,6 +330,7 @@ void time_interval::cleanup()
 
 interval_node::interval_node()
 {
+  m_passthrough = true;
   m_inlets.push_back(&audio_in);
   m_inlets.push_back(&midi_in);
   m_outlets.push_back(&audio_out);

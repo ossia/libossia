@@ -17,6 +17,7 @@ class loop_node final : public ossia::graph_node
 
 loop_node::loop_node()
 {
+  m_passthrough = true;
   // todo maybe we can optimize by having m_outlets == m_inlets
   // this way no copy.
   m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
