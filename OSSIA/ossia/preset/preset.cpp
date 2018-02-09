@@ -1122,42 +1122,29 @@ void ossia::presets::apply_preset(
   }
 }
 
-void
-make_preset_node(
-    ossia::net::node_base& node, ossia::presets::preset& preset,
-    const std::string& key)
+ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
 {
-  std::string currentkey = key;
-  if (auto parent = node.get_parent())
+  ossia::presets::preset cue;
+  auto nodes = ossia::net::list_all_child(&node);
+  for (auto n : nodes)
   {
-    currentkey += "/" + device_to_preset_key(node, *parent);
-  }
-
-  auto children = node.children_copy();
-
-  ossia::sort(children, [](auto n1, auto n2)
-    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
-
-  if (children.size() == 0)
-  {
-    if (auto addr = node.get_parameter())
-      preset.push_back(std::make_pair(currentkey, addr->value()));
-  }
-  else
-  {
-    for (auto& child : children)
+    if (auto param = n->get_parameter())
     {
-      make_preset_node(*child, preset, currentkey);
+      if (param->get_value_type() != ossia::val_type::IMPULSE)
+      {
+        std::string key = n->get_name();
+        auto n1 = n->get_parent();
+        while ( n1 != &node )
+        {
+          key = n1->get_name() + "/" + key;
+          n1 = n1->get_parent();
+        }
+        cue.push_back({key,param->value()});
+      }
     }
   }
-}
 
-ossia::presets::preset
-ossia::presets::make_preset(ossia::net::node_base& node)
-{
-  presets::preset preset;
-  make_preset_node(node, preset, "");
-  return preset;
+  return cue;
 }
 
 ossia::net::node_base*
