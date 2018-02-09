@@ -12,7 +12,7 @@ struct rescale_in
     const ossia::time_value& prev_date;
     const ossia::token_request& request;
     void operator()(ossia::audio_port& port)
-    {
+    {/*
       if(request.speed > 1.0)
       {
         for(auto& c : port.samples)
@@ -29,6 +29,7 @@ struct rescale_in
       {
 
       }
+      */
 
     }
     void operator()(ossia::midi_port& port)
@@ -63,23 +64,70 @@ struct rescale_in
 
     }
 };
+struct init_data
+{
+    ossia::data_type operator()(ossia::audio_port& port)
+    {
+      return ossia::audio_port{};
+    }
+    ossia::data_type operator()(ossia::value_port& port)
+    {
+      return ossia::value_port{};
+    }
+    ossia::data_type operator()(ossia::midi_port& port)
+    {
+      return ossia::midi_port{};
+    }
+    ossia::data_type operator()()
+    {
+      return {};
+    }
+};
 struct rescale_out
 {
     const ossia::time_value& prev_date;
     const ossia::token_request& request;
-    void operator()(ossia::audio_port&)
+    void operator()(ossia::audio_port& scaled, ossia::audio_port& unscaled)
+    {
+      auto chans = scaled.samples.size();
+      if(unscaled.samples.size() < chans)
+        unscaled.samples.resize(chans);
+
+      for(std::size_t chan = 0; chan < chans; chan++)
+      {
+        auto prev_size = unscaled.samples[chan].size();
+        auto full_size = prev_size + scaled.samples[chan].size();
+        unscaled.samples[chan].resize(full_size);
+        for(std::size_t i = 0; i < scaled.samples[chan].size(); i++)
+        {
+          unscaled.samples[chan][prev_size + i] = scaled.samples[chan][i];
+        }
+      }
+    }
+
+    void operator()(ossia::midi_port& scaled, ossia::midi_port& unscaled)
+    {
+      for(auto& val : scaled.messages)
+      {
+        unscaled.messages.push_back(val);
+        unscaled.messages.back().timestamp /= request.speed;
+      }
+    }
+
+    void operator()(ossia::value_port& scaled, ossia::value_port& unscaled)
+    {
+      for(auto& val : scaled.get_data())
+      {
+        val.timestamp /= request.speed;
+        unscaled.get_data().push_back(val);
+      }
+    }
+
+    template<typename T, typename U>
+    void operator()(const T&, const U& unscaled)
     {
 
     }
-    void operator()(ossia::midi_port&)
-    {
-
-    }
-    void operator()(ossia::value_port&)
-    {
-
-    }
-
     void operator()()
     {
 
@@ -95,22 +143,34 @@ void graph_util::run_scaled(graph_node& first_node, execution_state& e)
     orig_ins.push_back(n->data);
   }
 
+  std::vector<ossia::data_type> final_outs;
+  final_outs.reserve(first_node.outputs().size());
+  for(auto& n : first_node.outputs())
+  {
+    final_outs.push_back(ossia::apply(init_data{}, n->data));
+  }
 
   for(const auto& request : first_node.requested_tokens)
   {
-    for(auto& n : first_node.inputs())
-      ossia::apply(rescale_in{first_node.prev_date(), request}, n->data);
+    if(request.speed  > 0)
+    {
+      for(auto& n : first_node.inputs())
+        ossia::apply(rescale_in{first_node.prev_date(), request}, n->data);
 
-    first_node.run(request, e);
-    for(auto& n : first_node.outputs())
-      ossia::apply(rescale_out{first_node.prev_date(), request}, n->data);
+      first_node.run(request, e);
 
-    first_node.set_prev_date(request.date);
+      for(std::size_t i = 0; i < first_node.outputs().size(); i++)
+        eggs::variants::apply(rescale_out{first_node.prev_date(), request}, first_node.outputs()[i]->data, final_outs[i]);
 
-    // Restore original input for the next token
-    for(std::size_t i = 0; i < first_node.inputs().size(); i++)
-      first_node.inputs()[i]->data = orig_ins[i];
+      first_node.set_prev_date(request.date);
+
+      // Restore original input for the next token
+      for(std::size_t i = 0; i < first_node.inputs().size(); i++)
+        first_node.inputs()[i]->data = orig_ins[i];
+    }
   }
+  for(std::size_t i = 0; i < first_node.outputs().size(); i++)
+    first_node.outputs()[i]->data = final_outs[i];
 }
 
 
@@ -209,6 +269,43 @@ void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
   }
 
 }
+
+void graph_util::exec_node(graph_node& first_node, execution_state& e, spdlog::logger& logger)
+{
+  init_node(first_node, e);
+  if(first_node.start_discontinuous()) {
+    first_node.requested_tokens.front().start_discontinuous = true;
+    first_node.set_start_discontinuous(false);
+  }
+  if(first_node.end_discontinuous()) {
+    first_node.requested_tokens.front().end_discontinuous = true;
+    first_node.set_end_discontinuous(false);
+  }
+
+  log_inputs(first_node, logger);
+  /*    auto all_normal = ossia::all_of(first_node.requested_tokens,
+                                   [] (const ossia::token_request& tk) { return tk.speed == 1.;});
+    if(all_normal)
+    {
+*/
+  for(const auto& request : first_node.requested_tokens)
+  {
+    first_node.run(request, e);
+    first_node.set_prev_date(request.date);
+  }
+  /*
+    }
+    else
+    {
+      run_scaled(first_node, e);
+    }
+*/
+  log_outputs(first_node, logger);
+
+  first_node.set_executed(true);
+  teardown_node(first_node, e);
+}
+
 graph_interface::~graph_interface()
 {
 

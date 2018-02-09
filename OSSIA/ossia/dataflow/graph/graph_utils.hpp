@@ -265,28 +265,7 @@ struct OSSIA_EXPORT graph_util
   static void exec_node(
       graph_node& first_node,
       execution_state& e,
-      spdlog::logger& logger)
-  {
-    init_node(first_node, e);
-    if(first_node.start_discontinuous()) {
-      first_node.requested_tokens.front().start_discontinuous = true;
-      first_node.set_start_discontinuous(false);
-    }
-    if(first_node.end_discontinuous()) {
-      first_node.requested_tokens.front().end_discontinuous = true;
-      first_node.set_end_discontinuous(false);
-    }
-
-    for(const auto& request : first_node.requested_tokens) {
-      log_inputs(first_node, logger);
-      first_node.run(request, e);
-      first_node.set_prev_date(request.date);
-      log_outputs(first_node, logger);
-    }
-
-    first_node.set_executed(true);
-    teardown_node(first_node, e);
-  }
+      spdlog::logger& logger);
 
   // These methods are only accessed by ossia::graph
   static bool can_execute(graph_node& node, const execution_state&)
@@ -471,5 +450,6 @@ struct tick_all_nodes
       e.commit();
     }
 };
+
 
 }
