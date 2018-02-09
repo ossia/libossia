@@ -21,7 +21,6 @@ public:
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   static void assist(attribute*, void*, long, long, char*);
-  static t_max_err notify(attribute*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
   static void destroy(attribute* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);

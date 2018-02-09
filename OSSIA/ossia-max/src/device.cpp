@@ -44,6 +44,9 @@ extern "C" void ossia_device_setup()
   class_addmethod(
         c, (method) device::get_mess_cb,
         "get", A_SYM, 0);
+  class_addmethod(
+      c, (method) device::notify,
+      "notify", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
 

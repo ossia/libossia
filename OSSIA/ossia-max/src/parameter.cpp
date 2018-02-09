@@ -156,34 +156,12 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
   if (msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
-    if( attrname == gensym("range") )
-      x->set_range();
-    else if ( attrname == gensym("clip") )
-      x->set_bounding_mode();
-    else if ( attrname == gensym("min") || attrname == gensym("max") )
-      x->set_minmax();
-    else if ( attrname == gensym("default") )
-      x->set_default();
-    else if ( attrname == gensym("unit") )
+    if ( attrname == gensym("unit") )
       x->set_unit();
-    else if ( attrname == gensym("hidden") )
-      x->set_hidden();
-    else if ( attrname == gensym("priority") )
-      x->set_priority();
-    else if ( attrname == gensym("mode") )
-      x->set_access_mode();
-    else if ( attrname == gensym("repetitions") )
-      x->set_repetition_filter();
-    else if ( attrname == gensym("tags") )
-      x->set_tags();
-    else if ( attrname == gensym("description") )
-      x->set_description();
-    else if ( attrname == gensym("enable") )
-      x->set_enable();
     else if ( attrname == gensym("type") )
       x->set_type();
-    else if ( s == gensym("mute") )
-      x->set_mute();
+    else
+      parameter_base::notify(x, s, msg, sender, data);
   }
   return 0;
 }
@@ -272,6 +250,8 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_default();
   set_rate();
   set_repetition_filter();
+  set_recall_safe();
+
 
   clock_delay(m_clock, 1);
 

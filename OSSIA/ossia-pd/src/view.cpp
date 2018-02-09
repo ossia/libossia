@@ -244,7 +244,7 @@ extern "C" void setup_ossia0x2eview(void)
 
     node_base::class_setup(c);
 
-    eclass_addmethod(c, (method) view::click,                    "click",         A_NULL,   0);
+    eclass_addmethod(c, (method) view::click, "click", A_NULL,   0);
     eclass_addmethod(c, (method) address_mess_cb<view>, "address",   A_SYMBOL, 0);
     eclass_addmethod(c, (method) view::get_mess_cb, "get",   A_SYMBOL, 0);
     eclass_addmethod(c, (method) view::notify,    "notify",   A_NULL,  0);

@@ -10,6 +10,7 @@ class parameter_base : public object_base
 {
 public:
   static void update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
+  static t_max_err notify(parameter_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
 
   parameter_base();
 
@@ -38,7 +39,6 @@ public:
   static void get_bounding_mode(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_default(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_type(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_priority(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);

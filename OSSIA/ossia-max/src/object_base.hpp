@@ -164,6 +164,7 @@ public:
   std::mutex bindMutex;
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
+  static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
   void is_deleted(const ossia::net::node_base& n);
 
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);

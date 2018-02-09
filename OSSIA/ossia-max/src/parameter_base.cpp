@@ -40,6 +40,37 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
   }
 }
 
+t_max_err parameter_base::notify(parameter_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data)
+{
+  t_symbol *attrname;
+
+  if (msg == gensym("attr_modified")) {
+    attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
+
+    if ( attrname == gensym("mode") )
+      x->set_access_mode();
+    else if ( attrname == gensym("repetitions") )
+      x->set_repetition_filter();
+    else if ( attrname == gensym("enable") )
+      x->set_enable();
+    else if ( attrname == gensym("type") )
+      x->set_type();
+    else if( attrname == gensym("rate") )
+      x->set_rate();
+    else if( attrname == gensym("range") )
+      x->set_range();
+    else if ( attrname == gensym("clip") )
+      x->set_bounding_mode();
+    else if ( attrname == gensym("min") || attrname == gensym("max") )
+      x->set_minmax();
+    else if ( attrname == gensym("default") )
+      x->set_default();
+    else
+      object_base::notify(x, s, msg, sender, data);
+  }
+  return 0;
+}
+
 void parameter_base::set_access_mode()
 {
   for (auto m : m_node_selection)

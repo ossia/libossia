@@ -63,6 +63,10 @@ extern "C" void ossia_client_setup()
       c, (method)client::assist,
       "assist", A_NOTHING, 0);
 
+  class_addmethod(
+      c, (method) client::notify,
+      "notify", A_CANT, 0);
+
   class_register(CLASS_BOX, c);
   ossia_library.ossia_client_class = c;
 

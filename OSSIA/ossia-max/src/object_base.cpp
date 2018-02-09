@@ -379,6 +379,28 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
   }
 }
 
+t_max_err object_base::notify(object_base *x, t_symbol *s,
+                       t_symbol *msg, void *sender, void *data)
+{
+  t_symbol *attrname;
+
+  if (msg == gensym("attr_modified")) {
+    attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
+
+    if ( attrname == gensym("hidden") )
+      x->set_hidden();
+    else if ( attrname == gensym("priority") )
+      x->set_priority();
+    else if ( attrname == gensym("description") )
+      x->set_description();
+    else if ( attrname == gensym("tags") )
+      x->set_tags();
+    else if ( s == gensym("recall_safe") )
+      x->set_recall_safe();
+  }
+  return 0;
+}
+
 void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
@@ -391,6 +413,7 @@ void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
     outlet_anything(x->m_dumpout, gensym("recall_safe"), 1, &a);
   }
 }
+
 void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
