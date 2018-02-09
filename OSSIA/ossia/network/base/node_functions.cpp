@@ -1,6 +1,9 @@
 #include "node_functions.hpp"
 #include <ossia/network/common/path.hpp>
+#include <ossia/network/base/node_attributes.hpp>
+
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 #include <iostream>
 #include <iterator>
@@ -558,6 +561,36 @@ address_scope get_address_scope(ossia::string_view addr)
       type = address_scope::global;
   }
   return type;
+}
+
+std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
+{
+  std::vector<ossia::net::node_base*> children
+      = node->children_copy();
+  std::vector<ossia::net::node_base*> list;
+
+  ossia::sort(children, [](auto n1, auto n2)
+    {
+      std::string s1 = n1->get_name();
+      std::string s2 = n2->get_name();
+
+      boost::algorithm::to_lower(s1);
+      boost::algorithm::to_lower(s2);
+
+      return s1 < s2;
+    });
+
+  ossia::sort(children, [](auto n1, auto n2)
+    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+
+  for (auto it = children.begin(); it != children.end(); it++ )
+  {
+    list.push_back(*it);
+    auto nested_list = list_all_child(*it);
+    list.insert(list.end(), nested_list.begin(), nested_list.end());
+  }
+
+  return list;
 }
 }
 }

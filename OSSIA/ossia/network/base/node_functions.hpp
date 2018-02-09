@@ -135,5 +135,13 @@ enum class address_scope
  */
 OSSIA_EXPORT
 address_scope get_address_scope(ossia::string_view addr);
+
+/**
+ * @brief list_all_child : list all node childs recursively
+ * @param node : starting point
+ * @return list : vector of child sorted by name then by priority
+ */
+OSSIA_EXPORT
+std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node);
 }
 }

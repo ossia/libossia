@@ -15,12 +15,10 @@ namespace ossia
 namespace max
 {
 
-static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node);
-
 static ossia::presets::preset make_preset(ossia::net::node_base* node)
 {
   ossia::presets::preset cue;
-  auto nodes = list_all_child(node);
+  auto nodes = ossia::net::list_all_child(node);
   for (auto n : nodes)
   {
     if (auto param = n->get_parameter())
@@ -290,50 +288,6 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
   }
 }
 
-void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
-
-  const auto children = node.children_copy();
-  list.reserve(list.size() + children.size());
-  for (const auto& child : children)
-  {
-    if (auto addr = child->get_parameter())
-    {
-      list.push_back(ossia::net::osc_parameter_string(*child));
-    }
-    list_all_child(*child,list);
-  }
-}
-
-static std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
-{
-  std::vector<ossia::net::node_base*> children
-    = node->children_copy();
-  std::vector<ossia::net::node_base*> list;
-
-  ossia::sort(children, [](auto n1, auto n2)
-    {
-      std::string s1 = n1->get_name();
-      std::string s2 = n2->get_name();
-
-      boost::algorithm::to_lower(s1);
-      boost::algorithm::to_lower(s2);
-
-      return s1 < s2;
-    });
-
-  ossia::sort(children, [](auto n1, auto n2)
-    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
-
-  for (auto it = children.begin(); it != children.end(); it++ )
-  {
-    list.push_back(*it);
-    auto nested_list = list_all_child(*it);
-    list.insert(list.end(), nested_list.begin(), nested_list.end());
-  }
-
-  return list;
-}
-
 void node_base::get_namespace(node_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
@@ -341,7 +295,7 @@ void node_base::get_namespace(node_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m.get_node();
-    list = list_all_child(n);
+    list = ossia::net::list_all_child(n);
 
     int pos = ossia::net::osc_parameter_string(*n).length();
     for (ossia::net::node_base* child : list)
@@ -369,7 +323,7 @@ void node_base::push_default_value(node_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m.get_node();
-    list = list_all_child(n);
+    list = ossia::net::list_all_child(n);
 
     for (ossia::net::node_base* child : list)
     {
@@ -390,7 +344,6 @@ void node_base::class_setup(t_class* c)
   class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
   class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
   class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
-
 }
 
 void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
