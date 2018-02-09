@@ -131,6 +131,7 @@ public:
   void set_tags();
   void set_priority();
   void set_hidden();
+  void set_recall_safe();
 
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
@@ -139,6 +140,7 @@ public:
   static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
   static void get_mess_cb(object_base* x, t_symbol* s);
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+  static void get_recall_safe(object_base*x, std::vector<t_matcher*> nodes);
 
 
   // default attributes
@@ -147,6 +149,7 @@ public:
   t_symbol* m_description{};
   long m_priority{};
   long m_hidden{};
+  long m_recall_safe{};
 
   long m_tags_size{};
   long m_description_size{};

@@ -252,18 +252,16 @@ void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
             {
               std::string name = it->name.GetString();
               auto n = ossia::net::find_node(*node, name);
-              if (n)
+              if (n && ossia::net::get_recall_safe(*n))
                 apply_json(it,n);
             }
           }
         }
         else
         {
-          std::cout << "preset: " << std::endl;
           auto preset = ossia::presets::from_string(json);
           for (auto& p : preset)
           {
-            std::cout << p.first << std::endl;
             if(auto n = ossia::net::find_node(*node, p.first))
             {
               if (ossia::net::get_recall_safe(*n))

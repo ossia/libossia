@@ -327,6 +327,15 @@ void object_base::set_description()
   }
 }
 
+void object_base::set_recall_safe()
+{
+  for (t_matcher* m : m_node_selection)
+  {
+    ossia::net::node_base* node = m->get_node();
+    ossia::net::set_recall_safe(*node, m_recall_safe);
+  }
+}
+
 void object_base::set_tags()
 {
   std::vector<std::string> tags;
@@ -363,11 +372,25 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
     get_tags(x, matchers);
   } else if ( attribute == ossia::net::text_hidden() ){
     get_hidden(x, matchers);
+  } else if ( attribute == ossia::net::text_recall_safe() ){
+    get_recall_safe(x, matchers);
   } else {
     object_error((t_object*)x, "no attribute %s", std::string(attribute).c_str());
   }
 }
 
+void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
+{
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    t_atom a;
+
+    A_SETLONG(&a, ossia::net::get_recall_safe(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("recall_safe"), 1, &a);
+  }
+}
 void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
@@ -458,7 +481,6 @@ void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
-
 void object_base::class_setup(t_class*c)
 {
   CLASS_ATTR_LONG(c, "priority", 0, object_base, m_priority);
@@ -473,6 +495,10 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_LONG( c, "hidden", 0, object_base, m_hidden);
   CLASS_ATTR_STYLE(c, "hidden", 0, "onoff");
   CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
+
+  CLASS_ATTR_LONG(c, "recall_safe", 0, object_base, m_recall_safe);
+  CLASS_ATTR_STYLE(c, "recall_safe", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "recall_safe", 0, "Recall safe");
 
   class_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
   class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_GIMME,   0);
@@ -508,6 +534,10 @@ void object_base::get_mess_cb(object_base* x, t_symbol* s){
     get_hidden(x,x->m_node_selection);
   else if (s == gensym("zombie"))
     get_zombie(x,x->m_node_selection);
+  else if (s == gensym("priority"))
+    get_priority(x,x->m_node_selection);
+  else if (s == gensym("recall_safe"))
+    get_recall_safe(x,x->m_node_selection);
   else
     object_post((t_object*)x,"nsso attribute %s", s->s_name);
 }
