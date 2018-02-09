@@ -19,128 +19,6 @@ node_base::node_base(t_eclass* x)
   : object_base{x}
 { }
 
-static ossia::presets::preset make_preset(ossia::net::node_base* node)
-{
-  ossia::presets::preset cue;
-  auto nodes = ossia::net::list_all_child(node);
-  for (auto n : nodes)
-  {
-    if (auto param = n->get_parameter())
-    {
-      if (param->get_value_type() != ossia::val_type::IMPULSE)
-      {
-        std::string key = n->get_name();
-        auto n1 = n->get_parent();
-        while ( n1 != node )
-        {
-          key = n1->get_name() + "/" + key;
-          n1 = n1->get_parent();
-        }
-        cue.push_back({key,param->value()});
-      }
-    }
-  }
-
-  return cue;
-}
-
-void make_json_preset(rapidjson::Document& d, ossia::net::node_base* node)
-{
-  rapidjson::Document subdoc(&d.GetAllocator());
-  subdoc.SetObject();
-
-  if(auto param = node->get_parameter())
-  {
-    if (param->get_value_type() != ossia::val_type::IMPULSE)
-    {
-      rapidjson::Value v = param->value().apply(ossia::oscquery::detail::value_to_json_value{d.GetAllocator()});
-      rapidjson::Value name(node->get_name(),d.GetAllocator());
-      d.AddMember(name, v, d.GetAllocator());
-    }
-  }
-
-  std::vector<ossia::net::node_base*> children
-      = node->children_copy();
-
-  if (children.empty())
-    return;
-
-  ossia::sort(children, [](auto n1, auto n2)
-    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
-
-  for (auto it = children.begin(); it != children.end(); it++ )
-  {
-    make_json_preset(subdoc, *it);
-  }
-
-  rapidjson::Value name(node->get_name(),d.GetAllocator());
-  d.AddMember(name, subdoc, d.GetAllocator());
-}
-
-// copy & paste from preset.cpp
-ossia::value json_to_ossia_value(const rapidjson::Value& value)
-{
-
-  ossia::value val;
-  enum rapidjson::Type tval = value.GetType();
-
-  switch (tval)
-  {
-    case rapidjson::kFalseType:
-      val = bool(false);
-      break;
-    case rapidjson::kTrueType:
-      val = bool(true);
-      break;
-    case rapidjson::kNumberType:
-      if (value.IsInt())
-      {
-        val = int32_t(value.GetInt());
-      }
-      else
-      {
-        val = float(value.GetDouble());
-      }
-      break;
-    case rapidjson::kStringType:
-      val = std::string(value.GetString());
-      break;
-    default:
-      break;
-  }
-
-  return val;
-}
-
-static void apply_json(rapidjson::Value::ConstMemberIterator object, ossia::net::node_base* node)
-{
-  if(object->value.IsObject())
-  {
-    for (auto it = object->value.MemberBegin();
-         it != object->value.MemberEnd();
-         ++it)
-    {
-      std::string name = it->name.GetString();
-      auto n = ossia::net::find_node(*node,it->name.GetString());
-      if (n && !ossia::net::get_recall_safe(*n))
-      {
-          apply_json(it, n);
-      }
-    }
-  }
-  else
-  {
-    if (node && !ossia::net::get_recall_safe(*node))
-    {
-      if (auto param = node->get_parameter())
-      {
-        param->push_value(json_to_ossia_value(object->value));
-        trig_output_value(node);
-      }
-    }
-  }
-}
-
 void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
 {
   ossia::net::node_base* node{};
@@ -196,28 +74,13 @@ void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
       try {
         if (make_kiss)
         {
-          auto preset = make_preset(node);
+          auto preset = ossia::presets::make_preset(*node);
           auto kiss = ossia::presets::to_string(preset);
           ossia::presets::write_file(kiss, filename);
         } else {
-          std::vector<ossia::net::node_base*> children
-              = node->children_copy();
 
-          ossia::sort(children, [](auto n1, auto n2)
-            { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
-
-          rapidjson::Document doc;
-          doc.SetObject();
-          for (auto it = children.begin(); it != children.end(); it++ )
-          {
-            make_json_preset(doc, *it);
-          }
-
-          rapidjson::StringBuffer buffer;
-          rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
-          doc.Accept(writer);
-
-          ossia::presets::write_file(buffer.GetString(), filename);
+          auto json = ossia::presets::make_json_preset(*node);
+          ossia::presets::write_file(json, filename);
         }
         SETFLOAT(status+1, 1);
 
@@ -238,40 +101,10 @@ void node_base::preset(node_base *x, t_symbol*s, int argc, t_atom* argv)
       try {
 
         auto json = ossia::presets::read_file(argv[0].a_w.w_symbol->s_name);
-        rapidjson::Document doc;
-        doc.Parse(json.c_str());
-        if (!doc.HasParseError())
-        {
-          if(doc.IsObject())
-          {
-            for (auto it = doc.MemberBegin();
-                 it != doc.MemberEnd();
-                 ++it)
-            {
-              std::string name = it->name.GetString();
-              auto n = ossia::net::find_node(*node, name);
-              if (n && ossia::net::get_recall_safe(*n))
-                apply_json(it,n);
-            }
-          }
-        }
-        else
-        {
-          auto preset = ossia::presets::from_string(json);
-          for (auto& p : preset)
-          {
-            if(auto n = ossia::net::find_node(*node, p.first))
-            {
-              if (ossia::net::get_recall_safe(*n))
-                continue;
 
-              if (auto param = n->get_parameter())
-              {
-                param->push_value(p.second);
-                trig_output_value(n);
-              }
-            }
-          }
+        if (!ossia::presets::apply_json(json, *node, trig_output_value))
+        {
+          ossia::presets::apply_preset(json, *node, trig_output_value);
         }
 
         SETFLOAT(status+1, 1);

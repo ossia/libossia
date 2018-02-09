@@ -58,6 +58,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eattribute();
   setup_ossia0x2eclient();
   setup_ossia0x2edevice();
+  setup_ossia0x2eexplorer();
   setup_ossia0x2elogger();
   setup_ossia0x2emodel();
   setup_ossia0x2eparam();
@@ -91,6 +92,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 t_eclass* ossia_pd::attribute_class;
 t_eclass* ossia_pd::client_class;
 t_eclass* ossia_pd::device_class;
+t_eclass* ossia_pd::explorer_class;
 t_eclass* ossia_pd::logger_class;
 t_eclass* ossia_pd::model_class;
 t_eclass* ossia_pd::param_class;

@@ -24,6 +24,7 @@ extern "C" void setup_ossia0x2eassert(void);
 extern "C" void setup_ossia0x2eattribute(void);
 extern "C" void setup_ossia0x2eclient(void);
 extern "C" void setup_ossia0x2edevice(void);
+extern "C" void setup_ossia0x2eexplorer(void);
 extern "C" void setup_ossia0x2elogger(void);
 extern "C" void setup_ossia0x2emodel(void);
 extern "C" void setup_ossia0x2eparam(void);
@@ -42,6 +43,7 @@ public:
     static t_eclass* attribute_class;
     static t_eclass* client_class;
     static t_eclass* device_class;
+    static t_eclass* explorer_class;
     static t_eclass* logger_class;
     static t_eclass* model_class;
     static t_eclass* param_class;

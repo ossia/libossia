@@ -64,17 +64,58 @@ write_file(ossia::string_view string, ossia::string_view filename);
 OSSIA_EXPORT const std::string
 read_file(const std::string& filename);
 
+/**
+ * @brief make_json_preset create a JSON preset
+ * @details The return JSON contains all node's child parameters
+ * with associated values, sorted by priority
+ * @param node
+ * @return JSON string
+ */
+OSSIA_EXPORT const std::string
+make_json_preset(const ossia::net::node_base& node);
+
+typedef void (*func_t)(ossia::net::node_base* n);
+
+/**
+ * @brief apply_json : apply a json preset to a node
+ * @param json : preset string
+ * @param node : root node to apply preset on
+ * @param fn : function to call just after push a value
+ * @return true if there is no parse error
+ */
+OSSIA_EXPORT bool
+apply_json(const std::string& json,
+           ossia::net::node_base& node,
+           func_t fn = nullptr);
+
+/**
+ * @brief apply_preset : apply simple preset to a node
+ * @details KISS = keep it simple and stupid,
+ * one parameter address followed by its value on each line
+ * @param kiss : preset string
+ * @param node : root node
+ * @param fn : function to call just after push a value
+ */
+OSSIA_EXPORT void apply_preset(
+    const std::string& kiss,
+    ossia::net::node_base& node,
+    func_t fn = nullptr);
+
+// DEPRECATED keep it for backward compatibility
 OSSIA_EXPORT void apply_preset(
     ossia::net::node_base&, const presets::preset&,
     keep_arch_type t = keep_arch_on,
     presets::instance_functions = {},
     bool allow_nonterminal = false);
 
-OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&);
+OSSIA_EXPORT presets::preset
+make_preset(ossia::net::node_base&);
 
 OSSIA_EXPORT ossia::net::node_base*
 get_node(ossia::net::node_base&, const std::string&);
-OSSIA_EXPORT std::string to_string(const ossia::net::device_base& ossiadev);
+
+OSSIA_EXPORT std::string
+to_string(const ossia::net::device_base& ossiadev);
 
 } // namespace presets
 } // namespace ossia
