@@ -78,6 +78,7 @@ bool model::do_registration(const std::vector<t_matcher>& matchers)
     set_description();
     set_tags();
     set_hidden();
+    set_recall_safe();
   }
 
   return true;
