@@ -1,16 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <ossia-max/src/client.hpp>
-#include <ossia-max/src/device.hpp>
-#include <ossia-max/src/logger.hpp>
-#include <ossia-max/src/model.hpp>
+
 #include <ossia-max/src/ossia-max.hpp>
-#include <ossia-max/src/parameter.hpp>
-#include <ossia-max/src/remote.hpp>
-#include <ossia-max/src/view.hpp>
 #include <ossia-max/src/utils.hpp>
-#include <ossia-max/src/object_base.hpp>
 
 #include <commonsyms.h>
 #pragma mark -
@@ -26,6 +19,8 @@ ossia_max::ossia_max():
     m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
 {
   common_symbols_init();
+
+  m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 
   parameters.reserve(2048);
   remotes.reserve(1024);

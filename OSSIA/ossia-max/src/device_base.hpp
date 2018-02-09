@@ -11,7 +11,7 @@ class device_base : public node_base
 public:
   void on_parameter_created_callback(const ossia::net::parameter_base& param);
   void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
-  void on_attribute_modified_callback(const ossia::net::node_base& node,
+  static void on_attribute_modified_callback(const ossia::net::node_base& node,
                                       ossia::string_view attribute);
 
   void connect_slots();

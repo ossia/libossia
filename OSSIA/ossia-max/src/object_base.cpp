@@ -352,7 +352,7 @@ void object_base::set_hidden()
   for (auto m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
-    ossia::net::set_hidden(*node, m_hidden);
+    ossia::net::set_hidden(*node, m_hidden > 0);
   }
 }
 
@@ -412,6 +412,7 @@ void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
     A_SETLONG(&a, ossia::net::get_recall_safe(*m->get_node()));
     outlet_anything(x->m_dumpout, gensym("recall_safe"), 1, &a);
   }
+  object_attr_touch((t_object *)x, gensym("recall_safe"));
 }
 
 void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
@@ -437,6 +438,7 @@ void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
                       x->m_tags_size, asym);
     }
   }
+  object_attr_touch((t_object *)x, gensym("tags"));
 }
 
 void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
@@ -460,6 +462,7 @@ void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
       outlet_anything(x->m_dumpout, gensym("description"), 0, nullptr);
     }
   }
+  object_attr_touch((t_object *)x, gensym("description"));
 }
 
 void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
@@ -478,6 +481,7 @@ void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
     A_SETFLOAT(&a, x->m_priority);
     outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
   }
+  object_attr_touch((t_object *)x, gensym("priority"));
 }
 
 void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
@@ -490,6 +494,7 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
     A_SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
     outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
   }
+  object_attr_touch((t_object *)x, gensym("hidden"));
 }
 
 void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
