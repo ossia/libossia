@@ -30,7 +30,7 @@ else()
         
         file(DOWNLOAD
           https://dl.bintray.com/boostorg/release/1.66.0/source/${BOOST_VERSION}.zip
-          ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
+          ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip)
 
         execute_process(
           COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.zip
