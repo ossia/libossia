@@ -31,7 +31,7 @@ class qml_sync : public QQuickItem
   public Q_SLOTS:
     void setExpr(QQmlScriptString expr);
 
-  signals:
+  Q_SIGNALS:
     void exprChanged(QQmlScriptString expr);
 
   private:

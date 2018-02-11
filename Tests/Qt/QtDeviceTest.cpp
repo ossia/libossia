@@ -45,7 +45,7 @@ void setVec3(QVector3D vec3)
     return;
 
   m_vec3 = vec3;
-  emit vec3Changed(vec3);
+  vec3Changed(vec3);
 }
 void setStr(QString str)
 {
@@ -53,7 +53,7 @@ void setStr(QString str)
     return;
 
   m_str = str;
-  emit strChanged(str);
+  strChanged(str);
 }
 
 void setTutu(int tutu)
@@ -62,10 +62,10 @@ void setTutu(int tutu)
     return;
 
   m_tutu = tutu;
-  emit tutuChanged(tutu);
+  tutuChanged(tutu);
 }
 
-signals:
+Q_SIGNALS:
 void vec3Changed(QVector3D vec3);
 void strChanged(QString str);
 void tutuChanged(int tutu);

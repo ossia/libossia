@@ -68,7 +68,7 @@ struct node_sorter
 struct init_node_visitor
 {
     inlet& in;
-    graph_edge& edge;
+    const graph_edge& edge;
     execution_state& e;
 
 
@@ -152,6 +152,28 @@ struct init_node_visitor
     {
       return true;
     }
+};
+struct init_must_copy_visitor
+{
+    const graph_edge& edge;
+
+    bool operator()(const immediate_glutton_connection&) const
+    { return !edge.out_node->enabled(); }
+
+    bool operator()(const immediate_strict_connection&) const
+    { return false; }
+
+    bool operator()(const delayed_glutton_connection&) const
+    { return false; }
+
+    bool operator()(const delayed_strict_connection&) const
+    { return false; }
+
+    bool operator()(const dependency_connection&) const
+    { return true; }
+
+    bool operator()() const
+    { return true; }
 };
 
 struct env_writer

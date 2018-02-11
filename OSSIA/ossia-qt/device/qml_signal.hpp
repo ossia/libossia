@@ -22,7 +22,7 @@ public:
   void resetNode() override;
   void setDevice(QObject* device) override;
 
-signals:
+Q_SIGNALS:
   void triggered();
   void trigger();
 

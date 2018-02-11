@@ -101,7 +101,7 @@ void qml_property_reader::on_node_deleted(const net::node_base&)
 void qml_property_reader::clearNode()
 {
   m_node.clear();
-  emit nodeChanged(m_node);
+  nodeChanged(m_node);
   m_param = nullptr;
   m_ossia_node = nullptr;
 
@@ -187,7 +187,7 @@ void qml_property_writer::on_node_deleted(const net::node_base&)
 void qml_property_writer::clearNode()
 {
   m_node.clear();
-  emit nodeChanged(m_node);
+  nodeChanged(m_node);
   if (m_param)
     m_param->remove_callback(m_cb);
   m_cb = {};
@@ -277,7 +277,7 @@ void qml_binding::setOn(QQmlScriptString on)
     return;
 
   m_on = on;
-  emit onChanged(on);
+  onChanged(on);
 }
 
 void qml_binding::on_node_deleted(const net::node_base&)
@@ -288,7 +288,7 @@ void qml_binding::on_node_deleted(const net::node_base&)
 void qml_binding::clearNode()
 {
   m_node.clear();
-  emit nodeChanged(m_node);
+  nodeChanged(m_node);
   m_param = nullptr;
   m_ossia_node = nullptr;
   m_expr.reset();
@@ -363,7 +363,7 @@ void qml_callback::on_node_deleted(const net::node_base&)
 void qml_callback::clearNode()
 {
   m_node.clear();
-  emit nodeChanged(m_node);
+  nodeChanged(m_node);
   if (m_param)
     m_param->remove_callback(m_cb);
   m_cb = {};
@@ -387,7 +387,7 @@ void qml_callback::setValue(QVariant value)
     return;
 
   m_value = value;
-  emit valueChanged(value);
+  valueChanged(value);
 }
 }
 }

@@ -597,7 +597,7 @@ void qml_device::setReadPreset(bool readPreset)
     return;
 
   m_readPreset = readPreset;
-  emit readPresetChanged(readPreset);
+  readPresetChanged(readPreset);
 }
 
 qml_device::~qml_device()
@@ -784,7 +784,7 @@ void qml_device::setName(QString name)
   if (m_device)
     m_device->set_name(name.toUtf8().toStdString());
 
-  emit nameChanged(name);
+  nameChanged(name);
 }
 
 void qml_device::cleanup()

@@ -63,34 +63,34 @@ void qml_loop::setInterval(qml_interval* interval)
     return;
 
   m_interval = interval;
-  emit intervalChanged(m_interval);
+  intervalChanged(m_interval);
 }
 
 void qml_loop::setStartCond(QQmlScriptString s) {
   if(s != m_startCond) {
     m_startCond = s;
-    emit startCondChanged(s);
+    startCondChanged(s);
   }
 }
 
 void qml_loop::setEndCond(QQmlScriptString s) {
   if(s != m_endCond) {
     m_endCond = s;
-    emit endCondChanged(s);
+    endCondChanged(s);
   }
 }
 
 void qml_loop::setStartTrig(QQmlScriptString s) {
   if(s != m_startTrig) {
     m_startTrig = s;
-    emit startTrigChanged(s);
+    startTrigChanged(s);
   }
 }
 
 void qml_loop::setEndTrig(QQmlScriptString s) {
   if(s != m_endTrig) {
     m_endTrig = s;
-    emit endTrigChanged(s);
+    endTrigChanged(s);
   }
 }
 

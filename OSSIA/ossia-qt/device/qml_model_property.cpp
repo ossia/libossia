@@ -39,7 +39,7 @@ void qml_model_property::setCount(int count)
   m_count = count;
   endResetModel();
 
-  emit countChanged(count);
+  countChanged(count);
 }
 
 void qml_model_property::setDevice(QObject* device)
@@ -66,7 +66,7 @@ void qml_model_property::setDevice(QObject* device)
           &qml_model_property::on_device_deleted);
     }
 
-    emit deviceChanged(device);
+    deviceChanged(device);
   }
 }
 
@@ -82,7 +82,7 @@ void qml_model_property::setNode(QString node)
     return;
 
   m_node = node;
-  emit nodeChanged(node);
+  nodeChanged(node);
 }
 
 void qml_model_property::reloadParentNode()
@@ -181,7 +181,7 @@ void qml_model_property::setParentNode(QObject* parentNode)
     m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
   }
 
-  emit parentNodeChanged(m_parentNode);
+  parentNodeChanged(m_parentNode);
 }
 
 void qml_model_property::on_node_deleted(const net::node_base&)

@@ -81,7 +81,7 @@ void qml_logger::setAppName(QString appAuthor)
     return;
 
   m_appName = appAuthor;
-  emit appNameChanged(appAuthor);
+  appNameChanged(appAuthor);
 }
 
 void qml_logger::setAppVersion(QString appVersion)
@@ -90,7 +90,7 @@ void qml_logger::setAppVersion(QString appVersion)
     return;
 
   m_appVersion = appVersion;
-  emit appVersionChanged(appVersion);
+  appVersionChanged(appVersion);
 }
 
 void qml_logger::setAppCreator(QString appCreator)
@@ -99,7 +99,7 @@ void qml_logger::setAppCreator(QString appCreator)
     return;
 
   m_appCreator = appCreator;
-  emit appCreatorChanged(appCreator);
+  appCreatorChanged(appCreator);
 }
 
 void qml_logger::disconnectLogger()
@@ -173,7 +173,7 @@ void qml_logger::setLoggerHost(QString loggerHost)
     return;
 
   m_loggerHost = loggerHost;
-  emit loggerHostChanged(m_loggerHost);
+  loggerHostChanged(m_loggerHost);
 }
 
 static void LogQtToOssia(
@@ -189,7 +189,7 @@ static void LogQtToOssia(
   {
     if(msg.contains(filter, Qt::CaseInsensitive))
     {
-      emit logger.filteredLog(type,filename,context.line,msg);
+      logger.filteredLog(type,filename,context.line,msg);
       return;
     }
   }
@@ -225,7 +225,7 @@ void qml_logger::setLogQtMessages(bool logQtMessages)
     return;
 
   m_logQtMessages = logQtMessages;
-  emit logQtMessagesChanged(m_logQtMessages);
+  logQtMessagesChanged(m_logQtMessages);
 
   if (m_logQtMessages)
   {
@@ -243,7 +243,7 @@ void qml_logger::setLogFilter(QStringList logFilter)
 
   m_logFilter = std::move(logFilter);
 
-  emit logFilterChanged(m_logFilter);
+  logFilterChanged(m_logFilter);
 }
 void qml_logger::setHeartbeat(quint32 heartbeat)
 {
@@ -251,7 +251,7 @@ void qml_logger::setHeartbeat(quint32 heartbeat)
     return;
 
   m_heartbeatDur = heartbeat;
-  emit heartbeatChanged(m_heartbeatDur);
+  heartbeatChanged(m_heartbeatDur);
   connectLogger();
 }
 
@@ -261,7 +261,7 @@ void qml_logger::setLogLevel(qml_logger::log_level l)
     return;
 
   m_logLevel = l;
-  emit logLevelChanged(l);
+  logLevelChanged(l);
   if (m_logger)
     m_logger->set_level((spdlog::level::level_enum)l);
 }

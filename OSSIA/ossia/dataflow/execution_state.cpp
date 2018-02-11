@@ -1,5 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include "execution_state.hpp"
+
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
@@ -319,6 +321,41 @@ void execution_state::commit_merged()
 
 void execution_state::commit()
 {
+  state_flatten_visitor<ossia::flat_vec_state, false, true> vis{m_commitOrderedState};
+  for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
+  {
+    switch(it->second.size())
+    {
+      case 0:
+        continue;
+      case 1:
+      {
+        to_state_element(*it->first, it->second[0].first).launch();
+        break;
+      }
+      default:
+      {
+        m_commitOrderedState.clear();
+        m_commitOrderedState.reserve(it->second.size());
+        for(auto& val : it->second)
+        {
+          //std::cerr << "mergin : " <<  val.first.value << std::endl;
+          vis(to_state_element(*it->first, std::move(val.first)));
+        }
+
+        m_commitOrderedState.launch();
+      }
+    }
+
+    it->second.clear();
+  }
+
+  commit_common();
+}
+
+void execution_state::commit_priorized()
+{
+  // Here we use the priority of each node =>
   state_flatten_visitor<ossia::flat_vec_state, false, true> vis{m_commitOrderedState};
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
   {

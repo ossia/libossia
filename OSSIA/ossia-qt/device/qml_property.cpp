@@ -116,7 +116,7 @@ void qml_property::resetNode()
           .connect<qml_property_base, &qml_property_base::on_node_deleted>(
               this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
-      emit nodeChanged(m_node);
+      nodeChanged(m_node);
       m_param = m_ossia_node->get_parameter();
 
       setPath(QString::fromStdString(
@@ -216,7 +216,7 @@ void qml_property::setValueType(qml_val_type::val_type valueType)
   m_valueType = valueType;
   if (m_param)
     m_param->set_value_type(static_cast<ossia::val_type>(valueType));
-  emit valueTypeChanged(valueType);
+  valueTypeChanged(valueType);
 }
 
 void qml_property::setAccess(qml_access_mode::access_mode access)
@@ -227,7 +227,7 @@ void qml_property::setAccess(qml_access_mode::access_mode access)
   m_access = access;
   if (m_param)
     m_param->set_access(static_cast<ossia::access_mode>(access));
-  emit accessChanged(access);
+  accessChanged(access);
 }
 
 void qml_property::setBounding(qml_bounding_mode::bounding_mode bounding)
@@ -238,7 +238,7 @@ void qml_property::setBounding(qml_bounding_mode::bounding_mode bounding)
   m_bounding = bounding;
   if (m_param)
     m_param->set_bounding(static_cast<ossia::bounding_mode>(bounding));
-  emit boundingChanged(bounding);
+  boundingChanged(bounding);
 }
 
 void qml_property::setFilterRepetitions(
@@ -251,7 +251,7 @@ void qml_property::setFilterRepetitions(
   if (m_param)
     m_param->set_repetition_filter(
         static_cast<ossia::repetition_filter>(filterRepetitions));
-  emit filterRepetitionsChanged(filterRepetitions);
+  filterRepetitionsChanged(filterRepetitions);
 }
 
 void qml_property::setMin(QVariant min)
@@ -261,7 +261,7 @@ void qml_property::setMin(QVariant min)
 
   m_min = min;
   updateDomain();
-  emit minChanged(min);
+  minChanged(min);
 }
 
 void qml_property::setMax(QVariant max)
@@ -271,7 +271,7 @@ void qml_property::setMax(QVariant max)
 
   m_max = max;
   updateDomain();
-  emit maxChanged(max);
+  maxChanged(max);
 }
 
 void qml_property::setValues(QVariantList values)
@@ -281,7 +281,7 @@ void qml_property::setValues(QVariantList values)
 
   m_values = values;
   updateDomain();
-  emit valuesChanged(values);
+  valuesChanged(values);
 }
 
 void qml_property::setUnit(QString unit)
@@ -292,7 +292,7 @@ void qml_property::setUnit(QString unit)
   m_unit = unit;
   if (m_param)
     m_param->set_unit(ossia::parse_pretty_unit(unit.toStdString()));
-  emit unitChanged(unit);
+  unitChanged(unit);
 }
 
 void qml_property::node_destroyed()

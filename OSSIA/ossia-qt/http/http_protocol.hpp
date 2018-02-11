@@ -50,7 +50,7 @@ public:
   {
     return js;
   }
-signals:
+Q_SIGNALS:
   void sig_push(const http_parameter*);
 
 private Q_SLOTS:

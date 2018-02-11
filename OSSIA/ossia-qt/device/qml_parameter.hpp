@@ -46,7 +46,7 @@ public:
     return m_value;
   }
 
-signals:
+Q_SIGNALS:
   void setValue_sig(const ossia::value&);
 
   void valueTypeChanged(qml_val_type::val_type valueType);

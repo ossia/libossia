@@ -172,7 +172,7 @@ void qml_node_base::setNode(QString node)
   m_node = node;
   m_userRequestedNode = node;
   resetNode();
-  emit nodeChanged(node);
+  nodeChanged(node);
 }
 
 void qml_node_base::setDevice(QObject* device)
@@ -182,7 +182,7 @@ void qml_node_base::setDevice(QObject* device)
 
   m_device = qobject_cast<qml_device*>(device);
   resetNode();
-  emit deviceChanged(m_device);
+  deviceChanged(m_device);
 }
 
 void qml_node_base::setParentNode(qml_node_base* parentNode)
@@ -195,7 +195,7 @@ void qml_node_base::setParentNode(qml_node_base* parentNode)
     m_device = qobject_cast<qml_device*>(m_parentNode->device());
   resetNode();
 
-  emit parentNodeChanged(parentNode);
+  parentNodeChanged(parentNode);
 }
 
 void qml_node_base::setPriority(qreal priority)
@@ -208,7 +208,7 @@ void qml_node_base::setPriority(qreal priority)
   if (m_ossia_node)
     ossia::net::set_priority(*m_ossia_node, m_priority);
 
-  emit priorityChanged(priority);
+  priorityChanged(priority);
 }
 
 void qml_node_base::setDescription(QString description)
@@ -221,7 +221,7 @@ void qml_node_base::setDescription(QString description)
   if (m_ossia_node)
     ossia::net::set_description(*m_ossia_node, m_description.toStdString());
 
-  emit descriptionChanged(description);
+  descriptionChanged(description);
 }
 
 void qml_node_base::setTags(QStringList tags)
@@ -233,7 +233,7 @@ void qml_node_base::setTags(QStringList tags)
   if (m_ossia_node)
     ossia::net::set_tags(*m_ossia_node, toStringVector(m_tags));
 
-  emit tagsChanged(tags);
+  tagsChanged(tags);
 }
 
 void qml_node_base::setRefreshRate(qint32 refreshRate)
@@ -246,7 +246,7 @@ void qml_node_base::setRefreshRate(qint32 refreshRate)
   if (m_ossia_node)
     ossia::net::set_refresh_rate(*m_ossia_node, m_refreshRate);
 
-  emit refreshRateChanged(refreshRate);
+  refreshRateChanged(refreshRate);
 }
 
 void qml_node_base::setStepSize(qreal stepSize)
@@ -259,7 +259,7 @@ void qml_node_base::setStepSize(qreal stepSize)
   if (m_ossia_node)
     ossia::net::set_value_step_size(*m_ossia_node, stepSize);
 
-  emit stepSizeChanged(stepSize);
+  stepSizeChanged(stepSize);
 }
 
 void qml_node_base::setDefaultValue(QVariant defaultValue)
@@ -273,7 +273,7 @@ void qml_node_base::setDefaultValue(QVariant defaultValue)
     ossia::net::set_default_value(
         *m_ossia_node, qt_to_ossia{}(m_defaultValue));
 
-  emit defaultValueChanged(defaultValue);
+  defaultValueChanged(defaultValue);
 }
 
 void qml_node_base::setCritical(bool critical)
@@ -286,7 +286,7 @@ void qml_node_base::setCritical(bool critical)
   if (m_ossia_node)
     ossia::net::set_critical(*m_ossia_node, m_critical);
 
-  emit criticalChanged(critical);
+  criticalChanged(critical);
 }
 
 void qml_node_base::setHidden(bool hidden)
@@ -299,7 +299,7 @@ void qml_node_base::setHidden(bool hidden)
   if (m_ossia_node)
     ossia::net::set_hidden(*m_ossia_node, m_hidden);
 
-  emit hiddenChanged(m_hidden);
+  hiddenChanged(m_hidden);
 }
 
 void qml_node_base::setDisabled(bool disabled)
@@ -312,7 +312,7 @@ void qml_node_base::setDisabled(bool disabled)
   if (m_ossia_node)
     ossia::net::set_disabled(*m_ossia_node, m_disabled);
 
-  emit disabledChanged(m_disabled);
+  disabledChanged(m_disabled);
 }
 
 void qml_node_base::setMuted(bool muted)
@@ -325,7 +325,7 @@ void qml_node_base::setMuted(bool muted)
   if (m_ossia_node)
     ossia::net::set_muted(*m_ossia_node, m_muted);
 
-  emit mutedChanged(m_muted);
+  mutedChanged(m_muted);
 }
 
 void qml_node_base::setExtendedType(QString extendedType)
@@ -338,7 +338,7 @@ void qml_node_base::setExtendedType(QString extendedType)
   if (m_ossia_node)
     ossia::net::set_extended_type(*m_ossia_node, m_extendedType.toStdString());
 
-  emit extendedTypeChanged(m_extendedType);
+  extendedTypeChanged(m_extendedType);
 }
 
 void qml_node_base::applyNodeAttributes()
@@ -422,7 +422,7 @@ void qml_node_base::setPath(QString path)
 
   m_path = path;
 
-  emit pathChanged(path);
+  pathChanged(path);
 }
 
 void qml_property_base::on_node_deleted(const net::node_base& n)
@@ -453,7 +453,7 @@ void qml_property_base::clearNode(bool reading)
         par->remove_child(*node);
     }
   }
-  emit nodeChanged(m_node);
+  nodeChanged(m_node);
 }
 }
 }

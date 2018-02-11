@@ -443,7 +443,7 @@ private Q_SLOTS:
     auto e1 = boost::add_edge(n1, n2, g.impl());
     auto e2 = boost::add_edge(n2, n3, g.impl());
 
-    QVERIFY(g.find_path(n1, n3, g.impl()));
+    QVERIFY(g.update_fun.find_path(n1, n3, g.impl()));
   }
   void test_bfs_addr()
   {
@@ -460,7 +460,7 @@ private Q_SLOTS:
     g.add_node(n2);
     g.add_node(n3);
 
-    g.update_graph_bfs(std::vector<ossia::net::device_base*>{&test.device});
+    g.update_fun(g, std::vector<ossia::net::device_base*>{&test.device});
   }
   void test_tcl_addr()
   {
@@ -477,7 +477,7 @@ private Q_SLOTS:
     g.add_node(n2);
     g.add_node(n3);
 
-    g.update_graph_tclosure(std::vector<ossia::net::device_base*>{&test.device});
+    g.update_fun(g, std::vector<ossia::net::device_base*>{&test.device});
   }
 
   void test_mock()

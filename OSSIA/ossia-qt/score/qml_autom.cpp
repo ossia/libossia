@@ -78,7 +78,7 @@ void qml_autom::setup()
     auto target = m_target.value<qt::qml_node_base*>();
     targetNode = target->ossiaNode();
 
-    emit targetChanged(QVariant::fromValue(target));
+    targetChanged(QVariant::fromValue(target));
   }
   else if(m_target.canConvert<QString>())
   {
@@ -175,7 +175,7 @@ void qml_autom::setTarget(QVariant var)
   if(m_target != var)
   {
     m_target = var;
-    emit targetChanged(var);
+    targetChanged(var);
   }
 }
 
@@ -185,7 +185,7 @@ void qml_autom::setXMin(double xMin)
     return;
 
   m_xMin = xMin;
-  emit xMinChanged(m_xMin);
+  xMinChanged(m_xMin);
 }
 
 void qml_autom::setXMax(double xMax)
@@ -194,7 +194,7 @@ void qml_autom::setXMax(double xMax)
     return;
 
   m_xMax = xMax;
-  emit xMaxChanged(m_xMax);
+  xMaxChanged(m_xMax);
 }
 
 void qml_autom::setYMin(double yMin)
@@ -203,7 +203,7 @@ void qml_autom::setYMin(double yMin)
     return;
 
   m_yMin = yMin;
-  emit yMinChanged(m_yMin);
+  yMinChanged(m_yMin);
 }
 
 void qml_autom::setYMax(double yMax)
@@ -212,7 +212,7 @@ void qml_autom::setYMax(double yMax)
     return;
 
   m_yMax = yMax;
-  emit yMaxChanged(m_yMax);
+  yMaxChanged(m_yMax);
 }
 
 void qml_autom::reset_impl()

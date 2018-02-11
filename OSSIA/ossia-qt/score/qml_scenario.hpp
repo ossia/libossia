@@ -32,7 +32,7 @@ class qml_scenario : public qml_process
   public Q_SLOTS:
     void setStartSync(qml_sync* s);
 
-  signals:
+  Q_SIGNALS:
     void startSyncChanged(qml_sync*);
 
 private:

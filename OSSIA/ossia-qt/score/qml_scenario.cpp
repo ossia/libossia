@@ -129,7 +129,7 @@ void qml_scenario::setStartSync(qml_sync* s)
     m_startSync = s;
     m_startSync->setParent(this);
     m_startSync->setParentItem(this);
-    emit startSyncChanged(s);
+    startSyncChanged(s);
   }
 }
 

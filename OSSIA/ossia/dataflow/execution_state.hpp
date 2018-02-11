@@ -47,6 +47,7 @@ struct OSSIA_EXPORT execution_state
     void clear_devices();
     void reset();
     void commit();
+    void commit_priorized();
     void commit_merged();
     void commit_ordered();
     void commit_common();

@@ -40,11 +40,11 @@ class qml_breakpoint : public QQuickItem
 
     QEasingCurve::Type type() const { return m_type; }
 
-  signals:
+  Q_SIGNALS:
     void typeChanged(QEasingCurve::Type);
 
   public Q_SLOTS:
-    void setType(QEasingCurve::Type t) { if(m_type != t) { m_type = t; emit typeChanged(t); } }
+    void setType(QEasingCurve::Type t) { if(m_type != t) { m_type = t; typeChanged(t); } }
 
   private:
     QEasingCurve::Type m_type{QEasingCurve::Linear};
@@ -77,7 +77,7 @@ class qml_autom : public qml_process
     void setYMin(double yMin);
     void setYMax(double yMax);
 
-  signals:
+  Q_SIGNALS:
     void targetChanged(QVariant target);
     void xMinChanged(double xMin);
     void xMaxChanged(double xMax);

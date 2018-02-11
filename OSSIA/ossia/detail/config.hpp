@@ -86,3 +86,7 @@ using void_t = void;
 #if !defined(BOOST_DATE_TIME_NO_LIB)
 #define BOOST_DATE_TIME_NO_LIB
 #endif
+
+#if !defined(QT_NO_KEYWORDS)
+#define QT_NO_KEYWORDS
+#endif

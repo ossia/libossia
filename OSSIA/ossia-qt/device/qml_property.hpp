@@ -43,7 +43,7 @@ public:
   QVariantList values() const;
   QString unit() const;
 
-signals:
+Q_SIGNALS:
   void setValue_sig(const ossia::value&);
 
   void valueTypeChanged(qml_val_type::val_type valueType);

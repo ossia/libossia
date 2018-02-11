@@ -81,7 +81,7 @@ public Q_SLOTS:
   void setDisabled(bool disabled);
   void setMuted(bool muted);
 
-signals:
+Q_SIGNALS:
   void nodeChanged(QString node);
   void deviceChanged(qml_device* device);
   void pathChanged(QString path);

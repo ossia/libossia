@@ -36,7 +36,7 @@ public:
 
   void updateCount();
   void reloadParentNode();
-signals:
+Q_SIGNALS:
   void setValue_sig(const value&);
   void countChanged(int count);
   void nodeChanged(QString node);
