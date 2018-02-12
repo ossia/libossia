@@ -58,6 +58,8 @@ set(PROJECT_SRCS
   src/device.hpp
   src/device_base.cpp
   src/device_base.hpp
+  src/explorer.cpp
+  src/explorer.hpp
   src/logger.cpp
   src/logger.hpp
   src/model.cpp
