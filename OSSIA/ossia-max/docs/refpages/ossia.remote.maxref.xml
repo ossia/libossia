@@ -227,12 +227,12 @@
 			</description>
 		</attribute>  
 
-		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+		<attribute name="invisible" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Hide parameter node in remote client
 			</digest>
 			<description>
-				The <at>hidden</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+				The <at>invisible</at> attribute allows a remote client to hide this parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
 			</description>
 		</attribute>
 		

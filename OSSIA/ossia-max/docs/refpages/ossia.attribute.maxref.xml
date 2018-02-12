@@ -79,7 +79,7 @@
 					<li>default</li>
 					<li>description</li>
 					<li>enable</li>
-					<li>hidden</li>
+					<li>invisible</li>
 					<li>max</li>
 					<li>min</li>
 					<li>mode</li>
@@ -168,12 +168,12 @@
 			</description>
 		</attribute>  
 
-		<attribute name="hidden" get="1" set="1" type="symbol" size="1">
+		<attribute name="invisible" get="1" set="1" type="symbol" size="1">
 			<digest>
 				Hide bound parameter in remote client
 			</digest>
 			<description>
-				The <at>hidden</at> attribute allows a remote client to hide the bound parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
+				The <at>invisible</at> attribute allows a remote client to hide the bound parameter - this can be useful e.g. for "internal" or setup parameters that we don't want to give access to.
 			</description>
 		</attribute>
 		

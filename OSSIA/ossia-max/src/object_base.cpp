@@ -352,7 +352,7 @@ void object_base::set_hidden()
   for (auto m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
-    ossia::net::set_hidden(*node, m_hidden > 0);
+    ossia::net::set_hidden(*node, m_invisible > 0);
   }
 }
 
@@ -387,7 +387,7 @@ t_max_err object_base::notify(object_base *x, t_symbol *s,
   if (!x->m_lock && msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
-    if ( attrname == gensym("hidden") )
+    if ( attrname == gensym("invisible") )
       x->set_hidden();
     else if ( attrname == gensym("priority") )
       x->set_priority();
@@ -492,9 +492,9 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
 
     t_atom a;
     A_SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
-    outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
+    outlet_anything(x->m_dumpout, gensym("invisible"), 1, &a);
   }
-  lock_and_touch(x, gensym("hidden"));
+  lock_and_touch(x, gensym("invisible"));
 }
 
 void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
@@ -520,9 +520,9 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_MAX_MAX_ATTR_SIZE);
   CLASS_ATTR_LABEL(c, "tags", 0, "Tags");  
 
-  CLASS_ATTR_LONG( c, "hidden", 0, object_base, m_hidden);
-  CLASS_ATTR_STYLE(c, "hidden", 0, "onoff");
-  CLASS_ATTR_LABEL(c, "hidden", 0, "Hidden");  
+  CLASS_ATTR_LONG( c, "invisible", 0, object_base, m_invisible);
+  CLASS_ATTR_STYLE(c, "invisible", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "invisible", 0, "Invisible");  
 
   CLASS_ATTR_LONG(c, "recall_safe", 0, object_base, m_recall_safe);
   CLASS_ATTR_STYLE(c, "recall_safe", 0, "onoff");
@@ -558,7 +558,7 @@ void object_base::get_mess_cb(object_base* x, t_symbol* s){
     get_tags(x,x->m_node_selection);
   else if (s == gensym("description"))
     get_description(x,x->m_node_selection);
-  else if (s == gensym("hidden"))
+  else if (s == gensym("invisible"))
     get_hidden(x,x->m_node_selection);
   else if (s == gensym("zombie"))
     get_zombie(x,x->m_node_selection);
