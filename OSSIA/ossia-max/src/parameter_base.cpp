@@ -1077,10 +1077,10 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_STYLE(c, "enable", 0, "onoff");
   CLASS_ATTR_LABEL(c, "enable", 0, "Enable Parameter");
 
-  CLASS_ATTR_LONG(c, "hidden", 0, parameter_base, m_hidden);
+  CLASS_ATTR_LONG(c, "invisible", 0, parameter_base, m_invisible);
   CLASS_ATTR_STYLE(
-        c, "hidden", 0, "onoff");
-  CLASS_ATTR_LABEL(c, "hidden", 0, "Hide Parameter");
+        c, "invisible", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "invisible", 0, "Hide Parameter");
 
 
 }

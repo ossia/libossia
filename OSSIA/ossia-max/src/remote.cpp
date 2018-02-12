@@ -163,7 +163,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       x->set_unit();
     else if ( attrname == gensym("rate") )
       x->set_rate();
-    else if ( attrname == gensym("hidden") )
+    else if ( attrname == gensym("invisible") )
       x->set_hidden();
     else if ( attrname == gensym("priority") )
       x->set_priority();

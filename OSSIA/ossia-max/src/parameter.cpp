@@ -232,7 +232,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 
       ossia::net::set_disabled(local_param->get_node(), !m_enable);
 
-      ossia::net::set_hidden(local_param->get_node(), m_hidden);
+      ossia::net::set_hidden(local_param->get_node(), m_invisible);
 
       m_matchers.emplace_back(n, this);
     }

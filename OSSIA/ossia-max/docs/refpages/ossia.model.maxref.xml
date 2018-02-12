@@ -90,12 +90,12 @@
 				The <at>priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
 			</description>
 		</attribute>
-		<attribute name="hidden" get="1" set="1" type="int" size="1">
+		<attribute name="invisible" get="1" set="1" type="int" size="1">
 			<digest>
 				Hide node from remote client
 			</digest>
 			<description>
-				The <at>hidden</at> attribute allows to hide a model from remote clients - this can be useful e.g. for "internal" that we don't want to give access to.
+				The <at>invisible</at> attribute allows to hide a model from remote clients - this can be useful e.g. for "internal" that we don't want to give access to.
 			</description>
 		</attribute>
 	</attributelist>					

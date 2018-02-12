@@ -132,12 +132,12 @@
 				The <at>priority</at> attribute allows to order how several values of a same hierarchical level can be recalled 
 			</description>
 		</attribute>
-		<attribute name="hidden" get="1" set="1" type="int" size="1">
+		<attribute name="invisible" get="1" set="1" type="int" size="1">
 			<digest>
 				Hide device on the network
 			</digest>
 			<description>
-				The <at>hidden</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
+				The <at>invisible</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
 			</description>
 		</attribute>
 
