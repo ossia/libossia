@@ -522,7 +522,7 @@ void object_base::class_setup(t_class*c)
 
   CLASS_ATTR_LONG( c, "invisible", 0, object_base, m_invisible);
   CLASS_ATTR_STYLE(c, "invisible", 0, "onoff");
-  CLASS_ATTR_LABEL(c, "invisible", 0, "invisible");  
+  CLASS_ATTR_LABEL(c, "invisible", 0, "Invisible");  
 
   CLASS_ATTR_LONG(c, "recall_safe", 0, object_base, m_recall_safe);
   CLASS_ATTR_STYLE(c, "recall_safe", 0, "onoff");
