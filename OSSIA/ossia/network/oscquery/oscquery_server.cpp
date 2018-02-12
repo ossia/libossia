@@ -417,7 +417,7 @@ void oscquery_server_protocol::remove_node(
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) try
 {
-  ossia::net::handle_osc_message<true>(m, m_listening, *m_device);
+  ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
 
   if(m_echo)
   {
@@ -429,9 +429,6 @@ void oscquery_server_protocol::on_OSCMessage(
       }
     }
   }
-
-  if (m_logger.inbound_logger)
-    m_logger.inbound_logger->info("OSCQuery OSC In: {}", m);
 }
 catch (const std::exception& e)
 {
@@ -582,7 +579,7 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
     connection_handler hdl, const std::string& message)
 {
   if (m_logger.inbound_logger)
-    m_logger.inbound_logger->info("OSCQuery WS In: {}", message);
+    m_logger.inbound_logger->info("WS In: {}", message);
 
   if (message.empty())
   {

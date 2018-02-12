@@ -35,6 +35,11 @@ public:
    * @brief outbound_logger Set log function for messages going outside.
    */
   std::shared_ptr<spdlog::logger> outbound_logger;
+
+
+  // Same but will only be active for parameters that are listened to.
+  std::shared_ptr<spdlog::logger> inbound_listened_logger;
+  std::shared_ptr<spdlog::logger> outbound_listened_logger;
 };
 }
 }

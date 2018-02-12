@@ -403,7 +403,7 @@ void minuit_protocol::on_received_message(
 
   if (address.size() > 0 && address[0] == '/')
   {
-    ossia::net::handle_osc_message<true>(m, m_listening, *m_device);
+    ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
   }
   else
   {
@@ -411,9 +411,6 @@ void minuit_protocol::on_received_message(
       ossia::minuit::minuit_message_handler::handleMinuitMessage(
           *this, *m_device, address, m);
   }
-
-  if (m_logger.inbound_logger)
-    m_logger.inbound_logger->info("In: {0}", m);
 
   m_lastRecvMessage = get_time();
 }

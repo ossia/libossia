@@ -306,6 +306,9 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr)
     {
       query_send_message(json_writer::send_message(addr, val));
     }
+
+    if (m_logger.outbound_listened_logger)
+      m_logger.outbound_listened_logger->info("Out: {0}", addr, val);
     return true;
   }
   return false;
@@ -488,10 +491,7 @@ void oscquery_mirror_protocol::on_OSCMessage(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  ossia::net::handle_osc_message<true>(m, m_listening, *m_device);
-
-  if (m_logger.inbound_logger)
-    m_logger.inbound_logger->info("In: {0}", m);
+  ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
 
 #if defined(OSSIA_BENCHMARK)
   auto t2 = std::chrono::high_resolution_clock::now();
