@@ -148,7 +148,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
 {
   t_symbol *attrname;
 
-  if (msg == gensym("attr_modified") && sender == x) {
+  if (!x->m_lock && msg == gensym("attr_modified") && sender == x) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
     if( attrname == gensym("range") )

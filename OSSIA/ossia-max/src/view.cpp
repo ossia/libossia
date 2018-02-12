@@ -22,7 +22,7 @@ extern "C" void ossia_view_setup()
     class_addmethod(c, (method) view::get_mess_cb, "get",   A_SYM, 0);
 
     class_addmethod(
-          c, (method)attribute::notify,
+          c, (method)view::notify,
           "notify", A_CANT, 0);
   }
 

@@ -384,7 +384,7 @@ t_max_err object_base::notify(object_base *x, t_symbol *s,
 {
   t_symbol *attrname;
 
-  if (msg == gensym("attr_modified")) {
+  if (!x->m_lock && msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
     if ( attrname == gensym("hidden") )
@@ -412,7 +412,7 @@ void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
     A_SETLONG(&a, ossia::net::get_recall_safe(*m->get_node()));
     outlet_anything(x->m_dumpout, gensym("recall_safe"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("recall_safe"));
+  lock_and_touch(x, gensym("recall_safe"));
 }
 
 void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
@@ -438,7 +438,7 @@ void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
                       x->m_tags_size, asym);
     }
   }
-  object_attr_touch((t_object *)x, gensym("tags"));
+  lock_and_touch(x, gensym("tags"));
 }
 
 void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
@@ -462,7 +462,7 @@ void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
       outlet_anything(x->m_dumpout, gensym("description"), 0, nullptr);
     }
   }
-  object_attr_touch((t_object *)x, gensym("description"));
+  lock_and_touch(x, gensym("description"));
 }
 
 void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
@@ -481,7 +481,7 @@ void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
     A_SETFLOAT(&a, x->m_priority);
     outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("priority"));
+  lock_and_touch(x, gensym("priority"));
 }
 
 void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
@@ -494,7 +494,7 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
     A_SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
     outlet_anything(x->m_dumpout, gensym("hidden"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("hidden"));
+  lock_and_touch(x, gensym("hidden"));
 }
 
 void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
@@ -600,6 +600,13 @@ void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* 
   }
 
   x->fill_selection();
+}
+
+void object_base::lock_and_touch(object_base* x, t_symbol* s)
+{
+  x->m_lock = true;
+  object_attr_touch((t_object*)x, s);
+  x->m_lock = false;
 }
 
 void object_base::update_path()

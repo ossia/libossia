@@ -162,6 +162,7 @@ public:
   object_base();
 
   std::mutex bindMutex;
+  bool m_lock{false};
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
@@ -170,6 +171,8 @@ public:
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
+  static void lock_and_touch(object_base* x, t_symbol* s);
+
 protected:
   ossia::optional<ossia::traversal::path> m_path;
 };

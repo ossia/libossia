@@ -22,7 +22,6 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::model*);
   static void assist(ossia::max::model*, void*, long, long, char*);
-  static t_max_err notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 };
 
 } // max namespace

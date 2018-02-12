@@ -33,7 +33,7 @@ extern "C" void ossia_model_setup()
   class_addmethod(c, (method) model::get_mess_cb, "get",   A_SYM, 0);
 
   class_addmethod(
-        c, (method)attribute::notify,
+        c, (method)model::notify,
         "notify", A_CANT, 0);
 
 

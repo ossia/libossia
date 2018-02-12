@@ -153,7 +153,7 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
 {
   t_symbol *attrname;
 
-  if (msg == gensym("attr_modified")) {
+  if (!x->m_lock && msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
     if ( attrname == gensym("unit") )

@@ -44,7 +44,7 @@ t_max_err parameter_base::notify(parameter_base *x, t_symbol *s, t_symbol *msg, 
 {
   t_symbol *attrname;
 
-  if (msg == gensym("attr_modified")) {
+  if (!x->m_lock && msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
     if ( attrname == gensym("mode") )
@@ -467,9 +467,9 @@ void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
     outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
     outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
   }
-  object_attr_touch((t_object *)x, gensym("range"));
-  object_attr_touch((t_object *)x, gensym("min"));
-  object_attr_touch((t_object *)x, gensym("max"));
+  lock_and_touch(x, gensym("range"));
+  lock_and_touch(x, gensym("min"));
+  lock_and_touch(x, gensym("max"));
 }
 
 void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -485,7 +485,7 @@ void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*>
     A_SETSYM(&a,x->m_bounding_mode);
     outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("clip"));
+  lock_and_touch(x, gensym("clip"));
 }
 
 void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -513,7 +513,7 @@ void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes
     outlet_anything(x->m_dumpout, gensym("default"),
                     x->m_default_size, x->m_default);
   }
-  object_attr_touch((t_object *)x, gensym("default"));
+  lock_and_touch(x, gensym("default"));
 
 }
 
@@ -531,7 +531,7 @@ void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
     A_SETSYM(&a,x->m_type);
     outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("type"));
+  lock_and_touch(x, gensym("type"));
 }
 
 void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -548,7 +548,7 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> n
     A_SETSYM(&a, x->m_access_mode);
     outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("mode"));
+  lock_and_touch(x, gensym("mode"));
 }
 
 void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -565,7 +565,7 @@ void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_match
     A_SETLONG(&a, x->m_repetitions);
     outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("repetitions"));
+  lock_and_touch(x, gensym("repetitions"));
 }
 
 void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -581,7 +581,7 @@ void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
     A_SETLONG(&a,x->m_enable);
     outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("enable"));
+  lock_and_touch(x, gensym("enable"));
 }
 
 void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -599,7 +599,7 @@ void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
     A_SETSYM(&a, x->m_unit);
     outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("unit"));
+  lock_and_touch(x, gensym("unit"));
 }
 
 void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -616,7 +616,7 @@ void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
     A_SETLONG(&a, x->m_mute);
     outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("mute"));
+  lock_and_touch(x, gensym("mute"));
 }
 
 void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -629,7 +629,7 @@ void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> 
     A_SETLONG(&a, x->m_queue_length);
     outlet_anything(x->m_dumpout, gensym("queue_length"), 1, &a);
   }
-  object_attr_touch((t_object *)x, gensym("queue_length"));
+  lock_and_touch(x, gensym("queue_length"));
 }
 
 void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -649,7 +649,7 @@ void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
       outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
     }
   }
-  object_attr_touch((t_object *)x, gensym("rate"));
+  lock_and_touch(x, gensym("rate"));
 }
 
 template<std::size_t N>
