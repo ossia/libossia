@@ -13,19 +13,14 @@ phidget_parameter::phidget_parameter(
     : ossia::net::parameter_base{par}
     , m_protocol{proto}
     , m_phidget{p}
-    , m_ik{m_phidget->impl()}
+    //, m_ik{m_phidget->impl()}
 {
-  m_ik->set_sensor_change([=](int s, int v) { send(value()); });
+  //m_ik->set_sensor_change([=](int s, int v) { send(value()); });
 }
 
 phidget_parameter::~phidget_parameter()
 {
-  m_ik->set_sensor_change({});
-}
-
-net::node_base& phidget_parameter::get_node() const
-{
-  return m_parent;
+  //m_ik->set_sensor_change({});
 }
 
 void phidget_parameter::pull_value()
@@ -34,6 +29,7 @@ void phidget_parameter::pull_value()
 
 value phidget_parameter::value() const
 {
+    /*
   std::vector<ossia::value> v;
   int N = m_ik->get_sensor_count();
   for (int i = 0; i < N; i++)
@@ -41,6 +37,8 @@ value phidget_parameter::value() const
     v.push_back(m_ik->get_sensor_value(i));
   }
   return v;
+  */
+    return {};
 }
 
 net::parameter_base& phidget_parameter::push_value(const ossia::value&)
@@ -104,16 +102,6 @@ bounding_mode phidget_parameter::get_bounding() const
 }
 
 net::parameter_base& phidget_parameter::set_bounding(bounding_mode)
-{
-  return *this;
-}
-
-repetition_filter phidget_parameter::get_repetition_filter() const
-{
-  return ossia::repetition_filter::OFF;
-}
-
-net::parameter_base& phidget_parameter::set_repetition_filter(repetition_filter)
 {
   return *this;
 }

@@ -12,8 +12,9 @@ phidget_node::~phidget_node()
 }
 
 phidget_node::phidget_node(phidget_device& d, net::node_base& p)
-    : m_device{d}, m_parent{p}, m_name{"InterfaceKit"}
+    : m_device{d}, m_parent{p}
 {
+    m_name = "InterfaceKit";
 }
 
 net::device_base& phidget_node::get_device() const

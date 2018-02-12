@@ -2,19 +2,20 @@
 #include <functional>
 #include <iostream>
 #include <mutex>
-#include <phidget21.h>
+#include <phidget22.h>
 namespace ppp
 {
+/*
 struct interface_kit
 {
 public:
   interface_kit(int serial)
   {
-    CPhidgetInterfaceKit_create(&m_handle);
+    PhidgetInterfaceKit_create(&m_handle);
 
-    CPhidgetInterfaceKit_set_OnInputChange_Handler(
+    PhidgetInterfaceKit_set_OnInputChange_Handler(
         m_handle,
-        [](CPhidgetInterfaceKitHandle, void* userPtr, int index,
+        [](PhidgetInterfaceKitHandle, void* userPtr, int index,
            int st) -> int {
           auto& self = *(interface_kit*)(userPtr);
           if (self.onInputChange)
@@ -22,9 +23,9 @@ public:
           return EPHIDGET_OK;
         },
         this);
-    CPhidgetInterfaceKit_set_OnOutputChange_Handler(
+    PhidgetInterfaceKit_set_OnOutputChange_Handler(
         m_handle,
-        [](CPhidgetInterfaceKitHandle, void* userPtr, int index,
+        [](PhidgetInterfaceKitHandle, void* userPtr, int index,
            int st) -> int {
           auto& self = *(interface_kit*)(userPtr);
           if (self.onOutputChange)
@@ -32,9 +33,9 @@ public:
           return EPHIDGET_OK;
         },
         this);
-    CPhidgetInterfaceKit_set_OnSensorChange_Handler(
+    PhidgetInterfaceKit_set_OnSensorChange_Handler(
         m_handle,
-        [](CPhidgetInterfaceKitHandle, void* userPtr, int index,
+        [](PhidgetInterfaceKitHandle, void* userPtr, int index,
            int sensorValue) -> int {
           auto& self = *(interface_kit*)(userPtr);
 
@@ -45,64 +46,64 @@ public:
         },
         this);
 
-    CPhidget_open((CPhidgetHandle)m_handle, serial);
+    Phidget_open((PhidgetHandle)m_handle, serial);
   }
 
   ~interface_kit()
   {
-    CPhidget_close((CPhidgetHandle)m_handle);
-    CPhidget_delete((CPhidgetHandle)m_handle);
+    Phidget_close((PhidgetHandle)m_handle);
+    Phidget_delete((PhidgetHandle)m_handle);
   }
 
-  CPhidgetHandle get_base_handle() const
+  PhidgetHandle get_base_handle() const
   {
-    return (CPhidgetHandle)m_handle;
+    return (PhidgetHandle)m_handle;
   }
 
   int get_sensor_count() const
   {
     int c;
-    CPhidgetInterfaceKit_getSensorCount(m_handle, &c);
+    PhidgetInterfaceKit_getSensorCount(m_handle, &c);
     return c;
   }
 
   int get_sensor_value(int idx) const
   {
     int c;
-    CPhidgetInterfaceKit_getSensorValue(m_handle, idx, &c);
+    PhidgetInterfaceKit_getSensorValue(m_handle, idx, &c);
     return c;
   }
 
   int get_sensor_raw_value(int idx) const
   {
     int c;
-    CPhidgetInterfaceKit_getSensorRawValue(m_handle, idx, &c);
+    PhidgetInterfaceKit_getSensorRawValue(m_handle, idx, &c);
     return c;
   }
 
   int get_data_rate(int idx)
   {
     int ms;
-    CPhidgetInterfaceKit_getDataRate(m_handle, idx, &ms);
+    PhidgetInterfaceKit_getDataRate(m_handle, idx, &ms);
     return ms;
   }
 
   void set_data_rate(int idx, int ms)
   {
-    CPhidgetInterfaceKit_setDataRate(m_handle, idx, ms);
+    PhidgetInterfaceKit_setDataRate(m_handle, idx, ms);
   }
 
   int inputs() const
   {
     int m;
-    CPhidgetInterfaceKit_getInputCount(m_handle, &m);
+    PhidgetInterfaceKit_getInputCount(m_handle, &m);
     return m;
   }
 
   int outputs() const
   {
     int m;
-    CPhidgetInterfaceKit_getOutputCount(m_handle, &m);
+    PhidgetInterfaceKit_getOutputCount(m_handle, &m);
     return m;
   }
 
@@ -116,7 +117,7 @@ public:
   }
 
 private:
-  CPhidgetInterfaceKitHandle m_handle;
+  PhidgetInterfaceKitHandle m_handle;
   std::function<void(int, int)> m_sensorChange;
   std::mutex m_ioMutex;
 };
@@ -124,187 +125,188 @@ private:
 struct accelerometer
 {
 public:
-  accelerometer(CPhidgetAccelerometerHandle h) : m_handle{h}
+  accelerometer(PhidgetAccelerometerHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetAccelerometerHandle m_handle;
+  PhidgetAccelerometerHandle m_handle;
 };
 
 struct advanced_servo
 {
 public:
-  advanced_servo(CPhidgetAdvancedServoHandle h) : m_handle{h}
+  advanced_servo(PhidgetAdvancedServoHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetAdvancedServoHandle m_handle;
+  PhidgetAdvancedServoHandle m_handle;
 };
 
 struct bridge
 {
 public:
-  bridge(CPhidgetBridgeHandle h) : m_handle{h}
+  bridge(PhidgetBridgeHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetBridgeHandle m_handle;
+  PhidgetBridgeHandle m_handle;
 };
 
 struct frequency_counter
 {
 public:
-  frequency_counter(CPhidgetFrequencyCounterHandle h) : m_handle{h}
+  frequency_counter(PhidgetFrequencyCounterHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetFrequencyCounterHandle m_handle;
+  PhidgetFrequencyCounterHandle m_handle;
 };
 
 struct gps
 {
 public:
-  gps(CPhidgetGPSHandle h) : m_handle{h}
+  gps(PhidgetGPSHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetGPSHandle m_handle;
+  PhidgetGPSHandle m_handle;
 };
 
 struct ir
 {
 public:
-  ir(CPhidgetIRHandle h) : m_handle{h}
+  ir(PhidgetIRHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetIRHandle m_handle;
+  PhidgetIRHandle m_handle;
 };
 
 struct led
 {
 public:
-  led(CPhidgetLEDHandle h) : m_handle{h}
+  led(PhidgetLEDHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetLEDHandle m_handle;
+  PhidgetLEDHandle m_handle;
 };
 
 struct motor_control
 {
 public:
-  motor_control(CPhidgetMotorControlHandle h) : m_handle{h}
+  motor_control(PhidgetMotorControlHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetMotorControlHandle m_handle;
+  PhidgetMotorControlHandle m_handle;
 };
 
 struct ph_sensor
 {
 public:
-  ph_sensor(CPhidgetPHSensorHandle h) : m_handle{h}
+  ph_sensor(PhidgetPHSensorHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetPHSensorHandle m_handle;
+  PhidgetPHSensorHandle m_handle;
 };
 
 struct rfid
 {
 public:
-  rfid(CPhidgetRFIDHandle h) : m_handle{h}
+  rfid(PhidgetRFIDHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetRFIDHandle m_handle;
+  PhidgetRFIDHandle m_handle;
 };
 
 struct servo
 {
 public:
-  servo(CPhidgetServoHandle h) : m_handle{h}
+  servo(PhidgetServoHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetServoHandle m_handle;
+  PhidgetServoHandle m_handle;
 };
 
 struct spatial
 {
 public:
-  spatial(CPhidgetSpatialHandle h) : m_handle{h}
+  spatial(PhidgetSpatialHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetSpatialHandle m_handle;
+  PhidgetSpatialHandle m_handle;
 };
 
 struct stepper
 {
 public:
-  stepper(CPhidgetStepperHandle h) : m_handle{h}
+  stepper(PhidgetStepperHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetStepperHandle m_handle;
+  PhidgetStepperHandle m_handle;
 };
 
 struct temperature_sensor
 {
 public:
-  temperature_sensor(CPhidgetTemperatureSensorHandle h) : m_handle{h}
+  temperature_sensor(PhidgetTemperatureSensorHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetTemperatureSensorHandle m_handle;
+  PhidgetTemperatureSensorHandle m_handle;
 };
 
 struct text_lcd
 {
 public:
-  text_lcd(CPhidgetTextLCDHandle h) : m_handle{h}
+  text_lcd(PhidgetTextLCDHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetTextLCDHandle m_handle;
+  PhidgetTextLCDHandle m_handle;
 };
 
 struct text_led
 {
 public:
-  text_led(CPhidgetTextLEDHandle h) : m_handle{h}
+  text_led(PhidgetTextLEDHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetTextLEDHandle m_handle;
+  PhidgetTextLEDHandle m_handle;
 };
 
 struct weight_sensor
 {
 public:
-  weight_sensor(CPhidgetWeightSensorHandle h) : m_handle{h}
+  weight_sensor(PhidgetWeightSensorHandle h) : m_handle{h}
   {
   }
 
 private:
-  CPhidgetWeightSensorHandle m_handle;
+  PhidgetWeightSensorHandle m_handle;
 };
+*/
 }

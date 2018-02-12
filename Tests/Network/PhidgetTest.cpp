@@ -15,9 +15,9 @@ private Q_SLOTS:
     void test_exec()
     {
       ossia::phidget_device dev{"phidgets"};
-      sleep(1);
+      sleep(2);
       dev.get_protocol().run_commands();
-      sleep(1);
+      sleep(2);
     }
 };
 

@@ -27,5 +27,6 @@ public:
 
   void set_command_callback(std::function<void()>);
   void run_commands();
+  bool push_raw(const ossia::net::full_parameter_data&) override;
 };
 }
