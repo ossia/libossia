@@ -4,6 +4,9 @@ project(ossia-max C CXX)
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_INCLUDE_CURRENT_DIR 1)
+
+option(OSSIA_MAX_TEST "Run automatic test for C74 Max" OFF)
+
 include(GenerateExportHeader)
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path/../../../../support;@loader_path")
@@ -181,3 +184,17 @@ install(
     COMPONENT
         ${PROJECT_NAME}
 )
+
+if(OSSIA_MAX_TEST)
+    set(OSSIA_MAX_TEST_PATCHERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/368-set_broken.maxtest.maxpat
+        )
+    install(
+        FILES
+          ${OSSIA_MAX_TEST_PATCHERS}
+        DESTINATION
+          ${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests
+        COMPONENT
+          ${PROJECT_NAME}
+          )
+endif(OSSIA_MAX_TEST)
