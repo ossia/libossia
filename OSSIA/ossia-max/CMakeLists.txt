@@ -188,6 +188,7 @@ install(
 if(OSSIA_MAX_TEST)
     set(OSSIA_MAX_TEST_PATCHERS
         ${CMAKE_CURRENT_SOURCE_DIR}/max-test/368-set_broken.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/312-default_broken.maxtest.maxpat
         )
     install(
         FILES
