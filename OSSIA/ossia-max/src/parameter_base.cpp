@@ -371,13 +371,16 @@ void parameter_base::set_default()
     switch(param->get_value_type())
     {
       case ossia::val_type::VEC4F:
-        ossia::net::set_default_value(*node, max::to_vec<4>(m_default));
+        if (m_default_size >= 4)
+          ossia::net::set_default_value(*node, max::to_vec<4>(m_default));
         break;
       case ossia::val_type::VEC3F:
-        ossia::net::set_default_value(*node, to_vec<3>(m_default));
+        if (m_default_size >= 3)
+          ossia::net::set_default_value(*node, to_vec<3>(m_default));
         break;
       case ossia::val_type::VEC2F:
-        ossia::net::set_default_value(*node, to_vec<2>(m_default));
+        if (m_default_size >= 2)
+          ossia::net::set_default_value(*node, to_vec<2>(m_default));
         break;
       case ossia::val_type::FLOAT:
       case ossia::val_type::CHAR:
@@ -392,7 +395,6 @@ void parameter_base::set_default()
         {
           ossia::net::set_default_value(*node, (int)m_default[0].a_w.w_long);
         }
-        // TODO true / false for bool ?
         break;
       }
       case ossia::val_type::STRING:
@@ -405,9 +407,11 @@ void parameter_base::set_default()
       }
       case ossia::val_type::LIST:
       {
-        auto def = attribute2value(m_default, m_default_size);
-
-        ossia::net::set_default_value(*node, def);
+        if (m_default_size > 0)
+        {
+          auto def = attribute2value(m_default, m_default_size);
+          ossia::net::set_default_value(*node, def);
+        }
         break;
       }
       default:

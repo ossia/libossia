@@ -347,6 +347,10 @@ struct value_visitor
   {
     std::vector<t_atom> va;
     value2atom vm{va};
+
+    if(t.empty())
+      return;
+
     for (const auto& v : t)
       v.apply(vm);
 
