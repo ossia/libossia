@@ -16,6 +16,9 @@ namespace max
 class client : public device_base
 {
 public:
+
+  using is_client = std::true_type;
+
   static void register_children(client*);
   void unregister_children();
   static void loadbang(client*);

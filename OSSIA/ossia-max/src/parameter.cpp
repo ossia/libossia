@@ -26,9 +26,6 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
-  class_addmethod(
-      c, (method)parameter_base::push_default_value,
-      "loadbang", A_CANT, 0);
 
   class_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYM, 0);
   class_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYM, 0);
@@ -107,7 +104,8 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     object_attach_byptr_register(x, x, CLASS_BOX);
 
     // start registration
-    max_object_register<parameter>(x);
+    ossia_check_and_register(x);
+
     ossia_max::instance().parameters.push_back(x);
   }
 
@@ -166,18 +164,6 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
   return 0;
 }
 
-void parameter::update_attribute(parameter* x, string_view attribute, const net::node_base* node)
-{
-  auto matchers = make_matchers_vector(x,node);
-
-  if ( attribute == ossia::net::text_muted() ){
-    get_mute(x, matchers);
-  } else if ( attribute == ossia::net::text_unit() ){
-    get_unit(x, matchers);
-  } else
-    parameter_base::update_attribute((parameter_base*)x, attribute, node);
-}
-
 bool parameter::register_node(const std::vector<t_matcher>& nodes)
 {
   bool res = do_registration(nodes);
@@ -186,11 +172,11 @@ bool parameter::register_node(const std::vector<t_matcher>& nodes)
     object_dequarantining<parameter>(this);
     for (auto remote : remote::quarantine().copy())
     {
-      max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+      ossia_register(remote);
     }
     for (auto remote : attribute::quarantine().copy())
     {
-      max_object_register<ossia::max::attribute>(static_cast<ossia::max::attribute*>(remote));
+      ossia_register(remote);
     }
 
     clock_delay(m_poll_clock,1);
@@ -252,8 +238,8 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
   set_repetition_filter();
   set_recall_safe();
 
-
-  clock_delay(m_clock, 1);
+  // TODO trig this only if root patcher have been already loadbanged
+  // clock_delay(m_clock, 1);
 
   return (!m_matchers.empty() || m_is_pattern);
 }
@@ -268,11 +254,11 @@ bool parameter::unregister()
 
   for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+    ossia_register(remote);
   }
   for (auto attribute : attribute::quarantine().copy())
   {
-    max_object_register(attribute);
+    ossia_register(attribute);
   }
 
   object_quarantining(this);

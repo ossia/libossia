@@ -126,6 +126,7 @@ public:
 
   void fill_selection();
   void update_path();
+  void get_hierarchy();
 
   void set_description();
   void set_tags();
@@ -163,6 +164,8 @@ public:
 
   std::mutex bindMutex;
   bool m_lock{false};
+  std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order
+
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
@@ -172,6 +175,7 @@ public:
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
+  static void loadbang(object_base* x);
 
 protected:
   ossia::optional<ossia::traversal::path> m_path;

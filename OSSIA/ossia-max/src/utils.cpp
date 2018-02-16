@@ -393,14 +393,12 @@ std::string object_path_absolute(object_base* x)
   if (x->m_otype == object_class::view)
     start_level = 1;
 
-  view = (ossia::max::view*)find_parent_box_alive(
-        &x->m_object, gensym("ossia.view"), start_level, &view_level);
+  view = find_parent_box_alive<ossia::max::view>(x, start_level, &view_level);
 
   if (x->m_otype == object_class::model
       || x->m_otype == object_class::remote)
   {
-    model =  (ossia::max::model*)find_parent_box_alive(
-          &x->m_object, gensym("ossia.model"), start_level, &model_level);
+    model =  find_parent_box_alive<ossia::max::model>(x, start_level, &model_level);
   }
 
   t_object* object = nullptr;
@@ -413,8 +411,7 @@ std::string object_path_absolute(object_base* x)
   {
     vs.push_back(view->m_name->s_name);
     tmp = view;
-    view = (ossia::max::view*)find_parent_box_alive(
-          &tmp->m_object, gensym("ossia.view"), 1, &view_level);
+    view = find_parent_box_alive<ossia::max::view>(tmp, 1, &view_level);
   }
 
   ossia::max::model* tmp_model = nullptr;
@@ -423,8 +420,7 @@ std::string object_path_absolute(object_base* x)
     vs.push_back(model->m_name->s_name);
     tmp_model = model;
     model
-        = (ossia::max::model*) find_parent_box_alive(
-          &tmp_model->m_object, gensym("ossia.model"), 1, &model_level);
+        = find_parent_box_alive<ossia::max::model>(tmp_model, 1, &model_level);
   }
 
   auto rit = vs.rbegin();
@@ -459,6 +455,5 @@ void trig_output_value(ossia::net::node_base* node)
       }
     }
 }
-
 } // namespace max
 } // namespace ossia

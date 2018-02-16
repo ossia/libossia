@@ -36,7 +36,6 @@ extern "C" void ossia_model_setup()
         c, (method)model::notify,
         "notify", A_CANT, 0);
 
-
   class_register(CLASS_BOX, c);
   ossia_library.ossia_model_class = c;
 }
@@ -66,10 +65,6 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
       // free(x);
       return nullptr;
     }
-
-    x->m_clock = clock_new(
-        x, reinterpret_cast<method>(
-               static_cast<bool (*)(model*)>(&max_object_register<model>)));
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -102,8 +97,7 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     // 0 ms delay means that it will be perform on next clock tick
     // defer_low(x,reinterpret_cast<method>(
                 //static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)), nullptr, 0, 0L );
-    // clock_delay(x->m_clock, 1);
-    max_object_register<model>(x);
+    ossia_check_and_register(x);
     ossia_max::instance().models.push_back(x);
   }
 
@@ -116,7 +110,6 @@ void model::destroy(model* x)
   x->unregister();
   object_dequarantining<model>(x);
   ossia_max::instance().models.remove_all(x);
-  if(x->m_clock) object_free(x->m_clock);
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
   x->~model();
 }
@@ -225,7 +218,7 @@ void model::register_children()
       if(model->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
         model->register_node(m_matchers);
       else
-        max_object_register<ossia::max::model>(model);
+        ossia_register(model);
     }
     else if (child->m_otype == object_class::param)
     {
@@ -233,7 +226,7 @@ void model::register_children()
       if(parameter->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
         parameter->register_node(m_matchers);
       else // FIXME is the else statement needed ?
-        max_object_register<ossia::max::parameter>(parameter);
+        ossia_register(parameter);
     }
     else if (child->m_otype == object_class::remote)
     {
@@ -242,26 +235,24 @@ void model::register_children()
       if(remote->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
         remote->register_node(m_matchers);
       else
-        max_object_register<ossia::max::remote>(remote);
+        ossia_register(remote);
     }
   }
 
   for (auto view : view::quarantine().copy())
   {
-    max_object_register<ossia::max::view>(static_cast<ossia::max::view*>(view));
+    ossia_register(view);
   }
 
   // then try to register qurantinized remote
   for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+    ossia_register(remote);
   }
 }
 
 bool model::unregister()
 {
-  if (m_clock) clock_unset(m_clock);
-
   m_matchers.clear();
 
   object_quarantining<model>(this);

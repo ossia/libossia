@@ -44,10 +44,6 @@ extern "C" void ossia_client_setup()
       "update", A_NOTHING, 0);
 
   class_addmethod(
-      c, (method)client::loadbang,
-      "loadbang", A_NOTHING, 0);
-
-  class_addmethod(
       c, (method)client::connect,
       "connect", A_GIMME, 0);
 
@@ -490,11 +486,6 @@ void client::disconnect(client* x)
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
   }
-}
-
-void client::loadbang(client* x)
-{
-  register_children(x);
 }
 
 void client::poll_message(client* x)

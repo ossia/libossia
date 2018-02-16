@@ -51,6 +51,8 @@ public:
     return &instance().m_device;
   }
 
+  static void register_nodes(void* x);
+
   template<typename T>
   t_class* get_class() {
     if(std::is_same<T, parameter>::value) return ossia_parameter_class;
@@ -90,6 +92,11 @@ public:
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
 
+  // this is used at loadband to mark a patcher loaded
+  // and trig its registration
+  std::map<t_object*, bool> root_patcher;
+  void* m_reg_clock{};
+
 private:
   ossia_max();
   ~ossia_max();
@@ -122,32 +129,6 @@ void object_namespace(object_base* x);
  * @brief register_quarantinized Try to register all quarantinized objects
  */
 void register_quarantinized();
-
-/**
- * @brief             Find the first box of classname beside or above (in a
- * parent patcher) context.
- * @details           The function iterate all objects at the same level or
- * above x and return the first instance of classname found.
- * @param object      The Max object instance around which to search.
- * @param classname   The class name of the box object we are looking for.
- * @param start_level Level above current object where to start. 0 for current
- * patcher, 1 start searching in parent canvas.
- * @param level       Return level of the found object
- * @return The instance of the parent box if exists. Otherwise returns nullptr.
- */
-object_base* find_parent_box(
-    t_object* object, t_symbol* classname, int start_level, int* level);
-
-/**
- * @brief find_parent_box_alive
- * @details Find a parent that is not being removed soon
- * @param object      The Max object instance around which to search.
- * @param classname
- * @param start_level
- * @return
- */
-object_base* find_parent_box_alive(
-    t_object* object, t_symbol* classname, int start_level, int* level);
 
 /**
  * @brief Find all objects [classname] in the current patcher.

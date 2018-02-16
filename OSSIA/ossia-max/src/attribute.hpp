@@ -11,7 +11,7 @@ namespace max
 class attribute : public parameter_base
 {
 public:
-  using is_view = std::true_type;
+  using is_attribute = std::true_type;
 
   bool register_node(const std::vector<t_matcher>& node);
   bool do_registration(const std::vector<t_matcher>& node);

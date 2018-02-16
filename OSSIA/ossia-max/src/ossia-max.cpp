@@ -30,6 +30,8 @@ ossia_max::ossia_max():
   devices.reserve(8);
   clients.reserve(8);
 
+  m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
+
   post("OSSIA library for Max is loaded");
   post("build SHA : %s", ossia::get_commit_sha().c_str());
 }
@@ -37,7 +39,7 @@ ossia_max::ossia_max():
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-  // m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
+  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
 
   for (auto x : devices.copy())
   {
@@ -70,6 +72,85 @@ ossia_max& ossia_max::instance()
 {
   static ossia_max library_instance;
   return library_instance;
+}
+
+void ossia_max::register_nodes(void* x)
+{
+  auto& inst = ossia_max::instance();
+  auto& map = inst.root_patcher;
+  for (auto it = map.begin(); it != map.end(); it++)
+  {
+    t_object* patcher = it->first;
+    it->second = true;
+    for (auto dev : inst.devices.reference())
+    {
+      if(dev->m_patcher_hierarchy.back() == patcher)
+        ossia::max::device::register_children(dev);
+    }
+    for (auto model : inst.models.reference())
+    {
+      if ( model->m_patcher_hierarchy.back() == patcher
+            && model->m_matchers.empty())
+        ossia_register(model);
+    }
+    for (auto param : inst.parameters.reference())
+    {
+      if ( param->m_patcher_hierarchy.back() == patcher
+            && param->m_matchers.empty())
+        ossia_register(param);
+    }
+
+    for (auto client : inst.clients.reference())
+    {
+      if(client->m_patcher_hierarchy.back() == patcher)
+        ossia::max::client::register_children(client);
+    }
+    for (auto view : inst.views.reference())
+    {
+      if ( view->m_patcher_hierarchy.back() == patcher
+            && view->m_matchers.empty())
+        ossia_register(view);
+    }
+    for (auto remote : inst.remotes.reference())
+    {
+      if ( remote->m_patcher_hierarchy.back() == patcher
+            && remote->m_matchers.empty())
+        ossia_register(remote);
+    }
+    for (auto attr : inst.attributes.reference())
+    {
+      if ( attr->m_patcher_hierarchy.back() == patcher
+            && attr->m_matchers.empty())
+        ossia_register(attr);
+    }
+
+    for (auto dev : inst.devices.reference())
+    {
+      if(dev->m_patcher_hierarchy.back() == patcher)
+        node_base::push_default_value(dev);
+    }
+
+    std::vector<ossia::net::node_base*> list;
+
+    // send default value for default device's child
+    // TODO make this a method of ossia Max's object
+    auto n = &inst.get_default_device()->get_root_node();
+    list = ossia::net::list_all_child(n);
+
+    for (ossia::net::node_base* child : list)
+    {
+      if (auto param = child->get_parameter())
+      {
+        auto val = ossia::net::get_default_value(*child);
+        if(val)
+        {
+          param->push_value(*val);
+          trig_output_value(child);
+        }
+      }
+    }
+  }
+
 }
 
 namespace ossia
@@ -121,83 +202,27 @@ void register_quarantinized()
 {
   for (auto model : model::quarantine().copy())
   {
-    max_object_register<ossia::max::model>(
+    ossia_register<ossia::max::model>(
           static_cast<ossia::max::model*>(model));
   }
 
   for (auto parameter : parameter::quarantine().copy())
   {
-    max_object_register<ossia::max::parameter>(
+    ossia_register<ossia::max::parameter>(
           static_cast<ossia::max::parameter*>(parameter));
   }
 
   for (auto view : view::quarantine().copy())
   {
-    max_object_register<ossia::max::view>(
+    ossia_register<ossia::max::view>(
           static_cast<ossia::max::view*>(view));
   }
 
   for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<ossia::max::remote>(
+    ossia_register<ossia::max::remote>(
           static_cast<ossia::max::remote*>(remote));
   }
-}
-
-object_base* find_parent_box(
-    t_object* object, t_symbol* classname, int start_level, int* level)
-{
-
-  t_object* patcher = get_patcher(object);
-  object_base* parent = nullptr;
-
-  // look upper if there is an upper level and if it is not the level where to
-  // start the research
-  while (patcher && start_level--)
-    patcher = jpatcher_get_parentpatcher(patcher);
-
-  // if no parent object have been found in upper patcher, look around
-  while (patcher && !parent)
-  {
-    t_object* box =  jpatcher_get_firstobject(patcher);
-
-    while (box)
-    {
-      if (object_attr_getsym(box, _sym_maxclass) == classname)
-      {
-        t_object* object_box = NULL;
-        object_obex_lookup(object, gensym("#B"), &object_box);
-
-        // the object itself cannot be its own parent
-        if (box != object_box)
-        {
-          parent = (object_base*)jbox_get_object(box);
-          *level = start_level;
-          break;
-        }
-      }
-
-      box = jbox_get_nextobject(box);
-    }
-    patcher = jpatcher_get_parentpatcher(patcher);
-  }
-
-  return parent;
-}
-
-object_base* find_parent_box_alive(
-    t_object* object, t_symbol* classname, int start_level, int* level)
-{
-  object_base* parent
-      = find_parent_box(object, classname, start_level, level);
-
-  while (parent && parent->m_dead)
-  {
-    parent
-        = find_parent_box_alive(&parent->m_object, classname, 1, level);
-  }
-
-  return parent;
 }
 
 std::vector<object_base*> find_children_to_register(

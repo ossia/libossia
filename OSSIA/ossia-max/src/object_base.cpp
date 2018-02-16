@@ -294,6 +294,26 @@ void t_matcher::set_parent_addr()
 
 object_base::object_base()
 {
+
+}
+
+void object_base::get_hierarchy()
+{
+  t_object* patcher = get_patcher(&m_object);
+
+  while (patcher)
+  {
+    m_patcher_hierarchy.push_back(patcher);
+    patcher = jpatcher_get_parentpatcher(patcher);
+  }
+}
+
+void object_base::loadbang(object_base* x)
+{
+  std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
+
+  ossia_max::instance().root_patcher.insert(std::pair<t_object*,bool>(x->m_patcher_hierarchy.back(), false));
+  clock_delay(ossia_max::instance().m_reg_clock,1);
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
@@ -363,6 +383,9 @@ void object_base::defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* 
 void object_base::update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
   auto matchers = make_matchers_vector(x,node);
+
+  if (matchers.empty())
+    return;
 
   if ( attribute == ossia::net::text_priority() ){
     get_priority(x, matchers);
@@ -528,8 +551,9 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_STYLE(c, "recall_safe", 0, "onoff");
   CLASS_ATTR_LABEL(c, "recall_safe", 0, "Recall safe");
 
-  class_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
-  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_GIMME,   0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "select",   A_GIMME, 0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect", A_GIMME, 0);
+  class_addmethod(c, (method) object_base::loadbang,        "loadbang", A_CANT,  0);
 }
 
 void object_base::fill_selection()
@@ -537,7 +561,6 @@ void object_base::fill_selection()
   m_node_selection.clear();
   if ( m_selection_path )
   {
-    // TODO should support pattern matching in selection
     for (auto& m : m_matchers)
     {
       if ( ossia::traversal::match(*m_selection_path, *m.get_node()) )

@@ -9,9 +9,12 @@ namespace max
 #pragma mark -
 #pragma mark t_view structure declaration
 
-class view : public object_base
+class view : public object_base // FIXME why view doesn't inherite from ossia::max::node_base ??
 {
 public:
+
+  using is_view = std::true_type;
+
   bool register_node(const std::vector<t_matcher>& nodes);
   bool do_registration(const std::vector<t_matcher>& nodes);
   bool unregister();

@@ -46,11 +46,6 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     // make outlets
     x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump view state
 
-    //        x->m_clock = clock_new(x, (method)object_base::tick);
-    x->m_clock = clock_new(
-        x, reinterpret_cast<method>(
-               static_cast<bool (*)(view*)>(&max_object_register<view>)));
-
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
     x->m_otype = object_class::view;
@@ -70,22 +65,22 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-
-
-        // we need to delay registration because object may use patcher hierarchy
-        // to check address validity
-        // and object will be added to patcher's objects list (aka canvas g_list)
-        // after model_new() returns.
-        // 0 ms delay means that it will be perform on next clock tick
-        clock_delay(x->m_clock, 0);
       }
     }
+
+    if(x->m_name != _sym_nothing)
+    {
+      ossia_check_and_register(x);
+    }
+    else
+      x->get_hierarchy();
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
   }
 
-  if (x) ossia_max::instance().views.push_back(x);
+  ossia_max::instance().views.push_back(x);
+
   return (x);
 }
 
@@ -190,12 +185,12 @@ void view::register_children(view* x)
       if (view == x)
         continue;
 
-      max_object_register<ossia::max::view>(view);
+      ossia_register(view);
     }
     else if (child->m_otype == object_class::remote)
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
-      max_object_register<ossia::max::remote>(remote);
+      ossia_register(remote);
     }
   }
 }

@@ -11,7 +11,7 @@ namespace max
 class parameter : public parameter_base
 {
 public:
-  using is_model = std::true_type;
+  using is_parameter = std::true_type;
 
   bool register_node(const std::vector<t_matcher>& node);
   bool do_registration(const std::vector<t_matcher>& node);
@@ -26,8 +26,7 @@ public:
       ossia::max::parameter*, void*, long, long, char*);
   static t_max_err notify(ossia::max::parameter *x,
       t_symbol *s, t_symbol *msg, void *sender, void *data);
-  static void update_attribute(
-      parameter* x, string_view attribute, const net::node_base* node);
+  static void loadbang(parameter* x);
 
 };
 

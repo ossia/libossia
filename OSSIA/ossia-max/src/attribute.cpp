@@ -220,7 +220,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     object_attach_byptr_register(x, x, CLASS_BOX);
 
     // start registration
-    max_object_register<attribute>(x);
+    ossia_check_and_register(x);
     ossia_max::instance().attributes.push_back(x);
 
     x->update_path();

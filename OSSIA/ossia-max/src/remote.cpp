@@ -89,7 +89,9 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     {
       x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
       x->update_path();
-      max_object_register<remote>(x);
+      ossia_check_and_register(x);
+    } else {
+      x->get_hierarchy();
     }
 
     ossia_max::instance().remotes.push_back(x);
@@ -184,7 +186,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       if (x->m_mute)
         x->unregister();
       else
-        max_object_register(x);
+        ossia_register(x);
     }
 
   }
@@ -363,12 +365,17 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
           continue;
         }
       }
+
       if (n->get_parameter()->get_value_type()
           != ossia::val_type::IMPULSE)
       {
         auto& m = m_matchers.back();
-        m.enqueue_value(n->get_parameter()->value());
-        m.output_value();
+        auto v = n->get_parameter()->value();
+        if(v.valid())
+        {
+            m.enqueue_value(v);
+            m.output_value();
+        }
       }
     }
   }
@@ -442,6 +449,9 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
       x->m_unit = gensym(unit.c_str());
     }
 
+  }  else if ( attribute == ossia::net::text_extended_type() ){
+    auto matchers = make_matchers_vector(x,node);
+    get_type(x, matchers);
   } else {
     parameter_base::update_attribute(x, attribute, node);
   }

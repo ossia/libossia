@@ -19,6 +19,9 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
 {
   auto matchers = make_matchers_vector(x,node);
 
+  if (matchers.empty())
+    return;
+
   if ( attribute == ossia::net::text_refresh_rate() ){
     get_rate(x, matchers);
   } else if ( attribute == ossia::net::text_value_type() ){
@@ -35,6 +38,13 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
     get_repetition_filter(x, matchers);
   } else if ( attribute == ossia::net::text_default_value() ) {
     get_default(x, matchers);
+  }  else if ( attribute == ossia::net::text_extended_type() ){
+    get_type(x, matchers);
+    get_unit(x, matchers);
+  } else if ( attribute == ossia::net::text_muted() ){
+    get_mute(x, matchers);
+  } else if ( attribute == ossia::net::text_unit() ){
+    get_unit(x, matchers);
   } else {
     object_base::update_attribute((node_base*)x, attribute, node);
   }
@@ -699,6 +709,7 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
       if (set_flag) m->m_set_pool.push_back(v);
       param->push_value(v);
     }
+    trig_output_value(node);
   }
 }
 
@@ -710,6 +721,7 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     auto param = node->get_parameter();
     if (set_flag) m.m_set_pool.push_back(v);
     param->push_value(v);
+    trig_output_value(node);
   }
 }
 
@@ -750,9 +762,10 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
     std::vector<ossia::value> list;
 
+    list.reserve(argc+1);
+
     if ( s )
     {
-      list.reserve(argc+1);
       if ( s != gensym("list") && s != gensym("set") )
         list.push_back(std::string(s->s_name));
     }

@@ -12,6 +12,9 @@ namespace max
 class model : public node_base
 {
 public:
+
+  using is_model = std::true_type;
+
   bool register_node(const std::vector<t_matcher>& nodes);
   bool do_registration(const std::vector<t_matcher>& nodes);
   bool unregister();
