@@ -115,6 +115,15 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
+    x->get_hierarchy();
+    auto& map = ossia_max::instance().root_patcher;
+    auto it = map.find(x->m_patcher_hierarchy.back());
+
+    // register children only if root patcher have been loadbanged
+    // else the patcher itself will trig a registration on loadbang
+    if(it != map.end() && it->second)
+      client::register_children(x);
+
     ossia_library.clients.push_back(x);
   }
 
