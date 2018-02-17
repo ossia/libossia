@@ -310,10 +310,13 @@ void object_base::get_hierarchy()
 
 void object_base::loadbang(object_base* x)
 {
-  std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
+  if(!x->m_patcher_hierarchy.empty())
+  {
+    std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
 
-  ossia_max::instance().root_patcher.insert(std::pair<t_object*,bool>(x->m_patcher_hierarchy.back(), false));
-  clock_delay(ossia_max::instance().m_reg_clock,1);
+    ossia_max::instance().root_patcher.insert(std::pair<t_object*,bool>(x->m_patcher_hierarchy.back(), false));
+    clock_delay(ossia_max::instance().m_reg_clock,1);
+  }
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)

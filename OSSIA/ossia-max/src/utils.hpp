@@ -211,7 +211,10 @@ static inline T* find_parent_box_alive(
 template<typename T> bool
 ossia_register(T*x)
 {
-  std::cout << "registering " << x << std::endl;
+  if (!x->m_name)
+    return false;
+
+  std::cout << "registering " << x << " " << x->m_name->s_name << std::endl;
 
   std::vector<t_matcher> tmp;
   std::vector<t_matcher>* matchers = &tmp;
