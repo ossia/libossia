@@ -751,7 +751,10 @@ void parameter_base::push_default_value(parameter_base* x)
 
       auto def_val = ossia::net::get_default_value(*node);
       if (def_val)
+      {
         param->push_value(*def_val);
+        trig_output_value(node);
+      }
     }
   }
 }

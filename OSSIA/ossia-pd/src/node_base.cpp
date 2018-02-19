@@ -171,7 +171,10 @@ void node_base::push_default_value(node_base* x)
       {
         auto val = ossia::net::get_default_value(*child);
         if(val)
+        {
           param->push_value(*val);
+          trig_output_value(child);
+        }
       }
     }
   }
