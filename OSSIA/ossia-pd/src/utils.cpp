@@ -98,11 +98,11 @@ void register_quarantinized()
 {
   for (auto view : ossia::pd::view::quarantine().copy())
   {
-    obj_register<ossia::pd::view>(view);
+    ossia_register<ossia::pd::view>(view);
   }
   for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register<ossia::pd::remote>(remote);
+    ossia_register<ossia::pd::remote>(remote);
   }
 }
 
@@ -595,7 +595,7 @@ std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const os
 
 void trig_output_value(net::node_base *node)
 {
-  for(auto param : ossia_pd::instance().params.reference())
+  for(auto param : ossia_pd::instance().parameters.reference())
   {
     for (auto& m : param->m_matchers)
     {

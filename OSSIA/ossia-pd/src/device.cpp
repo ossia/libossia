@@ -121,7 +121,7 @@ void device::register_children(device* x)
   // to register them to device's address creation callback
   for (auto x : ossia_pd::instance().remotes.copy()){
     if (x->m_is_pattern)
-      obj_register<remote>(x);
+      ossia_register<remote>(x);
   }
 }
 

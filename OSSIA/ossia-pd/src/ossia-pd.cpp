@@ -4,6 +4,7 @@
 
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
+#include <ossia-pd/src/utils.hpp>
 
 #include <git_info.h>
 
@@ -77,13 +78,14 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   ossia_pd::ossia_class = c;
 
   auto& inst = ossia_pd::instance();
-  inst.params.reserve(2048);
+  inst.parameters.reserve(2048);
   inst.remotes.reserve(1024);
   inst.models.reserve(512);
   inst.attributes.reserve(512);
   inst.views.reserve(512);
   inst.devices.reserve(4);
   inst.clients.reserve(4);
+
   post("Welcome to ossia library");
   post("build SHA %s", ossia::get_commit_sha().c_str());
 }
@@ -118,6 +120,8 @@ ossia_pd::ossia_pd():
   m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
 {
   m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
+
+  m_reg_clock = clock_new(this, (t_method) ossia_pd::register_nodes);
 }
 
 ossia_pd::~ossia_pd()
@@ -143,7 +147,7 @@ ossia_pd::~ossia_pd()
   for (auto x : models.copy()){
     x->m_matchers.clear();
   }
-  for (auto x : params.copy()){
+  for (auto x : parameters.copy()){
     x->m_matchers.clear();
   }
 }
@@ -153,6 +157,84 @@ ossia_pd& ossia_pd::instance()
 {
   static ossia_pd library_instance;
   return library_instance;
+}
+
+void ossia_pd::register_nodes(void* x)
+{
+  auto& inst = ossia_pd::instance();
+  auto& map = inst.root_patcher;
+  for (auto it = map.begin(); it != map.end(); it++)
+  {
+    t_canvas* patcher = it->first;
+    for (auto dev : inst.devices.reference())
+    {
+      if(dev->m_patcher_hierarchy.back() == patcher)
+        ossia::pd::device::register_children(dev);
+    }
+    for (auto model : inst.models.reference())
+    {
+      if ( model->m_patcher_hierarchy.back() == patcher
+            && model->m_matchers.empty())
+        ossia_register(model);
+    }
+    for (auto param : inst.parameters.reference())
+    {
+      if ( param->m_patcher_hierarchy.back() == patcher
+            && param->m_matchers.empty())
+        ossia_register(param);
+    }
+
+    for (auto client : inst.clients.reference())
+    {
+      if(client->m_patcher_hierarchy.back() == patcher)
+        ossia::pd::client::register_children(client);
+    }
+    for (auto view : inst.views.reference())
+    {
+      if ( view->m_patcher_hierarchy.back() == patcher
+            && view->m_matchers.empty())
+        ossia_register(view);
+    }
+    for (auto remote : inst.remotes.reference())
+    {
+      if ( remote->m_patcher_hierarchy.back() == patcher
+            && remote->m_matchers.empty())
+        ossia_register(remote);
+    }
+    for (auto attr : inst.attributes.reference())
+    {
+      if ( attr->m_patcher_hierarchy.back() == patcher
+            && attr->m_matchers.empty())
+        ossia_register(attr);
+    }
+
+    for (auto dev : inst.devices.reference())
+    {
+      if(dev->m_patcher_hierarchy.back() == patcher)
+        node_base::push_default_value(dev);
+    }
+
+    std::vector<ossia::net::node_base*> list;
+
+    // send default value for default device's child
+    // TODO make this a method of ossia Max's object
+    auto n = &inst.get_default_device()->get_root_node();
+    list = ossia::net::list_all_child(n);
+
+    for (ossia::net::node_base* child : list)
+    {
+      if (auto param = child->get_parameter())
+      {
+        auto val = ossia::net::get_default_value(*child);
+        if(val)
+        {
+          param->push_value(*val);
+          trig_output_value(child);
+        }
+      }
+    }
+    it->second.is_loadbanged = true;
+  }
 }
 
 }

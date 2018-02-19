@@ -315,6 +315,23 @@ object_base::object_base(t_eclass* c)
   }
 }
 
+object_base::~object_base()
+{
+  auto& map = ossia_pd::instance().root_patcher;
+
+  const auto it = map.find(m_patcher_hierarchy.back());
+  if (it->second.dec() == 0)
+  {
+    // remove the key if there is no more object
+    // map.erase(m_patcher_hierarchy.back());
+
+    // or not... because if the patcher is not close but
+    // all its ossia objects are deleted, then if we add one
+    // it can't be registred because it won't find its root
+    // in the root patcher list.
+  }
+}
+
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
   m_is_deleted= true;
@@ -585,7 +602,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
   {
     for (auto& rm_matcher : x->m_matchers)
     {
-      for (auto param : ossia_pd::instance().params.reference())
+      for (auto param : ossia_pd::instance().parameters.reference())
       {
         for (auto& pa_matcher : param->m_matchers)
         {
@@ -647,6 +664,28 @@ void object_base::print_hierarchy(object_base* x)
     std::cout << c << std::endl;
 }
 
+void object_base::loadbang(object_base* x, t_float flag)
+{
+  if (flag == LB_LOAD)
+  {
+    if(!x->m_patcher_hierarchy.empty())
+    {
+      std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
+
+      auto& map = ossia_pd::instance().root_patcher;
+
+      std::pair<ossia_pd::RootMap::iterator, bool>  res = map.insert(
+            std::pair<t_canvas*,ossia_pd::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));
+      if (!res.second)
+      {
+        // key already exists, then increment count
+        (res.first)->second.inc();
+      }
+      clock_set(ossia_pd::instance().m_reg_clock,1);
+    }
+  }
+}
+
 void object_base::class_setup(t_eclass*c)
 {
   CLASS_ATTR_INT         (c, "priority",    0, object_base, m_priority);
@@ -655,9 +694,10 @@ void object_base::class_setup(t_eclass*c)
   CLASS_ATTR_INT         (c, "hidden",      0, object_base, m_hidden);
   CLASS_ATTR_INT         (c, "recall_safe", 0, object_base, m_recall_safe);
 
-  eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME,  0);
-  eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,   0);
-  eclass_addmethod(c, (method) object_base::print_hierarchy, "hierarchy", A_NULL, 0);
+  eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME, 0);
+  eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,  0);
+  eclass_addmethod(c, (method) object_base::print_hierarchy, "hierarchy", A_NULL,  0);
+  eclass_addmethod(c, (method) object_base::loadbang,        "loadbang",  A_NULL,  0);
 
   // to handle "dialog" message from property page
   class_addmethod((t_class *)c, (t_method)ebox_dialog, gensym("dialog"), A_GIMME, 0);

@@ -121,13 +121,13 @@ void model::register_children()
 
   for (auto view : view::quarantine().copy())
   {
-    obj_register(static_cast<ossia::pd::view*>(view));
+    ossia_register(static_cast<ossia::pd::view*>(view));
   }
 
   // then try to register quarantinized remote
   for (auto remote : remote::quarantine().copy())
   {
-    obj_register(static_cast<ossia::pd::remote*>(remote));
+    ossia_register(static_cast<ossia::pd::remote*>(remote));
   }
 }
 
@@ -215,7 +215,7 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
             << " " << x << " model " << x->m_name->s_name
             << " " << x->m_reg_count << std::endl;
 #else
-  obj_register(x);
+  ossia_check_and_register(x);
 #endif
 
   return x;

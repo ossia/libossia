@@ -361,7 +361,7 @@ std::vector<T*> get_objects(typename T::is_attribute* = nullptr)
 template<typename T>
 std::vector<T*> get_objects(typename T::is_parameter* = nullptr)
 {
-  return ossia_pd::instance().params.copy();
+  return ossia_pd::instance().parameters.copy();
 }
 
 template<typename T>
@@ -605,7 +605,7 @@ auto copy(const T& v) { return v; }
 
 template<typename T>
 // self registering (when creating the object)
-bool obj_register(T* x)
+bool ossia_register(T* x)
 {
   if (x->m_dead)
     return false; // object will be removed soon
@@ -681,6 +681,18 @@ bool obj_register(T* x)
   return x->register_node(*matchers);
 }
 
+template<typename T>
+void ossia_check_and_register(T* x)
+{
+  auto& map = ossia_pd::instance().root_patcher;
+  auto it = map.find(x->m_patcher_hierarchy.back());
+
+  // register object only if root patcher have been loadbanged
+  // else the patcher itself will trig a registration on loadbang
+  if(it != map.end() && it->second.is_loadbanged)
+    ossia_register(x);
+}
+
 template <typename T>
 void address_mess_cb(T* x, t_symbol* address)
 {
@@ -690,7 +702,7 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
   x->unregister();
-  obj_register(x);
+  ossia_register(x);
 }
 
 template <typename T>

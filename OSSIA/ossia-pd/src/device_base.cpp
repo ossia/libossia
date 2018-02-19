@@ -36,7 +36,7 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
 {
   if (node.get_parameter())
   {
-    for ( auto param : ossia_pd::instance().params.reference() )
+    for ( auto param : ossia_pd::instance().parameters.reference() )
     {
       for ( auto& m : param->m_matchers )
       {

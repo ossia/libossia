@@ -684,7 +684,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     }
     else
     {
-      for(auto param : ossia_pd::instance().params.reference())
+      for(auto param : ossia_pd::instance().parameters.reference())
       {
         bool break_flag = false;
 

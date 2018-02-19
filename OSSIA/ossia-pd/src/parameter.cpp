@@ -28,14 +28,19 @@ bool parameter::register_node(const std::vector<t_matcher>& matchers)
 
   for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register(remote);
+    ossia_register(remote);
   }
   for (auto attribute : ossia::pd::attribute::quarantine().copy())
   {
-    obj_register(attribute);
+    ossia_register(attribute);
   }
 
-  push_default_value(this);
+  const auto& map = ossia_pd::instance().root_patcher;
+  auto it = map.find(m_patcher_hierarchy.back());
+  if (it != map.end() && it->second.is_loadbanged)
+  {
+    push_default_value(this);
+  }
   clock_delay(m_poll_clock,1);
 
   return res;
@@ -108,11 +113,11 @@ bool parameter::unregister()
 
   for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register(remote);
+    ossia_register(remote);
   }
   for (auto attribute : ossia::pd::attribute::quarantine().copy())
   {
-    obj_register(attribute);
+    ossia_register(attribute);
   }
 
   return true;
@@ -128,7 +133,7 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
-    ossia_pd.params.push_back(x);
+    ossia_pd.parameters.push_back(x);
     x->m_otype = object_class::param;
 
     x->m_dataout = outlet_new((t_object*)x, nullptr);
@@ -178,7 +183,7 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
               << " " << x->m_reg_count << std::endl;
 
 #else
-    obj_register(x);
+    ossia_check_and_register(x);
 #endif
   }
 
@@ -215,7 +220,7 @@ void parameter::destroy(parameter* x)
 {
   x->m_dead = true;
   x->unregister();
-  ossia_pd::instance().params.remove_all(x);
+  ossia_pd::instance().parameters.remove_all(x);
 
   outlet_free(x->m_dataout);
   outlet_free(x->m_dumpout);

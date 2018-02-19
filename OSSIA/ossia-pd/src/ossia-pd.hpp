@@ -39,6 +39,7 @@ public:
     {
       return &instance().m_device;
     }
+    static void register_nodes(void* x);
 
     static t_eclass* attribute_class;
     static t_eclass* client_class;
@@ -64,7 +65,7 @@ public:
     static t_symbol* o_sym_address;
 
     ossia::safe_vector<attribute*> attributes;
-    ossia::safe_vector<parameter*> params;
+    ossia::safe_vector<parameter*> parameters;
     ossia::safe_vector<remote*> remotes;
     ossia::safe_vector<model*> models;
     ossia::safe_vector<view*> views;
@@ -78,6 +79,21 @@ public:
     ossia::safe_set<view*> view_quarantine;
     ossia::safe_set<parameter*> parameter_quarantine;
     ossia::safe_set<remote*> remote_quarantine;
+
+    // this is used at loadband to mark a patcher loaded
+    // and trig its registration
+    struct root_descriptor{
+      bool is_loadbanged{};
+      unsigned long count{}; // number of object under this root
+
+      unsigned long inc(){ return ++count;}
+      unsigned long dec(){ return --count;}
+    };
+
+    typedef std::map<t_canvas*, root_descriptor> RootMap;
+
+    RootMap root_patcher;
+    t_clock* m_reg_clock{};
 
 private:
     ossia_pd(); // constructor

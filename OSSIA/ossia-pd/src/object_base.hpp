@@ -144,6 +144,7 @@ public:
   static void get_recall_safe(object_base* x, std::vector<t_matcher*> nodes);
   static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
   static void address_mess_cb(object_base* x, t_symbol* address);
+  static void loadbang(object_base* x, t_float flag);
 
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_atom m_description[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
@@ -153,8 +154,9 @@ public:
   long m_tags_size{};
   long m_description_size{};
 
-  // constructor
+  // con/destructor
   object_base(t_eclass* c);
+  ~object_base();
 
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);

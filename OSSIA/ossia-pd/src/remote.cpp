@@ -120,8 +120,14 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
           != ossia::val_type::IMPULSE )
       {
         auto& m = m_matchers.back();
-        m.enqueue_value(n->get_parameter()->value());
-        m.output_value();
+        // TODO should we output value for all matchers ?
+        const auto& map = ossia_pd::instance().root_patcher;
+        auto it = map.find(m_patcher_hierarchy.back());
+        if (it != map.end() && it->second.is_loadbanged)
+        {
+          m.enqueue_value(n->get_parameter()->value());
+          m.output_value();
+        }
       }
     }
   }
@@ -250,7 +256,7 @@ t_pd_err remote::notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void*
       if (x->m_mute)
         x->unregister();
       else
-        obj_register(x);
+        ossia_register(x);
     }
     else
       parameter_base::notify((parameter_base*)x, s, msg, sender, data);
@@ -319,7 +325,7 @@ void* remote::create(t_symbol* name, int argc, t_atom* argv)
                 << " " << x << " remote " << x->m_name->s_name
                 << " " << x->m_reg_count << std::endl;
 #else
-      obj_register(x);
+      ossia_check_and_register(x);
 #endif
     }
 

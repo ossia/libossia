@@ -232,7 +232,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
               << "to register object " << x << " attribute '" << x->m_name->s_name
               << std::endl;
 #else
-    obj_register<attribute>(x);
+    ossia_check_and_register<attribute>(x);
 #endif
   }
 

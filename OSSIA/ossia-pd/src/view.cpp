@@ -113,12 +113,12 @@ static void register_children(view* x)
       ossia::pd::view* view = (ossia::pd::view*)v;
       if (view == x)
         continue;
-      obj_register<ossia::pd::view>(view);
+      ossia_register<ossia::pd::view>(view);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      obj_register<ossia::pd::remote>(remote);
+      ossia_register<ossia::pd::remote>(remote);
     }
   }
 }
@@ -213,7 +213,7 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
               << " " << x << " view " << x->m_name->s_name
               << " " << x->m_reg_count << std::endl;
 #else
-    obj_register(x);
+    ossia_check_and_register(x);
 #endif
   }
 
