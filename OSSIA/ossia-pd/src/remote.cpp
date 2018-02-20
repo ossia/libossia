@@ -120,9 +120,10 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
           != ossia::val_type::IMPULSE )
       {
         auto& m = m_matchers.back();
-        // TODO should we output value for all matchers ?
+
         const auto& map = ossia_pd::instance().root_patcher;
         auto it = map.find(m_patcher_hierarchy.back());
+
         if (it != map.end() && it->second.is_loadbanged)
         {
           m.enqueue_value(n->get_parameter()->value());
