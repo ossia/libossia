@@ -19,6 +19,8 @@
 #include <sstream>
 #include "ossia-max.hpp"
 
+#include <boost/algorithm/string.hpp>
+
 using namespace ossia::max;
 
 #pragma mark -
@@ -196,15 +198,23 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
   oscq_settings.host = "127.0.0.1";
   oscq_settings.port = 5678;
 
+  ossia::net::osc_connection_data osc_settings;
+  osc_settings.name = x->m_name->s_name;
+  osc_settings.host = "127.0.0.1";
+  osc_settings.remote_port = 6666;
+  osc_settings.local_port = 9999;
+
   t_atom connection_status[6];
 
   if (argc && argv->a_type == A_SYM)
   {
-    ossia::string_view protocol_name = argv->a_w.w_sym->s_name;
+    std::string protocol_name = argv->a_w.w_sym->s_name;
+    boost::algorithm::to_lower(protocol_name);
 
     if ( argc == 1
          && protocol_name != "oscquery"
-         && protocol_name != "Minuit" )
+         && protocol_name != "minuit"
+         && protocol_name != "osc")
     {
       ossia::string_view name;
 
@@ -274,18 +284,18 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       if (argc == 4
           && argv[0].a_type == A_SYM
           && argv[1].a_type == A_SYM
-          && argv[2].a_type == A_FLOAT
-          && argv[3].a_type == A_FLOAT)
+          && ( argv[2].a_type == A_LONG )
+          && ( argv[3].a_type == A_LONG ))
       {
         minuit_settings.name = atom_getsym(argv++)->s_name;
         minuit_settings.host = atom_getsym(argv++)->s_name;
-        minuit_settings.remote_port = atom_getfloat(argv++);
-        minuit_settings.local_port = atom_getfloat(argv++);
+        minuit_settings.remote_port = atom_getlong(argv++);
+        minuit_settings.local_port = atom_getlong(argv++);
       }
 
-      (connection_status+1, gensym("minuit"));
-      (connection_status+2, gensym(minuit_settings.name.c_str()));
-      (connection_status+3, gensym(minuit_settings.host.c_str()));
+      A_SETSYM(connection_status+1, gensym("minuit"));
+      A_SETSYM(connection_status+2, gensym(minuit_settings.name.c_str()));
+      A_SETSYM(connection_status+3, gensym(minuit_settings.host.c_str()));
       A_SETFLOAT(connection_status+4, minuit_settings.remote_port);
       A_SETFLOAT(connection_status+5, minuit_settings.local_port);
 
@@ -338,6 +348,45 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 
       outlet_anything(x->m_dumpout, gensym("connect"),4, connection_status);
     }
+    else if (protocol_name == "osc")
+    {
+      argc--;
+      argv++;
+      if (argc == 4
+          && argv[0].a_type == A_SYM
+          && argv[1].a_type == A_SYM
+          && ( argv[2].a_type == A_FLOAT || argv[2].a_type == A_LONG )
+          && ( argv[3].a_type == A_FLOAT || argv[3].a_type == A_LONG ))
+      {
+        osc_settings.name = atom_getsym(argv++)->s_name;
+        osc_settings.host = atom_getsym(argv++)->s_name;
+        osc_settings.remote_port = atom_getfloat(argv++);
+        osc_settings.local_port = atom_getfloat(argv++);
+      }
+
+      A_SETSYM(connection_status+1, gensym("osc"));
+      A_SETSYM(connection_status+2, gensym(osc_settings.name.c_str()));
+      A_SETSYM(connection_status+3, gensym(osc_settings.host.c_str()));
+      A_SETFLOAT(connection_status+4, osc_settings.remote_port);
+      A_SETFLOAT(connection_status+5, osc_settings.local_port);
+
+      try
+      {
+        x->m_device = new ossia::net::generic_device{
+            std::make_unique<ossia::net::osc_protocol>(
+              osc_settings.host, osc_settings.remote_port,
+              osc_settings.local_port, osc_settings.name),
+            x->m_name->s_name};
+        A_SETFLOAT(connection_status,1);
+      }
+      catch (const std::exception& e)
+      {
+        object_error((t_object*)x, "%s", e.what());
+        A_SETFLOAT(connection_status,0);
+      }
+
+      outlet_anything(x->m_dumpout, gensym("connect"),6, connection_status);
+    }
     else
     {
       object_error((t_object*)x, "Unknown protocol: %s", protocol_name.data());
@@ -348,9 +397,11 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
     client::print_protocol_help();
   }
 
-  x->connect_slots();
-
-  client::update(x);
+  if(x->m_device)
+  {
+    x->connect_slots();
+    client::update(x);
+  }
 }
 
 void client::check_thread_status(client* x)

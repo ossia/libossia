@@ -23,6 +23,8 @@ struct OSSIA_EXPORT minuit_connection_data
   int32_t local_port{};
 };
 
+using osc_connection_data = minuit_connection_data;
+
 struct OSSIA_EXPORT oscquery_connection_data
 {
   std::string name;

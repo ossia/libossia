@@ -270,8 +270,8 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       if (argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
       {
-        settings.oscport = atom_getfloat(argv++);
-        settings.wsport = atom_getfloat(argv++);
+        settings.oscport = atom_getlong(argv++);
+        settings.wsport = atom_getlong(argv++);
       }
 
       try

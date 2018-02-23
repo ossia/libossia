@@ -37,6 +37,11 @@ public:
         "oscquery <oscport> <wsurl> :\n"
         "\twsurl (symbol) : url to connect to (default : "
         "ws://127.0.0.1:5678)\n");
+    post(
+        "osc <remoteip> <remoteport> <localport> :\n"
+        "\tremoteip (symbol): ip of target device\n"
+        "\tremoteport (float): port on which packet should be send\n"
+        "\tlocalport (float): port to which this device is listening");
   }
 
   std::vector<ossia::net::minuit_connection_data> m_minuit_devices;
