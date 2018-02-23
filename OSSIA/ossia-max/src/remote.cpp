@@ -365,18 +365,16 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
           continue;
         }
       }
-      if ( n->get_parameter()->get_value_type()
-          != ossia::val_type::IMPULSE )
+
+      if (n->get_parameter()->get_value_type()
+          != ossia::val_type::IMPULSE)
       {
         auto& m = m_matchers.back();
-
-        const auto& map = ossia_max::instance().root_patcher;
-        auto it = map.find(m_patcher_hierarchy.back());
-
-        if (it != map.end() && it->second)
+        auto v = n->get_parameter()->value();
+        if(v.valid())
         {
-          m.enqueue_value(n->get_parameter()->value());
-          m.output_value();
+            m.enqueue_value(v);
+            m.output_value();
         }
       }
     }
