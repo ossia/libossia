@@ -171,6 +171,12 @@ void ossia_pd::register_nodes(void* x)
       if(dev->m_patcher_hierarchy.back() == patcher)
         ossia::pd::device::register_children(dev);
     }
+    for (auto client : inst.clients.reference())
+    {
+      if(client->m_patcher_hierarchy.back() == patcher)
+        ossia::pd::client::register_children(client);
+    }
+
     for (auto model : inst.models.reference())
     {
       if ( model->m_patcher_hierarchy.back() == patcher
@@ -184,11 +190,6 @@ void ossia_pd::register_nodes(void* x)
         ossia_register(param);
     }
 
-    for (auto client : inst.clients.reference())
-    {
-      if(client->m_patcher_hierarchy.back() == patcher)
-        ossia::pd::client::register_children(client);
-    }
     for (auto view : inst.views.reference())
     {
       if ( view->m_patcher_hierarchy.back() == patcher

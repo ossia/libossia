@@ -91,16 +91,24 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-void client::loadbang(client* x, t_float type)
-{
-  if (LB_LOAD == (int)type)
-  {
-    register_children(x);
-  }
-}
-
 void client::register_children(client* x)
 {
+
+  std::vector<object_base*> modelnodes
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
+  for (auto m : modelnodes)
+  {
+    if (m->m_otype == object_class::model)
+    {
+      ossia::pd::model* model = (ossia::pd::model*)m;
+      model->register_node(x->m_matchers);
+    }
+    else if (m->m_otype == object_class::param)
+    {
+      ossia::pd::parameter* param = (ossia::pd::parameter*)m;
+      param->register_node(x->m_matchers);
+    }
+  }
 
   std::vector<object_base*> viewnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
@@ -489,7 +497,6 @@ extern "C" void setup_ossia0x2eclient(void)
     eclass_addmethod(
         c, (method)client::register_children, "register", A_NULL, 0);
     eclass_addmethod(c, (method)client::update, "update", A_NULL, 0);
-    eclass_addmethod(c, (method)client::loadbang, "loadbang", A_FLOAT, 0);
     eclass_addmethod(c, (method)client::connect, "connect", A_GIMME, 0);
     eclass_addmethod(c, (method)client::disconnect, "disconnect", A_NULL, 0);
 
