@@ -697,7 +697,7 @@ void object_base::class_setup(t_eclass*c)
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME, 0);
   eclass_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_NULL,  0);
   eclass_addmethod(c, (method) object_base::print_hierarchy, "hierarchy", A_NULL,  0);
-  eclass_addmethod(c, (method) object_base::loadbang,        "loadbang",  A_NULL,  0);
+  eclass_addmethod(c, (method) object_base::loadbang,        "loadbang",  A_FLOAT,  0);
 
   // to handle "dialog" message from property page
   class_addmethod((t_class *)c, (t_method)ebox_dialog, gensym("dialog"), A_GIMME, 0);
