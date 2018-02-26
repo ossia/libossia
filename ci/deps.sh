@@ -91,8 +91,8 @@ case "$TRAVIS_OS_NAME" in
     set +e
     # try to force a ruby update
     # brew need Ruby 2.3, but OSX comes with 2.0
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install ruby
-    brew install gnu-tar xz
+    # HOMEBREW_NO_AUTO_UPDATE=1 brew install ruby
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install gnu-tar xz
     ARCHIVE=homebrew-cache.tar.xz
     wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
