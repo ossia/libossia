@@ -21,6 +21,9 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
 {
   if (m_mute) return false;
 
+  if(!m_name)
+    return false;
+
   update_path();
 
   bool res = do_registration(matchers);
