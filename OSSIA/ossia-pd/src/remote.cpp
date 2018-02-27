@@ -105,7 +105,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
       } else {
 
-        // if there is a node without address it might be a model
+        // if there is a node without parameter it might be a model
         // then look if that node have an eponyme child
 
         fmt::MemoryWriter path;
@@ -117,6 +117,10 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
           m_matchers.emplace_back(node, this);
         }
       }
+
+      if (!n)
+        continue;
+
       if ( n->get_parameter()->get_value_type()
           != ossia::val_type::IMPULSE )
       {
