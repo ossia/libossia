@@ -670,7 +670,10 @@ void object_base::loadbang(object_base* x, t_float flag)
   {
     if(!x->m_patcher_hierarchy.empty())
     {
-      std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
+      std::cout << "object_base: " << x;
+      if (x->m_name)
+        std::cout << " name " << x->m_name->s_name;
+      std::cout << " root: " << x->m_patcher_hierarchy.back() << std::endl;
 
       auto& map = ossia_pd::instance().root_patcher;
 
