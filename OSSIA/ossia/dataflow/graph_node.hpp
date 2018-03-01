@@ -58,6 +58,7 @@ inline bool operator!=(const token_request& lhs, const token_request& rhs) {
   return !(lhs == rhs);
 }
 
+using token_request_vec = ossia::small_vector<token_request, 4>;
 class OSSIA_EXPORT graph_node
 {
 public:
@@ -101,6 +102,10 @@ public:
     m_executed = b;
   }
 
+  const ossia::time_value& prev_date() const
+  {
+    return m_prev_date;
+  }
   void set_prev_date(time_value d)
   {
     m_prev_date = d;
@@ -115,7 +120,7 @@ public:
   bool logged() const { return m_logging; }
 
   virtual void all_notes_off();
-  ossia::small_vector<token_request, 4> requested_tokens;
+  token_request_vec requested_tokens;
 
 protected:
   inlets m_inlets;

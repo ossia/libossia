@@ -48,6 +48,20 @@ auto apply_con(const T& visitor, ossia::connection& con)
     default: return visitor(); break;
   }
 }
+template<typename T>
+auto apply_con(const T& visitor, const ossia::connection& con)
+{
+  auto tgt = con.target();
+  switch(con.which())
+  {
+    case 0: return visitor(*reinterpret_cast<const immediate_glutton_connection*>(tgt)); break;
+    case 1: return visitor(*reinterpret_cast<const immediate_strict_connection*>(tgt)); break;
+    case 2: return visitor(*reinterpret_cast<const delayed_glutton_connection*>(tgt)); break;
+    case 3: return visitor(*reinterpret_cast<const delayed_strict_connection*>(tgt)); break;
+    case 4: return visitor(*reinterpret_cast<const dependency_connection*>(tgt)); break;
+    default: return visitor(); break;
+  }
+}
 
 template<typename Graph_T, typename IO>
 void print_graph(Graph_T& g, IO& stream)
@@ -95,13 +109,19 @@ struct OSSIA_EXPORT graph_util
     {
       bool must_copy = in->sources.empty();
 
-      for (auto edge : in->sources)
+      for (const graph_edge* edge : in->sources)
       {
-        must_copy |= ossia::apply_con(init_node_visitor{*in, *edge, e}, edge->con);
+        must_copy |= ossia::apply_con(init_must_copy_visitor{*edge}, edge->con);
       }
 
       if(must_copy)
         pull_from_parameter(*in, e);
+
+      for (auto edge : in->sources)
+      {
+        ossia::apply_con(init_node_visitor{*in, *edge, e}, edge->con);
+      }
+
     }
   }
 
@@ -225,6 +245,10 @@ struct OSSIA_EXPORT graph_util
   static void log_inputs(const graph_node&, spdlog::logger& logger);
   static void log_outputs(const graph_node&, spdlog::logger& logger);
 
+  static void run_scaled(
+      graph_node& first_node,
+      execution_state& e);
+
   static void exec_node(
       graph_node& first_node,
       execution_state& e)
@@ -239,9 +263,19 @@ struct OSSIA_EXPORT graph_util
       first_node.set_end_discontinuous(false);
     }
 
-    for(const auto& request : first_node.requested_tokens) {
-      first_node.run(request, e);
-      first_node.set_prev_date(request.date);
+    auto all_normal = ossia::all_of(first_node.requested_tokens,
+                                   [] (const ossia::token_request& tk) { return tk.speed == 1.;});
+    if(all_normal)
+    {
+      for(const auto& request : first_node.requested_tokens)
+      {
+        first_node.run(request, e);
+        first_node.set_prev_date(request.date);
+      }
+    }
+    else
+    {
+      run_scaled(first_node, e);
     }
 
     first_node.set_executed(true);
@@ -263,12 +297,12 @@ struct OSSIA_EXPORT graph_util
       first_node.set_end_discontinuous(false);
     }
 
+    log_inputs(first_node, logger);
     for(const auto& request : first_node.requested_tokens) {
-      log_inputs(first_node, logger);
       first_node.run(request, e);
       first_node.set_prev_date(request.date);
-      log_outputs(first_node, logger);
     }
+    log_outputs(first_node, logger);
 
     first_node.set_executed(true);
     teardown_node(first_node, e);
@@ -310,6 +344,30 @@ struct OSSIA_EXPORT graph_util
           eggs::variants::apply(clear_data{}, out->data);
       }
     }
+  }
+
+  template<typename DevicesT>
+  static auto find_address_connection(ossia::graph_node& source, ossia::graph_node& sink, const DevicesT& devices)
+  {
+    bool ok = false;
+    for(const ossia::outlet_ptr& outlet : source.outputs())
+    {
+      for(const ossia::inlet_ptr& inlet : sink.inputs())
+      {
+        apply_to_destination(outlet->address, devices, [&] (ossia::net::parameter_base* p1, bool) {
+          apply_to_destination(inlet->address, devices, [&] (ossia::net::parameter_base* p2, bool) {
+            if(p1 == p2)
+              ok = true;
+          });
+        });
+
+        if(ok)
+          break;
+      }
+      if(ok)
+        break;
+    }
+    return ok;
   }
 };
 
@@ -439,22 +497,4 @@ struct OSSIA_EXPORT graph_base: graph_interface
     graph_t m_graph;
 };
 
-struct tick_all_nodes
-{
-    ossia::execution_state& e;
-    ossia::graph_base& g;
-
-    void operator()(unsigned long samples, double) const
-    {
-      e.clear_local_state();
-      e.get_new_values();
-      e.samples_since_start += samples;
-
-      for(auto& node : g.m_nodes)
-        node.first->requested_tokens.push_back(token_request{time_value{e.samples_since_start}});
-
-      g.state(e);
-      e.commit();
-    }
-};
 }

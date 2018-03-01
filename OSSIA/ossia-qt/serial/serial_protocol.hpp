@@ -35,7 +35,7 @@ public:
   }
   ~serial_wrapper();
 
-signals:
+Q_SIGNALS:
   void write(QByteArray);
 
 public Q_SLOTS:

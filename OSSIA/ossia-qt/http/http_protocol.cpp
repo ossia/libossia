@@ -78,7 +78,7 @@ bool http_protocol::push(const ossia::net::parameter_base& parameter_base)
 
   if (!addr.data().request.isEmpty())
   {
-    emit sig_push(&addr);
+    sig_push(&addr);
     return true;
   }
 

@@ -103,7 +103,7 @@ bool ws_generic_client_protocol::push(
 
   if (!addr.data().request.isNull())
   {
-    emit sig_push(&addr);
+    sig_push(&addr);
     return true;
   }
 

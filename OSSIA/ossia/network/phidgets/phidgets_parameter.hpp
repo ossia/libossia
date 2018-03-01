@@ -10,7 +10,7 @@ class phidget_parameter final : public ossia::net::parameter_base
 {
   phidget_protocol& m_protocol;
   ppp::phidget_ptr m_phidget;
-  ppp::interface_kit* m_ik{};
+  //ppp::interface_kit* m_ik{};
   ossia::domain m_domain;
 
 public:
@@ -38,7 +38,5 @@ public:
   net::parameter_base& set_domain(const domain&) override;
   bounding_mode get_bounding() const override;
   net::parameter_base& set_bounding(bounding_mode) override;
-  repetition_filter get_repetition_filter() const override;
-  net::parameter_base& set_repetition_filter(repetition_filter) override;
 };
 }

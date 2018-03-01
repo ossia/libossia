@@ -56,7 +56,7 @@ void qml_cond::setExpr(QQmlScriptString expr)
     return;
 
   m_expr = expr;
-  emit exprChanged(m_expr);
+  exprChanged(m_expr);
 }
 
 void qml_cond::setSync(qml_sync* sync)
@@ -77,7 +77,7 @@ void qml_cond::setSync(qml_sync* sync)
   {
     m_impl.reset();
   }
-  emit syncChanged(m_sync);
+  syncChanged(m_sync);
 }
 
 void qml_cond::reset()

@@ -5,6 +5,9 @@
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#if __has_include(<QJSValue>)
+#include <QJSValue>
+#endif
 
 // Taken from https://stackoverflow.com/a/18230916/1495627
 bool latin_compare(const QString& qstr, const std::string& str)
@@ -834,8 +837,12 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toStringList());
     case QVariant::Date:
       return operator()(v.toDate());
+
+#if __has_include(<QJSValue>)
     case 1024: // QJSValue -> seems to crash
       return value_from_js(v.value<QJSValue>());
+#endif
+
     default:
       return operator()();
   }

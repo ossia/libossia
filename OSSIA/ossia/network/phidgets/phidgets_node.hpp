@@ -16,7 +16,7 @@ public:
 
   ~phidget_node();
 
-  void set_parameter(std::unique_ptr<ossia::net::parameter_base> a)
+  void set_parameter(std::unique_ptr<ossia::net::parameter_base> a) override
   {
     m_parameter = std::move(a);
   }

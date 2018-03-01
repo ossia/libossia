@@ -52,7 +52,7 @@ public:
   {
     return js;
   }
-signals:
+Q_SIGNALS:
   void sig_push(const ws_generic_client_parameter*);
 
 private Q_SLOTS:

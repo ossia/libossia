@@ -9,7 +9,6 @@
 #include <smallfun.hpp>
 #include <iostream>
 #include <memory>
-#include <QDebug>
 
 #include <ossia/detail/callback_container.hpp>
 
@@ -52,11 +51,7 @@ context::~context() = default;
 spdlog::logger& logger()
 {
   static spdlog::logger& init = []() -> spdlog::logger& {
-    auto logger = spdlog::get("ossia");
-    if (logger)
-      return *logger;
-    else
-      return *spdlog::stderr_logger_mt("ossia");
+    return *logger_ptr();
   }();
 
   return init;

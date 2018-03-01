@@ -39,7 +39,7 @@ public Q_SLOTS:
   void setStartTrig(QQmlScriptString s);
   void setEndTrig(QQmlScriptString s);
 
-signals:
+Q_SIGNALS:
   void intervalChanged(qml_interval* interval);
   void startTrigChanged(QQmlScriptString);
   void endTrigChanged(QQmlScriptString);

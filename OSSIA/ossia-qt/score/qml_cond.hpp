@@ -62,7 +62,7 @@ public Q_SLOTS:
     void setExpr(QQmlScriptString expr);
     void setSync(qml_sync* sync);
 
-signals:
+Q_SIGNALS:
     void exprChanged(QQmlScriptString expr);
     void syncChanged(qml_sync* sync);
 

@@ -64,7 +64,7 @@ public:
   void setDevice(QObject* device) override;
   void resetNode() override;
 
-signals:
+Q_SIGNALS:
   void setValue_sig(const value&);
 
 private Q_SLOTS:
@@ -96,7 +96,7 @@ public:
 public Q_SLOTS:
   void setOn(QQmlScriptString on);
 
-signals:
+Q_SIGNALS:
   void onChanged(QQmlScriptString on);
 
 private:
@@ -121,7 +121,7 @@ public:
 
   QVariant value() const;
 
-signals:
+Q_SIGNALS:
   void valueChanged(QVariant);
   void setValue_sig(const ossia::value&);
 

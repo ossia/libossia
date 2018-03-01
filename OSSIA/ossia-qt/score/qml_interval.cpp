@@ -120,7 +120,7 @@ void qml_interval::setNominalDuration(qint32 nominalDuration)
     return;
 
   m_nominalDuration = nominalDuration;
-  emit nominalDurationChanged(m_nominalDuration);
+  nominalDurationChanged(m_nominalDuration);
 }
 
 void qml_interval::setMinDuration(qint32 minDuration)
@@ -129,7 +129,7 @@ void qml_interval::setMinDuration(qint32 minDuration)
     return;
 
   m_minDuration = minDuration;
-  emit minDurationChanged(m_minDuration);
+  minDurationChanged(m_minDuration);
 }
 
 void qml_interval::setMaxDuration(qint32 maxDuration)
@@ -138,7 +138,7 @@ void qml_interval::setMaxDuration(qint32 maxDuration)
     return;
 
   m_maxDuration = maxDuration;
-  emit maxDurationChanged(m_maxDuration);
+  maxDurationChanged(m_maxDuration);
 }
 
 void qml_interval::setPlayDuration(qint32 playDuration)
@@ -147,7 +147,7 @@ void qml_interval::setPlayDuration(qint32 playDuration)
     return;
 
   m_playDuration = playDuration;
-  emit playDurationChanged(m_playDuration);
+  playDurationChanged(m_playDuration);
 }
 
 void qml_interval::setFollows(qml_cond* follows)
@@ -156,7 +156,7 @@ void qml_interval::setFollows(qml_cond* follows)
     return;
 
   m_follows = follows;
-  emit followsChanged(m_follows);
+  followsChanged(m_follows);
 }
 
 void qml_interval::setPrecedes(qml_cond* precedes)
@@ -165,7 +165,7 @@ void qml_interval::setPrecedes(qml_cond* precedes)
     return;
 
   m_precedes = precedes;
-  emit precedesChanged(m_precedes);
+  precedesChanged(m_precedes);
 }
 
 void qml_interval::setFollows(qml_sync* follows)
@@ -174,7 +174,7 @@ void qml_interval::setFollows(qml_sync* follows)
     return;
 
   m_follows = follows->defaultCond();
-  emit followsChanged(m_follows);
+  followsChanged(m_follows);
 }
 
 void qml_interval::setPrecedes(qml_sync* precedes)
@@ -183,7 +183,7 @@ void qml_interval::setPrecedes(qml_sync* precedes)
     return;
 
   m_precedes = precedes->defaultCond();
-  emit precedesChanged(m_precedes);
+  precedesChanged(m_precedes);
 }
 
 void qml_interval::setFollows(QObject* follows)
@@ -223,7 +223,7 @@ void qml_interval::setSpeed(double speed)
     return;
 
   m_speed = speed;
-  emit speedChanged(m_speed);
+  speedChanged(m_speed);
 }
 
 void qml_interval::reset()

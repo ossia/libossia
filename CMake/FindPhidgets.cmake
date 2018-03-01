@@ -4,13 +4,13 @@
 #  LIBPHIDGETS_INCLUDE_DIR - the libphidgets include directory
 #  LIBPHIDGETS_LIBRARIES - Link these to use libphidgets
 
-find_path(LIBPHIDGETS_INCLUDE_DIR phidget21.h
+find_path(LIBPHIDGETS_INCLUDE_DIR phidget22.h
   HINTS
     ${PHIDGETS_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets
   )
 
-find_library(LIBPHIDGETS_LIBRARIES NAMES libphidget21.a
+find_library(LIBPHIDGETS_LIBRARIES NAMES libphidget22.a
   HINTS
   ${PHIDGETS_LIB_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets/.libs)

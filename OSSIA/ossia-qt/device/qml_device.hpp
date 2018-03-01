@@ -96,7 +96,7 @@ public Q_SLOTS:
 
   void cleanup();
 
-signals:
+Q_SIGNALS:
   void readPresetChanged(bool readPreset);
   void nameChanged(QString name);
 

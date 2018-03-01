@@ -69,7 +69,7 @@ public Q_SLOTS:
     void pause();
     void stop();
 
-signals:
+Q_SIGNALS:
     void nominalDurationChanged(qint32 nominalDuration);
     void minDurationChanged(qint32 minDuration);
     void maxDurationChanged(qint32 maxDuration);

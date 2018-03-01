@@ -84,7 +84,7 @@ class qml_script : public qml_process
     double position() const { return m_pos; }
     QQmlScriptString script() const { return m_script; }
     void setScript(QQmlScriptString s) { m_script = s; }
-  signals:
+  Q_SIGNALS:
     void dateChanged(qint32);
     void positionChanged(double);
     void scriptChanged(QQmlScriptString);

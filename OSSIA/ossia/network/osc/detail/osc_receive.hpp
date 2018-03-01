@@ -4,6 +4,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/common/network_logger.hpp>
 
 namespace ossia
 {
@@ -13,7 +14,8 @@ template<bool SilentUpdate>
 inline void handle_osc_message(
     const oscpack::ReceivedMessage& m,
     const ossia::net::listened_parameters& listening,
-    ossia::net::device_base& dev)
+    ossia::net::device_base& dev,
+    network_logger& logger)
 {
   auto addr_txt = m.AddressPattern();
   auto addr = listening.find(addr_txt);
@@ -23,6 +25,9 @@ inline void handle_osc_message(
     auto& the_addr = **addr;
     if(net::update_value(the_addr, m))
       dev.on_message( the_addr);
+
+    if (logger.inbound_listened_logger)
+      logger.inbound_listened_logger->info("In: {0}", m);
   }
   else
   {
@@ -74,6 +79,9 @@ inline void handle_osc_message(
       }
     }
   }
+
+  if (logger.inbound_logger)
+    logger.inbound_logger->info("In: {0}", m);
 }
 
 }

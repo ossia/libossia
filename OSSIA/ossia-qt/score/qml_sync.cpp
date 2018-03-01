@@ -53,7 +53,7 @@ void qml_sync::setExpr(QQmlScriptString expr)
     return;
 
   m_expr = expr;
-  emit exprChanged(m_expr);
+  exprChanged(m_expr);
 }
 
 void qml_sync::reset()

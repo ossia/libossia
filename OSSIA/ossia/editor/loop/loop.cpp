@@ -295,7 +295,6 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
     }
     else
     {
-      std::vector<time_event*> statusChangedEvents;
       switch(m_startEvent.get_status())
       {
         case time_event::status::NONE:

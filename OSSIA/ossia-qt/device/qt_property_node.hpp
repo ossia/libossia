@@ -148,7 +148,7 @@ private Q_SLOTS:
 
   void setValue_slot(const ossia::value&);
 
-signals:
+Q_SIGNALS:
   void setValue_sig(const ossia::value&);
 
 private:

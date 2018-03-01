@@ -54,7 +54,7 @@ class OSSIA_EXPORT qml_logger : public QObject
 
   log_level logLevel() const;
 
-signals:
+Q_SIGNALS:
   void appNameChanged(QString appName);
   void appVersionChanged(QString appVersion);
   void appCreatorChanged(QString appCreator);

@@ -11,39 +11,76 @@ namespace ppp
 {
 class phidgets_manager;
 
-struct phidget
+struct phidget_device
 {
   friend class phidgets_manager;
 
 public:
-  ~phidget();
+  ~phidget_device();
 
   std::function<void(int, const char*)> onError;
 
-  CPhidgetHandle handle() const;
+  PhidgetHandle handle() const;
   const std::string& name() const;
   const std::string& type() const;
   const std::string& label() const;
   int serial() const;
   int status() const;
-
-  void set_label(const std::string& n);
-  interface_kit* impl() const
+  /*
+  bool is_channel() const
   {
-    return m_ik.get();
+    int ok;
+    Phidget_getIsChannel(m_handle, &ok);
+    return (bool)ok;
+  }
+  */
+  bool is_attached() const
+  {
+    int ok;
+    Phidget_getAttached(m_handle, &ok);
+    return (bool)ok;
+  }
+  bool is_hub_port_device() const
+  {
+    int ok;
+    Phidget_getIsHubPortDevice(m_handle, &ok);
+    return (bool)ok;
+  }
+  bool is_local() const
+  {
+    int ok;
+    Phidget_getIsLocal(m_handle, &ok);
+    return (bool)ok;
+  }
+  bool is_remote() const
+  {
+    int ok;
+    Phidget_getIsRemote(m_handle, &ok);
+    return (bool)ok;
+  }
+  bool channel_count() const
+  {
+    uint32_t ok;
+    Phidget_getDeviceChannelCount(m_handle, PHIDCHCLASS_NOTHING, &ok);
+    return (bool)ok;
   }
 
+  Phidget_DeviceClass device_class() const { return m_class; }
+  Phidget_DeviceID device_id() const { return m_id; }
+
+  void set_label(const std::string& n);
+
 private:
-  phidget(CPhidgetHandle hdl);
-  phidget(const phidget&) = delete;
-  phidget(phidget&&) = delete;
-  phidget& operator=(const phidget&) = delete;
-  phidget& operator=(phidget&&) = delete;
+  phidget_device(PhidgetHandle hdl);
+  phidget_device(const phidget_device&) = delete;
+  phidget_device(phidget_device&&) = delete;
+  phidget_device& operator=(const phidget_device&) = delete;
+  phidget_device& operator=(phidget_device&&) = delete;
 
-  CPhidgetHandle m_handle{};
+  PhidgetHandle m_handle{};
 
-  CPhidget_DeviceClass m_class{};
-  CPhidget_DeviceID m_id{};
+  Phidget_DeviceClass m_class{};
+  Phidget_DeviceID m_id{};
 
   std::string m_name;
   std::string m_type;
@@ -51,9 +88,71 @@ private:
   int m_serial{};
   int m_status{};
 
-  std::unique_ptr<interface_kit> m_ik;
+  //std::unique_ptr<interface_kit> m_ik;
 };
-using phidget_ptr = std::shared_ptr<phidget>;
+
+
+struct phidget_channel
+{
+  friend class phidgets_manager;
+
+public:
+  ~phidget_channel();
+
+  std::function<void(int, const char*)> onError;
+
+  PhidgetHandle handle() const;
+  const std::string& name() const;
+  const std::string& className() const;
+  /*
+  bool is_channel() const
+  {
+    int ok;
+    Phidget_getIsChannel(m_handle, &ok);
+    return (bool)ok;
+  }
+  */
+  bool is_attached() const
+  {
+    int ok;
+    Phidget_getAttached(m_handle, &ok);
+    return (bool)ok;
+  }
+
+  bool is_local() const
+  {
+    int ok;
+    Phidget_getIsLocal(m_handle, &ok);
+    return (bool)ok;
+  }
+
+  bool is_remote() const
+  {
+    int ok;
+    Phidget_getIsRemote(m_handle, &ok);
+    return (bool)ok;
+  }
+
+private:
+  phidget_channel(PhidgetHandle device
+                  , PhidgetHandle hdl);
+  phidget_channel(const phidget_channel&) = delete;
+  phidget_channel(phidget_channel&&) = delete;
+  phidget_channel& operator=(const phidget_channel&) = delete;
+  phidget_channel& operator=(phidget_channel&&) = delete;
+
+  PhidgetHandle m_device{};
+  PhidgetHandle m_handle{};
+
+  Phidget_ChannelClass m_class{};
+  Phidget_ChannelSubclass m_subclass{};
+  int m_channel_id{};
+
+  std::string m_name;
+  std::string m_className;
+};
+
+using phidget_ptr = std::shared_ptr<phidget_device>;
 class phidgets_manager
 {
 public:
@@ -64,8 +163,8 @@ public:
   phidgets_manager& operator=(phidgets_manager&&) = delete;
   ~phidgets_manager();
 
-  std::function<void(phidget_ptr)> onPhidgetCreated;
-  std::function<void(phidget_ptr)> onPhidgetDestroyed;
+  std::function<void(phidget_ptr)> onDeviceCreated;
+  std::function<void(phidget_ptr)> onDeviceDestroyed;
 
   void open();
 
@@ -75,7 +174,7 @@ public:
   }
 
 private:
-  CPhidgetManagerHandle m_hdl{};
+  PhidgetManagerHandle m_hdl{};
 
   std::vector<phidget_ptr> m_phidgets;
 };

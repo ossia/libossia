@@ -254,15 +254,12 @@ void osc_protocol::on_received_message(
 {
   if (!m_learning)
   {
-    handle_osc_message<false>(m, m_listening, *m_device);
+    handle_osc_message<false>(m, m_listening, *m_device, m_logger);
   }
   else
   {
     on_learn(m);
   }
-
-  if (m_logger.inbound_logger)
-    m_logger.inbound_logger->info("In: {0}", m);
 }
 
 template <std::size_t N>

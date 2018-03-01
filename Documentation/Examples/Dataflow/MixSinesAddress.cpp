@@ -2,35 +2,7 @@
 #include <ossia/dataflow/audio_protocol.hpp>
 #include <ossia/dataflow/common_nodes.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-
-/*
-#if __has_include(<valgrind/callgrind.h>)
-#include <valgrind/callgrind.h>
-#endif
-struct tick_all_nodes_bench
-{
-    ossia::execution_state& e;
-    ossia::graph_base& g;
-
-    void operator()(unsigned long samples, double) const
-    {
-#if __has_include(<valgrind/callgrind.h>)
-      CALLGRIND_
-#endif
-      e.clear_local_state();
-      e.get_new_values();
-      e.samples_since_start += samples;
-
-      for(auto& node : g.m_nodes)
-        node.first->requested_tokens.push_back(token_request{time_value{e.samples_since_start}});
-
-      g.state(e);
-      e.commit();
-#if __has_include(<valgrind/callgrind.h>)
-#endif
-    }
-};
-*/
+#include <ossia/dataflow/graph/tick_methods.hpp>
 
 class OSSIA_EXPORT simple_device
 {

@@ -33,8 +33,8 @@ struct midi_port
   {
 
   }
-  midi_port& operator=(const midi_port&) = delete;
-  midi_port& operator=(midi_port&&) = delete;
+  midi_port& operator=(const midi_port&) = default;
+  midi_port& operator=(midi_port&&) = default;
 };
 
 struct tvalue {

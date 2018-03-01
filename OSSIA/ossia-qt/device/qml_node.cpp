@@ -80,7 +80,7 @@ void qml_node::resetNode()
   if(m_was_destroyed)
     return;
   m_node.clear();
-  emit nodeChanged(m_node);
+  nodeChanged(m_node);
   const bool reading = m_device ? m_device->readPreset() : false;
   reset_parent();
 
@@ -97,7 +97,7 @@ void qml_node::resetNode()
       m_ossia_node->about_to_be_deleted
           .connect<qml_node, &qml_node::on_node_deleted>(this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
-      emit nodeChanged(m_node);
+      nodeChanged(m_node);
       setPath(QString::fromStdString(
           ossia::net::address_string_from_node(*m_ossia_node)));
       applyNodeAttributes();

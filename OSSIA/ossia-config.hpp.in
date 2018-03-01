@@ -18,3 +18,4 @@
 #cmakedefine OSSIA_C
 #cmakedefine OSSIA_QML_SCORE
 #cmakedefine OSSIA_EDITOR
+#cmakedefine OSSIA_PARALLEL
