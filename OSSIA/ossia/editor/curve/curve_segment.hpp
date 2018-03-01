@@ -26,5 +26,9 @@ template <typename Y>
  *
  * In our case x can sometimes be greater than 1.
  */
+#if defined(_MSC_VER)
+using curve_segment = smallfun::function<Y(double, Y, Y), 24+24>;
+#else
 using curve_segment = smallfun::function<Y(double, Y, Y), 24>;
+#endif
 }

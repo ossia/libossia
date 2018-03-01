@@ -1,6 +1,7 @@
 #include "audio_parameter.hpp"
 #include "audio_protocol.hpp"
 #include "execution_state.hpp"
+#include <ossia/network/midi/midi_protocol.hpp>
 
 namespace ossia
 {

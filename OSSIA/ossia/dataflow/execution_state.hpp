@@ -3,6 +3,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/midi/midi_device.hpp>
+#include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/flat_state.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>

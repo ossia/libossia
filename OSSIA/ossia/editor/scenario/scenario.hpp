@@ -2,6 +2,8 @@
 
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
