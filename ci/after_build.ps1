@@ -89,7 +89,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     gpg.exe --fast-import ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc
 
     curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/"
-    $ARCHIVE_NAME="ossia-v${VERSION}-(W32-i386-32)-externals.zip"
+    $ARCHIVE_NAME="ossia-v${VERSION}-(Windows-i386-32)-externals.zip"
     copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ${ARCHIVE_NAME}
 
     gpg.exe -ab --batch --yes ${ARCHIVE_NAME}
