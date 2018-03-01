@@ -102,7 +102,7 @@ struct static_exec_logger
 };
 
 template<typename UpdateImpl, typename TickImpl>
-struct OSSIA_EXPORT graph_static final
+struct graph_static final
     : public graph_util
     , public graph_base
 {

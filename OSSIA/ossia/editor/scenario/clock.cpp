@@ -7,6 +7,7 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <cassert>
 #include <iostream>
+#include <ossia/editor/state/message.hpp>
 #include <ossia/editor/state/state.hpp>
 
 namespace ossia

@@ -25,7 +25,7 @@ struct OSSIA_EXPORT execution_state
     }
 
     template<typename T>
-    auto get_value_or(std::string_view v, T val)
+    auto get_value_or(std::string_view v, const T& val)
     {
       if(auto node = find_node(v))
         return ossia::convert<T>(node->get_parameter()->value());

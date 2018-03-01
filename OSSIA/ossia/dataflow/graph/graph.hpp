@@ -266,10 +266,7 @@ public:
   }
 
 public:
-  ~graph() override
-  {
-    clear();
-  }
+  ~graph() override;
 
   void state(execution_state& e) override
   {

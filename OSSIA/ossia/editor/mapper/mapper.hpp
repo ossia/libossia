@@ -41,10 +41,7 @@ class OSSIA_EXPORT mapping_node final :
       return "mapping";
     }
 
-    ~mapping_node() override
-    {
-
-    }
+    ~mapping_node() override;
 
     void set_driver(optional<ossia::destination> d)
     {

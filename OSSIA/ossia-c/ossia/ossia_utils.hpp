@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia-c/ossia-c.h>
+#include <ossia/detail/config.hpp>
 
 #include <algorithm>
 #include <cstdio>

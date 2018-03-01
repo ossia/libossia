@@ -45,10 +45,7 @@ class OSSIA_EXPORT automation_node final :
       m_outlets.push_back(&value_out);
     }
 
-    ~automation_node() override
-    {
-
-    }
+    ~automation_node() override;
     std::string label() const override
     {
       return "automation";

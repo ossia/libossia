@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/value/value_traits.hpp>
@@ -377,6 +378,18 @@ T convert(const ossia::value& val)
   return val.apply(detail::value_converter<T>{});
 }
 
+
+extern template double convert<double>(const ossia::value&);
+extern template float convert<float>(const ossia::value&);
+extern template int convert<int>(const ossia::value&);
+extern template char convert<char>(const ossia::value&);
+extern template bool convert<bool>(const ossia::value&);
+extern template std::string convert<std::string>(const ossia::value&);
+extern template std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value&);
+extern template ossia::vec2f convert<ossia::vec2f>(const ossia::value&);
+extern template ossia::vec3f convert<ossia::vec3f>(const ossia::value&);
+extern template ossia::vec4f convert<ossia::vec4f>(const ossia::value&);
+
 // Used to convert List in Vec2f, Vec3f, Vec4f...
 template <typename T>
 T convert(const std::vector<ossia::value>& val)
@@ -389,7 +402,7 @@ T convert(const std::vector<ossia::value>& val)
   const auto N = std::min(val.size(), detail::array_size<T>::value);
   for (std::size_t i = 0; i < N; i++)
   {
-    res[i] = convert<float>(val[i]);
+    res[i] = val[i].apply(detail::value_converter<typename T::value_type>{});
   }
   return res;
 }

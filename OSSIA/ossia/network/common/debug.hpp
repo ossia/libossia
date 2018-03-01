@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <fmt/format.h>
 #include <ossia_export.h>

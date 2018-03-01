@@ -3,6 +3,7 @@
 #include <ossia/dataflow/audio_parameter.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
 
 namespace ossia
 {
@@ -220,4 +221,10 @@ audio_parameter::~audio_parameter()
 texture_generic_parameter::~texture_generic_parameter()
 {
 }
+
+graph::~graph()
+{
+  clear();
+}
+
 }

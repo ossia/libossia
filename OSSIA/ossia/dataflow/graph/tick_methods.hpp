@@ -95,7 +95,7 @@ struct tick_all_nodes
 };
 
 // 1 tick per buffer
-template<auto Commit = &ossia::execution_state::commit>
+template<void(ossia::execution_state::*Commit)()>
 struct buffer_tick
 {
     ossia::execution_state& st;
@@ -117,7 +117,7 @@ struct buffer_tick
 };
 
 // 1 tick per sample
-template<auto Commit = &ossia::execution_state::commit>
+template<void(ossia::execution_state::*Commit)()>
 struct precise_score_tick
 {
     ossia::execution_state& st;
@@ -140,7 +140,7 @@ struct precise_score_tick
     }
 };
 
-template<auto Commit = &ossia::execution_state::commit>
+template<void(ossia::execution_state::*Commit)()>
 struct split_score_tick
 {
   public:
