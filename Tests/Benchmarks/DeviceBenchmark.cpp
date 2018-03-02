@@ -31,7 +31,7 @@ private Q_SLOTS:
             for(int i = 0; i < k; i++)
             {
                 auto n = src.create_child(std::to_string(i));
-                auto a = n->create_parameter(ossia::val_type::FLOAT);
+                n->create_parameter(ossia::val_type::FLOAT);
             }
 
             auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5566");

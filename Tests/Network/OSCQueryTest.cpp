@@ -153,7 +153,7 @@ private Q_SLOTS:
     {
         auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
         generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-        TestDeviceRef dev{serv};
+        TestDeviceRef dev{serv}; (void) dev;
         {
           auto& n = find_or_create_node(serv, "/main");
           auto a = n.create_parameter(ossia::val_type::FLOAT);

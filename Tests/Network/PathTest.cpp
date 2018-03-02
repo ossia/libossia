@@ -149,7 +149,7 @@ private Q_SLOTS:
     auto& n1 = ossia::net::find_or_create_node(device1, "foo/bar/baz");
     auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/blop");
     auto& n5 = ossia::net::find_or_create_node(device1, "foo/war/waz");
-    auto& n6 = ossia::net::find_or_create_node(device1, "foo/kar/kaz");
+    ossia::net::find_or_create_node(device1, "foo/kar/kaz");
 
     auto& n3 = ossia::net::find_or_create_node(device2, "fizz/baz");
     auto& n4 = ossia::net::find_or_create_node(device2, "foo/baz.2/blop");
@@ -299,7 +299,7 @@ private Q_SLOTS:
   {
     ossia::net::generic_device device1{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 
-    auto& foo = ossia::net::find_or_create_node(device1, "model");
+    ossia::net::find_or_create_node(device1, "model");
     auto& t1= ossia::net::find_or_create_node(device1, "model/tutu.1");
     auto& t2= ossia::net::find_or_create_node(device1, "model/tutu.2");
     auto& t3= ossia::net::find_or_create_node(device1, "model/tutu.3");

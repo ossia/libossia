@@ -110,7 +110,7 @@ struct Random
             }
 
             // Remove "/" at the beginning of each address
-            for(int i = 0; i < dev.size(); i++)
+            for(std::size_t i = 0; i < dev.size(); i++)
             {
                 dev[i].erase(dev[i].begin());
             }

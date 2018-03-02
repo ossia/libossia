@@ -440,8 +440,8 @@ private Q_SLOTS:
     auto n2 = boost::add_vertex({}, g.impl());
     auto n3 = boost::add_vertex({}, g.impl());
 
-    auto e1 = boost::add_edge(n1, n2, g.impl());
-    auto e2 = boost::add_edge(n2, n3, g.impl());
+    boost::add_edge(n1, n2, g.impl());
+    boost::add_edge(n2, n3, g.impl());
 
     QVERIFY(g.update_fun.find_path(n1, n3, g.impl()));
   }

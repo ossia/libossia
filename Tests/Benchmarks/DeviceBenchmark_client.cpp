@@ -21,7 +21,7 @@ const ossia::net::node_base* goToRandomNode(
 
   // Try to go randomly to a node that deep and return it
   auto currentNode = root;
-  for(int i = 0; i < depth; i++)
+  for(std::size_t i = 0; i < depth; i++)
   {
     if(currentNode->children().empty())
     {

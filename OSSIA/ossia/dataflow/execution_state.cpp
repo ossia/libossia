@@ -201,7 +201,7 @@ void execution_state::register_inlet(const inlet& port)
         register_parameter(**addr);
     }
   }
-  else if(auto mp = port.data.target<ossia::midi_port>())
+  else if(port.data.target<ossia::midi_port>())
   {
     if(auto addr = port.address.target<ossia::net::node_base*>())
     {

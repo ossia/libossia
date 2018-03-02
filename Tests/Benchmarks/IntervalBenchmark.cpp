@@ -384,7 +384,6 @@ private Q_SLOTS:
     {
       root_scenario root;
 
-      ossia::time_event* start{root.start_event.get()};
       for(int i = 0; i < k; i++)
       {
         auto t = rand() % 2;
