@@ -320,6 +320,39 @@ node node::create_list(std::string addr)
   return {};
 }
 
+node node::create_vec2f(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::val_type::VEC2F)};
+  }
+
+  return {};
+}
+
+node node::create_vec3f(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::val_type::VEC3F)};
+  }
+
+  return {};
+}
+
+node node::create_vec4f(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::val_type::VEC4F)};
+  }
+
+  return {};
+}
+
 node node::create_string(std::string addr)
 {
   if (m_node)

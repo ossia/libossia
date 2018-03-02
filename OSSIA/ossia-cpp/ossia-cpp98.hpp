@@ -119,8 +119,13 @@ public:
   node create_float(std::string addr);
   node create_bool(std::string addr);
   node create_list(std::string addr);
-  node create_string(std::string addr);
 
+  node create_vec2f(std::string addr);
+  node create_vec3f(std::string addr);
+  node create_vec4f(std::string addr);
+
+  node create_string(std::string addr);
+  
   node create_buffer(std::string addr);
   node create_filepath(std::string addr);
 
