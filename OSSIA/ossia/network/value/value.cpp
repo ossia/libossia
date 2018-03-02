@@ -711,27 +711,5 @@ operator>>(std::istream& s, std::vector<std::string>& list)
   // TODO
   return s;
 }
-
-
-template<typename T>
-void f(T s)
-{
-    std::cout << s << '\n';
-}
- 
-template void f<double>(double); // instantiates f<double>(double)
-template void f<>(char); // instantiates f<char>(char), template argument deduced
-template void f(int); // instantiates f<int>(int), template argument deduced
-
 }
 
-template OSSIA_EXPORT double ossia::convert<double>(const ossia::value&);
-template OSSIA_EXPORT float ossia::convert<float>(const ossia::value&);
-template OSSIA_EXPORT int ossia::convert<int>(const ossia::value&);
-template OSSIA_EXPORT char ossia::convert<char>(const ossia::value&);
-template OSSIA_EXPORT bool ossia::convert<bool>(const ossia::value&);
-template OSSIA_EXPORT std::string ossia::convert<std::string>(const ossia::value&);
-template OSSIA_EXPORT std::vector<ossia::value> ossia::convert<std::vector<ossia::value>>(const ossia::value&);
-template OSSIA_EXPORT ossia::vec2f ossia::convert<ossia::vec2f>(const ossia::value&);
-template OSSIA_EXPORT ossia::vec3f ossia::convert<ossia::vec3f>(const ossia::value&);
-template OSSIA_EXPORT ossia::vec4f ossia::convert<ossia::vec4f>(const ossia::value&);

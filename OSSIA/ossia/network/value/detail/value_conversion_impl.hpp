@@ -378,18 +378,6 @@ T convert(const ossia::value& val)
   return val.apply(detail::value_converter<T>{});
 }
 
-
-extern template double convert<double>(const ossia::value&);
-extern template float convert<float>(const ossia::value&);
-extern template int convert<int>(const ossia::value&);
-extern template char convert<char>(const ossia::value&);
-extern template bool convert<bool>(const ossia::value&);
-extern template std::string convert<std::string>(const ossia::value&);
-extern template std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value&);
-extern template ossia::vec2f convert<ossia::vec2f>(const ossia::value&);
-extern template ossia::vec3f convert<ossia::vec3f>(const ossia::value&);
-extern template ossia::vec4f convert<ossia::vec4f>(const ossia::value&);
-
 // Used to convert List in Vec2f, Vec3f, Vec4f...
 template <typename T>
 T convert(const std::vector<ossia::value>& val)
@@ -444,3 +432,14 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
 }
 }
+
+extern template double ossia::convert<double>(const ossia::value&);
+extern template float ossia::convert<float>(const ossia::value&);
+extern template int ossia::convert<int>(const ossia::value&);
+extern template char ossia::convert<char>(const ossia::value&);
+extern template bool ossia::convert<bool>(const ossia::value&);
+extern template std::string ossia::convert<std::string>(const ossia::value&);
+extern template std::vector<ossia::value> ossia::convert<std::vector<ossia::value>>(const ossia::value&);
+extern template ossia::vec2f ossia::convert<ossia::vec2f>(const ossia::value&);
+extern template ossia::vec3f ossia::convert<ossia::vec3f>(const ossia::value&);
+extern template ossia::vec4f ossia::convert<ossia::vec4f>(const ossia::value&);

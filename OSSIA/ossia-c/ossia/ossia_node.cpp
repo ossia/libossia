@@ -1,7 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ossia_utils.hpp"
-
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_functions.hpp>
 extern "C" {
 
 void ossia_node_remove_child(ossia_node_t node, ossia_node_t child)

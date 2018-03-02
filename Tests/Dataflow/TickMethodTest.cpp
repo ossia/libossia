@@ -14,7 +14,7 @@ class TickMethodTest : public QObject
       tokens.push_back(ossia::token_request{5_tv, 0.1});
       tokens.push_back(ossia::token_request{10_tv, 0.2});
       tokens.push_back(ossia::token_request{15_tv, 0.3});
-      split_score_tick<>::do_cuts(cuts, tokens, 0_tv);
+      split_score_tick<&ossia::execution_state::commit>::do_cuts(cuts, tokens, 0_tv);
 
       // from 0 to 3
       // from 3 to 5
