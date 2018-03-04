@@ -112,8 +112,48 @@ public:
 
   node find_child(std::string addr);
   void remove_child(std::string addr);
+
+  // Create a node
   node create_child(std::string addr);
 
+  // And optionnally add a typed parameter to it
+  void set_impulse();
+  void set_int();
+  void set_float();
+  void set_bool();
+  void set_list();
+
+  void set_vec2f();
+  void set_vec3f();
+  void set_vec4f();
+
+  void set_string();
+
+  void set_buffer();
+  void set_filepath();
+
+  void set_rgb();
+  void set_rgba();
+  void set_argb();
+  void set_argb8();
+  void set_hsv();
+
+  void set_cart2D();
+  void set_cart3D();
+  void set_polar();
+  void set_spherical();
+  void set_opengl();
+  void set_cylindrical();
+
+  void set_quaternion();
+  void set_euler();
+  void set_axis();
+
+  void set_decibel();
+  void set_midigain();
+
+
+  // Or directly create the child node and its parameter in one row:
   node create_impulse(std::string addr);
   node create_int(std::string addr);
   node create_float(std::string addr);
@@ -149,6 +189,7 @@ public:
   node create_decibel(std::string addr);
   node create_midigain(std::string addr);
 
+  // Set value and attributes of nodes and parameters:
   node& set_value(opp::value v);
   opp::value get_value() const;
   opp::value fetch_value() const;
@@ -235,7 +276,7 @@ private:
 class OSSIA_EXPORT oscquery_server
 {
 public:
-  oscquery_server(std::string name, int wsPort = 5678, int oscPort = 1234);
+  oscquery_server(std::string name, int oscPort = 1234, int wsPort = 5678);
   ~oscquery_server();
   node get_root_node() const;
 

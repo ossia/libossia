@@ -265,6 +265,282 @@ node node::create_child(std::string addr)
   return {};
 }
 
+
+
+void node::set_impulse()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::IMPULSE);
+  }
+
+}
+
+void node::set_int()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::INT);
+  }
+
+}
+
+void node::set_float()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::FLOAT);
+  }
+
+}
+
+void node::set_bool()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::BOOL);
+  }
+
+}
+
+void node::set_list()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::LIST);
+  }
+
+}
+
+void node::set_vec2f()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::VEC2F);
+  }
+
+}
+
+void node::set_vec3f()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::VEC3F);
+  }
+
+}
+
+void node::set_vec4f()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::VEC4F);
+  }
+
+}
+
+void node::set_string()
+{
+  if (m_node)
+  {
+     m_node->remove_parameter();
+     m_node->create_parameter(ossia::val_type::STRING);
+  }
+
+}
+
+void node::set_buffer()
+{
+  if (m_node)
+  {
+      m_node->remove_parameter();
+      ossia::setup_parameter(ossia::generic_buffer_type(), *m_node);
+  }
+
+}
+
+void node::set_filepath()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::filesystem_path_type(), *m_node);
+  }
+
+}
+
+void node::set_rgb()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::rgb_u{}, *m_node);
+  }
+
+}
+
+void node::set_rgba()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::rgba_u{}, *m_node);
+  }
+
+}
+
+void node::set_argb()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::argb_u{}, *m_node);
+  }
+
+}
+
+void node::set_argb8()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::argb8_u{}, *m_node);
+  }
+
+}
+
+void node::set_hsv()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::hsv_u{}, *m_node);
+  }
+
+}
+
+void node::set_cart2D()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::cartesian_2d_u{}, *m_node);
+  }
+
+}
+
+void node::set_cart3D()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::cartesian_3d_u{}, *m_node);
+  }
+
+}
+
+void node::set_polar()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::polar_u{}, *m_node);
+  }
+
+}
+
+void node::set_spherical()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::spherical_u{}, *m_node);
+  }
+
+}
+
+void node::set_opengl()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::opengl_u{}, *m_node);
+  }
+
+}
+
+void node::set_cylindrical()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::cylindrical_u{}, *m_node);
+  }
+
+}
+
+void node::set_quaternion()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::quaternion_u{}, *m_node);
+  }
+
+}
+
+void node::set_euler()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::euler_u{}, *m_node);
+  }
+
+
+}
+
+void node::set_axis()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::axis_u{}, *m_node);
+  }
+
+}
+
+void node::set_decibel()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::decibel_u{}, *m_node);
+  }
+
+}
+
+void node::set_midigain()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::midigain_u{}, *m_node);
+  }
+
+}
+
+
+
+
 node node::create_impulse(std::string addr)
 {
   if (m_node)
@@ -325,7 +601,7 @@ node node::create_vec2f(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::val_type::VEC2F)};
+    return node{n, n->create_parameter(ossia::val_type::VEC2F)};
   }
 
   return {};
@@ -336,7 +612,7 @@ node node::create_vec3f(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::val_type::VEC3F)};
+    return node{n, n->create_parameter(ossia::val_type::VEC3F)};
   }
 
   return {};
@@ -347,7 +623,7 @@ node node::create_vec4f(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::val_type::VEC4F)};
+    return node{n, n->create_parameter(ossia::val_type::VEC4F)};
   }
 
   return {};
@@ -561,6 +837,7 @@ node node::create_midigain(std::string addr)
 
   return {};
 }
+
 
 node& node::set_value(value v)
 {
@@ -1031,7 +1308,7 @@ void node::cleanup_parameter(const ossia::net::parameter_base&)
   m_addr = nullptr;
 }
 
-oscquery_server::oscquery_server(std::string name, int wsPort, int oscPort)
+oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
 {
   m_dev = new ossia::net::generic_device(
       std::make_unique<ossia::oscquery::oscquery_server_protocol>(
