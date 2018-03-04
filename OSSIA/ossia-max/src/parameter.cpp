@@ -198,13 +198,12 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
     auto node = m.get_node();
     m_parent_node = node;
 
-    auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
+    auto params = ossia::net::find_or_create_parameter(
+          *node, m_name->s_name, m_type->s_name);
 
-    for (auto n : nodes)
+    for (auto p : params)
     {
-      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
-
-      if (!local_param)
+      if (!p)
       {
         object_error(
               (t_object*)this,
@@ -214,13 +213,13 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
         return false;
       }
 
-      ossia::net::set_priority(local_param->get_node(), m_priority);
+      ossia::net::set_priority(p->get_node(), m_priority);
 
-      ossia::net::set_disabled(local_param->get_node(), !m_enable);
+      ossia::net::set_disabled(p->get_node(), !m_enable);
 
-      ossia::net::set_hidden(local_param->get_node(), m_invisible);
+      ossia::net::set_hidden(p->get_node(), m_invisible);
 
-      m_matchers.emplace_back(n, this);
+      m_matchers.emplace_back(&p->get_node(), this);
     }
   }
 

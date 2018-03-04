@@ -56,14 +56,12 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
     auto node = m.get_node();
     m_parent_node = node;
 
-    auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
+    auto params = ossia::net::find_or_create_parameter(
+          *node, m_name->s_name, m_type->s_name);
 
-    for (auto n : nodes)
+    for (auto p : params)
     {
-
-      auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
-
-      if (!local_param)
+      if (!p)
       {
         pd_error(
               this,
@@ -72,18 +70,17 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
         return false;
       }
 
-      local_param->set_repetition_filter(
+      p->set_repetition_filter(
             m_repetitions ? ossia::repetition_filter::ON
                                 : ossia::repetition_filter::OFF);
 
-      ossia::net::set_priority(local_param->get_node(), m_priority);
+      ossia::net::set_priority(p->get_node(), m_priority);
 
-      ossia::net::set_disabled(local_param->get_node(), !m_enable);
+      ossia::net::set_disabled(p->get_node(), !m_enable);
 
-      ossia::net::set_hidden(local_param->get_node(), m_hidden);
+      ossia::net::set_hidden(p->get_node(), m_hidden);
 
-      m_matchers.emplace_back(n, this);
-
+      m_matchers.emplace_back(&p->get_node(), this);
     }
   }
 

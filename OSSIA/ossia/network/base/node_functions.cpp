@@ -1,5 +1,6 @@
 #include "node_functions.hpp"
 #include <ossia/network/common/path.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -591,6 +592,64 @@ std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
   }
 
   return list;
+}
+
+
+std::vector<parameter_base*>
+find_or_create_parameter(node_base& node,
+                         std::string address,
+                         std::string type)
+{
+  // search for child that matches name but without parameter
+  // and create parameter on that node if it exists
+  // or create a new node with that name and a parameter
+
+  std::vector<std::string> names;
+
+  if(is_brace_expansion(address))
+  {
+    // 1. Replace all [ ] with { } form
+    auto str = canonicalize_str(address);
+
+    // 2. Expand
+    names = expand(str);
+  }
+  else
+  {
+    names.push_back(address);
+  }
+
+
+  std::vector<node_base*> nodes{};
+  nodes.reserve(names.size());
+
+  auto found_nodes = ossia::net::find_nodes(node, address);
+  for (auto n : found_nodes)
+  {
+    if (n->get_parameter())
+      // this will create a new node with the name incremented by one (e.g. foo.1)
+      nodes.push_back(&ossia::net::create_node(*n, n->get_name()));
+    else
+      nodes.push_back(n);
+
+    ossia::remove_one_if(names, [&] (auto& s) {
+      return s == n->get_name();
+    });
+  }
+
+  for(auto s : names)
+    nodes.push_back(&ossia::net::create_node(node, s));
+
+  std::vector<parameter_base*> parameters{};
+  parameters.reserve(nodes.size());
+
+  for (auto n : nodes)
+  {
+    if(auto param = ossia::try_setup_parameter(type, *n))
+      parameters.push_back(param);
+  }
+
+  return parameters;
 }
 }
 }
