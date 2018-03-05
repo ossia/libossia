@@ -183,9 +183,21 @@ bool graph_node::has_local_inputs(const execution_state& st) const
 void graph_node::clear()
 {
   for(auto inl : m_inlets)
+  {
+    for(ossia::graph_edge* e : inl->sources)
+    {
+      e->clear();
+    }
     delete inl;
+  }
   for(auto outl : m_outlets)
+  {
+    for(ossia::graph_edge* e : outl->targets)
+    {
+      e->clear();
+    }
     delete outl;
+  }
   m_inlets.clear();
   m_outlets.clear();
 }
