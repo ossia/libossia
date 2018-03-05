@@ -383,8 +383,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
       return vtx;
     }
 
-
-    void add_node(node_ptr n) override
+    void add_node(node_ptr n) final override
     {
       if(m_nodes.find(n) == m_nodes.end())
       {
@@ -392,7 +391,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
       }
     }
 
-    void remove_node(const node_ptr& n) override
+    void remove_node(const node_ptr& n) final override
     {
       for(auto& port : n->inputs())
         for(auto edge : port->sources)
@@ -415,7 +414,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
       m_dirty = true;
     }
 
-    void connect(std::shared_ptr<graph_edge> edge) override
+    void connect(std::shared_ptr<graph_edge> edge) final override
     {
       if(edge)
       {
@@ -444,12 +443,12 @@ struct OSSIA_EXPORT graph_base: graph_interface
       }
     }
 
-    void disconnect(const std::shared_ptr<graph_edge>& edge) override
+    void disconnect(const std::shared_ptr<graph_edge>& edge) final override
     {
       disconnect(edge.get());
     }
 
-    void disconnect(graph_edge* edge) override
+    void disconnect(graph_edge* edge) final override
     {
       if(edge)
       {
@@ -466,17 +465,17 @@ struct OSSIA_EXPORT graph_base: graph_interface
       }
     }
 
-    void clear() override
+    void clear() final override
     {
       // TODO clear all the connections, ports, etc, to ensure that there is no
       // shared_ptr loop
-      for (auto& node : m_nodes)
-      {
-        node.first->clear();
-      }
       for (auto& edge : m_edges)
       {
         edge.first->clear();
+      }
+      for (auto& node : m_nodes)
+      {
+        node.first->clear();
       }
       m_dirty = true;
       m_nodes.clear();
@@ -484,17 +483,22 @@ struct OSSIA_EXPORT graph_base: graph_interface
       m_graph.clear();
     }
 
-    void mark_dirty() override
+    void mark_dirty() final override
     {
       m_dirty = true;
     }
 
-    bool m_dirty{};
+    ~graph_base() override
+    {
+      clear();
+    }
 
     node_map m_nodes;
     edge_map m_edges;
 
     graph_t m_graph;
+
+    bool m_dirty{};
 };
 
 }

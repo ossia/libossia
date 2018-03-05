@@ -49,13 +49,12 @@ struct ossia_preset
 
   auto find(const std::string key)
   {
-    auto it = impl.begin();
-    for (it; it < impl.end(); it++)
+    for (auto it = impl.begin(); it < impl.end(); it++)
     {
       if (it->first == key)
-        break;
+        return it;
     }
-    return it;
+    return impl.end();
   }
 };
 

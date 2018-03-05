@@ -92,7 +92,7 @@ public:
   inlets& inputs() { return m_inlets; }
   outlets& outputs() { return m_outlets; }
 
-  void clear();
+  virtual void clear();
 
   bool start_discontinuous() const { return m_start_discontinuous; }
   bool end_discontinuous() const { return m_end_discontinuous; }
@@ -141,5 +141,7 @@ class OSSIA_EXPORT nonowning_graph_node: public graph_node
   public:
     using graph_node::graph_node;
     ~nonowning_graph_node() override;
+
+    void clear() override;
 };
 }

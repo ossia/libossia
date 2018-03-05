@@ -127,7 +127,7 @@ auto create_parameter(ossia::net::node_base& root, std::string name)
 }
 
 template<typename Address>
-auto find_or_create_parameter(ossia::net::node_base& root, std::string name)
+auto find_or_create_parameter(ossia::net::node_base& root, ossia::string_view name)
 {
   auto& node = ossia::net::find_or_create_node(root, std::move(name));
   if(auto p = dynamic_cast<Address*>(node.get_parameter()))
@@ -136,7 +136,7 @@ auto find_or_create_parameter(ossia::net::node_base& root, std::string name)
   }
   else
   {
-    auto addr = new Address(node);
+    auto addr = new Address{node};
     node.set_parameter(std::unique_ptr<Address>(addr));
     return addr;
   }

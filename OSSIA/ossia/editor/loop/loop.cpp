@@ -9,28 +9,36 @@
 #include <ossia/editor/exceptions.hpp>
 namespace ossia
 {
-class loop_node final : public ossia::graph_node
+class loop_node final : public ossia::nonowning_graph_node
 {
   public:
     loop_node();
+    std::string label() const override;
     void run(ossia::token_request t, ossia::execution_state&) override;
+    ossia::inlet audio_in{ossia::audio_port{}};
+    ossia::outlet audio_out{ossia::audio_port{}};
 };
 
 loop_node::loop_node()
 {
   // todo maybe we can optimize by having m_outlets == m_inlets
   // this way no copy.
-  m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
-  m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+  m_inlets.push_back(&audio_in);
+  m_outlets.push_back(&audio_out);
 }
 
+std::string loop_node::label() const
+{
+  return "Loop";
+}
 
 void loop_node::run(token_request t, execution_state&)
 {
-  auto i = m_inlets[0]->data.target<ossia::audio_port>();
-  auto o = m_outlets[0]->data.target<ossia::audio_port>();
+  auto i = audio_in.data.target<ossia::audio_port>();
+  auto o = audio_out.data.target<ossia::audio_port>();
   o->samples = i->samples;
 }
+
 loop::loop(time_value patternDuration,
            time_interval::exec_callback patternIntervalCallback,
            time_event::exec_callback patternStartEventCallback,

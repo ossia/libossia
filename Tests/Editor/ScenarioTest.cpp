@@ -125,8 +125,6 @@ private Q_SLOTS:
   void test_execution()
   {
     using namespace ossia;
-    auto fc_callback = std::bind(&ScenarioTest::first_interval_callback, this, _1, _2);
-    auto sc_callback = std::bind(&ScenarioTest::second_interval_callback, this, _1, _2);
     auto e_callback = std::bind(&ScenarioTest::event_callback, this, _1);
 
     auto main_start_node = std::make_shared<time_sync>();

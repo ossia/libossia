@@ -182,6 +182,10 @@ bool graph_node::has_local_inputs(const execution_state& st) const
 
 void graph_node::clear()
 {
+  for(auto inl : m_inlets)
+    delete inl;
+  for(auto outl : m_outlets)
+    delete outl;
   m_inlets.clear();
   m_outlets.clear();
 }
@@ -195,6 +199,10 @@ nonowning_graph_node::~nonowning_graph_node()
 {
   m_inlets.clear();
   m_outlets.clear();
+}
+
+void nonowning_graph_node::clear()
+{
 }
 
 }

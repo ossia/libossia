@@ -18,6 +18,11 @@ struct test_loop
     loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
 
     ossia::audio_parameter* aparam{};
+    ~test_loop()
+    {
+      g.clear();
+    }
+
     test_loop()
     {
       auto& root = d.get_root_node();

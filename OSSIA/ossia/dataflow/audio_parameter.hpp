@@ -161,7 +161,7 @@ public:
 
 struct execution_state;
 class OSSIA_EXPORT sound_node final :
-    public ossia::graph_node
+    public ossia::nonowning_graph_node
 {
 public:
   sound_node();
@@ -179,6 +179,7 @@ private:
   std::vector<std::vector<double>> m_data;
   std::size_t start{};
   std::size_t upmix{};
+  ossia::outlet audio_out{ossia::audio_port{}};
 };
 
 OSSIA_EXPORT

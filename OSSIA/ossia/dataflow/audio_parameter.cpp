@@ -118,7 +118,7 @@ net::parameter_base&audio_parameter::set_bounding(bounding_mode)
 
 sound_node::sound_node()
 {
-  m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+  m_outlets.push_back(&audio_out);
 }
 
 void sound_node::set_sound(const std::vector<std::vector<float>>& vec)
@@ -182,7 +182,7 @@ void sound_node::run(ossia::token_request t, ossia::execution_state& e)
   const std::size_t chan = m_data.size();
   const std::size_t len = m_data[0].size();
 
-  ossia::audio_port& ap = *m_outlets[0]->data.target<ossia::audio_port>();
+  ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
   ap.samples.resize(chan);
   int64_t max_N = std::min(t.date.impl, (int64_t)len);
   if(max_N <= 0)
