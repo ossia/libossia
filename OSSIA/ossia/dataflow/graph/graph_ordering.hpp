@@ -180,7 +180,6 @@ struct env_writer
 {
     outlet& out;
     graph_edge& edge;
-    execution_state& e;
     bool operator()(const immediate_glutton_connection&) const
     {
       return !edge.in_node->enabled();

@@ -141,7 +141,7 @@ struct OSSIA_EXPORT graph_util
       // If some following glutton nodes aren't enabled, then we copy to the env.
       for (const auto& tgt : out->targets)
       {
-        must_copy |= ossia::apply_con(env_writer{*out, *tgt, e}, tgt->con);
+        must_copy |= ossia::apply_con(env_writer{*out, *tgt}, tgt->con);
       }
 
       // if there are two outgoing glutton connections, one active, the other inactive
@@ -452,6 +452,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
     {
       if(edge)
       {
+        edge->clear();
         auto it = m_edges.find(edge);
         if (it != m_edges.end())
         {
@@ -461,7 +462,6 @@ struct OSSIA_EXPORT graph_base: graph_interface
           m_dirty = true;
           m_edges.erase(it);
         }
-        edge->clear();
       }
     }
 

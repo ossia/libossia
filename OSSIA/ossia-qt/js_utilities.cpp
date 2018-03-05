@@ -604,7 +604,7 @@ value value_from_js(const QJSValue& v)
         t.push_back(value_from_js(it.value()));
       }
     }
-    return std::move(t);
+    return t;
   }
   else
   {
