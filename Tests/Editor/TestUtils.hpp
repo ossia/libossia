@@ -103,17 +103,39 @@ std::ostream& operator<<(std::ostream& s, ossia::time_event::status st)
   }
   return s;
 }
-inline QDebug operator<<(QDebug d, ossia::time_event::status s)
+inline QDebug operator<<(QDebug d, ossia::time_event::status st)
 {
-  return d << QTest::toString(s);
+  switch(st)
+  {
+    case ossia::time_event::status::NONE: d << "none"; break;
+    case ossia::time_event::status::PENDING: d << "pending"; break;
+    case ossia::time_event::status::HAPPENED: d << "happened"; break;
+    case ossia::time_event::status::DISPOSED: d << "disposed"; break;
+  }
+  return d;
 }
-inline QDebug operator<<(QDebug d, const ossia::token_request&  s)
+inline QDebug operator<<(QDebug d, const ossia::token_request& tk)
 {
-  return d << QTest::toString(s);
+  QString str = "["
+              + QString::number(tk.date.impl) + ", "
+              + QString::number(tk.position) + ", "
+              + QString::number(tk.offset.impl) + "]";
+  return d << str;
 }
-inline QDebug operator<<(QDebug d, const ossia::small_vector<ossia::token_request, 4>&  s)
+inline QDebug operator<<(QDebug d, const ossia::small_vector<ossia::token_request, 4>& val)
 {
-  return d << QTest::toString(s);
+  QString s = "[";
+  for(auto& tk : val)
+  {
+    QString str = "["
+                + QString::number(tk.date.impl) + ", "
+                + QString::number(tk.position) + ", "
+                + QString::number(tk.offset.impl) + "]";
+    s += str;
+    s += QString(", ");
+  }
+  s += "]";
+  return d << s;
 }
 inline QDebug operator<<(QDebug d, const ossia::time_value&  s)
 {
