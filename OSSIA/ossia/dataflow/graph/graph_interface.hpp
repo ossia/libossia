@@ -2,6 +2,7 @@
 #include <ossia/dataflow/dataflow_fwd.hpp>
 namespace ossia
 {
+class time_interval;
 class OSSIA_EXPORT graph_interface
 {
 public:
@@ -21,4 +22,29 @@ public:
 
   virtual void print(std::ostream&) = 0;
 };
+
+struct graph_setup_options
+{
+    enum { StaticFixed, StaticBFS, StaticTC, Dynamic } scheduling{};
+    enum { Creation, XY, YX, Temporal } order{};
+    enum { Merge, Append, Replace } merge{};
+
+    bool parallel{};
+    bool log{};
+};
+
+struct tick_setup_options
+{
+    enum { Default, Ordered, Priorized, Merged } commit{};
+    enum { Buffer, ScoreAccurate, Precise } tick{};
+};
+OSSIA_EXPORT
+std::shared_ptr<ossia::graph_interface> make_graph(const graph_setup_options&);
+
+OSSIA_EXPORT
+smallfun::function<void(unsigned long, double), 128> make_tick(
+    const tick_setup_options& settings,
+    ossia::execution_state& st,
+    ossia::graph_interface& e,
+    ossia::time_interval& itv);
 }

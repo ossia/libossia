@@ -23,7 +23,7 @@ TEST_CASE ("Device exceptions") {
   SECTION("Invalid address: target node has children") {
     ossia::presets::preset preset;
     bool b;
-    preset.insert(std::make_pair("/root", b));
+    preset.push_back(std::make_pair("/root", b));
 
     REQUIRE_THROWS(ossia::presets::apply_preset(localDevice, preset, ossia::presets::keep_arch_off));
   }
@@ -31,7 +31,7 @@ TEST_CASE ("Device exceptions") {
   SECTION("Invalid address: keep_arch_type") {
     ossia::presets::preset preset;
     bool b;
-    preset.insert(std::make_pair ("/root/child_that_does_not_exist", b));
+    preset.push_back(std::make_pair ("/root/child_that_does_not_exist", b));
 
     REQUIRE_THROWS(ossia::presets::apply_preset(localDevice, preset, ossia::presets::keep_arch_on));
     REQUIRE_NOTHROW(ossia::presets::apply_preset(localDevice, preset, ossia::presets::keep_arch_off));
@@ -44,10 +44,10 @@ TEST_CASE ("Building device from preset") {
     std::make_unique<ossia::net::multiplex_protocol>(), "device"};
 
   ossia::presets::preset p;
-  p.emplace("/device/a.0/b.0/c.0", 1);
-  p.emplace("/device/a.0/b.0/c.1", 2);
-  p.emplace("/device/a.1/b.1/c", 3);
-  p.emplace("/device/a.1/b.1/d", 4);
+  p.emplace_back("/device/a.0/b.0/c.0", 1);
+  p.emplace_back("/device/a.0/b.0/c.1", 2);
+  p.emplace_back("/device/a.1/b.1/c", 3);
+  p.emplace_back("/device/a.1/b.1/d", 4);
 
   REQUIRE_NOTHROW(ossia::presets::apply_preset(localDevice, p, ossia::presets::keep_arch_off));
 
@@ -122,10 +122,10 @@ TEST_CASE ("Functions on instances") {
   });
 
   ossia::presets::preset p;
-  p.emplace("/device/a.0/b.0/c.0", 1);
-  p.emplace("/device/a.0/b.0/c.1", 2);
-  p.emplace("/device/a.1/b.1/c", 3);
-  p.emplace("/device/a.1/b.1/d", 4);
+  p.emplace_back("/device/a.0/b.0/c.0", 1);
+  p.emplace_back("/device/a.0/b.0/c.1", 2);
+  p.emplace_back("/device/a.1/b.1/c", 3);
+  p.emplace_back("/device/a.1/b.1/d", 4);
 
   REQUIRE_NOTHROW(ossia::presets::apply_preset(localDevice, p, ossia::presets::keep_arch_off, funcs));
 

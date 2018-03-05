@@ -8,8 +8,19 @@
 #include <ossia/editor/state/state.hpp>
 #include <boost/container/flat_map.hpp>
 #include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/mutex.hpp>
 namespace ossia
 {
+struct local_pull_visitor;
+struct global_pull_visitor;
+struct state_exec_visitor;
+#if defined(OSSIA_PARALLEL)
+#define OSSIA_EXEC_STATE_LOCK_READ(state) ossia::read_lock_t {(state).mutex}
+#define OSSIA_EXEC_STATE_LOCK_WRITE(state) ossia::write_lock_t {(state).mutex}
+#else
+#define OSSIA_EXEC_STATE_LOCK_READ(state)
+#define OSSIA_EXEC_STATE_LOCK_WRITE(state)
+#endif
 struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
@@ -63,6 +74,7 @@ struct OSSIA_EXPORT execution_state
     void insert(ossia::net::parameter_base& dest, tvalue&& v);
     void insert(ossia::net::parameter_base& dest, const audio_port& v);
     void insert(ossia::net::parameter_base& dest, const midi_port& v);
+    void insert(const ossia::state& v);
 
     bool in_local_scope(ossia::net::parameter_base& other) const;
 
@@ -84,6 +96,9 @@ struct OSSIA_EXPORT execution_state
     ossia::fast_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
     ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>> m_midiState;
 
+    mutable shared_mutex_t mutex;
+
+  private:
     std::list<message_queue> m_valueQueues;
 
     ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>> m_receivedValues;
@@ -95,5 +110,8 @@ struct OSSIA_EXPORT execution_state
 
     int m_msgIndex{};
 
+    friend struct local_pull_visitor;
+    friend struct global_pull_visitor;
+    friend struct state_exec_visitor;
 };
 }

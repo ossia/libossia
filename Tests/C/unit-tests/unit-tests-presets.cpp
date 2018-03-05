@@ -10,6 +10,22 @@
 #include <ossia/preset/preset.hpp>
 #include <ossia/ossia.hpp>
 
+namespace ossia
+{
+auto find(ossia::presets::preset& p, ossia::string_view t)
+{
+  for(auto it = p.begin(); it != p.end(); ++it)
+  {
+    if(it->first == t)
+      return it;
+  }
+  return p.end();
+}
+auto find(ossia::presets::preset& p, const char* t)
+{
+  return find(p, ossia::string_view{t});
+}
+}
 TEST_CASE ("JSON array") {
     SECTION ("Basic array parsing") {
 
@@ -21,16 +37,16 @@ TEST_CASE ("JSON array") {
         std::string json2 = R"_({"a":[[3, -6], [9, 2, 11]]})_";
         ossia::presets::preset p = ossia::presets::read_json(json2);
         REQUIRE(p.size() == 5);
-        REQUIRE(p.find("/a.0.0") != p.end());
-        REQUIRE(p.find("/a.0.1") != p.end());
-        REQUIRE(p.find("/a.1.0") != p.end());
-        REQUIRE(p.find("/a.1.1") != p.end());
-        REQUIRE(p.find("/a.1.2") != p.end());
-        auto i1 = p.find("/a.0.0")->second.get<int32_t>();
-        auto i2 = p.find("/a.0.1")->second.get<int32_t>();
-        auto i3 = p.find("/a.1.0")->second.get<int32_t>();
-        auto i4 = p.find("/a.1.1")->second.get<int32_t>();
-        auto i5 = p.find("/a.1.2")->second.get<int32_t>();
+        REQUIRE(ossia::find(p, "/a.0.0") != p.end());
+        REQUIRE(ossia::find(p, "/a.0.1") != p.end());
+        REQUIRE(ossia::find(p, "/a.1.0") != p.end());
+        REQUIRE(ossia::find(p, "/a.1.1") != p.end());
+        REQUIRE(ossia::find(p, "/a.1.2") != p.end());
+        auto i1 = ossia::find(p, "/a.0.0")->second.get<int32_t>();
+        auto i2 = ossia::find(p, "/a.0.1")->second.get<int32_t>();
+        auto i3 = ossia::find(p, "/a.1.0")->second.get<int32_t>();
+        auto i4 = ossia::find(p, "/a.1.1")->second.get<int32_t>();
+        auto i5 = ossia::find(p, "/a.1.2")->second.get<int32_t>();
         REQUIRE(i1 == 3);
         REQUIRE(i2 == -6);
         REQUIRE(i3 == 9);
@@ -48,14 +64,14 @@ TEST_CASE ("Parsing nested objects") {
     std::string json = R"_({"a":{"c":{"d":13,"e":5}}, "b":{"f1":true, "f2":{"f3":false}}})_";
     ossia::presets::preset p = ossia::presets::read_json(json);
     REQUIRE(p.size() == 4);
-    REQUIRE(p.find("/a/c/d") != p.end());
-    REQUIRE(p.find("/a/c/e") != p.end());
-    REQUIRE(p.find("/b/f1") != p.end());
-    REQUIRE(p.find("/b/f2/f3") != p.end());
-    auto acd = p.find("/a/c/d")->second.get<int32_t>();
-    auto ace = p.find("/a/c/e")->second.get<int32_t>();
-    auto bf1 = p.find("/b/f1")->second.get<bool>();
-    auto bf2f3 = p.find("/b/f2/f3")->second.get<bool>();
+    REQUIRE(ossia::find(p, "/a/c/d") != p.end());
+    REQUIRE(ossia::find(p, "/a/c/e") != p.end());
+    REQUIRE(ossia::find(p, "/b/f1") != p.end());
+    REQUIRE(ossia::find(p, "/b/f2/f3") != p.end());
+    auto acd = ossia::find(p, "/a/c/d")->second.get<int32_t>();
+    auto ace = ossia::find(p, "/a/c/e")->second.get<int32_t>();
+    auto bf1 = ossia::find(p, "/b/f1")->second.get<bool>();
+    auto bf2f3 = ossia::find(p, "/b/f2/f3")->second.get<bool>();
     REQUIRE(acd == 13);
     REQUIRE(ace == 5);
     REQUIRE(bf1 == true);
@@ -78,16 +94,16 @@ TEST_CASE ("Empty object") {
 TEST_CASE ("Parsing types") {
     std::string json = R"_({"a":1,"b":2.34234,"c":false, "d":"hello world","e":true})_";
     ossia::presets::preset p = ossia::presets::read_json(json);
-    REQUIRE(p.find("/a") != p.end());
-    REQUIRE(p.find("/b") != p.end());
-    REQUIRE(p.find("/c") != p.end());
-    REQUIRE(p.find("/d") != p.end());
-    REQUIRE(p.find("/e") != p.end());
-    REQUIRE(p.find("/a")->second.getType() == ossia::val_type::INT);
-    REQUIRE(p.find("/b")->second.getType() == ossia::val_type::FLOAT);
-    REQUIRE(p.find("/c")->second.getType() == ossia::val_type::BOOL);
-    REQUIRE(p.find("/d")->second.getType() == ossia::val_type::STRING);
-    REQUIRE(p.find("/e")->second.getType() == ossia::val_type::BOOL);
+    REQUIRE(ossia::find(p, "/a") != p.end());
+    REQUIRE(ossia::find(p, "/b") != p.end());
+    REQUIRE(ossia::find(p, "/c") != p.end());
+    REQUIRE(ossia::find(p, "/d") != p.end());
+    REQUIRE(ossia::find(p, "/e") != p.end());
+    REQUIRE(ossia::find(p, "/a")->second.getType() == ossia::val_type::INT);
+    REQUIRE(ossia::find(p, "/b")->second.getType() == ossia::val_type::FLOAT);
+    REQUIRE(ossia::find(p, "/c")->second.getType() == ossia::val_type::BOOL);
+    REQUIRE(ossia::find(p, "/d")->second.getType() == ossia::val_type::STRING);
+    REQUIRE(ossia::find(p, "/e")->second.getType() == ossia::val_type::BOOL);
 }
 
 TEST_CASE ("Building JSON array") {
@@ -101,11 +117,11 @@ TEST_CASE ("Building JSON array") {
         int32_t i4 (2);
         int32_t i5 (1);
 
-        p.insert(std::make_pair("/a.0", i1));
-        p.insert(std::make_pair("/a.1", i2));
-        p.insert(std::make_pair("/a.2", i3));
-        p.insert(std::make_pair("/a.3", i4));
-        p.insert(std::make_pair("/a.4", i5));
+        p.push_back(std::make_pair("/a.0", i1));
+        p.push_back(std::make_pair("/a.1", i2));
+        p.push_back(std::make_pair("/a.2", i3));
+        p.push_back(std::make_pair("/a.3", i4));
+        p.push_back(std::make_pair("/a.4", i5));
 
         std::string json = ossia::presets::write_json("device", p);
 
@@ -139,12 +155,12 @@ TEST_CASE ("Building JSON array") {
         int32_t i5 (5);
         int32_t i6 (6);
 
-        p.insert(std::make_pair ("/a.0.0.0", i1));
-        p.insert(std::make_pair ("/a.0.1.0", i2));
-        p.insert(std::make_pair ("/a.0.1.1", i3));
-        p.insert(std::make_pair ("/a.0.1.2", i4));
-        p.insert(std::make_pair ("/a.1.0", i5));
-        p.insert(std::make_pair ("/a.1.1", i6));
+        p.push_back(std::make_pair ("/a.0.0.0", i1));
+        p.push_back(std::make_pair ("/a.0.1.0", i2));
+        p.push_back(std::make_pair ("/a.0.1.1", i3));
+        p.push_back(std::make_pair ("/a.0.1.2", i4));
+        p.push_back(std::make_pair ("/a.1.0", i5));
+        p.push_back(std::make_pair ("/a.1.1", i6));
 
         // a = [[[1], [2, 3, 4]], [5, 6]]
 
@@ -189,10 +205,10 @@ TEST_CASE ("Building object"){
     int32_t i3 (3);
     int32_t i4 (4);
 
-    p.insert(std::make_pair ("/a", i1));
-    p.insert(std::make_pair ("/b/c", i2));
-    p.insert(std::make_pair ("/b/d", i3));
-    p.insert(std::make_pair ("/b/e/f", i4));
+    p.push_back(std::make_pair ("/a", i1));
+    p.push_back(std::make_pair ("/b/c", i2));
+    p.push_back(std::make_pair ("/b/d", i3));
+    p.push_back(std::make_pair ("/b/e/f", i4));
 
     std::string json = ossia::presets::write_json("device", p);
 
@@ -267,19 +283,19 @@ TEST_CASE ("Instances") {
     ossia::presets::preset p;
     using namespace std::literals;
 
-    p.insert(std::make_pair ("/width", 123));
-    p.insert(std::make_pair ("/leText.0/text", "foo"s));
-    p.insert(std::make_pair ("/leText.0/color", "bar"s));
-    p.insert(std::make_pair ("/leText.0/font.pointSize", 456));
-    p.insert(std::make_pair ("/leText.1/text", "foo"s));
-    p.insert(std::make_pair ("/leText.1/color", "bar"s));
-    p.insert(std::make_pair ("/leText.1/font.pointSize", 456));
-    p.insert(std::make_pair ("/leText.2/text", "foo"s));
-    p.insert(std::make_pair ("/leText.2/color", "bar"s));
-    p.insert(std::make_pair ("/leText.2/font.pointSize", 456));
-    p.insert(std::make_pair ("/leText.3/text", "foo"s));
-    p.insert(std::make_pair ("/leText.3/color", "bar"s));
-    p.insert(std::make_pair ("/leText.3/font.pointSize", 456));
+    p.push_back(std::make_pair ("/width", 123));
+    p.push_back(std::make_pair ("/leText.0/text", "foo"s));
+    p.push_back(std::make_pair ("/leText.0/color", "bar"s));
+    p.push_back(std::make_pair ("/leText.0/font.pointSize", 456));
+    p.push_back(std::make_pair ("/leText.1/text", "foo"s));
+    p.push_back(std::make_pair ("/leText.1/color", "bar"s));
+    p.push_back(std::make_pair ("/leText.1/font.pointSize", 456));
+    p.push_back(std::make_pair ("/leText.2/text", "foo"s));
+    p.push_back(std::make_pair ("/leText.2/color", "bar"s));
+    p.push_back(std::make_pair ("/leText.2/font.pointSize", 456));
+    p.push_back(std::make_pair ("/leText.3/text", "foo"s));
+    p.push_back(std::make_pair ("/leText.3/color", "bar"s));
+    p.push_back(std::make_pair ("/leText.3/font.pointSize", 456));
 
     std::string json = ossia::presets::write_json("device", p);
 
@@ -295,10 +311,10 @@ TEST_CASE ("Nested arrays and objects") {
     int32_t i3 (3);
     int32_t i4 (4);
 
-    p.insert(std::make_pair ("/a.0/b/c.0", i1));
-    p.insert(std::make_pair ("/a.0/b/c.1", i2));
-    p.insert(std::make_pair ("/a.1/b.0/c", i3));
-    p.insert(std::make_pair ("/a.1/b.0/d", i4));
+    p.push_back(std::make_pair ("/a.0/b/c.0", i1));
+    p.push_back(std::make_pair ("/a.0/b/c.1", i2));
+    p.push_back(std::make_pair ("/a.1/b.0/c", i3));
+    p.push_back(std::make_pair ("/a.1/b.0/d", i4));
 
     std::string json = ossia::presets::write_json("device", p);
 
@@ -350,12 +366,12 @@ TEST_CASE ("Types conversion") {
     ossia::value v = c;
     REQUIRE(v.getType() == ossia::val_type::CHAR);
     REQUIRE(*v.target<char>() == '2');
-    p.insert(std::make_pair ("/true", btrue));
-    p.insert(std::make_pair ("/false", bfalse));
-    p.insert(std::make_pair ("/char", c));
-    p.insert(std::make_pair ("/int", i));
-    p.insert(std::make_pair ("/float", f));
-    p.insert(std::make_pair ("/string", s));
+    p.push_back(std::make_pair ("/true", btrue));
+    p.push_back(std::make_pair ("/false", bfalse));
+    p.push_back(std::make_pair ("/char", c));
+    p.push_back(std::make_pair ("/int", i));
+    p.push_back(std::make_pair ("/float", f));
+    p.push_back(std::make_pair ("/string", s));
 
     std::string json = ossia::presets::write_json("device", p);
 

@@ -3,7 +3,6 @@
 #include "execution_state.hpp"
 
 #include <ossia/dataflow/audio_parameter.hpp>
-#include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/detail/apply.hpp>
@@ -14,13 +13,13 @@
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 namespace ossia
 {
-
 struct local_pull_visitor
 {
     execution_state& st;
     ossia::net::parameter_base* addr{};
     bool operator()(value_port& val)
     {
+      OSSIA_EXEC_STATE_LOCK_READ(st);
       auto it = st.m_valueState.find(addr);
       if (it != st.m_valueState.end() && !it->second.empty())
       {
@@ -32,6 +31,7 @@ struct local_pull_visitor
 
     bool operator()(audio_port& val)
     {
+      OSSIA_EXEC_STATE_LOCK_READ(st);
       auto it = st.m_audioState.find(addr);
       if (it != st.m_audioState.end() && !it->second.samples.empty())
       {
@@ -43,6 +43,7 @@ struct local_pull_visitor
 
     bool operator()(midi_port& val)
     {
+      OSSIA_EXEC_STATE_LOCK_READ(st);
       auto it = st.m_midiState.find(addr);
       if (it != st.m_midiState.end() && !it->second.empty())
       {
@@ -458,6 +459,7 @@ void execution_state::insert(ossia::net::parameter_base& param, const data_type&
     }
     case 2:
     {
+      OSSIA_EXEC_STATE_LOCK_WRITE(*this);
       auto val = static_cast<const ossia::value_port*>(v.target());
       int idx = m_msgIndex;
       auto& st = m_valueState[&param];
@@ -514,6 +516,7 @@ void execution_state::insert(ossia::net::parameter_base& param, data_type&& v)
     }
     case 2:
     {
+      OSSIA_EXEC_STATE_LOCK_WRITE(*this);
       auto val = static_cast<ossia::value_port*>(v.target());
       int idx = m_msgIndex;
       auto& st = m_valueState[&param];
@@ -556,33 +559,92 @@ void execution_state::insert(ossia::net::parameter_base& param, data_type&& v)
 
 void execution_state::insert(ossia::net::parameter_base& param, const tvalue& v)
 {
-    m_valueState[&param].emplace_back(v, m_msgIndex++);
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
+  m_valueState[&param].emplace_back(v, m_msgIndex++);
 }
 void execution_state::insert(ossia::net::parameter_base& param, tvalue&& v)
 {
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   m_valueState[&param].emplace_back(std::move(v), m_msgIndex++);
 }
 
 void execution_state::insert(ossia::net::parameter_base& param, const audio_port& v)
 {
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   mix{}(v.samples, m_audioState[&param].samples, false);
 }
 
 void execution_state::insert(ossia::net::parameter_base& param, const midi_port& v)
 {
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   auto& vec = m_midiState[&param];
   vec.insert(vec.end(), v.messages.begin(), v.messages.end());
 }
 
+struct state_exec_visitor
+{
+    ossia::execution_state& e;
+    void operator()(const ossia::state& st)
+    {
+      for(auto& msg : st)
+        ossia::apply(*this, msg);
+    }
+
+    void operator()(const ossia::message& msg)
+    {
+      e.m_valueState[&msg.dest.address()].emplace_back(
+            ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit },
+            e.m_msgIndex++);
+    }
+
+    template<std::size_t N>
+    void operator()(const ossia::piecewise_vec_message<N>& st)
+    {
+    }
+
+    void operator()(const ossia::piecewise_message& st)
+    {
+    }
+
+    void operator()()
+    {
+
+    }
+};
+
+void execution_state::insert(const ossia::state& v)
+{
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
+  for(auto& msg : v)
+  {
+    ossia::apply(state_exec_visitor{*this}, msg);
+  }
+}
+
+static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>>& container)
+{
+  auto it = container.find(&other);
+  if(it == container.end())
+    return false;
+  return !it->second.empty();
+}
+static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>>& container)
+{
+  auto it = container.find(&other);
+  if(it == container.end())
+    return false;
+  return !it->second.empty();
+}
+static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, audio_port>& container)
+{
+  auto it = container.find(&other);
+  if(it == container.end())
+    return false;
+  return !it->second.samples.empty();
+}
 bool execution_state::in_local_scope(net::parameter_base& other) const
 {
-  bool ok = (m_valueState.find(&other) != m_valueState.end())
-            || (m_audioState.find(&other) != m_audioState.end())
-            || (m_midiState.find(&other) != m_midiState.end());
-  if (!ok)
-  {
-    // TODO check if there is any pattern matching the current destination
-  }
-  return ok;
+  OSSIA_EXEC_STATE_LOCK_READ(*this);
+  return (is_in(other, m_valueState) || is_in(other, m_audioState) || is_in(other, m_midiState));
 }
 }

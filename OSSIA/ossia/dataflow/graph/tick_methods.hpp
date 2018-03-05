@@ -99,7 +99,7 @@ template<void(ossia::execution_state::*Commit)()>
 struct buffer_tick
 {
     ossia::execution_state& st;
-    ossia::graph_base& g;
+    ossia::graph_interface& g;
     ossia::time_interval& itv;
 
     void operator()(unsigned long frameCount, double seconds)
@@ -121,7 +121,7 @@ template<void(ossia::execution_state::*Commit)()>
 struct precise_score_tick
 {
     ossia::execution_state& st;
-    ossia::graph_base& g;
+    ossia::graph_interface& g;
     ossia::time_interval& itv;
 
     void operator()(unsigned long frameCount, double seconds)

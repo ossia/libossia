@@ -5,36 +5,6 @@
 #include <ossia/dataflow/execution_state.hpp>
 
 namespace ossia {
-namespace detail
-{
-struct state_exec_visitor
-{
-    ossia::execution_state& e;
-    void operator()(const ossia::state& st)
-    {
-
-    }
-
-    void operator()(const ossia::message& msg)
-    {
-      e.insert(msg.dest.address(), {ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit }});
-    }
-
-    template<std::size_t N>
-    void operator()(const ossia::piecewise_vec_message<N>& st)
-    {
-    }
-
-    void operator()(const ossia::piecewise_message& st)
-    {
-    }
-
-    void operator()()
-    {
-
-    }
-};
-}
 struct state_node final : public ossia::graph_node
 {
   public:
@@ -49,10 +19,7 @@ struct state_node final : public ossia::graph_node
 
     void run(ossia::token_request, ossia::execution_state& e) override
     {
-      for(auto& msg : data)
-      {
-        ossia::apply(detail::state_exec_visitor{e}, msg);
-      }
+      e.insert(data);
     }
 
     ossia::state data;

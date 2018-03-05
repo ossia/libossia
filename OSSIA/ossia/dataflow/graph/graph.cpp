@@ -4,9 +4,220 @@
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
-
+#include <ossia/dataflow/graph/graph_parallel.hpp>
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/graph/tick_methods.hpp>
+#include <spdlog/spdlog.h>
 namespace ossia
 {
+
+std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup_options& opt)
+{
+  using namespace ossia;
+  auto sched = opt.scheduling;
+  bool log = opt.log;
+  if(log)
+  {
+    using exec_t = static_exec_logger;
+    if(sched == ossia::graph_setup_options::Dynamic)
+    {
+      return std::make_shared<ossia::graph>();
+    }
+    else if(sched == ossia::graph_setup_options::StaticBFS)
+    {
+      using graph_type = graph_static<
+          bfs_update
+        , exec_t>;
+
+      auto g = std::make_shared<graph_type>();
+      g->tick_fun.logger = ossia::logger_ptr();
+      return g;
+    }
+    else if(sched == ossia::graph_setup_options::StaticFixed)
+    {
+      using graph_type = graph_static<
+          simple_update
+        , exec_t>;
+
+      auto g = std::make_shared<graph_type>();
+      g->tick_fun.logger = ossia::logger_ptr();
+      return g;
+    }
+    else // if(sched == ossia::graph_setup_options::StaticTC)
+    {
+      using graph_type = graph_static<
+          tc_update<fast_tc>
+        , exec_t>;
+
+      auto g = std::make_shared<graph_type>();
+      g->tick_fun.logger = ossia::logger_ptr();
+      return g;
+    }
+  }
+  else
+  {
+    using exec_t = static_exec;
+    if(sched == ossia::graph_setup_options::Dynamic)
+    {
+      using graph_type = ossia::graph;
+
+      return std::make_shared<graph_type>();
+    }
+    else if(sched == ossia::graph_setup_options::StaticBFS)
+    {
+      using graph_type = graph_static<
+          bfs_update
+        , exec_t>;
+
+      return std::make_shared<graph_type>();
+    }
+    else if(sched == ossia::graph_setup_options::StaticFixed)
+    {
+      using graph_type = graph_static<
+          simple_update
+        , exec_t>;
+
+      return std::make_shared<graph_type>();
+    }
+    else //if(sched == sched_t.StaticTC)
+    {
+      using graph_type = graph_static<
+          tc_update<fast_tc>
+        , exec_t>;
+
+      return std::make_shared<graph_type>();
+    }
+  }
+}
+
+std::shared_ptr<ossia::graph_interface> make_graph_par_impl(const ossia::graph_setup_options& opt)
+{
+  using namespace ossia;
+#if defined(OSSIA_PARALLEL)
+
+  auto sched = opt.scheduling;
+  bool log = opt.log;
+
+  if(sched == ossia::graph_setup_options::StaticBFS)
+  {
+    using graph_type = graph_static<
+        parallel_update<bfs_update>
+      , parallel_exec>;
+
+    auto g = std::make_shared<graph_type>();
+
+    if(log)
+      g->update_fun.logger = ossia::logger_ptr();
+
+    return g;
+  }
+  else if(sched == ossia::graph_setup_options::StaticTC)
+  {
+    using graph_type = graph_static<
+        parallel_update<tc_update<fast_tc>>
+      , parallel_exec>;
+
+    auto g = std::make_shared<graph_type>();
+
+    if(log)
+      g->update_fun.logger = ossia::logger_ptr();
+
+    return g;
+  }
+  else if(sched == ossia::graph_setup_options::StaticFixed)
+  {
+    using graph_type = graph_static<
+        parallel_update<simple_update>
+      , parallel_exec>;
+
+    auto g = std::make_shared<graph_type>();
+
+    if(log)
+      g->update_fun.logger = ossia::logger_ptr();
+
+    return g;
+  }
+#endif
+  return {};
+}
+std::shared_ptr<ossia::graph_interface> make_graph(const ossia::graph_setup_options& opt)
+{
+  std::shared_ptr<ossia::graph_interface> g;
+
+#if defined(OSSIA_PARALLEL)
+  if(opt.parallel)
+  {
+    g = make_graph_par_impl(opt);
+  }
+#endif
+
+  if(!g)
+  {
+    g = make_graph_impl(opt);
+  }
+  return g;
+}
+
+smallfun::function<void(unsigned long, double), 128> make_tick(
+    const tick_setup_options& settings,
+    ossia::execution_state& st,
+    ossia::graph_interface& gb,
+    ossia::time_interval& itv)
+{
+  auto& g = static_cast<ossia::graph_base&>(gb);
+  auto tick = settings.tick;
+  auto commit = settings.commit;
+
+  if(commit == tick_setup_options::Default)
+  {
+    static constexpr const auto commit_policy = &ossia::execution_state::commit;
+    if(tick == tick_setup_options::Buffer)
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::Precise)
+      return ossia::precise_score_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::ScoreAccurate)
+      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    else
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+  }
+  else if(commit == tick_setup_options::Ordered)
+  {
+    static constexpr const auto commit_policy = &ossia::execution_state::commit_ordered;
+    if(tick == tick_setup_options::Buffer)
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::Precise)
+      return ossia::precise_score_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::ScoreAccurate)
+      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    else
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+  }
+  else if(commit == tick_setup_options::Priorized)
+  {
+    static constexpr const auto commit_policy = &ossia::execution_state::commit_priorized;
+    if(tick == tick_setup_options::Buffer)
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::Precise)
+      return ossia::precise_score_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::ScoreAccurate)
+      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    else
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+  }
+  else if(commit == tick_setup_options::Merged)
+  {
+    static constexpr const auto commit_policy = &ossia::execution_state::commit_merged;
+    if(tick == tick_setup_options::Buffer)
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::Precise)
+      return ossia::precise_score_tick<commit_policy>{st, g, itv};
+    else if(tick == tick_setup_options::ScoreAccurate)
+      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    else
+      return ossia::buffer_tick<commit_policy>{st, g, itv};
+  }
+  return ossia::buffer_tick<&ossia::execution_state::commit>{st, g, itv};
+}
 
 struct rescale_in
 {
