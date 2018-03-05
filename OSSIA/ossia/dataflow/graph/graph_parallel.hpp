@@ -14,6 +14,7 @@ struct parallel_update
 public:
     using cont_node = tf::continue_node<tf::continue_msg>;
     std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<bench_map> perf_map;
 
     template<typename Graph_T>
     parallel_update(Graph_T& g): impl{g}
@@ -33,11 +34,24 @@ public:
 
     if(logger)
     {
-      for(auto n : nodes)
+      if(perf_map)
       {
-        graph_node* node = n.first.get();
-        flow_nodes.insert({node,
-                           std::make_unique<cont_node>(flow_graph, node_exec_logger{cur_state, *logger, *node})});
+        for(auto n : nodes)
+        {
+          graph_node* node = n.first.get();
+          flow_nodes.insert({node,
+                             std::make_unique<cont_node>(flow_graph,
+                              node_exec_logger_bench{cur_state, *perf_map, *logger, *node})});
+        }
+      }
+      else
+      {
+        for(auto n : nodes)
+        {
+          graph_node* node = n.first.get();
+          flow_nodes.insert({node,
+                             std::make_unique<cont_node>(flow_graph, node_exec_logger{cur_state, *logger, *node})});
+        }
       }
     }
     else

@@ -10,13 +10,17 @@
 #include <spdlog/spdlog.h>
 namespace ossia
 {
+std::shared_ptr<bench_map> bench_ptr()
+{
+  static std::shared_ptr<bench_map> b = std::make_shared<bench_map>();
+  return b;
+}
 
 std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup_options& opt)
 {
   using namespace ossia;
   auto sched = opt.scheduling;
-  bool log = opt.log;
-  if(log)
+  if(opt.log)
   {
     using exec_t = static_exec_logger;
     if(sched == ossia::graph_setup_options::Dynamic)
@@ -30,7 +34,7 @@ std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup
         , exec_t>;
 
       auto g = std::make_shared<graph_type>();
-      g->tick_fun.logger = ossia::logger_ptr();
+      g->tick_fun.logger = opt.log;
       return g;
     }
     else if(sched == ossia::graph_setup_options::StaticFixed)
@@ -40,7 +44,7 @@ std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup
         , exec_t>;
 
       auto g = std::make_shared<graph_type>();
-      g->tick_fun.logger = ossia::logger_ptr();
+      g->tick_fun.logger = opt.log;
       return g;
     }
     else // if(sched == ossia::graph_setup_options::StaticTC)
@@ -50,7 +54,7 @@ std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup
         , exec_t>;
 
       auto g = std::make_shared<graph_type>();
-      g->tick_fun.logger = ossia::logger_ptr();
+      g->tick_fun.logger = opt.log;
       return g;
     }
   }
@@ -96,7 +100,6 @@ std::shared_ptr<ossia::graph_interface> make_graph_par_impl(const ossia::graph_s
 #if defined(OSSIA_PARALLEL)
 
   auto sched = opt.scheduling;
-  bool log = opt.log;
 
   if(sched == ossia::graph_setup_options::StaticBFS)
   {
@@ -106,8 +109,8 @@ std::shared_ptr<ossia::graph_interface> make_graph_par_impl(const ossia::graph_s
 
     auto g = std::make_shared<graph_type>();
 
-    if(log)
-      g->update_fun.logger = ossia::logger_ptr();
+    g->update_fun.logger = opt.log;
+    g->update_fun.perf_map = opt.bench;
 
     return g;
   }
@@ -119,8 +122,8 @@ std::shared_ptr<ossia::graph_interface> make_graph_par_impl(const ossia::graph_s
 
     auto g = std::make_shared<graph_type>();
 
-    if(log)
-      g->update_fun.logger = ossia::logger_ptr();
+    g->update_fun.logger = opt.log;
+    g->update_fun.perf_map = opt.bench;
 
     return g;
   }
@@ -132,8 +135,8 @@ std::shared_ptr<ossia::graph_interface> make_graph_par_impl(const ossia::graph_s
 
     auto g = std::make_shared<graph_type>();
 
-    if(log)
-      g->update_fun.logger = ossia::logger_ptr();
+    g->update_fun.logger = opt.log;
+    g->update_fun.perf_map = opt.bench;
 
     return g;
   }

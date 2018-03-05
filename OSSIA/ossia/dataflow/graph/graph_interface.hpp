@@ -1,7 +1,12 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+namespace spdlog
+{
+class logger;
+}
 namespace ossia
 {
+struct bench_map;
 class time_interval;
 class OSSIA_EXPORT graph_interface
 {
@@ -30,7 +35,8 @@ struct graph_setup_options
     enum { Merge, Append, Replace } merge{};
 
     bool parallel{};
-    bool log{};
+    std::shared_ptr<spdlog::logger> log{};
+    std::shared_ptr<bench_map> bench{};
 };
 
 struct tick_setup_options
@@ -38,6 +44,11 @@ struct tick_setup_options
     enum { Default, Ordered, Priorized, Merged } commit{};
     enum { Buffer, ScoreAccurate, Precise } tick{};
 };
+
+
+OSSIA_EXPORT
+std::shared_ptr<bench_map> bench_ptr();
+
 OSSIA_EXPORT
 std::shared_ptr<ossia::graph_interface> make_graph(const graph_setup_options&);
 

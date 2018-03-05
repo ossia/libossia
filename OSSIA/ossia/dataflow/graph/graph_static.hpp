@@ -3,6 +3,7 @@
 #include <boost/graph/transitive_closure.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
+#include <ossia/dataflow/bench_map.hpp>
 
 #include <boost/circular_buffer.hpp>
 #include <boost/container/flat_map.hpp>
@@ -43,6 +44,31 @@ struct node_exec_logger
           graph_util::exec_node(node, *g);
         else
           graph_util::exec_node(node, *g, logger);
+      }
+    }
+};
+
+struct node_exec_logger_bench
+{
+    execution_state*& g;
+    bench_map& perf;
+    spdlog::logger& logger;
+    graph_node& node;
+
+    template<typename T>
+    void operator()(const T&)
+    {
+      if(node.enabled())
+      {
+        assert(graph_util::can_execute(node, *g));
+
+        auto t0 = std::chrono::steady_clock::now();
+        if(!node.logged())
+          graph_util::exec_node(node, *g);
+        else
+          graph_util::exec_node(node, *g, logger);
+        auto t1 = std::chrono::steady_clock::now();
+        perf[&node] = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
       }
     }
 };

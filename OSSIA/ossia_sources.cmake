@@ -504,6 +504,7 @@ set(OSSIA_QT_SCORE_SRCS
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/bench_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/common_nodes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
