@@ -28,4 +28,10 @@ bad_request_error::~bad_request_error()
 
 }
 
+invalid_value_type_error::~invalid_value_type_error()
+{
+
+}
+
+
 }
