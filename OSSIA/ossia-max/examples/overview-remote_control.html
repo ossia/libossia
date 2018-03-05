@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<title>
+			OSCQuery Remote example
+		</title>
+<style>
+	body {
+		font: 14px/1.7 -apple-system-font, HelveticaNeue-Light, "Helvetica Neue", Helvetica, sans-serif;
+	}
+		</style>
+		<script type="text/javascript">
+function init() { 
+		var ws = new WebSocket("ws://127.0.0.1:5678");
+		ws.onopen = function(mess) {
+		  // This way the protocol will always try to send 
+		  // data through websockets.
+		  ws.send("/?SET_PORT=0");
+		  ws.send("/");
+		}
+		var carrier = document.getElementById('carrier');
+		var ratio = document.getElementById('ratio');
+		var cutoff = document.getElementById('cutoff');
+
+
+		ws.onmessage = function(mess) {
+		  // An OSCQuery value json looks like 
+		  // { "/the/addr" : 123 }
+		  console.log(mess.data);
+		  var json = JSON.parse(mess.data);
+		  var keys = Object.keys(json);
+
+		  var carrier_k = keys.findIndex(function(val) { return val == "/my_2voices_synth/voice.1/carrier/frequency"; });
+		  var ratio_k = keys.findIndex(function(val) { return val == "/my_2voices_synth/voice.1/modulation/ratio"; });
+		  var cutoff_k = keys.findIndex(function(val) { return val == "/my_2voices_synth/voice.1/cutoff/frequency"; });
+		  
+		  if(ratio_k != -1)
+		  {
+			  ratio.value = json["/my_2voices_synth/voice.1/modulation/ratio"];
+		  };
+		  if(carrier_k != -1)
+		  {
+			  carrier.value = json["/my_2voices_synth/voice.1/carrier/frequency"];
+		  };
+
+		  if(cutoff_k != -1)
+		  {
+			  cutoff.value = json["/my_2voices_synth/voice.1/cutoff/frequency"];
+		  };
+
+		}
+		
+		carrier.oninput = function(ev) {
+			  ws.send('{ "/my_2voices_synth/voice.1/carrier/frequency": ' + carrier.value + '}');
+			  console.log('{ "/my_2voices_synth/voice.1/carrier/frequency": ' + carrier.value + '}');
+		};
+		
+		ratio.oninput = function(ev) {
+			  ws.send('{ "/my_2voices_synth/voice.1/modulation/ratio": ' + ratio.value + '}');
+			  console.log('{ "/my_2voices_synth/voice.1/modulation/ratio": ' + ratio.value + '}');
+		};
+
+		cutoff.oninput = function(ev) {
+			  ws.send('{ "/my_2voices_synth/voice.1/cutoff/frequency": ' + cutoff.value + '}');
+			  console.log('{ "/my_2voices_synth/voice.1/cutoff/frequency": ' + cutoff.value + '}');
+		};
+
+
+
+		};
+		</script>
+	</head>
+	<body onload="init()">
+		<h2>An HTML example interface using websocket</h2>
+		<table>
+			<tr>
+				<td>
+					Carrier frequency
+				</td>
+				<td>
+					<input id="carrier" type="range" min="0" max="10000">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Modulation ratio
+				</td>
+				<td>
+					<input id="ratio" type="range" min="0" max="10">
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Cutoff frequency
+				</td>
+				<td>
+					<input id="cutoff" type="range" min="0" max="10000">
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

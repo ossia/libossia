@@ -118,6 +118,11 @@ public:
     return impl;
   }
 
+  auto size() const
+  {
+    return impl.size();
+  }
+
 private:
   ossia::ptr_set<T> impl;
 };

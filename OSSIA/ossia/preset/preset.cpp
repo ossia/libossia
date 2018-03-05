@@ -46,6 +46,17 @@ struct ossia_preset
   ossia_preset(const ossia::presets::preset& prst) : impl(prst)
   {
   }
+
+  auto find(const std::string key)
+  {
+    auto it = impl.begin();
+    for (it; it < impl.end(); it++)
+    {
+      if (it->first == key)
+        break;
+    }
+    return it;
+  }
 };
 
 /// C functions ///
@@ -315,7 +326,7 @@ bool ossia_presets_has_key(const ossia_preset_t preset, const char* key)
   {
     try
     {
-      return preset->impl.find(key) != preset->impl.end();
+      return preset->find(key) != preset->impl.end();
     }
     catch (...)
     {
@@ -332,7 +343,7 @@ ossia_preset_result ossia_presets_key_to_string(
   {
     try
     {
-      auto it = preset->impl.find(key);
+      auto it = preset->find(key);
       if (it != preset->impl.end())
       {
         *buffer = copy_string(ossia::convert<std::string>(it->second));
@@ -358,7 +369,7 @@ ossia_preset_result ossia_presets_key_to_value(
   {
     try
     {
-      auto it = preset->impl.find(key);
+      auto it = preset->find(key);
       if (it != preset->impl.end())
       {
         *buffer = convert(it->second);
@@ -454,7 +465,7 @@ void explore(
   else
   {
     ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
-    preset->insert(pp);
+    preset->push_back(pp);
   }
 }
 
@@ -1120,41 +1131,29 @@ void ossia::presets::apply_preset(
   }
 }
 
-void make_preset_node(
-    ossia::net::node_base& node, ossia::presets::preset& preset,
-    const std::string& key)
+ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
 {
-  std::string currentkey = key;
-  if (auto parent = node.get_parent())
+  ossia::presets::preset cue;
+  auto nodes = ossia::net::list_all_child(&node);
+  for (auto n : nodes)
   {
-    currentkey += "/" + device_to_preset_key(node, *parent);
-  }
-#if !defined(OSSIA_HAS_SHARED_MUTEX)
-  auto children = node.children_copy();
-#else
-  const auto& children = node.children();
-#endif
-
-  if (children.size() == 0)
-  {
-    if (auto addr = node.get_parameter())
-      preset.insert(std::make_pair(currentkey, addr->value()));
-  }
-  else
-  {
-    for (auto& child : children)
+    if (auto param = n->get_parameter())
     {
-      make_preset_node(*child, preset, currentkey);
+      if (param->get_value_type() != ossia::val_type::IMPULSE)
+      {
+        std::string key = n->get_name();
+        auto n1 = n->get_parent();
+        while ( n1 != &node )
+        {
+          key = n1->get_name() + "/" + key;
+          n1 = n1->get_parent();
+        }
+        cue.push_back({key,param->value()});
+      }
     }
   }
-}
 
-ossia::presets::preset
-ossia::presets::make_preset(ossia::net::node_base& node)
-{
-  presets::preset preset;
-  make_preset_node(node, preset, "");
-  return preset;
+  return cue;
 }
 
 ossia::net::node_base*
@@ -1231,6 +1230,141 @@ std::string ossia::presets::to_string(const ossia::net::device_base& ossiadev)
   to_string_node(root, strnodes, keys);
   ss << "[" << boost::join(strnodes, ", ") << "]";
   return std::string(ss.str());
+}
+
+void make_json_from_node(rapidjson::Document& d, ossia::net::node_base* node)
+{
+  rapidjson::Document subdoc(&d.GetAllocator());
+  subdoc.SetObject();
+
+  if(auto param = node->get_parameter())
+  {
+    if (param->get_value_type() != ossia::val_type::IMPULSE)
+    {
+      rapidjson::Value v = param->value().apply(ossia::oscquery::detail::value_to_json_value{d.GetAllocator()});
+      rapidjson::Value name(node->get_name(),d.GetAllocator());
+      d.AddMember(name, v, d.GetAllocator());
+    }
+  }
+
+  std::vector<ossia::net::node_base*> children
+      = node->children_copy();
+
+  if (children.empty())
+    return;
+
+  ossia::sort(children, [](auto n1, auto n2)
+    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+
+  for (auto it = children.begin(); it != children.end(); it++ )
+  {
+    make_json_from_node(subdoc, *it);
+  }
+
+  rapidjson::Value name(node->get_name(),d.GetAllocator());
+  d.AddMember(name, subdoc, d.GetAllocator());
+}
+
+const std::string ossia::presets::make_json_preset(const ossia::net::node_base& node)
+{
+  std::vector<ossia::net::node_base*> children
+      = node.children_copy();
+
+  ossia::sort(children, [](auto n1, auto n2)
+    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+
+  rapidjson::Document doc;
+  doc.SetObject();
+  for (auto it = children.begin(); it != children.end(); it++ )
+  {
+    make_json_from_node(doc, *it);
+  }
+
+  rapidjson::StringBuffer buffer;
+  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+  doc.Accept(writer);
+
+  return buffer.GetString();
+}
+
+void apply_json_member_to_node(
+    rapidjson::Value::ConstMemberIterator object,
+    ossia::net::node_base& node,
+    ossia::presets::func_t fn)
+{
+  if(object->value.IsObject())
+  {
+    for (auto it = object->value.MemberBegin();
+         it != object->value.MemberEnd();
+         ++it)
+    {
+      std::string name = it->name.GetString();
+      auto n = ossia::net::find_node(node,it->name.GetString());
+      if (n && !ossia::net::get_recall_safe(*n))
+      {
+          apply_json_member_to_node(it, *n, fn);
+      }
+    }
+  }
+  else
+  {
+    if (!ossia::net::get_recall_safe(node))
+    {
+      if (auto param = node.get_parameter())
+      {
+        param->push_value(json_to_ossia_value(object->value));
+        if (fn)
+          fn(&node);
+      }
+    }
+  }
+}
+
+bool ossia::presets::apply_json(const std::string& json, ossia::net::node_base& node, func_t fn)
+{
+  rapidjson::Document doc;
+  doc.Parse(json.c_str());
+  if (doc.HasParseError())
+    return false;
+  else
+  {
+    if(doc.IsObject())
+    {
+      for (auto it = doc.MemberBegin();
+           it != doc.MemberEnd();
+           ++it)
+      {
+        std::string name = it->name.GetString();
+        auto n = ossia::net::find_node(node, name);
+        if (n && !ossia::net::get_recall_safe(*n))
+          apply_json_member_to_node(it, *n, fn);
+      }
+    }
+  }
+  return true;
+}
+
+
+void ossia::presets::apply_preset(const std::string& kiss,
+                  ossia::net::node_base& node,
+                  ossia::presets::func_t fn)
+{
+  auto preset = ossia::presets::from_string(kiss);
+  for (auto& p : preset)
+  {
+    if(auto n = ossia::net::find_node(node, p.first))
+    {
+      if (ossia::net::get_recall_safe(*n))
+        continue;
+
+      if (auto param = n->get_parameter())
+      {
+        param->push_value(p.second);
+        if(fn)
+          fn(n);
+      }
+    }
+  }
 }
 
 /// Exception handling ///

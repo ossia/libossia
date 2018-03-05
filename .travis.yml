@@ -40,6 +40,8 @@ matrix:
     env: BUILD_TYPE=Release OSSIA_STATIC=1
   - os: linux
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
+  - os: linux
+    env: BUILD_TYPE=PdTest OSSIA_STATIC=1
 
 ## RpiDocker build is tooooooo slow
 #  - os: linux
@@ -67,16 +69,11 @@ matrix:
   - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=3.4
 
-  - sudo: required
-    services:
-      - docker
-    env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 BUILD_TYPE=python_manylinux
+#  - services: docker
+#    env: BUILD_TYPE=python_manylinux
 
-  - sudo: required
-    services:
-      - docker
-    env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 BUILD_TYPE=python_manylinux
-         PRE_CMD=linux32
+#  - services: docker
+#    env: BUILD_TYPE=python_manylinux PRE_CMD=linux32
 
   - os: linux
     env: BUILD_TYPE=qml
@@ -100,6 +97,8 @@ matrix:
     env: BUILD_TYPE=Release OSSIA_STATIC=1
   - os: osx
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1 PYTHON_VERSION=3.6
+  - os: osx
+    env: BUILD_TYPE=PdTest OSSIA_STATIC=1 PYTHON_VERSION=3.6
   - os: osx
     env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
 

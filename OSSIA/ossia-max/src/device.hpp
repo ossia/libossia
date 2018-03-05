@@ -11,12 +11,12 @@ namespace max
 class device : public device_base
 {
 public:
+
+  using is_device = std::true_type;
+
   static void register_children(device*);
   void unregister_children();
   static void loadbang(device*);
-
-  void on_parameter_created_callback(const ossia::net::parameter_base& param);
-  void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
 
   std::vector<std::vector<t_atom>> m_protocols;
 

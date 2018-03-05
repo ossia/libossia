@@ -102,7 +102,7 @@ private Q_SLOTS:
     void test_basic()
     {
         //using namespace std::placeholders;
-        loop l(25._tv, &interval_callback, event_callback, event_callback);
+        loop l(25._tv, {[] (auto&&... args) { interval_callback(args...); }}, event_callback, event_callback);
 
         //! \todo test clone()
     }
@@ -117,12 +117,12 @@ private Q_SLOTS:
         auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), event_callback));
 
-        auto interval = time_interval::create(&interval_callback, *start_event, *end_event, 500._tv, 500._tv, 500._tv);
+        auto interval = time_interval::create({}, *start_event, *end_event, 500._tv, 500._tv, 500._tv);
 
         ossia::clock c{*interval};
         c.set_granularity(std::chrono::milliseconds(20));
         interval->add_time_process(
-              std::make_unique<loop>(25._tv, &interval_callback, event_callback, event_callback));
+                    std::make_unique<loop>(25._tv, ossia::time_interval::exec_callback{}, event_callback, event_callback));
 
         c.start_and_tick();
 
@@ -290,11 +290,11 @@ private Q_SLOTS:
       l.parent.start();
       ossia::execution_state e;
       e.valueDevices = {&l.d};
-      for(int i = 1; i <= 14; i++) {
+      for(int64_t i = 1; i <= 14; i++) {
 
         float* chan = audio_data[0] + i - 1 ;
         l.aparam->audio = {{chan, 64 - i}};
-        l.parent.state(time_value{i}, 0., time_value{0}, 1.);
+        l.parent.state(ossia::time_value{i}, 0., ossia::time_value{0}, 1.);
         e.clear_local_state();
         l.g.state(e);
         e.commit();

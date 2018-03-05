@@ -9,7 +9,7 @@
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include "../Editor/TestUtils.hpp"
+#include "TestUtils.hpp"
 
 using namespace ossia;
 // TODO move this code where it is useful.

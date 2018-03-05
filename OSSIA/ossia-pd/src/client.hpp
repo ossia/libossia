@@ -14,9 +14,10 @@ class client : public device_base
 public:
   client();
 
+  using is_client = std::true_type;
+
   static void register_children(client* x);
   void unregister_children();
-  static void loadbang(client* x, t_float type);
 
   static void print_protocol_help()
   {

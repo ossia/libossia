@@ -58,9 +58,9 @@ private Q_SLOTS:
         auto nodeC = std::make_shared<time_sync>();
         auto eventC = *(nodeC->emplace(nodeC->get_time_events().begin(), &event_callback));
 
-        auto interval1 = time_interval::create(&interval_callback, *eventA, *eventB, 1000._tv);
-        auto interval2 = time_interval::create(&interval_callback, *eventB, *eventC, 1000._tv);
-        auto interval3 = time_interval::create(&interval_callback, *eventA, *eventC, 2000._tv);
+        auto interval1 = time_interval::create({[] (auto&&... args) { interval_callback(args...); }}, *eventA, *eventB, 1000._tv);
+        auto interval2 = time_interval::create({[] (auto&&... args) { interval_callback(args...); }}, *eventB, *eventC, 1000._tv);
+        auto interval3 = time_interval::create({[] (auto&&... args) { interval_callback(args...); }}, *eventA, *eventC, 2000._tv);
 
         QVERIFY(eventA->previous_time_intervals().size() == 0);
         QVERIFY(eventA->next_time_intervals().size() == 2);

@@ -2,7 +2,6 @@
 
 #include <ossia-pd/src/parameter_base.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {
@@ -16,8 +15,8 @@ public:
 
   remote();
 
-  bool register_node(const std::vector<ossia::net::node_base*>& node);
-  bool do_registration(const std::vector<ossia::net::node_base*>& node);
+  bool register_node(const std::vector<t_matcher>& node);
+  bool do_registration(const std::vector<t_matcher>& node);
   bool unregister();
 
   ossia::net::device_base* m_dev{};
@@ -45,10 +44,6 @@ public:
   static void get_enable(remote*x);
 
   void on_device_deleted(const ossia::net::node_base&);
-private:
-  void update_path(ossia::string_view name);
-  ossia::optional<ossia::traversal::path> m_path;
-
 };
 } // namespace pd
 } // namespace ossia

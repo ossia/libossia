@@ -92,6 +92,10 @@ function(install_headers_rec theHeaders)
 endfunction()
 
 install_headers_rec("${API_HEADERS}")
+
+if(OSSIA_EDITOR)
+  install_headers_rec("${OSSIA_EDITOR_HEADERS}")
+endif()
 if(OSSIA_PROTOCOL_MIDI)
   install_headers_rec("${OSSIA_MIDI_HEADERS}")
 endif()

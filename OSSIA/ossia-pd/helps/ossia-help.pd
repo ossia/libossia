@@ -1,4 +1,4 @@
-#N canvas 160 243 947 811 10;
+#N canvas 149 22 949 856 10;
 #X msg 125 587 expose oscquery;
 #X msg 113 557 expose;
 #X text 30 589 for example;
@@ -69,16 +69,16 @@ functions as a tree of nodes and parameters. These nodes/parameters
 can have attributes \, which allow to declare some of their properties
 \, such as their values \, types \, units \, ranges \, etc..., f 129
 ;
-#X text 30 686 When exposed via OSCquery \, one can query the namespace
+#X text 31 740 When exposed via OSCquery \, one can query the namespace
 and properties from a web browser \, e.g. http://localhost:5678 if
 you used the default ports More queries are possible in this way \,
 e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE,
 f 116;
 #X text 145 310 allows to get the namespace \, i.e. the list of the
 adresses registered to the global device., f 96;
-#X text 26 729 ________________________________________________________________________________________________________________
+#X text 27 783 ________________________________________________________________________________________________________________
 , f 122;
-#X text 29 761 Please report bugs on: https://github.com/OSSIA/libossia/issues
+#X text 30 815 Please report bugs on: https://github.com/OSSIA/libossia/issues
 , f 84;
 #N canvas 0 22 361 184 presets 0;
 #X obj 196 126 outlet;
@@ -99,8 +99,12 @@ adresses registered to the global device., f 96;
 #X connect 6 0 0 0;
 #X restore 165 392 pd presets;
 #X text 251 392 preset management in here;
-#X msg 167 646 expose oscquery 3456 2839;
-#X text 352 647 other ports;
+#X msg 162 658 get protocols;
+#X msg 168 685 stop 0;
+#X text 276 658 get a list of all protocols this device is exposed
+through;
+#X text 232 687 stop exposing this device (if it's the only exposed
+once);
 #X connect 0 0 13 0;
 #X connect 1 0 13 0;
 #X connect 5 0 14 0;

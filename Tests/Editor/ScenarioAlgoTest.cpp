@@ -76,7 +76,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> se = start_event(scenario);
       std::shared_ptr<time_event> ee = create_event(scenario);
 
-      std::shared_ptr<time_interval> c = time_interval::create([] (auto&&...) {}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c = time_interval::create({}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
       s.scenario->add_time_interval(c);
 
       s.interval->start_and_tick();
@@ -112,8 +112,8 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
 
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
@@ -142,10 +142,10 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e4 = create_event(scenario);
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 1_tv, 1_tv, 1_tv);
-      std::shared_ptr<time_interval> c3 = time_interval::create([] (auto&&...) {}, *e3, *e4, 10_tv, 10_tv, 10_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 1_tv, 1_tv, 1_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 1_tv, 1_tv, 1_tv);
+      std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 1_tv, 1_tv, 1_tv);
+      std::shared_ptr<time_interval> c3 = time_interval::create({}, *e3, *e4, 10_tv, 10_tv, 10_tv);
 
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
@@ -180,10 +180,10 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e4 = create_event(scenario); e4->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 1_tv, 0_tv, ossia::Infinite);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 1_tv, 0_tv, ossia::Infinite);
-      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 1_tv, 0_tv, ossia::Infinite);
-      std::shared_ptr<time_interval> c3 = time_interval::create([] (auto&&...) {}, *e3, *e4, 1_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 1_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 1_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 1_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c3 = time_interval::create({}, *e3, *e4, 1_tv, 0_tv, ossia::Infinite);
 
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
@@ -275,10 +275,10 @@ class ScenarioAlgoTest : public QObject
        * | - - - - e1 - - - - - | ------------ e3
        */
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e2, 20_tv, 0_tv, 25_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e0, *e1, 15_tv, 0_tv, ossia::Infinite);
-      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e1, *e2, 5_tv, 0_tv, ossia::Infinite);
-      std::shared_ptr<time_interval> c3 = time_interval::create([] (auto&&...) {}, *e2, *e3, 100_tv, 100_tv, 100_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e2, 20_tv, 0_tv, 25_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e0, *e1, 15_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c2 = time_interval::create({}, *e1, *e2, 5_tv, 0_tv, ossia::Infinite);
+      std::shared_ptr<time_interval> c3 = time_interval::create({}, *e2, *e3, 100_tv, 100_tv, 100_tv);
 
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
@@ -374,8 +374,8 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
       s.scenario->add_time_interval(c0);
       s.scenario->add_time_interval(c1);
@@ -408,8 +408,8 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
@@ -439,9 +439,9 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 500_tv, 500_tv, 500_tv);
-      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 500_tv, 500_tv, 500_tv);
+      std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 3000_tv, 3000_tv, 3000_tv);
 
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
@@ -469,7 +469,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e0 = create_event(scenario);
       std::shared_ptr<time_event> e1 = create_event(scenario);
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
       s.scenario->add_time_interval(c0);
 
       QCOMPARE(c0->get_position(), 0.);
@@ -509,11 +509,11 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e2 = create_event(scenario);
       std::shared_ptr<time_event> e3 = create_event(scenario);
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
       s.scenario->add_time_interval(c0);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 0_tv, 0_tv, 0_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, 0_tv);
       s.scenario->add_time_interval(c1);
-      std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 20_tv, 20_tv, 20_tv);
+      std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 20_tv, 20_tv, 20_tv);
       s.scenario->add_time_interval(c2);
 
       auto msg_node = std::make_shared<message_node>();
@@ -557,8 +557,8 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(1, ossia::expressions::comparator::EQUAL, 1));
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 30_tv, 20_tv, 40_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 30_tv, 20_tv, 40_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
@@ -593,7 +593,7 @@ class ScenarioAlgoTest : public QObject
 
       scenario.get_start_time_sync()->set_expression(ossia::expressions::make_expression_false());
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 30_tv, 30_tv, 30_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 30_tv, 30_tv, 30_tv);
 
       scenario.add_time_interval(c0);
 
@@ -624,8 +624,8 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 300_tv, 300_tv, 300_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 500_tv, 500_tv, 500_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 300_tv, 300_tv, 300_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 500_tv, 500_tv, 500_tv);
 
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
@@ -657,8 +657,8 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 300_tv, 300_tv, 300_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e0, *e1, 500_tv, 100_tv, 1000_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 300_tv, 300_tv, 300_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e0, *e1, 500_tv, 100_tv, 1000_tv);
 
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
@@ -690,8 +690,8 @@ class ScenarioAlgoTest : public QObject
       e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 30_tv, 30_tv, 30_tv);
-      std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 30_tv, 30_tv, 30_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
 
       scenario.add_time_interval(c0);
       scenario.add_time_interval(c1);
@@ -739,7 +739,7 @@ class ScenarioAlgoTest : public QObject
 //      std::shared_ptr<time_event> e0 = start_event(scenario);
 //      std::shared_ptr<time_event> e1 = create_event(scenario);
 
-//      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+//      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
 //      s.scenario->add_time_interval(c0);
 
 //      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
@@ -775,7 +775,7 @@ class ScenarioAlgoTest : public QObject
 //      e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
 
 
-//      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+//      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
 //      s.scenario->add_time_interval(c0);
 
 //      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
@@ -810,7 +810,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e0 = start_event(scenario);
       std::shared_ptr<time_event> e1 = create_event(scenario);
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
       s.scenario->add_time_interval(c0);
 
       auto node = std::make_shared<percentage_node>(*utils.float_addr);
@@ -863,7 +863,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_event> e0 = start_event(scenario);
       std::shared_ptr<time_event> e1 = create_event(scenario);
 
-      std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
       s.scenario->add_time_interval(c0);
 
       auto node = std::make_shared<percentage_node>(*utils.float_addr);
@@ -919,11 +919,11 @@ class ScenarioAlgoTest : public QObject
 //        e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
 //        e2->add_state(ossia::message{*utils.float_addr, ossia::value{31.}});
 
-//        std::shared_ptr<time_interval> c0 = time_interval::create([] (auto&&...) {}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+//        std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
 //        s.scenario->add_time_interval(c0);
-//        std::shared_ptr<time_interval> c1 = time_interval::create([] (auto&&...) {}, *e1, *e2, 5_tv, 5_tv, 5_tv);
+//        std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 5_tv, 5_tv, 5_tv);
 //        s.scenario->add_time_interval(c1);
-//        std::shared_ptr<time_interval> c2 = time_interval::create([] (auto&&...) {}, *e2, *e3, 5_tv, 5_tv, 5_tv);
+//        std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 5_tv, 5_tv, 5_tv);
 //        s.scenario->add_time_interval(c1);
 
 //        {

@@ -8,7 +8,7 @@
 	</digest>
 
 	<description>
-		ossia.view allows to bind to a model patcher and define a scope to the ossia.remotes at the same level patcher or below to automatically bind to corresponding ossia.parameters
+		<o>ossia.view</o> allows to bind to a model patcher and define a scope to the ossia.remotes at the same level patcher or below to automatically bind to corresponding ossia.parameters
 	</description>
 
 	
@@ -39,17 +39,30 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="bind to address" optional="0" type="symbol">
+		<objarg name="Address to bind to" optional="0" type="symbol">
 			<digest>
-				The address of the node (model) to bind this view to.
+				The address of the node (model) to bind this view to
 			</digest>
 			<description>
-				ossia.view requires an argument defining a node name in the ossia namespace to which it will bind This will define the scope to which the ossia.remotes at the same level patcher or below will automatically bind to corresponding ossia.parameters.  
+				<o>ossia.view</o> requires an argument defining a node name in the ossia namespace to which it will bind. This will define the scope to which the ossia.remotes at the same level patcher or below will automatically bind to corresponding ossia.parameters.  
 				This argument is mandatory, and each <o>ossia.view</o> within a upper-level model, device or client must have a unique name.
 			</description>
 		</objarg>
 	</objarglist>	
 	
+	<methodlist>
+		<method name="address">
+			<arglist>
+				<arg name="Address to bind to" optional="1" type="list" />
+			</arglist>
+			<digest>
+				The address of the node (model) to bind this view to
+			</digest>
+			<description>
+				The <m>address</m> message followed a node address in the Ossia namespace will make the view bind to the specified node (model)
+			</description>
+		</method>
+	</methodlist>
 
 	<!--SEEALSO-->
 	<seealsolist>

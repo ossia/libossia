@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
-#include <ossia/editor/exceptions.hpp>
+#include <ossia/network/exceptions.hpp>
 #include <ossia/network/value/value_base.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/detail/string_view.hpp>

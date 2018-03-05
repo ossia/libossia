@@ -25,7 +25,7 @@ struct root_scenario
   std::shared_ptr<ossia::time_event> scenario_start;
   root_scenario(ossia::time_value dur):
     interval{ossia::time_interval::create(
-               [] (auto&&...) {},
+               {},
                *start_event, *end_event, dur, dur, dur)}
   , scenario{std::make_shared<ossia::scenario>()}
   {

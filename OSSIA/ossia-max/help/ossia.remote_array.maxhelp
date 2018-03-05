@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 298.0, 111.0, 1196.0, 694.0 ],
+		"rect" : [ 252.0, 333.0, 1421.0, 707.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -68,7 +68,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1196.0, 668.0 ],
+						"rect" : [ 0.0, 26.0, 1421.0, 681.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -131,7 +131,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 298.0, 137.0, 1196.0, 668.0 ],
+						"rect" : [ 252.0, 359.0, 1421.0, 681.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -160,6 +160,19 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-2",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 64.0, 129.5, 565.0, 20.0 ],
+									"presentation_rect" : [ 613.0, 83.5, 0.0, 0.0 ],
+									"style" : "",
+									"text" : "This only works with the brace expansion syntax, i.e. {12..43} will match all instances between 12 and 43"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"id" : "obj-10",
 									"maxclass" : "comment",
@@ -244,6 +257,7 @@
 							}
 , 							{
 								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-35",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -304,6 +318,7 @@
 							}
 , 							{
 								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-30",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -351,6 +366,7 @@
 							}
 , 							{
 								"box" : 								{
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-20",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -387,7 +403,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 8.0, 7.0, 561.5, 143.0 ]
+									"patching_rect" : [ 8.0, 7.0, 566.5, 100.0 ]
 								}
 
 							}

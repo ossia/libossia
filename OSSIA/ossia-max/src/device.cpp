@@ -6,6 +6,7 @@
 #include "remote.hpp"
 #include "view.hpp"
 #include "utils.hpp"
+#include "ossia-max.hpp"
 
 #include "ossia/network/osc/osc.hpp"
 #include "ossia/network/oscquery/oscquery_server.hpp"
@@ -43,6 +44,9 @@ extern "C" void ossia_device_setup()
   class_addmethod(
         c, (method) device::get_mess_cb,
         "get", A_SYM, 0);
+  class_addmethod(
+      c, (method) device::notify,
+      "notify", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -97,10 +101,16 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
                                                  x->m_name->s_name};
     x->connect_slots();
 
-    x->m_nodes = {&x->m_device->get_root_node()};
+    x->get_hierarchy();
+    auto& map = ossia_max::instance().root_patcher;
+    auto it = map.find(x->m_patcher_hierarchy.back());
+
+    // register object only if root patcher have been loadbanged
+    // else the patcher itself will trig a registration on loadbang
+    if(it != map.end() && it->second)
+      device::register_children(x);
 
     ossia_library.devices.push_back(x);
-    device::register_children(x);
   }
 
   return (x);
@@ -110,7 +120,12 @@ void device::destroy(device* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
-  x->unregister_children();
+
+  // This is no more needed since all children
+  // are connected to node.about_to_be_deleted
+  //x->unregister_children();
+
+  x->disconnect_slots();
 
   delete x->m_device;
   x->m_device = nullptr;
@@ -131,12 +146,12 @@ void device::register_children(device* x)
     if (child->m_otype == object_class::model)
     {
       ossia::max::model* model = (ossia::max::model*)child;
-      model->register_node(x->m_nodes);
+      model->register_node(x->m_matchers);
     }
     else if (child->m_otype == object_class::param)
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-      parameter->register_node(x->m_nodes);
+      parameter->register_node(x->m_matchers);
     }
   }
 
@@ -148,12 +163,12 @@ void device::register_children(device* x)
     if (child->m_otype == object_class::view)
     {
       ossia::max::view* view = (ossia::max::view*)child;
-      view->register_node(x->m_nodes);
+      view->register_node(x->m_matchers);
     }
     else if (child->m_otype == object_class::remote)
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->register_node(x->m_nodes);
+      remote->register_node(x->m_matchers);
     }
   }
 }
@@ -162,6 +177,7 @@ void device::unregister_children()
 {
   std::vector<object_base*> children_model = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
+
 
   for (auto child : children_model)
   {
@@ -199,8 +215,8 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
   if (argc && argv->a_type == A_SYM)
   {
-    auto& proto = static_cast<ossia::net::local_protocol&>(
-        x->m_device->get_protocol());
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+          x->m_device->get_protocol());
     const ossia::string_view protocol = atom_getsym(argv)->s_name;
 
     if (protocol == "Minuit")
@@ -220,9 +236,17 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::minuit_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
+
+        std::vector<t_atom> a;
+        a.resize(4);
+        A_SETSYM(&a[0], gensym("Minuit"));
+        A_SETSYM(&a[1], gensym(settings.remoteip.c_str()));
+        A_SETFLOAT(&a[2], settings.remoteport);
+        A_SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -246,15 +270,22 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       if (argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
       {
-        settings.oscport = atom_getfloat(argv++);
-        settings.wsport = atom_getfloat(argv++);
+        settings.oscport = atom_getlong(argv++);
+        settings.wsport = atom_getlong(argv++);
       }
 
       try
       {
-        proto.expose_to(
+        multiplex.expose_to(
             std::make_unique<ossia::oscquery::oscquery_server_protocol>(
                 settings.oscport, settings.wsport));
+
+        std::vector<t_atom> a;
+        a.resize(3);
+        A_SETSYM(&a[0], gensym("oscquery"));
+        A_SETFLOAT(&a[1], settings.oscport);
+        A_SETFLOAT(&a[2], settings.wsport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -286,8 +317,16 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        proto.expose_to(std::make_unique<ossia::net::osc_protocol>(
+        multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport));
+
+        std::vector<t_atom> a;
+        a.resize(4);
+        A_SETSYM(&a[0], gensym("osc"));
+        A_SETSYM(&a[1], gensym(settings.remoteip.c_str()));
+        A_SETFLOAT(&a[2], settings.remoteport);
+        A_SETFLOAT(&a[3], settings.localport);
+        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -358,7 +397,7 @@ void device::stop_expose(device*x, int index)
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
-  if ( index < protos.size() )
+  if ( index < x->m_protocols.size() && index < protos.size() )
   {
     multiplex.stop_expose_to(*protos[index]);
     x->m_protocols.erase(x->m_protocols.begin() + index);

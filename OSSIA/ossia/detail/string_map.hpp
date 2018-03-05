@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/string_view.hpp>
+#include <boost/functional/hash.hpp>
 #include <hopscotch_map.h>
 #include <string>
 
@@ -14,16 +15,18 @@ struct string_hash
 {
   std::size_t operator()(const std::string& s) const
   {
-    return std::hash<std::string>{}(s);
+    return boost::hash<std::string>{}(s);
   }
+
   std::size_t operator()(ossia::string_view s) const
   {
-    return std::hash<ossia::string_view>{}(s);
+    return boost::hash_range(s.data(), s.data() + s.size());
   }
+
   template <std::size_t N>
-  std::size_t operator()(const char (&str)[N]) const
+  std::size_t operator()(const char (&s)[N]) const
   {
-    return operator()(make_string_view<N>(str));
+    return boost::hash_range(s, s + N - 1);
   }
 };
 

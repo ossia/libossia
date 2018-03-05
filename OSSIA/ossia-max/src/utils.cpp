@@ -2,7 +2,7 @@
 
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-
+#include "ossia-max.hpp"
 
 namespace ossia
 {
@@ -375,5 +375,85 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
     }
 }
 
+std::string object_path_absolute(object_base* x)
+{
+  fmt::MemoryWriter fullpath;
+  std::vector<std::string> vs;
+  vs.reserve(8);
+
+  vs.push_back(x->m_name->s_name);
+
+  ossia::max::view* view = nullptr;
+  ossia::max::model* model = nullptr;
+
+  int start_level = 0;
+  int view_level = 0;
+  int model_level = 0;
+
+  if (x->m_otype == object_class::view)
+    start_level = 1;
+
+  view = find_parent_box_alive<ossia::max::view>(x, start_level, &view_level);
+
+  if (x->m_otype == object_class::model
+      || x->m_otype == object_class::remote)
+  {
+    model =  find_parent_box_alive<ossia::max::model>(x, start_level, &model_level);
+  }
+
+  t_object* object = nullptr;
+  ossia::max::view* tmp = nullptr;
+
+  // FIXME this will fail as soon as https://github.com/OSSIA/libossia/issues/208 is implemented
+  // or if model and view are mixed in the same hierarchy
+
+  while (view)
+  {
+    vs.push_back(view->m_name->s_name);
+    tmp = view;
+    view = find_parent_box_alive<ossia::max::view>(tmp, 1, &view_level);
+  }
+
+  ossia::max::model* tmp_model = nullptr;
+  while (model)
+  {
+    vs.push_back(model->m_name->s_name);
+    tmp_model = model;
+    model
+        = find_parent_box_alive<ossia::max::model>(tmp_model, 1, &model_level);
+  }
+
+  auto rit = vs.rbegin();
+  for (; rit != vs.rend(); ++rit)
+  {
+    fullpath << "/" << *rit;
+  }
+
+  if (vs.empty())
+    fullpath << "/";
+
+  return fullpath.str();
+}
+
+void trig_output_value(ossia::net::node_base* node)
+{
+    for(auto param : ossia_max::instance().parameters.reference())
+    {
+      for (auto& m : param->m_matchers)
+      {
+        if ( m.get_node() == node )
+          m.output_value();
+      }
+    }
+
+    for(auto remote : ossia_max::instance().remotes.reference())
+    {
+      for (auto& m : remote->m_matchers)
+      {
+        if ( m.get_node() == node )
+          m.output_value();
+      }
+    }
+}
 } // namespace max
 } // namespace ossia

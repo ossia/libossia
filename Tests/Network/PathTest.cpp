@@ -5,7 +5,7 @@
 #include <iostream>
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <Editor/TestUtils.hpp>
+#include "TestUtils.hpp"
 using namespace ossia;
 using namespace ossia::net;
 using namespace std::placeholders;

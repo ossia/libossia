@@ -1,0 +1,1 @@
+pd.com -nogui -lib ossia -send ";pd quit" 2>&1 | findstr /i "Welcome to ossia library"

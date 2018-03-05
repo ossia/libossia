@@ -1,8 +1,6 @@
-#N canvas 240 113 1166 778 10;
+#N canvas 166 98 1166 778 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
-#X text 668 119 bool : bollean value \, 0 or 1;
-#X text 668 139 symbol : string value;
 #X text 669 159 vec2f : list of 2 float values \, useful for 2d coordinates
 ;
 #X text 668 177 vec3f : list of 3 float values \, useful for 3d coordinates
@@ -336,7 +334,7 @@ patcher.;
 #X text 120 305 send attribute values and parameter state through rightmost
 output, f 66;
 #N canvas 777 353 649 398 declaring_multiple_parameters_in_1_object
-0;
+1;
 #X floatatom 50 150 5 0 0 0 - - -, f 5;
 #X floatatom 50 97 5 0 0 0 - - -, f 5;
 #X obj 425 156 route address;
@@ -372,9 +370,6 @@ write or both \, could be : BI (default) \, GET \, SET \, RW \, R \,
 W;
 #X text 651 484 @repetitions <float> enable/disable repetitions \,
 could be 0 or 1 - default: 1 when none specified;
-#X text 651 409 @both <symbol> defines behavior when value go out of
-range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
-LOW \, HIGH, f 68;
 #X text 652 519 @rate: how often (in ms) the value is output - default
 10;
 #N canvas 530 67 495 609 units 0;
@@ -449,18 +444,23 @@ color.argb8 color.hsv color.cmy8 color.xyz gain.linear gain.midigain
 gain.db gain.db-raw time.second time.bark time.hz time.cents time.hz
 time.mel time.midinote time.ms time.speed, f 24;
 #X restore 932 444 pd unit_list;
-#X connect 15 0 16 0;
-#X connect 15 1 17 0;
-#X connect 15 2 18 0;
-#X connect 15 3 19 0;
-#X connect 20 0 45 0;
-#X connect 21 0 45 0;
-#X connect 22 0 45 0;
-#X connect 26 0 34 0;
-#X connect 30 0 31 0;
-#X connect 31 0 29 0;
-#X connect 34 0 26 0;
-#X connect 37 0 36 0;
-#X connect 45 0 15 0;
-#X connect 45 1 14 0;
-#X connect 48 0 45 0;
+#X text 651 409 @clip <symbol> defines behavior when value go out of
+range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
+LOW \, HIGH, f 68;
+#X text 668 119 bool : boolean value \, 0 or 1;
+#X text 668 139 string (or symbol) : string value;
+#X connect 13 0 14 0;
+#X connect 13 1 15 0;
+#X connect 13 2 16 0;
+#X connect 13 3 17 0;
+#X connect 18 0 43 0;
+#X connect 19 0 43 0;
+#X connect 20 0 43 0;
+#X connect 24 0 32 0;
+#X connect 28 0 29 0;
+#X connect 29 0 27 0;
+#X connect 32 0 24 0;
+#X connect 35 0 34 0;
+#X connect 43 0 13 0;
+#X connect 43 1 12 0;
+#X connect 46 0 43 0;

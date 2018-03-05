@@ -35,10 +35,10 @@ case "$TRAVIS_OS_NAME" in
 
     shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
-        # install arm-linux-gnueabihf-g++-6 from yaketty
+        # install arm-linux-gnueabihf-g++-6 from artful
         pushd /etc/apt
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
-        sudo sed -i -- 's/trusty/yakkety/g' sources.list
+        sudo sed -i -- 's/trusty/artful/g' sources.list
         sudo apt-get update -qq
         sudo apt-get install -qq g++-6-arm-linux-gnueabihf
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
@@ -52,9 +52,13 @@ case "$TRAVIS_OS_NAME" in
 
         # Copy boost to system path and image path
         sudo ln -s /opt/boost/boost /usr/include/boost
-    elif [[ $BUILD_TYPE == *python* ]] ; then
+    elif [[ $BUILD_TYPE == *python* ]]; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
-        docker pull $DOCKER_IMAGE
+        if [[ "${PRE_CMD:-linux64}" == "linux32" ]]; then
+          docker pull quay.io/pypa/manylinux1_i686
+        else
+          docker pull quay.io/pypa/manylinux1_x86_64
+        fi
         wget https://bootstrap.pypa.io/get-pip.py
         # Install setuptools (need for build wheel)
         for PYBIN in /opt/python/*/bin/; do
@@ -85,7 +89,10 @@ case "$TRAVIS_OS_NAME" in
   osx)
     # work around a homebrew bug
     set +e
-    brew install gnu-tar xz
+    # try to force a ruby update
+    # brew need Ruby 2.3, but OSX comes with 2.0
+    # HOMEBREW_NO_AUTO_UPDATE=1 brew install ruby
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install gnu-tar xz
     ARCHIVE=homebrew-cache.tar.xz
     wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar

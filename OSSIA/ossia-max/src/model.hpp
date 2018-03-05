@@ -12,8 +12,11 @@ namespace max
 class model : public node_base
 {
 public:
-  bool register_node(const std::vector<ossia::net::node_base*>& nodes);
-  bool do_registration(const std::vector<ossia::net::node_base*>& nodes);
+
+  using is_model = std::true_type;
+
+  bool register_node(const std::vector<t_matcher>& nodes);
+  bool do_registration(const std::vector<t_matcher>& nodes);
   bool unregister();
   void register_children();
 
@@ -22,7 +25,6 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::model*);
   static void assist(ossia::max::model*, void*, long, long, char*);
-  static t_max_err notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 };
 
 } // max namespace

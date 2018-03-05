@@ -4,14 +4,26 @@ project("ossia-pd")
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 
+option(OSSIA_PD_BENCHMARK "Add some process time computation and print it to the console" OFF)
+
+if(OSSIA_PD_BENCHMARK)
+    add_definitions(-DOSSIA_PD_BENCHMARK)
+endif()
+
+message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 if(MSVC)
-if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd.lib")
+if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
     message("Downloading and extracting PureData windows binary")
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
       file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/a0urdqx1xuve5fbh/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     else()
-      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-0.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-1test3.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     endif()
 
     # Extract Pd.
@@ -46,6 +58,8 @@ set(PROJECT_SRCS
   src/device.hpp
   src/device_base.cpp
   src/device_base.hpp
+  src/explorer.cpp
+  src/explorer.hpp
   src/logger.cpp
   src/logger.hpp
   src/model.cpp
@@ -66,10 +80,17 @@ set(PROJECT_SRCS
   src/view.hpp
   src/utils.hpp
   src/utils.cpp
+  src/assert.hpp
+  src/assert.cpp
   )
 
 include(GenerateExportHeader)
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
+
+if(OSSIA_SANITIZE)
+    sanitize_build(${PROJECT_NAME})
+endif()
+
 target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
 use_gold(${PROJECT_NAME})
 
@@ -106,11 +127,13 @@ elseif(UNIX)
         set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".l_arm")
     elseif(${OSSIA_ARCHITECTURE} MATCHES "x86")
         set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".l_i386")
-    elseif(${OSSIA_ARCHITECTURE} MATCHES "amd64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".l_ia64")
     else()
         set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_linux")
     endif()
+endif()
+
+if(APPLE)
+  target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
 endif()
 
 set(OSSIA_PD_INSTALL_FOLDER "ossia-pd-package/ossia" CACHE STRING "PD Package Install folder")
@@ -130,3 +153,39 @@ install(TARGETS ${PROJECT_NAME}
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../LICENSE
         DESTINATION "${OSSIA_PD_INSTALL_FOLDER}"
         COMPONENT ${PROJECT_NAME})
+
+if(OSSIA_TESTING)
+  # need to call enable_testing() here
+  # to update test on CMakeLists.txt changes
+  # enable_testing()
+
+  message(STATUS "Define Pd test")
+  message("First a loading test")
+
+  if(MSVC)
+    add_test(NAME ossia-pd-loading-test
+        COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.cmd
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+        )
+  else()
+    add_test(NAME ossia-pd-loading-test
+        COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+        )
+  endif()
+
+  file(GLOB PD_UNIT_TEST
+       LIST_DIRECTORIES false
+       RELATIVE ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+       ${CMAKE_CURRENT_LIST_DIR}/unit-tests/*.pd
+       )
+
+  foreach(patcher ${PD_UNIT_TEST})
+    message("add test patcher: ${patcher}")
+    add_test(NAME ${patcher}
+             COMMAND pd -nogui -lib ossia ${patcher}
+             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+             )
+  endforeach()
+  include(CTest)
+endif()

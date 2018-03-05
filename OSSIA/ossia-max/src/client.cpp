@@ -17,6 +17,9 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include "ossia-max.hpp"
+
+#include <boost/algorithm/string.hpp>
 
 using namespace ossia::max;
 
@@ -43,10 +46,6 @@ extern "C" void ossia_client_setup()
       "update", A_NOTHING, 0);
 
   class_addmethod(
-      c, (method)client::loadbang,
-      "loadbang", A_NOTHING, 0);
-
-  class_addmethod(
       c, (method)client::connect,
       "connect", A_GIMME, 0);
 
@@ -61,6 +60,10 @@ extern "C" void ossia_client_setup()
   class_addmethod(
       c, (method)client::assist,
       "assist", A_NOTHING, 0);
+
+  class_addmethod(
+      c, (method) client::notify,
+      "notify", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
   ossia_library.ossia_client_class = c;
@@ -114,6 +117,15 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
+    x->get_hierarchy();
+    auto& map = ossia_max::instance().root_patcher;
+    auto it = map.find(x->m_patcher_hierarchy.back());
+
+    // register children only if root patcher have been loadbanged
+    // else the patcher itself will trig a registration on loadbang
+    if(it != map.end() && it->second)
+      client::register_children(x);
+
     ossia_library.clients.push_back(x);
   }
 
@@ -124,7 +136,11 @@ void client::destroy(client* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
-  x->unregister_children();
+
+  // No more needed since all children
+  // are connected to node.about_to_be_deleted
+  // x->unregister_children();
+
   object_free((t_object*)x->m_poll_clock);
 
   if (x->m_device)
@@ -182,15 +198,23 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
   oscq_settings.host = "127.0.0.1";
   oscq_settings.port = 5678;
 
+  ossia::net::osc_connection_data osc_settings;
+  osc_settings.name = x->m_name->s_name;
+  osc_settings.host = "127.0.0.1";
+  osc_settings.remote_port = 6666;
+  osc_settings.local_port = 9999;
+
   t_atom connection_status[6];
 
   if (argc && argv->a_type == A_SYM)
   {
-    ossia::string_view protocol_name = argv->a_w.w_sym->s_name;
+    std::string protocol_name = argv->a_w.w_sym->s_name;
+    boost::algorithm::to_lower(protocol_name);
 
     if ( argc == 1
          && protocol_name != "oscquery"
-         && protocol_name != "Minuit" )
+         && protocol_name != "minuit"
+         && protocol_name != "osc")
     {
       ossia::string_view name;
 
@@ -260,18 +284,18 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       if (argc == 4
           && argv[0].a_type == A_SYM
           && argv[1].a_type == A_SYM
-          && argv[2].a_type == A_FLOAT
-          && argv[3].a_type == A_FLOAT)
+          && ( argv[2].a_type == A_LONG )
+          && ( argv[3].a_type == A_LONG ))
       {
         minuit_settings.name = atom_getsym(argv++)->s_name;
         minuit_settings.host = atom_getsym(argv++)->s_name;
-        minuit_settings.remote_port = atom_getfloat(argv++);
-        minuit_settings.local_port = atom_getfloat(argv++);
+        minuit_settings.remote_port = atom_getlong(argv++);
+        minuit_settings.local_port = atom_getlong(argv++);
       }
 
-      (connection_status+1, gensym("minuit"));
-      (connection_status+2, gensym(minuit_settings.name.c_str()));
-      (connection_status+3, gensym(minuit_settings.host.c_str()));
+      A_SETSYM(connection_status+1, gensym("minuit"));
+      A_SETSYM(connection_status+2, gensym(minuit_settings.name.c_str()));
+      A_SETSYM(connection_status+3, gensym(minuit_settings.host.c_str()));
       A_SETFLOAT(connection_status+4, minuit_settings.remote_port);
       A_SETFLOAT(connection_status+5, minuit_settings.local_port);
 
@@ -324,6 +348,45 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 
       outlet_anything(x->m_dumpout, gensym("connect"),4, connection_status);
     }
+    else if (protocol_name == "osc")
+    {
+      argc--;
+      argv++;
+      if (argc == 4
+          && argv[0].a_type == A_SYM
+          && argv[1].a_type == A_SYM
+          && ( argv[2].a_type == A_FLOAT || argv[2].a_type == A_LONG )
+          && ( argv[3].a_type == A_FLOAT || argv[3].a_type == A_LONG ))
+      {
+        osc_settings.name = atom_getsym(argv++)->s_name;
+        osc_settings.host = atom_getsym(argv++)->s_name;
+        osc_settings.remote_port = atom_getfloat(argv++);
+        osc_settings.local_port = atom_getfloat(argv++);
+      }
+
+      A_SETSYM(connection_status+1, gensym("osc"));
+      A_SETSYM(connection_status+2, gensym(osc_settings.name.c_str()));
+      A_SETSYM(connection_status+3, gensym(osc_settings.host.c_str()));
+      A_SETFLOAT(connection_status+4, osc_settings.remote_port);
+      A_SETFLOAT(connection_status+5, osc_settings.local_port);
+
+      try
+      {
+        x->m_device = new ossia::net::generic_device{
+            std::make_unique<ossia::net::osc_protocol>(
+              osc_settings.host, osc_settings.remote_port,
+              osc_settings.local_port, osc_settings.name),
+            x->m_name->s_name};
+        A_SETFLOAT(connection_status,1);
+      }
+      catch (const std::exception& e)
+      {
+        object_error((t_object*)x, "%s", e.what());
+        A_SETFLOAT(connection_status,0);
+      }
+
+      outlet_anything(x->m_dumpout, gensym("connect"),6, connection_status);
+    }
     else
     {
       object_error((t_object*)x, "Unknown protocol: %s", protocol_name.data());
@@ -334,9 +397,11 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
     client::print_protocol_help();
   }
 
-  x->connect_slots();
-
-  client::update(x);
+  if(x->m_device)
+  {
+    x->connect_slots();
+    client::update(x);
+  }
 }
 
 void client::check_thread_status(client* x)
@@ -425,12 +490,12 @@ void client::register_children(client* x)
     if (child->m_otype == object_class::view)
     {
       ossia::max::view* view = (ossia::max::view*)child;
-      view->register_node(x->m_nodes);
+      view->register_node(x->m_matchers);
     }
     else if (child->m_otype == object_class::remote)
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->register_node(x->m_nodes);
+      remote->register_node(x->m_matchers);
     }
   }
 }
@@ -461,10 +526,11 @@ void client::update(client* x)
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
   // for OSC Query
 
+  x->m_matchers.clear();
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_nodes = {&x->m_device->get_root_node()};
+    x->m_matchers.emplace_back(&x->m_device->get_root_node(), (object_base*)nullptr);
 
     client::register_children(x);
   }
@@ -480,11 +546,6 @@ void client::disconnect(client* x)
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
   }
-}
-
-void client::loadbang(client* x)
-{
-  register_children(x);
 }
 
 void client::poll_message(client* x)

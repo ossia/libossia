@@ -1,9 +1,17 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <boost/version.hpp>
 #include <string_view>
 namespace ossia
 {
 using string_view = std::string_view;
+/*
+inline std::string& operator+=(std::string& str, string_view s)
+{
+  str.append(s.data(), s.size());
+  return str;
+}
+*/
 
 // See also https://gist.github.com/klmr/2775736
 template <std::size_t N>

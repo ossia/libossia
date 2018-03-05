@@ -1,0 +1,14 @@
+/my_synth/voice.1/carrier/frequency	float: 58.5305
+/my_synth/voice.1/cutoff/frequency	float: 1686.24
+/my_synth/voice.1/gain	float: 0
+/my_synth/voice.1/modulation/index	float: 1000
+/my_synth/voice.1/modulation/ratio	float: 1.65438
+/my_synth/voice.1/pan	float: -0.181103
+/my_synth/voice.1/ramptime	float: 1000
+/my_synth/voice.2/carrier/frequency	float: 1449.44
+/my_synth/voice.2/cutoff/frequency	float: 1143.88
+/my_synth/voice.2/gain	float: -19.2913
+/my_synth/voice.2/modulation/index	float: 1000
+/my_synth/voice.2/modulation/ratio	float: 1.89057
+/my_synth/voice.2/pan	float: -0.464567
+/my_synth/voice.2/ramptime	float: 1000

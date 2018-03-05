@@ -33,7 +33,7 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_sync>();
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
-        auto interval = time_interval::create(&interval_callback, *start_event, *end_event, 1000._tv);
+        auto interval = time_interval::create({[] (auto&&... args) { interval_callback(args...); }}, *start_event, *end_event, 1000._tv);
         ossia::clock c{*interval};
         QVERIFY(interval != nullptr);
 
@@ -79,7 +79,7 @@ private Q_SLOTS:
         auto end_node = std::make_shared<time_sync>();
         auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
-        auto interval = time_interval::create(&interval_callback, *start_event, *end_event, 1000._tv);
+        auto interval = time_interval::create({[] (auto&&... args) { interval_callback(args...); }}, *start_event, *end_event, 1000._tv);
         auto scenar = std::make_unique<scenario>();
 
         auto scenar_ptr = scenar.get();

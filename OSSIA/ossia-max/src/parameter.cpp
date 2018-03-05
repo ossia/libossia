@@ -26,9 +26,9 @@ extern "C" void ossia_parameter_setup()
   class_addmethod(
       c, (method)parameter::notify,
       "notify", A_CANT, 0);
-  class_addmethod(
-      c, (method)parameter::push_default_value,
-      "loadbang", A_CANT, 0);
+
+  class_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYM, 0);
+  class_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYM, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -58,7 +58,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     x->m_access_mode = gensym("bi");
     x->m_bounding_mode = gensym("free");
 
-    x->m_clock = clock_new(x, (method)parameter::push_default_value);
+    x->m_clock = clock_new(x, (method)parameter_base::push_default_value);
     x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
 
     x->m_otype = object_class::param;
@@ -87,13 +87,25 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
+    if(x->m_type != gensym("string")
+            && x->m_min_size == 0
+            && x->m_max_size == 0
+            && x->m_range_size == 0)
+    {
+      // set range if not set by attribute min/max or range
+      x->m_range_size = 2;
+      A_SETFLOAT(x->m_range,0);
+      A_SETFLOAT(x->m_range+1,1);
+    }
+
     // Register object to istself so it can receive notification when attribute changed
     // This is not documented anywhere, please look at :
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
     // start registration
-    max_object_register<parameter>(x);
+    ossia_check_and_register(x);
+
     ossia_max::instance().parameters.push_back(x);
   }
 
@@ -139,42 +151,20 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
 {
   t_symbol *attrname;
 
-  if (msg == gensym("attr_modified")) {
+  if (!x->m_lock && msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
-    if( attrname == gensym("range") )
-      x->set_range();
-    else if ( attrname == gensym("clip") )
-      x->set_bounding_mode();
-    else if ( attrname == gensym("min") || attrname == gensym("max") )
-      x->set_minmax();
-    else if ( attrname == gensym("default") )
-      x->set_default();
-    else if ( attrname == gensym("unit") )
+    if ( attrname == gensym("unit") )
       x->set_unit();
-    else if ( attrname == gensym("hidden") )
-      x->set_hidden();
-    else if ( attrname == gensym("priority") )
-      x->set_priority();
-    else if ( attrname == gensym("mode") )
-      x->set_access_mode();
-    else if ( attrname == gensym("repetitions") )
-      x->set_repetition_filter();
-    else if ( attrname == gensym("tags") )
-      x->set_tags();
-    else if ( attrname == gensym("description") )
-      x->set_description();
-    else if ( attrname == gensym("enable") )
-      x->set_enable();
     else if ( attrname == gensym("type") )
       x->set_type();
-    else if ( s == gensym("mute") )
-      x->set_mute();
+    else
+      parameter_base::notify(x, s, msg, sender, data);
   }
   return 0;
 }
 
-bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool parameter::register_node(const std::vector<t_matcher>& nodes)
 {
   bool res = do_registration(nodes);
   if (res)
@@ -182,7 +172,11 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
     object_dequarantining<parameter>(this);
     for (auto remote : remote::quarantine().copy())
     {
-      max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+      ossia_register(remote);
+    }
+    for (auto remote : attribute::quarantine().copy())
+    {
+      ossia_register(remote);
     }
 
     clock_delay(m_poll_clock,1);
@@ -193,14 +187,15 @@ bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
   return res;
 }
 
-bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
 
-  for (auto node : _nodes)
+  for (auto& m : matchers)
   {
+    auto node = m.get_node();
     m_parent_node = node;
 
     auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
@@ -223,28 +218,30 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
 
       ossia::net::set_disabled(local_param->get_node(), !m_enable);
 
-      ossia::net::set_hidden(local_param->get_node(), m_hidden);
+      ossia::net::set_hidden(local_param->get_node(), m_invisible);
 
       m_matchers.emplace_back(n, this);
-      m_nodes.push_back(n);
     }
-
-    fill_selection();
-
-    set_description();
-    set_tags();
-    set_access_mode();
-    set_unit();
-    set_bounding_mode();
-    set_range();
-    set_minmax();
-    set_default();
-    set_repetition_filter();
   }
 
-  clock_delay(m_clock, 0);
+  fill_selection();
 
-  return true;
+  set_description();
+  set_tags();
+  set_access_mode();
+  set_unit();
+  set_bounding_mode();
+  set_range();
+  set_minmax();
+  set_default();
+  set_rate();
+  set_repetition_filter();
+  set_recall_safe();
+
+  // TODO trig this only if root patcher have been already loadbanged
+  // clock_delay(m_clock, 1);
+
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 bool parameter::unregister()
@@ -252,12 +249,16 @@ bool parameter::unregister()
   clock_unset(m_clock);
   clock_unset(m_poll_clock);
 
+  m_node_selection.clear();
   m_matchers.clear();
-  m_nodes.clear();
 
   for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+    ossia_register(remote);
+  }
+  for (auto attribute : attribute::quarantine().copy())
+  {
+    ossia_register(attribute);
   }
 
   object_quarantining(this);

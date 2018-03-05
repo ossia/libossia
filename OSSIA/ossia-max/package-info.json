@@ -1,0 +1,43 @@
+{
+	"author" : "OSSIA project",
+	"authors" : [  ],
+	"description" : "A framework to setup your patch architecture as a tree of OSC nodes and parameters allowing its features to be exposed over the network through various protocoles (ie. OSC, OSCQuery, Minuit), explored and queried, stored or mapped",
+	"displayname" : "",
+	"extends" : "",
+	"extensible" : 0,
+	"homepatcher" : "OSSIA overview.maxpat",
+	"max_version_max" : "none",
+	"max_version_min" : "7.1",
+	"name" : "OSSIA",
+	"os" : 	{
+		"macintosh" : 		{
+			"platform" : [ "ia32", "x64" ],
+			"min_version" : "none"
+		}
+,
+		"windows" : 		{
+			"platform" : [ "ia32", "x64" ],
+			"min_version" : "none"
+		}
+
+	}
+,
+	"package_extra" : 	{
+		"reverse_domain" : "io.ossia",
+		"copyright" : "Copyright (c) 2017 OSSIA"
+	}
+,
+	"tags" : ["framework", "interactive", "Score", "network", "mapping", "OSCQuery"],
+	"version" : "1.0.0",
+	"website" : "https://ossia.io",
+	"filelist" : 	{
+		"examples" : [],
+		"externals" : ["ossia.attribute.mxo", "ossia.client.mxo", "ossia.device.mxo", "ossia.logger.mxo", "ossia.model.mxo", "ossia.mxo", "ossia.parameter.mxo", "ossia.remote.mxo", "ossia.view.mxo"],
+		"patchers" : [],
+		"help" : ["distant_device.maxpat", "ossia.client.maxhelp", "ossia.device.maxhelp", "ossia.logger.maxhelp", "ossia.maxhelp", "ossia.model.maxhelp", "ossia.parameter.maxhelp", "ossia.remote_array.maxhelp", "ossia.remote.maxhelp", "ossia.view.maxhelp"],
+		"docs" : ["ossia.client.maxref.xml", "ossia.device.maxref.xml", "ossia.logger.maxref.xml", "ossia.maxref.xml", "ossia.model.maxref.xml", "ossia.parameter.maxref.xml", "ossia.remote.maxref.xml", "ossia.view.maxref.xml"],
+		"code" : [],
+		"extras" : [ "OSSIA overview.maxpat" ]
+	}
+
+}

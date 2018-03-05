@@ -8,6 +8,7 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/common/path.hpp>
 
 #include <readerwriterqueue.h>
 
@@ -49,26 +50,42 @@ public:
   void enqueue_value(ossia::value v);
   void output_value();
   ossia::net::node_base* get_node() const { return node; }
-  object_base* get_parent() const { return parent; }
+  object_base* get_parent() const { return owner; }
   t_atom* get_atom_addr_ptr() { return &m_addr; }
   void set_parent_addr();
 
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
+  void set_dead(){ m_dead = true; }
+
   std::vector<ossia::value> m_set_pool;
 
 private:
   ossia::net::node_base* node{};
-  object_base* parent{};
+  object_base* owner{};
 
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
 
   moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
-  t_atom m_addr;
+  bool m_dead{};
+  t_atom m_addr{};
+};
 
+struct search_result
+{
+  object_base* object{};
+  t_object* patcher{};
+  t_object* parent{};
+  t_symbol* classname{};
+  int level; // relative hierarchy level
+
+  friend bool operator<(search_result a, search_result b)
+  {
+    return a.level < b.level;
+  }
 };
 
 struct object_base
@@ -86,6 +103,7 @@ public:
   //flags
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
+  long m_queue_length{64};
   bool m_is_deleted;
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
@@ -98,27 +116,32 @@ public:
   float m_rate{10};
 
   ossia::net::generic_device* m_device{};
-  std::vector<ossia::net::node_base*> m_nodes{};
+  // std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
-  t_symbol* m_selection_pattern{};
+  ossia::optional<ossia::traversal::path> m_selection_path{};
 
   static void class_setup(t_class*c);
 
   void fill_selection();
+  void update_path();
+  void get_hierarchy();
 
   void set_description();
   void set_tags();
   void set_priority();
   void set_hidden();
+  void set_recall_safe();
 
-  static void get_description(object_base* x);
-  static void get_tags(object_base* x);
-  static void get_priority(object_base* x);
-  static void get_hidden(object_base* x);
+  static void get_description(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
+  static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
   static void get_mess_cb(object_base* x, t_symbol* s);
-  static void address_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+  static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+  static void get_recall_safe(object_base*x, std::vector<t_matcher*> nodes);
 
 
   // default attributes
@@ -126,22 +149,36 @@ public:
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_description{};
   long m_priority{};
-  long m_hidden{};
+  long m_invisible{};
+  long m_recall_safe{};
 
   long m_tags_size{};
   long m_description_size{};
+
+  std::vector<search_result> m_found_parameters{};
+  std::vector<search_result> m_found_models{};
+  t_object* m_patcher{};
 
   // constructor
   object_base();
 
   std::mutex bindMutex;
+  bool m_lock{false};
+  std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order
+
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
+  static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
   void is_deleted(const ossia::net::node_base& n);
 
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
+  static void lock_and_touch(object_base* x, t_symbol* s);
+  static void loadbang(object_base* x);
+
+protected:
+  ossia::optional<ossia::traversal::path> m_path;
 };
 
 #pragma mark -
@@ -314,6 +351,10 @@ struct value_visitor
   {
     std::vector<t_atom> va;
     value2atom vm{va};
+
+    if(t.empty())
+      return;
+
     for (const auto& v : t)
       v.apply(vm);
 

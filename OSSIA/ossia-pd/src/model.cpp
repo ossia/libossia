@@ -16,31 +16,26 @@ model::model():
   node_base{ossia_pd::model_class}
 { }
 
-bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool model::register_node(const std::vector<t_matcher>& matchers)
 {
   if (m_dead) return true;
-  bool res = do_registration(nodes);
-  if (res)
-  {
-    fill_selection();
-    obj_dequarantining<model>(this);
-    register_children();
-  }
-  else
-    obj_quarantining<model>(this);
+  bool res = do_registration(matchers);
+
+  register_children();
 
   return res;
 }
 
-bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
+bool model::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the parameter
 
   std::string name(m_name->s_name);
 
-  for (auto node : nodes)
+  for (auto& m : matchers)
   {
+    auto node = m.get_node();
     m_parent_node = node;
 
     if (node->find_child(name))
@@ -53,7 +48,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
       // we have to check if a node with the same name already exists to avoid
       // auto-incrementing name
       std::vector<object_base*> obj
-          = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+          = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
       for (auto v : obj)
       {
         if (v->m_otype == object_class::param)
@@ -71,8 +66,8 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
       }
     }
 
-    m_nodes = ossia::net::create_nodes(*node, name);
-    for (auto n : m_nodes)
+    auto nodes = ossia::net::create_nodes(*node, name);
+    for (auto n : nodes)
     {
       m_matchers.emplace_back(n, this);
     }
@@ -83,6 +78,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
     set_description();
     set_tags();
     set_hidden();
+    set_recall_safe();
   }
 
   return true;
@@ -91,7 +87,7 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 void model::register_children()
 {
   std::vector<object_base*> obj
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
   for (auto v : obj)
   {
     if (v->m_otype == object_class::model)
@@ -102,51 +98,48 @@ void model::register_children()
       if (model == this)
         continue;
 
-      obj_register<ossia::pd::model>(model);
+      // register only object with a relative scope
+      // other subscribed to on_parameter_created callback
+      if (model->m_addr_scope == ossia::net::address_scope::relative )
+        model->register_node(m_matchers);
     }
     else if (v->m_otype == object_class::param)
     {
       parameter* param = (parameter*)v;
-      // param->register_node(m_nodes);
-      obj_register<ossia::pd::parameter>(param);
+
+      if (param->m_addr_scope == ossia::net::address_scope::relative )
+        param->register_node(m_matchers);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      // remote->register_node(m_nodes);
-      obj_register<ossia::pd::remote>(remote);
+
+      if (remote->m_addr_scope == ossia::net::address_scope::relative )
+        remote->register_node(m_matchers);
     }
   }
 
   for (auto view : view::quarantine().copy())
   {
-    obj_register(static_cast<ossia::pd::view*>(view));
+    ossia_register(static_cast<ossia::pd::view*>(view));
   }
 
   // then try to register quarantinized remote
   for (auto remote : remote::quarantine().copy())
   {
-    obj_register(static_cast<ossia::pd::remote*>(remote));
+    ossia_register(static_cast<ossia::pd::remote*>(remote));
   }
 }
 
 bool model::unregister()
 {
 
-  clock_unset(m_clock);
-
   m_matchers.clear();
-  m_nodes.clear();
-
-  obj_quarantining<model>(this);
-
-  //m_parent_node = find_parent_nodes(x);
 
   register_children();
 
   return true;
 }
-
 
 t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
@@ -164,11 +157,6 @@ t_pd_err model::notify(model*x, t_symbol*s, t_symbol* msg, void* sender, void* d
   return 0;
 }
 
-ossia::safe_set<model*>& model::quarantine()
-{
-    return ossia_pd::instance().model_quarantine;
-}
-
 void* model::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto& ossia_pd = ossia_pd::instance();
@@ -183,7 +171,6 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
     if (d)
     {
       x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
-      x->m_clock = clock_new(x, (t_method)obj_register<model>);
 
       if (argc != 0 && argv[0].a_type == A_SYMBOL)
       {
@@ -211,13 +198,6 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
       }
 
       ebox_attrprocess_viabinbuf(x, d);
-
-      // we need to delay registration because object may use patcher hierarchy
-      // to check address validity
-      // and object will be added to patcher's objects list (aka canvas g_list)
-      // after model_new() returns.
-      // clock_set uses ticks as time unit
-      clock_set(x->m_clock, 1);
     }
 
     if (find_peer(x))
@@ -230,6 +210,14 @@ void* model::create(t_symbol* name, int argc, t_atom* argv)
     }
   }
 
+#ifdef OSSIA_PD_BENCHMARK
+  std::cout << measure<>::execution(obj_register<model>, x) / 1000. << " ms "
+            << " " << x << " model " << x->m_name->s_name
+            << " " << x->m_reg_count << std::endl;
+#else
+  ossia_check_and_register(x);
+#endif
+
   return x;
 }
 
@@ -237,10 +225,9 @@ void model::destroy(model* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<model>(x);
   ossia_pd::instance().models.remove_all(x);
-  clock_free(x->m_clock);
-  x->m_clock = nullptr;
+  outlet_free(x->m_dumpout);
+  x->m_dumpout = nullptr;
 
   x->~model();
 }
@@ -258,9 +245,10 @@ extern "C" void setup_ossia0x2emodel(void)
     node_base::class_setup(c);
 
     eclass_addmethod(c, (method) model::notify,     "notify",   A_NULL,  0);
+    eclass_addmethod(c, (method) address_mess_cb<model>, "address",   A_SYMBOL, 0);
+    eclass_addmethod(c, (method) model::get_mess_cb, "get",   A_SYMBOL, 0);
 
-    // eclass_register(CLASS_OBJ,c); // disable property dialog since it's
-    // buggy
+    eclass_register(CLASS_OBJ,c);
   }
   ossia_pd::model_class = c;
 }

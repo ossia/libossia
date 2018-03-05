@@ -17,6 +17,8 @@ option(OSSIA_DATAFLOW "Dataflow features" ON)
 option(OSSIA_EDITOR "Editor features" ON)
 option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
+#option(OSSIA_SUBMODULE_AUTOUPDATE "Auto update submodule" ON)
+set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
@@ -41,6 +43,40 @@ option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidge
 option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
+
+if(OSSIA_SUBMODULE_AUTOUPDATE)
+message(STATUS "Update general OSSIA dependencies :")
+execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/GSL
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/chobo-shl
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/brigand
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/whereami
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/rapidjson
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/websocketpp
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/asio
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/variant
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/spdlog
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/fmt
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+message(STATUS "...done")
+set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
+endif()
 
 include(Sanitize)
 include(DebugMode)
@@ -69,9 +105,8 @@ if(OSSIA_NO_QT)
   set(OSSIA_QT 0)
 endif()
 if(OSSIA_OSX_RETROCOMPATIBILITY)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 endif()
-
 
 if(OSSIA_MOST_STATIC)
     set(OSSIA_STATIC ON)
@@ -175,6 +210,7 @@ endif()
 
 # Compiler & linker flags
 if(MSVC)
+    set(CMAKE_CXX_FLAGS "-DNOGDI -DLF_FACESIZE=32 ${CMAKE_CXX_FLAGS}")
     set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
     set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")

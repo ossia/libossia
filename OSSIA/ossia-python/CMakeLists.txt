@@ -1,5 +1,9 @@
 project(ossia_python)
 
+message(STATUS "Update ossia-python dependency: pybind11")
+execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pybind11
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "We can't use pybind11 CMake module when cross-compiling.")
 

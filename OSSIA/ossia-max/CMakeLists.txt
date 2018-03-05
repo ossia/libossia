@@ -4,13 +4,21 @@ project(ossia-max C CXX)
 set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_INCLUDE_CURRENT_DIR 1)
+
+option(OSSIA_MAX_TEST "Run automatic test for C74 Max" OFF)
+
 include(GenerateExportHeader)
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path/../../../../support;@loader_path")
 elseif(WIN32)
     set(CMAKE_INSTALL_RPATH  "\$ORIGIN/../support;\$ORIGIN")
 endif()
-find_package(MaxSDK REQUIRED)
+find_package(MaxSDK QUIET)
+if(NOT MaxSDK_FOUND)
+	execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	find_package(MaxSDK REQUIRED)
+endif()
 
 if(APPLE)
     FIND_PATH(FILE_H_DIR Files.h
@@ -29,6 +37,8 @@ if(APPLE)
         include_directories("${FILE_H_DIR}")
     endif()
 endif()
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROJECT_SRCS
     src/ossia-max.cpp
@@ -83,6 +93,7 @@ if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE MAC_VERSION)
     target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>)
+    target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN_VERSION _CRT_SECURE_NO_WARNINGS)
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
@@ -96,6 +107,7 @@ function(setup_max_external theTarget)
     if(APPLE)
         set_property(TARGET ${theTarget} PROPERTY BUNDLE True)
         set_property(TARGET ${theTarget} PROPERTY BUNDLE_EXTENSION "mxo")
+        target_link_libraries(${theTarget} PRIVATE -Wl,-undefined,dynamic_lookup)
         file(COPY resources/PkgInfo DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${theTarget}.mxo/Contents/)
     elseif(WIN32)
         if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
@@ -129,6 +141,18 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/interfaces"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs"
         "${CMAKE_CURRENT_SOURCE_DIR}/patchers"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extras"
+        "${CMAKE_CURRENT_SOURCE_DIR}/media"
+    DESTINATION
+        ${OSSIA_MAX_INSTALL_FOLDER}
+    COMPONENT
+        ${PROJECT_NAME}
+)
+
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/package-info.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/icon.png"
     DESTINATION
         ${OSSIA_MAX_INSTALL_FOLDER}
     COMPONENT
@@ -160,3 +184,18 @@ install(
     COMPONENT
         ${PROJECT_NAME}
 )
+
+if(OSSIA_MAX_TEST)
+    set(OSSIA_MAX_TEST_PATCHERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/368-set_broken.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/312-default_broken.maxtest.maxpat
+        )
+    install(
+        FILES
+          ${OSSIA_MAX_TEST_PATCHERS}
+        DESTINATION
+          ${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests
+        COMPONENT
+          ${PROJECT_NAME}
+          )
+endif(OSSIA_MAX_TEST)

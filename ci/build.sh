@@ -100,13 +100,43 @@ case "$TRAVIS_OS_NAME" in
         fi
 
       ;;
-      PdRelease)
+      PdTest)
 
-        pushd /tmp
-        git clone ${TRAVIS_BUILD_DIR} --recursive
-        tar -czf ${ARTIFACTS_DIR}/libossia-source.tar.gz --exclude .git libossia
-        rm -rf libossia
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+                   -DCMAKE_CXX_COMPILER="$CXX" \
+                   -DBOOST_ROOT="$BOOST_ROOT" \
+                   -DCMAKE_BUILD_TYPE=Debug \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_STATIC=1 \
+                   -DOSSIA_TESTING=1 \
+                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_QT=0 \
+                   -DOSSIA_PYTHON=0 \
+                   -DOSSIA_EDITOR=OFF \
+                   -DOSSIA_DATAFLOW=OFF \
+                   -DOSSIA_PROTOCOL_MIDI=OFF \
+                   ..
+
+
+        $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install > /dev/null
+
+        pushd "$TRAVIS_BUILD_DIR/3rdparty/pure-data"
+          sudo apt-get install -qq autoconf libtool
+          ./autogen.sh
+          ./configure
+          make -j 2
+          sudo make install
         popd
+
+        mkdir -p ~/pd-externals/
+        mv "$TRAVIS_BUILD_DIR/ossia-pd-package/ossia" ~/pd-externals/
+
+        $CMAKE_BIN --build . --target test        
+
+      ;;
+      PdRelease)
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
                    -DCMAKE_CXX_COMPILER="$CXX" \
@@ -122,7 +152,17 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_PYTHON=0 \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
+                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
+
+        # make a clone after initializing submodules (with Cmake)
+        # and before build
+        pushd /tmp
+          git clone ${TRAVIS_BUILD_DIR} --recursive
+          tar -czf ${ARTIFACTS_DIR}/libossia-source.tar.gz --exclude .git libossia
+          rm -rf libossia
+        popd
+
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install > /dev/null
 
@@ -153,6 +193,7 @@ case "$TRAVIS_OS_NAME" in
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
+                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -401,6 +442,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_EDITOR=OFF \
                -DOSSIA_DATAFLOW=OFF \
+               -DOSSIA_PROTOCOL_MIDI=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -412,6 +454,38 @@ case "$TRAVIS_OS_NAME" in
       popd
 
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
+
+    elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
+
+      $CMAKE_BIN -DCMAKE_BUILD_TYPE=Debug \
+               -DOSSIA_STATIC=1 \
+               -DOSSIA_SANITIZE=1 \
+               -DOSSIA_TESTING=1 \
+               -DOSSIA_EXAMPLES=0 \
+               -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
+               -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+               -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+               -DOSSIA_CI=1 \
+               -DOSSIA_QT=0 \
+               -DOSSIA_PYTHON=0 \
+               -DOSSIA_PD=1 \
+               -DOSSIA_MAX=0 \
+               -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+               -DOSSIA_EDITOR=OFF \
+               -DOSSIA_DATAFLOW=OFF \
+               -DOSSIA_PROTOCOL_MIDI=OFF \
+               ..
+      $CMAKE_BIN --build . -- -j2
+      $CMAKE_BIN --build . --target install > /dev/null
+
+      mkdir -p ~/Documents/Pd/externals
+      mv $TRAVIS_BUILD_DIR/ossia-pd-package/ossia ~/Documents/Pd/externals
+
+      wget http://msp.ucsd.edu/Software/pd-0.48-1test3.mac.tar.gz
+      tar xf pd-0.48-1test3.mac.tar.gz
+      export PATH="${PWD}/Pd-0.48-1test3.app/Contents/Resources/bin:${PATH}"
+
+      $CMAKE_BIN --build . --target test
 
     elif [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
@@ -430,6 +504,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_MAX=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_EDITOR=OFF \
+               -DOSSIA_PROTOCOL_MIDI=OFF \
                -DOSSIA_DATAFLOW=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
@@ -437,8 +512,8 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      pushd $TRAVIS_BUILD_DIR/ossia-max-package/
-      tar -czf $TRAVIS_BUILD_DIR/ossia-max-package/ossia-max-osx.tar.gz ossia
+      pushd ${TRAVIS_BUILD_DIR}/ossia-max-package/
+      tar -czf ${ARTIFACTS_DIR}/ossia-max-osx.tar.gz ossia
       popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
@@ -508,8 +583,10 @@ case "$TRAVIS_OS_NAME" in
 
     else
       OSSIA_UNITY=1
+      OSSIA_QT=1
       if [[ "$OSSIA_STATIC" == "1" ]]; then
         OSSIA_UNITY=0
+        OSSIA_QT=0
       fi
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -520,12 +597,13 @@ case "$TRAVIS_OS_NAME" in
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=1 \
+               -DOSSIA_QT=${OSSIA_QT} \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
-               -DOSSIA_UNITY3D=$OSSIA_UNITY \
+               -DOSSIA_UNITY3D=${OSSIA_UNITY} \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
+               -DOSSIA_PD=0 \
                ..
 
       $CMAKE_BIN --build . -- -j2
@@ -537,11 +615,11 @@ case "$TRAVIS_OS_NAME" in
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz *
         else
-          cd $TRAVIS_BUILD_DIR/install/unity3d
+          cd $TRAVIS_BUILD_DIR/install/ossia-unity
           tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
 
           cd $TRAVIS_BUILD_DIR/install
-          rm -rf unity3d
+          rm -rf ossia-unity
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz *
         fi
       fi

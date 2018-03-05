@@ -3,6 +3,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/exceptions.hpp>
 
 namespace ossia
 {

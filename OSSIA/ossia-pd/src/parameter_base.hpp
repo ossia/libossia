@@ -28,6 +28,7 @@ public:
   void set_unit();
 
   static void class_setup(t_eclass*c);
+  static t_pd_err notify(parameter_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
   static void get_mess_cb(parameter_base* x, t_symbol* s);
   static void get_unit(parameter_base*x, std::vector<t_matcher*> nodes);
@@ -43,6 +44,7 @@ public:
   static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes);
 
   // attributes
   t_symbol* m_type{};
@@ -52,7 +54,7 @@ public:
   t_atom m_range[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_bounding_mode{};
   t_symbol* m_access_mode{};
-  t_float m_repetitions{};
+  t_float m_repetitions{1};
   t_symbol* m_unit{};
   int m_mute{0};
   int m_enable{1};

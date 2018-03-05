@@ -23,7 +23,7 @@ void device::destroy(device* x)
   clock_unset(x->m_clock);
   clock_free(x->m_clock);
 
-  // TODO why is this necessary since all children
+  // TODO why is this no more necessary since all children
   // should have register to node.about_to_be_deleted() signal
   // x->unregister_children();
 
@@ -65,8 +65,6 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
 
     x->connect_slots();
 
-    x->m_nodes = {&x->m_device->get_root_node()};
-
     x->m_clock = clock_new(x, (t_method)device::register_children);
     clock_delay(x->m_clock, 0);
 
@@ -87,36 +85,35 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
 
 void device::register_children(device* x)
 {
-
   std::vector<object_base*> modelnodes
-      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
   for (auto v : modelnodes)
   {
     if (v->m_otype == object_class::model)
     {
       ossia::pd::model* model = (ossia::pd::model*)v;
-      model->register_node(x->m_nodes);
+      model->register_node(x->m_matchers);
     }
     else if (v->m_otype == object_class::param)
     {
       parameter* param = (parameter*)v;
-      param->register_node(x->m_nodes);
+      param->register_node(x->m_matchers);
     }
   }
 
   std::vector<object_base*> viewnodes
-      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnodes)
   {
     if (v->m_otype == object_class::view)
     {
       ossia::pd::view* view = (ossia::pd::view*)v;
-      view->register_node(x->m_nodes);
+      view->register_node(x->m_matchers);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      remote->register_node(x->m_nodes);
+      remote->register_node(x->m_matchers);
     }
   }
 
@@ -124,14 +121,14 @@ void device::register_children(device* x)
   // to register them to device's address creation callback
   for (auto x : ossia_pd::instance().remotes.copy()){
     if (x->m_is_pattern)
-      obj_register<remote>(x);
+      ossia_register<remote>(x);
   }
 }
 
 void device::unregister_children()
 {
   std::vector<object_base*> node
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.model");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
 
   for (auto v : node)
   {
@@ -148,7 +145,7 @@ void device::unregister_children()
   }
 
   std::vector<object_base*> viewnode
-      = find_child_to_register(this, m_obj.o_canvas->gl_list, "ossia.view");
+      = find_child_to_register(this, m_obj.o_canvas->gl_list, ossia_pd::o_sym_view);
   for (auto v : viewnode)
   {
     if (v->m_otype == object_class::view)
@@ -162,26 +159,6 @@ void device::unregister_children()
       remote->unregister();
     }
   }
-}
-
-void device::on_parameter_created_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  SETSYMBOL(a, gensym("create"));
-  SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
-}
-
-void device::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-  std::string addr = ossia::net::address_string_from_node(node);
-  t_atom a[2];
-  SETSYMBOL(a, gensym("delete"));
-  SETSYMBOL(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
 void device::expose(device* x, t_symbol*, int argc, t_atom* argv)
@@ -362,7 +339,7 @@ void device::stop_expose(device*x, float f)
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
-  if ( index < protos.size() )
+  if ( index < x->m_protocols.size() && index < protos.size() )
   {
     multiplex.stop_expose_to(*protos[index]);
     x->m_protocols.erase(x->m_protocols.begin() + index);
@@ -384,7 +361,7 @@ extern "C" void setup_ossia0x2edevice(void)
 
     device_base::class_setup(c);
 
-      // TODO delete register method (only for debugging purpose)
+    // TODO delete register method (only for debugging purpose)
     eclass_addmethod(
           c, (method)device::register_children,"register", A_NULL, 0);
     eclass_addmethod(c, (method) device::expose, "expose", A_GIMME, 0);
@@ -394,6 +371,9 @@ extern "C" void setup_ossia0x2edevice(void)
 
     eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
     eclass_addmethod(c, (method) device::get_mess_cb, "get", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) device::notify,    "notify",   A_NULL,  0);
+
+    eclass_register(CLASS_OBJ, c);
   }
 
   ossia_pd::device_class = c;

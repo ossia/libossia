@@ -5,7 +5,7 @@
 			"major" : 7,
 			"minor" : 3,
 			"revision" : 4,
-			"architecture" : "x64",
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
@@ -51,7 +51,7 @@
 							"major" : 7,
 							"minor" : 3,
 							"revision" : 4,
-							"architecture" : "x64",
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -114,7 +114,7 @@
 							"major" : 7,
 							"minor" : 3,
 							"revision" : 4,
-							"architecture" : "x64",
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -297,7 +297,7 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -777,7 +777,7 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -851,7 +851,7 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
@@ -900,7 +900,7 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -974,7 +974,7 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
@@ -1156,7 +1156,7 @@
 							"major" : 7,
 							"minor" : 3,
 							"revision" : 4,
-							"architecture" : "x64",
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -1197,7 +1197,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 600.0, 581.0, 187.0, 21.0 ],
-									"presentation_rect" : [ 607.0, 584.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "also works with pattern-matching",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1238,7 +1237,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 470.0, 581.0, 124.0, 22.0 ],
-									"presentation_rect" : [ 655.0, 504.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "set *_parameter $1"
 								}
@@ -1253,7 +1251,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 470.0, 444.0, 375.0, 21.0 ],
-									"presentation_rect" : [ 533.0, 469.0, 0.0, 0.0 ],
 									"style" : "",
 									"text" : "values of parameters can be fed to ossia.model, with the set message:",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1269,7 +1266,6 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 470.0, 469.0, 50.0, 22.0 ],
-									"presentation_rect" : [ 469.0, 460.0, 0.0, 0.0 ],
 									"style" : ""
 								}
 
@@ -1328,11 +1324,11 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 1140.0, 121.0, 310.0, 344.0 ],
+										"rect" : [ 1442.0, 101.0, 342.0, 509.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -1359,13 +1355,92 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"visible" : 1,
 										"boxes" : [ 											{
+												"box" : 												{
+													"id" : "obj-8",
+													"linecount" : 2,
+													"maxclass" : "comment",
+													"numinlets" : 1,
+													"numoutlets" : 0,
+													"patching_rect" : [ 42.0, 444.0, 215.0, 33.0 ],
+													"style" : "",
+													"text" : "values for parameters with recall_safe attribute set to 1 will not be recalled"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-5",
+													"maxclass" : "newobj",
+													"numinlets" : 1,
+													"numoutlets" : 2,
+													"outlettype" : [ "", "" ],
+													"patching_rect" : [ 38.0, 479.0, 245.0, 22.0 ],
+													"style" : "",
+													"text" : "ossia.parameter no_recall @recall_safe 1"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-3",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 233.0, 203.5, 72.0, 22.0 ],
+													"style" : "",
+													"text" : "~/test2.json"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-4",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 217.0, 171.5, 78.0, 22.0 ],
+													"style" : "",
+													"text" : "~/test1.json"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-1",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 94.0, 196.5, 72.0, 22.0 ],
+													"style" : "",
+													"text" : "~/test2.json"
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-2",
+													"maxclass" : "message",
+													"numinlets" : 2,
+													"numoutlets" : 1,
+													"outlettype" : [ "" ],
+													"patching_rect" : [ 78.0, 164.5, 78.0, 22.0 ],
+													"style" : "",
+													"text" : "~/test1.json"
+												}
+
+											}
+, 											{
 												"box" : 												{
 													"id" : "obj-50",
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 221.0, 37.5, 50.0, 20.0 ],
+													"patching_rect" : [ 258.0, 37.5, 50.0, 20.0 ],
 													"style" : "",
 													"text" : "presets"
 												}
@@ -1382,7 +1457,7 @@
 													"maxclass" : "comment",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 152.0, 30.0, 50.0, 50.0 ],
+													"patching_rect" : [ 189.0, 30.0, 50.0, 50.0 ],
 													"style" : "",
 													"text" : "recall",
 													"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1439,7 +1514,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 139.0, 85.5, 72.0, 22.0 ],
+													"patching_rect" : [ 176.0, 85.5, 72.0, 22.0 ],
 													"style" : "",
 													"text" : "~/test1.txt"
 												}
@@ -1453,7 +1528,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 139.0, 196.5, 73.0, 35.0 ],
+													"patching_rect" : [ 176.0, 298.5, 73.0, 35.0 ],
 													"style" : "",
 													"text" : "prepend preset load"
 												}
@@ -1466,7 +1541,7 @@
 													"numinlets" : 2,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 166.0, 119.5, 72.0, 22.0 ],
+													"patching_rect" : [ 203.0, 119.5, 72.0, 22.0 ],
 													"style" : "",
 													"text" : "~/test2.txt"
 												}
@@ -1480,7 +1555,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "int" ],
-													"patching_rect" : [ 139.0, 155.0, 82.0, 35.0 ],
+													"patching_rect" : [ 176.0, 257.0, 82.0, 35.0 ],
 													"style" : "",
 													"text" : "conformpath max boot"
 												}
@@ -1494,7 +1569,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 42.0, 196.5, 73.0, 35.0 ],
+													"patching_rect" : [ 42.0, 298.5, 73.0, 35.0 ],
 													"style" : "",
 													"text" : "prepend preset save"
 												}
@@ -1521,7 +1596,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "int" ],
-													"patching_rect" : [ 42.0, 155.0, 82.0, 35.0 ],
+													"patching_rect" : [ 42.0, 257.0, 82.0, 35.0 ],
 													"style" : "",
 													"text" : "conformpath max boot"
 												}
@@ -1535,7 +1610,7 @@
 													"maxclass" : "outlet",
 													"numinlets" : 1,
 													"numoutlets" : 0,
-													"patching_rect" : [ 84.5, 291.5, 30.0, 30.0 ],
+													"patching_rect" : [ 84.5, 393.5, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -1543,8 +1618,29 @@
  ],
 										"lines" : [ 											{
 												"patchline" : 												{
+													"destination" : [ "obj-28", 0 ],
+													"source" : [ "obj-1", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-28", 0 ],
+													"source" : [ "obj-2", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
 													"destination" : [ "obj-39", 0 ],
 													"source" : [ "obj-28", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-42", 0 ],
+													"source" : [ "obj-3", 0 ]
 												}
 
 											}
@@ -1559,6 +1655,13 @@
 												"patchline" : 												{
 													"destination" : [ "obj-6", 0 ],
 													"source" : [ "obj-39", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-42", 0 ],
+													"source" : [ "obj-4", 0 ]
 												}
 
 											}
@@ -1657,7 +1760,7 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -2091,11 +2194,11 @@
 											"major" : 7,
 											"minor" : 3,
 											"revision" : 4,
-											"architecture" : "x64",
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
-										"rect" : [ 98.0, 269.0, 393.0, 155.0 ],
+										"rect" : [ 1432.0, 755.0, 408.0, 207.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
 										"default_fontsize" : 12.0,
@@ -2122,16 +2225,44 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"visible" : 1,
 										"boxes" : [ 											{
+												"box" : 												{
+													"format" : 6,
+													"id" : "obj-7",
+													"maxclass" : "flonum",
+													"numinlets" : 1,
+													"numoutlets" : 2,
+													"outlettype" : [ "", "bang" ],
+													"parameter_enable" : 0,
+													"patching_rect" : [ 9.0, 168.0, 50.0, 22.0 ],
+													"style" : ""
+												}
+
+											}
+, 											{
+												"box" : 												{
+													"id" : "obj-5",
+													"maxclass" : "number",
+													"numinlets" : 1,
+													"numoutlets" : 2,
+													"outlettype" : [ "", "bang" ],
+													"parameter_enable" : 0,
+													"patching_rect" : [ 9.0, 107.0, 50.0, 22.0 ],
+													"style" : ""
+												}
+
+											}
+, 											{
 												"box" : 												{
 													"id" : "obj-4",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
-													"patching_rect" : [ 9.0, 105.0, 358.0, 22.0 ],
+													"patching_rect" : [ 9.0, 139.0, 376.0, 22.0 ],
 													"style" : "",
-													"text" : "ossia.parameter another_parameter @type float @default 45.231"
+													"text" : "ossia.parameter another_parameter @type float @default 45.230999"
 												}
 
 											}
@@ -2150,7 +2281,7 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 													"id" : "obj-2",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
@@ -2163,7 +2294,21 @@
 
 											}
  ],
-										"lines" : [  ],
+										"lines" : [ 											{
+												"patchline" : 												{
+													"destination" : [ "obj-5", 0 ],
+													"source" : [ "obj-3", 0 ]
+												}
+
+											}
+, 											{
+												"patchline" : 												{
+													"destination" : [ "obj-7", 0 ],
+													"source" : [ "obj-4", 0 ]
+												}
+
+											}
+ ],
 										"styles" : [ 											{
 												"name" : "Jamoma_highlighted_orange",
 												"default" : 												{
@@ -2249,7 +2394,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
 									"id" : "obj-2",
 									"linecount" : 2,
 									"maxclass" : "newobj",

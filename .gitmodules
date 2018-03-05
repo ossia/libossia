@@ -81,3 +81,6 @@
 [submodule "3rdparty/flat_hash_map"]
 	path = 3rdparty/flat_hash_map
 	url = https://github.com/jcelerier/flat_hash_map
+[submodule "3rdparty/max-sdk"]
+	path = 3rdparty/max-sdk
+	url = https://github.com/Cycling74/max-sdk.git

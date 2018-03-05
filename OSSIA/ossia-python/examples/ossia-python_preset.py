@@ -7,7 +7,7 @@ This is a low level approach to integrate Ossia architecture into a python progr
 For higher level features use pyossia module.
 """
 
-import pyossia.ossia_python as ossia
+import ossia_python as ossia
 import time
 
 print("OSSIA LIBRARY PRESET EXAMPLE")

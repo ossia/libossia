@@ -29,6 +29,13 @@ extern "C" void ossia_model_setup()
       c, (method)model::assist,
         "assist", A_CANT, 0);
 
+  class_addmethod(c, (method) address_mess_cb<model>, "address",   A_SYM, 0);
+  class_addmethod(c, (method) model::get_mess_cb, "get",   A_SYM, 0);
+
+  class_addmethod(
+        c, (method)model::notify,
+        "notify", A_CANT, 0);
+
   class_register(CLASS_BOX, c);
   ossia_library.ossia_model_class = c;
 }
@@ -55,13 +62,9 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
       model::destroy(x);
-      free(x);
+      // free(x);
       return nullptr;
     }
-
-    x->m_clock = clock_new(
-        x, reinterpret_cast<method>(
-               static_cast<bool (*)(model*)>(&max_object_register<model>)));
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -94,7 +97,7 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     // 0 ms delay means that it will be perform on next clock tick
     // defer_low(x,reinterpret_cast<method>(
                 //static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)), nullptr, 0, 0L );
-    clock_delay(x->m_clock, 1);
+    ossia_check_and_register(x);
     ossia_max::instance().models.push_back(x);
   }
 
@@ -107,7 +110,6 @@ void model::destroy(model* x)
   x->unregister();
   object_dequarantining<model>(x);
   ossia_max::instance().models.remove_all(x);
-  if(x->m_clock) object_free(x->m_clock);
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
   x->~model();
 }
@@ -124,12 +126,13 @@ void model::assist(model* x, void* b, long m, long a, char* s)
   }
 }
 
-bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool model::register_node(const std::vector<t_matcher>& matchers)
 {
-  bool res = do_registration(nodes);
+  bool res = do_registration(matchers);
 
   if (res)
   {
+    object_dequarantining<model>(this);
     register_children();
   }
   else
@@ -138,7 +141,7 @@ bool model::register_node(const std::vector<ossia::net::node_base*>& nodes)
   return res;
 }
 
-bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
+bool model::do_registration(const std::vector<t_matcher>& matchers)
 {
   // we should unregister here because we may have add a node between the
   // registered node and the parameter
@@ -146,9 +149,9 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
 
   ossia::string_view name(m_name->s_name);
 
-  for (auto node : nodes)
+  for (auto& m : matchers)
   {
-
+    auto node = m.get_node();
     m_parent_node = node;
 
     if (node->find_child(name))
@@ -179,25 +182,26 @@ bool model::do_registration(const std::vector<ossia::net::node_base*>& nodes)
       }
     }
 
-    m_nodes = ossia::net::create_nodes(*node, name);
+    auto m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
     {
       m_matchers.emplace_back(n, this);
     }
 
+    fill_selection();
+
     set_priority();
     set_description();
     set_tags();
     set_hidden();
+    set_recall_safe();
   }
 
-  return true;
+  return (!m_matchers.empty() || m_is_pattern);
 }
 
 void model::register_children()
 {
-  object_dequarantining<model>(this);
-
   std::vector<object_base*> children = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
@@ -211,33 +215,45 @@ void model::register_children()
       if (model == this)
         continue;
 
-      max_object_register<ossia::max::model>(model);
+      if(model->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
+        model->register_node(m_matchers);
+      else
+        ossia_register(model);
     }
     else if (child->m_otype == object_class::param)
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-      max_object_register<ossia::max::parameter>(parameter);
+      if(parameter->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
+        parameter->register_node(m_matchers);
+      else // FIXME is the else statement needed ?
+        ossia_register(parameter);
+    }
+    else if (child->m_otype == object_class::remote)
+    {
+      ossia::max::remote* remote = (ossia::max::remote*)child;
+
+      if(remote->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
+        remote->register_node(m_matchers);
+      else
+        ossia_register(remote);
     }
   }
 
   for (auto view : view::quarantine().copy())
   {
-    max_object_register<ossia::max::view>(static_cast<ossia::max::view*>(view));
+    ossia_register(view);
   }
 
   // then try to register qurantinized remote
   for (auto remote : remote::quarantine().copy())
   {
-    max_object_register<ossia::max::remote>(static_cast<ossia::max::remote*>(remote));
+    ossia_register(remote);
   }
 }
 
 bool model::unregister()
 {
-  if (m_clock) clock_unset(m_clock);
-
   m_matchers.clear();
-  m_nodes.clear();
 
   object_quarantining<model>(this);
 

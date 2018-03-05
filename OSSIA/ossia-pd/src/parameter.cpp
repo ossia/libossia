@@ -17,51 +17,50 @@ namespace pd
 parameter::parameter():
   parameter_base{ossia_pd::param_class}
 {
-  m_range_size = 2;
-  SETFLOAT(m_range,0);
-  SETFLOAT(m_range+1,1);
 }
 
-bool parameter::register_node(const std::vector<ossia::net::node_base*>& nodes)
+bool parameter::register_node(const std::vector<t_matcher>& matchers)
 {
-  bool res = do_registration(nodes);
-  if (res)
+  bool res = do_registration(matchers);
+
+  // TODO should we put this into device_base::on_parameter_deleted_callback ?
+  // the drawback is that when the parameter is created, it is not fully configured
+
+  for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    fill_selection();
-    obj_dequarantining<parameter>(this);
-
-    // TODO should we put this into device_base::on_parameter_deleted_callback ?
-    // the drawback is that when the parmater is created, it is not fully configured
-    for (auto remote : ossia::pd::remote::quarantine().copy())
-    {
-      obj_register(remote);
-    }
-    for (auto attribute : ossia::pd::attribute::quarantine().copy())
-    {
-      obj_register(attribute);
-    }
-
-    clock_delay(m_poll_clock,1);
+    ossia_register(remote);
   }
-  else
-    obj_quarantining<parameter>(this);
+  for (auto attribute : ossia::pd::attribute::quarantine().copy())
+  {
+    ossia_register(attribute);
+  }
+
+  const auto& map = ossia_pd::instance().root_patcher;
+  auto it = map.find(m_patcher_hierarchy.back());
+  if (it != map.end() && it->second.is_loadbanged)
+  {
+    push_default_value(this);
+  }
+  clock_delay(m_poll_clock,1);
 
   return res;
 }
 
-bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _nodes)
+bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
-  for (auto node : _nodes)
+  for (auto& m : matchers)
   {
+    auto node = m.get_node();
     m_parent_node = node;
 
     auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
 
     for (auto n : nodes)
     {
+
       auto local_param = ossia::try_setup_parameter(m_type->s_name, *n);
 
       if (!local_param)
@@ -84,52 +83,44 @@ bool parameter::do_registration(const std::vector<ossia::net::node_base*>& _node
       ossia::net::set_hidden(local_param->get_node(), m_hidden);
 
       m_matchers.emplace_back(n, this);
-      m_nodes.push_back(n);
+
     }
-
-    fill_selection();
-
-    set_description();
-    set_tags();
-    set_access_mode();
-    set_unit();
-    set_bounding_mode();
-    set_range();
-    set_minmax();
-    set_default();
-    set_rate();
   }
 
-  clock_set(m_clock, 1);
+  fill_selection();
+
+  set_description();
+  set_tags();
+  set_access_mode();
+  set_unit();
+  set_bounding_mode();
+  set_range();
+  set_minmax();
+  set_default();
+  set_rate();
+  set_repetition_filter();
+  set_recall_safe();
 
   return true;
 }
 
 bool parameter::unregister()
 {
-  clock_unset(m_clock);
   clock_unset(m_poll_clock);
 
+  m_node_selection.clear();
   m_matchers.clear();
-  m_nodes.clear();
 
   for (auto remote : ossia::pd::remote::quarantine().copy())
   {
-    obj_register(remote);
+    ossia_register(remote);
   }
   for (auto attribute : ossia::pd::attribute::quarantine().copy())
   {
-    obj_register(attribute);
+    ossia_register(attribute);
   }
 
-  obj_quarantining<parameter>(this);
-
   return true;
-}
-
-ossia::safe_set<parameter*>& parameter::quarantine()
-{
-  return ossia_pd::instance().parameter_quarantine;
 }
 
 void* parameter::create(t_symbol* name, int argc, t_atom* argv)
@@ -142,7 +133,7 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
 
   if (x && d)
   {
-    ossia_pd.params.push_back(x);
+    ossia_pd.parameters.push_back(x);
     x->m_otype = object_class::param;
 
     x->m_dataout = outlet_new((t_object*)x, nullptr);
@@ -153,7 +144,6 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
     x->m_unit = gensym("");
     x->m_type = gensym("float");
 
-    x->m_clock = clock_new(x, (t_method)push_default_value);
     x->m_poll_clock = clock_new(x, (t_method)parameter_base::output_value);
 
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
@@ -176,62 +166,65 @@ void* parameter::create(t_symbol* name, int argc, t_atom* argv)
     boost::algorithm::to_lower(type);
     x->m_type = gensym(type.c_str());
 
-    obj_register<parameter>(x);
+    if(x->m_type != gensym("string")
+       && x->m_min_size == 0
+       && x->m_max_size == 0
+       && x->m_range_size == 0)
+    {
+      // set range if not set by attribute min/max or range
+      x->m_range_size = 2;
+      SETFLOAT(x->m_range,0);
+      SETFLOAT(x->m_range+1,1);
+    }
+
+#ifdef OSSIA_PD_BENCHMARK
+    std::cout << measure<>::execution(obj_register<parameter>, x) / 1000. << " ms "
+              << " " << x << " parameter " << x->m_name->s_name
+              << " " << x->m_reg_count << std::endl;
+
+#else
+    ossia_check_and_register(x);
+#endif
   }
 
   return (x);
+}
+
+void parameter::update_attribute(parameter* x, string_view attribute, const net::node_base* node)
+{
+  auto matchers = make_matchers_vector(x,node);
+
+  if ( attribute == ossia::net::text_muted() ){
+    get_mute(x, matchers);
+  } else if ( attribute == ossia::net::text_unit() ){
+    get_unit(x, matchers);
+  } else
+    parameter_base::update_attribute((parameter_base*)x, attribute, node);
 }
 
 t_pd_err parameter::notify(parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
 {
   if (msg == gensym("attr_modified"))
   {
-      if( s == gensym("range") )
-        x->set_range();
-      else if ( s == gensym("clip") )
-        x->set_bounding_mode();
-      else if ( s == gensym("min") || s == gensym("max") )
-        x->set_minmax();
-      else if ( s == gensym("default") )
-        x->set_default();
-      else if ( s == gensym("unit") )
-        x->set_unit();
-      else if ( s == gensym("hidden") )
-        x->set_hidden();
-      else if ( s == gensym("priority") )
-        x->set_priority();
-      else if ( s == gensym("mode") )
-        x->set_access_mode();
-      else if ( s == gensym("repetitions") )
-        x->set_repetition_filter();
-      else if ( s == gensym("tags") )
-        x->set_tags();
-      else if ( s == gensym("description") )
-        x->set_description();
-      else if ( s == gensym("enable") )
-        x->set_enable();
-      else if ( s == gensym("type") )
-        x->set_type();
-      else if ( s == gensym("rate") )
-        x->set_rate();
-      else if ( s == gensym("mute") )
-        x->set_mute();
-
+    if ( s == gensym("unit") )
+      x->set_unit();
+    else if ( s == gensym("mute") )
+      x->set_mute();
+    else
+      parameter_base::notify((parameter_base*)x,s,msg,sender,data);
   }
-  return 0;
+  return {};
 }
 
 void parameter::destroy(parameter* x)
 {
   x->m_dead = true;
   x->unregister();
-  obj_dequarantining<parameter>(x);
-  ossia_pd::instance().params.remove_all(x);
+  ossia_pd::instance().parameters.remove_all(x);
 
   outlet_free(x->m_dataout);
   outlet_free(x->m_dumpout);
 
-  clock_free(x->m_clock);
   clock_free(x->m_poll_clock);
 
   x->~parameter();
@@ -247,18 +240,20 @@ extern "C" void setup_ossia0x2eparam(void)
   {
     class_addcreator((t_newmethod)parameter::create,gensym("ø.param"), A_GIMME, 0);
     class_addcreator((t_newmethod)parameter::create,gensym("ossia.parameter"), A_GIMME, 0);
+    class_addcreator((t_newmethod)parameter::create,gensym("ø.parameter"), A_GIMME, 0);
 
     parameter_base::class_setup(c);
 
     eclass_addmethod(c, (method) parameter::notify,    "notify",   A_NULL,  0);
     eclass_addmethod(c, (method) parameter_base::get_mess_cb, "get", A_SYMBOL, 0);
+    eclass_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYMBOL, 0);
 
     // special attributes
     CLASS_ATTR_DEFAULT(c, "type", 0, "float");
     CLASS_ATTR_DEFAULT(c, "clip", 0, "free");
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
-    eclass_register(CLASS_OBJ, c); // disable property dialog since it's
+    eclass_register(CLASS_OBJ, c);
   }
 
   ossia_pd::param_class = c;

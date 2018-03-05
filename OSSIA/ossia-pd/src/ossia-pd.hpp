@@ -20,9 +20,11 @@ struct websocket_threaded_connection;
 namespace pd
 {
 
+extern "C" void setup_ossia0x2eassert(void);
 extern "C" void setup_ossia0x2eattribute(void);
 extern "C" void setup_ossia0x2eclient(void);
 extern "C" void setup_ossia0x2edevice(void);
+extern "C" void setup_ossia0x2eexplorer(void);
 extern "C" void setup_ossia0x2elogger(void);
 extern "C" void setup_ossia0x2emodel(void);
 extern "C" void setup_ossia0x2eparam(void);
@@ -37,10 +39,12 @@ public:
     {
       return &instance().m_device;
     }
+    static void register_nodes(void* x);
 
     static t_eclass* attribute_class;
     static t_eclass* client_class;
     static t_eclass* device_class;
+    static t_eclass* explorer_class;
     static t_eclass* logger_class;
     static t_eclass* model_class;
     static t_eclass* param_class;
@@ -48,8 +52,20 @@ public:
     static t_eclass* view_class;
     static t_eclass* ossia_class;
 
+    static t_symbol* o_sym_attribute;
+    static t_symbol* o_sym_client;
+    static t_symbol* o_sym_device;
+    static t_symbol* o_sym_logger;
+    static t_symbol* o_sym_model;
+    static t_symbol* o_sym_param;
+    static t_symbol* o_sym_remote;
+    static t_symbol* o_sym_view;
+    static t_symbol* o_sym_ossia;
+    static t_symbol* o_sym_set;
+    static t_symbol* o_sym_address;
+
     ossia::safe_vector<attribute*> attributes;
-    ossia::safe_vector<parameter*> params;
+    ossia::safe_vector<parameter*> parameters;
     ossia::safe_vector<remote*> remotes;
     ossia::safe_vector<model*> models;
     ossia::safe_vector<view*> views;
@@ -58,14 +74,26 @@ public:
 
     ossia::safe_vector<t_select_clock*> select_clocks;
 
-    t_symbol* sym_addr;
-    t_symbol* sym_set;
-
     ossia::safe_set<attribute*> attribute_quarantine;
     ossia::safe_set<model*> model_quarantine;
     ossia::safe_set<view*> view_quarantine;
     ossia::safe_set<parameter*> parameter_quarantine;
     ossia::safe_set<remote*> remote_quarantine;
+
+    // this is used at loadband to mark a patcher loaded
+    // and trig its registration
+    struct root_descriptor{
+      bool is_loadbanged{};
+      unsigned long count{}; // number of object under this root
+
+      unsigned long inc(){ return ++count;}
+      unsigned long dec(){ return --count;}
+    };
+
+    typedef std::map<t_canvas*, root_descriptor> RootMap;
+
+    RootMap root_patcher;
+    t_clock* m_reg_clock{};
 
 private:
     ossia_pd(); // constructor

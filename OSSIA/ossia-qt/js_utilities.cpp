@@ -851,6 +851,7 @@ value qt_to_ossia::operator()(const QVariant& v)
 }
 #endif
 
+OSSIA_EXPORT
 QDebug operator<<(QDebug s, const ossia::value& v)
 {
   return s << QString::fromStdString(ossia::value_to_pretty_string(v));

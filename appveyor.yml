@@ -1,7 +1,6 @@
 image: Visual Studio 2017
 
 environment:
-  BOOST_ROOT: c:\Libraries\boost_1_64_0
   CTEST_OUTPUT_ON_FAILURE: 1
   DEKEN_PASSWORD:
     secure: J57LV7zrVl8xsXC/ng0TgA==
@@ -26,6 +25,10 @@ environment:
 
     - APPVEYOR_BUILD_TYPE: pd
       configuration: Release
+
+    - APPVEYOR_BUILD_TYPE: pd-test
+      configuration: Debug
+      QTDIR-32bit: C:\Qt\5.9\msvc2015
 
     - APPVEYOR_BUILD_TYPE: max
       configuration: Release

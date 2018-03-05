@@ -2,6 +2,13 @@
 #include <ossia/preset/preset.hpp>
 #include <ossia-max/src/utils.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/oscquery/detail/value_to_json.hpp>
+
+#include <boost/algorithm/string/case_conv.hpp>
+
+#include <rapidjson/allocators.h>
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
 
 namespace ossia
 {
@@ -20,7 +27,7 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
     case object_class::model:
     case object_class::view:
       // TODO oups how to get that ?
-      node = x->m_nodes[0];
+      node = x->m_matchers[0].get_node();
       break;
     default:
       node = nullptr;
@@ -48,11 +55,23 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
       A_SETFLOAT(status+1, 0);
       status[2] = argv[0];
 
-      try {
+      std::string filename = argv[0].a_w.w_sym->s_name;
 
-        auto preset = ossia::presets::make_preset(*node);
-        auto json = ossia::presets::to_string(preset);
-        ossia::presets::write_file(json, argv[0].a_w.w_sym->s_name);
+      bool make_kiss = filename.size() >= 4 &&
+                 filename.compare(filename.size() - 4, 4, ".txt") == 0;
+
+      try
+      {
+        if (make_kiss)
+        {
+          auto preset = ossia::presets::make_preset(*node);
+          auto kiss = ossia::presets::to_string(preset);
+          ossia::presets::write_file(kiss, filename);
+        } else {
+
+          auto json = ossia::presets::make_json_preset(*node);
+          ossia::presets::write_file(json, filename);
+        }
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
@@ -72,12 +91,17 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
       try {
 
         auto json = ossia::presets::read_file(argv[0].a_w.w_sym->s_name);
-        auto preset = ossia::presets::from_string(json);
-        ossia::presets::apply_preset(*node, preset, ossia::presets::keep_arch_on, {}, true);
+        ossia::presets::preset preset;
+
+        if (!ossia::presets::apply_json(json, *node, trig_output_value))
+        {
+          ossia::presets::apply_preset(json, *node, trig_output_value);
+        }
+
         A_SETFLOAT(status+1, 1);
 
       } catch (std::ifstream::failure e) {
-        object_error((t_object*)x,"Can't write file %s, error: %s", argv[0].a_w.w_sym->s_name, e.what());
+        object_error((t_object*)x,"Can't open file %s, error: %s", argv[0].a_w.w_sym->s_name, e.what());
       } catch (const std::exception& e) {
         object_error((t_object*)x,"Can't apply preset to current device:  %s", e.what());
       } catch (...) {
@@ -96,45 +120,22 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
   }
 }
 
-void list_all_child(const ossia::net::node_base& node, std::vector<std::string>& list){
-
-  const auto children = node.children_copy();
-  list.reserve(list.size() + children.size());
-  for (const auto& child : children)
-  {
-    if (auto addr = child->get_parameter())
-    {
-      list.push_back(ossia::net::osc_parameter_string(*child));
-    }
-    list_all_child(*child,list);
-  }
-}
-
-void list_all_child(const ossia::net::node_base& node, std::vector<ossia::net::node_base*>& list){
-
-  const auto children = node.children_copy();
-  list.reserve(list.size() + children.size());
-  for (const auto& child : children)
-  {
-    list.push_back(child);
-    list_all_child(*child,list);
-  }
-}
-
 void node_base::get_namespace(node_base* x)
 {
   t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
-  for (auto n : x->m_nodes)
+  for (auto& m : x->m_matchers)
   {
-    list_all_child(*n, list);
+    auto n = m.get_node();
+    list = ossia::net::list_all_child(n);
+
     int pos = ossia::net::osc_parameter_string(*n).length();
     for (ossia::net::node_base* child : list)
     {
       if (child->get_parameter())
       {
         ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-        ossia::value val = child->get_parameter()->fetch_value();
+        ossia::value val = child->get_parameter()->value();
 
         std::vector<t_atom> va;
         value2atom vm{va};
@@ -148,12 +149,36 @@ void node_base::get_namespace(node_base* x)
   }
 }
 
+void node_base::push_default_value(node_base* x)
+{
+  std::vector<ossia::net::node_base*> list;
+  for (auto& m : x->m_matchers)
+  {
+    auto n = m.get_node();
+    list = ossia::net::list_all_child(n);
+
+    for (ossia::net::node_base* child : list)
+    {
+      if (auto param = child->get_parameter())
+      {
+        auto val = ossia::net::get_default_value(*child);
+        if(val)
+        {
+          param->push_value(*val);
+          trig_output_value(child);
+        }
+      }
+    }
+  }
+}
+
 void node_base::class_setup(t_class* c)
 {
   object_base::class_setup(c);
   class_addmethod(c, (method) node_base::set,           "set",       A_GIMME, 0);
   class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
   class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
+  class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
 }
 
 void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
@@ -164,13 +189,16 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
     argv++;
     argc--;
     auto v = atom2value(nullptr,argc,argv);
-    for (auto n : x->m_nodes)
+    for (auto& m : x->m_matchers)
     {
-      auto nodes = ossia::net::find_nodes(*n, addr);
+      auto nodes = ossia::net::find_nodes(*m.get_node(), addr);
       for (auto& node : nodes)
       {
-        if (auto param = node->get_parameter()){
+        if (auto param = node->get_parameter())
+        {
+
           param->push_value(v);
+          trig_output_value(node);
         }
       }
     }

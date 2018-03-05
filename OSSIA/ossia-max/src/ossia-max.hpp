@@ -51,6 +51,8 @@ public:
     return &instance().m_device;
   }
 
+  static void register_nodes(void* x);
+
   template<typename T>
   t_class* get_class() {
     if(std::is_same<T, parameter>::value) return ossia_parameter_class;
@@ -90,6 +92,11 @@ public:
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
 
+  // this is used at loadband to mark a patcher loaded
+  // and trig its registration
+  std::map<t_object*, bool> root_patcher;
+  void* m_reg_clock{};
+
 private:
   ossia_max();
   ~ossia_max();
@@ -101,15 +108,6 @@ private:
 
 #pragma mark -
 #pragma mark Templates
-
-/**
- * @brief get absolute path to an object
- * @param t_object_base
- * @return std::string with full path to object from root device in an OSC
- * style (with '/')
- */
-template <typename T>
-extern std::string object_path_absolute(T*);
 
 template <typename T>
 extern void object_quarantining(T*);
@@ -133,50 +131,6 @@ void object_namespace(object_base* x);
 void register_quarantinized();
 
 /**
- * @brief             Find the first box of classname beside or above (in a
- * parent patcher) context.
- * @details           The function iterate all objects at the same level or
- * above x and return the first instance of classname found.
- * @param object      The Max object instance around which to search.
- * @param classname   The class name of the box object we are looking for.
- * @param start_level Level above current object where to start. 0 for current
- * patcher, 1 start searching in parent canvas.
- * @param level       Return level of the found object
- * @return The instance of the parent box if exists. Otherwise returns nullptr.
- */
-object_base* find_parent_box(
-    t_object* object, t_symbol* classname, int start_level, int* level);
-
-/**
- * @brief find_parent_box_alive
- * @details Find a parent that is not being removed soon
- * @param object      The Max object instance around which to search.
- * @param classname
- * @param start_level
- * @return
- */
-object_base* find_parent_box_alive(
-    t_object* object, t_symbol* classname, int start_level, int* level);
-
-/**
- * @brief The box_hierachy class
- * @details Little class to store object pointer and hierarchy level, useful
- * for iterating object from top to bottom.
- */
-class box_hierachy
-{
-public:
-  t_object* box;
-  int hierarchy;
-  t_symbol* classname;
-
-  friend bool operator<(box_hierachy a, box_hierachy b)
-  {
-    return a.hierarchy < b.hierarchy;
-  }
-};
-
-/**
  * @brief Find all objects [classname] in the current patcher.
  * @param patcher : patcher in which we are looking for objects
  * @param classname : name of the object to search (ossia.model or ossia.view)
@@ -184,7 +138,7 @@ public:
  * corresponding classname
  */
 std::vector<object_base*> find_children_to_register(
-    t_object* object, t_object* patcher, t_symbol* classname, bool* found_dev = nullptr);
+    t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
 
 /**
  * @brief             Convenient method to easily get the patcher where a box

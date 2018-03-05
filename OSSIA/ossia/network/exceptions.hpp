@@ -1,5 +1,7 @@
 #pragma once
-#include <ossia/editor/exceptions.hpp>
+#include <ossia_export.h>
+#include <stdexcept>
+#include <string>
 
 namespace ossia
 {
@@ -67,5 +69,19 @@ struct OSSIA_EXPORT bad_request_error final : public std::runtime_error
   {
   }
   ~bad_request_error() override;
+};
+
+/**
+ * @brief The invalid_value_type_error class
+ *
+ * Means that an invalid value was passed.
+ * For instance a List where an Impulse is required.
+ */
+struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
+{
+  invalid_value_type_error(const char* e) : std::logic_error(e)
+  {
+  }
+  ~invalid_value_type_error() override;
 };
 }
