@@ -252,7 +252,6 @@ void qml_logger::setHeartbeat(quint32 heartbeat)
 
   m_heartbeatDur = heartbeat;
   heartbeatChanged(m_heartbeatDur);
-  connectLogger();
 }
 
 void qml_logger::setLogLevel(qml_logger::log_level l)
