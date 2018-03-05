@@ -133,7 +133,9 @@ private Q_SLOTS:
 
   void test_root_only()
   {
-    auto path = ossia::traversal::make_path("/");
+    using namespace std::literals;
+    auto parts = ossia::net::address_parts("/"sv);
+    ossia::traversal::make_path("/"sv);
   }
 
   void test_traversal()

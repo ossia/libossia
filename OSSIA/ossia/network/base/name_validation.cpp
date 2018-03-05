@@ -228,7 +228,7 @@ std::vector<std::string> address_parts(ossia::string_view src)
     {
       src.remove_prefix(1);
     }
-    if(src.back() == '/')
+    if(!src.empty() && src.back() == '/')
     {
       src.remove_suffix(1);
     }
