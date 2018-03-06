@@ -11,7 +11,7 @@ phidget_device::phidget_device(PhidgetHandle hdl) : m_handle{hdl}
   Phidget_getDeviceClass(m_handle, &m_class);
   Phidget_getDeviceID(m_handle, &m_id);
   Phidget_getDeviceSerialNumber(m_handle, &m_serial);
-  // Phidget_getDeviceStatus(m_handle, &m_status);
+  //Phidget_getDeviceStatus(m_handle, &m_status);
   // Phidget_getSerialNumber(m_handle, &m_serial);
 
   const char* name;
@@ -79,10 +79,6 @@ const std::string& phidget_device::label() const
 int phidget_device::serial() const
 {
   return m_serial;
-}
-int phidget_device::status() const
-{
-  return m_status;
 }
 
 void phidget_device::set_label(const std::string& n)
@@ -175,7 +171,7 @@ void phidgets_manager::open()
           PhidgetHandle parent;
           if(Phidget_getParent(phid, &parent) == EPHIDGET_OK)
           {
-            std::cerr << "\tparent ok: " << hub << std::endl;
+            std::cerr << "\tparent ok: " << parent << std::endl;
             auto oldpar = parent;
             while(parent)
             {

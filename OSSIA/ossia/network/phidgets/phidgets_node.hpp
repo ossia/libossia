@@ -1,12 +1,14 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
+#include <phidget22.h>
 namespace ossia
 {
 class phidget_device;
 class phidget_node : public ossia::net::node_base
 {
 protected:
-  phidget_device& m_device;
+  PhidgetHandle m_hdl{};
+  net::device_base& m_device;
   node_base& m_parent;
   std::unique_ptr<ossia::net::parameter_base> m_parameter;
 public:
@@ -16,12 +18,13 @@ public:
 
   ~phidget_node();
 
+  auto phidget() const { return m_hdl; }
   void set_parameter(std::unique_ptr<ossia::net::parameter_base> a) override
   {
     m_parameter = std::move(a);
   }
 
-  phidget_node(phidget_device& d, ossia::net::node_base& p);
+  phidget_node(PhidgetHandle hdl, ossia::net::device_base& d, ossia::net::node_base& p);
 
   ossia::net::device_base& get_device() const final override;
   ossia::net::node_base* get_parent() const override;

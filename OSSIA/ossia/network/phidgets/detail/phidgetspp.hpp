@@ -25,7 +25,7 @@ public:
   const std::string& type() const;
   const std::string& label() const;
   int serial() const;
-  int status() const;
+
   /*
   bool is_channel() const
   {
@@ -86,7 +86,6 @@ private:
   std::string m_type;
   std::string m_label;
   int m_serial{};
-  int m_status{};
 
   //std::unique_ptr<interface_kit> m_ik;
 };

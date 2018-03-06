@@ -4,6 +4,7 @@
 #include "phidgets_parameter.hpp"
 #include "phidgets_device.hpp"
 #include "phidgets_protocol.hpp"
+#include <ossia/network/base/node_functions.hpp>
 namespace ossia
 {
 
@@ -11,10 +12,83 @@ phidget_node::~phidget_node()
 {
 }
 
-phidget_node::phidget_node(phidget_device& d, net::node_base& p)
-    : m_device{d}, m_parent{p}
+phidget_node::phidget_node(PhidgetHandle hdl, net::device_base& d, net::node_base& p)
+    : m_hdl{hdl}, m_device{d}, m_parent{p}
 {
-    m_name = "InterfaceKit";
+    std::string name = "Phidget";
+
+    const char* arr{};
+    int chan{false};
+    Phidget_getIsChannel(hdl, &chan);
+    if(chan)
+    {
+      Phidget_ChannelSubclass sc{};
+      Phidget_getChannelSubclass(hdl, &sc);
+      switch(sc)
+      {
+        case PHIDCHSUBCLASS_VOLTAGERATIOINPUT_BRIDGE:
+          name = "Wheatstone Bridge";
+          break;
+
+        case PHIDCHSUBCLASS_NONE:
+        default:
+        {
+          Phidget_getChannelClassName(hdl, &arr);
+          if(arr && strlen(arr) > 0)
+          {
+            name = arr;
+          }
+          else
+          {
+            Phidget_getChannelName(hdl, &arr);
+            if(arr && strlen(arr) > 0)
+            {
+              name = arr;
+            }
+          }
+          break;
+        }
+      }
+
+    }
+    else
+    {
+      Phidget_getDeviceLabel(hdl, &arr);
+      if(arr && strlen(arr) > 0)
+      {
+        name = arr;
+      }
+      else
+      {
+
+        Phidget_getDeviceClassName(hdl, &arr);
+        if(arr && strlen(arr) > 0)
+        {
+          name = arr;
+        }
+        else
+        {
+          Phidget_getDeviceName(hdl, &arr);
+          if(arr && strlen(arr) > 0)
+          {
+            name = arr;
+          }
+        }
+      }
+    }
+
+    int isport{};
+    Phidget_getIsHubPortDevice(hdl, &isport);
+    if(isport)
+    {
+
+      int port{};
+      Phidget_getHubPort(hdl, &port);
+      name += " - ";
+      name += std::to_string(port);
+    }
+    m_name = ossia::net::sanitize_name(name, p.children_names());
+    this->m_oscAddressCache = ossia::net::osc_parameter_string(*this);
 }
 
 net::device_base& phidget_node::get_device() const
