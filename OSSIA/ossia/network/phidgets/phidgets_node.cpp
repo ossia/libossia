@@ -27,7 +27,7 @@ phidget_node::phidget_node(PhidgetHandle hdl, net::device_base& d, net::node_bas
       switch(sc)
       {
         case PHIDCHSUBCLASS_VOLTAGERATIOINPUT_BRIDGE:
-          name = "Wheatstone Bridge";
+          name = "Bridge";
           break;
 
         case PHIDCHSUBCLASS_NONE:
@@ -84,8 +84,9 @@ phidget_node::phidget_node(PhidgetHandle hdl, net::device_base& d, net::node_bas
 
       int port{};
       Phidget_getHubPort(hdl, &port);
-      name += " - ";
+      name += "-";
       name += std::to_string(port);
+      name += "-";
     }
     m_name = ossia::net::sanitize_name(name, p.children_names());
     this->m_oscAddressCache = ossia::net::osc_parameter_string(*this);

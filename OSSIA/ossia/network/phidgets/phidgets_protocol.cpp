@@ -31,31 +31,31 @@ const char* phidget_name(Phidget_DeviceClass cls)
 {
   switch(cls)
   {
-    case PHIDCLASS_ACCELEROMETER: return "PHIDCLASS_ACCELEROMETER";
-    case PHIDCLASS_ADVANCEDSERVO: return "PHIDCLASS_ADVANCEDSERVO";
-    case PHIDCLASS_ANALOG: return "PHIDCLASS_ANALOG";
-    case PHIDCLASS_BRIDGE: return "PHIDCLASS_BRIDGE";
-    case PHIDCLASS_ENCODER: return "PHIDCLASS_ENCODER";
-    case PHIDCLASS_FREQUENCYCOUNTER: return "PHIDCLASS_FREQUENCYCOUNTER";
-    case PHIDCLASS_GPS: return "PHIDCLASS_GPS";
-    case PHIDCLASS_HUB: return "PHIDCLASS_HUB";
-    case PHIDCLASS_INTERFACEKIT: return "PHIDCLASS_INTERFACEKIT";
-    case PHIDCLASS_IR : return "PHIDCLASS_IR";
-    case PHIDCLASS_LED: return "PHIDCLASS_LED";
-    case PHIDCLASS_MESHDONGLE: return "PHIDCLASS_MESHDONGLE";
-    case PHIDCLASS_MOTORCONTROL: return "PHIDCLASS_MOTORCONTROL";
-    case PHIDCLASS_PHSENSOR: return "PHIDCLASS_PHSENSOR";
-    case PHIDCLASS_RFID: return "PHIDCLASS_RFID";
-    case PHIDCLASS_SERVO: return "PHIDCLASS_SERVO";
-    case PHIDCLASS_SPATIAL: return "PHIDCLASS_SPATIAL";
-    case PHIDCLASS_STEPPER: return "PHIDCLASS_STEPPER";
-    case PHIDCLASS_TEMPERATURESENSOR: return "PHIDCLASS_TEMPERATURESENSOR";
-    case PHIDCLASS_TEXTLCD: return "PHIDCLASS_TEXTLCD";
-    case PHIDCLASS_VINT: return "PHIDCLASS_VINT";
-    case PHIDCLASS_GENERIC: return "PHIDCLASS_GENERIC";
-    case PHIDCLASS_FIRMWAREUPGRADE: return "PHIDCLASS_FIRMWAREUPGRADE";
-    case PHIDCLASS_DICTIONARY: return "PHIDCLASS_DICTIONARY";
-    case PHIDCLASS_NOTHING: return "PHIDCLASS_NOTHING";
+  case PHIDCLASS_ACCELEROMETER: return "PHIDCLASS_ACCELEROMETER";
+  case PHIDCLASS_ADVANCEDSERVO: return "PHIDCLASS_ADVANCEDSERVO";
+  case PHIDCLASS_ANALOG: return "PHIDCLASS_ANALOG";
+  case PHIDCLASS_BRIDGE: return "PHIDCLASS_BRIDGE";
+  case PHIDCLASS_ENCODER: return "PHIDCLASS_ENCODER";
+  case PHIDCLASS_FREQUENCYCOUNTER: return "PHIDCLASS_FREQUENCYCOUNTER";
+  case PHIDCLASS_GPS: return "PHIDCLASS_GPS";
+  case PHIDCLASS_HUB: return "PHIDCLASS_HUB";
+  case PHIDCLASS_INTERFACEKIT: return "PHIDCLASS_INTERFACEKIT";
+  case PHIDCLASS_IR : return "PHIDCLASS_IR";
+  case PHIDCLASS_LED: return "PHIDCLASS_LED";
+  case PHIDCLASS_MESHDONGLE: return "PHIDCLASS_MESHDONGLE";
+  case PHIDCLASS_MOTORCONTROL: return "PHIDCLASS_MOTORCONTROL";
+  case PHIDCLASS_PHSENSOR: return "PHIDCLASS_PHSENSOR";
+  case PHIDCLASS_RFID: return "PHIDCLASS_RFID";
+  case PHIDCLASS_SERVO: return "PHIDCLASS_SERVO";
+  case PHIDCLASS_SPATIAL: return "PHIDCLASS_SPATIAL";
+  case PHIDCLASS_STEPPER: return "PHIDCLASS_STEPPER";
+  case PHIDCLASS_TEMPERATURESENSOR: return "PHIDCLASS_TEMPERATURESENSOR";
+  case PHIDCLASS_TEXTLCD: return "PHIDCLASS_TEXTLCD";
+  case PHIDCLASS_VINT: return "PHIDCLASS_VINT";
+  case PHIDCLASS_GENERIC: return "PHIDCLASS_GENERIC";
+  case PHIDCLASS_FIRMWAREUPGRADE: return "PHIDCLASS_FIRMWAREUPGRADE";
+  case PHIDCLASS_DICTIONARY: return "PHIDCLASS_DICTIONARY";
+  case PHIDCLASS_NOTHING: return "PHIDCLASS_NOTHING";
   }
   return "none";
 }
@@ -64,44 +64,44 @@ const char* phidget_name(Phidget_ChannelClass cls)
 {
   switch(cls)
   {
-    case PHIDCHCLASS_NOTHING: return "PHIDCHCLASS_NOTHING";
-    case PHIDCHCLASS_ACCELEROMETER: return "PHIDCHCLASS_ACCELEROMETER";
-    case PHIDCHCLASS_CURRENTINPUT: return "PHIDCHCLASS_CURRENTINPUT";
-    case PHIDCHCLASS_DATAADAPTER: return "PHIDCHCLASS_DATAADAPTER";
-    case PHIDCHCLASS_DCMOTOR: return "PHIDCHCLASS_DCMOTOR";
-    case PHIDCHCLASS_DIGITALINPUT: return "PHIDCHCLASS_DIGITALINPUT";
-    case PHIDCHCLASS_DIGITALOUTPUT: return "PHIDCHCLASS_DIGITALOUTPUT";
-    case PHIDCHCLASS_DISTANCESENSOR: return "PHIDCHCLASS_DISTANCESENSOR";
-    case PHIDCHCLASS_ENCODER: return "PHIDCHCLASS_ENCODER";
-    case PHIDCHCLASS_FREQUENCYCOUNTER: return "PHIDCHCLASS_FREQUENCYCOUNTER";
-    case PHIDCHCLASS_GPS: return "PHIDCHCLASS_GPS";
-    case PHIDCHCLASS_LCD: return "PHIDCHCLASS_LCD";
-    case PHIDCHCLASS_GYROSCOPE: return "PHIDCHCLASS_GYROSCOPE";
-    case PHIDCHCLASS_HUB: return "PHIDCHCLASS_HUB";
-    case PHIDCHCLASS_CAPACITIVETOUCH: return "PHIDCHCLASS_CAPACITIVETOUCH";
-    case PHIDCHCLASS_HUMIDITYSENSOR: return "PHIDCHCLASS_HUMIDITYSENSOR";
-    case PHIDCHCLASS_IR: return "PHIDCHCLASS_IR";
-    case PHIDCHCLASS_LIGHTSENSOR: return "PHIDCHCLASS_LIGHTSENSOR";
-    case PHIDCHCLASS_MAGNETOMETER: return "PHIDCHCLASS_MAGNETOMETER";
-    case PHIDCHCLASS_MESHDONGLE: return "PHIDCHCLASS_MESHDONGLE";
-    case PHIDCHCLASS_PHSENSOR: return "PHIDCHCLASS_PHSENSOR";
-    case PHIDCHCLASS_POWERGUARD: return "PHIDCHCLASS_POWERGUARD";
-    case PHIDCHCLASS_PRESSURESENSOR: return "PHIDCHCLASS_PRESSURESENSOR";
-    case PHIDCHCLASS_RCSERVO: return "PHIDCHCLASS_RCSERVO";
-    case PHIDCHCLASS_RESISTANCEINPUT: return "PHIDCHCLASS_RESISTANCEINPUT";
-    case PHIDCHCLASS_RFID: return "PHIDCHCLASS_RFID";
-    case PHIDCHCLASS_SOUNDSENSOR: return "PHIDCHCLASS_SOUNDSENSOR";
-    case PHIDCHCLASS_SPATIAL: return "PHIDCHCLASS_SPATIAL";
-    case PHIDCHCLASS_STEPPER: return "PHIDCHCLASS_STEPPER";
-    case PHIDCHCLASS_TEMPERATURESENSOR: return "PHIDCHCLASS_TEMPERATURESENSOR";
-    case PHIDCHCLASS_VOLTAGEINPUT: return "PHIDCHCLASS_VOLTAGEINPUT";
-    case PHIDCHCLASS_VOLTAGEOUTPUT: return "PHIDCHCLASS_VOLTAGEOUTPUT";
-    case PHIDCHCLASS_VOLTAGERATIOINPUT: return "PHIDCHCLASS_VOLTAGERATIOINPUT";
-    case PHIDCHCLASS_FIRMWAREUPGRADE: return "PHIDCHCLASS_FIRMWAREUPGRADE";
-    case PHIDCHCLASS_GENERIC: return "PHIDCHCLASS_GENERIC";
-    case PHIDCHCLASS_MOTORPOSITIONCONTROLLER: return "PHIDCHCLASS_MOTORPOSITIONCONTROLLER";
-    case PHIDCHCLASS_BLDCMOTOR: return "PHIDCHCLASS_BLDCMOTOR";
-    case PHIDCHCLASS_DICTIONARY: return "PHIDCHCLASS_DICTIONARY";
+  case PHIDCHCLASS_NOTHING: return "PHIDCHCLASS_NOTHING";
+  case PHIDCHCLASS_ACCELEROMETER: return "PHIDCHCLASS_ACCELEROMETER";
+  case PHIDCHCLASS_CURRENTINPUT: return "PHIDCHCLASS_CURRENTINPUT";
+  case PHIDCHCLASS_DATAADAPTER: return "PHIDCHCLASS_DATAADAPTER";
+  case PHIDCHCLASS_DCMOTOR: return "PHIDCHCLASS_DCMOTOR";
+  case PHIDCHCLASS_DIGITALINPUT: return "PHIDCHCLASS_DIGITALINPUT";
+  case PHIDCHCLASS_DIGITALOUTPUT: return "PHIDCHCLASS_DIGITALOUTPUT";
+  case PHIDCHCLASS_DISTANCESENSOR: return "PHIDCHCLASS_DISTANCESENSOR";
+  case PHIDCHCLASS_ENCODER: return "PHIDCHCLASS_ENCODER";
+  case PHIDCHCLASS_FREQUENCYCOUNTER: return "PHIDCHCLASS_FREQUENCYCOUNTER";
+  case PHIDCHCLASS_GPS: return "PHIDCHCLASS_GPS";
+  case PHIDCHCLASS_LCD: return "PHIDCHCLASS_LCD";
+  case PHIDCHCLASS_GYROSCOPE: return "PHIDCHCLASS_GYROSCOPE";
+  case PHIDCHCLASS_HUB: return "PHIDCHCLASS_HUB";
+  case PHIDCHCLASS_CAPACITIVETOUCH: return "PHIDCHCLASS_CAPACITIVETOUCH";
+  case PHIDCHCLASS_HUMIDITYSENSOR: return "PHIDCHCLASS_HUMIDITYSENSOR";
+  case PHIDCHCLASS_IR: return "PHIDCHCLASS_IR";
+  case PHIDCHCLASS_LIGHTSENSOR: return "PHIDCHCLASS_LIGHTSENSOR";
+  case PHIDCHCLASS_MAGNETOMETER: return "PHIDCHCLASS_MAGNETOMETER";
+  case PHIDCHCLASS_MESHDONGLE: return "PHIDCHCLASS_MESHDONGLE";
+  case PHIDCHCLASS_PHSENSOR: return "PHIDCHCLASS_PHSENSOR";
+  case PHIDCHCLASS_POWERGUARD: return "PHIDCHCLASS_POWERGUARD";
+  case PHIDCHCLASS_PRESSURESENSOR: return "PHIDCHCLASS_PRESSURESENSOR";
+  case PHIDCHCLASS_RCSERVO: return "PHIDCHCLASS_RCSERVO";
+  case PHIDCHCLASS_RESISTANCEINPUT: return "PHIDCHCLASS_RESISTANCEINPUT";
+  case PHIDCHCLASS_RFID: return "PHIDCHCLASS_RFID";
+  case PHIDCHCLASS_SOUNDSENSOR: return "PHIDCHCLASS_SOUNDSENSOR";
+  case PHIDCHCLASS_SPATIAL: return "PHIDCHCLASS_SPATIAL";
+  case PHIDCHCLASS_STEPPER: return "PHIDCHCLASS_STEPPER";
+  case PHIDCHCLASS_TEMPERATURESENSOR: return "PHIDCHCLASS_TEMPERATURESENSOR";
+  case PHIDCHCLASS_VOLTAGEINPUT: return "PHIDCHCLASS_VOLTAGEINPUT";
+  case PHIDCHCLASS_VOLTAGEOUTPUT: return "PHIDCHCLASS_VOLTAGEOUTPUT";
+  case PHIDCHCLASS_VOLTAGERATIOINPUT: return "PHIDCHCLASS_VOLTAGERATIOINPUT";
+  case PHIDCHCLASS_FIRMWAREUPGRADE: return "PHIDCHCLASS_FIRMWAREUPGRADE";
+  case PHIDCHCLASS_GENERIC: return "PHIDCHCLASS_GENERIC";
+  case PHIDCHCLASS_MOTORPOSITIONCONTROLLER: return "PHIDCHCLASS_MOTORPOSITIONCONTROLLER";
+  case PHIDCHCLASS_BLDCMOTOR: return "PHIDCHCLASS_BLDCMOTOR";
+  case PHIDCHCLASS_DICTIONARY: return "PHIDCHCLASS_DICTIONARY";
   }
   return "none";
 }
@@ -111,7 +111,7 @@ class phidget_generic_parameter : public ossia::net::parameter_base
 {
   PhidgetHandle m_phidget{};
   ossia::domain m_domain;
-  ossia::value m_value, m_previousValue;
+  //ossia::value m_value, m_previousValue;
   std::mutex m_valueMutex;
 
   auto get_phidget() const
@@ -126,12 +126,14 @@ class phidget_generic_parameter : public ossia::net::parameter_base
 public:
   phidget_generic_parameter(
       PhidgetHandle p, net::node_base& par)
-      : ossia::net::parameter_base{par}
-      , m_phidget{p}
-  {
+    : ossia::net::parameter_base{par}
+    , m_phidget{p}
+  {/*
     Phidget_openWaitForAttachment(m_phidget, 1000);
     m_domain = get_impl().get_domain();
-    m_value = init_value(ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum);
+    Phidget_close(m_phidget);
+    */
+    //m_value = value();
   }
 
   void on_first_callback_added() override
@@ -178,24 +180,8 @@ public:
     if (!val.valid())
       return *this;
 
-    ossia::value copy;
-    {
-      lock_t lock(m_valueMutex);
-      if (m_value.v.which() == val.v.which())
-      {
-        m_previousValue = std::move(m_value); // TODO also implement me for MIDI
-        m_value = val;
-        copy = m_value;
-      }
-      else
-      {
-        m_previousValue = std::move(m_value);
-        m_value = ossia::convert(val, m_previousValue);
-        copy = m_value;
-      }
-    }
-
-    send(copy);
+    get_impl().set_value(ossia::convert<decltype(Impl{get_phidget()}.get_value())>(val));
+    send(val);
     return *this;
   }
 
@@ -207,6 +193,116 @@ public:
   val_type get_value_type() const override
   {
     return ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum;
+  }
+
+  net::parameter_base& set_value_type(val_type) override
+  {
+    return *this;
+  }
+
+  access_mode get_access() const override
+  {
+    return {};
+  }
+
+  net::parameter_base& set_access(access_mode) override
+  {
+    return *this;
+  }
+
+  const domain& get_domain() const override
+  {
+    return m_domain;
+  }
+
+  net::parameter_base& set_domain(const domain&) override
+  {
+    return *this;
+  }
+
+  bounding_mode get_bounding() const override
+  {
+    return {};
+  }
+
+  net::parameter_base& set_bounding(bounding_mode) override
+  {
+    return *this;
+  }
+};
+
+
+class phidget_open_parameter : public ossia::net::parameter_base
+{
+  PhidgetHandle m_phidget{};
+  bool m_open{false};
+
+public:
+  phidget_open_parameter(
+      PhidgetHandle p, net::node_base& par)
+    : ossia::net::parameter_base{par}
+    , m_phidget{p}
+  {
+  }
+
+  ~phidget_open_parameter() override
+  {
+  }
+
+  void pull_value() override
+  {
+
+  }
+
+  ossia::value value() const override
+  {
+    return m_open;
+  }
+
+  net::parameter_base& push_value(const ossia::value&) override
+  {
+    return *this;
+  }
+
+  net::parameter_base& push_value(ossia::value&&) override
+  {
+    return *this;
+  }
+
+  net::parameter_base& push_value() override
+  {
+    return *this;
+  }
+
+  net::parameter_base& set_value(const ossia::value& val) override
+  {
+    if (!val.valid())
+      return *this;
+
+    auto res = ossia::convert<bool>(val);
+    if(res != value())
+    {
+      if(res)
+      {
+        Phidget_openWaitForAttachment(m_phidget, 1000);
+      }
+      else
+      {
+        Phidget_close(m_phidget);
+      }
+      send(res);
+    }
+    return *this;
+  }
+
+  net::parameter_base& set_value(ossia::value&& v) override
+  {
+    return set_value(v);
+  }
+
+  val_type get_value_type() const override
+  {
+    return ossia::val_type::BOOL;
   }
 
   net::parameter_base& set_value_type(val_type) override
@@ -244,14 +340,69 @@ public:
   {
     return *this;
   }
-
-  double (*get_value)(PhidgetHandle) = {};
 };
-template <typename Impl>
-auto make_parameter(ossia::phidget_node& parent)
+
+template <typename Impl, typename Parent>
+auto make_parameter(Parent& parent)
 {
   return std::make_unique< phidget_generic_parameter<Impl> >(parent.phidget(), parent);
 }
+
+class phidget_rate_node : public ossia::net::generic_node
+{
+public:
+  template<typename Desc>
+  struct Parameter
+  {
+    typename Desc::handle_type phidget;
+
+    int get_value()
+    {
+      uint32_t val;
+      Desc::Get(phidget, &val);
+      return val;
+    }
+
+    void set_value(int val)
+    {
+      Desc::Set(phidget, val);
+    }
+
+    ossia::domain get_domain()
+    {
+      uint32_t min{}, max{};
+      Desc::Min(phidget, &min);
+      Desc::Max(phidget, &max);
+      return ossia::make_domain((int)min, (int)max);
+    }
+
+    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
+    {
+    }
+
+    void disable_callbacks()
+    {
+    }
+  };
+
+  template<typename Desc>
+  phidget_rate_node(Desc desc, PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
+    generic_node{"rate", dev, parent}
+  {
+    m_parameter = std::make_unique< phidget_generic_parameter<Parameter<Desc>> >(hdl, *this);
+  }
+};
+
+class phidget_open_node : public ossia::net::generic_node
+{
+public:
+  phidget_open_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
+    generic_node{"open", dev, parent}
+  {
+    m_parameter = std::make_unique< phidget_open_parameter >(hdl, *this);
+  }
+};
+
 
 class phidget_voltage_ratio_node : public ossia::phidget_node
 {
@@ -285,8 +436,8 @@ public:
       PhidgetVoltageRatioInput_setOnVoltageRatioChangeHandler(
             phidget,
             [] (PhidgetVoltageRatioInputHandle ch, void *ctx, const double ratio) {
-          auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-          p.set_value(ratio);
+        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
+        p.set_value(ratio);
       }, &p);
     }
 
@@ -296,10 +447,25 @@ public:
     }
   };
 
+  struct rate_desc
+  {
+    using handle_type = PhidgetVoltageRatioInputHandle;
+    static const constexpr auto Get = PhidgetVoltageRatioInput_getDataInterval;
+    static const constexpr auto Set = PhidgetVoltageRatioInput_setDataInterval;
+    static const constexpr auto Min = PhidgetVoltageRatioInput_getMinDataInterval;
+    static const constexpr auto Max = PhidgetVoltageRatioInput_getMaxDataInterval;
+  };
+
   phidget_voltage_ratio_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
     phidget_node{hdl, dev, parent}
   {
     m_parameter = make_parameter<Parameter>(*this);
+  }
+
+  void init()
+  {
+    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
   }
 };
 
@@ -336,8 +502,8 @@ public:
       PhidgetVoltageInput_setOnVoltageChangeHandler(
             phidget,
             [] (PhidgetVoltageInputHandle ch, void *ctx, const double ratio) {
-          auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-          p.set_value(ratio);
+        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
+        p.set_value(ratio);
       }, &p);
     }
 
@@ -347,10 +513,25 @@ public:
     }
   };
 
+  struct rate_desc
+  {
+    using handle_type = PhidgetVoltageInputHandle;
+    static const constexpr auto Get = PhidgetVoltageInput_getDataInterval;
+    static const constexpr auto Set = PhidgetVoltageInput_setDataInterval;
+    static const constexpr auto Min = PhidgetVoltageInput_getMinDataInterval;
+    static const constexpr auto Max = PhidgetVoltageInput_getMaxDataInterval;
+  };
+
   phidget_voltage_input_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
     phidget_node{hdl, dev, parent}
   {
     m_parameter = make_parameter<Parameter>(*this);
+  }
+
+  void init()
+  {
+    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
   }
 };
 
@@ -383,8 +564,8 @@ public:
       PhidgetDigitalInput_setOnStateChangeHandler(
             phidget,
             [] (PhidgetDigitalInputHandle ch, void *ctx, const int ratio) {
-          auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-          p.set_value(ratio);
+        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
+        p.set_value(ratio);
       }, &p);
     }
 
@@ -398,6 +579,11 @@ public:
     phidget_node{hdl, dev, parent}
   {
     m_parameter = make_parameter<Parameter>(*this);
+  }
+
+  void init()
+  {
+    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
   }
 };
 
@@ -439,6 +625,11 @@ public:
   {
     m_parameter = make_parameter<Parameter>(*this);
   }
+
+  void init()
+  {
+    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
+  }
 };
 
 class phidget_hub_node : public ossia::phidget_node
@@ -477,7 +668,7 @@ public:
       PhidgetAccelerometer_getMaxAcceleration(phidget, &max);
       return ossia::make_domain(
             ossia::make_vec(min[0], min[1], min[2]),
-            ossia::make_vec(max[0], max[1], max[2]));
+          ossia::make_vec(max[0], max[1], max[2]));
     }
 
     void enable_callbacks(phidget_generic_parameter<Parameter>& p)
@@ -485,8 +676,8 @@ public:
       PhidgetAccelerometer_setOnAccelerationChangeHandler(
             phidget,
             [] (PhidgetAccelerometerHandle ch, void *ctx, const double val[3], double ts) {
-          auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-          p.set_value(ossia::make_vec(val[0], val[1], val[2]));
+        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
+        p.set_value(ossia::make_vec(val[0], val[1], val[2]));
       }, &p);
     }
 
@@ -496,10 +687,24 @@ public:
     }
   };
 
+  struct rate_desc
+  {
+    using handle_type = PhidgetAccelerometerHandle;
+    static const constexpr auto Get = PhidgetAccelerometer_getDataInterval;
+    static const constexpr auto Set = PhidgetAccelerometer_setDataInterval;
+    static const constexpr auto Min = PhidgetAccelerometer_getMinDataInterval;
+    static const constexpr auto Max = PhidgetAccelerometer_getMaxDataInterval;
+  };
+
   phidget_accelerometer_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
     phidget_node{hdl, dev, parent}
   {
     m_parameter = make_parameter<Parameter>(*this);
+  }
+
+  void init()
+  {
+    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
   }
 };
 
@@ -524,7 +729,7 @@ public:
       return v;
     }
 
-    void set_value(ossia::vec3f)
+    void set_value(std::vector<ossia::value> )
     {
 
     }
@@ -554,8 +759,8 @@ public:
       PhidgetGyroscope_setOnAngularRateUpdateHandler(
             phidget,
             [] (PhidgetGyroscopeHandle ch, void *ctx, const double val[3], double ts) {
-          auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-          p.set_value(ossia::make_vec(val[0], val[1], val[2]));
+        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
+        p.set_value(ossia::make_vec(val[0], val[1], val[2]));
       }, &p);
     }
 
@@ -565,10 +770,24 @@ public:
     }
   };
 
+  struct rate_desc
+  {
+    using handle_type = PhidgetGyroscopeHandle;
+    static const constexpr auto Get = PhidgetGyroscope_getDataInterval;
+    static const constexpr auto Set = PhidgetGyroscope_setDataInterval;
+    static const constexpr auto Min = PhidgetGyroscope_getMinDataInterval;
+    static const constexpr auto Max = PhidgetGyroscope_getMaxDataInterval;
+  };
+
   phidget_gyroscope_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
     phidget_node{hdl, dev, parent}
   {
     m_parameter = make_parameter<Parameter>(*this);
+  }
+
+  void init()
+  {
+    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
   }
 };
 
@@ -577,7 +796,6 @@ phidget_protocol::phidget_protocol()
 {
   onDeviceCreated = [=](PhidgetHandle phid) {
     m_functionQueue.enqueue([=] {
-      std::cerr << "EXECUTING\n";
       if(m_phidgetMap.find(phid) != m_phidgetMap.end())
         return;
 
@@ -589,52 +807,60 @@ phidget_protocol::phidget_protocol()
 
       switch(cls)
       {
-        case PHIDCHCLASS_ACCELEROMETER:
-        {
-          phid_node = new phidget_accelerometer_node{phid, *m_dev, *par_node};
-
-          /*
-          uint32_t i = 1;
-          PhidgetAccelerometer_getMinDataInterval(hdl, &i);
-          std::cerr  << "min: " << i << std::endl;
-          PhidgetAccelerometer_getMaxDataInterval(hdl, &i);
-          std::cerr  << "max: " << i << std::endl;
-          PhidgetAccelerometer_setDataInterval(hdl, 4);
-          */
-          break;
-        }
-
-        case PHIDCHCLASS_GYROSCOPE:
-        {
-          phid_node = new phidget_gyroscope_node{phid, *m_dev, *par_node};
-          break;
-        }
-
-        case PHIDCHCLASS_VOLTAGEINPUT:
-        {
-          phid_node = new phidget_voltage_input_node{phid, *m_dev, *par_node};
-          break;
-        }
-        case PHIDCHCLASS_DIGITALINPUT:
-        {
-          phid_node = new phidget_digital_input_node{phid, *m_dev, *par_node};
-          break;
-        }
-        case PHIDCHCLASS_DIGITALOUTPUT:
-        {
-          phid_node = new phidget_digital_output_node{phid, *m_dev, *par_node};
-          break;
-        }
-        case PHIDCHCLASS_HUB:
-        {
-          phid_node = new phidget_hub_node{phid, *m_dev, *par_node};
-          break;
-        }
-        case PHIDCHCLASS_VOLTAGERATIOINPUT:
-        {
-          phid_node = new phidget_voltage_ratio_node{phid, *m_dev, *par_node};
-          break;
-        }
+      case PHIDCHCLASS_ACCELEROMETER:
+      {
+        auto node = new phidget_accelerometer_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        node->init();
+        phid_node = node;
+        break;
+      }
+      case PHIDCHCLASS_GYROSCOPE:
+      {
+        auto node = new phidget_gyroscope_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        node->init();
+        phid_node = node;
+        break;
+      }
+      case PHIDCHCLASS_VOLTAGEINPUT:
+      {
+        auto node = new phidget_voltage_input_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        node->init();
+        phid_node = node;
+        break;
+      }  case PHIDCHCLASS_DIGITALINPUT:
+      {
+        auto node = new phidget_digital_input_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        node->init();
+        phid_node = node;
+        break;
+      }
+      case PHIDCHCLASS_DIGITALOUTPUT:
+      {
+        auto node = new phidget_digital_output_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        node->init();
+        phid_node = node;
+        break;
+      }
+      case PHIDCHCLASS_HUB:
+      {
+        auto node = new phidget_hub_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        phid_node = node;
+        break;
+      }
+      case PHIDCHCLASS_VOLTAGERATIOINPUT:
+      {
+        auto node = new phidget_voltage_ratio_node{phid, *m_dev, *par_node};
+        par_node->add_child(std::unique_ptr<phidget_node>(node));
+        node->init();
+        phid_node = node;
+        break;
+      }
       }
 
       if(!phid_node)
@@ -646,7 +872,6 @@ phidget_protocol::phidget_protocol()
       //    std::make_unique<phidget_parameter>(phid, *this, *phid_node));
 
 
-      par_node->add_child(std::unique_ptr<phidget_node>(phid_node));
     });
 
     if (m_commandCb)
@@ -818,7 +1043,7 @@ ossia::net::node_base* phidget_protocol::get_parent(PhidgetHandle phid)
 
 void phidget_protocol::open()
 {
-  PhidgetLog_enable(PHIDGET_LOG_VERBOSE, NULL);
+  PhidgetLog_enable(PHIDGET_LOG_WARNING, NULL);
 
   // Tree :
   // Phidgets:/device/...

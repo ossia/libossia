@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
 #include <phidget22.h>
+#include <unordered_map>
 #include <readerwriterqueue.h>
 namespace ossia
 {
