@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/dataflow.hpp>
+#include <ossia/dataflow/bench_map.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/breadth_first_search.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
@@ -377,6 +378,9 @@ struct OSSIA_EXPORT graph_base: graph_interface
 
     auto add_node_impl(node_ptr n)
     {
+      auto& bench = *ossia::bench_ptr();
+      bench[n.get()];
+
       auto vtx = boost::add_vertex(n, m_graph);
       m_nodes.insert({std::move(n), vtx});
       m_dirty = true;

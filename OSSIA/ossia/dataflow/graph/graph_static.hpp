@@ -27,6 +27,33 @@ struct node_exec
       }
     }
 };
+struct node_exec_bench
+{
+    execution_state*& g;
+    graph_node& node;
+    bench_map& perf;
+
+    template<typename T>
+    void operator()(const T&)
+    {
+      if(perf.measure)
+      {
+        if(node.enabled())
+        {
+          assert(graph_util::can_execute(node, *g));
+
+          auto t0 = std::chrono::steady_clock::now();
+          graph_util::exec_node(node, *g);
+          auto t1 = std::chrono::steady_clock::now();
+          perf[&node] = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+        }
+        else
+        {
+          perf[&node] = 0;
+        }
+      }
+    }
+};
 
 struct node_exec_logger
 {
@@ -58,17 +85,31 @@ struct node_exec_logger_bench
     template<typename T>
     void operator()(const T&)
     {
-      if(node.enabled())
+      if(perf.measure)
       {
-        assert(graph_util::can_execute(node, *g));
+        if(node.enabled())
+        {
+          assert(graph_util::can_execute(node, *g));
 
-        auto t0 = std::chrono::steady_clock::now();
+          auto t0 = std::chrono::steady_clock::now();
+          if(!node.logged())
+            graph_util::exec_node(node, *g);
+          else
+            graph_util::exec_node(node, *g, logger);
+          auto t1 = std::chrono::steady_clock::now();
+          perf[&node] = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+        }
+        else
+        {
+          perf[&node] = 0;
+        }
+      }
+      else
+      {
         if(!node.logged())
           graph_util::exec_node(node, *g);
         else
           graph_util::exec_node(node, *g, logger);
-        auto t1 = std::chrono::steady_clock::now();
-        perf[&node] = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
       }
     }
 };
