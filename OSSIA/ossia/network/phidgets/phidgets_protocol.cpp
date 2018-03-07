@@ -180,6 +180,15 @@ void phidget_protocol::run_commands()
   } while (ok);
 }
 
+void phidget_protocol::run_command()
+{
+  std::function<void()> cmd;
+
+  if(m_functionQueue.try_dequeue(cmd))
+    if (cmd)
+      cmd();
+}
+
 bool phidget_protocol::push_raw(const net::full_parameter_data &)
 {
   return false;

@@ -1078,7 +1078,7 @@ auto make(PhidgetHandle phid, ossia::net::device_base& dev, ossia::net::node_bas
     }
 
     node->init();
-    //Phidget_close(phid);
+    Phidget_close(phid);
 
   return node;
 }

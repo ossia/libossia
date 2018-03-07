@@ -35,6 +35,7 @@ public:
 
   void set_command_callback(std::function<void()>);
   void run_commands();
+  void run_command();
   bool push_raw(const ossia::net::full_parameter_data&) override;
 
 private:
