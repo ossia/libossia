@@ -186,13 +186,7 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 
 struct callback_index::impl {
   ossia::callback_container<ossia::value_callback>::iterator index;
-  impl operator=(const impl);
 };
-
-callback_index::impl callback_index::impl::operator=(const callback_index::impl other)
-  {
-    return other;
-  }
 
 callback_index::callback_index()
   : index{new impl}
