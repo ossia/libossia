@@ -1,8 +1,10 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/phidgets/phidgets_parameter_data.hpp>
 #include <phidget22.h>
 #include <unordered_map>
 #include <readerwriterqueue.h>
+#include <ossia/detail/optional.hpp>
 namespace ossia
 {
 namespace net {
@@ -14,8 +16,9 @@ class OSSIA_EXPORT phidget_protocol : public ossia::net::protocol_base
   net::device_base* m_dev{};
   std::function<void()> m_commandCb;
   moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
-
+  //std::unordered_map<std::pair<PhidgetHandle, ossia::optional<int>>, ossia::net::node_base*> m_phidgetMap;
   std::unordered_map<PhidgetHandle, ossia::net::node_base*> m_phidgetMap;
+
 public:
   phidget_protocol();
   ~phidget_protocol();
@@ -36,7 +39,7 @@ public:
 
 private:
 
-  ossia::net::node_base*  get_parent(PhidgetHandle hdl);
+  ossia::net::node_base*  get_parent(ossia::phidget_handle_t hdl);
   std::function<void(PhidgetHandle)> onDeviceCreated;
   std::function<void(PhidgetHandle)> onDeviceDestroyed;
   PhidgetManagerHandle m_hdl{};

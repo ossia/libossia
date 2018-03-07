@@ -8,16 +8,16 @@ namespace ossia
 strong_value<hsv_u::neutral_unit>
 hsv_u::to_neutral(strong_value<hsv_u::concrete_type> self)
 {
-  const auto H = self.dataspace_value[0];
-  const auto S = self.dataspace_value[1];
-  const auto V = self.dataspace_value[2];
+  const double H = self.dataspace_value[0];
+  const double S = self.dataspace_value[1];
+  const double V = self.dataspace_value[2];
   if (S == 0.)
   {
-    return {1., V, V, V};
+    return {1., (float)V, (float)V, (float)V};
   }
   else
   {
-    auto var_h = H * 6.;
+    double var_h = H * 6.;
     if (var_h == 6.)
       var_h = 0.;      // H must be < 1
     int var_i = var_h; // Or ... var_i = floor( var_h )
@@ -45,9 +45,9 @@ hsv_u::to_neutral(strong_value<hsv_u::concrete_type> self)
 
 hsv_u::value_type hsv_u::from_neutral(strong_value<hsv_u::neutral_unit> self)
 {
-  const auto var_R = self.dataspace_value[1];
-  const auto var_G = self.dataspace_value[2];
-  const auto var_B = self.dataspace_value[3];
+  const double var_R = self.dataspace_value[1];
+  const double var_G = self.dataspace_value[2];
+  const double var_B = self.dataspace_value[3];
 
   const auto var_Min
       = std::min(std::min(var_R, var_G), var_B); // Min. value of RGB
@@ -57,7 +57,7 @@ hsv_u::value_type hsv_u::from_neutral(strong_value<hsv_u::neutral_unit> self)
 
   if (del_Max == 0.) // This is a gray, no chroma...
   {
-    return {0., 0., var_Max};
+    return {0., 0., (float)var_Max};
   }
   else // Chromatic data...
   {

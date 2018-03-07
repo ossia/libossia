@@ -4,793 +4,25 @@
 #include "phidgets_parameter.hpp"
 #include "phidgets_device.hpp"
 #include "phidgets_node.hpp"
+#include "phidgets_parameter_data.hpp"
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/value/value_traits.hpp>
 namespace ossia
 {
-class hub
+template<typename Fun>
+ossia::net::node_base* find_tree(ossia::net::node_base& root, const Fun& f)
 {
-  hub(PhidgetHandle h)
+  if(f(root))
+    return &root;
+  for(auto& node : root.children_copy())
   {
-    //m_hub = h;
-
+    auto res = find_tree(node, f);
+    if(res)
+      return res;
   }
-  PhidgetHubHandle m_hub;
-  PhidgetHandle m_handle;
-};
-class vint
-{
-  vint(PhidgetHandle h)
-  {
-    //m_hub = h;
-  }
-  PhidgetHandle m_handle;
-};
-const char* phidget_name(Phidget_DeviceClass cls)
-{
-  switch(cls)
-  {
-  case PHIDCLASS_ACCELEROMETER: return "PHIDCLASS_ACCELEROMETER";
-  case PHIDCLASS_ADVANCEDSERVO: return "PHIDCLASS_ADVANCEDSERVO";
-  case PHIDCLASS_ANALOG: return "PHIDCLASS_ANALOG";
-  case PHIDCLASS_BRIDGE: return "PHIDCLASS_BRIDGE";
-  case PHIDCLASS_ENCODER: return "PHIDCLASS_ENCODER";
-  case PHIDCLASS_FREQUENCYCOUNTER: return "PHIDCLASS_FREQUENCYCOUNTER";
-  case PHIDCLASS_GPS: return "PHIDCLASS_GPS";
-  case PHIDCLASS_HUB: return "PHIDCLASS_HUB";
-  case PHIDCLASS_INTERFACEKIT: return "PHIDCLASS_INTERFACEKIT";
-  case PHIDCLASS_IR : return "PHIDCLASS_IR";
-  case PHIDCLASS_LED: return "PHIDCLASS_LED";
-  case PHIDCLASS_MESHDONGLE: return "PHIDCLASS_MESHDONGLE";
-  case PHIDCLASS_MOTORCONTROL: return "PHIDCLASS_MOTORCONTROL";
-  case PHIDCLASS_PHSENSOR: return "PHIDCLASS_PHSENSOR";
-  case PHIDCLASS_RFID: return "PHIDCLASS_RFID";
-  case PHIDCLASS_SERVO: return "PHIDCLASS_SERVO";
-  case PHIDCLASS_SPATIAL: return "PHIDCLASS_SPATIAL";
-  case PHIDCLASS_STEPPER: return "PHIDCLASS_STEPPER";
-  case PHIDCLASS_TEMPERATURESENSOR: return "PHIDCLASS_TEMPERATURESENSOR";
-  case PHIDCLASS_TEXTLCD: return "PHIDCLASS_TEXTLCD";
-  case PHIDCLASS_VINT: return "PHIDCLASS_VINT";
-  case PHIDCLASS_GENERIC: return "PHIDCLASS_GENERIC";
-  case PHIDCLASS_FIRMWAREUPGRADE: return "PHIDCLASS_FIRMWAREUPGRADE";
-  case PHIDCLASS_DICTIONARY: return "PHIDCLASS_DICTIONARY";
-  case PHIDCLASS_NOTHING: return "PHIDCLASS_NOTHING";
-  }
-  return "none";
+  return nullptr;
 }
-
-const char* phidget_name(Phidget_ChannelClass cls)
-{
-  switch(cls)
-  {
-  case PHIDCHCLASS_NOTHING: return "PHIDCHCLASS_NOTHING";
-  case PHIDCHCLASS_ACCELEROMETER: return "PHIDCHCLASS_ACCELEROMETER";
-  case PHIDCHCLASS_CURRENTINPUT: return "PHIDCHCLASS_CURRENTINPUT";
-  case PHIDCHCLASS_DATAADAPTER: return "PHIDCHCLASS_DATAADAPTER";
-  case PHIDCHCLASS_DCMOTOR: return "PHIDCHCLASS_DCMOTOR";
-  case PHIDCHCLASS_DIGITALINPUT: return "PHIDCHCLASS_DIGITALINPUT";
-  case PHIDCHCLASS_DIGITALOUTPUT: return "PHIDCHCLASS_DIGITALOUTPUT";
-  case PHIDCHCLASS_DISTANCESENSOR: return "PHIDCHCLASS_DISTANCESENSOR";
-  case PHIDCHCLASS_ENCODER: return "PHIDCHCLASS_ENCODER";
-  case PHIDCHCLASS_FREQUENCYCOUNTER: return "PHIDCHCLASS_FREQUENCYCOUNTER";
-  case PHIDCHCLASS_GPS: return "PHIDCHCLASS_GPS";
-  case PHIDCHCLASS_LCD: return "PHIDCHCLASS_LCD";
-  case PHIDCHCLASS_GYROSCOPE: return "PHIDCHCLASS_GYROSCOPE";
-  case PHIDCHCLASS_HUB: return "PHIDCHCLASS_HUB";
-  case PHIDCHCLASS_CAPACITIVETOUCH: return "PHIDCHCLASS_CAPACITIVETOUCH";
-  case PHIDCHCLASS_HUMIDITYSENSOR: return "PHIDCHCLASS_HUMIDITYSENSOR";
-  case PHIDCHCLASS_IR: return "PHIDCHCLASS_IR";
-  case PHIDCHCLASS_LIGHTSENSOR: return "PHIDCHCLASS_LIGHTSENSOR";
-  case PHIDCHCLASS_MAGNETOMETER: return "PHIDCHCLASS_MAGNETOMETER";
-  case PHIDCHCLASS_MESHDONGLE: return "PHIDCHCLASS_MESHDONGLE";
-  case PHIDCHCLASS_PHSENSOR: return "PHIDCHCLASS_PHSENSOR";
-  case PHIDCHCLASS_POWERGUARD: return "PHIDCHCLASS_POWERGUARD";
-  case PHIDCHCLASS_PRESSURESENSOR: return "PHIDCHCLASS_PRESSURESENSOR";
-  case PHIDCHCLASS_RCSERVO: return "PHIDCHCLASS_RCSERVO";
-  case PHIDCHCLASS_RESISTANCEINPUT: return "PHIDCHCLASS_RESISTANCEINPUT";
-  case PHIDCHCLASS_RFID: return "PHIDCHCLASS_RFID";
-  case PHIDCHCLASS_SOUNDSENSOR: return "PHIDCHCLASS_SOUNDSENSOR";
-  case PHIDCHCLASS_SPATIAL: return "PHIDCHCLASS_SPATIAL";
-  case PHIDCHCLASS_STEPPER: return "PHIDCHCLASS_STEPPER";
-  case PHIDCHCLASS_TEMPERATURESENSOR: return "PHIDCHCLASS_TEMPERATURESENSOR";
-  case PHIDCHCLASS_VOLTAGEINPUT: return "PHIDCHCLASS_VOLTAGEINPUT";
-  case PHIDCHCLASS_VOLTAGEOUTPUT: return "PHIDCHCLASS_VOLTAGEOUTPUT";
-  case PHIDCHCLASS_VOLTAGERATIOINPUT: return "PHIDCHCLASS_VOLTAGERATIOINPUT";
-  case PHIDCHCLASS_FIRMWAREUPGRADE: return "PHIDCHCLASS_FIRMWAREUPGRADE";
-  case PHIDCHCLASS_GENERIC: return "PHIDCHCLASS_GENERIC";
-  case PHIDCHCLASS_MOTORPOSITIONCONTROLLER: return "PHIDCHCLASS_MOTORPOSITIONCONTROLLER";
-  case PHIDCHCLASS_BLDCMOTOR: return "PHIDCHCLASS_BLDCMOTOR";
-  case PHIDCHCLASS_DICTIONARY: return "PHIDCHCLASS_DICTIONARY";
-  }
-  return "none";
-}
-
-template<typename Impl>
-class phidget_generic_parameter : public ossia::net::parameter_base
-{
-  PhidgetHandle m_phidget{};
-  ossia::domain m_domain;
-  //ossia::value m_value, m_previousValue;
-  std::mutex m_valueMutex;
-
-  auto get_phidget() const
-  {
-    return reinterpret_cast<decltype(Impl::phidget)>(m_phidget);
-  }
-  auto get_impl() const
-  {
-    return Impl{get_phidget()};
-  }
-
-public:
-  phidget_generic_parameter(
-      PhidgetHandle p, net::node_base& par)
-    : ossia::net::parameter_base{par}
-    , m_phidget{p}
-  {/*
-    Phidget_openWaitForAttachment(m_phidget, 1000);
-    m_domain = get_impl().get_domain();
-    Phidget_close(m_phidget);
-    */
-    //m_value = value();
-  }
-
-  void on_first_callback_added() override
-  {
-    get_impl().enable_callbacks(*this);
-  }
-  void on_removing_last_callback() override
-  {
-    get_impl().disable_callbacks();
-  }
-
-  ~phidget_generic_parameter()
-  {
-    Phidget_close(m_phidget);
-  }
-
-  void pull_value() override
-  {
-
-  }
-
-  ossia::value value() const override
-  {
-    return get_impl().get_value();
-  }
-
-  net::parameter_base& push_value(const ossia::value&) override
-  {
-    return *this;
-  }
-
-  net::parameter_base& push_value(ossia::value&&) override
-  {
-    return *this;
-  }
-
-  net::parameter_base& push_value() override
-  {
-    return *this;
-  }
-
-  net::parameter_base& set_value(const ossia::value& val) override
-  {
-    if (!val.valid())
-      return *this;
-
-    get_impl().set_value(ossia::convert<decltype(Impl{get_phidget()}.get_value())>(val));
-    send(val);
-    return *this;
-  }
-
-  net::parameter_base& set_value(ossia::value&& v) override
-  {
-    return set_value(v);
-  }
-
-  val_type get_value_type() const override
-  {
-    return ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum;
-  }
-
-  net::parameter_base& set_value_type(val_type) override
-  {
-    return *this;
-  }
-
-  access_mode get_access() const override
-  {
-    return {};
-  }
-
-  net::parameter_base& set_access(access_mode) override
-  {
-    return *this;
-  }
-
-  const domain& get_domain() const override
-  {
-    return m_domain;
-  }
-
-  net::parameter_base& set_domain(const domain&) override
-  {
-    return *this;
-  }
-
-  bounding_mode get_bounding() const override
-  {
-    return {};
-  }
-
-  net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
-};
-
-
-class phidget_open_parameter : public ossia::net::parameter_base
-{
-  PhidgetHandle m_phidget{};
-  bool m_open{false};
-
-public:
-  phidget_open_parameter(
-      PhidgetHandle p, net::node_base& par)
-    : ossia::net::parameter_base{par}
-    , m_phidget{p}
-  {
-  }
-
-  ~phidget_open_parameter() override
-  {
-  }
-
-  void pull_value() override
-  {
-
-  }
-
-  ossia::value value() const override
-  {
-    return m_open;
-  }
-
-  net::parameter_base& push_value(const ossia::value&) override
-  {
-    return *this;
-  }
-
-  net::parameter_base& push_value(ossia::value&&) override
-  {
-    return *this;
-  }
-
-  net::parameter_base& push_value() override
-  {
-    return *this;
-  }
-
-  net::parameter_base& set_value(const ossia::value& val) override
-  {
-    if (!val.valid())
-      return *this;
-
-    auto res = ossia::convert<bool>(val);
-    if(res != value())
-    {
-      if(res)
-      {
-        Phidget_openWaitForAttachment(m_phidget, 1000);
-      }
-      else
-      {
-        Phidget_close(m_phidget);
-      }
-      send(res);
-    }
-    return *this;
-  }
-
-  net::parameter_base& set_value(ossia::value&& v) override
-  {
-    return set_value(v);
-  }
-
-  val_type get_value_type() const override
-  {
-    return ossia::val_type::BOOL;
-  }
-
-  net::parameter_base& set_value_type(val_type) override
-  {
-    return *this;
-  }
-
-  access_mode get_access() const override
-  {
-    return {};
-  }
-
-  net::parameter_base& set_access(access_mode) override
-  {
-    return *this;
-  }
-
-  const domain& get_domain() const override
-  {
-    static const domain d;
-    return d;
-  }
-
-  net::parameter_base& set_domain(const domain&) override
-  {
-    return *this;
-  }
-
-  bounding_mode get_bounding() const override
-  {
-    return {};
-  }
-
-  net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
-};
-
-template <typename Impl, typename Parent>
-auto make_parameter(Parent& parent)
-{
-  return std::make_unique< phidget_generic_parameter<Impl> >(parent.phidget(), parent);
-}
-
-class phidget_rate_node : public ossia::net::generic_node
-{
-public:
-  template<typename Desc>
-  struct Parameter
-  {
-    typename Desc::handle_type phidget;
-
-    int get_value()
-    {
-      uint32_t val;
-      Desc::Get(phidget, &val);
-      return val;
-    }
-
-    void set_value(int val)
-    {
-      Desc::Set(phidget, val);
-    }
-
-    ossia::domain get_domain()
-    {
-      uint32_t min{}, max{};
-      Desc::Min(phidget, &min);
-      Desc::Max(phidget, &max);
-      return ossia::make_domain((int)min, (int)max);
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-    }
-
-    void disable_callbacks()
-    {
-    }
-  };
-
-  template<typename Desc>
-  phidget_rate_node(Desc desc, PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    generic_node{"rate", dev, parent}
-  {
-    m_parameter = std::make_unique< phidget_generic_parameter<Parameter<Desc>> >(hdl, *this);
-  }
-};
-
-class phidget_open_node : public ossia::net::generic_node
-{
-public:
-  phidget_open_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    generic_node{"open", dev, parent}
-  {
-    m_parameter = std::make_unique< phidget_open_parameter >(hdl, *this);
-  }
-};
-
-
-class phidget_voltage_ratio_node : public ossia::phidget_node
-{
-public:
-  struct Parameter
-  {
-    PhidgetVoltageRatioInputHandle phidget;
-
-    float get_value()
-    {
-      double val = 0;
-      PhidgetVoltageRatioInput_getVoltageRatio(phidget, &val);
-      return val;
-    }
-
-    void set_value(float)
-    {
-
-    }
-
-    ossia::domain get_domain()
-    {
-      double min, max;
-      PhidgetVoltageRatioInput_getMinVoltageRatio(phidget, &min);
-      PhidgetVoltageRatioInput_getMaxVoltageRatio(phidget, &max);
-      return ossia::make_domain(min, max);
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-      PhidgetVoltageRatioInput_setOnVoltageRatioChangeHandler(
-            phidget,
-            [] (PhidgetVoltageRatioInputHandle ch, void *ctx, const double ratio) {
-        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-        p.set_value(ratio);
-      }, &p);
-    }
-
-    void disable_callbacks()
-    {
-      PhidgetVoltageRatioInput_setOnVoltageRatioChangeHandler(phidget, nullptr, nullptr);
-    }
-  };
-
-  struct rate_desc
-  {
-    using handle_type = PhidgetVoltageRatioInputHandle;
-    static const constexpr auto Get = PhidgetVoltageRatioInput_getDataInterval;
-    static const constexpr auto Set = PhidgetVoltageRatioInput_setDataInterval;
-    static const constexpr auto Min = PhidgetVoltageRatioInput_getMinDataInterval;
-    static const constexpr auto Max = PhidgetVoltageRatioInput_getMaxDataInterval;
-  };
-
-  phidget_voltage_ratio_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-    m_parameter = make_parameter<Parameter>(*this);
-  }
-
-  void init()
-  {
-    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
-    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
-  }
-};
-
-
-class phidget_voltage_input_node : public ossia::phidget_node
-{
-public:
-  struct Parameter
-  {
-    PhidgetVoltageInputHandle phidget;
-
-    float get_value()
-    {
-      double val = 0;
-      PhidgetVoltageInput_getVoltage(phidget, &val);
-      return val;
-    }
-
-    void set_value(float)
-    {
-
-    }
-
-    ossia::domain get_domain()
-    {
-      double min, max;
-      PhidgetVoltageInput_getMinVoltage(phidget, &min);
-      PhidgetVoltageInput_getMaxVoltage(phidget, &max);
-      return ossia::make_domain(min, max);
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-      PhidgetVoltageInput_setOnVoltageChangeHandler(
-            phidget,
-            [] (PhidgetVoltageInputHandle ch, void *ctx, const double ratio) {
-        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-        p.set_value(ratio);
-      }, &p);
-    }
-
-    void disable_callbacks()
-    {
-      PhidgetVoltageInput_setOnVoltageChangeHandler(phidget, nullptr, nullptr);
-    }
-  };
-
-  struct rate_desc
-  {
-    using handle_type = PhidgetVoltageInputHandle;
-    static const constexpr auto Get = PhidgetVoltageInput_getDataInterval;
-    static const constexpr auto Set = PhidgetVoltageInput_setDataInterval;
-    static const constexpr auto Min = PhidgetVoltageInput_getMinDataInterval;
-    static const constexpr auto Max = PhidgetVoltageInput_getMaxDataInterval;
-  };
-
-  phidget_voltage_input_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-    m_parameter = make_parameter<Parameter>(*this);
-  }
-
-  void init()
-  {
-    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
-    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
-  }
-};
-
-class phidget_digital_input_node : public ossia::phidget_node
-{
-public:
-  struct Parameter
-  {
-    PhidgetDigitalInputHandle phidget;
-
-    bool get_value()
-    {
-      int val = 0;
-      PhidgetDigitalInput_getState(phidget, &val);
-      return val == 1;
-    }
-
-    void set_value(bool)
-    {
-
-    }
-
-    ossia::domain get_domain()
-    {
-      return {};
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-      PhidgetDigitalInput_setOnStateChangeHandler(
-            phidget,
-            [] (PhidgetDigitalInputHandle ch, void *ctx, const int ratio) {
-        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-        p.set_value(ratio);
-      }, &p);
-    }
-
-    void disable_callbacks()
-    {
-      PhidgetDigitalInput_setOnStateChangeHandler(phidget, nullptr, nullptr);
-    }
-  };
-
-  phidget_digital_input_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-    m_parameter = make_parameter<Parameter>(*this);
-  }
-
-  void init()
-  {
-    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
-  }
-};
-
-class phidget_digital_output_node : public ossia::phidget_node
-{
-public:
-  struct Parameter
-  {
-    PhidgetDigitalOutputHandle phidget;
-
-    bool get_value()
-    {
-      int val = 0;
-      PhidgetDigitalOutput_getState(phidget, &val);
-      return val == 1;
-    }
-
-    void set_value(bool v)
-    {
-      PhidgetDigitalOutput_setState(phidget, (int) v);
-    }
-
-    ossia::domain get_domain()
-    {
-      return {};
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-    }
-
-    void disable_callbacks()
-    {
-    }
-  };
-
-  phidget_digital_output_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-    m_parameter = make_parameter<Parameter>(*this);
-  }
-
-  void init()
-  {
-    add_child(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
-  }
-};
-
-class phidget_hub_node : public ossia::phidget_node
-{
-public:
-  phidget_hub_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-  }
-};
-
-class phidget_accelerometer_node : public ossia::phidget_node
-{
-public:
-  struct Parameter
-  {
-    PhidgetAccelerometerHandle phidget;
-
-    ossia::vec3f get_value()
-    {
-      double val[3]{};
-      PhidgetAccelerometer_getAcceleration(phidget, &val);
-      return ossia::make_vec(val[0], val[1], val[2]);
-    }
-
-    void set_value(ossia::vec3f)
-    {
-
-    }
-
-    ossia::domain get_domain()
-    {
-      double min[3];
-      double max[3];
-      PhidgetAccelerometer_getMinAcceleration(phidget, &min);
-      PhidgetAccelerometer_getMaxAcceleration(phidget, &max);
-      return ossia::make_domain(
-            ossia::make_vec(min[0], min[1], min[2]),
-          ossia::make_vec(max[0], max[1], max[2]));
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-      PhidgetAccelerometer_setOnAccelerationChangeHandler(
-            phidget,
-            [] (PhidgetAccelerometerHandle ch, void *ctx, const double val[3], double ts) {
-        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-        p.set_value(ossia::make_vec(val[0], val[1], val[2]));
-      }, &p);
-    }
-
-    void disable_callbacks()
-    {
-      PhidgetAccelerometer_setOnAccelerationChangeHandler(phidget, nullptr, nullptr);
-    }
-  };
-
-  struct rate_desc
-  {
-    using handle_type = PhidgetAccelerometerHandle;
-    static const constexpr auto Get = PhidgetAccelerometer_getDataInterval;
-    static const constexpr auto Set = PhidgetAccelerometer_setDataInterval;
-    static const constexpr auto Min = PhidgetAccelerometer_getMinDataInterval;
-    static const constexpr auto Max = PhidgetAccelerometer_getMaxDataInterval;
-  };
-
-  phidget_accelerometer_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-    m_parameter = make_parameter<Parameter>(*this);
-  }
-
-  void init()
-  {
-    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
-  }
-};
-
-class phidget_gyroscope_node : public ossia::phidget_node
-{
-public:
-  struct Parameter
-  {
-    PhidgetGyroscopeHandle phidget;
-
-    std::vector<ossia::value> get_value()
-    {
-      int count = 0;
-
-      double val[3];
-      PhidgetGyroscope_getAngularRate(phidget, &val);
-      std::vector<ossia::value> v(count);
-      for(int i = 0; i < count; i++)
-      {
-        v[i] = (float)val[i];
-      }
-      return v;
-    }
-
-    void set_value(std::vector<ossia::value> )
-    {
-
-    }
-
-    ossia::domain get_domain()
-    {
-      int count = 0;
-      PhidgetGyroscope_getAxisCount(phidget, &count);
-
-      double min[3];
-      double max[3];
-
-      PhidgetGyroscope_getMinAngularRate(phidget, &min);
-      PhidgetGyroscope_getMaxAngularRate(phidget, &max);
-
-      std::vector<ossia::value> min_v(count), max_v(count);
-      for(int i = 0; i < 3; i++)
-      {
-        min_v[i] = (float)min[i];
-        max_v[i] = (float)max[i];
-      }
-      return ossia::make_domain(min_v, max_v);
-    }
-
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-      PhidgetGyroscope_setOnAngularRateUpdateHandler(
-            phidget,
-            [] (PhidgetGyroscopeHandle ch, void *ctx, const double val[3], double ts) {
-        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-        p.set_value(ossia::make_vec(val[0], val[1], val[2]));
-      }, &p);
-    }
-
-    void disable_callbacks()
-    {
-      PhidgetGyroscope_setOnAngularRateUpdateHandler(phidget, nullptr, nullptr);
-    }
-  };
-
-  struct rate_desc
-  {
-    using handle_type = PhidgetGyroscopeHandle;
-    static const constexpr auto Get = PhidgetGyroscope_getDataInterval;
-    static const constexpr auto Set = PhidgetGyroscope_setDataInterval;
-    static const constexpr auto Min = PhidgetGyroscope_getMinDataInterval;
-    static const constexpr auto Max = PhidgetGyroscope_getMaxDataInterval;
-  };
-
-  phidget_gyroscope_node(PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent):
-    phidget_node{hdl, dev, parent}
-  {
-    m_parameter = make_parameter<Parameter>(*this);
-  }
-
-  void init()
-  {
-    add_child(std::make_unique< ossia::phidget_rate_node>(rate_desc{}, m_hdl, m_device, *this));
-  }
-};
-
 
 phidget_protocol::phidget_protocol()
 {
@@ -798,6 +30,8 @@ phidget_protocol::phidget_protocol()
     m_functionQueue.enqueue([=] {
       if(m_phidgetMap.find(phid) != m_phidgetMap.end())
         return;
+      Phidget_DeviceClass dcls;
+      Phidget_getDeviceClass(phid, &dcls);
 
       Phidget_ChannelClass cls;
       Phidget_getChannelClass(phid, &cls);
@@ -807,71 +41,56 @@ phidget_protocol::phidget_protocol()
 
       switch(cls)
       {
-      case PHIDCHCLASS_ACCELEROMETER:
-      {
-        auto node = new phidget_accelerometer_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        node->init();
-        phid_node = node;
-        break;
-      }
-      case PHIDCHCLASS_GYROSCOPE:
-      {
-        auto node = new phidget_gyroscope_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        node->init();
-        phid_node = node;
-        break;
-      }
-      case PHIDCHCLASS_VOLTAGEINPUT:
-      {
-        auto node = new phidget_voltage_input_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        node->init();
-        phid_node = node;
-        break;
-      }  case PHIDCHCLASS_DIGITALINPUT:
-      {
-        auto node = new phidget_digital_input_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        node->init();
-        phid_node = node;
-        break;
-      }
-      case PHIDCHCLASS_DIGITALOUTPUT:
-      {
-        auto node = new phidget_digital_output_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        node->init();
-        phid_node = node;
-        break;
-      }
-      case PHIDCHCLASS_HUB:
-      {
-        auto node = new phidget_hub_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        phid_node = node;
-        break;
-      }
-      case PHIDCHCLASS_VOLTAGERATIOINPUT:
-      {
-        auto node = new phidget_voltage_ratio_node{phid, *m_dev, *par_node};
-        par_node->add_child(std::unique_ptr<phidget_node>(node));
-        node->init();
-        phid_node = node;
-        break;
-      }
+        case PHIDCHCLASS_ACCELEROMETER:
+          phid_node = make<phidget_accelerometer_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_GYROSCOPE:
+          phid_node = make<phidget_gyroscope_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_VOLTAGEINPUT:
+          phid_node = make<phidget_voltage_input_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_DIGITALINPUT:
+          phid_node = make<phidget_digital_input_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_DIGITALOUTPUT:
+          phid_node = make<phidget_digital_output_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_HUB:
+          phid_node = make<phidget_hub_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_VOLTAGERATIOINPUT:
+          phid_node = make<phidget_voltage_ratio_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_MAGNETOMETER:
+          phid_node = make<phidget_magnetometer_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_CAPACITIVETOUCH:
+          phid_node = make<phidget_capacitive_touch_input_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_DISTANCESENSOR:
+          phid_node = make<phidget_distance_sensor_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_HUMIDITYSENSOR:
+          phid_node = make<phidget_humidity_sensor_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_PRESSURESENSOR:
+          phid_node = make<phidget_pressure_sensor_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_RESISTANCEINPUT:
+          phid_node = make<phidget_resistance_input_node>(phid, *m_dev, *par_node);
+          break;
+        case PHIDCHCLASS_LIGHTSENSOR:
+          phid_node = make<phidget_light_sensor_node>(phid, *m_dev, *par_node);
+          break;
+        default:
+          break;
       }
 
       if(!phid_node)
         return;
 
       m_phidgetMap.insert({phid, phid_node});
-
-      //phid_node->set_parameter(
-      //    std::make_unique<phidget_parameter>(phid, *this, *phid_node));
-
-
     });
 
     if (m_commandCb)
@@ -880,22 +99,15 @@ phidget_protocol::phidget_protocol()
 
   onDeviceDestroyed = [=](PhidgetHandle phid) {
     m_functionQueue.enqueue([=] {
-      auto& root = m_dev->get_root_node();
-      /*
-      for (auto& cld : root.children_copy())
+      auto it = m_phidgetMap.find(phid);
+      if(it != m_phidgetMap.end())
       {
-        auto phid_node = dynamic_cast<phidget_node*>(cld);
-        if (phid_node)
+        if(auto par = it->second->get_parent())
         {
-          auto addr = dynamic_cast<phidget_parameter*>(phid_node->get_parameter());
-          if (addr && addr->phidget() == phid)
-          {
-            root.remove_child(*phid_node);
-            break;
-          }
+          par->remove_child(*it->second);
         }
+        m_phidgetMap.erase(it);
       }
-        */
     });
 
     if (m_commandCb)
@@ -973,19 +185,160 @@ bool phidget_protocol::push_raw(const net::full_parameter_data &)
   return false;
 }
 
-ossia::net::node_base* phidget_protocol::get_parent(PhidgetHandle phid)
+auto debug_handle(phidget_handle_t phid, int h)
 {
-  PhidgetHandle parent{};
-  auto err = Phidget_getParent(phid, &parent);
-
-  int x = 0;
-  auto hub_err = Phidget_getIsHubPortDevice(phid, &x);
-  std::cerr << "hub port : " << x << " - err: " << hub_err << std::endl;
-
-  if(err == EPHIDGET_OK)
+  // Phidget_openWaitForAttachment(phid, 0);
+  std::cerr << std::endl;
+  auto debug_param = [&] (auto param, const char* name)
   {
+    int x = 0;
+    auto hub_err = param(phid, &x);
+    for(int i = 0; i < 2 * h; i++) std::cerr << ' ';
+    std::cerr << name << " : " << x;
+    if(hub_err != EPHIDGET_OK)
+      std::cerr << " - err: " << hub_err;
+    std::cerr << std::endl;
+    return x;
+  };
+
+  {
+  }
+#define PHIDGET_DEBUG(p) debug_param(p, #p)
+
+  int chan;
+  Phidget_getIsChannel(phid, &chan);
+  if(chan)
+  {
+    for(int i = 0; i < 2 * h; i++) std::cerr << ' ';
+    std::cerr << (int64_t) phid.phid << " => "
+              << phid.get_device_classname() << " "
+              << phid.get_channel_classname()  << " "
+              << phid.get_channel_subclassname()  << std::endl;
+
+    PHIDGET_DEBUG(Phidget_getChannel);
+  }
+  else
+  {
+    for(int i = 0; i < 2 * h; i++) std::cerr << ' ';
+    Phidget_DeviceClass dc;
+    Phidget_getDeviceClass(phid, &dc);
+    std::cerr << (int64_t) phid.phid << " => "
+              << phid.get_device_classname()  << std::endl;
+  }
+
+  {
+    PhidgetHandle hub;
+    if(Phidget_getHub(phid, &hub) == EPHIDGET_OK)
+    {
+      for(int i = 0; i < 2 * h; i++) std::cerr << ' ';
+      std::cerr << "Phidget_getHub : " << (int64_t)hub << std::endl;
+    }
+  }
+  {
+    Phidget_DeviceID hub;
+    if(Phidget_getDeviceID(phid, &hub) == EPHIDGET_OK)
+    {
+      for(int i = 0; i < 2 * h; i++) std::cerr << ' ';
+      std::cerr << "Phidget_getDeviceID : " << phid.get_device_id_name() << std::endl;
+    }
+  }
+  PHIDGET_DEBUG(Phidget_getAttached);
+  PHIDGET_DEBUG(Phidget_getIsHubPortDevice);
+  PHIDGET_DEBUG(Phidget_getHubPort);
+  PHIDGET_DEBUG(Phidget_getHubPortCount);
+  // Phidget_close(phid);
+}
+
+ossia::net::node_base* phidget_protocol::get_parent(phidget_handle_t phid)
+{
+  int k = 0;
+  debug_handle(phid, k++);
+  PhidgetHandle parent{};
+
+  std::vector<PhidgetHandle> parents;
+  auto err = Phidget_getParent(phid, &parent);
+  while(err == EPHIDGET_OK && parent)
+  {
+    debug_handle(parent, k++);
+    parents.push_back(parent);
+    err = Phidget_getParent(parent, &parent);
+  }
+  ossia::net::node_base* par_node = &m_dev->get_root_node();
+
+  std::vector<ossia::net::node_base*> current_ports;
+  for(auto it = parents.rbegin(); it != parents.rend(); ++it)
+  {
+    phidget_handle_t hdl = *it;
+    auto phid_it = m_phidgetMap.find(*it);
+    if(phid_it != m_phidgetMap.end())
+    {
+      par_node = phid_it->second;
+      current_ports.clear();
+      if(hdl.get_device_class() == PHIDCLASS_HUB)
+      {
+        for(auto n : par_node->children_copy())
+        {
+          current_ports.push_back(n);
+        }
+      }
+      continue;
+    }
+    if(hdl.get_device_class() == PHIDCLASS_HUB)
+    {
+      auto node = new ossia::phidget_node{hdl, *m_dev, *par_node};
+      m_phidgetMap.insert({hdl, node});
+      par_node->add_child(std::unique_ptr<ossia::net::node_base>(node));
+      par_node = node;
+
+      current_ports.clear();
+      for(int i = 0; i < hdl.get_hub_port_count(); i++)
+      {
+        auto port = new ossia::phidget_hub_port_node{hdl, i, *m_dev, *par_node};
+        current_ports.push_back(port);
+        par_node->add_child(std::unique_ptr<ossia::net::node_base>(port));
+      }
+    }
+    else if(hdl.get_device_class() == PHIDCLASS_VINT
+            && hdl.get_parent().get_device_class() == PHIDCLASS_HUB
+            && (hdl.get_device_id() == PHIDID_VOLTAGEINPUT_PORT
+             || hdl.get_device_id() == PHIDID_VOLTAGERATIOINPUT_PORT
+             || hdl.get_device_id() == PHIDID_DIGITALINPUT_PORT
+             || hdl.get_device_id() == PHIDID_DIGITALOUTPUT_PORT)
+            )
+    {
+      if(!current_ports.empty())
+      {
+        auto cur_idx = hdl.get_hub_port();
+        assert(cur_idx >= 0);
+        assert(cur_idx < current_ports.size());
+        par_node = current_ports[cur_idx];
+        current_ports.clear();
+      }
+    }
+    else
+    {
+      if(!current_ports.empty())
+      {
+        auto cur_idx = hdl.get_hub_port();
+        assert(cur_idx >= 0);
+        assert(cur_idx < current_ports.size());
+        par_node = current_ports[cur_idx];
+        current_ports.clear();
+      }
+
+      auto node = new ossia::phidget_node{hdl, *m_dev, *par_node};
+      m_phidgetMap.insert({hdl, node});
+      par_node->add_child(std::unique_ptr<ossia::net::node_base>(node));
+      par_node = node;
+    }
+
+  }
+  return par_node;
+
+/*
     if(parent)
     {
+      debug_handle(parent, k++);
       auto par_it = m_phidgetMap.find(parent);
       if(par_it == m_phidgetMap.end())
       {
@@ -997,6 +350,7 @@ ossia::net::node_base* phidget_protocol::get_parent(PhidgetHandle phid)
 
         while(err == EPHIDGET_OK && parent)
         {
+          debug_handle(parent, k++);
           par_it = m_phidgetMap.find(parent);
           if(par_it == m_phidgetMap.end())
           {
@@ -1011,25 +365,12 @@ ossia::net::node_base* phidget_protocol::get_parent(PhidgetHandle phid)
 
         // Choose the starting parent ossia node
         ossia::net::node_base* par_node = &m_dev->get_root_node();
-        if(par_it != m_phidgetMap.end())
+        if(parent && par_it != m_phidgetMap.end())
         {
           par_node = par_it->second;
         }
 
         // Create all child nodes
-        for(auto it = parents.rbegin(); it != parents.rend(); ++it)
-        {
-          auto node = new ossia::phidget_node{*it, *m_dev, *par_node};
-          m_phidgetMap.insert({*it, node});
-          par_node->add_child(std::unique_ptr<ossia::net::node_base>(node));
-          par_node = node;
-        }
-
-        /*
-        fmt::MemoryWriter wr;
-        ossia::net::debug_recursively(wr, m_dev->get_root_node());
-        std::cerr << wr.str() << std::endl;
-        */
         return par_node;
       }
       else
@@ -1037,8 +378,9 @@ ossia::net::node_base* phidget_protocol::get_parent(PhidgetHandle phid)
         return par_it->second;
       }
     }
+
   }
-  return &m_dev->get_root_node();
+  */
 }
 
 void phidget_protocol::open()
