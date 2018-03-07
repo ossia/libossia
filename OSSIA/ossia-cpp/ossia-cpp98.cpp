@@ -905,12 +905,12 @@ value node::fetch_value() const
   return {};
 }
 
-callback_index node::set_value_callback(value_callback c, void* context)
+callback_index node::set_value_callback(value_callback c, void* ctx)
 {
   if (m_addr)
   {
       callback_index idx;
-    //  (*idx.index) = m_addr->add_callback([=](const ossia::value& v) { c(context, v); });
+      idx.index->index = m_addr->add_callback([=](const ossia::value& v) { c(ctx, v); });
       return idx;
   }
   return {};
@@ -920,7 +920,7 @@ void node::remove_value_callback(callback_index id)
 {
   if (m_addr)
   {
-  //  m_addr->remove_callback(*id.index);
+  m_addr->remove_callback(id.index->index);
   }
 }
 

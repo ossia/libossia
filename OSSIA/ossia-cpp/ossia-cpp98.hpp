@@ -207,7 +207,7 @@ public:
   opp::value get_value() const;
   opp::value fetch_value() const;
 
-  callback_index set_value_callback(value_callback c, void* context);
+  callback_index set_value_callback(value_callback c, void* ctx);
   void remove_value_callback(callback_index id);
 
   node& set_min(opp::value min);
