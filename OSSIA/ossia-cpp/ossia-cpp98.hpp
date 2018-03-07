@@ -93,6 +93,19 @@ private:
 
 typedef void (*value_callback)(void*, const opp::value&);
 
+struct callback_index {
+    callback_index();
+    ~callback_index();
+    callback_index(const callback_index&);
+    callback_index& operator=(const callback_index&);
+
+  private:
+    friend class node;
+
+    struct impl;
+    impl* index;
+};
+
 class OSSIA_EXPORT node
 {
 public:
@@ -193,7 +206,9 @@ public:
   node& set_value(opp::value v);
   opp::value get_value() const;
   opp::value fetch_value() const;
-  void set_value_callback(value_callback c, void* context);
+
+  callback_index set_value_callback(value_callback c, void* context);
+  void remove_value_callback(callback_index id);
 
   node& set_min(opp::value min);
   opp::value get_min() const;
@@ -276,8 +291,11 @@ private:
 class OSSIA_EXPORT oscquery_server
 {
 public:
+  oscquery_server();
   oscquery_server(std::string name, int oscPort = 1234, int wsPort = 5678);
   ~oscquery_server();
+
+  void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
   node get_root_node() const;
 
 private:

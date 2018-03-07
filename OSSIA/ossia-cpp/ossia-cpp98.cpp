@@ -4,12 +4,18 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
 namespace opp
 {
+
+//**************************************************************//
+//                      callback_index                         //
+//*************************************************************//
+
 
 value::value() : m_val{new ossia::value}
 {
@@ -173,6 +179,45 @@ value& value::operator=(opp::value&& v)
 value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 {
 }
+
+//*************************************************************//
+//                      callback_index                         //
+//*************************************************************//
+
+struct callback_index::impl {
+  ossia::callback_container<ossia::value_callback>::iterator index;
+  impl operator=(const impl);
+};
+
+callback_index::impl callback_index::impl::operator=(const callback_index::impl other)
+  {
+    return other;
+  }
+
+callback_index::callback_index()
+  : index{new impl}
+{
+}
+
+callback_index::~callback_index()
+{
+   delete index;
+}
+
+callback_index::callback_index(const callback_index& other)
+  : index{new impl{*other.index}}
+{
+}
+
+callback_index& callback_index::operator=(const callback_index& other)
+{
+  *index = *other.index;
+  return *this;
+}
+
+//*************************************************************//
+//                          node                               //
+//*************************************************************//
 
 node::node() : m_node{}, m_addr{}
 {
@@ -860,11 +905,22 @@ value node::fetch_value() const
   return {};
 }
 
-void node::set_value_callback(value_callback c, void* context)
+callback_index node::set_value_callback(value_callback c, void* context)
 {
   if (m_addr)
   {
-    m_addr->add_callback([=](const ossia::value& v) { c(context, v); });
+      callback_index idx;
+    //  (*idx.index) = m_addr->add_callback([=](const ossia::value& v) { c(context, v); });
+      return idx;
+  }
+  return {};
+}
+
+void node::remove_value_callback(callback_index id)
+{
+  if (m_addr)
+  {
+  //  m_addr->remove_callback(*id.index);
   }
 }
 
@@ -1308,6 +1364,11 @@ void node::cleanup_parameter(const ossia::net::parameter_base&)
   m_addr = nullptr;
 }
 
+oscquery_server::oscquery_server()
+{
+  m_dev = new ossia::net::generic_device();
+}
+
 oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
 {
   m_dev = new ossia::net::generic_device(
@@ -1319,6 +1380,15 @@ oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
 oscquery_server::~oscquery_server()
 {
   delete m_dev;
+}
+
+void oscquery_server::setup(std::string name, int oscPort, int wsPort)
+{
+  auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
+  m_dev = new ossia::net::generic_device{std::move(local_proto_ptr),
+          name};
+  local_proto_ptr->expose_to (std::make_unique<ossia::oscquery::oscquery_server_protocol> (
+                             oscPort, wsPort));
 }
 
 node oscquery_server::get_root_node() const
