@@ -185,7 +185,7 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 //*************************************************************//
 
 struct callback_index::impl {
-  ossia::callback_container<ossia::value_callback>::iterator index;
+  ossia::callback_container<ossia::value_callback>::iterator iterator;
 };
 
 callback_index::callback_index()
@@ -904,7 +904,7 @@ callback_index node::set_value_callback(value_callback c, void* ctx)
   if (m_addr)
   {
       callback_index idx;
-      idx.index->index = m_addr->add_callback([=](const ossia::value& v) { c(ctx, v); });
+      idx.index->iterator = m_addr->add_callback([=](const ossia::value& v) { c(ctx, v); });
       return idx;
   }
   return {};
@@ -914,7 +914,7 @@ void node::remove_value_callback(callback_index id)
 {
   if (m_addr)
   {
-  m_addr->remove_callback(id.index->index);
+  m_addr->remove_callback(id.index->iterator);
   }
 }
 
