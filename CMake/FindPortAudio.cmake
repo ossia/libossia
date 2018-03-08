@@ -14,50 +14,63 @@
 #
 
 if(NOT PORTAUDIO2_FOUND OR "${PORTAUDIO_INCLUDE_DIRS}" MATCHES "")
-    find_path(PORTAUDIO_INCLUDE_DIRS
-        NAMES
-        portaudio.h
-        PATHS
-        /usr/include
-        /usr/local/include
-        /opt/local/include
-        /sw/include
-        c:/portaudio/include
-        "${PORTAUDIO_INCLUDE_DIR_HINT}"
-        )
+  find_path(PORTAUDIO_INCLUDE_DIRS
+    NAMES
+      portaudio.h
+    PATHS
+      /usr/include
+      /usr/local/include
+      /opt/local/include
+      /sw/include
+      c:/portaudio/include
+      "${PORTAUDIO_INCLUDE_DIR_HINT}"
+  )
 
+  if(PORTAUDIO_ONLY_DYNAMIC)
     find_library(PORTAUDIO_LIBRARIES
-        NAMES
-        portaudio_static_x64.lib libportaudio_static.a libportaudio.a portaudio
-        PATHS
+      NAMES
+        portaudio
+      PATHS
         /opt/portaudio/lib
         /usr/lib
         /usr/local/lib
         /opt/local/lib
-        /sw/lib
         c:/portaudio/lib
         "${PORTAUDIO_LIB_DIR_HINT}"
-        )
+    )
+  else()
+    find_library(PORTAUDIO_LIBRARIES
+      NAMES
+        portaudio_static_x64.lib libportaudio_static.a libportaudio.a portaudio
+      PATHS
+        /opt/portaudio/lib
+        /usr/lib
+        /usr/local/lib
+        /opt/local/lib
+        c:/portaudio/lib
+        "${PORTAUDIO_LIB_DIR_HINT}"
+    )
+  endif()
 
-    if(${PORTAUDIO_LIBRARIES} MATCHES ".*\.a")
-        add_library(PortAudio STATIC IMPORTED)
-    elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*portaudio_static_x64\.lib")
-        add_library(PortAudio STATIC IMPORTED)
-    elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*{lib,so,dylib,dll}")
-        add_library(PortAudio SHARED IMPORTED)
-    else()
-        return()
-    endif()
+  if(${PORTAUDIO_LIBRARIES} MATCHES ".*\.a")
+    add_library(PortAudio STATIC IMPORTED)
+  elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*portaudio_static_x64\.lib")
+    add_library(PortAudio STATIC IMPORTED)
+  elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*{lib,so,dylib,dll}")
+    add_library(PortAudio SHARED IMPORTED)
+  else()
+    return()
+  endif()
 
-    set_target_properties(PortAudio
-        PROPERTIES
-          IMPORTED_LOCATION ${PORTAUDIO_LIBRARIES}
-          INTERFACE_INCLUDE_DIRECTORIES ${PORTAUDIO_INCLUDE_DIRS})
-    set(PORTAUDIO_VERSION 19)
+  set_target_properties(PortAudio
+    PROPERTIES
+    IMPORTED_LOCATION ${PORTAUDIO_LIBRARIES}
+    INTERFACE_INCLUDE_DIRECTORIES ${PORTAUDIO_INCLUDE_DIRS})
+  set(PORTAUDIO_VERSION 19)
 endif ()
 
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-    Portaudio DEFAULT_MSG
-    PORTAUDIO_LIBRARIES PORTAUDIO_INCLUDE_DIRS)
+  Portaudio DEFAULT_MSG
+  PORTAUDIO_LIBRARIES PORTAUDIO_INCLUDE_DIRS)
