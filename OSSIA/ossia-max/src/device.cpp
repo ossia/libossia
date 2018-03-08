@@ -11,6 +11,7 @@
 #include "ossia/network/osc/osc.hpp"
 #include "ossia/network/oscquery/oscquery_server.hpp"
 #include "ossia/network/minuit/minuit.hpp"
+#include <ossia/network/local/local.hpp>
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
@@ -214,6 +215,27 @@ void device::unregister_children()
     }
   }
 }
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+static void* phidgets_poll_clock = {};
+static bool phidgets_exposed = false;
+static void update_phidgets(void* x)
+{
+    auto dev = reinterpret_cast<device*>(x);
+    ossia::net::device_base* d = dev->m_device;
+    if(auto prot = dynamic_cast<ossia::net::multiplex_protocol*>(&d->get_protocol()))
+    {
+        for(auto& e : prot->get_protocols())
+        {
+            if(auto ph = dynamic_cast<ossia::phidget_protocol*>(e.get()))
+            {
+                ph->run_commands();
+            }
+        }
+    }
+
+    clock_delay(phidgets_poll_clock, 2000);
+}
+#endif
 
 void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
@@ -348,18 +370,22 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
     else if(protocol == "Phidgets")
     {
-        static auto prot = new ossia::phidget_protocol();
-        multiplex.expose_to(std::unique_ptr<ossia::net::protocol_base>(prot));
-        std::vector<t_atom> a;
-        a.resize(1);
-        A_SETSYM(&a[0], gensym("phidgets"));
-        x->m_protocols.push_back(a);
+        if(!phidgets_exposed)
+        {
+            multiplex.expose_to(std::make_unique<ossia::phidget_protocol>());
+            std::vector<t_atom> a;
+            a.resize(1);
+            A_SETSYM(&a[0], gensym("phidgets"));
+            x->m_protocols.push_back(a);
 
-        static void* clk;
-        clk = clock_new(x, [] (void* x) {
-            prot->run_commands();
-            clock_delay(clk, 1000);
-        });
+            phidgets_poll_clock = clock_new(x, (method)update_phidgets);
+
+            clock_delay(phidgets_poll_clock, 1000);
+        }
+        else
+        {
+            error("Only a single Phidget device can be active at a given time");
+        }
     }
 #endif
     else
@@ -420,6 +446,14 @@ void device::stop_expose(device*x, int index)
 
   if ( index < x->m_protocols.size() && index < protos.size() )
   {
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+      if(dynamic_cast<ossia::phidget_protocol*>(protos[index].get()))
+      {
+          clock_unset(phidgets_poll_clock);
+          clock_free((t_object*)phidgets_poll_clock);
+          phidgets_exposed = false;
+      }
+#endif
     multiplex.stop_expose_to(*protos[index]);
     x->m_protocols.erase(x->m_protocols.begin() + index);
   }

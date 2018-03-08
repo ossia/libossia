@@ -530,7 +530,7 @@ void client::update(client* x)
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_matchers.emplace_back(&x->m_device->get_root_node(), (object_base*)nullptr);
+    x->m_matchers.emplace_back(std::make_shared<t_matcher>(&x->m_device->get_root_node(), (object_base*)nullptr));
 
     client::register_children(x);
   }

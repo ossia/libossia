@@ -164,7 +164,7 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
   return 0;
 }
 
-bool parameter::register_node(const std::vector<t_matcher>& nodes)
+bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
 {
   bool res = do_registration(nodes);
   if (res)
@@ -187,7 +187,7 @@ bool parameter::register_node(const std::vector<t_matcher>& nodes)
   return res;
 }
 
-bool parameter::do_registration(const std::vector<t_matcher>& matchers)
+bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
@@ -195,7 +195,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 
   for (auto& m : matchers)
   {
-    auto node = m.get_node();
+    auto node = m->get_node();
     m_parent_node = node;
 
     auto nodes = ossia::net::create_nodes(*node, m_name->s_name);
@@ -220,7 +220,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 
       ossia::net::set_hidden(local_param->get_node(), m_invisible);
 
-      m_matchers.emplace_back(n, this);
+      m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
     }
   }
 

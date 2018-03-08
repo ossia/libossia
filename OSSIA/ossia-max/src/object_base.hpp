@@ -104,7 +104,7 @@ public:
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
   long m_queue_length{64};
-  bool m_is_deleted;
+  bool m_is_deleted{};
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
 
@@ -118,7 +118,7 @@ public:
   ossia::net::generic_device* m_device{};
   // std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
-  std::vector<t_matcher> m_matchers{};
+  std::vector<std::shared_ptr<t_matcher>> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
   ossia::optional<ossia::traversal::path> m_selection_path{};
 
