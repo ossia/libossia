@@ -4,6 +4,7 @@
 #include <QVariantMap>
 #include <hopscotch_map.h>
 #include <ossia_export.h>
+#include <wobjectdefs.h>
 namespace ossia
 {
 namespace net
@@ -36,10 +37,7 @@ class qml_binding;
 class qml_callback;
 class OSSIA_EXPORT qml_device : public QObject
 {
-  Q_OBJECT
-  Q_PROPERTY(bool readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged FINAL)
-  Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
-
+  W_OBJECT(qml_device)
 public:
   qml_device(QObject* parent = nullptr);
   ~qml_device();
@@ -74,14 +72,13 @@ public:
 
   const qpointer_set<qml_model_property>& models() const { return m_models; }
 
-public Q_SLOTS:
-  bool openOSC(QString ip, int localPort, int remotePort);
-  bool openOSCQueryServer(int WSport, int oscPort);
-  bool openOSCQueryClient(QString address, int localOscPort);
-  bool openMIDIInputDevice(int device);
-  bool openMIDIOutputDevice(int device);
-  QVariantMap getMIDIInputDevices() const;
-  QVariantMap getMIDIOutputDevices() const;
+  bool openOSC(QString ip, int localPort, int remotePort); W_INVOKABLE(openOSC)
+  bool openOSCQueryServer(int WSport, int oscPort); W_INVOKABLE(openOSCQueryServer)
+  bool openOSCQueryClient(QString address, int localOscPort); W_INVOKABLE(openOSCQueryClient)
+  bool openMIDIInputDevice(int device); W_INVOKABLE(openMIDIInputDevice)
+  bool openMIDIOutputDevice(int device); W_INVOKABLE(openMIDIOutputDevice)
+  QVariantMap getMIDIInputDevices() const; W_INVOKABLE(getMIDIInputDevices)
+  QVariantMap getMIDIOutputDevices() const; W_INVOKABLE(getMIDIOutputDevices)
 
   void recreate(QObject* root);
   void remap(QObject* root);
@@ -96,9 +93,15 @@ public Q_SLOTS:
 
   void cleanup();
 
-Q_SIGNALS:
-  void readPresetChanged(bool readPreset);
-  void nameChanged(QString name);
+
+  void readPresetChanged(bool readPreset)
+  W_SIGNAL(readPresetChanged, readPreset)
+
+  void nameChanged(QString name)
+  W_SIGNAL(nameChanged, name)
+
+  W_PROPERTY(bool, readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged, W_Final)
+  W_PROPERTY(QString, name READ name WRITE setName NOTIFY nameChanged, W_Final)
 
 private:
   void setupLocal();
@@ -122,7 +125,7 @@ private:
 
 class OSSIA_EXPORT qml_singleton_device : public qml_device
 {
-  Q_OBJECT
+  W_OBJECT(qml_singleton_device)
 public:
   static qml_singleton_device& instance();
 

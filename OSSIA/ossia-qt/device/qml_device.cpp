@@ -28,6 +28,10 @@
 #include <ossia/network/osc/osc.hpp>
 #endif
 #include <QCoreApplication>
+#include <wobjectimpl.h>
+
+W_OBJECT_IMPL(ossia::qt::qml_device)
+W_OBJECT_IMPL(ossia::qt::qml_singleton_device)
 namespace ossia
 {
 namespace qt

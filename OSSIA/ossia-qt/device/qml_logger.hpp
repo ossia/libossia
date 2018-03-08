@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QString>
 #include <memory>
+#include <QVariantMap>
 #include <ossia_export.h>
 namespace spdlog
 {
