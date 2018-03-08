@@ -84,3 +84,6 @@
 [submodule "3rdparty/max-sdk"]
 	path = 3rdparty/max-sdk
 	url = https://github.com/Cycling74/max-sdk.git
+[submodule "3rdparty/verdigris"]
+	path = 3rdparty/verdigris
+	url = https://github.com/woboq/verdigris
