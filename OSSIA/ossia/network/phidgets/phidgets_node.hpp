@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
-#include <phidget22.h>
+#include <ossia/network/phidgets/phidgets_parameter_data.hpp>
 namespace ossia
 {
 class phidget_device;

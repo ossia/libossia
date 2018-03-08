@@ -60,7 +60,7 @@ void attribute::assist(attribute* x, void* b, long m, long a, char* s)
   }
 }
 
-bool attribute::register_node(const std::vector<t_matcher>& node)
+bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& node)
 {
   if (m_mute) return false;
 
@@ -76,7 +76,7 @@ bool attribute::register_node(const std::vector<t_matcher>& node)
 
   if (!node.empty() && m_is_pattern){
     // assume all nodes refer to the same device
-    auto& dev = node[0].get_node()->get_device();
+    auto& dev = node[0]->get_node()->get_device();
     if (&dev != m_dev)
     {
       if (m_dev) {
@@ -92,7 +92,7 @@ bool attribute::register_node(const std::vector<t_matcher>& node)
   return res;
 }
 
-bool attribute::do_registration(const std::vector<t_matcher>& matchers)
+bool attribute::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   unregister();
 
@@ -100,7 +100,7 @@ bool attribute::do_registration(const std::vector<t_matcher>& matchers)
 
   for (auto& m : matchers)
   {
-    auto node = m.get_node();
+    auto node = m->get_node();
     if (m_addr_scope == net::address_scope::absolute)
     {
       // get root node
@@ -122,7 +122,7 @@ bool attribute::do_registration(const std::vector<t_matcher>& matchers)
 
     for (auto n : nodes){
       if (n->get_parameter()){
-        m_matchers.emplace_back(n,this);
+        m_matchers.emplace_back(std::make_shared<t_matcher>(n,this));
       } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
@@ -131,7 +131,7 @@ bool attribute::do_registration(const std::vector<t_matcher>& matchers)
         path << name_fmt << "/" << name_fmt;
         auto node = ossia::net::find_node(*n, path.str());
         if (node){
-          m_matchers.emplace_back(node, this);
+          m_matchers.emplace_back(std::make_shared<t_matcher>(node, this));
         }
       }
     }
@@ -169,7 +169,7 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
   {
     // TODO rethink that parent_node
     m_parent_node = node.get_parent();
-    m_matchers.emplace_back(&node,this);
+    m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
     // TODO optimize : don't clear and iterate through all matchers
     // just add it if it matches instead
     fill_selection();

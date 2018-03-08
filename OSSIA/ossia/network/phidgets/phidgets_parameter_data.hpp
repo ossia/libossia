@@ -1,5 +1,9 @@
 #pragma once
+#if defined(__APPLE__)
+#include <Phidget22/phidget22.h>
+#else
 #include <phidget22.h>
+#endif
 #include <string>
 namespace ossia
 {

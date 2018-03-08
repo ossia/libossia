@@ -10,7 +10,6 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_set.hpp>
-#include <flat_hash_map.hpp>
 #include <ossia_export.h>
 #include <set>
 namespace ossia

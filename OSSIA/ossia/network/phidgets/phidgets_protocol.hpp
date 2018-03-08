@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/phidgets/phidgets_parameter_data.hpp>
-#include <phidget22.h>
 #include <unordered_map>
 #include <readerwriterqueue.h>
 #include <ossia/detail/optional.hpp>
