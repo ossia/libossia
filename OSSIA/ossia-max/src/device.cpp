@@ -12,6 +12,10 @@
 #include "ossia/network/oscquery/oscquery_server.hpp"
 #include "ossia/network/minuit/minuit.hpp"
 
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+#include <ossia/network/phidgets/phidgets_protocol.hpp>
+#endif
+
 using namespace ossia::max;
 
 #pragma mark -
@@ -341,6 +345,23 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
           "%u",
           settings.remoteip.c_str(), settings.remoteport, settings.localport);
     }
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+    else if(protocol == "Phidgets")
+    {
+        static auto prot = new ossia::phidget_protocol();
+        multiplex.expose_to(std::unique_ptr<ossia::net::protocol_base>(prot));
+        std::vector<t_atom> a;
+        a.resize(1);
+        A_SETSYM(&a[0], gensym("phidgets"));
+        x->m_protocols.push_back(a);
+
+        static void* clk;
+        clk = clock_new(x, [] (void* x) {
+            prot->run_commands();
+            clock_delay(clk, 1000);
+        });
+    }
+#endif
     else
     {
       object_error((t_object*)x, "Unknown protocol: %s", protocol.data());
