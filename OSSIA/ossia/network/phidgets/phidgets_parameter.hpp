@@ -1,5 +1,4 @@
 #pragma once
-#include <phidget22.h>
 #include <ossia/network/phidgets/phidgets_node.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
@@ -87,7 +86,7 @@ class phidget_generic_parameter : public ossia::net::parameter_base
     const domain& get_domain() const override { return m_domain; }
     net::parameter_base& set_domain(const domain&) override { return *this; }
 
-    bounding_mode get_bounding() const override { return ossia::bounding_mode::CLIP; }
+    bounding_mode get_bounding() const override { return ossia::bounding_mode::FREE; }
     net::parameter_base& set_bounding(bounding_mode) override { return *this; }
 };
 
@@ -156,7 +155,7 @@ class phidget_control_parameter : public ossia::net::parameter_base
     const domain& get_domain() const override { return m_domain; }
     net::parameter_base& set_domain(const domain&) override { return *this; }
 
-    bounding_mode get_bounding() const override { return ossia::bounding_mode::CLIP; }
+    bounding_mode get_bounding() const override { return ossia::bounding_mode::FREE; }
     net::parameter_base& set_bounding(bounding_mode) override { return *this; }
 };
 
@@ -1070,12 +1069,14 @@ auto make(PhidgetHandle phid, ossia::net::device_base& dev, ossia::net::node_bas
   auto node = new T{phid, dev, par_node};
   par_node.add_child(std::unique_ptr<phidget_node>(node));
 
+    /*
     Phidget_close(phid);
     for(int i = 0; i < 10; i++)
     {
       if(Phidget_openWaitForAttachment(phid, 100) == EPHIDGET_OK)
         break;
     }
+    */
 
     node->init();
     //Phidget_close(phid);

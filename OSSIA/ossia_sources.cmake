@@ -379,7 +379,6 @@ set(OSSIA_SERIAL_SRCS
 
 
 set(OSSIA_PHIDGETS_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/phidgetspp.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/sensors.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_device.hpp"
@@ -390,7 +389,6 @@ set(OSSIA_PHIDGETS_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets.hpp")
 
 set(OSSIA_PHIDGETS_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/phidgetspp.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.cpp"
