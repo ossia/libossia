@@ -23,6 +23,18 @@ elseif(UNIX)
       HINTS
       ${PHIDGETS_LIB_DIR}
       ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets/.libs)
+else()
+
+    find_path(LIBPHIDGETS_INCLUDE_DIR phidget22.h
+      HINTS
+        ${PHIDGETS_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets
+        c:/phidget22-windevel
+      )
+
+    find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22
+      HINTS
+        c:/phidget22-windevel/x64)
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LIBPHIDGETS DEFAULT_MSG LIBPHIDGETS_LIBRARIES LIBPHIDGETS_INCLUDE_DIR)

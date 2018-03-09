@@ -143,8 +143,15 @@ endif()
 
 target_compile_definitions(ossia PUBLIC TINYSPLINE_DOUBLE_PRECISION)
 
+if(MSVC)
+  target_compile_definitions(ossia 
+    PUBLIC 
+      __cpp_constexpr=201304
+      __cpp_variable_templates=201304
+  )
+endif()
 if(NOT ANDROID)
-  target_link_libraries(ossia PUBLIC boost)
+  target_link_libraries(ossia PUBLIC Boost::boost)
 endif()
 # Additional protocols
 if(OSSIA_PROTOCOL_AUDIO)
@@ -441,7 +448,7 @@ message(STATUS "OSSIA - Qt: ${OSSIA_QT}")
 message(STATUS "OSSIA - C: ${OSSIA_C}")
 message(STATUS "OSSIA - CPP: ${OSSIA_CPP}")
 set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
-if(NOT "${OSSIA_SANITIZE}" AND NOT "${OSSIA_DISABLE_COTIRE}" AND NOT "${DISABLE_COTIRE}")
+if(NOT OSSIA_SANITIZE AND NOT OSSIA_DISABLE_COTIRE AND NOT DISABLE_COTIRE )
 cotire(ossia)
 endif()
 
