@@ -41,6 +41,10 @@ class oscquery_mirror;
 class OSSIA_EXPORT value
 {
 public:
+  using vec2f = std::array<float, 2ul>;
+  using vec3f = std::array<float, 3ul>;
+  using vec4f = std::array<float, 4ul>;
+
   value();
   ~value();
   value(const value& v);
@@ -48,6 +52,9 @@ public:
   value(bool v);
   value(float v);
   value(double v);
+  value(const vec2f);
+  value(const vec3f);
+  value(const vec4f);
   value(std::vector<opp::value> v);
   value(std::string v);
   value(const char* v);
@@ -56,6 +63,9 @@ public:
   bool is_int() const;
   bool is_float() const;
   bool is_bool() const;
+  bool is_vec2f() const;
+  bool is_vec3f() const;
+  bool is_vec4f() const;
   bool is_list() const;
   bool is_string() const;
 
@@ -69,6 +79,9 @@ public:
   value& operator=(int v);
   value& operator=(float v);
   value& operator=(bool v);
+  value& operator=(vec2f v);
+  value& operator=(vec3f v);
+  value& operator=(vec4f v);
   value& operator=(std::vector<opp::value> v);
   value& operator=(std::string v);
 
@@ -76,6 +89,9 @@ public:
   void set_int(int v);
   void set_float(float v);
   void set_bool(bool v);
+  void set_vec2f(vec2f v);
+  void set_vec3f(vec3f v);
+  void set_vec4f(vec4f v);
   void set_list(std::vector<opp::value> v);
   void set_string(std::string v);
 

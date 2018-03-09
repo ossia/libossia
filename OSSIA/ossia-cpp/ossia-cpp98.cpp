@@ -13,7 +13,7 @@ namespace opp
 {
 
 //**************************************************************//
-//                      callback_index                         //
+//                          value                               //
 //*************************************************************//
 
 
@@ -42,6 +42,15 @@ value::value(double v) : m_val{new ossia::value(v)}
 value::value(const char* v) : m_val{new ossia::value(std::string(v))}
 {
 }
+value::value(const vec2f v) : m_val{new ossia::value(vec2f(v))}
+{
+}
+value::value(const vec3f v) : m_val{new ossia::value(vec3f(v))}
+{
+}
+value::value(const vec4f v) : m_val{new ossia::value(vec4f(v))}
+{
+}
 value::value(std::vector<opp::value> v) : m_val{new ossia::value()}
 {
   *this = std::move(v);
@@ -66,6 +75,21 @@ bool value::is_bool() const
 {
   return m_val->getType() == ossia::val_type::BOOL;
 }
+bool value::is_vec2f() const
+{
+  const auto t = m_val->getType();
+  return t == ossia::val_type::VEC2F;
+}
+bool value::is_vec3f() const
+{
+  const auto t = m_val->getType();
+  return t == ossia::val_type::VEC3F;
+}
+bool value::is_vec4f() const
+{
+  const auto t = m_val->getType();
+  return t == ossia::val_type::VEC4F;
+}
 bool value::is_list() const
 {
   const auto t = m_val->getType();
@@ -77,6 +101,7 @@ bool value::is_string() const
 {
   return m_val->getType() == ossia::val_type::STRING;
 }
+
 int value::to_int() const
 {
   return ossia::convert<int>(*m_val);
@@ -125,6 +150,21 @@ value& value::operator=(bool v)
   *m_val = v;
   return *this;
 }
+value& value::operator=(vec2f v)
+{
+  *m_val = v;
+  return *this;
+}
+value& value::operator=(vec3f v)
+{
+  *m_val = v;
+  return *this;
+}
+value& value::operator=(vec4f v)
+{
+  *m_val = v;
+  return *this;
+}
 value& value::operator=(std::vector<value> v)
 {
   std::vector<ossia::value> res;
@@ -152,6 +192,18 @@ void value::set_float(float v)
   *this = std::move(v);
 }
 void value::set_bool(bool v)
+{
+  *this = std::move(v);
+}
+void value::set_vec2f(vec2f v)
+{
+  *this = std::move(v);
+}
+void value::set_vec3f(vec3f v)
+{
+  *this = std::move(v);
+}
+void value::set_vec4f(vec4f v)
 {
   *this = std::move(v);
 }
