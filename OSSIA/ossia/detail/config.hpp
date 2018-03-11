@@ -29,22 +29,14 @@
 #define OSSIA_INLINE
 #endif
 
-// Remove with C++17
-#if defined(_MSC_VER) || defined(__cpp_lib_void_t)
 namespace ossia
 {
 template <typename... Args>
 using void_t = std::void_t<Args...>;
 }
-#else
-namespace ossia
-{
-template <typename... Args>
-using void_t = void;
-}
-#endif
 
 #define BOOST_MATH_DISABLE_FLOAT128
+#define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE
 
 #define SPDLOG_NO_DATETIME
 #define SPDLOG_NO_THREAD_ID

@@ -17,7 +17,7 @@ namespace ossia
 invalid_callback_error::~invalid_callback_error()
 {
 
-}
+} 
 
 static void ossia_global_init()
 {
