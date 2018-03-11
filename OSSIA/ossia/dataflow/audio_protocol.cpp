@@ -105,7 +105,11 @@ void audio_protocol::reload()
 #if defined(__EMSCRIPTEN__)
 #else
   auto inputInfo = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
+  if(!inputInfo)
+    return;
   auto outputInfo = Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice());
+  if(!outputInfo)
+    return;
   inputs = inputInfo->maxInputChannels;
   outputs = outputInfo->maxOutputChannels;
 
