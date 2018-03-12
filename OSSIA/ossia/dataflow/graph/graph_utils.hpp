@@ -376,6 +376,27 @@ struct OSSIA_EXPORT graph_util
 struct OSSIA_EXPORT graph_base: graph_interface
 {
 
+    void recompute_maps()
+    {
+      m_nodes.clear();
+      m_edges.clear();
+      auto vertices = boost::vertices(m_graph);
+      for(auto it = vertices.first; it != vertices.second; it++)
+      {
+        graph_vertex_t k = *it;
+        node_ptr n = m_graph[k];
+        
+        m_nodes.insert({n, k});
+      }
+      
+      auto edges = boost::edges(m_graph);
+      for(auto it = edges.first; it != edges.second; it++)
+      {
+        graph_edge_t k = *it;
+        edge_ptr n = m_graph[k];
+        m_edges.insert({n, k});
+      }
+    }
     auto add_node_impl(node_ptr n)
     {
       auto& bench = *ossia::bench_ptr();
@@ -384,6 +405,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
       auto vtx = boost::add_vertex(n, m_graph);
       m_nodes.insert({std::move(n), vtx});
       m_dirty = true;
+      recompute_maps();
       return vtx;
     }
 
@@ -412,6 +434,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
         {
           boost::clear_vertex(it->second, m_graph);
           boost::remove_vertex(it->second, m_graph);
+          recompute_maps();
         }
         m_nodes.erase(it);
       }
@@ -439,6 +462,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
 
         // TODO check that two edges can be added
         auto res = boost::add_edge(in_vtx, out_vtx, edge, m_graph);
+        recompute_maps();
         if (res.second)
         {
           m_edges.insert({std::move(edge), res.first});
@@ -462,7 +486,10 @@ struct OSSIA_EXPORT graph_base: graph_interface
         {
           auto edg = boost::edges(m_graph);
           if(std::find(edg.first, edg.second, it->second) != edg.second)
+          {
             boost::remove_edge(it->second, m_graph);
+            recompute_maps();
+          }
           m_dirty = true;
           m_edges.erase(it);
         }
