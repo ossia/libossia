@@ -215,6 +215,7 @@ struct graph_static final
         if(m_dirty)
         {
           update_fun(*this, e.allDevices);
+          m_enabled_cache.clear();
           m_dirty = false;
         }
 

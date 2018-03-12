@@ -319,7 +319,7 @@ ossia::net::node_base* phidget_protocol::get_parent(phidget_handle_t phid)
       {
         auto cur_idx = hdl.get_hub_port();
         assert(cur_idx >= 0);
-        assert(cur_idx < current_ports.size());
+        assert(cur_idx < (int)current_ports.size());
         par_node = current_ports[cur_idx];
         current_ports.clear();
       }
@@ -330,7 +330,7 @@ ossia::net::node_base* phidget_protocol::get_parent(phidget_handle_t phid)
       {
         auto cur_idx = hdl.get_hub_port();
         assert(cur_idx >= 0);
-        assert(cur_idx < current_ports.size());
+        assert(cur_idx < (int)current_ports.size());
         par_node = current_ports[cur_idx];
         current_ports.clear();
       }
