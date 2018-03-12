@@ -264,6 +264,11 @@ struct OSSIA_EXPORT graph_util
       first_node.set_end_discontinuous(false);
     }
 
+    for(const auto& request : first_node.requested_tokens) {
+      first_node.run(request, e);
+      first_node.set_prev_date(request.date);
+    }
+/*
     auto all_normal = ossia::all_of(first_node.requested_tokens,
                                    [] (const ossia::token_request& tk) { return tk.speed == 1.;});
     if(all_normal)
@@ -278,7 +283,7 @@ struct OSSIA_EXPORT graph_util
     {
       run_scaled(first_node, e);
     }
-
+*/
     first_node.set_executed(true);
     teardown_node(first_node, e);
   }

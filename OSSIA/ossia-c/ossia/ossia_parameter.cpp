@@ -3,7 +3,6 @@
 #include "ossia_utils.hpp"
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <readerwriterqueue.h>
-#include <unordered_map>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/message_queue.hpp>
 

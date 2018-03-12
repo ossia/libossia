@@ -6,6 +6,7 @@
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_parallel.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/graph/node_executors.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>
 #include <spdlog/spdlog.h>
 namespace ossia
@@ -15,14 +16,15 @@ std::shared_ptr<bench_map> bench_ptr()
   static std::shared_ptr<bench_map> b = std::make_shared<bench_map>();
   return b;
 }
-
+template<typename T>
+struct wrap_type { using type = T; };
 std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup_options& opt)
 {
   using namespace ossia;
   auto sched = opt.scheduling;
-  if(opt.log)
+  auto setup = [&] (auto t) -> std::shared_ptr<ossia::graph_interface>
   {
-    using exec_t = static_exec_logger;
+    using exec_t = typename decltype(t)::type;
     if(sched == ossia::graph_setup_options::Dynamic)
     {
       return std::make_shared<ossia::graph>();
@@ -34,7 +36,8 @@ std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup
         , exec_t>;
 
       auto g = std::make_shared<graph_type>();
-      g->tick_fun.logger = opt.log;
+      g->tick_fun.set_logger(opt.log);
+      g->tick_fun.set_bench(opt.bench);
       return g;
     }
     else if(sched == ossia::graph_setup_options::StaticFixed)
@@ -44,7 +47,8 @@ std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup
         , exec_t>;
 
       auto g = std::make_shared<graph_type>();
-      g->tick_fun.logger = opt.log;
+      g->tick_fun.set_logger(opt.log);
+      g->tick_fun.set_bench(opt.bench);
       return g;
     }
     else // if(sched == ossia::graph_setup_options::StaticTC)
@@ -54,43 +58,27 @@ std::shared_ptr<ossia::graph_interface> make_graph_impl(const ossia::graph_setup
         , exec_t>;
 
       auto g = std::make_shared<graph_type>();
-      g->tick_fun.logger = opt.log;
+      g->tick_fun.set_logger(opt.log);
+      g->tick_fun.set_bench(opt.bench);
       return g;
     }
+
+  };
+  if(opt.bench && opt.log)
+  {
+    return setup(wrap_type<ossia::static_exec_logger_bench>{});
+  }
+  else if(opt.bench)
+  {
+    return setup(wrap_type<ossia::static_exec_bench>{});
+  }
+  else if(opt.log)
+  {
+    return setup(wrap_type<ossia::static_exec_logger>{});
   }
   else
   {
-    using exec_t = static_exec;
-    if(sched == ossia::graph_setup_options::Dynamic)
-    {
-      using graph_type = ossia::graph;
-
-      return std::make_shared<graph_type>();
-    }
-    else if(sched == ossia::graph_setup_options::StaticBFS)
-    {
-      using graph_type = graph_static<
-          bfs_update
-        , exec_t>;
-
-      return std::make_shared<graph_type>();
-    }
-    else if(sched == ossia::graph_setup_options::StaticFixed)
-    {
-      using graph_type = graph_static<
-          simple_update
-        , exec_t>;
-
-      return std::make_shared<graph_type>();
-    }
-    else //if(sched == sched_t.StaticTC)
-    {
-      using graph_type = graph_static<
-          tc_update<fast_tc>
-        , exec_t>;
-
-      return std::make_shared<graph_type>();
-    }
+    return setup(wrap_type<ossia::static_exec>{});
   }
 }
 

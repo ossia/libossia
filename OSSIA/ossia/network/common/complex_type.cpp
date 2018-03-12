@@ -11,7 +11,6 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/dataspace/detail/list_units.hpp>
 #include <boost/algorithm/string.hpp>
-#include <unordered_map>
 
 namespace ossia
 {
