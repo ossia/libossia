@@ -268,9 +268,18 @@ void execution_state::commit_common()
   {
     auto addr = dynamic_cast<audio_parameter*>(elt.first);
     if(addr)
+    {
       addr->push_value(elt.second);
+      for(auto& chan : addr->audio)
+      {
+        chan = chan.subspan(1);
+      }
+    }
+
     for(auto& vec : elt.second.samples)
+    {
       vec.clear();
+    }
   }
 
   for (auto& elt : m_midiState)

@@ -173,7 +173,10 @@ class phidget_open_parameter : public ossia::net::parameter_base
     {
     }
 
-    ~phidget_open_parameter() override { }
+    ~phidget_open_parameter() override
+    {
+      Phidget_close(m_phidget);
+    }
 
     ossia::value value() const override { return m_open; }
 

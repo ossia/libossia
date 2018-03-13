@@ -11,6 +11,12 @@ namespace ossia
 
 phidget_node::~phidget_node()
 {
+  m_children.clear();
+
+  about_to_be_deleted(*this);
+
+  remove_parameter();
+  Phidget_release(&m_hdl);
 }
 
 void phidget_node::set_parameter(std::unique_ptr<net::parameter_base> a)

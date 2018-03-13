@@ -381,6 +381,7 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
             phidgets_poll_clock = clock_new(x, (method)update_phidgets);
 
             clock_delay(phidgets_poll_clock, 1000);
+            phidgets_exposed = true;
         }
         else
         {
