@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/detail/any.hpp>
@@ -7,7 +8,8 @@
 /**
  * \file any_map.hpp
  */
-
+extern template class OSSIA_EXTERN_EXPORT_HPP(OSSIA_EXPORT)
+  tsl::hopscotch_map<std::string, std::any, ossia::string_hash, ossia::string_equal, std::allocator<std::pair<std::string, std::any>>, 4>;
 namespace ossia
 {
 //! A container to store any kind of data indexed by a string

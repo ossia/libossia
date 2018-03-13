@@ -11,13 +11,14 @@
 #include <memory>
 
 #include <ossia/detail/callback_container.hpp>
-
+#include <ossia/detail/any_map.hpp>
+template class OSSIA_EXTERN_EXPORT_CPP(OSSIA_EXPORT) tsl::hopscotch_map<std::string, std::any, ossia::string_hash, ossia::string_equal, std::allocator<std::pair<std::string, std::any>>, 4>;
 namespace ossia
 {
 invalid_callback_error::~invalid_callback_error()
 {
 
-} 
+}
 
 static void ossia_global_init()
 {

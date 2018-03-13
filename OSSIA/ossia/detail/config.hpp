@@ -1,6 +1,10 @@
 #pragma once
 #include <ossia-config.hpp>
+#include <ossia_export.h>
 #include <type_traits>
+
+#define OSSIA_EXTERN_EXPORT_HPP(EXPORT) EXPORT
+#define OSSIA_EXTERN_EXPORT_CPP(EXPORT)
 
 #if defined(__cplusplus) \
     && ((__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
