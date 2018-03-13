@@ -4,8 +4,8 @@
 
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/common/debug.hpp>
-#include <boost/program_options.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <boost/lexical_cast.hpp>
 int main(int argc, char** argv)
 {
   int local_port = 9997;

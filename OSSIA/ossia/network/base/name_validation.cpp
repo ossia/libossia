@@ -2,6 +2,8 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <algorithm>
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>

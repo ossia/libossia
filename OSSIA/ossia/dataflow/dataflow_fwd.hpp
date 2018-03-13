@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <boost/functional/hash.hpp>
 #include <eggs/variant.hpp>
 #include <ossia/network/common/path.hpp>
 
@@ -14,11 +13,17 @@ template <typename T>
 class hash<std::pair<T*, T*>>
 {
 public:
+  void hash_combine(std::size_t& seed, const T& v)
+  {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+  }
+
   std::size_t operator()(const std::pair<T*, T*>& p) const
   {
     std::size_t seed = 0;
-    boost::hash_combine(seed, p.first);
-    boost::hash_combine(seed, p.second);
+    hash_combine(seed, p.first);
+    hash_combine(seed, p.second);
     return seed;
   }
 };

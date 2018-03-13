@@ -71,6 +71,8 @@ graph_edge::graph_edge(connection c, outlet_ptr pout, inlet_ptr pin, node_ptr po
   , out_node{std::move(pout_node)}
   , in_node{std::move(pin_node)}
 {
+  assert(out_node);
+  assert(in_node);
 }
 
 void graph_edge::init()

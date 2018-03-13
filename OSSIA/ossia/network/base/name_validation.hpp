@@ -1,7 +1,5 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <ossia_export.h>
 #include <string>
 #include <vector>

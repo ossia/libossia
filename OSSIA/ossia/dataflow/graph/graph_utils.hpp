@@ -12,7 +12,6 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
-#include <boost/range/adaptors.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/graph/graphviz.hpp>
 
