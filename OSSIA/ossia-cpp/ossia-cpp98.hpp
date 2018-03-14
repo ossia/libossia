@@ -41,9 +41,9 @@ class oscquery_mirror;
 class OSSIA_EXPORT value
 {
 public:
-  using vec2f = std::array<float, 2ul>;
-  using vec3f = std::array<float, 3ul>;
-  using vec4f = std::array<float, 4ul>;
+  typedef std::array<float, 2ul> vec2f ;
+  typedef std::array<float, 3ul> vec3f ;
+  typedef std::array<float, 4ul> vec4f ;
 
   value();
   ~value();
@@ -114,6 +114,7 @@ struct callback_index {
     ~callback_index();
     callback_index(const callback_index&);
     callback_index& operator=(const callback_index&);
+ //   explicit operator bool() const;
 
   private:
     friend class node;

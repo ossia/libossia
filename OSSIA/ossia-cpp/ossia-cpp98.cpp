@@ -261,6 +261,14 @@ callback_index& callback_index::operator=(const callback_index& other)
   return *this;
 }
 
+/*
+callback_index::operator bool() const
+{
+    if (index->iterator) return TRUE;
+    return FALSE;
+}
+*/
+
 //*************************************************************//
 //                          node                               //
 //*************************************************************//
