@@ -8,6 +8,7 @@
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/value/value_traits.hpp>
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 template<typename Fun>
@@ -24,98 +25,208 @@ ossia::net::node_base* find_tree(ossia::net::node_base& root, const Fun& f)
   return nullptr;
 }
 
+void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
+{
+  phidget_handle_t hdl{phid};
+  const auto sn = hdl.get_serial();
+  ossia::logger().info(" Phidget {}", sn);
+  if(m_phidgetMap.find(hdl) != m_phidgetMap.end())
+    return;
+  Phidget_DeviceClass dcls;
+  Phidget_getDeviceClass(phid, &dcls);
+
+  Phidget_ChannelClass cls;
+  Phidget_getChannelClass(phid, &cls);
+
+  auto par_node = get_parent(phid);
+  ossia::phidget_node* phid_node{};
+
+  switch(cls)
+  {
+    case PHIDCHCLASS_ACCELEROMETER:
+      phid_node = make<phidget_accelerometer_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_GYROSCOPE:
+      phid_node = make<phidget_gyroscope_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_VOLTAGEINPUT:
+      phid_node = make<phidget_voltage_input_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_DIGITALINPUT:
+      phid_node = make<phidget_digital_input_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_DIGITALOUTPUT:
+      phid_node = make<phidget_digital_output_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_HUB:
+      phid_node = make<phidget_hub_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_VOLTAGERATIOINPUT:
+      phid_node = make<phidget_voltage_ratio_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_MAGNETOMETER:
+      phid_node = make<phidget_magnetometer_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_CAPACITIVETOUCH:
+      phid_node = make<phidget_capacitive_touch_input_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_DISTANCESENSOR:
+      phid_node = make<phidget_distance_sensor_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_HUMIDITYSENSOR:
+      phid_node = make<phidget_humidity_sensor_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_PRESSURESENSOR:
+      phid_node = make<phidget_pressure_sensor_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_RESISTANCEINPUT:
+      phid_node = make<phidget_resistance_input_node>(phid, *m_dev, *par_node);
+      break;
+    case PHIDCHCLASS_LIGHTSENSOR:
+      phid_node = make<phidget_light_sensor_node>(phid, *m_dev, *par_node);
+      break;
+    default:
+      break;
+  }
+
+  if(!phid_node)
+  {
+    Phidget_release(&phid);
+    return;
+  }
+  phid_node->about_to_be_deleted.connect<phidget_protocol, &phidget_protocol::deleting_node>(*this);
+  ossia::logger().info("Created Phidget {} {}", sn, phid_node->get_name());
+  m_phidgetMap.insert({hdl, phid_node});
+}
+
+void phidget_protocol::remove_parent_rec(ossia::net::node_base* par)
+{
+  if(par && par->children().empty())
+  {
+    if(auto grandpa = par->get_parent())
+    {
+      remove_node(par);
+      remove_parent_rec(grandpa);
+    }
+  }
+}
+bool is_child_of(ossia::net::node_base* child, const ossia::net::node_base* par)
+{
+  while(auto cur = child->get_parent())
+  {
+    if(cur == par)
+      return true;
+    child = cur;
+  }
+  return false;
+}
+void phidget_protocol::remove_node(ossia::net::node_base* node)
+{
+  if(auto par = node->get_parent())
+  {
+    /*
+    for(auto it = m_phidgetMap.begin(); it != m_phidgetMap.end(); )
+    {
+      if(is_child_of(it->second, node))
+      {
+        it = m_phidgetMap.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }*/
+    par->remove_child(*node);
+  }
+}
+
+void phidget_protocol::deleting_node(const net::node_base& par)
+{
+  for(auto it = m_phidgetMap.begin(); it != m_phidgetMap.end(); )
+  {
+    if(it->second == &par)
+    {
+      it = m_phidgetMap.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
+
+void phidget_protocol::on_deviceRemoved(ossia::phidget_id phid)
+{
+  ossia::net::node_base* to_remove{};
+  for(auto it = m_phidgetMap.begin(); it != m_phidgetMap.end(); )
+  {
+    auto pn = dynamic_cast<phidget_node*>(it->second);
+    if(pn && pn->id == phid)
+    {
+        ossia::logger().info("Remvoing Phidget {}", it->second->get_name());
+
+        to_remove = it->second;
+        it = m_phidgetMap.erase(it);
+        break;
+    }
+    else
+    {
+      ++it;
+    }
+  }
+
+  if(to_remove)
+  {
+    auto par = to_remove->get_parent();
+    remove_node(to_remove);
+    remove_parent_rec(par);
+  }
+}
+
 phidget_protocol::phidget_protocol()
 {
-  onDeviceCreated = [=](PhidgetHandle phid) {
-    m_functionQueue.enqueue([=] {
-      if(m_phidgetMap.find(phid) != m_phidgetMap.end())
-        return;
-      Phidget_DeviceClass dcls;
-      Phidget_getDeviceClass(phid, &dcls);
+  PhidgetLog_enable(PHIDGET_LOG_WARNING, NULL);
 
-      Phidget_ChannelClass cls;
-      Phidget_getChannelClass(phid, &cls);
+  // Tree :
+  // Phidgets:/device/...
 
-      auto par_node = get_parent(phid);
-      ossia::phidget_node* phid_node{};
+  // For each device, create the relevant keys.
+  PhidgetManager_create(&m_hdl);
+  PhidgetManager_setOnAttachHandler(
+        m_hdl,
+        [] (PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
+    auto self = (phidget_protocol*)ptr;
 
-      switch(cls)
-      {
-        case PHIDCHCLASS_ACCELEROMETER:
-          phid_node = make<phidget_accelerometer_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_GYROSCOPE:
-          phid_node = make<phidget_gyroscope_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_VOLTAGEINPUT:
-          phid_node = make<phidget_voltage_input_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_DIGITALINPUT:
-          phid_node = make<phidget_digital_input_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_DIGITALOUTPUT:
-          phid_node = make<phidget_digital_output_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_HUB:
-          phid_node = make<phidget_hub_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_VOLTAGERATIOINPUT:
-          phid_node = make<phidget_voltage_ratio_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_MAGNETOMETER:
-          phid_node = make<phidget_magnetometer_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_CAPACITIVETOUCH:
-          phid_node = make<phidget_capacitive_touch_input_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_DISTANCESENSOR:
-          phid_node = make<phidget_distance_sensor_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_HUMIDITYSENSOR:
-          phid_node = make<phidget_humidity_sensor_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_PRESSURESENSOR:
-          phid_node = make<phidget_pressure_sensor_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_RESISTANCEINPUT:
-          phid_node = make<phidget_resistance_input_node>(phid, *m_dev, *par_node);
-          break;
-        case PHIDCHCLASS_LIGHTSENSOR:
-          phid_node = make<phidget_light_sensor_node>(phid, *m_dev, *par_node);
-          break;
-        default:
-          break;
-      }
+    ossia::logger().warn("Phidget conncet: {}", (int64_t) phid);
+    Phidget_retain(phid);
+    self->m_functionQueue.enqueue([phid,self] { self->on_deviceCreated(phid); });
 
-      if(!phid_node)
-        return;
+    if (self->m_commandCb)
+      self->m_commandCb();
+  },
+  this);
 
-      m_phidgetMap.insert({phid, phid_node});
-    });
+  PhidgetManager_setOnDetachHandler(
+        m_hdl,
+        [](PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
 
-    if (m_commandCb)
-      m_commandCb();
-  };
+    phidget_handle_t h{phid};
 
-  onDeviceDestroyed = [=](PhidgetHandle phid) {
-    m_functionQueue.enqueue([=] {
-      auto it = m_phidgetMap.find(phid);
-      if(it != m_phidgetMap.end())
-      {
-        if(auto par = it->second->get_parent())
-        {
-          par->remove_child(*it->second);
-        }
-        m_phidgetMap.erase(it);
-      }
-    });
+    //ossia::logger().info("Phidget remove info: {} {} {} {} ",
+    // h.get_device_classname(), h.get_device_id_name(),
+    // h.get_channel_classname(), h.get_channel_subclassname() );
 
-    if (m_commandCb)
-      m_commandCb();
 
-  };
+    auto self = (phidget_protocol*)ptr;
+    self->m_functionQueue.enqueue([phid=phidget_id{h},self] { self->on_deviceRemoved(phid); });
 
-  open();
+    if (self->m_commandCb)
+      self->m_commandCb();
+  },
+  this);
+
+  PhidgetManager_open(m_hdl);
+
 }
 
 phidget_protocol::~phidget_protocol()
@@ -278,7 +389,7 @@ ossia::net::node_base* phidget_protocol::get_parent(phidget_handle_t phid)
   for(auto it = parents.rbegin(); it != parents.rend(); ++it)
   {
     phidget_handle_t hdl = *it;
-    auto phid_it = m_phidgetMap.find(*it);
+    auto phid_it = m_phidgetMap.find(hdl);
     if(phid_it != m_phidgetMap.end())
     {
       par_node = phid_it->second;
@@ -343,102 +454,14 @@ ossia::net::node_base* phidget_protocol::get_parent(phidget_handle_t phid)
 
   }
   return par_node;
-
-/*
-    if(parent)
-    {
-      debug_handle(parent, k++);
-      auto par_it = m_phidgetMap.find(parent);
-      if(par_it == m_phidgetMap.end())
-      {
-        // List all parent phidgets
-        std::vector<PhidgetHandle> parents;
-        parents.push_back(parent);
-
-        err = Phidget_getParent(parent, &parent);
-
-        while(err == EPHIDGET_OK && parent)
-        {
-          debug_handle(parent, k++);
-          par_it = m_phidgetMap.find(parent);
-          if(par_it == m_phidgetMap.end())
-          {
-            parents.push_back(parent);
-            err = Phidget_getParent(parent, &parent);
-          }
-          else
-          {
-            break;
-          }
-        }
-
-        // Choose the starting parent ossia node
-        ossia::net::node_base* par_node = &m_dev->get_root_node();
-        if(parent && par_it != m_phidgetMap.end())
-        {
-          par_node = par_it->second;
-        }
-
-        // Create all child nodes
-        return par_node;
-      }
-      else
-      {
-        return par_it->second;
-      }
-    }
-
-  }
-  */
 }
-
-void phidget_protocol::open()
+phidget_id::phidget_id(ossia::phidget_handle_t hdl)
 {
-  PhidgetLog_enable(PHIDGET_LOG_WARNING, NULL);
-
-  // Tree :
-  // Phidgets:/device/...
-
-  // For each device, create the relevant keys.
-  PhidgetManager_create(&m_hdl);
-  PhidgetManager_setOnAttachHandler(
-        m_hdl,
-        [] (PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
-    auto& self = *(phidget_protocol*)ptr;
-
-    Phidget_retain(phid);
-    self.m_phidgets.push_back(phid);
-
-    if (self.onDeviceCreated)
-      self.onDeviceCreated(phid);
-  },
-  this);
-
-  PhidgetManager_setOnDetachHandler(
-        m_hdl,
-        [](PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
-    auto& self = *(phidget_protocol*)ptr;
-    {
-      auto it = ossia::find(self.m_phidgets, phid);
-      if (it != self.m_phidgets.end())
-      {
-        if (self.onDeviceDestroyed)
-          self.onDeviceDestroyed(*it);
-        self.m_phidgets.erase(it);
-        self.m_phidgetMap.erase(phid);
-      }
-    }
-
-    {
-      auto it = ossia::find(self.m_phidgetQuarantine, phid);
-      if(it != self.m_phidgetQuarantine.end())
-      {
-        self.m_phidgetQuarantine.erase(it);
-      }
-    }
-  },
-  this);
-
-  PhidgetManager_open(m_hdl);
+  serialNumber = hdl.get_serial();
+  hubPort = hdl.get_hub_port();
+  channel = hdl.get_channel();
+  isHubPort = hdl.is_hub_port_device();
 }
+
 }
+

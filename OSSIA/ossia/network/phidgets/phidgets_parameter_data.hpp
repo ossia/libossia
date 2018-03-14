@@ -15,6 +15,13 @@ struct phidget_handle_t
 
     }
 
+    int32_t get_serial() const
+    {
+      int32_t sn;
+      Phidget_getDeviceSerialNumber(phid, &sn);
+      return sn;
+    }
+
     operator PhidgetHandle() const
     {
       return phid;
@@ -30,6 +37,12 @@ struct phidget_handle_t
     {
       Phidget_DeviceClass dc;
       Phidget_getDeviceClass(phid, &dc);
+      return dc;
+    }
+    auto get_channel() const
+    {
+      int dc;
+      Phidget_getChannel(phid, &dc);
       return dc;
     }
     auto get_channel_class() const
@@ -323,4 +336,45 @@ struct phidget_handle_t
     }
 };
 
+struct phidget_id {
+    phidget_id() = default;
+    phidget_id(ossia::phidget_handle_t);
+    int serialNumber;
+    int hubPort;
+    int channel;
+    int isHubPort;
+};
+inline bool operator==(phidget_id lhs, phidget_id rhs)
+{
+  return lhs.serialNumber == rhs.serialNumber &&
+      lhs.hubPort == rhs.hubPort &&
+      lhs.channel == rhs.channel &&
+      lhs.isHubPort == rhs.isHubPort;
+}
+}
+
+namespace std
+{
+template<>
+class hash<ossia::phidget_id>
+{
+
+    inline void hash_combine(std::size_t& seed, int v)
+    {
+        std::hash<int> hasher;
+        seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    }
+  public:
+
+    std::size_t operator()(const ossia::phidget_id& id)
+    {
+      std::size_t s = 0;
+      hash_combine(s, id.serialNumber);
+      hash_combine(s, id.hubPort);
+      hash_combine(s, id.channel);
+      hash_combine(s, id.isHubPort);
+      return s;
+    }
+
+};
 }

@@ -12,6 +12,7 @@ protected:
   node_base& m_parent;
   std::unique_ptr<ossia::net::parameter_base> m_parameter;
 public:
+  phidget_id id;
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
   using const_iterator
       = ossia::ptr_container<ossia::net::node_base>::const_iterator;

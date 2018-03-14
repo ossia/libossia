@@ -33,6 +33,7 @@ void phidget_node::set_parameter(std::unique_ptr<net::parameter_base> a)
 phidget_node::phidget_node(PhidgetHandle hdl, net::device_base& d, net::node_base& p)
   : m_hdl{hdl}, m_device{d}, m_parent{p}
 {
+    id = phidget_handle_t{m_hdl};
     std::string name = "Phidget";
 
     const char* arr{};

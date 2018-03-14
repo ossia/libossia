@@ -4,7 +4,7 @@
 
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
-
+#include <ossia/context.hpp>
 #include <commonsyms.h>
 #pragma mark -
 #pragma mark library
@@ -14,10 +14,24 @@
 using namespace ossia::max;
 
 // ossia-max library constructor
+struct max_msp_log_sink final :
+        public spdlog::sinks::sink
+{
+    void log(const spdlog::details::log_msg& msg) override
+    {
+        post("%s", msg.raw.str().c_str());
+        //l(msg.level, QString::fromUtf8(msg.formatted.data(), msg.formatted.size()));
+    }
+
+    void flush() override
+    {
+    }
+};
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
     m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
 {
+  ossia::context c{{std::make_shared<max_msp_log_sink>()}};
   common_symbols_init();
 
   m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();

@@ -4,6 +4,7 @@
 #include <ossia/detail/hash_map.hpp>
 #include <readerwriterqueue.h>
 #include <ossia/detail/optional.hpp>
+
 namespace ossia
 {
 namespace net {
@@ -15,8 +16,8 @@ class OSSIA_EXPORT phidget_protocol : public ossia::net::protocol_base
   net::device_base* m_dev{};
   std::function<void()> m_commandCb;
   moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
-  //std::unordered_map<std::pair<PhidgetHandle, ossia::optional<int>>, ossia::net::node_base*> m_phidgetMap;
-  ossia::fast_hash_map<PhidgetHandle, ossia::net::node_base*> m_phidgetMap;
+
+  ossia::fast_hash_map<PhidgetHandle, ossia::phidget_node*> m_phidgetMap;
 
 public:
   phidget_protocol();
@@ -40,13 +41,12 @@ public:
 private:
 
   ossia::net::node_base*  get_parent(ossia::phidget_handle_t hdl);
-  std::function<void(PhidgetHandle)> onDeviceCreated;
-  std::function<void(PhidgetHandle)> onDeviceDestroyed;
   PhidgetManagerHandle m_hdl{};
 
-  std::vector<PhidgetHandle> m_phidgets;
-  std::vector<PhidgetHandle> m_phidgetQuarantine;
-  void open();
-
+  void on_deviceCreated(PhidgetHandle phid);
+  void on_deviceRemoved(phidget_id sn);
+  void remove_parent_rec(ossia::net::node_base* par);
+  void remove_node(ossia::net::node_base* par);
+  void deleting_node(const ossia::net::node_base& par);
 };
 }
