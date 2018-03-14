@@ -489,6 +489,7 @@ class phidget_control_node : public ossia::net::generic_node
       generic_node{name, dev, parent}
     {
       m_parameter = std::make_unique< phidget_control_parameter<Desc> >(hdl, *this);
+      m_device.on_parameter_created(*m_parameter);
     }
 };
 
@@ -499,6 +500,7 @@ class phidget_open_node : public ossia::net::generic_node
       generic_node{"open", dev, parent}
     {
       m_parameter = std::make_unique< phidget_open_parameter >(hdl, *this);
+      m_device.on_parameter_created(*m_parameter);
     }
 };
 
@@ -509,6 +511,7 @@ class phidget_channel_node : public ossia::net::generic_node
       generic_node{"channel", dev, parent}
     {
       m_parameter = std::make_unique< phidget_channel_parameter >(hdl, *this);
+      m_device.on_parameter_created(*m_parameter);
     }
 };
 
@@ -549,6 +552,8 @@ class phidget_voltage_ratio_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
+
       add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -586,6 +591,7 @@ class phidget_current_input_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -630,6 +636,7 @@ class phidget_voltage_input_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -666,6 +673,7 @@ class phidget_capacitive_touch_input_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -701,6 +709,7 @@ class phidget_distance_sensor_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<UInt_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -736,6 +745,7 @@ class phidget_humidity_sensor_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -772,6 +782,7 @@ class phidget_pressure_sensor_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -806,6 +817,7 @@ class phidget_resistance_input_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -841,6 +853,7 @@ class phidget_light_sensor_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
@@ -895,6 +908,7 @@ class phidget_digital_input_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Parameter>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
     }
@@ -941,6 +955,7 @@ class phidget_digital_output_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Parameter>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
     }
@@ -974,6 +989,7 @@ class phidget_magnetometer_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Vec3_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
@@ -1009,6 +1025,7 @@ class phidget_accelerometer_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Vec3_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
       add_child_simple(std::make_unique< ossia::phidget_channel_node>(m_hdl, m_device, *this));
@@ -1044,6 +1061,7 @@ class phidget_gyroscope_node : public ossia::phidget_node
     void init()
     {
       m_parameter = make_parameter<Vec3_parameter<param_desc>>(*this);
+      m_device.on_parameter_created(*m_parameter);
 
       add_child_simple(std::make_unique< ossia::phidget_open_node>(m_hdl, m_device, *this));
       add_child_simple(std::make_unique<ossia::phidget_control_node>(Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));

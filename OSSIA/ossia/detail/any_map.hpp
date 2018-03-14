@@ -9,7 +9,7 @@
  * \file any_map.hpp
  */
 extern template class OSSIA_EXTERN_EXPORT_HPP(OSSIA_EXPORT)
-  tsl::hopscotch_map<std::string, std::any, ossia::string_hash, ossia::string_equal, std::allocator<std::pair<std::string, std::any>>, 4>;
+  tsl::hopscotch_map<std::string, ossia::any, ossia::string_hash, ossia::string_equal, std::allocator<std::pair<std::string, ossia::any>>, 4>;
 namespace ossia
 {
 //! A container to store any kind of data indexed by a string
