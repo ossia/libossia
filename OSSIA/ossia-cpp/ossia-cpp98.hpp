@@ -302,7 +302,7 @@ private:
   void cleanup_parameter(const ossia::net::parameter_base&);
 
   ossia::net::node_base* m_node;
-  ossia::net::parameter_base* m_addr;
+  ossia::net::parameter_base* m_param;
 };
 
 class OSSIA_EXPORT oscquery_server
