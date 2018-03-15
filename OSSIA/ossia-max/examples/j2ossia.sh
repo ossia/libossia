@@ -9,6 +9,7 @@ find "$1" -name '*.maxpat' -exec sed -E -i.bak '
     s/j\.send/ossia.remote/g;    
     s/j\.receive/ossia.remote/g;    
     s/j\.model/ossia.model \#1/g;
+    s/j\.view/ossia.view \#1/g;
     s/j\.message ([a-zA-Z0-9~().\/]+) /ossia.parameter \1 @mode set /g;
     s/j\.return ([a-zA-Z0-9~().\/]+) /ossia.parameter \1 @mode get /g;    
     s/j\.parameter/ossia.parameter/g;
