@@ -1438,11 +1438,19 @@ oscquery_server::~oscquery_server()
 
 void oscquery_server::setup(std::string name, int oscPort, int wsPort)
 {
-  auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-  m_dev = new ossia::net::generic_device{std::move(local_proto_ptr),
-          name};
-  local_proto_ptr->expose_to (std::make_unique<ossia::oscquery::oscquery_server_protocol> (
-                             oscPort, wsPort));
+  //auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
+  //m_dev = new ossia::net::generic_device{std::move(local_proto_ptr), name};
+  //local_proto_ptr->expose_to
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+        m_dev->get_protocol());
+
+  m_dev->set_name(name);
+
+  auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+        oscPort, wsPort);
+
+  multiplex.expose_to(std::move(oscq_proto));
+
 }
 
 node oscquery_server::get_root_node() const
