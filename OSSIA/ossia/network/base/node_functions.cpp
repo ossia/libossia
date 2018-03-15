@@ -597,8 +597,8 @@ std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
 
 std::vector<parameter_base*>
 find_or_create_parameter(node_base& node,
-                         std::string address,
-                         std::string type)
+                         const std::string& address,
+                         const std::string& type)
 {
   // search for child that matches name but without parameter
   // and create parameter on that node if it exists

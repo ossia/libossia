@@ -78,8 +78,8 @@ find_or_create_node(node_base& dev, ossia::string_view parameter_base);
  */
 OSSIA_EXPORT std::vector<parameter_base*>
 find_or_create_parameter(node_base& node,
-                         std::string address,
-                         std::string type);
+                         const std::string& address,
+                         const std::string& type);
 
 /**
  * @brief Calls find_node or create_node according to the value `create`
