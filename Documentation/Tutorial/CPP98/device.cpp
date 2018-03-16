@@ -40,6 +40,10 @@ int main()
   n2.set_min(0.5);
   n2.set_max(0.7);
 
+  // Create a node /boo (just a container without parameter)
+  opp::node n3;
+  n3 = root.create_child("boo");
+
 
   ////////////////////////////////////////////////////////////////////////
   //// Step 2. Creating another device to connect with the first one. ////
@@ -90,7 +94,7 @@ int main()
   // Method 3 :
   //if (n1.valid())root.remove_child(n1.get_name());
   //if (n2.valid())root.remove_child(n2.get_name());
-  //if (n3.valid())root.remove_child(n3.get_name());
+  if (n3.valid())root.remove_child(n3.get_name());
 
 
   return 0;
