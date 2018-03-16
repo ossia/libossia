@@ -104,14 +104,34 @@ void audio_protocol::reload()
 
 #if defined(__EMSCRIPTEN__)
 #else
-  auto inputInfo = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
-  if(!inputInfo)
+
+  int card_in_idx = -1;
+  int card_out_idx = -1;
+
+  for(int i = 0; i < Pa_GetDeviceCount(); i++)
+  {
+    auto raw_name = Pa_GetDeviceInfo(i)->name;
+    if(raw_name == card_in)
+    {
+      card_in_idx = i;
+    }
+    if(raw_name == card_out)
+    {
+      card_out_idx = i;
+    }
+  }
+  if(card_in_idx == -1 || card_out_idx == -1)
     return;
-  auto outputInfo = Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice());
-  if(!outputInfo)
+
+  auto devInInfo = Pa_GetDeviceInfo(card_in_idx);
+  if(!devInInfo)
     return;
-  inputs = inputInfo->maxInputChannels;
-  outputs = outputInfo->maxOutputChannels;
+  auto devOutInfo = Pa_GetDeviceInfo(card_out_idx);
+  if(!devOutInfo)
+    return;
+
+  inputs = devInInfo->maxInputChannels;
+  outputs = devOutInfo->maxOutputChannels;
 
   audio_ins.clear();
   audio_outs.clear();
@@ -141,14 +161,14 @@ void audio_protocol::reload()
 
 
   PaStreamParameters inputParameters;
-  inputParameters.device = Pa_GetDefaultInputDevice();
+  inputParameters.device = card_in_idx;
   inputParameters.channelCount = inputs;
   inputParameters.sampleFormat = paFloat32 | paNonInterleaved;
   inputParameters.suggestedLatency = 0.01;
   inputParameters.hostApiSpecificStreamInfo = nullptr;
 
   PaStreamParameters outputParameters;
-  outputParameters.device = Pa_GetDefaultOutputDevice();
+  outputParameters.device = card_out_idx;
   outputParameters.channelCount = outputs;
   outputParameters.sampleFormat = paFloat32 | paNonInterleaved;
   outputParameters.suggestedLatency = 0.01;

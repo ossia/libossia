@@ -25,6 +25,7 @@ namespace ossia
 class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 {
   public:
+    std::string card_in, card_out;
     int rate{44100};
     int bufferSize{512};
     int inputs{};
