@@ -75,5 +75,23 @@ int main()
   n2.set_value(0.6);
   while(count < 2)
     ;
+
+  // Trying to delete nodes - all methods crash (in different ways)
+
+    // Method 1 :
+  //std::vector<opp::node> children_list;
+  //children_list = root.get_children();
+  //for (auto child : children_list)
+  //     root.remove_child(child.get_name());
+
+  // Method 2 :
+  //root.remove_children();
+
+  // Method 3 :
+  //if (n1.valid())root.remove_child(n1.get_name());
+  //if (n2.valid())root.remove_child(n2.get_name());
+  //if (n3.valid())root.remove_child(n3.get_name());
+
+
   return 0;
 }
