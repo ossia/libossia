@@ -142,6 +142,7 @@ public:
 
   node find_child(std::string addr);
   void remove_child(std::string addr);
+  void remove_children();
 
   // Create a node
   node create_child(std::string addr);

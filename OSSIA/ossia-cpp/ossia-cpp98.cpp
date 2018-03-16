@@ -301,7 +301,7 @@ node::~node()
   if (m_node)
   {
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
-    m_node->get_device()
+    if (m_param) m_node->get_device()
         .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
   }
 }
@@ -351,6 +351,14 @@ void node::remove_child(std::string addr)
   {
     auto cld = ossia::net::find_node(*m_node, addr);
     cld->get_parent()->remove_child(*cld);
+  }
+}
+
+void node::remove_children()
+{
+  if (m_node)
+  {
+    m_node->clear_children();
   }
 }
 
