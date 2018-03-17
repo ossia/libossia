@@ -87,3 +87,6 @@
 [submodule "3rdparty/verdigris"]
 	path = 3rdparty/verdigris
 	url = https://github.com/woboq/verdigris
+[submodule "3rdparty/weakjack"]
+	path = 3rdparty/weakjack
+	url = https://github.com/x42/weakjack

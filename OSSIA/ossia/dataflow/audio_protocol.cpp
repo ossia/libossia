@@ -1,6 +1,8 @@
 #include <ossia/dataflow/audio_protocol.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/device.hpp>
+#define __x86_64__ 1
+#include <weak_libjack.h>
 #if defined(__MACH__)
 #include <mach/mach_init.h>
 #include <mach/thread_policy.h>
@@ -10,17 +12,19 @@
 #endif
 namespace ossia
 {
+
 audio_protocol::audio_protocol():
   bufferSize{128}
 {
   audio_tick = [] (auto&&...) { };
-#if defined(OSSIA_PROTOCOL_AUDIO)
-#if defined(__EMSCRIPTEN__)
+
+#if defined(USE_SDL)
   //SDL_Init(SDL_INIT_AUDIO);
-#else
+#elif defined(USE_PORTAUDIO)
   if(Pa_Initialize() != paNoError)
     throw std::runtime_error("Audio error");
-#endif
+#elif defined(USE_JACK)
+  std::cerr << "JACK: " << have_libjack() << std::endl;
 #endif
 }
 
@@ -28,10 +32,17 @@ audio_protocol::~audio_protocol()
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
-#if defined(__EMSCRIPTEN__)
+
+#if defined(USE_SDL)
   //SDL_Quit();
-#else
+
+#elif defined(USE_PORTAUDIO)
   Pa_Terminate();
+
+#elif defined(USE_JACK)
+
+#else
+
 #endif
 #endif
 }
@@ -78,9 +89,8 @@ void audio_protocol::set_device(ossia::net::device_base& dev)
 
 void audio_protocol::stop()
 {
-#if defined(OSSIA_PROTOCOL_AUDIO)
-#if defined(__EMSCRIPTEN__)
-#else
+#if defined(USE_SDL)
+#elif defined(USE_PORTAUDIO)
   if(m_stream)
   {
     auto ec = Pa_StopStream(m_stream);
@@ -93,17 +103,91 @@ void audio_protocol::stop()
 
     m_stream = nullptr;
   }
-#endif
+#elif defined(USE_JACK)
+  if(client)
+  {
+    jack_client_close(client);
+    client = nullptr;
+    input_ports.clear();
+    output_ports.clear();
+  }
 #endif
 }
 
 void audio_protocol::reload()
 {
-#if defined(OSSIA_PROTOCOL_AUDIO)
   stop();
 
-#if defined(__EMSCRIPTEN__)
-#else
+#if defined(USE_SDL)
+
+#elif defined(USE_JACK)
+
+  client = jack_client_open("score", JackNullOption, NULL);
+  if (!client)
+  {
+    std::cerr << "JACK server not running?" << std::endl;
+    exit(0);
+    return;
+  }
+
+  jack_set_process_callback(
+        client,
+        [] (jack_nframes_t nframes, void* ctx) -> int {
+      auto self = (audio_protocol*) ctx;
+      return self->process(nframes, ctx);
+    },
+        this);
+
+  jack_set_sample_rate_callback (client, JackSampleRateCallback{}, this);
+
+  jack_on_shutdown (client, JackShutdownCallback{}, this);
+
+
+  constexpr const int count = 32;
+  inputs = 32;
+  outputs = 32;
+  audio_ins.clear();
+  audio_outs.clear();
+
+  for(int i = 0; i < count; i++)
+  {
+    auto in = jack_port_register (client, ("in-" + std::to_string(i)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    auto out = jack_port_register (client, ("out-" + std::to_string(i)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+    assert(in);
+    input_ports.push_back(in);
+    assert(out); 
+    output_ports.push_back(out);
+    audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/" + std::to_string(i)));
+    audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
+  }
+
+  main_audio_in = ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/main");
+  main_audio_out = ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/main");
+
+  main_audio_in->audio.resize(inputs);
+
+  for(int i = 0; i < inputs; i++)
+  {
+    audio_ins[i]->audio.resize(1);
+  }
+
+  main_audio_out->audio.resize(outputs);
+  for(int i = 0; i < outputs; i++)
+  {
+    audio_outs[i]->audio.resize(1);
+  }
+
+
+  std::cerr << "=== stream start ===\n";
+
+  int err = jack_activate (client);
+  if (err != 0)
+  {
+    std::cerr << "JACK error: " << err << std::endl;
+  }
+
+
+#elif defined(USE_PORTAUDIO)
 
   int card_in_idx = -1;
   int card_out_idx = -1;
@@ -194,7 +278,6 @@ void audio_protocol::reload()
   else
     std::cerr << "Error while opening audio stream: " << Pa_GetErrorText(ec) << std::endl;
 #endif
-#endif
 }
 
 void audio_protocol::register_parameter(mapped_audio_parameter& p)
@@ -241,31 +324,16 @@ void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
   });
 }
 
-
-#if defined(__EMSCRIPTEN__)
-#else
-PaStream*audio_protocol::stream() { return m_stream; }
-int audio_protocol::PortAudioCallback(
-    const void* input,
-    void* output,
-    unsigned long frameCount,
-    const PaStreamCallbackTimeInfo* timeInfo,
-    PaStreamCallbackFlags statusFlags,
-    void* userData)
+void audio_protocol::process_generic(audio_protocol& self, float** float_input, float** float_output, uint32_t frameCount)
 {
-  auto& self = *static_cast<audio_protocol*>(userData);
   {
     smallfun::function<void()> f;
     while(self.funlist.try_dequeue(f))
       f();
   }
 
-#if defined(OSSIA_PROTOCOL_AUDIO)
   using idx_t = gsl::span<float>::index_type;
   const idx_t fc = frameCount;
-
-  auto float_input = ((float **) input);
-  auto float_output = ((float **) output);
 
   // Prepare virtual audio inputs
   for(auto virt : self.virtaudio)
@@ -320,13 +388,52 @@ int audio_protocol::PortAudioCallback(
     self.replace_tick = false;
   }
 
-  self.audio_tick(frameCount, timeInfo->currentTime);
-  return paContinue;
-#else
-  return {};
-#endif
 }
 
+#if defined(USE_SDL)
+
+#elif defined(USE_PORTAUDIO)
+PaStream*audio_protocol::stream() { return m_stream; }
+int audio_protocol::PortAudioCallback(
+    const void* input,
+    void* output,
+    unsigned long frameCount,
+    const PaStreamCallbackTimeInfo* timeInfo,
+    PaStreamCallbackFlags statusFlags,
+    void* userData)
+{
+  auto& self = *static_cast<audio_protocol*>(userData);
+  auto float_input = ((float **) input);
+  auto float_output = ((float **) output);
+
+  process_generic(self, float_input, float_output, frameCount);
+  self.audio_tick(frameCount, timeInfo->currentTime);
+
+  return paContinue;
+}
+#elif defined(USE_JACK)
+
+int audio_protocol::process(jack_nframes_t nframes, void* arg)
+{
+
+  auto& self = *static_cast<audio_protocol*>(arg);
+  auto float_input = (float**)alloca(sizeof(float*) * self.inputs);
+  auto float_output = (float**) alloca(sizeof(float*) * self.outputs);
+  for(int i = 0; i < self.inputs; i++)
+  {
+    float_input[i] = (jack_default_audio_sample_t *) jack_port_get_buffer(self.input_ports[i], nframes);
+  }
+  for(int i = 0; i < self.outputs; i++)
+  {
+    float_output[i] = (jack_default_audio_sample_t *) jack_port_get_buffer(self.output_ports[i], nframes);
+  }
+
+  process_generic(self, float_input, float_output, nframes);
+  self.audio_tick(nframes, 0);
+
+  return 0;
+}
+#endif
 audio_device::audio_device(std::string name)
   : device{std::make_unique<audio_protocol>(), name}
   , protocol{static_cast<audio_protocol&>(device.get_protocol())}
@@ -351,5 +458,9 @@ ossia::audio_parameter& audio_device::get_main_out()
   return static_cast<ossia::audio_parameter&>(*ossia::net::find_node(device.get_root_node(), "/out/main")->get_parameter());
 }
 
-#endif
+
 }
+
+#if defined(USE_JACK)
+#include <../weakjack/weak_libjack.c>
+#endif

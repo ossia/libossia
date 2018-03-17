@@ -7,12 +7,31 @@
 #include <readerwriterqueue.h>
 
 #if defined(OSSIA_PROTOCOL_AUDIO)
-#if defined(__EMSCRIPTEN__)
-  #include <SDL/SDL.h>
-  #include <SDL/SDL_audio.h>
-#else
-  #include <portaudio.h>
+  #if defined(__EMSCRIPTEN__)
+    #define USE_SDL
+  #elif defined(_MSC_VER)
+    #define USE_JACK
+  #else
+    #define USE_PORTAUDIO
+  #endif
 #endif
+
+#if defined(USE_SDL)
+#include <SDL/SDL.h>
+#include <SDL/SDL_audio.h>
+
+#elif defined(USE_JACK)
+#define USE_WEAK_JACK 1
+#define NO_JACK_METADATA 1
+struct __jack_port;
+struct __jack_client;
+typedef struct _jack_port jack_port_t;
+typedef struct _jack_client jack_client_t;
+typedef uint32_t jack_nframes_t;
+
+#elif defined(USE_PORTAUDIO)
+#include <portaudio.h>
+
 #else
 using PaStream = int;
 using PaStreamCallbackTimeInfo = int;
@@ -35,15 +54,26 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     smallfun::function<void(unsigned long, double), 256> ui_tick;
     smallfun::function<void(unsigned long, double), 256> audio_tick;
 
-#if defined(__EMSCRIPTEN__)
+    static void process_generic(audio_protocol& self, float** inputs, float** outputs, uint32_t nsamples);
+#if defined(USE_SDL)
     static int SDLCallback(void* userData,Uint8* _stream,int _length);
-#else
+
+#elif defined(USE_JACK)
+
+    jack_client_t *client{};
+    std::vector<jack_port_t*> input_ports;
+    std::vector<jack_port_t*> output_ports;
+    static int process(jack_nframes_t nframes, void *arg);
+
+#elif defined(USE_PORTAUDIO)
     static int PortAudioCallback(
         const void *input, void *output,
         unsigned long frameCount,
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags,
         void *userData);
+    PaStream* stream();
+    PaStream* m_stream{};
 #endif
 
     audio_protocol();
@@ -74,14 +104,8 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     void register_parameter(virtual_audio_parameter& p);
     void unregister_parameter(virtual_audio_parameter& p);
 
-#if !defined(__EMSCRIPTEN__)
-    PaStream* stream();
-#endif
   private:
     ossia::net::device_base* m_dev{};
-#if !defined(__EMSCRIPTEN__)
-    PaStream* m_stream{};
-#endif
 
     ossia::audio_parameter* main_audio_in{};
     ossia::audio_parameter* main_audio_out{};

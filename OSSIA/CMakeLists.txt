@@ -144,8 +144,8 @@ endif()
 target_compile_definitions(ossia PUBLIC TINYSPLINE_DOUBLE_PRECISION)
 
 if(MSVC)
-  target_compile_definitions(ossia 
-    PUBLIC 
+  target_compile_definitions(ossia
+    PUBLIC
       __cpp_constexpr=201304
       __cpp_variable_templates=201304
   )
@@ -272,7 +272,7 @@ if(OSSIA_DNSSD)
   target_link_libraries(ossia PRIVATE Servus)
 endif()
 
-if(OSSIA_DATAFLOW)  
+if(OSSIA_DATAFLOW)
   find_package(TBB)
   if(TARGET tbb)
     set(OSSIA_PARALLEL 1)
@@ -280,13 +280,16 @@ if(OSSIA_DATAFLOW)
   endif()
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
-  target_link_libraries(ossia PUBLIC PortAudio)
+  if(MSVC)
+    target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/weakjack)
+  else()
+    target_link_libraries(ossia PUBLIC PortAudio)
 
-  find_library(Jack_LIBRARY NAMES jack)
-  if(Jack_LIBRARY)
-    target_link_libraries(ossia PUBLIC ${Jack_LIBRARY})
+    find_library(Jack_LIBRARY NAMES jack)
+    if(Jack_LIBRARY)
+      target_link_libraries(ossia PUBLIC ${Jack_LIBRARY})
+    endif()
   endif()
-
 
   if(APPLE)
       find_library(Foundation_FK Foundation)
