@@ -54,7 +54,7 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     smallfun::function<void(unsigned long, double), 256> ui_tick;
     smallfun::function<void(unsigned long, double), 256> audio_tick;
 
-    static void process_generic(audio_protocol& self, float** inputs, float** outputs, uint32_t nsamples);
+    static void process_generic(audio_protocol& self, float** inputs, float** outputs, uint64_t nsamples);
 #if defined(USE_SDL)
     static int SDLCallback(void* userData,Uint8* _stream,int _length);
 

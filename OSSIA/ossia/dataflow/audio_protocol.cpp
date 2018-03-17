@@ -1,8 +1,12 @@
 #include <ossia/dataflow/audio_protocol.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/device.hpp>
+
+#if defined(USE_JACK)
 #define __x86_64__ 1
 #include <weak_libjack.h>
+#endif
+
 #if defined(__MACH__)
 #include <mach/mach_init.h>
 #include <mach/thread_policy.h>
@@ -155,7 +159,7 @@ void audio_protocol::reload()
     auto out = jack_port_register (client, ("out-" + std::to_string(i)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     assert(in);
     input_ports.push_back(in);
-    assert(out); 
+    assert(out);
     output_ports.push_back(out);
     audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/in/" + std::to_string(i)));
     audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(m_dev->get_root_node(), "/out/" + std::to_string(i)));
@@ -324,7 +328,7 @@ void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
   });
 }
 
-void audio_protocol::process_generic(audio_protocol& self, float** float_input, float** float_output, uint32_t frameCount)
+void audio_protocol::process_generic(audio_protocol& self, float** float_input, float** float_output, uint64_t frameCount)
 {
   {
     smallfun::function<void()> f;
