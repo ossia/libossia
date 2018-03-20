@@ -4,7 +4,7 @@
 #include <ossia/ossia.hpp>
 #include <functional>
 #include <iostream>
-#include <ossia/dataflow/audio_parameter.hpp>
+#include <ossia/audio/audio_parameter.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
 

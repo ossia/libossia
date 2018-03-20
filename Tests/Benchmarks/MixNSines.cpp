@@ -1,5 +1,5 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/dataflow/audio_protocol.hpp>
+#include <ossia/audio/audio_protocol.hpp>
 #include <ossia/editor/automation/automation.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>

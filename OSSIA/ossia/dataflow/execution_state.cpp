@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "execution_state.hpp"
 
-#include <ossia/dataflow/audio_parameter.hpp>
+#include <ossia/audio/audio_parameter.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/detail/apply.hpp>

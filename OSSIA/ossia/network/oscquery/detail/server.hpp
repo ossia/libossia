@@ -155,7 +155,8 @@ public:
       // in a way that bypasses most, if not all, of the cleanup routines"
 
       //m_server.stop();
-      m_server.stop_listening();
+      if(m_server.is_listening())
+        m_server.stop_listening();
   }
 
   void close(connection_handler hdl)

@@ -1,5 +1,5 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/dataflow/audio_protocol.hpp>
+#include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/common_nodes.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>

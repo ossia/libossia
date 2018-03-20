@@ -14,7 +14,6 @@
 #include <hopscotch_map.h>
 #include <string>
 #include <vector>
-#include <websocketpp/connection.hpp>
 
 namespace ossia
 {

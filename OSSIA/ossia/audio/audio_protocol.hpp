@@ -1,46 +1,27 @@
 #pragma once
 #include <ossia-config.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/dataflow/audio_parameter.hpp>
+#include <ossia/audio/audio_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <smallfun.hpp>
 #include <readerwriterqueue.h>
 
-#if defined(OSSIA_PROTOCOL_AUDIO)
-  #if defined(__EMSCRIPTEN__)
-    #define USE_SDL
-  #elif defined(_MSC_VER)
-    #define USE_JACK
-  #else
-    #define USE_PORTAUDIO
-  #endif
-#endif
-
-#if defined(USE_SDL)
-#include <SDL/SDL.h>
-#include <SDL/SDL_audio.h>
-
-#elif defined(USE_JACK)
-#define USE_WEAK_JACK 1
-#define NO_JACK_METADATA 1
-struct __jack_port;
-struct __jack_client;
-typedef struct _jack_port jack_port_t;
-typedef struct _jack_client jack_client_t;
-typedef uint32_t jack_nframes_t;
-
-#elif defined(USE_PORTAUDIO)
-#include <portaudio.h>
-
-#else
-using PaStream = int;
-using PaStreamCallbackTimeInfo = int;
-using PaStreamCallbackFlags = int;
-#endif
-
-
 namespace ossia
 {
+class audio_protocol;
+class OSSIA_EXPORT audio_engine
+{
+  public:
+    virtual ~audio_engine();
+
+    virtual void stop() = 0;
+    virtual void reload(audio_protocol* cur) = 0;
+
+    std::atomic<audio_protocol*> protocol{};
+    std::atomic_bool stop_processing{};
+    std::atomic_bool processing{};
+};
+
 class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 {
   public:
@@ -55,30 +36,11 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     smallfun::function<void(unsigned long, double), 256> audio_tick;
 
     static void process_generic(audio_protocol& self, float** inputs, float** outputs, uint64_t nsamples);
-#if defined(USE_SDL)
-    static int SDLCallback(void* userData,Uint8* _stream,int _length);
 
-#elif defined(USE_JACK)
-
-    jack_client_t *client{};
-    std::vector<jack_port_t*> input_ports;
-    std::vector<jack_port_t*> output_ports;
-    static int process(jack_nframes_t nframes, void *arg);
-
-#elif defined(USE_PORTAUDIO)
-    static int PortAudioCallback(
-        const void *input, void *output,
-        unsigned long frameCount,
-        const PaStreamCallbackTimeInfo* timeInfo,
-        PaStreamCallbackFlags statusFlags,
-        void *userData);
-    PaStream* stream();
-    PaStream* m_stream{};
-#endif
 
     audio_protocol();
-
     ~audio_protocol() override;
+    void stop() override;
 
     void set_tick(smallfun::function<void(unsigned long, double)> t)
     {
@@ -95,22 +57,21 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     bool update(ossia::net::node_base& node_base) override;
     void set_device(ossia::net::device_base& dev) override;
 
-    void stop() override;
-
-    void reload();
 
     void register_parameter(mapped_audio_parameter& p);
     void unregister_parameter(mapped_audio_parameter& p);
     void register_parameter(virtual_audio_parameter& p);
     void unregister_parameter(virtual_audio_parameter& p);
 
-  private:
-    ossia::net::device_base* m_dev{};
-
+    ossia::net::device_base& get_device() const { return *m_dev; }
     ossia::audio_parameter* main_audio_in{};
     ossia::audio_parameter* main_audio_out{};
     std::vector<ossia::audio_parameter*> audio_ins;
     std::vector<ossia::audio_parameter*> audio_outs;
+
+    audio_engine* engine{};
+  protected:
+    ossia::net::device_base* m_dev{};
 
     std::vector<ossia::mapped_audio_parameter*> in_mappings;
     std::vector<ossia::mapped_audio_parameter*> out_mappings;
@@ -118,11 +79,11 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     moodycamel::ReaderWriterQueue<smallfun::function<void()>> funlist;
 };
 
-
 class OSSIA_EXPORT audio_device
 {
   public:
     audio_device(std::string name = "audio");
+    audio_device(std::unique_ptr<audio_protocol>, std::string name = "audio");
     ~audio_device();
 
     ossia::audio_parameter& get_main_in();
@@ -132,4 +93,6 @@ class OSSIA_EXPORT audio_device
     ossia::audio_protocol& protocol;
 };
 
+OSSIA_EXPORT
+ossia::audio_engine* make_audio_engine(std::string proto);
 }

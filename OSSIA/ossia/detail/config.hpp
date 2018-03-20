@@ -50,11 +50,11 @@ using void_t = std::void_t<Args...>;
 #define SPDLOG_TRACE_ON
 
 #if !defined(SPDLOG_FMT_EXTERNAL)
-#define SPDLOG_FMT_EXTERNAL
+#define SPDLOG_FMT_EXTERNAL 1
 #endif
 
 #if !defined(FMT_HEADER_ONLY)
-#define FMT_HEADER_ONLY
+#define FMT_HEADER_ONLY 1
 #endif
 
 #if !defined(RAPIDJSON_HAS_STDSTRING)
@@ -67,7 +67,7 @@ using void_t = std::void_t<Args...>;
 #endif
 
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
-#define BOOST_SYSTEM_NO_DEPRECATED
+#define BOOST_SYSTEM_NO_DEPRECATED 1
 
 #define _WEBSOCKETPP_CPP11_STRICT_ 1
 
@@ -76,13 +76,17 @@ using void_t = std::void_t<Args...>;
 #endif
 
 #if !defined(BOOST_REGEX_NO_LIB)
-#define BOOST_REGEX_NO_LIB
+#define BOOST_REGEX_NO_LIB 1
 #endif
 
 #if !defined(BOOST_DATE_TIME_NO_LIB)
-#define BOOST_DATE_TIME_NO_LIB
+#define BOOST_DATE_TIME_NO_LIB 1
+#endif
+
+#if !defined(BOOST_SYSTEM_NO_LIB)
+#define BOOST_SYSTEM_NO_LIB 1
 #endif
 
 #if !defined(QT_NO_KEYWORDS)
-#define QT_NO_KEYWORDS
+#define QT_NO_KEYWORDS 1
 #endif

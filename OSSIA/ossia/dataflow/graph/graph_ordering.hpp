@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/dataflow/audio_parameter.hpp>
+#include <ossia/audio/audio_parameter.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/detail/logger.hpp>
