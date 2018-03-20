@@ -1,5 +1,5 @@
 #pragma once
-#if __has_include(<portaudio.h>)
+#if 1 || __has_include(<portaudio.h>)
 #include <ossia/audio/audio_protocol.hpp>
 #include <portaudio.h>
 
@@ -26,6 +26,8 @@ class portaudio_engine final
 
     void reload(ossia::audio_protocol* p) override
     {
+      if(this->protocol)
+        this->protocol.load()->engine = nullptr;
       this->protocol = p;
       stop();
 
@@ -53,6 +55,10 @@ class portaudio_engine final
           card_out_idx = i;
         }
       }
+      if(card_in_idx == -1)
+        card_in_idx = Pa_GetDefaultInputDevice();
+      if(card_out_idx == -1)
+        card_out_idx = Pa_GetDefaultOutputDevice();
       if(card_in_idx == -1 || card_out_idx == -1)
         return;
 
@@ -108,7 +114,8 @@ class portaudio_engine final
       outputParameters.hostApiSpecificStreamInfo = nullptr;
 
       std::cerr << "=== stream start ===\n";
-      auto ec = Pa_OpenStream(&m_stream,
+      PaStream* stream;
+      auto ec = Pa_OpenStream(&stream,
                               &inputParameters,
                               &outputParameters,
                               proto.rate,
@@ -116,12 +123,17 @@ class portaudio_engine final
                               paNoFlag,
                               &PortAudioCallback,
                               this);
+      client.store(stream);
       if(ec == PaErrorCode::paNoError)
       {
-        ec = Pa_StartStream( m_stream );
+        ec = Pa_StartStream( client );
         if(ec != PaErrorCode::paNoError)
         {
           std::cerr << "Error while starting audio stream: " << Pa_GetErrorText(ec) << std::endl;
+        }
+        else
+        {
+          stop_processing = false;
         }
       }
       else
@@ -130,9 +142,14 @@ class portaudio_engine final
 
     void stop() override
     {
-      if(m_stream)
+      if(client)
       {
-        auto ec = Pa_StopStream(m_stream);
+        stop_processing = true;
+        auto clt = client.load();
+        client = nullptr;
+        protocol = nullptr;
+
+        auto ec = Pa_StopStream(clt);
         std::cerr << "=== stream stop ===\n";
 
         if(ec != PaErrorCode::paNoError)
@@ -140,7 +157,7 @@ class portaudio_engine final
           std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec) << std::endl;
         }
 
-        m_stream = nullptr;
+        while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100)) ;
       }
     }
 
@@ -154,16 +171,30 @@ class portaudio_engine final
         void* userData)
     {
       auto& self = *static_cast<portaudio_engine*>(userData);
-      auto float_input = ((float **) input);
-      auto float_output = ((float **) output);
 
-      self.protocol.load()->process_generic(*self.protocol.load(), float_input, float_output, frameCount);
-      self.protocol.load()->audio_tick(frameCount, timeInfo->currentTime);
+      if(self.stop_processing)
+      {
+        return 0;
+      }
+
+      auto clt = self.client.load();
+      auto proto = self.protocol.load();
+      if(clt && proto)
+      {
+        self.processing = true;
+        auto float_input = ((float **) input);
+        auto float_output = ((float **) output);
+
+        proto->process_generic(*proto, float_input, float_output, frameCount);
+        proto->audio_tick(frameCount, timeInfo->currentTime);
+
+        self.processing = false;
+      }
 
       return paContinue;
     }
 
-    PaStream* m_stream{};
+    std::atomic<PaStream*> client{};
 };
 
 }
