@@ -272,12 +272,17 @@ if(OSSIA_DATAFLOW)
   find_package(TBB)
   if(TARGET tbb)
     set(OSSIA_PARALLEL 1)
-    target_link_libraries(ossia PUBLIC tbb)
+    target_include_directories(ossia PRIVATE
+      ${TBB_INCLUDE_DIRS})
+    target_link_libraries(ossia PRIVATE
+        debug ${TBB_LIBRARIES_DEBUG}
+        optimized ${TBB_LIBRARIES_RELEASE}
+        general ${TBB_LIBRARIES})
   endif()
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 
-  find_path(Jack_INCLUDE_DIR NAMES jack/jack.h)
+  find_path(Jack_INCLUDE_DIR NAMES jack/jack.h HINTS ${CMAKE_CURRENT_SOURCE_DIR})
   if(Jack_INCLUDE_DIR)
     target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/weakjack)
     target_include_directories(ossia PRIVATE ${Jack_INCLUDE_DIR})
@@ -285,11 +290,6 @@ if(OSSIA_DATAFLOW)
 
   if(NOT MSVC)
     target_link_libraries(ossia PUBLIC PortAudio)
-
-#    find_library(Jack_LIBRARY NAMES jack)
-#    if(Jack_LIBRARY)
-#      target_link_libraries(ossia PUBLIC ${Jack_LIBRARY})
-#    endif()
   endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)
