@@ -61,10 +61,6 @@ if(NOT TARGET ModernMIDI)
   set(OSSIA_DATAFLOW OFF)
 endif()
 
-if(NOT TARGET PortAudio)
-  set(OSSIA_DATAFLOW OFF)
-endif()
-
 include(ossia_sources.cmake)
 
 if(OSSIA_PROTOCOL_HTTP)
@@ -280,15 +276,27 @@ if(OSSIA_DATAFLOW)
   endif()
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
-  if(MSVC)
+
+  find_path(Jack_INCLUDE_DIR NAMES jack/jack.h)
+  if(Jack_INCLUDE_DIR)
     target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/weakjack)
-  else()
+    target_include_directories(ossia PRIVATE ${Jack_INCLUDE_DIR})
+  endif()
+
+  if(NOT MSVC)
     target_link_libraries(ossia PUBLIC PortAudio)
 
-    find_library(Jack_LIBRARY NAMES jack)
-    if(Jack_LIBRARY)
-      target_link_libraries(ossia PUBLIC ${Jack_LIBRARY})
-    endif()
+#    find_library(Jack_LIBRARY NAMES jack)
+#    if(Jack_LIBRARY)
+#      target_link_libraries(ossia PUBLIC ${Jack_LIBRARY})
+#    endif()
+  endif()
+
+  set(SDL_BUILDING_LIBRARY TRUE)
+  find_package(SDL)
+  if(SDL_FOUND)
+    target_include_directories(ossia PRIVATE ${SDL_INCLUDE_DIR})
+    target_link_libraries(ossia PRIVATE ${SDL_LIBRARY})
   endif()
 
   if(APPLE)

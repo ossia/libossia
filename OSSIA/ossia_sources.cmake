@@ -505,6 +505,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/portaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/sdl_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/bench_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/common_nodes.hpp"
