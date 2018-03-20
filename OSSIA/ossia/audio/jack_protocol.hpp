@@ -42,6 +42,54 @@ jack_engine::jack_engine()
   jack_set_process_callback(client, process, this);
   jack_set_sample_rate_callback (client, JackSampleRateCallback{}, this);
   jack_on_shutdown (client, JackShutdownCallback{}, this);
+  jack_set_error_function([] (const char* str) {
+    std::cerr << "JACK ERROR: " << str << std::endl;
+  });
+  jack_set_info_function([] (const char* str) {
+    std::cerr << "JACK INFO: " << str << std::endl;
+  });
+
+  constexpr const int count = 32;
+
+  for(int i = 0; i < count; i++)
+  {
+    auto in = jack_port_register (client, ("in_" + std::to_string(i + 1)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    auto out = jack_port_register (client, ("out_" + std::to_string(i + 1)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+    assert(in);
+    input_ports.push_back(in);
+    assert(out);
+    output_ports.push_back(out);
+  }
+
+  std::cerr << "=== stream start ===\n";
+
+  int err = jack_activate(client);
+  if (err != 0)
+  {
+    std::cerr << "JACK error: " << err << std::endl;
+    exit(0);
+  }
+
+  {
+    auto ports = jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsOutput);
+    if(ports)
+    {
+      for (int i = 0; i < input_ports.size() && ports[i]; i++)
+        jack_connect(client, ports[i], jack_port_name(input_ports[i]));
+
+      jack_free(ports);
+    }
+  }
+  {
+    auto ports = jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsInput);
+    if(ports)
+    {
+      for (int i = 0; i < output_ports.size() && ports[i]; i++)
+        jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
+
+      jack_free(ports);
+    }
+  }
 }
 
 jack_engine::~jack_engine()
@@ -49,6 +97,7 @@ jack_engine::~jack_engine()
   stop();
   if(protocol)
     protocol.load()->engine = nullptr;
+  jack_deactivate(client.load());
   jack_client_close(client);
 }
 
@@ -65,7 +114,7 @@ void jack_engine::reload(ossia::audio_protocol* p)
   std::cerr << "=== STARTING PROCESS ==" << std::endl;
 
 
-  if(input_ports.empty())
+  //if(input_ports.empty())
   {
     constexpr const int count = 32;
     proto.inputs = 32;
@@ -75,14 +124,8 @@ void jack_engine::reload(ossia::audio_protocol* p)
 
     for(int i = 0; i < count; i++)
     {
-      auto in = jack_port_register (client, ("in-" + std::to_string(i)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-      auto out = jack_port_register (client, ("out-" + std::to_string(i)).c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-      assert(in);
-      input_ports.push_back(in);
-      assert(out);
-      output_ports.push_back(out);
-      proto.audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/in/" + std::to_string(i)));
-      proto.audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/out/" + std::to_string(i)));
+      proto.audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/in/" + std::to_string(i + 1)));
+      proto.audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/out/" + std::to_string(i + 1)));
     }
 
     proto.main_audio_in = ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/in/main");
@@ -102,14 +145,6 @@ void jack_engine::reload(ossia::audio_protocol* p)
     }
   }
 
-  std::cerr << "=== stream start ===\n";
-
-  int err = jack_activate (client);
-  if (err != 0)
-  {
-    std::cerr << "JACK error: " << err << std::endl;
-    return;
-  }
   stop_processing = false;
 }
 
@@ -120,7 +155,6 @@ void jack_engine::stop()
     this->protocol.load()->engine = nullptr;
   stop_processing = true;
   protocol = nullptr;
-  jack_deactivate(client.load());
   while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100)) ;
 }
 
@@ -129,7 +163,6 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
   auto& self = *static_cast<jack_engine*>(arg);
   if(self.stop_processing)
   {
-    std::cerr << "=== NO RUNNING ==" << std::endl;
     return 0;
   }
 

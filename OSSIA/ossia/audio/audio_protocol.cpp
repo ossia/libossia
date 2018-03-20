@@ -89,10 +89,8 @@ void audio_protocol::stop()
   if(engine)
   {
     engine->stop();
-    engine->protocol = nullptr;
   }
-  audio_tick = [] (auto&&...) { };
-  ui_tick = [] (auto&&...) { };
+  set_tick([] (auto&&...) { });
   while(funlist.pop());
   engine = nullptr;
 }

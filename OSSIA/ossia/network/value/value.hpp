@@ -280,10 +280,7 @@ public:
     auto t = v.which();
     if (t == v.npos)
     {
-      throw ossia::invalid_value_type_error{
-          "value::getType: "
-          "called with no value"};
-      return {};
+      return ossia::val_type::NONE;
     }
 
     return static_cast<ossia::val_type>(t);
