@@ -71,21 +71,6 @@ struct init_node_visitor
     const graph_edge& edge;
     execution_state& e;
 
-
-    static void copy_from_local(const data_type& out, inlet& in)
-    {
-      const auto w = out.which();
-      if (w == in.data.which() && w != data_type::npos)
-      {
-        switch(w)
-        {
-          case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
-          case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
-          case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
-        }
-      }
-    }
-
     static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
     {
       const auto w = out.which();
@@ -102,7 +87,16 @@ struct init_node_visitor
 
     static void copy(const outlet& out, inlet& in)
     {
-      copy_from_local(out.data, in);
+      const auto w = out.data.which();
+      if (w == in.data.which() && w != data_type::npos)
+      {
+        switch(w)
+        {
+          case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.data.target()), *reinterpret_cast<ossia::audio_port*>(in.data.target())); break;
+          case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.data.target()),  *reinterpret_cast<ossia::midi_port*>(in.data.target())); break;
+          case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.data.target()), *reinterpret_cast<ossia::value_port*>(in.data.target())); break;
+        }
+      }
     }
 
     bool operator()(immediate_glutton_connection) const

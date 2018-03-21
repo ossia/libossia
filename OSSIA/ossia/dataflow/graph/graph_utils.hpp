@@ -121,7 +121,6 @@ struct OSSIA_EXPORT graph_util
       {
         ossia::apply_con(init_node_visitor{*in, *edge, e}, edge->con);
       }
-
     }
   }
 
