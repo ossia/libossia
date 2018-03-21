@@ -91,7 +91,11 @@ void audio_protocol::stop()
     engine->stop();
   }
   set_tick([] (auto&&...) { });
-  while(funlist.pop());
+
+  smallfun::function<void()> f;
+  while(funlist.try_dequeue(f))
+    f();
+
   engine = nullptr;
 }
 
