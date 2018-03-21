@@ -10,7 +10,9 @@
 namespace ossia
 {
 
-ossia::audio_engine* make_audio_engine(std::string proto)
+ossia::audio_engine* make_audio_engine(
+    std::string proto, std::string name,
+    int& inputs, int& outputs, int& rate, int& bs)
 {
   ossia::audio_engine* p{};
   if(0) { }
@@ -24,7 +26,7 @@ ossia::audio_engine* make_audio_engine(std::string proto)
 #if __has_include(<jack/jack.h>)
   else if(proto == "JACK")
   {
-    p = new ossia::jack_engine;
+    p = new ossia::jack_engine{name, inputs, outputs, rate, bs};
   }
 #endif
 
@@ -45,7 +47,7 @@ ossia::audio_engine* make_audio_engine(std::string proto)
   if(!p)
   {
 #if __has_include(<jack/jack.h>)
-    p = new ossia::jack_engine;
+    p = new ossia::jack_engine{name, inputs, outputs, rate, bs};
 #endif
   }
   if(!p)

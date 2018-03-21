@@ -94,5 +94,7 @@ class OSSIA_EXPORT audio_device
 };
 
 OSSIA_EXPORT
-ossia::audio_engine* make_audio_engine(std::string proto);
+ossia::audio_engine* make_audio_engine(
+    std::string proto, std::string name,
+    int& inputs, int& outputs, int& rate, int& bs);
 }
