@@ -174,6 +174,13 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
   auto& self = *static_cast<jack_engine*>(arg);
   if(self.stop_processing)
   {
+    for(int i = 0; i < self.output_ports.size(); i++)
+    {
+      auto chan = (jack_default_audio_sample_t *) jack_port_get_buffer(self.output_ports[i], nframes);
+      for(int i = 0; i < nframes; i++)
+        chan[i] = 0.;
+    }
+
     return 0;
   }
 

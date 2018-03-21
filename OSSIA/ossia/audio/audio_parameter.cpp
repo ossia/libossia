@@ -20,7 +20,12 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
   {
     auto& src = audio[chan];
     auto& res = res_vec[chan];
-    const auto N = std::min((int)src.size(), (int)res.size());
+
+    const auto N = src.size();
+
+    if(res.size() < N)
+      res.resize(N);
+
     for (int i = 0; i < N; i++)
       res[i] += src[i];
   }
