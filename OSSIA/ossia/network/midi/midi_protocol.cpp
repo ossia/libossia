@@ -72,12 +72,16 @@ bool midi_protocol::set_info(midi_info m)
     {
       m_input->openPort(m_info.port);
       m_input->messageCallback = [this] (mm::MidiMessage mess) {
+        const auto chan = mess.getChannel();
+        if(chan == 0)
+          return;
+
         if(m_registers)
         {
           messages.enqueue(mess);
         }
 
-        midi_channel& c = m_channels[mess.getChannel()];
+        midi_channel& c = m_channels[chan - 1];
         switch (mess.getMessageType())
         {
           case mm::MessageType::NOTE_ON:
@@ -181,7 +185,7 @@ bool midi_protocol::pull(parameter_base& address)
     return false;
 
   auto& adrinfo = adrs.info();
-  const midi_channel& chan = m_channels[adrinfo.channel];
+  const midi_channel& chan = m_channels[adrinfo.channel - 1];
   switch (adrinfo.type)
   {
     case address_info::Type::NoteOn_N:
@@ -358,7 +362,7 @@ bool midi_protocol::observe(parameter_base& address, bool enable)
 
   auto adrs_ptr = &adrs;
   auto& adrinfo = adrs.info();
-  midi_channel& chan = m_channels[adrinfo.channel];
+  midi_channel& chan = m_channels[adrinfo.channel - 1];
   switch (adrinfo.type)
   {
     case address_info::Type::NoteOn_N:
