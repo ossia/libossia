@@ -19,7 +19,7 @@ ossia::audio_engine* make_audio_engine(
 #if __has_include(<portaudio.h>)
   else if(proto == "PortAudio")
   {
-    p = new ossia::portaudio_engine;
+    p = new ossia::portaudio_engine{rate, bs};
   }
 #endif
 
@@ -40,7 +40,7 @@ ossia::audio_engine* make_audio_engine(
   if(!p)
   {
 #if __has_include(<portaudio.h>)
-   p = new ossia::portaudio_engine;
+   p = new ossia::portaudio_engine{rate, bs};
 #endif
   }
 

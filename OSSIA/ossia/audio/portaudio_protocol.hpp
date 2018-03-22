@@ -1,5 +1,5 @@
 #pragma once
-#if __has_include(<portaudio.h>)
+#if 1 || __has_include(<portaudio.h>)
 #include <ossia/audio/audio_protocol.hpp>
 #include <portaudio.h>
 
@@ -12,7 +12,7 @@ class portaudio_engine final
     : public audio_engine
 {
   public:
-    portaudio_engine()
+    portaudio_engine(int& in, int& out, int& rate, int& bs)
     {
       if(Pa_Initialize() != paNoError)
         throw std::runtime_error("Audio error");
