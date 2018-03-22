@@ -290,6 +290,10 @@ if(OSSIA_DATAFLOW)
 
   if(NOT MSVC)
     target_link_libraries(ossia PUBLIC PortAudio)
+    find_library(Jack_LIBRARY NAMES jack)
+    if(Jack_LIBRARY)
+      target_link_libraries(ossia PUBLIC ${Jack_LIBRARY})
+    endif()
   endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)
