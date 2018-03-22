@@ -144,7 +144,7 @@ class portaudio_engine final
     static int PortAudioCallback(
         const void* input,
         void* output,
-        unsigned long frameCount,
+        unsigned long nframes,
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags,
         void* userData)
@@ -153,6 +153,13 @@ class portaudio_engine final
 
       if(self.stop_processing)
       {
+        auto float_output = ((float **) output);
+        for(std::size_t i = 0; i < self.m_outs; i++)
+        {
+          auto chan = float_output[i];
+          for(std::size_t i = 0; i < nframes; i++)
+            chan[i] = 0.;
+        }
         return 0;
       }
 
@@ -164,8 +171,8 @@ class portaudio_engine final
         auto float_input = ((float *const *) input);
         auto float_output = ((float **) output);
 
-        proto->process_generic(*proto, float_input, float_output, (int)self.m_ins, (int)self.m_outs, frameCount);
-        proto->audio_tick(frameCount, timeInfo->currentTime);
+        proto->process_generic(*proto, float_input, float_output, (int)self.m_ins, (int)self.m_outs, nframes);
+        proto->audio_tick(nframes, timeInfo->currentTime);
 
         self.processing = false;
       }
