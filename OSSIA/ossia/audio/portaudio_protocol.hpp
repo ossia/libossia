@@ -100,6 +100,18 @@ class portaudio_engine final
     ~portaudio_engine() override
     {
       stop();
+      if(protocol)
+        protocol.load()->engine = nullptr;
+
+      auto clt = client.load();
+      auto ec = Pa_StopStream(clt);
+      std::cerr << "=== stream stop ===\n";
+
+      if(ec != PaErrorCode::paNoError)
+      {
+        std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec) << std::endl;
+      }
+
       Pa_Terminate();
     }
 
@@ -107,9 +119,9 @@ class portaudio_engine final
     {
       if(this->protocol)
         this->protocol.load()->engine = nullptr;
-      this->protocol = p;
       stop();
 
+      this->protocol = p;
       if(!p)
         return;
       auto& proto = *p;
@@ -122,23 +134,10 @@ class portaudio_engine final
 
     void stop() override
     {
-      if(client)
-      {
-        stop_processing = true;
-        auto clt = client.load();
-        client = nullptr;
-        protocol = nullptr;
+      stop_processing = true;
+      protocol = nullptr;
 
-        auto ec = Pa_StopStream(clt);
-        std::cerr << "=== stream stop ===\n";
-
-        if(ec != PaErrorCode::paNoError)
-        {
-          std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec) << std::endl;
-        }
-
-        while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100)) ;
-      }
+      while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
   private:
