@@ -40,7 +40,7 @@ jack_engine::jack_engine(std::string name, int& inputs, int& outputs, int& rate,
   if (!client)
   {
     std::cerr << "JACK server not running?" << std::endl;
-    exit(0);
+    throw std::runtime_error("Audio error: no JACK server");
   }
   jack_set_process_callback(client, process, this);
   jack_set_sample_rate_callback (client, JackSampleRateCallback{}, this);
@@ -74,14 +74,14 @@ jack_engine::jack_engine(std::string name, int& inputs, int& outputs, int& rate,
   if (err != 0)
   {
     std::cerr << "JACK error: " << err << std::endl;
-    exit(0);
+    throw std::runtime_error("Audio error: JACK cannot activate");
   }
 
   {
     auto ports = jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsOutput);
     if(ports)
     {
-      for (int i = 0; i < input_ports.size() && ports[i]; i++)
+      for (std::size_t i = 0; i < input_ports.size() && ports[i]; i++)
         jack_connect(client, ports[i], jack_port_name(input_ports[i]));
 
       jack_free(ports);
@@ -91,7 +91,7 @@ jack_engine::jack_engine(std::string name, int& inputs, int& outputs, int& rate,
     auto ports = jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, JackPortIsPhysical | JackPortIsInput);
     if(ports)
     {
-      for (int i = 0; i < output_ports.size() && ports[i]; i++)
+      for (std::size_t i = 0; i < output_ports.size() && ports[i]; i++)
         jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
 
       jack_free(ports);
@@ -117,44 +117,9 @@ void jack_engine::reload(ossia::audio_protocol* p)
     return;
   auto& proto = *p;
   proto.engine = this;
-  auto& dev = proto.get_device();
   std::cerr << "=== STARTING PROCESS ==" << std::endl;
 
-  {
-    if(proto.inputs <= 0)
-      proto.inputs = input_ports.size();
-
-    if(proto.outputs <= 0)
-      proto.outputs = output_ports.size();
-
-    proto.audio_ins.clear();
-    proto.audio_outs.clear();
-
-    for(int i = 0; i < proto.inputs; i++)
-    {
-      proto.audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/in/" + std::to_string(i + 1)));
-    }
-    for(int i = 0; i < proto.outputs; i++)
-    {
-      proto.audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/out/" + std::to_string(i + 1)));
-    }
-
-    proto.main_audio_in = ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/in/main");
-    proto.main_audio_out = ossia::net::find_or_create_parameter<ossia::audio_parameter>(dev.get_root_node(), "/out/main");
-
-    proto.main_audio_in->audio.resize(proto.inputs);
-
-    for(int i = 0; i < proto.inputs; i++)
-    {
-      proto.audio_ins[i]->audio.resize(1);
-    }
-
-    proto.main_audio_out->audio.resize(proto.outputs);
-    for(int i = 0; i < proto.outputs; i++)
-    {
-      proto.audio_outs[i]->audio.resize(1);
-    }
-  }
+  proto.setup_tree((int)input_ports.size(), (int)output_ports.size());
 
   stop_processing = false;
 }
@@ -172,12 +137,14 @@ void jack_engine::stop()
 int jack_engine::process(jack_nframes_t nframes, void* arg)
 {
   auto& self = *static_cast<jack_engine*>(arg);
+  const auto inputs = self.input_ports.size();
+  const auto outputs = self.output_ports.size();
   if(self.stop_processing)
   {
-    for(int i = 0; i < self.output_ports.size(); i++)
+    for(std::size_t i = 0; i < outputs; i++)
     {
       auto chan = (jack_default_audio_sample_t *) jack_port_get_buffer(self.output_ports[i], nframes);
-      for(int i = 0; i < nframes; i++)
+      for(std::size_t i = 0; i < nframes; i++)
         chan[i] = 0.;
     }
 
@@ -188,18 +155,18 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
   if(proto)
   {
     self.processing = true;
-    auto float_input = (float**)alloca(sizeof(float*) * proto->inputs);
-    auto float_output = (float**) alloca(sizeof(float*) * proto->outputs);
-    for(int i = 0; i < proto->inputs; i++)
+    auto float_input = (float**)alloca(sizeof(float*) * inputs);
+    auto float_output = (float**) alloca(sizeof(float*) * outputs);
+    for(std::size_t i = 0; i < inputs; i++)
     {
       float_input[i] = (jack_default_audio_sample_t *) jack_port_get_buffer(self.input_ports[i], nframes);
     }
-    for(int i = 0; i < proto->outputs; i++)
+    for(std::size_t i = 0; i < outputs; i++)
     {
       float_output[i] = (jack_default_audio_sample_t *) jack_port_get_buffer(self.output_ports[i], nframes);
     }
 
-    proto->process_generic(*proto, float_input, float_output, nframes);
+    proto->process_generic(*proto, float_input, float_output, (int)inputs, (int)outputs, nframes);
     proto->audio_tick(nframes, 0);
     self.processing = false;
   }

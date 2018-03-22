@@ -11,7 +11,7 @@ namespace ossia
 {
 
 ossia::audio_engine* make_audio_engine(
-    std::string proto, std::string name,
+    std::string proto, std::string name, std::string req_in, std::string req_out,
     int& inputs, int& outputs, int& rate, int& bs)
 {
   ossia::audio_engine* p{};
@@ -19,7 +19,7 @@ ossia::audio_engine* make_audio_engine(
 #if __has_include(<portaudio.h>)
   else if(proto == "PortAudio")
   {
-    p = new ossia::portaudio_engine{rate, bs};
+    p = new ossia::portaudio_engine{name, req_in, req_out, inputs, outputs, rate, bs};
   }
 #endif
 
@@ -40,7 +40,7 @@ ossia::audio_engine* make_audio_engine(
   if(!p)
   {
 #if __has_include(<portaudio.h>)
-   p = new ossia::portaudio_engine{rate, bs};
+    p = new ossia::portaudio_engine{name, req_in, req_out, inputs, outputs, rate, bs};
 #endif
   }
 
@@ -66,8 +66,7 @@ ossia::audio_engine* make_audio_engine(
 }
 
 
-audio_protocol::audio_protocol():
-  bufferSize{128}
+audio_protocol::audio_protocol()
 {
   audio_tick = [] (auto&&...) { };
 }
@@ -99,6 +98,40 @@ void audio_protocol::stop()
     f();
 
   engine = nullptr;
+}
+
+void audio_protocol::setup_tree(int inputs, int outputs)
+{
+  auto& dev = get_device();
+  auto& root = dev.get_root_node();
+
+  audio_ins.clear();
+  audio_outs.clear();
+
+  main_audio_in = ossia::net::find_or_create_parameter<ossia::audio_parameter>(root, "/in/main");
+  main_audio_out = ossia::net::find_or_create_parameter<ossia::audio_parameter>(root, "/out/main");
+  for(int i = 0; i < inputs; i++)
+  {
+    audio_ins.push_back(
+          ossia::net::find_or_create_parameter<ossia::audio_parameter>(root, "/in/" + std::to_string(i)));
+  }
+  for(int i = 0; i < outputs; i++)
+  {
+    audio_outs.push_back(
+          ossia::net::find_or_create_parameter<ossia::audio_parameter>(root, "/out/" + std::to_string(i)));
+  }
+
+  main_audio_in->audio.resize(inputs);
+  for(int i = 0; i < inputs; i++)
+  {
+    audio_ins[i]->audio.resize(1);
+  }
+
+  main_audio_out->audio.resize(outputs);
+  for(int i = 0; i < outputs; i++)
+  {
+    audio_outs[i]->audio.resize(1);
+  }
 }
 
 bool audio_protocol::pull(ossia::net::parameter_base&)
@@ -187,7 +220,8 @@ void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
 
 void audio_protocol::process_generic(
     audio_protocol& self,
-    float** float_input, float** float_output,
+    float* const * float_input, float** float_output,
+    int inputs, int outputs,
     uint64_t frameCount)
 {
   {
@@ -206,7 +240,7 @@ void audio_protocol::process_generic(
   }
 
   // Prepare audio inputs
-  const int n_in_channels = self.inputs;
+  const int n_in_channels = inputs;
   for(int i = 0; i < n_in_channels; i++)
   {
     self.main_audio_in->audio[i] = {float_input[i], fc};
@@ -223,7 +257,7 @@ void audio_protocol::process_generic(
   }
 
   // Prepare audio outputs
-  const int n_out_channels = self.outputs;
+  const int n_out_channels = outputs;
   for(int i = 0; i < n_out_channels; i++)
   {
     self.main_audio_out->audio[i] = {float_output[i], fc};
@@ -254,26 +288,36 @@ void audio_protocol::process_generic(
 
 }
 
-using default_audio_protocol =
-  #if defined(__EMSCRIPTEN__)
-    sdl_protocol
-  #elif defined(_MSC_VER)
-    jack_engine
-  #elif __has_include(<portaudio.h>)
-    portaudio_engine
-  #else
-    ossia::dummy_engine
-  #endif
-;
+static std::string default_audio_protocol() {
+
+#if defined(__EMSCRIPTEN__)
+  return "SDL";
+#elif defined(_MSC_VER)
+  return "JACK";
+#elif __has_include(<portaudio.h>)
+  return "PortAudio";
+#else
+  return "";
+#endif
+}
 audio_device::audio_device(std::string name)
   : audio_device{std::make_unique<audio_protocol>(), name}
 {
+  int ins = 2, outs = 2, rate = 44100, bs = 64;
+  engine = std::unique_ptr<ossia::audio_engine>(make_audio_engine(default_audio_protocol(), name, "", "", ins, outs, rate, bs));
+  engine->reload(&protocol);
+  m_bs = bs;
+  m_sr = rate;
 }
 
 audio_device::audio_device(std::unique_ptr<audio_protocol> proto, std::string name)
   : device{std::move(proto), name}
   , protocol{static_cast<audio_protocol&>(device.get_protocol())}
 {
+  int ins = 2, outs = 2, rate = 44100, bs = 64;
+  engine = std::unique_ptr<ossia::audio_engine>(make_audio_engine(default_audio_protocol(), name, "", "", ins, outs, rate, bs));
+  engine->reload(&protocol);m_bs = bs;
+  m_sr = rate;
 }
 
 
@@ -281,6 +325,15 @@ audio_device::~audio_device()
 {
 }
 
+int audio_device::get_buffer_size() const
+{
+  return m_bs;
+}
+
+int audio_device::get_sample_rate() const
+{
+  return m_sr;
+}
 
 ossia::audio_parameter& audio_device::get_main_in()
 {

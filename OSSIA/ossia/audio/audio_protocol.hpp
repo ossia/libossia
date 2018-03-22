@@ -25,17 +25,14 @@ class OSSIA_EXPORT audio_engine
 class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 {
   public:
-    std::string card_in, card_out;
-    int rate{44100};
-    int bufferSize{512};
-    int inputs{};
-    int outputs{};
-
     std::atomic_bool replace_tick{false};
     smallfun::function<void(unsigned long, double), 256> ui_tick;
     smallfun::function<void(unsigned long, double), 256> audio_tick;
 
-    static void process_generic(audio_protocol& self, float** inputs, float** outputs, uint64_t nsamples);
+    static void process_generic(audio_protocol& self,
+                                float *const * inputs, float** outputs,
+                                int n_in, int n_out,
+                                uint64_t nsamples);
 
 
     audio_protocol();
@@ -47,6 +44,8 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
       ui_tick = std::move(t);
       replace_tick = true;
     }
+
+    void setup_tree(int inputs, int outputs);
 
     bool pull(ossia::net::parameter_base&) override;
     bool push(const ossia::net::parameter_base&) override;
@@ -89,12 +88,19 @@ class OSSIA_EXPORT audio_device
     ossia::audio_parameter& get_main_in();
     ossia::audio_parameter& get_main_out();
 
+    int get_buffer_size() const;
+    int get_sample_rate() const;
+
+    std::unique_ptr<ossia::audio_engine> engine;
     ossia::net::generic_device device;
     ossia::audio_protocol& protocol;
+
+  private:
+    int m_bs{}, m_sr{};
 };
 
 OSSIA_EXPORT
 ossia::audio_engine* make_audio_engine(
-    std::string proto, std::string name,
+    std::string proto, std::string name, std::string req_in, std::string req_out,
     int& inputs, int& outputs, int& rate, int& bs);
 }
