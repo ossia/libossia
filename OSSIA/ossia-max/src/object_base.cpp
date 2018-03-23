@@ -315,7 +315,7 @@ void object_base::loadbang(object_base* x)
     std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
 
     ossia_max::instance().root_patcher.insert(std::pair<t_object*,bool>(x->m_patcher_hierarchy.back(), false));
-    clock_delay(ossia_max::instance().m_reg_clock,1);
+    //clock_delay(ossia_max::instance().m_reg_clock,1);
   }
 }
 

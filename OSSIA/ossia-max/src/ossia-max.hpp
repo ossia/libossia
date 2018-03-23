@@ -95,7 +95,7 @@ public:
   // this is used at loadband to mark a patcher loaded
   // and trig its registration
   std::map<t_object*, bool> root_patcher;
-  void* m_reg_clock{};
+  //void* m_reg_clock{};
 
 private:
   ossia_max();

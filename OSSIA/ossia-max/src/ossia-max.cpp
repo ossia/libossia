@@ -44,7 +44,7 @@ ossia_max::ossia_max():
   devices.reserve(8);
   clients.reserve(8);
 
-  m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
+  //m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
 
   post("OSSIA library for Max is loaded");
   post("build SHA : %s", ossia::get_commit_sha().c_str());
