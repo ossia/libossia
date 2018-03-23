@@ -270,9 +270,16 @@ void execution_state::commit_common()
     if(addr)
     {
       addr->push_value(elt.second);
+
+      // Advance the time for the case where we push value multiple
+      // times in one tick.
+      // TODO improve with variable duration support.
       for(auto& chan : addr->audio)
       {
-        chan = chan.subspan(1);
+        if(!chan.empty())
+        {
+          chan = chan.subspan(1);
+        }
       }
     }
 
