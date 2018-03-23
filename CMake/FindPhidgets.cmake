@@ -32,9 +32,15 @@ else()
         c:/phidget22-windevel
       )
 
-    find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22
-      HINTS
-        c:/phidget22-windevel/x64)
+    if(CMAKE_SIZEOF_VOID_P MATCHES 4)
+      find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22
+        HINTS
+          c:/phidget22-windevel/x86)
+    else()
+      find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22
+        HINTS
+          c:/phidget22-windevel/x64)
+    endif()
 endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LIBPHIDGETS DEFAULT_MSG LIBPHIDGETS_LIBRARIES LIBPHIDGETS_INCLUDE_DIR)
