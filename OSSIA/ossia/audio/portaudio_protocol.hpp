@@ -1,5 +1,5 @@
 #pragma once
-#if 1 || __has_include(<portaudio.h>)
+#if __has_include(<portaudio.h>)
 #include <ossia/audio/audio_protocol.hpp>
 #include <portaudio.h>
 
