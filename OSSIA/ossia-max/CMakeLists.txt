@@ -190,6 +190,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_SOURCE_DIR}/max-test/368-set_broken.maxtest.maxpat
         ${CMAKE_CURRENT_SOURCE_DIR}/max-test/312-default_broken.maxtest.maxpat
         ${CMAKE_CURRENT_SOURCE_DIR}/max-test/366-priorities_init.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/377-noloadbanged_initialization.maxtest.maxpat
         )
     install(
         FILES
