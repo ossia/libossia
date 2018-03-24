@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   execution_state e;
   audio_device audio; // a device that maps to the sound card inputs & outputs
 
-  e.sampleRate = audio.get_rate();
+  e.sampleRate = audio.get_sample_rate();
   e.bufferSize = audio.get_buffer_size();
   e.register_device(&audio.device);
   e.register_device(&osc.device);

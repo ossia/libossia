@@ -21,13 +21,13 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
     auto& src = audio[chan];
     auto& res = res_vec[chan];
 
-    const auto N = src.size();
+    const std::size_t N = src.size();
 
     if(res.size() < N)
       res.resize(N);
 
-    for (int i = 0; i < N; i++)
-      res[i] += src[i];
+    for (std::size_t i = 0; i < N; i++)
+      res[i] += double(src[i]);
   }
 }
 
@@ -38,10 +38,11 @@ void audio_parameter::push_value(const audio_port& port)
   {
     auto& src = port.samples[chan];
     auto& dst = audio[chan];
-    std::copy_n(
-          src.begin(),
-          std::min(src.size(), (std::size_t)dst.size()),
-          dst.begin());
+    const auto N = std::min(src.size(), (std::size_t)dst.size());
+    for(std::size_t i = 0; i < N; i++)
+    {
+      dst[i] += float(src[i] * m_gain);
+    }
   }
 }
 
@@ -49,14 +50,14 @@ void audio_parameter::pull_value()
 {
 }
 
-ossia::net::parameter_base& audio_parameter::push_value(const ossia::value&)
+ossia::net::parameter_base& audio_parameter::push_value(const ossia::value& v)
 {
-  return *this;
+  return set_value(v);
 }
 
-ossia::net::parameter_base& audio_parameter::push_value(ossia::value&&)
+ossia::net::parameter_base& audio_parameter::push_value(ossia::value&& v)
 {
-  return *this;
+  return set_value(v);
 }
 
 net::parameter_base&audio_parameter::push_value()
@@ -66,22 +67,30 @@ net::parameter_base&audio_parameter::push_value()
 
 value audio_parameter::value() const
 {
-  return {};
+  return m_gain;
 }
 
-net::parameter_base&audio_parameter::set_value(const ossia::value&)
+net::parameter_base&audio_parameter::set_value(const ossia::value& v)
 {
+  auto flt = ossia::convert<float>(v);
+  auto vol = ossia::clamp(flt, 0.f, 1.f);
+  if(m_gain != vol)
+  {
+    m_gain = vol;
+    std::cerr << m_gain << std::endl;
+    send(vol);
+  }
   return *this;
 }
 
-net::parameter_base&audio_parameter::set_value(ossia::value&&)
+net::parameter_base&audio_parameter::set_value(ossia::value&& v)
 {
-  return *this;
+  return set_value(v);
 }
 
 val_type audio_parameter::get_value_type() const
 {
-  return {};
+  return ossia::val_type::FLOAT;
 }
 
 net::parameter_base&audio_parameter::set_value_type(val_type)

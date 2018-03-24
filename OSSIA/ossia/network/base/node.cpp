@@ -262,6 +262,7 @@ void node_base::clear_children()
   for (auto& child : m_children)
   {
     child->clear_children();
+    child->remove_parameter();
   }
 
   {

@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     g.connect(make_strict_edge(0, 0, sin_node, gain));
   }
 
-  e.sampleRate = audio.get_rate();
+  e.sampleRate = audio.get_sample_rate();
   e.bufferSize = audio.get_buffer_size();
   e.register_device(&audio.device);
 

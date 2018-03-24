@@ -126,7 +126,10 @@ execution_state::execution_state()
 
 void execution_state::register_device(net::device_base* d)
 {
-  valueDevices.push_back(d);
+  if(d->get_name() == "audio")
+    audioDevices.push_back(d);
+  else
+    valueDevices.push_back(d);
   allDevices.push_back(d);
   m_valueQueues.emplace_back(*d);
 }

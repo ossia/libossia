@@ -27,7 +27,7 @@ struct OSSIA_EXPORT execution_state
     execution_state();
     ossia::net::node_base* find_node(std::string_view name)
     {
-      for(auto dev : valueDevices)
+      for(auto dev : allDevices)
       {
         if(auto res = ossia::net::find_node(dev->get_root_node(), name))
           return res;
