@@ -23,8 +23,6 @@ if(OSSIA_QT)
   find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml Quick)
   if(NOT "${Qt5Core_FOUND}")
     set(OSSIA_QT OFF)
-  else()
-    set(OSSIA_EDITOR ON)
   endif()
   if(NOT "${Qt5Quick_FOUND}")
     set(OSSIA_QML OFF)
@@ -252,7 +250,7 @@ if(OSSIA_QT)
     PRIVATE
       "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
     PUBLIC
-      "${OSSIA_3RDPARTY_FOLDER}/verdigris/src"
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/verdigris/src>
    )
  add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
  if(OSSIA_DISABLE_QT_PLUGIN)

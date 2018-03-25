@@ -59,6 +59,7 @@ if(OSSIA_QML)
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml
+        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Property.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml
         ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml
@@ -163,8 +164,16 @@ install(FILES ${OSSIA_3RDPARTY_FOLDER}/flat_hash_map/flat_hash_map.hpp
         COMPONENT Devel)
 install(FILES
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
+     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_sc_map.h
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_hash.h
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_set.h
+     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_sc_set.h
+        DESTINATION include/
+        COMPONENT Devel)
+
+install(FILES
+     ${OSSIA_3RDPARTY_FOLDER}/verdigris/src/wobjectdefs.h
+     ${OSSIA_3RDPARTY_FOLDER}/verdigris/src/wobjectimpl.h
         DESTINATION include/
         COMPONENT Devel)
 

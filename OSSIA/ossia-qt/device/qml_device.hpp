@@ -80,18 +80,18 @@ public:
   QVariantMap getMIDIInputDevices() const; W_INVOKABLE(getMIDIInputDevices)
   QVariantMap getMIDIOutputDevices() const; W_INVOKABLE(getMIDIOutputDevices)
 
-  void recreate(QObject* root);
-  void remap(QObject* root);
+  void recreate(QObject* root); W_INVOKABLE(recreate)
+  void remap(QObject* root); W_INVOKABLE(remap)
 
-  void setReadPreset(bool readPreset);
+  void setReadPreset(bool readPreset); W_INVOKABLE(setReadPreset)
 
-  void savePreset(const QUrl& file);
-  void loadPreset(QObject* root, QString file);
-  void saveDevice(const QUrl& file);
+  void savePreset(const QUrl& file); W_INVOKABLE(savePreset)
+  void loadPreset(QObject* root, QString file); W_INVOKABLE(loadPreset)
+  void saveDevice(const QUrl& file); W_INVOKABLE(saveDevice)
 
-  void setName(QString name);
+  void setName(QString name); W_INVOKABLE(setName)
 
-  void cleanup();
+  void cleanup(); W_INVOKABLE(cleanup)
 
 
   void readPresetChanged(bool readPreset)
