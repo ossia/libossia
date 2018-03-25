@@ -77,7 +77,6 @@ net::parameter_base&audio_parameter::set_value(const ossia::value& v)
   if(m_gain != vol)
   {
     m_gain = vol;
-    std::cerr << m_gain << std::endl;
     send(vol);
   }
   return *this;
