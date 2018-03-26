@@ -13,7 +13,7 @@ endif()
 find_program(CLANG_FORMAT "clang-format")
 if(CLANG_FORMAT)
     add_custom_target(
-        clang-format
+        ossia-clang-format
         COMMAND ${CLANG_FORMAT}
         -i
         ${SRCS}
@@ -24,7 +24,7 @@ endif()
 find_program(CLANG_TIDY "clang-tidy")
 if(CLANG_TIDY)
     add_custom_target(
-        clang-tidy
+        ossia-clang-tidy
         COMMAND ${CLANG_TIDY}
         ${SRCS}
         -config=''
