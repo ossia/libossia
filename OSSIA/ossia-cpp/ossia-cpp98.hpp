@@ -114,7 +114,7 @@ struct callback_index {
     ~callback_index();
     callback_index(const callback_index&);
     callback_index& operator=(const callback_index&);
- //   explicit operator bool() const;
+    explicit operator bool() const;
 
   private:
     friend class node;
@@ -131,7 +131,7 @@ public:
   node& operator=(const node&);
   ~node();
 
-  bool valid() const;
+  explicit operator bool() const;
 
   std::string get_name() const;
   void set_name(std::string s);

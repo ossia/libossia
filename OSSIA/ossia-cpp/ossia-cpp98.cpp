@@ -238,6 +238,7 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 
 struct callback_index::impl {
   ossia::callback_container<ossia::value_callback>::iterator iterator;
+  ossia::callback_container<ossia::value_callback>::impl impl;
 };
 
 callback_index::callback_index()
@@ -261,13 +262,12 @@ callback_index& callback_index::operator=(const callback_index& other)
   return *this;
 }
 
-/*
+
 callback_index::operator bool() const
 {
-    if (index->iterator) return TRUE;
-    return FALSE;
+    return (index->iterator!=index->impl.end());
 }
-*/
+
 
 //*************************************************************//
 //                          node                               //
@@ -306,7 +306,7 @@ node::~node()
   }
 }
 
-bool node::valid() const
+node::operator bool() const
 {
   return m_node;
 }
