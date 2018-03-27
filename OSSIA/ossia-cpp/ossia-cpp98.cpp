@@ -261,13 +261,12 @@ callback_index& callback_index::operator=(const callback_index& other)
   return *this;
 }
 
-/*
+
 callback_index::operator bool() const
 {
-    if (index->iterator) return TRUE;
-    return FALSE;
+    return active;
 }
-*/
+
 
 //*************************************************************//
 //                          node                               //
@@ -301,12 +300,12 @@ node::~node()
   if (m_node)
   {
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
-    m_node->get_device()
+    if (m_param) m_node->get_device()
         .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
   }
 }
 
-bool node::valid() const
+node::operator bool() const
 {
   return m_node;
 }
@@ -327,6 +326,11 @@ std::string node::get_parameter() const
   if(m_param)
     return ossia::net::osc_parameter_string(*m_param);
   return "";
+}
+
+bool node::has_parameter() const
+{
+    return(m_param);
 }
 
 std::vector<node> node::get_children() const
@@ -351,6 +355,14 @@ void node::remove_child(std::string addr)
   {
     auto cld = ossia::net::find_node(*m_node, addr);
     cld->get_parent()->remove_child(*cld);
+  }
+}
+
+void node::remove_children()
+{
+  if (m_node)
+  {
+    m_node->clear_children();
   }
 }
 
@@ -965,6 +977,7 @@ callback_index node::set_value_callback(value_callback c, void* ctx)
   {
       callback_index idx;
       idx.index->iterator = m_param->add_callback([=](const ossia::value& v) { c(ctx, v); });
+      idx.active = true;
       return idx;
   }
   return {};
@@ -975,6 +988,7 @@ void node::remove_value_callback(callback_index id)
   if (m_param)
   {
   m_param->remove_callback(id.index->iterator);
+  id.active = false;
   }
 }
 
