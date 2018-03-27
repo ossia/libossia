@@ -114,13 +114,14 @@ struct callback_index {
     ~callback_index();
     callback_index(const callback_index&);
     callback_index& operator=(const callback_index&);
-    explicit operator bool() const;
+    operator bool() const;
 
   private:
     friend class node;
 
     struct impl;
     impl* index;
+    bool active = false;
 };
 
 class OSSIA_EXPORT node
@@ -131,12 +132,13 @@ public:
   node& operator=(const node&);
   ~node();
 
-  explicit operator bool() const;
+  operator bool() const;
 
   std::string get_name() const;
   void set_name(std::string s);
 
   std::string get_parameter() const;
+  bool has_parameter() const;
 
   std::vector<node> get_children() const;
 
