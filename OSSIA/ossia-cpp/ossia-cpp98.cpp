@@ -238,6 +238,7 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 
 struct callback_index::impl {
   ossia::callback_container<ossia::value_callback>::iterator iterator;
+  bool active = false;
 };
 
 callback_index::callback_index()
@@ -262,10 +263,12 @@ callback_index& callback_index::operator=(const callback_index& other)
 }
 
 
+// This doesn't seem to be working:
 callback_index::operator bool() const
 {
-    return active;
+    return index->active;
 }
+
 
 
 //*************************************************************//
@@ -977,18 +980,18 @@ callback_index node::set_value_callback(value_callback c, void* ctx)
   {
       callback_index idx;
       idx.index->iterator = m_param->add_callback([=](const ossia::value& v) { c(ctx, v); });
-      idx.active = true;
+      idx.index->active = true;
       return idx;
   }
   return {};
 }
 
-void node::remove_value_callback(callback_index id)
+void node::remove_value_callback(callback_index idx)
 {
   if (m_param)
   {
-  m_param->remove_callback(id.index->iterator);
-  id.active = false;
+  m_param->remove_callback(idx.index->iterator);
+  idx.index->active = false;
   }
 }
 

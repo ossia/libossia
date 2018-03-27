@@ -121,7 +121,7 @@ struct callback_index {
 
     struct impl;
     impl* index;
-    bool active = false;
+
 };
 
 class OSSIA_EXPORT node
@@ -228,7 +228,7 @@ public:
   opp::value fetch_value() const;
 
   callback_index set_value_callback(value_callback c, void* ctx);
-  void remove_value_callback(callback_index id);
+  void remove_value_callback(callback_index idx);
 
   node& set_min(opp::value min);
   opp::value get_min() const;
