@@ -238,6 +238,7 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 
 struct callback_index::impl {
   ossia::callback_container<ossia::value_callback>::iterator iterator;
+  // TODO : improve this by using ossia::optionnal<T> instead of an explicit bool parameter
   bool active = false;
 };
 
@@ -263,9 +264,9 @@ callback_index& callback_index::operator=(const callback_index& other)
 }
 
 
-// This doesn't seem to be working:
 callback_index::operator bool() const
 {
+    // TODO : improve this by using ossia::optionnal<T> instead of an explicit bool parameter
     return index->active;
 }
 
