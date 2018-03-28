@@ -237,9 +237,7 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 //*************************************************************//
 
 struct callback_index::impl {
-  ossia::callback_container<ossia::value_callback>::iterator iterator;
-  // TODO : improve this by using ossia::optionnal<T> instead of an explicit bool parameter
-  bool active = false;
+  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator> iterator = ossia::none;
 };
 
 callback_index::callback_index()
@@ -266,8 +264,7 @@ callback_index& callback_index::operator=(const callback_index& other)
 
 callback_index::operator bool() const
 {
-    // TODO : improve this by using ossia::optionnal<T> instead of an explicit bool parameter
-    return index->active;
+  return bool(index->iterator);
 }
 
 
@@ -981,7 +978,6 @@ callback_index node::set_value_callback(value_callback c, void* ctx)
   {
       callback_index idx;
       idx.index->iterator = m_param->add_callback([=](const ossia::value& v) { c(ctx, v); });
-      idx.index->active = true;
       return idx;
   }
   return {};
@@ -991,8 +987,7 @@ void node::remove_value_callback(callback_index idx)
 {
   if (m_param)
   {
-  m_param->remove_callback(idx.index->iterator);
-  idx.index->active = false;
+  m_param->remove_callback(*idx.index->iterator);
   }
 }
 
