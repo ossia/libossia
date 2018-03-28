@@ -266,8 +266,8 @@ callback_index& callback_index::operator=(const callback_index& other)
 
 callback_index::operator bool() const
 {
-    // TODO : improve this by using ossia::optionnal<T> instead of an explicit bool parameter
-    return index->active;
+  // TODO : improve this by using ossia::optionnal<T> instead of an explicit bool parameter
+  return index->active;
 }
 
 
@@ -278,12 +278,14 @@ callback_index::operator bool() const
 
 node::node() : m_node{}, m_param{}
 {
+    std::cout << "Create Node: " << get_name() << '\n';
 }
 
 node::node(const node& other)
     : m_node{other.m_node}, m_param{other.m_param}
 {
   init();
+  std::cout << "Create Node: " << get_name() << " from " << other.get_name() << '\n';
 }
 
 node& node::operator=(const node& other)
@@ -296,6 +298,8 @@ node& node::operator=(const node& other)
 
   init();
 
+  std::cout << "Create Node: " << get_name() << " from " << other.get_name() << '\n';
+
   return *this;
 }
 
@@ -303,9 +307,11 @@ node::~node()
 {
   if (m_node)
   {
+    std::cout << "Delete Node: " << get_name() << " / Has Parameter : " << has_parameter() << '\n';
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
     if (m_param) m_node->get_device()
         .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+    std::cout << "   L___> Still here ? " << bool(m_node) << "  : " << get_name()   << " / Has Parameter : " << has_parameter() << '\n';
   }
 }
 
