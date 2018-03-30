@@ -45,3 +45,5 @@ ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
 
 ossia_add_example(mixsines "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSines.cpp")
 ossia_add_example(mixsinesaddr "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSinesAddress.cpp")
+
+ossia_add_example(pd_controller "${CMAKE_CURRENT_SOURCE_DIR}/Network/PdController.cpp")

@@ -4,7 +4,7 @@
 </head>
 <script>
     function init() { 
-      var ws = new WebSocket("ws://127.0.0.1:5678");
+      var ws = new WebSocket("ws://172.17.0.2:5678");
       ws.onopen = function(mess) {
           // This way the protocol will always try to send 
           // data through websockets.

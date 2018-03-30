@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <random>
+#include <boost/predef.h>
 namespace ossia
 {
 struct rand_float_node final : public ossia::nonowning_graph_node
@@ -23,11 +24,37 @@ struct rand_float_node final : public ossia::nonowning_graph_node
     }
 };
 
+template<std::size_t N>
+struct sin_table
+{
+    template<typename T>
+    constexpr sin_table(T t)
+      : values{}
+    {
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            values[i] = t(2. * M_PI * i / N);
+        }
+    }
+
+    constexpr double value(double freq) const
+    {
+      const auto res = int(std::fmod(freq, 2. * M_PI) * (N-1));
+      assert(res >= 0);
+      assert(res < N);
+      return values[res];
+    }
+    double values[N];
+};
 
 struct sine_node final : public ossia::nonowning_graph_node
 {
     ossia::inlet freq_in{ossia::value_port{}};
     ossia::outlet audio_out{ossia::audio_port{}};
+
+#if defined(BOOST_COMP_GNUC)
+    static constexpr sin_table<1024> sines{[] (auto f) { return sin(f); }};
+#endif
   public:
     double m_cos = 1.;
     double m_sin = 0;
@@ -49,6 +76,12 @@ struct sine_node final : public ossia::nonowning_graph_node
         audio.resize(1);
         audio[0].resize(tk.offset.impl + N);
 
+#if defined(BOOST_COMP_GNUC)
+        for(int64_t i = tk.offset.impl; i < tk.offset.impl + N; i++)
+        {
+          audio[0][i] = sines.value(2. * M_PI * freq / st.sampleRate);
+        }
+#else
         // Uses the method in https://github.com/mbrucher/AudioTK/blob/master/ATK/Tools/SinusGeneratorFilter.cpp
         auto frequ_cos = std::cos(2. * M_PI * freq / st.sampleRate);
         auto frequ_sin = std::sin(2. * M_PI * freq / st.sampleRate);
@@ -63,6 +96,7 @@ struct sine_node final : public ossia::nonowning_graph_node
 
           audio[0][i] = m_sin;
         }
+#endif
       }
     }
 };

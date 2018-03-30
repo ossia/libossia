@@ -61,6 +61,17 @@ using void_t = std::void_t<Args...>;
 #define RAPIDJSON_HAS_STDSTRING 1
 #endif
 
+#if defined(__AVX__)
+#define RAPIDJSON_SSE42 1
+#elif defined (__SSE2__)
+#define RAPIDJSON_SSE2 1
+#endif
+
+#if defined(__ARM_NEON)
+#define RAPIDJSON_NEON 1
+#endif
+
+
 // https://github.com/Tencent/rapidjson/issues/1015
 #if !defined(RAPIDJSON_HAS_CXX11_RVALUE_REFS)
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1

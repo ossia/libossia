@@ -402,8 +402,8 @@ struct OSSIA_EXPORT graph_base: graph_interface
     }
     auto add_node_impl(node_ptr n)
     {
-      auto& bench = *ossia::bench_ptr();
-      bench[n.get()];
+      //auto& bench = *ossia::bench_ptr();
+      //bench[n.get()];
 
       auto vtx = boost::add_vertex(n, m_graph);
       m_nodes.insert({std::move(n), vtx});

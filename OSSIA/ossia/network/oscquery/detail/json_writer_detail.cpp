@@ -102,11 +102,13 @@ void json_writer_impl::writeValue(int32_t i) const
 }
 void json_writer_impl::writeValue(float i) const
 {
-  writer.Double(i);
+  if(!writer.Double(i))
+      writer.Null();
 }
 void json_writer_impl::writeValue(double i) const
 {
-  writer.Double(i);
+  if(!writer.Double(i))
+    writer.Null();
 }
 void json_writer_impl::writeValue(bool i) const
 {

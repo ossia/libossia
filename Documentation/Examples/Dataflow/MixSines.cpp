@@ -1,4 +1,5 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/graph/tick_methods.hpp>
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/common_nodes.hpp>
 
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
   e.register_device(&audio.device);
 
   g.state(e);
-  audio.protocol.set_tick(tick_all_nodes_bench{e, g});
+  audio.protocol.set_tick(tick_all_nodes{e, g});
 
   std::this_thread::sleep_for(10s);
 }

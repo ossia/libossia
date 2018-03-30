@@ -292,7 +292,7 @@ static std::string default_audio_protocol() {
 
 #if defined(__EMSCRIPTEN__)
   return "SDL";
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) || __has_include(<weak_libjack.h>)
   return "JACK";
 #elif __has_include(<portaudio.h>)
   return "PortAudio";

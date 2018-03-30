@@ -284,6 +284,7 @@ if(OSSIA_DATAFLOW)
   if(Jack_INCLUDE_DIR)
     target_include_directories(ossia PRIVATE ${OSSIA_3RDPARTY_FOLDER}/weakjack)
     target_include_directories(ossia PRIVATE ${Jack_INCLUDE_DIR})
+    target_link_libraries(ossia PUBLIC ${CMAKE_DL_LIBS})
   endif()
 
   if(NOT MSVC)
