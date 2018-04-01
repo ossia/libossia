@@ -129,27 +129,24 @@ net::parameter_base&audio_parameter::set_bounding(bounding_mode)
 }
 
 
-sound_node::sound_node()
-{
-  m_outlets.push_back(&audio_out);
-}
-
-void sound_node::set_sound(const std::vector<std::vector<float>>& vec)
-{
-  m_data.resize(vec.size());
-  for(std::size_t i = 0; i < vec.size(); i++)
-  {
-    m_data[i].assign(vec[i].begin(), vec[i].end());
-  }
-}
-void sound_node::set_sound(std::vector<std::vector<double>> vec)
-{
-  m_data = std::move(vec);
-}
-
-sound_node::~sound_node()
+virtual_audio_parameter::~virtual_audio_parameter()
 {
 
+}
+
+mapped_audio_parameter::mapped_audio_parameter(bool output, audio_mapping m, net::node_base& n)
+  : audio_parameter{n}
+  , mapping(std::move(m))
+  , is_output{output}
+{
+  auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
+  proto.register_parameter(*this);
+}
+
+mapped_audio_parameter::~mapped_audio_parameter()
+{
+  auto& proto = static_cast<ossia::audio_protocol&>(get_node().get_device().get_protocol());
+  proto.unregister_parameter(*this);
 }
 
 void do_fade(bool start_discontinuous, bool end_discontinuous, audio_channel& ap, std::size_t start, std::size_t end)
@@ -187,135 +184,4 @@ void do_fade(bool start_discontinuous, bool end_discontinuous, audio_channel& ap
     }
   }
 }
-
-void sound_node::run(ossia::token_request t, ossia::execution_state& e)
-{
-  if(m_data.empty())
-    return;
-  const std::size_t chan = m_data.size();
-  const std::size_t len = m_data[0].size();
-
-  ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
-  ap.samples.resize(chan);
-  int64_t max_N = std::min(t.date.impl, (int64_t)len);
-  if(max_N <= 0)
-    return;
-  const auto samples = max_N - m_prev_date + t.offset.impl;
-  if(samples <= 0)
-    return;
-
-  if(t.date > m_prev_date)
-  {
-    for(std::size_t i = 0; i < chan; i++)
-    {
-      ap.samples[i].resize(samples);
-      for(int64_t j = m_prev_date; j < max_N; j++)
-      {
-        ap.samples[i][j - m_prev_date + t.offset.impl] = m_data[i][j];
-      }
-      do_fade(
-            t.start_discontinuous,
-            t.end_discontinuous,
-            ap.samples[i],
-            t.offset.impl,
-            samples);
-    }
-  }
-  else
-  {
-    // TODO rewind correctly and add rubberband
-    for(std::size_t i = 0; i < chan; i++)
-    {
-      ap.samples[i].resize(samples);
-      for(int64_t j = m_prev_date; j < max_N; j++)
-      {
-        ap.samples[i][max_N - (j - m_prev_date) + t.offset.impl] = m_data[i][j];
-      }
-
-      do_fade(
-            t.start_discontinuous,
-            t.end_discontinuous,
-            ap.samples[i],
-            max_N + t.offset.impl,
-            m_prev_date + t.offset.impl);
-    }
-  }
-
-
-
-  // Upmix
-  if(upmix != 0)
-  {
-    if(upmix < chan)
-    {
-      /*
-      // Downmix
-      switch(upmix)
-      {
-        case 1:
-        {
-          for(std::size_t i = 1; i < chan; i++)
-          {
-            if(ap.samples[0].size() < ap.samples[i].size())
-              ap.samples[0].resize(ap.samples[i].size());
-
-            for(std::size_t j = 0; j < ap.samples[i].size(); j++)
-              ap.samples[0][j] += ap.samples[i][j];
-          }
-        }
-        default:
-          // TODO
-          break;
-      }
-      */
-    }
-    else if(upmix > chan)
-    {
-      switch(chan)
-      {
-        case 1:
-        {
-          ap.samples.resize(upmix);
-          for(std::size_t i = 1; i < upmix; i++)
-          {
-            ap.samples[i] = ap.samples[0];
-          }
-          break;
-        }
-        default:
-          // TODO
-          break;
-      }
-    }
-  }
-
-  // Move channels
-  if(start != 0)
-  {
-    ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
-  }
-}
-
-virtual_audio_parameter::~virtual_audio_parameter()
-{
-
-}
-
-mapped_audio_parameter::mapped_audio_parameter(bool output, audio_mapping m, net::node_base& n)
-  : audio_parameter{n}
-  , mapping(std::move(m))
-  , is_output{output}
-{
-  auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
-  proto.register_parameter(*this);
-}
-
-mapped_audio_parameter::~mapped_audio_parameter()
-{
-  auto& proto = static_cast<ossia::audio_protocol&>(get_node().get_device().get_protocol());
-  proto.unregister_parameter(*this);
-
-}
-
-
 }

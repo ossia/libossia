@@ -4,47 +4,10 @@
 
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
+#include <ossia/dataflow/nodes/messages.hpp>
+#include <ossia/dataflow/nodes/percentage.hpp>
 
 #include "TestUtils.hpp"
-
-namespace ossia
-{
-class message_node final : public ossia::graph_node
-{
-  public:
-    message_node()
-    {
-
-    }
-
-    void run(ossia::token_request, ossia::execution_state& e) override
-    {
-      for(auto& msg : data)
-      {
-        e.insert(msg.dest.address(), ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit });
-      }
-    }
-
-    std::vector<ossia::message> data;
-};
-
-class percentage_node final : public ossia::graph_node
-{
-  public:
-    percentage_node(ossia::destination d)
-    {
-      outputs().push_back(ossia::make_outlet<ossia::value_port>(&d.address()));
-    }
-
-    void run(ossia::token_request tok, ossia::execution_state& e) override
-    {
-      outputs().back()->data.target<ossia::value_port>()->add_raw_value(ossia::tvalue{(float)tok.position});
-    }
-};
-}
-
-namespace ossia {
-}
 
 class ScenarioAlgoTest : public QObject
 {
@@ -516,7 +479,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 20_tv, 20_tv, 20_tv);
       s.scenario->add_time_interval(c2);
 
-      auto msg_node = std::make_shared<message_node>();
+      auto msg_node = std::make_shared<ossia::nodes::messages>();
       msg_node->data.push_back({*utils.float_addr, ossia::value(1.234)});
 
       auto msg_proc = std::make_shared<ossia::node_process>(msg_node);
@@ -813,7 +776,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
       s.scenario->add_time_interval(c0);
 
-      auto node = std::make_shared<percentage_node>(*utils.float_addr);
+      auto node = std::make_shared<ossia::nodes::percentage>(*utils.float_addr);
       auto proc = std::make_shared<ossia::node_process>(node);
       c0->add_time_process(proc);
       g.add_node(node);
@@ -866,7 +829,7 @@ class ScenarioAlgoTest : public QObject
       std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
       s.scenario->add_time_interval(c0);
 
-      auto node = std::make_shared<percentage_node>(*utils.float_addr);
+      auto node = std::make_shared<ossia::nodes::percentage>(*utils.float_addr);
       auto proc = std::make_shared<ossia::node_process>(node);
       c0->add_time_process(proc);
       g.add_node(node);

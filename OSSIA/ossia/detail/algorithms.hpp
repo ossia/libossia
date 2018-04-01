@@ -213,4 +213,9 @@ constexpr std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N])
     return detail::to_array_impl(a, std::make_index_sequence<N>{});
 }
 
+template<typename... Args>
+constexpr std::array<const char*, sizeof...(Args)> make_array(Args&&... args)
+{
+  return {args...};
+}
 }

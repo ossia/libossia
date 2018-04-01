@@ -73,21 +73,6 @@ struct scenario_graph
 
 };
 
-class scenario_node final : public ossia::nonowning_graph_node
-{
-public:
-  scenario_node();
-  std::string label() const override;
-  void run(ossia::token_request t, ossia::execution_state&) override;
-  // TODO: add here the states to play.
-  // They have to work with inter-ticks.
-  ossia::inlet audio_in{ossia::audio_port{}};
-  ossia::inlet midi_in{ossia::midi_port{}};
-  ossia::outlet audio_out{ossia::audio_port{}};
-  ossia::outlet midi_out{ossia::midi_port{}};
-};
-
-
 class OSSIA_EXPORT scenario final : public time_process
 {
 public:

@@ -1,15 +1,15 @@
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <string>
-
-#include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/nodes/forward_node.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/optional.hpp>
 #include <smallfun.hpp>
 #include <ossia_export.h>
+
+#include <functional>
+#include <memory>
+#include <string>
 
 /**
  * \file time_interval.hpp
@@ -18,20 +18,6 @@ namespace ossia
 {
 class time_event;
 class time_process;
-
-class interval_node final : public ossia::nonowning_graph_node
-{
-public:
-  interval_node();
-  std::string label() const override;
-  void run(ossia::token_request t, ossia::execution_state&) override;
-
-  ossia::inlet audio_in{ossia::audio_port{}};
-  ossia::inlet midi_in{ossia::midi_port{}};
-  ossia::outlet audio_out{ossia::audio_port{}};
-  ossia::outlet midi_out{ossia::midi_port{}};
-};
-
 
 /**
  * @brief The time_interval class
@@ -48,7 +34,7 @@ public:
 class OSSIA_EXPORT time_interval
 {
 public:
-  std::shared_ptr<ossia::interval_node> node;
+  std::shared_ptr<ossia::nodes::interval> node;
 
   auto get_date() const
   {

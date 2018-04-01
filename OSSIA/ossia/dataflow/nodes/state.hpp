@@ -4,15 +4,16 @@
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 
-namespace ossia {
-struct state_node final : public ossia::graph_node
+namespace ossia::nodes
+{
+struct state final : public ossia::graph_node
 {
   public:
-    state_node(const ossia::state& other): data{other} { }
-    state_node(ossia::state&& other): data{std::move(other)} { }
-    state_node(): data{} { }
+    state(const ossia::state& other): data{other} { }
+    state(ossia::state&& other): data{std::move(other)} { }
+    state(): data{} { }
 
-    ~state_node() override
+    ~state() override
     {
 
     }
@@ -24,6 +25,5 @@ struct state_node final : public ossia::graph_node
 
     ossia::state data;
 };
-
 }
 

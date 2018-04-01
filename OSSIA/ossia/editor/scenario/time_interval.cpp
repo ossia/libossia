@@ -93,7 +93,7 @@ time_interval::time_interval(
     , m_min(min)
     , m_max(max)
 {
-  node = std::make_shared<ossia::interval_node>();
+  node = std::make_shared<ossia::nodes::interval>();
 }
 
 time_interval::~time_interval()
@@ -325,35 +325,6 @@ void time_interval::remove_time_process(time_process* timeProcess)
 void time_interval::cleanup()
 {
   m_processes.clear();
-}
-
-
-interval_node::interval_node()
-{
-  m_inlets.push_back(&audio_in);
-  m_inlets.push_back(&midi_in);
-  m_outlets.push_back(&audio_out);
-  m_outlets.push_back(&midi_out);
-}
-
-std::string interval_node::label() const
-{
-  return "Interval";
-}
-
-
-void interval_node::run(token_request t, execution_state&)
-{
-  {
-    auto i = audio_in.data.target<ossia::audio_port>();
-    auto o = audio_out.data.target<ossia::audio_port>();
-    o->samples = i->samples;
-  }
-  {
-    auto i = midi_in.data.target<ossia::midi_port>();
-    auto o = midi_out.data.target<ossia::midi_port>();
-    o->messages = i->messages;
-  }
 }
 
 }

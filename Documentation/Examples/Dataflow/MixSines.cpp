@@ -44,14 +44,14 @@ int main(int argc, char** argv)
   execution_state e;
   audio_device audio;
 
-  auto gain = std::make_shared<gain_node>();
+  auto gain = std::make_shared<ossia::nodes::gain>();
   g.add_node(gain);
   gain->outputs()[0]->address = &audio.get_main_out();
 
   for(int i = 0; i < nodes; i++)
   {
-    auto rand_node = std::make_shared<rand_float_node>(200, 600);
-    auto sin_node = std::make_shared<sine_node>();
+    auto rand_node = std::make_shared<ossia::nodes::rand_float>(200, 600);
+    auto sin_node = std::make_shared<ossia::nodes::sine>();
     g.connect(make_strict_edge(0, 0, rand_node, sin_node));
     g.connect(make_strict_edge(0, 0, sin_node, gain));
   }

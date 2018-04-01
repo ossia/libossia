@@ -9,6 +9,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/exceptions.hpp>
+#include <ossia/dataflow/nodes/forward_node.hpp>
 #include <cassert>
 #include <hopscotch_map.h>
 #include <iostream>
@@ -17,42 +18,12 @@
 
 namespace ossia
 {
-scenario_node::scenario_node()
-{
-  // todo maybe we can optimize by having m_outlets == m_inlets
-  // this way no copy.
-  m_inlets.push_back(&audio_in);
-  m_inlets.push_back(&midi_in);
-  m_outlets.push_back(&audio_out);
-  m_outlets.push_back(&midi_out);
-}
-
-std::string scenario_node::label() const
-{
-  return "Scenario";
-}
-
-
-void scenario_node::run(token_request t, execution_state&)
-{
-  {
-    auto i = audio_in.data.target<ossia::audio_port>();
-    auto o = audio_out.data.target<ossia::audio_port>();
-    o->samples = i->samples;
-  }
-  {
-    auto i = midi_in.data.target<ossia::midi_port>();
-    auto o = midi_out.data.target<ossia::midi_port>();
-    o->messages = i->messages;
-  }
-}
-
 scenario::scenario():
   m_sg{*this}
 {
   // create the start TimeSync
   add_time_sync(std::make_shared<time_sync>());
-  node = std::make_shared<scenario_node>();
+  node = std::make_shared<ossia::nodes::scenario>();
 }
 
 scenario::~scenario()

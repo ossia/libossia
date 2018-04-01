@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
   e.register_device(&osc.device);
 
   // multiplies the inputs by a float value
-  auto gain = std::make_shared<gain_node>();
+  auto gain = std::make_shared<ossia::nodes::gain>();
   g.add_node(gain);
 
   // the gain node can be controlled through the OSC address /volume,
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   // 60 sine generators, each with their frequency controllable by
   // an OSC address of the form /freq.1 /freq.2 /freq.3 ...
   for(int i = 0; i < nodes; i++) {
-    auto node = std::make_shared<sine_node>();
+    auto node = std::make_shared<ossia::nodes::sine>();
     g.connect(make_strict_edge(0, 0, node, gain));
 
     auto freq_param = ossia::create_parameter(osc.device, "/freq", "hz");

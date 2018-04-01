@@ -7,6 +7,7 @@
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
+#include <ossia/dataflow/nodes/sound.hpp>
 
 namespace ossia
 {
@@ -49,7 +50,7 @@ struct test_loop
       {
         auto child = std::make_shared<loop>(1_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
 
-        auto snd = std::make_shared<ossia::sound_node>();
+        auto snd = std::make_shared<ossia::nodes::sound>();
         snd->set_sound(std::vector<std::vector<double>>{ {1., 2., 3., 4.} });
         child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
         i1->add_time_process(child);
@@ -61,7 +62,7 @@ struct test_loop
       {
         auto child = std::make_shared<loop>(2_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
 
-        auto snd = std::make_shared<ossia::sound_node>();
+        auto snd = std::make_shared<ossia::nodes::sound>();
         snd->set_sound(std::vector<std::vector<double>>{ {5.,6.,7.,8.} });
         child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
         i2->add_time_process(child);
@@ -154,7 +155,7 @@ private Q_SLOTS:
       {
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
-        auto snd = std::make_shared<ossia::sound_node>();
+        auto snd = std::make_shared<ossia::nodes::sound>();
         snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
@@ -172,7 +173,7 @@ private Q_SLOTS:
       {
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
-        auto snd = std::make_shared<ossia::sound_node>();
+        auto snd = std::make_shared<ossia::nodes::sound>();
         snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
@@ -190,7 +191,7 @@ private Q_SLOTS:
       {
         loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
                time_event::exec_callback{}};
-        auto snd = std::make_shared<ossia::sound_node>();
+        auto snd = std::make_shared<ossia::nodes::sound>();
         snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
@@ -231,7 +232,7 @@ private Q_SLOTS:
       auto child = std::make_shared<loop>(3_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
       parent.get_time_interval().add_time_process(child);
 
-      auto snd = std::make_shared<ossia::sound_node>();
+      auto snd = std::make_shared<ossia::nodes::sound>();
       snd->set_sound(std::vector<std::vector<double>>{ {0.1, 0.2, 0.3, 0.4} });
       child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 

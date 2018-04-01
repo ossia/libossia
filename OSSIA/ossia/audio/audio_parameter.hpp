@@ -163,29 +163,6 @@ public:
 };
 
 
-struct execution_state;
-class OSSIA_EXPORT sound_node final :
-    public ossia::nonowning_graph_node
-{
-public:
-  sound_node();
-  ~sound_node();
-
-  void set_start(std::size_t v) { start = v; }
-  void set_upmix(std::size_t v) { upmix = v; }
-  void set_sound(const std::vector<std::vector<float>>& vec);
-  void set_sound(std::vector<std::vector<double>> vec);
-  void run(ossia::token_request t, ossia::execution_state& e) override;
-  std::size_t channels() const { return m_data.size(); }
-  std::size_t duration() const { return m_data.empty() ? 0 : m_data[0].size(); }
-
-private:
-  std::vector<std::vector<double>> m_data;
-  std::size_t start{};
-  std::size_t upmix{};
-  ossia::outlet audio_out{ossia::audio_port{}};
-};
-
 OSSIA_EXPORT
 void do_fade(bool start_discontinuous, bool end_discontinuous, audio_channel& ap, std::size_t start, std::size_t end);
 }
