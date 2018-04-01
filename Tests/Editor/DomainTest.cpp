@@ -4,8 +4,6 @@
 #include <iostream>
 #include "TestUtils.hpp"
 
-using namespace ossia;
-using namespace ossia::net;
 template<typename R, typename T>
 ossia::value to(T f) { return R{(decltype(R{}))f}; }
 
@@ -19,7 +17,7 @@ class DomainTest : public QObject
     using val_t = decltype(T{});
     for(int i = 0; i < 6; i++)
     {
-      addr.set_bounding((bounding_mode)i);
+      addr.set_bounding((ossia::bounding_mode)i);
       addr.push_value(T{(val_t)(min - 100)});
       addr.push_value(min);
       addr.push_value(T{(val_t)((min + max) / 2)});
@@ -66,7 +64,7 @@ class DomainTest : public QObject
 
     for(int i = 0; i < 6; i++)
     {
-      addr.set_bounding((bounding_mode)i);
+      addr.set_bounding((ossia::bounding_mode)i);
       for(auto& vec : test_vecs)
         addr.push_value(vec);
     }
@@ -86,7 +84,7 @@ class DomainTest : public QObject
 
     for(int i = 0; i < 6; i++)
     {
-      addr.set_bounding((bounding_mode)i);
+      addr.set_bounding((ossia::bounding_mode)i);
       for(auto& vec : test_vecs)
         addr.push_value(vec);
     }
@@ -158,7 +156,7 @@ class DomainTest : public QObject
                       T{(val_t)(max + 100)}};
     for(int i = 0; i < 6; i++)
     {
-      addr.set_bounding((bounding_mode)i);
+      addr.set_bounding((ossia::bounding_mode)i);
       addr.push_value(t);
     }
   }
@@ -166,7 +164,7 @@ class DomainTest : public QObject
   template<typename T>
   void test_clamp_tuple(ossia::net::parameter_base& addr, T min, T max)
   {
-    domain_base<T> dom{min, max};
+    ossia::domain_base<T> dom{min, max};
 
     addr.set_domain(dom);
 
@@ -297,7 +295,7 @@ private Q_SLOTS:
         if(d.max) { }
         if(!d.values.empty()) { }
       }
-      void operator()(ossia::domain_base<impulse>& d)
+      void operator()(ossia::domain_base<ossia::impulse>& d)
       {
         // nothing to do
       }
@@ -346,6 +344,7 @@ private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
+    using namespace ossia;
     domain_base<int> dom(1, 24);
 
     QVERIFY(*dom.min  == 1);
@@ -382,7 +381,8 @@ private Q_SLOTS:
 
   void test_clamp_address()
   {
-    TestDevice t;
+    using namespace ossia;
+    ossia::TestDevice t;
     test_clamp_numeric(*t.float_addr, float{0.}, float{1.});
     test_clamp_numeric(*t.vec2f_addr, float{0.}, float{1.});
     test_clamp_numeric(*t.int_addr, int{0}, int{100});
@@ -536,7 +536,7 @@ private Q_SLOTS:
 
   void test_get_min_max()
   {
-    using namespace ossia::net;
+    using namespace ossia;
     { // No domain
       domain d;
       QVERIFY(get_min(d) == value{});
@@ -593,7 +593,7 @@ private Q_SLOTS:
 
       // Correct domain
       set_min(d, int{12});
-      qDebug() << get_min(d);
+      std::cerr << get_min(d);
       QVERIFY(get_min(d) == int{12});
 
       set_max(d, int{25});
@@ -601,7 +601,7 @@ private Q_SLOTS:
 
       // No value
       set_min(d, float{7});
-      qDebug() << get_min(d);
+      std::cerr << get_min(d);
       QVERIFY(get_min(d) == value{});
 
       set_max(d, float{42});
@@ -620,28 +620,28 @@ private Q_SLOTS:
       QVERIFY(get_max(d) == impulse{});
 
       set_min(d, int{12});
-      qDebug() << get_min(d);
+      std::cerr << get_min(d);
       QVERIFY(get_min(d) == int{12});
 
       set_max(d, int{25});
       QVERIFY(get_max(d) == int{25});
 
       set_min(d, float{7});
-      qDebug() << get_min(d);
+      std::cerr << get_min(d);
       QVERIFY(get_min(d) == float{7});
 
       set_max(d, float{42});
       QVERIFY(get_max(d) == float{42});
 
       set_min(d, std::string{"foo"});
-      qDebug() << get_min(d);
+      std::cerr << get_min(d);
       QVERIFY(get_min(d) == std::string{"foo"});
 
       set_max(d, std::string{"bar"});
       QVERIFY(get_max(d) == std::string{"bar"});
 
       set_min(d, std::vector<ossia::value>{float{}, int{}});
-      qDebug() << get_min(d);
+      std::cerr << get_min(d);
       QVERIFY(get_min(d) == (std::vector<ossia::value>{float{}, int{}}));
 
       set_max(d, std::vector<ossia::value>{float{2}, int{3}});
@@ -651,6 +651,7 @@ private Q_SLOTS:
 
   void test_string()
   {
+    using namespace ossia;
     {
       domain d = domain_base<std::string>();
       ossia::set_values(d, {"foo", "bar", "baz"});
