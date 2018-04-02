@@ -296,4 +296,23 @@ struct info_functions
 
 };
 
+struct base_metadata
+{
+    using value_in = ossia::safe_nodes::value_in;
+    using value_out = ossia::safe_nodes::value_out;
+    using audio_in = ossia::safe_nodes::audio_in;
+    using audio_out = ossia::safe_nodes::audio_out;
+    using midi_in = ossia::safe_nodes::midi_in;
+    using midi_out = ossia::safe_nodes::midi_out;
+    using address_in = ossia::safe_nodes::address_in;
+
+    static const constexpr dummy_container<value_in> value_ins{};
+    static const constexpr dummy_container<value_out> value_outs{};
+    static const constexpr dummy_container<audio_in> audio_ins{};
+    static const constexpr dummy_container<audio_out> audio_outs{};
+    static const constexpr dummy_container<midi_in> midi_ins{};
+    static const constexpr dummy_container<midi_out> midi_outs{};
+    static const constexpr dummy_container<address_in> address_ins{};
+    static const constexpr std::tuple<> controls{};
+};
 }
