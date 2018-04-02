@@ -10,7 +10,6 @@
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
-#include <ossia/editor/scenario/detail/scenario_graph.hpp>
 #include <cassert>
 #include <hopscotch_map.h>
 #include <iostream>

@@ -1,7 +1,9 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>
 #include <ossia/audio/audio_protocol.hpp>
-#include <ossia/dataflow/common_nodes.hpp>
+#include <ossia/dataflow/nodes/rand_float.hpp>
+#include <ossia/dataflow/nodes/sine.hpp>
+#include <ossia/dataflow/nodes/gain.hpp>
 
 
 #if __has_include(<valgrind/callgrind.h>)

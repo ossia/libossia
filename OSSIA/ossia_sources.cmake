@@ -38,7 +38,6 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base_variant.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_conversion.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/numeric_domain.hpp"
@@ -85,7 +84,6 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/string_view.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.hpp"
@@ -178,12 +176,8 @@ set(SRCS
 )
 
 set(OSSIA_EDITOR_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/spline.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/gradient.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/metronome.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/curve_value_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
@@ -199,7 +193,6 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.hpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_composition.hpp"
@@ -213,7 +206,6 @@ set(OSSIA_EDITOR_HEADERS
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/continuity.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_graph.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_interval.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_event.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_sync.hpp"
@@ -236,12 +228,8 @@ set(OSSIA_EDITOR_HEADERS
   )
 
 set(OSSIA_EDITOR_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/automation.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/spline.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/gradient.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/metronome.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
@@ -252,7 +240,6 @@ set(OSSIA_EDITOR_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_bool.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/mapper.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_execution.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_offset.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
@@ -381,19 +368,15 @@ set(OSSIA_SERIAL_SRCS
 set(OSSIA_PHIDGETS_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/sensors.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter_data.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter_data.hpp")
 
 set(OSSIA_PHIDGETS_SRCS
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.cpp")
 
 
 set(OSSIA_WS_CLIENT_HEADERS
@@ -508,7 +491,6 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/bench_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/common_nodes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/connection.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow_fwd.hpp"

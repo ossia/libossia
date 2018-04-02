@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "phidgets_protocol.hpp"
 #include "phidgets_parameter.hpp"
-#include "phidgets_device.hpp"
 #include "phidgets_node.hpp"
 #include "phidgets_parameter_data.hpp"
 #include <ossia/network/common/debug.hpp>
