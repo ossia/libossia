@@ -55,23 +55,6 @@ class OSSIA_EXPORT automation final :
       return "automation";
     }
 
-    void set_destination(optional<ossia::destination> d)
-    {
-      auto& vp = *value_out.data.target<ossia::value_port>();
-      if(d)
-      {
-        value_out.address = &d->address();
-        vp.type = d->unit;
-        vp.index = d->index;
-      }
-      else
-      {
-        value_out.address = {};
-        vp.type = ossia::val_type::FLOAT;
-        vp.index = {};
-      }
-    }
-
     void set_behavior(const ossia::behavior& b)
     {
       m_drive = b;

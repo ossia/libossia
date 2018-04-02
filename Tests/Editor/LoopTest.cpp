@@ -1,14 +1,15 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <functional>
 #include <iostream>
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/nodes/sound.hpp>
-
+#include <ossia/editor/loop/loop.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 namespace ossia
 {
 
@@ -16,7 +17,7 @@ struct test_loop
 {
     ossia::net::generic_device d;
     ossia::graph g;
-    loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
+    ossia::loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
 
     ossia::audio_parameter* aparam{};
     ~test_loop()

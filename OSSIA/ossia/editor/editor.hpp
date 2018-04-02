@@ -15,7 +15,3 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
-
-#include <ossia/editor/automation/automation.hpp>
-#include <ossia/editor/loop/loop.hpp>
-#include <ossia/editor/mapper/mapper.hpp>
