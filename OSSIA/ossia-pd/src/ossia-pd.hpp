@@ -80,8 +80,8 @@ public:
     ossia::safe_set<parameter*> parameter_quarantine;
     ossia::safe_set<remote*> remote_quarantine;
 
-    // this is used at loadband to mark a patcher loaded
-    // and trig its registration
+    // this is used at loadbang to mark a patcher loaded
+    // and trigger its registration
     struct root_descriptor{
       bool is_loadbanged{};
       unsigned long count{}; // number of object under this root

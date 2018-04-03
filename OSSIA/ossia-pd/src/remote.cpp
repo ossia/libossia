@@ -285,11 +285,6 @@ void remote::click(
   {
     x->m_last_click = milliseconds(0);
 
-    int l;
-
-    ossia::pd::device* device
-        = find_parent<ossia::pd::device>(x, 0, &l);
-
     if (!object_base::find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");
   }
