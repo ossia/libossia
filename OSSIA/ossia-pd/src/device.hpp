@@ -1,5 +1,6 @@
 #pragma once
 #include "device_base.hpp"
+#include "m_pd.h" // for post()
 
 namespace ossia
 {

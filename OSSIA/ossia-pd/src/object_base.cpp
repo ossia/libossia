@@ -20,7 +20,7 @@ namespace pd
 #pragma mark t_select_clock
 
 t_select_clock::t_select_clock(t_canvas* cnv, object_base* obj) :
-  m_canvas(cnv), m_obj(obj)
+  m_obj(obj), m_canvas(cnv)
 {
   m_clock = clock_new(this, (t_method) t_select_clock::deselect);
   ossia_pd::instance().select_clocks.push_back(this);

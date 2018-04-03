@@ -316,7 +316,7 @@ void device::get_protocols(device* x)
   {
     t_atom ar[5];
     SETFLOAT(ar,j);
-    for (int i = 0 ; i<v.size() ; i++)
+    for (unsigned int i = 0 ; i<v.size() ; i++)
       ar[i+1] = v[i];
 
     outlet_anything(x->m_dumpout, gensym("protocol"), v.size()+1, ar);
@@ -334,7 +334,7 @@ void device::get_mess_cb(device* x, t_symbol* s)
 
 void device::stop_expose(device*x, float f)
 {
-  int index = static_cast<int>(f);
+  unsigned int index = static_cast<unsigned int>(f);
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();

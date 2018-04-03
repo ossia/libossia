@@ -102,7 +102,7 @@ public:
   bool m_is_pattern{}; // whether the address is a pattern or not
   bool m_dead{false}; // whether this object is being deleted or not
   bool m_is_deleted{false}; // true during the is_deleted callback method
-  int m_queue_length{64};
+  unsigned int m_queue_length{64};
   int m_recall_safe{0};
 
   t_clock* m_clock{};   // multi-purpose clock

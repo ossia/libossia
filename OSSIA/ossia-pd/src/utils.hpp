@@ -303,12 +303,12 @@ struct domain_visitor {
 
     for (const auto& v : d.min)
       v.apply(minvisitor);
-    for (int i=0; i < vamin.size(); i++)
+    for (unsigned int i=0; i < vamin.size(); i++)
       x->m_min[i] = vamin[i];
 
     for (const auto& v : d.max)
       v.apply(maxvisitor);
-    for (int i=0; i < vamax.size(); i++)
+    for (unsigned int i=0; i < vamax.size(); i++)
       x->m_max[i] = vamax[i];
 
     // TODO range
@@ -391,7 +391,7 @@ std::vector<T*> get_objects(typename T::is_view* = nullptr)
  * @return The instance of the found object.
  */
 template<typename T>
-T* find_parent(object_base* x, int start_level, int* level)
+T* find_parent(object_base* x, unsigned int start_level, int* level)
 {
   if (start_level > x->m_patcher_hierarchy.size())
     return nullptr; // if we can't reach start level (because we reach the root
@@ -414,7 +414,7 @@ T* find_parent(object_base* x, int start_level, int* level)
   ossia::sort(objects, [](auto o1, auto o2){
     return o1->m_patcher_hierarchy.size() > o2->m_patcher_hierarchy.size();});
 
-  for (int i = start_level; i < x->m_patcher_hierarchy.size(); i++)
+  for (unsigned int i = start_level; i < x->m_patcher_hierarchy.size(); i++)
   {
     // remove objects that are deeper than the expected level
     auto size = x->m_patcher_hierarchy.size() - i;
@@ -625,14 +625,13 @@ bool ossia_register(T* x)
   }
   else
   {
-    int l;
+    int l{};
     ossia::pd::device* device = find_parent_alive<ossia::pd::device>(x, 0, &l);
     ossia::pd::client* client = find_parent_alive<ossia::pd::client>(x, 0, &l);
 
     ossia::pd::model* model = nullptr;
     ossia::pd::view* view = nullptr;
-    int view_level = 0, model_level = 0;
-    int start_level = 0;
+    int view_level{}, model_level{}, start_level{};
 
     if (x->m_otype == object_class::view || x->m_otype == object_class::model)
     {
