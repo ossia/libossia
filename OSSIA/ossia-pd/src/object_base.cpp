@@ -677,9 +677,13 @@ void object_base::loadbang(object_base* x, t_float flag)
       if (!res.second)
       {
         // key already exists, then increment count
-        (res.first)->second.inc();
+        ossia_pd::root_descriptor& desc = (res.first)->second;
+        desc.inc();
+        if (!desc.is_loadbanged)
+          clock_set(ossia_pd::instance().m_reg_clock,1);
+      } else {
+        clock_set(ossia_pd::instance().m_reg_clock,1);
       }
-      clock_set(ossia_pd::instance().m_reg_clock,1);
     }
   }
 }

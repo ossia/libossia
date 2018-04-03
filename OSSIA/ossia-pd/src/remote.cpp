@@ -32,7 +32,8 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
     obj_dequarantining<remote>(this);
     bang(this);
     clock_set(m_poll_clock,1);
-  }
+  } else if (!m_is_pattern)
+    obj_quarantining<remote>(this);
 
   if (!m_matchers.empty() && m_is_pattern){
     // assume all nodes refer to the same device
@@ -47,8 +48,7 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
     }
-  } else
-    obj_quarantining<remote>(this);
+  }
 
   return res;
 }
