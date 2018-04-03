@@ -47,6 +47,8 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
       m_dev = &dev;
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
+
+      obj_dequarantining<remote>(this);
     }
   }
 
