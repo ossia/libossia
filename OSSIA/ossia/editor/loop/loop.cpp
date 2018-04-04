@@ -15,17 +15,13 @@ loop::loop(time_value patternDuration,
            time_event::exec_callback patternStartEventCallback,
            time_event::exec_callback patternEndEventCallback
            )
-  : m_startCallback(std::move(patternStartEventCallback))
-  , m_endCallback(std::move(patternEndEventCallback))
-  , m_startEvent(**m_startNode.emplace(
+  : m_startEvent(**m_startNode.emplace(
                    m_startNode.get_time_events().begin(),
-                   [&](time_event::status result) { start_event_callback(result); }))
+                   std::move(patternStartEventCallback)))
   , m_endEvent(**m_endNode.emplace(
                    m_endNode.get_time_events().begin(),
-                   [&](time_event::status result) { end_event_callback(result); }))
-  , m_interval{time_interval::exec_callback{[this](double position, ossia::time_value date) { return interval_callback(position, date); }},
-               m_startEvent, m_endEvent, patternDuration, patternDuration, patternDuration}
-  , m_intervalCallback(std::move(patternIntervalCallback))
+                   std::move(patternEndEventCallback)))
+  , m_interval{std::move(patternIntervalCallback), m_startEvent, m_endEvent, patternDuration, patternDuration, patternDuration}
 {
   node = std::make_shared<ossia::nodes::loop>();
   if(patternDuration <= 0)
@@ -45,6 +41,7 @@ void loop::offset(ossia::time_value offset, double pos)
   time_value patternOffset{
     std::fmod((double)offset, (double)m_interval.get_nominal_duration())};
   m_interval.offset(patternOffset);
+  m_lastDate = offset;
   /*
     std::cerr << "Offset: " << offset << std::endl;
    // reset internal mOffsetState
@@ -67,6 +64,14 @@ void loop::offset(ossia::time_value offset, double pos)
     }
   }
   */
+}
+
+void loop::transport(ossia::time_value offset, double pos)
+{
+  time_value patternOffset{
+    std::fmod((double)offset, (double)m_interval.get_nominal_duration())};
+  m_interval.transport(patternOffset);
+  m_lastDate = offset;
 }
 
 void loop::make_happen(time_event& event)
@@ -389,28 +394,5 @@ time_sync& loop::get_start_timesync()
 time_sync& loop::get_end_timesync()
 {
   return m_endNode;
-}
-
-void loop::interval_callback(
-    double position, ossia::time_value date)
-{
-  if (m_intervalCallback)
-  {
-    // add the state of the pattern TimeInterval
-    //m_interval.state();
-    (*m_intervalCallback)(position, date);
-  }
-}
-
-void loop::start_event_callback(time_event::status newStatus)
-{
-  if (m_startCallback)
-    (m_startCallback)(newStatus);
-}
-
-void loop::end_event_callback(time_event::status newStatus)
-{
-  if (m_endCallback)
-    (m_endCallback)(newStatus);
 }
 }

@@ -661,7 +661,7 @@ private Q_SLOTS:
     }
 
     {
-      domain d = make_domain({"foo", "bar", "baz"});
+      domain d = make_domain(std::vector<std::string>{"foo", "bar", "baz"});
 
       QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "foo") == std::string("foo"));
       QVERIFY(ossia::apply_domain(d, ossia::bounding_mode::CLIP, "blah") == ossia::value{});

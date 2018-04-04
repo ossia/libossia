@@ -45,18 +45,18 @@ class OSSIA_EXPORT sound final :
       int64_t max_N = std::min(t.date.impl, (int64_t)len);
       if(max_N <= 0)
         return;
-      const auto samples = max_N - m_prev_date + t.offset.impl;
+      const auto samples = max_N - prev_date() + t.offset.impl;
       if(samples <= 0)
         return;
 
-      if(t.date > m_prev_date)
+      if(t.date > prev_date())
       {
         for(std::size_t i = 0; i < chan; i++)
         {
           ap.samples[i].resize(samples);
-          for(int64_t j = m_prev_date; j < max_N; j++)
+          for(int64_t j = prev_date(); j < max_N; j++)
           {
-            ap.samples[i][j - m_prev_date + t.offset.impl] = m_data[i][j];
+            ap.samples[i][j - prev_date() + t.offset.impl] = m_data[i][j];
           }
           do_fade(
                 t.start_discontinuous,
@@ -72,9 +72,9 @@ class OSSIA_EXPORT sound final :
         for(std::size_t i = 0; i < chan; i++)
         {
           ap.samples[i].resize(samples);
-          for(int64_t j = m_prev_date; j < max_N; j++)
+          for(int64_t j = prev_date(); j < max_N; j++)
           {
-            ap.samples[i][max_N - (j - m_prev_date) + t.offset.impl] = m_data[i][j];
+            ap.samples[i][max_N - (j - prev_date()) + t.offset.impl] = m_data[i][j];
           }
 
           do_fade(
@@ -82,7 +82,7 @@ class OSSIA_EXPORT sound final :
                 t.end_discontinuous,
                 ap.samples[i],
                 max_N + t.offset.impl,
-                m_prev_date + t.offset.impl);
+                prev_date() + t.offset.impl);
         }
       }
 

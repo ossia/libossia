@@ -52,8 +52,8 @@ class OSSIA_EXPORT metronome final :
       time_value cur{m_curve->value_at(pos)};
 
       // TODO we should compute the derivative since the last tick in order to be precise
-      if(date > m_prev_date) {
-        time_value elapsed = date - m_prev_date;
+      if(date > prev_date()) {
+        time_value elapsed = date - prev_date();
         if(m_metroPrevTick + elapsed < cur) {
           // not yet
           m_metroPrevTick += elapsed;
@@ -65,8 +65,8 @@ class OSSIA_EXPORT metronome final :
           vp->add_value(ossia::impulse{}, t.date);
         }
       }
-      else if(date < m_prev_date) {
-        time_value elapsed = m_prev_date - date;
+      else if(date < prev_date()) {
+        time_value elapsed = prev_date() - date;
         if(m_metroPrevTick + elapsed < cur) {
           // not yet
           m_metroPrevTick += elapsed;

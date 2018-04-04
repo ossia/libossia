@@ -79,14 +79,6 @@ public:
   scenario();
   ~scenario() override;
 
-  void offset(ossia::time_value, double pos) override;
-
-  void state(ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed) override;
-
-  void start() override;
-  void stop() override;
-  void pause() override;
-  void resume() override;
 
   /*! add a #time_interval and its #time_syncs into the scenario if they
    don't
@@ -119,14 +111,24 @@ public:
    \return #Container<#time_interval> */
   const ptr_container<time_interval>& get_time_intervals() const;
 
+private:
+  friend struct scenario_graph;
+  void offset(ossia::time_value, double pos) override;
+
+  void state(ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed) override;
+
+  void start() override;
+  void stop() override;
+  void pause() override;
+  void resume() override;
+
+  void transport(ossia::time_value offset, double pos) override;
+  bool is_root_sync(ossia::time_sync& sync) const;
+
   void reset_subgraph(
       const ptr_container<time_sync>&
       , const ptr_container<time_interval>&
       , time_sync& root);
-
-  bool is_root_sync(ossia::time_sync& sync) const;
-private:
-
 
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
@@ -142,6 +144,10 @@ private:
   boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_endNodes; // used as cache
   scenario_graph m_sg; // used as cache
+
+
+  ossia::time_value m_lastDate{ossia::Infinite};
+
   bool process_this(
       time_sync& node,
       small_event_vec& pendingEvents,

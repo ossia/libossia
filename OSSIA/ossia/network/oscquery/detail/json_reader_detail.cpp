@@ -186,7 +186,16 @@ static bool ReadValueObject(const rapidjson::Value& val, domain& res)
 
   if (values_it != mem_end)
   {
-    // TODO
+    if(values_it->value.IsArray())
+    {
+      std::vector<ossia::value> vals;
+      const auto& arr = values_it->value.GetArray();
+      for(auto& val : arr)
+      {
+        vals.push_back(ReadValue(val));
+      }
+      res = ossia::make_domain(std::move(vals));
+    }
   }
   else if (min_it != mem_end || max_it != mem_end)
   {

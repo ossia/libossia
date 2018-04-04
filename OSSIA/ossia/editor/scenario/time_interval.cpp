@@ -172,6 +172,29 @@ void time_interval::offset(ossia::time_value date)
     (*m_callback)(m_position, m_date);
 }
 
+void time_interval::transport(time_value date)
+{
+  m_date = date;
+
+  compute_position();
+
+  const auto& processes = get_time_processes();
+  const auto N = processes.size();
+  if (N > 0)
+  {
+    // get the state of each TimeProcess at current clock position and date
+    for (const auto& timeProcess : processes)
+    {
+      if (timeProcess->enabled())
+      {
+        timeProcess->transport(m_date, m_position);
+      }
+    }
+  }
+  if (m_callback)
+    (*m_callback)(m_position, m_date);
+}
+
 void time_interval::state()
 {
   const auto& processes = get_time_processes();

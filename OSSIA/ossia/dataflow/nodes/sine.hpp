@@ -51,7 +51,7 @@ struct sine final : public ossia::nonowning_graph_node
         freq = ossia::clamp(ossia::convert<float>(vals.back().value), 0.f, 20000.f);
 
       auto& audio = audio_out.data.target<ossia::audio_port>()->samples;
-      if(auto N = tk.date - m_prev_date; N > 0)
+      if(auto N = tk.date - prev_date(); N > 0)
       {
         audio.resize(1);
         audio[0].resize(tk.offset.impl + N);
