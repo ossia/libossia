@@ -120,6 +120,8 @@ public:
    \return std::shared_ptr<#State> */
   void offset(ossia::time_value);
 
+  void transport(ossia::time_value);
+
   /*! get a #State from the interval depending on its date
    \details the returned #State is made of as many as sub States for each
    TimeProcess the #time_interval manages

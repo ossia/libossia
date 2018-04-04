@@ -27,7 +27,7 @@ struct gain final : public ossia::nonowning_graph_node
       auto& in = audio_in.data.target<ossia::audio_port>()->samples;
       auto& out = audio_out.data.target<ossia::audio_port>()->samples;
 
-      const auto N = tk.date - m_prev_date;
+      const auto N = tk.date - prev_date();
       const std::size_t last_pos = tk.offset.impl + N;
       const auto channels = in.size();
       out.resize(channels);

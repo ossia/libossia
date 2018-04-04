@@ -113,6 +113,100 @@ void process_offset(
     }
   }
 }
+void scenario::transport(ossia::time_value offset, double pos)
+{
+  // reset internal offset list and state
+
+  // a temporary list to order all past events to build the
+  // offset state
+  past_events_map pastEvents;
+
+  m_runningIntervals.clear();
+
+  // Precompute the default date of every timesync.
+  ossia::ptr_map<time_sync*, ossia::time_value> time_map;
+  process_timesync_dates(*m_nodes[0], time_map);
+
+  // Set *every* time interval prior to this one to be rigid
+  // note : this change the semantics of the score and should not be done like
+  // this;
+  // it's only a temporary (1 year later: haha) bugfix for
+  // https://github.com/OSSIA/score/issues/253 .
+  for (auto& elt : time_map)
+  {
+    if (elt.second < offset)
+    {
+      for (EventPtr& ev : elt.first->get_time_events())
+      {
+        for (IntervalPtr& cst_ptr : ev->previous_time_intervals())
+        {
+          time_interval& cst = *cst_ptr;
+          auto dur = cst.get_nominal_duration();
+          cst.set_min_duration(dur);
+          cst.set_max_duration(dur);
+        }
+      }
+    }
+    else
+    {
+      for (EventPtr& ev_ptr : elt.first->get_time_events())
+      {
+        for (IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
+        {
+          time_interval& cst = *cst_ptr;
+          auto& start_tn = cst.get_start_event().get_time_sync();
+          auto start_date_it = time_map.find(&start_tn);
+          if (start_date_it != time_map.end())
+          {
+            auto start_date = start_date_it->second;
+            if (start_date < offset)
+            {
+              auto dur = cst.get_nominal_duration();
+              auto dur_min = cst.get_min_duration();
+              if (dur_min < dur)
+                cst.set_min_duration(offset - start_date);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // propagate offset from the first TimeSync
+  process_offset(*m_nodes[0], offset, pastEvents);
+
+  // offset all TimeIntervals
+  for (const auto& timeInterval : m_intervals)
+  {
+    ossia::time_interval& cst = *timeInterval;
+
+    auto& sev = cst.get_start_event();
+    auto& stn = sev.get_time_sync();
+    auto start_date = sev.get_time_sync().get_date();
+    bool all_empty = ossia::all_of(stn.get_time_events(), [] (const auto& ev) {
+      return ev->previous_time_intervals().empty();
+    });
+
+    if (all_empty && &stn != m_nodes[0].get())
+      continue;
+
+    // offset TimeInterval's Clock
+    time_value intervalOffset = offset - start_date;
+
+    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration())
+    {
+      cst.transport(intervalOffset);
+      m_runningIntervals.insert(&cst);
+    }
+    else
+    {
+      cst.transport(Zero);
+    }
+  }
+
+  m_lastDate = offset;
+
+}
 
 void scenario::offset(ossia::time_value offset, double pos)
 {

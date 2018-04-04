@@ -31,7 +31,9 @@ public:
    \details don't call offset when the parent #time_interval is running
    \param date offset date
    \param pos offset position (in [0;1] relative to parent nominal duration) */
-  virtual void offset(ossia::time_value date, double pos);
+  virtual void offset(ossia::time_value date, double pos) = 0;
+
+  virtual void transport(ossia::time_value date, double pos) = 0;
 
   /*! get a #StateElement from the process depending on its parent
    #time_interval date
@@ -98,10 +100,6 @@ public:
 protected:
   //! Reimplement this to have a special behaviour on mute
   virtual void mute_impl(bool);
-  ossia::time_value m_lastDate{ossia::Infinite};
-  // used to filter multiple state calls at the
-  // same time (use date as position can be always
-  // 0 in infinite duration case)
 
 private:
   bool m_unmuted = true;

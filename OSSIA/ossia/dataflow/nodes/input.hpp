@@ -75,18 +75,18 @@ private:
     int64_t max_N = std::min(t.date.impl, len);
     if(max_N <= 0)
       return;
-    auto samples = max_N - m_prev_date + t.offset.impl;
+    auto samples = max_N - prev_date() + t.offset.impl;
     if(samples <= 0)
       return;
 
-    if(t.date > m_prev_date)
+    if(t.date > prev_date())
     {
       for(std::size_t i = 0; i < chan; i++)
       {
         ap.samples[i].resize(samples);
-        for(int64_t j = m_prev_date; j < max_N; j++)
+        for(int64_t j = prev_date(); j < max_N; j++)
         {
-          ap.samples[i][j - m_prev_date + t.offset.impl] = m_data[i][j];
+          ap.samples[i][j - prev_date() + t.offset.impl] = m_data[i][j];
         }
       }
     }
@@ -96,9 +96,9 @@ private:
       for(std::size_t i = 0; i < chan; i++)
       {
         ap.samples[i].resize(samples);
-        for(int64_t j = m_prev_date; j < max_N; j++)
+        for(int64_t j = prev_date(); j < max_N; j++)
         {
-          ap.samples[i][max_N - (j - m_prev_date) + t.offset.impl] = m_data[i][j];
+          ap.samples[i][max_N - (j - prev_date()) + t.offset.impl] = m_data[i][j];
         }
       }
     }

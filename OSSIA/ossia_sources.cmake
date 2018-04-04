@@ -503,6 +503,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_chain_process.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_utils.hpp"

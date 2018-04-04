@@ -77,6 +77,17 @@ domain make_domain(
   return domain{std::move(v)};
 }
 
+domain make_domain(const std::vector<ossia::value>& vals)
+{
+  if (vals.size() > 0)
+  {
+    auto dom = init_domain(vals[0].getType());
+    ossia::apply_nonnull(value_set_update_visitor{vals}, dom.v);
+    return dom;
+  }
+
+  return {};
+}
 domain make_domain(
     const ossia::value& min, const ossia::value& max,
     const std::vector<ossia::value>& vals)
