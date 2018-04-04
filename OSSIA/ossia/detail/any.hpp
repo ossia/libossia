@@ -14,8 +14,6 @@
 #ifdef __has_include
   #if __has_include(<any>) && (__cplusplus > 201402L)
     #define OSSIA_USE_STD_ANY 1
-  #elif __has_include(<experimental/any>)
-    #define OSSIA_USE_STD_EXPERIMENTAL_ANY 1
   #else
     #define OSSIA_USE_BOOST_ANY 1
   #endif
