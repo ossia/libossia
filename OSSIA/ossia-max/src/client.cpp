@@ -521,7 +521,6 @@ void client::update(client* x)
   {
     x->m_device->get_protocol().update(*x->m_device);
 
-    x->get_hierarchy();
     auto& map = ossia_max::instance().root_patcher;
     auto it = map.find(x->m_patcher_hierarchy.back());
 

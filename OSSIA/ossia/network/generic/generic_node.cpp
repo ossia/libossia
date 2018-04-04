@@ -70,9 +70,10 @@ generic_node::generic_node(std::string name, device_base& aDevice)
 
 generic_node::~generic_node()
 {
+  m_children.clear();
+
   about_to_be_deleted(*this);
 
-  m_children.clear();
   remove_parameter();
 }
 

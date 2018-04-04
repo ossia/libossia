@@ -215,6 +215,7 @@ bool node_base::remove_child(const std::string& name)
 
   if (it != m_children.end())
   {
+    (*it)->clear_children();
     dev.on_node_removing(**it);
     removing_child(**it);
     m_children.erase(it);
@@ -238,6 +239,7 @@ bool node_base::remove_child(const node_base& n)
 
   if (it != m_children.end())
   {
+    (*it)->clear_children();
     dev.on_node_removing(**it);
     removing_child(**it);
     m_children.erase(it);
@@ -256,15 +258,24 @@ void node_base::clear_children()
   if (!dev.get_capabilities().change_tree)
     return;
 
-  write_lock_t lock{m_mutex};
   for (auto& child : m_children)
   {
-    dev.on_node_removing(*child);
-    removing_child(*child);
-    child.reset();
+    child->clear_children();
   }
 
-  m_children.clear();
+  {
+    write_lock_t lock{m_mutex};
+    while(!m_children.empty())
+    {
+      auto child = std::move(m_children.back());
+      dev.on_node_removing(*child);
+      removing_child(*child);
+      m_children.pop_back();
+      child.reset();
+    }
+
+    m_children.clear();
+  }
 }
 
 std::vector<node_base*> node_base::children_copy() const
