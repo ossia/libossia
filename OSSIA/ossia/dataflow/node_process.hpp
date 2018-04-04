@@ -13,7 +13,6 @@ public:
   ~node_process() override;
   void offset(ossia::time_value, double pos) override;
   void transport(ossia::time_value date, double pos) override;
-  void set_node(std::shared_ptr<ossia::graph_node> n);
 
   void
   state(ossia::time_value parent_date, double relative_position,

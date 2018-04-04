@@ -12,36 +12,23 @@ namespace ossia
 
 node_process::node_process(node_ptr n)
 {
+  assert(n);
   node = std::move(n);
 }
 
 void node_process::offset(time_value date, double pos)
 {
-  std::cerr << "node_process: offset " << date.impl << std::endl;
-  if(node)
-    node->set_prev_date(date);
+  node->set_prev_date(date);
 }
 
 void node_process::transport(time_value date, double pos)
 {
-  std::cerr << "node_process: transport " << date.impl << std::endl;
-  if(node)
-    node->set_prev_date(date);
-}
-
-
-void node_process::set_node(std::shared_ptr<graph_node> n)
-{
-  node = std::move(n);
+  node->set_prev_date(date);
 }
 
 void node_process::state(time_value parent_date, double relative_position, time_value tick_offset, double gspeed)
 {
-  if(node)
-  {
-    std::cerr << "node_process: state " << parent_date.impl << std::endl;
-    node->requested_tokens.push_back({parent_date, relative_position, tick_offset, gspeed});
-  }
+  node->requested_tokens.push_back({parent_date, relative_position, tick_offset, gspeed});
 }
 
 void node_process::start()
