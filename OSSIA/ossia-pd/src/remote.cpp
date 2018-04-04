@@ -17,7 +17,7 @@ remote::remote():
   parameter_base{ossia_pd::remote_class}
 { }
 
-bool remote::register_node(const std::vector<t_matcher>& matchers)
+bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   if (m_mute) return false;
 
@@ -37,7 +37,7 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
 
   if (!m_matchers.empty() && m_is_pattern){
     // assume all nodes refer to the same device
-    auto& dev = matchers[0].get_node()->get_device();
+    auto& dev = matchers[0]->get_node()->get_device();
     if (&dev != m_dev)
     {
       if (m_dev) {
@@ -55,7 +55,7 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
   return res;
 }
 
-bool remote::do_registration(const std::vector<t_matcher>& matchers)
+bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   unregister();
 
@@ -63,7 +63,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
   for (auto& m : matchers)
   {
-    auto node = m.get_node();
+    auto node = m->get_node();
 
     if (m_addr_scope == net::address_scope::absolute)
     {
@@ -91,7 +91,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
       // avoid to register the same node twice
       for (auto& m : m_matchers)
       {
-        if ( m.get_node() == n && m.get_owner() == this )
+        if ( m->get_node() == n && m->get_owner() == this )
         {
           continue_flag = true;
           break;
@@ -103,7 +103,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
       if (n->get_parameter()){
 
-        m_matchers.emplace_back(n,this);
+        m_matchers.emplace_back(std::make_shared<t_matcher>(n,this));
 
       } else {
 
@@ -116,7 +116,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
         n = ossia::net::find_node(*n, path.str());
 
         if (n && n->get_parameter()){
-          m_matchers.emplace_back(node, this);
+          m_matchers.emplace_back(std::make_shared<t_matcher>(node, this));
         }
       }
 
@@ -133,8 +133,8 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
         if (it != map.end() && it->second.is_loadbanged)
         {
-          m.enqueue_value(n->get_parameter()->value());
-          m.output_value();
+          m->enqueue_value(n->get_parameter()->value());
+          m->output_value();
         }
       }
     }
@@ -172,7 +172,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& par
   if ( m_path && ossia::traversal::match(*m_path, node) )
   {
     m_parent_node = node.get_parent();
-    m_matchers.emplace_back(&node,this);
+    m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
     fill_selection();
   }
 }
@@ -370,6 +370,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
+      assert(!x->m_matchers.empty());
       auto rate = ossia::net::get_refresh_rate(*m->get_node());
       if (rate)
       {
@@ -385,8 +386,9 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
     for (auto m : x->m_node_selection)
     {
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
+      assert(!x->m_matchers.empty());
+      ossia::net::parameter_base* param = m->get_node()->get_parameter();
       if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
       {
         x->m_ounit = param->get_unit();

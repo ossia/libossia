@@ -72,6 +72,8 @@ public:
   inline bool operator==(const t_matcher& rhs)
   { return (get_node() == rhs.node); }
 
+  void set_dead(){ m_dead = true; }
+
   std::vector<ossia::value> m_set_pool;
 
 private:
@@ -83,6 +85,8 @@ private:
 
   moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
+  bool m_dead{};
+  bool m_is_deleted{};
   t_atom m_addr{};
 };
 
@@ -116,7 +120,7 @@ public:
   // TODO m_parent_nodes should be a vector
   // since we may use pattern matching in view and model
   ossia::net::node_base* m_parent_node{};
-  std::vector<t_matcher> m_matchers{};
+  std::vector<std::shared_ptr<t_matcher>> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
   ossia::optional<ossia::traversal::path> m_selection_path{};
   std::vector<t_canvas*> m_patcher_hierarchy; // canvas hierarchy in ascending order

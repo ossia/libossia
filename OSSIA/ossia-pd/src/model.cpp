@@ -16,7 +16,7 @@ model::model():
   node_base{ossia_pd::model_class}
 { }
 
-bool model::register_node(const std::vector<t_matcher>& matchers)
+bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   if (m_dead) return true;
   bool res = do_registration(matchers);
@@ -26,7 +26,7 @@ bool model::register_node(const std::vector<t_matcher>& matchers)
   return res;
 }
 
-bool model::do_registration(const std::vector<t_matcher>& matchers)
+bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   unregister();  // we should unregister here because we may have add a node
                  // between the registered node and the parameter
@@ -35,7 +35,7 @@ bool model::do_registration(const std::vector<t_matcher>& matchers)
 
   for (auto& m : matchers)
   {
-    auto node = m.get_node();
+    auto node = m->get_node();
     m_parent_node = node;
 
     if (node->find_child(name))
@@ -69,7 +69,7 @@ bool model::do_registration(const std::vector<t_matcher>& matchers)
     auto nodes = ossia::net::create_nodes(*node, name);
     for (auto n : nodes)
     {
-      m_matchers.emplace_back(n, this);
+      m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
     }
 
     fill_selection();

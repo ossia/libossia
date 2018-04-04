@@ -690,9 +690,9 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
         for (auto& m : param->m_matchers)
         {
-          if ( m == *node )
+          if ( *m == *node )
           {
-            m.output_value();
+            m->output_value();
             break_flag = true;
             break;
           }
@@ -706,8 +706,8 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     {
       for (auto& m : remote->m_matchers)
       {
-        if ( m == *node )
-          m.output_value();
+        if ( *m == *node )
+          m->output_value();
       }
     }
   }
@@ -733,7 +733,7 @@ void parameter_base::output_value(parameter_base* x)
 {
   for (auto& m : x->m_matchers)
   {
-    m.output_value();
+    m->output_value();
   }
   clock_delay(x->m_poll_clock, x->m_rate);
 }

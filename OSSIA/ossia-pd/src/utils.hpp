@@ -610,8 +610,8 @@ bool ossia_register(T* x)
   if (x->m_dead)
     return false; // object will be removed soon
 
-  std::vector<t_matcher> tmp;
-  std::vector<t_matcher>* matchers = &tmp;
+  std::vector<std::shared_ptr<t_matcher>> tmp;
+  std::vector<std::shared_ptr<t_matcher>>* matchers = &tmp;
 
   if (x->m_addr_scope == ossia::net::address_scope::global)
   {
@@ -620,7 +620,7 @@ bool ossia_register(T* x)
     tmp.reserve(nodes.size());
     for (auto n : nodes)
     {
-      tmp.emplace_back(n, (object_base*)nullptr);
+      tmp.emplace_back(std::make_shared<t_matcher>(n, (object_base*)nullptr));
     }
   }
   else
@@ -672,8 +672,8 @@ bool ossia_register(T* x)
     }
     else
     {
-      tmp.push_back({&ossia_pd::get_default_device()->get_root_node(),
-                      (object_base*) nullptr});
+      tmp.emplace_back(std::make_shared<t_matcher>(&ossia_pd::get_default_device()->get_root_node(),
+                      (object_base*) nullptr));
     }
   }
 

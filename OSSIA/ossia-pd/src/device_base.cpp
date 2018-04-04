@@ -40,8 +40,8 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
     {
       for ( auto& m : param->m_matchers )
       {
-        if ( m.get_node() == &node )
-          parameter::update_attribute((ossia::pd::parameter*)m.get_owner(),attribute, &node);
+        if ( m->get_node() == &node )
+          parameter::update_attribute((ossia::pd::parameter*)m->get_owner(),attribute, &node);
       }
     }
 
@@ -49,8 +49,8 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
     {
       for ( auto& m : remote->m_matchers )
       {
-        if ( m.get_node() == &node )
-          remote::update_attribute((ossia::pd::remote*)m.get_owner(),attribute, &node);
+        if ( m->get_node() == &node )
+          remote::update_attribute((ossia::pd::remote*)m->get_owner(),attribute, &node);
       }
     }
 
@@ -58,8 +58,8 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
     {
       for ( auto& m : attr->m_matchers )
       {
-        if ( m.get_node() == &node )
-          attribute::update_attribute((ossia::pd::attribute*)m.get_owner(),attribute, &node);
+        if ( m->get_node() == &node )
+          attribute::update_attribute((ossia::pd::attribute*)m->get_owner(),attribute, &node);
       }
     }
   } else {
@@ -67,8 +67,8 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
     {
       for ( auto& m : model->m_matchers )
       {
-        if ( m.get_node() == &node )
-          model::update_attribute((ossia::pd::model*)m.get_owner(),attribute, &node);
+        if ( m->get_node() == &node )
+          model::update_attribute((ossia::pd::model*)m->get_owner(),attribute, &node);
       }
     }
 
@@ -76,8 +76,8 @@ void device_base::on_attribute_modified_callback(const ossia::net::node_base& no
     {
       for ( auto& m : view->m_matchers )
       {
-        if ( m.get_node() == &node )
-          view::update_attribute((ossia::pd::view*)m.get_owner(),attribute, &node);
+        if ( m->get_node() == &node )
+          view::update_attribute((ossia::pd::view*)m->get_owner(),attribute, &node);
       }
     }
   }
@@ -93,11 +93,12 @@ void device_base::connect_slots()
     // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
     m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 
-    m_matchers.emplace_back(&m_device->get_root_node(), nullptr);
+    m_matchers.emplace_back(std::make_shared<t_matcher>(&m_device->get_root_node(), nullptr));
 
     // This is to handle [get address( message only
     // so is it really needed ?
-    m_node_selection.push_back(&m_matchers[0]);
+    assert(!m_matchers.empty());
+    m_node_selection.push_back(m_matchers[0].get());
   }
 }
 

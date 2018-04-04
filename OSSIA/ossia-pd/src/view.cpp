@@ -16,7 +16,7 @@ view::view():
 //****************//
 // Member methods //
 //****************//
-bool view::register_node(const std::vector<t_matcher>& matchers)
+bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   bool res = do_registration(matchers);
   if (res)
@@ -54,7 +54,7 @@ bool view::register_node(const std::vector<t_matcher>& matchers)
   return res;
 }
 
-bool view::do_registration(const std::vector<t_matcher>& matchers)
+bool view::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
 
   // we should unregister here because we may have add a node
@@ -65,7 +65,7 @@ bool view::do_registration(const std::vector<t_matcher>& matchers)
   {
     std::string name = m_name->s_name;
 
-    auto _node = m.get_node();
+    auto _node = m->get_node();
 
     if (m_addr_scope == ossia::net::address_scope::absolute)
     {
@@ -91,7 +91,7 @@ bool view::do_registration(const std::vector<t_matcher>& matchers)
       // but with a parameter, in that case it's an ø.param
       // then forget it
       if (!n->get_parameter()){
-        m_matchers.emplace_back(n, this);
+        m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
       }
     }
   }

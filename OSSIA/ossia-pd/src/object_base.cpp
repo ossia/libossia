@@ -136,7 +136,7 @@ void purge_parent(ossia::net::node_base* node)
       {
         for (const auto& m : model->m_matchers)
         {
-          if (m.get_node() == pn)
+          if (m->get_node() == pn)
           {
             remove_me = false;
             break;
@@ -169,12 +169,12 @@ t_matcher::~t_matcher()
 
         for (auto remote : ossia_pd::instance().remotes.copy())
         {
-          ossia::remove_one(remote->m_matchers,*this);
+          ossia::remove_one_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
         }
 
         for (auto attribute : ossia_pd::instance().attributes.copy())
         {
-          ossia::remove_one(attribute->m_matchers,*this);
+          ossia::remove_one_if(attribute->m_matchers, [this] (auto& other) { return *other == *this; });
         }
 
         purge_parent(node);
@@ -267,7 +267,7 @@ void t_matcher::output_value()
 
 void t_matcher::set_owner_addr()
 {
-  if (owner->m_parent_node){
+  if ( !m_dead && node && owner && owner->m_parent_node){
     // TODO how to deal with multiple parents ?
     std::string addr = ossia::net::relative_address_string_from_nodes(*node, *owner->m_parent_node);
     SETSYMBOL(&m_addr, gensym(addr.c_str()));
@@ -335,17 +335,26 @@ object_base::~object_base()
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
   m_is_deleted= true;
-
+  for(auto nd : m_node_selection)
+  {
+      if(nd->get_node() == &n)
+          nd->set_dead();
+  }
+  for(auto& nd : m_matchers)
+  {
+      if(nd->get_node() == &n)
+          nd->set_dead();
+  }
   ossia::remove_one_if(
         m_node_selection,
-        [&] (const auto& m) {
+        [&] (const t_matcher* m) {
     return m->get_node() == &n;
   });
 
   ossia::remove_one_if(
         m_matchers,
-        [&] (auto& m) {
-    return m.get_node() == &n;
+        [&] (const std::shared_ptr<t_matcher>& m) {
+    return m->get_node() == &n;
   });
 
   m_is_deleted = false;
@@ -537,13 +546,13 @@ void object_base::fill_selection()
   {
     for (auto& m : m_matchers)
     {
-      if ( ossia::traversal::match(*m_selection_path, *m.get_node()) )
-        m_node_selection.push_back(&m);
+      if ( ossia::traversal::match(*m_selection_path, *m->get_node()) )
+        m_node_selection.push_back(m.get());
     }
   } else {
     for (auto& m : m_matchers)
     {
-      m_node_selection.push_back(&m);
+      m_node_selection.push_back(m.get());
     }
   }
 }
@@ -615,7 +624,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              object_base* obj = pa_matcher.get_owner();
+              object_base* obj = pa_matcher->get_owner();
               t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);
@@ -643,7 +652,7 @@ bool ossia::pd::object_base::find_and_display_friend(object_base* x)
               pd_error(x, "We only display the first 10 connected nodes, and yes this is arbitrary for the sake of your eyes.");
             } else {
               // display it
-              object_base* obj = md_matcher.get_owner();
+              object_base* obj = md_matcher->get_owner();
               t_canvas* patcher = obj->m_obj.o_canvas;
 
               canvas_vis(glist_getcanvas(patcher), 1);

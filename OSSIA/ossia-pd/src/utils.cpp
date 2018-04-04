@@ -573,9 +573,9 @@ std::vector<ossia::pd::t_matcher*> make_matchers_vector(object_base* x, const os
   {
     for (auto& m : x->m_matchers)
     {
-      if (node == m.get_node())
+      if (node == m->get_node())
       {
-        matchers.push_back(&m);
+        matchers.push_back(m.get());
         break;
       }
     }
@@ -599,8 +599,8 @@ void trig_output_value(net::node_base *node)
   {
     for (auto& m : param->m_matchers)
     {
-      if ( m.get_node() == node )
-        m.output_value();
+      if ( m->get_node() == node )
+        m->output_value();
     }
   }
 
@@ -608,8 +608,8 @@ void trig_output_value(net::node_base *node)
   {
     for (auto& m : remote->m_matchers)
     {
-      if ( m.get_node() == node )
-        m.output_value();
+      if ( m->get_node() == node )
+        m->output_value();
     }
   }
 }
