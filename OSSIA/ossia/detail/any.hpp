@@ -1,4 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #if defined(__native_client__) || defined(__ANDROID_API__) \
     || defined(__ANDROID__) || defined(ANDROID)
 #define OSSIA_USE_BOOST_ANY 1

@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include "ext.h"
 
 #include <ossia/detail/safe_vec.hpp>

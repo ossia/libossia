@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <memory>
 #include <ossia_export.h>
 #include <vector>

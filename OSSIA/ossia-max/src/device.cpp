@@ -7,14 +7,18 @@
 #include "view.hpp"
 #include "utils.hpp"
 #include "ossia-max.hpp"
-
+#include <ossia/detail/config.hpp>
 #include "ossia/network/osc/osc.hpp"
 #include "ossia/network/oscquery/oscquery_server.hpp"
 #include "ossia/network/minuit/minuit.hpp"
 #include <ossia/network/local/local.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_LEAPMOTION)
+#include <ossia/network/leapmotion/leapmotion_device.hpp>
 #endif
 
 using namespace ossia::max;
@@ -243,9 +247,9 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
   {
     auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
           x->m_device->get_protocol());
-    const ossia::string_view protocol = atom_getsym(argv)->s_name;
+    const auto protocol = boost::to_lower_copy(std::string(atom_getsym(argv)->s_name));
 
-    if (protocol == "Minuit")
+    if (protocol == "minuit")
     {
       protocol_settings::minuit settings{};
 
@@ -367,8 +371,9 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
           "%u",
           settings.remoteip.c_str(), settings.remoteport, settings.localport);
     }
+
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
-    else if(protocol == "Phidgets")
+    else if(protocol == "phidgets")
     {
         if(!phidgets_exposed)
         {
@@ -389,9 +394,21 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         }
     }
 #endif
+
+#if defined(OSSIA_PROTOCOL_LEAPMOTION)
+    else if(protocol == "leapmotion")
+    {
+        multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>());
+        std::vector<t_atom> a;
+        a.resize(1);
+        A_SETSYM(&a[0], gensym("LeapMotion"));
+        x->m_protocols.push_back(a);
+    }
+#endif
+
     else
     {
-      object_error((t_object*)x, "Unknown protocol: %s", protocol.data());
+      object_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
     }
   }
   else

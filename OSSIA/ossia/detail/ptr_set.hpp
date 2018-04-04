@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <hopscotch_set.h>
 #include <hopscotch_map.h>
 #include <ossia/detail/math.hpp>
