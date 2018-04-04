@@ -13,11 +13,11 @@
 #include <ossia/ossia.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/detail/http_client.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <iostream>
 #include <memory>
 #include <functional>
-#include <ossia/network/oscquery/detail/http_client.hpp>
-#include <ossia/network/base/parameter_data.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;

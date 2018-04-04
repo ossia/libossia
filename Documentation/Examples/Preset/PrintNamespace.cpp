@@ -1,9 +1,5 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <iostream>
-#include <memory>
-#include <functional>
-
 #include <ossia/ossia.hpp>
 
 #include <rapidjson/stringbuffer.h>
@@ -11,6 +7,10 @@
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/filewritestream.h>
+#include <iostream>
+#include <memory>
+#include <functional>
+
 
 using namespace ossia;
 using namespace ossia::net;

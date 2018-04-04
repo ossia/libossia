@@ -10,12 +10,12 @@
  * http://www.cecill.info
  */
 
+#include <ossia/ossia.hpp>
+#include <ossia/network/common/debug.hpp>
 #include <iostream>
 #include <memory>
 #include <functional>
 
-#include <ossia/ossia.hpp>
-#include <ossia/network/common/debug.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;

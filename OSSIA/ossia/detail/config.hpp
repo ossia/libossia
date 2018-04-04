@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia-config.hpp>
 #include <ossia_export.h>
-#include <type_traits>
 
 #define OSSIA_EXTERN_EXPORT_HPP(EXPORT) EXPORT
 #define OSSIA_EXTERN_EXPORT_CPP(EXPORT)
@@ -33,14 +32,8 @@
 #define OSSIA_INLINE
 #endif
 
-namespace ossia
-{
-template <typename... Args>
-using void_t = std::void_t<Args...>;
-}
 
-#define BOOST_MATH_DISABLE_FLOAT128
-#define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE
+#define _WEBSOCKETPP_CPP11_STRICT_ 1
 
 #define SPDLOG_NO_DATETIME
 #define SPDLOG_NO_THREAD_ID
@@ -77,10 +70,14 @@ using void_t = std::void_t<Args...>;
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
 #endif
 
+
+#define BOOST_MATH_DISABLE_FLOAT128
+#define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE 1
+#define _HAS_AUTO_PTR_ETC 1 // for MSVC /std:c++latest
+
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
 #define BOOST_SYSTEM_NO_DEPRECATED 1
 
-#define _WEBSOCKETPP_CPP11_STRICT_ 1
 
 #if !defined(ASIO_STANDALONE)
 #define ASIO_STANDALONE 1
@@ -101,3 +98,11 @@ using void_t = std::void_t<Args...>;
 #if !defined(QT_NO_KEYWORDS)
 #define QT_NO_KEYWORDS 1
 #endif
+
+#include <type_traits>
+
+namespace ossia
+{
+template <typename... Args>
+using void_t = std::void_t<Args...>;
+}

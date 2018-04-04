@@ -1,12 +1,13 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <iostream>
-#include <memory>
-#include <functional>
 
 #include <ossia/ossia.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/preset/preset.hpp>
+
+#include <iostream>
+#include <memory>
+#include <functional>
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>

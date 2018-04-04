@@ -9,11 +9,11 @@
  * http://www.cecill.info
  */
 
+#include <ossia/ossia.hpp>
 #include <iostream>
 #include <thread>
 #include <memory>
 
-#include <ossia/ossia.hpp>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;

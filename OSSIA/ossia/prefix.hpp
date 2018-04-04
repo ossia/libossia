@@ -5,9 +5,9 @@
 #pragma clang system_header
 
 //
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/callback_container.hpp>
-#include <ossia/detail/config.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_map.hpp>

@@ -10,11 +10,12 @@
  * http://www.cecill.info
  */
 
+#include <ossia/ossia.hpp>
+
 #include <iostream>
 #include <memory>
 #include <functional>
 
-#include <ossia/ossia.hpp>
 
 using namespace ossia;
 using namespace std;

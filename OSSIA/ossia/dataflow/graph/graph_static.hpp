@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <ossia-config.hpp>
 #include <ossia/dataflow/graph/transitive_closure.hpp>
 #include <boost/graph/transitive_closure.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>

@@ -10,14 +10,14 @@
  * http://www.cecill.info
  */
 
-#include <iostream>
-#include <memory>
-#include <functional>
-
 #include <ossia/ossia.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <spdlog/spdlog.h>
+
+#include <iostream>
+#include <memory>
+#include <functional>
 
 using namespace ossia;
 using namespace std;

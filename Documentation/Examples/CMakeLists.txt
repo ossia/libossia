@@ -35,6 +35,10 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   ossia_add_example(network_oscquery_publication "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication.cpp")
   ossia_add_example(network_oscquery_publication_simple "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication_simple.cpp")
   ossia_add_example(network_oscquery_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_exploration.cpp")
+
+  if(OSSIA_PROTOCOL_LEAPMOTION)
+    ossia_add_example(network_leapmotion_oscquery "${CMAKE_CURRENT_SOURCE_DIR}/Network/LeapToOscQuery.cpp")
+  endif()
 endif()
 
 #ossia_add_example(preset_device_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/DeviceExample.cpp")
