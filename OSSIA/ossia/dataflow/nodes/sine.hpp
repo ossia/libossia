@@ -23,7 +23,7 @@ struct sin_table
     {
       const auto res = int(std::fmod(freq, 2. * M_PI) * (N-1));
       assert(res >= 0);
-      assert(res < N);
+      assert(res < (int)N);
       return values[res];
     }
     double values[N];

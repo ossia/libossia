@@ -165,6 +165,12 @@ void for_each_in_tuple(
   (void)expander{0, ((void)func(std::get<Is>(tuple)), 0)...};
 }
 
+template <class F>
+void for_each_in_tuple(
+    const std::tuple<>& tuple, F func, std::index_sequence<0>)
+{
+}
+
 template <class F, class... Ts>
 void for_each_in_tuple(const std::tuple<Ts...>& tuple, F func)
 {

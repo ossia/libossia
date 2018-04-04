@@ -144,8 +144,8 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
     for(std::size_t i = 0; i < outputs; i++)
     {
       auto chan = (jack_default_audio_sample_t *) jack_port_get_buffer(self.output_ports[i], nframes);
-      for(std::size_t i = 0; i < nframes; i++)
-        chan[i] = 0.;
+      for(std::size_t j = 0; j < nframes; j++)
+        chan[j] = 0.;
     }
 
     return 0;

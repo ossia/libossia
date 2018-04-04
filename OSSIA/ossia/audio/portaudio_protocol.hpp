@@ -154,11 +154,11 @@ class portaudio_engine final
       if(self.stop_processing)
       {
         auto float_output = ((float **) output);
-        for(std::size_t i = 0; i < self.m_outs; i++)
+        for(int i = 0; i < self.m_outs; i++)
         {
           auto chan = float_output[i];
-          for(std::size_t i = 0; i < nframes; i++)
-            chan[i] = 0.;
+          for(std::size_t j = 0; j < nframes; j++)
+            chan[j] = 0.;
         }
         return 0;
       }
