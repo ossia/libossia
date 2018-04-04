@@ -92,9 +92,19 @@ public:
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
 
-  // this is used at loadband to mark a patcher loaded
-  // and trig its registration
-  std::map<t_object*, bool> root_patcher;
+  // this is used at loadbang to mark a patcher loaded
+  // and trigger its registration
+  struct root_descriptor{
+    bool is_loadbanged{};
+    unsigned long count{}; // number of object under this root
+
+    unsigned long inc(){ return ++count;}
+    unsigned long dec(){ return --count;}
+  };
+
+  typedef std::map<t_object*, root_descriptor> RootMap;
+
+  RootMap root_patcher;
   void* m_reg_clock{};
 
 private:

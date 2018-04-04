@@ -312,10 +312,21 @@ void object_base::loadbang(object_base* x)
 {
   if(!x->m_patcher_hierarchy.empty())
   {
-    std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
+    auto& map = ossia_max::instance().root_patcher;
 
-    ossia_max::instance().root_patcher.insert(std::pair<t_object*,bool>(x->m_patcher_hierarchy.back(), false));
-    clock_delay(ossia_max::instance().m_reg_clock,1);
+    std::pair<ossia_max::RootMap::iterator, bool> res = map.insert(
+                std::pair<t_object*,ossia_max::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));
+
+    if (!res.second)
+    {
+      // key already exists, then increment count
+      ossia_max::root_descriptor& desc = (res.first)->second;
+      desc.inc();
+      if (!desc.is_loadbanged)
+        clock_delay(ossia_max::instance().m_reg_clock,1);
+    } else {
+      clock_delay(ossia_max::instance().m_reg_clock,1);
+    }
   }
 }
 

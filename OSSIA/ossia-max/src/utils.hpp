@@ -296,7 +296,7 @@ void ossia_check_and_register(T* x)
 
   // register object only if root patcher have been loadbanged
   // else the patcher itself will trig a registration on loadbang
-  if(it != map.end() && it->second)
+  if(it != map.end() && it->second.is_loadbanged)
     ossia_register(x);
 }
 

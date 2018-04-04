@@ -117,15 +117,6 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    x->get_hierarchy();
-    auto& map = ossia_max::instance().root_patcher;
-    auto it = map.find(x->m_patcher_hierarchy.back());
-
-    // register children only if root patcher have been loadbanged
-    // else the patcher itself will trig a registration on loadbang
-    if(it != map.end() && it->second)
-      client::register_children(x);
-
     ossia_library.clients.push_back(x);
   }
 
@@ -526,13 +517,18 @@ void client::update(client* x)
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
   // for OSC Query
 
-  x->m_matchers.clear();
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-    x->m_matchers.emplace_back(&x->m_device->get_root_node(), (object_base*)nullptr);
 
-    client::register_children(x);
+    x->get_hierarchy();
+    auto& map = ossia_max::instance().root_patcher;
+    auto it = map.find(x->m_patcher_hierarchy.back());
+
+    // register children only if root patcher have been loadbanged
+    // else the patcher itself will trigger a registration on loadbang
+    if(it != map.end() && it->second.is_loadbanged)
+      client::register_children(x);
   }
 }
 
