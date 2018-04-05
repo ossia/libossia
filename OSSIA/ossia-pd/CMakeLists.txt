@@ -195,7 +195,7 @@ if(OSSIA_TESTING)
   foreach(patcher ${PD_UNIT_TEST})
     message("add test patcher: ${patcher}")
     add_test(NAME ${patcher}
-             COMMAND pd -nogui -lib ossia ${patcher}
+             COMMAND pd -nogui -lib ossia -open ${patcher} -send "ossia testing 1;"
              WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
              )
   endforeach()

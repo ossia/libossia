@@ -683,7 +683,7 @@ bool ossia_register(T* x)
 template<typename T>
 void ossia_check_and_register(T* x)
 {
-  auto& map = ossia_pd::instance().root_patcher;
+  auto& map = ossia_pd::instance().m_root_patcher;
   auto it = map.find(x->m_patcher_hierarchy.back());
 
   // register object only if root patcher have been loadbanged

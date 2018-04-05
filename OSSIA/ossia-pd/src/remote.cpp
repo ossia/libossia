@@ -128,7 +128,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
       {
         auto& m = m_matchers.back();
 
-        const auto& map = ossia_pd::instance().root_patcher;
+        const auto& map = ossia_pd::instance().m_root_patcher;
         auto it = map.find(m_patcher_hierarchy.back());
 
         if (it != map.end() && it->second.is_loadbanged)

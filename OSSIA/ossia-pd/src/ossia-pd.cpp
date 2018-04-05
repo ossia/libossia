@@ -49,6 +49,11 @@ static void ossia_free(t_ossia *x)
   ossia_pd::instance().devices.remove_all(x);
 }
 
+static void enable_testing(t_ossia *x, float f)
+{
+  ossia_pd::instance().m_testing = f > 0.;
+}
+
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 {
   t_eclass* c = eclass_new(
@@ -74,6 +79,7 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   eclass_addmethod(c, (method) device::name,   "name",      A_GIMME, 0);
   eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
   eclass_addmethod(c, (method) device::get_mess_cb, "get", A_SYMBOL, 0);
+  eclass_addmethod(c, (method) enable_testing, "testing", A_FLOAT, 0);
 
   ossia_pd::ossia_class = c;
 
@@ -162,7 +168,7 @@ ossia_pd& ossia_pd::instance()
 void ossia_pd::register_nodes(void* x)
 {
   auto& inst = ossia_pd::instance();
-  auto& map = inst.root_patcher;
+  auto& map = inst.m_root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {
     t_canvas* patcher = it->first;

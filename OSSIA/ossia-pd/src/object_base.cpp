@@ -317,7 +317,7 @@ object_base::object_base(t_eclass* c)
 
 object_base::~object_base()
 {
-  auto& map = ossia_pd::instance().root_patcher;
+  auto& map = ossia_pd::instance().m_root_patcher;
 
   const auto it = map.find(m_patcher_hierarchy.back());
   if (it->second.dec() == 0)
@@ -670,7 +670,7 @@ void object_base::loadbang(object_base* x, t_float flag)
   {
     if(!x->m_patcher_hierarchy.empty())
     {
-      auto& map = ossia_pd::instance().root_patcher;
+      auto& map = ossia_pd::instance().m_root_patcher;
 
       std::pair<ossia_pd::RootMap::iterator, bool>  res = map.insert(
             std::pair<t_canvas*,ossia_pd::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));

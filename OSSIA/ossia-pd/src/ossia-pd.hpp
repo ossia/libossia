@@ -92,8 +92,10 @@ public:
 
     typedef std::map<t_canvas*, root_descriptor> RootMap;
 
-    RootMap root_patcher;
+    RootMap m_root_patcher{};
     t_clock* m_reg_clock{};
+
+    bool m_testing{};
 
 private:
     ossia_pd(); // constructor
