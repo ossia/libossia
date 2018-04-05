@@ -25,7 +25,7 @@ struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
     execution_state();
-    ossia::net::node_base* find_node(std::string_view name)
+    ossia::net::node_base* find_node(std::string_view name) const
     {
       for(auto dev : allDevices)
       {
