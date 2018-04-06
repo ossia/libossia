@@ -578,8 +578,9 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     }
     else
     {
-      if (set_flag) m->m_set_pool.push_back(v);
       param->push_value(v);
+      if (set_flag)
+        m->m_set_pool.push_back(param->value());
     }
   }
 }
@@ -594,7 +595,6 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     param->push_value(v);
   }
 }
-
 
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
