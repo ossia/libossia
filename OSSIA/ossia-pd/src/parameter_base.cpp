@@ -601,15 +601,17 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   if (x->m_mute)
     return;
 
+  // TODO : simplify if statements
+
   bool set_flag = false;
-  if (s && s == gensym("set"))
+  if(s && s == gensym("set"))
     set_flag = true;
 
   if (argc == 0 && s)
   {
     just_push(x, std::string(s->s_name), set_flag);
   }
-  else if (argc == 1)
+  else if (argc == 1 && s && ( s == gensym("float") || s == gensym("list")))
   {
     ossia::value v;
     // convert one element array to single element

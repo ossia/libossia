@@ -143,7 +143,6 @@ public:
   static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
   static void get_recall_safe(object_base* x, std::vector<t_matcher*> nodes);
   static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
-  static void address_mess_cb(object_base* x, t_symbol* address);
   static void loadbang(object_base* x, t_float flag);
 
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
