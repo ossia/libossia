@@ -129,9 +129,19 @@ net::parameter_base&audio_parameter::set_bounding(bounding_mode)
 }
 
 
+virtual_audio_parameter::virtual_audio_parameter(int num_channels, net::node_base& n)
+  : audio_parameter{n}
+  , m_audio_data(num_channels)
+{
+  set_buffer_size(512);
+  auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
+  proto.register_parameter(*this);
+}
+
 virtual_audio_parameter::~virtual_audio_parameter()
 {
-
+  auto& proto = static_cast<ossia::audio_protocol&>(get_node().get_device().get_protocol());
+  proto.unregister_parameter(*this);
 }
 
 mapped_audio_parameter::mapped_audio_parameter(bool output, audio_mapping m, net::node_base& n)

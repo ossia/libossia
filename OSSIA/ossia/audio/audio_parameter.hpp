@@ -48,12 +48,7 @@ class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
   std::vector<std::vector<float>> m_audio_data;
 
 public:
-  virtual_audio_parameter(int num_channels, ossia::net::node_base& n)
-    : audio_parameter{n}
-    , m_audio_data(num_channels)
-  {
-    set_buffer_size(512);
-  }
+  virtual_audio_parameter(int num_channels, ossia::net::node_base& n);
 
   void set_buffer_size(int bs)
   {
