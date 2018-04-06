@@ -709,8 +709,9 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     }
     else
     {
-      if (set_flag) m->m_set_pool.push_back(v);
       param->push_value(v);
+      if (set_flag)
+        m->m_set_pool.push_back(param->value());
     }
     trig_output_value(node);
   }
@@ -742,7 +743,8 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   {
     just_push(x, std::string(s->s_name), set_flag);
   }
-  else if (argc == 1)
+  else if (argc == 1 && s &&
+           ( s == gensym("float") || s == gensym("list") || ( s == gensym("int"))))
   {
     // convert one element array to single element
     switch(argv->a_type)
