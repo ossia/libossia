@@ -636,43 +636,51 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       list.push_back(std::string(s->s_name));
     }
 
+    bool is_array = false;
+
     switch(argc)
     {
       case 2:
         if(auto arr = to_array<2>(argv)) {
+          is_array = true;
           convert_or_push(x, *arr, set_flag);
         }
         break;
       case 3:
         if(auto arr = to_array<3>(argv)) {
+          is_array = true;
           convert_or_push(x, *arr, set_flag);
         }
         break;
       case 4:
         if(auto arr = to_array<4>(argv)) {
+          is_array = true;
           convert_or_push(x, *arr, set_flag);
         }
         break;
     }
 
-    for (; argc > 0; argc--, argv++)
+    if (!is_array)
     {
-      switch (argv->a_type)
+      for (; argc > 0; argc--, argv++)
       {
-        case A_SYMBOL:
-          list.push_back(std::string(atom_getsymbol(argv)->s_name));
-          break;
-        case A_FLOAT:
-          list.push_back(atom_getfloat(argv));
-          break;
-        default:
-          pd_error(x, "value type not handled");
+        switch (argv->a_type)
+        {
+          case A_SYMBOL:
+            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          default:
+            pd_error(x, "value type not handled");
+        }
       }
+
+      ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
+
+      convert_or_push(x, std::move(list), set_flag);
     }
-
-    ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
-
-    convert_or_push(x, std::move(list), set_flag);
   }
 
   // go through all matchers to fire the new value
