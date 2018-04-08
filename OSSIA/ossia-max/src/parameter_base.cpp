@@ -766,38 +766,44 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   {
 
     std::vector<ossia::value> list;
-
     list.reserve(argc+1);
 
-    if ( s )
+    bool start_with_symbol = false;
+
+    if ( s && s != gensym("list") && s != gensym("set")  )
     {
-      if ( s != gensym("list") && s != gensym("set") )
-        list.push_back(std::string(s->s_name));
+      list.push_back(std::string(s->s_name));
+      start_with_symbol = true;
     }
 
     bool is_array = false;
 
-    switch(argc)
+    /*
+    if(!start_with_symbol)
     {
-      case 2:
-        if(auto arr = to_array<2>(argv)) {
-          is_array = true;
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      case 3:
-        if(auto arr = to_array<3>(argv)) {
-          is_array = true;
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      case 4:
-        if(auto arr = to_array<4>(argv)) {
-          is_array = true;
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
+      switch(argc)
+      {
+        case 2:
+          if(auto arr = to_array<2>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
+          break;
+        case 3:
+          if(auto arr = to_array<3>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
+          break;
+        case 4:
+          if(auto arr = to_array<4>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
+          break;
+      }
     }
+    */
 
     if (!is_array)
     {
