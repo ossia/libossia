@@ -252,7 +252,11 @@ void audio_protocol::process_generic(
     mapped->audio.resize(mapped->mapping.size());
     for(std::size_t i = 0; i < mapped->mapping.size(); i++)
     {
-      mapped->audio[i] = {float_input[mapped->mapping[i]], fc};
+      auto map_channel = mapped->mapping[i];
+      if(map_channel < n_in_channels)
+        mapped->audio[i] = {float_input[map_channel], fc};
+      else
+        mapped->audio[i] = {};
     }
   }
 
@@ -274,7 +278,11 @@ void audio_protocol::process_generic(
     mapped->audio.resize(mapped->mapping.size());
     for(std::size_t i = 0; i < mapped->mapping.size(); i++)
     {
-      mapped->audio[i] = {float_output[mapped->mapping[i]], fc};
+      auto map_channel = mapped->mapping[i];
+      if(map_channel < n_out_channels)
+        mapped->audio[i] = {float_output[map_channel], fc};
+      else
+        mapped->audio[i] = {};
     }
   }
 

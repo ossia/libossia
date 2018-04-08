@@ -23,9 +23,13 @@ class message_queue final : public Nano::Observer
 
     ~message_queue()
     {
-      for(auto reg : m_reg)
-      {
-        reg.first->remove_callback(reg.second);
+      try {
+        for(auto reg : m_reg)
+        {
+          reg.first->remove_callback(reg.second);
+        }
+      } catch(...) {
+
       }
     }
 
@@ -68,8 +72,8 @@ class message_queue final : public Nano::Observer
     moodycamel::ReaderWriterQueue<received_value> m_queue;
 
     ossia::ptr_map<
-      ossia::net::parameter_base*,
-      ossia::net::parameter_base::callback_index> m_reg;
+    ossia::net::parameter_base*,
+    ossia::net::parameter_base::callback_index> m_reg;
 };
 
 class global_message_queue final : public Nano::Observer
@@ -78,7 +82,7 @@ class global_message_queue final : public Nano::Observer
     global_message_queue(ossia::net::device_base& dev)
     {
       dev.on_message
-         .connect<global_message_queue, &global_message_queue::on_message>(
+          .connect<global_message_queue, &global_message_queue::on_message>(
             *this);
     }
 
