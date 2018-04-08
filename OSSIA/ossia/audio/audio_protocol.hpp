@@ -26,8 +26,9 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 {
   public:
     std::atomic_bool replace_tick{false};
-    smallfun::function<void(unsigned long, double), 256> ui_tick;
-    smallfun::function<void(unsigned long, double), 256> audio_tick;
+    using fun_type = smallfun::function<void(unsigned long, double), 256>;
+    fun_type ui_tick;
+    fun_type audio_tick;
 
     static void process_generic(audio_protocol& self,
                                 float *const * inputs, float** outputs,
@@ -39,7 +40,7 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     ~audio_protocol() override;
     void stop() override;
 
-    void set_tick(smallfun::function<void(unsigned long, double)> t)
+    void set_tick(fun_type&& t)
     {
       ui_tick = std::move(t);
       replace_tick = true;
