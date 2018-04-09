@@ -275,14 +275,14 @@ callback_index::operator bool() const
 
 node::node() : m_node{}, m_param{}
 {
-    std::cout << "Create Node: " << get_name() << '\n';
+    std::cout << "Create Empty Node " << get_name() << '\n';
 }
 
 node::node(const node& other)
     : m_node{other.m_node}, m_param{other.m_param}
 {
   init();
-  std::cout << "Create Node: " << get_name() << " from " << other.get_name() << '\n';
+  std::cout << "Copy Node: " << get_name() << " from " << other.get_name() << '\n';
 }
 
 node& node::operator=(const node& other)
@@ -295,7 +295,7 @@ node& node::operator=(const node& other)
 
   init();
 
-  std::cout << "Create Node: " << get_name() << " from " << other.get_name() << '\n';
+  std::cout << "Assign Node: " << get_name() << " from " << other.get_name() << '\n';
 
   return *this;
 }
@@ -308,7 +308,6 @@ node::~node()
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
     if (m_param) m_node->get_device()
         .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
-    std::cout << "   L___> Still here ? " << bool(m_node) << "  : " << get_name()   << " / Has Parameter : " << has_parameter() << '\n';
   }
 }
 
