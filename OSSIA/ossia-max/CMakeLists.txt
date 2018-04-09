@@ -15,9 +15,9 @@ elseif(WIN32)
 endif()
 find_package(MaxSDK QUIET)
 if(NOT MaxSDK_FOUND)
-	execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	find_package(MaxSDK REQUIRED)
+  find_package(MaxSDK REQUIRED)
 endif()
 
 if(APPLE)
@@ -87,7 +87,9 @@ generate_export_header(${PROJECT_NAME})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${MAXSDK_MAX_INCLUDE_DIR})
+    ${MAXSDK_MAX_INCLUDE_DIR}
+
+    ${OSSIA_3RDPARTY_FOLDER}/concurrentqueue)
 
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE MAC_VERSION)

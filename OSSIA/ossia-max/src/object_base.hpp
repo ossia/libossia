@@ -11,7 +11,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/common/path.hpp>
 
-#include <readerwriterqueue.h>
+#include <concurrentqueue.h>
 
 
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
@@ -69,7 +69,7 @@ private:
   ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = ossia::none;
 
-  moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
+  moodycamel::ConcurrentQueue<ossia::value> m_queue_list;
 
   bool m_dead{};
   t_atom m_addr{};

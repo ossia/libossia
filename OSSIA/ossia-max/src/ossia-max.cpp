@@ -21,8 +21,17 @@ struct max_msp_log_sink final :
 {
     void log(const spdlog::details::log_msg& msg) override
     {
+      switch(msg.level)
+      {
+      case spdlog::level::warn:
+      case spdlog::level::err:
+        error("%s", msg.raw.str().c_str());
+        break;
+
+      default:
         post("%s", msg.raw.str().c_str());
-        //l(msg.level, QString::fromUtf8(msg.formatted.data(), msg.formatted.size()));
+        break;
+      }
     }
 
     void flush() override
