@@ -4,7 +4,7 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/base/protocol.hpp>
-
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 class leapmotion_protocol::leap_listener final
@@ -20,11 +20,10 @@ class leapmotion_protocol::leap_listener final
 
     }
 
-    ossia::value to_value(Vector v)
+    ossia::vec3f to_value(Vector v)
     {
       return ossia::vec3f{v.x, v.y, v.z};
     }
-
 
     void onInit(const Controller&) override { }
     void onConnect(const Controller&) override { }
@@ -45,6 +44,7 @@ class leapmotion_protocol::leap_listener final
         else
           right_active = true;
 
+        handType.palm_velocity.push_value(to_value(hand.palmVelocity()));
         handType.palm_position.push_value(to_value(hand.palmPosition()));
         handType.palm_direction.push_value(to_value(hand.direction()));
         handType.palm_normal.push_value(to_value(hand.palmNormal()));
@@ -113,21 +113,20 @@ class leapmotion_protocol::leap_listener final
     void onDeviceFailure(const Controller&) override { }
     void onLogMessage(const Controller&, Leap::MessageSeverity severity, int64_t t, const char* msg) override
     {
-      switch (severity) {
+      switch (severity)
+      {
         case Leap::MESSAGE_CRITICAL:
-          std::cout << "[Critical]";
+          ossia::logger().error("[LeapMotion Critical] {} : {}", t, msg);
           break;
         case Leap::MESSAGE_WARNING:
-          std::cout << "[Warning]";
+          ossia::logger().error("[LeapMotion Warning] {} : {}", t, msg);
           break;
         case Leap::MESSAGE_INFORMATION:
-          std::cout << "[Info]";
+          ossia::logger().error("[LeapMotion Info] {} : {}", t, msg);
           break;
         case Leap::MESSAGE_UNKNOWN:
-          std::cout << "[Unknown]";
+          ossia::logger().error("[LeapMotion Error] {} : {}", t, msg);
       }
-      std::cout << "[" << t << "] ";
-      std::cout << msg << std::endl;
     }
 
     struct hand {
@@ -146,6 +145,7 @@ class leapmotion_protocol::leap_listener final
         ossia::net::parameter_base& ring_distal_end    {*ossia::create_parameter(root, "/" + kind + "/ring/distal/end", "xyz")};
         ossia::net::parameter_base& pinky_distal_end   {*ossia::create_parameter(root, "/" + kind + "/pinky/distal/end", "xyz")};
 
+        ossia::net::parameter_base& palm_velocity      {*ossia::create_parameter(root, "/" + kind + "/palm/velocity", "xyz")};
         ossia::net::parameter_base& palm_position      {*ossia::create_parameter(root, "/" + kind + "/palm/position", "xyz")};
         ossia::net::parameter_base& palm_normal        {*ossia::create_parameter(root, "/" + kind + "/palm/normal", "xyz")};
         ossia::net::parameter_base& palm_direction     {*ossia::create_parameter(root, "/" + kind + "/palm/direction", "xyz")};
@@ -184,7 +184,6 @@ leapmotion_protocol::~leapmotion_protocol()
     controller->removeListener(*listener);
 }
 
-//{std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "leapmotion"};
 }
 
 
