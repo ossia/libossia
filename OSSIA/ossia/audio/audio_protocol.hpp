@@ -69,13 +69,13 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     std::vector<ossia::audio_parameter*> audio_ins;
     std::vector<ossia::audio_parameter*> audio_outs;
 
+    std::vector<ossia::mapped_audio_parameter*> in_mappings;
+    std::vector<ossia::mapped_audio_parameter*> out_mappings;
+    std::vector<ossia::virtual_audio_parameter*> virtaudio;
     audio_engine* engine{};
   protected:
     ossia::net::device_base* m_dev{};
 
-    std::vector<ossia::mapped_audio_parameter*> in_mappings;
-    std::vector<ossia::mapped_audio_parameter*> out_mappings;
-    std::vector<ossia::virtual_audio_parameter*> virtaudio;
     moodycamel::ReaderWriterQueue<smallfun::function<void()>> funlist;
 };
 

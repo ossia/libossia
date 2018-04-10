@@ -2,6 +2,7 @@
 #include <ossia/network/phidgets/phidgets_node.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 
@@ -202,7 +203,18 @@ class phidget_open_parameter : public ossia::net::parameter_base
       {
         if(res)
         {
-          Phidget_openWaitForAttachment(m_phidget, 0);
+          auto err = Phidget_openWaitForAttachment(m_phidget, 1000);
+          if(err != EPHIDGET_OK)
+          {
+            const char* err_txt{};
+            Phidget_getErrorDescription(err, &err_txt);
+            if(err_txt)
+              ossia::logger().error("Phidget Open error: {} ({})", this->get_node().osc_address(), err_txt);
+            else
+              ossia::logger().error("Phidget Open error: {} (timeout)", this->get_node().osc_address());
+
+            res = false;
+          }
         }
         else
         {

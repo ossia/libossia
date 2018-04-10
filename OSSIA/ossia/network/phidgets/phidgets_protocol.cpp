@@ -28,7 +28,7 @@ void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
 {
   phidget_handle_t hdl{phid};
   const auto sn = hdl.get_serial();
-  ossia::logger().info(" Phidget {}", sn);
+
   if(m_phidgetMap.find(hdl) != m_phidgetMap.end())
     return;
   Phidget_DeviceClass dcls;
@@ -94,7 +94,7 @@ void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
     return;
   }
   phid_node->about_to_be_deleted.connect<phidget_protocol, &phidget_protocol::deleting_node>(*this);
-  ossia::logger().info("Created Phidget {} {}", sn, phid_node->get_name());
+
   m_phidgetMap.insert({hdl, phid_node});
 }
 
@@ -162,8 +162,6 @@ void phidget_protocol::on_deviceRemoved(ossia::phidget_id phid)
     auto pn = dynamic_cast<phidget_node*>(it->second);
     if(pn && pn->id == phid)
     {
-        ossia::logger().info("Remvoing Phidget {}", it->second->get_name());
-
         to_remove = it->second;
         it = m_phidgetMap.erase(it);
         break;
@@ -196,7 +194,6 @@ phidget_protocol::phidget_protocol()
         [] (PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
     auto self = (phidget_protocol*)ptr;
 
-    ossia::logger().warn("Phidget conncet: {}", (int64_t) phid);
     Phidget_retain(phid);
     self->m_functionQueue.enqueue([phid,self] { self->on_deviceCreated(phid); });
 
@@ -210,11 +207,6 @@ phidget_protocol::phidget_protocol()
         [](PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
 
     phidget_handle_t h{phid};
-
-    //ossia::logger().info("Phidget remove info: {} {} {} {} ",
-    // h.get_device_classname(), h.get_device_id_name(),
-    // h.get_channel_classname(), h.get_channel_subclassname() );
-
 
     auto self = (phidget_protocol*)ptr;
     self->m_functionQueue.enqueue([phid=phidget_id{h},self] { self->on_deviceRemoved(phid); });

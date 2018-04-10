@@ -167,6 +167,8 @@ struct OSSIA_EXPORT graph_util
 */
   static bool disable_strict_nodes(const graph_node* node)
   {
+    if(node->muted())
+      return true;
     for (const auto& in : node->inputs())
     {
       for (const auto& edge : in->sources)

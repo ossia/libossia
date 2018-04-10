@@ -112,6 +112,12 @@ endif()
 if(OSSIA_PROTOCOL_WEBSOCKETS)
   install_headers_rec("${OSSIA_WS_CLIENT_HEADERS}")
 endif()
+if(OSSIA_PROTOCOL_PHIDGETS)
+  install_headers_rec("${OSSIA_PHIDGETS_HEADERS}")
+endif()
+if(OSSIA_PROTOCOL_LEAPMOTION)
+  install_headers_rec("${OSSIA_LEAPMOTION_HEADERS}")
+endif()
 if(OSSIA_C)
   install_headers_rec("${OSSIA_C_HEADERS}")
 endif()
@@ -144,6 +150,14 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/spdlog/include/
         DESTINATION include
         COMPONENT Devel)
 
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/
+        DESTINATION include
+        COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/rapidjson/include/
+        DESTINATION include
+        COMPONENT Devel)
+
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include/
         DESTINATION include
         COMPONENT Devel)
@@ -156,6 +170,9 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
         DESTINATION include
         COMPONENT Devel)
 
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp
+        DESTINATION include
+        COMPONENT Devel)
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.hpp
         DESTINATION include/
         COMPONENT Devel)

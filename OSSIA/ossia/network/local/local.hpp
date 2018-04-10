@@ -26,6 +26,20 @@ public:
   multiplex_protocol& operator=(const multiplex_protocol&) = delete;
   multiplex_protocol& operator=(multiplex_protocol&&) = delete;
 
+  template<typename Arg>
+  multiplex_protocol(Arg&& arg):
+    multiplex_protocol{}
+  {
+    expose_to(std::move(arg));
+  }
+
+  template<typename Arg, typename... Args>
+  multiplex_protocol(Args&&... args, Arg&& arg):
+    multiplex_protocol{std::forward<Args>(args)...}
+  {
+    expose_to(std::move(arg));
+  }
+
   virtual ~multiplex_protocol();
 
   bool pull(ossia::net::parameter_base&) override;

@@ -53,72 +53,10 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 
 oscquery_mirror_protocol::oscquery_mirror_protocol(
     std::string host, uint16_t local_osc_port)
-    : m_oscServer{std::make_unique<osc::receiver>(
-          local_osc_port,
-          [=](const oscpack::ReceivedMessage& m,
-              const oscpack::IpEndpointName& ip) {
-            this->on_OSCMessage(m, ip);
-          })}
-    , m_websocketClient{std::make_unique<websocket_client>(
-                          [=] (connection_handler hdl, std::string& msg) {
-      this->on_WSMessage(hdl, msg);
-    })}
-    , m_websocketHost{std::move(host)}
-    , m_http{std::make_unique<http_client_context>()}
+  : m_websocketHost{std::move(host)}
+  , m_http{std::make_unique<http_client_context>()}
+  , m_osc_port{local_osc_port}
 {
-  auto port_idx = m_websocketHost.find_last_of(':');
-  if (port_idx != std::string::npos)
-  {
-    m_websocketPort = m_websocketHost.substr(port_idx + 1);
-  }
-  else
-  {
-    m_websocketPort = "80";
-  }
-  if (boost::starts_with(m_websocketHost, "http"))
-  {
-    m_useHTTP = true;
-    if (port_idx != std::string::npos)
-    {
-      m_websocketHost.erase(
-          m_websocketHost.begin() + port_idx, m_websocketHost.end());
-      m_websocketHost = "127.0.0.1";
-    }
-
-    m_http->worker = std::make_shared<asio::io_service::work>(m_http->context);
-    m_http->thread = std::thread([=] { m_http->context.run(); });
-  }
-  else
-  {
-    m_wsThread = std::thread([=] {
-      try
-      {
-        m_websocketClient->connect(m_websocketHost);
-      }
-      catch (...)
-      {
-        // Websocket does not connect, so let's try http requests
-        m_useHTTP = true;
-      }
-    });
-
-    int n = 0;
-    while (!query_connected())
-    {
-      n++;
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      if (n > 500)
-      {
-        cleanup_connections();
-        throw ossia::connection_error{
-            "oscquery_mirror_protocol::oscquery_mirror_protocol: "
-            "Could not connect to "
-            + m_websocketHost};
-      }
-    }
-  }
-
-  m_oscServer->run();
 }
 
 void oscquery_mirror_protocol::cleanup_connections()
@@ -425,6 +363,7 @@ std::future<void> oscquery_mirror_protocol::update_future(net::node_base& b)
 void oscquery_mirror_protocol::set_device(net::device_base& dev)
 {
   m_device = &dev;
+  init();
 }
 
 void oscquery_mirror_protocol::run_commands()
@@ -468,6 +407,76 @@ void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
 void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
 {
   m_websocketClient->onFail = std::move(f);
+}
+
+void oscquery_mirror_protocol::init()
+{
+  m_oscServer = std::make_unique<osc::receiver>(
+        m_osc_port,
+        [=](const oscpack::ReceivedMessage& m,
+            const oscpack::IpEndpointName& ip) {
+          this->on_OSCMessage(m, ip);
+  });
+
+  m_websocketClient = std::make_unique<websocket_client>(
+                        [=] (connection_handler hdl, std::string& msg) {
+    this->on_WSMessage(hdl, msg);
+  });
+
+  auto port_idx = m_websocketHost.find_last_of(':');
+  if (port_idx != std::string::npos)
+  {
+    m_websocketPort = m_websocketHost.substr(port_idx + 1);
+  }
+  else
+  {
+    m_websocketPort = "80";
+  }
+  if (boost::starts_with(m_websocketHost, "http"))
+  {
+    m_useHTTP = true;
+    if (port_idx != std::string::npos)
+    {
+      m_websocketHost.erase(
+          m_websocketHost.begin() + port_idx, m_websocketHost.end());
+      m_websocketHost = "127.0.0.1";
+    }
+
+    m_http->worker = std::make_shared<asio::io_service::work>(m_http->context);
+    m_http->thread = std::thread([=] { m_http->context.run(); });
+  }
+  else
+  {
+    m_wsThread = std::thread([=] {
+      try
+      {
+        m_websocketClient->connect(m_websocketHost);
+      }
+      catch (...)
+      {
+        // Websocket does not connect, so let's try http requests
+        m_useHTTP = true;
+      }
+    });
+
+    int n = 0;
+    while (!query_connected())
+    {
+      n++;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      if (n > 500)
+      {
+        cleanup_connections();
+        throw ossia::connection_error{
+            "oscquery_mirror_protocol::oscquery_mirror_protocol: "
+            "Could not connect to "
+            + m_websocketHost};
+      }
+    }
+  }
+
+  m_oscServer->run();
+
 }
 
 void oscquery_mirror_protocol::request_add_node(

@@ -98,6 +98,7 @@ public:
   void set_fail_callback(std::function<void()>);
 
 private:
+  void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
   void on_OSCMessage(
@@ -152,6 +153,7 @@ private:
   std::thread m_wsThread;
   std::string m_websocketHost;
   std::string m_websocketPort;
+  int m_osc_port{};
 
   std::unique_ptr<http_client_context> m_http;
   std::atomic_bool m_useHTTP{false};

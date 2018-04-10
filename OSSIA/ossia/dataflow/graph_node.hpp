@@ -119,8 +119,13 @@ public:
   void set_logging(bool b) { m_logging = b; }
   bool logged() const { return m_logging; }
 
+  void set_mute(bool b) { m_muted = b; }
+  bool muted() const { return m_muted; }
+
   virtual void all_notes_off();
   token_request_vec requested_tokens;
+
+
 
 protected:
   inlets m_inlets;
@@ -134,6 +139,7 @@ private:
   bool m_start_discontinuous{};
   bool m_end_discontinuous{};
   bool m_logging{};
+  bool m_muted{};
 };
 
 class OSSIA_EXPORT nonowning_graph_node: public graph_node

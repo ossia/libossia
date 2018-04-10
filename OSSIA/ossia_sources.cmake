@@ -11,6 +11,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_set.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
