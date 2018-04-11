@@ -52,7 +52,7 @@ class midi final
     void add_note(note_data nd)
     {
       m_orig_notes.insert(nd);
-      if(nd.start > m_lastPos)
+      if(nd.start > m_prev_date)
       {
         m_notes.insert(nd);
       }
@@ -70,6 +70,35 @@ class midi final
       }
     }
 
+    void transport(ossia::time_value date, double pos)
+    {
+      // 1. Send note-offs
+      m_toStop.insert(m_playingnotes.begin(), m_playingnotes.end());
+      m_playingnotes.clear();
+
+      // 2. Send note-ons
+      doTransport = true;
+
+      // 3. Re-add following notes
+      if(date < m_prev_date)
+      {
+        auto min_it = m_orig_notes.lower_bound({date});
+        auto max_it = m_orig_notes.lower_bound({m_prev_date});
+
+        if(min_it != m_orig_notes.end())
+          m_notes.insert(min_it, max_it);
+
+        for(auto it = m_orig_notes.begin(); it != min_it; ++it)
+        {
+          if((it->start + it->duration) > date)
+          {
+            m_notes.insert(*it);
+          }
+        }
+
+      }
+    }
+
     void update_note(note_data oldNote, note_data newNote)
     {
       // OPTIMIZEME
@@ -82,11 +111,13 @@ class midi final
       m_notes = std::move(notes);
       m_orig_notes = m_notes;
 
-      auto max_it = std::lower_bound(m_notes.begin(), m_notes.end(), m_lastPos, note_comparator{});
-      m_notes.erase(m_notes.begin(), max_it);
+      auto max_it = m_notes.lower_bound({m_prev_date});
+      if(max_it != m_notes.begin()) // TODO handle hte begin case correctly
+        m_notes.erase(m_notes.begin(), max_it);
     }
 
     bool mustStop{};
+    bool doTransport{};
   private:
     void run(ossia::token_request t, ossia::execution_state& e) override
     {
@@ -107,6 +138,20 @@ class midi final
       }
       else
       {
+        if(doTransport)
+        {
+          auto it = m_notes.begin();
+          while(it != m_notes.end() && it->start < t.date)
+          {
+            auto& note = *it;
+            mp->messages.push_back(mm::MakeNoteOn(m_channel, note.pitch, note.velocity));
+            mp->messages.back().timestamp = t.offset;
+            m_playingnotes.insert(note);
+            it = m_notes.erase(it);
+          }
+
+          doTransport = false;
+        }
         if (t.date > prev_date())
         {
           // First send note offs
@@ -129,7 +174,7 @@ class midi final
           }
 
           // Look for all the messages
-          auto max_it = std::lower_bound(m_notes.begin(), m_notes.end(), t.date, note_comparator{});
+          auto max_it = m_notes.lower_bound({t.date});
           for(auto it = m_notes.begin(); it < max_it; )
           {
             note_data& note = *it;
@@ -158,8 +203,6 @@ class midi final
         mp->messages.back().timestamp = t.offset;
       }
       m_toStop.clear();
-
-      m_lastPos = t.position;
     }
 
     note_set m_notes;
@@ -167,7 +210,6 @@ class midi final
     note_set m_playingnotes;
     note_set m_toStop;
 
-    double m_lastPos{};
     int m_channel{};
 
 };
@@ -176,11 +218,19 @@ class midi_node_process final : public ossia::node_process
 {
   public:
     using ossia::node_process::node_process;
-  void stop() override
-  {
-    midi* n = static_cast<midi*>(node.get());
-    n->requested_tokens.push_back(ossia::token_request{});
-    n->mustStop = true;
-  }
+
+    void transport(ossia::time_value date, double pos) override
+    {
+      node_process::transport(date, pos);
+      midi& n = *static_cast<midi*>(node.get());
+      n.transport(date, pos);
+    }
+
+    void stop() override
+    {
+      midi& n = *static_cast<midi*>(node.get());
+      n.requested_tokens.push_back(ossia::token_request{});
+      n.mustStop = true;
+    }
 };
 }
