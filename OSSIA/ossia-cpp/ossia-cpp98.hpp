@@ -41,9 +41,9 @@ class oscquery_mirror;
 class OSSIA_EXPORT value
 {
 public:
-  typedef std::array<float, 2ul> vec2f ;
-  typedef std::array<float, 3ul> vec3f ;
-  typedef std::array<float, 4ul> vec4f ;
+  struct vec2f {float x, y;};
+  struct vec3f {float x, y, z;};
+  struct vec4f {float x, y, z, w;};
 
   value();
   ~value();

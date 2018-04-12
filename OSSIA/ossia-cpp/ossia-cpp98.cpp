@@ -9,6 +9,7 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
+#include<array>
 namespace opp
 {
 
@@ -42,14 +43,17 @@ value::value(double v) : m_val{new ossia::value(v)}
 value::value(const char* v) : m_val{new ossia::value(std::string(v))}
 {
 }
-value::value(const vec2f v) : m_val{new ossia::value(vec2f(v))}
+value::value(const vec2f v) : m_val{new ossia::value()}
 {
+  *this = std::move(v);
 }
-value::value(const vec3f v) : m_val{new ossia::value(vec3f(v))}
+value::value(const vec3f v) : m_val{new ossia::value()}
 {
+  *this = std::move(v);
 }
-value::value(const vec4f v) : m_val{new ossia::value(vec4f(v))}
+value::value(const vec4f v) : m_val{new ossia::value()}
 {
+  *this = std::move(v);
 }
 value::value(std::vector<opp::value> v) : m_val{new ossia::value()}
 {
@@ -152,17 +156,17 @@ value& value::operator=(bool v)
 }
 value& value::operator=(vec2f v)
 {
-  *m_val = v;
+  *m_val = std::array<float, 2ul>{v.x, v.y};
   return *this;
 }
 value& value::operator=(vec3f v)
 {
-  *m_val = v;
+  *m_val = std::array<float, 3ul>{v.x, v.y, v.z};
   return *this;
 }
 value& value::operator=(vec4f v)
 {
-  *m_val = v;
+  *m_val = std::array<float, 4ul>{v.x, v.y, v.z};
   return *this;
 }
 value& value::operator=(std::vector<value> v)
