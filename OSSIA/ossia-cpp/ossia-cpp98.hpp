@@ -109,7 +109,7 @@ private:
 
 typedef void (*value_callback)(void*, const opp::value&);
 
-struct callback_index {
+struct OSSIA_EXPORT callback_index {
     callback_index();
     ~callback_index();
     callback_index(const callback_index&);
@@ -198,7 +198,7 @@ public:
   node create_vec4f(std::string addr);
 
   node create_string(std::string addr);
-  
+
   node create_buffer(std::string addr);
   node create_filepath(std::string addr);
 
