@@ -72,6 +72,9 @@ public:
   int to_int() const;
   float to_float() const;
   bool to_bool() const;
+  vec2f to_vec2f() const;
+  vec3f to_vec3f() const;
+  vec4f to_vec4f() const;
   std::vector<opp::value> to_list() const;
   std::string to_string() const;
 

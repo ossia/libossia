@@ -118,6 +118,31 @@ bool value::to_bool() const
 {
   return ossia::convert<bool>(*m_val);
 }
+value::vec2f value::to_vec2f() const
+{
+  value::vec2f res;
+  res.x = ossia::convert<ossia::vec2f>(*m_val)[0];
+  res.y = ossia::convert<ossia::vec2f>(*m_val)[1];
+  return res;
+}
+value::vec3f value::to_vec3f() const
+{
+  value::vec3f res;
+  res.x = ossia::convert<ossia::vec3f>(*m_val)[0];
+  res.y = ossia::convert<ossia::vec3f>(*m_val)[1];
+  res.z = ossia::convert<ossia::vec3f>(*m_val)[2];
+  return res;
+}
+value::vec4f value::to_vec4f() const
+{
+  value::vec4f res;
+  res.x = ossia::convert<ossia::vec4f>(*m_val)[0];
+  res.y = ossia::convert<ossia::vec4f>(*m_val)[1];
+  res.z = ossia::convert<ossia::vec4f>(*m_val)[2];
+  res.w = ossia::convert<ossia::vec4f>(*m_val)[3];
+  return res;
+}
+
 std::vector<value> value::to_list() const
 {
   std::vector<opp::value> res;
@@ -166,7 +191,7 @@ value& value::operator=(vec3f v)
 }
 value& value::operator=(vec4f v)
 {
-  *m_val = std::array<float, 4ul>{v.x, v.y, v.z};
+  *m_val = std::array<float, 4ul>{v.x, v.y, v.z, v.w};
   return *this;
 }
 value& value::operator=(std::vector<value> v)
