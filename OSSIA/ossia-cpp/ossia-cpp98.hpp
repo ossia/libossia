@@ -41,9 +41,12 @@ class oscquery_mirror;
 class OSSIA_EXPORT value
 {
 public:
-  struct vec2f {float x, y;};
-  struct vec3f {float x, y, z;};
-  struct vec4f {float x, y, z, w;};
+  struct vec2f {float data[2];
+                float& operator[](int i){return data[i];}};
+  struct vec3f {float data[3];
+                float& operator[](int i){return data[i];}};
+  struct vec4f {float data[4];
+                float& operator[](int i){return data[i];}};
 
   value();
   ~value();
