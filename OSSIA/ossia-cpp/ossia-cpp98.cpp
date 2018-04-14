@@ -9,7 +9,10 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
-#include<array>
+
+#include <array>
+#include <functional>
+
 namespace opp
 {
 
@@ -296,7 +299,43 @@ callback_index::operator bool() const
   return bool(index->iterator);
 }
 
+//*************************************************************//
+//                  connection_callback_fn                     //
+//*************************************************************//
 
+/*
+struct connection_callback_fn::impl {
+    std::function<const std::string&> lambda =
+        std::function<const std::string&>();
+};
+
+connection_callback_fn::connection_callback_fn()
+  : fn{new impl}
+{
+}
+
+connection_callback_fn::~connection_callback_fn()
+{
+   delete fn;
+}
+
+connection_callback_fn::connection_callback_fn(const connection_callback_fn& other)
+  : fn{new impl{*other.fn}}
+{
+}
+
+connection_callback_fn& connection_callback_fn::operator=(const connection_callback_fn& other)
+{
+  *fn = *other.fn;
+  return *this;
+}
+
+
+connection_callback_fn::operator bool() const
+{
+  return bool(fn);
+}
+*/
 
 //*************************************************************//
 //                          node                               //
@@ -1492,12 +1531,33 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
         oscPort, wsPort);
 
   multiplex.expose_to(std::move(oscq_proto));
-
 }
 
 node oscquery_server::get_root_node() const
 {
   return node{&m_dev->get_root_node()};
+}
+
+void oscquery_server::set_connection_callback(connection_callback c, void* ctx)
+{
+
+  auto connect_callback = [=] (const std::string& address) {
+    c(ctx, connection_status::Connect, address);
+  };
+  auto disconnect_callback = [=] (const std::string& address) {
+    c(ctx, connection_status::Disconnect, address);
+  };
+
+  ossia::oscquery::oscquery_server_protocol& proto =
+      dynamic_cast<ossia::oscquery::oscquery_server_protocol&>(m_dev->get_protocol());
+
+  proto.onClientConnected.connect<&connect_callback>();
+  proto.onClientDisconnected.connect<&disconnect_callback>();
+}
+
+void oscquery_server::remove_connection_callback()
+{
+
 }
 
 oscquery_mirror::oscquery_mirror(std::string name, std::string host) try

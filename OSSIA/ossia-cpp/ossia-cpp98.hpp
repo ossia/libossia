@@ -35,6 +35,12 @@ enum bounding_mode
   High
 };
 
+enum connection_status
+{
+  Connect,
+  Disconnect
+};
+
 class node;
 class oscquery_server;
 class oscquery_mirror;
@@ -114,6 +120,7 @@ private:
 };
 
 typedef void (*value_callback)(void*, const opp::value&);
+typedef void (*connection_callback)(void*, opp::connection_status status, const std::string&);
 
 struct OSSIA_EXPORT callback_index {
     callback_index();
@@ -129,6 +136,20 @@ struct OSSIA_EXPORT callback_index {
     impl* index;
 
 };
+
+/*
+struct OSSIA_EXPORT connection_callback_fn {
+    connection_callback_fn();
+    ~connection_callback_fn();
+    connection_callback_fn(const connection_callback_fn&);
+    connection_callback_fn& operator=(const connection_callback_fn&);
+    operator bool() const;
+
+  private:
+    struct impl;
+    impl* fn;
+};
+*/
 
 class OSSIA_EXPORT node
 {
@@ -323,6 +344,9 @@ public:
 
   void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
   node get_root_node() const;
+
+  void set_connection_callback(connection_callback c, void* ctx);
+  void remove_connection_callback();
 
 private:
   ossia::net::device_base* m_dev;
