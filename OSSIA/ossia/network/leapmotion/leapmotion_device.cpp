@@ -180,7 +180,7 @@ void leapmotion_protocol::set_device(net::device_base& dev)
 
 leapmotion_protocol::~leapmotion_protocol()
 {
-  if(controller)
+  if(controller && listener)
     controller->removeListener(*listener);
 }
 

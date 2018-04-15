@@ -31,6 +31,7 @@ void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
 
   if(m_phidgetMap.find(hdl) != m_phidgetMap.end())
     return;
+
   Phidget_DeviceClass dcls;
   Phidget_getDeviceClass(phid, &dcls);
 
@@ -93,6 +94,16 @@ void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
     Phidget_release(&phid);
     return;
   }
+
+  Phidget_setOnErrorHandler(
+        phid,
+        [] (PhidgetHandle phid, void *ctx, Phidget_ErrorEventCode errorCode, const char *errorString)
+  {
+    auto phid_node = static_cast<ossia::phidget_node*>(ctx);
+    ossia::logger().error("[Phidget] {} ({}): {}", phid_node->osc_address(), phidget_handle_t{phid}.get_serial(), errorString);
+  }, phid_node);
+
+
   phid_node->about_to_be_deleted.connect<phidget_protocol, &phidget_protocol::deleting_node>(*this);
 
   m_phidgetMap.insert({hdl, phid_node});
@@ -182,8 +193,12 @@ void phidget_protocol::on_deviceRemoved(ossia::phidget_id phid)
 
 phidget_protocol::phidget_protocol()
 {
-  PhidgetLog_enable(PHIDGET_LOG_WARNING, NULL);
+  PhidgetLog_enable(PHIDGET_LOG_WARNING, nullptr);
 
+  PhidgetNet_enableServerDiscovery(PHIDGETSERVER_SBC);
+  PhidgetNet_enableServerDiscovery(PHIDGETSERVER_DEVICE);
+  PhidgetNet_enableServerDiscovery(PHIDGETSERVER_DEVICELISTENER);
+  PhidgetNet_enableServerDiscovery(PHIDGETSERVER_DEVICEREMOTE);
   // Tree :
   // Phidgets:/device/...
 
