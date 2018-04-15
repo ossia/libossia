@@ -340,9 +340,9 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       if (argc == 3 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG
           && argv[2].a_type == A_LONG)
       {
-        settings.remoteip = atom_getsym(argv)->s_name;
-        settings.remoteport = atom_getfloat(argv++);
-        settings.localport = atom_getfloat(argv++);
+        settings.remoteip = atom_getsym(argv++)->s_name;
+        settings.remoteport = atom_getlong(argv++);
+        settings.localport = atom_getlong(argv++);
       }
 
       try
