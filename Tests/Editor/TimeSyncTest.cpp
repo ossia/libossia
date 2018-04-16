@@ -23,7 +23,7 @@ private Q_SLOTS:
         auto node = std::make_shared<time_sync>();
         QVERIFY(node != nullptr);
 
-        time_value date = node->get_date();
+        ossia::time_value date = node->get_date();
         QVERIFY(date == Zero);
 
         QVERIFY(node->get_expression() == expressions::expression_true());

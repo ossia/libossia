@@ -6,7 +6,7 @@
 
 using namespace ossia;
 
-void interval_callback(double position, time_value date, const ossia::state_element& element)
+void interval_callback(double position, ossia::time_value date, const ossia::state_element& element)
 {
     ;
 }
