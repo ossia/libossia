@@ -199,7 +199,14 @@ struct value2atom
   void operator()(int32_t i) const
   {
     t_atom a;
-    atom_setfloat(&a, i);
+    atom_setlong(&a, i);
+    data.push_back(a);
+  }
+
+  void operator()(int64_t i) const
+  {
+    t_atom a;
+    atom_setlong(&a, i);
     data.push_back(a);
   }
 

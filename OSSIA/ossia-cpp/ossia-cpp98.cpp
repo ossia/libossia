@@ -4,12 +4,19 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
+#include<array>
 namespace opp
 {
+
+//**************************************************************//
+//                          value                               //
+//*************************************************************//
+
 
 value::value() : m_val{new ossia::value}
 {
@@ -36,6 +43,18 @@ value::value(double v) : m_val{new ossia::value(v)}
 value::value(const char* v) : m_val{new ossia::value(std::string(v))}
 {
 }
+value::value(const vec2f v) : m_val{new ossia::value()}
+{
+  *this = std::move(v);
+}
+value::value(const vec3f v) : m_val{new ossia::value()}
+{
+  *this = std::move(v);
+}
+value::value(const vec4f v) : m_val{new ossia::value()}
+{
+  *this = std::move(v);
+}
 value::value(std::vector<opp::value> v) : m_val{new ossia::value()}
 {
   *this = std::move(v);
@@ -60,6 +79,21 @@ bool value::is_bool() const
 {
   return m_val->getType() == ossia::val_type::BOOL;
 }
+bool value::is_vec2f() const
+{
+  const auto t = m_val->getType();
+  return t == ossia::val_type::VEC2F;
+}
+bool value::is_vec3f() const
+{
+  const auto t = m_val->getType();
+  return t == ossia::val_type::VEC3F;
+}
+bool value::is_vec4f() const
+{
+  const auto t = m_val->getType();
+  return t == ossia::val_type::VEC4F;
+}
 bool value::is_list() const
 {
   const auto t = m_val->getType();
@@ -71,6 +105,7 @@ bool value::is_string() const
 {
   return m_val->getType() == ossia::val_type::STRING;
 }
+
 int value::to_int() const
 {
   return ossia::convert<int>(*m_val);
@@ -83,6 +118,31 @@ bool value::to_bool() const
 {
   return ossia::convert<bool>(*m_val);
 }
+value::vec2f value::to_vec2f() const
+{
+  value::vec2f res;
+  res[0] = ossia::convert<ossia::vec2f>(*m_val)[0];
+  res[1] = ossia::convert<ossia::vec2f>(*m_val)[1];
+  return res;
+}
+value::vec3f value::to_vec3f() const
+{
+  value::vec3f res;
+  res[0] = ossia::convert<ossia::vec3f>(*m_val)[0];
+  res[1] = ossia::convert<ossia::vec3f>(*m_val)[1];
+  res[2] = ossia::convert<ossia::vec3f>(*m_val)[2];
+  return res;
+}
+value::vec4f value::to_vec4f() const
+{
+  value::vec4f res;
+  res[0] = ossia::convert<ossia::vec4f>(*m_val)[0];
+  res[1] = ossia::convert<ossia::vec4f>(*m_val)[1];
+  res[2] = ossia::convert<ossia::vec4f>(*m_val)[2];
+  res[3] = ossia::convert<ossia::vec4f>(*m_val)[3];
+  return res;
+}
+
 std::vector<value> value::to_list() const
 {
   std::vector<opp::value> res;
@@ -119,6 +179,21 @@ value& value::operator=(bool v)
   *m_val = v;
   return *this;
 }
+value& value::operator=(vec2f v)
+{
+  *m_val = std::array<float, 2ul>{v[0], v[1]};
+  return *this;
+}
+value& value::operator=(vec3f v)
+{
+  *m_val = std::array<float, 3ul>{v[0], v[1], v[2]};
+  return *this;
+}
+value& value::operator=(vec4f v)
+{
+  *m_val = std::array<float, 4ul>{v[0], v[1], v[2], v[3]};
+  return *this;
+}
 value& value::operator=(std::vector<value> v)
 {
   std::vector<ossia::value> res;
@@ -149,6 +224,18 @@ void value::set_bool(bool v)
 {
   *this = std::move(v);
 }
+void value::set_vec2f(vec2f v)
+{
+  *this = std::move(v);
+}
+void value::set_vec3f(vec3f v)
+{
+  *this = std::move(v);
+}
+void value::set_vec4f(vec4f v)
+{
+  *this = std::move(v);
+}
 void value::set_list(std::vector<value> v)
 {
   *this = std::move(v);
@@ -174,12 +261,53 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 {
 }
 
-node::node() : m_node{}, m_addr{}
+//*************************************************************//
+//                      callback_index                         //
+//*************************************************************//
+
+struct callback_index::impl {
+  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator> iterator = ossia::none;
+};
+
+callback_index::callback_index()
+  : index{new impl}
+{
+}
+
+callback_index::~callback_index()
+{
+   delete index;
+}
+
+callback_index::callback_index(const callback_index& other)
+  : index{new impl{*other.index}}
+{
+}
+
+callback_index& callback_index::operator=(const callback_index& other)
+{
+  *index = *other.index;
+  return *this;
+}
+
+
+callback_index::operator bool() const
+{
+  return bool(index->iterator);
+}
+
+
+
+//*************************************************************//
+//                          node                               //
+//*************************************************************//
+
+node::node() : m_node{}, m_param{}
 {
 }
 
 node::node(const node& other)
-    : m_node{other.m_node}, m_addr{other.m_addr}
+    : m_node{other.m_node}, m_param{other.m_param}
 {
   init();
 }
@@ -190,7 +318,7 @@ node& node::operator=(const node& other)
     cleanup(*m_node);
 
   m_node = other.m_node;
-  m_addr = other.m_addr;
+  m_param = other.m_param;
 
   init();
 
@@ -202,12 +330,12 @@ node::~node()
   if (m_node)
   {
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
-    m_node->get_device()
+    if (m_param) m_node->get_device()
         .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
   }
 }
 
-bool node::valid() const
+node::operator bool() const
 {
   return m_node;
 }
@@ -225,9 +353,14 @@ void node::set_name(std::string s)
 
 std::string node::get_parameter() const
 {
-  if(m_addr)
-    return ossia::net::osc_parameter_string(*m_addr);
+  if(m_param)
+    return ossia::net::osc_parameter_string(*m_param);
   return "";
+}
+
+bool node::has_parameter() const
+{
+    return(m_param);
 }
 
 std::vector<node> node::get_children() const
@@ -255,6 +388,14 @@ void node::remove_child(std::string addr)
   }
 }
 
+void node::remove_children()
+{
+  if (m_node)
+  {
+    m_node->clear_children();
+  }
+}
+
 node node::create_child(std::string addr)
 {
   if (m_node)
@@ -264,6 +405,282 @@ node node::create_child(std::string addr)
 
   return {};
 }
+
+
+
+void node::set_impulse()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::IMPULSE);
+  }
+
+}
+
+void node::set_int()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::INT);
+  }
+
+}
+
+void node::set_float()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::FLOAT);
+  }
+
+}
+
+void node::set_bool()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::BOOL);
+  }
+
+}
+
+void node::set_list()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::LIST);
+  }
+
+}
+
+void node::set_vec2f()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::VEC2F);
+  }
+
+}
+
+void node::set_vec3f()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::VEC3F);
+  }
+
+}
+
+void node::set_vec4f()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::VEC4F);
+  }
+
+}
+
+void node::set_string()
+{
+  if (m_node)
+  {
+     m_node->remove_parameter();
+     m_node->create_parameter(ossia::val_type::STRING);
+  }
+
+}
+
+void node::set_buffer()
+{
+  if (m_node)
+  {
+      m_node->remove_parameter();
+      ossia::setup_parameter(ossia::generic_buffer_type(), *m_node);
+  }
+
+}
+
+void node::set_filepath()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::filesystem_path_type(), *m_node);
+  }
+
+}
+
+void node::set_rgb()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::rgb_u{}, *m_node);
+  }
+
+}
+
+void node::set_rgba()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::rgba_u{}, *m_node);
+  }
+
+}
+
+void node::set_argb()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::argb_u{}, *m_node);
+  }
+
+}
+
+void node::set_argb8()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::argb8_u{}, *m_node);
+  }
+
+}
+
+void node::set_hsv()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::hsv_u{}, *m_node);
+  }
+
+}
+
+void node::set_cart2D()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::cartesian_2d_u{}, *m_node);
+  }
+
+}
+
+void node::set_cart3D()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::cartesian_3d_u{}, *m_node);
+  }
+
+}
+
+void node::set_polar()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::polar_u{}, *m_node);
+  }
+
+}
+
+void node::set_spherical()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::spherical_u{}, *m_node);
+  }
+
+}
+
+void node::set_opengl()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::opengl_u{}, *m_node);
+  }
+
+}
+
+void node::set_cylindrical()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::cylindrical_u{}, *m_node);
+  }
+
+}
+
+void node::set_quaternion()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::quaternion_u{}, *m_node);
+  }
+
+}
+
+void node::set_euler()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::euler_u{}, *m_node);
+  }
+
+
+}
+
+void node::set_axis()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::axis_u{}, *m_node);
+  }
+
+}
+
+void node::set_decibel()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::decibel_u{}, *m_node);
+  }
+
+}
+
+void node::set_midigain()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::midigain_u{}, *m_node);
+  }
+
+}
+
+
+
 
 node node::create_impulse(std::string addr)
 {
@@ -325,7 +742,7 @@ node node::create_vec2f(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::val_type::VEC2F, *n)};
+    return node{n, n->create_parameter(ossia::val_type::VEC2F)};
   }
 
   return {};
@@ -336,7 +753,7 @@ node node::create_vec3f(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::val_type::VEC3F, *n)};
+    return node{n, n->create_parameter(ossia::val_type::VEC3F)};
   }
 
   return {};
@@ -347,7 +764,7 @@ node node::create_vec4f(std::string addr)
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::val_type::VEC4F, *n)};
+    return node{n, n->create_parameter(ossia::val_type::VEC4F)};
   }
 
   return {};
@@ -562,51 +979,63 @@ node node::create_midigain(std::string addr)
   return {};
 }
 
+
 node& node::set_value(value v)
 {
-  if (m_addr)
-    m_addr->push_value(*v.m_val);
+  if (m_param)
+    m_param->push_value(*v.m_val);
   return *this;
 }
 
 value node::get_value() const
 {
-  if (m_addr)
-    return m_addr->value();
+  if (m_param)
+    return m_param->value();
   return {};
 }
 
 value node::fetch_value() const
 {
-  if (m_addr)
-    return m_addr->fetch_value();
+  if (m_param)
+    return m_param->fetch_value();
   return {};
 }
 
-void node::set_value_callback(value_callback c, void* context)
+callback_index node::set_value_callback(value_callback c, void* ctx)
 {
-  if (m_addr)
+  if (m_param)
   {
-    m_addr->add_callback([=](const ossia::value& v) { c(context, v); });
+      callback_index idx;
+      idx.index->iterator = m_param->add_callback([=](const ossia::value& v) { c(ctx, v); });
+      return idx;
+  }
+  return {};
+}
+
+void node::remove_value_callback(callback_index idx)
+{
+  if (m_param)
+  {
+  m_param->remove_callback(*idx.index->iterator);
   }
 }
 
 node& node::set_min(value min)
 {
-  if (m_addr)
+  if (m_param)
   {
-    auto dom = m_addr->get_domain();
+    auto dom = m_param->get_domain();
     dom.set_min(std::move(*min.m_val));
-    m_addr->set_domain(std::move(dom));
+    m_param->set_domain(std::move(dom));
   }
   return *this;
 }
 
 value node::get_min() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    auto dom = m_addr->get_domain();
+    auto dom = m_param->get_domain();
     return ossia::get_min(dom);
   }
   return {};
@@ -614,20 +1043,20 @@ value node::get_min() const
 
 node& node::set_max(value max)
 {
-  if (m_addr)
+  if (m_param)
   {
-    auto dom = m_addr->get_domain();
+    auto dom = m_param->get_domain();
     dom.set_max(std::move(*max.m_val));
-    m_addr->set_domain(std::move(dom));
+    m_param->set_domain(std::move(dom));
   }
   return *this;
 }
 
 value node::get_max() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    auto dom = m_addr->get_domain();
+    auto dom = m_param->get_domain();
     return ossia::get_max(dom);
   }
   return {};
@@ -635,9 +1064,9 @@ value node::get_max() const
 
 node& node::set_accepted_values(std::vector<value> v)
 {
-  if (m_addr)
+  if (m_param)
   {
-    auto dom = m_addr->get_domain();
+    auto dom = m_param->get_domain();
 
     std::vector<ossia::value> vals;
     for (const auto& val : v)
@@ -645,16 +1074,16 @@ node& node::set_accepted_values(std::vector<value> v)
 
     ossia::set_values(dom, std::move(vals));
 
-    m_addr->set_domain(std::move(dom));
+    m_param->set_domain(std::move(dom));
   }
   return *this;
 }
 
 std::vector<value> node::get_accepted_values() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    auto dom = m_addr->get_domain();
+    auto dom = m_param->get_domain();
     // TODO
     return {};
   }
@@ -663,54 +1092,54 @@ std::vector<value> node::get_accepted_values() const
 
 node& node::set_unit(std::string v)
 {
-  if (m_addr)
+  if (m_param)
   {
-    m_addr->set_unit(ossia::parse_pretty_unit(v));
+    m_param->set_unit(ossia::parse_pretty_unit(v));
   }
   return *this;
 }
 
 std::string node::get_unit() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    return ossia::get_pretty_unit_text(m_addr->get_unit());
+    return ossia::get_pretty_unit_text(m_param->get_unit());
   }
   return {};
 }
 
 node& node::set_access(access_mode v)
 {
-  if (m_addr)
+  if (m_param)
   {
-    m_addr->set_access(static_cast<ossia::access_mode>(v));
+    m_param->set_access(static_cast<ossia::access_mode>(v));
   }
   return *this;
 }
 
 access_mode node::get_access() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    return static_cast<opp::access_mode>(m_addr->get_access());
+    return static_cast<opp::access_mode>(m_param->get_access());
   }
   return {};
 }
 
 node& node::set_bounding(bounding_mode v)
 {
-  if (m_addr)
+  if (m_param)
   {
-    m_addr->set_bounding(static_cast<ossia::bounding_mode>(v));
+    m_param->set_bounding(static_cast<ossia::bounding_mode>(v));
   }
   return *this;
 }
 
 bounding_mode node::get_bounding() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    return static_cast<opp::bounding_mode>(m_addr->get_bounding());
+    return static_cast<opp::bounding_mode>(m_param->get_bounding());
   }
   return {};
 }
@@ -981,9 +1410,9 @@ bool node::get_muted() const
 
 node& node::set_repetition_filter(bool v)
 {
-  if (m_addr)
+  if (m_param)
   {
-    m_addr->set_repetition_filter(
+    m_param->set_repetition_filter(
         v ? ossia::repetition_filter::ON : ossia::repetition_filter::OFF);
   }
   return *this;
@@ -991,21 +1420,21 @@ node& node::set_repetition_filter(bool v)
 
 bool node::get_repetition_filter() const
 {
-  if (m_addr)
+  if (m_param)
   {
-    return m_addr->get_repetition_filter();
+    return m_param->get_repetition_filter();
   }
   return {};
 }
 
 node::node(ossia::net::node_base* b)
-    : m_node{b}, m_addr{b->get_parameter()}
+    : m_node{b}, m_param{b->get_parameter()}
 {
   init();
 }
 
 node::node(ossia::net::node_base* b, ossia::net::parameter_base* a)
-    : m_node{b}, m_addr{a}
+    : m_node{b}, m_param{a}
 {
   init();
 }
@@ -1021,17 +1450,22 @@ void node::init()
 void node::cleanup(const ossia::net::node_base&)
 {
   m_node = nullptr;
-  m_addr = nullptr;
+  m_param = nullptr;
 }
 void node::cleanup_parameter(const ossia::net::parameter_base&)
 {
-  if (m_addr)
+  if (m_param)
     m_node->get_device()
         .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
-  m_addr = nullptr;
+  m_param = nullptr;
 }
 
-oscquery_server::oscquery_server(std::string name, int wsPort, int oscPort)
+oscquery_server::oscquery_server()
+{
+  m_dev = new ossia::net::generic_device();
+}
+
+oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
 {
   m_dev = new ossia::net::generic_device(
       std::make_unique<ossia::oscquery::oscquery_server_protocol>(
@@ -1042,6 +1476,23 @@ oscquery_server::oscquery_server(std::string name, int wsPort, int oscPort)
 oscquery_server::~oscquery_server()
 {
   delete m_dev;
+}
+
+void oscquery_server::setup(std::string name, int oscPort, int wsPort)
+{
+  //auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
+  //m_dev = new ossia::net::generic_device{std::move(local_proto_ptr), name};
+  //local_proto_ptr->expose_to
+  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+        m_dev->get_protocol());
+
+  m_dev->set_name(name);
+
+  auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+        oscPort, wsPort);
+
+  multiplex.expose_to(std::move(oscq_proto));
+
 }
 
 node oscquery_server::get_root_node() const

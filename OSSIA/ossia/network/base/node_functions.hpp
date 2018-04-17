@@ -67,6 +67,21 @@ OSSIA_EXPORT node_base&
 find_or_create_node(node_base& dev, ossia::string_view parameter_base);
 
 /**
+ * @brief Find a parameter and create it if it does not exist.
+ * @details Find a node matching the address, if it already has a parameter
+ * create a new one (with name incremented by 1), if not create parameter
+ * It some matching nodes does not exist, they will be created with a parameter
+ * @param node
+ * @param address
+ * @param type of the parameter
+ * @return vector of created parameters
+ */
+OSSIA_EXPORT std::vector<parameter_base*>
+find_or_create_parameter(node_base& node,
+                         const std::string& address,
+                         const std::string& type);
+
+/**
  * @brief Calls find_node or create_node according to the value `create`
  */
 OSSIA_EXPORT node_base* find_or_create_node(

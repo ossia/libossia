@@ -32,11 +32,6 @@ void* assert::create(t_symbol* s, int argc, t_atom* argv)
   return x;
 }
 
-void assert::in_bang(ossia::pd::assert* x)
-{
-  x->m_armed=true;
-}
-
 void assert::in_anything(ossia::pd::assert* x, t_symbol* s, int argc, t_atom* argv)
 {
   t_atom* a = x->m_atom;
@@ -72,7 +67,7 @@ void assert::in_anything(ossia::pd::assert* x, t_symbol* s, int argc, t_atom* ar
 void assert::quit()
 {
   logpost(this, 1, "assert %s failed", m_name->s_name);
-  if(m_armed)
+  if(ossia_pd::instance().m_testing)
     exit(1);
   else
     logpost(this, 0, "crash!!!");
@@ -95,12 +90,6 @@ extern "C" void setup_ossia0x2eassert(void)
   eclass_addmethod(
       c, (method)assert::in_anything,
       "anything", A_GIMME, 0);
-  eclass_addmethod(
-      c, (method)assert::in_bang,
-      "bang", A_NULL, 0);
-  eclass_addmethod(
-      c, (method)assert::in_bang,
-      "loadbang", A_NULL, 0);
 
   CLASS_ATTR_SYMBOL(c, "name", 0, assert, m_name);
 

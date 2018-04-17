@@ -20,7 +20,7 @@ namespace pd
 #pragma mark t_select_clock
 
 t_select_clock::t_select_clock(t_canvas* cnv, object_base* obj) :
-  m_canvas(cnv), m_obj(obj)
+  m_obj(obj), m_canvas(cnv)
 {
   m_clock = clock_new(this, (t_method) t_select_clock::deselect);
   ossia_pd::instance().select_clocks.push_back(this);
@@ -317,7 +317,7 @@ object_base::object_base(t_eclass* c)
 
 object_base::~object_base()
 {
-  auto& map = ossia_pd::instance().root_patcher;
+  auto& map = ossia_pd::instance().m_root_patcher;
 
   const auto it = map.find(m_patcher_hierarchy.back());
   if (it->second.dec() == 0)
@@ -670,21 +670,20 @@ void object_base::loadbang(object_base* x, t_float flag)
   {
     if(!x->m_patcher_hierarchy.empty())
     {
-      std::cout << "object_base: " << x;
-      if (x->m_name)
-        std::cout << " name " << x->m_name->s_name;
-      std::cout << " root: " << x->m_patcher_hierarchy.back() << std::endl;
-
-      auto& map = ossia_pd::instance().root_patcher;
+      auto& map = ossia_pd::instance().m_root_patcher;
 
       std::pair<ossia_pd::RootMap::iterator, bool>  res = map.insert(
             std::pair<t_canvas*,ossia_pd::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));
       if (!res.second)
       {
         // key already exists, then increment count
-        (res.first)->second.inc();
+        ossia_pd::root_descriptor& desc = (res.first)->second;
+        desc.inc();
+        if (!desc.is_loadbanged)
+          clock_set(ossia_pd::instance().m_reg_clock,1);
+      } else {
+        clock_set(ossia_pd::instance().m_reg_clock,1);
       }
-      clock_set(ossia_pd::instance().m_reg_clock,1);
     }
   }
 }

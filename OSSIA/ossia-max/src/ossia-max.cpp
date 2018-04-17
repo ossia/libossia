@@ -106,7 +106,7 @@ void ossia_max::register_nodes(void* x)
   for (auto it = map.begin(); it != map.end(); it++)
   {
     t_object* patcher = it->first;
-    it->second = true;
+    it->second.is_loadbanged = true;
     for (auto dev : inst.devices.reference())
     {
       if(dev->m_patcher_hierarchy.back() == patcher)

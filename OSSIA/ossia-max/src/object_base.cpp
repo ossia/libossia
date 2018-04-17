@@ -312,10 +312,21 @@ void object_base::loadbang(object_base* x)
 {
   if(!x->m_patcher_hierarchy.empty())
   {
-    std::cout << "object_base: " << x << " name " << x->m_name->s_name << " root: " << x->m_patcher_hierarchy.back() << std::endl;
+    auto& map = ossia_max::instance().root_patcher;
 
-    ossia_max::instance().root_patcher.insert(std::pair<t_object*,bool>(x->m_patcher_hierarchy.back(), false));
-    //clock_delay(ossia_max::instance().m_reg_clock,1);
+    std::pair<ossia_max::RootMap::iterator, bool> res = map.insert(
+                std::pair<t_object*,ossia_max::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));
+
+    if (!res.second)
+    {
+      // key already exists, then increment count
+      ossia_max::root_descriptor& desc = (res.first)->second;
+      desc.inc();
+      if (!desc.is_loadbanged)
+        clock_delay(ossia_max::instance().m_reg_clock,1);
+    } else {
+      clock_delay(ossia_max::instance().m_reg_clock,1);
+    }
   }
 }
 
@@ -554,11 +565,11 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_LABEL(c, "description", 0, "Description");
 
   CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, object_base, m_tags, m_tags_size, OSSIA_MAX_MAX_ATTR_SIZE);
-  CLASS_ATTR_LABEL(c, "tags", 0, "Tags");  
+  CLASS_ATTR_LABEL(c, "tags", 0, "Tags");
 
   CLASS_ATTR_LONG( c, "invisible", 0, object_base, m_invisible);
   CLASS_ATTR_STYLE(c, "invisible", 0, "onoff");
-  CLASS_ATTR_LABEL(c, "invisible", 0, "Invisible");  
+  CLASS_ATTR_LABEL(c, "invisible", 0, "Invisible");
 
   CLASS_ATTR_LONG(c, "recall_safe", 0, object_base, m_recall_safe);
   CLASS_ATTR_STYLE(c, "recall_safe", 0, "onoff");

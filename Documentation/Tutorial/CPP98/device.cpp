@@ -29,7 +29,7 @@ int main()
   opp::oscquery_server dev("supersoftware");
   opp::node root = dev.get_root_node();
 
-  // Create a node /foo
+  // Create a node /foo (just a container without parameter)
   opp::node n1 = root.create_child("foo");
 
   // Create a node /foo/bar/baz of type float
@@ -39,6 +39,16 @@ int main()
                    .set_bounding(opp::Clip);
   n2.set_min(0.5);
   n2.set_max(0.7);
+
+  // This can be decomposed in several steps:
+  // Create an empty node
+  opp::node n3;
+  // give it a parent and a name
+  n3 = root.create_child("boo");
+  // Then add a float parameter to it:
+  n3.set_float();
+  // Add an unit to the parameter:
+  n3.set_unit("gain.db");
 
 
   ////////////////////////////////////////////////////////////////////////
@@ -54,14 +64,14 @@ int main()
   // We expect to find remote_n2 here, but in the general case
   // network problems can happen so check the returned value.
   opp::node remote_n2 = remote_dev.get_root_node().find_child("/foo/bar/baz");
-  if(!remote_n2.valid())
+  if(!remote_n2)
     return 1;
 
   // After some time n2 wil get the value that we send here:
   remote_n2.set_value(0.1);
   // It will however be filtered according to the domain we set, e.g.
   // the result will be argb(0.5, 0.2, 0.5, 0.9).
-
+  remote_n2.set_value(0.8);
 
   //////////////////////////////////////////////////////
   //// Step 3. Receiving changes through callbacks. ////
@@ -72,8 +82,20 @@ int main()
   remote_n2.set_value_callback(test_callback, &count);
 
   n2.set_value(0.5);
-  n2.set_value(0.6);
+  n2.set_value(0.9);
   while(count < 2)
     ;
+
+
+  // Node deletion:
+
+  // Method 1 :
+  //root.remove_children();
+
+  // Method 2 :
+  if (n1)root.remove_child(n1.get_name());
+  if (n2)root.remove_child(n2.get_name());
+  if (n3)root.remove_child(n3.get_name());
+
   return 0;
 }

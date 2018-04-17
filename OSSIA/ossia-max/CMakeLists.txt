@@ -191,6 +191,11 @@ if(OSSIA_MAX_TEST)
     set(OSSIA_MAX_TEST_PATCHERS
         ${CMAKE_CURRENT_SOURCE_DIR}/max-test/368-set_broken.maxtest.maxpat
         ${CMAKE_CURRENT_SOURCE_DIR}/max-test/312-default_broken.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/366-priorities_init.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/377-noloadbanged_initialization.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/383-remote_outputs_zero_on_node_creation.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/384-address_output_persistence.maxtest.maxpat
+        ${CMAKE_CURRENT_SOURCE_DIR}/max-test/379-list_test.maxpat
         )
     install(
         FILES

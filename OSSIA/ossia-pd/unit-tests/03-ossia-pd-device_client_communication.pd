@@ -1,4 +1,4 @@
-#N canvas 2 579 956 215 10;
+#N canvas 2 579 1256 215 10;
 #X obj 798 133 ossia.device;
 #X msg 798 113 expose oscquery;
 #X obj 779 3 loadbang;
@@ -9,7 +9,7 @@
 #X obj 779 45 t b b b;
 #X msg 834 74 \; pd dsp 1;
 #X floatatom 515 139 5 0 0 0 - - -, f 5;
-#X msg 222 171 \; pd quit;
+#X msg 909 144 \; pd quit;
 #X obj 61 152 ø.assert 6 @name remote_output;
 #X obj 278 142 ø.assert 10 @name param_output;
 #X obj 278 81 f;
@@ -26,6 +26,12 @@
 #X obj 88 132 print remote_output;
 #X obj 34 122 sel 0;
 #X msg 61 22 pd~ start -nogui -lib ossia subpatchers/03-client.pd;
+#X obj 1065 53 r ossia;
+#X obj 1095 106 ossia;
+#X obj 905 72 spigot;
+#X obj 1065 76 t a a;
+#X obj 987 106 route testing;
+#X obj 987 129 t b a;
 #X connect 1 0 0 0;
 #X connect 2 0 6 0;
 #X connect 3 0 20 0;
@@ -45,10 +51,17 @@
 #X connect 18 0 0 0;
 #X connect 19 0 13 0;
 #X connect 20 0 9 0;
-#X connect 22 0 10 0;
+#X connect 22 0 29 0;
 #X connect 22 1 12 0;
 #X connect 22 2 21 0;
 #X connect 23 0 25 0;
 #X connect 23 1 24 0;
 #X connect 25 1 11 0;
 #X connect 26 0 4 0;
+#X connect 27 0 30 0;
+#X connect 29 0 10 0;
+#X connect 30 0 31 0;
+#X connect 30 1 28 0;
+#X connect 31 0 32 0;
+#X connect 32 0 6 0;
+#X connect 32 1 29 1;

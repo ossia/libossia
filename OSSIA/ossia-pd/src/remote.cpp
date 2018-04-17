@@ -32,7 +32,8 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
     obj_dequarantining<remote>(this);
     bang(this);
     clock_set(m_poll_clock,1);
-  }
+  } else if (!m_is_pattern)
+    obj_quarantining<remote>(this);
 
   if (!m_matchers.empty() && m_is_pattern){
     // assume all nodes refer to the same device
@@ -46,9 +47,10 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
       m_dev = &dev;
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
+
+      obj_dequarantining<remote>(this);
     }
-  } else
-    obj_quarantining<remote>(this);
+  }
 
   return res;
 }
@@ -126,7 +128,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
       {
         auto& m = m_matchers.back();
 
-        const auto& map = ossia_pd::instance().root_patcher;
+        const auto& map = ossia_pd::instance().m_root_patcher;
         auto it = map.find(m_patcher_hierarchy.back());
 
         if (it != map.end() && it->second.is_loadbanged)
@@ -282,11 +284,6 @@ void remote::click(
   if (diff.count() < 200)
   {
     x->m_last_click = milliseconds(0);
-
-    int l;
-
-    ossia::pd::device* device
-        = find_parent<ossia::pd::device>(x, 0, &l);
 
     if (!object_base::find_and_display_friend(x))
       pd_error(x, "sorry I can't find a connected friend :-(");

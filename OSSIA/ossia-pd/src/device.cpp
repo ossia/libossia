@@ -20,8 +20,6 @@ void device::destroy(device* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
-  clock_unset(x->m_clock);
-  clock_free(x->m_clock);
 
   // TODO why is this no more necessary since all children
   // should have register to node.about_to_be_deleted() signal
@@ -63,11 +61,6 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
     x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
                                                  x->m_name->s_name};
 
-    x->connect_slots();
-
-    x->m_clock = clock_new(x, (t_method)device::register_children);
-    clock_delay(x->m_clock, 0);
-
     ebox_attrprocess_viabinbuf(x, d);
 
     if (find_peer(x))
@@ -77,7 +70,18 @@ void* device::create(t_symbol* name, int argc, t_atom* argv)
       device::destroy(x);
       free(x);
       x = nullptr;
+      return x;
     }
+
+    auto& map = ossia_pd::instance().m_root_patcher;
+    auto it = map.find(x->m_patcher_hierarchy.back());
+
+    // register object only if root patcher have been loadbanged
+    // else the patcher itself will trig a registration on loadbang
+    if(it != map.end() && it->second.is_loadbanged)
+        register_children(x);
+
+    x->connect_slots();
   }
 
   return (x);
@@ -316,7 +320,7 @@ void device::get_protocols(device* x)
   {
     t_atom ar[5];
     SETFLOAT(ar,j);
-    for (int i = 0 ; i<v.size() ; i++)
+    for (unsigned int i = 0 ; i<v.size() ; i++)
       ar[i+1] = v[i];
 
     outlet_anything(x->m_dumpout, gensym("protocol"), v.size()+1, ar);
@@ -334,7 +338,7 @@ void device::get_mess_cb(device* x, t_symbol* s)
 
 void device::stop_expose(device*x, float f)
 {
-  int index = static_cast<int>(f);
+  unsigned int index = static_cast<unsigned int>(f);
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();

@@ -2,14 +2,14 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x86",
+			"major" : 8,
+			"minor" : 0,
+			"revision" : 0,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 100.0, 99.0, 1091.0, 733.0 ],
+		"rect" : [ 100.0, 100.0, 1091.0, 733.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -48,10 +48,10 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"major" : 8,
+							"minor" : 0,
+							"revision" : 0,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -88,6 +88,7 @@
 					}
 ,
 					"patching_rect" : [ 780.0, 247.0, 27.0, 22.0 ],
+					"presentation_rect" : [ 780.0, 247.0, 27.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -111,14 +112,14 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"major" : 8,
+							"minor" : 0,
+							"revision" : 0,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 125.0, 1091.0, 707.0 ],
+						"rect" : [ 100.0, 126.0, 1091.0, 707.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -155,7 +156,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 747.0, 595.0, 150.0, 22.0 ],
-									"presentation_rect" : [ 747.0, 593.0, 0.0, 0.0 ],
+									"presentation_rect" : [ 747.0, 595.0, 150.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -170,6 +171,7 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 650.0, 440.0, 50.0, 22.0 ],
+									"presentation_rect" : [ 650.0, 440.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -182,6 +184,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 650.0, 464.0, 67.0, 22.0 ],
+									"presentation_rect" : [ 650.0, 464.0, 67.0, 22.0 ],
 									"style" : "",
 									"text" : "default $1"
 								}
@@ -196,6 +199,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 586.0, 595.0, 150.0, 22.0 ],
+									"presentation_rect" : [ 586.0, 595.0, 150.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -209,6 +213,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 201.0, 595.0, 150.0, 22.0 ],
+									"presentation_rect" : [ 201.0, 595.0, 150.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -222,6 +227,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 240.0, 435.0, 150.0, 22.0 ],
+									"presentation_rect" : [ 240.0, 435.0, 150.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -236,6 +242,7 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 162.0, 401.0, 50.0, 22.0 ],
+									"presentation_rect" : [ 162.0, 401.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -248,6 +255,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 162.0, 435.0, 67.0, 22.0 ],
+									"presentation_rect" : [ 162.0, 435.0, 67.0, 22.0 ],
 									"style" : "",
 									"text" : "default $1"
 								}
@@ -261,8 +269,9 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 586.0, 545.0, 166.0, 22.0 ],
+									"presentation_rect" : [ 586.0, 545.0, 166.0, 22.0 ],
 									"style" : "",
-									"text" : "default 45."
+									"text" : "default 1.27"
 								}
 
 							}
@@ -278,6 +287,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 759.0, 373.5, 205.0, 49.0 ],
+									"presentation_rect" : [ 759.0, 373.5, 205.0, 49.0 ],
 									"style" : "",
 									"text" : "one can select only one, or a subset of the multiple addresses",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -297,6 +307,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 592.5, 190.0, 322.5, 64.0 ],
+									"presentation_rect" : [ 592.5, 190.0, 322.5, 64.0 ],
 									"style" : "",
 									"text" : "ossia.attribute also works with multiples \n(see Multiples tab of ossia.parameter's help for more info)",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -311,6 +322,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 610.5, 412.0, 120.0, 22.0 ],
+									"presentation_rect" : [ 610.5, 412.0, 120.0, 22.0 ],
 									"style" : "",
 									"text" : "select multiples.[1-2]"
 								}
@@ -324,6 +336,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 610.5, 382.0, 103.0, 22.0 ],
+									"presentation_rect" : [ 610.5, 382.0, 103.0, 22.0 ],
 									"style" : "",
 									"text" : "select multiples.2"
 								}
@@ -341,6 +354,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 765.0, 485.5, 166.0, 49.0 ],
+									"presentation_rect" : [ 765.0, 485.5, 166.0, 49.0 ],
 									"style" : "",
 									"text" : "ossia.attribute can also accept address patterns",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -355,6 +369,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 617.0, 338.0, 61.0, 22.0 ],
+									"presentation_rect" : [ 617.0, 338.0, 61.0, 22.0 ],
 									"style" : "",
 									"text" : "get range"
 								}
@@ -368,6 +383,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 603.0, 305.0, 67.0, 22.0 ],
+									"presentation_rect" : [ 603.0, 305.0, 67.0, 22.0 ],
 									"style" : "",
 									"text" : "get default"
 								}
@@ -381,6 +397,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 585.0, 271.0, 49.0, 22.0 ],
+									"presentation_rect" : [ 585.0, 271.0, 49.0, 22.0 ],
 									"style" : "",
 									"text" : "get clip"
 								}
@@ -394,9 +411,10 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 586.0, 499.0, 169.0, 22.0 ],
+									"patching_rect" : [ 586.0, 499.0, 165.0, 22.0 ],
+									"presentation_rect" : [ 586.0, 499.0, 165.0, 22.0 ],
 									"style" : "",
-									"text" : "_ossia.attribute multiples.{1..3}"
+									"text" : "ossia.attribute multiples.{1..3}"
 								}
 
 							}
@@ -411,6 +429,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 192.75, 338.0, 192.0, 35.0 ],
+									"presentation_rect" : [ 192.75, 338.0, 192.0, 35.0 ],
 									"style" : "",
 									"text" : "attributes can be remotely set",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -429,6 +448,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 158.0, 190.0, 186.0, 49.0 ],
+									"presentation_rect" : [ 158.0, 190.0, 186.0, 49.0 ],
 									"style" : "",
 									"text" : "Get any attribute value of the bound parameter",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -443,6 +463,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 83.0, 262.0, 61.0, 22.0 ],
+									"presentation_rect" : [ 83.0, 262.0, 61.0, 22.0 ],
 									"style" : "",
 									"text" : "get range"
 								}
@@ -456,6 +477,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 67.0, 228.0, 67.0, 22.0 ],
+									"presentation_rect" : [ 67.0, 228.0, 67.0, 22.0 ],
 									"style" : "",
 									"text" : "get default"
 								}
@@ -469,8 +491,9 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 49.0, 545.0, 166.0, 22.0 ],
+									"presentation_rect" : [ 49.0, 545.0, 166.0, 22.0 ],
 									"style" : "",
-									"text" : "default 0.182"
+									"text" : "clip low"
 								}
 
 							}
@@ -482,6 +505,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 122.5, 344.5, 45.0, 22.0 ],
+									"presentation_rect" : [ 122.5, 344.5, 45.0, 22.0 ],
 									"style" : "",
 									"text" : "clip $1"
 								}
@@ -504,13 +528,14 @@
 									"outlettype" : [ "", "", "float" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 79.0, 314.5, 106.0, 18.0 ],
+									"presentation_rect" : [ 79.0, 314.5, 106.0, 18.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
-											"parameter_longname" : "live.tab",
-											"parameter_shortname" : "live.tab",
-											"parameter_type" : 2,
 											"parameter_enum" : [ "free", "low", "high", "both" ],
-											"parameter_unitstyle" : 0
+											"parameter_type" : 2,
+											"parameter_unitstyle" : 0,
+											"parameter_longname" : "live.tab",
+											"parameter_shortname" : "live.tab"
 										}
 
 									}
@@ -535,6 +560,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 227.0, 478.0, 186.0, 64.0 ],
+									"presentation_rect" : [ 227.0, 478.0, 186.0, 64.0 ],
 									"style" : "",
 									"text" : "Set a parameter name to bind to and remote access its attributes",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -550,6 +576,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 586.0, 625.0, 311.0, 35.0 ],
+									"presentation_rect" : [ 586.0, 625.0, 311.0, 35.0 ],
 									"style" : "",
 									"text" : "ossia.parameter multiples.[1-3] @clip both @default 12 @range 0. 1. @type int"
 								}
@@ -564,6 +591,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 41.0, 625.0, 310.0, 35.0 ],
+									"presentation_rect" : [ 41.0, 625.0, 310.0, 35.0 ],
 									"style" : "",
 									"text" : "ossia.parameter my_parameter @clip free @default 2. @range 0. 1. @type float"
 								}
@@ -577,6 +605,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 49.0, 194.0, 49.0, 22.0 ],
+									"presentation_rect" : [ 49.0, 194.0, 49.0, 22.0 ],
 									"style" : "",
 									"text" : "get clip"
 								}
@@ -591,6 +620,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 49.0, 499.0, 172.0, 22.0 ],
+									"presentation_rect" : [ 49.0, 499.0, 172.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.attribute my_parameter"
 								}
@@ -608,7 +638,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 8.0, 7.0, 561.5, 119.0 ]
+									"patching_rect" : [ 8.0, 7.0, 561.5, 119.0 ],
+									"presentation_rect" : [ 8.0, 7.0, 561.5, 119.0 ]
 								}
 
 							}
@@ -621,6 +652,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 41.0, 595.0, 152.0, 22.0 ],
+									"presentation_rect" : [ 41.0, 595.0, 152.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -762,6 +794,14 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"midpoints" : [ 756.5, 620.5, 595.5, 620.5 ],
+									"source" : [ "obj-32", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-1", 0 ],
 									"midpoints" : [ 58.5, 344.5, 58.5, 344.5 ],
 									"source" : [ "obj-4", 0 ]
@@ -789,6 +829,7 @@
 					}
 ,
 					"patching_rect" : [ 165.0, 242.0, 50.0, 22.0 ],
+					"presentation_rect" : [ 165.0, 242.0, 50.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -805,7 +846,11 @@
  ],
 		"lines" : [  ],
 		"parameters" : 		{
-			"obj-1::obj-8" : [ "live.tab", "live.tab", 0 ]
+			"obj-1::obj-8" : [ "live.tab", "live.tab", 0 ],
+			"parameterbanks" : 			{
+
+			}
+
 		}
 ,
 		"dependency_cache" : [ 			{

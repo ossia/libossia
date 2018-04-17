@@ -5,11 +5,11 @@
 			"major" : 7,
 			"minor" : 3,
 			"revision" : 4,
-			"architecture" : "x64",
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 0.0, 70.0, 1389.0, 861.0 ],
+		"rect" : [ 78.0, 71.0, 946.0, 628.0 ],
 		"bgcolor" : [ 0.0, 0.0, 0.0, 1.0 ],
 		"editing_bgcolor" : [ 0.239216, 0.254902, 0.278431, 1.0 ],
 		"bglocked" : 0,
@@ -166,7 +166,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 959.0, 630.5, 372.0, 22.0 ],
+					"patching_rect" : [ 959.0, 630.5, 337.0, 22.0 ],
 					"style" : "",
 					"text" : "ossia.parameter my_list_mixed @type list @default a 65. 101"
 				}
@@ -208,9 +208,9 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 959.0, 666.0, 176.0, 22.0 ],
+					"patching_rect" : [ 959.0, 666.0, 123.0, 22.0 ],
 					"style" : "",
-					"text" : "zl.compare a 65. 101."
+					"text" : "zl.compare a 65. 101"
 				}
 
 			}

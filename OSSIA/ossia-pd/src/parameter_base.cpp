@@ -578,8 +578,9 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     }
     else
     {
-      if (set_flag) m->m_set_pool.push_back(v);
       param->push_value(v);
+      if (set_flag)
+        m->m_set_pool.push_back(param->value());
     }
   }
 }
@@ -595,21 +596,22 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
   }
 }
 
-
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (x->m_mute)
     return;
 
+  // TODO : simplify if statements
+
   bool set_flag = false;
-  if (s && s == gensym("set"))
+  if(s && s == gensym("set"))
     set_flag = true;
 
   if (argc == 0 && s)
   {
     just_push(x, std::string(s->s_name), set_flag);
   }
-  else if (argc == 1)
+  else if (argc == 1 && s && ( s == gensym("float") || s == gensym("list")))
   {
     ossia::value v;
     // convert one element array to single element
@@ -629,48 +631,63 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   {
     std::vector<ossia::value> list;
     list.reserve(argc+1);
+
+    bool start_with_symbol = false;
+
     if ( s && s != gensym("list") && s != gensym("set"))
     {
       list.push_back(std::string(s->s_name));
+      start_with_symbol = true;
     }
 
-    switch(argc)
-    {
-      case 2:
-        if(auto arr = to_array<2>(argv)) {
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      case 3:
-        if(auto arr = to_array<3>(argv)) {
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      case 4:
-        if(auto arr = to_array<4>(argv)) {
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-    }
+    bool is_array = false;
 
-    for (; argc > 0; argc--, argv++)
+    if(!start_with_symbol)
     {
-      switch (argv->a_type)
+      switch(argc)
       {
-        case A_SYMBOL:
-          list.push_back(std::string(atom_getsymbol(argv)->s_name));
+        case 2:
+          if(auto arr = to_array<2>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
           break;
-        case A_FLOAT:
-          list.push_back(atom_getfloat(argv));
+        case 3:
+          if(auto arr = to_array<3>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
           break;
-        default:
-          pd_error(x, "value type not handled");
+        case 4:
+          if(auto arr = to_array<4>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
+          break;
       }
     }
 
-    ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
+    if (!is_array)
+    {
+      for (; argc > 0; argc--, argv++)
+      {
+        switch (argv->a_type)
+        {
+          case A_SYMBOL:
+            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          default:
+            pd_error(x, "value type not handled");
+        }
+      }
 
-    convert_or_push(x, std::move(list), set_flag);
+      ossia::pd::parameter_base* xparam = static_cast<ossia::pd::parameter_base*>(x);
+
+      convert_or_push(x, std::move(list), set_flag);
+    }
   }
 
   // go through all matchers to fire the new value

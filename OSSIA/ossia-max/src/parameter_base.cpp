@@ -709,8 +709,9 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     }
     else
     {
-      if (set_flag) m->m_set_pool.push_back(v);
       param->push_value(v);
+      if (set_flag)
+        m->m_set_pool.push_back(param->value());
     }
     trig_output_value(node);
   }
@@ -742,7 +743,8 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   {
     just_push(x, std::string(s->s_name), set_flag);
   }
-  else if (argc == 1)
+  else if (argc == 1 && s &&
+           ( s == gensym("float") || s == gensym("list") || ( s == gensym("int"))))
   {
     // convert one element array to single element
     switch(argv->a_type)
@@ -764,56 +766,66 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   {
 
     std::vector<ossia::value> list;
-
     list.reserve(argc+1);
 
-    if ( s )
+    bool start_with_symbol = false;
+
+    if ( s && s != gensym("list") && s != gensym("set")  )
     {
-      if ( s != gensym("list") && s != gensym("set") )
-        list.push_back(std::string(s->s_name));
+      list.push_back(std::string(s->s_name));
+      start_with_symbol = true;
     }
 
-    switch(argc)
+    bool is_array = false;
+
+    /*
+    if(!start_with_symbol)
     {
-      case 2:
-        if(auto arr = to_array<2>(argv)) {
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      case 3:
-        if(auto arr = to_array<3>(argv)) {
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      case 4:
-        if(auto arr = to_array<4>(argv)) {
-          convert_or_push(x, *arr, set_flag);
-        }
-        break;
-      default:
-        {
-          for (; argc > 0; argc--, argv++)
-          {
-            switch(argv->a_type)
-            {
-              case A_SYM:
-                list.push_back(std::string(atom_getsym(argv)->s_name));
-                break;
-              case A_FLOAT:
-                list.push_back(atom_getfloat(argv));
-                break;
-              case A_LONG:
-                list.push_back(static_cast<long>(atom_getlong(argv)));
-                break;
-              default:
-                object_error((t_object*)x, "value type not handled");
-            }
+      switch(argc)
+      {
+        case 2:
+          if(auto arr = to_array<2>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
           }
-
-          convert_or_push(x, std::move(list), set_flag);
-        }
+          break;
+        case 3:
+          if(auto arr = to_array<3>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
+          break;
+        case 4:
+          if(auto arr = to_array<4>(argv)) {
+            is_array = true;
+            convert_or_push(x, *arr, set_flag);
+          }
+          break;
+      }
     }
+    */
 
+    if (!is_array)
+    {
+      for (; argc > 0; argc--, argv++)
+      {
+        switch(argv->a_type)
+        {
+          case A_SYM:
+            list.push_back(std::string(atom_getsym(argv)->s_name));
+            break;
+          case A_FLOAT:
+            list.push_back(atom_getfloat(argv));
+            break;
+          case A_LONG:
+            list.push_back(static_cast<long>(atom_getlong(argv)));
+            break;
+          default:
+            object_error((t_object*)x, "value type not handled");
+        }
+      }
+      convert_or_push(x, std::move(list), set_flag);
+    }
   }
 
   // go through all matchers to fire the new value

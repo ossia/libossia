@@ -75,6 +75,7 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
     object_quarantining<attribute>(this);
 
   if (!node.empty() && m_is_pattern){
+
     // assume all nodes refer to the same device
     auto& dev = node[0]->get_node()->get_device();
     if (&dev != m_dev)
@@ -86,6 +87,8 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
       m_dev = &dev;
       m_dev->on_parameter_created.connect<attribute, &attribute::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<attribute, &attribute::on_device_deleted>(this);
+
+      object_dequarantining<attribute>(this);
     }
   }
 

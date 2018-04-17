@@ -136,6 +136,18 @@ if(APPLE)
   target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
 endif()
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  # using Clang
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  # using GCC
+  target_link_libraries(${PROJECT_NAME} PRIVATE "-static-libgcc -static-libstdc++")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  # using Intel C++
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  # using Visual Studio C++
+  # TODO
+endif()
+
 set(OSSIA_PD_INSTALL_FOLDER "ossia-pd-package/ossia" CACHE STRING "PD Package Install folder")
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/helps"
@@ -183,7 +195,7 @@ if(OSSIA_TESTING)
   foreach(patcher ${PD_UNIT_TEST})
     message("add test patcher: ${patcher}")
     add_test(NAME ${patcher}
-             COMMAND pd -nogui -lib ossia ${patcher}
+             COMMAND pd -nogui -lib ossia -open ${patcher} -send "ossia testing 1;"
              WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
              )
   endforeach()

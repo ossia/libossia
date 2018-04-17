@@ -157,7 +157,13 @@ void client::update(client* x)
   {
     x->m_device->get_protocol().update(*x->m_device);
 
-    client::register_children(x);
+    auto& map = ossia_pd::instance().m_root_patcher;
+    auto it = map.find(x->m_patcher_hierarchy.back());
+
+    // register children only if root patcher have been loadbanged
+    // else the patcher itself will trigger a registration on loadbang
+    if(it != map.end() && it->second.is_loadbanged)
+      client::register_children(x);
   }
 }
 

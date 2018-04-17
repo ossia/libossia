@@ -282,6 +282,8 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
     object_quarantining<remote>(this);
 
   if (!matchers.empty() && m_is_pattern){
+    object_dequarantining<remote>(this);
+
     // assume all nodes refer to the same device
     auto& dev = matchers[0]->get_node()->get_device();
     if (&dev != m_dev)
@@ -293,6 +295,8 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
       m_dev = &dev;
       m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
+
+      object_dequarantining<remote>(this);
     }
   }
 

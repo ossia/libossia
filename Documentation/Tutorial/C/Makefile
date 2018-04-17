@@ -1,2 +1,2 @@
 all:
-    cc device.c -I../../include -L../../lib -lossia
+	cc device.c -I../../include -L../../lib -lossia

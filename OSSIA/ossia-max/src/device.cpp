@@ -116,8 +116,9 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
     // register object only if root patcher have been loadbanged
     // else the patcher itself will trig a registration on loadbang
-    // if(it != map.end() && it->second)
-    //  device::register_children(x);
+    // TODO have a setting for this ?
+    if(it != map.end() && it->second.is_loadbanged)
+      device::register_children(x);
 
     ossia_library.devices.push_back(x);
   }
