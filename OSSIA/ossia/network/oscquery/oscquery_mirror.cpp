@@ -54,8 +54,8 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 oscquery_mirror_protocol::oscquery_mirror_protocol(
     std::string host, uint16_t local_osc_port)
   : m_websocketHost{std::move(host)}
-  , m_http{std::make_unique<http_client_context>()}
   , m_osc_port{local_osc_port}
+  , m_http{std::make_unique<http_client_context>()}
 {
 }
 

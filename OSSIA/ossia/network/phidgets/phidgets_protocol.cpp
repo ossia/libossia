@@ -27,7 +27,6 @@ ossia::net::node_base* find_tree(ossia::net::node_base& root, const Fun& f)
 void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
 {
   phidget_handle_t hdl{phid};
-  const auto sn = hdl.get_serial();
 
   if(m_phidgetMap.find(hdl) != m_phidgetMap.end())
     return;

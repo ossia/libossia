@@ -1,5 +1,5 @@
 #pragma once
-#if defined(_MSC_VER) || __has_include(<jack/jack.h>)
+#if __has_include(<jack/jack.h>) && !defined(__EMSCRIPTEN__)
 #include <ossia/audio/audio_protocol.hpp>
 #define __x86_64__ 1
 #define USE_WEAK_JACK 1

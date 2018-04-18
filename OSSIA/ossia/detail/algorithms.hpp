@@ -159,22 +159,20 @@ void copy_if(const Vector1& source, Vector2& destination, Pred predicate)
 // http://stackoverflow.com/a/26902803/1495627
 template <class F, class... Ts, std::size_t... Is>
 void for_each_in_tuple(
-    const std::tuple<Ts...>& tuple, F func, std::index_sequence<Is...>)
+    const std::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
 {
-  using expander = int[];
-  (void)expander{0, ((void)func(std::get<Is>(tuple)), 0)...};
-}
-
-template <class F>
-void for_each_in_tuple(
-    const std::tuple<>& tuple, F func, std::index_sequence<0>)
-{
+  (std::forward<F>(func)(std::get<Is>(tuple)), ...);
 }
 
 template <class F, class... Ts>
-void for_each_in_tuple(const std::tuple<Ts...>& tuple, F func)
+void for_each_in_tuple(const std::tuple<Ts...>& tuple, F&& func)
 {
-  for_each_in_tuple(tuple, func, std::make_index_sequence<sizeof...(Ts)>());
+  for_each_in_tuple(tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <class F>
+void for_each_in_tuple(const std::tuple<>& tuple, const F& func)
+{
 }
 
 
@@ -182,16 +180,15 @@ template<std::size_t N>
 struct num { static const constexpr auto value = N; };
 
 template <class F, std::size_t... Is>
-void for_each_in_range(F func, std::index_sequence<Is...>)
+void for_each_in_range(F&& func, std::index_sequence<Is...>)
 {
-  using expander = int[];
-  (void)expander{0, ((void)func(num<Is>{}), 0)...};
+  (std::forward<F>(func)(num<Is>{}), ...);
 }
 
 template <std::size_t N, typename F>
-void for_each_in_range(F func)
+void for_each_in_range(F&& func)
 {
-  for_each_in_range(func, std::make_index_sequence<N>());
+  for_each_in_range(std::forward<F>(func), std::make_index_sequence<N>());
 }
 
 
