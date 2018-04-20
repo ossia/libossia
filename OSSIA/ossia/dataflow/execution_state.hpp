@@ -15,8 +15,8 @@ struct local_pull_visitor;
 struct global_pull_visitor;
 struct state_exec_visitor;
 #if defined(OSSIA_PARALLEL)
-#define OSSIA_EXEC_STATE_LOCK_READ(state) ossia::read_lock_t {(state).mutex}
-#define OSSIA_EXEC_STATE_LOCK_WRITE(state) ossia::write_lock_t {(state).mutex}
+#define OSSIA_EXEC_STATE_LOCK_READ(state) ossia::read_lock_t ossia_read_lock{(state).mutex}
+#define OSSIA_EXEC_STATE_LOCK_WRITE(state) ossia::write_lock_t ossia_write_lock{(state).mutex}
 #else
 #define OSSIA_EXEC_STATE_LOCK_READ(state)
 #define OSSIA_EXEC_STATE_LOCK_WRITE(state)
