@@ -32,4 +32,9 @@ write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, char c)
   writer.String(&c, 1);
 }
 
+inline std::string json_to_str(const rapidjson::StringBuffer& other)
+{
+  return std::string(other.GetString(), other.GetSize());
+}
+
 using allocator = rapidjson::MemoryPoolAllocator<>;

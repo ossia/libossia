@@ -47,8 +47,8 @@ inline bool url_decode(const std::string& in, std::string& out)
 {
   out.clear();
   out.reserve(in.size());
-  const int N = in.size();
-  for (int i = 0; i < N; ++i)
+  const std::size_t N = in.size();
+  for (std::size_t i = 0; i < N; ++i)
   {
     switch (in[i])
     {

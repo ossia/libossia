@@ -45,8 +45,10 @@ oscquery_server_protocol::oscquery_server_protocol(
       connection_handler hdl, const std::string& str) {
     auto res = on_WSrequest(hdl, str);
 
-    if (res.GetSize() > 0 && m_logger.outbound_logger)
-      m_logger.outbound_logger->info("OSCQuery WS Out: {}", res.GetString());
+    if (!res.data.empty()
+        && res.type != server_reply::data_type::binary
+        && m_logger.outbound_logger)
+      m_logger.outbound_logger->info("OSCQuery WS Out: {}", res.data);
 
     return res;
   });
@@ -574,7 +576,7 @@ void oscquery_server_protocol::update_zeroconf()
   }
 }
 
-rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
+ossia::oscquery::server_reply oscquery_server_protocol::on_WSrequest(
     connection_handler hdl, const std::string& message)
 {
   if (m_logger.inbound_logger)
@@ -595,7 +597,10 @@ rapidjson::StringBuffer oscquery_server_protocol::on_WSrequest(
     doc.Parse(message); // TODO ParseInsitu
 
     if(!doc.HasParseError())
-      return json_query_answerer{}(*this, hdl, doc);
+    {
+      auto s = json_query_answerer{}(*this, hdl, doc);
+      return std::string{};
+    }
   }
   // Exceptions are catched in the caller.
 

@@ -318,6 +318,8 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/html_writer.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server_reply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_reader_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/value_to_json.hpp"
@@ -330,6 +332,7 @@ set(OSSIA_OSCQUERY_SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_reader_detail.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/html_writer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/attributes.cpp"

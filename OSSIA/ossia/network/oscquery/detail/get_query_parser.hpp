@@ -6,7 +6,7 @@
 #include <boost/lexical_cast.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-
+#include <ossia/network/oscquery/detail/html_writer.hpp>
 namespace ossia
 {
 namespace net
@@ -88,7 +88,8 @@ public:
 
   auto operator()(oscquery_server_protocol& proto, const oscquery_server_protocol::connection_handler& hdl)
   {
-    return [&](ossia::string_view path, string_map<std::string>&& parameters) {
+    return [&proto,&hdl] (ossia::string_view path, string_map<std::string>&& parameters) -> server_reply
+    {
       // Here we handle the url elements relative to oscquery
       if (parameters.size() == 0)
       {
@@ -117,13 +118,22 @@ public:
           if (!node)
             throw node_not_found_error{std::string(path)};
 
-          // Listen
+
+          // LISTEN
           auto listen_it = parameters.find(detail::listen());
           if (listen_it != parameters.end())
           {
             return handle_listen(proto, hdl, *node, path, listen_it->second);
           }
 
+          // HTML
+          auto html_it = parameters.find("HTML");
+          if (html_it != parameters.end())
+          {
+            return static_html_builder{}.build_tree(*node);
+          }
+
+          // SET_PORT
           auto set_osc_port_it = parameters.find(detail::set_port());
           if (set_osc_port_it != parameters.end())
           {
@@ -144,19 +154,21 @@ public:
             }
           }
 
+          // ADD_NODE
           auto add_instance_it = parameters.find(detail::add_node());
           if (add_instance_it != parameters.end())
           {
             proto.add_node(path, std::move(parameters));
-            return json_writer::string_t{};
+            return {};
           }
 
+          // REMOVE_NODE
           auto rm_instance_it = parameters.find(detail::remove_node());
           if (rm_instance_it != parameters.end())
           {
             // Value is the child to remove
             proto.remove_node(path, rm_instance_it.value());
-            return json_writer::string_t{};
+            return {};
           }
 
           // All the value-less parameters
@@ -179,7 +191,7 @@ public:
           return oscquery::json_writer::query_host_info(proto);
         }
       }
-      return json_writer::string_t{};
+      return {};
     };
   }
 };

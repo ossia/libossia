@@ -1,14 +1,14 @@
 #pragma once
+#include <ossia/network/oscquery/detail/server_reply.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/detail/mutex.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
-#include <ossia/detail/json_fwd.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <hopscotch_map.h>
 #include <readerwriterqueue.h>
 #include <nano_signal_slot.hpp>
 #include <atomic>
-#include <ossia/network/generic/generic_device.hpp>
 namespace osc
 {
 template <typename T>
@@ -37,7 +37,7 @@ class OSSIA_EXPORT oscquery_server_protocol final
 public:
   using connection_handler = std::weak_ptr<void>;
   oscquery_server_protocol(uint16_t osc_port = 1234, uint16_t ws_port = 5678);
-  ~oscquery_server_protocol();
+  ~oscquery_server_protocol() override;
 
   /**
    * When the server receives a message, it will propagate it to
@@ -110,7 +110,7 @@ private:
   void update_zeroconf();
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
-  rapidjson::StringBuffer
+  ossia::oscquery::server_reply
   on_WSrequest(connection_handler hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;

@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/network/oscquery/detail/server_reply.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <boost/config.hpp>
 #include <boost/version.hpp>
@@ -61,10 +62,10 @@ public:
 #endif
           try
           {
-            rapidjson::StringBuffer res = h(hdl, msg->get_raw_payload());
-            if (res.GetSize() > 0)
+            auto res = h(hdl, msg->get_raw_payload());
+            if (res.data.size() > 0)
             {
-              send_message(hdl, std::move(res));
+              send_message(hdl, res);
             }
           }
           catch (const ossia::node_not_found_error& e)
@@ -104,15 +105,28 @@ public:
     m_server.set_http_handler([=](connection_handler hdl) {
       auto con = m_server.get_con_from_hdl(hdl);
 
-      con->replace_header("Content-Type", "application/json; charset=utf-8");
-      con->replace_header("Connection", "close");
       try
       {
-        rapidjson::StringBuffer base_str
-            = h(hdl, con->get_uri()->get_resource());
-        std::string str{base_str.GetString(), base_str.GetSize()};
-        str += "\0";
-        con->set_body(std::move(str));
+        ossia::oscquery::server_reply str = h(hdl, con->get_uri()->get_resource());
+
+        switch(str.type)
+        {
+          case server_reply::data_type::json:
+          {
+            con->replace_header("Content-Type", "application/json; charset=utf-8");
+            str.data += "\0";
+            break;
+          }
+          case server_reply::data_type::html:
+          {
+            con->replace_header("Content-Type", "text/html; charset=utf-8");
+            break;
+          }
+          default:
+            break;
+        }
+        con->replace_header("Connection", "close");
+        con->set_body(std::move(str.data));
         con->set_status(websocketpp::http::status_code::ok);
       }
       catch (const ossia::node_not_found_error& e)
@@ -169,6 +183,21 @@ public:
   {
     auto con = m_server.get_con_from_hdl(hdl);
     con->send(message);
+  }
+
+  void send_message(connection_handler hdl, const ossia::oscquery::server_reply& message)
+  {
+    auto con = m_server.get_con_from_hdl(hdl);
+    switch (message.type)
+    {
+      case server_reply::data_type::json:
+      case server_reply::data_type::html:
+        con->send(message.data, websocketpp::frame::opcode::TEXT);
+        break;
+      default:
+        con->send(message.data, websocketpp::frame::opcode::BINARY);
+        break;
+    }
   }
 
   void
