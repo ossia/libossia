@@ -114,7 +114,7 @@ void phidget_protocol::remove_parent_rec(ossia::net::node_base* par)
   {
     if(auto grandpa = par->get_parent())
     {
-      remove_node(par);
+      grandpa->remove_child(*par);
       remove_parent_rec(grandpa);
     }
   }
@@ -128,25 +128,6 @@ bool is_child_of(ossia::net::node_base* child, const ossia::net::node_base* par)
     child = cur;
   }
   return false;
-}
-void phidget_protocol::remove_node(ossia::net::node_base* node)
-{
-  if(auto par = node->get_parent())
-  {
-    /*
-    for(auto it = m_phidgetMap.begin(); it != m_phidgetMap.end(); )
-    {
-      if(is_child_of(it->second, node))
-      {
-        it = m_phidgetMap.erase(it);
-      }
-      else
-      {
-        ++it;
-      }
-    }*/
-    par->remove_child(*node);
-  }
 }
 
 void phidget_protocol::deleting_node(const net::node_base& par)
@@ -162,6 +143,19 @@ void phidget_protocol::deleting_node(const net::node_base& par)
       ++it;
     }
   }
+}
+
+static
+ossia::net::node_base* find_parent_rec(ossia::net::node_base& root, ossia::net::node_base* child_to_find)
+{
+  for(auto node : root.children_copy())
+  {
+    if(node == child_to_find)
+        return &root;
+    if(auto cld = find_parent_rec(*node, child_to_find))
+        return cld;
+  }
+  return nullptr;
 }
 
 void phidget_protocol::on_deviceRemoved(ossia::phidget_id phid)
@@ -184,9 +178,14 @@ void phidget_protocol::on_deviceRemoved(ossia::phidget_id phid)
 
   if(to_remove)
   {
-    auto par = to_remove->get_parent();
-    remove_node(to_remove);
-    remove_parent_rec(par);
+    // of to_remove is invalid for some reason we must not deref it
+    auto par = find_parent_rec(this->m_dev->get_root_node(), to_remove);
+
+    if(par)
+    {
+      par->remove_child(*to_remove);
+      remove_parent_rec(par);
+    }
   }
 }
 
