@@ -33,7 +33,7 @@ ossia::audio_engine* make_audio_engine(
 #if defined(__EMSCRIPTEN__)
   else if(proto == "SDL")
   {
-    p = new ossia::sdl_protocol;
+    p = new ossia::sdl_protocol{rate, bs};
   }
 #endif
 
