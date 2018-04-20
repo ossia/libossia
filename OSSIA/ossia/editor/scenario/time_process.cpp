@@ -28,7 +28,8 @@ void time_process::resume()
 void time_process::mute(bool m)
 {
   m_unmuted = !m;
-  node->set_mute(m);
+  if(node)
+    node->set_mute(m);
   mute_impl(m);
 }
 

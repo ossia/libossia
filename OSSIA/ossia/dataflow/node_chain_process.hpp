@@ -59,6 +59,11 @@ struct node_chain_process final :
       }
     }
 
+    void mute_impl(bool b) override
+    {
+      for(auto& node : nodes)
+        node->set_mute(b);
+    }
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
     ossia::time_value m_lastDate{ossia::Infinite};
 };
