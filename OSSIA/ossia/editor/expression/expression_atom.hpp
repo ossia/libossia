@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/expression/operators.hpp>
@@ -9,6 +8,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <eggs/variant.hpp>
 #include <ossia_export.h>
+#include <memory>
 
 /**
  * \file expression_atom.hpp

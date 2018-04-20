@@ -219,7 +219,7 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
 
       ossia::net::set_hidden(p->get_node(), m_invisible);
 
-      m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
+      m_matchers.emplace_back(std::make_shared<t_matcher>(&p->get_node(), this));
     }
   }
 

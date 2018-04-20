@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #if defined(__APPLE__)
 #include <mach/time_value.h>
 #endif

@@ -322,10 +322,16 @@ void object_base::loadbang(object_base* x)
       // key already exists, then increment count
       ossia_max::root_descriptor& desc = (res.first)->second;
       desc.inc();
+#if OSSIA_MAX_AUTOREGISTER
       if (!desc.is_loadbanged)
         clock_delay(ossia_max::instance().m_reg_clock,1);
-    } else {
+#endif 
+    } 
+    else 
+    {
+#if OSSIA_MAX_AUTOREGISTER
       clock_delay(ossia_max::instance().m_reg_clock,1);
+#endif 
     }
   }
 }

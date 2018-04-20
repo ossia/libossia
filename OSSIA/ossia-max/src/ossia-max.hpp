@@ -1,4 +1,5 @@
 #pragma once
+#define OSSIA_MAX_AUTOREGISTER 1
 #include <ossia/detail/config.hpp>
 #include "ext.h"
 #include "ext_obex.h"

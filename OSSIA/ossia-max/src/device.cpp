@@ -112,14 +112,15 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
     x->get_hierarchy();
     auto& map = ossia_max::instance().root_patcher;
-    //auto it = map.find(x->m_patcher_hierarchy.back());
+#if OSSIA_MAX_AUTOREGISTER
+    auto it = map.find(x->m_patcher_hierarchy.back());
 
     // register object only if root patcher have been loadbanged
     // else the patcher itself will trig a registration on loadbang
     // TODO have a setting for this ?
     if(it != map.end() && it->second.is_loadbanged)
       device::register_children(x);
-
+#endif
     ossia_library.devices.push_back(x);
   }
 
