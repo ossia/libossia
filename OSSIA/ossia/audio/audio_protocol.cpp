@@ -134,6 +134,68 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   }
 }
 
+void audio_protocol::advance_tick(std::size_t count)
+{
+  for(auto& chan : main_audio_in->audio)
+  {
+    if(!chan.empty())
+    {
+      chan = chan.subspan(count);
+    }
+  }
+  for(auto& chan : main_audio_out->audio)
+  {
+    if(!chan.empty())
+    {
+      chan = chan.subspan(count);
+    }
+  }
+
+  for(auto in : audio_ins)
+  {
+    for(auto& chan : in->audio)
+    {
+      if(!chan.empty())
+      {
+        chan = chan.subspan(count);
+      }
+    }
+  }
+
+  for(auto in : in_mappings)
+  {
+    for(auto& chan : in->audio)
+    {
+      if(!chan.empty())
+      {
+        chan = chan.subspan(count);
+      }
+    }
+  }
+
+  for(auto out : audio_outs)
+  {
+    for(auto& chan : out->audio)
+    {
+      if(!chan.empty())
+      {
+        chan = chan.subspan(count);
+      }
+    }
+  }
+
+  for(auto out : out_mappings)
+  {
+    for(auto& chan : out->audio)
+    {
+      if(!chan.empty())
+      {
+        chan = chan.subspan(count);
+      }
+    }
+  }
+}
+
 bool audio_protocol::pull(ossia::net::parameter_base&)
 {
   return false;

@@ -3,6 +3,7 @@
 #include "execution_state.hpp"
 
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/detail/apply.hpp>
@@ -273,17 +274,6 @@ void execution_state::commit_common()
     if(addr)
     {
       addr->push_value(elt.second);
-
-      // Advance the time for the case where we push value multiple
-      // times in one tick.
-      // TODO improve with variable duration support.
-      for(auto& chan : addr->audio)
-      {
-        if(!chan.empty())
-        {
-          chan = chan.subspan(1);
-        }
-      }
     }
 
     for(auto& vec : elt.second.samples)
@@ -306,6 +296,35 @@ void execution_state::commit_common()
     elt.second.clear();
   }
 }
+
+void execution_state::advance_tick(std::size_t t)
+{
+  /*
+        for (auto& elt : st.m_audioState)
+        {
+          auto addr = dynamic_cast<audio_parameter*>(elt.first);
+          if(addr)
+          {
+            for(auto& chan : addr->audio)
+            {
+              if(!chan.empty())
+              {
+                chan = chan.subspan(1);
+              }
+            }
+          }
+        }
+        */
+  for(auto& dev : audioDevices)
+  {
+    auto& proto = dev->get_protocol();
+    if(auto ap = dynamic_cast<ossia::audio_protocol*>(&proto))
+    {
+      ap->advance_tick(t);
+    }
+  }
+}
+
 void execution_state::commit_merged()
 {
   //int i = 0;

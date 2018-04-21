@@ -47,6 +47,7 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
     }
 
     void setup_tree(int inputs, int outputs);
+    void advance_tick(std::size_t count);
 
     bool pull(ossia::net::parameter_base&) override;
     bool push(const ossia::net::parameter_base&) override;

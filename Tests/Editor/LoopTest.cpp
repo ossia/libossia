@@ -5,7 +5,7 @@
 #include <iostream>
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/dataflow/node_process.hpp>
-#include <ossia/dataflow/graph/graph.hpp>
+#include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/editor/loop/loop.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
@@ -16,10 +16,12 @@ namespace ossia
 struct test_loop
 {
     ossia::net::generic_device d;
-    ossia::graph g;
+    ossia::tc_graph g;
     ossia::loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
 
     ossia::audio_parameter* aparam{};
+    ossia::nodes::sound* snd1{};
+    ossia::nodes::sound* snd2{};
     ~test_loop()
     {
       g.clear();
@@ -27,6 +29,12 @@ struct test_loop
 
     test_loop()
     {
+      /// this creates :
+      /// A root loop ("parent")
+      /// With an interval (duration 7) which has a scenario:
+      /// [ ---- i1 (4) ---- ] | [ ---- i2 (3) ---- ]
+      /// [     loop (1)     ]   [    loop (2)      ]
+      /// [ sound {1,2,3,4}  ]   [ sound {5,6,7,8}  ]
       auto& root = d.get_root_node();
       auto foo = root.create_child("foo");
       aparam = new audio_parameter{*foo};
@@ -51,7 +59,7 @@ struct test_loop
       {
         auto child = std::make_shared<loop>(1_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
 
-        auto snd = std::make_shared<ossia::nodes::sound>();
+        auto snd = std::make_shared<ossia::nodes::sound>(); snd1 = snd.get();
         snd->set_sound(std::vector<std::vector<double>>{ {1., 2., 3., 4.} });
         child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
         i1->add_time_process(child);
@@ -63,7 +71,7 @@ struct test_loop
       {
         auto child = std::make_shared<loop>(2_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
 
-        auto snd = std::make_shared<ossia::nodes::sound>();
+        auto snd = std::make_shared<ossia::nodes::sound>(); snd2 = snd.get();
         snd->set_sound(std::vector<std::vector<double>>{ {5.,6.,7.,8.} });
         child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
         i2->add_time_process(child);
@@ -263,6 +271,14 @@ private Q_SLOTS:
       l.parent.start();
       l.parent.state(14_tv, 0., 0_tv, 1.);
 
+      qDebug() << "SOUND 1 tokens";
+      for(auto t : l.snd1->requested_tokens)
+        qDebug() << t;
+
+      qDebug() << "SOUND 2 tokens";
+      for(auto t : l.snd2->requested_tokens)
+        qDebug() << t;
+
 
       audio_vector expected{ossia::audio_channel{1., 1., 1., 1., 5., 6., 5., 1., 1., 1., 1., 5., 6., 5.}};
 
@@ -277,15 +293,15 @@ private Q_SLOTS:
       auto op = l.aparam->audio;
 
       QVERIFY(op.size() > 0);
+      auto chan = op[0];
       QVERIFY(op[0].size() >= 14);
-
       for(int i = 0; i < 14; i++)
       {
-        QCOMPARE(expected[0][i], op[0][i]);
+        QCOMPARE(chan[i], expected[0][i]);
       }
-      for(int i = 14; i < op[0].size(); i++)
+      for(int i = 14; i < chan.size(); i++)
       {
-        QCOMPARE(0.f, op[0][i]);
+        QCOMPARE(0.f, chan[i]);
       }
     }
 

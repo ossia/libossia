@@ -136,6 +136,8 @@ struct precise_score_tick
         itv.tick(ossia::time_value(1));
         g.state(st);
         (st.*Commit)();
+
+        st.advance_tick(1);
       }
     }
 };
