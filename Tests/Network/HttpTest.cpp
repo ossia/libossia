@@ -13,7 +13,7 @@
 
 using namespace ossia;
 using namespace ossia::net;
-class OSCQueryTest : public QObject
+class HttpTest : public QObject
 {
     Q_OBJECT
 
@@ -151,7 +151,7 @@ private Q_SLOTS:
 };
 
 
-QTEST_APPLESS_MAIN(OSCQueryTest)
+QTEST_APPLESS_MAIN(HttpTest)
 
 #include "HttpTest.moc"
 

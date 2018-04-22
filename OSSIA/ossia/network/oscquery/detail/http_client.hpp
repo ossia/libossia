@@ -165,10 +165,6 @@ private:
   {
     if (!err)
     {
-      m_stream << &m_response;
-      std::string s = m_stream.str();
-      m_fun(this, s);
-
       // Continue reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
@@ -193,7 +189,6 @@ private:
   tcp::resolver m_resolver;
   tcp::socket m_socket;
   asio::streambuf m_response;
-  std::stringstream m_stream;
   std::function<void(http_get_request*, const std::string&)> m_fun;
   std::function<void(http_get_request*)> m_err;
 };

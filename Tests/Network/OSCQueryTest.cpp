@@ -187,8 +187,9 @@ private Q_SLOTS:
         ws_proto->push_raw(d2);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        delete ws_proto;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        delete ws_clt;
 
         // should use QCOMPARE after device cleaning to avoid hang
         QCOMPARE(b, expected_value);
