@@ -60,8 +60,6 @@ struct local_pull_visitor
     }
 };
 
-// TODO if addresses are missing should they be created automatically ?
-// Else how to create a custom address
 struct global_pull_visitor
 {
     ossia::execution_state& state;
