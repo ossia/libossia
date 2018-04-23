@@ -266,11 +266,11 @@ value::value(const ossia::value& v) : m_val{new ossia::value(v)}
 //*************************************************************//
 
 struct callback_index::impl {
-  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator> iterator = ossia::none;
+  ossia::callback_container<ossia::value_callback>::iterator iterator;
 };
 
 callback_index::callback_index()
-  : index{new impl}
+  : index{}
 {
 }
 
@@ -280,20 +280,32 @@ callback_index::~callback_index()
 }
 
 callback_index::callback_index(const callback_index& other)
-  : index{new impl{*other.index}}
 {
+  if(other.index)
+    index = new impl{*other.index};
 }
 
 callback_index& callback_index::operator=(const callback_index& other)
 {
-  *index = *other.index;
+  if(!other.index)
+  {
+    delete index;
+    index = nullptr;
+  }
+  else
+  {
+    if(!index)
+      index = new impl{*other.index};
+    else
+      *index = *other.index;
+  }
   return *this;
 }
 
 
 callback_index::operator bool() const
 {
-  return bool(index->iterator);
+  return bool(index);
 }
 
 
@@ -307,7 +319,17 @@ node::node() : m_node{}, m_param{}
 }
 
 node::node(const node& other)
-    : m_node{other.m_node}, m_param{other.m_param}
+    : node{other.m_node, other.m_param}
+{
+}
+
+node::node(ossia::net::node_base* b)
+  : node{b, b->get_parameter()}
+{
+}
+
+node::node(ossia::net::node_base* b, ossia::net::parameter_base* a)
+    : m_node{b}, m_param{a}
 {
   init();
 }
@@ -325,13 +347,40 @@ node& node::operator=(const node& other)
   return *this;
 }
 
+void node::init()
+{
+  assert(m_node);
+  m_node->about_to_be_deleted.connect<node, &node::cleanup>(*this);
+  m_node->get_device()
+      .on_parameter_removing.connect<node, &node::cleanup_parameter>(*this);
+}
+
+void node::cleanup(const ossia::net::node_base&)
+{
+  if (m_node)
+  {
+    m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
+    m_node->get_device().on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+  }
+
+  m_node = nullptr;
+  m_param = nullptr;
+}
+
+void node::cleanup_parameter(const ossia::net::parameter_base&)
+{
+  if(m_node)
+    m_node->get_device().on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+  m_param = nullptr;
+}
+
+
 node::~node()
 {
   if (m_node)
   {
     m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
-    if (m_param) m_node->get_device()
-        .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+    m_node->get_device().on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
   }
 }
 
@@ -1005,18 +1054,18 @@ callback_index node::set_value_callback(value_callback c, void* ctx)
 {
   if (m_param)
   {
-      callback_index idx;
-      idx.index->iterator = m_param->add_callback([=](const ossia::value& v) { c(ctx, v); });
-      return idx;
+    callback_index idx;
+    idx.index = new callback_index::impl{m_param->add_callback([=] (const ossia::value& v) { c(ctx, v); })};
+    return idx;
   }
   return {};
 }
 
 void node::remove_value_callback(callback_index idx)
 {
-  if (m_param)
+  if (m_param && idx.index)
   {
-  m_param->remove_callback(*idx.index->iterator);
+    m_param->remove_callback(idx.index->iterator);
   }
 }
 
@@ -1427,77 +1476,95 @@ bool node::get_repetition_filter() const
   return {};
 }
 
-node::node(ossia::net::node_base* b)
-    : m_node{b}, m_param{b->get_parameter()}
-{
-  init();
-}
-
-node::node(ossia::net::node_base* b, ossia::net::parameter_base* a)
-    : m_node{b}, m_param{a}
-{
-  init();
-}
-
-void node::init()
-{
-  assert(m_node);
-  m_node->about_to_be_deleted.connect<node, &node::cleanup>(*this);
-  m_node->get_device()
-      .on_parameter_removing.connect<node, &node::cleanup_parameter>(*this);
-}
-
-void node::cleanup(const ossia::net::node_base&)
-{
-  m_node = nullptr;
-  m_param = nullptr;
-}
-void node::cleanup_parameter(const ossia::net::parameter_base&)
-{
-  if (m_param)
-    m_node->get_device()
-        .on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
-  m_param = nullptr;
-}
-
 oscquery_server::oscquery_server()
+  : oscquery_server{"Ossia OSCQuery server"}
 {
-  m_dev = new ossia::net::generic_device();
 }
 
 oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
+  : m_con{}
+  , m_discon{}
 {
-  m_dev = new ossia::net::generic_device(
-      std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-          oscPort, wsPort),
-      name);
+  setup(std::move(name), oscPort, wsPort);
 }
 
 oscquery_server::~oscquery_server()
 {
+  using ossia::oscquery::oscquery_server_protocol;
+  if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+  {
+    proto->onClientConnected.disconnect<oscquery_server, &oscquery_server::on_connection>(*this);
+    proto->onClientDisconnected.disconnect<oscquery_server, &oscquery_server::on_disconnection>(*this);
+  }
+
   delete m_dev;
 }
 
 void oscquery_server::setup(std::string name, int oscPort, int wsPort)
 {
-  //auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
-  //m_dev = new ossia::net::generic_device{std::move(local_proto_ptr), name};
-  //local_proto_ptr->expose_to
-  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-        m_dev->get_protocol());
+  using ossia::oscquery::oscquery_server_protocol;
+  if(m_dev)
+  {
+    if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+    {
+      proto->onClientConnected.disconnect<oscquery_server, &oscquery_server::on_connection>(*this);
+      proto->onClientDisconnected.disconnect<oscquery_server, &oscquery_server::on_disconnection>(*this);
+    }
 
-  m_dev->set_name(name);
+    delete m_dev;
+  }
 
-  auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-        oscPort, wsPort);
-
-  multiplex.expose_to(std::move(oscq_proto));
-
+  m_dev = new ossia::net::generic_device(
+      std::make_unique<oscquery_server_protocol>(oscPort, wsPort),
+      std::move(name));
+  if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+  {
+    proto->onClientConnected.connect<oscquery_server, &oscquery_server::on_connection>(*this);
+    proto->onClientDisconnected.connect<oscquery_server, &oscquery_server::on_disconnection>(*this);
+  }
 }
 
 node oscquery_server::get_root_node() const
 {
   return node{&m_dev->get_root_node()};
+}
+
+void oscquery_server::set_connection_callback(connection_callback c, void* ctx)
+{
+  m_con = c;
+  m_con_ctx = ctx;
+}
+
+void oscquery_server::remove_connection_callback()
+{
+  set_connection_callback(nullptr, nullptr);
+}
+
+void oscquery_server::on_connection(const std::string& str)
+{
+  if(m_con)
+  {
+    m_con(m_con_ctx, str);
+  }
+}
+
+void oscquery_server::set_disconnection_callback(disconnection_callback c, void* ctx)
+{
+  m_discon = c;
+  m_discon_ctx = ctx;
+}
+
+void oscquery_server::remove_disconnection_callback()
+{
+  set_disconnection_callback(nullptr, nullptr);
+}
+
+void oscquery_server::on_disconnection(const std::string& str)
+{
+  if(m_discon)
+  {
+    m_discon(m_discon_ctx, str);
+  }
 }
 
 oscquery_mirror::oscquery_mirror(std::string name, std::string host) try
