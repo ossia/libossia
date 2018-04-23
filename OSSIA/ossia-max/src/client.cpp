@@ -128,6 +128,13 @@ void client::destroy(client* x)
   x->m_dead = true;
   x->m_matchers.clear();
 
+  if (x->m_async_thread)
+  {
+    x->m_async_thread->join();
+    delete x->m_async_thread;
+    x->m_async_thread = nullptr;
+  }
+
   // No more needed since all children
   // are connected to node.about_to_be_deleted
   // x->unregister_children();

@@ -110,17 +110,20 @@ void ossia_max::register_nodes(void* x)
     it->second.is_loadbanged = true;
     for (auto dev : inst.devices.reference())
     {
+      if (dev->m_patcher_hierarchy.empty()) continue;
       if(dev->m_patcher_hierarchy.back() == patcher)
         ossia::max::device::register_children(dev);
     }
     for (auto model : inst.models.reference())
     {
+      if (model->m_patcher_hierarchy.empty()) continue;
       if ( model->m_patcher_hierarchy.back() == patcher
             && model->m_matchers.empty())
         ossia_register(model);
     }
     for (auto param : inst.parameters.reference())
     {
+      if (param->m_patcher_hierarchy.empty()) continue;
       if ( param->m_patcher_hierarchy.back() == patcher
             && param->m_matchers.empty())
         ossia_register(param);
@@ -128,23 +131,27 @@ void ossia_max::register_nodes(void* x)
 
     for (auto client : inst.clients.reference())
     {
+      if(client->m_patcher_hierarchy.empty()) continue;
       if(client->m_patcher_hierarchy.back() == patcher)
         ossia::max::client::register_children(client);
     }
     for (auto view : inst.views.reference())
     {
+      if (view->m_patcher_hierarchy.empty()) continue;
       if ( view->m_patcher_hierarchy.back() == patcher
             && view->m_matchers.empty())
         ossia_register(view);
     }
     for (auto remote : inst.remotes.reference())
     {
+      if (remote->m_patcher_hierarchy.empty()) continue;
       if ( remote->m_patcher_hierarchy.back() == patcher
             && remote->m_matchers.empty())
         ossia_register(remote);
     }
     for (auto attr : inst.attributes.reference())
     {
+      if (attr->m_patcher_hierarchy.empty()) continue;
       if ( attr->m_patcher_hierarchy.back() == patcher
             && attr->m_matchers.empty())
         ossia_register(attr);
@@ -152,16 +159,15 @@ void ossia_max::register_nodes(void* x)
 
     for (auto dev : inst.devices.reference())
     {
+      if (dev->m_patcher_hierarchy.empty()) continue;
       if(dev->m_patcher_hierarchy.back() == patcher)
         node_base::push_default_value(dev);
     }
 
-    std::vector<ossia::net::node_base*> list;
-
     // send default value for default device's child
     // TODO make this a method of ossia Max's object
     auto n = &inst.get_default_device()->get_root_node();
-    list = ossia::net::list_all_child(n);
+    auto list = ossia::net::list_all_child(n);
 
     for (ossia::net::node_base* child : list)
     {

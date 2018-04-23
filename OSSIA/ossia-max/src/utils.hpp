@@ -174,7 +174,7 @@ T* find_parent_box(
 
     for (auto o : objects)
     {
-      if (x->m_patcher_hierarchy[i] == o->m_patcher_hierarchy[0])
+      if (!o->m_patcher_hierarchy.empty() && x->m_patcher_hierarchy[i] == o->m_patcher_hierarchy[0])
       {
         return o;
       }
