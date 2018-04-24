@@ -47,33 +47,29 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJEC
 
 if(OSSIA_SUBMODULE_AUTOUPDATE)
 message(STATUS "Update general OSSIA dependencies :")
+set(OSSIA_SUBMODULES
+    GSL chobo-shl hopscotch-map
+    nano-signal-slot brigand whereami
+    rapidjson readerwriterqueue websocketpp
+    asio variant spdlog fmt
+    SmallFunction
+    Servus
+    bitset2
+    concurrentqueue
+    exprtk
+    flat_hash_map
+    frozen
+    weakjack
+    verdigris
+    )
+
+foreach(submodule ${OSSIA_SUBMODULES})
+    message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+endforeach()
+
 execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/GSL
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/chobo-shl
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/brigand
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/whereami
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/rapidjson
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/websocketpp
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/asio
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/variant
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/spdlog
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/fmt
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 message(STATUS "...done")
 set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
