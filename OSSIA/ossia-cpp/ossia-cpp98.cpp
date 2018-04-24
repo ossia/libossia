@@ -423,6 +423,17 @@ std::vector<node> node::get_children() const
   return res;
 }
 
+std::vector<node> node::get_namespace() const
+{
+  std::vector<node> res;
+  auto list = ossia::net::list_all_child(m_node);
+  for (auto child : list)
+  {
+    res.push_back(child);
+  }
+  return res;
+}
+
 node node::find_child(std::string addr)
 {
   return m_node ? node{ossia::net::find_node(*m_node, addr)} : node{};

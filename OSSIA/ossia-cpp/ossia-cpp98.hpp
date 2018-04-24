@@ -148,6 +148,11 @@ public:
   bool has_parameter() const;
 
   std::vector<node> get_children() const;
+  /**
+   * @brief get_namespace return all children recursively by priority order
+   * @return node vector
+   */
+  std::vector<node> get_namespace() const;
 
   node find_child(std::string addr);
   void remove_child(std::string addr);
