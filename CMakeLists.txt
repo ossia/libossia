@@ -9,13 +9,13 @@ find_package(Qt5 5.3 COMPONENTS Core)
 
 # Configuration
 
-# Dependencies
-set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
-
 # activate select policies
 #cmake_policy(VERSION 3.9)
 include(OssiaConfiguration)
 cmake_policy(SET CMP0069 NEW)
+
+# Dependencies
+set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 
 if(ANDROID)
   set(Boost_FOUND True)
