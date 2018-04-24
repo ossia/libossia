@@ -115,6 +115,14 @@ void phidget_protocol::remove_parent_rec(ossia::net::node_base* par)
     if(auto grandpa = par->get_parent())
     {
       grandpa->remove_child(*par);
+
+      for(auto it = m_phidgetMap.begin(); it != m_phidgetMap.end(); )
+      {
+        if(it->second == par)
+          it = m_phidgetMap.erase(it);
+        else
+          ++it;
+      }
       remove_parent_rec(grandpa);
     }
   }

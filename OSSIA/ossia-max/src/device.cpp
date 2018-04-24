@@ -23,6 +23,28 @@
 
 using namespace ossia::max;
 
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+static void* phidgets_poll_clock = {};
+static bool phidgets_exposed = false;
+static void update_phidgets(void* x)
+{
+    auto dev = reinterpret_cast<device*>(x);
+    ossia::net::device_base* d = dev->m_device;
+    if(auto prot = dynamic_cast<ossia::net::multiplex_protocol*>(&d->get_protocol()))
+    {
+        for(auto& e : prot->get_protocols())
+        {
+            if(auto ph = dynamic_cast<ossia::phidget_protocol*>(e.get()))
+            {
+                ph->run_commands();
+            }
+        }
+    }
+
+    clock_delay(phidgets_poll_clock, 2000);
+}
+#endif
+
 #pragma mark -
 #pragma mark ossia_device class methods
 
@@ -136,6 +158,26 @@ void device::destroy(device* x)
   // are connected to node.about_to_be_deleted
   //x->unregister_children();
 
+  {
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+#endif
+    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
+        x->m_device->get_protocol());
+    auto& protos = multiplex.get_protocols();
+
+    for(auto& proto : protos)
+    if(dynamic_cast<ossia::phidget_protocol*>(proto.get()))
+    {
+      if(phidgets_poll_clock)
+      {
+        clock_unset(phidgets_poll_clock);
+        clock_free((t_object*)phidgets_poll_clock);
+        phidgets_poll_clock = nullptr;
+      }
+      phidgets_exposed = false;
+    }
+  }
+
   x->disconnect_slots();
 
   delete x->m_device;
@@ -221,27 +263,6 @@ void device::unregister_children()
     }
   }
 }
-#if defined(OSSIA_PROTOCOL_PHIDGETS)
-static void* phidgets_poll_clock = {};
-static bool phidgets_exposed = false;
-static void update_phidgets(void* x)
-{
-    auto dev = reinterpret_cast<device*>(x);
-    ossia::net::device_base* d = dev->m_device;
-    if(auto prot = dynamic_cast<ossia::net::multiplex_protocol*>(&d->get_protocol()))
-    {
-        for(auto& e : prot->get_protocols())
-        {
-            if(auto ph = dynamic_cast<ossia::phidget_protocol*>(e.get()))
-            {
-                ph->run_commands();
-            }
-        }
-    }
-
-    clock_delay(phidgets_poll_clock, 2000);
-}
-#endif
 
 void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
@@ -471,6 +492,7 @@ void device::stop_expose(device*x, int index)
       {
           clock_unset(phidgets_poll_clock);
           clock_free((t_object*)phidgets_poll_clock);
+          phidgets_poll_clock = nullptr;
           phidgets_exposed = false;
       }
 #endif
