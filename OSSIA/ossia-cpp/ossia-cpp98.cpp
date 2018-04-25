@@ -324,7 +324,7 @@ node::node(const node& other)
 }
 
 node::node(ossia::net::node_base* b)
-  : node{b, b->get_parameter()}
+  : node{b, b ? b->get_parameter() : nullptr}
 {
 }
 
