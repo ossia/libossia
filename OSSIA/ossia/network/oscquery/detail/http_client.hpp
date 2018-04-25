@@ -10,14 +10,14 @@ namespace ossia
 namespace oscquery
 {
 using tcp = asio::ip::tcp;
-class http_get_request
+class http_get_request: public std::enable_shared_from_this<http_get_request>
 {
   fmt::MemoryWriter m_request;
 
 public:
   http_get_request(
-      std::function<void(http_get_request*, const std::string&)> f,
-      std::function<void(http_get_request*)> err, asio::io_context& ctx,
+      std::function<void(http_get_request&, const std::string&)> f,
+      std::function<void(http_get_request&)> err, asio::io_context& ctx,
       const std::string& server, const std::string& port,
       const std::string& path)
       : m_resolver(ctx)
@@ -29,11 +29,15 @@ public:
     m_request << "Host: " << server << "\r\n";
     m_request << "Accept: */*\r\n";
     m_request << "Connection: close\r\n\r\n";
+  }
 
+  void resolve(const std::string& server, const std::string& port)
+  {
     m_resolver.async_resolve(
-        server, port, std::bind(
-                          &http_get_request::handle_resolve, this,
-                          std::placeholders::_1, std::placeholders::_2));
+        server, port, [self=shared_from_this()] (
+          const asio::error_code& err,
+          const tcp::resolver::results_type& endpoints)
+    { self->handle_resolve(err, endpoints); });
   }
 
   void close()
@@ -48,17 +52,16 @@ private:
   {
     if (!err)
     {
-      // Attempt a connection to each endpoint in the list until we
-      // successfully establish a connection.
       asio::async_connect(
           m_socket, endpoints,
-          std::bind(
-              &http_get_request::handle_connect, this, std::placeholders::_1));
+          [self=shared_from_this()] (const asio::error_code& err, auto&&) {
+        self->handle_connect(err);
+      });
     }
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(this);
+      m_err(*this);
     }
   }
 
@@ -67,16 +70,16 @@ private:
     if (!err)
     {
       asio::const_buffer request(m_request.data(), m_request.size());
-      // The connection was successful. Send the request.
       asio::async_write(
-          m_socket, request, std::bind(
-                                 &http_get_request::handle_write_request, this,
-                                 std::placeholders::_1));
+          m_socket, request,
+          [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
+        self->handle_write_request(err);
+      });
     }
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(this);
+      m_err(*this);
     }
   }
 
@@ -84,19 +87,16 @@ private:
   {
     if (!err)
     {
-      // Read the response status line. The response_ streambuf will
-      // automatically grow to accommodate the entire line. The growth may be
-      // limited by passing a maximum size to the streambuf constructor.
       asio::async_read_until(
           m_socket, m_response, "\r\n",
-          std::bind(
-              &http_get_request::handle_read_status_line, this,
-              std::placeholders::_1));
+            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
+          self->handle_read_status_line(err);
+        });
     }
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(this);
+      m_err(*this);
     }
   }
 
@@ -126,14 +126,14 @@ private:
       // Read the response headers, which are terminated by a blank line.
       asio::async_read_until(
           m_socket, m_response, "\r\n\r\n",
-          std::bind(
-              &http_get_request::handle_read_headers, this,
-              std::placeholders::_1));
+            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
+          self->handle_read_headers(err);
+        });
     }
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(this);
+      m_err(*this);
     }
   }
 
@@ -150,14 +150,14 @@ private:
       // Start reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
-          std::bind(
-              &http_get_request::handle_read_content, this,
-              std::placeholders::_1));
+            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
+          self->handle_read_content(err);
+        });
     }
     else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(this);
+      m_err(*this);
     }
   }
 
@@ -168,29 +168,34 @@ private:
       // Continue reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
-          std::bind(
-              &http_get_request::handle_read_content, this,
-              std::placeholders::_1));
+            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
+          self->handle_read_content(err);
+        });
     }
     else if (err != asio::error::eof)
     {
       ossia::logger().error("HTTP Error: {}", err.message());
-      m_err(this);
+      m_err(*this);
     }
     else if (err == asio::error::eof)
     {
       // Write all of the data that has been read so far.
       const auto& dat = m_response.data();
-      std::string str{asio::buffers_begin(dat), asio::buffers_end(dat)};
-      m_fun(this, str);
+      auto begin = asio::buffers_begin(dat);
+      auto end = asio::buffers_end(dat);
+      auto sz = end - begin;
+      std::string str;
+      str.reserve(sz + 16); // for RapidJSON simd parsing which reads past bounds
+      str.assign(begin, end);
+      m_fun(*this, str);
     }
   }
 
   tcp::resolver m_resolver;
   tcp::socket m_socket;
   asio::streambuf m_response;
-  std::function<void(http_get_request*, const std::string&)> m_fun;
-  std::function<void(http_get_request*)> m_err;
+  std::function<void(http_get_request&, const std::string&)> m_fun;
+  std::function<void(http_get_request&)> m_err;
 };
 }
 }

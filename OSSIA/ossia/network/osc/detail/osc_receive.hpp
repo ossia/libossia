@@ -1,10 +1,11 @@
 #pragma once
-#include <oscpack/osc/OscReceivedElements.h>
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/common/network_logger.hpp>
+#include <oscpack/osc/OscReceivedElements.h>
 
 namespace ossia
 {

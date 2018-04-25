@@ -29,13 +29,14 @@ namespace oscquery
 class websocket_client;
 class http_get_request;
 struct http_client_context;
+struct http_responder;
 
 class OSSIA_EXPORT oscquery_mirror_protocol final
     : public ossia::net::protocol_base
 {
 public:
   oscquery_mirror_protocol(std::string host, uint16_t local_osc_port = 10203);
-  ~oscquery_mirror_protocol();
+  ~oscquery_mirror_protocol() override;
 
   bool pull(net::parameter_base&) override;
   std::future<void> pull_async(net::parameter_base&) override;
@@ -98,6 +99,7 @@ public:
   void set_fail_callback(std::function<void()>);
 
 private:
+  friend struct http_responder;
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);

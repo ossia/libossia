@@ -12,6 +12,8 @@ struct OSSIA_EXPORT json_parser
 {
   static std::shared_ptr<rapidjson::Document>
   parse(const std::string& message);
+  static std::shared_ptr<rapidjson::Document>
+  parse(const char* data, std::size_t N);
 
   static int get_port(const rapidjson::Value& obj);
 

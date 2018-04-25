@@ -6,7 +6,7 @@
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <hopscotch_map.h>
-#include <readerwriterqueue.h>
+#include <concurrentqueue.h>
 #include <nano_signal_slot.hpp>
 #include <atomic>
 namespace osc

@@ -201,6 +201,13 @@ install(
     DESTINATION include/
     COMPONENT Devel)
 
+install(
+      FILES
+        ${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/concurrentqueue.h
+        ${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/blockingconcurrentqueue.h
+      DESTINATION include/
+      COMPONENT Devel)
+
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         DESTINATION include
         COMPONENT Devel)

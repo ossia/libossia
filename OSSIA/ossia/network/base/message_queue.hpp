@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
-#include <readerwriterqueue.h>
+#include <concurrentqueue.h>
 #include <ossia/detail/ptr_set.hpp>
 
 namespace ossia
@@ -69,7 +69,7 @@ class message_queue final : public Nano::Observer
         m_reg.erase(it);
     }
 
-    moodycamel::ReaderWriterQueue<received_value> m_queue;
+    moodycamel::ConcurrentQueue<received_value> m_queue;
 
     ossia::ptr_map<
     ossia::net::parameter_base*,
@@ -97,7 +97,7 @@ class global_message_queue final : public Nano::Observer
     }
 
   private:
-    moodycamel::ReaderWriterQueue<received_value> m_queue;
+    moodycamel::ConcurrentQueue<received_value> m_queue;
 };
 
 }

@@ -24,8 +24,6 @@ namespace oscquery
 struct http_client_context
 {
     std::thread thread;
-    std::vector<http_get_request*> requests;
-    std::vector<http_get_request*> cemetary;
     asio::io_service context;
     std::shared_ptr<asio::io_service::work> worker;
 };
@@ -112,6 +110,24 @@ void oscquery_mirror_protocol::cleanup_connections()
   }
 }
 
+struct http_responder
+{
+  oscquery_mirror_protocol& self;
+  template<typename T, typename S>
+  void on_response(T& req, const S& str)
+  {
+    if (self.on_WSMessage({}, str))
+    {
+      req.close();
+    }
+  }
+
+  template<typename T, typename S>
+  void on_error(T& req)
+  {
+    req.close();
+  }
+};
 void oscquery_mirror_protocol::query_send_message(const std::string& str)
 {
   if (!m_useHTTP)
@@ -120,21 +136,19 @@ void oscquery_mirror_protocol::query_send_message(const std::string& str)
   }
   else
   {
-    auto hrq = new http_get_request(
-        [=](auto req, const auto& str) {
+    auto hrq = std::make_shared<http_get_request>(
+        [=](auto& req, const auto& str) {
           bool res = this->on_WSMessage({}, str);
           if (res)
           {
-            req->close();
-            m_http->cemetary.push_back(req);
+            req.close();
           }
         },
-        [=](auto req) {
-          req->close();
-          m_http->cemetary.push_back(req);
+        [=](auto& req) {
+          req.close();
         },
         m_http->context, m_websocketHost, m_websocketPort, str);
-    m_http->requests.push_back(hrq);
+    hrq->resolve(m_websocketHost, m_websocketPort);
   }
 }
 
@@ -147,22 +161,19 @@ void oscquery_mirror_protocol::query_send_message(
   }
   else
   {
-    auto hrq = new http_get_request(
-        [=](auto req, const auto& str) {
+    auto hrq = std::make_shared<http_get_request>(
+        [=] (auto& req, const auto& str) {
           bool res = this->on_WSMessage({}, str);
           if (res)
           {
-            req->close();
-            m_http->cemetary.push_back(req);
+            req.close();
           }
         },
-        [=](auto req) {
-          req->close();
-          m_http->cemetary.push_back(req);
+        [=] (auto& req) {
+          req.close();
         },
         m_http->context, m_websocketHost, m_websocketPort, str.GetString());
-
-    m_http->requests.push_back(hrq);
+    hrq->resolve(m_websocketHost, m_websocketPort);
   }
 }
 

@@ -168,12 +168,6 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
   target_compile_definitions(ossia PUBLIC ASIO_STANDALONE=1)
-  target_include_directories(ossia SYSTEM PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
-      )
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
@@ -428,6 +422,11 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/bitset2>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
 )
 
 target_include_directories(ossia SYSTEM

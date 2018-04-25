@@ -119,6 +119,7 @@ struct value_port
       }
     }
   }
+
   void add_raw_value(ossia::value&& v)
   {
     switch(mix_method)
@@ -142,6 +143,56 @@ struct value_port
       }
     }
   }
+
+  /*
+  void add_external_value(const ossia::net::parameter_base& addr)
+  {
+    switch(mix_method)
+    {
+      case data_mix_method::mix_replace:
+      {
+        auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == 0; });
+        if(it != data.end())
+          *it = addr.value();
+        else
+          data.emplace_back(ossia::convert(addr.value(), type));
+        break;
+      }
+      case data_mix_method::mix_append:
+        data.emplace_back(addr.value());
+        break;
+      case data_mix_method::mix_merge:
+      {
+        // TODO;
+        break;
+      }
+    }
+  }
+
+  void add_external_value(const ossia::net::parameter_base& addr, ossia::value&& v)
+  {
+    switch(mix_method)
+    {
+      case data_mix_method::mix_replace:
+      {
+        auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == 0; });
+        if(it != data.end())
+          *it = addr.value();
+        else
+          data.emplace_back(ossia::convert(v, type));
+        break;
+      }
+      case data_mix_method::mix_append:
+        data.emplace_back(addr.value());
+        break;
+      case data_mix_method::mix_merge:
+      {
+        // TODO;
+        break;
+      }
+    }
+  }
+  */
 
   void add_value(ossia::value&& v, int64_t timestamp)
   {
