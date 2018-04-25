@@ -18,29 +18,29 @@ namespace ossia
 namespace net
 {
 http_protocol::http_protocol(QByteArray code)
-    : mEngine{new QQmlEngine}
-    , mComponent{new QQmlComponent{mEngine}}
-    , mAccessManager{new QNetworkAccessManager}
-    , mCode{code}
+    : m_engine{new QQmlEngine}
+    , m_component{new QQmlComponent{m_engine}}
+    , m_access{new QNetworkAccessManager}
+    , m_code{code}
 {
   connect(
-      mComponent, &QQmlComponent::statusChanged, this,
+      m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
-        if (!mDevice)
+        if (!m_device)
           return;
 
         switch (status)
         {
           case QQmlComponent::Status::Ready:
           {
-            auto item = mComponent->create();
-            item->setParent(mEngine->rootContext());
+            auto item = m_component->create();
+            item->setParent(m_engine->rootContext());
 
             QVariant ret;
             QMetaObject::invokeMethod(
                 item, "createTree", Q_RETURN_ARG(QVariant, ret));
             qt::create_device<http_device, http_node, http_protocol>(
-                *mDevice, ret.value<QJSValue>());
+                *m_device, ret.value<QJSValue>());
 
             return;
           }
@@ -48,7 +48,7 @@ http_protocol::http_protocol(QByteArray code)
             return;
           case QQmlComponent::Status::Null:
           case QQmlComponent::Status::Error:
-            qDebug() << mComponent->errorString();
+            qDebug() << m_component->errorString();
             return;
         }
       });
@@ -60,6 +60,9 @@ http_protocol::http_protocol(QByteArray code)
 
 http_protocol::~http_protocol()
 {
+  delete m_access;
+  delete m_component;
+  delete m_engine;
 }
 
 bool http_protocol::update(ossia::net::node_base& node_base)
@@ -97,8 +100,8 @@ void http_protocol::set_device(device_base& dev)
 {
   if (auto htdev = dynamic_cast<http_device*>(&dev))
   {
-    mDevice = htdev;
-    mComponent->setData(mCode, QUrl{});
+    m_device = htdev;
+    m_component->setData(m_code, QUrl{});
   }
 }
 
@@ -106,12 +109,12 @@ void http_protocol::slot_push(const http_parameter* addr_p)
 {
   auto& addr = *addr_p;
   auto dat = addr.data().request;
-  auto rep = mAccessManager->get(QNetworkRequest(
+  auto rep = m_access->get(QNetworkRequest(
       dat.replace("$val", qt::value_to_js_string(addr.value()))));
 
   auto pair = std::make_pair(rep, &addr);
 
-  mReplies.push_back(pair);
+  m_replies.push_back(pair);
 
   connect(
       rep, &QNetworkReply::readyRead, this,
@@ -125,7 +128,7 @@ void http_protocol::slot_push(const http_parameter* addr_p)
           apply_reply(ans.call({QString(rep.readAll())}));
         }
 
-        mReplies.removeAll(pair);
+        m_replies.removeAll(pair);
       },
       Qt::QueuedConnection);
 }
@@ -146,7 +149,7 @@ void http_protocol::apply_reply(QJSValue arr)
       continue;
 
     auto addr_txt = addr.toString().toStdString();
-    auto n = find_node(*mDevice, addr_txt);
+    auto n = find_node(*m_device, addr_txt);
     if (!n)
       continue;
 

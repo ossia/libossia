@@ -33,7 +33,7 @@ public:
   http_protocol& operator=(const http_protocol&) = delete;
   http_protocol& operator=(http_protocol&&) = delete;
 
-  ~http_protocol();
+  ~http_protocol() override;
 
   bool update(ossia::net::node_base& node_base) override;
 
@@ -59,14 +59,14 @@ private Q_SLOTS:
 private:
   void apply_reply(QJSValue);
 
-  QQmlEngine* mEngine{};
-  QQmlComponent* mComponent{};
+  QQmlEngine* m_engine{};
+  QQmlComponent* m_component{};
 
-  QNetworkAccessManager* mAccessManager{};
+  QNetworkAccessManager* m_access{};
 
-  QByteArray mCode;
-  http_device* mDevice{};
-  QList<std::pair<QNetworkReply*, const http_parameter*>> mReplies;
+  QByteArray m_code;
+  http_device* m_device{};
+  QList<std::pair<QNetworkReply*, const http_parameter*>> m_replies;
 };
 }
 }
