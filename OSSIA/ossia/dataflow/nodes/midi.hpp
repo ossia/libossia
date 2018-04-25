@@ -82,20 +82,38 @@ class midi final
       // 3. Re-add following notes
       if(date < m_prev_date)
       {
-        auto min_it = m_orig_notes.lower_bound({date});
-        auto max_it = m_orig_notes.lower_bound({m_prev_date});
-
-        if(min_it != m_orig_notes.end())
-          m_notes.insert(min_it, max_it);
-
-        for(auto it = m_orig_notes.begin(); it != min_it; ++it)
+        if(date == 0_tv)
         {
-          if((it->start + it->duration) > date)
+          m_notes = m_orig_notes;
+        }
+        else
+        {
+          auto min_it = m_orig_notes.lower_bound({date});
+          auto max_it = m_orig_notes.lower_bound({m_prev_date});
+
+          if(min_it != m_orig_notes.end())
+            m_notes.insert(min_it, max_it);
+
+          // all of these will have it->start < date
+          for(auto it = m_orig_notes.begin(); it != min_it; ++it)
           {
-            m_notes.insert(*it);
+            if((it->start + it->duration) > date)
+            {
+              m_notes.insert(*it);
+            }
           }
         }
-
+      }
+      else if(date > m_prev_date)
+      {
+        // remove previous notes
+        auto min_it = m_notes.lower_bound({date});
+        if(min_it != m_notes.begin() && min_it != m_notes.end())
+        {
+          std::advance(min_it, -1);
+          m_notes.erase(m_notes.begin(), min_it);
+        }
+        // todo resume current notes
       }
     }
 
@@ -122,6 +140,13 @@ class midi final
     void run(ossia::token_request t, ossia::execution_state& e) override
     {
       ossia::midi_port* mp = midi_out.data.target<ossia::midi_port>();
+
+      for(const note_data& note : m_toStop)
+      {
+        mp->messages.push_back(mm::MakeNoteOff(m_channel, note.pitch, note.velocity));
+        mp->messages.back().timestamp = t.offset;
+      }
+      m_toStop.clear();
 
       if(mustStop)
       {
@@ -197,12 +222,6 @@ class midi final
         }
       }
 
-      for(const note_data& note : m_toStop)
-      {
-        mp->messages.push_back(mm::MakeNoteOff(m_channel, note.pitch, note.velocity));
-        mp->messages.back().timestamp = t.offset;
-      }
-      m_toStop.clear();
     }
 
     note_set m_notes;
