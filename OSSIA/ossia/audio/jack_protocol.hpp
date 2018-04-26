@@ -33,6 +33,15 @@ namespace ossia
 jack_engine::jack_engine(std::string name, int& inputs, int& outputs, int& rate, int& bs)
 {
   std::cerr << "JACK: " << have_libjack() << std::endl;
+#if defined(_WIN32)
+  {
+    if (FindWindow(nullptr, "jackd.exe") == nullptr)
+    {
+      std::cerr << "JACK server not running?" << std::endl;
+      throw std::runtime_error("Audio error: no JACK server");
+    }
+  }
+#endif
   client = jack_client_open(
              (!name.empty() ? name.c_str() : "score")
              , JackNullOption
@@ -174,5 +183,5 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
 }
 }
 
-#include <../weakjack/weak_libjack.c>
+#include <../weakjack/weak_libjack.cpp>
 #endif

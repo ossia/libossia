@@ -27,49 +27,98 @@ if(NOT PORTAUDIO2_FOUND OR "${PORTAUDIO_INCLUDE_DIRS}" MATCHES "")
   )
 
   if(OSSIA_CI)
-      set(PORTAUDIO_ONLY_DYNAMIC 1)
-  endif()
-  if(PORTAUDIO_ONLY_DYNAMIC)
-    find_library(PORTAUDIO_LIBRARIES
-      NAMES
-        portaudio
-      PATHS
-        /opt/portaudio/lib
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        c:/portaudio/lib
-        "${PORTAUDIO_LIB_DIR_HINT}"
-    )
-  else()
-    find_library(PORTAUDIO_LIBRARIES
-      NAMES
-        portaudio_static_x64.lib libportaudio_static.a libportaudio.a portaudio
-      PATHS
-        /opt/portaudio/lib
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        c:/portaudio/lib
-        "${PORTAUDIO_LIB_DIR_HINT}"
-    )
+    set(PORTAUDIO_ONLY_DYNAMIC 1)
   endif()
 
-  if(${PORTAUDIO_LIBRARIES} MATCHES ".*\.a")
-    add_library(PortAudio STATIC IMPORTED)
-  elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*portaudio_static_x64\.lib")
-    add_library(PortAudio STATIC IMPORTED)
-  elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*{lib,so,dylib,dll}")
-    add_library(PortAudio SHARED IMPORTED)
-  else()
-    return()
-  endif()
+  if(WIN32)
 
-  set_target_properties(PortAudio
-    PROPERTIES
-    IMPORTED_LOCATION ${PORTAUDIO_LIBRARIES}
-    INTERFACE_INCLUDE_DIRECTORIES ${PORTAUDIO_INCLUDE_DIRS})
-  set(PORTAUDIO_VERSION 19)
+    find_library(PORTAUDIO_LIBRARIES_DEBUG
+      NAMES
+        portaudio_static_x64.lib
+      PATHS
+        c:/portaudio/lib/debug
+        "${PORTAUDIO_LIB_DIR_HINT}/debug"
+    )
+    find_library(PORTAUDIO_LIBRARIES_RELEASE
+      NAMES
+        portaudio_static_x64.lib
+      PATHS
+        c:/portaudio/lib/release
+        "${PORTAUDIO_LIB_DIR_HINT}/release"
+    )
+
+    set(PORTAUDIO_LIBRARIES)
+    if(PORTAUDIO_LIBRARIES_DEBUG)
+      set(PORTAUDIO_LIBRARIES ${PORTAUDIO_LIBRARIES} ${PORTAUDIO_LIBRARIES_DEBUG})
+    endif()
+    if(PORTAUDIO_LIBRARIES_RELEASE)
+      set(PORTAUDIO_LIBRARIES ${PORTAUDIO_LIBRARIES} ${PORTAUDIO_LIBRARIES_RELEASE})
+    endif()
+
+    add_library(PortAudio STATIC IMPORTED)
+
+    set_property(
+      TARGET PortAudio
+      APPEND
+      PROPERTY
+        IMPORTED_CONFIGURATIONS DEBUG RELEASE
+    )
+    set_target_properties(PortAudio
+      PROPERTIES
+      IMPORTED_LOCATION_DEBUG ${PORTAUDIO_LIBRARIES_DEBUG}
+      IMPORTED_LOCATION_RELEASE ${PORTAUDIO_LIBRARIES_RELEASE}
+      IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "C"
+      IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "C"
+      MAP_IMPORTED_CONFIG_MINSIZEREL Release
+      MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release
+      INTERFACE_INCLUDE_DIRECTORIES ${PORTAUDIO_INCLUDE_DIRS})
+    set(PORTAUDIO_VERSION 19)
+  else()
+
+    if(PORTAUDIO_ONLY_DYNAMIC)
+      find_library(PORTAUDIO_LIBRARIES
+        NAMES
+          portaudio
+        PATHS
+          /opt/portaudio/lib
+          /usr/lib
+          /usr/local/lib
+          /opt/local/lib
+          c:/portaudio/lib
+          "${PORTAUDIO_LIB_DIR_HINT}"
+      )
+    else()
+        find_library(PORTAUDIO_LIBRARIES
+           NAMES
+             portaudio_static_x64.lib libportaudio_static.a libportaudio.a portaudio
+           PATHS
+             /opt/portaudio/lib
+             /usr/lib
+             /usr/local/lib
+             /opt/local/lib
+             "${PORTAUDIO_LIB_DIR_HINT}"
+          )
+    endif()
+
+    if("${PORTAUDIO_LIBRARIES}" MATCHES ".*\.a")
+      add_library(PortAudio STATIC IMPORTED)
+
+      find_library(Jack_LIBRARY NAMES jack)
+      if(Jack_LIBRARY)
+        target_link_libraries(PortAudio INTERFACE ${Jack_LIBRARY})
+      endif()
+    elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*{lib,so,dylib,dll}")
+      add_library(PortAudio SHARED IMPORTED)
+    else()
+      return()
+    endif()
+
+    set_target_properties(PortAudio
+      PROPERTIES
+      IMPORTED_LOCATION ${PORTAUDIO_LIBRARIES}
+      INTERFACE_INCLUDE_DIRECTORIES ${PORTAUDIO_INCLUDE_DIRS})
+    set(PORTAUDIO_VERSION 19)
+  endif()
 endif ()
 
 
