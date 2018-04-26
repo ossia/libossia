@@ -105,7 +105,10 @@ if(NOT PORTAUDIO2_FOUND OR "${PORTAUDIO_INCLUDE_DIRS}" MATCHES "")
 
       find_library(Jack_LIBRARY NAMES jack)
       if(Jack_LIBRARY)
-        target_link_libraries(PortAudio INTERFACE ${Jack_LIBRARY})
+        set_target_properties(PortAudio
+            PROPERTIES
+            INTERFACE_LINK_LIBRARIES ${Jack_LIBRARY}
+        )
       endif()
     elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*{lib,so,dylib,dll}")
       add_library(PortAudio SHARED IMPORTED)
