@@ -89,7 +89,7 @@
 	url = https://github.com/woboq/verdigris
 [submodule "3rdparty/weakjack"]
 	path = 3rdparty/weakjack
-	url = https://github.com/x42/weakjack
+	url = https://github.com/jcelerier/weakjack
 [submodule "3rdparty/concurrentqueue"]
 	path = 3rdparty/concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue
