@@ -62,15 +62,9 @@ class oscquery_mirror;
 //               value                  //
 //*************************************//
 
-
-/** @defgroup CPPVal Value
- * @brief Values of the Nodes' parameters
- * @see ossia::value
- *  @{
- */
-
 /**The value class holds values from parameters
- * @brief The value class holds all ossia value types
+ * @brief The value class holds all ossia parameters typed values
+ * @see ossia::value
  */
 class OSSIA_EXPORT value
 {
@@ -294,7 +288,7 @@ class OSSIA_EXPORT value
     value(const T* v);
     ossia::value* m_val;
 };
-/** @}*/
+
 
 typedef void (*value_callback)(void*, const opp::value&);
 typedef void (*connection_callback)(void*, const std::string&);
