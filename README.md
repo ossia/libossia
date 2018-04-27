@@ -11,7 +11,7 @@ libossia offers bindings and implementations for several environments: PureData,
 
 You can find some documentation for the library and its various implementationis at https://ossia.github.io
 
-Please feel free to come and chat with us ! [![Gitter](https://badges.gitter.im/OSSIA/libossia.svg)](https://gitter.im/OSSIA/libossia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Please feel free to ask questions on the [forum](http://forum.ossia.io/c/libossia), or to come and chat with us ! [![Gitter](https://badges.gitter.im/OSSIA/libossia.svg)](https://gitter.im/OSSIA/libossia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 More about the general project at: http://ossia.io 
 
