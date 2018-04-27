@@ -7,7 +7,7 @@
 #define OSSIA_CPP_CXX11
 #endif
 
-/** @defgroup CPP98API CPP98 API
+/** @defgroup C++98API C++98 API
  * CPP98 bindings of libossia.
  *
  * @{
