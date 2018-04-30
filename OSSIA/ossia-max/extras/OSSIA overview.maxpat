@@ -4,12 +4,12 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x64",
+			"revision" : 5,
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 313.0, 196.0, 1370.0, 773.0 ],
+		"rect" : [ 276.0, 196.0, 1370.0, 773.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,272 @@
 		"showontab" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-3",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 0,
+					"patcher" : 					{
+						"fileversion" : 1,
+						"appversion" : 						{
+							"major" : 7,
+							"minor" : 3,
+							"revision" : 5,
+							"architecture" : "x86",
+							"modernui" : 1
+						}
+,
+						"rect" : [ 276.0, 222.0, 1370.0, 747.0 ],
+						"bglocked" : 0,
+						"openinpresentation" : 0,
+						"default_fontsize" : 12.0,
+						"default_fontface" : 0,
+						"default_fontname" : "Arial",
+						"gridonopen" : 1,
+						"gridsize" : [ 15.0, 15.0 ],
+						"gridsnaponopen" : 1,
+						"objectsnaponopen" : 1,
+						"statusbarvisible" : 2,
+						"toolbarvisible" : 1,
+						"lefttoolbarpinned" : 0,
+						"toptoolbarpinned" : 0,
+						"righttoolbarpinned" : 0,
+						"bottomtoolbarpinned" : 0,
+						"toolbars_unpinned_last_save" : 0,
+						"tallnewobj" : 0,
+						"boxanimatetime" : 200,
+						"enablehscroll" : 1,
+						"enablevscroll" : 1,
+						"devicewidth" : 0.0,
+						"description" : "",
+						"digest" : "",
+						"tags" : "",
+						"style" : "",
+						"subpatcher_template" : "",
+						"showontab" : 1,
+						"boxes" : [ 							{
+								"box" : 								{
+									"angle" : 270.0,
+									"bgcolor" : [ 0.989256, 0.417462, 0.031845, 1.0 ],
+									"id" : "obj-11",
+									"maxclass" : "panel",
+									"mode" : 0,
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 83.5, 34.199432, 67.0, 25.0 ],
+									"presentation_rect" : [ 83.5, 34.199432, 67.0, 25.0 ],
+									"proportion" : 0.39,
+									"shape" : 3,
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"autofit" : 1,
+									"forceaspect" : 1,
+									"id" : "obj-10",
+									"maxclass" : "fpic",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "jit_matrix" ],
+									"patching_rect" : [ 7.5, 12.0, 69.0, 69.398842 ],
+									"pic" : "/Users/jln/Desktop/Capture d’écran 2018-04-30 à 22.48.17.png",
+									"presentation_rect" : [ 7.5, 12.0, 69.0, 69.398842 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"autofit" : 1,
+									"forceaspect" : 1,
+									"id" : "obj-8",
+									"maxclass" : "fpic",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "jit_matrix" ],
+									"patching_rect" : [ 138.5, 12.0, 69.0, 69.0 ],
+									"pic" : "/Users/jln/Documents/Max 8/Packages/ossia/icon.png",
+									"presentation_rect" : [ 138.5, 12.0, 69.0, 69.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bgcolor" : [ 0.376471, 0.384314, 0.4, 1.0 ],
+									"bgcolor2" : [ 0.376471, 0.384314, 0.4, 1.0 ],
+									"bgfillcolor_angle" : 270.0,
+									"bgfillcolor_autogradient" : 0.0,
+									"bgfillcolor_color" : [ 0.290196, 0.309804, 0.301961, 0.0 ],
+									"bgfillcolor_color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
+									"bgfillcolor_color2" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
+									"bgfillcolor_proportion" : 0.39,
+									"bgfillcolor_type" : "color",
+									"gradient" : 1,
+									"id" : "obj-36",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 641.0, 476.0, 251.0, 22.0 ],
+									"presentation_rect" : [ 641.0, 476.0, 251.0, 22.0 ],
+									"style" : "",
+									"text" : "https://github.com/mrRay/OSCQueryProposal",
+									"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"hidden" : 1,
+									"id" : "obj-27",
+									"linecount" : 3,
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 567.0, 275.0, 257.0, 49.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 567.0, 275.0, 257.0, 49.0 ],
+									"style" : "",
+									"text" : ";\rmax launchbrowser https://github.com/mrRay/OSCQueryProposal"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-7",
+									"linecolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ],
+									"maxclass" : "live.line",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 308.0, 199.0, 204.0, 7.0 ],
+									"presentation_rect" : [ 308.0, 199.0, 204.0, 7.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"bgcolor" : [ 0.098384, 0.51736, 0.794437, 1.0 ],
+									"fontface" : 1,
+									"fontsize" : 12.0,
+									"id" : "obj-21",
+									"linecount" : 2,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 22.0, 334.0, 327.0, 33.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 22.0, 334.0, 327.0, 34.0 ],
+									"style" : "",
+									"text" : "\nossia-max & Jamoma differences",
+									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-4",
+									"linecount" : 21,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 22.0, 370.0, 1004.0, 288.0 ],
+									"presentation_linecount" : 21,
+									"presentation_rect" : [ 22.0, 370.0, 1000.0, 301.0 ],
+									"style" : "",
+									"text" : "The Max implementation of the ossialib is not strictly speaking a porting of Jamoma package. ossia-max focused solely on Jamoma Modular core objects (model, view, parameters and remotes and network features) and should provide features you need to architecture your patchers.\n\nAs compared to Jamoma, ossia-max does not provide audio-related or amenities features. Also, ossia-max itself do not provide ramping features. \n\nOn the other hand, libossia provides a much optimized implementation of the network and architecture features. Patch loading time, namespace subscriptions and all have been especially vastly reduced. Time-related features such as ramps (and much more, ie. automations, interpolations, mappings or custom scripts) can be achieved within Score software thanks to the tight integration of libossia and Score. Interoperability between your various ossia-max-based Max patchers, be it locally or on different computer as well as with other applications also provides a much better and efficient experience thanks to the various implemented protocols, especially OSCQuery (                                                                         ). \n\nIf you are willing to give ossia-max a try and port some of your Jamoma patchers to ossia-max, here is a quick highlight on some syntaxe changes as compared to Jamoma Modular core objects to get you started : \n\n- j.parameter, j.message and j.return features are merged inside a single ossia.parameter with settable  access attribute (get, set or both) \n- j.parameter @type (decimal, integer, boolean, array, string, generic) are @type (float, int, bool, symbol, list, impulse, vec2f, vec3f, vec4f) for ossia.parameter \n- j.parameter @repetitions/filter (0/1) is simplified as @repetitions (1/0) for ossia.parameter \n- j.parameter @clipmode (none, low, high, both, wrap, fold) is simplified as @clip (free, low, high, both, wrap, both, ) for ossia.parameter \n- j.parameter @active (0/1) is renamed as @enable (0/1) for ossia.parameter \n- ossia.parameter @priority is reversed as compared to j.parameter. Higher priorities are sent first \n- ossia.parameter of type 'list' can be set independent min and max boundaries for each item in the list, ie: [ossia.parameter position @type vec3f @clip both @min -5. 1. 0. @max 5. 1. 1.] \n- @type dataspace got removed from ossia.parameter. Dataspace is internally set based on the value of @unit attribute \n"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-2",
+									"linecount" : 9,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 22.0, 102.0, 1000.0, 127.0 ],
+									"presentation_linecount" : 9,
+									"presentation_rect" : [ 22.0, 102.0, 1000.0, 127.0 ],
+									"style" : "",
+									"text" : "ossia-max is based from the work and experience that has been done over the years on Jamoma specifications and shares a number of features.\n\nSo you should feel just at home with ossia-max if you've been using Jamoma for some time.\n\nIf you want to port some models and views made in Jamoma 0.6 using ossia-max, ossia-max package provides a shell script that can make things easier.\n\nFrom the Terminal, run the j2ossia.sh script placed in Max 7/Packages/ossia-max/examples folder using either a .maxpat file as argument or a path to folder containing Jamoma patchers.\n\nHit enter key and voilà!."
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"fontname" : "Lato Regular",
+									"fontsize" : 48.0,
+									"id" : "obj-9",
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 217.5, 12.0, 713.0, 64.0 ],
+									"presentation_rect" : [ 217.5, 12.0, 713.0, 64.0 ],
+									"style" : "",
+									"text" : "Porting patches from Jamoma 0.6",
+									"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"angle" : 270.0,
+									"bgcolor" : [ 0.098039, 0.517647, 0.796078, 0.0 ],
+									"border" : 1,
+									"bordercolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ],
+									"id" : "obj-6",
+									"maxclass" : "panel",
+									"mode" : 0,
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 22.0, 370.0, 1000.0, 301.0 ],
+									"presentation_rect" : [ 22.0, 370.0, 1000.0, 301.0 ],
+									"proportion" : 0.39,
+									"rounded" : 1,
+									"style" : ""
+								}
+
+							}
+ ],
+						"lines" : [ 							{
+								"patchline" : 								{
+									"destination" : [ "obj-27", 0 ],
+									"hidden" : 1,
+									"source" : [ "obj-36", 0 ]
+								}
+
+							}
+ ],
+						"styles" : [ 							{
+								"name" : "Jamoma_highlighted_orange",
+								"default" : 								{
+									"accentcolor" : [ 1.0, 0.5, 0.0, 1.0 ]
+								}
+,
+								"parentstyle" : "",
+								"multi" : 0
+							}
+ ]
+					}
+,
+					"patching_rect" : [ 800.0, 147.0, 187.0, 22.0 ],
+					"presentation_rect" : [ 800.0, 147.0, 187.0, 22.0 ],
+					"saved_object_attributes" : 					{
+						"description" : "",
+						"digest" : "",
+						"globalpatchername" : "",
+						"style" : "",
+						"tags" : ""
+					}
+,
+					"style" : "",
+					"text" : "p \"Porting patches from Jamoma\""
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-2",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -49,12 +315,12 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 313.0, 222.0, 1370.0, 747.0 ],
+						"rect" : [ 0.0, 26.0, 1370.0, 747.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -93,6 +359,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 555.5, 197.5, 150.0, 35.0 ],
+									"presentation_rect" : [ 555.5, 197.5, 150.0, 35.0 ],
 									"style" : "",
 									"text" : "Store presets in a dict",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -108,6 +375,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 369.0, 73.0, 265.0, 21.0 ],
+									"presentation_rect" : [ 369.0, 73.0, 265.0, 21.0 ],
 									"style" : "",
 									"text" : "...Or roll your own preset management",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -126,6 +394,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 555.5, 118.5, 172.0, 49.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 555.5, 118.5, 172.0, 49.0 ],
 									"style" : "",
 									"text" : "Recall presets stored in a dict",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -140,6 +410,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"patching_rect" : [ 469.0, 280.5, 60.0, 22.0 ],
+									"presentation_rect" : [ 469.0, 280.5, 60.0, 22.0 ],
 									"style" : "",
 									"text" : "loadbang"
 								}
@@ -152,6 +423,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 525.0, 397.5, 317.0, 282.0 ],
+									"presentation_rect" : [ 525.0, 397.5, 317.0, 282.0 ],
 									"style" : ""
 								}
 
@@ -164,6 +436,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 469.0, 304.5, 139.0, 22.0 ],
+									"presentation_rect" : [ 469.0, 304.5, 139.0, 22.0 ],
 									"style" : "",
 									"text" : "read demo_presets.json"
 								}
@@ -178,6 +451,7 @@
 									"outlettype" : [ "int", "", "" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 369.0, 130.5, 171.0, 24.0 ],
+									"presentation_rect" : [ 369.0, 130.5, 171.0, 24.0 ],
 									"style" : "",
 									"tabs" : [ "preset1", "preset2", "preset3" ]
 								}
@@ -191,6 +465,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 445.0, 163.5, 87.0, 22.0 ],
+									"presentation_rect" : [ 445.0, 163.5, 87.0, 22.0 ],
 									"style" : "",
 									"text" : "prepend recall"
 								}
@@ -205,6 +480,7 @@
 									"outlettype" : [ "int", "", "" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 369.0, 205.5, 171.0, 24.0 ],
+									"presentation_rect" : [ 369.0, 205.5, 171.0, 24.0 ],
 									"style" : "",
 									"tabs" : [ "preset1", "preset2", "preset3" ]
 								}
@@ -218,6 +494,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 445.0, 236.5, 85.0, 22.0 ],
+									"presentation_rect" : [ 445.0, 236.5, 85.0, 22.0 ],
 									"style" : "",
 									"text" : "prepend store"
 								}
@@ -236,8 +513,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -276,6 +553,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "bang", "" ],
 													"patching_rect" : [ 442.333344, 214.0, 30.0, 22.0 ],
+													"presentation_rect" : [ 442.333344, 214.0, 30.0, 22.0 ],
 													"style" : "",
 													"text" : "t b l"
 												}
@@ -290,6 +568,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 258.0, 481.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 258.0, 481.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -302,6 +581,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 393.333344, 166.0, 36.0, 22.0 ],
+													"presentation_rect" : [ 393.333344, 166.0, 36.0, 22.0 ],
 													"style" : "",
 													"text" : "read"
 												}
@@ -315,6 +595,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "bang", "" ],
 													"patching_rect" : [ 423.333344, 120.0, 64.0, 22.0 ],
+													"presentation_rect" : [ 423.333344, 120.0, 64.0, 22.0 ],
 													"style" : "",
 													"text" : "sel bang"
 												}
@@ -328,6 +609,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 508.166656, 166.0, 36.0, 22.0 ],
+													"presentation_rect" : [ 508.166656, 166.0, 36.0, 22.0 ],
 													"style" : "",
 													"text" : "write"
 												}
@@ -341,6 +623,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "bang", "" ],
 													"patching_rect" : [ 508.166656, 130.0, 64.0, 22.0 ],
+													"presentation_rect" : [ 508.166656, 130.0, 64.0, 22.0 ],
 													"style" : "",
 													"text" : "sel bang"
 												}
@@ -354,6 +637,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 553.166626, 166.0, 83.0, 22.0 ],
+													"presentation_rect" : [ 553.166626, 166.0, 83.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend write"
 												}
@@ -368,6 +652,8 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 442.333344, 166.0, 56.0, 35.0 ],
+													"presentation_linecount" : 2,
+													"presentation_rect" : [ 442.333344, 166.0, 56.0, 35.0 ],
 													"style" : "",
 													"text" : "prepend read"
 												}
@@ -381,6 +667,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 425.0, 302.0, 37.0, 22.0 ],
+													"presentation_rect" : [ 425.0, 302.0, 37.0, 22.0 ],
 													"style" : "",
 													"text" : "clear"
 												}
@@ -394,6 +681,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "bang" ],
 													"patching_rect" : [ 387.0, 303.0, 24.0, 24.0 ],
+													"presentation_rect" : [ 387.0, 303.0, 24.0, 24.0 ],
 													"style" : ""
 												}
 
@@ -406,6 +694,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 243.0, 144.0, 75.0, 22.0 ],
+													"presentation_rect" : [ 243.0, 144.0, 75.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend get"
 												}
@@ -419,6 +708,7 @@
 													"numoutlets" : 3,
 													"outlettype" : [ "bang", "bang", "" ],
 													"patching_rect" : [ 132.666672, 136.0, 40.0, 22.0 ],
+													"presentation_rect" : [ 132.666672, 136.0, 40.0, 22.0 ],
 													"style" : "",
 													"text" : "t b b l"
 												}
@@ -432,6 +722,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 153.666672, 196.0, 86.0, 22.0 ],
+													"presentation_rect" : [ 153.666672, 196.0, 86.0, 22.0 ],
 													"style" : "",
 													"text" : "set replace $1"
 												}
@@ -445,6 +736,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 282.166687, 343.0, 57.0, 22.0 ],
+													"presentation_rect" : [ 282.166687, 343.0, 57.0, 22.0 ],
 													"style" : "",
 													"text" : "zl slice 1"
 												}
@@ -458,6 +750,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 282.166687, 377.0, 49.0, 22.0 ],
+													"presentation_rect" : [ 282.166687, 377.0, 49.0, 22.0 ],
 													"style" : "",
 													"text" : "dict.iter"
 												}
@@ -471,6 +764,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 84.0, 243.0, 120.0, 22.0 ],
+													"presentation_rect" : [ 84.0, 243.0, 120.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend replace test"
 												}
@@ -484,6 +778,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "dictionary" ],
 													"patching_rect" : [ 84.0, 196.0, 63.0, 22.0 ],
+													"presentation_rect" : [ 84.0, 196.0, 63.0, 22.0 ],
 													"style" : "",
 													"text" : "dict.group"
 												}
@@ -497,6 +792,7 @@
 													"numoutlets" : 4,
 													"outlettype" : [ "dictionary", "", "", "" ],
 													"patching_rect" : [ 258.0, 303.0, 91.5, 22.0 ],
+													"presentation_rect" : [ 258.0, 303.0, 91.5, 22.0 ],
 													"saved_object_attributes" : 													{
 														"embed" : 0,
 														"parameter_enable" : 0
@@ -515,6 +811,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 282.166687, 409.0, 74.0, 22.0 ],
+													"presentation_rect" : [ 282.166687, 409.0, 74.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend set"
 												}
@@ -528,6 +825,7 @@
 													"numoutlets" : 7,
 													"outlettype" : [ "", "", "", "", "", "", "" ],
 													"patching_rect" : [ 84.0, 95.0, 528.0, 22.0 ],
+													"presentation_rect" : [ 84.0, 95.0, 528.0, 22.0 ],
 													"style" : "",
 													"text" : "route namespace store recall delete read write"
 												}
@@ -541,6 +839,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 143.0, 379.0, 73.0, 22.0 ],
+													"presentation_rect" : [ 143.0, 379.0, 73.0, 22.0 ],
 													"style" : "",
 													"text" : "namespace"
 												}
@@ -556,6 +855,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 84.0, 28.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 84.0, 28.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -569,6 +869,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 143.0, 464.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 143.0, 464.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -581,6 +882,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 330.0, 130.0, 66.0, 22.0 ],
+													"presentation_rect" : [ 330.0, 130.0, 66.0, 22.0 ],
 													"style" : "",
 													"text" : "remove $1"
 												}
@@ -832,6 +1134,8 @@
 									}
 ,
 									"patching_rect" : [ 445.0, 341.0, 99.0, 35.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 445.0, 341.0, 99.0, 35.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -857,6 +1161,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 151.0, 288.0, 172.0, 49.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 151.0, 288.0, 172.0, 49.0 ],
 									"style" : "",
 									"text" : "Recall example or user defined presets ",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -875,6 +1181,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 103.0, 111.5, 162.0, 49.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 103.0, 111.5, 162.0, 49.0 ],
 									"style" : "",
 									"text" : "Set name & path to store preset",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -889,6 +1197,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 82.0, 397.5, 79.0, 22.0 ],
+									"presentation_rect" : [ 82.0, 397.5, 79.0, 22.0 ],
 									"style" : "",
 									"text" : "absolutepath"
 								}
@@ -902,6 +1211,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 190.0, 357.0, 103.0, 22.0 ],
+									"presentation_rect" : [ 190.0, 357.0, 103.0, 22.0 ],
 									"style" : "",
 									"text" : "demo_preset2.txt"
 								}
@@ -915,6 +1225,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 82.0, 357.0, 103.0, 22.0 ],
+									"presentation_rect" : [ 82.0, 357.0, 103.0, 22.0 ],
 									"style" : "",
 									"text" : "demo_preset1.txt"
 								}
@@ -928,6 +1239,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 55.0, 556.0, 117.0, 22.0 ],
+									"presentation_rect" : [ 55.0, 556.0, 117.0, 22.0 ],
 									"style" : "",
 									"text" : "prepend preset load"
 								}
@@ -941,6 +1253,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
 									"patching_rect" : [ 55.0, 451.0, 130.0, 22.0 ],
+									"presentation_rect" : [ 55.0, 451.0, 130.0, 22.0 ],
 									"style" : "",
 									"text" : "conformpath max boot"
 								}
@@ -954,6 +1267,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"patching_rect" : [ 55.0, 288.0, 24.0, 24.0 ],
+									"presentation_rect" : [ 55.0, 288.0, 24.0, 24.0 ],
 									"style" : ""
 								}
 
@@ -966,6 +1280,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"patching_rect" : [ 55.0, 327.5, 69.0, 22.0 ],
+									"presentation_rect" : [ 55.0, 327.5, 69.0, 22.0 ],
 									"style" : "",
 									"text" : "opendialog"
 								}
@@ -979,6 +1294,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
 									"patching_rect" : [ 20.0, 211.0, 130.0, 22.0 ],
+									"presentation_rect" : [ 20.0, 211.0, 130.0, 22.0 ],
 									"style" : "",
 									"text" : "conformpath max boot"
 								}
@@ -992,6 +1308,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 20.0, 243.0, 120.0, 22.0 ],
+									"presentation_rect" : [ 20.0, 243.0, 120.0, 22.0 ],
 									"style" : "",
 									"text" : "prepend preset save"
 								}
@@ -1005,6 +1322,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 20.0, 187.0, 109.0, 22.0 ],
+									"presentation_rect" : [ 20.0, 187.0, 109.0, 22.0 ],
 									"style" : "",
 									"text" : "combine PATH .txt"
 								}
@@ -1018,6 +1336,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"patching_rect" : [ 20.0, 131.0, 24.0, 24.0 ],
+									"presentation_rect" : [ 20.0, 131.0, 24.0, 24.0 ],
 									"style" : ""
 								}
 
@@ -1030,6 +1349,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "bang" ],
 									"patching_rect" : [ 20.0, 157.0, 68.0, 22.0 ],
+									"presentation_rect" : [ 20.0, 157.0, 68.0, 22.0 ],
 									"style" : "",
 									"text" : "savedialog"
 								}
@@ -1042,6 +1362,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 0,
 									"patching_rect" : [ 948.0, 678.0, 37.0, 22.0 ],
+									"presentation_rect" : [ 948.0, 678.0, 37.0, 22.0 ],
 									"style" : "",
 									"text" : "dac~"
 								}
@@ -1056,6 +1377,7 @@
 									"outlettype" : [ "signal", "signal", "", "float", "list" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 948.0, 332.5, 48.0, 136.0 ],
+									"presentation_rect" : [ 948.0, 332.5, 48.0, 136.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_longname" : "live.gain~[2]",
@@ -1083,6 +1405,7 @@
 									"outlettype" : [ "signal", "signal", "", "float", "list" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 1049.0, 519.0, 48.0, 136.0 ],
+									"presentation_rect" : [ 1049.0, 519.0, 48.0, 136.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_longname" : "live.gain~[1]",
@@ -1117,6 +1440,7 @@
 									"numoutlets" : 0,
 									"offset" : [ 0.0, 0.0 ],
 									"patching_rect" : [ 1049.0, 317.0, 293.0, 159.0 ],
+									"presentation_rect" : [ 1049.0, 317.0, 293.0, 159.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -1137,6 +1461,7 @@
 									"numoutlets" : 0,
 									"offset" : [ 0.0, 0.0 ],
 									"patching_rect" : [ 948.0, 106.0, 293.0, 159.0 ],
+									"presentation_rect" : [ 948.0, 106.0, 293.0, 159.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -1150,6 +1475,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 948.0, 46.5, 129.0, 22.0 ],
+									"presentation_rect" : [ 948.0, 46.5, 129.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.model my_synth"
 								}
@@ -1163,6 +1489,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 1049.0, 485.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 1049.0, 485.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth voice.2"
 								}
@@ -1176,6 +1503,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 948.0, 274.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 948.0, 274.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth voice.1"
 								}
@@ -1190,6 +1518,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 20.0, 689.5, 169.0, 22.0 ],
+									"presentation_rect" : [ 20.0, 689.5, 169.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.device my_fm_patcher"
 								}
@@ -1206,6 +1535,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 20.0, 32.5, 198.0, 47.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 20.0, 32.5, 198.0, 47.0 ],
 									"style" : "",
 									"text" : "\nStore models current state as text file",
 									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
@@ -1436,6 +1767,7 @@
 					}
 ,
 					"patching_rect" : [ 477.0, 149.0, 144.0, 22.0 ],
+					"presentation_rect" : [ 477.0, 149.0, 144.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -1461,8 +1793,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -1497,6 +1829,8 @@
 						"boxes" : [ 							{
 								"box" : 								{
 									"autofit" : 1,
+									"data" : [ 25893, "png", "IBkSG0fBZn....PCIgDQRA...nO...f9HX.....hrqUO....DLmPIQEBHf.B7g.YHB..f.PRDEDU3wI68lGlkcbUmf+Nwc4smYVYUkJURk1k0RIYIaIYraYKT4FAlM6FvH0z.ta5lugkY5d5E2.CL7QR0yz7wLF9noald.+wzL.cOesk.FZrGvfMtboEKURpVypxZeeuxJqrx826cu23L+wcKtau7kY9du7kUc+keQ9t23FQbiaDwINm3DQbBfbjibbKOnU6LPN5hf8peWZ0xb2HqjiUWnuZmAxwxBshzsyPnxfZwaIuyf0XHmid+N7I3FYDBae6sEA1y9S86oa7S78naYZYNYiYJnQrgzRWvhFzfhRTQ.Lkj4aJYtrTxRStYsxC1T2wr4Be42xdrs+JVvkXNq1GtOajQH7q5kmnbh+9YjSn2eAWhG.DPTOxHD9zeZMLy501bsIDMrGPe8x4pUtT0glwg1jckBCaKoMZ5XuAKSiAsrsWmPhZvzn.DhBrzoDATfXVG.vgYA.fFQR..FjCHpAHpNXttnoUSF7rjgwMDNNS4HzlPWvii4abiAYb0Elc9Isk1yzrlSyKOy5kn1DN3K+kchje+UA.1NmS72+fbB8UOP.fACB+pgD2O7e4eoYyZaorrZgxLqU1fc1riY46mI5AbD785Ph6BD1LK4MHIpFoan4noI.HB.BhkDXlXlIvLf6uDwtzbNdubMueYh.Hh8bfIhEfXVHX.HAXljRI0rIqwXVHvDBHtjfctB.NuvQdZQylmlLztnMaMKMWy4AldgK77Oe8fNsb+1jAey4nmibB8dKBKu8HBtussMSTdiC4TrzFaR5aRP3CHznGUpYb+RltOV5b2RfgjZZ5rlFHF.RG.ISjzALyL.CGlXMk2BS.DuzpeYBLwHBonCwjFHPDQrP.HDLDB.PfXIHaGI.Okgl1kXhNmtk8YjR6iKjxipy3Jly27ZCb8Ylb269KWG.tRpDNnfbh9dDxIz69HdYL8n+4uYkEty63drJX7nBR7nNFhGQZT3AXoy8JY9Njfq.gNCHI1wAjjAXeZBNHYIhVNZUeoCuWoamJwd.QfEBPBMWICjND.pqKzFWHDmmrZdFgs8wgCcXS14nCN0Tmc+ey+7oSQeC4D8cQjSn2MPJSq0V2wNpLS464wrMz+P1j7YIyBOtzv3dj1NaDrrrjHRvLXVRPJ8SGWh490ZIeNyL.CkNAHAXgfEDAvRPBs5jl13BG4EDMabLRx6ojiy9Jd8EFar290tYLt79obN5fnesIzZSnpg7O5OlwVFpYEnq+PxhkdglR9EYCyGiMLFF1V0XGGS.xk9fkA0CAboWiiHb+IhAI.XlHMgELLmkrslRyt4wEr3MJZa+5y2b1ids5SLEFebKbnC4FW2w0miN.tknQ0pLBlloG9u5uz7l2w8Orgl4CRvXaN5ZunCnOHaZNH6XaxVVB3x+iD3VCB5kJX1UMg.DQ55RR2vhrslU3HOpPJ2ono0N.jGUblwu9Edk+5FXD.Ew7y4zuLwskM15.HTURu1qJ1xV15fNlEtenY7rN5FujjnmmIZKrPvrkEHoCCWl04k2JviqOyBAQFFtkmRmqqCrKslVeMxx58rkKbpqUehIv27aJyI3W9Hug2RCQJutucbvMsP0xeTpf4K5nq+QkRmGmIwfP5PRGmfvomSf2RXqHlOqoAMgFSR47jt9wD1NuunYicP0m+suxG+UOOPDk3kSv2lHuAX6AJXko8xup3t9m932krbkOoig36SVrzGV5HuGvRSoLTQZ4buWdHXr8DAglFCPNPW+RZMZb.xx9uxX9E9auzgeiSie5eZ6fUlW9ByYQQdiwVivUp111l4Cnso6c9Jk+Ar009dYCyGmssGVxr.tKRkbh6NLXlYPD.IXAAlzLuovw5jF1VeMSqF+IMu5LG6x69KWWQq84D7Yf7FloAesm+pup3AW2CVsd4AdPYoheZaCwqH0LdHaGaCx1g.37wc2ifKmdhgl.jtoklk0kzss+yDMr9+kzZdjKM+UmBexOo+3kxI3ig7Fopve9u+UGgd3O52S04FdiOszz7S0PS7CH0zeDR5ny1MQjEqRN5ovWAdjlNwZ5RCG6Knwx++DMp+kESa8dWZxCdS7JuhLmCeTj2XMDtMKdkWUrwO+S+jjdge.KcyOijviKAWjrsA4IdNmWps5CIyLQ.ZZfHxVv3TBKq+JQyEdsAe+Su6S7+32ay7kYaHxaxpTFbWe02cKVCu9OiSwReVGfmkcjUgzgn7we22Bek2wZZfHQccMZTs4V3+l9bM+Suzu6nm.u1q3unatslf+16Fu7HB7ZOAUacO4PUJa78ZWr3+PGCiOLaaOjjcDjLm.esDbWIRBIoaLqf4wn4W3+JUe9Wc7u43WGHXd3usjf+10FwD.v5eyCW0PxOiU4J+L1Z5eufPEXYmqjs03fAKglACvMMbb1oYiF+eLmr9aM0W+OcpaWI1u8pwrux19l6nvlz2xC4TtvOnjn+IN552GZ1vaJxD2dUlbKJBlOdSSPNNWSSx+W34W3UuwMmYT7YdtE7C1pWNr2BsEOH2x.BXDZci+KOPsgu2OqU4h+bNZZ+HRluCtYSBfHQNW7aY.QfX.hssAHpBqq+ggt1GtVgBFU+L+HmYtGcKyictyU6rYOC2NzvN3abi+si9fN0p9S4XZ922wQtEhkBHk4iC+Vb3uvaDj.PS6Z5VM+JlSuv+wK+RacOHr8wszb2uUuANgW8UEadxhEja8w9NZVrv+ZGCimgsrpP4D321AlYlEBlzzapIkiQ0a7ev4lW9+1Tye4owq7JRbKLw9sxMzIricnMLsgOfvr7+PmRk+wscr2LYaSDAwpclKGqdfAjrP.gg4DhEV3uPzn4u2DW6.6GG5P12ptG3uUjP2c8o+DepBq6d17mTJD+KczEu.6HMHoCokyEOGvk6tiPvBR.cf8n0nwugyBS8Um7kdtoAvsbqpta0ZzS..U2w6ud8hq+UjEJ7yxN1OA6ZLEAIxIxyQHXo6X2IccPj3r5KT+2GSO6e3M9dd5Kdq1pp6VGQXGYDA.vf63v2mdw0+yYaX7+riiyiy11fXOi9f+Lnl6xcbfk.gXKK333bOVEz+WIW2.+pq6abnsBff1T2JfaM3vMxHBbW2k1vOzG+CaOPs+mbH5kHGYEvx7E9RNZK3qYdRSuNA7spb9K9+t1a7VuwE9sltAvZ+wsu1edz4QDCuv2S0h28S92yZfpeAP3iC6lEIBhP6mpe23nE+lV3R6dDKdoEd0vkUXZm2WqxWK16Ns7ZVeGokuWNwOKjU9awduYkOZmxrrBe54KOQ9Ha1Qux323dG5arqWnx0lbtM8AabhqM5a1rEebqIvZYtcDXfpe42e8ZCNvOtrTgeAIQ2Aa0LmKdNV1nvbKfA+ZukrvgOEHCso0L09sjlhu3X+ga+pdAoU8n02h0pbzI.f082YzsnM3.+2KM0+WXCdiv1NmHOGKOvLzcjXf8MFJsuCSP5.Bn.KwGV.8xa7C8hmb7CryIwZTliqEIzI.fA24QtetV0edag3mzgkqmbxGOdNVAfDn5YuHpticAQ85fzDj6ocEWjX5IEjwctgm9kN53i9BS.ry0bmgbq0HzI7xupX8+Z+be.45F5WylneX1wdfb60VNVQfHXN8rXvu1aAswm.jllqV4gfHHHlklLiOfFvisoOh9XWavW3Z3r6bMEg9ZIhCBirCsA+D2wGzoR4u.zz91Yql54D34Xk.l.DMcvvey2Fk20A.WPCjjPDRCh.yrTHLjBC88.c8edocy2drWa69mi788XsAQh2zmcGO3K7b0qU4WWRhmGMpqAgH33.dk.lHzIRmtAX+yQwdT9SsrX49tWIwqcd2sp9ZIWWxLFbzihJ+0uIHR5Q1RH7.uK7WOhclLLN.qq8KMsy367Bu1.qIl9s9eQ2YPX7+GLF7t+19DNUq9qHIwyilMzoN3FGuet2tX7V5IuuU56dkDu1IMZUZuTeuku3UPkW+8g1by6dDyyIIvc6yg.QtiamXrQhoGsPwpWpviU4rSO1eiS5od+C5uIzGYDAN1uo9f24leA6ZUGwA34gcSSQ9lRIGc.XLyrXfW+8g94tLfvkHO3XvM7Xuz6+tc83Nc6r.f1D4HdzxEwEF3t+zm4Fm3qtXKlfUUz+RnOxHBfsIV2SO3GqYsZeA.7bBqlF.PzGr5IycqgcD.HaGL3tN.Jr+i5QKGJCAkfPWsC.BvUuPBvXSvAeHyZ3Da3wd9yN9X6z+Uz2g9UNiDF6Ingeg65YrpT82.L+LnYCct+M+li0PPBfJG+LnvdNH.XWh2DGo8wG7.E0OBDyNB1w9w3FM9MHQgs8r+T+TZwhTeC5G4n6NEZ+DO1GtQspeAlvGkZ1TPBJmHOGqHPL.DDJcsIv.+MuInomEjleypniMOjqdHAt+D7Pffv8+DXlXlVufEeP1diGcKO+O7Et7t+J8cb06258g..p701+ShRC8ugEz2M0rtIQ4D44XkClHHZz.q+q9lvbziAXpqrsyiyUO1XyAAVPtiajh04.CoPyvlEZuAoa7KOJeOumm8juugfuehiNA.T3qczGPTpxuHH56G1MKJPNQdN5LPHYLvnGAEe+Cg3q9BBoKpNovIW3EJFQ49K.QrqB51LS7ctdwzid8C87WGn+w3SpuZmA7.gQFgJ8b+naFEM+EkD9rvpQEBf56mfxbz+CO9p0Ny4Qo24.frsbGWtDvmhmonj4B063H+nHRu6uReA8cbJBPeJCRX8n+8K9yezuDNqW.W04r2evQejQD3Id4gJNfw+ZnK9ogkUQvbvLXlibrRQwqOAF3arKnc0I.DhPROk4MmBTJm2BlgU8GH933C0Mrm7.DQPJ0IFOh.5CbGO81100N32XNDsOjUEzOHVLg65SWrxPZeNog3mgsrMxW654nSBsEZfZ6ZTne9q.nIRg+pBgMCHXBPFUAbgig2mjIJQNfezY3XaoyMs9bri4O6C9x+5CzE+zZarZSnSXjcnU8dK+cyEJ9OiYtLPtYXNGcJv.LP0ibRXdnSzZgnY.vT3hzPw6PnJeOGILgyQuWaWoz.0c9uqDz9g2xK+aVDqxb0W8d4rqhLq8WenOpSoZ+51R6mmbrLxIxyQGAL.qIP0KeMLze1WCZSNEftVzAZSg+FpLN26CFidvTpIPTQ2UmS8nMYIl.yfgPygzMNfvT7KL5iO02X07bea0SYbu1qJL+pO0GnYwB+qXo8GissLbWDBqt5sfX+gs0WnCkbrbAQnvrygZuw6AwTSCVW3sYWTEzNNQtxihlXwTVWrzHnMqW53tTZI1wQCfdR.8O+ievZSbXf8m0anaiUGtmiLhn7S8o2DFn1uhiP7OArzPzGnvB.u4ZsdcXL2Bn4vCh9jrUNVBvcqmZgge68fhuy9AIbOH1RL8YQVQbjBm4PN0BDKL.HxHdUhCEaCwP.Ab1EF5+IMKn8KdzuzMO2pwtca0XL5DdhmPWqbkWg0L9wAX89hsHpWVnvTyfM7FuKF9uZmnzD2LX6Rli0NfbXT63mAE26Q.QrK0FCWNuIH3iMraklhQGudFsC7Fae7ETO4+KABrilz14Gxro7m3o9wqVJ6Dq6gdsn6D.PwZOwGsd4x+LvwpL6HIMAQqZj5Ju3pW9Zn1t1GzO5Y.jRTcW6GM11GCMKWBBlyYt2uCu5xpWYbT48GET85QlJs.A28VJrpQKYUqh37QBP7EUCRHsPjzxu8kiTGD+O1Ydra.7UPOdrg8x4Qm..J8mt+6FlF+Zrf9nrqwbruX2nMv4tHFXG6B5m9B.B.RPPahognbAz3N2.jjXUOOl6Vbm47Kf08V6F5m5B.ZtiWFL7.4RfKnXjkpFZB.eAc4TmdsP0xQAwSM0TdeTfejmTE0DPbWa5oeo24Zi80m.8PVG8VB8e++7pZqeS+Skll+HriUAZ0e58.w.q63mAC70eKncsIbGOm+ybbf9jSAdCqCMFpuX5PyQKf.LV29FCk10AbIx8TLlKT9Ug3Obr49DspMIIWh8fPptjXonoYDPI8lf6FfAzlHPF2yy7od2Kev+l5PoantI5UD5D9s+KMK9.efOKWr3+B1wZizp5pxysrkbjX3CcLT8u4sfX14htho.bUFy70gwjy.msrIXUtzpS1MGKNHBCb5yipe82FjzwSvXehcf.kuEepvnnD2jR5Ex21+YT5JsKqqiQ+6YzJzXhtOoMtg4S8cOZux5zz8I1XP3IdUQo0e+OCWrvuDjxOHKcV0LMyDC.hfQSartCbDT4arKPMa.PdS+he6BOBdVHfXhoftiCZbe2Mj5ZdowpQtOGwQvVO8F2DC80eKHtwMc25o9D2rBmWRkKb38IWhqgb58mO8.RdJJG+X4lXdmZiDhkbElDaorjOx0p9.mGWd2cct58Hkws0A4RE9GHIwyHrsXcxa.u8Zv.RhgQCKL3ANJJ+16EjUSWN4R1ctRimuXFroNLG6jXf6YyXhm5wA.CMIxI1WsACHIBFyWGC9tiBsKMt6RbU52SbbhbEDmnW8Q9iEOhX+j6LvnNd+ThkW1JXHCo9FXIHa4SH009Gs0G7gO3X6FWMsf0IQ2liNArCsR2e0uWot1ufP5LHXlVs1rJDyP3HwP6YLT9s1CnFM7rUXdY0HU9JMTHBPJg90mB3t2HrqVc0H6miTfPxXvwNFJ8diBRZC05snjZpD8.p6o7nhl6dkHd8eLktkNIrqebL+hy7f.QLCR.w8AG8yNds6aztMW8toxvbmJsO3.2sTW+eN.1Hjqdqicx8T2.Ccfifxu4tc4j6uUE8KhCTeKEUUtR.PBHt4zn5quGXdyogLe90WUg+ZunzEuLJ89iBpQcDpnMkNug5udPo90mHLpV3cqxCHtSYdxSy4eYz2UFAmYHcbFDR6+4O5VdzGK8LZmCcSN5D9C1QAsAW2mWVr3Onvpo1pokhgXFCL5wP4uw6.xwFfTWsTsp25nb4ESMMzXFM27c.VueY67eaHHBlSMMFbGuCzu3UAqo4sxzhNFbJdcIQdAITW5tAMdmBBOMtml10yfatp2bVgC9ZtmXIyDzGR.XHt+uycL2o9ZVsym9xAcKBcB.nvm6yuMYoB+RvwZCX0X9xY.FLXoDCc3ShJei2Ajsu3coko8FKlxGg5zq..PrD5W+lfpTBMuiM.IAvDspO+w213X.l.zrrwfeqciBidLvF9c3RQ+uhcZ2k1VUTb057vX4YK3hHFOSwGF.hDmrtm3HaUFPHZGOtD6RMhDaoro7ziu4O9Q5VG0ScOB8+32+N0GpxmWJz9XvQpt0e5cvS7tAN84Q0c9ddFo+3BUDkiNkveD0ehfnoEzmbZ3bW2ApOPUftRUSNxBrfv.G+zn7arauAeFs4UbtvQH78u1ChfPSdR.jbWpoNheUeCdKTzzD.Jq68H9l1WC.PQhzJswRz6N9w9amr0e8KOzMHzILxqZT3917OjzT+mDNVCQDVEzxNC.BUtzUw.u96A8qeCvwmm7.jlXWHY8hm+rl.h4qCs5MP868tfiode6Q5zsVfAKHTZhIw.es2FZyLixZePg3zivifqQjHjWcRhzDVUF+qiT2GsCBURdtsIxSGtmfTr.f1.XswEOv20Al6TeM61NAZSz4IzGYDgwS9suUTqzmGL+jP5Hnz6Jq6AlAHBEmbJLze6aCiKbEvJVVDJQ1wsebeRU2qIO+IE+CuFBB5iOEzMzvB28chUoIR31NXN27Xnc9tv3bWLl0hIp30ABe6OtcRcqlFVW4NrqjbxcCaqzci+8TDdGw492dfAApHHw5JJj685m3qewTdYqHzYIzGYDAtmuyJh0U4eLH5GkcrMEwVvf8DGQPegFX3crKXb3SCXpNFNWqHh5XlbiSTg0IDN9b0wVQAOC.B.8KccHV+Pn95Gp29Md6ji.HFPy1FCs6CBy8eTuYQQsFwSJdx+75hTHxQvupDgrWKyHSklWbofeUaQnfLlG9j9lLLIhCQDyLQLuYRSrPgG7iuqoO41Z.z4FudmTK3D.f9vC83rl9+.IPQ2MiauWgMvV51f3PmDnjAB2dhsymPnSDoRN50BP.DAMGKT4s1Gpb4wAibkx0Ubd+q5INGJr6wfvxyJt5AAhaI2THt7Hx8kl1eifyJreb8Kn0Sa.p8CZaCFLCAbvOTET9oCeQcFzYmtq6ealjt1mE.OBaaClHRB2B2tsyaZxAyLF7XmFE1yXf0I.kwNGvMlB6q1kiAgPE536Dg+FL2rQCiuw7WehIw.u2Ag9LyFjW5Ue22p6bKKIXNwMQ4cseHlaN.8vwkGYAoloriQACWiDAwHvETGGlZ.JcbG0+fDJvQr69WmhzCE018l4tC2j.R9t0H5G+g+tQGcUY0olHXB.vnTssBA9gYoCQrDK8wprB.C.hPkqdcT9cN.DKTGBuU8lzqWc0UnTvkJy8ZjbKmwZbkU81WrPFlG6rXvMrNLw21GDrPzK+xuEGDzaZgZ64fP6xWMztuwQBB.b6THnMGiHAhhHFue0XXcu+gxPXaD+KTDeOgdX33gH0m21fY.3.HoOUAp7yBfuoWFbEK+Pmii9K+pBTpvOlTWeKjzgWMVAblyLKF3asene0q6ZWA7JdDpV2S0du8mmS2y75n8xlYkarv4stpIGIJ+9GBCb5K5x3OGcLLvXGGE2yQ.qPj6KyUfXzA0oLRXC2hvE1qdOd6A+GmX3ZoyAWkSdh1NKSm6RiUBHk2gTJ+G8Teme9xqvht.zI3n6N17O6G3iw5leFYylFAd1iffADVVXv8LFLOwY7UaNXv.TXusg8+FBN1UI5aNyoMiUjJfAooAw70Qs2b2n4P0vbaXctcBjyZe4AOIzF3hWBke82GPHcmprHDkPQAaTnePoXW0fPRwhajvkd1PkrOqYMiSD4URkNQNRaMgl4e2F7feG.i7U.1dKxgsG5L7d9c1QEtn4OrjD2MXvti2.cjd4VzdAkLj.n1YuDJs2CCHCUsRbkl3uhmhWjQ9iYaQqfhqY1vd8YoDPWC5WZBLz2ZePegFtgweszm6VZNPn3MmBU+V6ChEl2qNRsdv6JN58oWm48a7vlncPzAwoNwYYSjG2sxa5C.hkxMIf4O3i7h0FtEebsM5HD552w59Prl11XqlEE.BUkbzccLXRfhyLGprqC.L6BgKfBkFLtRyEJVGCDIL9JkOPpOEQ6CMdApJVgTBKBpcfjAL0f4QOGFZziCgiqMEvenA4t1qNkXF50afA2yXv3rWRoNDIqagh35wpSUquBPZ9EfnJiKBQKCvfiTcmtp+3L7eI3Hh.6XPfddQgleLfQRWqhKArRmGcB+9uYUsxk9bPS78wrzj3UVFZI91AAFCu2CAy8eLPEzPTsrqpk7fn3IAmpPYHLbdaDhHanAhhLcLQBuOXDze.XIzmbZvaXHzXnZgOOGsFDfun1CcjSgRuy9B2kgrRfHUoo78kBSi.NxtgM5RekhEC+6UmXtjoU5Y1tGbaFy0Hht4va04cm3Xaq9JYd0WYbzGYDBCNviJMMeIvnLI6csl8EYq1ktBJ79iAnQfkbH26LpHhtjEUBieT3PA176aNnO5TLTfgIgOme.HHncyYP02cTTbhoxIxaWv.fHT4ZWGke28AwBJRnA..0o6JV8aPUd33w4XD1I6XHYm8Q3Sk4RYkBxtcOGCIyFrj96RKT7IikQWxX4SnOxHBrwsUVWPeWjT9gYmdq4ghIfBSOKp716Gh4mW4KIEh33OJ9Md6xoj61HuGqJZYLoCbUwtHnS.W+X.Af4ouDF5cN.zWn9J6i81.32wswb0w.u0tg1kudriPI+.524azGEUgXd0m.oREEcr9KhTwoRExwbYEtkui.QPxDKcdLv7m4d+DEWQmlHqLstu9x2Eqq88AhJRLiEWYVcNPNRT6HmDFm4RJh1EVo4VdES.ON7YDB4LDY6ClngEhDZDPrGxWIPJAVM5LfFghicRrt6XXb8mYqH0opKGAfbjXv8dHXbzy.TzHVcwhPTxdC2hTqGoTJyoPcz.jZa1H8CDKGjRtN87SGAL.DBBz2cAMm+H.bfkaJs73nOxHBfsILDFOKA5oXGmdtkio3DShBG9DtGp8ogPMnjf3M5JYlh1aZhzw+4TlM7BlGURIM8ajIYT78GycIxRJcXjCODVvW8rmGE12gALDH4zZRQCdj09.E64JjuowwLyNLh8Niw0Ngx.i2FqKvUmcb.X9gD5zKfsNhNvHKKZ1kmx314NA9I+WVhKY94YcsmANVQZu2UcLfvwACrmCgBG4rg1ua.jZEnpH0pJowq2+PwyaGktjQXT6iiCeCfAfFAwBMf1ryiF2+lgsoIT0daty0UXxahA1w6B8IlDjpc7C.9i0NpxyHEUj3+bJY8se8JEFtXCLKRphTtaw8u6AlYPPnAF5EFP+qLyo+UVX4jNKmdG7JYZtUP3EgiGG0dEUNAT7pWGEN7I87jh0oJGMyxdiIyeL3Jbl8iCT9M5mY6UwxJIR.Mu+6UBv5DLN2kw5d2QgVylJQL2AFvbg5Xvcc.Xbwq3ZrNkva5PCIxUKt7K7XkJd050HbyCt1KcZw5OOqgbGlhIeRu.RoC.yOWMG4y440RtGmkmn6u7qJLJV36G55qGNRN91zu6ABZVNn5nGEhIlFrlHBQVqhWp2GD2kR1OZXCdsdMj3HsA75STRfXFENvIvPicJPNxdY6j9ZP1Nn1ANJLNxI8T3QXW0LnXkSQGQs5lHN.ADroL17VTO25piUGBb.3MjXlADUAQeF7r+TKK8psTijaI02+luaoP+kHaaStGMu4DyPJDnxEuBLOzo.JDWYMvi0px7gRgMFTy9Qt1iaO79Inu6DMJ3v33dDYF5crjLTWcgwg.fXgFn7tNHZNPULy8cWXYzw7sPvsro54tHJtqC.Q8lt6JM.jPZJ1mupxPsTVWCITCremtAdDJReKUYbF7qTp4Uxe8NPDIbj1FDK91ev0skG6T.GDQzP7hikmV2Mp9wXc8GDMa3dd00sMiRdkzZVVn7AONnEZjhVYcQ3LglbIs5G7v5y3bLhKpV7qCuWEE1CA5...H.jDQAQUDxj4W16mn0Ejt.5SNMp89GBMFZ.X4au4tcidmAXAAyYlCU209gX5Y8pOytvveYLELv7DV7UjIgZvK0i1Pk2TzNHx98mrcQOFLyjFsYgk3iCfCgk.QNvxQz8emcTgzEu.KkCAl6Qqoc2JfxWaBnehK3ZwXjLR1AiphZhufIhEt.ovThSBaBtR7U2uxQjhKlh377KB2DeGSf0Dv7jWDCN5wbEgOd5c6fC.BaGLv9NDzO+kAJp6sXmTK+iTaEJWTfR0TepKm5fkubjNvSoNSwwLiHJWm8G6eVzQqVD6DwR4fLvK7veh+sqeoF6kBGcxckvU6QHiBOKraZRACJsaCFhlMQoCcL2y7ZMuJx3GXdHCEwrX0MY9I3yQNtXj9QHdKREk1n9H03P.PiP42dLzbiCiodj6G8xUTX+BF33mBE28XAJeqUURIEKOk.32NLxLfzJIyZs28aq4AWiHIDZBwGzQX8j.XmnEsbiikFG8wdBBBwyvL+P8xIHhAPwqNNLNwEPjohN0MyPJhqmftj.6asXVzhpLTjWv0pb8ce+QVBtr26ymKefAPvAUey8gxWaBu1iq1rY6cryKe4qhxuwd.rZDoLkh2gpRcZzpo3ig2223JCUM7ocsRXU9M8EOULIER+SK50wCW72W77Y73EGLCH46UChOx88hiXl7iIaz9D5iLBguq6YCjt9Gkk1C6dVO2aZZnYYixG6rPa14aQOsJhpmXst64mmIih4zpHUBaL6DdxvRJgy+4tuCJxySqShPoQzuwTXf29.vX5YW0I+5UN8omAUe28CwMuIHk0wdZVl2HE8rZYZrk.qe8ZfUZ2u9.H05x3HNQXb+hOjhTa2jR7yhPdw5HHyNSXRJkC.l9nEj5a1aWs0Vn8Iz291YXZdOrt9GDfD8FQ1cQgImBlm8RdmxJH8BQEvpgggxTvEk3iiGonEpHwJqK0v3cc7gFlB293oES.lG+BXnCbBnY0wMk28cfrcv.idTXbpKnrnXP5qzpvXE3RckoAfnVHFknAf3R7kL9wF9WlLRVs6hzs8H4Jf6i6Hw84YPJZKztqLNBirCMrwRuHIneThkkQjl0JiMM3dFQKDUq8h+7zeluI8cfibJT3vmN1pfSEQmVlPtpPYZX7dRZUt.Hyw9kJm8X4aOQuS12imhh76oI3GNLYjRncyY.O7.nwvC58jzJehWV1pxvzyGIKmyxOU+am7R73lLeRj.0N04Qk238cshqI3lSwR5zjJxu9kB7lf.tm9NIe+QMxHTzeo39qlW5Og2g8..3xDwGr1C7h6apytSm1Itsmx3FYDBaov.fDeLl40AoSLQni2Hiyv+144Qel97K.yScNvMZBTxLnG5Ts21QjH2uyhvG5SDkf9Mq4LWch0i.YxfCBDEkXOpjDtALBCKF.BADyLGptqQQygpg42vPveE.Fs7YoVFmVXWI90p7RqxGL.QnvjSgpeqcCZg5.FQ2UZrevBtwWOFY+V7WxxQpqi2THsrTFD3AoebIU6yTJmaKHsRPH9XX9luJ.tFZiFAsin6D191YnQqG5ZeDPj.L59VZDIClHT9xiCsKbMkoTKsd4CJETbI1PoHwoz.G1fI9mbVMzPhwvGS77TyYwEimTbLflFzO23Xn29.vXgFtqA+dQYbOxIp2DC916EZWbbWh7HlWqVPHEyp9DsN0qb0ShsjFn0TXDjFygrPDCVQ+FjDbjOqYYi6DIEwJUzdiQ+keUADZOLIcdb3zVRJzA.AgsDEO6EAMac2ogQAtbAhZBmiCFDjHs4zN7t3uyrIHgBgreXhKxXrNc.hHlI6kmRDGlAJoAyCcFLznmHvt2cq.HGIF5fGCENzIAJ31YcXQYzNH8mG7jc9FVl4N6EoTOpzNHZah30osYFuKtqzVINxc9zAX48SNxmDXDMzQHzGYDBehp5P23YgPTCRI5IF+Qhf4ry4teyKnGSdWOtEQxnwIfP.GfD7diPz52gX7Cvgrark46KQZC.OafVKhQX7LHTd2GA0N2kcCYePCqUpq14tDJsmCAPxHDOQT.WjwRqV9lFhsd2UE0NdYeVHtgiH6.1+5HggjoOxV9XSazFewswXz291Y7G8WqCA9vrPCDa0STWgTPn3UGGhqdSvkBGSG4wALXdooTD+V8bwZw1HC9h9EjXKwLpR7XvIan4aTL7Vce9ZJHL+40QCythrO6bn1tNDZNPUzXnAZoDK8yfIfBSMCJs6CBwjSqb5p387HJTyGow4UMPozg.kzuvpDJre7LQZcxzmCFr2za+zRmBkAvhZBiVLN5tEQKT4NAQOQvza0CfvxFEN8E.DxvNwhjsbuSkPHPnNuwwuXBpGr2kCRi303KgV.svd.GMUTxQratLTRC2iEX8yeUL36MlmIidsInlVn1dNDLN0ECWIigOM50bT+7oMCKaBEmOrlMszJ16nkqWh0zfX2st5iTRqv846WqhP6MFcMymfD52EK6EVRF2F6EldFnepKAXnGHdUvZQ1MXADQg0i9jLthKGeT8bBhN23DU2Xbj2Cq9RX+NSUj7SItvepdhePADqSffynqXMXCjRARTXrShAO3I.bVCNdcFXfibRWqEiVfWQkjIvSN7ZDonVAgcHGe3ZIk3mf+zsEWmmQjVOvo9.rlv4NzYFDzFjzL9PoTCj.slP2i9BELeZVW2.rj69GrdtKLhBW85PL07ojohwcfCIbjAsPZQeQpgIsBR0QzmlhgR69DoCEM88SO+L.oXay75bxuwmf8r7MMrQo26Pnx4uha4Byq5G3gskiDn7UGGU9V6Ej+h.xSK6jJgkx2dHmWJn7KwRIFPoLSoAPPxojVwqKZK6MPuX.ocN31sDqCo8G1aEx0R4VZ8XzIvXjW0Df2Jbbzyddk6PvSlMxxFEtvUADRvv0VsGWvN2QoSA9j136XnjciwHIzaN5CS4ow8q0koosvY7RinsOSzIfeLYF.FZPL87n1tFEMFdPzbfpHb906CAC.AA84W.Ud68AwMlFnnhRTY2oKkTCePcoK7qKhTBywq4U.E5CyL72HDTl0mgoYReaIcR+GXlXosFH5QuumFCb18io7eRZAuUbzcobtqMemfnGB11Zvc9p5hmQttNi4V.Zm+5tMrkxvdsC5g1+W2qYoqykVxuRjBhmOijHeZdoWVRrkbJ0h8tSINIDKLkwRFtcJU8yOdtmbtdrvAL0f94tJFZOiAx1aZMW0YYmgC.jkCFX+GFFm77dq6Ak5U3WdSHdcnp49BROWDiGQnDRrWcbjN1ai5zH0g2h.lYA.sEpfy8sXgcwGitP+AgtwFgTpnFytniAJbiaBwLyh3h+lj6Zpe7Q8nsTasxKfU8KwKOLWvHi3jEnvwtGeXpA2nz.16AjFPg8cbL3wNcrdQ5ubjjw.m5rnzdGykaf5GVPmiooDt32GFt.8wDIXpkgpC+QEgskTuL7eo1EvZJ3oqLlfXPAo8PKV3aEgtaoft3C.RTEb2eSSSL.43.yqLt6VXTjBEQvtHxm.LdCH+fqRfRH5mZrOkXZoKQeCJKg0H+pFt1nzI5tqK3sE8xDG8S.BaKT6MGEUuvU66ltMetwktx3n7atOHlxqCZOjYemrevhWOgDLc4D2jdcdzHkLQ5yJ5VwvcOSvUADOBV1ZcmAg+Y+1lfz+.P5TFLQc6kJIXF5MZB8KMAPC6r6yk7GIWZOK9o3gRiNFJhWyYzJLM9UI288pETI376yEgi+N8yOphklUyOEtUZDDSeSTcWihBSN8p9RZMRcF.Dyu.p9t6GZW4pf0EAVoEUoq3T+1hVdjf.NwwbrRYWjxVNYkVF0XIqaW65.ChkNkXV9HO3y9KTCs.YSnS.3derAAv8Ca6Bc89C8HBDys.DSMC7qviuCuUCa7dsi2HLPqsoMd63ua0AyujK0UZ0oleh+BUyC9DJYP73FlPkKxBBlm8xn1ANFnlVc8pi1FRFCd3S.yieF20wtJTjNghUeB.3txEiUGhzY.DVtjUcY7xZ0dBP6U2sVyAFLK0YfsXA8MfVvUOKst6Z1nJUdiPXbmfcDAK60tLLmdFHVXd.MkSQkj4tHJfNSwYiENU04llwqkT9e6iVwYNEMzyQ9Q4FJniBe8NydiBy+wfkn3dNFpcGqGS83OXzk+4p.Xg.Uu7kQg2YT27tv+DVI5Xm8kPO5IdpWZvJcCv9+ySeF9ed9M8xntz8QoWuEeYScqDb2ujjTPZqWRXS.3zH0FcK1zqUz7NglXXHcXtUFE6NA75c0352DzbMbk0PY9VUa9DmXIqpX+VGrRnhHLXpq8m3kQKdXRsj0ObovnIYZGO1gefrpWBAH6lnx2Zen9FFBM13vvUM8qBfHnO8zn5q+dPa94bWhq9pwQQQYpkdA0gb7mj18J9mhgkfhEjLhYrXsXuq0lf.VmNI2DZgbdYK5912NCFaBBLTOSNQGGnM9j.0sQDQz7bgDIgUTDBjhwEIDqKpB8hPnsnhwkVXRO7TVgISnx0SUiypwO1VskAftFzuwTXv2detmhrqRfp2DC9dG.ZW3xf0HOh7XiyNRYAozwUxwjGeJGChSz2Z5YlTJ2oTpiTyG2x3jLfCO.yhM6sS1REYSnOxqZ.g1lgirp69.uKmgg69VVepYBDIMMZknyUMGT2kfulZkbZOKxaHKA4aAWlL8MEp7DdkRis3M7AhNACddvR.VW.yiddL7dNLnl189FW1NXfCebTXeGyMGKUxrY7oG3Y7s8qeXiLJsL5rPEI7OkFTQvsrhvSLbpPrbKabqiWDY7QlNg9HiP.UKBFaFNNkSkNnSBuw0YtPcHlcVvFBEBUDogdhJL050zHnTPmspdIjZTJWFYXCJhv6Qz6qTJ0oOLrMMAR.TbeGGCbpKDsbpaBuzu7ktJJs6CAxtYB6DPHApKka34cWXcWxNu8Bq+6fSI8hXRvR93ViaYIxAbs3Zl.zlpoWpbVAK6wnOHUAZzFAy5fSo1oK.wryCL8Bd61IWhefn0699vHtFacMxDtUopi8MsqShk2mWZiNOiQrmv6L35PLjIl29TR.h.svBn7dOLVX3AQyMrtdBwtXt4Q08bPnMwjfz0R9NUylAboirG8.fesQz68qSyT0IT6PjmrMys5vc6QnMrsY0p.35oElrEcuxFKCMygb2IPcY3UqXL8rfluI.nvkAZbwyTmZgLqNi4eZhv2wDkMsw7kw3.i7tSKu6SVD9+VBg.Zm6ZXncMJDyuPxu6NMjRLz9GCFG7zfzTr6aw03VDown1Ha42IbqT7Y2rNbsqikLSLX.w5E1NYNW5sfJt4ffvFA.CImbEizocR1c74VLRaoh56AStNevoGvXDbdhLxHUcrktFfaWQ8xJrYXDdXk3k3gth3FUH0Vr.f..LDv7fmBCs+iB3jxGWmxAB0N0YQw2YTfhZgeKQxbJhY6KpM4deX9Od4CA0CFSWw2UKaVJ0goWObKqX6pfkCKz3Z.oTTirHz291Y.pLjnV5QqK.oDZyNmx.0PzFPrmGLm47GGd.K5CN7W0k45h1vlQvNkosbKABL07SKP5qMfLZvZJPoceXT9BWBoK26JGFWeBT9s2KHoMRyptjDQ0mBkpNIBuJ8QfGSTA0oRLNmsLqCVp0kq8bte6N0bjnZV0FYOFcKqpnfbfHDHcMPfrr.M+7fMZQiH+cMlWCMhhOJcz57p+3GiQKz897xX75wWu9IBq60g6ByPMS3G+.6+N6JADUuAF3sFE1CL.ZNzfKZGIKkOAw7KfAemC.8qdCOSBUXgn5YWq6EQIvi2msJAupFUBq6RoBRMyjxk9dzq3I0OAF.DyPBpB.MDvKK.dM08LH.RiiNCBu7KKfPuFXY4nxm0kbDbIzmcAv5wHciu7UUanDQzNz98IkZu9KAtxKpz.bqSS+usHYnvmGm4ePwjhQTHR6bF.ZBnekwwfu+XfZTOlJrWANGGLvQbWhqrOMdrrcjaUKGh7PNnNJ7aIp+tOJNWb+J0XhfGIaplVcp5w0FNBDwtVoCSBhAwCemox7NIgNAf08RBXnWEDL.jJqE0tfyaMpJZ1Dzrt6XsjaOQu6hsvGh0TJZarzb8Sf.Br7r915nfG4dcX1NMAaiI4C65k4QNMF7vmz63qZkV+HQ4yeQTZuiAHs7lT.EBIEt1tudUhw3iMlBj.ihEF0pGJNgZK4hq9w2uUA2yQAlwvaproNRojJkwnOBgMuYC33bGPJK0SJ+X.iFMAMq27xxAdmcD7+ICB5nw0SgO8jdYWB8IFIipxsxuLviXIQ56qzNEhIOEfQMZhR6ZLT9bWZ4292KNF2XJT8M1KnqOk25XWUrbEhUJt+wam4yqv0wwKmT9N4XcND7s017Z5d7j5qc.l.7fVy2TCXDDGIYyOB.JK0.SUgjMVdsTVBvK4olVfaXCXJhnHJFpb.TBu2+TycTzf3FWN7AKtZpXzoVaPsSpv9MxY22M.TV0mQ4x66WDYcRqpQW.sImA09VihlCL.rFdfkWUXSaL36cPnelKCT0HXoG5lkScOmAkhZ0.GFjr.6+CEbans5yiHmZyxz1HL2pAkVskqVph1MRILoqLthlDzzMAIHHs4t6QSCCv.ZMZBRJAXWaDGC0gimnITn2pWj37fiRD7E6KoWpRmPkWG1iEw.bVaGuDdqZe07oVXfhZP+xWCCt+wv0+3OmqYcpc93UR2ANwYfwXmDnhdh2KEoxIT7cRsSp34xDqacFo1thSQwdsIQt6651SRcvLSPTogFom1orZ5D51Bc.TNBKytY4GyPTOzFlGk9MsVnjhcpL74rW3SrKm82qpoZT.6CPjckCBjnYwJ5i5uhD.D.zEnvdOIF3N2Hl9weX2P2NazMAAyqccT5MN.HGa.M0Q24WhSdDjwdRJcD42DJEx7HRmEutz81975s9DDvrfP0BMrRcisjNgtjzAf6ju20Kg8TOikUDQUIUh7L5NOalTgByDJTvRhk1pLB4S21ghU70eJ2fCp75ih5qecn4FW+hmlDAsYlCC9l6CZyLEfllRbRJrt+6skB7oX4fcyVYUiEWYdw+txQKAAFPTvwvLUB8zWvLrk.RtP6q.jUfyeotZYCdorZa8hexUmUJ5oH1y6+PxF39GlfolsSnTKuwHqpDOF.ZBnsvLXn2ZePepo8S3rcMZhA16XP+7Wv6rnWMuE5H0qUO9qBTpVLaxtedEJ4OkuWV46MZYR5m644HF7oEjvfkFoxkHCBcSAXxDgGWIcOGP.gdXtIid8CLr+s5Clh4Tecg+0efn4H+usjSOHE85DvW5EuNG3nD8Fm4RXvceDPKzLiNaY.IiZG+rn3dOFHKoR55Sbqdk2SU4N6WVyweV3uQT4Rjusv3Fcpv62pu5iAyfXoNKsSk3I6UFmPP9FD+tauptUhjiCBkfH56Lg3o9Rm5k2BVkXHow6OThVkwvhPRiUOzhlvQ5ISsNnEGND.QeF6VZ.B.RGT3fmBU2vPXls9vJxZ6ECMALu10Q426PPTuN3BZdKy3zp6C8KrbOJGcN3aH59SK9LZjz.exg44T5MOSCB5s6vunRfBRY5LuagojRxAiupaZig8RZlQDqzRHAJGpkWxuqdRMpdsa8I5USXUtHwazpJRAsHCzrSAN0FvKRLTPLox33OOkzlAft.jUcT88NDbpUByeu2MftV.qS8aNEF7c1Gzl3FfM0f+YXdpHhJShMjiLd89gT4ePstJ5Dy4+QkVGLJu.hRIL21CZowQubY.gvsmAI59LziwfIwyyzSpEgYoP61skZwGQ+Pa0msZLR2Ny4eWbNkpkMdWKI.cMHldFL3W4sQoO38gFaditay0olFEG8zPaxIUNZiSe3Ag8mFN16ngMo35Q9OG+492lVZjdJlikGRmPed.XBFYZAp5jviHyuibuNtIvA8ZmfLLFkAGvofRKzdn+rohOoRT9UQ4bSdC6H9.OBGRSrN9h2QnujPDAgcCT7sOLJXcXuGKAJKR4nMNYN0U.uLHJyx1gR.I13KpeWs7MlUsVN27nvSiFsn9KCQ2mGPVjcW1ickbVTvp+5qFFJbJ1HQvTpldjyXbjremEpuD+6hOW6qRVS0HHMYeaCwbBz+PJbySKJk0U7PKPYbYhfyQ9kCwUVRa.UM2kHLsVGJK8g.cKMX1cQVIkYVAk8Xz61l24.nJbVzwfCvQZDDmuUjGrDysqYZlnnDwPxWeEOppKCBoqDO.ecsD7zHD0oQrkHSnFR.nXtmxRb7XdEcirnFlrduwem4HKHgqPaDQNjPO0hrzIzMJvfgzkniSuxHsdiSsGZkmko+BOkCE6QTxlOTjV2pAN0uDuHkt2qcZDEmH1yOO4R3L4jqpfKWy8uq2t6PvngoMyGpwHSdATjmmFQN4kOxpS50N0M8SfZHDou9GSmPepYXrAylf8LwmsRLoTMmxYD9rL8xB.otl6Qjbfmje6S2OAespqz.k7Cfh34pmZ5b.ARxVRTpDDqVXQzc9hYMZBhmxH9CFFDhRumRrZODUxpDhwGTsDN94VI9sa1KYmMIkeK87PNTPXwnCIrVBbzMENf45AFmwd.XcCvNT3Tr4K1tmTEbhcLkBAbjFLpK+UkwpG+80SlNsUHZ4JCpcpZTI5cuO4AHkuT.oIpTZcPl06wutHdtTMdYw9VQRiLS+bjE74kQRtovl8mmrHEkoux3D0rgPaZzKJg8lKWGS8jhBxQcs+Jj51MA+RSgWpOKCMkmvuEKbo8r1qIBmxU4nCBFDyx500RWqxoSnWeFGH358rJEBfMK.1a7lwnuUlFIrjxRqcZRsT6OMsoWhh8r3DiTjvD9Gh4Zs+w8s0cjrD9tRUBqz9NyQBDLLM4r51R6zBRFyidSFMraBSxULfdvTY3XZ3ZFoT0TbL3p.GN4yB0Nj6MxvqcM40ojV8c8BjsnyIkjw69EaFAizMd15qn8whnw7DytSz2GmHOojTIpOxIvWJf.HFhYmugisq0iY6QddF6G8l1f4oAHK.1r6lEY.GIbLL.WQ20bBm033BrTCwZvFI3sWi49N5b.jNwdWDs8qJko+HNxrSm30GsP4b4XYgP0Zw00Ljson6ae6LlaRanabMPzB8l0.N.aZBtVA.63ywFGLN93RVDnVofs7UhTMxOs3s2G4ZGDWj1ThqnGP5nVlK7yGoFPuvrHSGWh3j6Z21LRlaBvSVXtF1oYgYRWPpu3kbP84mCR1B.rxbZ0EfqHkRCCHKWBvRBeKXRRSFbxlzoRljVi7U65htS8aXYXbHojbYoPcey.d6PTJ4N6MhiR0dKl78kQ9vO+QojHAYh9fxx0zNFDn5Nr7FW9xS5a9eifzHzYfsyPJmFDMaGYrRYxwU4YF5fKUBnQ6sTT4LuAsmISZMExPoTAG8QH8mCJjfWFFmPytb7zOakrE3iW7Cd2AocZJGzysHq9sbr7Ayt66Sh4FBAME.bRKbYuDX0KMGHZlfibnNStJa+EBWN5NoGFeER4pzFUkT4shu7rM5g6jKkUydpIopm8yM3Zmxd+w1mbL9QtKRGfpgcInSiLxNTl2Qs3SXsRcPeLBpBEyJk7MS6TZAHKB8QFg.ImCLOE7WtUcSo28HzcpVwq9NZCvDZjMHLpDxb5bNTB1ZOrTJy8HbYJRAlquYojuNQASrzHx5VdMaA+ZNvDMKbZNeVOOaN5MwLn.Mg2X.3EcOE1Af0P0.J5sapTMpfDGrjKUmgnPd2gPcapFxEJI0dz65W6MHsuvPjz2LjfgR66ak1wcrRP0o7Li0.e1kv8ik8qMf+NXfX55NTvhbqM4nC.L8MlCEV+MflVOgHGLfUsJfqUDzBM.zzhZIXaUDSz.ucZX2oa3uZf1LO2w+zVrlCY8ByJdqEK66Of2XzAfyMHfYxJboSnuc.LRi4.v3fHKH61ykNAvRHKUDxJkg1T0AWBHzrECDg3UFaL5hvwmpZsUVzdm5E6o4DaezNXRiLYdlRHARaLwsqF.ZWeyLMB5ztCfrJSiyOpWum0Samb1sgKMBKk7DBXMaVAKi0oz1Yb4Ia.VdIHzmG8htbY.tfIbpTKXtz8G0fhYAMLvpv2jQ6qFBOG6M0CwhbXZjT4xcdzoqvioT71+SfC+QwQsgK0ozI0xzrypczx5EaFbZ0r7zMwp16VzfYbE4TzBYFhLi6W7m1FR4U.QyzqVzLPWG1qa.vFQOPDSpFQ0FYbr1eoTHeqjjgs3aYwqknDcTrnQJQ3aOkskOp6dEDLHwr.3hW8pmqNxnER1D5iLBAo7pf4a1yl3eRflabHHKa3s2zSmKT6irC7sRz9sGHkeozezRJsVlD429Uv20AALEwVWNqoVCnUJia6.3+M9Jv19F8FyJkKmBm0M.Pwx.KLEXCx+IHvFny.D7MkQgiM2Gt1ZNVQdQuvjxXD6Tmbp8bz1DKc.ppDIQqRy1eb+4ny.FRBLOoTXbEzhooIKN5Lv1Y3HuNrctDfvoqeps38VsqVAxRU7VeOYju41376nUumaaP2VAD852SNTA6szzY1Y7F17UQKZk2hCvA.blWaZ7A9bmFByFvxtb2utjALMg0FGDZW8xt2yHh0fIf+MiPt5YJvguV3891COmh8Rq3kIq0ar198jsb6yK8RnrRs05km84vc3tVRvmWelYS6XQO.sxxsSX26Vhuieh6AlE1FbrJi3VyotADBPVMf4our63z8Wa0dYInjIBuS0mvmfHgV844HGq8AyLKHiYAve10tv+t2nUgcwO+RcbNAj1y5M2kcegeIBVqeHvFk7Vgb9NDbs+nHhNMOdtfKiFGWbasb743VPvLOKC4wWrvs3D5MsOMbruJnkxYZ7JALj0pB66XH2aWrESEmheQTNm+E4D143VG3M9bBPdSaKmSrXguUiQ2kx3xmdbT6INAzL+HvwQzUEe2mQqgIrdfMAiScd.8n6mlTe4KBMbJz+AdjeBcli0jfAHRSxLN8D0oyuXAewXSS3K9SaCFiBAY6JZbWz4m9DgFaZ8.vPQ7cDSLdjh+weVF9Eo751UQ4WISORN5C.CRXSLBNi.iF...B.IQTPTMBt5u47A9kAZsV28gSyC.KQS.pPqStNDXIbFZPXeOqC5W7J.ZB3qccF.hfLfmwez+rAKHysz3RmTP+aG3xe6v23stvsUOa4P7damv2dD5v4v.3bPn+Dvwp6ua1X.Tn.Z7vaAFG+xfGH5zhIgunHQIpylLMFw+J1Znlibr5A1caiCI6LAYYef1INKln6tzNiKm.RLJHskuDeKYIDIzXyaBNUKA33sx9BOFW..GwBIEMS6uXZRUScJ2mKNZNVSBlf..zQZZT3B990pHr3pRejQHTcJKH4cCYpliptCjRHGbP3b+aDzBQsI89htGt6p3TUzVRjEgcZcBjibz2BuE3sXuS5bkFnMDOsUKXFWrycBrssxP6tKBR66GfJ4tPV5xx9JAftFn5MPgScQ.iv9jbOQWRlAnVbmqWosHZRO7qYWG7431CPXARJ+cl8ricXfytnhlt3D5.tD6uzmifVgONH5dc2YYc4wo6k5NF5nvEtBDSW28nUVELgjqSNJn+tHIDhmkoXEMstaibji9AvLyDI.ShCawV+tKL0WZ71Ids2pfYjQHTW+FP5rKvRYuiFfAOPMz7duqf6iXPDP33wCG4N6MKZbTaNQBc.jKddNVaBFfASueyFxqi3aeyLP6xQmw19IrgNUCBsuc.TA8BVdL4ZcX0HXdwqBQc2ir8DqucVc50T7mZUlzKMZIW8bji9L3NiQyHY4+W27hW7cAFqsTbV6utV29mzALcbPZm.P.H6xaa0PVzvY8qCN2w5CoISbLMkblv852Kajqv8brFCdhsyDINkfnw.dM2SRo1.sOg9HiPfqeAHs2O.r6cb+XfhEQ8GZKPpaB3j0AwR3IGUjIUii1uPNxwZY3MvzCY63bNrDHBaOQ2AbEee3OcSrwRqG5EddvNU6MVdF3Z4YJV.Et30gXl4bOr9XEQ0CT9V51yr3ZYO458YQ9L5Qel4HGsDLXPZ2jg7Odhyu6WG3rs8gO1RYKoQXqGhA0XOf3i2Sa7KYfJUv7O0CBVJBXMGL1gTECO9hkQQn97cxVNViBBhSSPtGfctjNgAWJD5L191Yb8oNIZ17cgPqNjrrWsJ4.Hz7duaXuw0AXK8Ms6dAQwvRwIIvScIxnnY9zTMP7O8bjiUSvrjAIrjR68ZM8bGFKQsLsz2j4+VuRcvx2.jXRzKUSMy.kJg5O0CBzLiuOepVI6sq2BdfBIeJqBtX6hNNN0ue3xc4tUMGXFhaRD85SN4WbZrDQatoVhAqYeOHzONH8MCocZC5sqgF26cih205g9Um.bAM3d1P6B16WJwIlQ3TMxJoEEIlwWYbLRh7wpmiUKPffy4Yo7cVNwdoxQ2s0+1euqAV9WAM8F.oRQzc.KApVA0exGFtyAdPucPomOOQxYDQL9T5jTcav2deF8tO0bjCevrTBHr.n+1wuvdNiu2Kkzn805dHHfcB7B+Xy.M5SCRLDXYOhqtq11cpUA52bJnc8I81q5jGOaJTS799FX4WyxHQ1ZiGYfB8SkAOEsyj18YsyyWrv0EOS25HumdU9qS99TSitY9OdZ2h64vSx3Ifsy+KyO6W5bKmW4xwPv4kil+D.3qCwxS5+UDJUDK73OHjUJ6ZoX4vskZTAzY2wpGwu185E26V1PXwZjztMhZ04LVu.K22SudlM5DuuHR.1Ey+wS6E4dBZfHwaHaZ3u2yWxYtkuEebr5MfT9U.ySCpGsR4T97r2xchlOvci.tv9JeKvoLJ6HxnGOb9OOHvo+ByQNV0.u.6vekIlXp5XYpnnkKgNisdHFLN.H58Ao2aHxUclEP8G6AgSopg8.lBsYqIWWbt4Kx4ASNxQWC96TMv7gbj1uKvWzAYsvPWDrbFitK111Hbyx0QwxUAvm.fKfd7RHiKWFfbfw4tFfH1lZw+mTVobg20pwmmw30WDexQN5XfAHflfn+Sbio+qWXg81b4lTKeB8ctSFepsJgbKyCcymBfu+dx9TWEBArGZPnM9jflZJHzDJiugTxJ9GJiw165bb+TPJeFo+gkSrmiNOb4lSLf9dsA9Obiq9e7LqjzakcpLr8syX1KcR3z3qCRLSOuQOy.kKg4etsBXTv01xQ.giE2e73brgoml.8onPj1RgL4h1miNObagR0YR90wBMWxqDt3X4yQ2Gu8S4fssk5PX9sAIeWn6ajoBgOQb4xPX2DFm6p.591GVEKNiO73pmt.6YvYGnMERImydN5TviLGZGgcj+NSL9u8wwJjixJmPG6D3Ee4IAquEna9Lv1VuWtR4...QvZfJv35SBwzy.noEsXItshi7uNl+YYHJhqHvd7mWNt8BLyRhzZ.f+Lto9+kEV3asrGatO5LGnZa+yr.rs+S.acNH.ANwbc08cCTEy+baENUqBX6fPSCsuH7obumn8rhH9I0DeJcj5uV5i6xQN5LfXPWhkze5DS7ElsSjfc.N5..fvl9zWCar7Fft4GENNZsEauzVwYskEvJ8DSVsB.AnekI.opTNueiKztqfGoIxdzP19VD1bN84XkAWkvoYw.+mm3xy9G.rauC0fUF5bGQpu1qHgk0WB11mDjF0VKfFYa5W65zzPiG+gf0CdOP5ygMfoLiHamU3wIO39nWG0nS1l5AIeetmiU.7NgTAy7EsY4+Yfun8hEm1EcJBc2V3SYeJP3KAgVOzTSEKWTn.l641JbtyM.oiS3Wnun4A+5I1tLdG.oQ72JW77PNwdNVIfXF3OcpKO4XddzQZP0IOzyYbkYsgk8WFDN.D58tkEabIBFbHL2y8jPVpDjVNdFoBUt0HZjjg9n94zte1I8JmXOGKM3xMm.CwwgT9m.b+qXEvohN0XzcwXakvisgoQESCvzyiUgUKG..XFbsZPpIfwotBHg54BY3ZhiCtxawynrn5hOt7E6bgIaIXxG2dNZCv.fn5fne2aXM8eAV3eWaagWaGzYIzwNYr6GwA+ct6Ifg4CAvOLXGQObl0i.4vCBBNP+Z2.tG3xwmA8PW.SeJMky46Sq2Rqsue4HGgviatCf9qKcr92W+5+tWDKy0zdVnCSnC.rSfMW+lX8OkED5eaPxqCqVs1EBXug0AgkEDW+ltD6ADyoyQN5xhM40QhEE+4oc+h4eNxA.f1kYl+2O40t3NZ2CkgkTp2oSP..L1X.O+O3Ugv79fP+IgzQqmuHZ7E5wPGVqaPnMybPL4Tfz7rhror12ifLOPFWbt1YK.SNwdNhBlkRPBKvzWtti72yZ9+SSiNnH69n6PnCP3M+RKfm+G85PyXa.7FbU30pwRJiALK.qgGBF2XJP2bVvZh.Uw4Jx9hugV7dfx+iEtDphHmnNGKNXFfHw4A67+5zi+aOZ258zI05tJb6Q5jSsWHc9CfvbAzE5kp8fGA2vCgYd9mAxMNLfkcPtzs+mXSUVDq.arqUCo5yn3ed4ZdOGsFLyRRnWWx3+mIt1Tuku2ci2U2hitKF60j3i7YNNzJ8gfl1C6ZwXWkX0wLPkxnw5GDFieCHlcA2S7EO0zEgCOPXwc7Ak6qtdp8TfWbU.FE4b8ucEdJfi.QuyBj3W1d1+OuQ2780cIzAHX9y1.2SywAIdQ.LHjL54iW2Mm3QrWAVCVCFSNMDysfxvz8UFWLEwkPgap6FNEB+fNAVB6Z87MGyskveNyASWygoek4t1teOfy1lK+xkG51D5.m8Ojwy+oGGZUJAg1yBVZfUMVYjKwdspvdnZPepYgX14bsjrdrdcKsUE6vex0a0Tqk95kOk2dFYqbB9ay.SPTGB5OPVG+QMZ7ecdzkGqW2mPGfvKs0lnwcdMPZOA.8P8bKQSrrC.AtZUXstZvXxofX5YAqKhLLaeBdu9dSlDItI1uT5tUqQtji9C3Z9lEDQhcYay+lSeyKdFfw55JzoWPnCrycBbW+8tIFt3TPX9z.xgQ2SQfsGH.TsBZtg0AsolFholAPjBm73K0FpUb3ydr5Qe04D621BhXP5mlY7El55G4aB7WXidfla6MD5.tJlayOvovP2EftwGARYIzOnMpJkf0l1HDKr.zlZZDeN08omYek1QwWicwI7auoYaw5JHG25AOCJwz.7u6jWS6+af+35nGM8L8NBc.BisMFejZGCTwGDZ5OIjNhUEEyEALPwBvdSaDjsMD2XJPNRDbBuPHw5j2KVfo3qTt1Yb7sxm1+o4XsEbU.mPxL+UER6+sKrvu8j8x2eujPG.67++16bMH435599uys6omYe+D6hEff.f.PfDjlVhjRJ1rhnRpJkSpxtriJS5x1QQk7WTUIUpxUoTkSX4DDT1Q4QU9gnjoKUVxJILTJRnjrkrdX8vwZcHiHgHHEe.vGAj30t.6626LSOc22S9P2ySrXwrKlE6rfy+pFfYmt668zce+eum64btmK7bmLO+7+yuDNNe.DyHXi1drBeQTzJ4doHbnA.iKNytHRP.XhMRW0gIiTykW81.054psVj82chDRNHl2.rO9by7Ye8hG5VkLbKlnC.B22COCo5dYbb+6Cz91qw4JBEbSQzPCf1dZLyNOFe+XKxaq1yGRMeorO3kx+wlBsH12tgDWoofrbjvmZwou52FNaCIqwrQv1AQGN8CBevtFCxjFi7f.aitbqHRpdiAa+8R3.8FGe7KrJ3Tq+zqPkcoZ04qNqyVeipuwNdKryCl.TyWHzX+yBV8KtBaCgM41CQmQU9ENlO9CcNjT8iQNFp8Ve1iccf1cmDrmgQBTLysLB1qYN3kBRtj+lh+85NWcpCkWZZdLz7ipscZSERTY2Wv70CE6+0Ul9pimLZ9sbrc+HR3296dLZu8OEp8Wfn.ulFxdwPaMLD2yeIR+JuItys.fINzYK0mb0yfuXKOy0barYFc+l87uMFBULkJY6ele0fXRtS.FyemUi92r3LOwooh3n7VM1lFQuDDdtmdJdnG6p358.fLLVay0aMiAae8Rvt5Cmr9HKuBhZKEm7kQsYN1JbIWUepm0z90CMOOV11fPbDXXsXyjgfcO.ZpTXx0Py7R2TnnE1w37+CU+8VXlq7LvYgswU5z1MQG.g6+CMNdcu.h4CARGMGFmqRHPGsSvt2EjIElkxhYk7wycGopWeRo3i+5TNTMoO1McWapuqUP0rFvHf0BAJA6YPx9P2M4u2Cg+tG.2YVBmrEWnRaeqbvRwwNxhVj+iKLy7+kvW5VRPwrdnYfnC+hOHLwfW.OSHFmGFHUxB0s4p0tWJh10fDLz..Q3tvRwwNuQRVBq0HtIiVKW6Ox0bhUOg+aLYey1r4FwCJVkUt58Vqyes98aFNVM2+k9tR7H3BPfhsm1I28eXx9duarC0O35BcjAaadjZrIi01RqnL1Hx2ZU2a.YWKEvzRfEyezhg74w+yskGG60CZNH5iNpxKczPdn87l333fwb+nZ5lxg0DfN6fv8rahFnGLyuJlb4SNVkilW82Wex95E8bMeOBtkfJBGAqBZZOxcrCvJu+6iv8uGHiWUDZaWc.gA3L9bHNx1C0RADmUsp4OOHevePvJe14nAm621rnYpUTrr7u76OBs49uFCebhh5oojrWoAfVdY7dqyi24FCY0kwDow9dGpXIqtFlFVVKZ706VsI7QvVEJMpZ7yXMSZJbmCQtiteXf9SBhIKU+LQSdWjkt9qedbVZgRA6zsJnpZQbWAU9x91B+mxuvSdwac09MFMGinWFB+jmZEdfei2hTNCfiycSTjaSIYuXFmIcZhFZPJLbeXbbvjMORd+XRtoNiNt5xB8qEZ9drbSAQh25qQQ6ncBtycS16+vDbzC.c2U74rlKmvjeOcJTOAuwld6fj6iJeSaf4+b1kdhySS1KmlMhN.Bm5+4Bbe+puNoRcHLlCiMxzbYbtZfDartvgGjvA5EDvrZVj7EhGYo1vhs1jSQUYoFJetZ4h+5TwMDweaGBwFYKzBc2NEtq6fr2+QnvQtSz968Z2cbutEBXauMbWbULysz0oi1FKJYgcgeTnp+6WYw+32n3g1xq7M.ZFI5.Hb5u7b799keQb8NBNoNHVas6RhMevwAs6tHbOCS3t5GwHHKtZrAhpjrWRS9JtcJY7qJ9sJz3+ZSC0zT222FBQBQ81E926AH6O6cSvguSzd5Bb2DMOccHniL3MyBH99rU1YnppEbsJlmIxpexUW3INSwCskUoaRzrRzAP3mb2yyCNxKgm2QvXtCTqKM6CioZLgu2tIbjgwTHGloW.UnpcClZMVW4qu1iU4ouF256nI6JQYxP9etiQt22cSz9FA5r8axQhEnsLnph6DyG2I6V.TEK3VPQd1vHymL6hi+ZIIPhlNRNzbSzAFEN0gmkOvHuJF28hXtSr1ly4rWDkxibwtcyLyb3N4LfoX1poF03uluSYxasQfy54ZtcZvHPgH7O19nvOy8.oSQCiiHBQc2ANKsBlEaHau3UAUwJ3jG3+cfn+t4le7eJbxa4KTkMBZxI5P7Ra8PSwCM7qiwrabbNTo8e8l0F3ZQq.uBoe02BypYS980JP3VCB+5NJ8l0vcMYPhi8.siNHXeCUNrhuY0Po3FbYJWBa2iTWZZjnnFFErjg2feP.le+by06KAOYSMIG1QPzAXT34e5o389qbFb81GNtuGrgljWpMmszUEmKNFdm6hH1xtCpbXwVN7XkZI3IKe4RZGbc6XXs96sATTFkqmmFVCnDm5txGPg8MDzVaMd4ps1vTH.2ImMNJFuIohpppHtVf+lPaz+tbye0Wdm.IG1wPzA.gW3qLCu2G6EvI0vXj6Fq0IQk10Jnx2d+jKGYNyafy7KRIKnulIkBoBRuhZbP87PChhyzMPL4opLrWS.YuH4tnbEowcnUrSs5YjYAjfHz1SSzf8Sor5Si5iQHr6NI0ryiYora549GaYcPvDnX9V1fnemUW5y95MyyIuVrShnCfvK7kVfG5W64ASaHl6FEulpvkMQ0Qy3Wgzu9aiDV6xakqU+cAJ563re3GB+68vDtucgs2NPDCTvhZUjj8w8Ri1utxwlP1Wu30QzxeJNFlHXcLnddDMPODdvcSvAGAwOrbNye8jijvaUxGRvHC.oSuID50AVfzoHzyiTWdJDMpb8VmnTrqKxxfyWtfF73YW5O47Tt6jcDXmFQG.gS8zKwC7K8Rnohvw4HfzApVmCibK.EBv6LuAtSMCXJ5C3JcuVM5i6HXBiH3n6mfidDHSFzd5lngGhf8MBE1+vDt69Q6nCT2TwQdWQq3a03NWp5CatGEps70qIxnwf00A0yEMcZrs2NQ81CQ6YPJbn8f+8b.7um6hf2y9I7NFgncuKB6pMR+NWIV.qCpfIHDsqNHp+d452aylDph1QaXB7wc1E1PkeorCiXlVTymOv37eI+7elwJd3Fqft0B2saAXSf3o09jO1j7Q+5OAckYB779swHGhns6jMYxLtmadRckIhCVl08bARBlaqiCA82W4fGo3cgWJHceX6qW72mMdeiKuOl74vY4rXlOGN4xgTHOR9BHAgPP.lbAaLQWLDtqdQauMv3f03h1VJzN7HJiGZZOro8.OOHUpXebWJXfRF5Vikca2cgsq1wL+RfacDJpAg3N1TTX+i.YxT54XCCtNj+v2ItSNONytPM4Sf0FkCDF4xJ7YhB3oys5ezTEObiS3t0fchDcn3C565kmmyduOE6pyoIs2+AbbOFgAJlj4rucHVpRpwGCYkrwDBsRAoBBQk8GEoPmsSTucW970pKy3KWRH9dwjockbLaDDFBEBffPL9EH84GGuhiptdtRV.rJA6cPx99uWnszIFATpv3ZIeJJxUdOUS9zC.Rkhvc0Edys.HN07LXskAm4V.y7KhcjzIEWC9EXOcg+64NIyKtJlvv0s3S1jETv4cBE98yNm8uDdhh9oaGGIG1Yp5dYL5nJO5wB40xcN5nqWEiyAvwYuwIuBt0Oucw.KtHoO0qhDEPklLuZ+mWwrLDArVBGY.BOzA.m5nu2p56HV8Zbcimiaasg1SWD1VZ7t3UiMP150zzHPjkBGduDcm6MtrLl36kZmhQ8LqTUAiAyxYI0Ult9r1sHHEBQS6QzvCt0D5phfsy1wY4UwYtkia4WibkXzMEwDYUmSEI1+sYm246.e5bzjrJz1rXmMQGhI6m6CpbW+vKQp68GiXRii6APHMpJ2pI6tm6b3boKhXp7QakoD5ZH5I+bvA2GQ6c30xQ6aBHP1bj9cFG0Zqdmet1OBnVKQC2GQ6dW2j0aBLBZPHot7jw0+MxoHBnVEmf.JrmcAYZvFkqHR4RXOcf2UlFMnPUt3zFOLtUEyhJNmTE4wyN+UOE7EBYGNIGtcfnC.ipb1yBm9KOKG8i7iwg4wKyA.cfXizwV+n6h.YWkT+jWASd+3FPU4LfhgpeMVaWUzLYv+n2EZOcyMOIOVVLKsDdmebpR0+q24FoXGnGB26taH0Mw0JolXRbVMOZ8LBsi.q3C81Yrq1ZzySuHZKCpih6klJtCIqMoaPiEwbNfOq0O5OL6xelKrSx8Y2Hr8t+m0XQ7Kjm5iLGuza94w2+wAmmAiihHJ5MZhha1Zsr0tMSLAlUVrJi8T4PAqs.nX6rMrc2Y4xqQfffDeZWmnP3F67WOnZhcD5Lwkb0yEE6FA2wl.7KvVBIO48Tv91KgCOHZPXbaCL.lSgke2Uleg+jrYexIKdEMdgX6A2lLhdUPXrueHG3W9b3YecD2LHtG.QyjzPdqYj87938pmEyhKUknTNVdpbV5UabqncMDgGbekSXE2rPUbmZVbGeZJY7uqKjXup0S6DtuQRRXC2jsuKNO84WFmIlq9lmtB3Zvj0mfQFD5ryFWmdWS83PXadp2UmABXEbjuIJepUV7U+gveUPEm4sM31QhdLN6IgNN5DzV2OGobuBFycgwsuR9JtQpJuBxDWA225bHgQTclkgRF0Jw4ak92XyM6RgCdmX28fMtv.PUbuxT3d0YiGrZ8ZxVJlyyPvAtiFSmMIVrW8Kf2jy.AQ0mA1DI9b8bIZjg1h5RNwfac1opVya6bko+ChLNe5rK7JuNLZD2lQvKhaeI5.bwQUd4isBGnmeJobddD5AWu8jrStdMYd4MET.ee7dsyhyzSGasZfJs3dkVuVp7+EPauM7O1gfN5rwMsTqh6El.m4V3F24Qxg0zdDbv8Fa0+FjbnhRpIlBIme80IlB3JXVwON92yj4lWHpp7ShxM2zKQP3eqMc5GO3zm5qElekEguyNhXVeyhcp9QudgBmP4jD.bJdzu5+B5uyOFdo93X3HDEkl3jBwlrYcb6BY5YvL4T0sagpr+kn16.syNqsHu4f0hYU+5u.EASdaRZbpAJGYxfs8NwL2xanKS7yi6kmjvN6rwnkSrewAiS.JWf7EdJN+reA9dezIJdF27URyMtcxXbqGheQdxGadxO4eJYy9Iwp+u.yL33pwqljMwDBUfvHbFebLqtJvMNJvjJ+hBQCzSbzlo2n4RWmxC.pMd2fstKvhAcis5x4lUNbcIpqN1Xj0XecQpwmBx6eyIOpF+d03.HKPHeCVM+uCico+v2MQxga2Uc+ZgvK+Mhn6idQZefW.QtDF2gvwrG.INJu1HsJEXwEI0q9ZX78SbiTMaix0Da6kFM2w.NN3eOGBs2darM27CH0EtLl74pOifY.LNT3P2QrOraTxhHn993MwzwZKTOkawf.LLjv96FsXRgbiBUUDAb7rX0WiBg+wjK2eJmpvo4Y+Xa.0ct8.2tq5dsH9E6nmHhQYL9XewmBsq+OXZ+iSJ2ecbb2M1.m5JPaJtJ0txXXVZATmTwFkactjRpOIIw2daow1WeTZ38FAR1u3HLp9KVA.Kz.SPCEkEaucQT5z3DFv0jTLWG4Q7Kf2klf7COHjxq9qyhQ2laJKVcNx6+0Xor+YrxbuIeqOQthm0F8VYmNd2FQuHheQ+e+i6C7l7ne0eO5tsuKdN+V358HXC2Cp0b8I7IVqJaVR8NWHoA7ZYAqxQ.mo1iGYwtqdhM3Tix+0EQP.lnvM10n13NHJFW.MBnJjIdEu4r7pav9yhcQHysDLz.0ScE6SbQTD2oIegeL9AeAxV3Y3jmonQBdWGAuHd2JQuHhYem7LYgSLJO5W8knmzeXR47QwM8CSTvvw9dpV2wowFv5piiYt4hWIWU0D5Z6avRED9jsvofcMXx01Xa+IazfkQDDUQhBQqq.ZeC.uTDMXOjZxoq+qIYFTxxYwa7onvf8VxkcW64lnhtHfwcNBhdNJj8Kwzq7C3a8aNKbbANwsMQ31lEuamnCEsLOHbxGaIfuI+Z+EuH8p+iww8WEw79QnWznxDdw.9939NWpB2oUK8dsaXZQvXUr3RT+8UxO1Mx6FILrZKneCuFEUrHQQMd1fwPT+8f5XpdeQqdfn3N4TTH29gNpIUSUzUYNo.XYBsuD94+5rxpea9J+5uS4S7D63iS8FAZQzKix5V+U9mNFO3m6+F2+vOKtteXbc+HXL+733jgvBwC5MyzhY1YhMplUqe2NKfMxhsmt1hh9KE7C.aTRQWmkukXU2a3Pv1SmXccwD5eiO8hPINK5N2hXlYdrc1dQsThugbRApVfH8EnPzeA4J72v3+z2fQoPMkRKPKhdsnbCiS+IB3zG+M3QNv6vg55aij9Cim9OCi6GjfvLtu0EbHL.MVmdopUl15ACPXD1g6KdYk1nI5JH4JDuF22.dWCTjBq+5zdyIOZr+z6pCLyjOVCn58dV.BivarqP98LjEWWvw0hUKPP3KR9nmlr4+grP9qxO3syknYVo6nVnLZQzWWbBKihOixk3A+beItq99Nzl2ivby7KIyN+GPv4NPocRT9UJx4qBR0e2BHND1+fk2v.ajKrNqES1BkyRM0aSdKwKrkq2da1lFJ34QzP8f6TSCoLPTcdkQphiQctzLvQy5yv6ZJxm8EIe32f7geOf43jO1skwldiFsH52XD2.5zWIhS+IlA3qA+i9tZe699spy+DDy+PC5QAaeJHEWVrRIi2Ug01SVVpjoMr81KaIsMUKF+BUWu2vTHKavB..DfaRDEDUqI9+L9gD0nWdnIKvkn95qt5PqXFWEwDajMiyhDomy4JS9rQY536yrK+b7s+MWH9rOdCzuj2dis10n8smnhmY+q7R0St6wnQOLp4gEQeeB1CAhas4p.QLR7tEZDQ6c23+26CDm1lZzHHfzO+qPpKeEJk9juQHwff9G4.D7.2aiOCuHFXtEn8u2yhgq0W8ZkQkXrwMi.mKgvKGY0mQbbe1byEbF3IWslRtEIuNQqQz23nXiKA9LEBVjWAdzyRl99qRmN7Hp07HHx+.Cx8CjDVW1jMjODAQh5t2jsfns.DZQBKF9qaLBqIWDE2WxarPg1Ri1SGvbyCNtII7ghKnOCBFTzbHlyXUFMR3GI1nW2eQ2wgOckwyaKx8l.sH5adTQCuSFPdFyOOiA+VmJc27+HRL+LFU9PH5Omf48.R6n1TZJGh5q2XGwaUogO5YTDRPcNI3ZuUJDFayfF8RfPimmdX+cqlYlUwUEDiJXBUgbnx4CQedjTiZC4EKXXRV3JKCmrR+e2hfeSfVD8FCJO5D+4q5uDuM7HW.F5ul16qWGW9YcE4QLX+fQ8zyA0AGrWLNchUcRVPMUqi8MyZkOHZi6lrhwWtMLIOwuoq8jxqRypKwKEeigvd6y5IiuB3rjE6kEUdAUc9Qpw4z4m+xy.SEjrlvKN26Vj6FDZQzarnhFmiZAxSVlHBlHhi+8oyKMfS2cden5CfevCPpLGAQFAh5GzLwFqRoTxwnJTmapjAgw418Mr52JnQkint5QC9X2xUifJfwI1z8wapF9HNyCLg1YWmKB2SoXeYeG4LL6jSlrKjVwECbaPxXrYCsH5acnXi0jFumPYElI5k4GwKyeGOxmqOFpu6hzNGAiygwI0QHk6Afn8gXFDQxTZjc0BVqVAmpZZXEZ.HAAwK2zM5TsEhI4gVvqXGNEqsqmiukxoFZjD4TKPjLKXFiH6EIz+bDouEQAmivnyke4IltFxck2SsFAeKBsH5a8nxFukGwZzOwrvwmC3E3AIC69d6it7FBQGAUNLYLGDG2C.xAvX2KB8hw0MNeqS7lstZATAaE5aWnfpEiY8Mz3hJDElrB1RJ2hhrwHfnw67LIAEjZEhBCIRWDzqhpWjfnKRT34QsuEvUIWtoXh7yw+2uWV3XZEAzxZ8roE1BQKh9sVTSC6SD+amlbvwyCbU3D+T1+WLM2mWazkzFhWGjMX23Y1OdouCbL6AGce33NLn6BQ6AjL3jxfwHRfQLVifwSDsDqDJ0ISENMnzOHnFUEbASJEu1zXMHrVBCUBs4QYYDcFBilDUGGUGC+vwHH7hjN5pXxrBSGkkktbNdtkpIVWOYKCpsMiVD8sWTAA3DkYfW7BE3hT.Xw3e+3uMOB+XZqeG5ZDCfCW8BsQm8zMs4zCjd.7b6EGy.r3JcFYssKFoK0RZD0STMCFRgRQ8rSpSqEkPQjbVUJnAg9rxp9HNYQYAr5LjKXQvNKEhVfbYWhA5YUxMukv7QLcFKm9JQkk8iWdZJsH0MUnU.yz7ij2QGuh2UkHRq26uJHZG2PRdjAlK4Z5WArwaRAmrR+wciJSYMjkZpuVnYCsH56bQ87taiR91JJyVnEZgVnEZgVnEZgFB9+CnDIT8M8Zx1B.....jTQNQjqBAlf" ],
+									"embed" : 1,
 									"forceaspect" : 1,
 									"id" : "obj-17",
 									"maxclass" : "fpic",
@@ -1504,7 +1838,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "jit_matrix" ],
 									"patching_rect" : [ 13.0, 13.0, 63.5, 63.5 ],
-									"pic" : "/Users/jln/@Developments/Git_repositories/libossia/OSSIA/ossia-max/icon.png"
+									"pic" : "Unknown.png",
+									"presentation_rect" : [ 13.0, 13.0, 63.5, 63.5 ]
 								}
 
 							}
@@ -1517,6 +1852,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 78.5, 13.0, 571.0, 64.0 ],
+									"presentation_rect" : [ 78.5, 13.0, 571.0, 64.0 ],
 									"style" : "",
 									"text" : "Score sequencer",
 									"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
@@ -1534,6 +1870,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 84.0, 682.0, 74.0 ],
+									"presentation_linecount" : 4,
+									"presentation_rect" : [ 15.0, 84.0, 682.0, 74.0 ],
 									"style" : "",
 									"text" : "OSSIA lib has been developped within the OSSIA research project alongside the Score sequencer.\n\nScore is an open-source interactive sequencer dedicated to precise and flexible scripting of interactive scenarios",
 									"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
@@ -1550,6 +1888,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 492.5, 189.0, 14.0, 14.0 ],
+									"presentation_rect" : [ 492.5, 189.0, 14.0, 14.0 ],
 									"proportion" : 0.39,
 									"shape" : 3,
 									"style" : ""
@@ -1574,6 +1913,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 509.0, 185.0, 405.0, 22.0 ],
+									"presentation_rect" : [ 509.0, 185.0, 405.0, 22.0 ],
 									"style" : "",
 									"text" : "Get Score sequencer at http://ossia.io & see example for more information",
 									"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
@@ -1590,6 +1930,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 586.0, 178.5, 189.0, 35.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 586.0, 178.5, 189.0, 35.0 ],
 									"style" : "",
 									"text" : ";\rmax launchbrowser http://ossia.io"
 								}
@@ -1606,8 +1948,9 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "jit_matrix" ],
-									"patching_rect" : [ 294.0, 219.0, 795.0, 481.730167 ],
-									"pic" : "Mac HD:/Users/jln/Documents/Max 7/Packages/ossia/media/score.png"
+									"patching_rect" : [ 294.0, 219.0, 795.0, 481.730164 ],
+									"pic" : "Mac HD:/Users/jln/Documents/Max 7/Packages/ossia/media/score.png",
+									"presentation_rect" : [ 294.0, 219.0, 795.0, 481.730164 ]
 								}
 
 							}
@@ -1633,7 +1976,8 @@
  ]
 					}
 ,
-					"patching_rect" : [ 688.0, 153.0, 120.0, 22.0 ],
+					"patching_rect" : [ 649.0, 149.0, 120.0, 22.0 ],
+					"presentation_rect" : [ 649.0, 149.0, 120.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -1658,8 +2002,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -1700,6 +2044,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 488.0, 430.5, 233.0, 21.0 ],
+									"presentation_rect" : [ 488.0, 430.5, 233.0, 21.0 ],
 									"style" : "",
 									"text" : "NB: this looks better in FireFox",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1716,6 +2061,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 336.0, 597.0, 233.0, 35.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 336.0, 597.0, 233.0, 35.0 ],
 									"style" : "",
 									"text" : "< bidirectionnal communication between remote and local parameter values >",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -1732,6 +2079,7 @@
 									"outlettype" : [ "", "" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 615.0, 597.0, 83.0, 24.0 ],
+									"presentation_rect" : [ 615.0, 597.0, 83.0, 24.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_longname" : "live.text",
@@ -1758,6 +2106,7 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 266.5, 666.0, 50.0, 22.0 ],
+									"presentation_rect" : [ 266.5, 666.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1770,6 +2119,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 40.0, 666.0, 214.0, 22.0 ],
+									"presentation_rect" : [ 40.0, 666.0, 214.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote voice.1/cutoff/frequency"
 								}
@@ -1785,6 +2135,7 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 266.5, 628.0, 50.0, 22.0 ],
+									"presentation_rect" : [ 266.5, 628.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1797,6 +2148,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 40.0, 628.0, 214.0, 22.0 ],
+									"presentation_rect" : [ 40.0, 628.0, 214.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote voice.1/modulation/ratio"
 								}
@@ -1812,6 +2164,7 @@
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 266.5, 589.0, 50.0, 22.0 ],
+									"presentation_rect" : [ 266.5, 589.0, 50.0, 22.0 ],
 									"style" : ""
 								}
 
@@ -1824,6 +2177,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 40.0, 589.0, 214.0, 22.0 ],
+									"presentation_rect" : [ 40.0, 589.0, 214.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote voice.1/carrier/frequency"
 								}
@@ -1842,6 +2196,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 488.0, 517.0, 331.0, 64.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 488.0, 517.0, 331.0, 64.0 ],
 									"style" : "",
 									"text" : "This allows, among others,  to have remote clients such as this WS-based web client:",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -1860,8 +2216,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -1902,6 +2258,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 50.0, 202.0, 71.0, 23.0 ],
+													"presentation_rect" : [ 50.0, 202.0, 71.0, 23.0 ],
 													"style" : "",
 													"text" : "route body"
 												}
@@ -1917,6 +2274,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "dictionary" ],
 													"patching_rect" : [ 50.0, 227.0, 94.0, 23.0 ],
+													"presentation_rect" : [ 50.0, 227.0, 94.0, 23.0 ],
 													"style" : "",
 													"text" : "dict.deserialize"
 												}
@@ -1932,6 +2290,7 @@
 													"numoutlets" : 4,
 													"outlettype" : [ "dictionary", "", "", "" ],
 													"patching_rect" : [ 50.0, 134.0, 59.5, 23.0 ],
+													"presentation_rect" : [ 50.0, 134.0, 59.5, 23.0 ],
 													"saved_object_attributes" : 													{
 														"embed" : 0,
 														"parameter_enable" : 0
@@ -1952,6 +2311,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "dictionary", "" ],
 													"patching_rect" : [ 50.0, 161.0, 89.0, 23.0 ],
+													"presentation_rect" : [ 50.0, 161.0, 89.0, 23.0 ],
 													"style" : "",
 													"text" : "dict.strip body"
 												}
@@ -1967,6 +2327,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "dictionary", "" ],
 													"patching_rect" : [ 50.0, 100.0, 50.0, 23.0 ],
+													"presentation_rect" : [ 50.0, 100.0, 50.0, 23.0 ],
 													"style" : "",
 													"text" : "maxurl"
 												}
@@ -1982,6 +2343,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 50.0, 40.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 50.0, 40.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -1995,6 +2357,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 50.0, 310.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 50.0, 310.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2047,6 +2410,7 @@
 									}
 ,
 									"patching_rect" : [ 892.0, 278.0, 94.0, 22.0 ],
+									"presentation_rect" : [ 892.0, 278.0, 94.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -2073,8 +2437,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -2114,6 +2478,8 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 148.0, 204.0, 120.0, 49.0 ],
+													"presentation_linecount" : 3,
+													"presentation_rect" : [ 148.0, 204.0, 120.0, 49.0 ],
 													"style" : "",
 													"text" : ";\rmax launchbrowser $1"
 												}
@@ -2129,6 +2495,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 48.5, 126.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 48.5, 126.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2141,6 +2508,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "bang" ],
 													"patching_rect" : [ 48.5, 170.0, 27.0, 22.0 ],
+													"presentation_rect" : [ 48.5, 170.0, 27.0, 22.0 ],
 													"style" : "",
 													"text" : "b 1"
 												}
@@ -2156,6 +2524,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 148.0, 93.0, 51.0, 19.0 ],
+													"presentation_rect" : [ 148.0, 93.0, 51.0, 19.0 ],
 													"style" : "",
 													"text" : "zl ecils 1"
 												}
@@ -2171,6 +2540,7 @@
 													"numoutlets" : 5,
 													"outlettype" : [ "", "", "", "", "" ],
 													"patching_rect" : [ 128.25, 61.0, 98.0, 19.0 ],
+													"presentation_rect" : [ 128.25, 61.0, 98.0, 19.0 ],
 													"style" : "",
 													"text" : "regexp (.*\\\\/)(.*/)"
 												}
@@ -2184,6 +2554,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "int" ],
 													"patching_rect" : [ 148.0, 162.0, 157.0, 22.0 ],
+													"presentation_rect" : [ 148.0, 162.0, 157.0, 22.0 ],
 													"style" : "",
 													"text" : "conformpath slash absolute"
 												}
@@ -2198,6 +2569,8 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 148.0, 122.5, 317.0, 35.0 ],
+													"presentation_linecount" : 2,
+													"presentation_rect" : [ 148.0, 122.5, 317.0, 35.0 ],
 													"style" : "",
 													"text" : "sprintf symout file://%s/examples/overview-remote_control.html"
 												}
@@ -2211,6 +2584,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 48.5, 204.0, 50.0, 22.0 ],
+													"presentation_rect" : [ 48.5, 204.0, 50.0, 22.0 ],
 													"style" : "",
 													"text" : "path"
 												}
@@ -2226,6 +2600,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 128.25, 15.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 128.25, 15.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2239,6 +2614,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 48.5, 235.682129, 30.0, 30.0 ],
+													"presentation_rect" : [ 48.5, 235.682129, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2314,6 +2690,7 @@
 									}
 ,
 									"patching_rect" : [ 615.0, 635.0, 45.0, 22.0 ],
+									"presentation_rect" : [ 615.0, 635.0, 45.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -2336,6 +2713,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 615.0, 666.0, 69.0, 22.0 ],
+									"presentation_rect" : [ 615.0, 666.0, 69.0, 22.0 ],
 									"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
 									"style" : "",
 									"text" : "thispatcher"
@@ -2354,6 +2732,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 1047.5, 209.5, 168.0, 64.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 1047.5, 209.5, 168.0, 64.0 ],
 									"style" : "",
 									"text" : "Get OSCQuery-formatted namespace as dictionary",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2370,6 +2750,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 883.5, 134.0, 14.0, 14.0 ],
+									"presentation_rect" : [ 883.5, 134.0, 14.0, 14.0 ],
 									"proportion" : 0.39,
 									"shape" : 3,
 									"style" : ""
@@ -2394,6 +2775,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 903.0, 130.0, 192.0, 22.0 ],
+									"presentation_rect" : [ 903.0, 130.0, 192.0, 22.0 ],
 									"style" : "",
 									"text" : "More info on OSCQuery protocole",
 									"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
@@ -2410,6 +2792,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 903.0, 103.0, 257.0, 49.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 903.0, 103.0, 257.0, 49.0 ],
 									"style" : "",
 									"text" : ";\rmax launchbrowser https://github.com/mrRay/OSCQueryProposal"
 								}
@@ -2427,6 +2811,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 610.0, 364.5, 156.0, 64.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 610.0, 364.5, 156.0, 64.0 ],
 									"style" : "",
 									"text" : "Watch OSCQuery-formatted namespace in browser",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2444,6 +2830,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 497.0, 74.5, 239.0, 47.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 497.0, 74.5, 239.0, 47.0 ],
 									"style" : "",
 									"text" : "\nExpose patcher namespace over network",
 									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
@@ -2462,6 +2850,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 675.0, 212.5, 133.0, 92.0 ],
+									"presentation_linecount" : 5,
+									"presentation_rect" : [ 675.0, 212.5, 133.0, 92.0 ],
 									"style" : "",
 									"text" : "Expose models in this tab over the network using OSCQuery protocol",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2480,6 +2870,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 123.0, 76.0, 133.0, 64.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 123.0, 76.0, 133.0, 64.0 ],
 									"style" : "",
 									"text" : "Get namespace of 'my_2voices_synth' model",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2498,8 +2890,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -2538,6 +2930,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 163.5, 193.0, 50.0, 22.0 ],
+													"presentation_rect" : [ 163.5, 193.0, 50.0, 22.0 ],
 													"style" : "",
 													"text" : "clear all"
 												}
@@ -2551,6 +2944,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 254.5, 340.0, 93.0, 22.0 ],
+													"presentation_rect" : [ 254.5, 340.0, 93.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend set set"
 												}
@@ -2564,6 +2958,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 260.5, 295.0, 65.0, 22.0 ],
+													"presentation_rect" : [ 260.5, 295.0, 65.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend 1"
 												}
@@ -2577,6 +2972,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 31.5, 329.5, 100.0, 22.0 ],
+													"presentation_rect" : [ 31.5, 329.5, 100.0, 22.0 ],
 													"style" : "",
 													"text" : "zl slice 1"
 												}
@@ -2590,6 +2986,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 151.5, 394.0, 74.0, 22.0 ],
+													"presentation_rect" : [ 151.5, 394.0, 74.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend set"
 												}
@@ -2605,6 +3002,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 56.5, 36.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 56.5, 36.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2617,6 +3015,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"patching_rect" : [ 50.0, 239.0, 30.0, 22.0 ],
+													"presentation_rect" : [ 50.0, 239.0, 30.0, 22.0 ],
 													"style" : "",
 													"text" : "t l b"
 												}
@@ -2630,6 +3029,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 44.5, 394.0, 74.0, 22.0 ],
+													"presentation_rect" : [ 44.5, 394.0, 74.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend set"
 												}
@@ -2643,6 +3043,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 181.5, 295.0, 65.0, 22.0 ],
+													"presentation_rect" : [ 181.5, 295.0, 65.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend 0"
 												}
@@ -2656,6 +3057,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 151.5, 340.0, 93.0, 22.0 ],
+													"presentation_rect" : [ 151.5, 340.0, 93.0, 22.0 ],
 													"style" : "",
 													"text" : "prepend set set"
 												}
@@ -2669,6 +3071,7 @@
 													"numoutlets" : 3,
 													"outlettype" : [ "", "bang", "int" ],
 													"patching_rect" : [ 147.5, 96.0, 67.0, 22.0 ],
+													"presentation_rect" : [ 147.5, 96.0, 67.0, 22.0 ],
 													"style" : "",
 													"text" : "t s b -1"
 												}
@@ -2682,6 +3085,7 @@
 													"numoutlets" : 4,
 													"outlettype" : [ "int", "", "", "int" ],
 													"patching_rect" : [ 196.5, 239.0, 61.0, 22.0 ],
+													"presentation_rect" : [ 196.5, 239.0, 61.0, 22.0 ],
 													"style" : "",
 													"text" : "counter"
 												}
@@ -2695,6 +3099,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 50.0, 154.0, 103.0, 22.0 ],
+													"presentation_rect" : [ 50.0, 154.0, 103.0, 22.0 ],
 													"style" : "",
 													"text" : "route namespace"
 												}
@@ -2710,6 +3115,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 147.5, 36.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 147.5, 36.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2723,6 +3129,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 37.5, 502.0, 30.0, 30.0 ],
+													"presentation_rect" : [ 37.5, 502.0, 30.0, 30.0 ],
 													"style" : ""
 												}
 
@@ -2860,6 +3267,7 @@
 									}
 ,
 									"patching_rect" : [ 46.0, 251.0, 202.0, 22.0 ],
+									"presentation_rect" : [ 46.0, 251.0, 202.0, 22.0 ],
 									"saved_object_attributes" : 									{
 										"description" : "",
 										"digest" : "",
@@ -2887,6 +3295,7 @@
 									"numoutlets" : 4,
 									"outlettype" : [ "list", "", "", "" ],
 									"patching_rect" : [ 46.0, 290.0, 299.0, 255.0 ],
+									"presentation_rect" : [ 46.0, 290.0, 299.0, 255.0 ],
 									"rows" : 98
 								}
 
@@ -2899,6 +3308,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 46.0, 97.0, 73.0, 22.0 ],
+									"presentation_rect" : [ 46.0, 97.0, 73.0, 22.0 ],
 									"style" : "",
 									"text" : "namespace"
 								}
@@ -2913,6 +3323,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 46.0, 160.5, 181.0, 22.0 ],
+									"presentation_rect" : [ 46.0, 160.5, 181.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.model my_2voices_synth"
 								}
@@ -2930,6 +3341,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 891.0, 319.5, 385.0, 365.0 ],
+									"presentation_rect" : [ 891.0, 319.5, 385.0, 365.0 ],
 									"proportion" : 0.39,
 									"rounded" : 0,
 									"style" : ""
@@ -2944,6 +3356,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 892.0, 320.5, 382.0, 363.0 ],
+									"presentation_rect" : [ 892.0, 320.5, 382.0, 363.0 ],
 									"stripecolor" : [ 0.376471, 0.384314, 0.4, 0.19 ],
 									"style" : ""
 								}
@@ -2959,6 +3372,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 892.0, 230.0, 149.0, 23.0 ],
+									"presentation_rect" : [ 892.0, 230.0, 149.0, 23.0 ],
 									"style" : "",
 									"text" : "get http://localhost:5678"
 								}
@@ -2972,6 +3386,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 75.0, 221.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 75.0, 221.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth voice.2"
 								}
@@ -2985,6 +3400,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 75.0, 197.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 75.0, 197.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth voice.1"
 								}
@@ -2998,6 +3414,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 488.0, 247.5, 161.0, 22.0 ],
+									"presentation_rect" : [ 488.0, 247.5, 161.0, 22.0 ],
 									"style" : "",
 									"text" : "expose oscquery 3455 5678"
 								}
@@ -3011,6 +3428,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"patching_rect" : [ 488.0, 212.5, 60.0, 22.0 ],
+									"presentation_rect" : [ 488.0, 212.5, 60.0, 22.0 ],
 									"style" : "",
 									"text" : "loadbang"
 								}
@@ -3025,6 +3443,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 488.0, 277.0, 183.0, 22.0 ],
+									"presentation_rect" : [ 488.0, 277.0, 183.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.device my_ossia_patcher"
 								}
@@ -3039,6 +3458,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 488.0, 372.0, 120.0, 49.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 488.0, 372.0, 120.0, 49.0 ],
 									"style" : "",
 									"text" : ";\rmax launchbrowser http://localhost:5678"
 								}
@@ -3192,6 +3613,7 @@
 					}
 ,
 					"patching_rect" : [ 302.0, 153.0, 155.0, 22.0 ],
+					"presentation_rect" : [ 302.0, 153.0, 155.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -3216,8 +3638,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x64",
+							"revision" : 5,
+							"architecture" : "x86",
 							"modernui" : 1
 						}
 ,
@@ -3257,6 +3679,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 37.0, 304.0, 137.0, 22.0 ],
+									"presentation_rect" : [ 37.0, 304.0, 137.0, 22.0 ],
 									"style" : "",
 									"text" : "set carrier/frequency $1"
 								}
@@ -3271,7 +3694,7 @@
 									"outlettype" : [ "", "float" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 37.0, 256.0, 44.0, 36.0 ],
-									"presentation_rect" : [ 36.0, 218.5, 44.0, 36.0 ],
+									"presentation_rect" : [ 37.0, 256.0, 44.0, 37.0 ],
 									"prototypename" : "freq",
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
@@ -3306,6 +3729,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 1174.0, 515.0, 192.0, 78.0 ],
+									"presentation_linecount" : 4,
+									"presentation_rect" : [ 1174.0, 515.0, 192.0, 78.0 ],
 									"style" : "",
 									"text" : "Open bpatcher (select 'New View of synth.view.maxmapt' in contextual menu) to see how to build model's view",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -3323,6 +3748,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 867.0, 164.5, 239.0, 33.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 867.0, 164.5, 239.0, 34.0 ],
 									"style" : "",
 									"text" : "\nBuild models view",
 									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
@@ -3336,6 +3763,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 879.0, 625.0, 247.0, 20.0 ],
+									"presentation_rect" : [ 879.0, 625.0, 247.0, 20.0 ],
 									"style" : "",
 									"text" : "Embedded bpatcher view of fm_synth model",
 									"textcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ]
@@ -3354,6 +3782,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 1174.0, 378.0, 126.0, 64.0 ],
+									"presentation_linecount" : 3,
+									"presentation_rect" : [ 1174.0, 378.0, 126.0, 64.0 ],
 									"style" : "",
 									"text" : "Choose model instance to remote control",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -3372,6 +3802,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 697.0, 276.0, 134.0, 78.0 ],
+									"presentation_linecount" : 4,
+									"presentation_rect" : [ 697.0, 276.0, 134.0, 78.0 ],
 									"style" : "",
 									"text" : "Send/receive parameters value using built-in unit translation",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -3389,6 +3821,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 394.0, 164.5, 239.0, 33.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 394.0, 164.5, 239.0, 34.0 ],
 									"style" : "",
 									"text" : "\nRemote access of parameters value",
 									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
@@ -3403,6 +3837,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 152.0, 433.0, 150.0, 33.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 152.0, 433.0, 150.0, 33.0 ],
 									"style" : "",
 									"text" : "Here we have 4 instances of a same model",
 									"textcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ]
@@ -3420,6 +3856,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 37.0, 164.5, 198.0, 33.0 ],
+									"presentation_linecount" : 2,
+									"presentation_rect" : [ 37.0, 164.5, 198.0, 34.0 ],
 									"style" : "",
 									"text" : "\nBuild patcher models",
 									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
@@ -3438,6 +3876,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 146.0, 329.0, 162.0, 78.0 ],
+									"presentation_linecount" : 4,
+									"presentation_rect" : [ 146.0, 329.0, 162.0, 78.0 ],
 									"style" : "",
 									"text" : "Open fm_synth patcher to see how to build model using Ossia framework",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -3451,6 +3891,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 0,
 									"patching_rect" : [ 37.0, 637.0, 39.5, 22.0 ],
+									"presentation_rect" : [ 37.0, 637.0, 39.5, 22.0 ],
 									"style" : "",
 									"text" : "dac~"
 								}
@@ -3465,6 +3906,7 @@
 									"outlettype" : [ "signal", "signal", "", "float", "list" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 37.0, 472.0, 101.0, 144.0 ],
+									"presentation_rect" : [ 37.0, 472.0, 101.0, 144.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_longname" : "live.gain~",
@@ -3486,6 +3928,8 @@
 , 							{
 								"box" : 								{
 									"autofit" : 1,
+									"data" : [ 22546, "png", "IBkSG0fBZn....PCIgDQRA...LK...vrHX....fvTzx7....DLmPIQEBHf.B7g.YHB..f.PRDEDU3wY68dGtkcbUmn+p8Iby4TmyRsRVIKYIKIagsjSfswOrAaSX.+YB9QXLyGLvyvfw3gY3AO3iAXfGyyvGvif4gwfACXIgCxAkkUvJ1RpywaNmNgZ89icEV0ZW6y8b6f5tkU0e29r2UXUq0p9UqppUU68F3UCuZ3UCuZ3UCWXETmuYfKlC+5GYR53UqgiUoFNYk5X55ZLccMlptFntNMSZBfH.kBHQAP.nPB5pPBFpnBcWHAanTAr0xkvlJU.6o0R3GZjdd01kSivqpzVive63yQO77qfmY4J3IWtJNUkZ.TMLvxKf9mcJz0zKfRKUCkVEnPk5nPEBpUpijp0ghPJPFHELSDnDEnREft0BndYEpWt.pVFnZGEw782Elp69vjs0IfpD5pXBt91Kgqpsx3F5nE7g1PuuZ6UCBupxQD9TmZF5ee1kw+vLKgZ0phsL6DnmomBcL0JnywpfhyWAopMJRoswqX2RYiOZYyRmZcWFKLXYr3.shY6qebrdFDHoH9N6oU7V6oc7yt49e01OV3UUF.3G+kFk97yrDNYkJXiyNIF4XmDCbfEQxx07YxLSAhcMfvvKKuoQlEFC18jHufcorKf825sUDSsqNvo1xFwI6c.TtPQ795sc7N6sC78Ob2eac6421J7ee66jze2zKh9meZroieLLv9mGkmqle9sMJnxALxPdNvsNB8r4kD8JTdBSDk13XSmMXfRAPF5Vs6RXhc2INwl2Blpidwasm1v+gg5F+feaHv9aqD3e9CNN8GN9bPu3BXu6+kvvO67PUqdZhQL0ZATD.TLPEo8.MhnzzLkyYE1NGYSD1xSZBpDEjyklW+RZXSyVWjlRiRvinPBF6J6F6aO6Aq1RG3GcnNwexd1v21zF+JdA8O4TyP+AmZV7jKtB1yQ2O17SLAJsTU.3mRK2voyZqzRHiltY9JrJyvz97pxlOa7t5jWVCvO0xKB5n.a7fkOKXVTuU6nDNw0MHdwsrar0VKie5g6F+hacfWQ2d+JVg6W4PSP+2FaVL7Xm.63oOJ573KGttMN.TSYsPZhOIQkBTjSI.v6pM45AoTquN5FodAX.3L8nHOsYkgHqU8rzxEhD2BaocbnqZq3T8OB9HC2M9i28Huhrc+UbB0uvAGm9sFcNrsScDrquwgQwUq6.KTJxAJUh45zfRZRkmWn.YPGpTygo4QZJjGxa5Aj1U2Jddsgfo3nY7ImOThomSlXPHuIl5C.g5sVBG311NNxvaE+HC0I9yujWYMEjWwHL+bGXL524TyhcdpCis80NBJZmKrIXACo+ZCYcWFG7xMywAVg4S4.UggPHWZ40t5OaYTrR0XysVvKEvKowX6v4mes1NAbGMpWtDN3stEb3MrM7CMT23u7RekAn9hdg3Sb3InOwImF67nGDa+9NNJVqdJni2.J8M1oSP5BMY+.UHnJ+5jySVK3bC4h4j3jkz6SAoB9REYtEx9IY3GEpWr.N7ssYbvMsC7SLbO3+0dt3d5GWzx7+0iMG8QNz3n2icHrq68PnfY6issqtESwKjbFBx46JyOKv8gbFeJqfz3mmztE0EllkWk7R5b3Yy9P.bCnqfmcdVABns.Hy5CAB.5hEv9u8siitwsieysz2EsKT7hRl9M8zGk9JSLCd8eoGGsM4JrTBmxfqkV5UBmueMsx1EbAH.3TFZD3BDadMdd.JyTN39VlsPS.XlpRXZlD7KVzdOD7nR9qkmXSQoAVjyjdP9Hrxfsh6+Mec3R5oK7hW2NtnCabQEC+IOxDzG+3Siq3Y9VXCeyI8lCMsPpDyB2BlRfvLT.vjMjehxCJ4gf7hPPT.dS4QKQqG3pq.9LJeAeDYmVeHeylBRTdySv3oa6Xv.4m556GO6Ub03mXjKtl5wEML5tdrCRyexSgK+K7Lnn8DoEKHa3kokcscq+vYRYWOkuQ46LkGVi5sVRBdl2wUfYGbDT6l18EE3jK3Yxe0COA8qcjwwM70dTz8wV97M67scg41Z63Qusa.+Har2K3ck2EzL2q+acD5YNwov084eJTPWOZdHMfJY8Q2Smxb1nrmKBubvO0UI3we2WM5YngvQes67BVLyErLVwGZ+zte1mDa9gmHHdaiWrFQYbwxayTdxLKlXoyiO184Q6X7nL+4w+M557BqUdHwL0hkWIMN1qaP7B680f+rcOD9Pibg2Yq9BNF5W+HSR+WN73308EeHzwoV0EuD.wCb.XyllDztdoayj9YRPBxWq5c8JCMq7CDl1BarU7H24MgO7F5A+oWfcHltfhY9td1iQewiMFto+wGEI089L8rcHverTX8Hu+rc80L4a8l+yz5c8FpkjfG9645wdFZ.7LW61ufACcACir2G+PT0m4ow19ZGOCPSdNJr2yyGOMIfPldlxx8EqHOjvwrRfuLDqSRLZjmL4IdpK7j7urtyieZXcDg14EhoKUFWCdv2vlwnW5kikecWX3siKHXh1e38S63gdTL7SMSZDw.Ww72pI3OgZrzh4uUoecEAYCtb22ZJsEqNb9StYBw7+bL5tV0sMD0eyB8oIeQ0wb5kCs..F6p6EO60e8.2xkbdGKcdmAvC9Rz070dHz6KtPlM1J11C23qsGzFy8VZEaiIhTddb.QpC1FvIoWF9vrCgQ6+jmuvkzOG9wcCi37C8jrLqY+fb13lzS2mJa9DYe5KoS7st0WG9auzQvGXnyeOgKmeAyOvKRu1699QWGekH9+2qHcScfEuWYZFtkIJjAQnbWCvEUkLOH6Q8LGreHMDkyVG9x4QywNsdMB3IyKuLAmVuHxWlPf9KKMs4geBlj7fBJQ6PXZyu4Vw27NtY7GumgwGYi8cdAWc9CL+MdA5F+WtOz9jFOVvGdVY.HDBMSYumMzMQlUcySiucuxPFIVzXFbtlgfGhYJlUlbmZfHOVYzANjfJe0jmUyrlqYxbroJHkI28pf5L.SqDUj77gvq.BXogZAOx24sfeicLH9XmGNrRme.yesmit4+w6GsLe5iuD6Lo6CJD3RHYZYlt.iFNcMqAhmFmljYtptCxNIpKF8scZjOzI4b95iFxPe4TJD8obcTQVdOnuUi3Ota3Tw4+FwWYjIAvm+aktJgG78dq3We6Cg+Ka6kW.8K+f4u99na4S+0PoUpARoBa3HBj8DfkCvylOaXsxuMujR4KmYk705uKr5H8gpizCVcndPRkpn7XygxiMCZ4jSgjEVwc.jr7pqdo0feMowyiMe.HflbZE.rzQJq1KCwzaN8COcAukQWyzQxfjOh0dIySsVKh6+Cba32ZmCiegs7x261iWdAy22KPutO6WGsMSEuxgcR0hobUhVAN.IJn1rpbJQkaiD0RILya7JwBWxlB4Ol4IUk5n+Gdenim7fo0klBnYdANeIkmzHQf7pXOfpw307n0Zoa3kOCPWTlfzj7mPGmm7Kk6U5oDd3+2tM7mdIifO7KSuIld4CL+fuDcc+Kecz8wWIcJDbvLmSxadgx4MBje4fHerxux1FFS7ldMP2QKQmZhz5damXRz+W7agByub74DyqSd7wl2pBwAKx7KoQrzyK90Ju7o.yAmR8krLBd2w+7iMqPNmeqsgG6scK.25k9JGvb+OxAnM8kueLvyO+oGAxCLGC3JKCKTcftvIde2JPRRV5hHCGaRq0ImCC82eeHodisJ2TxvZE25I80a8EKOnIqiSSdYxKqK7zuwaB30et2OzmyO+WW1ieHZfG8QVW.YcjcCK3WSdzZJeErHdchBSdGWCPgDnA4ZbzfRqOJbAm7xuR+ciEds6og7Zre4xgVGIdJNMbWGQ1xnahUWrxFK+A4oYAnmF.YMQXfmedrmm3wQwGZ+mAVBZtv4Tv7a+YOFsvS+rXCOzjYU147qlHjXlBRtMx.HQoPhR4JiLOVvt85EttciUGna.BHApfFGEA2N04JKBq6outciJ82cPcYADwjiDUVCQbdWx2MBzw6HHKa.M0TlxFi1w5jIyer+VOowCa7gl.i7R6C65wN34T.84Lv7G6PiS229OJ14W5PdvoVHnDCPvrxxymqATmiRiYcIihjML5BW5lRsBCBjArpAk9ZmkETj+OKflHB5DEVd2avy25P4PN5QfkXcV9LnbRYfU1LzS.XsAMkNZirClKcMkQ+qMujaxqNSL6hY.emCbLHMJKerq64fX7ieJ7tdtieNCPeNCL+ab3IvU+O7Dg.UtvVmI7biXZ1uDKulx4RW.BB9k+mFfJWDU5ocGHkTd.KP58jBomuCdeAsIOT50qLT2gMlxlE68xoqvmatNR4xSd3xZijwX4Wi.cXd0SzNkV8tzKLwpeY6Ur6I.PJ7Z9rOI97iMG9uczIOm.nO2.levWht9+46GIbvgUHkOvHZD13CDck2Qa33JNf3Mx.n1.cGzvFXMVSofVI.TBBAPkg5IrQLm5KfGkMv1zpytNuxy0ARfDuSQc1015Pt3tX7sDvoEzQJibdSJm76yocqfViq+yee3W9HShyEgy5f4a8oNBs6m3wPGisZXinrgIViWdVaxyBE+5XVhLWWqq1B2dKamLqUIhfyMF7eseBGL4qd4RPWrPZ5bvBGbDaQj77XKGam877EiN76iYwOVcH4K6u4UNoLvuNuNCR4UIhKFuwJeGiVA69odBL3ibfy5VmOqBl+DGdB5gOxnXS223YSTJXLkfNlxHh0ZMhjOaPIJBqQovjy6ArBfbvTKkdGgcMoITbgkQR05wAmJFV1i+aLfUZESx+w7UcLfGm7BqoNcB+9X.2X0ediJvDkXsEZY8yyiBXS223X1wlDu2m+DmUAzmcAyGZbbC+cOJ.TAJQMREP6e13A7BNepaZgBysh8FU4T1zsKBo7TyCTW6e8PXWWCY5SYMLa2LCM4A4rFvVFa1fNLV4JfmMxqkWzBYyEmf2iB9szlWe4U+fAhX4KgwCN5v34Lc9DzLu5QSgzVVmfccvLBI.MT309YdT7YGaN7+yIm4rFf9rFXdiO5Aoq4Kb+Hot2KCodWHMcEQoGIByBsbddPAXQLAJFhu.jzNG1xAjsChsgweepWPHMAppFkmXNGuJWWSZMjdSjQFcwUdrYcE16IEq7xPiLYWwxumuR24y.PFElGeieJssKNUoSuVaDDUFWgki69XSyKwtXWWc.Gf1xejYJVdYibkw9xex29klemLgPYfqns63ag5Dtl+s6G+3GJ7AV9LIbVAL+QOvXj9EdQz0QWA1W+TJh41KG.MUfC7lfMeLS47ynapUxzFRRn3TFkrxznpzFfhgGzDbaad2OwgLEV5dPx7isd3apguSWxxUP6O+wLzkLVyo.x31ZdPF4ySaqurUAVIS4aJvjpg1FPKrdTwRYkuBICcTjWm.fz0GX7.Dm1VcTcSaPpR0q+r4yq2Tl1RynWtNg15x5udx21X67YZascJ..py6DpIzwQWFibvCf2zSezyJVmOq.l+8N1TXG+aujSwxGyRYAI.NkOzgWC.mx0hO7fU3AFZuRk+qFdCiVqVJy7iUFEaKu3IPG6+TA4ylW2uVKWAzI8u9+5OCvhqlJKb.l1WNorY+ylWkxLBCStHamZFcjfWKuYMPPl76et7PvunNkU2X.2ZCe3z6T3e.rN1F8mqCCqdzr7QL9OgyGF9Ww38PCW.63K7R3qL0h3uZr4NiAzmwf4a3IOBs2G7QQQM47gKPnxg2nw+13w8yK.bBoh3Mfl7X5fnzT.PRooTEnRTe1E3YGZD.8buOMRVtho7g7fa5.HDrA.zw9GEs+hmLfeUJuxSQg7EeiWbkgBoKGb3no0JFqyuk1A5TWumv5zkGC.hyefUL9jbULCO..nNEzNELSEldMiLJ4YKnUGguMzUQ.EqS3RefGE+XGJhSCVmgyHv7e1nyPO5nSgAe7YbbblFD1vLYbAl8u59gHcS8P51Lqq0TrOKCl34Cw5+lenB9kHfBKsJ1ve+8g1N1jl1SB7gVSqeB1oRn0D56wO.56e+wcxgCHp8ygLpLEwjmCXlSZAO1Rb8lj11SDUD8oR6aCbFCX4MS8yNk9Yz47347ZLYfyS4oK35JlbMzSLCVd1EvO+AGWj35KbFcRlRdn8SW6e4WBsMYkyDxv3F4wVacl95HuyeUaGybyWJpWpnI+go25TKhA9JeKTZzYN84gy.9KZ9NaU2o8WO2DZVdzxCl7u7fkwi8AdS.25o+oq6ztf+rGbL5u4AeRbI+y6Kj4Zl.OuqU4j5EouWaz8qEOj.Ts+tPkA6FUMOoIkFaNTb7YPoEWMdYhc1cWKdOVdhoCZD+y0CrEak4k7hgFM7E.SyTeMHumqd4xruu6KCulqZu3qbUa8zh3m9bzWeezM8G8uiBZBPAj4QRG.odohbMD12KDtWG.bEjkN1C2Rjsy19H7GjWjScwRKyasHPfJUBppUyxK4z.a46v2N8g8zB+toPAwaogk2BxG4iyV+AzRBdr5CK8x4KPk0qPJo.EQN4eiACzsT9xYf7EoiI+iGD+0.Qftz9NOA.0ST3g9e+NAdiW1oEtr3oSg9f66jzC9E9JNfLfWwZEHtxv1PYUTAunU3JUM.oDoY85tkzlFHPlN.1Y8SH3kth7sgj7s6yJaY.L0a3JP4wlEsL9rn7DyCcoBX0g5FUFtGTYndvV9T2Sfbaa.4cZRIXnbPL8RL8SvSkMkMcG.RwpSQ5V.myyC1PjcNMyG7Gh8K2vCmG4FoxT7vHHJrcv09ypam7xO6HbrfJ02y67wdLz9SbX5z4090oEX9SO5r3lefICExXBLaHOmhKuyt.WYvAGZw8Dqbbq2.9S8loC.WQwoMQop3ps2BprqgwB6ZXnzH0qJMyzX37.OYNHlagRQg7pE3j2zLhP6LSYgORjLsXkMuo5jW5NaJwXlH7j.KPJJH8.cCDcNY7vHO3T3Au9Su2C2qauY7C7Bmj15y7ToETN+Qf.Km1z7q5G90FHUfZQYXMR1m.Dm61bdJwjFYqmr7imGPFfXp6v.TF+xl5Ifz6yz333g3zO.XHiWviTd4kIqAk20ITDGWeJyustriFJzuY3Wd4Le5DcFGhUuLW5En2YFg3xIIqyXFBI.UcM15y7svU8DGtA8hhGV2f4+5wlCa7qdp.fj2qKgfVxZAJXNiLGsSHyvutz.bMfJED8j8ezISoWX9HsL+F5q80g0MaojyrKW18o09zXaFQwy2V9DN9zyyhNZr7lV21xKnklBnEWWvKObxWHsC8RWHOvkamNLiLPr6CJkQOCgbZyW35.b6TKD.cg9ypGHqABKs0dcxF+Jigmdd9GdolKrt.y+T6eTZSO+yiB0slazA.Tt.H69mEawAGTlF..xziWRaY2ZYcA20g.sv7X2gKVqUpEYg+cCAkR5H.MAfIO3M9KOQY7g7rjNbPgurYksPCKb8uDz5sXDitg5UIelsMOTGnhpyscP3zIlNn.owFdw8g2vSs91l60EX9O7TyhM8EOBHyLoBsTk0BgiEcMpg4m2PAF8hAVhhGDAsaZH4mGgA9vCYiINddkcRyxqg2KA+gV7h0oNrbw2ODInNKOjU2kkm8oy0Swzwwm7cdxtrij2PDbSqJj+harfS2sbOGFe8YWeyctoAy+JGZBZv8e.TrpcBUfsZTYOPjYNlAJBw0J17AsSeQ1AwQ2LcbX4YMxGOsp82sjkCOtjD.JjjYOKb7ssNzwkMd9j2yKW.eImyuIehMyLq9TTGR9xRaodUxKJEXSEKjmbsO71INcz93Af+UBVfqBExtFYzu17TrFgANzgv6Yc7LC1zf4eiQmEa4d1G7qfl7ySx0HxuFv8M0gu.DRbO7JZaHn+A6u.ZH+CdZkW555rz0D+HJ.PAGbuz3KUzCHXMTA7Du9kxSj74hWwxKWuvokHOYVDmfuj53.ciJRb77ZKOKODusBH.X5xODoatWyervPX43AtLoqGl+se2uH9bStX7BFIzzfY8IGEkWtFHhfVqsSz.JU5v6D7ywMFCGr+FZjYwLVkWrgqyyBmL83C6FZEvYkqVcW+uXM9jFPWtXHXg2HaBAipDg28LQV9wMpjADEzAmBuNfGrzIxnebfOeDKtAi7RmymjnLR8.2hbdiFDMuxN.wjOSYJsXcjLyL3ie3IxoqPXno.yuom9nzNdrGGTceqfcEn55D6MeJeEqobTLglyztPrccSz3xAAY5HTWzAQjedYHB.0zfMHS1ojn.zkJjgWHMwFNNBOKrD4V8tyZsuPtUvGCnPjuNZD.gLCoys.GjQAfzP67lxhz3QLcJ25oRVeVdRERmXWawJx.ej4c+XOK9cGctL4IVno.yekIW.89TyCB0Ss.SbuXnM.ayikDQ9ohv4NmkORnc3.NgVM.IyRWwyCRym0w7t7QgZEEmN.pJ072CdUwbIWoRdZZqW6o1Sv6tSGHu9sExJ+74RX6w3jGDxOb4zVWY54ACnWHGN5HmyPnJ0OzTntgWGtNf77x3K9dH3qeg9HH8Hwgvxxa258ImEyuZUzLg0DL+6bron1OxgM9cUChpCxXlw8TLDYGEbdAPKF+HSfA3hIfY0FgcykJy7BTn1VUuNaTClK7r3dMg5sv2fTJzUdw38f5AgxrzjMWVjl6HYYhH24QqXySIH+xzkSTWFD7hzzMmVY5HK3KRDWLiWhgXRzJz0INE9Pu3oVqV30FL+mOw7XyOxSB6XdjATqIswJs4sDDLa7osA25oC93M714X6Vms2uLtL85Yo6FtTX8nAkGD.Le+sCFlSztoKVf0.wpvF01Gqdk4M104IyMRVhwCLLZv84UVtEYD6dF8xqt44IxtB6omf1wxKaJq1D25irO7mM4BXsBqIX9olaEjz+t.oRAw.ouXq.UGDYV9IoSsZCsIejArXr3Aj1QPLLZv1byWDTfBHq.qXidFsg2PuLOk0HhwMvzyj0+4oYhZoje1.teC6XxcIUrEQIAC7slOvKEB8PfNPHiAclY7PFC8bCcHackwm57N1wNuEBPdiL96G0CAdRIHdldJvSLfoOIfNeok.ZhoZzPv7G+vSPnNvz2x0fIeW2Np0QKntttadwDzPqsyilLON+obT5IjxNeNwVCaxi8HG5DP6CgIagDt4gyT1x6Cxq0OmJ3zfVZvyKSuGTmvLZBQDz1CtuSA6mNh63WFrv0vsoFL9junXCGxzCfQSidxVWA+x0Md8Ie69c9BOX6ygagqNcEad1Y2XnviDP34vHqrya+B3QMK957csTvGVdjBouq4.JL39OvZ5y4FBl+6lZAzQ0TJt7VGFS7Ad6nxN1H.Rm2r6u5l6gYgfvBn0.JKyqf8vPXUj55ByvrEoQx4mRgk0MUFmGA74O.3PwooegMT3KMBdcUpffddV0xKDqCq8i8XvNfZmpkULsmYXYGblZHrSJgPSn.jVGjOqNw+nbw0Y9yKrSOYIEWt37qoSP1yagmOS8jk12YRGVmrJLf2ssGj8sUiHKgSyv2dtw6+v3yMyRnQgFBle9EpfNXCGTqsxXh24aDycqWGpmnLdvPC6SuX.3VarRqMSMgAbyXozAHDVdf0JA6ZRpfgqtBAQBZHuNmUgyOhp0KWzmeSaT.vSR67jCtLXVPLQrCbuqcKT18xhzpNiWnr4ODDpY7bHODHGZcDvqfuzTFdzBpC3aKupxVFxDO+AAva3QLRDqrsMVEfJxWTgggbAy+eexoIXOJjBKRye06ES+8dmnVec..BZK30bviHPlyyJy0cvLTivJX3PJYAxwxWd4gqvZFZj4ECn0nRZ+OPkJERWgESIss.Td7wd.AjMtw3WYmXYclNsAUTZw4I9mI3XcpyXDfw2w3Y90wdzoBnqNGdQmubDKXSqkIl.+zGXrbyXtf4uxbqD9F6ja4RArZ+8gwe+ucrxkscfDjBj0Z.3sJamKsawgVvNyO0NZuVAR7ayFZT9oHWyl4yp82Yz70PEeL.eyx6qGYyxGL0XrEi0HdMWRGYTt7xWv0qQUEaCR3zQNpmLOa7ENHt6YyepF4Bl+bytD5oFh2XXqyBEwT2wMiYtyaB5REf1YYVCRW2us21gPBlvIYm1u2CHQFEvVb4zvja+oWpCKevHrjmdMZDgzoxQX095BT4R4cHx7kmuxbFeDLy.oLH90cMaGN44wEGERKt6vHa4AKs.YlUeBOhjg973XaYOWHk5zLoI3+LO0NQpO2OQhu6mYV7hKl+aBfbAyUVsNJa8t.DCYH92hW51wDu+2FpObevswJPCB0AosKNT6lic57rg2aGA6SOeHHlNPpXUHCXHS+NG.gBxWfbXJDqqUv0UFp6.Wn4.Br5z8BlOFvCv4ZZ91S6maMiO4cpDzxcqUgXngD7Gb3jzd9Ro3abGkoikqthcM7k0wKF53XeIOxz6tra4of1fr5l.4gQyxyTEnd9yaNJX9O5jSSnpnFCbeDqmsowsZOchweuuEr30sWyaWHCvUY9Ua86b58ZGv1DmN8.L4YdeqLYtOiGNzLMK6Q7wt.ufg0z4noDJsPMHvpanWg+k4.NaGAFuPdWO4Rm0hqXz1UXoI7.vfDkvW.sJ6FOPjyEmb5Z86dfdx1QfsVF9Bvr4MvMer3f8.gyGQyolsfFS8va6D63J.x14xnGC4aBsN5X3mZ+iFsUKJX9qL6xHXweLkUfkDwtmQETX1a8Zwzu6aG0aurCDa2bkf4JS0g6ar.qB7y0FNkFYdczFfozFqB1yDh45.vjqA0diBYvMR4KnSAvpC0aFOT34U3ZbrLWPigkmXmSAs13VJ2HK7EkY3Q.DNsKemSac5Jacs4yrQ5eodHP44xLcV35Eu9Oi2Rbkm04x8qEvq4YzozbsI5vSWl0SFN8rUOUWGB1YXBWYLC+sgW3P3ty4P6GELeuKrB5ppkos0ASA5b.uxY8fb8fIr7lGAi+AeGn512.b9e1N0CqEYjZIVK2HB93XBKhN2bQTfRJkSfayN3eWYb.E.lxmXEm7xF489fUYuxH85aHrMj7MChGmk1ZsGHvdc.3hy9CC7IG0wsQJv+q8nADBnQ.eAib5.RHTWD7mYeyOgm...H.jDQAQEQtNJs7g55.CEL4BbZJbkFG.6Zacu9ArUjswS3UFmgJxImVmJz0SOKdokhOu4nf4wWtFZg8DJG3PbVuSSqOq2ugAUJTukVv3uyaGKbqWKpmfzoUnM.Z6wHU38CXsJaTJZK.IVH3.Ry.3LkPfEAVd8xh8Zub5lGpoiT0xkR+LRvKqntidcyltHdeGhLlCCuN3LujqVJZGed8lQ2zrxXL50DukiHQ6Rv8BdK10kmsZ1M4xDhu.v5h48wtzGO7ymQlNyx2bW2kgoeuo9j1cZ6LyY1YUDl3g8LFya.n3BYzFmnRiuyVrnhvytCLuITcC8Inmnhrchk4oY4Gd9hQ6nzfxld9X50NDi+aV56M8GgNQn4ZUmMpt..VdY76d7oxjiLf4e+SLs64IJvXf7ICvORCpKWgp35UFp+TeRu2sylpgeKwA2Gzlcxv4UAwvOQUZbvDE4uHJG9q407NH41eWdaCkkdwBwZ3k7Ur72HWVE6PUkGurV4sYnSL9MldTVNoQ47ZShU1Xxdr3L+01zyfma4rG7nLf4WXkp.0hTQwp60gk.cwhXx2xqGydm2DzkK3.xDeavIiuoMKfvZsD14+wN8kV.8ZwCj3FlA+nxgcgy76maOaDUsS0vRzHzIyyXWLlHGPAIewyDU.hjkHm+9bq571zB278yqRD3rX5NJ75fxIcTPtDFY5XGii6crwvysb14MmAL+rKsZ56OBD1vxYHa71+RTr2e0BffjNys2chI9.uMTY3dAgzmvTq64RYcMReWYYmGse9zdqz1+HXeE94V7iT+vbQGA1dLHjAN+l9cBg+N4VgEutc6oqglAmTStarr+ADfOxfi44g8BDLibvnmhcuUWXokJBscixJncPdfGCw4Id8XUHx5mi8T7xw3I2GAEY9jxm16Hg.9jqiAP6mXd7DMik4mZkpns5YAkjx7MBQy9FhP9OlKV.f+CRiW4XyqM8Jc0IF+88VwhWydglzPS1iUp2mzdK2VW0YEXw1sQhFrX8zL.EdCAAOuZ4MHhy9qhHLyksYnasbfhIngFg.FW71FdAOJAI7zIdYhXcPknBnU.+Hosfub4QPy.fqMdd8XKOS7B5zx6faJm6M7YijMgNKy40Wpe.PKmXYLekrSeHCXd7Uphx0Q.fUo09OhKhUUyET2GjFs+6QB.bejbT7xpTXla8Zwzuq2Hn1aAduZjZIVa87gl.rt5B7FGa9Xt9gqnYJCJRipimMtqy+Qpgwub2akjf4u5cjo7xuk0YqAVZLPTCyGxeGzS2bIJCnxVtXi.D85H5BGM3fOYYiUtHcVb9EWPy0J3zmQ.513KOVj2c1Hl2LzJjXaD0VvKPlIjwqHhB6AYspY1v.U.8PPGhk29lvXef2FVcqij55NMySGtEJZu1NcD.4S5bJavg7YaXCZr47Cmu4cZ4xGQX9qZaPWtTCocr5x9WlMqKmqiNLLK8n4AgAY8wmBRdqSTVdYP1gHWcaCxer7lWYyjO6HpZBnV1s0NBXl41B4iNiatC7ZMhX6.rBNimNil0asULw696.KbKWCnB.xywQ5SENyps6T3grVjiMTejq46FUVuIvjSFuWqXQL4a85ReAKlyvj4YwSJ14wyACCaCr5iL0g82FU+wFIHJ84zLlLjyHAN5JGcRj+b0Ixo1vqK4TkfY5U13WbA7GdhoCJbVvLAn4MlpTGmI0Jt3X4WyEAx4vsrx.qr77O20e4Xx26cf58zF7tnic9MLExMEF6luPBfMuwhC7LW62PBj42.4BTf4MhHr3VF.S+cb0gKpIViYj46FcN8rxjKcBTdgMxAwKAj9u9jd5GiuiMztjGygeClRxZUGQjcJhrmYZg1orv.5pkWEiVMz5b.X9SO1bQ5JCymxLOfkHBIv7bxA+0Ae+5L4IgY1yBtiEmsLUFd.iOo2l2WzN+Pmdu1sHQ91xZl9g4eAJbgRxTYA7fWg32l1DX9pSYjY6gKetKcSX1aduYmJfcXPlJLSCk7Wg0SdebmmW3fzDU1gqESCwce8H7jzZMedsL5aqKdfDk2xi7eCzER9BggL2aoMgPdlxVOkWcELVsF.lWz7rkYAu1FwzLxdZ.LVo34k+0SMXe1Y+oLOgU7zUTXmEhHTubQL0cdyX9630ApTh2xryuzV.qotzF+QyTON.sPwwUfjNUFs7D+bF.34Ik6XVZzIZBScs6Dy95ubPEKDNkJ.2A+gezUCO+zLdIVqMw.pjuA1xyLgz+al43ifoO4nSL8Aunl0Qj1YP6Hsym5hdbDiWC4gPgkLDR1gELrPPu3.whUNS1Ju5pX95roDCAXdI6hfPZCnJ305jA7xdT3sI6+vFB2oBDDxLJlbHavR29Y30UG.X18tSL96+sgZC0MrGST9bmsmODxfX79pjPPqfUQZGJjHmdWw0GVdvrVA9GkRM7wYe1bm4Z2AN9G3Mfk28FYG3Weajus0zfYUD7CGrw7KYEdx+KYYFamMHjCvJG68nkqyCCAXASffSG3t1gdMzk2IfwyAm5MKvLPuKJSjdL1NKbdk2dX4IWmJYmTitovJqrFf45oVl0Z39T4BxbMY+isgBDxNUHihRapbGfVSlzxR2zzYww3oJ8zEF888VvxWyklBjsuu6buVvrCmwTfrN41F1LFtz7OZ4dPbB7xOroA+q6VvjaP.U6nMbp2x0hwe2uNr5VFDTgvUSFd7NYV9b3VFvjGOa5N7ShlqSnAb4vv5vz3kkU7.9IbzBJJO5RS6eJrczPNucq9WT27SeoMM1jnBqG1z4B3UsmFDATb4kx.lC9.8rrQHTDABoeL20pzeI1IhJ8i4txagw9YSHQgfu2vA6+bZ700rOWVNZ.wVASthCRARkfodCWG5baa.c+u+PnvJUgVSPozPgDCo8uC3T7oDkiGaUJkY8f97oMxlsdSVZUPsVNcCi.qQw7JEv5cvD.rvFG.K9c0OPMM593SfVN7XnkCONJrzJAcj3MR7FRYP5kFadi8ofPlm0aHVYxq9WKB0rUuk9w9FXlotsBNKTX4pX95g4K.LujcH..2G.bKClXp.2KnFxak0tjAkl7S8Pw1DEFCqTr7QDRXCu3r.Be+D.+acy425Fvxev2FF3e89P4SMMHJAPY.uZxellcllsyWPkQgPDg5AVVL6Pn4r0l.Bi7u7n3De22DP4Bv9Aixw2l7l.ur.E.JU.ytiQ.s8ggRATb0Zn3bKgRysLJM+Rn3bKgjkVEIqVEIqVCpUphjpUgpRUjoimrQzXjIS57e4A9aokXWau2l2XWGKsX0sjd77JkIV5NiZ4QOYcZtu3hUvr5FXYdUJEQoMDzNGDswBsMj4YgjMrdz3jCwyxGG76lBRDZY+XuWqsVwL2wMhg+a9hPQrgiXJba7d+jaRmOm0bpGPZ.ik3RSLK1vc+X3Tem2.zhU1qguCdP4YRmhRe2aTcvtwxC1M.7cVEedCAzDJsZUTZ4JPs7pHYkJnzJUQxxUPgYVDkmZdTX5EgRWOsJRTrF4bjIqxlMBpSOvc+PhJadyJXA7pqL1zcu3qi.rs0Q.MskiUdNcr7nhwaN9jPxR0vRMxxrWwjRPmEGofk2gvNVuzF0qFvMGIWOTSnNEXCJsyjgLIUqB.xsvQ..k8UorsP1IlCXl5S9MPt4o4lil+9VN53X3u3SfQeyWS37gM.9nzz958x9jg.3nmlU1f4Gp.p1ZITs0R.82YzFXUcMZc1EQ4oV.kGeNT9nSfRSLqwqIQrn33KO+4HWfEkXyyvqKM8u8xHewt73C.nV8Dx1AgmlzhmCDmFkct5AoQ.EVtdF8ezOpkj.H4FNvw.gmXLe17yUk2gy8XwnIF1lXxosgvCh35H9EsN27nm+8GM.H.nRW0lJw3chTsbPeHhSKyOLKT94vob7jsQr0W7jXSyrDl51uJrzvc6kSViYvT+MoQDY9T.a6j.1mbYVdYhnK+bctYZSThBK0amX495Dzt2.vMeon8oW.c97GGs8Bm.IKtR5fPrW93xQnc0SNyLfOqLHngKK50HOBcclxGqCkqMgoSyN6BGsq2VAHCAf4B.AsJtQnsyI1J.xomYqDlaDHffuKxbAwIv1xxSWNDHie594OD55deLnpU2xs.P4ddDc7fKtz3yL8O1AuCYRiBu2baowmEi72e+XoKayX5adunRakYKjMe8BGX6jOvjc4.Fb.rzBmA7PL8yR81IV50uWfadunqiNA554NJZ4.i5rPF7VEkoSyK9TdfUml6kcPxclHh1LG8jfcvZKD426Qjz3jK5EDP81JhVDXm.vbGIIYY.uQSGwi0iJ32DS94yoQZJWIJCqwJHOZfjp0Pee0GAs9bGAJUBTJyr44dXwoL7SeI.TKFEij0CXxmQ1su2IXTEs+bGCscfSg4tgKASYOEcR8RdMrRYW1HCQ5bZkW8v32425fX9sLHZahYwfewuEJNyB4Ljuu7bLTr1F9rJbYSN9d3rgbkQtVIonloCfT143OFOR.P2dIzUgvSiQ.XtsBp.kSTEJPXifrWEP5q0qLbtfIitJnrko0IlA8bWeCTb5EMSqHI0RQgTKw1O33t5vgpsfZeU5HqkWr7grQzDuSrMVCcMpqTCceeOG53oNDV7x1BVZGifUFnKeEXoKPVcmLNttvFuzZEIJCWeqQXaF.Vdfdvw+duEL3887n8m8HdQSvKRCyt3IlpzlFCT6T4L9KCfOGw1YaQyniMQqkXa4k3PFeWqsxn6FBlSTYsfZKMuwmmtv5PP9yKvazjwwBc+sdAzw88jPUSCURBHJ0RqJIw3wBqvnPpC5.HyXvt+2ZsfSXEa8g4YQMBOSpvFxBytD59geQz8C8BP2UaXksNHVdmifE1z.oayMq9hpOQ5T8Sj5BIOzHcYN7sNo.F6MbknysNHF3q9z.KUA.rWRgJkeDW4zBrfX4v9FaDtpg0afLEToTYY2Hz1cshciyo.13IeEJpqps0N5JXCpDf41YtOwpas67UBSnxDZDH.v03w2IMomZ3gjUqf99hODZ4.GCvbbkHRAETdKwpjryMCLq0VFhxNDnSFYWycYlSrLavikVoS8h2BqbZ9jEVAs+rGEs8LGE8WLAU6sSn6tcTq61PstaG05ocToq1Q0NaATwhA0KOH4AqtOP2AyNlpD4MB8laGifkGtWL7c+3nkSMEb6zGQhofY7UuYUVTvndbY0jWd4Uh0FEwfHm11xmVTkq9s4yEu0aPFdgSi5szB5pP3h.EVlSAH9ym.4bIlNyX.N1DIJUPYrlu3G+TaitlIrbqi1Fr1O43nm69APg4WB.l4GG.jSLXT6N8obyrvO+NO5kuPPNiG7xTB.ZFOEL6GWiu8VJxjLoPcRMMJMwb.SLGZQXUA..ER.0RInKWD0KWBnsRP2RITu0Rndakgt8VA0RITq8Vvp8zAp1V4z1.KOR95z5pOqdzpu88AITs8VvodW2H1v+zCiVFaZeKWvb1Iu74RmouTd25ErE874iXKOaJCV1yYLwcHWD5Wjpzsd6Qdfp7G.pz3Ws0Vark4e3Q5QguzyQJxusjoacsYdTJQilQNbMv1dXFoV6VhuIdGhvhs8lK0PgdezmAc7POsYUZIo.X6X6ou2bS6gpP5jJbUqx.3YAtwDJrQxozg4DywVHo6LXXXuLqDWP+n265XatW3CcTSCUsUQgEWEE34SEgN.f5nETo+NQ8A5BqNP2XgsMLp0Vov4zB3OlAHUepL0qRSndgBXr250gM8Y9FHYoUMHrb32HWSB8YF+6I0ML55WvXH.0kVvTLnr51HSErZ4VPuIMXNyoEzXQKXHBeCqJILsfhZrXjNMBSuWEBdd.ALfEy7VTDPxRqfAtmG.kN1nofXUAyTlrC03c+le3uz+HqIHVCqho.39810.JbWnsyqRnG00skkMGE6NnYOn+vxOrN5JVZAUDiOs9IOfW77GGKoVXEzxhqBbzIQ6.n2DEVcaCgE26lw76XjT2lY5j6BV4l8ak1aAScGWCF7e4Q7MDLd2KKokmrxNwTt.Fy9hIwRdcQloPH8MpUOHSiWGxs4NHODPashMVND9lELWT4nUPgUlCliYU9Ix1AV6bP8xZX3kgzo221QNE54ddPjrxJPQIl4DYfOIIF.lEPaThZyu1o0.FfypOB1TEebtQ3LmsZ2NypY7uPAl8XHZrBJzOt7JGEPT2B0FaSXxNxmCfw4k5DZ4fihVN3nnu1JiEt1chIt1calZA4dnPU70.Yjy41xfn0W6tPGO59MFLB63vAkJxbJ13xAXiFyB9YM3i2s6tqgLZ0gViB95werWs0gqnc2I1f.Lm8wlJQgZQF8Pqo.fZrc.UltCXX9i+jLm.B88.OI58e5qhjkVEomDDybh01oUXtO09DHJ8ufgHMS2HZmbYD13A.YazY4I.HyhWXGxQCaZVEdzSZl3Bhes6neJr74YRW5YlGoIOpkqftdf8gM+O8Pn37qXV6hxLMOwwx0T7wtgKEU1z.7pPVkfeX9c5VF+jqbJimDxHDSSmByaf9Im5Pmn.JV.+fC2cPyRVvbwDTof2JSvSnfATRL.Zz+X4MivRDJM2hXnOyWDs8HOm4znYmyaJHNsWrAjZmerEryXE2EVKWRydrSAXVFwDTpzSOmUoyoISoFsegsXre8EP7GDWiHwkYdhM.jyoolP4SLI13e2WGcefSZhm0VETeo2O5a4ZgtkxqM+1n5uQ7UChiCXClxgLDSuQ.0Ft0HYNBX95aqDzk7VlrVk37UvvNjfmIeOrX5lNOvwvf+seAT7TSBm2JTIorhpfgdVfswxrwCFoDRkNEA.+FdXAsVPoDDSHa51f1+rKRL.sCDXMuQBAMWSQ1eMWvAkfkFIRSGg974bx6QIm1i06QKWACbWON5Z+mHNlhY4qZakw723ti2SkWehQu7oK46PcpmuYcHIV5VYWpuh1YmBtd0szFPgHSpPFwk2VYfRIAVRIvWHgGzF7V+A9EFJ+E.PUSiAu2uI54e6ajdNdsUsYgb.INvocweJUhwEZj25qVHzxdKbkicRv7FDQdcOKARYzVF4IxQNxiCnK9iW217a4+.fBBdJjC5rwtlXwQY.Jgfq9+xOMZctkMxDXuPeLyC0HRScoak8g6Tpmj5qH5Qt9gDsMZQ9DiTGXvIP2XlNUcV9EKFawszMtp17eIvrgLf481ZIfRlI+q8uRszLktetaVa1Jy7gIyiUksro+1xTygg+L2CZ8a8hofXyh4Tn.raJh+rUXrRSJyW6JqEZu8ZY6XpKdBeRfsfDWGaoAFSjJC+Jesb4xF+06Kug.rJiX+wyCaHL2q+Wkmer4O3DjYIs8EoncA8L4VAC835.qLB.0pUwf20iAUMsC3Z8MsscjzDzESvJ6YCdciEWpCoWvPxLYL3y6fMI4AEyJ+1qcXHaZjSVjenircZcORXlNxyOxv3JZqLjgLf4O91FTgRV.jo9Ya0pcQbZhbKJz8dyfB2YuDEPO66PXf+16BkFeF.nLdMHAj1uvtTNWAEUHEtVGdWo4TBvLLIyuErFaqEcWCsm5.vO7ZvSesNmEshHJbGHvvtZWRYmlklxz33nisb.90jnE2ClZQ6AxJmLv5.35nFt4NkmXVLz88rofV6yWorCG.l8p1NXhr23.46D6pFNP1TYRiqDW9I+u11Euem85TWHxprCM.klkJC0OtrVyZYN54YFkKXdZSXBOqmqKtH2aA9EpUG8cuOBZceG1jXJ3UgDP0UtsqL0hrYyQbzw58BCzUX0RC9a7R+nCjoUg.a5PV24EnUL9q1ZIi76tF.GfGz548xAugmkMO+3UXVvoRxGTnJUB54gTicd4Cvd9Gn.MgmQRSuim9Hny8rQrvF5mK5AVYWputPkA6AkGeFWamhKGjs9XmqCNuSDHhmWCMTvDuWOXGAmsLd+ul7J5q4hGL+WiNZGexsOXFetE+MmeIiGMH6btL+YEVtti2wx361VlbFL7m9tPqO+gMyCNcpCV2uknLKuyNWYqK2fBgOV.pfpfD+u2ZlMcF71Fm1+ja600V.YFUmQ9D0gsrxofH9MFW5A7rmVYmzIkFkqt34yKcV4fPvnEbdgL4TmVec+zGMPlrYTY8EMQXwqXqLvImyHVGHu7Ksy4xa.e3Gkgw4YzagzHTKZsp6nG.p0aIfBYvw.HGv7s0YKP2QAiBH7OebbfN4VXQ2OyKhA+L2CRlYgz43pRbySNEPa52q7tZiugG9ml.Jnp4MVxNQ776lWoRjNq7j1qjBe00FtHP268.VaYP0GgubfPxYTyeMInEuLrFNmd.vMUEGM0L5AO8AaNzbzRK6+Tn3xUS2laxKmNYD.ycIaBTohrAejuZ.DxFucP1bv6DlYpPgxeP4ov+.qMj2Tuv02OPorOkI.4.leyc2FPqEhtwHN9Tz5nVsJF5e8afN+JeSnpYFVzrXNk0GxloMjNmYawsCeJ3btuiAb.KtRfYPK7diBUWORCLmltPrLQrIgKpC9bgs.ddfs.pLMhvmeRlFElV.cszjyS77iP53.fUqitegildhyBTFlW8XDftXBVdOaLsZhcNrk.PQGQIu3hOui3K+ZMruFT7IaR28p3loOG6J1EdO8v9JFvBQAyexsOnBsmD7NGj68H90..sL5jXj+l6Bk1+QgcCPfpPJHVk3NKE1ixIY2NZy7j8O2cFAiTdAjPvhl.faQD71lLe4OMaOcHcY+JjKtrw8LlawY0C4Eac3rVqCos0pbvBiH6BagquBX4ygQYVACnGB4AhkeOSwrnYhuim4XAskoxZ5E13W3x1LapYL5xpatWTTxNUV9jCLUBZXulYTha6JvaFbZxncsstwTisQBwW.H.PoBXkRInbEeqm0aEbkROO5yg1e3mBnNkNcBUBTTpOiUIo+RPkdMkJg1IWPHEHStmLEl0Y9vrJ+u7FI9vutgyYhf7gx15Y.qxiKWxfVXog2sOXzAwBprfIqx2E37WnAxT4GN0ibBo95kU1LcNfPWvBElbAz9ImxsPvXGKgEFrGLXhx8I.IP9.SVr7LCvJ0EjP2QQ3OEuHF8h3TDDp20.0FtEfREv+wM0WzIMm62N6ao6V.0VjWeylJq3Rqfg+b2KZ+AdRfZT5gDhRfRqbsJV2vARYFpPEzayMWOfTqwbPBenZ9PuA8Vo.fs6WAMBlGcLf1ZEriDv8+JyJCxvWg7DEi23c.DyuGZgLZ4UgukcVGAimj5ByOcYVHnqZDcJPRBz81YFKoZd6.iG4Vw47cvHN.A.7fQGABFMMnMQZnv1g6Z6I24KCz.v7c1c6.sWL6DyAP6G8TXnO8cgRG8TPQJjP9CQep2IrduPYXP9SHsJ3uz1RtYMaO0vUBSLoLveGJedfI+NkCKdawi8pwRJiACyC+J5kFK43QqeWAX9XEjK9P+K6Ki8IZmb+ySc+nGVo2hzL2QgdHg6bKe8mRgRGax..C+zUZutZ+clYPAKMsxB2yDb8mS1r4v1NZkQweVuLYkAutwy27NzPAL9UdI4NeYfF.l+jaePE5nffGHz68+jnuO28hjEWAJchapEPC+4LFryVgy6EbyHg+FzDFLNiKVmJ1qN8fVedRooXu.AWMGlWuEnLVMIHhfW6rFkL0EhbOD4MrLjCJxymrimL+x5S5.rvzRVZETZ4Jgq2ffaif.Ar5.cIjsX0kTuDOW9N2MaHdaFX5h5aYD7Va.XN+4LC.zRQToEEJuJgxKrD56tueT5DSjBTcOCd1M.IseQ54W0eH5SmSG2JrT.XWpjw2.kgab1F0HC3VIXlnoL0IAu6pVOMCtBDaZCxzaHANCnePcDSO.zxjyhpadHV0EluJ7mv7X7jSmmWkKtj6AnFJ6wHWXcUYysBTp.9I2X74KCz.Ky..+.82NPOkLmzs6BkNwDobkyGw9S7l8cIrsCo0qFD7tgK1t4Ys3GJHl3jcTcoItNCMMWDbXWxlOBj4c6gw5j0iDYpSxyS7SPGuN.KuA+JjO40RdUJix.utySGlynMkGed2MtwIz9Bs7.cGx2Y3mH3nXse7JlmTzSfW1hjQuCfItyciqpyVxV+rPCAy+0W5FUn3Jn2+06CIKWEtW.K1sdlT.ZU3SsLwmhQJC4depYO7Lbfgi4MoYO.AbvhCbSgK+EjOd2JVLlAr8rcJaYdArO8pMbwftggEctLxFTv2Ho42yjE6HHbdK5ILixxqNWGwnOXxfS9DzUgPZ.Bkmbd+zJr+kXf1Zfps1Bzs1BiGXsMb9S1w1ZjJZGcVbJV9BNZshN0VWzXpaRSX9Wydw2+.c1fFp0.LC.fA5CKu2VAnTeDCs8wWxuadHwtoH121PdKvNqwVrEA1AQAri1HWoAuxS4yePCuMvccDItGj2XBwimUG7CQkMR2N+kdevHq9U7EZ.hYUIv3iqQlISRdwVdBg9okQmfWiUbCBxQBrWGweiEmXNSxjWd0H3I.ppEvvouqCiOdoe84oyWno+2zDxcIQLZP0Y4k.V4p5FnbQ7Ks0AZ3jUVSv7GYnNwXu4aHEW3d.SSbVeUtc3yd1igA3ZcCW3ViFKPLEfr8Qt5aYZYRW66fv25WmgcquLI+Jo4e3f3eGWHJxe5rwYqeV6Qv04EmrLwnUftixl+79KS4IfhSs.rOWd1ukKd9JUtq1eWYcYVNzmabRJmbYTJeMh1b5Z0Cm7Mck3V5I9SWBOrlf4+3cOhp9keI.IVKtd+H6AzlSwk6g5z16m6AiPFbsBdEiUQQhzBuOVmEhBetCCoqufJc5e448fX2ms9Cs5jWCWdwIqKo2.xddIxy5P9.KTWi1ld9T.MqCsaQuJfZCj9djNyFXjibasdEuiKkKele7g5GchBU2yVwOr48aciBq8zL.vHcVFKdy8YfsoVm4OWdjAbaCdEAE7G+7sZXWDBV8wG3+QJLOdfSnIKtud47RVZ.emOwSRhJyvy40fnB3GKsC4gr2GKtr7sh0nRAxQL4U5iaedxpGacx4i2yB.JMgU5siHz1SOmmmczj2YNjuj3.uewi2tI0eDQXgad.fhI3mXi8N0VTWJ..bQrIQTPTsllAaJv7GYntwn29MBXV.n+IoNzTTlu5PVAkeNKHx8qOcthg0fji0LldfcP3CUtbKT75zVFQlCCl3cmrNt66zR.hmWDEO5zbjm5Ma4C.ErNTbchuQOrbAhBY4SD3URK+VXxExJuLEa8xE80m1WV+YOw6W5Xefdjf7LqCHiNxm+foWYx+Iu8qFumA5HNOKBMEX9Wa6Cpv12Hp0YIP7sjl4JN2pU4GT.BwO3CFvUfwnrFvRCAKdhWWBEjXwQYLHB1uqUebdmofNhB9f0ov4ol.9jxPONuF7jnHjsL5Bw5.BxWPcPgmiEcHcRpVKh75aizEKjgOcA4875Ml2YrkgWVYaBiFxE9p6pDvlFBetKaSM0jSa7llvBumA5.206+pwV9TOt4rwZ+f3f.Eoiysc03yl2BhkOjn7WxIZJ3kWhOADRmfQFXcokO3q7.+wvZkZn2m8XnkQmAklXNTbp4gtsVP0g6FUFtWTYHuOWIBtWgtA0gkdAlTf4sJiP93rilxpWBVoDmeI+0ZJacYiWVmjn7FZjrZUz8gFCkGcFTZr4P4ImEnRcTevtQ0g6EU5qir7HZfNkq+MkgH3elNs5LtLEiG4cJM44DevqBau8R3v4Tq4vEMY3qtOZW+m9LHoRMma4DXwnwIaqZ1zrQHea1KKmzq.w3Ga7x7Gk2SxVIxYij2BYWKYLu5VpG37aL5EHOIhBlCeoT.TgB.0pmqNhWWw3aa6Ql9hqGdHme4BktkRX++tuO7GeICgORC10OdnosLC.bS80Fdt2+kfg++84f87DjKSg3xVrUIyuOSYDyaU1PJiKO5jI+JfJaZ.Tc3dvpC2MVYftQ4EWAsL1rnz3yhxGeRTX0pQAxMR1jtPTleorFSNjkIlw6.ZJrXlWmbh.Ps5P2UaX0M0OpLb2X0g5E5REPKiOKJO1bnkwlAkFe1fxDPm7.rB8TddCQJqYjKyEi+8sGTt0BMMPFX8ZYF.3dedZWezOCRpsdNCkogXVBalx.zXqoq2P8dZGS9ltZr3l5KiUFqkmhqVECeeOGZ8ENQSwiw5LegTHclNJrv0sKL9MtGyGfTwLfLWz6KdBz223YgZ0z4WuVilc1JXostTAbfeu2G9+bWCg+OViMJgGV2r0k73GhF+y8Uw.elC03g9hzyrYmV.mlw1LhlYpF4Q2Eupsiwt4KM8MaOe99tBA2NAC.z6AFE88UeJWCad7IW9xSVazzjyajmXxU.6tFiHZiudOcfIuyqAKLTN9qUnKJtzpX3u7SgVN5D41d0n12F0Nm2TrrgI9d2Al4seq.27dVW3ylxaF7vmXy8iYdi2X5d5SYGRcs.x17Xiydu7ON83BqbXb9u4MLm82k20Fvn25k6+DMDCfHnyL6ZDL8a5pykGavntQ407lVQL4NV7wpm7ngKtjDL5a+5yGHajatosZs2BN4a+5P895HNMyYJDR4KO9KldjH.RALya70gO1F5IedMmv5FL+CLb2pc1aaXt2wlxMOYDTovGAzFyWsbW3veoqDEDlCOX+U2RYL9scEgK3uAMJA.5cLLV4RxJuwZjaz8.HzcbYRLmqAhb57hP2Xzf.l6ltTrbude0lKeJhWWn.l7Me0QKSlvZz4tYCy8N1DPakvuwNFZcOqg0MXF.3fu1cpF+cbaPWLI.vED3JHKawOQW77TmPFelx2XiXOMs75M3TXgvzM+M8scEnZakMuagyQvXmIA9qZ.h.F81tbnasbbPlsdj.N9omylDeNLbcB+D2YCbYvMLVN0uT+YpqpC2Kl70r8znsxDB6L6FhW6yikEWbvdvBWyNiKubYy1NwkUd9yq7r1QcwDL9631vmXS8hSmvoEXF.3ZGncbxO703YPMkBJ4+ximf2Wn0YJ.fzFh5MPQv6PXi29av2ZPk33Wl9Kknvr6bHyKW7vCXC.ftN4eK4SHcW9X0mh.zkKgU25.gzW9cNzV+0YxrMPL8BPHPvRm5Y48.PhL95BdIH8T5szt2.Hkx8NNwJOAu6LzHP945A.fELuO5xrYHDkMdN+v4O6eJkuSK2PUcBm7CesnXGkwmHxaqnlIbZClehqY6pUt9KCU2bqNYHymnZIvLGEdfUK4Yh0FjfiXVvjV2L+VquNgVk.+6DuzsLl2fwCIlFefviGYkA5Ij2s0MS1xPMdGRIuxCR8VvQiUDeVVN6neleWYnt8xB4ewVB.WmaMY+HKQA5H6uKOPWNueDcjFCu4v.wfh1h3.0bcBgpasMrx0uW7o1w.QJbyENsAy..enMzMNxO0c..x0a28bnoPf0MBTPb9G+blUPB9CkGByGiPAoE77CxJKutpLRJHLIXIzg.UPgM1Zs4D2o7wuhYATVZKkkFE7OaGr3n35pbyOB4WQhYyiBXoA617BtjBjeGvk2okA54zUSJTquNc5axYzgAfsUIqiaFYvsPFA+SDNxO4cfan6VwGZj09.EkW3LBL+mcIaPgM1Kl+N1fgGSGFgf05J6A.kszdhkV5WTJiLoPPmhL.Uh7JzLf3v5DvPGEP81a0CdynHEWmCHA.nRms438zz70iS9E+53SFPhGe.uxiyj+Lxp8eL8.+9ziiaZ9q2RozyZgQNzRq57QK3qig+mITqq1.2cERPpU+ulcBsxfssTAL+adC.C2MdzqYamQdv9LBLC.76usAvXu2aOcwf.9oHvTTodfH6Xio3BlBvXsf.SoyTTtBYSRLjpj3DRmNQwox4jh4xaSbOAz1TyyZzMVlXcv.44II.LsSLKdgiV8GM0vSAH2JGq+p+fG4.ddq7owSHYkJn7xUhKubC3wlVmH3zg1SonYjLqbI0aYNO3hNu14bSETXr22siehSCWwICmwf4+iapO0UMPGXzO7U6OcYHrSeld5J+8AtHS1AvdM6HDRrxwcLPrmiOqgjRiMK6sGu0RH+cuFBROu7VZrvs40wxri8pKMIeqovMQvBtYOtWDSthBRT90OwUk1GsLPH3kiNQ.sYjcqb.C+FbuPeH+sPkpn3LK3dXesaauSVX+5ZurctjV541kz.i9guFfNaA+u1yHmQVkANK.lA.d5qc6pkdcWIpbEca.ujuA1IrFgy8XGYZ0rsLlyIb..MvHFe5IvYUzqb7VFs+YUrElYQjTolwo7J+qrVx2Hxm8fMMxwWowUZrYSqewzUj7ibTnfWL47mMNFeDBhseFwRoouiA4ATPPKXe8NXoQ5ukFcl.8ohLcpzj6i4I+i5YLfeqiOuuyHQocXrelFD7sscM8c4LXx.4UYlKpbEciktwq.3l18YLPF3rDXF.3Wcq8gi+y71gtr8cJG7MvHUK6DVtayz9gXgJ8kQsadoDYtG.tGRV6VLwMQx.0bbDa369dhClxFbfKyBpgEC.b1fRAzxTKfVN53tpLnt0oDy0Ik0H5qD3xG3xrIO7GZWxzoLiIaiRkz9GGr.8G3VDSqy1e1igjUqFLsDKPm6xrvGx3vNX89DGvQSx1Sxz955b6t2q2C+bgnBxa8xI33+Luc7dFpwOw0qmvYMv7u11GTciC2EN7G6NcKAvZo0YwTZ4iUdBvInJdjPzylAFY3FeZHLMak04isez1jywNr5xZGtmfXWf49vA+ReKfZ5.fryhrPWX4Eob5xOE5lVhKmBBwsnkczCe98ORRL5CfjEWFCc+6KToyMNvG9y1giYmrmm+3n7gFKq8CDJWAsEjPlrFUX5tC+wtSzcOs0zG79lIbVCLC.7HW81TX2ifY+d1gKNowR.l9KG5vAnYP7MJyLEnLKPmBHU00H.EEGIZXvTqIC7X6GEGe1.dv0XIjorUbj7qhKJwxerzjgbbqqKz1yeTz0gFWzINSOC+8lN0ElaEzy88rgcFWC9LP2KJn81Y+d1Nv1GByci65rFPF3rLXF..27dTS+NeCn5NZO.jQroT3VYKOcoYV.Qd88tcyG1ZBh+Gfe9l5v7WXp4wV9Gd.z5Dl2rOtgMPHv1LmRU0ZX3u1yfNe3WzymV9g0BE7LFZ+0jG90V4HnSWDPqUt39A1QKQYkOjvA5Q3+s+65wP+loZkY3hHaDSWGbbr4O68CrZ0voLHr35V7IKMmbvkYyuU2QGXp24a.+pak8cV4rT3rZOCa3G6kFk9TuzXXa+reVnpT2WSj+WEeY4VEhELx7UJ.xnncugjHxQGmBUtTe90VZkjfEtg8fot1cBJxGGQP.se7Iw.26Sij4WJa5xc5TbuRw9f1nI28b4eM4UI8HFcL5Hads5Nmdi.TIpn5jZizGF+63pPk95LZqexxUvPO39PqO+wLO8HvSSldOnrb4huAJvv2FdgJW.G4268gaYSci6+0bl4S4XgyIfY.fq7INL8LO59w1+u+kOyqFI34rEMRRP895DUFpaTYvtQoEWAEGatTW4Us5Y+5qA.1f3Vq7AO.ug0WChmZuUTcntQkg6ATwBnzXygRSLKJL6hMMMVy7It+v+xuYT7p1FpcVx6Ewp9ycgGZ+T6ewuIF5O8ohmtnm7599lglMaZMJOMS4r4CHqUp0p74XYaM4s0Sczrz7zMrFsUi+i9ZvR290AbqWx4LL2Y+4LyC2ztUK8cbcX920VSumOWNaPFWr6yK+j3u7JCOt7xmb5H73YaxSl5tQ7rDbuVxI2RVL4pQqzKu5HFsxSmkmdcsRKV8wBy+t2FV5Mds3Ss6ghH.m8BmaAy.3u8RGAS899NvJ2BSPxCTm28MS9aTYXwS403vuNVdZT8znPLdesnUdcfk+oDoKyeroGzL5slgWalxS.KeKCgodu2N93ase7isgS+CQTyDNmCl+.C0s52dmChQ+wean5dSeYVy8SrMDrGBQBA9VlxuLYhqAMNwnUd7PLdtQ4O25Lxa2m7nWr5Kfma.cra9QLZxoSiz2M604QipWdOXre72F9Q1P2Q+hpd1NbNGLC.7yuk9UezszGNwuv6B01Pq49vWlwsmrckRlgnMxrcEK1yWnL+1KHhs6eQZrsoCv2kPJfNMB3wyS.eEgFtxporzQmU9i0I2FBjIShM5U8PC63DAvJefg4sY01Xq3D+mem3sLPG3O+R1v4bfLv45E.JBeuO+InOyQmBa4m6eDIyUI+tzVW.oIjTPEznaec.DfL3IZoYLMsrNB7FPXY4cH30m6MtDu9rGKRBguLTx6QFOFOJyCOtbdj2c0mPGD8sBkTe0.8RP4iTuY3QQ6Q8tKgi+678fqYntvSdsa+kML1KqfY.f28ycb5e9nSiM+K+4Pxnq3YDU11N90qU6dl3SX.RU72BOR5mW8GqNWq9NMhO4oGS9joyoUzGQedmo0.CK6v0n9Pw36XXamLjnP8gZAG+W+8fqbjtvy7xHPF37.XF.3c9bGm9WN9LXi+W+mPwCrDTIQTNrW9ewbcUdfOW9Q77FPOy0t5OSKuo7b9iPF9MOdLfW3gF59wbP14DZnrkWdVqxZkQdafM+5r7ms8p1tZGm7W46FW4fc9xNPF37DXF.3G3ENI8We7YwF9M+7nzyLSN4REBPblEX26xpskgUlfVGUX4ig53oIA0NvOu0WE8RO8Q17pxI8nlbk0cDdKCojlNYtznYmVSlfvsHQLMW8p5Em5+76Du9AZGOvUe1e28Zlv4MvL.vO8AFi9edrowP+AeAz5CNtHUgBroCwLKpD22LjIGyYN50nzZTcISOFsjw0L4YsBmt5Sd4QTZrxMODF+m4cf21.cf69J2x4ML04UvL.vu5gmf90N7TXf+h6AseOm77M67pg0YXo25lvj+vuE79GoK7+2d234U7z4cvL.v+ySLM8Su+wQG+aOD5+u54cwaO.5IwdeMyxSRhJy2tDabqUYiQed7qEM37PihqYuW9ayl95k+ZDe.zXcN..HBy7Cc4X9uqaBezM0K9810vm2wRm2YffvC7RDdgSgM8IuGnVoVFP5ZAZiAricOPV.6ZExi94kWdcDiNMpNZFdoYoedzbszWMpNnVKhS7q91.18P3OZWC0vuZpubFtffI3gc+XGh1+XKfg+s97nz9lOZdZ1Fc.Dc084EZTmkFQu0E+bdLb1fOqt2twX+huSTr21Nmc52NcCWPwL1vGbemj9ziNG54y9UQm+8GJLwXfS4ZojtzKV4VqzPjzOcn2ZQ67jq7VeXr6iUdIcySu0Lxi49E991Il864MhWeuscdyiEMJbAGCYC+QmbZ5m7.S.7bGGa5+5WBpp08I5bKWNrePCdjVrX.yFExKeAtMTVuwpeI+Cl6.yi2kLPLYgEuRTLRvfR2Vxum61S3KKUp.Nwuxc.bYaB+7atO7auy0+anyWNBWPxT7vlezCRGerEvv+O9BnzSa8GcN9vMeDEBEUxj0XnTV4CxCL9+MFWlGZdMbgmidYPf4P+XWK4+lMzbtpq5U0GF6m8c.ze6.27EVSqPFtfl4rgOx9Gk9iO4r.O9AwF+cuOnVtp4c3.CuIwRQvfYRxRCBlyhffHQvmNZzv5LEnFxapfNCY1dZQ+mz8Mw93RwjUNuy6PH6exBt8fgXEg8aLYU2VIbx+S2Jv0sS716ucbWWw4O+G2rgK3YPdXqeyCRGclkQue56Ec7udDP12EUhQXyLJtXjd4H4pD+0xMNKyFKJlcP.VVgvOjjHDCKG8mOCi7r2tV1r4yNfu4fAxLWN.SV3kw0wlvRuyshY9fuIfNaA+E6XP7COROWTfStnfI4gO9gmf9jGaZfiMMF4+q6FEN9RYZ0y4Pl0DHi34sQmsAf3osdqiFlGbZPmlk1L8gdqcfS8y8VA1bu3CMR2ouXLuHJbQEyxC25ScD59ldYT9deJz+exSfDySAdybRz.hC3aly2S.8sGFm0YYWOgloLMJOq0IxiH.pkBXpO70fJuoqF6pyx3.W+NunDWbQISyCi7nGfFc1UPae4m.c+W8bHYkzuJT4cDbal3ZT5qU944CH+71rzoYyqryYdmoH6vXJEP8VJh49Aubr7a9ZA5nL9er09wO6l6+hVLwEsLNO76bronewiOMpsXEzxW8oPu+EOERVtJxW7DSnrgNTtQkOO5b5DZF9XstOFvO67pzsWFy7e3pvp29qAnsR3WbC8feyKPc215IbQu.vC+tGeJ5W53SikWrJJ+MdFz2e9ShjEp..yKkE.vaTiYry8YTlkpxUdOXib40SKU..LrNTLp4eQtD04KA7aX5guDX3zQVtX7.0YKX5ejqFUtsqDn0h3WZi8f+6mFeUmtPM7JFAgG9CNwzzu7wmFysXEj7HuDF3y+Tnv9lMW2CD5UgzH8dvv.t49XVRGDYX877dBPdH37CBdLHNoA8Hzs9d6AS9tdMPei6An0h3iuwdeY4AL8k6vq3DHd3SO1bzu8ImFey4WEXpkQ6esm.c8Oe.nlYUelZlU8C17PafmCh9HJoD4CH.zQ5zERtldiX83YDE.0SqX920NvR290CzeqXasUB+BarW7SuoKLNTPmKBuhUvjgO5AFi98FedfUqCbnIPO28ihV+xiBUc+6BOtOhA3KnRLXuIN6KTa+h8HQdf65XANMrHQEKyt2kdYxqO+1EyQD.JU.q7lGAy9VuAfcLHPIE9gFnK7WdoWb4hsS2v2VHjxv654NN84mZIfUqA7rGG87Medz5CNITStLBd+s0TlCsg0gYylvovYdWxETe930C1FpbyChYesWFvUrYfxEvs1Sq3GcntwG5b7KckKzBeakvJC+YiNC82O4B3eclkS+N9M6JH44NJ59QdIT9QlDpEXuNDVKMUdN3vFZrSHP.ftANsf5nEr5MO.l+F1CzW1VA5sU.Evs1cq36q+NwG8hXWqclF91VAOV3icnwo6d1kviM+p.Z.L9hnvKbDz5gNIZ4fygBGbIjLyxQ.rQPm4Y.FHqQ5b.+5daE02YGX0c1MVYGaD0uzsALTG.I.6t8x36p21wu+E.OgGWnDdUEQCB+hGbb5AWbE7UmeUf5ls5ak5.SuDvIlBsdrSgVOzjHY5UgZwpPMuFIKWGXk5ouRb0YMwRII.kJBzZAnau.nNJBcmE.0WqXkcN.VYKi.rw9A5qcfVMeC+RT3F5nEbKc0Jt4NaEe+C28q1tEI7pJk0Y3O3DSSO+xUvyrbE7zKWESTod7smiPZ7Zx6xhDU5pAyQq2d4B3ZZsDtx1KiKq0x3meKe66TFd0vqFd0vqFd0vqDB++StMdIr0edptC....PRE4DQtJDXBB" ],
+									"embed" : 1,
 									"forceaspect" : 1,
 									"id" : "obj-17",
 									"maxclass" : "fpic",
@@ -3493,7 +3937,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "jit_matrix" ],
 									"patching_rect" : [ 13.0, 13.0, 63.5, 63.5 ],
-									"pic" : "/Users/jln/@Developments/Git_repositories/libossia/OSSIA/ossia-max/icon.png"
+									"pic" : "icon.png",
+									"presentation_rect" : [ 13.0, 13.0, 63.5, 63.5 ]
 								}
 
 							}
@@ -3506,6 +3951,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 78.5, 13.0, 571.0, 64.0 ],
+									"presentation_rect" : [ 78.5, 13.0, 571.0, 64.0 ],
 									"style" : "",
 									"text" : "Ossia framework overview",
 									"textcolor" : [ 0.2, 0.2, 0.2, 1.0 ]
@@ -3524,6 +3970,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 650.0, 488.0, 177.0, 78.0 ],
+									"presentation_linecount" : 4,
+									"presentation_rect" : [ 650.0, 488.0, 177.0, 78.0 ],
 									"style" : "",
 									"text" : "Control parameters across model instances using pattern matching in addresses",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -3549,8 +3997,8 @@
 										"appversion" : 										{
 											"major" : 7,
 											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x64",
+											"revision" : 5,
+											"architecture" : "x86",
 											"modernui" : 1
 										}
 ,
@@ -3593,8 +4041,8 @@
 														"appversion" : 														{
 															"major" : 7,
 															"minor" : 3,
-															"revision" : 4,
-															"architecture" : "x64",
+															"revision" : 5,
+															"architecture" : "x86",
 															"modernui" : 1
 														}
 ,
@@ -3634,6 +4082,8 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 259.0, 131.0, 57.0, 35.0 ],
+																	"presentation_linecount" : 2,
+																	"presentation_rect" : [ 259.0, 131.0, 57.0, 35.0 ],
 																	"style" : "",
 																	"text" : "prepend set"
 																}
@@ -3648,6 +4098,8 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 200.0, 131.0, 57.0, 35.0 ],
+																	"presentation_linecount" : 2,
+																	"presentation_rect" : [ 200.0, 131.0, 57.0, 35.0 ],
 																	"style" : "",
 																	"text" : "prepend set"
 																}
@@ -3662,6 +4114,8 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 145.5, 131.0, 57.0, 35.0 ],
+																	"presentation_linecount" : 2,
+																	"presentation_rect" : [ 145.5, 131.0, 57.0, 35.0 ],
 																	"style" : "",
 																	"text" : "prepend set"
 																}
@@ -3676,6 +4130,8 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 86.5, 131.0, 57.0, 35.0 ],
+																	"presentation_linecount" : 2,
+																	"presentation_rect" : [ 86.5, 131.0, 57.0, 35.0 ],
 																	"style" : "",
 																	"text" : "prepend set"
 																}
@@ -3689,6 +4145,7 @@
 																	"numoutlets" : 5,
 																	"outlettype" : [ "", "float", "float", "float", "float" ],
 																	"patching_rect" : [ 50.0, 100.0, 231.0, 22.0 ],
+																	"presentation_rect" : [ 50.0, 100.0, 231.0, 22.0 ],
 																	"style" : "",
 																	"text" : "unpack setlist 0. 0. 0. 0."
 																}
@@ -3704,6 +4161,7 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 50.0, 40.0, 30.0, 30.0 ],
+																	"presentation_rect" : [ 50.0, 40.0, 30.0, 30.0 ],
 																	"style" : ""
 																}
 
@@ -3717,6 +4175,7 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 86.5, 226.0, 30.0, 30.0 ],
+																	"presentation_rect" : [ 86.5, 226.0, 30.0, 30.0 ],
 																	"style" : ""
 																}
 
@@ -3730,6 +4189,7 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 145.5, 226.0, 30.0, 30.0 ],
+																	"presentation_rect" : [ 145.5, 226.0, 30.0, 30.0 ],
 																	"style" : ""
 																}
 
@@ -3743,6 +4203,7 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 200.0, 226.0, 30.0, 30.0 ],
+																	"presentation_rect" : [ 200.0, 226.0, 30.0, 30.0 ],
 																	"style" : ""
 																}
 
@@ -3756,6 +4217,7 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 259.0, 226.0, 30.0, 30.0 ],
+																	"presentation_rect" : [ 259.0, 226.0, 30.0, 30.0 ],
 																	"style" : ""
 																}
 
@@ -3828,6 +4290,7 @@
 													}
 ,
 													"patching_rect" : [ 44.333328, 78.0, 167.666672, 22.0 ],
+													"presentation_rect" : [ 44.333328, 78.0, 167.666672, 22.0 ],
 													"saved_object_attributes" : 													{
 														"description" : "",
 														"digest" : "",
@@ -3849,6 +4312,7 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 44.333328, 220.0, 167.666672, 22.0 ],
+													"presentation_rect" : [ 44.333328, 220.0, 167.666672, 22.0 ],
 													"style" : "",
 													"text" : "pak 0. 0. 0. 0."
 												}
@@ -3863,6 +4327,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 3.0, 4.0, 71.0, 20.0 ],
+													"presentation_rect" : [ 3.0, 4.0, 71.0, 20.0 ],
 													"style" : "",
 													"text" : "Mixer view",
 													"textcolor" : [ 0.65098, 0.666667, 0.662745, 1.0 ]
@@ -3878,6 +4343,7 @@
 													"outlettype" : [ "", "float" ],
 													"parameter_enable" : 1,
 													"patching_rect" : [ 193.0, 110.0, 33.0, 97.0 ],
+													"presentation_rect" : [ 193.0, 110.0, 33.0, 97.0 ],
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
@@ -3908,6 +4374,7 @@
 													"outlettype" : [ "", "float" ],
 													"parameter_enable" : 1,
 													"patching_rect" : [ 143.444443, 110.0, 33.0, 97.0 ],
+													"presentation_rect" : [ 143.444443, 110.0, 33.0, 97.0 ],
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
@@ -3938,6 +4405,7 @@
 													"outlettype" : [ "", "float" ],
 													"parameter_enable" : 1,
 													"patching_rect" : [ 93.55555, 110.0, 33.0, 97.0 ],
+													"presentation_rect" : [ 93.55555, 110.0, 33.0, 97.0 ],
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
@@ -3968,6 +4436,7 @@
 													"outlettype" : [ "", "float" ],
 													"parameter_enable" : 1,
 													"patching_rect" : [ 44.333328, 110.0, 33.0, 97.0 ],
+													"presentation_rect" : [ 44.333328, 110.0, 33.0, 97.0 ],
 													"prototypename" : "gain",
 													"saved_attribute_attributes" : 													{
 														"valueof" : 														{
@@ -3998,6 +4467,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 44.333328, 48.0, 203.0, 22.0 ],
+													"presentation_rect" : [ 44.333328, 48.0, 203.0, 22.0 ],
 													"style" : "",
 													"text" : "ossia.remote_array synth.{1..4}/gain"
 												}
@@ -4079,6 +4549,7 @@
 									}
 ,
 									"patching_rect" : [ 394.0, 467.0, 268.0, 264.0 ],
+									"presentation_rect" : [ 394.0, 467.0, 268.0, 264.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -4092,7 +4563,7 @@
 									"outlettype" : [ "int", "int" ],
 									"parameter_enable" : 0,
 									"patching_rect" : [ 394.0, 335.0, 280.0, 45.0 ],
-									"presentation_rect" : [ 0.0, 0.0, 336.0, 53.0 ],
+									"presentation_rect" : [ 394.0, 335.0, 280.0, 45.0 ],
 									"style" : ""
 								}
 
@@ -4106,6 +4577,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 394.0, 304.0, 298.0, 22.0 ],
+									"presentation_rect" : [ 394.0, 304.0, 298.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote synth.1/carrier/frequency @unit midinote"
 								}
@@ -4120,7 +4592,7 @@
 									"outlettype" : [ "", "float" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 342.0, 233.0, 44.0, 36.0 ],
-									"presentation_rect" : [ 0.0, 0.0, 44.0, 36.0 ],
+									"presentation_rect" : [ 342.0, 233.0, 44.0, 37.0 ],
 									"prototypename" : "freq",
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
@@ -4152,6 +4624,7 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 394.0, 241.0, 215.0, 22.0 ],
+									"presentation_rect" : [ 394.0, 241.0, 215.0, 22.0 ],
 									"style" : "",
 									"text" : "ossia.remote synth.1/carrier/frequency"
 								}
@@ -4165,6 +4638,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 37.0, 438.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 37.0, 438.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth synth.4"
 								}
@@ -4178,6 +4652,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 37.0, 414.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 37.0, 414.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth synth.3"
 								}
@@ -4191,6 +4666,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 37.0, 390.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 37.0, 390.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth synth.2"
 								}
@@ -4204,6 +4680,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 875.0, 435.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 875.0, 435.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "prepend address"
 								}
@@ -4227,6 +4704,7 @@
 									"outlettype" : [ "", "", "float" ],
 									"parameter_enable" : 1,
 									"patching_rect" : [ 875.0, 395.0, 293.0, 26.0 ],
+									"presentation_rect" : [ 875.0, 395.0, 293.0, 26.0 ],
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_longname" : "live.tab",
@@ -4264,6 +4742,7 @@
 									"numoutlets" : 0,
 									"offset" : [ 0.0, 0.0 ],
 									"patching_rect" : [ 875.0, 464.0, 293.0, 159.0 ],
+									"presentation_rect" : [ 875.0, 464.0, 293.0, 159.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -4276,6 +4755,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "signal", "signal" ],
 									"patching_rect" : [ 37.0, 352.0, 101.0, 22.0 ],
+									"presentation_rect" : [ 37.0, 352.0, 101.0, 22.0 ],
 									"style" : "",
 									"text" : "fm_synth synth.1"
 								}
@@ -4414,6 +4894,7 @@
 					}
 ,
 					"patching_rect" : [ 232.0, 153.0, 50.0, 22.0 ],
+					"presentation_rect" : [ 232.0, 153.0, 50.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -4431,59 +4912,80 @@
  ],
 		"lines" : [  ],
 		"parameters" : 		{
-			"obj-2::obj-10::obj-4" : [ "Gain[1]", "Gain", 0 ],
-			"obj-2::obj-1::obj-2" : [ "Cutoff[2]", "Cutoff", 0 ],
-			"obj-42::obj-11" : [ "live.tab", "live.tab", 0 ],
-			"obj-2::obj-1::obj-6" : [ "Pan[2]", "Pan", 0 ],
-			"obj-42::obj-10::obj-6" : [ "Pan", "Pan", 0 ],
-			"obj-42::obj-18" : [ "live.gain~", "live.gain~", 0 ],
-			"obj-2::obj-10::obj-7" : [ "live.numbox[1]", "live.numbox", 0 ],
-			"obj-42::obj-10::obj-4" : [ "Gain", "Gain", 0 ],
-			"obj-42::obj-10::obj-7" : [ "live.numbox", "live.numbox", 0 ],
+			"obj-2::obj-10::obj-6" : [ "Pan[1]", "Pan", 0 ],
 			"obj-2::obj-10::obj-2" : [ "Cutoff[1]", "Cutoff", 0 ],
-			"obj-42::obj-34" : [ "live.dial", "live.dial", 0 ],
+			"obj-42::obj-10::obj-2" : [ "Cutoff", "Cutoff", 0 ],
+			"obj-2::obj-1::obj-7" : [ "live.numbox[2]", "live.numbox", 0 ],
+			"obj-42::obj-10::obj-1" : [ "Carrier frequency", "Carrier frequency", 0 ],
+			"obj-42::obj-18" : [ "live.gain~", "live.gain~", 0 ],
+			"obj-42::obj-10::obj-7" : [ "live.numbox", "live.numbox", 0 ],
+			"obj-2::obj-5" : [ "live.gain~[2]", "live.gain~[1]", 0 ],
+			"obj-42::obj-10::obj-6" : [ "Pan", "Pan", 0 ],
+			"obj-2::obj-10::obj-4" : [ "Gain[1]", "Gain", 0 ],
+			"obj-42::obj-10::obj-4" : [ "Gain", "Gain", 0 ],
+			"obj-2::obj-1::obj-3" : [ "Index[2]", "Index", 0 ],
+			"obj-2::obj-1::obj-4" : [ "Gain[2]", "Gain", 0 ],
+			"obj-2::obj-10::obj-3" : [ "Index[1]", "Index", 0 ],
+			"obj-2::obj-1::obj-6" : [ "Pan[2]", "Pan", 0 ],
 			"obj-2::obj-1::obj-8" : [ "Ratio[2]", "Ratio", 0 ],
+			"obj-42::obj-1" : [ "live.dial[1]", "live.dial", 0 ],
+			"obj-42::obj-11" : [ "live.tab", "live.tab", 0 ],
+			"obj-2::obj-10::obj-7" : [ "live.numbox[1]", "live.numbox", 0 ],
+			"obj-2::obj-1::obj-2" : [ "Cutoff[2]", "Cutoff", 0 ],
+			"obj-2::obj-3" : [ "live.gain~[1]", "live.gain~[1]", 0 ],
+			"obj-43::obj-19" : [ "live.text", "live.text", 0 ],
 			"obj-42::obj-41::obj-21" : [ "Gain1[2]", "Gain 3", 0 ],
+			"obj-42::obj-10::obj-8" : [ "Ratio", "Ratio", 0 ],
 			"obj-42::obj-41::obj-15" : [ "Gain1[1]", "Gain 2", 0 ],
 			"obj-42::obj-41::obj-25" : [ "Gain1", "Gain 1", 0 ],
 			"obj-2::obj-10::obj-8" : [ "Ratio[1]", "Ratio", 0 ],
-			"obj-42::obj-41::obj-23" : [ "Gain1[3]", "Gain 4", 0 ],
-			"obj-2::obj-1::obj-7" : [ "live.numbox[2]", "live.numbox", 0 ],
-			"obj-42::obj-10::obj-1" : [ "Carrier frequency", "Carrier frequency", 0 ],
-			"obj-43::obj-19" : [ "live.text", "live.text", 0 ],
-			"obj-42::obj-10::obj-8" : [ "Ratio", "Ratio", 0 ],
 			"obj-2::obj-10::obj-1" : [ "Carrier frequency[1]", "Carrier frequency", 0 ],
 			"obj-2::obj-1::obj-1" : [ "Carrier frequency[2]", "Carrier frequency", 0 ],
-			"obj-42::obj-1" : [ "live.dial[1]", "live.dial", 0 ],
-			"obj-2::obj-1::obj-3" : [ "Index[2]", "Index", 0 ],
-			"obj-2::obj-10::obj-3" : [ "Index[1]", "Index", 0 ],
-			"obj-2::obj-10::obj-6" : [ "Pan[1]", "Pan", 0 ],
-			"obj-2::obj-3" : [ "live.gain~[1]", "live.gain~[1]", 0 ],
-			"obj-42::obj-10::obj-2" : [ "Cutoff", "Cutoff", 0 ],
-			"obj-2::obj-1::obj-4" : [ "Gain[2]", "Gain", 0 ],
-			"obj-2::obj-5" : [ "live.gain~[2]", "live.gain~[1]", 0 ],
-			"obj-42::obj-10::obj-3" : [ "Index", "Index", 0 ]
+			"obj-42::obj-41::obj-23" : [ "Gain1[3]", "Gain 4", 0 ],
+			"obj-42::obj-10::obj-3" : [ "Index", "Index", 0 ],
+			"obj-42::obj-34" : [ "live.dial", "live.dial", 0 ]
 		}
 ,
 		"dependency_cache" : [ 			{
 				"name" : "fm_synth.maxpat",
-				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
-				"patcherrelativepath" : "../patchers",
+				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../Documents/Max 7/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "synth.view.maxpat",
-				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
-				"patcherrelativepath" : "../patchers",
+				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../Documents/Max 7/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "ossia.remote_array.maxpat",
-				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
-				"patcherrelativepath" : "../patchers",
+				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../Documents/Max 7/Packages/ossia/patchers",
 				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "score.png",
+				"bootpath" : "~/Documents/Max 7/Packages/ossia/media",
+				"patcherrelativepath" : "../../../../../Documents/Max 7/Packages/ossia/media",
+				"type" : "PNG ",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "icon.png",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia",
+				"patcherrelativepath" : "../../../../../Documents/Max 8/Packages/ossia",
+				"type" : "PNG ",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "Capture d’écran 2018-04-30 à 22.48.17.png",
+				"bootpath" : "~/Desktop",
+				"patcherrelativepath" : "../../../../../Desktop",
+				"type" : "PNG ",
 				"implicit" : 1
 			}
 , 			{
