@@ -349,10 +349,12 @@ node& node::operator=(const node& other)
 
 void node::init()
 {
-  assert(m_node);
-  m_node->about_to_be_deleted.connect<node, &node::cleanup>(*this);
-  m_node->get_device()
-      .on_parameter_removing.connect<node, &node::cleanup_parameter>(*this);
+  if(m_node)
+  {
+    m_node->about_to_be_deleted.connect<node, &node::cleanup>(*this);
+    m_node->get_device()
+        .on_parameter_removing.connect<node, &node::cleanup_parameter>(*this);
+  }
 }
 
 void node::cleanup(const ossia::net::node_base&)
