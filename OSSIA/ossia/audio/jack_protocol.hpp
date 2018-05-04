@@ -183,5 +183,5 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
 }
 }
 
-#include "../../../3rdparty/weakjack/weak_libjack.c"
+#include <../weakjack/weak_libjack.cpp>
 #endif
