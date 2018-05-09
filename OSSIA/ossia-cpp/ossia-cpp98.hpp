@@ -1,13 +1,7 @@
 #ifndef OSSIA_CPP98_HPP_2017_07_07
 #define OSSIA_CPP98_HPP_2017_07_07
-#include <ossia_export.h>
-#include <string>
-#include <vector>
-#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
-#define OSSIA_CPP_CXX11
-#endif
-
-/** @defgroup C++98API C++98 API
+#include <stddef.h>
+/** @defgroup CPP98API C++98 API
  * CPP98 bindings of libossia.
  *
  * @{
@@ -16,9 +10,13 @@
  * @file ossia-cpp98.hpp
  */
 
-/**
- *
- */
+#include <ossia_export.h>
+#include <string>
+#include <vector>
+#if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
+#define OSSIA_CPP_CXX11
+#endif
+
 namespace ossia
 {
 class value;
@@ -29,6 +27,9 @@ class parameter_base;
 class device_base;
 }
 }
+/**
+ *
+ */
 namespace opp
 {
 /**Access modes define if the parameter's value be accessed only on read, on
@@ -62,7 +63,14 @@ class oscquery_mirror;
 //               value                  //
 //*************************************//
 
-/**The value class holds values from parameters
+/**
+ * @ingroup CPP98API
+ * @brief The value class holds all ossia parameters typed values
+ * @see ossia::value
+ *  @{
+ */
+
+/**
  * @brief The value class holds all ossia parameters typed values
  * @see ossia::value
  */
@@ -257,24 +265,104 @@ class OSSIA_EXPORT value
     //Assignment Operators //
     //*********************//
 
+    /**
+     * @brief operator = assigns with another opp::value
+     * @param v : an opp::value
+     * @return the reference to this value object
+     */
     value& operator=(const value& v);
+    /**
+     * @brief operator = assigns with an integer
+     * @param v : an int
+     * @return the reference to this value object
+     */
     value& operator=(int v);
+    /**
+     * @brief operator = assigns with a float
+     * @param v : a float
+     * @return the reference to this value object
+     */
     value& operator=(float v);
+    /**
+     * @brief operator = assigns with a bool
+     * @param v : a bool
+     * @return the reference to this value object
+     */
     value& operator=(bool v);
+    /**
+     * @brief operator = assigns with a vec2f
+     * @param v : a vec2f
+     * @return the reference to this value object
+     */
     value& operator=(vec2f v);
+    /**
+     * @brief operator = assigns with a vec3f
+     * @param v : a vec3f
+     * @return the reference to this value object
+     */
     value& operator=(vec3f v);
+    /**
+     * @brief operator = assigns with a vec4f
+     * @param v : a vec4f
+     * @return the reference to this value object
+     */
     value& operator=(vec4f v);
+    /**
+     * @brief operator = assigns with a vector of values (aka list)
+     * @param v : a vector of values (aka list)
+     * @return the reference to this value object
+     */
     value& operator=(std::vector<opp::value> v);
+    /**
+     * @brief operator = assigns with a string
+     * @param v : a string
+     * @return the reference to this value object
+     */
     value& operator=(std::string v);
 
+    /**
+     * @brief sets the value as an impulse (a value-less signal)
+     */
     void set_impulse();
+    /**
+     * @brief sets the value as an int
+     * @param v int is moved intoto the value object
+     */
     void set_int(int v);
+    /**
+     * @brief sets the value as a float
+     * @param v float is moved intoto the value object
+     */
     void set_float(float v);
+    /**
+     * @brief sets the value as a bool
+     * @param v bool is moved intoto the value object
+     */
     void set_bool(bool v);
+    /**
+     * @brief sets the value as a vec2f
+     * @param v vec2f is moved intoto the value object
+     */
     void set_vec2f(vec2f v);
+    /**
+     * @brief sets the value as a vec3f
+     * @param v vec3f is moved intoto the value object
+     */
     void set_vec3f(vec3f v);
+    /**
+     * @brief sets the value as a vec4f
+     * @param v vec4f is moved intoto the value object
+     */
     void set_vec4f(vec4f v);
+    /**
+     * @brief sets the value as a vector of opp::values
+     * @param v vector of opp::values is moved intoto the value object
+     */
     void set_list(std::vector<opp::value> v);
+    /**
+     * @brief sets the value as a string
+     * @param v string is moved intoto the value object
+     */
     void set_string(std::string v);
 
 #if defined(OSSIA_CPP_CXX11)
@@ -289,11 +377,22 @@ class OSSIA_EXPORT value
     ossia::value* m_val;
 };
 
+/** @}*/
 
 typedef void (*value_callback)(void*, const opp::value&);
 typedef void (*connection_callback)(void*, const std::string&);
 typedef void (*disconnection_callback)(void*, const std::string&);
 
+/**
+ * @ingroup CPP98API
+ * @brief he callback_index struct holds callbacks for adding listeners to parameters' values
+ *
+ *  @{
+ */
+
+/**
+ * @brief The callback_index struct holds callbacks for adding listeners to parameters' values
+ */
 struct OSSIA_EXPORT callback_index {
     callback_index();
     ~callback_index();
@@ -308,22 +407,69 @@ struct OSSIA_EXPORT callback_index {
     impl* index;
 };
 
+/** @}*/
+
+/**
+ * @ingroup CPP98API
+ * @brief The node class holds all ossia parameters typed values
+ * @see ossia::value
+ *  @{
+ */
+
+/**
+* @brief The node class holds all ossia  nodes and their optionnal parameters
+*/
 class OSSIA_EXPORT node
 {
   public:
+
+    //*********************//
+    //     Constructors    //
+    //*********************//
+
+    /**
+     * @brief node default constructor
+     */
     node();
+    /**
+     * @brief node copy constructor
+     */
     node(const node&);
+    /**
+     * @brief operator = assign the current node to another one
+     * @return reference to the assigned node
+     */
     node& operator=(const node&);
+
+    /**
+     * @brief node default destructor
+     */
     ~node();
 
+    /**
+     * @brief operator bool checks is the node is valid
+     * @return true if the node is valid
+     */
     operator bool() const;
 
+    /**
+     * @brief get_name allows to get a node's name
+     * @return a string with the node's name
+     */
     std::string get_name() const;
+    /**
+     * @brief set_name allows to set or change a node's name
+     * @param a string with the desired node name
+     */
     void set_name(std::string s);
 
     std::string get_parameter() const;
     bool has_parameter() const;
 
+    /**
+   * @brief get_namespace returns all direct children (one level of hierarchy only)
+   * @return opp::node vector
+   */
     std::vector<node> get_children() const;
     /**
    * @brief get_namespace return all children recursively by priority order
@@ -497,6 +643,8 @@ class OSSIA_EXPORT node
     ossia::net::parameter_base* m_param;
 };
 
+/** @}*/
+
 class OSSIA_EXPORT oscquery_server
 {
   public:
@@ -539,6 +687,8 @@ class OSSIA_EXPORT oscquery_mirror
 }
 
 /** @}*/
-/** @}*/
 
 #endif
+
+
+/** @}*/
