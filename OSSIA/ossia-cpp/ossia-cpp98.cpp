@@ -741,7 +741,15 @@ void node::set_midigain()
 
 }
 
+void node::set_linear()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::linear_u{}, *m_node);
+  }
 
+}
 
 
 node node::create_impulse(std::string addr)
@@ -1036,6 +1044,17 @@ node node::create_midigain(std::string addr)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
     return node{n, ossia::setup_parameter(ossia::midigain_u{}, *n)};
+  }
+
+  return {};
+}
+
+node node::create_linear(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::linear_u{}, *n)};
   }
 
   return {};

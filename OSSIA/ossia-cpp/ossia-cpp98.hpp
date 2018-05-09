@@ -1,21 +1,17 @@
 #ifndef OSSIA_CPP98_HPP_2017_07_07
 #define OSSIA_CPP98_HPP_2017_07_07
 #include <stddef.h>
-/** @defgroup CPP98API C++98 API
- * CPP98 bindings of libossia.
- *
- * @{
- */
-/**
- * @file ossia-cpp98.hpp
- */
-
 #include <ossia_export.h>
 #include <string>
 #include <vector>
 #if (__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1900))
 #define OSSIA_CPP_CXX11
 #endif
+
+/**
+ * @file ossia-cpp98.hpp
+ */
+
 
 namespace ossia
 {
@@ -27,7 +23,13 @@ class parameter_base;
 class device_base;
 }
 }
-/**
+/** @defgroup CPP98API C++98 API
+ * CPP98 bindings of libossia.
+ *
+ * @{
+ */
+
+/** @namespace opp is the namespace for libossia's C++98 (SafeC++ bindings)
  *
  */
 namespace opp
@@ -67,7 +69,6 @@ class oscquery_mirror;
  * @ingroup CPP98API
  * @brief The value class holds all ossia parameters typed values
  * @see ossia::value
- *  @{
  */
 
 /**
@@ -377,22 +378,23 @@ class OSSIA_EXPORT value
     ossia::value* m_val;
 };
 
-/** @}*/
-
+/** @brief container for a value callback
+ * @see opp::callback_index
+ */
 typedef void (*value_callback)(void*, const opp::value&);
+/** @brief container for a connection callback
+ * @see opp::osquery_server::set_connection_callback
+ */
 typedef void (*connection_callback)(void*, const std::string&);
+/** @brief container for a disconnection callback
+ * @see opp::osquery_server::set_disconnection_callback
+ */
 typedef void (*disconnection_callback)(void*, const std::string&);
 
 /**
  * @ingroup CPP98API
- * @brief he callback_index struct holds callbacks for adding listeners to parameters' values
- *
- *  @{
- */
-
-/**
  * @brief The callback_index struct holds callbacks for adding listeners to parameters' values
- */
+*/
 struct OSSIA_EXPORT callback_index {
     callback_index();
     ~callback_index();
@@ -407,17 +409,11 @@ struct OSSIA_EXPORT callback_index {
     impl* index;
 };
 
-/** @}*/
 
 /**
  * @ingroup CPP98API
  * @brief The node class holds all ossia parameters typed values
  * @see ossia::value
- *  @{
- */
-
-/**
-* @brief The node class holds all ossia  nodes and their optionnal parameters
 */
 class OSSIA_EXPORT node
 {
@@ -436,7 +432,7 @@ class OSSIA_EXPORT node
      */
     node(const node&);
     /**
-     * @brief operator = assign the current node to another one
+     * @brief assign the current node to another one
      * @return reference to the assigned node
      */
     node& operator=(const node&);
@@ -447,157 +443,538 @@ class OSSIA_EXPORT node
     ~node();
 
     /**
-     * @brief operator bool checks is the node is valid
+     * @brief checks is the node is valid
      * @return true if the node is valid
      */
     operator bool() const;
 
     /**
-     * @brief get_name allows to get a node's name
+     * @brief get a node's name
      * @return a string with the node's name
      */
     std::string get_name() const;
     /**
-     * @brief set_name allows to set or change a node's name
+     * @brief set or change a node's name
      * @param a string with the desired node name
      */
     void set_name(std::string s);
-
-    std::string get_parameter() const;
+    /**
+     * @brief get this node's OSC address
+     * @return this node's OSC address as a string
+     */
+    std::string get_address() const;
+    /**
+     * @brief does this node have a parameter ?
+     * @return true if there is a parameter to this node
+     */
     bool has_parameter() const;
 
     /**
-   * @brief get_namespace returns all direct children (one level of hierarchy only)
+   * @brief returns all direct children (one level of hierarchy only)
    * @return opp::node vector
    */
     std::vector<node> get_children() const;
     /**
-   * @brief get_namespace return all children recursively by priority order
+   * @brief return all children recursively by priority order
    * @return opp::node vector
    */
     std::vector<node> get_namespace() const;
-
+    /**
+     * @brief finds a child node by its name
+     * @param addr is a string corresponding to the desired child node's name
+     * @return the child node
+     */
     node find_child(std::string addr);
+    /**
+     * @brief removes a child node, described by its name
+     * @param addr a string corresponding to the child node's name that one wants to remove
+     */
     void remove_child(std::string addr);
+    /**
+     * @brief removes all children of the current node
+     */
     void remove_children();
 
-    // Create a node
+    /**
+     * @brief creates a child node to the current node
+     * this creates a "container", without a parameter,
+     * which can later be added with the below set_* methods
+     * @param addr is a string to use as the child's node name
+     * @return the just-created node object
+     */
     node create_child(std::string addr);
 
-    // And optionnally add a typed parameter to it
+    /**
+     * @brief adds an impulse parameter to the current node
+     */
     void set_impulse();
+    /**
+     * @brief adds an int parameter to the current node
+     */
     void set_int();
+    /**
+     * @brief adds a float parameter to the current node
+     */
     void set_float();
+    /**
+     * @brief adds a bool parameter to the current node
+     */
     void set_bool();
-    void set_list();
-
+    /**
+     * @brief adds a vec2f parameter to the current node
+     */
     void set_vec2f();
+    /**
+     * @brief adds a vec3f parameter to the current node
+     */
     void set_vec3f();
+    /**
+     * @brief adds a vec4f parameter to the current node
+     */
     void set_vec4f();
-
+    /**
+     * @brief adds a list parameter to the current node
+     */
+    void set_list();
+    /**
+     * @brief adds a string parameter to the current node
+     */
     void set_string();
-
+    /**
+     * @brief adds a buffer parameter to the current node
+     */
     void set_buffer();
+    /**
+     * @brief adds a filepath parameter to the current node
+     */
     void set_filepath();
-
+    /**
+     * @brief adds a vec3f parameter to the current node, with the color.rgb unit
+     */
     void set_rgb();
+    /**
+     * @brief adds a vec4f parameter to the current node, with the color.rgba unit
+     */
     void set_rgba();
+    /**
+     * @brief adds a vec4f parameter to the current node, with the color.argb unit
+     */
     void set_argb();
+    /**
+     * @brief adds a vec4f parameter to the current node, with the color.argb8 unit
+     */
     void set_argb8();
+    /**
+     * @brief adds a vec3f parameter to the current node, with the color.hsv unit
+     */
     void set_hsv();
-
+    /**
+     * @brief adds a vec2f parameter to the current node, with the position.cart2D unit (aka XY)
+     */
     void set_cart2D();
+    /**
+     * @brief adds a vec3f parameter to the current node, with the position.cart3D unit (aka XYZ)
+     */
     void set_cart3D();
+    /**
+     * @brief adds a vec2f parameter to the current node, with the position.polar unit (aka ad)
+     */
     void set_polar();
+    /**
+     * @brief adds a vec3f parameter to the current node, with the position.spherical unit (aka aed)
+     */
     void set_spherical();
+    /**
+     * @brief adds a vec3f parameter to the current node, with the position.openGL unit (aka xyz)
+     */
     void set_opengl();
+    /**
+     * @brief adds a vec3f parameter to the current node, with the position.cylindrical unit (aka daz)
+     */
     void set_cylindrical();
-
+    /**
+     * @brief adds a vec4f parameter to the current node, with the orientation.quaternion unit
+     */
     void set_quaternion();
+    /**
+     * @brief adds a vec3f parameter to the current node, with the orientation.euler unit (aka Euler angles)
+     */
     void set_euler();
+    /**
+     * @brief adds a vec4f parameter to the current node, with the orientation.axis unit (aka xyza)
+     */
     void set_axis();
-
+    /**
+     * @brief adds a float parameter to the current node, with the gain.decibel unit
+     */
     void set_decibel();
+    /**
+     * @brief adds a float parameter to the current node, with the gain.midgain unit in the [0 127] range
+     */
     void set_midigain();
+    /**
+     * @brief adds a float parameter to the current node, with the gain.linear unit in the [0. 1.] range
+     */
+    void set_linear();
 
 
-    // Or directly create the child node and its parameter in one row:
+    /**
+     * @brief creates a child node with tne given name, and an impulse parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_impulse(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and an int parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_int(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and a float parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_float(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and a bool parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_bool(std::string addr);
-    node create_list(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name, and a vec2f parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_vec2f(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and a vec3f parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_vec3f(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and a vec4f parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_vec4f(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name, and a list parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_list(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and a string parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_string(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name, and a buffer parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_buffer(std::string addr);
+    /**
+     * @brief creates a child node with tne given name, and a filepath parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_filepath(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the color.rgb unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_rgb(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec4f parameter with the color.rgba unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_rgba(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec4f parameter with the color.argb unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_argb(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec4f parameter with the color.argb8 unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_argb8(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the color.hsv unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_hsv(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec2f parameter with the position.cart2D unit (aka XY)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_cart2D(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the position.cart3D unit (aka XYZ)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_cart3D(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec2f parameter with the position.polar unit (aka ad)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_polar(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the position.spherical unit (aka aed)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_spherical(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the position.openGL unit (aka xyz)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_opengl(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the position.cylindrical unit (aka daz)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_cylindrical(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec4f parameter with the orientation.quaternion unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_quaternion(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the orientation.euler unit (aka Euler angles)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_euler(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a vec4f parameter with the orientation.axis unit (aka xyza)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_axis(std::string addr);
-
+    /**
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the gain.decibel unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_decibel(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the gain.midigain unit in the [0 127) range
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
     node create_midigain(std::string addr);
+    /**
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the gain.linear unit in the [0. 1.) range
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_linear(std::string addr);
 
-    // Set value and attributes of nodes and parameters:
+    /**
+     * @brief set the node's parameter's value
+     * @param v an opp:value
+     * @return a reference to this node
+     * @see opp::value
+     */
     node& set_value(opp::value v);
+    /**
+     * @brief get this node's parameter's value
+     * @return an opp::value with this node's parameter's value
+     */
     opp::value get_value() const;
+    /**
+     * @brief fetch this node's parameter's value
+     * @return an opp::value with this node's parameter's value
+     */
     opp::value fetch_value() const;
-
+    /**
+     * @brief sets a callback allowing to listen to this value
+     * @param c a value_callback
+     * @param ctx the context as a void*
+     * @return a callback_index struct
+     * @see opp::value_callback
+     * @see opp::callback_index
+     */
     callback_index set_value_callback(value_callback c, void* ctx);
+    /**
+     * @brief removes a value_callback, previously set with set_value_callback()
+     * @param idx a callback_index, as returned by set_value_callback()
+     * @see opp::callback_index
+     */
     void remove_value_callback(callback_index idx);
-
+    /**
+     * @brief sets the 'min' attribute of this node's parameter (minimum value)
+     * @param min an opp::value with the desired minimum value
+     * @return a reference to this node
+     * @see opp::node::set_bounding
+     */
     node& set_min(opp::value min);
+    /**
+     * @brief gets the 'min' attribute of this node's parameter (minimum value)
+     * @return an opp::value with this node's parameter's minimum value
+     * @see opp::node::get_bounding
+     */
     opp::value get_min() const;
-
+    /**
+     * @brief sets the 'max' attribute of this node's parameter (maximum value)
+     * @param min an opp::value with the desired mmaximum value
+     * @return a reference to this node
+     *  @see opp::node::set_bounding
+     */
     node& set_max(opp::value max);
+    /**
+     * @brief gets the 'max' attribute of this node's parameter (maximum value)
+     * @return an opp::value with this node's parameter's maximum value
+     * @see opp::node::get_bounding
+     */
     opp::value get_max() const;
-
+    /**
+     * @brief sets a list of the values accepted by this node's parameter ("values" attribute)
+     * @param v a vector of opp::value with the desired list of accepted values
+     * @return a reference to this node
+     * @see opp::node::set_bounding
+     */
     node& set_accepted_values(std::vector<opp::value> v);
+    /**
+     * @brief gets a list of the values accepted by this node's parameter ("values" attribute)
+     * @return a vector of opp::value with the list of this node's parameter's accepted values
+     */
     std::vector<opp::value> get_accepted_values() const;
-
+    /**
+     * @brief sets the unit attribute of this node's parameter
+     * @param v a string with this unit's name
+     * @return a reference to this node
+     * @see ossia::unit_t
+     */
     node& set_unit(std::string v);
+    /**
+     * @brief gets the unit of this node's parameter
+     * @return a string with this node's parameter's unit name
+     * @see ossia::unit_t
+     */
     std::string get_unit() const;
-
+    /**
+     * @brief sets the access_mode attribute of this node's parameter
+     * @param v an opp::access_mode of the chosen mode
+     * @return a reference to this node
+     */
     node& set_access(access_mode v);
+    /**
+     * @brief gets the access_mode attribute of this node's parameter
+     * @return an opp::access_mode with this node's parameter's access mode
+     */
     access_mode get_access() const;
-
+    /**
+     * @brief sets the bounding_mode attribute of this node's parameter
+     * @param v an opp::bounding_mode of the chosen mode
+     * @return a reference to this node
+     */
     node& set_bounding(bounding_mode v);
+    /**
+     * @brief gets the bounding_mode attribute of this node's parameter
+     * @return an opp::bounding_mode with this node's parameter's access mode
+     */
     bounding_mode get_bounding() const;
-
+    /**
+     * @brief sets the default_value attribute of this node's parameter
+     * @param v an opp::value with this node's parameter's default value
+     * @return a reference to this node
+     * @see ossia::unit_t
+     */
     node& set_default_value(value v);
+    /**
+     * @brief gets the default_value attribute of this node's parameter
+     * @return an opp::value with this node's parameter's default value
+     */
     value get_default_value();
-
+    /**
+     * @brief sets this node's description attribute
+     * @param v a string with the textual description of this node
+     * @return a reference to this node
+     */
     node& set_description(std::string v);
+    /**
+     * @brief gets this node's description attribute
+     * @return a string with the textual description of this node
+     */
     std::string get_description() const;
-
+    /**
+     * @brief sets his node's tags attribute
+     * @param v a vector of strings with the desired tags of this node'
+     * @return a reference to this node
+     */
     node& set_tags(std::vector<std::string> v);
+    /**
+     * @brief gets this node's tags attribute
+     * @return a string with this node's tags
+     */
     std::vector<std::string> get_tags() const;
-
+    /**
+     * @brief sets how many instances this node can have
+     * @param min the minimum number of instances this node can have
+     * @param max the maximum number of instances this node can have
+     * @return a reference to this node
+     */
     node& set_instance_bounds(int min, int max);
+    /**
+     * @brief unset how many instances this node can have
+     * @return a reference to this node
+     */
     node& unset_instance_bounds();
+    /**
+     * @brief gets how many instances this node can have
+     * @return a std::pair with the minimum and maxium number sof instances this node can have
+     */
     std::pair<int, int> get_instance_bounds() const;
-
+    /**
+     * @brief sets the priority attribute of this node's parameter
+     * @param v a float with this node's parameter's priority value (higher numbers for higher priorities)
+     * @return a reference to this node
+     */
     node& set_priority(float v);
+    /**
+     * @brief unsets the priority attribute of this node's parameter
+     * @return a reference to this node
+     */
     node& unset_priority();
+    /**
+     * @brief gets the priority attribute of this node's parameter
+     * @return a float with this node's parameter's priority value (higher numbers for higher priorities)
+     */
     float get_priority();
 
     node& set_refresh_rate(int v);
@@ -691,4 +1068,4 @@ class OSSIA_EXPORT oscquery_mirror
 #endif
 
 
-/** @}*/
+
