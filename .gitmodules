@@ -1,95 +1,95 @@
 [submodule "CMake/cmake-modules"]
-	path = CMake/cmake-modules
-	url = https://github.com/OSSIA/cmake-modules
+    path = CMake/cmake-modules
+    url = https://github.com/OSSIA/cmake-modules
 [submodule "3rdparty/ModernMIDI"]
-	path = 3rdparty/ModernMIDI
-	url = https://github.com/jcelerier/ModernMIDI
+    path = 3rdparty/ModernMIDI
+    url = https://github.com/jcelerier/ModernMIDI
 [submodule "3rdparty/variant"]
-	path = 3rdparty/variant
-	url = https://github.com/eggs-cpp/variant
+    path = 3rdparty/variant
+    url = https://github.com/eggs-cpp/variant
 [submodule "3rdparty/oscpack"]
-	path = 3rdparty/oscpack
-	url = https://github.com/jcelerier/oscpack
+    path = 3rdparty/oscpack
+    url = https://github.com/jcelerier/oscpack
 [submodule "3rdparty/nano-signal-slot"]
-	path = 3rdparty/nano-signal-slot
-	url = https://github.com/jcelerier/nano-signal-slot
+    path = 3rdparty/nano-signal-slot
+    url = https://github.com/jcelerier/nano-signal-slot
 [submodule "3rdparty/rapidjson"]
-	path = 3rdparty/rapidjson
-	url = https://github.com/miloyip/rapidjson
+    path = 3rdparty/rapidjson
+    url = https://github.com/miloyip/rapidjson
 [submodule "3rdparty/spdlog"]
-	path = 3rdparty/spdlog
-	url = https://github.com/gabime/spdlog
+    path = 3rdparty/spdlog
+    url = https://github.com/gabime/spdlog
 [submodule "3rdparty/brigand"]
-	path = 3rdparty/brigand
-	url = https://github.com/edouarda/brigand
+    path = 3rdparty/brigand
+    url = https://github.com/edouarda/brigand
 [submodule "3rdparty/jni_hpp"]
-	path = 3rdparty/jni_hpp
-	url = https://github.com/jcelerier/jni.hpp
+    path = 3rdparty/jni_hpp
+    url = https://github.com/jcelerier/jni.hpp
 [submodule "3rdparty/fmt"]
-	path = 3rdparty/fmt
-	url = https://github.com/fmtlib/fmt
+    path = 3rdparty/fmt
+    url = https://github.com/jcelerier/fmt
 [submodule "3rdparty/readerwriterqueue"]
-	path = 3rdparty/readerwriterqueue
-	url = https://github.com/cameron314/readerwriterqueue
+    path = 3rdparty/readerwriterqueue
+    url = https://github.com/cameron314/readerwriterqueue
 [submodule "3rdparty/hopscotch-map"]
-	path = 3rdparty/hopscotch-map
-	url = https://github.com/tessil/hopscotch-map.git
+    path = 3rdparty/hopscotch-map
+    url = https://github.com/tessil/hopscotch-map.git
 [submodule "3rdparty/pure-data"]
-	path = 3rdparty/pure-data
-	#url = https://github.com/avilleret/pure-data.git
-	#url = https://git.code.sf.net/p/pure-data/pure-data
+    path = 3rdparty/pure-data
+    #url = https://github.com/avilleret/pure-data.git
+    #url = https://git.code.sf.net/p/pure-data/pure-data
   url = https://github.com/pure-data/pure-data.git
 [submodule "3rdparty/CicmWrapper"]
-	path = 3rdparty/CicmWrapper
-	url = https://github.com/avilleret/CicmWrapper.git
+    path = 3rdparty/CicmWrapper
+    url = https://github.com/avilleret/CicmWrapper.git
 [submodule "3rdparty/chobo-shl"]
-	path = 3rdparty/chobo-shl
-	url = https://github.com/Chobolabs/chobo-shl
+    path = 3rdparty/chobo-shl
+    url = https://github.com/Chobolabs/chobo-shl
 [submodule "3rdparty/GSL"]
-	path = 3rdparty/GSL
-	url = https://github.com/Microsoft/GSL
+    path = 3rdparty/GSL
+    url = https://github.com/Microsoft/GSL
 [submodule "3rdparty/pybind11"]
-	path = 3rdparty/pybind11
-	url = https://github.com/pybind/pybind11
+    path = 3rdparty/pybind11
+    url = https://github.com/pybind/pybind11
 [submodule "3rdparty/asio"]
-	path = 3rdparty/asio
-	url = https://github.com/chriskohlhoff/asio
+    path = 3rdparty/asio
+    url = https://github.com/chriskohlhoff/asio
 [submodule "3rdparty/websocketpp"]
-	path = 3rdparty/websocketpp
-	url = https://github.com/zaphoyd/websocketpp
+    path = 3rdparty/websocketpp
+    url = https://github.com/jcelerier/websocketpp
 [submodule "3rdparty/Servus"]
-	path = 3rdparty/Servus
-	url = https://github.com/jcelerier/Servus
+    path = 3rdparty/Servus
+    url = https://github.com/jcelerier/Servus
 [submodule "3rdparty/libartnet"]
-	path = 3rdparty/libartnet
-	url = https://github.com/OpenLightingProject/libartnet
+    path = 3rdparty/libartnet
+    url = https://github.com/OpenLightingProject/libartnet
 [submodule "3rdparty/whereami"]
-	path = 3rdparty/whereami
-	url = https://github.com/gpakosz/whereami
+    path = 3rdparty/whereami
+    url = https://github.com/gpakosz/whereami
 [submodule "3rdparty/frozen"]
-	path = 3rdparty/frozen
-	url = https://github.com/serge-sans-paille/frozen
+    path = 3rdparty/frozen
+    url = https://github.com/serge-sans-paille/frozen
 [submodule "3rdparty/bitset2"]
-	path = 3rdparty/bitset2
-	url = https://github.com/ClaasBontus/bitset2
+    path = 3rdparty/bitset2
+    url = https://github.com/ClaasBontus/bitset2
 [submodule "3rdparty/exprtk"]
-	path = 3rdparty/exprtk
-	url = https://github.com/ArashPartow/exprtk
+    path = 3rdparty/exprtk
+    url = https://github.com/ArashPartow/exprtk
 [submodule "3rdparty/SmallFunction"]
-	path = 3rdparty/SmallFunction
-	url = https://github.com/jcelerier/SmallFunction
+    path = 3rdparty/SmallFunction
+    url = https://github.com/jcelerier/SmallFunction
 [submodule "3rdparty/flat_hash_map"]
-	path = 3rdparty/flat_hash_map
-	url = https://github.com/jcelerier/flat_hash_map
+    path = 3rdparty/flat_hash_map
+    url = https://github.com/jcelerier/flat_hash_map
 [submodule "3rdparty/max-sdk"]
-	path = 3rdparty/max-sdk
-	url = https://github.com/Cycling74/max-sdk.git
+    path = 3rdparty/max-sdk
+    url = https://github.com/Cycling74/max-sdk.git
 [submodule "3rdparty/verdigris"]
-	path = 3rdparty/verdigris
-	url = https://github.com/woboq/verdigris
+    path = 3rdparty/verdigris
+    url = https://github.com/woboq/verdigris
 [submodule "3rdparty/weakjack"]
-	path = 3rdparty/weakjack
-	url = https://github.com/jcelerier/weakjack
+    path = 3rdparty/weakjack
+    url = https://github.com/jcelerier/weakjack
 [submodule "3rdparty/concurrentqueue"]
-	path = 3rdparty/concurrentqueue
-	url = https://github.com/cameron314/concurrentqueue
+    path = 3rdparty/concurrentqueue
+    url = https://github.com/cameron314/concurrentqueue
