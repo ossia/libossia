@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 38.0, 56.0, 1612.0, 960.0 ],
+		"rect" : [ 38.0, 78.0, 1612.0, 960.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -189,9 +189,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 105.0, 49.0, 500.0, 22.0 ],
+					"patching_rect" : [ 105.0, 50.0, 627.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter carrier/frequency @default 440 @type hz @description \"Carrier frequency \""
+					"text" : "ossia.parameter carrier/frequency @default 440 @type hz @description \"Carrier frequency \" @min 20 @max 20000"
 				}
 
 			}
