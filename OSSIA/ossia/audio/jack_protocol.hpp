@@ -1,11 +1,13 @@
 #pragma once
 #if __has_include(<jack/jack.h>) && !defined(__EMSCRIPTEN__)
 #include <ossia/audio/audio_protocol.hpp>
-#define __x86_64__ 1
 #define USE_WEAK_JACK 1
 #define NO_JACK_METADATA 1
 #include <weak_libjack.h>
-
+#if defined(_WIN32)
+#include <TlHelp32.h>
+#endif
+#include <string_view>
 namespace ossia
 {
 class jack_engine final
@@ -25,26 +27,56 @@ class jack_engine final
     std::vector<jack_port_t*> input_ports;
     std::vector<jack_port_t*> output_ports;
 };
-
 }
 
 namespace ossia
 {
+
+#if defined(_WIN32)
+inline bool has_jackd_process()
+{
+  auto plist = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
+  if( plist == INVALID_HANDLE_VALUE )
+    return false;
+
+  PROCESSENTRY32 entry;
+  entry.dwSize = sizeof( PROCESSENTRY32 );
+
+  if(!Process32First(plist, &entry))
+  {
+    CloseHandle(plist);
+    return false;
+  }
+
+  do
+  {
+    using namespace std::literals;
+    auto name = entry.szExeFile;
+    if(name == "jackd.exe"s)
+      return true;
+  } while( Process32Next(plist, &entry));
+
+  CloseHandle(plist);
+  return false;
+}
+#endif
+
 jack_engine::jack_engine(std::string name, int& inputs, int& outputs, int& rate, int& bs)
 {
-  std::cerr << "JACK: " << have_libjack() << std::endl;
 #if defined(_WIN32)
   {
-    if (FindWindow(nullptr, "jackd.exe") == nullptr)
+    if (!has_jackd_process())
     {
       std::cerr << "JACK server not running?" << std::endl;
       throw std::runtime_error("Audio error: no JACK server");
     }
   }
 #endif
+
+  std::cerr << "JACK: " << WeakJack::instance().available() << std::endl;
   client = jack_client_open(
              (!name.empty() ? name.c_str() : "score")
-             , JackNullOption
+             , JackNoStartServer
              , nullptr);
   if (!client)
   {
@@ -183,5 +215,4 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
 }
 }
 
-#include <../weakjack/weak_libjack.cpp>
 #endif

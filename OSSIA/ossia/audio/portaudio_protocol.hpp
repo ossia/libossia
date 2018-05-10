@@ -81,37 +81,46 @@ class portaudio_engine final
                               paNoFlag,
                               &PortAudioCallback,
                               this);
-      client.store(stream);
+      m_stream.store(stream);
       if(ec == PaErrorCode::paNoError)
       {
-        ec = Pa_StartStream( client );
+        ec = Pa_StartStream( stream );
         if(ec != PaErrorCode::paNoError)
         {
           std::cerr << "Error while starting audio stream: " << Pa_GetErrorText(ec) << std::endl;
-        }
-        else
-        {
+          Pa_CloseStream(stream);
+          m_stream.store(nullptr);
         }
       }
       else
+      {
         std::cerr << "Error while opening audio stream: " << Pa_GetErrorText(ec) << std::endl;
+        m_stream.store(nullptr);
+      }
+
+      if(!m_stream)
+      {
+        Pa_Terminate();
+        throw std::runtime_error("Could not start PortAudio stream");
+      }
     }
 
     ~portaudio_engine() override
     {
       stop();
-      if(protocol)
-        protocol.load()->engine = nullptr;
+      if(auto p = protocol.load())
+        p->engine = nullptr;
 
-      auto clt = client.load();
-      auto ec = Pa_StopStream(clt);
-      std::cerr << "=== stream stop ===\n";
-
-      if(ec != PaErrorCode::paNoError)
+      if(auto stream = m_stream.load())
       {
-        std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec) << std::endl;
-      }
+        auto ec = Pa_StopStream(stream);
+        std::cerr << "=== stream stop ===\n";
 
+        if(ec != PaErrorCode::paNoError)
+        {
+          std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec) << std::endl;
+        }
+      }
       Pa_Terminate();
     }
 
@@ -163,7 +172,7 @@ class portaudio_engine final
         return 0;
       }
 
-      auto clt = self.client.load();
+      auto clt = self.m_stream.load();
       auto proto = self.protocol.load();
       if(clt && proto)
       {
@@ -180,7 +189,7 @@ class portaudio_engine final
       return paContinue;
     }
 
-    std::atomic<PaStream*> client{};
+    std::atomic<PaStream*> m_stream{};
 };
 
 }

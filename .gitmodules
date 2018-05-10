@@ -27,7 +27,7 @@
     url = https://github.com/jcelerier/jni.hpp
 [submodule "3rdparty/fmt"]
     path = 3rdparty/fmt
-    url = https://github.com/jcelerier/fmt
+    url = https://github.com/fmtlib/fmt
 [submodule "3rdparty/readerwriterqueue"]
     path = 3rdparty/readerwriterqueue
     url = https://github.com/cameron314/readerwriterqueue
