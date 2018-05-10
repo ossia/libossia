@@ -46,13 +46,13 @@ namespace opp
 {
 /**Access modes define if the parameter's value be accessed only on read, on
  * write, or bidirectionnally
- * @brief Defines R, W or RW access to the parameter's value
+ * @brief Defines Write (Set), Read (Get) or Read/Write (Bi) access to the parameter's value
  */
 enum access_mode
 {
   Get, /// only read the value
-  Set, /// only writethe value
-  Bi   /// read  and write the value
+  Set, /// only write the value
+  Bi   /// read and write the value
 };
 /**Bounding modes define what to do at the bounds of the parameter's value
  * @brief Behaviour at the bounds of the value
@@ -420,9 +420,15 @@ struct OSSIA_EXPORT callback_index {
 };
 
 
-/**
+/**The nodes in the device are simply called "nodes" in the API. Nodes are identified with the OSC parameter syntax: /foo/bar.
+ * Nodes per se don't carry any value; they have to be extended with parameters to be able to send and receive messages.
+ * When multiple nodes with the same name are created, they will be appended instance numbers, separated with a dot.
+ * E.g. when duplicating the node /foo, its duplicates will be named /foo.1, /foo.2, etc…
+ * This allows to have a cleaner representation of the address/namespace, as is demonstrated on the figures below:
+ * [Namespace using slashes for instances](https://ossia.github.io/images/NamespaceSlash.png)
+ * [Namespace using dots for instances](https://ossia.github.io/images/NamespaceDot.png)
  * @ingroup CPP98API
- * @brief The node class holds all ossia parameters typed values
+ * @brief The node class holds all ossia nodes and their optional parameters
  * @see ossia::value
 */
 class OSSIA_EXPORT node
@@ -1122,12 +1128,12 @@ class OSSIA_EXPORT node
  * For more information on the OSCQuery protocol, please refer to the proposal.
  *
  * @ingroup CPP98API
- * @brief The oscquery_server class
+ * @brief The oscquery_server class allows to create a local OSCQuery server
  */
 class OSSIA_EXPORT oscquery_server
 {
   public:
-    /** A device can be created without arguments.
+    /** A server can be created without arguments.
      * It will then have to be configured later on with
      * opp::oscquery_server::setup
      * @brief declares a (yet to be configured) OSCQuery server
