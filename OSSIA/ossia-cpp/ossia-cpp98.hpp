@@ -8,10 +8,6 @@
 #define OSSIA_CPP_CXX11
 #endif
 
-/**
- * @file ossia-cpp98.hpp
- */
-
 
 namespace ossia
 {
@@ -24,9 +20,23 @@ class device_base;
 }
 }
 /** @defgroup CPP98API C++98 API
- * CPP98 bindings of libossia.
+ * C++98 bindings of libossia: a modern C++, cross-environment distributed object model for creative coding.
+ *
+ * ossia-cpp (Safe C++) is a simplified C++ binding, kept compatible with C++98,
+ * which makes it hard to have problems at the cost of performance.
+ *
+ * libossia is natively written in modern C++14. The FastC++ implementation is subject to frequent updates and changes; use it instead of this binding to get maximal performance.
+ *
+ * libossia allows to declare the architecture of your creative coding application's functions as a tree of OSC nodes and parameters. These nodes/parameters can have attributes, which allow to declare many of their properties, such as their values, types, units, ranges, etc....
+ * This OSC tree-based architecture (coined "device" in the OSSIA terminology) can then be exposed over the network under several protocols (OSCQuery only for now, for ossia-cpp), some of which allow this architecture, and the properties and values of its nodes, to be fully explored and queried.
+ *
+ * An illustrated documentation is available at <a href="https://ossia.github.io/?cpp--98">https://ossia.github.io/?cpp\-\-98</a>
  *
  * @{
+ */
+
+/**
+ * @file ossia-cpp98.hpp
  */
 
 /** @namespace opp is the namespace for libossia's C++98 (SafeC++ bindings)
@@ -165,9 +175,9 @@ class OSSIA_EXPORT value
     value(const char* v);
 
 
-   //*********************//
-   //     Type tests      //
-   //*********************//
+    //*********************//
+    //     Type tests      //
+    //*********************//
 
 
     /**
@@ -458,11 +468,7 @@ class OSSIA_EXPORT node
      * @param a string with the desired node name
      */
     void set_name(std::string s);
-    /**
-     * @brief get this node's OSC address
-     * @return this node's OSC address as a string
-     */
-    std::string get_address() const;
+
     /**
      * @brief does this node have a parameter ?
      * @return true if there is a parameter to this node
@@ -470,15 +476,20 @@ class OSSIA_EXPORT node
     bool has_parameter() const;
 
     /**
-   * @brief returns all direct children (one level of hierarchy only)
-   * @return opp::node vector
-   */
-    std::vector<node> get_children() const;
+     * @brief get this node's OSC address
+     * @return this node's OSC address as a string
+     */
+    std::string get_address() const;
     /**
    * @brief return all children recursively by priority order
-   * @return opp::node vector
+   * @return a vector of opp::node
    */
     std::vector<node> get_namespace() const;
+    /**
+   * @brief returns all direct children (one level of hierarchy only)
+   * @return a vector of opp::node
+   */
+    std::vector<node> get_children() const;
     /**
      * @brief finds a child node by its name
      * @param addr is a string corresponding to the desired child node's name
@@ -812,13 +823,14 @@ class OSSIA_EXPORT node
      */
     node& set_value(opp::value v);
     /**
-     * @brief get this node's parameter's value
+     * @brief get this node's (local) parameter's value
      * @return an opp::value with this node's parameter's value
      */
     opp::value get_value() const;
     /**
-     * @brief fetch this node's parameter's value
+     * @brief fetch this node's parameter's value over the network:
      * @return an opp::value with this node's parameter's value
+     * @see opp::oscquery_mirror
      */
     opp::value fetch_value() const;
     /**
@@ -909,6 +921,19 @@ class OSSIA_EXPORT node
      * @return an opp::bounding_mode with this node's parameter's access mode
      */
     bounding_mode get_bounding() const;
+
+    /**
+     * @brief sets the repetition_filter attribute of this node's parameter
+     * @param v an bool: true to filter out this node's parameter's value repetitions
+     * @return a reference to this node
+     */
+    node& set_repetition_filter(bool v);
+    /**
+     * @brief gets the repetition_filter attribute of this node's parameter
+     * @return a bool: true if this node's parameter's value repetitions are filtered out
+     */
+    bool get_repetition_filter() const;
+
     /**
      * @brief sets the default_value attribute of this node's parameter
      * @param v an opp::value with this node's parameter's default value
@@ -943,6 +968,7 @@ class OSSIA_EXPORT node
      * @return a string with this node's tags
      */
     std::vector<std::string> get_tags() const;
+
     /**
      * @brief sets how many instances this node can have
      * @param min the minimum number of instances this node can have
@@ -960,6 +986,7 @@ class OSSIA_EXPORT node
      * @return a std::pair with the minimum and maxium number sof instances this node can have
      */
     std::pair<int, int> get_instance_bounds() const;
+
     /**
      * @brief sets the priority attribute of this node's parameter
      * @param v a float with this node's parameter's priority value (higher numbers for higher priorities)
@@ -977,30 +1004,95 @@ class OSSIA_EXPORT node
      */
     float get_priority();
 
+    /**An optional value that says how often a value should be updated.
+     * @brief sets the refresh_rate attribute of this node's parameter
+     * @param v an int with this node's parameter's refresh_rate value
+     * @return a reference to this node
+     */
     node& set_refresh_rate(int v);
+    /**
+     * @brief unsets the refresh_rate attribute of this node's parameter
+     * @return a reference to this node
+     */
     node& unset_refresh_rate();
+    /**
+     * @brief gets the refresh_rate attribute of this node's parameter
+     * @return a float with this node's parameter's refresh_rate value
+     */
     int get_refresh_rate();
 
+    /**An optional value that says by which increment a value should change, for instance in a value editor.
+     * @brief sets the value_step_size attribute of this node's parameter
+     * @param v the increment size
+     * @return a reference to this node
+     */
     node& set_value_step_size(double v);
+    /**
+     * @brief unsets the value_step_size attribute of this node's parameter
+     * @return a reference to this node
+     */
     node& unset_value_step_size();
+    /**
+     * @brief gets the value_step_size attribute of this node's parameter
+     * @return a float with this node's parameter's refresh_rate value
+     */
     double get_value_step_size();
 
+    /**
+     * @brief sets this node's hidden attribute
+     * @param v a bool: true to hide this node
+     * @return a reference to this node
+     */
     node& set_hidden(bool v);
+    /**
+     * @brief gets this node's hidden attribute
+     * @return a bool: true if the node is hidden
+     */
     bool get_hidden() const;
 
+    /**
+     * @brief sets the disabled attribute of this node's parameter
+     * @param v a bool: true to disable this node's parameter
+     * @return a reference to this node
+     */
     node& set_disabled(bool v);
+    /**
+     * @brief gets the disabled attribute of this node's parameter
+     * @return a bool: true if the node's parameter is disabled
+     */
     bool get_disabled() const;
 
-    node& set_critical(bool v);
-    bool get_critical() const;
-
-    bool get_zombie() const;
-
+    /**
+     * @brief sets the muted attribute of this node's parameter
+     * @param v a bool: true to mute this node's parameter
+     * @return a reference to this node
+     */
     node& set_muted(bool v);
+    /**
+     * @brief gets the muted attribute of this node's parameter
+     * @return a bool: true if the node's parameter is muted
+     */
     bool get_muted() const;
 
-    node& set_repetition_filter(bool v);
-    bool get_repetition_filter() const;
+
+    /**
+     * @brief sets the critical attribute of this node's parameter
+     * @param v a bool: true to mark this node's parameter  as critical
+     * @return a reference to this node
+     */
+    node& set_critical(bool v);
+    /**
+     * @brief gets the critical attribute of this node's parameter
+     * @return a bool: true if the node's parameter  is critical
+     */
+    bool get_critical() const;
+
+    /**
+     * @brief gets the zombie attribute of this node's parameter
+     * @return a bool: true if the node has been zombified
+     */
+    bool get_zombie() const;
+
 
 #if defined(OSSIA_CPP_CXX11)
     node(node&&) = default;
@@ -1020,16 +1112,46 @@ class OSSIA_EXPORT node
     ossia::net::parameter_base* m_param;
 };
 
-/** @}*/
 
+/**A device represents a tree of parameters.
+ * Local devices map to real parameters on the executable libossia is used with. For instance the frequency of a filter, etc.
+ * Devices can be mapped to different protocols: OSC, OSCQuery, Midi, etc.
+ * For the sake of simplicity, the safeC++ (opp) binding ties together device and protocol implementation
+ * We use the OSCQuery protocol here.
+ * Once a device has been created, it is possible to check what's in it by going to http://localhost:5678.
+ * For more information on the OSCQuery protocol, please refer to the proposal.
+ *
+ * @ingroup CPP98API
+ * @brief The oscquery_server class
+ */
 class OSSIA_EXPORT oscquery_server
 {
   public:
+    /** A device can be created without arguments.
+     * It will then have to be configured later on with
+     * opp::oscquery_server::setup
+     * @brief declares a (yet to be configured) OSCQuery server
+     */
     oscquery_server();
+    /**
+     * @brief declares and configures an OSCQuery server
+     * @param name the name of the OSCQuery server
+     * @param oscPort the OSC port to receive messages from (defaults to 1234)
+     * @param wsPort the websocket port the server uses to manage queries (defaults to 5678)
+     */
     oscquery_server(std::string name, int oscPort = 1234, int wsPort = 5678);
     ~oscquery_server();
-
+    /**
+     * @brief sets up an OSCQuery Server with the appropriate device name and ports
+     * @param name the name of the OSCQuery server
+     * @param oscPort the OSC port to receive messages from (defaults to 1234)
+     * @param wsPort the websocket port the server uses to manage queries (defaults to 5678)
+     */
     void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
+    /**
+     * @brief get_root_node
+     * @return
+     */
     node get_root_node() const;
 
     void set_connection_callback(connection_callback c, void* ctx);
@@ -1048,6 +1170,10 @@ class OSSIA_EXPORT oscquery_server
     void* m_discon_ctx;
 };
 
+/**Remote devices are mirror images of local devices on other applications: remote controls, mobile apps, etc. Every parameter in a local device will be synchronized with the remote devices that connected to it.
+ * @ingroup CPP98API
+ * @brief The oscquery_mirror class allows to create a mirror image of a remote OSCQuery server
+ */
 class OSSIA_EXPORT oscquery_mirror
 {
   public:
