@@ -1140,6 +1140,9 @@ class OSSIA_EXPORT oscquery_server
      * @param wsPort the websocket port the server uses to manage queries (defaults to 5678)
      */
     oscquery_server(std::string name, int oscPort = 1234, int wsPort = 5678);
+    /**
+     * @brief OSCQuery Server default destructor
+     */
     ~oscquery_server();
     /**
      * @brief sets up an OSCQuery Server with the appropriate device name and ports
@@ -1149,15 +1152,31 @@ class OSSIA_EXPORT oscquery_server
      */
     void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
     /**
-     * @brief get_root_node
-     * @return
+     * @brief get this server's root opp::node
+     * @return this server's root opp::node
      */
     node get_root_node() const;
 
+    /**
+     * @brief set a callback to be called when a connection is made to this device
+     * @param c the connection_callback
+     * @param ctx the callback context as a void*
+     */
     void set_connection_callback(connection_callback c, void* ctx);
+    /**
+     * @brief remove the previously set connection_callback
+     */
     void remove_connection_callback();
 
+    /**
+     * @brief set a callback to be called when a connection to this device is closed
+     * @param c the connection_callback
+     * @param ctx the callback context as a void*
+     */
     void set_disconnection_callback(disconnection_callback c, void* ctx);
+    /**
+     * @brief remove the previously set disconnection_callback
+     */
     void remove_disconnection_callback();
 
   private:
@@ -1177,11 +1196,31 @@ class OSSIA_EXPORT oscquery_server
 class OSSIA_EXPORT oscquery_mirror
 {
   public:
+    /**
+     * @brief create an OSCQuery mirror device and connect it to a remote device
+     * @param name the name of the remote device (server)
+     * @param host the IP of the remote device (server)
+     */
     oscquery_mirror(std::string name, std::string host = "ws://127.0.0.1:5678");
+    /**
+     * @brief OSCQuery Mirror default destructor
+     */
     ~oscquery_mirror();
 
+    /**
+     * @brief get this server's root opp::node
+     * @return this server's root opp::node
+     */
     node get_root_node() const;
+    /**
+     * @brief refresh the Mirror's namespace
+     */
     void refresh();
+    /**
+     * @brief reconnect to the remote device
+     * @param name the name of the remote device (server)
+     * @param host the IP of the remote device (server)
+     */
     void reconnect(std::string name, std::string host);
 
   private:
