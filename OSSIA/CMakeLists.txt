@@ -293,7 +293,9 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PUBLIC ${CMAKE_DL_LIBS})
   endif()
 
-  target_link_libraries(ossia PUBLIC PortAudio)
+  if(PortAudio_FOUND)
+    target_link_libraries(ossia PUBLIC PortAudio)
+  endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)
   find_package(SDL)

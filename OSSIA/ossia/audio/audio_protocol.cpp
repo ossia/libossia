@@ -59,7 +59,7 @@ ossia::audio_engine* make_audio_engine(
 
   if(!p)
   {
-    return new ossia::dummy_engine;
+    return new ossia::dummy_engine{name, inputs, outputs, rate, bs};
   }
 
   return p;
