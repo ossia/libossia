@@ -422,6 +422,7 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/invoke.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/name_utils.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"

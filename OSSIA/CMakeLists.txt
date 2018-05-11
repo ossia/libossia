@@ -293,7 +293,7 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PUBLIC ${CMAKE_DL_LIBS})
   endif()
 
-  if(PortAudio_FOUND)
+  if(TARGET PortAudio)
     target_link_libraries(ossia PUBLIC PortAudio)
   endif()
 
