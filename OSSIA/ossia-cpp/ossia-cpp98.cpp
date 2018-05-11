@@ -650,6 +650,16 @@ void node::set_cart3D()
 
 }
 
+void node::set_opengl()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::opengl_u{}, *m_node);
+  }
+
+}
+
 void node::set_polar()
 {
   if (m_node)
@@ -670,16 +680,6 @@ void node::set_spherical()
 
 }
 
-void node::set_opengl()
-{
-  if (m_node)
-  {
-    m_node->remove_parameter();
-    ossia::setup_parameter(ossia::opengl_u{}, *m_node);
-  }
-
-}
-
 void node::set_cylindrical()
 {
   if (m_node)
@@ -689,6 +689,27 @@ void node::set_cylindrical()
   }
 
 }
+
+void node::set_angle_radian()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::radian_u{}, *m_node);
+  }
+
+}
+
+void node::set_angle_degree()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::degree_u{}, *m_node);
+  }
+
+}
+
 
 void node::set_quaternion()
 {
@@ -751,7 +772,35 @@ void node::set_linear()
 
 }
 
+void node::set_frequency()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::frequency_u{}, *m_node);
+  }
 
+}
+
+void node::set_midi_pitch()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::midi_pitch_u{}, *m_node);
+  }
+
+}
+
+void node::set_bpm()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::bpm_u{}, *m_node);
+  }
+
+}
 node node::create_impulse(std::string addr)
 {
   if (m_node)
@@ -950,6 +999,17 @@ node node::create_cart3D(std::string addr)
   return {};
 }
 
+node node::create_opengl(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::opengl_u{}, *n)};
+  }
+
+  return {};
+}
+
 node node::create_polar(std::string addr)
 {
   if (m_node)
@@ -972,23 +1032,34 @@ node node::create_spherical(std::string addr)
   return {};
 }
 
-node node::create_opengl(std::string addr)
-{
-  if (m_node)
-  {
-    auto n = &ossia::net::create_node(*m_node, addr);
-    return node{n, ossia::setup_parameter(ossia::opengl_u{}, *n)};
-  }
-
-  return {};
-}
-
 node node::create_cylindrical(std::string addr)
 {
   if (m_node)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
     return node{n, ossia::setup_parameter(ossia::cylindrical_u{}, *n)};
+  }
+
+  return {};
+}
+
+node node::create_angle_radian(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::radian_u{}, *n)};
+  }
+
+  return {};
+}
+
+node node::create_angle_degree(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::degree_u{}, *n)};
   }
 
   return {};
@@ -1060,6 +1131,38 @@ node node::create_linear(std::string addr)
   return {};
 }
 
+node node::create_frequency(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::frequency_u{}, *n)};
+  }
+
+  return {};
+}
+
+node node::create_midi_pitch(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::midi_pitch_u{}, *n)};
+  }
+
+  return {};
+}
+
+node node::create_bpm(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::bpm_u{}, *n)};
+  }
+
+  return {};
+}
 
 node& node::set_value(value v)
 {
