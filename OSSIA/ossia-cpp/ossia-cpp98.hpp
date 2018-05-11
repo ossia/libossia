@@ -50,21 +50,21 @@ namespace opp
  */
 enum access_mode
 {
-  Get, /// only read the value
-  Set, /// only write the value
-  Bi   /// read and write the value
+  Get, /**< only read the value */
+  Set, /**< only write the value */
+  Bi   /**< read and write the value */
 };
 /**Bounding modes define what to do at the bounds of the parameter's value
  * @brief Behaviour at the bounds of the value
  */
 enum bounding_mode
 {
-  Free, /// Let the value go all the way both sides over the bounds
-  Clip, /// Clip (clamp) the values at the bounds
-  Wrap, /// Start over at min bound when going over max bound (and vice-versa)
-  Fold, /// Fold back value when passing over the bound
-  Low,  /// Clip the values only on the min bound
-  High  /// Clip the values only at the max bound
+  Free, /**< Let the value go all the way both sides over the bounds */
+  Clip, /**< Clip (clamp) the values at the bounds */
+  Wrap, /**< Start over at min bound when going over max bound (and vice-versa) */
+  Fold, /**< Fold back value when passing over the bound */
+  Low,  /**< Clip the values only on the min bound */
+  High  /**< Clip the values only at the max bound */
 };
 
 class node;
@@ -420,11 +420,11 @@ struct OSSIA_EXPORT callback_index {
 };
 
 
-/**The nodes in the device are simply called "nodes" in the API. Nodes are identified with the OSC parameter syntax: /foo/bar.
+/**The nodes in the device are simply called "nodes" in the API. Nodes are identified with the OSC syntax: /foo/bar.
  * Nodes per se don't carry any value; they have to be extended with parameters to be able to send and receive messages.
  * When multiple nodes with the same name are created, they will be appended instance numbers, separated with a dot.
  * E.g. when duplicating the node /foo, its duplicates will be named /foo.1, /foo.2, etc…
- * This allows to have a cleaner representation of the address/namespace, as is demonstrated on the figures below:
+ * This allows to have a cleaner representation of the address/namespace.
  * [Namespace using slashes for instances](https://ossia.github.io/images/NamespaceSlash.png)
  * [Namespace using dots for instances](https://ossia.github.io/images/NamespaceDot.png)
  * @ingroup CPP98API
@@ -451,7 +451,7 @@ class OSSIA_EXPORT node
      * @brief assign the current node to another one
      * @return reference to the assigned node
      */
-    node& operator=(const node&);
+    node& operator = (const node&);
 
     /**
      * @brief node default destructor
@@ -515,311 +515,369 @@ class OSSIA_EXPORT node
     /**
      * @brief creates a child node to the current node
      * this creates a "container", without a parameter,
-     * which can later be added with the below set_* methods
+     * which can later be added with the set_(type) methods below
      * @param addr is a string to use as the child's node name
      * @return the just-created node object
      */
     node create_child(std::string addr);
 
-    /**
+    /**Impulse: no value; just a message.
      * @brief adds an impulse parameter to the current node
      */
     void set_impulse();
-    /**
+    /**Integer: 32-bit int.
      * @brief adds an int parameter to the current node
      */
     void set_int();
-    /**
+    /**Floating-point: 32-bit float.
      * @brief adds a float parameter to the current node
      */
     void set_float();
-    /**
+    /**Boolean: true/false.
      * @brief adds a bool parameter to the current node
      */
     void set_bool();
-    /**
+    /**Vec2f:  As an optimisation, vec2f is a specific type for 2 floats
      * @brief adds a vec2f parameter to the current node
      */
     void set_vec2f();
-    /**
+    /**Vec3f: As an optimisation, vec3f is a specific type for 3 floats
      * @brief adds a vec3f parameter to the current node
      */
     void set_vec3f();
-    /**
+    /**Vec4f: As an optimisation, vec4f is a specific type for 4 floats
      * @brief adds a vec4f parameter to the current node
      */
     void set_vec4f();
-    /**
+    /**List: : a generic list of values: [3, 'a', 2.68, ["foo", "bar"]]
      * @brief adds a list parameter to the current node
      */
     void set_list();
-    /**
+    /**String: a string of chars as defined  in the C++ standard library
      * @brief adds a string parameter to the current node
      */
     void set_string();
-    /**
+    /**Generic buffer : when a string should be interpreted as a a raw binary blob.
      * @brief adds a buffer parameter to the current node
      */
     void set_buffer();
-    /**
+    /**File path : used for when a string is a filesystem path, like /home/self/sound.wav or c:\\document.txt
      * @brief adds a filepath parameter to the current node
      */
     void set_filepath();
-    /**
+    /**RGB: 3 float numbers between 0. and 1. describing respectively Red, Green and Blue color values
      * @brief adds a vec3f parameter to the current node, with the color.rgb unit
      */
     void set_rgb();
-    /**
+    /**RGBA: 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha color values
      * @brief adds a vec4f parameter to the current node, with the color.rgba unit
      */
     void set_rgba();
-    /**
+    /**ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue color values
      * @brief adds a vec4f parameter to the current node, with the color.argb unit
      */
     void set_argb();
-    /**
+    /**8 bits ARGB: 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue color values
      * @brief adds a vec4f parameter to the current node, with the color.argb8 unit
      */
     void set_argb8();
-    /**
+    /**HSV: 3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) color values in the HSV colorspace
      * @brief adds a vec3f parameter to the current node, with the color.hsv unit
      */
     void set_hsv();
-    /**
-     * @brief adds a vec2f parameter to the current node, with the position.cart2D unit (aka XY)
+    /**Cart2D: Cartesian 2-dimensional position (i.e. X, Y)
+     * @brief adds a vec2f parameter to the current node, with the position.cart2D unit
      */
     void set_cart2D();
-    /**
-     * @brief adds a vec3f parameter to the current node, with the position.cart3D unit (aka XYZ)
+    /**Cart3D: Cartesian 3-dimensional position (ie. X, Y, Z)
+     * @brief adds a vec3f parameter to the current node, with the position.cart3D unit
      */
     void set_cart3D();
-    /**
-     * @brief adds a vec2f parameter to the current node, with the position.polar unit (aka ad)
+    /**OpenGL: Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
+     * @brief adds a vec3f parameter to the current node, with the position.openGL unit (aka X, Y, Z)
+     */
+    void set_opengl();
+    /**Polar: Polar 2-dimensional position (ie. ad: amplitude, distance)
+     * @brief adds a vec2f parameter to the current node, with the position.polar unit
      */
     void set_polar();
-    /**
+    /**Spherical: Polar 3-dimensional position (ie. aed: amplitude, elevation, distance)
      * @brief adds a vec3f parameter to the current node, with the position.spherical unit (aka aed)
      */
     void set_spherical();
-    /**
-     * @brief adds a vec3f parameter to the current node, with the position.openGL unit (aka xyz)
-     */
-    void set_opengl();
-    /**
+    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, amplitude, Z)
      * @brief adds a vec3f parameter to the current node, with the position.cylindrical unit (aka daz)
      */
     void set_cylindrical();
-    /**
+
+    /**radian: a angle expressed in radian
+     * @brief cadds a vec3f parameter to the current node, with the angle.radian unit
+     */
+    void set_angle_radian();
+    /**degree: a angle expressed in degrees
+     * @brief adds a vec3f parameter to the current node, with theangle.radian unit
+     */
+    void set_angle_degree();
+    /**Quaternion: An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
      * @brief adds a vec4f parameter to the current node, with the orientation.quaternion unit
      */
     void set_quaternion();
-    /**
+    /**Euler: A triplet of angles (in degrees) describing the orientation of a rigid body with respect to a fixed coordinate system
      * @brief adds a vec3f parameter to the current node, with the orientation.euler unit (aka Euler angles)
      */
     void set_euler();
-    /**
-     * @brief adds a vec4f parameter to the current node, with the orientation.axis unit (aka xyza)
+    /**Axis: An angle (a, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, a
+     * @brief adds a vec4f parameter to the current node, with the orientation.axis unit
      */
     void set_axis();
-    /**
+    /**deciBel: a single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal gain, <0dB describing a signal attenuation)
      * @brief adds a float parameter to the current node, with the gain.decibel unit
      */
     void set_decibel();
-    /**
-     * @brief adds a float parameter to the current node, with the gain.midgain unit in the [0 127] range
+    /**midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
+     * @brief adds a float parameter to the current node, with the gain.midigain unit
      */
     void set_midigain();
-    /**
-     * @brief adds a float parameter to the current node, with the gain.linear unit in the [0. 1.] range
+    /**linear: a linear gain in the [0. 1.) range, with 1. being the nominal level
+     * @brief adds a float parameter to the current node, with the gain.linear unit
      */
     void set_linear();
+    /**frequency: a frequency expressed in Hertz
+     * @brief adds a float parameter to the current node, with the time.frequency unit
+     */
+    void set_frequency();
+    /**midi_pitch: a frequency expressed as a MIDI pitch (ie. 36 for C3)
+     * @brief adds a float parameter to the current node, with the time.midi_pitch unit
+     */
+    void set_midi_pitch();
+    /**bpm: a frequency expressed in beats per minute
+     * @brief adds a float parameter to the current node, with the time.bpm unit
+     */
+    void set_bpm();
 
 
-    /**
+    /**Impulse: no value; just a message.
      * @brief creates a child node with tne given name, and an impulse parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_impulse(std::string addr);
-    /**
+    /**Integer: 32-bit int.
      * @brief creates a child node with tne given name, and an int parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_int(std::string addr);
-    /**
+    /**Floating-point: 32-bit float.
      * @brief creates a child node with tne given name, and a float parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_float(std::string addr);
-    /**
+    /**Boolean: true/false.
      * @brief creates a child node with tne given name, and a bool parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_bool(std::string addr);
-    /**
+    /**Vec2f: As an optimisation, vec2f is a specific type for 2 floats
      * @brief creates a child node with tne given name, and a vec2f parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_vec2f(std::string addr);
-    /**
+    /**Vec3f: As an optimisation, vec3f is a specific type for 3 floats
      * @brief creates a child node with tne given name, and a vec3f parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_vec3f(std::string addr);
-    /**
+    /**Vec4f: As an optimisation, vec4f is a specific type for 4 floats
      * @brief creates a child node with tne given name, and a vec4f parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_vec4f(std::string addr);
-    /**
+    /**List: : a generic list of values: [3, 'a', 2.68, ["foo", "bar"]]
      * @brief creates a child node with tne given name, and a list parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_list(std::string addr);
-    /**
+    /**String: a string of chars as defined in the C++ standard library
      * @brief creates a child node with tne given name, and a string parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_string(std::string addr);
-    /**
+    /**Generic buffer : when a string should be interpreted as a a raw binary blob.
      * @brief creates a child node with tne given name, and a buffer parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_buffer(std::string addr);
-    /**
+    /**File path : used for when a string is a filesystem path, like /home/self/sound.wav or c:\\document.txt
      * @brief creates a child node with tne given name, and a filepath parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_filepath(std::string addr);
-    /**
+    /**RGB: 3 float numbers between 0. and 1. describing respectively Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the color.rgb unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_rgb(std::string addr);
-    /**
+    /**RGBA: 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.rgba unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_rgba(std::string addr);
-    /**
+    /**ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.argb unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_argb(std::string addr);
-    /**
+    /**8 bits ARGB: 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.argb8 unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_argb8(std::string addr);
-    /**
+    /**HSV:  3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) values in the HSV colorspace
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the color.hsv unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_hsv(std::string addr);
-    /**
+    /**Cart2D: Cartesian 2-dimensional position (i.e. X, Y)
      * @brief creates a child node with tne given name,
-     * and a vec2f parameter with the position.cart2D unit (aka XY)
+     * and a vec2f parameter with the position.cart2D unit (aka xy)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_cart2D(std::string addr);
-    /**
+    /**Cart3D: Cartesian 3-dimensional position (ie. X, Y, Z)
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.cart3D unit (aka XYZ)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_cart3D(std::string addr);
-    /**
-     * @brief creates a child node with tne given name,
-     * and a vec2f parameter with the position.polar unit (aka ad)
-     * @param addr: the name of the created node
-     * @return the created opp::node object
-     */
-    node create_polar(std::string addr);
-    /**
-     * @brief creates a child node with tne given name,
-     * and a vec3f parameter with the position.spherical unit (aka aed)
-     * @param addr: the name of the created node
-     * @return the created opp::node object
-     */
-    node create_spherical(std::string addr);
-    /**
+    /**OpenGL: Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.openGL unit (aka xyz)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_opengl(std::string addr);
-    /**
+    /**Polar: Polar 2-dimensional position (ie. ad: amplitude, distance)
+     * @brief creates a child node with tne given name,
+     * and a vec2f parameter with the position.polar unit (aka ad)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_polar(std::string addr);
+    /**Spherical: Polar 3-dimensional position (ie. aed: amplitude, elevation, distance)
+     * @brief creates a child node with tne given name,
+     * and a vec3f parameter with the position.spherical unit (aka aed)
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_spherical(std::string addr);
+    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, amplitude, Z)
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.cylindrical unit (aka daz)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_cylindrical(std::string addr);
-    /**
+
+    /**radian: a angle expressed in radian
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the angle.radian unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_angle_radian(std::string addr);
+    /**radian: a angle expressed in degrees
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the angle.radian unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_angle_degree(std::string addr);
+
+    /**Quaternion: An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the orientation.quaternion unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_quaternion(std::string addr);
-    /**
+    /**Euler: A triplet of angles (in degrees): {yaw, pitch, roll} describing the orientation of a rigid body with respect to a fixed coordinate system
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the orientation.euler unit (aka Euler angles)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_euler(std::string addr);
-    /**
+    /**Axis: An angle (w, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, w
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the orientation.axis unit (aka xyza)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_axis(std::string addr);
-    /**
+    /**deciBel: a single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal gain, <0dB describing a signal attenuation)
      * @brief creates a child node with tne given name,
      * and a float parameter with the gain.decibel unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_decibel(std::string addr);
-    /**
+    /**midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
      * @brief creates a child node with tne given name,
      * and a float parameter with the gain.midigain unit in the [0 127) range
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_midigain(std::string addr);
-    /**
+    /**linear: a linear gain in the [0. 1.) range, with 1. being the nominal level
      * @brief creates a child node with tne given name,
      * and a float parameter with the gain.linear unit in the [0. 1.) range
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_linear(std::string addr);
+    /**frequency: a frequency expressed in Hertz
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the time.frequency unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_frequency(std::string addr);
+    /**midi_pitch: a frequency expressed as a MIDI pitch (ie. 36 for C3)
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the time.midi_pitch unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_midi_pitch(std::string addr);
+    /**bpm: a frequency expressed in beats per minute
+     * @brief creates a child node with tne given name,
+     * and a float parameter with the time.bpm unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_bpm(std::string addr);
 
     /**
      * @brief set the node's parameter's value

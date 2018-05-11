@@ -40,7 +40,7 @@ void list_units(InsertFun fun)
     }
   });
 
-  fun("complex", cartesian_2d_u{});
+  fun("complex", ossia::cartesian_2d_u{});
   fun("point2d", ossia::cartesian_2d_u{});
   fun("2d", ossia::cartesian_2d_u{});
   fun("cartesian2d", ossia::cartesian_2d_u{});
