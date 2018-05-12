@@ -512,6 +512,10 @@ class OSSIA_EXPORT node
      */
     void remove_children();
 
+    //*********************//
+    //     Create Nodes    //
+    //*********************//
+
     /**
      * @brief creates a child node to the current node
      * this creates a "container", without a parameter,
@@ -520,6 +524,10 @@ class OSSIA_EXPORT node
      * @return the just-created node object
      */
     node create_child(std::string addr);
+
+    //*********************//
+    //     Add parameters  //
+    //*********************//
 
     /**Impulse: no value; just a message.
      * @brief adds an impulse parameter to the current node
@@ -609,7 +617,6 @@ class OSSIA_EXPORT node
      * @brief adds a vec3f parameter to the current node, with the position.cylindrical unit (aka daz)
      */
     void set_cylindrical();
-
     /**radian: a angle expressed in radian
      * @brief cadds a vec3f parameter to the current node, with the angle.radian unit
      */
@@ -655,6 +662,9 @@ class OSSIA_EXPORT node
      */
     void set_bpm();
 
+    //************************************//
+    //     Create Nodes with parameters   //
+    //************************************//
 
     /**Impulse: no value; just a message.
      * @brief creates a child node with tne given name, and an impulse parameter
@@ -879,6 +889,10 @@ class OSSIA_EXPORT node
      */
     node create_bpm(std::string addr);
 
+    //************************************//
+    //             Manage values          //
+    //************************************//
+
     /**
      * @brief set the node's parameter's value
      * @param v an opp:value
@@ -897,7 +911,10 @@ class OSSIA_EXPORT node
      * @see opp::oscquery_mirror
      */
     opp::value fetch_value() const;
-    /**
+
+    /**Parameter callbacks will inform you every time a parameter receives a message:
+     * this will enable listening on the remote end,
+     * ie. messages will be sent upon modification.
      * @brief sets a callback allowing to listen to this value
      * @param c a value_callback
      * @param ctx the context as a void*
@@ -912,7 +929,49 @@ class OSSIA_EXPORT node
      * @see opp::callback_index
      */
     void remove_value_callback(callback_index idx);
+
+
+
+
+    //************************************//
+    //           Manage attributes        //
+    //************************************//
+
+
+    //*********    Access mode:    ************//
+
+
+    /**Access mode is a metadata that categorizes parameters between:
+     *
+     * - GET: read-only
+     * - SET: write-only
+     * - BI: read-write
+     *
+     * For instance:
+     *
+     * - The value of a vu-meter should be GET
+     * - A "play" button should be SET.
+     * - The cutoff of a filter or a controllable color should be BI.
+     * @brief sets the access_mode attribute of this node's parameter
+     * @param v an opp::access_mode of the chosen mode
+     * @return a reference to this node
+     */
+    node& set_access(access_mode v);
     /**
+     * @brief gets the access_mode attribute of this node's parameter
+     * @return an opp::access_mode with this node's parameter's access mode
+     * @see opp::node::set_acess
+     */
+    access_mode get_access() const;
+
+
+
+    //*********    Domain:    ************//
+
+    /**Domains allow to set a range of accepted values for a given parameter.<br>
+     * This range can be continuous (between a min and max), or discrete:  a set of accepted values.<br>
+     * This function defines the minimum of a continuous range.<br>
+     * This is only meaningful for nodes with parameters of numerical types (ie ints, floats, vecnfs and some lists)<br>
      * @brief sets the 'min' attribute of this node's parameter (minimum value)
      * @param min an opp::value with the desired minimum value
      * @return a reference to this node
@@ -922,23 +981,31 @@ class OSSIA_EXPORT node
     /**
      * @brief gets the 'min' attribute of this node's parameter (minimum value)
      * @return an opp::value with this node's parameter's minimum value
+     * @see opp::node::set_min
      * @see opp::node::get_bounding
      */
     opp::value get_min() const;
-    /**
+    /**Domains allow to set a range of accepted values for a given parameter.<br>
+     * This range can be continuous (between a min and max), or discrete:  a set of accepted values.<br>
+     * This function defines the maximum of a continuous range.<br>
+     * This is only meaningful for nodes with parameters of numerical types (ie ints, floats, vecnfs and some lists)<br>
      * @brief sets the 'max' attribute of this node's parameter (maximum value)
      * @param min an opp::value with the desired mmaximum value
      * @return a reference to this node
-     *  @see opp::node::set_bounding
+     * @see opp::node::set_bounding
      */
     node& set_max(opp::value max);
     /**
      * @brief gets the 'max' attribute of this node's parameter (maximum value)
      * @return an opp::value with this node's parameter's maximum value
+     * @see opp::node::set_max
      * @see opp::node::get_bounding
      */
     opp::value get_max() const;
-    /**
+    /**Domains allow to set a range of accepted values for a given parameter.<br>
+     * This range can be continuous (between a min and max), or discrete:  a set of accepted values.<br>
+     * This function defines a set of accepted values.<br>
+     * This is only meaningful for nodes with parameters of about any types except Impulse<br>
      * @brief sets a list of the values accepted by this node's parameter ("values" attribute)
      * @param v a vector of opp::value with the desired list of accepted values
      * @return a reference to this node
@@ -948,36 +1015,30 @@ class OSSIA_EXPORT node
     /**
      * @brief gets a list of the values accepted by this node's parameter ("values" attribute)
      * @return a vector of opp::value with the list of this node's parameter's accepted values
+     * @see opp::node::set_accepted_values
+     * @see opp::node::set_bounding
      */
     std::vector<opp::value> get_accepted_values() const;
-    /**
-     * @brief sets the unit attribute of this node's parameter
-     * @param v a string with this unit's name
-     * @return a reference to this node
-     * @see ossia::unit_t
-     */
-    node& set_unit(std::string v);
-    /**
-     * @brief gets the unit of this node's parameter
-     * @return a string with this node's parameter's unit name
-     * @see ossia::unit_t
-     */
-    std::string get_unit() const;
-    /**
-     * @brief sets the access_mode attribute of this node's parameter
-     * @param v an opp::access_mode of the chosen mode
-     * @return a reference to this node
-     */
-    node& set_access(access_mode v);
-    /**
-     * @brief gets the access_mode attribute of this node's parameter
-     * @return an opp::access_mode with this node's parameter's access mode
-     */
-    access_mode get_access() const;
-    /**
+
+
+    //*********    Bounding mode:    ************//
+
+
+    /**The bounding mode tells what happens when a value is outside of the min / max:
+     *
+     * * **FREE** : no clipping; domain is only indicative.
+     * * **CLIP** : clipped to the closest value in the range.
+     * * **LOW** : only clips values lower than the min.
+     * * **HIGH** : only clips values higher than the max.
+     * * **WRAP** : wraps values around the range
+     * * **FOLD** : folds back values into the range
+     *
+     * The default is **FREE**.
      * @brief sets the bounding_mode attribute of this node's parameter
      * @param v an opp::bounding_mode of the chosen mode
      * @return a reference to this node
+     * @see opp::node::set_min
+     * @see opp::node::set_max
      */
     node& set_bounding(bounding_mode v);
     /**
@@ -986,19 +1047,140 @@ class OSSIA_EXPORT node
      */
     bounding_mode get_bounding() const;
 
-    /**
-     * @brief sets the repetition_filter attribute of this node's parameter
-     * @param v an bool: true to filter out this node's parameter's value repetitions
+
+    //*********    Units:    ************//
+
+    /**Units give a semantic meaning to the value of a parameter. <br>
+     * Units are sorted by categories (coined "dataspace" ): every unit in a category is convertible to the other units in the same category. <br>
+     * Every category has a neutral unit to/from which conversions are made. <br>
+     *
+     * An unit, when setting it as a parameter's attribute, can be expressed as a string in the form:<br>
+     * - "category.unit" (such as "position.cart2D"),<br>
+     * - only with the unit name (such as "cart2D", those being all unique), <br>
+     * - or with "nicknames", that are indicated in parentheses, after the unit name <br>
+     * A list of all supported units is given below.
+     *
+     * @brief sets the unit attribute of this node's parameter
+     * @param v a string with this unit's name
      * @return a reference to this node
+     * @see ossia::unit_t
      */
-    node& set_repetition_filter(bool v);
-    /**
-     * @brief gets the repetition_filter attribute of this node's parameter
-     * @return a bool: true if this node's parameter's value repetitions are filtered out
+    node& set_unit(std::string v);
+    /**< @details
+     *
+     * - **Position**
+     *
+     *   + **cart3D** (*xyz*, *pos*, *point*, *point3d*, *3d*, *cartesian3d*, *coord*, *coordinate*, *coordinates*, *pvector* *, *vertex*):
+     * Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
+     *   + **cart2D** (*xy*, *complex*, *point2d*, *2d*, *cartesian2d*):
+     * Cartesian 2-dimensional position (i.e. X, Y)
+     *   + **opengl** (*gl*, *position.gl*):
+     * Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
+     *   + **spherical** (*aed*):
+     * Polar 3-dimensional position (ie. aed: amplitude, elevation, distance)
+     *   + **polar** (*ad*):
+     * Polar 2-dimensional position (ie. ad: amplitude, distance)
+     *   + **cylindrical** (*daz*):
+     * Mixed 3-dimensional position (ie. daz: distance, amplitude, Z)
+     *
+     *
+     *
+     * - **Orientation**
+     *
+     *   + **quaternion**:
+     * An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
+     *   + **euler**:
+     * A triplet of angles (in degrees) describing the orientation of a rigid body with respect to a fixed coordinate system
+     *   + **axis**:
+     * An angle (a, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, a
+     *
+     *
+     *
+     * - **Color**
+     *
+     *   + **argb** (*col*):
+     * 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue color values
+     *   + **rgba**:
+     * 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha color values
+     *   + **rgb**:
+     * 3 float numbers between 0. and 1. describing respectively Red, Green and Blue color values
+     *   + **bgr**:
+     * 3 float numbers between 0. and 1. describing respectively Blue, Green and Red color values
+     *   + **argb8**:
+     * 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue color values
+     *   + **hsv**:
+     * 3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) color values in the * HSV colorspace
+     *   + **cmy8**:
+     * 3 int numbers between 0 and 255 describing respectively Cyan, Magenta, and Yellow color values
+     *   + **cmyk8**:
+     * 4 int numbers between 0 and 255 describing respectively Cyan, Magenta, Yellow and Black color values
+     *
+     * - **Angle**
+     *
+     *   + **radian**
+     *   + **degree**
+     *
+     *
+     * - **Distance**
+     *
+     *   + **meter**
+     *   + **kilometer**
+     *   + **decimeter**
+     *   + **centimeter**
+     *   + **millimeter**
+     *   + **micrometer**
+     *   + **nanometer**
+     *   + **picometer**
+     *   + **inch**
+     *   + **foot**
+     *   + **mile**
+     *
+     * - **Time**
+     *
+     *   + **second**
+     *   + **bark**
+     *   + **bpm**
+     *   + **cent**
+     *   + **frequency** (*freq*, *frequence*, *Hz*, *hz*, *Hertz*):
+     *   + **mel**
+     *   + **midi_pitch** (*midinote*):
+     *   + **millisecond** (*ms*)
+     *   + **playback_speed**
+     *   + **sample** (the length of a sample, for a sample_rate of 44100Hz)
+     *
+     * - **Gain**
+     *
+     *   + **linear**:
+     * A linear gain in the [0. 1.] range, with 1. being the nominal level
+     *   + **midigain**:
+     * A value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
+     *   + **decibel** (*db*, *dB*):
+     * A single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal * gain, < 0dB describing a signal attenuation, clipped at -96dB)
+     *   + **decibel_raw**
+     * Same as deciBel, but unclipped.
+     *
+     * - **Speed**
+     *
+     *   + **meter_per_second**
+     *   + **miles_per_hour**
+     *   + **kilometer_per_hour**
+     *   + **knot**
+     *   + **foot_per_second**
+     *   + **foot_per_hour**
      */
-    bool get_repetition_filter() const;
 
     /**
+     * @brief gets the unit of this node's parameter
+     * @return a string with this node's parameter's unit name
+     * @see ossia::unit_t
+     */
+    std::string get_unit() const;
+
+
+
+    //*********    Other value management attributes:    ************//
+
+    /**A default value for a given node. Useful for resetting to a default state.
      * @brief sets the default_value attribute of this node's parameter
      * @param v an opp::value with this node's parameter's default value
      * @return a reference to this node
@@ -1010,63 +1192,18 @@ class OSSIA_EXPORT node
      * @return an opp::value with this node's parameter's default value
      */
     value get_default_value();
-    /**
-     * @brief sets this node's description attribute
-     * @param v a string with the textual description of this node
-     * @return a reference to this node
-     */
-    node& set_description(std::string v);
-    /**
-     * @brief gets this node's description attribute
-     * @return a string with the textual description of this node
-     */
-    std::string get_description() const;
-    /**
-     * @brief sets his node's tags attribute
-     * @param v a vector of strings with the desired tags of this node'
-     * @return a reference to this node
-     */
-    node& set_tags(std::vector<std::string> v);
-    /**
-     * @brief gets this node's tags attribute
-     * @return a string with this node's tags
-     */
-    std::vector<std::string> get_tags() const;
 
-    /**
-     * @brief sets how many instances this node can have
-     * @param min the minimum number of instances this node can have
-     * @param max the maximum number of instances this node can have
+    /**When the repetition filter is enabled, if the same value is sent twice, the second time will be filtered out.
+     * @brief sets the repetition_filter attribute of this node's parameter
+     * @param v an bool: true to filter out this node's parameter's value repetitions
      * @return a reference to this node
      */
-    node& set_instance_bounds(int min, int max);
+    node& set_repetition_filter(bool v);
     /**
-     * @brief unset how many instances this node can have
-     * @return a reference to this node
+     * @brief gets the repetition_filter attribute of this node's parameter
+     * @return a bool: true if this node's parameter's value repetitions are filtered out
      */
-    node& unset_instance_bounds();
-    /**
-     * @brief gets how many instances this node can have
-     * @return a std::pair with the minimum and maxium number sof instances this node can have
-     */
-    std::pair<int, int> get_instance_bounds() const;
-
-    /**
-     * @brief sets the priority attribute of this node's parameter
-     * @param v a float with this node's parameter's priority value (higher numbers for higher priorities)
-     * @return a reference to this node
-     */
-    node& set_priority(float v);
-    /**
-     * @brief unsets the priority attribute of this node's parameter
-     * @return a reference to this node
-     */
-    node& unset_priority();
-    /**
-     * @brief gets the priority attribute of this node's parameter
-     * @return a float with this node's parameter's priority value (higher numbers for higher priorities)
-     */
-    float get_priority();
+    bool get_repetition_filter() const;
 
     /**An optional value that says how often a value should be updated.
      * @brief sets the refresh_rate attribute of this node's parameter
@@ -1102,19 +1239,24 @@ class OSSIA_EXPORT node
      */
     double get_value_step_size();
 
-    /**
-     * @brief sets this node's hidden attribute
-     * @param v a bool: true to hide this node
+    /**Nodes with the highest priority should execute first.
+     * @brief sets the priority attribute of this node's parameter
+     * @param v a float with this node's parameter's priority value (higher numbers for higher priorities)
      * @return a reference to this node
      */
-    node& set_hidden(bool v);
+    node& set_priority(float v);
     /**
-     * @brief gets this node's hidden attribute
-     * @return a bool: true if the node is hidden
+     * @brief unsets the priority attribute of this node's parameter
+     * @return a reference to this node
      */
-    bool get_hidden() const;
-
+    node& unset_priority();
     /**
+     * @brief gets the priority attribute of this node's parameter
+     * @return a float with this node's parameter's priority value (higher numbers for higher priorities)
+     */
+    float get_priority();
+
+    /**This attribute will disable a node: it will stop receiving and sending messages from/to the network.
      * @brief sets the disabled attribute of this node's parameter
      * @param v a bool: true to disable this node's parameter
      * @return a reference to this node
@@ -1126,7 +1268,8 @@ class OSSIA_EXPORT node
      */
     bool get_disabled() const;
 
-    /**
+    /**This attribute will disable a node: it will stop sending messages to the network. <br>
+     * Unlike the "disabled" attribute, it won't propagate to other mirrored servers.
      * @brief sets the muted attribute of this node's parameter
      * @param v a bool: true to mute this node's parameter
      * @return a reference to this node
@@ -1138,8 +1281,9 @@ class OSSIA_EXPORT node
      */
     bool get_muted() const;
 
-
-    /**
+    /**This attribute informs the network protocol that the value has a particular importance
+     * and should if possible use a protocol not subject to message loss, eg TCP instead of UDP.
+     * This is useful for instance for "play" messages.
      * @brief sets the critical attribute of this node's parameter
      * @param v a bool: true to mark this node's parameter  as critical
      * @return a reference to this node
@@ -1151,7 +1295,69 @@ class OSSIA_EXPORT node
      */
     bool get_critical() const;
 
+
+
+    //*********    Other informative attributes:    ************//
+
+
+    /**An optional textual description.
+     * @brief sets this node's description attribute
+     * @param v a string with the textual description of this node
+     * @return a reference to this node
+     */
+    node& set_description(std::string v);
     /**
+     * @brief gets this node's description attribute
+     * @return a string with the textual description of this node
+     */
+    std::string get_description() const;
+
+    /**An optional array of tags for nodes, expressed as one string per tag.
+     * @brief sets his node's tags attribute
+     * @param v a vector of strings with the desired tags of this node'
+     * @return a reference to this node
+     */
+    node& set_tags(std::vector<std::string> v);
+    /**
+     * @brief gets this node's tags attribute
+     * @return a string with this node's tags
+     */
+    std::vector<std::string> get_tags() const;
+
+    /**For nodes that can have instantiatable children, this sets the minimum and maximum number of children that can exist.
+     * This is an optional attribute: it is not enforced and is only to be relied upon as a metadata.
+     * @brief sets how many instances this node can have
+     * @param min the minimum number of instances this node can have
+     * @param max the maximum number of instances this node can have
+     * @return a reference to this node
+     */
+    node& set_instance_bounds(int min, int max);
+    /**
+     * @brief unset how many instances this node can have
+     * @return a reference to this node
+     */
+    node& unset_instance_bounds();
+    /**
+     * @brief gets how many instances this node can have
+     * @return a std::pair with the minimum and maxium number sof instances this node can have
+     */
+    std::pair<int, int> get_instance_bounds() const;
+
+    /**This attribute is to use for nodes that are not to be exposed to the network.
+     * @brief sets this node's hidden attribute
+     * @param v a bool: true to hide this node
+     * @return a reference to this node
+     */
+    node& set_hidden(bool v);
+    /**
+     * @brief gets this node's hidden attribute
+     * @return a bool: true if the node is hidden
+     */
+    bool get_hidden() const;
+
+    /**This is a read-only attribute: it informs of whether a node is in a zombie state.
+     * A zombie node is an node in a remote device, whose source has been removed.
+     * It is kept in the mirrors but marked as such.
      * @brief gets the zombie attribute of this node's parameter
      * @return a bool: true if the node has been zombified
      */
@@ -1197,7 +1403,8 @@ class OSSIA_EXPORT oscquery_server
      * @brief declares a (yet to be configured) OSCQuery server
      */
     oscquery_server();
-    /**
+    /** A server can be created and directly exposed using the OSCQuery protocol
+     * by giving it a name and optional OSC and websocket port numbers.
      * @brief declares and configures an OSCQuery server
      * @param name the name of the OSCQuery server
      * @param oscPort the OSC port to receive messages from (defaults to 1234)
@@ -1208,14 +1415,16 @@ class OSSIA_EXPORT oscquery_server
      * @brief OSCQuery Server default destructor
      */
     ~oscquery_server();
-    /**
+    /**When created without arguments, a server can be exposed using the OSCQuery protocol
+     * by giving it a name and optional OSC and websocket port numbers.
      * @brief sets up an OSCQuery Server with the appropriate device name and ports
      * @param name the name of the OSCQuery server
      * @param oscPort the OSC port to receive messages from (defaults to 1234)
      * @param wsPort the websocket port the server uses to manage queries (defaults to 5678)
      */
     void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
-    /**
+
+    /**The root node of the server can be useful to create sub_nodes
      * @brief get this server's root opp::node
      * @return this server's root opp::node
      */
@@ -1260,7 +1469,10 @@ class OSSIA_EXPORT oscquery_server
 class OSSIA_EXPORT oscquery_mirror
 {
   public:
-    /**
+    /**It is possible to create a OSCQuery mirrot and to connect it to a remote device,
+     * this will allow to build a tree of opp::nodes, the structure of which can be discovered
+     * with get_root_node() and using the get_namespace(), get_children() and find_child() methods. <br>
+     * See the tutorial example of the Documentation folder at the root of the libossia repository.
      * @brief create an OSCQuery mirror device and connect it to a remote device
      * @param name the name of the remote device (server)
      * @param host the IP of the remote device (server)
@@ -1271,16 +1483,18 @@ class OSSIA_EXPORT oscquery_mirror
      */
     ~oscquery_mirror();
 
-    /**
+    /**Use get_root_node() in combination with et_namespace(), get_children() and find_child() to build the mirror node tree
      * @brief get this server's root opp::node
      * @return this server's root opp::node
      */
     node get_root_node() const;
-    /**
+
+    /**If the structure of the remote server we're mirroring changed, we can refresh the image we have of it.
      * @brief refresh the Mirror's namespace
      */
     void refresh();
-    /**
+
+    /**When the connection the remote server we're mirroring  has been lost, we need to reconnect to it.
      * @brief reconnect to the remote device
      * @param name the name of the remote device (server)
      * @param host the IP of the remote device (server)
