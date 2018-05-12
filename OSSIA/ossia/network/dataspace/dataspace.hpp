@@ -14,7 +14,12 @@
 namespace ossia
 {
 #include <ossia/network/dataspace/dataspace_base_variants.hpp>
-//! A unit
+//!  Units give a semantic meaning to the value of a parameter.<br>
+//! They are sorted by categories: every unit in a category is convertible to the other units in the same category.<br>
+//! Every category (coined "dataspace") has a neutral unit to/from which conversions are made.<br>
+//! \see opp::node::set_unit for a list of all availble units
+
+
 struct OSSIA_EXPORT unit_t final
 {
   unit_variant v;

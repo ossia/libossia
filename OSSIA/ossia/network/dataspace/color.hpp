@@ -243,7 +243,7 @@ struct OSSIA_EXPORT xyz_u : public color_unit<xyz_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
-    return ossia::make_string_array("xyz");
+    return ossia::make_string_array("cie_xyz");
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
@@ -263,7 +263,7 @@ struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
 {
   static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
   {
-    return ossia::make_string_array("Yxy");
+    return ossia::make_string_array("cie_Yxy");
   }
 
   static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
