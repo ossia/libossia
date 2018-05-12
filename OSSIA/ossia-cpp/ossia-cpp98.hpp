@@ -390,6 +390,7 @@ class OSSIA_EXPORT value
 
 /** @brief container for a value callback
  * @see opp::callback_index
+ * @see opp::node::set_value_callback
  */
 typedef void (*value_callback)(void*, const opp::value&);
 /** @brief container for a connection callback
@@ -404,6 +405,9 @@ typedef void (*disconnection_callback)(void*, const std::string&);
 /**
  * @ingroup CPP98API
  * @brief The callback_index struct holds callbacks for adding listeners to parameters' values
+ * @see opp::node::set_value_callback
+ * @see opp::node::remove_value_callback
+ *
 */
 struct OSSIA_EXPORT callback_index {
     callback_index();
@@ -1383,13 +1387,12 @@ class OSSIA_EXPORT node
 };
 
 
-/**A device represents a tree of parameters.
- * Local devices map to real parameters on the executable libossia is used with. For instance the frequency of a filter, etc.
- * Devices can be mapped to different protocols: OSC, OSCQuery, Midi, etc.
- * For the sake of simplicity, the safeC++ (opp) binding ties together device and protocol implementation
- * We use the OSCQuery protocol here.
- * Once a device has been created, it is possible to check what's in it by going to http://localhost:5678.
- * For more information on the OSCQuery protocol, please refer to the proposal.
+/**A device represents a tree of parameters. <br>
+ * Local devices map to real parameters on the executable libossia is used with. For instance the frequency of a filter, etc.<br>
+ * Devices can be mapped to different protocols: OSC, OSCQuery, Midi, etc.<br>
+ * For the sake of simplicity, the safeC++ (opp) binding ties together device and protocol implementation: OSCQuery protocol here. <br>
+ * Once a device has been created, it is possible to check what's in it by going to http://localhost:5678. <br>
+ * For more information on the OSCQuery protocol, please refer to the proposal: [https://github.com/mrRay/OSCQueryProposal](https://github.com/mrRay/OSCQueryProposal)
  *
  * @ingroup CPP98API
  * @brief The oscquery_server class allows to create a local OSCQuery server
@@ -1424,7 +1427,7 @@ class OSSIA_EXPORT oscquery_server
      */
     void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
 
-    /**The root node of the server can be useful to create sub_nodes
+    /**The root node of the server can be useful to create sub_nodes, with opp::node::create_child and all opp::node::create_* methods.
      * @brief get this server's root opp::node
      * @return this server's root opp::node
      */
@@ -1469,10 +1472,10 @@ class OSSIA_EXPORT oscquery_server
 class OSSIA_EXPORT oscquery_mirror
 {
   public:
-    /**It is possible to create a OSCQuery mirrot and to connect it to a remote device,
-     * this will allow to build a tree of opp::nodes, the structure of which can be discovered
-     * with get_root_node() and using the get_namespace(), get_children() and find_child() methods. <br>
-     * See the tutorial example of the Documentation folder at the root of the libossia repository.
+    /**It is possible to create a OSCQuery mirror and to connect it to a remote device. <br>
+     * This will allow to build a tree of opp::node s, the structure of which can be discovered
+     * by using get_root_node() and the opp::node::get_namespace(), opp::node::get_children() and opp::node::find_child() methods. <br>
+     * See the CPP98 tutorial example of the Documentation folder at the root of the libossia repository for an example of this.
      * @brief create an OSCQuery mirror device and connect it to a remote device
      * @param name the name of the remote device (server)
      * @param host the IP of the remote device (server)
@@ -1483,7 +1486,7 @@ class OSSIA_EXPORT oscquery_mirror
      */
     ~oscquery_mirror();
 
-    /**Use get_root_node() in combination with et_namespace(), get_children() and find_child() to build the mirror node tree
+    /**Use get_root_node() in combination with opp::node::get_namespace(), opp::node::get_children() and opp::node::find_child() to build the mirror node tree.
      * @brief get this server's root opp::node
      * @return this server's root opp::node
      */
@@ -1494,7 +1497,7 @@ class OSSIA_EXPORT oscquery_mirror
      */
     void refresh();
 
-    /**When the connection the remote server we're mirroring  has been lost, we need to reconnect to it.
+    /**When the connection the remote server we're mirroring  has been lost, we need to reconnect to it in order to go on with the operations.
      * @brief reconnect to the remote device
      * @param name the name of the remote device (server)
      * @param host the IP of the remote device (server)
