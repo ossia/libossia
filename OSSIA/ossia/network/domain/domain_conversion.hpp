@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain.hpp>
-
+#include <iostream>
 namespace ossia
 {
 template <typename U>
@@ -225,6 +225,21 @@ inline void convert_compatible_domain(domain& dom, ossia::val_type newtype)
   if (dom.which() < list_index)
   {
     dom = convert_domain(dom, newtype);
+  }
+  else if(dom.which() == list_index)
+  {
+    switch(newtype)
+    {
+      case ossia::val_type::VEC2F:
+      case ossia::val_type::VEC3F:
+      case ossia::val_type::VEC4F:
+      {
+        dom = convert_domain(dom, newtype);
+        break;
+      }
+      default:
+        break;
+    }
   }
 }
 }

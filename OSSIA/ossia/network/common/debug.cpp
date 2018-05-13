@@ -103,7 +103,7 @@ operator<<(fmt::BasicWriter<char>& w, ossia::bounding_mode b)
 fmt::BasicWriter<char>&
 operator<<(fmt::BasicWriter<char>& w, const ossia::domain& d)
 {
-  // TODO
+  w << d.to_pretty_string();
   return w;
 }
 }
