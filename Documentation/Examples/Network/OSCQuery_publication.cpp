@@ -115,7 +115,7 @@ int main()
 
   {
     // tuple is a std::vector<value>
-    auto& node = find_or_create_node(device, "/test/my_tuple");
+    auto& node = find_or_create_node(device, "/test/my_list_values");
     auto address = node.create_parameter(val_type::LIST);
     address->add_callback(printValueCallback);
 
@@ -125,17 +125,39 @@ int main()
     // Domain of the tuple
     node.set(domain_attribute{},
       vector_domain(
-                             tuple{0, 1}, // Min values
-                             tuple{3, 5}, // Max values
+                             {}, // Min values
+                             {}, // Max values
                              std::vector<boost::container::flat_set<ossia::value>>{
                                {123, 345}, {12345, 234} // Allowed values
                              } ));
   }
 
   {
+    // tuple is a std::vector<value>
+    auto& node = find_or_create_node(device, "/test/my_list_minmax");
+    auto address = node.create_parameter(val_type::LIST);
+    address->add_callback(printValueCallback);
+
+    using tuple = std::vector<ossia::value>;
+    address->push_value(tuple{"foo"s, 1234, tuple{"bar"s, 4.5}});
+
+    // Domain of the tuple
+    node.set(domain_attribute{},
+      vector_domain(tuple{0, 1}, // Min values
+                    tuple{3, 5}, // Max values
+                    {} ));
+  }
+
+  {
     // fixed-length arrays
     auto& node = find_or_create_node(device, "/test/my_vec3f");
     auto address = node.create_parameter(val_type::VEC3F);
+    address->set_domain(
+          ossia::make_domain(
+            ossia::make_vec(0, -1, -2),
+            ossia::make_vec(1, 1, 2)
+            )
+         );
     address->add_callback(printValueCallback);
     address->push_value(ossia::make_vec(0., 1., 2.));
   }

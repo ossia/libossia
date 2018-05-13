@@ -1369,8 +1369,8 @@ class OSSIA_EXPORT node
 
 
 #if defined(OSSIA_CPP_CXX11)
-    node(node&&) = default;
-    node& operator=(node&&) = default;
+    node(node&&);
+    node& operator=(node&&);
 #endif
 
   private:

@@ -319,9 +319,16 @@ node::node() : m_node{}, m_param{}
 }
 
 node::node(const node& other)
-    : node{other.m_node, other.m_param}
+  : node{other.m_node, other.m_param}
 {
 }
+
+node::node(node&& other)
+  : node{other.m_node, other.m_param}
+{
+
+}
+
 
 node::node(ossia::net::node_base* b)
   : node{b, b ? b->get_parameter() : nullptr}
@@ -341,6 +348,22 @@ node& node::operator=(const node& other)
 
   m_node = other.m_node;
   m_param = other.m_param;
+
+  init();
+
+  return *this;
+}
+
+node& node::operator=(node&& other)
+{
+  if (m_node)
+    cleanup(*m_node);
+
+  m_node = other.m_node;
+  m_param = other.m_param;
+
+  if(m_node)
+    other.cleanup(*m_node);
 
   init();
 
@@ -445,8 +468,8 @@ void node::remove_child(std::string addr)
 {
   if (m_node)
   {
-    auto cld = ossia::net::find_node(*m_node, addr);
-    cld->get_parent()->remove_child(*cld);
+    if(auto cld = ossia::net::find_node(*m_node, addr))
+      cld->get_parent()->remove_child(*cld);
   }
 }
 
@@ -1226,9 +1249,15 @@ node& node::set_min(value min)
 {
   if (m_param)
   {
-    auto dom = m_param->get_domain();
-    dom.set_min(std::move(*min.m_val));
-    m_param->set_domain(std::move(dom));
+    if(auto dom = m_param->get_domain())
+    {
+      dom.set_min(std::move(*min.m_val));
+      m_param->set_domain(std::move(dom));
+    }
+    else
+    {
+      m_param->set_domain(ossia::make_domain(*min.m_val, ossia::value{}));
+    }
   }
   return *this;
 }
@@ -1247,9 +1276,15 @@ node& node::set_max(value max)
 {
   if (m_param)
   {
-    auto dom = m_param->get_domain();
-    dom.set_max(std::move(*max.m_val));
-    m_param->set_domain(std::move(dom));
+    if(auto dom = m_param->get_domain())
+    {
+      dom.set_max(std::move(*max.m_val));
+      m_param->set_domain(std::move(dom));
+    }
+    else
+    {
+      m_param->set_domain(ossia::make_domain(ossia::value{}, *max.m_val));
+    }
   }
   return *this;
 }
@@ -1611,10 +1646,8 @@ bool node::get_zombie() const
   {
     return ossia::net::get_zombie(*m_node);
   }
-  return {};
+         return {};
 }
-
-
 
 
 
@@ -1624,8 +1657,11 @@ oscquery_server::oscquery_server()
 }
 
 oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
-  : m_con{}
+  : m_dev{}
+  , m_con{}
+  , m_con_ctx{}
   , m_discon{}
+  , m_discon_ctx{}
 {
   setup(std::move(name), oscPort, wsPort);
 }
