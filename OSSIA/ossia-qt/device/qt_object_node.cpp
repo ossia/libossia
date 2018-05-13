@@ -3,6 +3,8 @@
 #include "qt_object_node.hpp"
 #include "qt_property_node.hpp"
 #include <QChildEvent>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qt_object_node)
 namespace ossia
 {
 namespace qt

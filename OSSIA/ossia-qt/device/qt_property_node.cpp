@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "qt_property_node.hpp"
 #include <ossia-qt/js_utilities.hpp>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qt_property_node)
 namespace ossia
 {
 namespace qt
