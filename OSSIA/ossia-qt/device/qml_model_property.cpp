@@ -7,6 +7,8 @@
 #include <ossia-qt/device/qml_device.hpp>
 
 #include <boost/algorithm/string.hpp>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qml_model_property)
 namespace ossia
 {
 namespace qt

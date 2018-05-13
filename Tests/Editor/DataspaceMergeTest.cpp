@@ -45,7 +45,7 @@ class DataspaceMergeTest : public QObject
     return bs;
   }
 
-private Q_SLOTS:
+private:
   void static_test()
   {
     static_assert(ossia::detail::is_array<ossia::vec3f>::value, "");

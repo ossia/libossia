@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
+#include <wobjectdefs.h>
 #include <ossia/network/base/protocol.hpp>
 #include <QObject>
 #include <QSerialPort>
@@ -15,7 +16,7 @@ namespace net
 {
 class OSSIA_EXPORT serial_wrapper : public QObject
 {
-  Q_OBJECT
+  W_OBJECT(serial_wrapper)
 
   QSerialPort mSerialPort;
 
@@ -35,18 +36,18 @@ public:
   }
   ~serial_wrapper();
 
-Q_SIGNALS:
-  void write(QByteArray);
+public:
+  void write(QByteArray arg_1) W_SIGNAL(write, arg_1);
 
-public Q_SLOTS:
+public:
   void on_write(QByteArray b)
   {
     mSerialPort.write(b);
-  }
+  }; W_SLOT(on_write)
   void on_read()
   {
     qDebug() << mSerialPort.readAll();
-  }
+  }; W_SLOT(on_read)
 };
 
 

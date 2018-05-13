@@ -171,30 +171,18 @@ if(OSSIA_PROTOCOL_OSCQUERY)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
-  set(cur_moc "")
-  qt5_wrap_cpp(cur_moc ossia-qt/http/http_protocol.hpp TARGET ossia)
-  target_sources(ossia PRIVATE ${cur_moc})
-
   target_sources(ossia PRIVATE ${OSSIA_HTTP_HEADERS} ${OSSIA_HTTP_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HTTP)
 endif()
 
 if(OSSIA_PROTOCOL_WEBSOCKETS)
-  set(cur_moc "")
-  qt5_wrap_cpp(cur_moc ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp TARGET ossia)
-  target_sources(ossia PRIVATE ${cur_moc})
-
   target_sources(ossia PRIVATE ${OSSIA_WS_CLIENT_HEADERS} ${OSSIA_WS_CLIENT_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::Qml Qt5::WebSockets)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} WebSockets)
 endif()
 
 if(OSSIA_PROTOCOL_SERIAL)
-  set(cur_moc "")
-  qt5_wrap_cpp(cur_moc ossia-qt/serial/serial_protocol.hpp TARGET ossia)
-  target_sources(ossia PRIVATE ${cur_moc})
-
   target_sources(ossia PRIVATE ${OSSIA_SERIAL_HEADERS} ${OSSIA_SERIAL_SRCS})
   target_link_libraries(ossia PUBLIC Qt5::SerialPort)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)

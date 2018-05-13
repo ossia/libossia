@@ -6,6 +6,8 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <QDebug>
 #include <ossia-qt/device/qml_device.hpp>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qml_node)
 namespace ossia
 {
 namespace qt

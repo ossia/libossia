@@ -4,7 +4,7 @@
 class TickMethodTest : public QObject
 {
     Q_OBJECT
-  private Q_SLOTS:
+  private:
     void test_cuts()
     {
       using namespace ossia;

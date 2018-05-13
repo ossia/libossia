@@ -60,7 +60,7 @@ class ScenarioTest : public QObject
     }
   }
 
-private Q_SLOTS:
+private:
 
   /*! test life cycle and accessors functions */
   void test_basic()

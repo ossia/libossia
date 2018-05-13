@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
+#include <wobjectdefs.h>
 #include <ossia-qt/http/http_parameter.hpp>
 
 #include <QByteArray>
@@ -23,7 +24,7 @@ class http_parameter;
 class OSSIA_EXPORT http_protocol final : public QObject,
                                          public ossia::net::protocol_base
 {
-  Q_OBJECT
+  W_OBJECT(http_protocol)
 
 public:
   http_protocol(QByteArray code);
@@ -50,11 +51,11 @@ public:
   {
     return js;
   }
-Q_SIGNALS:
-  void sig_push(const http_parameter*);
+public:
+  void sig_push(const http_parameter* arg_1) W_SIGNAL(sig_push, arg_1);
 
-private Q_SLOTS:
-  void slot_push(const http_parameter*);
+private:
+  void slot_push(const http_parameter*); W_SLOT(slot_push);
 
 private:
   void apply_reply(QJSValue);
@@ -72,3 +73,5 @@ private:
 }
 
 Q_DECLARE_METATYPE(ossia::net::http_parameter*)
+W_REGISTER_ARGTYPE(ossia::net::http_parameter*)
+W_REGISTER_ARGTYPE(const ossia::net::http_parameter*)

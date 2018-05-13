@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
+#include <wobjectdefs.h>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_parameter.hpp>
 
 #include <QByteArray>
@@ -24,7 +25,7 @@ class OSSIA_EXPORT ws_generic_client_protocol final
     : public QObject,
       public ossia::net::protocol_base
 {
-  Q_OBJECT
+  W_OBJECT(ws_generic_client_protocol)
 
 public:
   ws_generic_client_protocol(const QString& addr, QByteArray code);
@@ -52,11 +53,11 @@ public:
   {
     return js;
   }
-Q_SIGNALS:
-  void sig_push(const ws_generic_client_parameter*);
+public:
+  void sig_push(const ws_generic_client_parameter* arg_1) W_SIGNAL(sig_push, arg_1);
 
-private Q_SLOTS:
-  void slot_push(const ws_generic_client_parameter*);
+private:
+  void slot_push(const ws_generic_client_parameter*); W_SLOT(slot_push);
 
 private:
   void apply_reply(QJSValue);
@@ -75,3 +76,5 @@ private:
 }
 
 Q_DECLARE_METATYPE(ossia::net::ws_generic_client_parameter*)
+W_REGISTER_ARGTYPE(ossia::net::ws_generic_client_parameter*)
+W_REGISTER_ARGTYPE(const ossia::net::ws_generic_client_parameter*)

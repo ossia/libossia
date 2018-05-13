@@ -5,7 +5,7 @@
 class CPP98Test : public QObject
 {
     Q_OBJECT
-private Q_SLOTS:
+private:
 
     void test_basic()
     {

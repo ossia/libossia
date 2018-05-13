@@ -8,6 +8,8 @@
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
 
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qml_node_base)
 namespace ossia
 {
 namespace qt

@@ -11,6 +11,8 @@
 #include <ossia-qt/serial/serial_node.hpp>
 #include <sstream>
 
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::net::serial_wrapper)
 namespace ossia
 {
 namespace net
@@ -18,7 +20,7 @@ namespace net
 
 serial_wrapper::~serial_wrapper()
 {
-    
+
 }
 
 serial_protocol::serial_protocol(

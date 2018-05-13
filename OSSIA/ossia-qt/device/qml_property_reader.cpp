@@ -8,6 +8,12 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <QDebug>
 
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qml_property_context)
+W_OBJECT_IMPL(ossia::qt::qml_property_reader)
+W_OBJECT_IMPL(ossia::qt::qml_property_writer)
+W_OBJECT_IMPL(ossia::qt::qml_binding)
+W_OBJECT_IMPL(ossia::qt::qml_callback)
 namespace ossia
 {
 namespace qt

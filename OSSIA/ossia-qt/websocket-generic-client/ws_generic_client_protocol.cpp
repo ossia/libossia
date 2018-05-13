@@ -12,6 +12,8 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QWebSocket>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::net::ws_generic_client_protocol)
 namespace ossia
 {
 namespace net

@@ -7,109 +7,108 @@
 #include <iostream>
 #include <QVector>
 #include <QtGui/QVector3D>
-
+#include <wobjectdefs.h>
+#include <wobjectimpl.h>
 
 class SomeObject : public QObject
 {
-  Q_OBJECT
-  Q_PROPERTY(int tutu READ tutu WRITE setTutu NOTIFY tutuChanged)
-  Q_PROPERTY(QString str READ str WRITE setStr NOTIFY strChanged)
-  Q_PROPERTY(QVector3D vec3 READ vec3 WRITE setVec3 NOTIFY vec3Changed)
-
+  W_OBJECT(SomeObject)
   QVector3D m_vec3;
 
   QString m_str;
 
-int m_tutu;
+  int m_tutu;
 
 public:
-using QObject::QObject;
-QVector3D vec3() const
-{
-  return m_vec3;
-}
-QString str() const
-{
-  return m_str;
-}
+  using QObject::QObject;
+  QVector3D vec3() const
+  {
+    return m_vec3;
+  }
+  QString str() const
+  {
+    return m_str;
+  }
 
-int tutu() const
-{
-  return m_tutu;
-}
+  int tutu() const
+  {
+    return m_tutu;
+  }
 
-public Q_SLOTS:
-void setVec3(QVector3D vec3)
-{
-  if (m_vec3 == vec3)
-    return;
+public:
+  void setVec3(QVector3D vec3)
+  {
+    if (m_vec3 == vec3)
+      return;
 
-  m_vec3 = vec3;
-  vec3Changed(vec3);
-}
-void setStr(QString str)
-{
-  if (m_str == str)
-    return;
+    m_vec3 = vec3;
+    vec3Changed(vec3);
+  }
+  void setStr(QString str)
+  {
+    if (m_str == str)
+      return;
 
-  m_str = str;
-  strChanged(str);
-}
+    m_str = str;
+    strChanged(str);
+  }
 
-void setTutu(int tutu)
-{
-  if (m_tutu == tutu)
-    return;
+  void setTutu(int tutu)
+  {
+    if (m_tutu == tutu)
+      return;
 
-  m_tutu = tutu;
-  tutuChanged(tutu);
-}
+    m_tutu = tutu;
+    tutuChanged(tutu);
+  }
 
-Q_SIGNALS:
-void vec3Changed(QVector3D vec3);
-void strChanged(QString str);
-void tutuChanged(int tutu);
+public:
+  void vec3Changed(QVector3D vec3) W_SIGNAL(vec3Changed, vec3);
+  void strChanged(QString str) W_SIGNAL(strChanged, str);
+  void tutuChanged(int tutu) W_SIGNAL(tutuChanged, tutu);
+  W_PROPERTY(int, tutu READ tutu WRITE setTutu NOTIFY tutuChanged)
+  W_PROPERTY(QString, str READ str WRITE setStr NOTIFY strChanged)
+  W_PROPERTY(QVector3D, vec3 READ vec3 WRITE setVec3 NOTIFY vec3Changed)
+
 };
 using namespace ossia;
+
 class QtDeviceTest : public QObject
 {
-    Q_OBJECT
+  W_OBJECT(QtDeviceTest)
 
-private Q_SLOTS:
+private:
+  void test_device()
+  {
+    int argc{}; char** argv{};
+    QCoreApplication app(argc, argv);
 
+    QObject obj1{&app};
+    Q_SET_OBJECT_NAME(obj1);
+    SomeObject obj2{&obj1};
+    Q_SET_OBJECT_NAME(obj2);
 
-    void test_device()
-    {
-        int argc{}; char** argv{};
-        QCoreApplication app(argc, argv);
+    ossia::context context;
 
-        QObject obj1{&app};
-        Q_SET_OBJECT_NAME(obj1);
-        SomeObject obj2{&obj1};
-        Q_SET_OBJECT_NAME(obj2);
-
-        ossia::context context;
-
-        ossia::qt::qt_device dev{
-          app,
+    ossia::qt::qt_device dev{
+      app,
           std::make_unique<ossia::net::multiplex_protocol>(),
           "newDevice" };
 
-        obj2.setTutu(555);
-        obj2.setVec3({1, 2, 3});
+    obj2.setTutu(555);
+    obj2.setVec3({1, 2, 3});
 
-        auto& proto = static_cast<ossia::net::multiplex_protocol&>(dev.get_protocol());
-        proto.expose_to(
-              std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 13579, 9998));
+    auto& proto = static_cast<ossia::net::multiplex_protocol&>(dev.get_protocol());
+    proto.expose_to(
+          std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 13579, 9998));
 
-       QTimer::singleShot(3000, [&] () { app.exit(); });
+    QTimer::singleShot(3000, [&] () { app.exit(); });
 
-        app.exec();
-    }
+    app.exec();
+  }
 };
+W_OBJECT_IMPL(SomeObject)
+W_OBJECT_IMPL(QtDeviceTest)
 
 
 QTEST_APPLESS_MAIN(QtDeviceTest)
-
-#include "QtDeviceTest.moc"
-

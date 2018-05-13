@@ -13,6 +13,8 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::net::http_protocol)
 namespace ossia
 {
 namespace net

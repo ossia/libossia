@@ -1,5 +1,6 @@
 #pragma once
 #include <QQuickItem>
+#include <wobjectdefs.h>
 #include <QQmlExpression>
 #include <QQmlScriptString>
 #include <QQmlListProperty>
@@ -39,9 +40,9 @@ class qml_expr final : public ossia::expressions::expression_generic_base
 ossia::expression_ptr make_expression(const QQmlScriptString& script, QObject* obj, expression_ptr deflt);
 class qml_cond : public QQuickItem
 {
-    Q_OBJECT
-    Q_PROPERTY(QQmlScriptString expr READ expr WRITE setExpr NOTIFY exprChanged)
-    Q_PROPERTY(qml_sync* sync READ sync WRITE setSync NOTIFY syncChanged)
+    W_OBJECT(qml_cond)
+    
+    
   public:
     qml_cond(QQuickItem* parent = nullptr);
 
@@ -58,19 +59,23 @@ class qml_cond : public QQuickItem
 
     std::shared_ptr<ossia::time_event> cond() const { return m_impl; }
     void setCond(std::shared_ptr<ossia::time_event> c) { m_impl = c; }
-public Q_SLOTS:
-    void setExpr(QQmlScriptString expr);
-    void setSync(qml_sync* sync);
+public:
+    void setExpr(QQmlScriptString expr); W_SLOT(setExpr);
+    void setSync(qml_sync* sync); W_SLOT(setSync);
 
-Q_SIGNALS:
-    void exprChanged(QQmlScriptString expr);
-    void syncChanged(qml_sync* sync);
+public:
+    void exprChanged(QQmlScriptString expr) W_SIGNAL(exprChanged, expr);
+    void syncChanged(qml_sync* sync) W_SIGNAL(syncChanged, sync);
 
 private:
     void reset();
     QQmlScriptString m_expr;
     std::shared_ptr<ossia::time_event> m_impl;
     qml_sync* m_sync{};
+
+W_PROPERTY(qml_sync*, sync READ sync WRITE setSync NOTIFY syncChanged)
+
+W_PROPERTY(QQmlScriptString, expr READ expr WRITE setExpr NOTIFY exprChanged)
 };
 }
 }

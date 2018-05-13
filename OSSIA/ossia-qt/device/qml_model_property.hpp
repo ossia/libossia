@@ -1,25 +1,24 @@
 
 #pragma once
 #include <ossia/network/base/parameter.hpp>
+#include <wobjectdefs.h>
 #include <QAbstractItemModel>
 #include <QObject>
 #include <QQmlProperty>
 #include <QQmlPropertyValueSource>
 #include <ossia-qt/device/qml_node_base.hpp>
+#include <ossia-qt/value_metatypes.hpp>
 namespace ossia
 {
 namespace qt
 {
 class OSSIA_EXPORT qml_model_property : public QAbstractItemModel
 {
-  Q_OBJECT
-  Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged)
-  Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged)
-  Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
-  Q_PROPERTY(QObject* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged)
+  W_OBJECT(qml_model_property)
+
 public:
   qml_model_property(QObject* parent = nullptr);
-  ~qml_model_property();
+  ~qml_model_property() override;
 
 public:
   QModelIndex
@@ -36,18 +35,18 @@ public:
 
   void updateCount();
   void reloadParentNode();
-Q_SIGNALS:
-  void setValue_sig(const value&);
-  void countChanged(int count);
-  void nodeChanged(QString node);
-  void parentNodeChanged(QObject* parentNode);
-  void deviceChanged(QObject* device);
+public:
+  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
+  void countChanged(int count) W_SIGNAL(countChanged, count);
+  void nodeChanged(QString node) W_SIGNAL(nodeChanged, node);
+  void parentNodeChanged(QObject* parentNode) W_SIGNAL(parentNodeChanged, parentNode);
+  void deviceChanged(QObject* device) W_SIGNAL(deviceChanged, device);
 
-public Q_SLOTS:
-  void setCount(int count);
-  void setNode(QString node);
-  void setParentNode(QObject* parentNode);
-  void setDevice(QObject* device);
+public:
+  void setCount(int count); W_SLOT(setCount);
+  void setNode(QString node); W_SLOT(setNode);
+  void setParentNode(QObject* parentNode); W_SLOT(setParentNode);
+  void setDevice(QObject* device); W_SLOT(setDevice);
 
 private:
   void on_device_deleted(QObject*);
@@ -60,6 +59,14 @@ private:
   qml_device* m_device{};
   int m_count{};
   int m_computedCount{};
+
+W_PROPERTY(QObject*, parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged)
+
+W_PROPERTY(QObject*, device READ device WRITE setDevice NOTIFY deviceChanged)
+
+W_PROPERTY(QString, node READ node WRITE setNode NOTIFY nodeChanged)
+
+W_PROPERTY(int, count READ count WRITE setCount NOTIFY countChanged)
 };
 }
 }

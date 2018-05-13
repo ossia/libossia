@@ -21,7 +21,7 @@ class ExpressionPulseTest : public QObject
     m_result_callback_called = true;
   }
 
-private Q_SLOTS:
+private:
 
   /*! evaluate expressions with destination values */
   void test_basic()

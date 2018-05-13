@@ -1,5 +1,6 @@
 #pragma once
 #include <QQuickItem>
+#include <wobjectdefs.h>
 #include <QQmlExpression>
 #include <QQmlScriptString>
 #include <QQmlListProperty>
@@ -10,7 +11,7 @@ namespace qt
 {
 class qml_state : public QQuickItem
 {
-    Q_OBJECT
+    W_OBJECT(qml_state)
 
   public:
     qml_state(QQuickItem* parent = nullptr);

@@ -10,7 +10,7 @@ class CurveSegmentPowerTest : public QObject
 {
   Q_OBJECT
 
-private Q_SLOTS:
+private:
 
   /*! test life cycle and accessors functions for bool type */
   void test_bool()

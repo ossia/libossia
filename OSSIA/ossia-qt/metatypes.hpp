@@ -13,6 +13,9 @@
 #if defined(OSSIA_EDITOR)
 Q_DECLARE_METATYPE(ossia::state)
 Q_DECLARE_METATYPE(ossia::state_element)
+
+W_REGISTER_ARGTYPE(ossia::state)
+W_REGISTER_ARGTYPE(ossia::state_element)
 #endif
 
 Q_DECLARE_METATYPE(ossia::net::parameter_base*)
@@ -25,3 +28,15 @@ Q_DECLARE_METATYPE(ossia::traversal::path)
 Q_DECLARE_METATYPE(ossia::access_mode)
 Q_DECLARE_METATYPE(ossia::bounding_mode)
 Q_DECLARE_METATYPE(ossia::unit_t)
+
+W_REGISTER_ARGTYPE(ossia::net::parameter_base*)
+W_REGISTER_ARGTYPE(ossia::net::node_base*)
+W_REGISTER_ARGTYPE(ossia::net::device_base*)
+W_REGISTER_ARGTYPE(ossia::net::protocol_base*)
+W_REGISTER_ARGTYPE(ossia::extended_attributes)
+
+W_REGISTER_ARGTYPE(ossia::traversal::path)
+W_REGISTER_ARGTYPE(ossia::access_mode)
+W_REGISTER_ARGTYPE(ossia::bounding_mode)
+W_REGISTER_ARGTYPE(ossia::unit_t)
+

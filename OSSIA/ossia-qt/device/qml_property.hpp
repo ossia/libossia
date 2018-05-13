@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
+#include <wobjectdefs.h>
 #include <QObject>
 #include <QQmlProperty>
 #include <QQmlPropertyValueSource>
@@ -15,17 +16,9 @@ class qml_device;
 class OSSIA_EXPORT qml_property : public qml_property_base,
                                   public QQmlPropertyValueSource
 {
-  Q_OBJECT
-  Q_INTERFACES(QQmlPropertyValueSource)
-    Q_PROPERTY(QString unit READ unit WRITE setUnit NOTIFY unitChanged RESET resetUnit FINAL)
-    Q_PROPERTY(ossia::qt::qml_val_type::val_type valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType FINAL)
-    Q_PROPERTY(ossia::qt::qml_access_mode::access_mode access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess FINAL)
-    Q_PROPERTY(ossia::qt::qml_bounding_mode::bounding_mode bounding READ bounding WRITE setBounding NOTIFY boundingChanged RESET resetBounding FINAL)
-    Q_PROPERTY(ossia::qt::qml_rep_filter::repetition_filter filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged RESET resetFilterRepetitions FINAL)
+  W_OBJECT(qml_property)
+  W_INTERFACE(QQmlPropertyValueSource)
 
-  Q_PROPERTY(QVariant min READ min WRITE setMin NOTIFY minChanged RESET resetMin FINAL)
-  Q_PROPERTY(QVariant max READ max WRITE setMax NOTIFY maxChanged RESET resetMax FINAL)
-  Q_PROPERTY(QVariantList values READ values WRITE setValues NOTIFY valuesChanged RESET resetValues FINAL)
 public:
   qml_property(QQuickItem* parent = nullptr);
   ~qml_property();
@@ -43,32 +36,32 @@ public:
   QVariantList values() const;
   QString unit() const;
 
-Q_SIGNALS:
-  void setValue_sig(const ossia::value&);
+public:
+  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
 
-  void valueTypeChanged(qml_val_type::val_type valueType);
-  void accessChanged(qml_access_mode::access_mode access);
-  void boundingChanged(qml_bounding_mode::bounding_mode bounding);
+  void valueTypeChanged(qml_val_type::val_type valueType) W_SIGNAL(valueTypeChanged, valueType);
+  void accessChanged(qml_access_mode::access_mode access) W_SIGNAL(accessChanged, access);
+  void boundingChanged(qml_bounding_mode::bounding_mode bounding) W_SIGNAL(boundingChanged, bounding);
   void filterRepetitionsChanged(
-      qml_rep_filter::repetition_filter filterRepetitions);
-  void minChanged(QVariant min);
-  void maxChanged(QVariant max);
-  void valuesChanged(QVariantList values);
-  void unitChanged(QString unit);
+      qml_rep_filter::repetition_filter filterRepetitions) W_SIGNAL(filterRepetitionsChanged, filterRepetitions);
+  void minChanged(QVariant min) W_SIGNAL(minChanged, min);
+  void maxChanged(QVariant max) W_SIGNAL(maxChanged, max);
+  void valuesChanged(QVariantList values) W_SIGNAL(valuesChanged, values);
+  void unitChanged(QString unit) W_SIGNAL(unitChanged, unit);
 
-public Q_SLOTS:
-  void qtVariantChanged();
-  void setValue_slot(const value&);
+public:
+  void qtVariantChanged(); W_SLOT(qtVariantChanged);
+  void setValue_slot(const value&); W_SLOT(setValue_slot);
 
-  void setValueType(qml_val_type::val_type valueType);
-  void setAccess(qml_access_mode::access_mode access);
-  void setBounding(qml_bounding_mode::bounding_mode bounding);
+  void setValueType(qml_val_type::val_type valueType); W_SLOT(setValueType);
+  void setAccess(qml_access_mode::access_mode access); W_SLOT(setAccess);
+  void setBounding(qml_bounding_mode::bounding_mode bounding); W_SLOT(setBounding);
   void
-  setFilterRepetitions(qml_rep_filter::repetition_filter filterRepetitions);
-  void setMin(QVariant min);
-  void setMax(QVariant max);
-  void setValues(QVariantList values);
-  void setUnit(QString unit);
+  setFilterRepetitions(qml_rep_filter::repetition_filter filterRepetitions); W_SLOT(setFilterRepetitions);
+  void setMin(QVariant min); W_SLOT(setMin);
+  void setMax(QVariant max); W_SLOT(setMax);
+  void setValues(QVariantList values); W_SLOT(setValues);
+  void setUnit(QString unit); W_SLOT(setUnit);
 
   void resetValueType()
   {
@@ -76,52 +69,52 @@ public Q_SLOTS:
     {
       m_valueType = ossia::none;
     }
-  }
+  }; W_SLOT(resetValueType)
   void resetAccess()
   {
     if (m_access)
     {
       m_access = ossia::none;
     }
-  }
+  }; W_SLOT(resetAccess)
   void resetBounding()
   {
     if (m_bounding)
     {
       m_bounding = ossia::none;
     }
-  }
+  }; W_SLOT(resetBounding)
   void resetFilterRepetitions()
   {
     if (m_filterRepetitions)
     {
       m_filterRepetitions = ossia::none;
     }
-  }
+  }; W_SLOT(resetFilterRepetitions)
   void resetMin()
   {
     setMin(QVariant{});
-  }
+  }; W_SLOT(resetMin)
   void resetMax()
   {
     setMax(QVariant{});
-  }
+  }; W_SLOT(resetMax)
   void resetValues()
   {
     if (m_values)
     {
       m_values = ossia::none;
     }
-  }
+  }; W_SLOT(resetValues)
   void resetUnit()
   {
     if (m_unit)
     {
       m_values = ossia::none;
     }
-  }
+  }; W_SLOT(resetUnit)
 
-  void node_destroyed();
+  void node_destroyed(); W_SLOT(node_destroyed);
 private:
   void setupAddress(bool reading);
   void updateDomain();
@@ -136,6 +129,22 @@ private:
   optional<QVariantList> m_values{};
   optional<QString> m_unit{};
   bool m_updatingFromSetValue{};
+
+W_PROPERTY(QVariantList, values READ values WRITE setValues NOTIFY valuesChanged RESET resetValues, W_Final)
+
+W_PROPERTY(QVariant, max READ max WRITE setMax NOTIFY maxChanged RESET resetMax, W_Final)
+
+W_PROPERTY(QVariant, min READ min WRITE setMin NOTIFY minChanged RESET resetMin, W_Final)
+
+W_PROPERTY(ossia::qt::qml_rep_filter::repetition_filter, filterRepetitions READ filterRepetitions WRITE setFilterRepetitions NOTIFY filterRepetitionsChanged RESET resetFilterRepetitions, W_Final)
+
+W_PROPERTY(ossia::qt::qml_bounding_mode::bounding_mode, bounding READ bounding WRITE setBounding NOTIFY boundingChanged RESET resetBounding, W_Final)
+
+W_PROPERTY(ossia::qt::qml_access_mode::access_mode, access READ access WRITE setAccess NOTIFY accessChanged RESET resetAccess, W_Final)
+
+W_PROPERTY(ossia::qt::qml_val_type::val_type, valueType READ valueType WRITE setValueType NOTIFY valueTypeChanged RESET resetValueType, W_Final)
+
+W_PROPERTY(QString, unit READ unit WRITE setUnit NOTIFY unitChanged RESET resetUnit, W_Final)
 };
 }
 }

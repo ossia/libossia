@@ -21,7 +21,7 @@ class ExpressionAtomTest : public QObject
         m_result_callback_called = true;
     }
 
-private Q_SLOTS:
+private:
 
     /*! evaluate expressions with impulse values */
     void test_impulse()

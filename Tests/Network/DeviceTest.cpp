@@ -110,7 +110,7 @@ class DeviceTest : public QObject
 {
   Q_OBJECT
 
-private Q_SLOTS:
+private:
     void test_bundle()
     {
         ossia::net::generic_device osc_A{

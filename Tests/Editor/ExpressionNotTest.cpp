@@ -21,7 +21,7 @@ class ExpressionNotTest : public QObject
         m_result_callback_called = true;
     }
 
-private Q_SLOTS:
+private:
 
     /*! test life cycle and accessors functions */
     void test_basic()

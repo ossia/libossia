@@ -29,7 +29,7 @@ class AutomationTest : public QObject
 //    m_parameter_values.push_back(v);
 //  }
 
-//private Q_SLOTS:
+//private:
 
 //  /*! test life cycle and accessors functions */
 //  void test_basic()

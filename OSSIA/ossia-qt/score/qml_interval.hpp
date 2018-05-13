@@ -1,5 +1,6 @@
 #pragma once
 #include <QQuickItem>
+#include <wobjectdefs.h>
 #include <QQmlListProperty>
 #include <ossia-qt/score/qml_sync.hpp>
 #include <ossia-qt/score/qml_cond.hpp>
@@ -26,14 +27,14 @@ T findParent(QObject* obj)
 
 class qml_interval : public QQuickItem
 {
-    Q_OBJECT
-    Q_PROPERTY(qint32 nominalDuration READ nominalDuration WRITE setNominalDuration NOTIFY nominalDurationChanged)
-    Q_PROPERTY(qint32 minDuration READ minDuration WRITE setMinDuration NOTIFY minDurationChanged)
-    Q_PROPERTY(qint32 maxDuration READ maxDuration WRITE setMaxDuration NOTIFY maxDurationChanged)
-    Q_PROPERTY(qint32 playDuration READ playDuration WRITE setPlayDuration NOTIFY playDurationChanged)
-    Q_PROPERTY(double speed READ speed WRITE setSpeed NOTIFY speedChanged)
-    Q_PROPERTY(QObject* follows READ follows WRITE setFollows NOTIFY followsChanged)
-    Q_PROPERTY(QObject* precedes READ precedes WRITE setPrecedes NOTIFY precedesChanged)
+    W_OBJECT(qml_interval)
+    
+    
+    
+    
+    
+    
+    
   public:
     qml_interval(QQuickItem* parent = nullptr);
     ~qml_interval() override;
@@ -52,31 +53,31 @@ class qml_interval : public QQuickItem
     void registerProcess(qml_process*);
     void unregisterProcess(qml_process*);
     std::shared_ptr<ossia::time_interval> m_interval;
-public Q_SLOTS:
-    void setNominalDuration(qint32 nominalDuration);
-    void setMinDuration(qint32 minDuration);
-    void setMaxDuration(qint32 maxDuration);
-    void setPlayDuration(qint32 playDuration);
-    void setFollows(qml_cond* follows);
-    void setPrecedes(qml_cond* precedes);
-    void setFollows(qml_sync* follows);
-    void setPrecedes(qml_sync* precedes);
-    void setFollows(QObject* follows);
-    void setPrecedes(QObject* precedes);
-    void setSpeed(double speed);
+public:
+    void setNominalDuration(qint32 nominalDuration); W_SLOT(setNominalDuration);
+    void setMinDuration(qint32 minDuration); W_SLOT(setMinDuration);
+    void setMaxDuration(qint32 maxDuration); W_SLOT(setMaxDuration);
+    void setPlayDuration(qint32 playDuration); W_SLOT(setPlayDuration);
+    void setFollows(qml_cond* follows); W_SLOT(setFollows);
+    void setPrecedes(qml_cond* precedes); W_SLOT(setPrecedes);
+    void setFollows(qml_sync* follows); W_SLOT(setFollows);
+    void setPrecedes(qml_sync* precedes); W_SLOT(setPrecedes);
+    void setFollows(QObject* follows); W_SLOT(setFollows);
+    void setPrecedes(QObject* precedes); W_SLOT(setPrecedes);
+    void setSpeed(double speed); W_SLOT(setSpeed);
 
-    void play();
-    void pause();
-    void stop();
+    void play(); W_SLOT(play);
+    void pause(); W_SLOT(pause);
+    void stop(); W_SLOT(stop);
 
-Q_SIGNALS:
-    void nominalDurationChanged(qint32 nominalDuration);
-    void minDurationChanged(qint32 minDuration);
-    void maxDurationChanged(qint32 maxDuration);
-    void playDurationChanged(qint32 playDuration);
-    void followsChanged(qml_cond* follows);
-    void precedesChanged(qml_cond* precedes);
-    void speedChanged(double speed);
+public:
+    void nominalDurationChanged(qint32 nominalDuration) W_SIGNAL(nominalDurationChanged, nominalDuration);
+    void minDurationChanged(qint32 minDuration) W_SIGNAL(minDurationChanged, minDuration);
+    void maxDurationChanged(qint32 maxDuration) W_SIGNAL(maxDurationChanged, maxDuration);
+    void playDurationChanged(qint32 playDuration) W_SIGNAL(playDurationChanged, playDuration);
+    void followsChanged(qml_cond* follows) W_SIGNAL(followsChanged, follows);
+    void precedesChanged(qml_cond* precedes) W_SIGNAL(precedesChanged, precedes);
+    void speedChanged(double speed) W_SIGNAL(speedChanged, speed);
 
 private:
     void reset();
@@ -89,6 +90,20 @@ private:
     qml_process* m_parent{};
 
     double m_speed;
+
+W_PROPERTY(QObject*, precedes READ precedes WRITE setPrecedes NOTIFY precedesChanged)
+
+W_PROPERTY(QObject*, follows READ follows WRITE setFollows NOTIFY followsChanged)
+
+W_PROPERTY(double, speed READ speed WRITE setSpeed NOTIFY speedChanged)
+
+W_PROPERTY(qint32, playDuration READ playDuration WRITE setPlayDuration NOTIFY playDurationChanged)
+
+W_PROPERTY(qint32, maxDuration READ maxDuration WRITE setMaxDuration NOTIFY maxDurationChanged)
+
+W_PROPERTY(qint32, minDuration READ minDuration WRITE setMinDuration NOTIFY minDurationChanged)
+
+W_PROPERTY(qint32, nominalDuration READ nominalDuration WRITE setNominalDuration NOTIFY nominalDurationChanged)
 };
 }
 }

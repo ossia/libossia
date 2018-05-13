@@ -1,5 +1,6 @@
 #pragma once
 #include <QQuickItem>
+#include <wobjectdefs.h>
 #include <QPointer>
 #include <readerwriterqueue.h>
 
@@ -15,15 +16,15 @@ namespace qt
 
 class qml_exec : public QObject
 {
-    Q_OBJECT
+    W_OBJECT(qml_exec)
   public:
     static qml_exec& instance();
     static qml_exec* get(QObject* obj);
     void submitCommand(std::function<void()>);
-  public Q_SLOTS:
-    void play(qml_interval* itvl);
-    void pause(qml_interval* itvl);
-    void stop(qml_interval* itvl);
+  public:
+    void play(qml_interval* itvl); W_SLOT(play);
+    void pause(qml_interval* itvl); W_SLOT(pause);
+    void stop(qml_interval* itvl); W_SLOT(stop);
 
   private:
     qml_exec();

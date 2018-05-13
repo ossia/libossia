@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
+#include <wobjectdefs.h>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
@@ -18,7 +19,7 @@ class OSSIA_EXPORT qt_object_node final : public QObject,
                                           public ossia::net::generic_node_base
 
 {
-  Q_OBJECT
+  W_OBJECT(qt_object_node)
 public:
   qt_object_node(QObject& obj, ossia::net::device_base& device);
   qt_object_node(

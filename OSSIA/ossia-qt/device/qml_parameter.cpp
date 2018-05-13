@@ -8,6 +8,8 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <QDebug>
 #include <QTimer>
+#include <wobjectimpl.h>
+W_OBJECT_IMPL(ossia::qt::qml_parameter)
 namespace ossia
 {
 namespace qt

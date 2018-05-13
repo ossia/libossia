@@ -81,7 +81,7 @@ class QmlApiTest : public QObject
       dev.cleanup();
     }
 
-  private Q_SLOTS:
+  private:
     void test_logger()
     {
       int argc{}; char** argv{};

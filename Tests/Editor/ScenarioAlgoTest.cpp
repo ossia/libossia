@@ -29,7 +29,7 @@ class ScenarioAlgoTest : public QObject
       return *sn->get_time_events().begin();
     }
 
-  private Q_SLOTS:
+  private:
     void test_exec_simple()
     {
       using namespace ossia;

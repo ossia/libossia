@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
+#include <wobjectdefs.h>
 #include <QObject>
 #include <QQmlProperty>
 #include <ossia-qt/device/qml_node_base.hpp>
@@ -13,7 +14,7 @@ class qml_device;
 
 class qml_signal : public qml_property_base
 {
-  Q_OBJECT
+  W_OBJECT(qml_signal)
 
 public:
   qml_signal(QQuickItem* parent = nullptr);
@@ -22,9 +23,9 @@ public:
   void resetNode() override;
   void setDevice(QObject* device) override;
 
-Q_SIGNALS:
-  void triggered();
-  void trigger();
+public:
+  void triggered() W_SIGNAL(triggered);
+  void trigger() W_SIGNAL(trigger);
 
 private:
   void setupAddress(bool reading);

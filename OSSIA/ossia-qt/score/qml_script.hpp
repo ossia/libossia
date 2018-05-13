@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia-qt/score/qml_autom.hpp>
+#include <wobjectdefs.h>
 #include <ossia-qt/device/qml_device.hpp>
 #include <QQmlScriptString>
 namespace ossia
@@ -18,10 +19,10 @@ class qml_script_process : public ossia::time_process
 
 class qml_message
 {
-    Q_GADGET
-    Q_PROPERTY(qml_device* device READ device WRITE setDevice)
-    Q_PROPERTY(QString address READ address WRITE setAddress)
-    Q_PROPERTY(QVariant value READ value WRITE setValue)
+    W_OBJECT(qml_message)
+    
+    
+    
 
   public:
     qml_message() = default;
@@ -50,10 +51,16 @@ class qml_message
     qml_device* m_dev{};
     QString m_addr;
     QVariant m_value;
+
+W_PROPERTY(QVariant, value READ value WRITE setValue)
+
+W_PROPERTY(QString, address READ address WRITE setAddress)
+
+W_PROPERTY(qml_device*, device READ device WRITE setDevice)
 };
 class qml_utils: public QObject
 {
-    Q_OBJECT
+    W_OBJECT(qml_utils)
 
   public:
     using QObject::QObject;
@@ -66,10 +73,10 @@ class qml_utils: public QObject
 };
 class qml_script : public qml_process
 {
-    Q_OBJECT
-    Q_PROPERTY(QQmlScriptString script READ script WRITE setScript NOTIFY scriptChanged)
-    Q_PROPERTY(qint32 date READ date NOTIFY dateChanged)
-    Q_PROPERTY(double position READ position NOTIFY positionChanged)
+    W_OBJECT(qml_script)
+    
+    
+    
   public:
     qml_script(QQuickItem* parent = nullptr);
     ~qml_script() override;
@@ -84,10 +91,10 @@ class qml_script : public qml_process
     double position() const { return m_pos; }
     QQmlScriptString script() const { return m_script; }
     void setScript(QQmlScriptString s) { m_script = s; }
-  Q_SIGNALS:
-    void dateChanged(qint32);
-    void positionChanged(double);
-    void scriptChanged(QQmlScriptString);
+  public:
+    void dateChanged(qint32 arg_1) W_SIGNAL(dateChanged, arg_1);
+    void positionChanged(double arg_1) W_SIGNAL(positionChanged, arg_1);
+    void scriptChanged(QQmlScriptString arg_1) W_SIGNAL(scriptChanged, arg_1);
 
   private:
     void reset_impl() override;
@@ -96,6 +103,12 @@ class qml_script : public qml_process
     QQmlScriptString m_script;
     time_value m_date{};
     double m_pos{};
+
+W_PROPERTY(double, position READ position NOTIFY positionChanged)
+
+W_PROPERTY(qint32, date READ date NOTIFY dateChanged)
+
+W_PROPERTY(QQmlScriptString, script READ script WRITE setScript NOTIFY scriptChanged)
 };
 }
 }

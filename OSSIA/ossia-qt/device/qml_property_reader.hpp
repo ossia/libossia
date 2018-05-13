@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
+#include <wobjectdefs.h>
 #include <QObject>
 #include <QQmlExpression>
 #include <QQmlProperty>
@@ -7,6 +8,7 @@
 #include <QQmlScriptString>
 #include <ossia-qt/device/qml_node_base.hpp>
 #include <ossia-qt/qml_context.hpp>
+#include <ossia-qt/value_metatypes.hpp>
 namespace ossia
 {
 namespace qt
@@ -15,26 +17,26 @@ class qml_node;
 class qml_device;
 class qml_property_context : public QObject
 {
-  Q_OBJECT
+  W_OBJECT(qml_property_context)
 public:
   qml_property_context(
       QQmlProperty& p, ossia::net::parameter_base& addr, QObject* parent);
 
   QQmlProperty& targetProperty;
   ossia::net::parameter_base& address;
-public Q_SLOTS:
-  void qtVariantChanged();
+public:
+  void qtVariantChanged(); W_SLOT(qtVariantChanged);
 };
 
 class qml_property_reader : public qml_node_base,
                             public QQmlPropertyValueSource
 {
-  Q_OBJECT
-  Q_INTERFACES(QQmlPropertyValueSource)
+  W_OBJECT(qml_property_reader)
+  W_INTERFACE(QQmlPropertyValueSource)
 
 public:
   qml_property_reader(QQuickItem* parent = nullptr);
-  ~qml_property_reader();
+  ~qml_property_reader() override;
 
   void setTarget(const QQmlProperty& prop) override;
   void setDevice(QObject* device) override;
@@ -53,22 +55,22 @@ private:
 class qml_property_writer : public qml_node_base,
                             public QQmlPropertyValueSource
 {
-  Q_OBJECT
-  Q_INTERFACES(QQmlPropertyValueSource)
+  W_OBJECT(qml_property_writer)
+  W_INTERFACE(QQmlPropertyValueSource)
 
 public:
   qml_property_writer(QQuickItem* parent = nullptr);
-  ~qml_property_writer();
+  ~qml_property_writer() override;
 
   void setTarget(const QQmlProperty& prop) override;
   void setDevice(QObject* device) override;
   void resetNode() override;
 
-Q_SIGNALS:
-  void setValue_sig(const value&);
+public:
+  void setValue_sig(const value& arg_1) W_SIGNAL(setValue_sig, arg_1);
 
-private Q_SLOTS:
-  void setValue_slot(const value&);
+private:
+  void setValue_slot(const value&); W_SLOT(setValue_slot);
 
 private:
   void setupAddress(bool reading);
@@ -82,22 +84,22 @@ private:
 
 class qml_binding : public qml_node_base
 {
-  Q_OBJECT
-  Q_PROPERTY(QQmlScriptString on READ on WRITE setOn NOTIFY onChanged)
+  W_OBJECT(qml_binding)
+
 public:
   qml_binding(QQuickItem* parent = nullptr);
-  ~qml_binding();
+  ~qml_binding() override;
 
   void setDevice(QObject* device) override;
   void resetNode() override;
 
   QQmlScriptString on() const;
 
-public Q_SLOTS:
-  void setOn(QQmlScriptString on);
+public:
+  void setOn(QQmlScriptString on); W_SLOT(setOn);
 
-Q_SIGNALS:
-  void onChanged(QQmlScriptString on);
+public:
+  void onChanged(QQmlScriptString on) W_SIGNAL(onChanged, on);
 
 private:
   void on_node_deleted(const ossia::net::node_base&);
@@ -106,28 +108,30 @@ private:
   std::unique_ptr<QQmlExpression> m_expr;
   ossia::net::parameter_base* m_param{};
   QQmlScriptString m_on;
+
+W_PROPERTY(QQmlScriptString, on READ on WRITE setOn NOTIFY onChanged)
 };
 
 class qml_callback : public qml_node_base
 {
-  Q_OBJECT
-  Q_PROPERTY(QVariant value READ value WRITE setValue NOTIFY valueChanged)
+  W_OBJECT(qml_callback)
+
 public:
   qml_callback(QQuickItem* parent = nullptr);
-  ~qml_callback();
+  ~qml_callback() override;
 
   void setDevice(QObject* device) override;
   void resetNode() override;
 
   QVariant value() const;
 
-Q_SIGNALS:
-  void valueChanged(QVariant);
-  void setValue_sig(const ossia::value&);
+public:
+  void valueChanged(QVariant arg_1) W_SIGNAL(valueChanged, arg_1);
+  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
 
-public Q_SLOTS:
-  void setValue(QVariant value);
-  void setValue_slot(const ossia::value&);
+public:
+  void setValue(QVariant value); W_SLOT(setValue);
+  void setValue_slot(const ossia::value&); W_SLOT(setValue_slot);
 
 private:
   void on_node_deleted(const ossia::net::node_base&);
@@ -136,6 +140,10 @@ private:
   ossia::net::parameter_base* m_param{};
   QVariant m_value;
   ossia::net::parameter_base::iterator m_cb;
+
+W_PROPERTY(QVariant, value READ value WRITE setValue NOTIFY valueChanged)
 };
 }
 }
+
+W_REGISTER_ARGTYPE(QQmlScriptString)

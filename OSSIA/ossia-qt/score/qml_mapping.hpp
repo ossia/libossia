@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia-qt/score/qml_autom.hpp>
+#include <wobjectdefs.h>
 #include <ossia/editor/mapper/mapper.hpp>
 
 namespace ossia
@@ -8,7 +9,7 @@ namespace qt
 {
 class qml_mapping : public qml_process
 {
-    Q_OBJECT
+    W_OBJECT(qml_mapping)
 
   public:
     qml_mapping(QQuickItem* parent = nullptr);

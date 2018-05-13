@@ -103,7 +103,7 @@ class JSTest : public QObject
     Q_OBJECT
 
 
-  private Q_SLOTS:
+  private:
     void test_value_conversion()
     {
         // TODO test undefined oscquery

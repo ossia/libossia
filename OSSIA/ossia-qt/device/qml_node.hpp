@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia-qt/device/qml_node_base.hpp>
+#include <wobjectdefs.h>
 
 namespace ossia
 {
@@ -7,16 +8,16 @@ namespace qt
 {
 class qml_node : public qml_node_base
 {
-  Q_OBJECT
+  W_OBJECT(qml_node)
 public:
   qml_node(QQuickItem* parent = nullptr);
   ~qml_node() override;
 
   void resetNode() override;
 
-public Q_SLOTS:
-  void reset_parent();
-  void node_destroyed();
+public:
+  void reset_parent(); W_SLOT(reset_parent);
+  void node_destroyed(); W_SLOT(node_destroyed);
 private:
   void on_node_deleted(const ossia::net::node_base&);
   void setDevice(QObject* device) override;

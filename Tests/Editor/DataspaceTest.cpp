@@ -52,7 +52,7 @@ class DataspaceTest : public QObject
       });
     });
   }
-private Q_SLOTS:
+private:
 
   /*! test impulse */
   void test_dataspace_simple()

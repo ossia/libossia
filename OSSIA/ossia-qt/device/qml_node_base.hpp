@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
+#include <wobjectdefs.h>
 #include <ossia/network/base/parameter.hpp>
 #include <QObject>
 #include <QQuickItem>
@@ -20,23 +21,7 @@ namespace qt
 class qml_device;
 class OSSIA_EXPORT qml_node_base : public QQuickItem, public Nano::Observer
 {
-  Q_OBJECT
-  Q_PROPERTY(QString node READ node WRITE setNode NOTIFY nodeChanged FINAL)
-  Q_PROPERTY(QString path READ path NOTIFY pathChanged FINAL)
-  Q_PROPERTY(QObject* device READ device WRITE setDevice NOTIFY deviceChanged)
-  Q_PROPERTY(qml_node_base* parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged FINAL)
-
-  Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged FINAL)
-  Q_PROPERTY(QString extendedType READ extendedType WRITE setExtendedType NOTIFY extendedTypeChanged FINAL)
-  Q_PROPERTY(QStringList tags READ tags WRITE setTags NOTIFY tagsChanged FINAL)
-  Q_PROPERTY(qreal priority READ priority WRITE setPriority NOTIFY priorityChanged FINAL)
-  Q_PROPERTY(qint32 refreshRate READ refreshRate WRITE setRefreshRate NOTIFY refreshRateChanged FINAL)
-  Q_PROPERTY(qreal stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged FINAL)
-  Q_PROPERTY(QVariant defaultValue READ defaultValue WRITE setDefaultValue NOTIFY defaultValueChanged FINAL)
-  Q_PROPERTY(bool critical READ critical WRITE setCritical NOTIFY criticalChanged FINAL)
-  Q_PROPERTY(bool hidden READ hidden WRITE setHidden NOTIFY hiddenChanged FINAL)
-  Q_PROPERTY(bool disabled READ disabled WRITE setDisabled NOTIFY disabledChanged FINAL)
-  Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY mutedChanged FINAL)
+  W_OBJECT(qml_node_base)
 
 public:
   qml_node_base(QQuickItem* parent = nullptr);
@@ -64,41 +49,41 @@ public:
   bool muted() const;
   QString extendedType() const;
 
-public Q_SLOTS:
-  void setNode(QString node);
-  virtual void setDevice(QObject* device);
+public:
+  void setNode(QString node); W_SLOT(setNode);
+  virtual void setDevice(QObject* device); W_SLOT(setDevice);
 
-  void setParentNode(qml_node_base* parentNode);
-  void setPriority(qreal priority);
-  void setDescription(QString description);
-  void setTags(QStringList tags);
-  void setExtendedType(QString extendedType);
-  void setRefreshRate(qint32 refreshRate);
-  void setStepSize(qreal stepSize);
-  void setDefaultValue(QVariant defaultValue);
-  void setCritical(bool critical);
-  void setHidden(bool hidden);
-  void setDisabled(bool disabled);
-  void setMuted(bool muted);
+  void setParentNode(qml_node_base* parentNode); W_SLOT(setParentNode);
+  void setPriority(qreal priority); W_SLOT(setPriority);
+  void setDescription(QString description); W_SLOT(setDescription);
+  void setTags(QStringList tags); W_SLOT(setTags);
+  void setExtendedType(QString extendedType); W_SLOT(setExtendedType);
+  void setRefreshRate(qint32 refreshRate); W_SLOT(setRefreshRate);
+  void setStepSize(qreal stepSize); W_SLOT(setStepSize);
+  void setDefaultValue(QVariant defaultValue); W_SLOT(setDefaultValue);
+  void setCritical(bool critical); W_SLOT(setCritical);
+  void setHidden(bool hidden); W_SLOT(setHidden);
+  void setDisabled(bool disabled); W_SLOT(setDisabled);
+  void setMuted(bool muted); W_SLOT(setMuted);
 
-Q_SIGNALS:
-  void nodeChanged(QString node);
-  void deviceChanged(qml_device* device);
-  void pathChanged(QString path);
+public:
+  void nodeChanged(QString node) W_SIGNAL(nodeChanged, node);
+  void deviceChanged(qml_device* device) W_SIGNAL(deviceChanged, device);
+  void pathChanged(QString path) W_SIGNAL(pathChanged, path);
 
-  void parentNodeChanged(qml_node_base* parentNode);
+  void parentNodeChanged(qml_node_base* parentNode) W_SIGNAL(parentNodeChanged, parentNode);
 
-  void priorityChanged(qreal priority);
-  void descriptionChanged(QString description);
-  void extendedTypeChanged(QString extendedType);
-  void tagsChanged(QStringList tags);
-  void refreshRateChanged(qint32 refreshRate);
-  void stepSizeChanged(qreal stepSize);
-  void defaultValueChanged(QVariant defaultValue);
-  void criticalChanged(bool critical);
-  void hiddenChanged(bool hidden);
-  void disabledChanged(bool d);
-  void mutedChanged(bool muted);
+  void priorityChanged(qreal priority) W_SIGNAL(priorityChanged, priority);
+  void descriptionChanged(QString description) W_SIGNAL(descriptionChanged, description);
+  void extendedTypeChanged(QString extendedType) W_SIGNAL(extendedTypeChanged, extendedType);
+  void tagsChanged(QStringList tags) W_SIGNAL(tagsChanged, tags);
+  void refreshRateChanged(qint32 refreshRate) W_SIGNAL(refreshRateChanged, refreshRate);
+  void stepSizeChanged(qreal stepSize) W_SIGNAL(stepSizeChanged, stepSize);
+  void defaultValueChanged(QVariant defaultValue) W_SIGNAL(defaultValueChanged, defaultValue);
+  void criticalChanged(bool critical) W_SIGNAL(criticalChanged, critical);
+  void hiddenChanged(bool hidden) W_SIGNAL(hiddenChanged, hidden);
+  void disabledChanged(bool d) W_SIGNAL(disabledChanged, d);
+  void mutedChanged(bool muted) W_SIGNAL(mutedChanged, muted);
 
 protected:
   void applyNodeAttributes();
@@ -130,6 +115,36 @@ protected:
 
 
   bool m_was_destroyed{false};
+
+W_PROPERTY(bool, muted READ muted WRITE setMuted NOTIFY mutedChanged, W_Final)
+
+W_PROPERTY(bool, disabled READ disabled WRITE setDisabled NOTIFY disabledChanged, W_Final)
+
+W_PROPERTY(bool, hidden READ hidden WRITE setHidden NOTIFY hiddenChanged, W_Final)
+
+W_PROPERTY(bool, critical READ critical WRITE setCritical NOTIFY criticalChanged, W_Final)
+
+W_PROPERTY(QVariant, defaultValue READ defaultValue WRITE setDefaultValue NOTIFY defaultValueChanged, W_Final)
+
+W_PROPERTY(qreal, stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged, W_Final)
+
+W_PROPERTY(qint32, refreshRate READ refreshRate WRITE setRefreshRate NOTIFY refreshRateChanged, W_Final)
+
+W_PROPERTY(qreal, priority READ priority WRITE setPriority NOTIFY priorityChanged, W_Final)
+
+W_PROPERTY(QStringList, tags READ tags WRITE setTags NOTIFY tagsChanged, W_Final)
+
+W_PROPERTY(QString, extendedType READ extendedType WRITE setExtendedType NOTIFY extendedTypeChanged, W_Final)
+
+W_PROPERTY(QString, description READ description WRITE setDescription NOTIFY descriptionChanged, W_Final)
+
+W_PROPERTY(qml_node_base*, parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged, W_Final)
+
+W_PROPERTY(QObject*, device READ device WRITE setDevice NOTIFY deviceChanged)
+
+W_PROPERTY(QString, path READ path NOTIFY pathChanged, W_Final)
+
+W_PROPERTY(QString, node READ node WRITE setNode NOTIFY nodeChanged, W_Final)
 };
 
 class OSSIA_EXPORT qml_property_base : public qml_node_base
@@ -147,3 +162,5 @@ protected:
 };
 }
 }
+
+W_REGISTER_ARGTYPE(ossia::qt::qml_node_base*)

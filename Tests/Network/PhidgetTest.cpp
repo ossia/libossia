@@ -13,7 +13,7 @@ class PhidgetTest : public QObject
 {
     Q_OBJECT
 
-private Q_SLOTS:
+private:
     void test_exec()
     {
       auto phid = new ossia::phidget_protocol;

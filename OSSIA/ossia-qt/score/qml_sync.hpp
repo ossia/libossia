@@ -1,5 +1,6 @@
 #pragma once
 #include <QQuickItem>
+#include <wobjectdefs.h>
 #include <QQmlExpression>
 #include <QQmlScriptString>
 #include <QQmlListProperty>
@@ -12,8 +13,8 @@ namespace qt
 class qml_cond;
 class qml_sync : public QQuickItem
 {
-    Q_OBJECT
-    Q_PROPERTY(QQmlScriptString expr READ expr WRITE setExpr NOTIFY exprChanged)
+    W_OBJECT(qml_sync)
+    
 
   public:
     qml_sync(QQuickItem* parent = nullptr);
@@ -28,11 +29,11 @@ class qml_sync : public QQuickItem
     void setup();
     std::shared_ptr<ossia::time_sync> sync() const { return m_impl; }
     void setSync(std::shared_ptr<ossia::time_sync> s) { m_impl = s; }
-  public Q_SLOTS:
-    void setExpr(QQmlScriptString expr);
+  public:
+    void setExpr(QQmlScriptString expr); W_SLOT(setExpr);
 
-  Q_SIGNALS:
-    void exprChanged(QQmlScriptString expr);
+  public:
+    void exprChanged(QQmlScriptString expr) W_SIGNAL(exprChanged, expr);
 
   private:
     void reset();
@@ -40,6 +41,8 @@ class qml_sync : public QQuickItem
     std::shared_ptr<ossia::time_sync> m_impl;
     qml_cond m_default;
     tsl::hopscotch_set<qml_cond*> m_conds;
+
+W_PROPERTY(QQmlScriptString, expr READ expr WRITE setExpr NOTIFY exprChanged)
 };
 }
 }

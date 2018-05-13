@@ -135,3 +135,4 @@ private:
 };
 }
 }
+W_REGISTER_ARGTYPE(ossia::qt::qml_device*)

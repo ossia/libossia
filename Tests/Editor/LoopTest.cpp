@@ -110,7 +110,7 @@ class LoopTest : public QObject
         std::cout << "Event : " << "new status received" << std::endl;
     }
 
-private Q_SLOTS:
+private:
 
 
     /*! test life cycle and accessors functions */
