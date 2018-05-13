@@ -36,10 +36,15 @@ int main()
   // Explore the tree of B
   std::cerr << "update: " << device.get_protocol().update(device) << std::endl;
 
-  ossia::net::find_node(device, "/test/my_string")->get_parameter()->push_value("fheakoezp");
-
   // Display the tree in console
   explore(device.get_root_node());
+
+  std::cerr << device.get_root_node().find_child("foo")->get_parameter()->get_domain() << std::endl;
+  while(true)
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  ossia::net::find_node(device, "/test/my_string")->get_parameter()->push_value("fheakoezp");
+
 
   auto node = ossia::net::find_node(device, "/test/my_float");
   // Request to add an instance :

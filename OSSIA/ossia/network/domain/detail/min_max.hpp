@@ -54,6 +54,38 @@ struct domain_min_visitor_helper<domain_base<ossia::value>>
   }
 };
 
+template <>
+struct domain_min_visitor_helper<vector_domain>
+{
+  OSSIA_INLINE ossia::value
+  operator()(const vector_domain& value) const
+  {
+    return value.min;
+  }
+};
+
+template <std::size_t N>
+struct domain_min_visitor_helper<vecf_domain<N>>
+{
+  OSSIA_INLINE ossia::value
+  operator()(const vecf_domain<N>& value) const
+  {
+    // TODO for this case, it would maybe be better to
+    // use the empty state of value instead of a boost::optional ?
+    std::array<float, N> arr;
+    for(auto& val : value.min)
+    if (!val)
+      return ossia::value{};
+
+    for(std::size_t i = 0; i < N; i++)
+    {
+      arr[i] = *value.min[i];
+    }
+
+    return arr;
+  }
+};
+
 /// Max ///
 template <typename T>
 struct domain_max_visitor_helper
@@ -100,6 +132,36 @@ struct domain_max_visitor_helper<domain_base<ossia::value>>
       return ossia::value{};
   }
 };
+
+template <>
+struct domain_max_visitor_helper<vector_domain>
+{
+  OSSIA_INLINE ossia::value
+  operator()(const vector_domain& value) const
+  {
+    return value.max;
+  }
+};
+
+template <std::size_t N>
+struct domain_max_visitor_helper<vecf_domain<N>>
+{
+  OSSIA_INLINE ossia::value
+  operator()(const vecf_domain<N>& value) const
+  {
+    std::array<float, N> arr;
+    for(auto& val : value.max)
+    if (!val)
+      return ossia::value{};
+
+    for(std::size_t i = 0; i < N; i++)
+    {
+      arr[i] = *value.max[i];
+    }
+
+    return arr;
+  }
+};
 }
 
 struct domain_min_visitor
@@ -108,6 +170,17 @@ struct domain_min_visitor
   OSSIA_INLINE ossia::value operator()(const domain_base<T>& value) const
   {
     return detail::domain_min_visitor_helper<domain_base<T>>{}(value);
+  }
+
+  OSSIA_INLINE ossia::value operator()(const vector_domain& value) const
+  {
+    return detail::domain_min_visitor_helper<vector_domain>{}(value);
+  }
+
+  template<std::size_t N>
+  OSSIA_INLINE ossia::value operator()(const vecf_domain<N>& value) const
+  {
+    return detail::domain_min_visitor_helper<vecf_domain<N>>{}(value);
   }
 
   template <typename... T>
@@ -123,6 +196,17 @@ struct domain_max_visitor
   OSSIA_INLINE ossia::value operator()(const domain_base<T>& value) const
   {
     return detail::domain_max_visitor_helper<domain_base<T>>{}(value);
+  }
+
+  OSSIA_INLINE ossia::value operator()(const vector_domain& value) const
+  {
+    return detail::domain_max_visitor_helper<vector_domain>{}(value);
+  }
+
+  template<std::size_t N>
+  OSSIA_INLINE ossia::value operator()(const vecf_domain<N>& value) const
+  {
+    return detail::domain_max_visitor_helper<vecf_domain<N>>{}(value);
   }
 
   template <typename... T>
