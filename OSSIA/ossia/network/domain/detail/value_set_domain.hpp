@@ -42,14 +42,23 @@ struct value_set_get_visitor
 
     std::vector<ossia::value> operator()(const ossia::vector_domain& dom)
     {
-      // TODO
-      return std::vector<ossia::value>{};
+      std::vector<ossia::value> v(dom.values.size());
+      for(std::size_t i = 0; i < dom.values.size(); i++)
+      {
+        v[i] = std::vector<ossia::value>(dom.values[i].begin(), dom.values[i].end());
+      }
+      return v;
     }
+
     template<std::size_t N>
     std::vector<ossia::value> operator()(const ossia::vecf_domain<N>& dom)
     {
-      // TODO
-      return std::vector<ossia::value>{};
+      std::vector<ossia::value> v(N);
+      for(std::size_t i = 0; i < N; i++)
+      {
+        v[i] = std::vector<ossia::value>(dom.values[i].begin(), dom.values[i].end());
+      }
+      return v;
     }
 };
 
