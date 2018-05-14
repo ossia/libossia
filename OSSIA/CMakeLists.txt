@@ -232,10 +232,7 @@ if(OSSIA_JAVA)
 endif()
 
 if(OSSIA_QT)
-  set(cur_moc "")
-  foreach(HEADER ${OSSIA_QT_HEADERS})
-    qt5_wrap_cpp(cur_moc ${HEADER} TARGET ossia)
-  endforeach()
+  qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
   target_sources(ossia PRIVATE ${cur_moc})
 
   target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
