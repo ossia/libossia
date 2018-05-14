@@ -1,4 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+#include <wobjectdefs.h>
 #include <QDebug>
 #include <QFile>
 #include <QObject>
@@ -18,7 +20,7 @@ namespace qt
 class qml_device;
 class qml_val_type
 {
-  Q_GADGET
+  W_GADGET(qml_val_type)
 public:
   enum val_type
   {
@@ -33,12 +35,12 @@ public:
     List,   //! \see std::vector<ossia::value>
     Char     //! \see char
   };
-  Q_ENUM(val_type)
+  W_ENUM(val_type, Float, Int, Vec2f, Vec3f, Vec4f, Impulse, Bool, String, List, Char)
 };
 
 class qml_access_mode
 {
-  Q_GADGET
+  W_GADGET(qml_access_mode)
 public:
   enum access_mode
   {
@@ -46,12 +48,12 @@ public:
     Get,
     Set
   };
-  Q_ENUM(access_mode)
+  W_ENUM(access_mode, Bi, Get, Set)
 };
 
 class qml_bounding_mode
 {
-  Q_GADGET
+  W_GADGET(qml_bounding_mode)
 public:
   enum bounding_mode
   {
@@ -62,12 +64,12 @@ public:
     Low,
     High
   };
-  Q_ENUM(bounding_mode)
+  W_ENUM(bounding_mode, Free, Clip, Wrap, Fold, Low, High)
 };
 
 class qml_rep_filter
 {
-  Q_GADGET
+  W_GADGET(qml_rep_filter)
 public:
   enum repetition_filter
   {
@@ -75,19 +77,19 @@ public:
     Filtered
   };
 
-  Q_ENUM(repetition_filter)
+  W_ENUM(repetition_filter, Unfiltered, Filtered)
 };
 
 class qml_duration
 {
-  Q_GADGET
+  W_GADGET(qml_duration)
 public:
   enum duration: qint32
   {
     Infinite = ossia::qt::infinite()
   };
 
-  Q_ENUM(duration)
+  W_ENUM(duration, Infinite)
 };
 }
 }

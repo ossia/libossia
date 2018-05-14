@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <cmath>
+#include <utility>
 /**
  * \file math.hpp
  *
