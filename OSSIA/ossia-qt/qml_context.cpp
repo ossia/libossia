@@ -7,3 +7,16 @@ W_GADGET_IMPL(ossia::qt::qml_access_mode)
 W_GADGET_IMPL(ossia::qt::qml_bounding_mode)
 W_GADGET_IMPL(ossia::qt::qml_rep_filter)
 W_GADGET_IMPL(ossia::qt::qml_duration)
+
+namespace ossia::detail {
+auto do_not_call_me()
+{
+  static volatile auto arr = {
+    &ossia::qt::qml_val_type::staticMetaObject,
+    &ossia::qt::qml_access_mode::staticMetaObject,
+    &ossia::qt::qml_bounding_mode::staticMetaObject,
+    &ossia::qt::qml_rep_filter::staticMetaObject,
+    &ossia::qt::qml_duration::staticMetaObject
+  };
+}
+}
