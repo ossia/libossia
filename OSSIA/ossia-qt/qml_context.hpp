@@ -18,7 +18,7 @@ namespace ossia
 namespace qt
 {
 class qml_device;
-class qml_val_type
+class OSSIA_EXPORT qml_val_type
 {
   W_GADGET(qml_val_type)
 public:
@@ -38,7 +38,7 @@ public:
   W_ENUM(val_type, Float, Int, Vec2f, Vec3f, Vec4f, Impulse, Bool, String, List, Char)
 };
 
-class qml_access_mode
+class OSSIA_EXPORT qml_access_mode
 {
   W_GADGET(qml_access_mode)
 public:
@@ -51,7 +51,7 @@ public:
   W_ENUM(access_mode, Bi, Get, Set)
 };
 
-class qml_bounding_mode
+class OSSIA_EXPORT qml_bounding_mode
 {
   W_GADGET(qml_bounding_mode)
 public:
@@ -67,7 +67,7 @@ public:
   W_ENUM(bounding_mode, Free, Clip, Wrap, Fold, Low, High)
 };
 
-class qml_rep_filter
+class OSSIA_EXPORT qml_rep_filter
 {
   W_GADGET(qml_rep_filter)
 public:
@@ -80,7 +80,7 @@ public:
   W_ENUM(repetition_filter, Unfiltered, Filtered)
 };
 
-class qml_duration
+class OSSIA_EXPORT qml_duration
 {
   W_GADGET(qml_duration)
 public:
