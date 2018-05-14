@@ -13,6 +13,16 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/any_map.hpp>
 
+// https://svn.boost.org/trac10/ticket/3605
+#if defined(_MSC_VER)
+#include <asio/detail/winsock_init.hpp>
+#pragma warning(push)
+#pragma warning(disable:4073)
+#pragma init_seg(lib)
+asio::detail::winsock_init<>::manual manual_winsock_init;
+#pragma warning(pop)
+#endif
+
 #if !defined(_MSC_VER)
 template class OSSIA_EXTERN_EXPORT_CPP(OSSIA_EXPORT) tsl::hopscotch_map<std::string, ossia::any, ossia::string_hash, ossia::string_equal, std::allocator<std::pair<std::string, ossia::any>>, 4>;
 #endif
@@ -28,9 +38,14 @@ static void ossia_global_init()
   static bool init = false;
   if (!init)
   {
-
     // Create a logger for the library.
     logger();
+
+    // Init WinSock
+#if defined(_MSC_VER)
+    WSADATA wsa_data;
+    ::WSAStartup(MAKEWORD(2, 0), &wsa_data);
+#endif
 
 // Register QML types
 #if defined(QT_QML_LIB)
