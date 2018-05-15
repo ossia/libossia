@@ -254,7 +254,7 @@ if(OSSIA_QML_SCORE)
 endif()
 
 if(OSSIA_DNSSD)
-  target_link_libraries(ossia PRIVATE Servus)
+  target_link_libraries(ossia PRIVATE Servus_iface)
 endif()
 
 if(OSSIA_DATAFLOW)

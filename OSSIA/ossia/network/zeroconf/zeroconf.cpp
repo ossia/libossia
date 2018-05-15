@@ -31,7 +31,7 @@ std::vector<minuit_connection_data> list_minuit_devices()
 
 #if defined(OSSIA_DNSSD)
   auto browser = new servus::Servus("_minuit._tcp");
-  browser->beginBrowsing(servus::Servus::IF_ALL);
+  browser->beginBrowsing(servus::Interface::IF_ALL);
   for (int i = 0; i < 500; i++)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -58,7 +58,7 @@ std::vector<oscquery_connection_data> list_oscquery_devices()
 
 #if defined(OSSIA_DNSSD)
   auto browser = new servus::Servus("_oscjson._tcp");
-  browser->beginBrowsing(servus::Servus::IF_ALL);
+  browser->beginBrowsing(servus::Interface::IF_ALL);
   for (int i = 0; i < 500; i++)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
