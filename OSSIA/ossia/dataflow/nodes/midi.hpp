@@ -143,7 +143,7 @@ class midi final
 
       for(const note_data& note : m_toStop)
       {
-        mp->messages.push_back(mm::MakeNoteOff(m_channel, note.pitch, note.velocity));
+        mp->messages.push_back(rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
         mp->messages.back().timestamp = t.offset;
       }
       m_toStop.clear();
@@ -152,7 +152,7 @@ class midi final
       {
         for(auto& note : m_playingnotes)
         {
-          mp->messages.push_back(mm::MakeNoteOff(m_channel, note.pitch, note.velocity));
+          mp->messages.push_back(rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
           mp->messages.back().timestamp = t.offset;
         }
 
@@ -169,7 +169,7 @@ class midi final
           while(it != m_notes.end() && it->start < t.date)
           {
             auto& note = *it;
-            mp->messages.push_back(mm::MakeNoteOn(m_channel, note.pitch, note.velocity));
+            mp->messages.push_back(rtmidi::message::note_on(m_channel, note.pitch, note.velocity));
             mp->messages.back().timestamp = t.offset;
             m_playingnotes.insert(note);
             it = m_notes.erase(it);
@@ -187,7 +187,7 @@ class midi final
 
             if (end_time >= prev_date() && end_time < t.date)
             {
-              mp->messages.push_back(mm::MakeNoteOff(m_channel, note.pitch, note.velocity));
+              mp->messages.push_back(rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
               mp->messages.back().timestamp = t.offset + (end_time - prev_date());
 
               it = m_playingnotes.erase(it);
@@ -207,7 +207,7 @@ class midi final
             if (start_time >= prev_date() && start_time < t.date)
             {
               // Send note_on
-              mp->messages.push_back(mm::MakeNoteOn(m_channel, note.pitch, note.velocity));
+              mp->messages.push_back(rtmidi::message::note_on(m_channel, note.pitch, note.velocity));
               mp->messages.back().timestamp = t.offset + (start_time - prev_date());
 
               m_playingnotes.insert(note);
