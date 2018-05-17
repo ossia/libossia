@@ -166,8 +166,8 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/brigand/include/brigand
         DESTINATION include
         COMPONENT Devel)
 
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/include
-        DESTINATION include/fmt
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
+        DESTINATION include
         COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp

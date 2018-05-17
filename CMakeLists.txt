@@ -30,7 +30,7 @@ else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.zip")
         
         file(DOWNLOAD
-          https://dl.bintray.com/boostorg/release/1.66.0/source/${BOOST_VERSION}.zip
+          https://dl.bintray.com/boostorg/release/1.67.0/source/${BOOST_VERSION}.zip
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip)
 
         execute_process(
@@ -41,7 +41,7 @@ else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.tar.gz")
         
         file(DOWNLOAD
-          https://dl.bintray.com/boostorg/release/1.66.0/source/${BOOST_VERSION}.tar.gz
+          https://dl.bintray.com/boostorg/release/1.67.0/source/${BOOST_VERSION}.tar.gz
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
         
         execute_process(
