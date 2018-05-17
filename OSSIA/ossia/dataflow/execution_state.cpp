@@ -664,7 +664,7 @@ static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::
     return false;
   return !it->second.empty();
 }
-static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>>& container)
+static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<rtmidi::message>>& container)
 {
   auto it = container.find(&other);
   if(it == container.end())

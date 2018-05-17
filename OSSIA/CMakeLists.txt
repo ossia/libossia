@@ -54,7 +54,7 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 
-if(NOT TARGET ModernMIDI)
+if(NOT TARGET RtMidi17)
   set(OSSIA_PROTOCOL_MIDI OFF)
   set(OSSIA_DATAFLOW OFF)
 endif()
@@ -160,7 +160,7 @@ if(OSSIA_PROTOCOL_AUDIO)
 endif()
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
-  target_link_libraries(ossia PRIVATE ModernMIDI)
+  target_link_libraries(ossia PRIVATE RtMidi17)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 endif()
 
@@ -413,8 +413,7 @@ target_include_directories(ossia
 target_include_directories(ossia SYSTEM
   PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/ModernMIDI/third_party>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/RtMidi17>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
 
       $<INSTALL_INTERFACE:include/nano-signal-slot>

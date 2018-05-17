@@ -236,7 +236,7 @@ struct rescale_in
     }
     void operator()(ossia::midi_port& port)
     {
-      value_vector<mm::MidiMessage> values;
+      value_vector<rtmidi::message> values;
       for(auto& val : port.messages)
       {
         if(val.timestamp >= request.offset && val.timestamp < request.offset + request.date - prev_date)
@@ -336,18 +336,18 @@ void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
       }
       void operator()(const ossia::midi_port& p)
       {
-        for(const mm::MidiMessage& val : p.messages)
+        for(const rtmidi::message& val : p.messages)
         {
-          switch(val.data.size())
+          switch(val.bytes.size())
           {
             case 1:
-              logger.log(spdlog::level::debug, "input {} (midi): {}", i, val.data[0]);
+              logger.log(spdlog::level::debug, "input {} (midi): {}", i, val.bytes[0]);
               break;
             case 2:
-              logger.log(spdlog::level::debug, "input {} (midi): {} {}", i, val.data[0], val.data[1]);
+              logger.log(spdlog::level::debug, "input {} (midi): {} {}", i, val.bytes[0], val.bytes[1]);
               break;
             case 3:
-              logger.log(spdlog::level::debug, "input {} (midi): {} {} {}", i, val.data[0], val.data[1], val.data[2]);
+              logger.log(spdlog::level::debug, "input {} (midi): {} {} {}", i, val.bytes[0], val.bytes[1], val.bytes[2]);
               break;
             default:
               break;
@@ -384,18 +384,18 @@ void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
       }
       void operator()(const ossia::midi_port& p)
       {
-        for(const mm::MidiMessage& val : p.messages)
+        for(const rtmidi::message& val : p.messages)
         {
-          switch(val.data.size())
+          switch(val.bytes.size())
           {
             case 1:
-              logger.log(spdlog::level::debug, "output {} (midi): {}", i, val.data[0]);
+              logger.log(spdlog::level::debug, "output {} (midi): {}", i, val.bytes[0]);
               break;
             case 2:
-              logger.log(spdlog::level::debug, "output {} (midi): {} {}", i, val.data[0], val.data[1]);
+              logger.log(spdlog::level::debug, "output {} (midi): {} {}", i, val.bytes[0], val.bytes[1]);
               break;
             case 3:
-              logger.log(spdlog::level::debug, "output {} (midi): {} {} {}", i, val.data[0], val.data[1], val.data[2]);
+              logger.log(spdlog::level::debug, "output {} (midi): {} {} {}", i, val.bytes[0], val.bytes[1], val.bytes[2]);
               break;
             default:
               break;

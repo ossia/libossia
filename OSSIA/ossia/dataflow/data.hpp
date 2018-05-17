@@ -3,7 +3,7 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
-#include <ModernMIDI/midi_message.h>
+#include <rtmidi17/message.hpp>
 namespace ossia
 {
 template <typename T>
@@ -20,7 +20,7 @@ struct audio_port
 
 struct midi_port
 {
-  value_vector<mm::MidiMessage> messages;
+  value_vector<rtmidi::message> messages;
 
   midi_port() = default;
   midi_port(const midi_port& p)
@@ -265,7 +265,7 @@ struct audio_delay_line
 
 struct midi_delay_line
 {
-  std::vector<value_vector<mm::MidiMessage>> messages;
+  std::vector<value_vector<rtmidi::message>> messages;
 };
 
 struct value_delay_line
@@ -438,7 +438,7 @@ struct mix
 
   }
 
-  void operator()(const value_vector<mm::MidiMessage>& out, value_vector<mm::MidiMessage>& in)
+  void operator()(const value_vector<rtmidi::message>& out, value_vector<rtmidi::message>& in)
   {
     for (const auto& data : out)
       in.push_back(data);

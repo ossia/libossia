@@ -61,10 +61,10 @@ endif()
 
 if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
   if(OSSIA_PROTOCOL_MIDI)
-    message(STATUS "Update OSSIA Midi Protocol dependency : ModernMIDI")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/ModernMIDI
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/ModernMIDI" EXCLUDE_FROM_ALL)
+    message(STATUS "Update OSSIA Midi Protocol dependency : RtMidi17")
+    #execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/RtMidi17
+    #                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/RtMidi17" EXCLUDE_FROM_ALL)
   endif()
 endif()
 
