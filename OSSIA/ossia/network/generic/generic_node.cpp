@@ -38,6 +38,15 @@ node_base* generic_node_base::get_parent() const
   return m_parent;
 }
 
+void generic_node_base::on_address_change()
+{
+  m_oscAddressCache = ossia::net::osc_parameter_string(*this);
+  for(auto& cld : m_children)
+  {
+    cld->on_address_change();
+  }
+}
+
 node_base& generic_node_base::set_name(std::string name)
 {
   auto old_name = std::move(m_name);
@@ -52,6 +61,7 @@ node_base& generic_node_base::set_name(std::string name)
     m_name = std::move(name);
     sanitize_name(m_name);
   }
+  on_address_change();
 
   // notify observers
   m_device.on_node_renamed(*this, old_name);

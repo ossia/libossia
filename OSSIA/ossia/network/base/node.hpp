@@ -196,6 +196,7 @@ public:
   bool is_root_instance(const ossia::net::node_base& child) const;
 
   const std::string& osc_address() const { return m_oscAddressCache; }
+  virtual void on_address_change();
 
   //! The node subclasses must call this in their destructor.
   mutable Nano::Signal<void(const node_base&)> about_to_be_deleted;

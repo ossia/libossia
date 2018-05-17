@@ -31,6 +31,9 @@ public:
   ossia::net::node_base* get_parent() const final override;
 
   ossia::net::node_base& set_name(std::string) final override;
+
+private:
+  void on_address_change() final override;
 };
 
 class OSSIA_EXPORT generic_node : public generic_node_base
@@ -40,7 +43,7 @@ public:
       std::string name, ossia::net::device_base& aDevice, node_base& aParent);
   generic_node(std::string name, ossia::net::device_base& aDevice);
 
-  ~generic_node();
+  ~generic_node() override;
 
   ossia::net::parameter_base* get_parameter() const final override;
   ossia::net::parameter_base*

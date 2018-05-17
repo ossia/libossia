@@ -126,6 +126,14 @@ bool node_base::is_root_instance(const node_base& child) const
   return false;
 }
 
+void node_base::on_address_change()
+{
+  for(auto& cld : m_children)
+  {
+    cld->on_address_change();
+  }
+}
+
 node_base* node_base::add_child(std::unique_ptr<node_base> n)
 {
   auto& dev = get_device();
