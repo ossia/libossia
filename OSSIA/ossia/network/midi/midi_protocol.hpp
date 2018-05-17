@@ -11,11 +11,11 @@
 
 #include <atomic>
 #include <readerwriterqueue.h>
-namespace mm
+namespace rtmidi
 {
-class MidiInput;
-class MidiOutput;
-struct MidiMessage;
+class midi_in;
+class midi_out;
+struct message;
 }
 namespace ossia
 {
@@ -54,7 +54,7 @@ class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 
     std::vector<midi_info> scan();
 
-    void push_value(const mm::MidiMessage&);
+    void push_value(const rtmidi::message&);
 
     template<typename T>
     void clone_value(T& port)
@@ -68,9 +68,9 @@ class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 
     void enable_registration();
   private:
-    moodycamel::ReaderWriterQueue<mm::MidiMessage> messages;
-    std::unique_ptr<mm::MidiInput> m_input;
-    std::unique_ptr<mm::MidiOutput> m_output;
+    moodycamel::ReaderWriterQueue<rtmidi::message> messages;
+    std::unique_ptr<rtmidi::midi_in> m_input;
+    std::unique_ptr<rtmidi::midi_out> m_output;
 
     std::array<midi_channel, 16> m_channels;
 

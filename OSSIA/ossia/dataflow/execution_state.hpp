@@ -96,7 +96,7 @@ struct OSSIA_EXPORT execution_state
     using value_state_impl = boost::container::flat_multimap<int64_t, std::pair<ossia::value, int>>;
     ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>> m_valueState;
     ossia::fast_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
-    ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<mm::MidiMessage>> m_midiState;
+    ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<rtmidi::message>> m_midiState;
 
     mutable shared_mutex_t mutex;
 
@@ -104,7 +104,7 @@ struct OSSIA_EXPORT execution_state
     std::list<message_queue> m_valueQueues;
 
     ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>> m_receivedValues;
-    ossia::ptr_map<ossia::net::midi::midi_protocol*, value_vector<mm::MidiMessage>> m_receivedMidi;
+    ossia::ptr_map<ossia::net::midi::midi_protocol*, value_vector<rtmidi::message>> m_receivedMidi;
 
     ossia::mono_state m_monoState;
     ossia::flat_vec_state m_commitOrderedState;

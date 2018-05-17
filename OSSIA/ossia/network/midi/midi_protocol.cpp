@@ -4,16 +4,15 @@
 #include <ossia/network/midi/midi.hpp>
 
 #include <ossia/detail/logger.hpp>
-#include <ModernMIDI/midi_message.h>
+#include <rtmidi17/message.hpp>
 #if !defined(__EMSCRIPTEN__)
-#include <ModernMIDI/midi_input.h>
-#include <ModernMIDI/midi_output.h>
+#include <rtmidi17/rtmidi17.hpp>
 #else
-namespace mm
+namespace rtmidi
 {
-class MidiInput
+class midi_in
 {};
-class MidiOutput
+class midi_out
 {};
 }
 #endif
@@ -25,8 +24,8 @@ namespace midi
 {
 midi_protocol::midi_protocol()
 #if !defined(__EMSCRIPTEN__)
-    : m_input{std::make_unique<mm::MidiInput>("ossia-in")}
-    , m_output{std::make_unique<mm::MidiOutput>("ossia-out")}
+    : m_input{std::make_unique<rtmidi::midi_in>(rtmidi::API::UNSPECIFIED, "ossia-in")}
+    , m_output{std::make_unique<rtmidi::midi_out>(rtmidi::API::UNSPECIFIED, "ossia-out")}
 #endif
 {
 }
@@ -41,8 +40,8 @@ midi_protocol::~midi_protocol()
 #if !defined(__EMSCRIPTEN__)
   try
   {
-    m_input->closePort();
-    m_output->closePort();
+    m_input->close_port();
+    m_output->close_port();
   }
   catch (...)
   {
@@ -59,20 +58,20 @@ bool midi_protocol::set_info(midi_info m)
     // Close current ports
     if (m_info.type == midi_info::Type::RemoteOutput)
     {
-      m_input->closePort();
+      m_input->close_port();
     }
     else if (m_info.type == midi_info::Type::RemoteInput)
     {
-      m_output->closePort();
+      m_output->close_port();
     }
 
     m_info = m;
 
     if (m_info.type == midi_info::Type::RemoteOutput)
     {
-      m_input->openPort(m_info.port);
-      m_input->messageCallback = [this] (mm::MidiMessage mess) {
-        const auto chan = mess.getChannel();
+      m_input->open_port(m_info.port);
+      m_input->set_callback([this] (rtmidi::message mess) {
+        const auto chan = mess.get_channel();
         if(chan == 0)
           return;
 
@@ -82,11 +81,11 @@ bool midi_protocol::set_info(midi_info m)
         }
 
         midi_channel& c = m_channels[chan - 1];
-        switch (mess.getMessageType())
+        switch (mess.get_message_type())
         {
-          case mm::MessageType::NOTE_ON:
-            c.note_on.first = mess.data[1];
-            c.note_on.second = mess.data[2];
+          case rtmidi::message_type::NOTE_ON:
+            c.note_on.first = mess.bytes[1];
+            c.note_on.second = mess.bytes[2];
             c.note_on_N[c.note_on.first] = c.note_on.second;
             if (auto ptr = c.callback_note_on)
             {
@@ -100,9 +99,9 @@ bool midi_protocol::set_info(midi_info m)
               value_callback(*ptr, val);
             }
             break;
-          case mm::MessageType::NOTE_OFF:
-            c.note_off.first = mess.data[1];
-            c.note_off.second = mess.data[2];
+          case rtmidi::message_type::NOTE_OFF:
+            c.note_off.first = mess.bytes[1];
+            c.note_off.second = mess.bytes[2];
             c.note_off_N[c.note_off.first] = c.note_off.second;
             if (auto ptr = c.callback_note_off)
             {
@@ -116,9 +115,9 @@ bool midi_protocol::set_info(midi_info m)
               value_callback(*ptr, val);
             }
             break;
-          case mm::MessageType::CONTROL_CHANGE:
-            c.cc.first = mess.data[1];
-            c.cc.second = mess.data[2];
+          case rtmidi::message_type::CONTROL_CHANGE:
+            c.cc.first = mess.bytes[1];
+            c.cc.second = mess.bytes[2];
             c.cc_N[c.cc.first] = c.cc.second;
             if (auto ptr = c.callback_cc)
             {
@@ -132,8 +131,8 @@ bool midi_protocol::set_info(midi_info m)
               value_callback(*ptr, val);
             }
             break;
-          case mm::MessageType::PROGRAM_CHANGE:
-            c.pc = mess.data[1];
+          case rtmidi::message_type::PROGRAM_CHANGE:
+            c.pc = mess.bytes[1];
             if (auto ptr = c.callback_pc)
             {
               value_callback(*ptr, int32_t{c.pc});
@@ -143,8 +142,8 @@ bool midi_protocol::set_info(midi_info m)
               value_callback(*ptr, ossia::impulse{});
             }
             break;
-          case mm::MessageType::PITCH_BEND:
-            c.pb = mess.data[2] * 128 + mess.data[1];
+          case rtmidi::message_type::PITCH_BEND:
+            c.pb = mess.bytes[2] * 128 + mess.bytes[1];
             if (auto ptr = c.callback_pb)
             {
               value_callback(*ptr, int32_t{c.pb});
@@ -153,11 +152,11 @@ bool midi_protocol::set_info(midi_info m)
           default:
             break;
         }
-      };
+      });
     }
     else if (m_info.type == midi_info::Type::RemoteInput)
     {
-      m_output->openPort(m_info.port);
+      m_output->open_port(m_info.port);
     }
 
     return true;
@@ -268,7 +267,7 @@ bool midi_protocol::push(const parameter_base& address)
     {
       case address_info::Type::NoteOn_N:
       {
-        m_output->send(mm::MakeNoteOn(
+        m_output->send_message(rtmidi::message::note_on(
             adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
         return true;
       }
@@ -276,14 +275,14 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::NoteOn:
       {
         auto& val = adrs.getValue().get<std::vector<ossia::value>>();
-        m_output->send(mm::MakeNoteOn(
+        m_output->send_message(rtmidi::message::note_on(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
       }
 
       case address_info::Type::NoteOff_N:
       {
-        m_output->send(mm::MakeNoteOff(
+        m_output->send_message(rtmidi::message::note_off(
             adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
         return true;
       }
@@ -291,14 +290,14 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::NoteOff:
       {
         auto& val = adrs.getValue().get<std::vector<ossia::value>>();
-        m_output->send(mm::MakeNoteOff(
+        m_output->send_message(rtmidi::message::note_off(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
       }
 
       case address_info::Type::CC_N:
       {
-        m_output->send(mm::MakeControlChange(
+        m_output->send_message(rtmidi::message::control_change(
             adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
         return true;
       }
@@ -306,27 +305,27 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::CC:
       {
         auto& val = adrs.getValue().get<std::vector<ossia::value>>();
-        m_output->send(mm::MakeControlChange(
+        m_output->send_message(rtmidi::message::control_change(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
       }
 
       case address_info::Type::PC:
       {
-        m_output->send(mm::MakeProgramChange(
+        m_output->send_message(rtmidi::message::program_change(
             adrinfo.channel, adrs.getValue().get<int32_t>()));
         return true;
       }
 
       case address_info::Type::PC_N:
       {
-        m_output->send(mm::MakeProgramChange(adrinfo.channel, adrinfo.note));
+        m_output->send_message(rtmidi::message::program_change(adrinfo.channel, adrinfo.note));
         return true;
       }
 
       case address_info::Type::PB:
       {
-        m_output->send(mm::MakePitchBend(adrinfo.channel, adrs.getValue().get<int32_t>()));
+        m_output->send_message(rtmidi::message::pitch_bend(adrinfo.channel, adrs.getValue().get<int32_t>()));
         return true;
       }
       default:
@@ -425,33 +424,31 @@ std::vector<midi_info> midi_protocol::scan()
 
   {
     // Input devices are those on which we do output
-    auto& in = *m_input;
-    auto dev = in.getInputDevice();
-    auto portcount = dev->getPortCount();
+    rtmidi::midi_in& in = *m_input;
+    auto portcount = in.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
-      vec.emplace_back(midi_info::Type::RemoteOutput, dev->getPortName(i), i);
+      vec.emplace_back(midi_info::Type::RemoteOutput, in.get_port_name(i), i);
     }
   }
 
   {
     // Output devices are those that will send data to us
-    auto& out = *m_output;
-    auto dev = out.getOutputDevice();
-    auto portcount = dev->getPortCount();
+    rtmidi::midi_out& out = *m_output;
+    auto portcount = out.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
-      vec.emplace_back(midi_info::Type::RemoteInput, dev->getPortName(i), i);
+      vec.emplace_back(midi_info::Type::RemoteInput, out.get_port_name(i), i);
     }
   }
 #endif
   return vec;
 }
 
-void midi_protocol::push_value(const mm::MidiMessage& m)
+void midi_protocol::push_value(const rtmidi::message& m)
 {
 #if !defined(__EMSCRIPTEN__)
-  m_output->send(m);
+  m_output->send_message(m);
 #endif
 }
 
