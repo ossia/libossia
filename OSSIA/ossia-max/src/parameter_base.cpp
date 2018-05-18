@@ -1113,8 +1113,6 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_STYLE(
         c, "invisible", 0, "onoff");
   CLASS_ATTR_LABEL(c, "invisible", 0, "Hide Parameter");
-
-
 }
 
 parameter_base::parameter_base()

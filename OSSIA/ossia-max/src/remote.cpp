@@ -33,6 +33,12 @@ extern "C" void ossia_remote_setup()
     class_addmethod(c, (method) address_mess_cb<remote>, "address",   A_SYM, 0);
 
     class_addmethod(c, (method) remote::get_mess_cb, "get",  A_SYM, 0);
+
+    CLASS_ATTR_LONG(c, "deferset", 0, remote, m_defer_set);
+    CLASS_ATTR_STYLE(
+          c, "deferset", 0, "onoff");
+    CLASS_ATTR_LABEL(c, "deferset", 0, "Deferlow  for 'set' output");
+
   }
 
   class_register(CLASS_BOX, c);

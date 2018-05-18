@@ -104,12 +104,11 @@ public:
   //flags
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
-  long m_queue_length{64};
   bool m_is_deleted{};
+  bool m_lock{false};
+  long m_queue_length{64};
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
-
-
 
   void* m_clock{};
   void* m_poll_clock{}; // value or message polling clock
@@ -151,6 +150,7 @@ public:
   t_symbol* m_description{};
   long m_priority{};
   long m_invisible{};
+  long m_defer_set{1};
   long m_recall_safe{};
 
   long m_tags_size{};
@@ -164,7 +164,6 @@ public:
   object_base();
 
   std::mutex bindMutex;
-  bool m_lock{false};
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order
 
 
@@ -271,6 +270,38 @@ struct value_visitor
 {
   T* x;
 
+  void set_out(t_atom& a) const
+  {
+    if (x->m_set_out)
+    {
+      if(x->m_defer_set)
+      {
+        defer_low((t_object*)x,(method)object_base::defer_set_output,
+                  gensym("set"), 1, &a);
+      }
+      else
+      {
+        outlet_anything(x->m_set_out, gensym("set"), 1, &a);
+      }
+    }
+  }
+
+  void set_out(int N, t_atom* a) const
+  {
+    if (x->m_set_out)
+    {
+      if(x->m_defer_set)
+      {
+        defer_low((t_object*)x,(method)object_base::defer_set_output,
+                  gensym("set"), N, a);
+      }
+      else
+      {
+        outlet_anything(x->m_set_out, gensym("set"), N, a);
+      }
+    }
+  }
+
   void operator()(impulse) const
   {
     outlet_bang(x->m_data_out);
@@ -285,9 +316,7 @@ struct value_visitor
     atom_setlong(&a, i);
     outlet_int(x->m_data_out, i);
 
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),1,&a);
+    set_out(a);
   }
 
   void operator()(float f) const
@@ -298,22 +327,12 @@ struct value_visitor
     if(x && x->m_data_out)
       outlet_float(x->m_data_out, f);
 
-    if (x && x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),1,&a);
+    set_out(a);
   }
 
   void operator()(bool b) const
   {
-    t_atom a;
-    int i = b ? 1 : 0;
-
-    atom_setlong(&a, i);
-    outlet_int(x->m_data_out, i);
-
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),1,&a);
+    (*this)(b ? 1 : 0);
   }
 
   void operator()(const std::string& str) const
@@ -324,9 +343,7 @@ struct value_visitor
     atom_setsym(&a, s);
     outlet_anything(x->m_data_out, s, 0, nullptr);
 
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),1,&a);
+    set_out(a);
   }
 
   void operator()(char c) const
@@ -336,9 +353,7 @@ struct value_visitor
     atom_setlong(&a, (long)c);
     outlet_int(x->m_data_out, (long)c);
 
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),1,&a);
+    set_out(a);
   }
 
   template<std::size_t N>
@@ -350,9 +365,7 @@ struct value_visitor
       atom_setfloat(a + i, vec[i]);
     outlet_list(x->m_data_out, gensym("list"), N, a);
 
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"), N,a);
+    set_out(N, a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
@@ -370,9 +383,7 @@ struct value_visitor
     if (x->m_data_out)
       outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
 
-    if (x->m_set_out)
-      defer_low((t_object*)x,(method)object_base::defer_set_output,
-                gensym("set"),va.size(), list_ptr);
+    set_out(va.size(), list_ptr);
   }
 
   void operator()() const
