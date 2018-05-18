@@ -160,22 +160,24 @@ void device::destroy(device* x)
 
   {
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
-#endif
     auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
         x->m_device->get_protocol());
     auto& protos = multiplex.get_protocols();
 
     for(auto& proto : protos)
-    if(dynamic_cast<ossia::phidget_protocol*>(proto.get()))
     {
-      if(phidgets_poll_clock)
+      if(dynamic_cast<ossia::phidget_protocol*>(proto.get()))
       {
-        clock_unset(phidgets_poll_clock);
-        clock_free((t_object*)phidgets_poll_clock);
-        phidgets_poll_clock = nullptr;
+        if(phidgets_poll_clock)
+        {
+          clock_unset(phidgets_poll_clock);
+          clock_free((t_object*)phidgets_poll_clock);
+          phidgets_poll_clock = nullptr;
+        }
+        phidgets_exposed = false;
       }
-      phidgets_exposed = false;
     }
+#endif
   }
 
   x->disconnect_slots();
@@ -185,7 +187,9 @@ void device::destroy(device* x)
 
   outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
+#if OSSIA_MAX_AUTOREGISTER
   register_quarantinized();
+#endif
   x->~device();
 }
 

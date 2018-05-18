@@ -146,7 +146,9 @@ void client::destroy(client* x)
   x->m_device = nullptr;
   outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
+#if OSSIA_MAX_AUTOREGISTER
   register_quarantinized();
+#endif
   x->~client();
 }
 
