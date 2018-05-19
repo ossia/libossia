@@ -16,21 +16,21 @@ include(OssiaConfiguration)
 cmake_policy(SET CMP0069 NEW)
 
 # Dependencies
-
+set(BOOST_MINOR 67)
 if(ANDROID)
   set(Boost_FOUND True)
-  include_directories("/opt/boost_1_64_0")
+  include_directories("/opt/boost_1_${BOOST_MINOR}_0")
 else()
   find_package(Boost QUIET)
   if ( NOT Boost_FOUND )
-    set(BOOST_VERSION "boost_1_66_0")
+    set(BOOST_VERSION "boost_1_${BOOST_MINOR}_0")
     if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
 
       if(WIN32)
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.zip")
-        
+
         file(DOWNLOAD
-          https://dl.bintray.com/boostorg/release/1.67.0/source/${BOOST_VERSION}.zip
+          https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.zip
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip)
 
         execute_process(
@@ -39,11 +39,11 @@ else()
 
       else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.tar.gz")
-        
+
         file(DOWNLOAD
-          https://dl.bintray.com/boostorg/release/1.67.0/source/${BOOST_VERSION}.tar.gz
+          https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.tar.gz
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
-        
+
         execute_process(
           COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
           WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
@@ -51,9 +51,9 @@ else()
       endif()
     endif()
     set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" )
-    set(BOOST_INCLUDEDIR "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/boost")
     find_package(Boost REQUIRED)
   endif()
+
   add_library(boost INTERFACE IMPORTED)
   set_property(TARGET boost PROPERTY
                INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
