@@ -52,7 +52,7 @@ inline bool has_jackd_process()
   {
     using namespace std::literals;
     auto name = entry.szExeFile;
-    if(name == "jackd.exe"s)
+    if(name == std::wstring(L"jackd.exe"))
       return true;
   } while( Process32Next(plist, &entry));
 

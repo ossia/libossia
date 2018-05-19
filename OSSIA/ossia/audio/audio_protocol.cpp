@@ -1,7 +1,6 @@
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/device.hpp>
-
 #include <ossia/audio/jack_protocol.hpp>
 #include <ossia/audio/portaudio_protocol.hpp>
 #include <ossia/audio/sdl_protocol.hpp>
