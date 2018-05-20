@@ -3,11 +3,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/midi/midi_node.hpp>
 
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 class OSSIA_EXPORT midi_device final : public ossia::net::device_base,
                                        public midi_node
@@ -28,6 +24,4 @@ public:
     return *this;
   }
 };
-}
-}
 }

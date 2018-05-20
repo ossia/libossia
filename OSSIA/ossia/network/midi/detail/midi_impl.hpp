@@ -18,7 +18,7 @@ namespace midi
 {
 const std::string& midi_node_name(midi_size_t i);
 
-class OSSIA_EXPORT note_on_N_node final : public midi_node, public midi_parameter
+class note_on_N_node final : public midi_node, public midi_parameter
 {
 public:
   note_on_N_node(
@@ -39,7 +39,7 @@ public:
   }
 };
 
-class OSSIA_EXPORT note_off_N_node final : public midi_node,
+class note_off_N_node final : public midi_node,
                                            public midi_parameter
 {
 public:
@@ -61,7 +61,7 @@ public:
   }
 };
 
-class OSSIA_EXPORT control_N_node final : public midi_node, public midi_parameter
+class control_N_node final : public midi_node, public midi_parameter
 {
 public:
   control_N_node(
@@ -82,11 +82,11 @@ public:
   }
 };
 
-class OSSIA_EXPORT program_N_node final : public midi_node, public midi_parameter
+class program_N_node final : public midi_node, public midi_parameter
 {
 public:
   program_N_node(
-      midi_size_t channel, midi_size_t param, midi_device& aDevice, 
+      midi_size_t channel, midi_size_t param, midi_device& aDevice,
       ossia::net::node_base& aParent)
       : midi_node{aDevice, aParent}
       , midi_parameter{address_info{channel, address_info::Type::PC_N, param},
@@ -103,10 +103,10 @@ public:
   }
 };
 
-class OSSIA_EXPORT program_node final : public midi_node, public midi_parameter
+class program_node final : public midi_node, public midi_parameter
 {
 public:
-  program_node(midi_size_t channel, midi_device& aDevice, 
+  program_node(midi_size_t channel, midi_device& aDevice,
     ossia::net::node_base& aParent)
       : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::PC, 0}, *this}
@@ -129,10 +129,10 @@ public:
   }
 };
 
-class OSSIA_EXPORT note_on_node final : public midi_node, public midi_parameter
+class note_on_node final : public midi_node, public midi_parameter
 {
 public:
-  note_on_node(midi_size_t channel, midi_device& aDevice, 
+  note_on_node(midi_size_t channel, midi_device& aDevice,
     ossia::net::node_base& aParent)
       : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::NoteOn, 0},
@@ -156,10 +156,10 @@ public:
   }
 };
 
-class OSSIA_EXPORT note_off_node final : public midi_node, public midi_parameter
+class note_off_node final : public midi_node, public midi_parameter
 {
 public:
-  note_off_node(midi_size_t channel, midi_device& aDevice, 
+  note_off_node(midi_size_t channel, midi_device& aDevice,
     ossia::net::node_base& aParent)
       : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::NoteOff, 0},
@@ -185,10 +185,10 @@ public:
   }
 };
 
-class OSSIA_EXPORT control_node final : public midi_node, public midi_parameter
+class control_node final : public midi_node, public midi_parameter
 {
 public:
-  control_node(midi_size_t channel, midi_device& aDevice, 
+  control_node(midi_size_t channel, midi_device& aDevice,
     ossia::net::node_base& aParent)
       : midi_node(aDevice, aParent)
       , midi_parameter{address_info{channel, address_info::Type::CC, 0}, *this}
@@ -212,7 +212,7 @@ public:
   }
 };
 
-class OSSIA_EXPORT pitch_bend_node final : public midi_node, public midi_parameter
+class pitch_bend_node final : public midi_node, public midi_parameter
 {
 public:
   pitch_bend_node(midi_size_t channel, midi_device& aDevice, ossia::net::node_base& aParent)
@@ -231,12 +231,12 @@ public:
   }
 };
 
-class OSSIA_EXPORT channel_node final : public midi_node
+class channel_node final : public midi_node
 {
   const midi_size_t m_channel;
 
 public:
-  channel_node(midi_size_t channel, midi_device& aDevice, 
+  channel_node(midi_size_t channel, midi_device& aDevice,
     ossia::net::node_base& aParent)
       : midi_node(aDevice, aParent), m_channel{channel}
   {

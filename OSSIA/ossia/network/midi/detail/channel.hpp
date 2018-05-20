@@ -2,11 +2,7 @@
 #include <array>
 #include <cinttypes>
 #include <utility>
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 using midi_size_t = uint8_t;
 class midi_parameter;
@@ -42,6 +38,4 @@ struct midi_channel
   std::array<midi_parameter*, 128> callback_cc_N = {{}};
   std::array<midi_parameter*, 128> callback_pc_N = {{}};
 };
-}
-}
 }

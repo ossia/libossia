@@ -5,7 +5,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/midi/detail/midi_impl.hpp>
+#include <ossia/network/midi/detail/channel.hpp>
 #include <array>
 #include <cassert>
 
@@ -17,11 +17,7 @@ class midi_in;
 class midi_out;
 struct message;
 }
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 struct OSSIA_EXPORT midi_info
 {
@@ -90,6 +86,4 @@ class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
     void value_callback(ossia::net::parameter_base& param, const ossia::value& val);
 
 };
-}
-}
 }

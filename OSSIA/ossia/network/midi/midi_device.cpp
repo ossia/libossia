@@ -5,11 +5,7 @@
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 midi_device::midi_device(std::unique_ptr<protocol_base> prot)
     : ossia::net::device_base{std::move(prot)}, midi_node{*this}
@@ -26,6 +22,9 @@ node_base& midi_device::set_name(std::string n)
 bool midi_device::update_namespace()
 {
   clear_children();
+
+  // TODO set type list and send as raw bytes
+  m_parameter = std::make_unique<midi_parameter>(address_info{{}, address_info::Type::Any, {}}, *this);
 
   try
   {
@@ -47,7 +46,5 @@ bool midi_device::update_namespace()
     return false;
   }
   return true;
-}
-}
 }
 }

@@ -1,12 +1,7 @@
 #pragma once
-
 #include <ossia/network/base/node.hpp>
 
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 class midi_protocol;
 class midi_device;
@@ -21,7 +16,7 @@ public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
   using const_iterator
       = ossia::ptr_container<ossia::net::node_base>::const_iterator;
-  ~midi_node();
+  ~midi_node() override;
   midi_node(midi_device& aDevice, ossia::net::node_base& aParent);
   midi_node(midi_device& aDevice);
 
@@ -38,6 +33,4 @@ public:
   make_child(const std::string& name) final override;
   void removing_child(node_base& node_base) final override;
 };
-}
-}
 }

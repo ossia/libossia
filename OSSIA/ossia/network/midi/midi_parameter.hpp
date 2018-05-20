@@ -2,14 +2,8 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
-
-#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 class midi_protocol;
 struct address_info
@@ -24,7 +18,8 @@ struct address_info
     CC_N,      // /12/CC/64 123,
     PC,        // /12/PC 32
     PC_N,      // /12/PC/32 Impulse
-    PB         // /12/PB -8192 -> 8191
+    PB,         // /12/PB -8192 -> 8191
+    Any
   };
 
   ossia::val_type matchingType()
@@ -34,6 +29,7 @@ struct address_info
       case Type::NoteOn:
       case Type::NoteOff:
       case Type::CC:
+      case Type::Any:
         return ossia::val_type::LIST;
       case Type::NoteOn_N:
       case Type::NoteOff_N:
@@ -73,6 +69,8 @@ struct address_info
                + boost::lexical_cast<std::string>(note);
       case Type::PB:
         return "/" + boost::lexical_cast<std::string>(channel) + "/PB";
+      case Type::Any:
+        return "/";
     }
     return {};
   }
@@ -85,6 +83,8 @@ struct address_info
       case Type::NoteOff:
       case Type::CC:
         return std::vector<ossia::value>{int32_t{val}, int32_t{val}};
+      case Type::Any:
+        return std::vector<ossia::value>{};
       case Type::NoteOn_N:
       case Type::NoteOff_N:
       case Type::CC_N:
@@ -99,7 +99,7 @@ struct address_info
 
   ossia::domain defaultDomain()
   {
-    if(type != Type::PB)
+    if(type != Type::PB && type != Type::Any)
       return ossia::make_domain(defaultValue(0), defaultValue(127));
     return ossia::make_domain(-8192, 8191);
   }
@@ -163,6 +163,4 @@ public:
 
   void value_callback(const ossia::value& val);
 };
-}
-}
 }

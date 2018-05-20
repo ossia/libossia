@@ -328,6 +328,21 @@ bool midi_protocol::push(const parameter_base& address)
         m_output->send_message(rtmidi::message::pitch_bend(adrinfo.channel, adrs.getValue().get<int32_t>()));
         return true;
       }
+
+      case address_info::Type::Any:
+      {
+        if(auto v = adrs.getValue().target<std::vector<ossia::value>>())
+        {
+          rtmidi::message m;
+          m.bytes.reserve(v->size());
+          for(const auto& val : *v)
+          {
+            m.bytes.push_back(ossia::convert<int32_t>(val));
+          }
+          m_output->send_message(std::move(m));
+        }
+        return true;
+      }
       default:
         return false;
     }

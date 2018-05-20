@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
-#include <ossia/network/midi/detail/midi_impl.hpp>
 
 namespace ossia::nodes
 {

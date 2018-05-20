@@ -9,7 +9,6 @@
 #include <ossia/detail/apply.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_parameter.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 namespace ossia
@@ -282,16 +281,18 @@ void execution_state::commit_common()
 
   for (auto& elt : m_midiState)
   {
-    if(auto addr = dynamic_cast<ossia::net::midi::midi_parameter*>(elt.first))
+    if(!elt.second.empty())
     {
-      auto& proto = static_cast<ossia::net::midi::midi_protocol&>(addr->get_protocol());
-
-      for (const auto& v : elt.second)
+      auto proto = dynamic_cast<ossia::net::midi::midi_protocol*>(&elt.first->get_node().get_device().get_protocol());
+      if(proto)
       {
-        proto.push_value(v);
+        for (const auto& v : elt.second)
+        {
+          proto->push_value(v);
+        }
       }
+      elt.second.clear();
     }
-    elt.second.clear();
   }
 }
 
@@ -612,9 +613,12 @@ void execution_state::insert(ossia::net::parameter_base& param, const audio_port
 
 void execution_state::insert(ossia::net::parameter_base& param, const midi_port& v)
 {
-  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
-  auto& vec = m_midiState[&param];
-  vec.insert(vec.end(), v.messages.begin(), v.messages.end());
+  if(!v.messages.empty())
+  {
+    OSSIA_EXEC_STATE_LOCK_WRITE(*this);
+    auto& vec = m_midiState[&param];
+    vec.insert(vec.end(), v.messages.begin(), v.messages.end());
+  }
 }
 
 struct state_exec_visitor
