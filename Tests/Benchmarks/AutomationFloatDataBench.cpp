@@ -33,7 +33,7 @@ struct tick_nodes_custom
       e.samples_since_start += samples;
 
       for(auto& node : g.m_nodes)
-        node.first->requested_tokens.push_back(token_request{time_value{e.samples_since_start}});
+        node.first->request(token_request{time_value{e.samples_since_start}});
 
       g.state(e);
       (e.*f)();

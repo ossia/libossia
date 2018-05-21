@@ -18,7 +18,7 @@ struct node_chain_process final :
       const ossia::token_request tk{parent_date, relative_position, tick_offset, speed};
       for(auto& node : nodes)
       {
-        node->requested_tokens.push_back(tk);
+        node->request(tk);
       }
       m_lastDate = parent_date;
     }

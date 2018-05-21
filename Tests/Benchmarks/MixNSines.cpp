@@ -63,7 +63,7 @@ int main()
       ossia::time_value cur_time{};
       e.clear_local_state();
       e.get_new_values();
-      for(auto& node : nodes) { node->requested_tokens.push_back({cur_time}); }
+      for(auto& node : nodes) { node->request({cur_time}); }
       g.state(e);
       e.commit();
 
@@ -77,7 +77,7 @@ int main()
         e.clear_local_state();
         e.get_new_values();
         cur_time += 64;
-        for(auto& node : nodes) { node->requested_tokens.push_back(ossia::token_request{cur_time}); }
+        for(auto& node : nodes) { node->request(ossia::token_request{cur_time}); }
         g.state(e);
         (e.*fun)();
         CALLGRIND_STOP_INSTRUMENTATION;

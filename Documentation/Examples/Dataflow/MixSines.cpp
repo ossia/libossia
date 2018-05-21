@@ -24,7 +24,7 @@ struct tick_all_nodes_bench
       e.samples_since_start += samples;
 
       for(auto& node : g.m_nodes)
-        node.first->requested_tokens.push_back(ossia::token_request{ossia::time_value{e.samples_since_start}});
+        node.first->request(ossia::token_request{ossia::time_value{e.samples_since_start}});
 
       g.state(e);
       e.commit();

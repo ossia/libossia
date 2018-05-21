@@ -344,7 +344,7 @@ static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void scenario::state(ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
 {
-  node->requested_tokens.push_back({date, pos, tick_offset, gspeed});
+  node->request({date, pos, tick_offset, gspeed});
   // ossia::logger().info("scenario::state starts");
   //if (date != m_lastDate)
   {

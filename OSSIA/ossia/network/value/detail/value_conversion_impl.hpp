@@ -4,7 +4,6 @@
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/value/value_traits.hpp>
 #include <boost/type_traits/function_traits.hpp>
-#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/home/x3.hpp>
 #include <fmt/format.h>

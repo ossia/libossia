@@ -111,6 +111,8 @@ public:
     m_prev_date = d;
   }
 
+  void request(ossia::token_request req);
+
   void disable()
   {
     requested_tokens.clear();

@@ -128,7 +128,7 @@ int main()
         e.clear_local_state();
         e.get_new_values();
         for(auto& n : g.m_nodes)
-          n.first->requested_tokens.push_back(ossia::token_request{ossia::time_value{1}});
+          n.first->request(ossia::token_request{ossia::time_value{1}});
 
         g.state(e);
         std::size_t msg_count = num_messages(e);
@@ -148,7 +148,7 @@ int main()
         {
           int64_t count = 0;
           for(auto& n : g.m_nodes)
-            n.first->requested_tokens.push_back(ossia::token_request{ossia::time_value{k}});
+            n.first->request(ossia::token_request{ossia::time_value{k}});
 
           auto t0 = std::chrono::steady_clock::now();
           CALLGRIND_START_INSTRUMENTATION;

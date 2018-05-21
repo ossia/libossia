@@ -247,7 +247,7 @@ class midi_node_process final : public ossia::node_process
     void stop() override
     {
       midi& n = *static_cast<midi*>(node.get());
-      n.requested_tokens.push_back(ossia::token_request{});
+      n.request(ossia::token_request{});
       n.mustStop = true;
     }
 };

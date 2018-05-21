@@ -79,7 +79,7 @@ auto operator()(T& g, const U& nodes)
   {
     g.mark_dirty();
     for(auto& node : nodes)
-      node->requested_tokens.push_back({});
+      node->request({});
     auto t0 = std::chrono::high_resolution_clock::now();
     CALLGRIND_START_INSTRUMENTATION;
     g.state(e);
@@ -110,7 +110,7 @@ auto operator()(T& g, const U& nodes)
   for(int i = 0; i < NUM_TAKES; i++)
   {
     for(auto& node : nodes)
-      node->requested_tokens.push_back({});
+      node->request({});
     auto t0 = std::chrono::high_resolution_clock::now();
     CALLGRIND_START_INSTRUMENTATION;
     g.state(e);

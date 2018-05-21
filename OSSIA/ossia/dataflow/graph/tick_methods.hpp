@@ -86,7 +86,7 @@ struct tick_all_nodes
       e.samples_since_start += samples;
 
       for(auto& node : g.m_nodes)
-        node.first->requested_tokens.push_back(
+        node.first->request(
                 token_request{time_value{e.samples_since_start}});
 
       g.state(e);
@@ -232,7 +232,7 @@ struct split_score_tick
           auto& req = requests[node.first.get()];
           if(req.second != req.first.end() && req.second->offset == cut)
           {
-            node.first->requested_tokens.push_back(*req.second);
+            node.first->request(*req.second);
             ++req.second;
           }
         }

@@ -10,7 +10,6 @@
 // TODO better way would be to use Boost.Spirit :
 // see
 // http://stackoverflow.com/questions/23437778/comparing-3-modern-c-ways-to-convert-integral-values-to-strings
-#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
 #include <boost/lexical_cast.hpp>
 namespace ossia
 {

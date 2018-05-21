@@ -162,6 +162,7 @@ if(OSSIA_SPLIT_DEBUG)
 #    -Wl,--compress-debug-sections=zlib
     -Wl,--dynamic-list-cpp-new
     -Wl,--dynamic-list-cpp-typeinfo
+    -Wno-unused-command-line-argument
   )
   endif()
 endif()
