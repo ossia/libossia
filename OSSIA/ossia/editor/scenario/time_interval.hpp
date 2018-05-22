@@ -65,11 +65,9 @@ public:
 
   void tick_current(ossia::time_value offset);
 
-  void tick();
-  void tick(ossia::time_value);
-  void tick(ossia::time_value, double ratio);
+  void tick(ossia::time_value, double ratio = 1.0);
   void tick_offset(ossia::time_value, ossia::time_value offset);
-  void tick_offset(ossia::time_value, double ratio, ossia::time_value offset);
+  //void tick_offset(ossia::time_value, double ratio, ossia::time_value offset);
 
   /*! to get the interval execution back
    \param const #TimeValue position
@@ -127,7 +125,7 @@ public:
    TimeProcess the #time_interval manages
    \details don't call state when the #time_interval is not running
    \return std::shared_ptr<#State> */
-  void state();
+  void state(ossia::time_value from, ossia::time_value to);
 
   /*! sets a new callback for the interval
     \param #time_interval::ExecutionCallback to use to be notified at each
@@ -208,6 +206,7 @@ private:
   time_interval& operator=(const time_interval&) = delete;
   time_interval& operator=(time_interval&&) = delete;
   void compute_position();
+  void tick_impl(ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset);
 
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;

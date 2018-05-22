@@ -234,15 +234,14 @@ struct apply_control<false, N>
       T3& a3;
       ossia::execution_state& st;
       template<typename... Args>
-      void operator()(const ossia::time_value& sub_prev_date,
-                      const ossia::token_request& sub_tk,
+      void operator()(const ossia::token_request& sub_tk,
                       Args&&... args)
       {
         Node_T::run(
               std::get<N1>(std::forward<T1>(a1))...,
               std::forward<Args>(args)...,
               std::get<N3>(std::forward<T3>(a3))...,
-              sub_prev_date, sub_tk, st);
+              sub_tk, st);
 
       }
 
@@ -259,16 +258,14 @@ struct apply_control<false, N>
       ossia::execution_state& st;
       State& s;
       template<typename... Args>
-      void operator()(const ossia::time_value& sub_prev_date,
-                      const ossia::token_request& sub_tk,
+      void operator()(const ossia::token_request& sub_tk,
                       Args&&... args)
       {
         Node_T::run(
               std::get<N1>(std::forward<T1>(a1))...,
               std::forward<Args>(args)...,
               std::get<N3>(std::forward<T3>(a3))...,
-              sub_prev_date, sub_tk, st, s);
-
+              sub_tk, st, s);
       }
 
   };
@@ -278,11 +275,10 @@ struct apply_control<false, N>
                                     const std::index_sequence<N1...>& n1,
                                     const std::index_sequence<N2...>& n2,
                                     const std::index_sequence<N3...>& n3,
-                                    const ossia::time_value& prev_date,
                                     const ossia::token_request& tk,
                                     ossia::execution_state& st)
   {
-    f(forwarder<T1, T3, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st}, prev_date, tk, std::get<N2>(std::forward<T2>(a2))...);
+    f(forwarder<T1, T3, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st}, tk, std::get<N2>(std::forward<T2>(a2))...);
   }
 
   // Expand three tuples and apply a function on the control tuple
@@ -291,12 +287,11 @@ struct apply_control<false, N>
                                     const std::index_sequence<N1...>& n1,
                                     const std::index_sequence<N2...>& n2,
                                     const std::index_sequence<N3...>& n3,
-                                    const ossia::time_value& prev_date,
                                     const ossia::token_request& tk,
                                     ossia::execution_state& st,
                                     State& s)
   {
-    f(forwarder_state<T1, T3, State, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st, s}, prev_date, tk, std::get<N2>(std::forward<T2>(a2))...);
+    f(forwarder_state<T1, T3, State, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st, s}, tk, std::get<N2>(std::forward<T2>(a2))...);
   }
 
   template<typename F, typename T1, typename T2, typename T3, typename... Args>
@@ -334,7 +329,7 @@ struct apply_control<false, N>
             apply_outlet_impl(
                   [&] (auto&&... o) {
               invoke(typename Node_T::control_policy{}, std::tie(i(inlets)...), std::tie(c(inlets, *this)...), std::tie(o(outlets)...),
-                       m_prev_date, tk, st, static_cast<state_type&>(*this));
+                       tk, st, static_cast<state_type&>(*this));
             }, outlets_indices{});
           }, controls_indices{});
         }, inlets_indices{});
@@ -346,7 +341,7 @@ struct apply_control<false, N>
           apply_outlet_impl(
                 [&] (auto&&... o) {
             Node_T::run(i(inlets)..., o(outlets)...,
-                      m_prev_date, tk, st, static_cast<state_type&>(*this));
+                      tk, st, static_cast<state_type&>(*this));
           }, outlets_indices{});
         }, inlets_indices{});
       }
@@ -362,7 +357,7 @@ struct apply_control<false, N>
                 [&] (auto&&... c) {
             apply_outlet_impl(
                   [&] (auto&&... o) {
-              invoke(typename Node_T::control_policy{}, std::tie(i(inlets)...), std::tie(c(inlets, *this)...), std::tie(o(outlets)...), m_prev_date, tk, st);
+              invoke(typename Node_T::control_policy{}, std::tie(i(inlets)...), std::tie(c(inlets, *this)...), std::tie(o(outlets)...), tk, st);
             }, outlets_indices{});
           }, controls_indices{});
         }, inlets_indices{});
@@ -373,7 +368,7 @@ struct apply_control<false, N>
               [&] (auto&&... i) {
           apply_outlet_impl(
                 [&] (auto&&... o) {
-            Node_T::run(i(inlets)..., o(outlets)..., m_prev_date, tk, st);
+            Node_T::run(i(inlets)..., o(outlets)..., tk, st);
           }, outlets_indices{});
         }, inlets_indices{});
       }

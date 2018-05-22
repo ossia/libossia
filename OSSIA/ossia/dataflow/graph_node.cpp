@@ -18,17 +18,16 @@ node_process::node_process(node_ptr n)
 
 void node_process::offset(time_value date, double pos)
 {
-  node->set_prev_date(date);
 }
 
 void node_process::transport(time_value date, double pos)
 {
-  node->set_prev_date(date);
 }
 
-void node_process::state(time_value parent_date, double relative_position, time_value tick_offset, double gspeed)
+void node_process::state(
+    ossia::time_value from, ossia::time_value to, double relative_position, time_value tick_offset, double gspeed)
 {
-  node->request({parent_date, relative_position, tick_offset, gspeed});
+  node->request({from, to, relative_position, tick_offset, gspeed});
 }
 
 void node_process::start()
@@ -38,7 +37,7 @@ void node_process::start()
 
 void node_process::stop()
 {
-  node->set_prev_date(ossia::Zero);
+
 }
 
 void node_process::pause()
@@ -206,11 +205,13 @@ void graph_node::clear()
 
 void graph_node::request(token_request req)
 {
-  if(std::abs(req.date - m_prev_date) > 1000)
+
+  if(std::abs(req.date - req.prev_date) > 1000)
   {
-    std::cerr << typeid(this).name() << " " << m_prev_date << " => " << req.date << std::endl;
+    std::cerr << typeid(this).name() << " " << req.prev_date << " => " << req.date << std::endl;
 
   }
+
   requested_tokens.push_back(std::move(req));
 }
 

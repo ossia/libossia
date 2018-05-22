@@ -298,7 +298,7 @@ void graph_util::run_scaled(graph_node& first_node, execution_state& e)
     orig_ins.push_back(n->data);
   }
 
-
+/*
   for(const auto& request : first_node.requested_tokens)
   {
     for(auto& n : first_node.inputs())
@@ -313,7 +313,7 @@ void graph_util::run_scaled(graph_node& first_node, execution_state& e)
     // Restore original input for the next token
     for(std::size_t i = 0; i < first_node.inputs().size(); i++)
       first_node.inputs()[i]->data = orig_ins[i];
-  }
+  }*/
 }
 
 

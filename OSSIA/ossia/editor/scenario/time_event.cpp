@@ -55,7 +55,7 @@ void time_event::tick(ossia::time_value date, double pos, ossia::time_value offs
   for(auto& proc : m_processes)
   {
     proc->start();
-    proc->state(date, pos, offset, 1.);
+    proc->state(0_tv, date, pos, offset, 1.);
     proc->stop();
   }
 }

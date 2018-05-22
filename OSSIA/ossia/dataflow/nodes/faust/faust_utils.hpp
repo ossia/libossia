@@ -87,9 +87,9 @@ struct faust_exec_ui final
 template<typename Node, typename Dsp>
 void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
 {
-  if(tk.date > self.prev_date())
+  if(tk.date > tk.prev_date)
   {
-    std::size_t d = tk.date - self.prev_date();
+    std::size_t d = tk.date - tk.prev_date;
     for(auto ctrl : self.controls)
     {
       auto& dat = ctrl.first->get_data();

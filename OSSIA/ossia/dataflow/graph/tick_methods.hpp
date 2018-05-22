@@ -83,11 +83,13 @@ struct tick_all_nodes
     {
       e.clear_local_state();
       e.get_new_values();
+      const time_value old_date{e.samples_since_start};
       e.samples_since_start += samples;
+      const time_value new_date{e.samples_since_start};
 
       for(auto& node : g.m_nodes)
         node.first->request(
-                token_request{time_value{e.samples_since_start}});
+                token_request{old_date, new_date});
 
       g.state(e);
       e.commit();
@@ -110,7 +112,7 @@ struct buffer_tick
       st.bufferSize = (int)frameCount;
       // we could run a syscall and call now() but that's a bit more costly.
       st.cur_date = seconds * 1e9;
-      itv.tick(ossia::time_value(frameCount));
+      itv.tick_offset(ossia::time_value(frameCount), 0_tv);
       g.state(st);
       (st.*Commit)();
     }
@@ -133,7 +135,7 @@ struct precise_score_tick
         st.clear_local_state();
         st.get_new_values();
         st.samples_since_start++;
-        itv.tick(ossia::time_value(1));
+        itv.tick_offset(ossia::time_value(1), 0_tv);
         g.state(st);
         (st.*Commit)();
 
@@ -203,12 +205,10 @@ struct split_score_tick
       requests.clear();
       for(const auto& node : g.m_nodes)
       {
-        ossia::time_value cur_date = node.first->prev_date();
         for(const auto& tk : node.first->requested_tokens)
         {
           cuts.insert(tk.offset);
-          cuts.insert(tk.offset + std::abs(tk.date - cur_date));
-          cur_date = tk.date;
+          cuts.insert(tk.offset + std::abs(tk.date - tk.prev_date));
         }
       }
 
@@ -216,7 +216,7 @@ struct split_score_tick
       {
         if(!node.first->requested_tokens.empty())
         {
-          do_cuts(cuts, node.first->requested_tokens, node.first->prev_date());
+          do_cuts(cuts, node.first->requested_tokens, node.first->requested_tokens.front().prev_date);
           auto it = requests.insert({node.first.get(), { std::move(node.first->requested_tokens) , {} }});
           it.first->second.second = it.first->second.first.begin(); // set iterator to begin() of token requests
           node.first->requested_tokens.clear();
@@ -248,7 +248,7 @@ struct split_score_tick
       st.bufferSize = (int)frameCount;
       // we could run a syscall and call now() but that's a bit more costly.
       st.cur_date = seconds * 1e9;
-      itv.tick(ossia::time_value(frameCount));
+      itv.tick_offset(ossia::time_value(frameCount), 0_tv);
 
       cut(g);
     }

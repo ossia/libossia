@@ -101,7 +101,7 @@ void scenario::start()
     {
       m_runningIntervals.insert(&cst);
       cst.start();
-      cst.tick();
+      cst.tick_current(0_tv);
     }
     // the interval is in the future
     else if (

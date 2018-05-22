@@ -184,9 +184,10 @@ bool loop::process_sync(ossia::time_sync& node, ossia::time_event& ev, bool even
 }
 
 
-void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
+void loop::state(
+    ossia::time_value from, ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
 {
-  node->request({date, pos, tick_offset, gspeed});
+  node->request({from, date, pos, tick_offset, gspeed});
   m_interval.set_parent_speed(gspeed);
   // if date hasn't been processed already
   //if (date != m_lastDate)
@@ -214,6 +215,7 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
         if(m_interval.get_date() == 0)
         {
           start_ev.tick(0_tv, 0., tick_offset);
+          m_interval.set_offset(0_tv);
           m_interval.start();
           m_interval.tick_current(tick_offset);
         }
@@ -241,6 +243,7 @@ void loop::state(ossia::time_value date, double pos, ossia::time_value tick_offs
             {
               m_interval.offset(time_value{});
               m_interval.start();
+              m_interval.set_offset(0_tv);
               m_interval.tick_current(tick_offset);
               start_ev.tick(0_tv, 0., tick_offset);
             }

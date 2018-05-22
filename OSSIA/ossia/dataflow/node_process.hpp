@@ -15,8 +15,9 @@ public:
   void transport(ossia::time_value date, double pos) override;
 
   void
-  state(ossia::time_value parent_date, double relative_position,
-        ossia::time_value tick_offset, double gspeed) override;
+  state(
+      ossia::time_value from, ossia::time_value to, double relative_position,
+      ossia::time_value tick_offset, double gspeed) override;
 
   void start() override;
   void stop() override;

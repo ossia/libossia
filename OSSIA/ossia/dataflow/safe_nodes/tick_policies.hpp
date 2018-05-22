@@ -20,7 +20,7 @@ auto timestamp(const T& p)
 struct precise_tick
 {
     template<typename TickFun, typename... Args>
-    void operator()(TickFun&& f, ossia::time_value prev_date, ossia::token_request req, const ossia::safe_nodes::timed_vec<Args>&... arg)
+    void operator()(TickFun&& f, ossia::token_request req, const ossia::safe_nodes::timed_vec<Args>&... arg)
     {
       auto iterators = std::make_tuple(arg.begin()...);
       const auto last_iterators = std::make_tuple(--arg.end()...);
@@ -41,7 +41,7 @@ struct precise_tick
       auto call_f = [&] (ossia::time_value cur) {
         ossia::token_request r = req;
         //TODO r.date +=
-        std::apply([&] (const auto&... it) { std::forward<TickFun>(f)(prev_date, r, it->second...); }, iterators);
+        std::apply([&] (const auto&... it) { std::forward<TickFun>(f)(r, it->second...); }, iterators);
       };
 
       ossia::time_value current_time = req.offset;
@@ -101,19 +101,19 @@ struct precise_tick
 struct default_tick
 {
     template<typename TickFun, typename... Args>
-    void operator()(TickFun&& f, const ossia::time_value& prev_date, const ossia::token_request& req, const ossia::safe_nodes::timed_vec<Args>&... arg)
+    void operator()(TickFun&& f, const ossia::token_request& req, const ossia::safe_nodes::timed_vec<Args>&... arg)
     {
-      f(prev_date, req, arg...);
+      f(req, arg...);
     }
 };
 
 struct last_tick
 {
     template<typename TickFun, typename... Args>
-    void operator()(TickFun&& f, const ossia::time_value& prev_date, const ossia::token_request& req, const ossia::safe_nodes::timed_vec<Args>&... arg)
+    void operator()(TickFun&& f, const ossia::token_request& req, const ossia::safe_nodes::timed_vec<Args>&... arg)
     {
       // TODO use largest date instead
-      std::apply([&] (const auto&... it) { std::forward<TickFun>(f)(prev_date, req, it->second...); }, std::make_tuple(--arg.end()...));
+      std::apply([&] (const auto&... it) { std::forward<TickFun>(f)(req, it->second...); }, std::make_tuple(--arg.end()...));
     }
 };
 
@@ -122,10 +122,10 @@ struct last_tick
 struct first_last_tick
 {
     template<typename TickFun, typename... Args>
-    void operator()(TickFun&& f, const ossia::time_value& prev_date, const ossia::token_request& req, const ossia::safe_nodes::timed_vec<Args>&... arg)
+    void operator()(TickFun&& f, const ossia::token_request& req, const ossia::safe_nodes::timed_vec<Args>&... arg)
     {
       // TODO use correct dates
-      std::apply([&] (const auto&... it) { std::forward<TickFun>(f)(prev_date, req, it->second...); }, std::make_tuple({arg.begin(), --arg.end()}...));
+      std::apply([&] (const auto&... it) { std::forward<TickFun>(f)(req, it->second...); }, std::make_tuple({arg.begin(), --arg.end()}...));
     }
 };
 

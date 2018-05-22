@@ -45,7 +45,8 @@ void clock::start_and_tick()
   m_elapsedTime = 0.;
 
   // notify the owner
-  m_interval.start_and_tick();
+  m_interval.start();
+  m_interval.tick_current(0_tv);
 
   if (m_thread.joinable())
     m_thread.join();
@@ -114,7 +115,7 @@ bool clock::tick()
     if (m_duration - m_date < Zero && !m_duration.infinite())
     {
       // notify the owner
-      m_interval.tick(time_value{deltaInUs});
+      m_interval.tick_offset(time_value{deltaInUs}, 0_tv);
 
       request_stop();
 

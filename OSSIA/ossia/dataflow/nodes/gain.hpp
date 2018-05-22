@@ -18,7 +18,7 @@ struct gain final : public ossia::nonowning_graph_node
       gain_in.data.target<ossia::value_port>()->type = ossia::decibel_u{};
       m_outlets.push_back(&audio_out);
     }
-    void run(ossia::token_request tk, ossia::execution_state& st) override
+    void run(ossia::token_request t, ossia::execution_state& st) override
     {
       auto& vals = gain_in.data.target<ossia::value_port>()->get_data();
       if(!vals.empty())
@@ -27,8 +27,8 @@ struct gain final : public ossia::nonowning_graph_node
       auto& in = audio_in.data.target<ossia::audio_port>()->samples;
       auto& out = audio_out.data.target<ossia::audio_port>()->samples;
 
-      const auto N = tk.date - prev_date();
-      const std::size_t last_pos = tk.offset.impl + N;
+      const auto N = t.date - t.prev_date;
+      const std::size_t last_pos = t.offset.impl + N;
       const auto channels = in.size();
       out.resize(channels);
 
@@ -36,10 +36,10 @@ struct gain final : public ossia::nonowning_graph_node
       {
         const auto cur_chan_size = in[i].size();
 
-        out[i].resize(tk.offset.impl + N);
+        out[i].resize(t.offset.impl + N);
         if(cur_chan_size < last_pos)
         {
-          for(std::size_t j = tk.offset.impl; j < cur_chan_size; j++)
+          for(std::size_t j = t.offset.impl; j < cur_chan_size; j++)
             out[i][j] = m_gain * in[i][j];
 
           for(std::size_t j = cur_chan_size; j < last_pos; j++)
@@ -47,7 +47,7 @@ struct gain final : public ossia::nonowning_graph_node
         }
         else
         {
-          for(std::size_t j = tk.offset.impl; j < last_pos; j++)
+          for(std::size_t j = t.offset.impl; j < last_pos; j++)
             out[i][j] = m_gain * in[i][j];
         }
       }

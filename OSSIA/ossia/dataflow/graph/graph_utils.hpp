@@ -233,8 +233,6 @@ struct OSSIA_EXPORT graph_util
       disable_strict_nodes(cur_enabled_node, disabled_cache);
       for (ossia::graph_node* n : disabled_cache)
       {
-        if(!n->requested_tokens.empty())
-          n->set_prev_date(n->requested_tokens.back().date);
         n->disable();
 
         cur_enabled_node.erase(n);
@@ -266,7 +264,6 @@ struct OSSIA_EXPORT graph_util
 
     for(const auto& request : first_node.requested_tokens) {
       first_node.run(request, e);
-      first_node.set_prev_date(request.date);
     }
 /*
     auto all_normal = ossia::all_of(first_node.requested_tokens,
@@ -306,7 +303,6 @@ struct OSSIA_EXPORT graph_util
     log_inputs(first_node, logger);
     for(const auto& request : first_node.requested_tokens) {
       first_node.run(request, e);
-      first_node.set_prev_date(request.date);
     }
     log_outputs(first_node, logger);
 

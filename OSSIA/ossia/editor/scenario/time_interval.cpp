@@ -10,64 +10,32 @@
 namespace ossia
 {
 
-void time_interval::tick_current(ossia::time_value offset)
+void time_interval::tick_impl(ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset)
 {
   m_tick_offset = offset;
-  node->request({m_date, m_position, m_tick_offset, m_globalSpeed});
+  m_date = new_date;
+  compute_position();
 
-  state();
+  node->request({old_date, new_date, m_position, m_tick_offset, m_globalSpeed});
+
+  state(old_date, new_date);
   if (m_callback)
-    (*m_callback)(m_position, m_date);
+    (*m_callback)(m_position, new_date);
 }
 
-void time_interval::tick()
+void time_interval::tick_current(ossia::time_value offset)
 {
-  m_tick_offset = 0_tv;
-  node->request({m_date, m_position, m_tick_offset, m_globalSpeed});
-
-  state();
-  if (m_callback)
-    (*m_callback)(m_position, m_date);
+  tick_impl(m_date, m_date, offset);
 }
 
 void time_interval::tick(time_value date, double ratio)
 {
-  m_date += std::ceil(date.impl * m_speed / ratio);
-  compute_position();
-  m_tick_offset = 0_tv;
-  node->request({m_date, m_position, m_tick_offset, m_globalSpeed});
-
-  state();
-  if (m_callback)
-    (*m_callback)(m_position, m_date);
-}
-
-void time_interval::tick(time_value date)
-{
-  return tick(date, 1.0);
+  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed / ratio), m_tick_offset);
 }
 
 void time_interval::tick_offset(time_value date, ossia::time_value offset)
 {
-  m_date += std::ceil(date.impl * m_speed);
-  compute_position();
-  m_tick_offset = offset;
-  node->request({m_date, m_position, m_tick_offset, m_globalSpeed});
-  state();
-  if (m_callback)
-    (*m_callback)(m_position, m_date);
-}
-
-void time_interval::tick_offset(time_value date, double ratio, ossia::time_value offset)
-{
-  m_date += std::ceil(date.impl * m_speed / ratio);
-  compute_position();
-  m_tick_offset = offset;
-  node->request({m_date, m_position, m_tick_offset, m_globalSpeed});
-
-  state();
-  if (m_callback)
-    (*m_callback)(m_position, m_date);
+  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), m_tick_offset);
 }
 
 std::shared_ptr<time_interval> time_interval::create(
@@ -103,7 +71,7 @@ time_interval::~time_interval()
 void time_interval::start_and_tick()
 {
   start();
-  tick();
+  tick_current(0_tv);
 }
 
 void time_interval::start()
@@ -195,7 +163,7 @@ void time_interval::transport(time_value date)
     (*m_callback)(m_position, m_date);
 }
 
-void time_interval::state()
+void time_interval::state(ossia::time_value from, ossia::time_value to)
 {
   const auto& processes = get_time_processes();
   const auto N = processes.size();
@@ -208,7 +176,7 @@ void time_interval::state()
       time_process& p = *timeProcess;
       if (p.enabled())
       {
-        p.state(m_date, m_position, m_tick_offset, m_globalSpeed);
+        p.state(from, to, m_position, m_tick_offset, m_globalSpeed);
       }
     }
   }

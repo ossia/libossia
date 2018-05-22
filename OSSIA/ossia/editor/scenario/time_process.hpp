@@ -40,7 +40,7 @@ public:
    \details don't call state when the parent #time_interval is not running
    */
   virtual void state(
-      ossia::time_value date, double pos,
+      ossia::time_value from, ossia::time_value to, double pos,
       ossia::time_value tick_offset, double gspeed) = 0;
 
   /**

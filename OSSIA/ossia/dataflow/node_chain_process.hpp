@@ -13,19 +13,20 @@ struct node_chain_process final :
       m_lastDate = ossia::Zero;
     }
 
-    void state(ossia::time_value parent_date, double relative_position, ossia::time_value tick_offset, double speed) override
+    void state(
+        ossia::time_value from, ossia::time_value to, double relative_position, ossia::time_value tick_offset, double speed) override
     {
-      const ossia::token_request tk{parent_date, relative_position, tick_offset, speed};
+      const ossia::token_request tk{from, to, relative_position, tick_offset, speed};
       for(auto& node : nodes)
       {
         node->request(tk);
       }
-      m_lastDate = parent_date;
+      m_lastDate = to;
     }
 
     void add_node(std::shared_ptr<ossia::graph_node> n)
     {
-      n->set_prev_date(this->m_lastDate);
+      //n->set_prev_date(this->m_lastDate);
       nodes.push_back(std::move(n));
     }
 
@@ -39,22 +40,16 @@ struct node_chain_process final :
 
     void offset(time_value date, double pos) override
     {
-      if(node)
-        node->set_prev_date(date);
       for(auto& node : nodes)
       {
-        node->set_prev_date(date);
         node->all_notes_off();
       }
     }
 
     void transport(ossia::time_value date, double pos) override
     {
-      if(node)
-        node->set_prev_date(date);
       for(auto& node : nodes)
       {
-        node->set_prev_date(date);
         node->all_notes_off();
       }
     }

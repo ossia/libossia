@@ -13,8 +13,10 @@ struct token_request {
     token_request(token_request&&) = default;
     token_request& operator=(const token_request&) = default;
     token_request& operator=(token_request&&) = default;
-    token_request(ossia::time_value d, double pos, ossia::time_value off, double s)
-      : date{d}
+
+    token_request(ossia::time_value prev_d, ossia::time_value d, double pos, ossia::time_value off, double s)
+      : prev_date{prev_d}
+      , date{d}
       , position{pos}
       , offset{off}
       , speed{s}
@@ -23,32 +25,35 @@ struct token_request {
       {
         offset.impl = 0;
       }
-
     }
-    token_request(ossia::time_value d, double pos, ossia::time_value off)
-      : token_request{d, pos, off, 1.}
-    {
 
-    }
-    token_request(ossia::time_value d, double pos)
-      : token_request{d, pos, time_value{}, 1.}
-    {
-
-    }
-    token_request(ossia::time_value d)
-      : token_request{d, 0., time_value{}, 1.}
+    token_request(ossia::time_value prev_d, ossia::time_value d, double pos, ossia::time_value off)
+      : token_request{prev_d, d, pos, off, 1.}
     {
 
     }
 
+    token_request(ossia::time_value prev_d, ossia::time_value d, double pos)
+      : token_request{prev_d, d, pos, time_value{}, 1.}
+    {
+
+    }
+
+    token_request(ossia::time_value prev_d, ossia::time_value d)
+      : token_request{prev_d, d, 0., time_value{}, 1.}
+    {
+
+    }
+
+    ossia::time_value prev_date{};
     ossia::time_value date{};
     double position{};
     ossia::time_value offset{};
     double speed{1.};
     bool start_discontinuous{};
     bool end_discontinuous{};
-
 };
+
 inline bool operator==(const token_request& lhs, const token_request& rhs) {
   return lhs.date == rhs.date && lhs.position == rhs.position
       && lhs.offset == rhs.offset && lhs.speed == rhs.speed && lhs.start_discontinuous == rhs.start_discontinuous
@@ -102,15 +107,6 @@ public:
     m_executed = b;
   }
 
-  const ossia::time_value& prev_date() const
-  {
-    return m_prev_date;
-  }
-  void set_prev_date(time_value d)
-  {
-    m_prev_date = d;
-  }
-
   void request(ossia::token_request req);
 
   void disable()
@@ -132,8 +128,6 @@ public:
 protected:
   inlets m_inlets;
   outlets m_outlets;
-
-  ossia::time_value m_prev_date{};
 
   bool m_executed{};
 

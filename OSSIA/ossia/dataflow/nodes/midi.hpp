@@ -176,7 +176,7 @@ class midi final
 
           doTransport = false;
         }
-        if (t.date > prev_date())
+        if (t.date > t.prev_date)
         {
           // First send note offs
           for(auto it = m_playingnotes.begin(); it != m_playingnotes.end(); )
@@ -184,10 +184,10 @@ class midi final
             note_data& note = *it;
             auto end_time = note.start + note.duration;
 
-            if (end_time >= prev_date() && end_time < t.date)
+            if (end_time >= t.prev_date && end_time < t.date)
             {
               mp->messages.push_back(rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
-              mp->messages.back().timestamp = t.offset + (end_time - prev_date());
+              mp->messages.back().timestamp = t.offset + (end_time - t.prev_date);
 
               it = m_playingnotes.erase(it);
             }
@@ -203,11 +203,11 @@ class midi final
           {
             note_data& note = *it;
             auto start_time = note.start;
-            if (start_time >= prev_date() && start_time < t.date)
+            if (start_time >= t.prev_date && start_time < t.date)
             {
               // Send note_on
               mp->messages.push_back(rtmidi::message::note_on(m_channel, note.pitch, note.velocity));
-              mp->messages.back().timestamp = t.offset + (start_time - prev_date());
+              mp->messages.back().timestamp = t.offset + (start_time - t.prev_date);
 
               m_playingnotes.insert(note);
               it = m_notes.erase(it);
@@ -220,6 +220,7 @@ class midi final
           }
         }
       }
+      m_prev_date = t.date;
 
     }
 
@@ -227,6 +228,7 @@ class midi final
     note_set m_orig_notes;
     note_set m_playingnotes;
     note_set m_toStop;
+    time_value m_prev_date{};
 
     int m_channel{};
 
