@@ -136,9 +136,9 @@ void scenario::transport(ossia::time_value offset, double pos)
   {
     if (elt.second < offset)
     {
-      for (EventPtr& ev : elt.first->get_time_events())
+      for (const EventPtr& ev : elt.first->get_time_events())
       {
-        for (IntervalPtr& cst_ptr : ev->previous_time_intervals())
+        for (const IntervalPtr& cst_ptr : ev->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
@@ -149,9 +149,9 @@ void scenario::transport(ossia::time_value offset, double pos)
     }
     else
     {
-      for (EventPtr& ev_ptr : elt.first->get_time_events())
+      for (const EventPtr& ev_ptr : elt.first->get_time_events())
       {
-        for (IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
+        for (const IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto& start_tn = cst.get_start_event().get_time_sync();
@@ -180,10 +180,10 @@ void scenario::transport(ossia::time_value offset, double pos)
   {
     ossia::time_interval& cst = *timeInterval;
 
-    auto& sev = cst.get_start_event();
-    auto& stn = sev.get_time_sync();
-    auto start_date = sev.get_time_sync().get_date();
-    bool all_empty = ossia::all_of(stn.get_time_events(), [] (const auto& ev) {
+    const auto& sev = cst.get_start_event();
+    const auto& stn = sev.get_time_sync();
+    const auto start_date = sev.get_time_sync().get_date();
+    const bool all_empty = ossia::all_of(stn.get_time_events(), [] (const auto& ev) {
       return ev->previous_time_intervals().empty();
     });
 
@@ -191,7 +191,7 @@ void scenario::transport(ossia::time_value offset, double pos)
       continue;
 
     // offset TimeInterval's Clock
-    time_value intervalOffset = offset - start_date;
+    const time_value intervalOffset = offset - start_date;
 
     if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration())
     {
@@ -231,9 +231,9 @@ void scenario::offset(ossia::time_value offset, double pos)
   {
     if (elt.second < offset)
     {
-      for (EventPtr& ev : elt.first->get_time_events())
+      for (const EventPtr& ev : elt.first->get_time_events())
       {
-        for (IntervalPtr& cst_ptr : ev->previous_time_intervals())
+        for (const IntervalPtr& cst_ptr : ev->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
@@ -244,9 +244,9 @@ void scenario::offset(ossia::time_value offset, double pos)
     }
     else
     {
-      for (EventPtr& ev_ptr : elt.first->get_time_events())
+      for (const EventPtr& ev_ptr : elt.first->get_time_events())
       {
-        for (IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
+        for (const IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto& start_tn = cst.get_start_event().get_time_sync();
