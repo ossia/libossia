@@ -64,6 +64,7 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
     message(STATUS "Update OSSIA Midi Protocol dependency : RtMidi17")
     #execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/RtMidi17
     #                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    set(RTMIDI17_HEADER_ONLY 1)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/RtMidi17" EXCLUDE_FROM_ALL)
   endif()
 endif()
