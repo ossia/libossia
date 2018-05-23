@@ -59,6 +59,10 @@ if(NOT TARGET RtMidi17)
   set(OSSIA_DATAFLOW OFF)
 endif()
 
+if(NOT OSSIA_EDITOR)
+  set(OSSIA_DATAFLOW OFF)
+endif()
+
 include(ossia_sources.cmake)
 
 if(OSSIA_PROTOCOL_HTTP)

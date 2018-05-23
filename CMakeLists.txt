@@ -13,6 +13,7 @@ find_package(Qt5 5.3 COMPONENTS Core)
 #cmake_policy(VERSION 3.9)
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 include(OssiaConfiguration)
+cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0069 NEW)
 
 # Dependencies

@@ -231,7 +231,7 @@ public:
             m_impl.get());
         ok = true;
       }
-      catch (std::runtime_error& e)
+      catch (std::runtime_error&)
       {
         m_port++;
       }
