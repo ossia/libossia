@@ -205,7 +205,6 @@ void scenario::transport(ossia::time_value offset, double pos)
   }
 
   m_lastDate = offset;
-
 }
 
 void scenario::offset(ossia::time_value offset, double pos)
