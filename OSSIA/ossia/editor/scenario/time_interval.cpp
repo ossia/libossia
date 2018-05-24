@@ -35,7 +35,7 @@ void time_interval::tick(time_value date, double ratio)
 
 void time_interval::tick_offset(time_value date, ossia::time_value offset)
 {
-  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), m_tick_offset);
+  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset);
 }
 
 std::shared_ptr<time_interval> time_interval::create(

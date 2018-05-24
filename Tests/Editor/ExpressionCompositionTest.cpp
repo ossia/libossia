@@ -28,7 +28,7 @@ class ExpressionCompositionTest : public QObject
   auto make_exprC()
   { return make_expression_atom(false, comparator::DIFFERENT, false); }
 
-private:
+private Q_SLOTS:
 
   /*! test AND operator */
   void test_AND()

@@ -146,7 +146,7 @@ class ClockTest : public QObject
 //        display_frames = false;
 //    }
 
-private:
+private Q_SLOTS:
 
 //    /*! test life cycle and accessors functions */
 //    void test_basic()

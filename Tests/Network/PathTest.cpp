@@ -28,7 +28,7 @@ class PathTest : public QObject
     return addresses;
   }
 
-private:
+private Q_SLOTS:
 
   void test_regex()
   {

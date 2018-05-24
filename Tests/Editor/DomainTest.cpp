@@ -265,7 +265,7 @@ class DomainTest : public QObject
     (ossia::fold(to<R>(10.),  to<R>(0), to<R>(1)), to<R>(0));
 
   }
-private:
+private Q_SLOTS:
 
   void test_visit()
   {

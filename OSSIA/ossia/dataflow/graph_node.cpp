@@ -205,12 +205,12 @@ void graph_node::clear()
 
 void graph_node::request(token_request req)
 {
-
+  /*
   if(std::abs(req.date - req.prev_date) > 1000)
   {
     std::cerr << typeid(this).name() << " " << req.prev_date << " => " << req.date << std::endl;
-
   }
+  */
 
   requested_tokens.push_back(std::move(req));
 }

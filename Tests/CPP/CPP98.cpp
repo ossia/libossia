@@ -15,7 +15,7 @@ static void test_callback(void* n, const opp::value& v)
 class CPP98Test : public QObject
 {
     W_OBJECT(CPP98Test)
-private:
+private Q_SLOTS:
 
     void test_basic()
     {

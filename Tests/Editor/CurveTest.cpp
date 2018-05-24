@@ -10,15 +10,16 @@ class CurveTest : public QObject
 {
   Q_OBJECT
 
-private:
+private Q_SLOTS:
 
   /*! test life cycle and accessors functions */
+    Q_SLOT
   void test_basic()
   {
     //! \todo test clone()
   }
 
-  void test_double_float()
+  Q_SLOT void test_double_float()
   {
     // <double, float> curve
     auto c = std::make_shared<curve<double, float>>();
@@ -63,7 +64,7 @@ private:
     QVERIFY(c->value_at(2.) == 0.);
   }
 
-  void test_float_float()
+  Q_SLOT void test_float_float()
   {
     auto c = std::make_shared<curve<float, float>>();
     QVERIFY(c != nullptr);
@@ -89,7 +90,7 @@ private:
     QVERIFY(qFuzzyCompare(c->value_at(10.), float(0.)));
   }
 
-  void test_float_int()
+  Q_SLOT void test_float_int()
   {
     auto c = std::make_shared<curve<float, int>>();
     curve_segment_linear<int> linearSegment;
@@ -107,7 +108,7 @@ private:
     QVERIFY(c->value_at(10.) == 10);
   }
 
-  void test_destination()
+  Q_SLOT void test_destination()
   {
     ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
 

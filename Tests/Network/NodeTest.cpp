@@ -15,7 +15,7 @@ using namespace std::placeholders;
 class NodeTest : public QObject
 {
   Q_OBJECT
-private:
+private Q_SLOTS:
 
 
   /*! test life cycle and accessors functions */

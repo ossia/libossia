@@ -21,10 +21,12 @@ struct tick_all_nodes_bench
 #endif
       e.clear_local_state();
       e.get_new_values();
+      ossia::time_value old_t{e.samples_since_start};
       e.samples_since_start += samples;
+      ossia::time_value new_t{e.samples_since_start};
 
       for(auto& node : g.m_nodes)
-        node.first->request(ossia::token_request{ossia::time_value{e.samples_since_start}});
+        node.first->request(ossia::token_request{old_t, new_t});
 
       g.state(e);
       e.commit();

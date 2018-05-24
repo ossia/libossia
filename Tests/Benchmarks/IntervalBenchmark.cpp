@@ -75,7 +75,7 @@ class IntervalBenchmark : public QObject
     return ee.get();
   }
 
-private:
+private Q_SLOTS:
   void test_states_rigid()
   {
       root_scenario root;

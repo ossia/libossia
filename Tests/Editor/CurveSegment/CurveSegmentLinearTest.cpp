@@ -13,7 +13,7 @@ class CurveSegmentLinearTest : public QObject
 private:
 
   /*! test life cycle and accessors functions for bool type */
-  void test_bool()
+  Q_SLOT void test_bool()
   {
     curve_segment_linear<bool> curveSegment;
 
@@ -25,7 +25,7 @@ private:
   }
 
   /*! test life cycle and accessors functions for int type */
-  void test_int()
+  Q_SLOT void test_int()
   {
     curve_segment_linear<int> curveSegment;
 
@@ -37,7 +37,7 @@ private:
   }
 
   /*! test life cycle and accessors functions for float type */
-  void test_float()
+  Q_SLOT void test_float()
   {
     curve_segment_linear<float> curveSegment;
 

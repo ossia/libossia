@@ -17,10 +17,8 @@ class AddressTest : public QObject
 {
     Q_OBJECT
 
-private:
-
     /*! test life cycle and accessors functions */
-    void test_basic()
+    Q_SLOT void test_basic()
     {
         ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
         auto cld = device.create_child("child");

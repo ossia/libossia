@@ -77,7 +77,7 @@ class QtDeviceTest : public QObject
 {
   W_OBJECT(QtDeviceTest)
 
-private:
+private Q_SLOTS:
   void test_device()
   {
     int argc{}; char** argv{};
@@ -105,7 +105,7 @@ private:
     QTimer::singleShot(3000, [&] () { app.exit(); });
 
     app.exec();
-  }
+  } W_SLOT(test_device);
 };
 W_OBJECT_IMPL(SomeObject)
 W_OBJECT_IMPL(QtDeviceTest)

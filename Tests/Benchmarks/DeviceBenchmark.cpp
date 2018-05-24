@@ -18,7 +18,7 @@ class DeviceBenchmark : public QObject
 {
     Q_OBJECT
 
-private:
+private Q_SLOTS:
     void test_oscq()
     {
         return;

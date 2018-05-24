@@ -430,7 +430,7 @@ class DataflowTest : public QObject
 {
   Q_OBJECT
 
-private:
+private Q_SLOTS:
 
   void test_bfs()
   {
@@ -631,18 +631,18 @@ private:
     simple_explicit_graph g(test, immediate_strict_connection{});
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
-    g.n1->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
 
     g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
-    g.n1->request(token_request{1_tv, 0.5});
-    g.n2->request(token_request{1_tv, 0.5});
+    g.n1->request(token_request{0_tv, 1_tv, 0.5});
+    g.n2->request(token_request{0_tv, 1_tv, 0.5});
 
     g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
-    g.n2->request(token_request{2_tv, 1.});
+    g.n2->request(token_request{1_tv, 2_tv, 1.});
 
     g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
@@ -658,9 +658,9 @@ private:
     three_serial_nodes_explicit_graph g(test, immediate_strict_connection{});
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
-    g.n1->request(token_request{0_tv});
-    g.n2->request(token_request{0_tv});
-    g.n3->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
+    g.n2->request(token_request{0_tv, 0_tv});
+    g.n3->request(token_request{0_tv, 0_tv});
 
     g.state(); // nothing
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
@@ -676,8 +676,8 @@ private:
     // Functional dependency
     ab_bc_graph g(test, immediate_strict_connection{});
 
-    g.n1->request(token_request{0_tv});
-    g.n2->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
+    g.n2->request(token_request{0_tv, 0_tv});
 
     g.state(); // nothing
     QCOMPARE(test.b->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
@@ -692,8 +692,8 @@ private:
     // Functional dependency
     bc_ab_graph g(test, immediate_strict_connection{});
 
-    g.n1->request(token_request{0_tv});
-    g.n2->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
+    g.n2->request(token_request{0_tv, 0_tv});
 
     g.state(); // nothing
     QCOMPARE(test.b->value(), ossia::value(std::vector<ossia::value>{10 * 1}));
@@ -708,18 +708,18 @@ private:
     simple_implicit_graph g{test};
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
-    g.n1->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
 
     g.state(); // f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
-    g.n1->request(token_request{1_tv, 0.5});
-    g.n2->request(token_request{1_tv, 0.5});
+    g.n1->request(token_request{0_tv, 1_tv, 0.5});
+    g.n2->request(token_request{0_tv, 1_tv, 0.5});
 
     g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
-    g.n2->request(token_request{2_tv, 1.});
+    g.n2->request(token_request{1_tv, 2_tv, 1.});
 
     g.state(); // f2
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -736,18 +736,18 @@ private:
     simple_explicit_graph g(test, immediate_glutton_connection{});
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
-    g.n1->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
 
     g.state(); // f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1}));
 
-    g.n1->request(token_request{1_tv, 0.5});
-    g.n2->request(token_request{1_tv, 0.5});
+    g.n1->request(token_request{0_tv, 1_tv, 0.5});
+    g.n2->request(token_request{0_tv, 1_tv, 0.5});
 
     g.state(); // f2 o f1
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
-    g.n2->request(token_request{2_tv, 1.});
+    g.n2->request(token_request{1_tv, 2_tv, 1.});
 
     g.state(); // f2
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -765,15 +765,15 @@ private:
     no_parameter_explicit_graph g(test, immediate_glutton_connection{});
     debug_mock::messages.clear();
 
-    g.n1->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
 
     qDebug("Start state");
     g.state(); // f1
     qDebug("End state");
     QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 0}}));
 
-    g.n1->request(token_request{1_tv, 0.5});
-    g.n2->request(token_request{1_tv, 0.5});
+    g.n1->request(token_request{0_tv, 1_tv, 0.5});
+    g.n2->request(token_request{0_tv, 1_tv, 0.5});
 
     qDebug("Start state");
     debug_mock::messages.clear();
@@ -781,7 +781,7 @@ private:
     QVERIFY((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 1}, {10, 1}}));
     qDebug("End state");
 
-    g.n2->request(token_request{2_tv, 1.});
+    g.n2->request(token_request{1_tv, 2_tv, 1.});
 
     qDebug("Start state");
     debug_mock::messages.clear();
@@ -801,14 +801,14 @@ private:
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
 
-    g.n1->request(token_request{0_tv});
+    g.n1->request(token_request{0_tv, 0_tv});
 
     // f1 pushes 1 * 1 in its queue
     g.state();
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{}));
 
-    g.n1->request(token_request{1_tv, 0.5});
-    g.n2->request(token_request{0_tv, 0.});
+    g.n1->request(token_request{0_tv, 1_tv, 0.5});
+    g.n2->request(token_request{0_tv, 0_tv, 0.});
 
     // f1(0) = 1
     // f1(1) = 2
@@ -816,7 +816,7 @@ private:
     g.state();
     QCOMPARE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
-    g.n2->request(token_request{1_tv, 1.});
+    g.n2->request(token_request{0_tv, 1_tv, 1.});
 
     // f2(f1(1), 1) = [2, 20]
     g.state(); // f2 o f1(t-1)

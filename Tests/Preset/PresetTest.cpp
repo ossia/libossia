@@ -17,7 +17,7 @@ class PresetTest : public QObject
 {
   Q_OBJECT
 
-private:
+private Q_SLOTS:
   void test_device()
   {
     using namespace std::literals;
@@ -87,8 +87,8 @@ private:
         "/.0",
         "/.1"
   }) {
-  	  std::string res;
-      bool ok = boost::spirit::x3::phrase_parse(str.begin(), str.end(), ossia::detail::parse::address_, 
+      std::string res;
+      bool ok = boost::spirit::x3::phrase_parse(str.begin(), str.end(), ossia::detail::parse::address_,
                   boost::spirit::x3::ascii::space, res);
       QVERIFY(ok);
     }
@@ -105,7 +105,7 @@ private:
                   );
       QVERIFY(ok);
     }
-    
+
 
     for(std::string str : {
         "vec4f: [0, 0, 0, 0]",

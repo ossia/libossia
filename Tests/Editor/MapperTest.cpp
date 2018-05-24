@@ -43,7 +43,7 @@ class MapperTest : public QObject
 //    m_float_address->push_value(current + 0.5);
 //  }
 
-//private:
+//private Q_SLOTS:
 
 //  /*! test life cycle and accessors functions */
 //  void test_basic()

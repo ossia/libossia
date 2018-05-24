@@ -10,7 +10,7 @@ class MessageTest : public QObject
 {
     Q_OBJECT
 
-private:
+private Q_SLOTS:
 
     /*! test life cycle and accessors functions */
     void test_basic()

@@ -110,7 +110,7 @@ class LoopTest : public QObject
         std::cout << "Event : " << "new status received" << std::endl;
     }
 
-private:
+private Q_SLOTS:
 
 
     /*! test life cycle and accessors functions */
@@ -152,7 +152,7 @@ private:
       loop l{0_tv, time_interval::exec_callback{}, time_event::exec_callback{},
              time_event::exec_callback{}};
       l.start();
-      l.state(1_tv, 0, 0_tv, 1.);
+      l.state(0_tv, 1_tv, 0, 0_tv, 1.);
       } catch(...) {
         b = true;
       }
@@ -169,13 +169,13 @@ private:
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
-        l.state(1_tv, 0, 0_tv, 1.);
+        l.state(0_tv, 1_tv, 0, 0_tv, 1.);
         qDebug() << snd->requested_tokens.size();
         QCOMPARE((int)snd->requested_tokens.size(), (int)2);
         qDebug() << snd->requested_tokens[0];
         qDebug() << snd->requested_tokens[1];
-        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0., 0_tv, 1.}));
-        QVERIFY((snd->requested_tokens[1] == token_request{1_tv, 0.25, 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0_tv, 0., 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[1] == token_request{0_tv, 1_tv, 0.25, 0_tv, 1.}));
         l.stop();
       }
 
@@ -187,13 +187,13 @@ private:
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
-        l.state(5_tv, 0, 0_tv, 1.);
+        l.state(0_tv, 5_tv, 0, 0_tv, 1.);
         qDebug() << snd->requested_tokens;
         QCOMPARE((int)snd->requested_tokens.size(), (int)4);
-        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0, 0_tv, 1.}));
-        QVERIFY((snd->requested_tokens[1] == token_request{4_tv, 1, 0_tv, 1.}));
-        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0, 4_tv, 1.}));
-        QVERIFY((snd->requested_tokens[3] == token_request{1_tv, 0.25, 4_tv, 1.}));
+        QVERIFY((snd->requested_tokens[0] == token_request{0_tv, 0_tv, 0, 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[1] == token_request{0_tv, 4_tv, 1, 0_tv, 1.}));
+        QVERIFY((snd->requested_tokens[2] == token_request{0_tv, 0_tv, 0, 4_tv, 1.}));
+        QVERIFY((snd->requested_tokens[3] == token_request{0_tv, 1_tv, 0.25, 4_tv, 1.}));
         l.stop();
       }
 
@@ -205,7 +205,7 @@ private:
         l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
         l.start();
-        l.state(9_tv, 0, 0_tv, 1.);
+        l.state(0_tv, 9_tv, 0, 0_tv, 1.);
         ossia::execution_state e;
         for(auto tk : snd->requested_tokens)
           ((ossia::graph_node*)snd.get())->run(tk, e);
@@ -246,7 +246,7 @@ private:
       child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
       parent.start();
-      parent.state(14_tv, 0., 0_tv, 1.);
+      parent.state(0_tv, 14_tv, 0., 0_tv, 1.);
 
       ossia::execution_state e;
       for(auto tk : snd->requested_tokens)
@@ -269,7 +269,7 @@ private:
     {
       test_loop l;
       l.parent.start();
-      l.parent.state(14_tv, 0., 0_tv, 1.);
+      l.parent.state(0_tv, 14_tv, 0., 0_tv, 1.);
 
       qDebug() << "SOUND 1 tokens";
       for(auto t : l.snd1->requested_tokens)
@@ -317,7 +317,7 @@ private:
 
         float* chan = audio_data[0] + i - 1 ;
         l.aparam->audio = {{chan, 64 - i}};
-        l.parent.state(ossia::time_value{i}, 0., ossia::time_value{0}, 1.);
+        l.parent.state(ossia::time_value{i - 1}, ossia::time_value{i}, 0., ossia::time_value{0}, 1.);
         e.clear_local_state();
         l.g.state(e);
         e.commit();

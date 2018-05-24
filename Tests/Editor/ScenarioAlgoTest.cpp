@@ -29,7 +29,7 @@ class ScenarioAlgoTest : public QObject
       return *sn->get_time_events().begin();
     }
 
-  private:
+  private Q_SLOTS:
     void test_exec_simple()
     {
       using namespace ossia;
@@ -89,6 +89,57 @@ class ScenarioAlgoTest : public QObject
 
       QCOMPARE(c0->get_date(), 0_tv);
       QCOMPARE(c1->get_date(), 500_tv);
+    }
+
+
+    void test_exec_chain_tokens()
+    {
+      using namespace ossia;
+      root_scenario s;
+
+      ossia::scenario& scenario = *s.scenario;
+      std::shared_ptr<time_event> e0 = start_event(scenario);
+      std::shared_ptr<time_event> e1 = create_event(scenario);
+      std::shared_ptr<time_event> e2 = create_event(scenario);
+
+
+      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+      std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 100_tv, 100_tv, 100_tv);
+
+      // {
+      auto n = std::make_shared<ossia::nodes::messages>();
+      auto proc = std::make_shared<ossia::node_process>(n);
+      c1->add_time_process(proc);
+      //} auto n = c1->node;
+      s.scenario->add_time_interval(c0);
+      s.scenario->add_time_interval(c1);
+
+      s.interval->start_and_tick();
+
+
+      s.interval->tick(50_tv);
+      QCOMPARE(c1->get_date(), 40_tv);
+      for(auto tok : n->requested_tokens)
+      {
+          qDebug() << tok;
+      }
+
+      QCOMPARE(n->requested_tokens.size(), 2);
+      QCOMPARE(n->requested_tokens[0], (token_request{0_tv, 0_tv, 0., 10_tv}));
+      QCOMPARE(n->requested_tokens[1], (token_request{0_tv, 40_tv, 40. / 100., 10_tv}));
+      n->requested_tokens.clear();
+
+      s.interval->tick(50_tv);
+      QCOMPARE(c1->get_date(), 90_tv);
+      for(auto tok : n->requested_tokens)
+      {
+          qDebug() << tok;
+      }
+
+      QCOMPARE(n->requested_tokens.size(), 1);
+      QCOMPARE(n->requested_tokens[0], (token_request{40_tv, 90_tv, 90. / 100., 0_tv}));
+      n->requested_tokens.clear();
+
     }
 
     void test_exec_chain_multi()
@@ -492,7 +543,7 @@ class ScenarioAlgoTest : public QObject
         qDebug() << tr;
       QCOMPARE((int)msg_node->requested_tokens.size(), (int) 1);
       auto t0 = msg_node->requested_tokens[0];
-      auto expected = token_request{0_tv, 0., 2_tv};
+      auto expected = token_request{0_tv, 0_tv, 0., 2_tv};
       QCOMPARE(t0, expected);
 
       QVERIFY(utils.float_addr->value() == ossia::value(float(0.)));
@@ -568,6 +619,7 @@ class ScenarioAlgoTest : public QObject
       QCOMPARE(c0->get_date(), 0_tv);
       QVERIFY(scenario.get_start_time_sync()->is_evaluating());
     }
+
     void test_speed()
     {
 
@@ -595,13 +647,13 @@ class ScenarioAlgoTest : public QObject
       s.interval->start();
       s.interval->tick(700_tv);
 
-      ossia::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
+      ossia::small_vector<token_request, 4> expected0{{0_tv, 0_tv, 0., 0_tv}, {0_tv, 300_tv, 1., 0_tv}};
       QVERIFY(c0->node->requested_tokens == expected0);
       qDebug() << c1->node->requested_tokens.size();
       qDebug() << c1->node->requested_tokens[0];
       QVERIFY(c1->node->requested_tokens.size() == 2);
       qDebug() << c1->node->requested_tokens[1];
-      ossia::small_vector<token_request, 4> expected1{{0_tv, 0., 300_tv}, {400_tv, 4./5., 300_tv}};
+      ossia::small_vector<token_request, 4> expected1{{0_tv, 0_tv, 0., 300_tv}, {0_tv, 400_tv, 4./5., 300_tv}};
       QVERIFY(c1->node->requested_tokens == expected1);
 
     }
@@ -630,13 +682,13 @@ class ScenarioAlgoTest : public QObject
 
       // In this case (when there are flexible bounsd) we go as far as possible in the tick.
       // Else this would cause deadlocks if one interval reached its max before another reached its min
-      ossia::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {300_tv, 1., 0_tv}};
+      ossia::small_vector<token_request, 4> expected0{{0_tv, 0_tv, 0., 0_tv}, {0_tv, 300_tv, 1., 0_tv}};
       QVERIFY(c0->node->requested_tokens == expected0);
       qDebug() << c1->node->requested_tokens.size();
       qDebug() << c1->node->requested_tokens[0];
       QVERIFY(c1->node->requested_tokens.size() == 2);
       qDebug() << c1->node->requested_tokens[1];
-      ossia::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {700_tv, 7./5., 0_tv}};
+      ossia::small_vector<token_request, 4> expected1{{0_tv, 0_tv, 0., 0_tv}, {0_tv, 700_tv, 7./5., 0_tv}};
       QVERIFY(c1->node->requested_tokens == expected1);
     }
 
@@ -662,13 +714,13 @@ class ScenarioAlgoTest : public QObject
 
       {
         s.interval->tick(20_tv);
-        ossia::small_vector<token_request, 4> expected0{{0_tv, 0., 0_tv}, {20_tv, 2./3., 0_tv}};
+        ossia::small_vector<token_request, 4> expected0{{0_tv, 0_tv, 0., 0_tv}, {0_tv, 20_tv, 2./3., 0_tv}};
         QVERIFY(c0->node->requested_tokens == expected0);
         qDebug() << c1->node->requested_tokens.size();
         qDebug() << c1->node->requested_tokens[0];
         QVERIFY(c1->node->requested_tokens.size() == 2);
         qDebug() << c1->node->requested_tokens[1];
-        ossia::small_vector<token_request, 4> expected1{{0_tv, 0., 0_tv}, {10_tv, 1., 0_tv}};
+        ossia::small_vector<token_request, 4> expected1{{0_tv, 0_tv, 0., 0_tv}, {0_tv, 10_tv, 1., 0_tv}};
         QVERIFY(c1->node->requested_tokens == expected1);
       }
       c0->node->requested_tokens.clear();
@@ -677,7 +729,7 @@ class ScenarioAlgoTest : public QObject
       QVERIFY(e1->get_status() == time_event::status::NONE);
       {
         s.interval->tick(20_tv);
-        ossia::small_vector<token_request, 4> expected0{{30_tv, 1., 0_tv}};
+        ossia::small_vector<token_request, 4> expected0{{0_tv, 30_tv, 1., 0_tv}};
         qDebug() << c0->node->requested_tokens;
         qDebug() << c1->node->requested_tokens;
         QVERIFY(c0->node->requested_tokens.size() == 1);

@@ -13,7 +13,7 @@ class CurveSegmentPowerTest : public QObject
 private:
 
   /*! test life cycle and accessors functions for bool type */
-  void test_bool()
+  Q_SLOT void test_bool()
   {
     {
       auto curveSegment = curve_segment_power<bool>{}(1.);
@@ -36,7 +36,7 @@ private:
   }
 
   /*! test life cycle and accessors functions for int type */
-  void test_int()
+  Q_SLOT void test_int()
   {
     {
       auto curveSegment = curve_segment_power<int>{}(1.);
@@ -59,7 +59,7 @@ private:
   }
 
   /*! test life cycle and accessors functions for float type */
-  void test_float()
+  Q_SLOT void test_float()
   {
     {
       auto curveSegment = curve_segment_power<float>{}(1.);
