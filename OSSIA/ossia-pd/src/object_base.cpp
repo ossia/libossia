@@ -165,7 +165,7 @@ t_matcher::~t_matcher()
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
+        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
 
         for (auto remote : ossia_pd::instance().remotes.copy())
         {
@@ -184,7 +184,7 @@ t_matcher::~t_matcher()
     {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
-      node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
+      node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
 
       // if there is no more matcher,
       // object should be quarantinized

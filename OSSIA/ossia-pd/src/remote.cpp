@@ -41,12 +41,12 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
     if (&dev != m_dev)
     {
       if (m_dev) {
-          m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
-          m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(this);
+          m_dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+          m_dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
       }
       m_dev = &dev;
-      m_dev->on_parameter_created.connect<remote, &remote::on_parameter_created_callback>(this);
-      m_dev->get_root_node().about_to_be_deleted.connect<remote, &remote::on_device_deleted>(this);
+      m_dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
+      m_dev->get_root_node().about_to_be_deleted.connect<&remote::on_device_deleted>(this);
 
       obj_dequarantining<remote>(this);
     }
@@ -158,8 +158,8 @@ bool remote::unregister()
   m_parent_node = nullptr;
   if(m_dev)
   {
-    m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(this);
-    m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(this);
+    m_dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+    m_dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
   }
   m_dev = nullptr;
   return true;
@@ -347,8 +347,8 @@ void remote::destroy(remote* x)
 
   if(x->m_is_pattern && x->m_dev)
   {
-    x->m_dev->on_parameter_created.disconnect<remote, &remote::on_parameter_created_callback>(x);
-    x->m_dev->get_root_node().about_to_be_deleted.disconnect<remote, &remote::on_device_deleted>(x);
+    x->m_dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(x);
+    x->m_dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(x);
   }
 
   clock_free(x->m_poll_clock);

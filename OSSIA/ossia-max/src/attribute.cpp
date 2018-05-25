@@ -81,12 +81,12 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
     if (&dev != m_dev)
     {
       if (m_dev) {
-          m_dev->on_parameter_created.disconnect<attribute, &attribute::on_parameter_created_callback>(this);
-          m_dev->get_root_node().about_to_be_deleted.disconnect<attribute, &attribute::on_device_deleted>(this);
+          m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(this);
+          m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(this);
       }
       m_dev = &dev;
-      m_dev->on_parameter_created.connect<attribute, &attribute::on_parameter_created_callback>(this);
-      m_dev->get_root_node().about_to_be_deleted.connect<attribute, &attribute::on_device_deleted>(this);
+      m_dev->on_parameter_created.connect<&attribute::on_parameter_created_callback>(this);
+      m_dev->get_root_node().about_to_be_deleted.connect<&attribute::on_device_deleted>(this);
 
       object_dequarantining<attribute>(this);
     }
@@ -157,8 +157,8 @@ bool attribute::unregister()
   m_parent_node = nullptr;
   if(m_dev)
   {
-    m_dev->on_parameter_created.disconnect<attribute, &attribute::on_parameter_created_callback>(this);
-    m_dev->get_root_node().about_to_be_deleted.disconnect<attribute, &attribute::on_device_deleted>(this);
+    m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(this);
+    m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(this);
   }
   m_dev = nullptr;
   return true;
@@ -241,8 +241,8 @@ void attribute::destroy(attribute* x)
 
   if(x->m_is_pattern && x->m_dev)
   {
-    x->m_dev->on_parameter_created.disconnect<attribute, &attribute::on_parameter_created_callback>(x);
-    x->m_dev->get_root_node().about_to_be_deleted.disconnect<attribute, &attribute::on_device_deleted>(x);
+    x->m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(x);
+    x->m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(x);
   }
 
   outlet_delete(x->m_dumpout);

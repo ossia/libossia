@@ -85,7 +85,7 @@ void qml_property_reader::resetNode()
     if (m_ossia_node)
     {
       m_ossia_node->about_to_be_deleted
-          .connect<qml_property_reader, &qml_property_reader::on_node_deleted>(
+          .connect<&qml_property_reader::on_node_deleted>(
               this);
       m_param = m_ossia_node->get_parameter();
 
@@ -172,7 +172,7 @@ void qml_property_writer::resetNode()
     if (m_ossia_node)
     {
       m_ossia_node->about_to_be_deleted
-          .connect<qml_property_writer, &qml_property_writer::on_node_deleted>(
+          .connect<&qml_property_writer::on_node_deleted>(
               this);
       m_param = m_ossia_node->get_parameter();
       if (m_param)
@@ -255,7 +255,7 @@ void qml_binding::resetNode()
     if (m_ossia_node)
     {
       m_ossia_node->about_to_be_deleted
-          .connect<qml_binding, &qml_binding::on_node_deleted>(this);
+          .connect<&qml_binding::on_node_deleted>(this);
       m_param = m_ossia_node->get_parameter();
 
       if (m_param)
@@ -349,7 +349,7 @@ void qml_callback::resetNode()
     if (m_ossia_node)
     {
       m_ossia_node->about_to_be_deleted
-          .connect<qml_callback, &qml_callback::on_node_deleted>(this);
+          .connect<&qml_callback::on_node_deleted>(this);
       m_param = m_ossia_node->get_parameter();
       if (m_param)
       {

@@ -97,7 +97,7 @@ void qml_node::resetNode()
     // Utility function to set-up a node.
     auto setup_valid_node = [&] {
       m_ossia_node->about_to_be_deleted
-          .connect<qml_node, &qml_node::on_node_deleted>(this);
+          .connect<&qml_node::on_node_deleted>(this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
       nodeChanged(m_node);
       setPath(QString::fromStdString(

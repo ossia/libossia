@@ -149,7 +149,7 @@ t_matcher::~t_matcher()
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
+        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
 
         for (auto remote : ossia_max::instance().remotes.copy())
         {
@@ -187,7 +187,7 @@ t_matcher::~t_matcher()
         if (param && callbackit) param->remove_callback(*callbackit);
         std::cout << "DISconnect node " << static_cast<void*>(node)
                   << " to is_deleted fn of " << static_cast<void*>(owner) << std::endl;
-        node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(owner);
+        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
       }
 
       // if there vector is empty

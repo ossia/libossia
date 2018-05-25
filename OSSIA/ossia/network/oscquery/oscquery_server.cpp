@@ -77,16 +77,16 @@ oscquery_server_protocol::~oscquery_server_protocol()
   {
     auto& dev = *m_device;
     dev.on_node_created
-        .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(
+        .disconnect<&oscquery_server_protocol::on_nodeCreated>(
             this);
     dev.on_node_removing
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(
+       .disconnect<&oscquery_server_protocol::on_nodeRemoved>(
             this);
     dev.on_attribute_modified
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
+       .disconnect<&oscquery_server_protocol::on_attributeChanged>(
             this);
     dev.on_node_renamed
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRenamed>(
+       .disconnect<&oscquery_server_protocol::on_nodeRenamed>(
            this);
   }
   stop();
@@ -239,32 +239,32 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
   {
     auto& old = *m_device;
     old.on_node_created
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(
+       .disconnect<&oscquery_server_protocol::on_nodeCreated>(
            this);
     old.on_node_removing
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(
+       .disconnect<&oscquery_server_protocol::on_nodeRemoved>(
            this);
     old.on_attribute_modified
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
+       .disconnect<&oscquery_server_protocol::on_attributeChanged>(
            this);
     old.on_node_renamed
-       .disconnect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRenamed>(
+       .disconnect<&oscquery_server_protocol::on_nodeRenamed>(
            this);
   }
   m_device = &dev;
 
   // TODO renamed, etc
   dev.on_node_created
-      .connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeCreated>(
+      .connect<&oscquery_server_protocol::on_nodeCreated>(
           this);
   dev.on_node_removing
-      .connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRemoved>(
+      .connect<&oscquery_server_protocol::on_nodeRemoved>(
           this);
   dev.on_attribute_modified
-      .connect<oscquery_server_protocol, &oscquery_server_protocol::on_attributeChanged>(
+      .connect<&oscquery_server_protocol::on_attributeChanged>(
           this);
   dev.on_node_renamed
-      .connect<oscquery_server_protocol, &oscquery_server_protocol::on_nodeRenamed>(
+      .connect<&oscquery_server_protocol::on_nodeRenamed>(
           this);
 
   update_zeroconf();

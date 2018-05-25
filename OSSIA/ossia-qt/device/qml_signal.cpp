@@ -30,8 +30,7 @@ qml_signal::~qml_signal()
   if (m_ossia_node)
   {
     m_ossia_node->about_to_be_deleted
-        .disconnect<qml_property_base, &qml_property_base::on_node_deleted>(
-            this);
+        .disconnect<&qml_signal::on_node_deleted>(this);
   }
   if (m_device)
     m_device->remove(this);
@@ -113,7 +112,7 @@ void qml_signal::resetNode()
     if (m_ossia_node)
     {
       m_ossia_node->about_to_be_deleted
-          .connect<qml_property_base, &qml_property_base::on_node_deleted>(
+          .connect<&qml_property_base::on_node_deleted>(
               this);
       m_node = QString::fromStdString(m_ossia_node->get_name());
       nodeChanged(m_node);

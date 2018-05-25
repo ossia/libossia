@@ -374,9 +374,9 @@ void node::init()
 {
   if(m_node)
   {
-    m_node->about_to_be_deleted.connect<node, &node::cleanup>(*this);
+    m_node->about_to_be_deleted.connect<&node::cleanup>(*this);
     m_node->get_device()
-        .on_parameter_removing.connect<node, &node::cleanup_parameter>(*this);
+        .on_parameter_removing.connect<&node::cleanup_parameter>(*this);
   }
 }
 
@@ -384,8 +384,8 @@ void node::cleanup(const ossia::net::node_base&)
 {
   if (m_node)
   {
-    m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
-    m_node->get_device().on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+    m_node->about_to_be_deleted.disconnect<&node::cleanup>(*this);
+    m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
   }
 
   m_node = nullptr;
@@ -395,7 +395,7 @@ void node::cleanup(const ossia::net::node_base&)
 void node::cleanup_parameter(const ossia::net::parameter_base&)
 {
   if(m_node)
-    m_node->get_device().on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+    m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
   m_param = nullptr;
 }
 
@@ -404,8 +404,8 @@ node::~node()
 {
   if (m_node)
   {
-    m_node->about_to_be_deleted.disconnect<node, &node::cleanup>(*this);
-    m_node->get_device().on_parameter_removing.disconnect<node, &node::cleanup_parameter>(*this);
+    m_node->about_to_be_deleted.disconnect<&node::cleanup>(*this);
+    m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
   }
 }
 
@@ -1671,8 +1671,8 @@ oscquery_server::~oscquery_server()
   using ossia::oscquery::oscquery_server_protocol;
   if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
   {
-    proto->onClientConnected.disconnect<oscquery_server, &oscquery_server::on_connection>(*this);
-    proto->onClientDisconnected.disconnect<oscquery_server, &oscquery_server::on_disconnection>(*this);
+    proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
+    proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
   }
 
   delete m_dev;
@@ -1685,8 +1685,8 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
   {
     if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
     {
-      proto->onClientConnected.disconnect<oscquery_server, &oscquery_server::on_connection>(*this);
-      proto->onClientDisconnected.disconnect<oscquery_server, &oscquery_server::on_disconnection>(*this);
+      proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
+      proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
     }
 
     delete m_dev;
@@ -1697,8 +1697,8 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
       std::move(name));
   if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
   {
-    proto->onClientConnected.connect<oscquery_server, &oscquery_server::on_connection>(*this);
-    proto->onClientDisconnected.connect<oscquery_server, &oscquery_server::on_disconnection>(*this);
+    proto->onClientConnected.connect<&oscquery_server::on_connection>(*this);
+    proto->onClientDisconnected.connect<&oscquery_server::on_disconnection>(*this);
   }
 }
 

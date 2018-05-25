@@ -12,7 +12,7 @@ alias_node::~alias_node()
   if (m_origin)
   {
     m_origin->about_to_be_deleted
-        .disconnect<alias_node, &alias_node::on_deletion>(this);
+        .disconnect<&alias_node::on_deletion>(this);
   }
 }
 
@@ -42,14 +42,14 @@ void alias_node::set_origin(node_base* o)
   if (m_origin)
   {
     m_origin->about_to_be_deleted
-        .disconnect<alias_node, &alias_node::on_deletion>(this);
+        .disconnect<&alias_node::on_deletion>(this);
   }
 
   m_origin = o;
 
   if (m_origin)
   {
-    m_origin->about_to_be_deleted.connect<alias_node, &alias_node::on_deletion>(
+    m_origin->about_to_be_deleted.connect<&alias_node::on_deletion>(
         this);
   }
 }

@@ -37,8 +37,8 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
   x->m_name = gensym(x->m_device->get_name().c_str());
   x->m_matchers.emplace_back(std::make_shared<t_matcher>(&x->m_device->get_root_node(), (object_base*)nullptr));
 
-  x->m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(x);
 
   if (argc > 0 && argv[0].a_type == A_SYM){
     x->m_name = argv[0].a_w.w_sym;
@@ -50,8 +50,8 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 
 void ossia_object::destroy(ossia_object *x)
 {
-  x->m_device->on_parameter_created.disconnect<device_base, &device_base::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.disconnect<device_base, &device_base::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.disconnect<&device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(x);
 
   ossia_max::instance().devices.remove_all(x);
 

@@ -84,9 +84,9 @@ void device_base::connect_slots()
 {
   if (m_device)
   {
-    m_device->on_parameter_created.connect<device_base, &device_base::on_parameter_created_callback>(this);
-    m_device->on_parameter_removing.connect<device_base, &device_base::on_parameter_deleted_callback>(this);
-    // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
+    m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(this);
+    m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(this);
+    // x->m_device->on_message.connect<&t_client::on_message_callback>(x);
     m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
 
@@ -103,9 +103,9 @@ void device_base::disconnect_slots()
 {
   if (m_device)
   {
-    m_device->on_parameter_created.disconnect<device_base, &device_base::on_parameter_created_callback>(this);
-    m_device->on_parameter_removing.disconnect<device_base, &device_base::on_parameter_deleted_callback>(this);
-    // x->m_device->on_message.connect<t_client, &t_client::on_message_callback>(x);
+    m_device->on_parameter_created.disconnect<&device_base::on_parameter_created_callback>(this);
+    m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(this);
+    // x->m_device->on_message.connect<&t_client::on_message_callback>(x);
     m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
   }

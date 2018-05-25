@@ -526,9 +526,9 @@ public:
   m_on_node_renamed(on_node_renamed_clbk), 
   m_on_node_removing(on_node_removing_clbk)
   {
-    device.on_node_created.connect<ossia_device_callback, &ossia_device_callback::on_node_created>(*this);
-    device.on_node_created.connect<ossia_device_callback, &ossia_device_callback::on_node_renamed>(*this);
-    device.on_node_removing.connect<ossia_device_callback, &ossia_device_callback::on_node_removing>(*this);
+    device.on_node_created.connect<&ossia_device_callback::on_node_created>(*this);
+    device.on_node_created.connect<&ossia_device_callback::on_node_renamed>(*this);
+    device.on_node_removing.connect<&ossia_device_callback::on_node_removing>(*this);
   }
 
 private:

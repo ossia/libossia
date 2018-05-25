@@ -18,7 +18,7 @@ class message_queue final : public Nano::Observer
     message_queue(ossia::net::device_base& dev)
     {
       dev.on_parameter_removing
-          .connect<message_queue, &message_queue::on_param_removed>(*this);
+          .connect<&message_queue::on_param_removed>(*this);
     }
 
     ~message_queue()
@@ -82,7 +82,7 @@ class global_message_queue final : public Nano::Observer
     global_message_queue(ossia::net::device_base& dev)
     {
       dev.on_message
-          .connect<global_message_queue, &global_message_queue::on_message>(
+          .connect<&global_message_queue::on_message>(
             *this);
     }
 

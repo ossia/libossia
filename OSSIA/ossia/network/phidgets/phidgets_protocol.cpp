@@ -103,7 +103,7 @@ void phidget_protocol::on_deviceCreated(PhidgetHandle phid)
   }, phid_node);
 
 
-  phid_node->about_to_be_deleted.connect<phidget_protocol, &phidget_protocol::deleting_node>(*this);
+  phid_node->about_to_be_deleted.connect<&phidget_protocol::deleting_node>(*this);
 
   m_phidgetMap.insert({hdl, phid_node});
 }

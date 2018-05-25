@@ -112,7 +112,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
     callbackit = param->add_callback(
       [=](const ossia::value& v) { enqueue_value(v); });
 
-  node->about_to_be_deleted.connect<object_base, &object_base::is_deleted>(
+  node->about_to_be_deleted.connect<&object_base::is_deleted>(
         parent);
 
   set_parent_addr();
@@ -133,7 +133,7 @@ t_matcher::~t_matcher()
         {
           auto param = node->get_parameter();
           if (param && callbackit) param->remove_callback(*callbackit);
-          node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+          node->about_to_be_deleted.disconnect<&object_base::is_deleted>(parent);
 
           node->get_parent()->remove_child(*node);
         }
@@ -147,7 +147,7 @@ t_matcher::~t_matcher()
     } else {
       auto param = node->get_parameter();
       if (param && callbackit) param->remove_callback(*callbackit);
-      node->about_to_be_deleted.disconnect<object_base, &object_base::is_deleted>(parent);
+      node->about_to_be_deleted.disconnect<&object_base::is_deleted>(parent);
 
       // if there is no more matcher,
       // object should be quarantinized

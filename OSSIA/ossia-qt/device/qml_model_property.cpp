@@ -23,7 +23,7 @@ qml_model_property::qml_model_property(QObject* parent)
 qml_model_property::~qml_model_property()
 {
   if(m_parentOssiaNode)
-    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    m_parentOssiaNode->about_to_be_deleted.disconnect<&qml_model_property::on_node_deleted>(*this);
   if (m_device)
   {
     m_device->remove(this);
@@ -91,7 +91,7 @@ void qml_model_property::reloadParentNode()
 {
     if (m_parentOssiaNode)
     {
-      m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+      m_parentOssiaNode->about_to_be_deleted.disconnect<&qml_model_property::on_node_deleted>(*this);
     }
 
     if(m_parentNode)
@@ -129,7 +129,7 @@ void qml_model_property::reloadParentNode()
     {
       ossia::net::set_instance_bounds(
           *m_parentOssiaNode, ossia::net::instance_bounds{0, 1000});
-      m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+      m_parentOssiaNode->about_to_be_deleted.connect<&qml_model_property::on_node_deleted>(*this);
     }
 }
 
@@ -142,7 +142,7 @@ void qml_model_property::setParentNode(QObject* parentNode)
 
   if (m_parentOssiaNode)
   {
-    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    m_parentOssiaNode->about_to_be_deleted.disconnect<&qml_model_property::on_node_deleted>(*this);
   }
 
   if(m_parentNode)
@@ -180,7 +180,7 @@ void qml_model_property::setParentNode(QObject* parentNode)
   {
     ossia::net::set_instance_bounds(
         *m_parentOssiaNode, ossia::net::instance_bounds{0, 1000});
-    m_parentOssiaNode->about_to_be_deleted.connect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    m_parentOssiaNode->about_to_be_deleted.connect<&qml_model_property::on_node_deleted>(*this);
   }
 
   parentNodeChanged(m_parentNode);
@@ -190,7 +190,7 @@ void qml_model_property::on_node_deleted(const net::node_base&)
 {
   if(m_parentOssiaNode)
   {
-    m_parentOssiaNode->about_to_be_deleted.disconnect<qml_model_property, &qml_model_property::on_node_deleted>(*this);
+    m_parentOssiaNode->about_to_be_deleted.disconnect<&qml_model_property::on_node_deleted>(*this);
   }
   m_parentOssiaNode = nullptr;
 }
