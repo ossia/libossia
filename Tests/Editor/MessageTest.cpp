@@ -1,8 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/editor/state/message.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
 
 using namespace ossia;
@@ -17,7 +18,7 @@ private Q_SLOTS:
     void test_basic()
     {
         // Local device
-        ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+        ossia::net::generic_device device{"test"};
 
         // Local tree building
         auto localIntNode = device.create_child("my_int");

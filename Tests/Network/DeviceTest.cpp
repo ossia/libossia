@@ -1,14 +1,17 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
 #include <ossia-qt/http/http.hpp>
 #include <ossia/network/midi/midi.hpp>
+#include <ossia/network/osc/osc.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client.hpp>
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/local/local.hpp>
 #include "TestUtils.hpp"
 
 using namespace ossia;
@@ -221,8 +224,7 @@ private Q_SLOTS:
   void test_basic()
   {
     {
-      ossia::net::generic_device local_device{
-        std::make_unique<ossia::net::multiplex_protocol>(), "test" };
+      ossia::net::generic_device local_device{"test" };
     }
     {
       ossia::net::generic_device osc_device{

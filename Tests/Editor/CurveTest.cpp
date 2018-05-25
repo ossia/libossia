@@ -1,8 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
+#include <ossia/editor/curve/curve_segment/linear.hpp>
+#include <ossia/editor/curve/curve_segment/power.hpp>
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
 
 using namespace ossia;
@@ -111,7 +114,7 @@ private Q_SLOTS:
 
   Q_SLOT void test_destination()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    ossia::net::generic_device device{"test"};
 
     auto localTupleNode = device.create_child("my_tuple");
     auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);

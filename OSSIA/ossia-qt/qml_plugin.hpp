@@ -1,10 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <QQmlExtensionPlugin>
-#include <wobjectdefs.h>
-#include <wobjectdefs.h>
-#include <wobjectdefs.h>
-#include <wobjectdefs.h>
-#include <wobjectdefs.h>
 #include <wobjectdefs.h>
 #include <QQmlExtensionInterface>
 #include <ossia_export.h>

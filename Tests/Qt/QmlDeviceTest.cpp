@@ -1,7 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/device.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <QQmlEngine>

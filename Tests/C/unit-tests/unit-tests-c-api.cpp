@@ -58,7 +58,6 @@ TEST_CASE ("C API: Apply preset") {
 
     ossia_device dev_c{
       std::make_unique<ossia::net::generic_device>(
-            std::make_unique<ossia::net::multiplex_protocol>(),
             "scene")};
 
     code = ossia_devices_apply_preset(&dev_c, p, false);

@@ -3,7 +3,6 @@
 #include <ossia/detail/config.hpp>
 #include <QtTest>
 #include <ossia/network/dataspace/dataspace.hpp>
-#include <ossia/network/local/local.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/network/common/complex_type.hpp>
@@ -23,7 +22,7 @@ class AddressTest : public QObject
     /*! test life cycle and accessors functions */
     Q_SLOT void test_basic()
     {
-        ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+        ossia::net::generic_device device{"test"};
         auto cld = device.create_child("child");
         auto address = cld->create_parameter();
         QVERIFY(address != nullptr);

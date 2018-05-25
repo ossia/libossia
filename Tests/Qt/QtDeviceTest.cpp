@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qt_device.hpp>
 #include <iostream>
@@ -9,6 +9,8 @@
 #include <QtGui/QVector3D>
 #include <wobjectdefs.h>
 #include <wobjectimpl.h>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/minuit/minuit.hpp>
 
 class SomeObject : public QObject
 {

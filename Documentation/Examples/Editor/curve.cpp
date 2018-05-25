@@ -9,7 +9,10 @@
  * This code is licensed under the terms of the "CeCILL-C"
  * http://www.cecill.info
  */
-#include <ossia/ossia.hpp>
+#include <ossia/detail/config.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <iostream>
 
 using namespace ossia;
@@ -43,7 +46,7 @@ int main()
   cout << "value at 2. = " << c->value_at(2.) << endl;
 
   // Local device
-  ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+  ossia::net::generic_device device{"test"};
 
   auto localTupleNode = device.create_child("my_tuple");
   auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);

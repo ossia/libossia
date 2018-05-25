@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <ossia/context.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
@@ -53,7 +53,7 @@ private Q_SLOTS:
 
     void test_parse()
     {
-      generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
+      generic_device dev{"A"};
 
       // Create a node
       {

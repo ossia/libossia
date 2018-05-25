@@ -6,7 +6,6 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/local/local.hpp>
 #include "TestUtils.hpp"
 using namespace ossia;
 
@@ -579,7 +578,7 @@ private Q_SLOTS:
     //! \todo test clone()
 
     // Local device
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    ossia::net::generic_device device{"test"};
 
     auto localTupleNode = device.create_child("my_tuple");
     auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);

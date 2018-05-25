@@ -10,9 +10,9 @@ namespace ossia
 {
 namespace net
 {
-generic_device::generic_device()
+generic_device::generic_device(std::string name)
     : device_base{std::make_unique<multiplex_protocol>()}
-    , generic_node{"", *this}
+    , generic_node{std::move(name), *this}
 {
   m_protocol->set_device(*this);
   m_capabilities.change_tree = true;

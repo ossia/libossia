@@ -8,7 +8,6 @@
 #include <rapidjson/document.h>
 #include <ossia-c/preset/preset.h>
 #include <ossia/preset/preset.hpp>
-#include <ossia/ossia.hpp>
 
 namespace ossia
 {
@@ -251,7 +250,7 @@ void make_preset(const ossia::net::node_base& n, ossia::presets::preset& p)
 
 
 TEST_CASE ("Device") {
-    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), ""};
+    ossia::net::generic_device dev{""};
     auto& r = dev.get_root_node();
     ossia::net::create_node(r, "/width").create_parameter(ossia::val_type::FLOAT);
     ossia::net::create_node(r, "/leText.0/text").create_parameter(ossia::val_type::STRING);

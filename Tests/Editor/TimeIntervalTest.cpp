@@ -4,7 +4,6 @@
 #include "TestUtils.hpp"
 
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
 
 using namespace ossia;

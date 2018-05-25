@@ -1,8 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
+#include <ossia/editor/curve/curve_segment/empty.hpp>
 #include <QtTest>
-#include "../../ForwardDeclaration.h"
 #include <iostream>
 
 using namespace ossia;

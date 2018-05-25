@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_convert.hpp>

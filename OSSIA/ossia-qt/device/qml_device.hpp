@@ -1,9 +1,9 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
 #include <hopscotch_map.h>
-#include <ossia_export.h>
 #include <wobjectdefs.h>
 namespace ossia
 {

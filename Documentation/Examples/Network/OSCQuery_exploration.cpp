@@ -10,12 +10,13 @@
  * http://www.cecill.info
  */
 
-#include <ossia/ossia.hpp>
+#include <ossia/detail/config.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <iostream>
 #include <memory>
 #include <functional>

@@ -2,14 +2,13 @@
 
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/local/local.hpp>
 namespace ossia
 {
 
 struct TestDevice
 {
   TestDevice():
-    device{std::make_unique<ossia::net::multiplex_protocol>(), "test"}
+    device{"test"}
   {
     impulse_addr = device.create_child("impulse")->create_parameter(val_type::IMPULSE);
     bool_addr = device.create_child("bool")->create_parameter(val_type::BOOL);

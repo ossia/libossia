@@ -4,7 +4,6 @@
 #include <QtTest/QTest>
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/network/local/local.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <Network/TestUtils.hpp>
 

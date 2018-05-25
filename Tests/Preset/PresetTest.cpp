@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
@@ -23,7 +22,7 @@ private Q_SLOTS:
   {
     using namespace std::literals;
 
-    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), "mydevice"};
+    ossia::net::generic_device dev{"mydevice"};
 
     auto& root = dev.get_root_node();
     ossia::net::set_app_creator(root, "test"s);
@@ -61,7 +60,7 @@ private Q_SLOTS:
   void test_nodes()
   {
 
-    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), "mydevice"};
+    ossia::net::generic_device dev{"mydevice"};
 
     auto& root = dev.get_root_node();
 
@@ -169,7 +168,7 @@ private Q_SLOTS:
 
   void test_nodes_txt()
   {
-    ossia::net::generic_device dev{std::make_unique<ossia::net::multiplex_protocol>(), "mydevice"};
+    ossia::net::generic_device dev{"mydevice"};
 
     auto& root = dev.get_root_node();
 

@@ -40,7 +40,6 @@ namespace qt
 qml_device::qml_device(QObject* parent)
     : QObject{parent}
     , m_device{std::make_unique<ossia::net::generic_device>(
-          std::make_unique<ossia::net::multiplex_protocol>(),
           m_name.toUtf8().toStdString())}
 {
 }
@@ -156,7 +155,6 @@ void qml_device::setupLocal()
 {
   // If there is an error we re-create a dummy device instead.
   m_device = std::make_unique<ossia::net::generic_device>(
-      std::make_unique<ossia::net::multiplex_protocol>(),
       m_name.toUtf8().toStdString());
 }
 

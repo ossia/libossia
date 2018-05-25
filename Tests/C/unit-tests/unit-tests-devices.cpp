@@ -13,8 +13,7 @@
 #include <ossia/ossia.hpp>
 
 TEST_CASE ("Device exceptions") {
-  ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+  ossia::net::generic_device localDevice{"test"};
 
   auto rootnode = localDevice.get_root_node().create_child("root");
   auto childnode = rootnode->create_child("child");
@@ -40,8 +39,7 @@ TEST_CASE ("Device exceptions") {
 }
 
 TEST_CASE ("Building device from preset") {
-  ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::multiplex_protocol>(), "device"};
+  ossia::net::generic_device localDevice{"device"};
 
   ossia::presets::preset p;
   p.emplace_back("/device/a.0/b.0/c.0", 1);
@@ -75,8 +73,7 @@ TEST_CASE ("Building device from preset") {
 }
 
 TEST_CASE ("Functions on instances") {
-  ossia::net::generic_device localDevice{
-    std::make_unique<ossia::net::multiplex_protocol>(), "device"};
+  ossia::net::generic_device localDevice{"device"};
 
   ossia::presets::instance_functions funcs;
   using namespace ossia::regex_path;

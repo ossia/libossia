@@ -11,7 +11,7 @@ class OSSIA_EXPORT generic_device final : public ossia::net::device_base,
                                           public generic_node
 {
 public:
-  generic_device();
+  explicit generic_device(std::string name = "");
   generic_device(const generic_device&) = delete;
   generic_device(generic_device&&) = delete;
   generic_device& operator=(const generic_device&) = delete;

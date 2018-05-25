@@ -2,10 +2,11 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/editor/state/state_element.hpp>
 using namespace ossia;
 
 /*
@@ -141,7 +142,7 @@ private Q_SLOTS:
 
   void test_compare()
   {
-    generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
+    generic_device dev{"test"};
     auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
     message m0{{*n1, ossia::destination_index{0}}, 5.};
@@ -163,7 +164,7 @@ private Q_SLOTS:
 
   void test_remove()
   {
-    generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
+    generic_device dev{"test"};
     auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
     state s;
@@ -176,7 +177,7 @@ private Q_SLOTS:
 
   void test_flatten()
   {
-    generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
+    generic_device dev{"test"};
     auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
     message m0{{*n1, ossia::destination_index{0}}, float{5.}};
@@ -227,7 +228,7 @@ private Q_SLOTS:
 
   void test_flatten_move()
   {
-    generic_device dev{std::make_unique<multiplex_protocol>(), "test"};
+    generic_device dev{"test"};
     auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
     state_element m0 = message{{*n1, ossia::destination_index{0}}, float{5.}};

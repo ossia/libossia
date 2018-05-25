@@ -49,7 +49,7 @@ class MapperTest : public QObject
 //  /*! test life cycle and accessors functions */
 //  void test_basic()
 //  {
-//    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+//    ossia::net::generic_device device{"test"};
 
 //    auto float_n = device.create_child("float");
 //    ossia::net::parameter_base* float_address = float_n->create_parameter(val_type::FLOAT);
@@ -69,7 +69,7 @@ class MapperTest : public QObject
 //  //! \todo test state()
 //  void test_execution()
 //  {
-//    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+//    ossia::net::generic_device device{"test"};
 
 //    auto float_n = device.create_child("float");
 //    m_float_address = float_n->create_parameter(val_type::FLOAT);

@@ -1,9 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
 #include <QtTest>
-#include <ossia/ossia.hpp>
 #include <iostream>
 #include <ossia/network/common/path.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia-qt/name_utils.hpp>
 // #include <ossia-qt/js_utilities.hpp>
@@ -21,7 +23,7 @@ private Q_SLOTS:
   /*! test life cycle and accessors functions */
   void test_basic()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    ossia::net::generic_device device{"test"};
     QVERIFY(device.get_name() == "test");
 
     device.set_name("app");
@@ -73,7 +75,7 @@ private Q_SLOTS:
   /*! test edition functions */
   void test_edition()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    ossia::net::generic_device device{"test"};
 
     // edit a node and its address and then remove it
     {
@@ -155,7 +157,7 @@ private Q_SLOTS:
   /*! test callback notifications */
   void test_callback()
   {
-    ossia::net::generic_device device{std::make_unique<ossia::net::multiplex_protocol>(), "test"};
+    ossia::net::generic_device device{"test"};
 
     /* TODO */
   }
@@ -227,7 +229,7 @@ private Q_SLOTS:
 
   void test_attributes()
   {
-    generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
+    generic_device dev{"A"};
     ossia::net::node_base& n = find_or_create_node(dev, "/main");
 
     QVERIFY(!get_access_mode(n));
@@ -348,7 +350,7 @@ private Q_SLOTS:
 
   void test_attributes_2()
   {
-    generic_device dev{std::make_unique<multiplex_protocol>(), "A"};
+    generic_device dev{"A"};
     ossia::net::node_base& n = find_or_create_node(dev, "/main");
 
     n.create_parameter(ossia::val_type::INT);

@@ -10,9 +10,11 @@
  * http://www.cecill.info
  */
 
-#include <ossia/ossia.hpp>
+#include <ossia/detail/config.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <spdlog/spdlog.h>
 
 #include <iostream>
