@@ -83,7 +83,7 @@ private Q_SLOTS:
 
     auto end_node = std::make_shared<time_sync>();
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), e_callback));
-    auto interval = time_interval::create({[] (auto&&... args) { main_interval_callback(args...); }}, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
+    auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { main_interval_callback(args...); }}, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
 
     QVERIFY(end_node->get_date() == 1000._tv);
   }
@@ -102,7 +102,7 @@ private Q_SLOTS:
     scenar->add_time_sync(end_node);
     auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), e_callback));
 
-    auto interval = time_interval::create({[] (auto&&... args) { main_interval_callback(args...); }}, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
+    auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { main_interval_callback(args...); }}, *start_event, *end_event, 1000._tv, 1000._tv, 1000._tv);
 
     scenar->add_time_interval(interval);
     QVERIFY(scenar->get_time_intervals().size() == 1);
@@ -132,7 +132,7 @@ private Q_SLOTS:
     auto main_end_node = std::make_shared<time_sync>();
     auto main_start_event = *(main_start_node->emplace(main_start_node->get_time_events().begin(), e_callback));
     auto main_end_event = *(main_end_node->emplace(main_end_node->get_time_events().begin(), e_callback));
-    main_interval = time_interval::create({[] (auto&&... args) { main_interval_callback(args...); }}, *main_start_event, *main_end_event, 5000._tv, 5000._tv, 5000._tv);
+    main_interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { main_interval_callback(args...); }}, *main_start_event, *main_end_event, 5000._tv, 5000._tv, 5000._tv);
     ossia::clock c{*main_interval};
     using namespace std::literals;
     c.set_granularity(50ms);
@@ -144,14 +144,14 @@ private Q_SLOTS:
     auto first_end_node = std::make_shared<time_sync>();
     auto first_start_event = *(scenario_start_node->emplace(scenario_start_node->get_time_events().begin(), e_callback));
     auto first_end_event = *(first_end_node->emplace(first_end_node->get_time_events().begin(), e_callback));
-    auto first_interval = time_interval::create({[=] (auto&&... args) { first_interval_callback(args...); }}, *first_start_event, *first_end_event, 1500._tv, 1500._tv, 1500._tv);
+    auto first_interval = time_interval::create(ossia::time_interval::exec_callback{[=] (auto&&... args) { first_interval_callback(args...); }}, *first_start_event, *first_end_event, 1500._tv, 1500._tv, 1500._tv);
 
     main_scenario->add_time_sync(first_end_node);
     main_scenario->add_time_interval(first_interval);
 
     auto second_end_node = std::make_shared<time_sync>();
     auto second_end_event = *(second_end_node->emplace(second_end_node->get_time_events().begin(), e_callback));
-    auto second_interval = time_interval::create({[=] (auto&&... args) { second_interval_callback(args...); }}, *first_end_event, *second_end_event, 2000._tv, 2000._tv, 2000._tv);
+    auto second_interval = time_interval::create(ossia::time_interval::exec_callback{[=] (auto&&... args) { second_interval_callback(args...); }}, *first_end_event, *second_end_event, 2000._tv, 2000._tv, 2000._tv);
 
     main_scenario->add_time_sync(second_end_node);
     main_scenario->add_time_interval(second_interval);

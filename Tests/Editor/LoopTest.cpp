@@ -118,7 +118,7 @@ private Q_SLOTS:
     void test_basic()
     {
         //using namespace std::placeholders;
-        loop l(25._tv, {[] (auto&&... args) { interval_callback(args...); }}, event_callback, event_callback);
+        loop l(25._tv, ossia::time_interval::exec_callback{[] (auto&&... args) { interval_callback(args...); }}, event_callback, event_callback);
 
         //! \todo test clone()
     }

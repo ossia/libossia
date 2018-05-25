@@ -1110,12 +1110,9 @@ ossia::value apply_domain_visitor::operator()(
       ossia::domain_conversion<vecf_domain<4>>{}.list_func(domain)}(b, value);
 }
 }
-namespace std
-{
 std::ostream& operator<<(std::ostream& s, const ossia::domain& d)
 {
   // OPTIMIZEME
   s << d.to_pretty_string();
   return s;
-}
 }

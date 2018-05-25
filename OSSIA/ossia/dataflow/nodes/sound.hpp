@@ -4,7 +4,7 @@
 
 namespace ossia::nodes
 {
-class OSSIA_EXPORT sound final :
+class sound final :
     public ossia::nonowning_graph_node
 {
   public:
@@ -149,8 +149,7 @@ class OSSIA_EXPORT sound final :
     ossia::outlet audio_out{ossia::audio_port{}};
 };
 
-
-class OSSIA_EXPORT sound_ref final :
+class sound_ref final :
     public ossia::nonowning_graph_node
 {
   public:

@@ -56,7 +56,6 @@ bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
   return !(lhs == rhs);
 }
 }
-namespace std
-{
+
+OSSIA_EXPORT
 std::ostream& operator<<(std::ostream&, const ossia::domain&);
-}

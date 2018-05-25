@@ -3,8 +3,11 @@
 #include <ossia/detail/config.hpp>
 #include <QtTest>
 #include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/local/local.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 #include <iostream>
 #include <brigand/algorithms/for_each.hpp>
