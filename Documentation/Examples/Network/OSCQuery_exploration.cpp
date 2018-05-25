@@ -11,6 +11,7 @@
  */
 
 #include <ossia/ossia.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
