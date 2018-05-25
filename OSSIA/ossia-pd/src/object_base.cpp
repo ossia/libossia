@@ -117,8 +117,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
       callbackit = param->add_callback(
             [=](const ossia::value& v) { enqueue_value(v); });
 
-    node->about_to_be_deleted.connect<object_base,
-        &object_base::is_deleted>(owner);
+    node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
     set_owner_addr();
   }
 }

@@ -99,8 +99,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
       callbackit = param->add_callback(
             [=](const ossia::value& v) { enqueue_value(v); });
 
-    node->about_to_be_deleted.connect<object_base,
-        &object_base::is_deleted>(owner);
+    node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
   }
 
   set_parent_addr();
@@ -325,13 +324,13 @@ void object_base::loadbang(object_base* x)
 #if OSSIA_MAX_AUTOREGISTER
       if (!desc.is_loadbanged)
         clock_delay(ossia_max::instance().m_reg_clock,1);
-#endif 
-    } 
-    else 
+#endif
+    }
+    else
     {
 #if OSSIA_MAX_AUTOREGISTER
       clock_delay(ossia_max::instance().m_reg_clock,1);
-#endif 
+#endif
     }
   }
 }
