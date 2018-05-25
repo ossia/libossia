@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
 #include <QtTest/QTest>
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>

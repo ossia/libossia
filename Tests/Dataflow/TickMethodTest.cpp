@@ -1,3 +1,4 @@
+#include <ossia/detail/config.hpp>
 #include <QtTest>
 #include <ossia/dataflow/graph/tick_methods.hpp>
 
