@@ -11,7 +11,7 @@
 namespace ossia
 {
 
-static inline OSSIA_DECL_RELAXED_CONSTEXPR bool is_vec(ossia::val_type v)
+static inline constexpr bool is_vec(ossia::val_type v)
 {
   switch (v)
   {

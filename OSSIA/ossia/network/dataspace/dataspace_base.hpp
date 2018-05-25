@@ -140,40 +140,40 @@ struct strong_value : Unit
 template <typename T, typename Ratio_T>
 struct linear_unit : public T
 {
-  OSSIA_INLINE static OSSIA_DECL_RELAXED_CONSTEXPR
+  OSSIA_INLINE static constexpr
       strong_value<typename T::neutral_unit>
       to_neutral(strong_value<typename T::concrete_type> self)
   {
     return {self.dataspace_value * ratio()};
   }
 
-  OSSIA_INLINE static OSSIA_DECL_RELAXED_CONSTEXPR typename T::value_type
+  OSSIA_INLINE static constexpr typename T::value_type
   from_neutral(strong_value<typename T::neutral_unit> self)
   {
     return self.dataspace_value / ratio();
   }
 
-  OSSIA_INLINE static OSSIA_DECL_RELAXED_CONSTEXPR double ratio()
+  OSSIA_INLINE static constexpr double ratio()
   {
-    return double(Ratio_T::num) / double(Ratio_T::den);
+    constexpr_return(double(Ratio_T::num) / double(Ratio_T::den));
   }
 };
 
 template <typename T>
 struct unit_traits
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return T::text();
+    constexpr_return(T::text());
   }
 };
 
 template <typename T>
 struct unit_traits<strong_value<T>>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return unit_traits<T>::text();
+    constexpr_return(unit_traits<T>::text());
   }
 };
 }

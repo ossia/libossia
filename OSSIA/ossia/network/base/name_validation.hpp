@@ -40,30 +40,30 @@ bool is_valid_character_for_name(Char_T c)
 /**
  * @brief Characters valid in an OSSIA device part.
  */
-inline ossia::string_view device_characters() noexcept
+constexpr ossia::string_view device_characters() noexcept
 {
-  return make_string_view("a-zA-Z0-9_~().-");
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~().-"));
 }
 
 /**
  * @brief Characters valid in an OSSIA address part.
  */
-inline ossia::string_view name_characters() noexcept
+constexpr ossia::string_view name_characters() noexcept
 {
-  return make_string_view("a-zA-Z0-9_~():.-");
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~():.-"));
 }
 
 /**
  * @brief Characters valid in an OSSIA address path.
  */
-inline ossia::string_view path_characters() noexcept
+constexpr ossia::string_view path_characters() noexcept
 {
-  return make_string_view("/a-zA-Z0-9_~():.-");
+  constexpr_return(ossia::make_string_view("/a-zA-Z0-9_~():.-"));
 }
 
-inline ossia::string_view name_characters_no_instance() noexcept
+constexpr ossia::string_view name_characters_no_instance() noexcept
 {
-  return make_string_view("a-zA-Z0-9_~():-");
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~():-"));
 }
 /**
  * @brief Characters valid in an OSSIA pattern-matching part.
@@ -72,9 +72,9 @@ inline ossia::string_view name_characters_no_instance() noexcept
  *
  * @see \ref ossia::traversal
  */
-inline ossia::string_view pattern_match_characters() noexcept
+constexpr ossia::string_view pattern_match_characters() noexcept
 {
-  return make_string_view("a-zA-Z0-9_~():.*?,{}\\[\\]-");
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~():.*?,{}\\[\\]-"));
 }
 
 /**

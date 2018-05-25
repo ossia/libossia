@@ -16,23 +16,23 @@ struct position_unit
 
 struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("cart3D", "xyz");
+    constexpr_return(ossia::make_string_array("cart3D", "xyz"));
   }
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
+  static constexpr auto array_parameters()
   {
-    return ossia::make_string_view("xyz");
+    constexpr_return(ossia::make_string_view("xyz"));
   }
 
   using value_type = vec3f;
-  static OSSIA_DECL_RELAXED_CONSTEXPR strong_value<neutral_unit>
+  static constexpr strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
     return self;
   }
 
-  static OSSIA_DECL_RELAXED_CONSTEXPR value_type
+  static constexpr value_type
   from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value;
@@ -41,13 +41,13 @@ struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
 
 struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("cart2D", "xy");
+    constexpr_return(ossia::make_string_array("cart2D", "xy"));
   }
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
+  static constexpr auto array_parameters()
   {
-    return ossia::make_string_view("xy");
+    constexpr_return(ossia::make_string_view("xy"));
   }
   using value_type = vec2f;
   static strong_value<neutral_unit>
@@ -65,13 +65,13 @@ struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
 // aed
 struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("spherical", "aed");
+    constexpr_return(ossia::make_string_array("spherical", "aed"));
   }
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
+  static constexpr auto array_parameters()
   {
-    return ossia::make_string_view("aed");
+    constexpr_return(ossia::make_string_view("aed"));
   }
   using value_type = vec3f;
   static strong_value<neutral_unit>
@@ -83,13 +83,13 @@ struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
 // ad
 struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("polar", "ad");
+    constexpr_return(ossia::make_string_array("polar", "ad"));
   }
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
+  static constexpr auto array_parameters()
   {
-    return ossia::make_string_view("ad");
+    constexpr_return(ossia::make_string_view("ad"));
   }
   using value_type = vec2f;
   static strong_value<neutral_unit>
@@ -113,13 +113,13 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
 
 struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("openGL");
+    constexpr_return(ossia::make_string_array("openGL"));
   }
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
+  static constexpr auto array_parameters()
   {
-    return ossia::make_string_view("xyz");
+    constexpr_return(ossia::make_string_view("xyz"));
   }
   using value_type = vec3f;
   static strong_value<neutral_unit>
@@ -138,13 +138,13 @@ struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
 
 struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("cylindrical", "daz");
+    constexpr_return(ossia::make_string_array("cylindrical", "daz"));
   }
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto array_parameters()
+  static constexpr auto array_parameters()
   {
-    return ossia::make_string_view("daz");
+    constexpr_return(ossia::make_string_view("daz"));
   }
   using value_type = vec3f;
   static strong_value<neutral_unit>

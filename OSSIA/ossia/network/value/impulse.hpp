@@ -24,112 +24,112 @@ class value;
 struct OSSIA_EXPORT impulse
 {
   using value_type = impulse;
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse() noexcept
+  constexpr impulse() noexcept
   {
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse(const impulse&) noexcept
+  constexpr impulse(const impulse&) noexcept
   {
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse(impulse&&) noexcept
+  constexpr impulse(impulse&&) noexcept
   {
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(const impulse&) noexcept
+  constexpr impulse& operator=(const impulse&) noexcept
   {
     return *this;
   }
-  OSSIA_DECL_RELAXED_CONSTEXPR impulse& operator=(impulse&&) noexcept
+  constexpr impulse& operator=(impulse&&) noexcept
   {
     return *this;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const ossia::impulse&) const
+  constexpr bool operator==(const ossia::impulse&) const
   {
     return true;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const ossia::impulse&) const
+  constexpr bool operator!=(const ossia::impulse&) const
   {
     return false;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const ossia::impulse&) const
+  constexpr bool operator>(const ossia::impulse&) const
   {
     return false;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const ossia::impulse&) const
+  constexpr bool operator>=(const ossia::impulse&) const
   {
     return true;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const ossia::impulse&) const
+  constexpr bool operator<(const ossia::impulse&) const
   {
     return false;
   }
 
-  OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const ossia::impulse&) const
+  constexpr bool operator<=(const ossia::impulse&) const
   {
     return true;
   }
 };
 
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const T&, const ossia::impulse&)
+constexpr bool operator==(const T&, const ossia::impulse&)
 {
   return true;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const T&, const ossia::impulse&)
+constexpr bool operator!=(const T&, const ossia::impulse&)
 {
   return false;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const T&, const ossia::impulse&)
+constexpr bool operator>(const T&, const ossia::impulse&)
 {
   return false;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const T&, const ossia::impulse&)
+constexpr bool operator>=(const T&, const ossia::impulse&)
 {
   return true;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const T&, const ossia::impulse&)
+constexpr bool operator<(const T&, const ossia::impulse&)
 {
   return false;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const T&, const ossia::impulse&)
+constexpr bool operator<=(const T&, const ossia::impulse&)
 {
   return true;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator==(const ossia::impulse&, const T&)
+constexpr bool operator==(const ossia::impulse&, const T&)
 {
   return true;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator!=(const ossia::impulse&, const T&)
+constexpr bool operator!=(const ossia::impulse&, const T&)
 {
   return false;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>(const ossia::impulse&, const T&)
+constexpr bool operator>(const ossia::impulse&, const T&)
 {
   return false;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator>=(const ossia::impulse&, const T&)
+constexpr bool operator>=(const ossia::impulse&, const T&)
 {
   return true;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<(const ossia::impulse&, const T&)
+constexpr bool operator<(const ossia::impulse&, const T&)
 {
   return false;
 }
 template <typename T>
-OSSIA_DECL_RELAXED_CONSTEXPR bool operator<=(const ossia::impulse&, const T&)
+constexpr bool operator<=(const ossia::impulse&, const T&)
 {
   return true;
 }

@@ -153,47 +153,47 @@ constexpr auto attributes_changed()
 // Queries
 constexpr auto add_node()
 {
-  return make_string_view("ADD_NODE");
+  constexpr_return(ossia::make_string_view("ADD_NODE"));
 }
 constexpr auto remove_node()
 {
-  return make_string_view("REMOVE_NODE");
+  constexpr_return(ossia::make_string_view("REMOVE_NODE"));
 }
 constexpr auto node_name()
 {
-  return make_string_view("NAME");
+  constexpr_return(ossia::make_string_view("NAME"));
 }
 constexpr auto set_port()
 {
-  return make_string_view("SET_PORT");
+  constexpr_return(ossia::make_string_view("SET_PORT"));
 }
 constexpr auto local_port()
 {
-  return make_string_view("LOCAL_PORT");
+  constexpr_return(ossia::make_string_view("LOCAL_PORT"));
 }
 constexpr auto listen()
 {
-  return make_string_view("LISTEN");
+  constexpr_return(ossia::make_string_view("LISTEN"));
 }
 constexpr auto text_true()
 {
-  return make_string_view("TRUE");
+  constexpr_return(ossia::make_string_view("TRUE"));
 }
 constexpr auto text_false()
 {
-  return make_string_view("FALSE");
+  constexpr_return(ossia::make_string_view("FALSE"));
 }
 constexpr auto query_listen_true()
 {
-  return make_string_view("?LISTEN=TRUE");
+  constexpr_return(ossia::make_string_view("?LISTEN=TRUE"));
 }
 constexpr auto query_listen_false()
 {
-  return make_string_view("?LISTEN=FALSE");
+  constexpr_return(ossia::make_string_view("?LISTEN=FALSE"));
 }
 constexpr auto query_value()
 {
-  return make_string_view("?VALUE");
+  constexpr_return(ossia::make_string_view("?VALUE"));
 }
 
 struct OSSIA_EXPORT full_path_attribute

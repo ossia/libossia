@@ -83,21 +83,21 @@ inline ossia::string_view to_minuit_type_text(ossia::val_type val)
   switch (val)
   {
     case val_type::IMPULSE:
-      return make_string_view("none");
+      constexpr_return(ossia::make_string_view("none"));
     case val_type::INT:
-      return make_string_view("integer");
+      constexpr_return(ossia::make_string_view("integer"));
     case val_type::FLOAT:
-      return make_string_view("decimal");
+      constexpr_return(ossia::make_string_view("decimal"));
     case val_type::BOOL:
-      return make_string_view("boolean");
+      constexpr_return(ossia::make_string_view("boolean"));
     case val_type::CHAR:
     case val_type::STRING:
-      return make_string_view("string");
+      constexpr_return(ossia::make_string_view("string"));
     case val_type::VEC2F:
     case val_type::VEC3F:
     case val_type::VEC4F:
     case val_type::LIST:
-      return make_string_view("array");
+      constexpr_return(ossia::make_string_view("array"));
     default:
       throw invalid_value_type_error("to_minuit_type_text: Invalid type");
   }
@@ -159,11 +159,11 @@ inline ossia::string_view to_minuit_service_text(ossia::access_mode acc)
   switch (acc)
   {
     case ossia::access_mode::BI:
-      return make_string_view("parameter");
+      constexpr_return(ossia::make_string_view("parameter"));
     case ossia::access_mode::GET:
-      return make_string_view("return");
+      constexpr_return(ossia::make_string_view("return"));
     case ossia::access_mode::SET:
-      return make_string_view("message");
+      constexpr_return(ossia::make_string_view("message"));
     default:
       throw parse_error("to_minuit_service_text: Invalid access mode");
   }
@@ -191,17 +191,17 @@ inline ossia::string_view to_minuit_bounding_text(ossia::bounding_mode b)
   switch (b)
   {
     case ossia::bounding_mode::FREE:
-      return make_string_view("none");
+      constexpr_return(ossia::make_string_view("none"));
     case ossia::bounding_mode::CLIP:
-      return make_string_view("both");
+      constexpr_return(ossia::make_string_view("both"));
     case ossia::bounding_mode::WRAP:
-      return make_string_view("wrap");
+      constexpr_return(ossia::make_string_view("wrap"));
     case ossia::bounding_mode::FOLD:
-      return make_string_view("fold");
+      constexpr_return(ossia::make_string_view("fold"));
     case ossia::bounding_mode::LOW:
-      return make_string_view("low");
+      constexpr_return(ossia::make_string_view("low"));
     case ossia::bounding_mode::HIGH:
-      return make_string_view("high");
+      constexpr_return(ossia::make_string_view("high"));
     default:
       throw parse_error("to_minuit_bounding_text: Invalid bounding mode");
   }

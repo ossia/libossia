@@ -25,17 +25,17 @@ using std::asinh;
 using std::fma;
 using std::llround;
 #endif
-const OSSIA_DECL_RELAXED_CONSTEXPR auto pi
+const constexpr auto pi
     = 3.141592653589793238462643383279502884;
-const OSSIA_DECL_RELAXED_CONSTEXPR auto two_pi
+const constexpr auto two_pi
     = 6.283185307179586476925286766559005768;
-const OSSIA_DECL_RELAXED_CONSTEXPR auto half_pi
+const constexpr auto half_pi
     = 1.570796326794896619231321691639751442;
-const OSSIA_DECL_RELAXED_CONSTEXPR auto rad_to_deg
+const constexpr auto rad_to_deg
     = 5.729577951308232087679815481410517033e+01;
-const OSSIA_DECL_RELAXED_CONSTEXPR auto deg_to_rad
+const constexpr auto deg_to_rad
     = 1.745329251994329576923690768488612713e-02;
-const OSSIA_DECL_RELAXED_CONSTEXPR auto ln_2
+const constexpr auto ln_2
     = 6.931471805599453094172321214581765680e-01;
 
 template<typename T>
@@ -67,7 +67,7 @@ inline constexpr size_t constexpr_log2(size_t n)
  * @brief clamp_min Returns the value bounded by a min
  */
 template <class T>
-OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp_min(T d, const T min)
+OSSIA_INLINE constexpr T clamp_min(T d, const T min)
 {
   return d < min ? min : d;
 }
@@ -76,7 +76,7 @@ OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp_min(T d, const T min)
  * @brief clamp_max Returns the value bounded by a max
  */
 template <class T>
-OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp_max(T d, const T max)
+OSSIA_INLINE constexpr T clamp_max(T d, const T max)
 {
   return d > max ? max : d;
 }
@@ -85,7 +85,7 @@ OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T clamp_max(T d, const T max)
  * @brief clamp Returns the value bounded by a min and a max
  */
 template <class T>
-OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T
+OSSIA_INLINE constexpr T
 clamp(T d, const T min, const T max)
 {
   return clamp_min(clamp_max(d, max), min);
@@ -94,7 +94,7 @@ clamp(T d, const T min, const T max)
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008
 template <class T>
-OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T
+OSSIA_INLINE constexpr T
 wrap(const T val, const T low, const T high)
 {
   if ((val >= low) && (val < high))
@@ -106,7 +106,7 @@ wrap(const T val, const T low, const T high)
 }
 
 template <class T>
-OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR T
+OSSIA_INLINE constexpr T
 fold(const T val, const T low, const T high)
 {
   if ((val >= low) && (val <= high))
@@ -120,7 +120,7 @@ fold(const T val, const T low, const T high)
 }
 
 template <class T>
-OSSIA_INLINE OSSIA_DECL_RELAXED_CONSTEXPR
+OSSIA_INLINE constexpr
 std::pair<T,T> div(T num, T denom)
 {
   return { num / denom, num % denom };

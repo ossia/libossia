@@ -19,7 +19,8 @@
 #endif
 
 /// Constexpr support ///
-#define OSSIA_DECL_RELAXED_CONSTEXPR constexpr
+#define constexpr_return(X) do { constexpr auto constexpr_return_x_ = X; return constexpr_return_x_; } while(0)
+
 
 /// Inline support ///
 #if defined(__GNUC__)
@@ -31,7 +32,6 @@
 #else
 #define OSSIA_INLINE
 #endif
-
 
 #define _WEBSOCKETPP_CPP11_STRICT_ 1
 

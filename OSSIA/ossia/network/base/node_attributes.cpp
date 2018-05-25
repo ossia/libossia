@@ -24,7 +24,7 @@ namespace net
   }                                                            \
   ossia::string_view text_##Name()                             \
   {                                                            \
-    return make_string_view(String);                           \
+    constexpr_return(ossia::make_string_view(String));                           \
   }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(Type, Name, String) \
@@ -58,7 +58,7 @@ namespace net
   }                                                              \
   ossia::string_view text_##Name()                               \
   {                                                              \
-    return make_string_view(String);                             \
+    constexpr_return(ossia::make_string_view(String));                             \
   }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(Type, Name, String) \
@@ -80,7 +80,7 @@ namespace net
   }                                                                 \
   ossia::string_view text_##Name()                                  \
   {                                                                 \
-    return make_string_view(String);                                \
+    constexpr_return(ossia::make_string_view(String));                                \
   }
 
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
@@ -102,7 +102,7 @@ OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(
 
 ossia::string_view text_extended_type()
 {
-  return make_string_view("extended_type");
+  constexpr_return(ossia::make_string_view("extended_type"));
 }
 
 optional<extended_type> get_extended_type(const ossia::net::node_base& n)
@@ -263,7 +263,7 @@ void set_default_value(ossia::net::node_base& n, const char* arg)
 // Address-related getters - setters
 ossia::string_view text_value()
 {
-  return make_string_view("value");
+  constexpr_return(ossia::make_string_view("value"));
 }
 value clone_value(const ossia::net::node_base& n)
 {
@@ -283,7 +283,7 @@ void set_value(ossia::net::parameter_data& n, value v)
 
 ossia::string_view text_value_type()
 {
-  return make_string_view("type");
+  constexpr_return(ossia::make_string_view("type"));
 }
 optional<val_type> get_value_type(const ossia::net::node_base& n)
 {
@@ -299,7 +299,7 @@ void set_value_type(ossia::net::node_base& n, val_type v)
 
 ossia::string_view text_domain()
 {
-  return make_string_view("domain");
+  constexpr_return(ossia::make_string_view("domain"));
 }
 domain get_domain(const ossia::net::node_base& n)
 {
@@ -319,7 +319,7 @@ void set_domain(ossia::net::parameter_data& n, domain v)
 
 ossia::string_view text_access_mode()
 {
-  return make_string_view("access");
+  constexpr_return(ossia::make_string_view("access"));
 }
 optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 {
@@ -339,7 +339,7 @@ void set_access_mode(ossia::net::parameter_data& n, access_mode v)
 
 ossia::string_view text_bounding_mode()
 {
-  return make_string_view("bounding");
+  constexpr_return(ossia::make_string_view("bounding"));
 }
 optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 {
@@ -359,7 +359,7 @@ void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v)
 
 ossia::string_view text_muted()
 {
-  return make_string_view("muted");
+  constexpr_return(ossia::make_string_view("muted"));
 }
 muted get_muted(const ossia::net::node_base& n)
 {
@@ -379,7 +379,7 @@ void set_muted(ossia::net::parameter_data& n, muted v)
 
 ossia::string_view text_disabled()
 {
-  return make_string_view("disabled");
+  constexpr_return(ossia::make_string_view("disabled"));
 }
 disabled get_disabled(const ossia::net::node_base& n)
 {
@@ -400,7 +400,7 @@ void set_disabled(ossia::net::parameter_data& n, disabled v)
 
 ossia::string_view text_critical()
 {
-  return make_string_view("critical");
+  constexpr_return(ossia::make_string_view("critical"));
 }
 critical get_critical(const ossia::net::node_base& n)
 {
@@ -420,7 +420,7 @@ void set_critical(ossia::net::parameter_data& n, critical v)
 
 ossia::string_view text_repetition_filter()
 {
-  return make_string_view("repetition_filter");
+  constexpr_return(ossia::make_string_view("repetition_filter"));
 }
 repetition_filter get_repetition_filter(const ossia::net::node_base& n)
 {
@@ -436,7 +436,7 @@ void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 
 ossia::string_view text_unit()
 {
-  return make_string_view("unit");
+  constexpr_return(ossia::make_string_view("unit"));
 }
 unit_t get_unit(const ossia::net::node_base& n)
 {

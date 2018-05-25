@@ -35,54 +35,54 @@ struct speed_ratio : public linear_unit<speed_unit<speed_ratio<T>>, T>
 template <>
 struct unit_traits<meter_per_second_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("m/s");
+    constexpr_return(ossia::make_string_array("m/s"));
   }
 };
 
 template <>
 struct unit_traits<miles_per_hour_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("mph", "mi/h");
+    constexpr_return(ossia::make_string_array("mph", "mi/h"));
   }
 };
 
 template <>
 struct unit_traits<kilometer_per_hour_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("km/h", "kmph");
+    constexpr_return(ossia::make_string_array("km/h", "kmph"));
   }
 };
 
 template <>
 struct unit_traits<knot_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("kn");
+    constexpr_return(ossia::make_string_array("kn"));
   }
 };
 
 template <>
 struct unit_traits<foot_per_hour_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("ft/h");
+    constexpr_return(ossia::make_string_array("ft/h"));
   }
 };
 
 template <>
 struct unit_traits<foot_per_second_u>
 {
-  static OSSIA_DECL_RELAXED_CONSTEXPR auto text()
+  static constexpr auto text()
   {
-    return ossia::make_string_array("ft/s");
+    constexpr_return(ossia::make_string_array("ft/s"));
   }
 };
 }
