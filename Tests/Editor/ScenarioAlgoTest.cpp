@@ -125,7 +125,7 @@ class ScenarioAlgoTest : public QObject
           qDebug() << tok;
       }
 
-      QCOMPARE(n->requested_tokens.size(), 2);
+      QCOMPARE((int)n->requested_tokens.size(), (int)2);
       QCOMPARE(n->requested_tokens[0], (token_request{0_tv, 0_tv, 0., 10_tv}));
       QCOMPARE(n->requested_tokens[1], (token_request{0_tv, 40_tv, 40. / 100., 10_tv}));
       n->requested_tokens.clear();
@@ -137,7 +137,7 @@ class ScenarioAlgoTest : public QObject
           qDebug() << tok;
       }
 
-      QCOMPARE(n->requested_tokens.size(), 1);
+      QCOMPARE((int)n->requested_tokens.size(), (int)1);
       QCOMPARE(n->requested_tokens[0], (token_request{40_tv, 90_tv, 90. / 100., 0_tv}));
       n->requested_tokens.clear();
 
