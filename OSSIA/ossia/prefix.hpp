@@ -4,7 +4,7 @@
 #pragma GCC system_header
 #pragma clang system_header
 
-////////
+//
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/callback_container.hpp>

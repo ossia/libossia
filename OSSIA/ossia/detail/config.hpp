@@ -1,6 +1,12 @@
 #pragma once
 #include <ossia-config.hpp>
 #include <ossia_export.h>
+#if defined(__APPLE__)
+#include <MacTypes.h>
+#if defined(nil)
+#undef nil
+#endif
+#endif
 
 #define OSSIA_EXTERN_EXPORT_HPP(EXPORT) EXPORT
 #define OSSIA_EXTERN_EXPORT_CPP(EXPORT)
