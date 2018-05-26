@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia-c/ossia-c.h>
 #include <ossia/detail/config.hpp>
 
