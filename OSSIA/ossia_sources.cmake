@@ -509,6 +509,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_chain_process.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/fx_node.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_utils.hpp"
@@ -517,6 +518,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/gain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/gradient.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/input.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/forward_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/mapping.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/merger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/messages.hpp"
@@ -532,6 +534,8 @@ set(OSSIA_DATAFLOW_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/port.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/executor.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/tick_policies.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_ordering.hpp"
