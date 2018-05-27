@@ -17,7 +17,7 @@
 namespace ossia
 {
 using past_events_map
-    = boost::container::flat_map<time_value, time_event*>;
+    = boost::container::flat_multimap<time_value, time_event*>;
 using DateMap = ossia::ptr_map<time_sync*, ossia::time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using IntervalPtr = std::shared_ptr<ossia::time_interval>;
@@ -103,7 +103,12 @@ void process_offset(
 
     // add HAPPENED event to offset event list
     if (eventStatus == time_event::status::HAPPENED)
-      pastEvents.insert(std::make_pair(date, ev_ptr.get()));
+    {
+      if(!ev_ptr->get_time_processes().empty())
+      {
+        pastEvents.insert(std::make_pair(date, ev_ptr.get()));
+      }
+    }
 
     // propagate offset processing to setup all TimeEvents
     for (const auto& timeInterval : event.next_time_intervals())
