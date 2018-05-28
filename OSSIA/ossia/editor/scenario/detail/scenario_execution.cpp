@@ -460,7 +460,7 @@ void scenario::state(
       if (!cst_max_dur.infinite())
       {
         // TODO instead if(tick < cst_max_dur - cst_old_date) while taking speed into account
-        auto max_tick = time_value{(cst_max_dur - cst_old_date) / interval.get_speed()};
+        auto max_tick = time_value{int64_t((cst_max_dur - cst_old_date) / interval.get_speed())};
         auto diff = tick - max_tick;
         if(diff <= 0)
         {
@@ -474,7 +474,7 @@ void scenario::state(
             interval.tick_offset(max_tick, offset);
           }
 
-          const auto ot = ossia::time_value{interval.get_speed() * diff};
+          const auto ot = ossia::time_value{int64_t(interval.get_speed() * diff)};
           const auto node_it = m_overticks.lower_bound(end_node);
           if (node_it != m_overticks.end() && (end_node == node_it->first))
           {

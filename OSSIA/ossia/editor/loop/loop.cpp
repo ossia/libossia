@@ -39,7 +39,7 @@ loop::~loop()
 void loop::offset(ossia::time_value offset, double pos)
 {
   time_value patternOffset{
-    std::fmod((double)offset, (double)m_interval.get_nominal_duration())};
+    int64_t(std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
   m_interval.offset(patternOffset);
   m_lastDate = offset;
   /*
@@ -69,7 +69,7 @@ void loop::offset(ossia::time_value offset, double pos)
 void loop::transport(ossia::time_value offset, double pos)
 {
   time_value patternOffset{
-    std::fmod((double)offset, (double)m_interval.get_nominal_duration())};
+    int64_t(std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
   m_interval.transport(patternOffset);
   m_lastDate = offset;
 }

@@ -118,7 +118,7 @@ void qml_exec::timerEvent(QTimerEvent* event)
 
   auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(m_cur_t - last).count();
 
-  m_cur->m_interval->tick(time_value(elapsed));
+  m_cur->m_interval->tick(time_value{elapsed});
 }
 
 }

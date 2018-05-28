@@ -71,7 +71,7 @@ struct root_scenario
   std::shared_ptr<ossia::time_interval> interval{ossia::time_interval::create(
             {},
             *start_event, *end_event,
-            ossia::time_value(15000), ossia::time_value(15000), ossia::time_value(15000))};
+          ossia::time_value{15000}, ossia::time_value{15000}, ossia::time_value{15000})};
   std::shared_ptr<ossia::scenario> scenario{std::make_shared<ossia::scenario>()};
   ossia::clock clck{*interval};
 

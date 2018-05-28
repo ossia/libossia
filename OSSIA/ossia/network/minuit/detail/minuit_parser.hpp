@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/base/device.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/detail/osc.hpp>

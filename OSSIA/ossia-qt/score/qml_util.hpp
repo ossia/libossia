@@ -13,7 +13,7 @@ inline bool isInfinite(qint32 t) { return t == infinite(); }
 inline auto defaultTime(qint32 t) -> ossia::time_value {
   return t == infinite()
       ? ossia::Infinite
-      : ossia::time_value{t * 1000.};
+      : ossia::time_value{t * 1000};
 }
 
 inline auto reverseTime(time_value t) -> qint32 {

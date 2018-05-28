@@ -112,7 +112,7 @@ struct buffer_tick
       st.bufferSize = (int)frameCount;
       // we could run a syscall and call now() but that's a bit more costly.
       st.cur_date = seconds * 1e9;
-      itv.tick_offset(ossia::time_value(frameCount), 0_tv);
+      itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv);
       g.state(st);
       (st.*Commit)();
     }
@@ -135,7 +135,7 @@ struct precise_score_tick
         st.clear_local_state();
         st.get_new_values();
         st.samples_since_start++;
-        itv.tick_offset(ossia::time_value(1), 0_tv);
+        itv.tick_offset(ossia::time_value{1}, 0_tv);
         g.state(st);
         (st.*Commit)();
 
@@ -248,7 +248,7 @@ struct split_score_tick
       st.bufferSize = (int)frameCount;
       // we could run a syscall and call now() but that's a bit more costly.
       st.cur_date = seconds * 1e9;
-      itv.tick_offset(ossia::time_value(frameCount), 0_tv);
+      itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv);
 
       cut(g);
     }

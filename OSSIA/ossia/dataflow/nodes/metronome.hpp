@@ -49,7 +49,7 @@ class OSSIA_EXPORT metronome final :
 
       // cur: Tick speed in time_values.
       // 1 = 1 tick per time_value. 1000 = 1 tick per 1000 time_value.
-      time_value cur{m_curve->value_at(pos)};
+      time_value cur{int64_t(m_curve->value_at(pos))};
 
       // TODO we should compute the derivative since the last tick in order to be precise
       if(date > t.prev_date) {

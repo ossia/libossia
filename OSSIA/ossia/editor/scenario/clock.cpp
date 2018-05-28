@@ -15,12 +15,12 @@ namespace ossia
 clock::clock(ossia::time_interval& cst, double ratio)
     : m_interval{cst}
     , m_ratio(ratio)
-    , m_duration(
+    , m_duration{
           cst.get_max_duration().infinite() ? time_value::infinity
-                                            : cst.get_max_duration() * ratio)
-    , m_granularity(1)
-    , m_running(false)
-    , m_paused(false)
+                                            : cst.get_max_duration() * ratio}
+    , m_granularity{1}
+    , m_running{false}
+    , m_paused{false}
 {
 }
 
