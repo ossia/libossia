@@ -218,16 +218,24 @@ bool node_base::remove_child(const std::string& name)
   std::string n = name;
   sanitize_name(n);
 
-  write_lock_t lock{m_mutex};
-  auto it
-      = find_if(m_children, [&](const auto& c) { return c->get_name() == n; });
-
-  if (it != m_children.end())
+  std::unique_ptr<ossia::net::node_base> cld;
   {
-    (*it)->clear_children();
-    dev.on_node_removing(**it);
-    removing_child(**it);
-    m_children.erase(it);
+    write_lock_t lock{m_mutex};
+    auto it
+        = find_if(m_children, [&](const auto& c) { return c->get_name() == n; });
+
+    if (it != m_children.end())
+    {
+      cld = std::move(*it);
+      m_children.erase(it);
+    }
+  }
+
+  if (cld)
+  {
+    cld->clear_children();
+    dev.on_node_removing(*cld);
+    removing_child(*cld);
 
     return true;
   }
@@ -243,16 +251,24 @@ bool node_base::remove_child(const node_base& n)
   if (!dev.get_capabilities().change_tree)
     return false;
 
-  write_lock_t lock{m_mutex};
-  auto it = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
-
-  if (it != m_children.end())
+  std::unique_ptr<ossia::net::node_base> cld;
   {
-    (*it)->clear_children();
-    dev.on_node_removing(**it);
-    removing_child(**it);
-    m_children.erase(it);
+    write_lock_t lock{m_mutex};
+    auto it = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
 
+    if (it != m_children.end())
+    {
+      cld = std::move(*it);
+      m_children.erase(it);
+    }
+  }
+
+  if (cld)
+  {
+    cld->clear_children();
+    dev.on_node_removing(*cld);
+    removing_child(*cld);
+    cld.reset();
     return true;
   }
   else
@@ -267,24 +283,20 @@ void node_base::clear_children()
   if (!dev.get_capabilities().change_tree)
     return;
 
-  for (auto& child : m_children)
-  {
-    child->clear_children();
-    child->remove_parameter();
-  }
+  children_t to_remove;
 
   {
     write_lock_t lock{m_mutex};
-    while(!m_children.empty())
-    {
-      auto child = std::move(m_children.back());
-      dev.on_node_removing(*child);
-      removing_child(*child);
-      m_children.pop_back();
-      child.reset();
-    }
+    to_remove = std::move(m_children);
+  }
 
-    m_children.clear();
+  for (auto& child : to_remove)
+  {
+    child->clear_children();
+    child->remove_parameter();
+    dev.on_node_removing(*child);
+    removing_child(*child);
+    child.reset();
   }
 }
 
