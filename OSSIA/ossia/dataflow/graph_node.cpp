@@ -58,12 +58,12 @@ node_process::~node_process()
 
 }
 
-graph_edge::graph_edge(connection c, std::size_t pout, std::size_t pin, node_ptr pout_node, node_ptr pin_node)
+graph_edge::graph_edge(connection c, std::size_t pout, std::size_t pin, node_ptr pout_node, node_ptr pin_node) noexcept
   : graph_edge{c, pout_node->outputs()[pout], pin_node->inputs()[pin], std::move(pout_node) , std::move(pin_node)}
 {
 }
 
-graph_edge::graph_edge(connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node, node_ptr pin_node)
+graph_edge::graph_edge(connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node, node_ptr pin_node) noexcept
   : con{c}
   , out{std::move(pout)}
   , in{std::move(pin)}
@@ -74,7 +74,7 @@ graph_edge::graph_edge(connection c, outlet_ptr pout, inlet_ptr pin, node_ptr po
   assert(in_node);
 }
 
-void graph_edge::init()
+void graph_edge::init() noexcept
 {
   if (in && out)
   {
@@ -92,12 +92,12 @@ void graph_edge::init()
   }
 }
 
-graph_edge::~graph_edge()
+graph_edge::~graph_edge() noexcept
 {
   clear();
 }
 
-void graph_edge::clear()
+void graph_edge::clear() noexcept
 {
   if (in && out)
   {
@@ -120,42 +120,42 @@ graph_node::~graph_node()
     delete outl;
 }
 
-void graph_node::prepare(const execution_state& st) const
+void graph_node::prepare(const execution_state& st) const noexcept
 {
 
 }
-graph_node::graph_node()
+graph_node::graph_node() noexcept
 {
 }
 
-bool graph_node::consumes(const execution_state&) const
+bool graph_node::consumes(const execution_state&) const noexcept
 {
   return false;
 }
 
-void graph_node::run(token_request t, execution_state&)
+void graph_node::run(token_request t, execution_state&) noexcept
 {
 }
 
-std::string graph_node::label() const
+std::string graph_node::label() const noexcept
 {
   return {};
 }
 
-bool graph_node::has_port_inputs() const
+bool graph_node::has_port_inputs() const noexcept
 {
   return ossia::any_of(
         inputs(), [](const inlet_ptr& inlet) { return !inlet->sources.empty(); });
 }
 
-bool graph_node::has_global_inputs() const
+bool graph_node::has_global_inputs() const noexcept
 {
   return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
     return (inlet->scope & port::scope_t::global) && bool(inlet->address);
   });
 }
 
-bool graph_node::has_local_inputs(const execution_state& st) const
+bool graph_node::has_local_inputs(const execution_state& st) const noexcept
 {
   return ossia::any_of(inputs(), [&] (const inlet_ptr& inlet) {
     if (inlet->scope & port::scope_t::local)
@@ -181,7 +181,7 @@ bool graph_node::has_local_inputs(const execution_state& st) const
 }
 
 
-void graph_node::clear()
+void graph_node::clear() noexcept
 {
   for(auto inl : m_inlets)
   {
@@ -203,7 +203,7 @@ void graph_node::clear()
   m_outlets.clear();
 }
 
-void graph_node::request(token_request req)
+void graph_node::request(token_request req) noexcept
 {
   /*
   if(std::abs(req.date - req.prev_date) > 1000)
@@ -215,7 +215,7 @@ void graph_node::request(token_request req)
   requested_tokens.push_back(std::move(req));
 }
 
-void graph_node::all_notes_off()
+void graph_node::all_notes_off() noexcept
 {
 
 }
@@ -226,7 +226,7 @@ nonowning_graph_node::~nonowning_graph_node()
   m_outlets.clear();
 }
 
-void nonowning_graph_node::clear()
+void nonowning_graph_node::clear() noexcept
 {
 }
 

@@ -60,7 +60,7 @@ class spline final :
 
     }
 
-    std::string label() const override
+    std::string label() const noexcept override
     {
       return "spline";
     }
@@ -76,7 +76,7 @@ class spline final :
     }
 
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       ossia::value_port* vp = value_out.data.target<ossia::value_port>();
 

@@ -18,7 +18,7 @@ struct state final : public ossia::graph_node
 
     }
 
-    void run(ossia::token_request, ossia::execution_state& e) override
+    void run(ossia::token_request, ossia::execution_state& e) noexcept override
     {
       e.insert(data);
     }

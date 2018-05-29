@@ -19,7 +19,7 @@ struct OSSIA_EXPORT port
   scope_t scope{scope_t::both};
 
 protected:
-  port(data_type d) : data{std::move(d)}
+  port(data_type&& d) noexcept : data{std::move(d)}
   {
   }
 
@@ -32,32 +32,32 @@ protected:
 
 struct OSSIA_EXPORT inlet : public port
 {
-  inlet(data_type d) : port{std::move(d)}
+  inlet(data_type&& d) noexcept : port{std::move(d)}
   {
   }
-  inlet(data_type d, destination_t dest)
+  inlet(data_type&& d, destination_t dest) noexcept
       : port{std::move(d)}, address{std::move(dest)}
   {
   }
 
-  inlet(data_type d, ossia::net::parameter_base& addr)
+  inlet(data_type&& d, ossia::net::parameter_base& addr) noexcept
       : port{std::move(d)}, address{&addr}
   {
   }
 
-  inlet(data_type d, graph_edge& edge) : port{std::move(d)}
+  inlet(data_type&& d, graph_edge& edge) noexcept : port{std::move(d)}
   {
     sources.push_back(&edge);
   }
 
-  void connect(graph_edge* e)
+  void connect(graph_edge* e) noexcept
   {
     auto it = ossia::find(sources, e);
     if (it == sources.end())
       sources.push_back(e);
   }
 
-  void disconnect(graph_edge* e)
+  void disconnect(graph_edge* e) noexcept
   {
     boost::remove_erase(sources, e);
   }
@@ -68,32 +68,32 @@ struct OSSIA_EXPORT inlet : public port
 
 struct OSSIA_EXPORT outlet : public port
 {
-  outlet(data_type d) : port{std::move(d)}
+  outlet(data_type&& d) noexcept : port{std::move(d)}
   {
   }
-  outlet(data_type d, destination_t dest)
+  outlet(data_type&& d, destination_t dest) noexcept
       : port{std::move(d)}, address{std::move(dest)}
   {
   }
 
-  outlet(data_type d, ossia::net::parameter_base& addr)
+  outlet(data_type&& d, ossia::net::parameter_base& addr) noexcept
       : port{std::move(d)}, address{&addr}
   {
   }
 
-  outlet(data_type d, graph_edge& edge) : port{std::move(d)}
+  outlet(data_type&& d, graph_edge& edge) noexcept : port{std::move(d)}
   {
     targets.push_back(&edge);
   }
 
-  void connect(graph_edge* e)
+  void connect(graph_edge* e) noexcept
   {
     auto it = ossia::find(targets, e);
     if (it == targets.end())
       targets.push_back(e);
   }
 
-  void disconnect(graph_edge* e)
+  void disconnect(graph_edge* e) noexcept
   {
     boost::remove_erase(targets, e);
   }

@@ -19,7 +19,7 @@ class OSSIA_EXPORT metronome final :
 
     }
 
-    std::string label() const override
+    std::string label() const noexcept override
     {
       return "automation";
     }
@@ -35,7 +35,7 @@ class OSSIA_EXPORT metronome final :
     }
 
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       ossia::value_port* vp = value_out.data.target<ossia::value_port>();
       const auto& date = t.date;

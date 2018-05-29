@@ -38,7 +38,7 @@ private:
     }
     return {};
   }
-  void run(ossia::token_request t, ossia::execution_state& e) override
+  void run(ossia::token_request t, ossia::execution_state& e) noexcept override
   {
     // First read the requested channels at the end of "data".
     if(m_numChan == 0)

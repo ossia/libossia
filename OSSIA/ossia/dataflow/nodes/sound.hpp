@@ -33,7 +33,7 @@ class sound final :
     {
       m_data = std::move(vec);
     }
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       if(m_data.empty())
         return;
@@ -172,7 +172,7 @@ class sound_ref final :
       m_data = std::move(vec);
     }
 
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       if(m_data.empty())
         return;

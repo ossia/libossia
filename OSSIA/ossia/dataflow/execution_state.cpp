@@ -74,7 +74,7 @@ struct global_pull_visitor
         auto it = state.m_receivedValues.find(const_cast<net::parameter_base*>(&out));
         if(it != state.m_receivedValues.end())
         {
-          for(auto& v : it->second)
+          for(ossia::value v : it->second)
             val.add_raw_value(std::move(v));
         }
       }

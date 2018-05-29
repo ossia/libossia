@@ -15,7 +15,7 @@ public:
     m_outlets.push_back(&midi_out);
   }
 
-  void run(token_request t, execution_state&) override
+  void run(token_request t, execution_state&) noexcept override
   {
     {
       auto i = audio_in.data.target<ossia::audio_port>();
@@ -38,7 +38,7 @@ class interval final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return "Interval";
   }
@@ -47,7 +47,7 @@ class loop final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return "Loop";
   }
@@ -56,7 +56,7 @@ class scenario final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return "Scenario";
   }

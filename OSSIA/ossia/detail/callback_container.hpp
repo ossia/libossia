@@ -16,13 +16,13 @@ namespace ossia
  *
  * Means that an invalid callback was passed
  */
-struct OSSIA_EXPORT invalid_callback_error : public std::logic_error
+struct OSSIA_EXPORT invalid_callback_error final : public std::logic_error
 {
   invalid_callback_error(const char* e) : std::logic_error(e)
   {
   }
 
-  ~invalid_callback_error();
+  ~invalid_callback_error() override;
   invalid_callback_error() : std::logic_error("Bad callback")
   {
   }
@@ -43,15 +43,13 @@ template <typename T>
 class callback_container
 {
 public:
-  callback_container()
-  {
-  }
+  callback_container() = default;
   callback_container(const callback_container& other)
   {
     std::lock_guard<std::mutex> lck{other.m_mutx};
     m_callbacks = other.m_callbacks;
   }
-  callback_container(callback_container&& other)
+  callback_container(callback_container&& other) noexcept
   {
     std::lock_guard<std::mutex> lck{other.m_mutx};
     m_callbacks = std::move(other.m_callbacks);
@@ -62,16 +60,14 @@ public:
     m_callbacks = other.m_callbacks;
     return *this;
   }
-  callback_container& operator=(callback_container&& other)
+  callback_container& operator=(callback_container&& other) noexcept
   {
     std::lock_guard<std::mutex> lck{other.m_mutx};
     m_callbacks = std::move(other.m_callbacks);
     return *this;
   }
 
-  virtual ~callback_container()
-  {
-  }
+  virtual ~callback_container() = default;
 
   /**
    * @brief impl How the callbackas are stored.

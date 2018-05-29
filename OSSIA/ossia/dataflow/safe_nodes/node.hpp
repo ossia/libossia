@@ -141,52 +141,47 @@ struct get_ports
       }
       else
       {
-        return msvc();
-      }
-    }
+        if constexpr(std::is_same<PortType, value_in>::value)
+        {
+          return T::Metadata::value_ins;
+        }
+        else if constexpr(std::is_same<PortType, value_out>::value)
+        {
+          return T::Metadata::value_outs;
+        }
 
-    constexpr auto msvc()
-    {
-      if constexpr(std::is_same<PortType, value_in>::value)
-      {
-        return T::Metadata::value_ins;
-      }
-      else if constexpr(std::is_same<PortType, value_out>::value)
-      {
-        return T::Metadata::value_outs;
-      }
+        else if constexpr(std::is_same<PortType, midi_in>::value)
+        {
+          return T::Metadata::midi_ins;
+        }
+        else if constexpr(std::is_same<PortType, midi_out>::value)
+        {
+          return T::Metadata::midi_outs;
+        }
 
-      else if constexpr(std::is_same<PortType, midi_in>::value)
-      {
-        return T::Metadata::midi_ins;
-      }
-      else if constexpr(std::is_same<PortType, midi_out>::value)
-      {
-        return T::Metadata::midi_outs;
-      }
+        else if constexpr(std::is_same<PortType, audio_in>::value)
+        {
+          return T::Metadata::audio_ins;
+        }
+        else if constexpr(std::is_same<PortType, audio_out>::value)
+        {
+          return T::Metadata::audio_outs;
+        }
 
-      else if constexpr(std::is_same<PortType, audio_in>::value)
-      {
-        return T::Metadata::audio_ins;
-      }
-      else if constexpr(std::is_same<PortType, audio_out>::value)
-      {
-        return T::Metadata::audio_outs;
-      }
+        else if constexpr(std::is_same<PortType, address_in>::value)
+        {
+          return T::Metadata::address_ins;
+        }
 
-      else if constexpr(std::is_same<PortType, address_in>::value)
-      {
-        return T::Metadata::address_ins;
-      }
+        else if constexpr(std::is_same<PortType, control_in>::value)
+        {
+          return T::Metadata::controls;
+        }
 
-      else if constexpr(std::is_same<PortType, control_in>::value)
-      {
-        return T::Metadata::controls;
-      }
-
-      else
-      {
-        return dummy_container<PortType>{};
+        else
+        {
+          return dummy_container<PortType>{};
+        }
       }
     }
 };

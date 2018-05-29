@@ -19,16 +19,16 @@ struct OSSIA_EXPORT graph_edge
 {
   graph_edge(
       connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node,
-      node_ptr pin_node);
+      node_ptr pin_node) noexcept;
 
   graph_edge(
-      connection c, std::size_t pout, std::size_t pin, node_ptr pout_node, node_ptr pin_node);
+      connection c, std::size_t pout, std::size_t pin, node_ptr pout_node, node_ptr pin_node) noexcept;
 
-  void init();
+  void init() noexcept;
 
   ~graph_edge();
 
-  void clear();
+  void clear() noexcept;
 
   connection con{};
   outlet_ptr out{};

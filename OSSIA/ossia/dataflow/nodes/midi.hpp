@@ -136,7 +136,7 @@ class midi final
     bool mustStop{};
     bool doTransport{};
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       ossia::midi_port* mp = midi_out.data.target<ossia::midi_port>();
 

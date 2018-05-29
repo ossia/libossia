@@ -8,13 +8,18 @@ namespace ossia
 {
 class graph;
 struct token_request {
-    token_request() = default;
-    token_request(const token_request&) = default;
-    token_request(token_request&&) = default;
-    token_request& operator=(const token_request&) = default;
-    token_request& operator=(token_request&&) = default;
+    token_request() noexcept = default;
+    token_request(const token_request&) noexcept = default;
+    token_request(token_request&&) noexcept = default;
+    token_request& operator=(const token_request&) noexcept = default;
+    token_request& operator=(token_request&&) noexcept = default;
 
-    token_request(ossia::time_value prev_d, ossia::time_value d, double pos, ossia::time_value off, double s)
+    token_request(
+        ossia::time_value prev_d
+        , ossia::time_value d
+        , double pos
+        , ossia::time_value off
+        , double s) noexcept
       : prev_date{prev_d}
       , date{d}
       , position{pos}
@@ -27,19 +32,23 @@ struct token_request {
       }
     }
 
-    token_request(ossia::time_value prev_d, ossia::time_value d, double pos, ossia::time_value off)
+    token_request(
+        ossia::time_value prev_d
+        , ossia::time_value d
+        , double pos
+        , ossia::time_value off) noexcept
       : token_request{prev_d, d, pos, off, 1.}
     {
 
     }
 
-    token_request(ossia::time_value prev_d, ossia::time_value d, double pos)
+    token_request(ossia::time_value prev_d, ossia::time_value d, double pos) noexcept
       : token_request{prev_d, d, pos, time_value{}, 1.}
     {
 
     }
 
-    token_request(ossia::time_value prev_d, ossia::time_value d)
+    token_request(ossia::time_value prev_d, ossia::time_value d) noexcept
       : token_request{prev_d, d, 0., time_value{}, 1.}
     {
 
@@ -67,7 +76,7 @@ using token_request_vec = ossia::small_vector<token_request, 4>;
 class OSSIA_EXPORT graph_node
 {
 public:
-  graph_node();
+  graph_node() noexcept;
   virtual ~graph_node();
 
   bool enabled() const
@@ -75,55 +84,53 @@ public:
     return !requested_tokens.empty();
   }
 
-  bool executed() const
+  bool executed() const noexcept
   {
     return m_executed;
   }
 
-  void set_start_discontinuous(bool b) { m_start_discontinuous = b; }
-  void set_end_discontinuous(bool b) { m_end_discontinuous = b; }
+  void set_start_discontinuous(bool b) noexcept { m_start_discontinuous = b; }
+  void set_end_discontinuous(bool b) noexcept { m_end_discontinuous = b; }
 
-  virtual void prepare(const execution_state& st) const;
-  virtual bool consumes(const execution_state&) const;
-  virtual void run(token_request, execution_state&);
-  virtual std::string label() const;
+  virtual void prepare(const execution_state& st) const noexcept;
+  virtual bool consumes(const execution_state&) const noexcept;
+  virtual void run(token_request, execution_state&) noexcept;
+  virtual std::string label() const noexcept;
 
-  bool has_port_inputs() const;
-  bool has_global_inputs() const;
-  bool has_local_inputs(const execution_state& st) const;
+  bool has_port_inputs() const noexcept;
+  bool has_global_inputs() const noexcept;
+  bool has_local_inputs(const execution_state& st) const noexcept;
 
-  const inlets& inputs() const { return m_inlets; }
-  const outlets& outputs() const { return m_outlets; }
-  inlets& inputs() { return m_inlets; }
-  outlets& outputs() { return m_outlets; }
+  const inlets& inputs() const noexcept { return m_inlets; }
+  const outlets& outputs() const noexcept { return m_outlets; }
+  inlets& inputs() noexcept { return m_inlets; }
+  outlets& outputs() noexcept { return m_outlets; }
 
-  virtual void clear();
+  virtual void clear() noexcept;
 
-  bool start_discontinuous() const { return m_start_discontinuous; }
-  bool end_discontinuous() const { return m_end_discontinuous; }
+  bool start_discontinuous() const noexcept { return m_start_discontinuous; }
+  bool end_discontinuous() const noexcept { return m_end_discontinuous; }
 
-  void set_executed(bool b)
+  void set_executed(bool b) noexcept
   {
     m_executed = b;
   }
 
-  void request(ossia::token_request req);
+  void request(ossia::token_request req) noexcept;
 
-  void disable()
+  void disable() noexcept
   {
     requested_tokens.clear();
   }
 
-  void set_logging(bool b) { m_logging = b; }
-  bool logged() const { return m_logging; }
+  void set_logging(bool b) noexcept { m_logging = b; }
+  bool logged() const noexcept { return m_logging; }
 
-  void set_mute(bool b) { m_muted = b; }
-  bool muted() const { return m_muted; }
+  void set_mute(bool b) noexcept { m_muted = b; }
+  bool muted() const noexcept { return m_muted; }
 
-  virtual void all_notes_off();
+  virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
-
-
 
 protected:
   inlets m_inlets;
@@ -144,6 +151,6 @@ class OSSIA_EXPORT nonowning_graph_node: public graph_node
     using graph_node::graph_node;
     ~nonowning_graph_node() override;
 
-    void clear() override;
+    void clear() noexcept override;
 };
 }

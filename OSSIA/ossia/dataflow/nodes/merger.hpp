@@ -33,7 +33,7 @@ public:
 
   }
 
-  void run(ossia::token_request t, ossia::execution_state& e) override
+  void run(ossia::token_request t, ossia::execution_state& e) noexcept override
   {
     auto& out = m_outlets.back()->data.target<ossia::audio_port>()->samples;
     std::size_t cur = 0;
@@ -50,7 +50,7 @@ public:
     }
   }
 
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return "Stereo Merger";
   }

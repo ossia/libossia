@@ -55,7 +55,7 @@ class gradient final : public ossia::graph_node
       }
     }
 
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       auto& out = *m_outlets[0]->data.target<ossia::value_port>();
 

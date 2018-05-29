@@ -28,7 +28,7 @@ class OSSIA_EXPORT mapping final :
       m_outlets.push_back(&value_out);
     }
 
-    std::string label() const override
+    std::string label() const noexcept override
     {
       return "mapping";
     }
@@ -68,7 +68,7 @@ class OSSIA_EXPORT mapping final :
     }
 
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       if(!m_drive)
         return;

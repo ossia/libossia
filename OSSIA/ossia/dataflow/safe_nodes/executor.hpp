@@ -46,7 +46,7 @@ public:
   using timed_vec_t = ossia::safe_nodes::timed_vec<typename std::tuple_element<N, controls_type>::type::type>;
 
   template <std::size_t... I>
-  static constexpr auto get_control_accessor_types(const std::index_sequence<I...>& )
+  static constexpr auto get_control_accessor_types(const std::index_sequence<I...>& ) noexcept
   {
     return std::tuple<timed_vec_t<I>...>{};
   }
@@ -54,7 +54,7 @@ public:
   using control_tuple_t = decltype(get_control_accessor_types(std::make_index_sequence<ossia::safe_nodes::info_functions<Node_T>::control_count>()));
   control_tuple_t control_tuple;
 
-  safe_node()
+  safe_node() noexcept
   {
     m_inlets.reserve(info_functions<Node_T>::inlet_size);
     m_outlets.reserve(info_functions<Node_T>::outlet_size);
@@ -105,7 +105,7 @@ public:
   }
 
   template<std::size_t N>
-  static constexpr auto get_inlet_accessor()
+  static constexpr auto get_inlet_accessor() noexcept
   {
     constexpr auto cat = info::categorize_inlet(N);
     if constexpr(cat == ossia::safe_nodes::inlet_kind::audio_in)
@@ -120,13 +120,6 @@ public:
         throw;
   }
 
-
-#if defined(_MSC_VER)
-#define MSVC_CONSTEXPR const
-#else
-#define MSVC_CONSTEXPR constexpr
-#endif
-
 template<bool Validate, std::size_t N>
 struct apply_control;
 
@@ -134,10 +127,10 @@ template<std::size_t N>
 struct apply_control<true, N>
 {
     template<typename Vec, typename Vp>
-    void operator()(Vec& vec, safe_node& self, const Vp& vp)
+    void operator()(Vec& vec, safe_node& self, const Vp& vp) noexcept
     {
         constexpr const auto ctrls = get_controls<Node_T>{}();
-        MSVC_CONSTEXPR auto ctrl = std::get<N>(ctrls);
+        constexpr auto ctrl = std::get<N>(ctrls);
         for (auto& v : vp)
         {
             if (auto res = ctrl.fromValue(v.value))
@@ -152,10 +145,10 @@ template<std::size_t N>
 struct apply_control<false, N>
 {
     template<typename Vec, typename Vp>
-    void operator()(Vec& vec, safe_node& self, const Vp& vp)
+    void operator()(Vec& vec, safe_node& self, const Vp& vp) noexcept
     {
         constexpr const auto ctrls = get_controls<Node_T>{}();
-        MSVC_CONSTEXPR auto ctrl = std::get<N>(ctrls);
+        constexpr auto ctrl = std::get<N>(ctrls);
         for (auto& v : vp)
         {
             vec[int64_t{ v.timestamp }] = ctrl.fromValue(v.value);
@@ -164,7 +157,7 @@ struct apply_control<false, N>
     }
 };
   template<std::size_t N>
-  static constexpr auto get_control_accessor()
+  static constexpr auto get_control_accessor() noexcept
   {
     return [] (const ossia::inlets& inl, safe_node& self) -> const auto& {
       constexpr const auto idx = info::control_start + N;
@@ -192,7 +185,7 @@ struct apply_control<false, N>
   }
 
   template<std::size_t N>
-  static constexpr auto get_outlet_accessor()
+  static constexpr auto get_outlet_accessor() noexcept
   {
     if constexpr(N < info::audio_out_count)
         return [] (const ossia::outlets& inl) -> ossia::audio_port& { return *inl[N]->data.target<ossia::audio_port>(); };
@@ -205,19 +198,19 @@ struct apply_control<false, N>
   }
 
   template <class F, std::size_t... I>
-  static constexpr void apply_inlet_impl(const F& f, const std::index_sequence<I...>& )
+  static constexpr void apply_inlet_impl(const F& f, const std::index_sequence<I...>& ) noexcept
   {
     f(get_inlet_accessor<I>()...);
   }
 
   template <class F, std::size_t... I>
-  static constexpr void apply_outlet_impl(const F& f, const std::index_sequence<I...>& )
+  static constexpr void apply_outlet_impl(const F& f, const std::index_sequence<I...>& ) noexcept
   {
     f(get_outlet_accessor<I>()...);
   }
 
   template <class F, std::size_t... I>
-  static constexpr void apply_control_impl(const F& f, const std::index_sequence<I...>& )
+  static constexpr void apply_control_impl(const F& f, const std::index_sequence<I...>& ) noexcept
   {
     f(get_control_accessor<I>()...);
   }
@@ -235,7 +228,7 @@ struct apply_control<false, N>
       ossia::execution_state& st;
       template<typename... Args>
       void operator()(const ossia::token_request& sub_tk,
-                      Args&&... args)
+                      Args&&... args) noexcept
       {
         Node_T::run(
               std::get<N1>(std::forward<T1>(a1))...,
@@ -259,7 +252,7 @@ struct apply_control<false, N>
       State& s;
       template<typename... Args>
       void operator()(const ossia::token_request& sub_tk,
-                      Args&&... args)
+                      Args&&... args) noexcept
       {
         Node_T::run(
               std::get<N1>(std::forward<T1>(a1))...,
@@ -276,7 +269,7 @@ struct apply_control<false, N>
                                     const std::index_sequence<N2...>& n2,
                                     const std::index_sequence<N3...>& n3,
                                     const ossia::token_request& tk,
-                                    ossia::execution_state& st)
+                                    ossia::execution_state& st) noexcept
   {
     f(forwarder<T1, T3, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st}, tk, std::get<N2>(std::forward<T2>(a2))...);
   }
@@ -289,7 +282,7 @@ struct apply_control<false, N>
                                     const std::index_sequence<N3...>& n3,
                                     const ossia::token_request& tk,
                                     ossia::execution_state& st,
-                                    State& s)
+                                    State& s) noexcept
   {
     f(forwarder_state<T1, T3, State, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st, s}, tk, std::get<N2>(std::forward<T2>(a2))...);
   }
@@ -298,7 +291,7 @@ struct apply_control<false, N>
   static constexpr auto invoke(
       F&& f,
         T1&& a1, T2&& a2, T3&& a3,
-        Args&&... args)
+        Args&&... args) noexcept
   {
     using I1 = std::make_index_sequence<std::tuple_size_v<std::decay_t<T1>>>;
     using I2 = std::make_index_sequence<std::tuple_size_v<std::decay_t<T2>>>;
@@ -308,7 +301,7 @@ struct apply_control<false, N>
                        I1{}, I2{}, I3{}, std::forward<Args>(args)...);
   }
 
-  void run(ossia::token_request tk, ossia::execution_state& st) override
+  void run(ossia::token_request tk, ossia::execution_state& st) noexcept override
   {
     using inlets_indices = std::make_index_sequence<info::control_start>;
     using controls_indices = std::make_index_sequence<info::control_count>;
@@ -381,7 +374,7 @@ struct apply_control<false, N>
     }
   }
 
-  void all_notes_off() override
+  void all_notes_off() noexcept override
   {
     if constexpr(info::midi_in_count > 0)
     {
@@ -389,7 +382,7 @@ struct apply_control<false, N>
     }
   }
 
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return "Control";
   }

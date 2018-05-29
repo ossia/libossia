@@ -21,31 +21,18 @@ struct audio_port
 struct midi_port
 {
   value_vector<rtmidi::message> messages;
-
-  midi_port() = default;
-  midi_port(const midi_port& p)
-    : messages{p.messages}
-  {
-
-  }
-  midi_port(midi_port&& p)
-    : messages{std::move(p.messages)}
-  {
-
-  }
-  midi_port& operator=(const midi_port&) = default;
-  midi_port& operator=(midi_port&&) = default;
 };
 
 struct tvalue {
-  tvalue(ossia::value&& v): value{std::move(v)} { }
+  explicit tvalue(ossia::value&& v): value{std::move(v)} { }
   tvalue(ossia::value&& v, const destination_index& d): value{std::move(v)}, index{d} { }
   tvalue(ossia::value&& v, const destination_index& d, const unit_t& u): value{std::move(v)}, index{d}, type{u} { }
-  tvalue(const ossia::value& v): value{v} { }
+  explicit tvalue(const ossia::value& v): value{v} { }
   tvalue(const ossia::value& v, const destination_index& d): value{v}, index{d} { }
   tvalue(const ossia::value& v, const destination_index& d, const unit_t& u): value{v}, index{d}, type{u} { }
 
   tvalue() = default;
+  ~tvalue() = default;
   tvalue(const tvalue&) = default;
   tvalue(tvalue&&) = default;
   tvalue& operator=(const tvalue&) = default;
@@ -63,14 +50,9 @@ enum data_mix_method: int8_t
   mix_replace,
   mix_merge
 };
+
 struct value_port
 {
-  value_port() = default;
-  value_port(const value_port&) = default;
-  value_port(value_port&&) = default;
-  value_port& operator=(const value_port&) = default;
-  value_port& operator=(value_port&&) = default;
-
   void add_raw_value(const ossia::tvalue& v)
   {
     switch(mix_method)
@@ -128,7 +110,7 @@ struct value_port
       {
         auto it = ossia::find_if(data, [&] (const ossia::tvalue& val) { return val.timestamp == 0; });
         if(it != data.end())
-          *it = std::move(v);
+          *it = ossia::tvalue{std::move(v)};
         else
           data.emplace_back(std::move(v));
         break;

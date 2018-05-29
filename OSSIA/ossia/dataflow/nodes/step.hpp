@@ -16,7 +16,7 @@ public:
 
   }
 
-  void run(ossia::token_request t, ossia::execution_state& e) override
+  void run(ossia::token_request t, ossia::execution_state& e) noexcept override
   {
     // We want to send a trigger for each value change that happened between last_t and now
     if(t.date > t.prev_date)
@@ -37,7 +37,7 @@ public:
   std::vector<float> values;
   ossia::time_value dur{};
 
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return "Step";
   }

@@ -50,7 +50,7 @@ class OSSIA_EXPORT automation final :
 
     }
 
-    std::string label() const override
+    std::string label() const noexcept override
     {
       return "automation";
     }
@@ -66,7 +66,7 @@ class OSSIA_EXPORT automation final :
     }
 
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) override
+    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
     {
       if(!m_drive)
         return;
