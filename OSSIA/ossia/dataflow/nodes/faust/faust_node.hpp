@@ -18,7 +18,7 @@ class faust final : public ossia::graph_node
       buildUserInterfaceCDSPInstance(m_dsp, &ex.glue);
     }
 
-    void run(ossia::token_request tk, ossia::execution_state&) override
+    void run(ossia::token_request tk, ossia::execution_state&) noexcept override
     {
       struct dsp_wrap
       {
@@ -31,12 +31,12 @@ class faust final : public ossia::graph_node
       faust_exec(*this, d, tk);
     }
 
-    std::string label() const override
+    std::string label() const noexcept override
     {
       return "Faust";
     }
 
-    void all_notes_off() override
+    void all_notes_off() noexcept override
     {
     }
 };
