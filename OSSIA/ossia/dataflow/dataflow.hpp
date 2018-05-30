@@ -8,7 +8,7 @@
 namespace ossia
 {
 template<typename Fun, typename DeviceList_T>
-void apply_to_destination(
+bool apply_to_destination(
     const destination_t& address,
     const DeviceList_T& devices,
     Fun f)
@@ -17,15 +17,17 @@ void apply_to_destination(
   {
       Fun& f;
       const DeviceList_T& devices;
-      void operator()(ossia::net::parameter_base* addr) const
+      bool operator()(ossia::net::parameter_base* addr) const
       {
         f(addr, true);
+        return true;
       }
-      void operator()(ossia::net::node_base* addr) const
+      bool operator()(ossia::net::node_base* addr) const
       {
+        return true;
       }
 
-      void operator()(const ossia::traversal::path& path) const
+      bool operator()(const ossia::traversal::path& path) const
       {
         std::vector<ossia::net::node_base*> roots{};
         for(auto n : devices)
@@ -37,12 +39,14 @@ void apply_to_destination(
         for(auto n : roots)
           if(auto addr = n->get_parameter())
             f(addr, unique);
+        return unique;
       }
 
-      void operator()() const
+      bool operator()() const
       {
+        return true;
       }
   } vis{f, devices};
-  ossia::apply(vis, address);
+  return ossia::apply(vis, address);
 }
 }
