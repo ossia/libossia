@@ -92,7 +92,7 @@ void graph_edge::init() noexcept
   }
 }
 
-graph_edge::~graph_edge() noexcept
+graph_edge::~graph_edge()
 {
   clear();
 }
