@@ -47,7 +47,7 @@ struct sine final : public ossia::nonowning_graph_node
       m_inlets.push_back(&freq_in);
       m_outlets.push_back(&audio_out);
     }
-    void run(const ossia::token_request t, ossia::execution_state& st) override
+    void run(const ossia::token_request t, ossia::execution_state& st) noexcept override
     {
       auto& vals = freq_in.data.target<ossia::value_port>()->get_data();
       if(!vals.empty())

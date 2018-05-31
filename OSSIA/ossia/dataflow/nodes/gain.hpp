@@ -18,7 +18,8 @@ struct gain final : public ossia::nonowning_graph_node
       gain_in.data.target<ossia::value_port>()->type = ossia::decibel_u{};
       m_outlets.push_back(&audio_out);
     }
-    void run(ossia::token_request t, ossia::execution_state& st) override
+
+    void run(ossia::token_request t, ossia::execution_state& st) noexcept override
     {
       auto& vals = gain_in.data.target<ossia::value_port>()->get_data();
       if(!vals.empty())

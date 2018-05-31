@@ -15,7 +15,7 @@ struct rand_float final : public ossia::nonowning_graph_node
       m_outlets.push_back(&value_out);
     }
 
-    void run(ossia::token_request tk, ossia::execution_state& st) override
+    void run(ossia::token_request tk, ossia::execution_state& st) noexcept override
     {
       thread_local std::mt19937 gen;
       auto& out = *value_out.data.target<ossia::value_port>();

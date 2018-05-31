@@ -11,7 +11,7 @@ class percentage final : public ossia::graph_node
       outputs().push_back(ossia::make_outlet<ossia::value_port>(&d.address()));
     }
 
-    void run(ossia::token_request tok, ossia::execution_state& e) override
+    void run(ossia::token_request tok, ossia::execution_state& e) noexcept override
     {
       outputs().back()->data.target<ossia::value_port>()->add_raw_value(ossia::tvalue{(float)tok.position});
     }
