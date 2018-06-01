@@ -14,6 +14,7 @@ ossia::audio_engine* make_audio_engine(
     int& inputs, int& outputs, int& rate, int& bs)
 {
   ossia::audio_engine* p{};
+  return new ossia::dummy_engine{name, inputs, outputs, rate, bs};
   if(0) { }
 #if __has_include(<portaudio.h>)
   else if(proto == "PortAudio")

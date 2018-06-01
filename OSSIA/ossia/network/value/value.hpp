@@ -396,3 +396,13 @@ operator<<(std::ostream&, const std::vector<std::string>& list);
 OSSIA_EXPORT std::istream&
 operator>>(std::istream&, std::vector<std::string>& list);
 }
+/*
+extern template class std::vector<ossia::value>;
+#if defined(OSSIA_USE_BOOST_OPTIONAL)
+extern template class boost::optional<ossia::value>;
+#elif defined(OSSIA_USE_STD_OPTIONAL)
+extern template class std::optional<ossia::value>;
+#elif defined(OSSIA_USE_STD_EXPERIMENTAL_OPTIONAL)
+extern template class std::experimental::optional<ossia::value>;
+#endif
+*/

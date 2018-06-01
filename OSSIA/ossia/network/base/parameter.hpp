@@ -13,7 +13,10 @@
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 #include <vector>
-
+/*
+extern template class ossia::callback_container<ossia::value_callback>;
+extern template class std::future<void>;
+*/
 namespace ossia
 {
 class value;

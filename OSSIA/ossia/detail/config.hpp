@@ -104,11 +104,3 @@
 #if !defined(QT_NO_KEYWORDS)
 #define QT_NO_KEYWORDS 1
 #endif
-
-#include <type_traits>
-
-namespace ossia
-{
-template <typename... Args>
-using void_t = std::void_t<Args...>;
-}

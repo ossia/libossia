@@ -13,6 +13,16 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <sstream>
 
+/*
+template class std::vector<ossia::value>;
+#if defined(OSSIA_USE_BOOST_OPTIONAL)
+template class boost::optional<ossia::value>;
+#elif defined(OSSIA_USE_STD_OPTIONAL)
+template class std::optional<ossia::value>;
+#elif defined(OSSIA_USE_STD_EXPERIMENTAL_OPTIONAL)
+template class std::experimental::optional<ossia::value>;
+#endif
+*/
 namespace ossia
 {
 

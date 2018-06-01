@@ -4,14 +4,15 @@
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+/*
+template class ossia::callback_container<ossia::value_callback>;
+*/
 
 namespace ossia
 {
 namespace net
 {
-parameter_base::~parameter_base()
-{
-}
+parameter_base::~parameter_base() = default;
 
 static void getAddressFromNode_rec(const node_base& n, std::string& str)
 {

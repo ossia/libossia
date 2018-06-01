@@ -15,11 +15,11 @@ class dummy_engine final
       m_runThread = std::thread{[=] {
         while(!stop_processing)
         {
-          ossia::audio_protocol* proto = protocol.load();
-
-          proto->process_generic(*proto, nullptr, nullptr, 0, 0, bs);
-          proto->audio_tick(bs, 0);
-
+          if(auto proto = protocol.load())
+          {
+            proto->process_generic(*proto, nullptr, nullptr, 0, 0, bs);
+            proto->audio_tick(bs, 0);
+          }
           std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
         }
 

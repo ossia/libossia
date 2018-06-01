@@ -5,8 +5,6 @@
 #include <functional>
 #include <thread>
 #include <iostream>
-
-using namespace ossia;
 using namespace std::chrono;
 using namespace std::placeholders;
 
