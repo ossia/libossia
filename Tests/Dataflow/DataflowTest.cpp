@@ -13,7 +13,7 @@ class node_mock final : public graph_node {
 
 public:
   const char* lbl{};
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return lbl;
   }
@@ -25,7 +25,7 @@ public:
   }
 
   std::function<void(token_request t, execution_state& e)> fun;
-  void run(token_request t, execution_state& e) override
+  void run(token_request t, execution_state& e) noexcept override
   {
     if(fun)
       fun(t, e);
