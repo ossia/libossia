@@ -9,8 +9,8 @@ class faust final : public ossia::graph_node
     llvm_dsp* m_dsp{};
   public:
     ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
-    faust(llvm_dsp& dsp):
-      m_dsp{&dsp}
+    faust(llvm_dsp* dsp):
+      m_dsp{dsp}
     {
       m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
       m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
