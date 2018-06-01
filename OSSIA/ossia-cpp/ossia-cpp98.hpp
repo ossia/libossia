@@ -516,6 +516,14 @@ class OSSIA_EXPORT node
      * @return the child node
      */
     node find_child(std::string addr);
+
+    /**
+     * @brief finds children matching pattern
+     * @param pattern to match
+     * @return found children vector
+     */
+    std::vector<node> find_children(std::string pattern);
+
     /**
      * @brief removes a child node, described by its name
      * @param addr a string corresponding to the child node's name that one wants to remove

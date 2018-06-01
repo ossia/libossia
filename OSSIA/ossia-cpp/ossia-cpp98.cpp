@@ -468,6 +468,20 @@ node node::find_child(std::string addr)
   return m_node ? node{ossia::net::find_node(*m_node, addr)} : node{};
 }
 
+std::vector<node> node::find_children(std::string addr)
+{
+  std::vector<node> res;
+  if (!m_node)
+    return res;
+
+  auto nodes = ossia::net::find_nodes(*m_node, addr);
+  res.reserve(nodes.size());
+  for(auto n : nodes)
+    res.push_back(n);
+
+  return res;
+}
+
 void node::remove_child(std::string addr)
 {
   if (m_node)
