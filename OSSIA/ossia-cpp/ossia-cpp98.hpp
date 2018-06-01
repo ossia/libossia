@@ -105,6 +105,11 @@ class OSSIA_EXPORT value
     struct vec4f {float data[4];
                   float& operator[](int i){return data[i];}};
 
+    /** An empty container just to declare impulse value in CPP98
+     *
+     */
+    struct impulse {};
+
     //*********************//
     //     Constructors    //
     //*********************//
@@ -173,6 +178,11 @@ class OSSIA_EXPORT value
      * @see ossia::value
      */
     value(const char* v);
+    /**
+     * @brief Create a value of type impulse
+     * @see ossia::value
+     */
+    value(impulse p);
 
 
     //*********************//

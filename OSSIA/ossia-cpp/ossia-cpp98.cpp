@@ -44,6 +44,9 @@ value::value(double v) : m_val{new ossia::value(v)}
 value::value(const char* v) : m_val{new ossia::value(std::string(v))}
 {
 }
+value::value(impulse p) : m_val{new ossia::value(ossia::impulse{})}
+{
+}
 value::value(const vec2f v) : m_val{new ossia::value()}
 {
   *this = std::move(v);
