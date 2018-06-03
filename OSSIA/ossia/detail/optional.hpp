@@ -1,14 +1,14 @@
 #pragma once
+
 #include <ossia/detail/config.hpp>
 #if defined(__native_client__) || defined(__ANDROID_API__) \
     || defined(__ANDROID__) || defined(ANDROID)
 #define OSSIA_USE_BOOST_OPTIONAL 1
 #elif defined(_MSC_VER)
-#define OSSIA_USE_BOOST_OPTIONAL 1
-
+#define OSSIA_USE_STD_OPTIONAL 1
 #else
 
-#ifdef __has_include
+#if defined(__has_include)
 #if __has_include(<optional>) && __cplusplus > 201402L
 #define OSSIA_USE_STD_OPTIONAL 1
 #elif __has_include(<experimental/optional>)

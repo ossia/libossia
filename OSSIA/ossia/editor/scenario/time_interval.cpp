@@ -43,7 +43,7 @@ std::shared_ptr<time_interval> time_interval::create(
     time_event& endEvent, ossia::time_value nominal, ossia::time_value min, ossia::time_value max)
 {
   auto timeInterval = std::make_shared<time_interval>(
-      callback, startEvent, endEvent, nominal, min, max);
+      std::move(callback), startEvent, endEvent, nominal, min, max);
 
   startEvent.next_time_intervals().push_back(timeInterval);
   endEvent.previous_time_intervals().push_back(timeInterval);
@@ -200,24 +200,30 @@ void time_interval::resume()
   }
 }
 
-void time_interval::set_callback(time_interval::exec_callback callback)
+void time_interval::set_callback(time_interval::exec_callback cb)
 {
-  m_callback = callback;
+  if(cb)
+    m_callback = std::move(*cb);
+  else
+    m_callback = {};
 }
 
 void time_interval::set_callback(smallfun::function<void (double, time_value), 32> cb)
 {
-  m_callback = cb;
+  m_callback = std::move(cb);
 }
 
 void time_interval::set_stateless_callback(time_interval::exec_callback cb)
 {
-  m_callback = cb;
+  if(cb)
+    m_callback = std::move(*cb);
+  else
+    m_callback = {};
 }
 
 void time_interval::set_stateless_callback(smallfun::function<void (double, time_value), 32> cb)
 {
-  m_callback = cb;
+  m_callback = std::move(cb);
 }
 
 const time_value& time_interval::get_nominal_duration() const
@@ -317,5 +323,4 @@ void time_interval::cleanup()
 {
   m_processes.clear();
 }
-
 }
