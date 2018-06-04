@@ -183,12 +183,12 @@ bool midi_protocol::pull(parameter_base& address)
   if (m_info.type != midi_info::Type::RemoteOutput)
     return false;
 
-  auto& adrinfo = adrs.info();
-  const midi_channel& chan = m_channels[adrinfo.channel - 1];
+  const address_info& adrinfo = adrs.info();
   switch (adrinfo.type)
   {
     case address_info::Type::NoteOn_N:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       int32_t val{chan.note_on_N[adrinfo.note]};
       address.set_value(val);
       return true;
@@ -196,6 +196,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::NoteOn:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       std::vector<ossia::value> val{int32_t{chan.note_on.first},
                                     int32_t{chan.note_on.second}};
       address.set_value(val);
@@ -204,6 +205,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::NoteOff_N:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       int32_t val{chan.note_off_N[adrinfo.note]};
       address.set_value(val);
       return true;
@@ -211,6 +213,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::NoteOff:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       std::vector<ossia::value> val{int32_t{chan.note_off.first},
                                     int32_t{chan.note_off.second}};
       address.set_value(val);
@@ -219,6 +222,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::CC_N:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       int32_t val{chan.cc_N[adrinfo.note]};
       address.set_value(val);
       return true;
@@ -226,6 +230,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::CC:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       std::vector<ossia::value> val{int32_t{chan.cc.first},
                                     int32_t{chan.cc.second}};
       address.set_value(val);
@@ -234,6 +239,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::PC:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       int32_t val{chan.pc};
       address.set_value(val);
       return true;
@@ -241,6 +247,7 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::PB:
     {
+      const midi_channel& chan = m_channels[adrinfo.channel - 1];
       int32_t val{chan.pb};
       address.set_value(val);
       return true;
@@ -376,34 +383,38 @@ bool midi_protocol::observe(parameter_base& address, bool enable)
 
   auto adrs_ptr = &adrs;
   auto& adrinfo = adrs.info();
-  midi_channel& chan = m_channels[adrinfo.channel - 1];
   switch (adrinfo.type)
   {
     case address_info::Type::NoteOn_N:
     {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
       chan.callback_note_on_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
     case address_info::Type::NoteOff_N:
     {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
       chan.callback_note_off_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
     case address_info::Type::CC_N:
     {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
       chan.callback_cc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
 
     case address_info::Type::PC_N:
     {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
       chan.callback_pc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
       return true;
     }
     case address_info::Type::PB:
     {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
       chan.callback_pb = enable ? adrs_ptr : nullptr;
       return true;
     }
