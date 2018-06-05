@@ -79,10 +79,18 @@ struct domain_prettyprint_visitor
 
 std::string domain::to_pretty_string() const
 {
-  fmt::MemoryWriter s;
-  ossia::apply_nonnull(
-      domain_prettyprint_visitor{s}, (domain_base_variant&)*this);
-  return s.str();
+  if(bool(*this))
+  {
+    fmt::MemoryWriter s;
+
+    ossia::apply_nonnull(
+        domain_prettyprint_visitor{s}, (domain_base_variant&)*this);
+    return s.str();
+  }
+  else
+  {
+    return "none";
+  }
 }
 
 template <typename Domain>

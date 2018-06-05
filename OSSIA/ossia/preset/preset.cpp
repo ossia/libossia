@@ -473,9 +473,12 @@ ossia::presets::preset ossia::presets::read_json(
     bool skip_first_level)
 {
   preset prst;
+  std::string preset;
+  preset.reserve(str.size() + 64);
+  preset.assign(str.begin(), str.end());
 
   rapidjson::Document doc;
-  doc.Parse(str.c_str());
+  doc.Parse(preset.c_str());
 
   if (!doc.HasParseError())
   {
