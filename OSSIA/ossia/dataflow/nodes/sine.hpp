@@ -60,7 +60,7 @@ struct sine final : public ossia::nonowning_graph_node
         audio[0].resize(t.offset.impl + N);
 
 #if BOOST_COMP_GNUC
-        for(int64_t i = tk.offset.impl; i < tk.offset.impl + N; i++)
+        for(int64_t i = t.offset.impl; i < t.offset.impl + N; i++)
         {
           audio[0][i] = sines.value(2. * M_PI * freq / st.sampleRate);
         }
