@@ -189,7 +189,7 @@ ossia::optional<path> make_path(ossia::string_view address) try
     auto parts = ossia::net::address_parts(p.pattern);
 
     // Potentially remove first ":".
-    if (parts[0].back() == ':')
+    if (!parts[0].empty() && parts[0].back() == ':')
       parts[0].resize(parts[0].size() - 1);
 
     for (auto part : parts)

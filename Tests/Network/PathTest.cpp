@@ -100,7 +100,7 @@ private Q_SLOTS:
       }
     }
     {
-      std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)})_"};
+      std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
       {
         std::string ex = "{0..32}";
         std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
