@@ -21,8 +21,9 @@ class http_device;
 class http_node;
 class http_parameter;
 
-class OSSIA_EXPORT http_protocol final : public QObject,
-                                         public ossia::net::protocol_base
+class OSSIA_EXPORT http_protocol final
+    : public QObject
+    , public ossia::net::protocol_base
 {
   W_OBJECT(http_protocol)
 

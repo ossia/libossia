@@ -14,7 +14,8 @@ namespace ossia
 {
 namespace net
 {
-class OSSIA_EXPORT serial_wrapper : public QObject
+class OSSIA_EXPORT serial_wrapper final
+    : public QObject
 {
   W_OBJECT(serial_wrapper)
 
@@ -52,12 +53,14 @@ public:
 
 
 class serial_device;
-class OSSIA_EXPORT serial_protocol final : public QObject, public ossia::net::protocol_base
+class OSSIA_EXPORT serial_protocol final
+    : public QObject
+    , public ossia::net::protocol_base
 {
 public:
   // Param : the name of the serial port
   serial_protocol(const QByteArray& code, const QSerialPortInfo& bot);
-  virtual ~serial_protocol();
+  ~serial_protocol() override;
 
   bool pull(ossia::net::parameter_base&) override;
   bool push(const ossia::net::parameter_base&) override;

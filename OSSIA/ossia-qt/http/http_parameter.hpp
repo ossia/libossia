@@ -8,7 +8,8 @@ namespace ossia
 namespace net
 {
 
-class OSSIA_EXPORT http_parameter final : public ossia::net::generic_parameter
+class OSSIA_EXPORT http_parameter final
+    : public ossia::net::generic_parameter
 {
 private:
   http_parameter_data_base mData;

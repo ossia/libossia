@@ -108,7 +108,7 @@ struct value_converter<int> : public numeric_value_converter<int>
       try
       {
         using boost::spirit::x3::int_;
-        int x;
+        int x{};
         boost::spirit::x3::parse(v.begin(), v.end(), int_, x);
         return x;
       }
@@ -127,7 +127,7 @@ struct value_converter<float> : public numeric_value_converter<float>
       try
       {
         using boost::spirit::x3::float_;
-        float x;
+        float x{};
         boost::spirit::x3::parse(v.begin(), v.end(), float_, x);
         return x;
       }
@@ -146,7 +146,7 @@ struct value_converter<double> : public numeric_value_converter<double>
       try
       {
         using boost::spirit::x3::double_;
-        double x;
+        double x{};
         boost::spirit::x3::parse(v.begin(), v.end(), double_, x);
         return x;
       }

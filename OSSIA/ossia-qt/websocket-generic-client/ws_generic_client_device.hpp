@@ -36,7 +36,7 @@ public:
   using ws_generic_client_node::get_name;
   using ws_generic_client_node::set_name;
 
-  ~ws_generic_client_device();
+  ~ws_generic_client_device() override;
 };
 }
 }

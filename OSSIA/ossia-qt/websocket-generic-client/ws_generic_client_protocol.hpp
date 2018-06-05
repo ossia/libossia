@@ -36,7 +36,7 @@ public:
       = delete;
   ws_generic_client_protocol& operator=(ws_generic_client_protocol&&) = delete;
 
-  ~ws_generic_client_protocol();
+  ~ws_generic_client_protocol() override;
 
   bool update(ossia::net::node_base& node_base) override;
 

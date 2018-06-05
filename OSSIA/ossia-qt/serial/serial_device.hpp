@@ -8,8 +8,9 @@ namespace ossia
 namespace net
 {
 
-class OSSIA_EXPORT serial_device : public ossia::net::device_base,
-                                   public serial_node
+class OSSIA_EXPORT serial_device final
+    : public ossia::net::device_base,
+    public serial_node
 {
 public:
   serial_device(const QByteArray& code, const QSerialPortInfo& bot);

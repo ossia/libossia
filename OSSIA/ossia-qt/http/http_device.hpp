@@ -8,8 +8,9 @@ namespace ossia
 namespace net
 {
 class http_protocol;
-class OSSIA_EXPORT http_device final : public ossia::net::device_base,
-                                       public http_node
+class OSSIA_EXPORT http_device final
+    : public ossia::net::device_base,
+    public http_node
 {
 public:
   http_device() = delete;
