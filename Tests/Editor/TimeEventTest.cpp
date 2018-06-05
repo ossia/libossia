@@ -10,16 +10,6 @@
 
 using namespace ossia;
 
-void interval_callback(double position, ossia::time_value date)
-{
-    ;
-}
-
-void event_callback(time_event::status newStatus)
-{
-    ;
-}
-
 class TimeEventTest : public QObject
 {
     Q_OBJECT
@@ -30,14 +20,14 @@ private Q_SLOTS:
     void test_basic()
     {
         auto node = std::make_shared<time_sync>();
-        auto event = *(node->emplace(node->get_time_events().begin(), &event_callback));
+        auto event = *(node->emplace(node->get_time_events().begin(), time_event::exec_callback{}));
         QVERIFY(event != nullptr);
 
         QVERIFY(&event->get_time_sync() == node.get());
         QVERIFY(event->get_expression() == expressions::expression_true());
         QVERIFY(event->get_status() == time_event::status::NONE);
 
-        auto event_with_expression = *(node->emplace(node->get_time_events().begin(), &event_callback, expressions::make_expression_false()));
+        auto event_with_expression = *(node->emplace(node->get_time_events().begin(), time_event::exec_callback{}, expressions::make_expression_false()));
         QVERIFY(event_with_expression != nullptr);
 
         QVERIFY(event_with_expression->get_expression() == expressions::expression_false());
@@ -54,18 +44,18 @@ private Q_SLOTS:
     void test_edition()
     {
         auto nodeA = std::make_shared<time_sync>();
-        auto eventA = *(nodeA->emplace(nodeA->get_time_events().begin(), &event_callback));
+        auto eventA = *(nodeA->emplace(nodeA->get_time_events().begin(), time_event::exec_callback{}));
 
         auto nodeB = std::make_shared<time_sync>();
-        auto eventB = *(nodeB->emplace(nodeB->get_time_events().begin(), &event_callback));
+        auto eventB = *(nodeB->emplace(nodeB->get_time_events().begin(), time_event::exec_callback{}));
 
         auto nodeC = std::make_shared<time_sync>();
-        auto eventC = *(nodeC->emplace(nodeC->get_time_events().begin(), &event_callback));
+        auto eventC = *(nodeC->emplace(nodeC->get_time_events().begin(), time_event::exec_callback{}));
 
-        ossia::time_interval::exec_callback cb{[] (auto&&... args) { interval_callback(args...); }};
-        auto interval1 = time_interval::create(cb, *eventA, *eventB, 1000._tv);
-        auto interval2 = time_interval::create(cb, *eventB, *eventC, 1000._tv);
-        auto interval3 = time_interval::create(cb, *eventA, *eventC, 2000._tv);
+        auto interval1 = time_interval::create(ossia::time_interval::exec_callback{}, *eventA, *eventB, 1000_tv);
+        auto interval2 = time_interval::create(ossia::time_interval::exec_callback{}, *eventB, *eventC, 1000_tv);
+        auto interval3 = time_interval::create(ossia::time_interval::exec_callback{}, *eventA, *eventC, 2000_tv);
+
 
         QVERIFY(eventA->previous_time_intervals().size() == 0);
         QVERIFY(eventA->next_time_intervals().size() == 2);

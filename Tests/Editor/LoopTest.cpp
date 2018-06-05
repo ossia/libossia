@@ -18,7 +18,7 @@ struct test_loop
 {
     ossia::net::generic_device d;
     ossia::tc_graph g;
-    ossia::loop parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
+    ossia::loop parent;
 
     ossia::audio_parameter* aparam{};
     ossia::nodes::sound* snd1{};
@@ -29,6 +29,7 @@ struct test_loop
     }
 
     test_loop()
+     : parent{7_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}}
     {
       /// this creates :
       /// A root loop ("parent")
