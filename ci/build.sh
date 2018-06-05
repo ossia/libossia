@@ -443,6 +443,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_PD=1 \
                -DOSSIA_MAX=0 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+               -DOSSIA_OSX_FAT_LIBRARIES=1 \
                -DOSSIA_EDITOR=OFF \
                -DOSSIA_DATAFLOW=OFF \
                -DOSSIA_PROTOCOL_MIDI=OFF \
@@ -474,6 +475,7 @@ case "$TRAVIS_OS_NAME" in
                -DOSSIA_PD=1 \
                -DOSSIA_MAX=0 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+               -DOSSIA_OSX_FAT_LIBRARIES=1 \
                -DOSSIA_EDITOR=OFF \
                -DOSSIA_DATAFLOW=OFF \
                -DOSSIA_PROTOCOL_MIDI=OFF \
