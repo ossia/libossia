@@ -106,12 +106,18 @@ if(NOT PORTAUDIO2_FOUND OR "${PORTAUDIO_INCLUDE_DIRS}" MATCHES "")
     if("${PORTAUDIO_LIBRARIES}" MATCHES ".*\.a")
       add_library(PortAudio STATIC IMPORTED)
 
-      find_library(Jack_LIBRARY NAMES jack)
-      if(Jack_LIBRARY)
-        set_target_properties(PortAudio
-            PROPERTIES
-            INTERFACE_LINK_LIBRARIES ${Jack_LIBRARY}
-        )
+      include(CheckLibraryExists)
+      check_library_exists(${PORTAUDIO_LIBRARIES} PaJack_GetClientName "" PORTAUDIO_NEEDS_JACK)
+      if(PORTAUDIO_NEEDS_JACK)
+        find_library(Jack_LIBRARY NAMES jack)
+        if(Jack_LIBRARY)
+          set_target_properties(PortAudio
+              PROPERTIES
+              INTERFACE_LINK_LIBRARIES ${Jack_LIBRARY}
+          )
+        else()
+          message(FATAL_ERROR "Static portaudio lib links against Jack but Jack wasn't found")
+        endif()
       endif()
     elseif(${PORTAUDIO_LIBRARIES} MATCHES ".*{lib,so,dylib,dll}")
       add_library(PortAudio SHARED IMPORTED)
