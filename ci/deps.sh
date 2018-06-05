@@ -16,7 +16,7 @@ case "$TRAVIS_OS_NAME" in
     else
       sudo wget -nv https://github.com/OSSIA/score-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
 
-      wget -nv https://cmake.org/files/v3.11/cmake-3.11.0-Linux-x86_64.tar.gz -O cmake-linux.tgz &
+      wget -nv https://cmake.org/files/v3.11/cmake-3.11.3-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
       echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
@@ -94,7 +94,7 @@ case "$TRAVIS_OS_NAME" in
     # HOMEBREW_NO_AUTO_UPDATE=1 brew install ruby
     HOMEBREW_NO_AUTO_UPDATE=1 brew install gnu-tar xz
     ARCHIVE=homebrew-cache.txz
-    wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk8/$ARCHIVE" -O "$ARCHIVE"
+    wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk9/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
     brew link --force boost cmake qt5 #ninja
     brew install portaudio

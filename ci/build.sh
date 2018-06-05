@@ -29,7 +29,10 @@ cd build
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    if [[ -f /usr/bin/gcc-7 ]] ; then
+    if [[ -f /usr/bin/gcc-8 ]] ; then
+      export CC=/usr/bin/gcc-8
+      export CXX=/usr/bin/g++-8
+    elif [[ -f /usr/bin/gcc-7 ]] ; then
       export CC=/usr/bin/gcc-7
       export CXX=/usr/bin/g++-7
     else
@@ -133,7 +136,7 @@ case "$TRAVIS_OS_NAME" in
         mkdir -p ~/pd-externals/
         mv "$TRAVIS_BUILD_DIR/ossia-pd-package/ossia" ~/pd-externals/
 
-        $CMAKE_BIN --build . --target test        
+        $CMAKE_BIN --build . --target test
 
       ;;
       PdRelease)
@@ -357,7 +360,7 @@ case "$TRAVIS_OS_NAME" in
           ..
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+        $CMAKE_BIN --build . --target install
 
         cd "$TRAVIS_BUILD_DIR/ossia-qml"
         tar -czf ${ARTIFACTS_DIR}/ossia-qml-linux_x86_64.tar.gz Ossia
