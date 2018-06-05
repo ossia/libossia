@@ -105,13 +105,15 @@ private Q_SLOTS:
       //// Step 3. Receiving changes through callbacks. ////
       //////////////////////////////////////////////////////
 
-
-      int count = 0;
-      remote_n2.set_value_callback(test_callback, &count);
+      struct {
+        volatile int count;
+      } cnt;
+      cnt.count = 0;
+      remote_n2.set_value_callback(test_callback, &cnt);
 
       n2.set_value(0.5);
       n2.set_value(0.9);
-      while(count < 2)
+      while(cnt.count < 2)
         ;
 
 
