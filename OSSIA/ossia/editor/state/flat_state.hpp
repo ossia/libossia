@@ -18,7 +18,7 @@
 #include <ossia/network/dataspace/detail/make_unit.hpp>
 #include <ossia/network/dataspace/detail/make_value.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
-#include <ossia/network/value/detail/value_conversion_impl.hpp>
+//#include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <boost/functional/hash.hpp>
 #include <ossia/detail/hash_map.hpp>

@@ -58,6 +58,7 @@ set(OSSIA_SUBMODULES
     concurrentqueue
     exprtk
     flat_hash_map
+    multi_index
     frozen
     weakjack
     verdigris

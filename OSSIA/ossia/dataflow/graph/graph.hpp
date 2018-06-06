@@ -303,7 +303,7 @@ public:
 
       finish_nodes(m_nodes);
     }
-    catch (const boost::not_a_dag& e)
+    catch (const boost::not_a_dag&)
     {
       ossia::logger().error("Execution graph is not a DAG.");
       return;

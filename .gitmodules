@@ -93,3 +93,6 @@
 [submodule "3rdparty/RtMidi17"]
 	path = 3rdparty/RtMidi17
 	url = https://github.com/jcelerier/RtMidi17
+[submodule "3rdparty/multi_index"]
+	path = 3rdparty/multi_index
+	url = https://github.com/Alexhuszagh/multi_index

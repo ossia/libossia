@@ -56,6 +56,7 @@ environment:
     - APPVEYOR_BUILD_TYPE: qml
       configuration: Release
       QTDIR: C:\Qt\5.11\msvc2017_64
+      platform: x64
 
 before_build:
   - ps: C:\projects\libossia\ci\before_build.ps1

@@ -121,6 +121,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
-  cmake $CommonFlags64 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_STATIC=0 -DOSSIA_QT=1 -DOSSIA_QML=1 c:\projects\libossia > $LogFile
+  cmake $CommonFlags64 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_PD=0 -DOSSIA_STATIC=0 -DOSSIA_QT=1 -DOSSIA_QML=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 }
