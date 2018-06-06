@@ -371,7 +371,17 @@ case "$TRAVIS_OS_NAME" in
       ;;
       Coverage)
         gem install coveralls-lcov
-        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" -DCMAKE_CXX_COMPILER="$CXX" -DBOOST_ROOT="$BOOST_ROOT" -DCMAKE_BUILD_TYPE=Debug -DOSSIA_TESTING=1 -DOSSIA_COVERAGE=1 -DOSSIA_CI=1 -DOSSIA_QT=1 ..
+        $CMAKE_BIN \
+          -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_CXX_COMPILER="$CXX" \
+          -DBOOST_ROOT="$BOOST_ROOT" \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DOSSIA_TESTING=1 \
+          -DOSSIA_COVERAGE=1 \
+          -DOSSIA_CI=1 \
+          -DOSSIA_PD=0 \
+          -DOSSIA_QT=1 \
+          ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
         rm -rf **/*.o
