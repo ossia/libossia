@@ -114,7 +114,7 @@ unsafe public class PresetController : MonoBehaviour
     var res = BlueYetiAPI.ossia_presets_write_json (preset, Controller.Get ().appName, out str);
 
     if (res == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-       System.IO.File.WriteAllText (presetPath, Marshal.PtrToStringAuto (str));
+       System.IO.File.WriteAllText (presetPath, Marshal.PtrToStringAnsi (str));
     }
   }
 
@@ -127,7 +127,7 @@ unsafe public class PresetController : MonoBehaviour
     var res = BlueYetiAPI.ossia_devices_write_json (dev_ptr, out str);
 
     if (res == ossia_preset_result_enum.OSSIA_PRESETS_OK) {
-       System.IO.File.WriteAllText (devicePath, Marshal.PtrToStringAuto (str));
+       System.IO.File.WriteAllText (devicePath, Marshal.PtrToStringAnsi (str));
     }
   }
 
