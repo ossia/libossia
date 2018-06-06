@@ -21,7 +21,7 @@ class OSSIA_EXPORT qml_property : public qml_property_base,
 
 public:
   qml_property(QQuickItem* parent = nullptr);
-  ~qml_property();
+  ~qml_property() override;
 
   void setTarget(const QQmlProperty& prop) override;
   void resetNode() override;

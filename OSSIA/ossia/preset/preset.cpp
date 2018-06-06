@@ -77,7 +77,7 @@ ossia_presets_read_json(const char* str, ossia_preset_t* presetptr)
     try
     {
       *presetptr
-          = new ossia_preset(ossia::presets::read_json(std::string(str), true));
+          = new ossia_preset(ossia::presets::read_json(std::string(str), false));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -111,7 +111,7 @@ ossia_preset_result ossia_presets_write_json(
   {
     try
     {
-      *buffer = copy_string(ossia::presets::write_json(device, preset->impl));
+      *buffer = copy_string(ossia::presets::write_json(device, preset->impl, false));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -201,7 +201,7 @@ ossia_preset_result ossia_devices_apply_preset(
     }
 
     ossia::presets::apply_preset(
-        odevptr->device->get_root_node(), preset->impl, keep_arch_token);
+          odevptr->device->get_root_node(), preset->impl, keep_arch_token/*, {}, false*/);
   }
   catch (...)
   {
@@ -424,6 +424,33 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value)
     case rapidjson::kStringType:
       val = std::string(value.GetString());
       break;
+    case rapidjson::kArrayType:
+    {
+      const auto N = value.Size();
+      switch(N)
+      {
+        case 2:
+          val = ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
+          break;
+        case 3:
+          val = ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
+          break;
+        case 4:
+          val = ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(), value[3].GetDouble());
+          break;
+        default:
+        {
+          std::vector<ossia::value> v;
+          v.reserve(N);
+          for(std::size_t i = 0; i < N; i++)
+          {
+            v.push_back(value[i].GetDouble());
+          }
+          val = std::move(v);
+        }
+      }
+      break;
+    }
     default:
       break;
   }
@@ -450,14 +477,31 @@ void explore(
         explore(root + "/" + member->name.GetString(), member->value, preset);
       }
     }
+
     if (jsonval.IsArray())
     {
       int arrsize = jsonval.Size();
+      bool is_num = true;
       for (int i = 0; i < arrsize; ++i)
       {
-        std::stringstream newroot;
-        newroot << root << "." << i;
-        explore(newroot.str(), jsonval[i], preset);
+        is_num &= jsonval[i].IsNumber();
+        if(!is_num)
+          break;
+      }
+
+      if(!is_num)
+      {
+        for (int i = 0; i < arrsize; ++i)
+        {
+          std::stringstream newroot;
+          newroot << root << "." << i;
+          explore(newroot.str(), jsonval[i], preset);
+        }
+      }
+      else
+      {
+        ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
+        preset->push_back(pp);
       }
     }
   }
@@ -639,7 +683,7 @@ void insert(
 }
 
 std::string
-ossia::presets::write_json(const std::string& devicename, const preset& prst)
+ossia::presets::write_json(const std::string& devicename, const preset& prst, bool erase_first)
 {
   rapidjson::Document d;
 
@@ -653,7 +697,10 @@ ossia::presets::write_json(const std::string& devicename, const preset& prst)
     boost::split(
         keys, it->first, [](char c) { return c == '/'; },
         boost::token_compress_on);
-    keys.erase(keys.begin()); // first element is empty
+
+    if(erase_first && !keys.empty())
+      keys.erase(keys.begin()); // first element is empty
+
     auto& val = it->second;
     insert(obj, keys, val, d.GetAllocator());
   }
@@ -1103,7 +1150,8 @@ void ossia::presets::apply_preset(
     ossia::net::node_base& node, const ossia::presets::preset& preset,
     ossia::presets::keep_arch_type keeparch,
     presets::instance_functions functions,
-    bool allow_nonterminal)
+    bool allow_nonterminal,
+    bool remove_first)
 {
   std::vector<ossia::net::node_base*> created_nodes;
 
@@ -1113,8 +1161,11 @@ void ossia::presets::apply_preset(
     boost::split(
         keys, itpp->first, [](char c) { return c == '/'; },
         boost::token_compress_on);
-    if(!keys.empty())
-      keys.erase(keys.begin()); // first subtring is empty
+    if(remove_first)
+    {
+      if(!keys.empty())
+        keys.erase(keys.begin()); // first subtring is empty
+    }
     if(!allow_nonterminal)
     {
       if(!keys.empty())

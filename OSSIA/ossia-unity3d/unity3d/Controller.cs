@@ -23,7 +23,7 @@ namespace Ossia
 
         // Convert callback_delegate into a function pointer that can be
         // used in unmanaged code.
-        IntPtr intptr_delegate = 
+        IntPtr intptr_delegate =
           Marshal.GetFunctionPointerForDelegate (callback_delegate);
 
         // Call the API passing along the function pointer.
@@ -31,7 +31,7 @@ namespace Ossia
 
         local_protocol = new Ossia.Local ();
         local_device = new Ossia.Device (local_protocol, "unity");
-        scene_node = local_device.GetRootNode ().AddChild ("scene");
+        scene_node = local_device.GetRootNode ();
 
         Queue = new Ossia.MessageQueue (local_device);
 
@@ -52,7 +52,7 @@ namespace Ossia
 
     public Ossia.Node SceneNode ()
     {
-      return scene_node; 
+      return scene_node;
     }
 
     void OnApplicationQuit ()

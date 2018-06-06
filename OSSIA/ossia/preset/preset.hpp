@@ -35,7 +35,7 @@ using preset_pair = std::pair<std::string, ossia::value>;
 
 OSSIA_EXPORT preset read_json(const std::string&, bool skip_first_level = true);
 OSSIA_EXPORT std::string
-write_json(const std::string& devicename, const preset&);
+write_json(const std::string& devicename, const preset&, bool erase_first = true);
 
 OSSIA_EXPORT std::string to_string(const preset&);
 OSSIA_EXPORT preset from_string(const ossia::string_view& str);
@@ -106,7 +106,8 @@ OSSIA_EXPORT void apply_preset(
     ossia::net::node_base&, const presets::preset&,
     keep_arch_type t = keep_arch_on,
     presets::instance_functions = {},
-    bool allow_nonterminal = false);
+    bool allow_nonterminal = false,
+    bool remove_first = true);
 
 OSSIA_EXPORT presets::preset
 make_preset(ossia::net::node_base&);

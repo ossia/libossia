@@ -178,7 +178,6 @@ private Q_SLOTS:
     ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4"));
     ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.5"));
 
-
     auto preset = ossia::presets::make_preset(dev);
     auto presetStr = ossia::presets::to_string(preset);
     qDebug() << presetStr.c_str();
@@ -188,6 +187,39 @@ private Q_SLOTS:
     auto presetStr2 = ossia::presets::to_string(loadPreset);
     qDebug() << presetStr2.c_str();
     QVERIFY(loadPreset == preset);
+
+  }
+
+  void test_vecnf()
+  {
+    ossia::net::generic_device dev{"mydevice"};
+
+    auto& root = dev.get_root_node();
+
+    auto p1 = ossia::try_setup_parameter("vec2", ossia::net::create_node(root, "/vec2"));
+    auto p2 = ossia::try_setup_parameter("vec3", ossia::net::create_node(root, "/vec3"));
+    auto p3 = ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/vec4"));
+    auto p4 = ossia::try_setup_parameter("list", ossia::net::create_node(root, "/list"));
+
+    p1->push_value(ossia::make_vec(1., -1.));
+    p2->push_value(ossia::make_vec(2., -2.5, -123.));
+    p3->push_value(ossia::make_vec(1e2, -0., 999, 4.56));
+    p4->push_value(std::vector<ossia::value>{1, 12, 17, -4, 5, .2, 15, 4, 0, 0, 145});
+
+    const auto preset = ossia::presets::make_preset(dev);
+    const auto presetStr = ossia::presets::to_string(preset);
+    qDebug() << presetStr.c_str();
+
+    const auto loadPreset = ossia::presets::from_string(presetStr);
+    for(auto s : loadPreset) qDebug() << s.first.c_str();
+    auto presetStr2 = ossia::presets::to_string(loadPreset);
+    qDebug() << presetStr2.c_str();
+    QVERIFY(loadPreset == preset);
+
+    const auto json = ossia::presets::write_json("whatever", loadPreset, false);
+    qDebug() << json.c_str();
+    const auto read_json = ossia::presets::read_json(json, false);
+     qDebug() << ossia::presets::to_string(read_json).c_str();
 
   }
 };
