@@ -1386,6 +1386,22 @@ class OSSIA_EXPORT node
     bool get_zombie() const;
 
 
+    /***********/
+    /* PRESETS */
+    /***********/
+
+    /**
+     * @brief load_preset: load JSON preset from a file
+     * @param filename
+     */
+    void load_preset(const std::string& filename);
+
+    /**
+     * @brief save_preset: save JSON preset to a file
+     * @param filename
+     */
+    void save_preset(const std::string& filename);
+
 #if defined(OSSIA_CPP_CXX11)
     node(node&&);
     node& operator=(node&&);
