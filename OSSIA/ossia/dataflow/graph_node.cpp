@@ -189,7 +189,6 @@ void graph_node::clear() noexcept
     {
       e->clear();
     }
-    delete inl;
   }
   for(auto outl : m_outlets)
   {
@@ -197,6 +196,14 @@ void graph_node::clear() noexcept
     {
       e->clear();
     }
+  }
+
+  for(auto inl : m_inlets)
+  {
+    delete inl;
+  }
+  for(auto outl : m_outlets)
+  {
     delete outl;
   }
   m_inlets.clear();
