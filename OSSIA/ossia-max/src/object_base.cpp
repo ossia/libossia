@@ -348,16 +348,16 @@ void object_base::is_deleted(const ossia::net::node_base& n)
         if(nd->get_node() == &n)
             nd->set_dead();
     }
-    ossia::remove_one_if(
+    m_node_selection.erase(ossia::remove_if(
       m_node_selection,
       [&] (const t_matcher* m) {
         return m->get_node() == &n;
-    });
-    ossia::remove_one_if(
+    }), m_node_selection.end());
+    m_matchers.erase(ossia::remove_if(
       m_matchers,
       [&] (const std::shared_ptr<t_matcher>& m) {
         return m->get_node() == &n;
-    });
+    }), m_matchers.end());
     m_is_deleted = false;
 }
 

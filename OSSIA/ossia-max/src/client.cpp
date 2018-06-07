@@ -184,7 +184,6 @@ void client::get_mess_cb(client* x, t_symbol* s)
 
 void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
 {
-
   disconnect(x);
 
   ossia::net::minuit_connection_data minuit_settings;
@@ -545,6 +544,7 @@ void client::disconnect(client* x)
 {
   if (x->m_device)
   {
+    x->m_matchers.clear();
     x->disconnect_slots();
     x->unregister_children();
     delete x->m_device;
