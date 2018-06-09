@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/dataflow/safe_nodes/port.hpp>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
 #include <brigand/sequences/list.hpp>
 #include <brigand/algorithms/index_of.hpp>
 #include <brigand/algorithms/transform.hpp>
@@ -12,7 +12,7 @@ namespace ossia::safe_nodes
 {
 
 template<typename T>
-using timed_vec = boost::container::flat_map<int64_t, T>;
+using timed_vec = ossia::flat_map<int64_t, T>;
 
 template<typename... Args>
 static constexpr auto make_node(Args&&... args)

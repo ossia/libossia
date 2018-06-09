@@ -47,12 +47,12 @@ bool scenario::is_root_sync(ossia::time_sync& sync) const
 }
 void scenario::start()
 {
-  m_runningIntervals.reserve(m_intervals.size());
+  m_runningIntervals.container.reserve(m_intervals.size());
   m_pendingEvents.reserve(m_nodes.size() * 2);
   m_maxReachedEvents.reserve(m_nodes.size() * 2);
-  m_overticks.reserve(m_nodes.size());
-  m_itv_end_map.reserve(m_intervals.size());
-  m_endNodes.reserve(m_nodes.size());
+  m_overticks.container.reserve(m_nodes.size());
+  m_itv_end_map.container.reserve(m_intervals.size());
+  m_endNodes.container.reserve(m_nodes.size());
   for(auto& node : m_nodes)
   {
     if(is_root_sync(*node))

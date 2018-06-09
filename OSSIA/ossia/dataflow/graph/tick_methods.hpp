@@ -156,7 +156,7 @@ struct split_score_tick
     ossia::time_interval& itv;
 
     static void do_cuts(
-        boost::container::flat_set<int64_t>& cuts,
+        ossia::flat_set<int64_t>& cuts,
         token_request_vec& tokens,
         time_value cur_date)
     {
@@ -254,7 +254,7 @@ struct split_score_tick
     }
 
   private:
-    boost::container::flat_set<int64_t> cuts;
+    ossia::flat_set<int64_t> cuts;
     std::map<const ossia::graph_node*, std::pair<ossia::token_request_vec, ossia::token_request_vec::iterator>> requests;
 };
 #if defined(SCORE_BENCHMARK)

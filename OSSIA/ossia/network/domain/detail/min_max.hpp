@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/domain/domain_base.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/flat_set.hpp>
 
 namespace ossia
 {
@@ -17,6 +18,15 @@ struct domain_min_visitor_helper
       return value::make<typename T::value_type>(*value.min);
     else
       return ossia::value{};
+  }
+};
+
+template <>
+struct domain_min_visitor_helper<domain_base<bool>>
+{
+  OSSIA_INLINE ossia::value operator()(const domain_base<bool>& value) const
+  {
+    return value.min;
   }
 };
 
@@ -96,6 +106,15 @@ struct domain_max_visitor_helper
       return value::make<typename T::value_type>(*value.max);
     else
       return ossia::value{};
+  }
+};
+
+template <>
+struct domain_max_visitor_helper<domain_base<bool>>
+{
+  OSSIA_INLINE ossia::value operator()(const domain_base<bool>& value) const
+  {
+    return value.max;
   }
 };
 
@@ -232,7 +251,6 @@ struct domain_set_min_visitor
   }
   OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming)
   {
-    domain.min = incoming;
   }
   OSSIA_INLINE void
   operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
@@ -276,7 +294,6 @@ struct domain_set_min_visitor
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
   {
-    domain.min = ossia::none;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(vector_domain& domain, U&&...)
@@ -317,7 +334,6 @@ struct domain_set_max_visitor
   }
   OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming)
   {
-    domain.max = incoming;
   }
   OSSIA_INLINE void
   operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
@@ -359,7 +375,6 @@ struct domain_set_max_visitor
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
   {
-    domain.max = ossia::none;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(vector_domain& domain, U&&...)
@@ -390,6 +405,11 @@ struct domain_minmax_creation_visitor
   OSSIA_INLINE domain operator()(T min, T max)
   {
     return domain_base<T>(min, max);
+  }
+
+  OSSIA_INLINE domain operator()(bool min, bool max)
+  {
+    return domain_base<bool>{};
   }
 
   template <std::size_t N>
@@ -451,15 +471,20 @@ struct domain_value_set_creation_visitor
     return dom;
   }
 
+  domain operator()(bool)
+  {
+    return domain_base<bool>{};
+  }
+
   domain operator()(const std::vector<ossia::value>& orig)
   {
     vector_domain res;
-    boost::container::flat_set<ossia::value> vals;
+    ossia::flat_set<ossia::value> vals;
 
     for (const auto& value : values)
       vals.insert(value);
 
-    res.values = std::vector<boost::container::flat_set<ossia::value>>(
+    res.values = std::vector<ossia::flat_set<ossia::value>>(
         orig.size(), std::move(vals));
 
     return res;
@@ -469,7 +494,7 @@ struct domain_value_set_creation_visitor
   domain operator()(const std::array<float, N>& dom)
   {
     vecf_domain<N> res;
-    boost::container::flat_set<float> vals;
+    ossia::flat_set<float> vals;
 
     for (const auto& value : values)
       if (auto r = value.target<float>())

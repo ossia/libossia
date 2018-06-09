@@ -407,6 +407,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/bitset2>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>

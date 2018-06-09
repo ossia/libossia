@@ -42,13 +42,8 @@ struct domain_conversion
   domain operator()(const domain_base<bool>& t)
   {
     U f;
-    if (t.min)
-      f.min = *t.min;
-    if (t.max)
-      f.max = *t.max;
-    if (!t.values.empty())
-      for (auto val : t.values)
-        f.values.insert(val);
+    f.min = 0;
+    f.max = 1;
     return f;
   }
 
@@ -82,25 +77,7 @@ struct domain_conversion<domain_base<bool>>
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {
-    return domain_base<bool>{false, true};
-  }
-  OSSIA_INLINE domain operator()(const domain_base<impulse>&)
-  {
-    return domain_base<bool>{false, true};
-  }
-  OSSIA_INLINE domain operator()(const domain_base<std::string>&)
-  {
-    return domain_base<bool>{false, true};
-  }
-  template<typename T>
-  domain operator()(const domain_base<T>& t)
-  {
-    domain_base<bool> f;
-    if (t.min)
-      f.min = bool(t.min);
-    if (t.max)
-      f.max = bool(t.max);
-    return f;
+    return domain_base<bool>{};
   }
 };
 template <>

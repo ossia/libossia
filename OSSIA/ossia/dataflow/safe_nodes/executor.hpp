@@ -170,7 +170,7 @@ struct apply_control<false, N>
       ossia::safe_nodes::timed_vec<val_type>& vec = std::get<N>(self.control_tuple);
       vec.clear();
       const auto& vp = inl[idx]->data.template target<ossia::value_port>()->get_data();
-      vec.reserve(vp.size() + 1);
+      vec.container.reserve(vp.size() + 1);
 
       // in all cases, set the current value at t=0
       vec.insert(std::make_pair(int64_t{0}, std::get<N>(self.controls)));

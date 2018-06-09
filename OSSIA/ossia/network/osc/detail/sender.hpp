@@ -56,12 +56,6 @@ public:
     send_base(address, std::forward<Args>(args)...);
   }
 
-  template <int N, typename... Args>
-  void send(oscpack::small_string_base<N> address, Args&&... args)
-  {
-    send_base(address, std::forward<Args>(args)...);
-  }
-
   const std::string& ip() const
   {
     return m_ip;

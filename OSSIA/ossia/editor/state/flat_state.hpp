@@ -4,7 +4,7 @@
 
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
 #include <ossia_export.h>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
@@ -123,34 +123,34 @@ class OSSIA_EXPORT flat_set_state
 
     void add(const ossia::message& e)
     {
-      // TODO push in vector instead... or boost::container::flat_multimap
+      // TODO push in vector instead... or flat_multimap
       // But normally there should be a single one with a given address / unit pair... do an assert ?
 
       m_children[std::make_pair(&e.dest.value.get(), e.get_unit())] = e;
     }
     void add(ossia::message&& e)
     {
-      // TODO push in vector instead... or boost::container::flat_multimap
+      // TODO push in vector instead... or flat_multimap
       m_children[std::make_pair(&e.dest.value.get(), e.get_unit())] = std::move(e);
 
     }
     void add(const ossia::piecewise_message& e)
     {
-      // TODO push in vector instead... or boost::container::flat_multimap
+      // TODO push in vector instead... or flat_multimap
       m_children[std::make_pair(&e.address.get(), e.get_unit())] = e;
 
     }
     template <std::size_t N>
     void add(piecewise_vec_message<N>&& e)
     {
-      // TODO push in vector instead... or boost::container::flat_multimap
+      // TODO push in vector instead... or flat_multimap
       m_children[std::make_pair(&e.address.get(), e.get_unit())] = std::move(e);
 
     }
     template <std::size_t N>
     void add(const piecewise_vec_message<N>& e)
     {
-      // TODO push in vector instead... or boost::container::flat_multimap
+      // TODO push in vector instead... or flat_multimap
       m_children[std::make_pair(&e.address.get(), e.get_unit())] = e;
     }
 

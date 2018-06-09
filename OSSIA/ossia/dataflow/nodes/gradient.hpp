@@ -3,14 +3,14 @@
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/editor/curve/curve_segment/easing.hpp>
 #include <ossia/network/dataspace/color.hpp>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
 
 namespace ossia::nodes
 {
 class gradient final : public ossia::graph_node
 {
   public:
-    using grad_type = boost::container::flat_map<double, ossia::hunter_lab>;
+    using grad_type = ossia::flat_map<double, ossia::hunter_lab>;
 
     gradient()
     {

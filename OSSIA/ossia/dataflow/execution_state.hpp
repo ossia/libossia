@@ -6,7 +6,8 @@
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/flat_state.hpp>
 #include <ossia/editor/state/state.hpp>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/flat_multimap.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/mutex.hpp>
 namespace ossia
@@ -93,7 +94,7 @@ struct OSSIA_EXPORT execution_state
     ossia::small_vector<ossia::net::device_base*, 4> allDevices;
 
     // private:// disabled due to tests, but for some reason can't make friend work
-    using value_state_impl = boost::container::flat_multimap<int64_t, std::pair<ossia::value, int>>;
+    using value_state_impl = ossia::flat_multimap<int64_t, std::pair<ossia::value, int>>;
     ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>> m_valueState;
     ossia::fast_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
     ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<rtmidi::message>> m_midiState;
@@ -108,7 +109,7 @@ struct OSSIA_EXPORT execution_state
 
     ossia::mono_state m_monoState;
     ossia::flat_vec_state m_commitOrderedState;
-    boost::container::flat_map<std::pair<int64_t, int>, std::vector<ossia::state_element>> m_flatMessagesCache;
+    ossia::flat_map<std::pair<int64_t, int>, std::vector<ossia::state_element>> m_flatMessagesCache;
 
     int m_msgIndex{};
 

@@ -111,9 +111,9 @@ Y curve<X, Y>::get_y0() const
 
       if (bounds.start < bounds.end)
       {
-        for (auto& pt : m_points)
+        for (auto& pt : m_points.container)
         {
-          auto& y = pt.second.first;
+          Y& y = pt.second.first;
           y = ossia::easing::ease{}(bounds.min, bounds.max, y);
         }
       }
@@ -124,7 +124,7 @@ Y curve<X, Y>::get_y0() const
       }
       else // start > end
       {
-        for (auto& pt : m_points)
+        for (auto& pt : m_points.container)
         {
           auto& y = pt.second.first;
           const auto fun = [=](Y val) -> Y {

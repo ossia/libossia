@@ -4,7 +4,6 @@
 #include <mach/time_value.h>
 #endif
 #include <cinttypes>
-#include <cmath>
 #include <limits>
 #include <ossia_export.h>
 
@@ -162,7 +161,6 @@ struct OSSIA_EXPORT time_value
    \return bool infinite */
   bool infinite() const noexcept
   {
-    //! \todo this prevents ever compiling with -Ofast
     return std::numeric_limits<int64_t>::max() == impl;
   }
 

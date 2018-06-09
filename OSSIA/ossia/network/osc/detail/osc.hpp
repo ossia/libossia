@@ -584,6 +584,12 @@ struct osc_write_domain_visitor
     }
   }
 
+  void operator()(const domain_base<bool>& dom)
+  {
+    vis(false);
+    vis(true);
+  }
+
   void operator()(const domain_base<ossia::impulse>& dom)
   {
   }

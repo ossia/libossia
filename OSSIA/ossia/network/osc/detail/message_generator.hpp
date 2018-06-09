@@ -78,7 +78,7 @@ public:
     p << oscpack::EndMessage();
     return p;
   }
-
+/*
   template <int N, typename... T>
   const oscpack::OutboundPacketStream&
   operator()(small_string_base<N> name, const T&... args)
@@ -88,7 +88,7 @@ public:
     p << oscpack::EndMessage();
     return p;
   }
-
+*/
   template <typename Val_T>
   const oscpack::OutboundPacketStream&
   operator()(const std::string& name, const std::vector<Val_T>& values)
@@ -155,16 +155,6 @@ public:
   template <typename... T>
   const oscpack::OutboundPacketStream&
   operator()(ossia::string_view name, const T&... args)
-  {
-    p << oscpack::BeginMessageN(name);
-    subfunc(args...);
-    p << oscpack::EndMessage();
-    return p;
-  }
-
-  template <int N, typename... T>
-  const oscpack::OutboundPacketStream&
-  operator()(small_string_base<N> name, const T&... args)
   {
     p << oscpack::BeginMessageN(name);
     subfunc(args...);

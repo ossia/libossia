@@ -192,6 +192,29 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
     */
   }
 }
+
+
+template <>
+template <typename U>
+ossia::value numeric_clamp<domain_base<bool>>::operator()(bounding_mode b, U&& val) const
+{
+  switch (b)
+  {
+    case bounding_mode::CLIP:
+      return bool(ossia::clamp(std::forward<U>(val), false, true));
+    case bounding_mode::WRAP:
+      return bool(ossia::wrap(std::forward<U>(val), false, true));
+    case bounding_mode::FOLD:
+      return bool(ossia::fold(std::forward<U>(val), false, true));
+    case bounding_mode::LOW:
+      return bool(ossia::clamp_min(std::forward<U>(val), false));
+    case bounding_mode::HIGH:
+      return bool(ossia::clamp_max(std::forward<U>(val), true));
+    default:
+      return std::forward<U>(val);
+  }
+}
+
 template <typename T>
 template <std::size_t N>
 ossia::value numeric_clamp<T>::
@@ -401,6 +424,39 @@ operator()(bounding_mode b, const std::vector<ossia::value>& val) const
     }
   }
   return std::move(res);
+}
+
+template <>
+template <std::size_t N>
+ossia::value numeric_clamp<domain_base<bool>>::operator()(bounding_mode b, std::array<float, N> val) const
+{
+  constexpr bool min = false, max = true;
+  switch (b)
+  {
+    case bounding_mode::CLIP:
+      for (std::size_t i = 0; i < N; i++)
+        val[i] = ossia::clamp(bool(val[i]), min, max);
+      break;
+    case bounding_mode::WRAP:
+      for (std::size_t i = 0; i < N; i++)
+        val[i] = ossia::wrap(bool(val[i]), min, max);
+      break;
+    case bounding_mode::FOLD:
+      for (std::size_t i = 0; i < N; i++)
+        val[i] = ossia::fold(bool(val[i]), min, max);
+      break;
+    case bounding_mode::LOW:
+      for (std::size_t i = 0; i < N; i++)
+        val[i] = ossia::clamp_min(bool(val[i]), min);
+      break;
+    case bounding_mode::HIGH:
+      for (std::size_t i = 0; i < N; i++)
+        val[i] = ossia::clamp_max(bool(val[i]), max);
+      break;
+    default:
+      break;
+  }
+  return val;
 }
 
 value list_clamp::

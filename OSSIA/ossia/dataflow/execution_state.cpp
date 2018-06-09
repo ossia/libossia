@@ -451,7 +451,7 @@ void execution_state::commit_ordered()
     it->second.clear();
   }
 
-  for(auto& vec : m_flatMessagesCache)
+  for(auto& vec : m_flatMessagesCache.container)
   {
     for(auto& mess : vec.second)
       ossia::launch(mess);

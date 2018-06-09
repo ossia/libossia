@@ -168,7 +168,7 @@ if(OSSIA_SPLIT_DEBUG)
   set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
   if(NOT APPLE AND NOT MINGW)
   set(GOLD_FLAGS
-    -gdwarf-4
+    -ggdb
 #    -Wa,--compress-debug-sections
 #    -Wl,--compress-debug-sections=zlib
     -Wl,--dynamic-list-cpp-new
@@ -248,8 +248,14 @@ else()
     set(OSSIA_LINK_OPTIONS
       -ffunction-sections
       -fdata-sections
+      -Wl,--gc-sections
     )
-  endif()
+    set(OSSIA_COMPILE_OPTIONS
+      ${OSSIA_COMPILE_OPTIONS}
+      -fno-math-errno
+    )
+
+endif()
 
     if(CMAKE_COMPILER_IS_GNUCXX)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
@@ -257,10 +263,8 @@ else()
       )
       if(NOT OSSIA_SPLIT_DEBUG)
         set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-          -Wl,--gc-sections
           -Wl,-Bsymbolic-functions
         )
-
 
         if(LINKER_IS_GOLD OR LINKER_IS_LLD)
           if(NOT OSSIA_SANITIZE)
@@ -282,9 +286,7 @@ else()
     endif()
 
     if(OSSIA_CI)
-        if(CMAKE_COMPILER_IS_GNUCXX)
-            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
-        endif()
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
     endif()
 
     if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)

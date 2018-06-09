@@ -15,6 +15,7 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/detail/flat_set.hpp>
 #include <spdlog/spdlog.h>
 
 #include <iostream>
@@ -129,7 +130,7 @@ int main()
       vector_domain(
                              {}, // Min values
                              {}, // Max values
-                             std::vector<boost::container::flat_set<ossia::value>>{
+                             std::vector<ossia::flat_set<ossia::value>>{
                                {123, 345}, {12345, 234} // Allowed values
                              } ));
   }

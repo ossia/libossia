@@ -5,8 +5,8 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/state/state.hpp>
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
+#include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/flat_set.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_set.hpp>
@@ -18,8 +18,8 @@ class graph;
 class time_event;
 class time_interval;
 class time_sync;
-using interval_set = boost::container::flat_set<time_interval*>;
-using sync_set = boost::container::flat_set<time_sync*>;
+using interval_set = ossia::flat_set<time_interval*>;
+using sync_set = ossia::flat_set<time_sync*>;
 using small_sync_vec = ossia::small_vector<time_sync*, 4>;
 using small_event_vec = ossia::small_vector<time_event*, 4>;
 struct overtick
@@ -28,7 +28,7 @@ struct overtick
   ossia::time_value max;
   ossia::time_value offset;
 };
-using overtick_map = boost::container::flat_map<time_sync*, overtick>;
+using overtick_map = ossia::flat_map<time_sync*, overtick>;
 
 class scenario;
 using scenario_graph_vertex = time_sync*;
@@ -142,7 +142,7 @@ private:
   small_event_vec m_pendingEvents;
   small_event_vec m_maxReachedEvents;
   overtick_map m_overticks; // used as cache
-  boost::container::flat_map<time_interval*, time_value> m_itv_end_map;
+  ossia::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_endNodes; // used as cache
   scenario_graph m_sg; // used as cache
 

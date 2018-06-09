@@ -369,7 +369,7 @@ void reset_items(QQuickItem* root)
     cur_pos++;
   }
 
-  boost::container::flat_set<QObject*> objs(items.begin(), items.end());
+  ossia::flat_set<QObject*> objs(items.begin(), items.end());
   boost::range::remove_erase_if(items, [&objs] (auto ptr) {
       return objs.find(ptr) != objs.end();
   });

@@ -53,6 +53,17 @@ struct domain_to_json
     writer.Null();
   }
 
+  void operator()(const ossia::domain_base<bool>& dom)
+  {
+      writer.StartObject();
+      writer.Key("VALS");
+      writer.StartArray();
+      write_json(writer, false);
+      write_json(writer, true);
+      writer.EndArray();
+      writer.EndObject();
+  }
+
   template <typename T>
   void operator()(const ossia::domain_base<T>& dom)
   {

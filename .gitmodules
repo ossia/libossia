@@ -96,3 +96,6 @@
 [submodule "3rdparty/multi_index"]
 	path = 3rdparty/multi_index
 	url = https://github.com/jcelerier/multi_index
+[submodule "3rdparty/flat"]
+	path = 3rdparty/flat
+	url = https://github.com/jcelerier/flat

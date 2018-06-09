@@ -12,7 +12,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
-#include <boost/container/flat_set.hpp>
+#include <ossia/detail/flat_set.hpp>
 #include <boost/graph/graphviz.hpp>
 
 class DataflowTest;
@@ -28,7 +28,7 @@ using graph_edge_t = graph_t::edge_descriptor;
 using node_map = ossia::shared_ptr_map<ossia::graph_node, graph_vertex_t>;
 using edge_map = ossia::shared_ptr_map<ossia::graph_edge, graph_edge_t>;
 
-using node_flat_set = boost::container::flat_set<graph_node*>;
+using node_flat_set = ossia::flat_set<graph_node*>;
 enum class node_ordering
 {
   topological, temporal, hierarchical

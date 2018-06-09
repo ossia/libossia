@@ -8,6 +8,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/exceptions.hpp>
+#include <ossia/detail/flat_multimap.hpp>
 #include <cassert>
 #include <hopscotch_map.h>
 #include <iostream>
@@ -16,8 +17,7 @@
 
 namespace ossia
 {
-using past_events_map
-    = boost::container::flat_multimap<time_value, time_event*>;
+using past_events_map = ossia::flat_multimap<time_value, time_event*>;
 using DateMap = ossia::ptr_map<time_sync*, ossia::time_value>;
 using EventPtr = std::shared_ptr<ossia::time_event>;
 using IntervalPtr = std::shared_ptr<ossia::time_interval>;

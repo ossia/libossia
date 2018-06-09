@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
+#include <ossia/detail/flat_multiset.hpp>
 
 namespace ossia::nodes
 {
@@ -31,14 +32,15 @@ class midi final
 {
     ossia::outlet midi_out{ossia::midi_port{}};
   public:
-    using note_set = boost::container::flat_multiset<note_data, note_comparator>;
+    using note_set = ossia::flat_multiset<note_data, note_comparator>;
     midi()
     {
       m_outlets.push_back(&midi_out);
-      m_notes.reserve(128);
-      m_orig_notes.reserve(128);
-      m_playingnotes.reserve(128);
-      m_toStop.reserve(64);
+      // TODO static_vector ??
+      m_notes.container.reserve(128);
+      m_orig_notes.container.reserve(128);
+      m_playingnotes.container.reserve(128);
+      m_toStop.container.reserve(64);
     }
 
     ~midi() override
@@ -181,7 +183,7 @@ class midi final
           // First send note offs
           for(auto it = m_playingnotes.begin(); it != m_playingnotes.end(); )
           {
-            note_data& note = *it;
+            note_data& note = const_cast<note_data&>(*it);
             auto end_time = note.start + note.duration;
 
             if (end_time >= t.prev_date && end_time < t.date)
@@ -201,7 +203,7 @@ class midi final
           auto max_it = m_notes.lower_bound({t.date});
           for(auto it = m_notes.begin(); it < max_it; )
           {
-            note_data& note = *it;
+            note_data& note = const_cast<note_data&>(*it);
             auto start_time = note.start;
             if (start_time >= t.prev_date && start_time < t.date)
             {

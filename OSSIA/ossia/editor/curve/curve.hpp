@@ -9,7 +9,7 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
 #include <functional>
 #include <map>
 #include <memory>
@@ -43,8 +43,8 @@ template <>
 const constexpr ossia::curve_segment_type
     curve_segment_type_map<ossia::value> = ossia::curve_segment_type::ANY;
 
-template <typename... Args>
-using curve_map = boost::container::flat_map<Args...>;
+template <typename K, typename V>
+using curve_map = ossia::flat_map<K, V>;
 
 template <typename X, typename Y>
 /**

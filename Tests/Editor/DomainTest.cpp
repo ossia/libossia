@@ -162,6 +162,17 @@ class DomainTest : public QObject
     }
   }
 
+
+  void test_clamp_tuple(ossia::net::parameter_base& addr, bool min, bool max)
+  {
+    ossia::domain_base<bool> dom{};
+
+    addr.set_domain(dom);
+
+    // min and max
+    push_tuple(addr, min, max);
+  }
+
   template<typename T>
   void test_clamp_tuple(ossia::net::parameter_base& addr, T min, T max)
   {
@@ -294,7 +305,6 @@ private Q_SLOTS:
       {
         if(d.min) { }
         if(d.max) { }
-        if(!d.values.empty()) { }
       }
       void operator()(ossia::domain_base<ossia::impulse>& d)
       {

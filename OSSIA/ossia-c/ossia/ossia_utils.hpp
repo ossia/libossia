@@ -8,7 +8,7 @@
 #include <cstring>
 #include <mutex>
 #include <fmt/format.h>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
 #include <ossia-c/log/ossia_log.h>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter.hpp>
@@ -180,7 +180,7 @@ struct address_cb {
 
 struct global_devices
 {
-    boost::container::flat_map<std::string, ossia_device_t> devices;
+    ossia::flat_map<std::string, ossia_device_t> devices;
 
     global_devices() = default;
     global_devices(const global_devices&) = delete;

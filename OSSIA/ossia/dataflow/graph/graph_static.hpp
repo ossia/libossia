@@ -8,7 +8,7 @@
 #include <ossia/dataflow/bench_map.hpp>
 
 #include <boost/circular_buffer.hpp>
-#include <boost/container/flat_map.hpp>
+#include <ossia/detail/flat_map.hpp>
 
 // #define OSSIA_GRAPH_DEBUG
 
@@ -67,7 +67,7 @@ struct graph_static final
         }
 
         // Filter disabled nodes (through strict relationships).
-        m_enabled_cache.reserve(m_nodes.size());
+        m_enabled_cache.container.reserve(m_nodes.size());
 
         for(auto node : m_all_nodes)
         {

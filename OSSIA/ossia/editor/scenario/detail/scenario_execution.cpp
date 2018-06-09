@@ -7,8 +7,8 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
+#include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/flat_set.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
 #include <cassert>
 #include <hopscotch_map.h>
@@ -359,8 +359,8 @@ void scenario::state(
     m_overticks.clear();
     m_endNodes.clear();
 
-    m_endNodes.reserve(m_nodes.size());
-    m_overticks.reserve(m_nodes.size());
+    m_endNodes.container.reserve(m_nodes.size());
+    m_overticks.container.reserve(m_nodes.size());
 
     for(auto it  = m_runningIntervals.begin(); it != m_runningIntervals.end(); )
     {
@@ -478,7 +478,7 @@ void scenario::state(
           const auto node_it = m_overticks.lower_bound(end_node);
           if (node_it != m_overticks.end() && (end_node == node_it->first))
           {
-            auto& cur = node_it->second;
+            auto& cur = const_cast<overtick&>(node_it->second);
 
             if (ot < cur.min)
               cur.min = ot;
@@ -530,7 +530,7 @@ void scenario::state(
             = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
 
         const auto offset = tick_offset + tick_ms - remaining_tick;
-        it->second.offset = offset;
+        const_cast<overtick&>(it->second).offset = offset;
         for (const auto& interval : ev.next_time_intervals())
         {
           run_interval(*interval, remaining_tick, offset);
