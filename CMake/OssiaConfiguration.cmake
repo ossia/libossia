@@ -245,88 +245,99 @@ if(MSVC)
     )
 else()
   if(CMAKE_BUILD_TYPE MATCHES Release)
-    set(OSSIA_LINK_OPTIONS
-      -ffunction-sections
-      -fdata-sections
-      -Wl,--gc-sections
-    )
     set(OSSIA_COMPILE_OPTIONS
       ${OSSIA_COMPILE_OPTIONS}
       -fno-math-errno
     )
+  endif()
 
-endif()
+  set(OSSIA_LINK_OPTIONS
+    -ffunction-sections
+    -fdata-sections
+  )
 
-    if(CMAKE_COMPILER_IS_GNUCXX)
+  if(NOT APPLE)
+    set(OSSIA_LINK_OPTIONS
+      -Wl,--gc-sections
+      -Wl,--as-needed
+    )
+  else()
+    set(OSSIA_LINK_OPTIONS
+      -Wl,-dead_strip
+    )
+  endif()
+
+
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+      -fvar-tracking-assignments
+    )
+    if(NOT OSSIA_SPLIT_DEBUG)
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-        -fvar-tracking-assignments
+        -Wl,-Bsymbolic-functions
       )
-      if(NOT OSSIA_SPLIT_DEBUG)
-        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-          -Wl,-Bsymbolic-functions
-        )
 
-        if(LINKER_IS_GOLD OR LINKER_IS_LLD)
-          if(NOT OSSIA_SANITIZE)
-              set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-                ${DEBUG_SPLIT_FLAG}
-                -Wl,--gdb-index
-              )
-          endif()
+      if(LINKER_IS_GOLD OR LINKER_IS_LLD)
+        if(NOT OSSIA_SANITIZE)
+            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+              ${DEBUG_SPLIT_FLAG}
+              -Wl,--gdb-index
+            )
         endif()
       endif()
     endif()
+  endif()
 
-    if(LINKER_IS_GOLD)
-      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} ${GOLD_FLAGS})
-    endif()
+  if(LINKER_IS_GOLD)
+    set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} ${GOLD_FLAGS})
+  endif()
 
-    if(OSSIA_MOST_STATIC)
-      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
-    endif()
+  if(OSSIA_MOST_STATIC)
+    set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -static -static-libgcc -static-libstdc++)
+  endif()
 
-    if(OSSIA_CI)
-      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
-    endif()
+  if(OSSIA_CI)
+    set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
+  endif()
 
-    if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)
-      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
-        -Wno-gnu-statement-expression
-        #-Wweak-vtables
-      )
-    endif()
-    set(OSSIA_COMPILE_OPTIONS
-        ${OSSIA_COMPILE_OPTIONS}
-        -Wall
-        -Wextra
-        -Wno-unused-parameter
-        -Wno-unknown-pragmas
-        -Wno-missing-braces
-        -Wno-four-char-constants
-        -Wnon-virtual-dtor
-        -pedantic
-        -Wunused
-        -Woverloaded-virtual
-        -pipe
-        -Werror=return-type
-        -Werror=trigraphs
-        -Wmissing-field-initializers
-        ${OSSIA_LINK_OPTIONS}
+  if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)
+    set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+      -Wno-gnu-statement-expression
+      #-Wweak-vtables
     )
-    if(NOT CMAKE_COMPILER_IS_GNUCXX)
-      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
-        -Wno-cast-align
-        -Wno-unused-local-typedef)
-    endif()
-    if(OSSIA_CI)
-        if(NOT CMAKE_COMPILER_IS_GNUCXX)
-            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
-        endif()
-    endif()
+  endif()
+  set(OSSIA_COMPILE_OPTIONS
+      ${OSSIA_COMPILE_OPTIONS}
+      -Wall
+      -Wextra
+      -Wno-unused-parameter
+      -Wno-unknown-pragmas
+      -Wno-missing-braces
+      -Wno-four-char-constants
+      -Wnon-virtual-dtor
+      -pedantic
+      -Wunused
+      -Woverloaded-virtual
+      -pipe
+      -Werror=return-type
+      -Werror=trigraphs
+      -Wmissing-field-initializers
+      ${OSSIA_LINK_OPTIONS}
+  )
+  if(NOT CMAKE_COMPILER_IS_GNUCXX)
+    set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+      -Wno-cast-align
+      -Wno-unused-local-typedef)
+  endif()
+  if(OSSIA_CI)
+      if(NOT CMAKE_COMPILER_IS_GNUCXX)
+          set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
+      endif()
+  endif()
 
-    if("${SUPPORTS_MISLEADING_INDENT_FLAG}")
-        set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS} -Wmisleading-indentation)
-    endif()
+  if("${SUPPORTS_MISLEADING_INDENT_FLAG}")
+      set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS} -Wmisleading-indentation)
+  endif()
 
 #    if(APPLE)
 #        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-warn_weak_exports")

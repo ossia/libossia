@@ -4,7 +4,7 @@
 #include <ossia-qt/score/qml_sync.hpp>
 #include <ossia-qt/score/qml_exec.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
+
 namespace ossia
 {
 namespace qt
@@ -55,8 +55,8 @@ void qml_scenario::unregisterInterval(qml_interval* itv)
     if(auto iv = itv->interval())
     {
       qml_exec::get(this)->submitCommand([impl=m_impl,iv] {
-        boost::remove_erase(iv->get_start_event().next_time_intervals(), iv);
-        boost::remove_erase(iv->get_end_event().previous_time_intervals(), iv);
+        ossia::remove_erase(iv->get_start_event().next_time_intervals(), iv);
+        ossia::remove_erase(iv->get_end_event().previous_time_intervals(), iv);
         impl->remove_time_interval(iv);
       });
     }

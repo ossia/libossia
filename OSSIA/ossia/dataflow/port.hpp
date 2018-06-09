@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
+
 
 namespace ossia
 {
@@ -59,7 +59,7 @@ struct OSSIA_EXPORT inlet : public port
 
   void disconnect(graph_edge* e) noexcept
   {
-    boost::remove_erase(sources, e);
+    ossia::remove_erase(sources, e);
   }
 
   destination_t address;
@@ -95,7 +95,7 @@ struct OSSIA_EXPORT outlet : public port
 
   void disconnect(graph_edge* e) noexcept
   {
-    boost::remove_erase(targets, e);
+    ossia::remove_erase(targets, e);
   }
 
   void write(execution_state& e);

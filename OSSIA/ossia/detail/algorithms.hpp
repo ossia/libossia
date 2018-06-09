@@ -66,13 +66,29 @@ void remove_one(Vector&& v, const Value& val)
 }
 
 template <typename Vector, typename Function>
-void remove_one_if(Vector&& v, const Function& val)
+void remove_one_if(Vector& v, const Function& val)
 {
   auto it = find_if(v, val);
   if (it != v.end())
   {
     v.erase(it);
   }
+}
+
+template<typename Vector, typename Value>
+void remove_erase(Vector& v, const Value& val)
+{
+  v.erase(
+      std::remove(v.begin(), v.end(), val),
+      v.end());
+}
+
+template<typename Vector, typename Function>
+void remove_erase_if(Vector& v, const Function& val)
+{
+  v.erase(
+      std::remove_if(v.begin(), v.end(), val),
+      v.end());
 }
 
 template <typename Vector, typename Fun>

@@ -19,7 +19,7 @@
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_signal.hpp>
 #include <ossia-qt/qml_context.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
+
 #include <ossia/network/common/debug.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/network/midi/midi.hpp>
@@ -370,7 +370,7 @@ void reset_items(QQuickItem* root)
   }
 
   ossia::flat_set<QObject*> objs(items.begin(), items.end());
-  boost::range::remove_erase_if(items, [&objs] (auto ptr) {
+  ossia::remove_erase_if(items, [&objs] (auto ptr) {
       return objs.find(ptr) != objs.end();
   });
 

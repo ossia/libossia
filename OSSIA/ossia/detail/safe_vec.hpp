@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
+
 #include <ossia/detail/ptr_set.hpp>
 #include <vector>
 
@@ -37,7 +37,7 @@ public:
 
   void remove_all(T t)
   {
-    boost::remove_erase(impl, t);
+    ossia::remove_erase(impl, t);
   }
 
   void reserve(std::size_t N)

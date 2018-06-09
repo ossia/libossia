@@ -724,10 +724,14 @@ struct state_flatten_visitor
   {
     return *iterator;
   }
+
+#if defined(NDEBUG)
   ossia::state_element& value(ossia::flat_vec_state::iterator iterator)
   {
     return *iterator;
   }
+#endif
+
   ossia::state_element& value(ossia::flat_set_state::iterator iterator)
   {
     return iterator->second;

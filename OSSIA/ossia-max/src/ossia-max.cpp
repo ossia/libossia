@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <ossia/detail/config.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
+
 
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
