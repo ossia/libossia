@@ -5,7 +5,7 @@
 #include <ossia/network/base/node_functions.hpp>
 #include "../Editor/TestUtils.hpp"
 #include <valgrind/callgrind.h>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <brigand/sequences/list.hpp>
 #include <random>
 #include <QCoreApplication>

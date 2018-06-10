@@ -1,9 +1,7 @@
 #pragma once
-#include <ossia/detail/algorithms.hpp>
 #include <ossia/network/value/vec.hpp>
-
+#include <ossia/detail/string_view.hpp>
 #include <ossia/detail/math.hpp>
-#include <brigand/algorithms/transform.hpp>
 #include <ratio>
 #include <type_traits>
 namespace ossia

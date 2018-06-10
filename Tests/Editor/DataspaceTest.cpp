@@ -8,7 +8,7 @@
 #include <ossia/network/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/algorithms.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 
 namespace ossia
 {
@@ -31,12 +31,12 @@ class DataspaceTest : public QObject
   void test_conversions_impl()
   {
     // Conversion
-    brigand::for_each<T>([&] (auto unit_1)
+    ossia::for_each_tagged(T{}, [&] (auto unit_1)
     {
       using unit_1_type = typename decltype(unit_1)::type;
       unit_1_type unit_1_v;
 
-      brigand::for_each<T>([&] (auto unit_2)
+      ossia::for_each_tagged(T{}, [&] (auto unit_2)
       {
         using unit_2_type = typename decltype(unit_2)::type;
         // Conversion at construction
@@ -153,8 +153,8 @@ private Q_SLOTS:
     ossia::unit_t unit;
 
     // Construction
-    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
-      brigand::for_each<typename decltype(t)::type>([&] (auto u) {
+    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
+      ossia::for_each_tagged(typename decltype(t)::type{}, [&] (auto u) {
         unit = typename decltype(u)::type{};
       });
     });
@@ -176,10 +176,10 @@ private Q_SLOTS:
   {
     // get_unit_text
     ossia::get_unit_text(ossia::unit_t{});
-    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
+    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
       using dataspace_t = typename ossia::matching_unit_u_list<typename decltype(t)::type>::type;
       ossia::get_unit_text(dataspace_t{});
-      brigand::for_each<typename decltype(t)::type>([&] (auto u) {
+      ossia::for_each_tagged(typename decltype(t)::type{}, [&] (auto u) {
         ossia::get_unit_text(typename decltype(u)::type{});
       });
     });
@@ -195,9 +195,9 @@ private Q_SLOTS:
     auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
     QVERIFY(!p2);
 
-    brigand::for_each<ossia::dataspace_u_list>([&] (auto t) {
+    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
       using dataspace_type = typename decltype(t)::type;
-      brigand::for_each<dataspace_type>([&] (auto u) {
+      ossia::for_each_tagged(dataspace_type{}, [&] (auto u) {
         using unit_type = typename decltype(u)::type;
         auto unit_text_array = ossia::unit_traits<unit_type>::text();
         for(auto unit_text : unit_text_array)

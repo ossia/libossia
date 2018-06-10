@@ -7,7 +7,7 @@
 #include <iostream>
 #include <utility>
 #include <brigand/algorithms/transform.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <brigand/sequences/make_sequence.hpp>
 
 namespace ossia

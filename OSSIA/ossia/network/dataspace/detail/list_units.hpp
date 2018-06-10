@@ -14,7 +14,7 @@ template<typename InsertFun>
 void list_units(InsertFun fun)
 {
   // TODO frozen hash-map
-  brigand::for_each<dataspace_u_list>([&](auto t) {
+  ossia::for_each_tagged(dataspace_u_list{}, [&](auto t) {
     ossia::net::parameter_data p;
     using dataspace_type = typename decltype(t)::type;
     using d_traits = dataspace_traits<dataspace_type>;
@@ -26,7 +26,7 @@ void list_units(InsertFun fun)
 
       fun(dataspace_name, neutral_u{});
 
-      brigand::for_each<dataspace_type>([&](auto u) {
+      ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
         using unit_type = typename decltype(u)::type;
 
         for (auto un : unit_traits<unit_type>::text())

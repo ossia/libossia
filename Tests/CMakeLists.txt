@@ -130,7 +130,7 @@ function(ossia_add_bench TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME} ${TESTSRCS})
     target_compile_options(ossia_${TESTNAME} PUBLIC ${OSSIA_COMPILE_OPTIONS})
     if(UNIX)
-      target_compile_options(ossia_${TESTNAME} PUBLIC -O3 -march=native -ggdb)
+      target_compile_options(ossia_${TESTNAME} PUBLIC -O3 -march=native)
     endif()
 
     target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} Qt5::Core Qt5::Test ossia)

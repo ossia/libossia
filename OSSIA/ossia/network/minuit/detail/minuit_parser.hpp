@@ -283,7 +283,7 @@ inline ossia::domain get_domain(
     val.push_back(ossia::net::to_numeric_value(cur, cur_it, beg_it));
   }
 
-  return ossia::make_domain(val, cur);
+  return ossia::make_domain_from_osc(val, cur);
 }
 
 inline optional<double> AsNumber(oscpack::ReceivedMessageArgumentIterator& it)

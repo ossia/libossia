@@ -1,29 +1,22 @@
 #pragma once
-#include <ossia/detail/apply.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/dataflow/execution_state.hpp>
 
 namespace ossia::nodes
 {
-struct state final : public ossia::graph_node
+struct OSSIA_EXPORT state final : public ossia::graph_node
 {
   public:
-    state(const ossia::state& other): data{other} { }
-    state(ossia::state&& other): data{std::move(other)} { }
-    state(): data{} { }
+    state(const ossia::state& other);
+    state(ossia::state&& other);
+    state() = default;
 
-    ~state() override
-    {
+    ~state() override;
 
-    }
-
-    void run(ossia::token_request, ossia::execution_state& e) noexcept override
-    {
-      e.insert(data);
-    }
+    void run(ossia::token_request, ossia::execution_state& e) noexcept override;
 
     ossia::state data;
 };
+
 }
 

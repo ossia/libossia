@@ -368,7 +368,7 @@ static auto& querySetterMap()
     using namespace ossia::net;
 
     // Remaining metadata
-    brigand::for_each<detail::all_attributes>([&](auto attr) {
+    ossia::for_each_tagged(detail::all_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(make_setter_pair(type{}));
     });

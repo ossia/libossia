@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <brigand/algorithms/transform.hpp>
 #include <brigand/sequences/list.hpp>
 #include <ossia/network/value/impulse.hpp>
@@ -321,7 +321,7 @@ struct gen_var
 
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       using impl_t = typename meta_t::type;
       meta_t t;
@@ -371,7 +371,7 @@ struct gen_var
     str << "switch(m_type) { \n";
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -393,7 +393,7 @@ struct gen_var
     // Write types
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -433,7 +433,7 @@ struct gen_var
     // Then specific ones between an instance of the variant and an instance of an actual type
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -506,7 +506,7 @@ struct gen_var
     // Then specific ones between an instance of the variant and an instance of an actual type
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -612,7 +612,7 @@ struct gen_var
   {
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       using impl_t = typename meta_t::type;
       meta_t t;
@@ -646,7 +646,7 @@ struct gen_var
   {
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -661,7 +661,7 @@ struct gen_var
   {
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -674,7 +674,7 @@ struct gen_var
     });
 
     i = 0;
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -687,7 +687,7 @@ struct gen_var
     });
 
     i = 0;
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -700,7 +700,7 @@ struct gen_var
     });
 
     i = 0;
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       using meta_t = typename decltype(_)::type;
       meta_t t;
 
@@ -765,7 +765,7 @@ static Type matching_type();
   {
     int i = 0;
     // Write types
-    brigand::for_each<var_impl>([&] (auto _) {
+    ossia::for_each_tagged(var_impl{}, [&] (auto _) {
       str << "  case "<< class_name <<"::Type::Type" << i << ":\n";
       str << "    return functor(" << orn_before << "var.m_impl.m_value" << i << orn_after << ");\n";
       i++;

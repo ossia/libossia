@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 namespace ossia
 {
 namespace oscquery

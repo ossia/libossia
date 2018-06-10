@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <boost/version.hpp>
 #include <string_view>
+#include <array>
+
 namespace ossia
 {
 using string_view = std::string_view;
@@ -19,4 +20,13 @@ constexpr ossia::string_view make_string_view(const char (&str)[N]) noexcept
 {
   return {str, N - 1};
 }
+
+template <typename... Args>
+constexpr std::array<ossia::string_view, sizeof...(Args)>
+make_string_array(Args&&... args) noexcept
+{
+  return std::array<ossia::string_view, sizeof...(Args)>{
+      make_string_view(args)...};
+}
+
 }

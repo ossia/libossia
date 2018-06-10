@@ -9,7 +9,7 @@
 #include <ossia/network/domain/domain.hpp>
 
 #include <iostream>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include "../Benchmarks/Random.hpp"
 
@@ -60,9 +60,9 @@ class AddressTest : public QObject
 
     void test_units()
     {
-      brigand::for_each<dataspace_u_list>([] (auto d_t) {
+      ossia::for_each_tagged(dataspace_u_list{}, [] (auto d_t) {
         using type = typename decltype(d_t)::type;
-        brigand::for_each<type>([] (auto u_t) {
+        ossia::for_each_tagged(type{}, [] (auto u_t) {
           using utype = typename decltype(u_t)::type;
           std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
         });

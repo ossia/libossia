@@ -2,7 +2,6 @@
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/path.hpp>
-#include <ossia/detail/apply.hpp>
 #include <vector>
 
 namespace ossia
@@ -13,40 +12,41 @@ bool apply_to_destination(
     const DeviceList_T& devices,
     Fun f)
 {
-  struct
+  switch(address.which())
   {
-      Fun& f;
-      const DeviceList_T& devices;
-      bool operator()(ossia::net::parameter_base* addr) const
-      {
-        f(addr, true);
-        return true;
-      }
-      bool operator()(ossia::net::node_base* addr) const
-      {
-        return true;
-      }
+    // ossia::net::parameter_base*
+    case 0:
+    {
+      f(*address.target<ossia::net::parameter_base*>(), true);
+      return true;
+    }
 
-      bool operator()(const ossia::traversal::path& path) const
-      {
-        std::vector<ossia::net::node_base*> roots{};
-        for(auto n : devices)
-          roots.push_back(&n->get_root_node());
+    // ossia::traversal::path
+    case 1:
+    {
+      std::vector<ossia::net::node_base*> roots{};
+      for(auto n : devices)
+        roots.push_back(&n->get_root_node());
 
-        ossia::traversal::apply(path, roots);
+      ossia::traversal::apply(*address.target<ossia::traversal::path>(), roots);
 
-        const bool unique = roots.size() == 1;
-        for(auto n : roots)
-          if(auto addr = n->get_parameter())
-            f(addr, unique);
-        return unique;
-      }
+      const bool unique = roots.size() == 1;
+      for(auto n : roots)
+        if(auto addr = n->get_parameter())
+          f(addr, unique);
+      return unique;
 
-      bool operator()() const
-      {
-        return true;
-      }
-  } vis{f, devices};
-  return ossia::apply(vis, address);
+    }
+
+    // ossia::net::node_base*
+    case 2:
+    {
+      return true;
+    }
+    default:
+    {
+      return true;
+    }
+  }
 }
 }

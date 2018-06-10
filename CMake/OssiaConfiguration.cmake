@@ -167,15 +167,27 @@ endif()
 if(OSSIA_SPLIT_DEBUG)
   set(DEBUG_SPLIT_FLAG "-gsplit-dwarf")
   if(NOT APPLE AND NOT MINGW)
-  set(GOLD_FLAGS
-    -ggdb
-#    -Wa,--compress-debug-sections
-#    -Wl,--compress-debug-sections=zlib
-    -Wl,--dynamic-list-cpp-new
-    -Wl,--dynamic-list-cpp-typeinfo
-    -Wno-unused-command-line-argument
-  )
+    set(GOLD_FLAGS
+#      -Wa,--compress-debug-sections
+#      -Wl,--compress-debug-sections=zlib
+      -Wl,--dynamic-list-cpp-new
+      -Wl,--dynamic-list-cpp-typeinfo
+      -Wno-unused-command-line-argument
+    )
   endif()
+
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(GOLD_FLAGS ${GOLD_FLAGS}
+      -ggdb
+    )
+  endif()
+
+  if(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+    set(GOLD_FLAGS ${GOLD_FLAGS}
+      -ggdb
+      )
+  endif()
+
 endif()
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
     set(OSSIA_ARCHITECTURE arm)

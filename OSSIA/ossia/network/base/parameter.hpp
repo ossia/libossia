@@ -8,11 +8,16 @@
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
 #include <functional>
-#include <future>
 #include <memory>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 #include <vector>
+
+namespace std
+{
+template<typename T>
+class future;
+}
 /*
 extern template class ossia::callback_container<ossia::value_callback>;
 extern template class std::future<void>;

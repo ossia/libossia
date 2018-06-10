@@ -124,7 +124,7 @@ domain make_domain(
   return {};
 }
 
-domain make_domain(
+domain make_domain_from_osc(
     const ossia::small_vector<ossia::value, 2>& val, const ossia::value& cur)
 {
   if (val.size() == 2 && val[0].valid() && val[1].valid())

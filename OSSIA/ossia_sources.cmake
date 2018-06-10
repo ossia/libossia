@@ -13,6 +13,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_set.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_multimap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_multiset.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/for_each.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json_fwd.hpp"
@@ -26,6 +27,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/pod_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/size.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_view.hpp"
@@ -560,6 +562,7 @@ set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/state.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph.cpp"
 )

@@ -9,7 +9,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <oscpack/osc/OscTypes.h>
 #include <rapidjson/document.h>
 #include <ossia/network/generic/generic_node.hpp>
@@ -345,7 +345,7 @@ static auto& namespaceSetterMap()
     using namespace ossia::net;
 
     // Remaining metadata
-    brigand::for_each<attributes_when_reading>([&](auto attr) {
+    ossia::for_each_tagged(attributes_when_reading{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(make_setter_pair<type>());
     });
@@ -366,9 +366,7 @@ static auto& attributesSetterMap()
 
     reader_map_type attr_impl = namespaceSetterMap();
     // Remaining metadata
-    brigand::
-        for_each<brigand::
-                     list<typetag_attribute, extended_type_attribute, unit_attribute>>(
+    ossia::for_each_type_tagged<typetag_attribute, extended_type_attribute, unit_attribute>(
             [&](auto attr) {
               using type = typename decltype(attr)::type;
               attr_impl.insert(make_setter_pair<type>());

@@ -9,7 +9,6 @@
 #include <ossia/network/dataspace/speed.hpp>
 #include <ossia/network/dataspace/temperature.hpp>
 #include <ossia/network/dataspace/time.hpp>
-#include <brigand/algorithms/fold.hpp>
 #include <functional>
 namespace ossia
 {

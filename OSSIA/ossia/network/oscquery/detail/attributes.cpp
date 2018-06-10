@@ -1,7 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/oscquery/detail/attributes.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 
 namespace ossia
 {
@@ -14,11 +14,11 @@ const key_map_type& ossia_to_oscquery_key()
     using namespace detail;
     key_map_type attr_impl;
 
-    brigand::for_each<base_attributes>([&](auto attr) {
+    ossia::for_each_tagged(base_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(std::make_pair(type::text(), metadata<type>::key()));
     });
-    brigand::for_each<extended_attributes>([&](auto attr) {
+    ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(std::make_pair(type::text(), metadata<type>::key()));
     });
@@ -33,11 +33,11 @@ const key_map_type& oscquery_to_ossia_key()
     using namespace detail;
     key_map_type attr_impl;
 
-    brigand::for_each<base_attributes>([&](auto attr) {
+    ossia::for_each_tagged(base_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(std::make_pair(metadata<type>::key(), type::text()));
     });
-    brigand::for_each<extended_attributes>([&](auto attr) {
+    ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(std::make_pair(metadata<type>::key(), type::text()));
     });

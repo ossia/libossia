@@ -4,8 +4,9 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_parse.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <brigand/algorithms/wrap.hpp>
+#include <brigand/sequences/list.hpp>
 namespace ossia
 {
 template <typename T>
@@ -559,9 +560,9 @@ struct make_unit_symbols_helper
 
   make_unit_symbols_helper()
   {
-    brigand::for_each<dataspace_u_list>([&](auto t) {
+    ossia::for_each_tagged(dataspace_u_list{}, [&](auto t) {
       using dataspace_type = typename decltype(t)::type;
-      brigand::for_each<dataspace_type>([&](auto u) {
+      ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
         using unit_type = typename decltype(u)::type;
         make_unit_symbols_sub_helper<dataspace_type, unit_type>{}(map);
       });

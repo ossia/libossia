@@ -207,16 +207,6 @@ void for_each_in_range(F&& func)
   for_each_in_range(std::forward<F>(func), std::make_index_sequence<N>());
 }
 
-
-template <typename... Args>
-constexpr std::array<ossia::string_view, sizeof...(Args)>
-make_string_array(Args&&... args) noexcept
-{
-  return std::array<ossia::string_view, sizeof...(Args)>{
-      make_string_view(args)...};
-}
-
-
 namespace detail {
 template <class T, std::size_t N, std::size_t... I>
 constexpr std::array<std::remove_cv_t<T>, N>

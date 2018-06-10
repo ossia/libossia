@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
+#include <ossia/detail/size.hpp>
 
 namespace ossia
 {
@@ -50,10 +51,10 @@ private:
 
     uint64_t i = 0;
     uint64_t sum = 0;
-    brigand::for_each<ossia::dataspace_u_list>([&](auto t) {
+    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
       using dataspace_type = typename decltype(t)::type;
       arr[i] = sum;
-      sum += brigand::size<dataspace_type>::value;
+      sum += ossia::size<dataspace_type>::value;
       i++;
     });
 
@@ -66,9 +67,9 @@ private:
     units_array arr;
 
     uint64_t i = 0;
-    brigand::for_each<ossia::dataspace_u_list>([&](auto t) {
+    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
       using dataspace_type = typename decltype(t)::type;
-      brigand::for_each<dataspace_type>([&](auto u) {
+      ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
         using unit_type = typename decltype(u)::type;
         arr[i] = unit_type{};
         i++;

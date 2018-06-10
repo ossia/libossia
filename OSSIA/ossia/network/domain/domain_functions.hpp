@@ -34,7 +34,7 @@ OSSIA_EXPORT domain make_domain(
     const ossia::value& min,
     const ossia::value& max);
 OSSIA_EXPORT domain make_domain(const std::vector<std::string>& s);
-OSSIA_EXPORT domain make_domain(
+OSSIA_EXPORT domain make_domain_from_osc(
     const ossia::small_vector<ossia::value, 2>& val, const ossia::value& cur);
 OSSIA_EXPORT domain make_domain(
     const ossia::value& min, const ossia::value& max,

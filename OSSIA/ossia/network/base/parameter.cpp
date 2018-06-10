@@ -4,6 +4,7 @@
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+#include <future>
 /*
 template class ossia::callback_container<ossia::value_callback>;
 */

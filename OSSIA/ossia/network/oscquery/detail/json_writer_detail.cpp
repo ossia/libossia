@@ -11,7 +11,7 @@
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/domain_to_json.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <brigand/algorithms/for_each.hpp>
+#include <ossia/detail/for_each.hpp>
 
 namespace ossia
 {
@@ -153,11 +153,11 @@ static const auto& attributesMap()
     attr_impl.insert(make_fun_pair<full_path_attribute>());
 
     // Add the "writeValue" function to the map for every attribute
-    brigand::for_each<base_attributes>([&](auto attr) {
+    ossia::for_each_tagged(base_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(make_fun_pair<type>());
     });
-    brigand::for_each<extended_attributes>([&](auto attr) {
+    ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(make_fun_pair<type>());
     });
@@ -205,7 +205,7 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   {
     // TODO it could be nice to have versions that take a parameter or a value
     // directly
-    brigand::for_each<base_attributes>([&](auto attr) {
+    ossia::for_each_tagged(base_attributes{}, [&](auto attr) {
       using Attr = typename decltype(attr)::type;
       auto res = Attr::getter(n);
       if (ossia::net::valid(res))
@@ -221,7 +221,7 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
     writer.Int(0);
   }
 
-  brigand::for_each<extended_attributes>([&](auto attr) {
+  ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
     using Attr = typename decltype(attr)::type;
     auto res = Attr::getter(n);
     if (ossia::net::valid(res))
