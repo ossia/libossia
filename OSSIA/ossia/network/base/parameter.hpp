@@ -12,11 +12,20 @@
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 #include <vector>
+#include <ciso646>
 
 namespace std
 {
+#if defined(_LIBCPP_VERSION)
+inline namespace __1
+{
 template<typename T>
 class future;
+}
+#else
+template<typename T>
+class future;
+#endif
 }
 /*
 extern template class ossia::callback_container<ossia::value_callback>;
