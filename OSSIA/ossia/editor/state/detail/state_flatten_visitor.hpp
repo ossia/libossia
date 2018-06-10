@@ -725,7 +725,7 @@ struct state_flatten_visitor
     return *iterator;
   }
 
-#if defined(NDEBUG)
+#if defined(OSSIA_SMALL_VECTOR)
   ossia::state_element& value(ossia::flat_vec_state::iterator iterator)
   {
     return *iterator;
