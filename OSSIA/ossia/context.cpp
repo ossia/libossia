@@ -67,7 +67,7 @@ context::context(const std::vector<spdlog::sink_ptr>& sinks)
 
 context::~context() = default;
 
-spdlog::logger& logger()
+spdlog::logger& logger() noexcept
 {
   static spdlog::logger& init = []() -> spdlog::logger& {
     return *logger_ptr();
@@ -76,7 +76,7 @@ spdlog::logger& logger()
   return init;
 }
 
-std::shared_ptr<spdlog::logger> logger_ptr()
+std::shared_ptr<spdlog::logger> logger_ptr() noexcept
 {
   if (auto logger = spdlog::get("ossia"))
     return logger;

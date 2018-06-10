@@ -20,12 +20,12 @@ public:
   safe_vector& operator=(const safe_vector&) = delete;
   safe_vector& operator=(safe_vector&&) = delete;
 
-  bool contains(T t)
+  bool contains(T t) noexcept
   {
     return ossia::contains(impl, t);
   }
 
-  void clear()
+  void clear() noexcept
   {
     impl.clear();
   }
@@ -50,12 +50,12 @@ public:
     return impl;
   }
 
-  auto& reference()
+  auto& reference() noexcept
   {
     return impl;
   }
 
-  auto& reference() const
+  auto& reference() const noexcept
   {
     return impl;
   }

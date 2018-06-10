@@ -39,7 +39,7 @@ const constexpr auto ln_2
     = 6.931471805599453094172321214581765680e-01;
 
 template<typename T>
-T ipow(T x, int N)
+T ipow(T x, int N) noexcept
 {
     T res = x;
     for(int i = 1; i < N; i++) { res *= x; }
@@ -47,18 +47,18 @@ T ipow(T x, int N)
 }
 
 template <typename T>
-auto norm(T x, T y)
+auto norm(T x, T y) noexcept
 {
   return std::sqrt(ipow(x, 2) + ipow(y, 2));
 }
 
 template <typename T>
-auto norm(T x, T y, T z)
+auto norm(T x, T y, T z) noexcept
 {
   return std::sqrt(ipow(x, 2) + ipow(y, 2) + ipow(z, 2));
 }
 
-inline constexpr size_t constexpr_log2(size_t n)
+inline constexpr size_t constexpr_log2(size_t n) noexcept
 {
   return ((n < 2) ? 0 : 1 + constexpr_log2(n / 2));
 }
@@ -67,7 +67,7 @@ inline constexpr size_t constexpr_log2(size_t n)
  * @brief clamp_min Returns the value bounded by a min
  */
 template <class T>
-OSSIA_INLINE constexpr T clamp_min(T d, const T min)
+OSSIA_INLINE constexpr T clamp_min(T d, const T min) noexcept
 {
   return d < min ? min : d;
 }
@@ -76,7 +76,7 @@ OSSIA_INLINE constexpr T clamp_min(T d, const T min)
  * @brief clamp_max Returns the value bounded by a max
  */
 template <class T>
-OSSIA_INLINE constexpr T clamp_max(T d, const T max)
+OSSIA_INLINE constexpr T clamp_max(T d, const T max) noexcept
 {
   return d > max ? max : d;
 }
@@ -86,7 +86,7 @@ OSSIA_INLINE constexpr T clamp_max(T d, const T max)
  */
 template <class T>
 OSSIA_INLINE constexpr T
-clamp(T d, const T min, const T max)
+clamp(T d, const T min, const T max) noexcept
 {
   return clamp_min(clamp_max(d, max), min);
 }
@@ -95,7 +95,7 @@ clamp(T d, const T min, const T max)
 // Credits : Nils Peters, Nov. 2008
 template <class T>
 OSSIA_INLINE constexpr T
-wrap(const T val, const T low, const T high)
+wrap(const T val, const T low, const T high) noexcept
 {
   if ((val >= low) && (val < high))
     return val;
@@ -107,7 +107,7 @@ wrap(const T val, const T low, const T high)
 
 template <class T>
 OSSIA_INLINE constexpr T
-fold(const T val, const T low, const T high)
+fold(const T val, const T low, const T high) noexcept
 {
   if ((val >= low) && (val <= high))
     return val;
@@ -121,7 +121,7 @@ fold(const T val, const T low, const T high)
 
 template <class T>
 OSSIA_INLINE constexpr
-std::pair<T,T> div(T num, T denom)
+std::pair<T,T> div(T num, T denom) noexcept
 {
   return { num / denom, num % denom };
 }

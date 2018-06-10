@@ -72,20 +72,20 @@ optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
 struct is_empty_value
 {
   template <typename T>
-  bool operator()(const T&)
+  bool operator()(const T&) noexcept
   {
     return false;
   }
-  bool operator()(const std::string& v)
+  bool operator()(const std::string& v) noexcept
   {
     return v.empty();
   }
-  bool operator()(const ossia::string_view& v)
+  bool operator()(const ossia::string_view& v) noexcept
   {
     return v.empty();
   }
   template <typename T>
-  bool operator()(const std::vector<T>& v)
+  bool operator()(const std::vector<T>& v) noexcept
   {
     return v.empty();
   }
@@ -117,7 +117,7 @@ void set_attribute(any_map& e, ossia::string_view str, const T& val)
 }
 
 //! Checks if an attribute is present.
-inline bool has_attribute(const any_map& e, ossia::string_view str)
+inline bool has_attribute(const any_map& e, ossia::string_view str) noexcept
 {
   return e.find(str) != e.end();
 }

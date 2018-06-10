@@ -13,11 +13,11 @@ struct EgurHash
 {
     static const constexpr size_t shift = constexpr_log2(1 + sizeof(T));
 
-    size_t operator()(const T* val) const
+    size_t operator()(const T* val) const noexcept
     {
       return (size_t)(val) >> shift;
     }
-    size_t operator()(const std::shared_ptr<T>& val) const
+    size_t operator()(const std::shared_ptr<T>& val) const noexcept
     {
       return (size_t)(val.get()) >> shift;
     }
@@ -27,19 +27,19 @@ template<typename T>
 struct PointerPredicate
 {
   using is_transparent = std::true_type;
-  bool operator()(const T* lhs, const T* rhs) const
+  bool operator()(const T* lhs, const T* rhs) const noexcept
   {
     return lhs == rhs;
   }
-  bool operator()(const std::shared_ptr<T>& lhs, const T* rhs) const
+  bool operator()(const std::shared_ptr<T>& lhs, const T* rhs) const noexcept
   {
     return lhs.get() == rhs;
   }
-  bool operator()(const T* lhs, const std::shared_ptr<T>& rhs) const
+  bool operator()(const T* lhs, const std::shared_ptr<T>& rhs) const noexcept
   {
     return lhs == rhs.get();
   }
-  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const
+  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const noexcept
   {
     return lhs == rhs;
   }

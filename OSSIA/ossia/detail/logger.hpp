@@ -23,6 +23,6 @@ namespace ossia
  *
  * The logger is first created in ossia::context construction.
  */
-OSSIA_EXPORT spdlog::logger& logger();
-OSSIA_EXPORT std::shared_ptr<spdlog::logger> logger_ptr();
+OSSIA_EXPORT spdlog::logger& logger() noexcept;
+OSSIA_EXPORT std::shared_ptr<spdlog::logger> logger_ptr() noexcept;
 }

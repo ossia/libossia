@@ -24,7 +24,7 @@ template <typename Vector>
 using iterator_t = typename std::remove_reference<Vector>::type::iterator;
 
 template <typename Vector, typename Value>
-auto find(Vector&& v, const Value& val)
+auto find(Vector&& v, const Value& val) noexcept
 {
   return std::find(std::begin(v), std::end(v), val);
 }
@@ -36,7 +36,7 @@ auto find_if(Vector&& v, Fun fun)
 }
 
 template <typename Vector, typename Value>
-auto* ptr_find(Vector&& v, const Value& val)
+auto* ptr_find(Vector&& v, const Value& val) noexcept
 {
   auto it = std::find(std::begin(v), std::end(v), val);
   return it != std::end(v) ? &*it : nullptr;
@@ -50,7 +50,7 @@ auto* ptr_find_if(Vector&& v, Fun fun)
 }
 
 template <typename Vector, typename Value>
-bool contains(Vector&& v, const Value& val)
+bool contains(Vector&& v, const Value& val) noexcept
 {
   return find(v, val) != std::end(v);
 }
@@ -92,19 +92,19 @@ void remove_erase_if(Vector& v, const Function& val)
 }
 
 template <typename Vector, typename Fun>
-bool any_of(Vector&& v, Fun fun)
+bool any_of(Vector&& v, Fun fun) noexcept
 {
   return std::any_of(std::begin(v), std::end(v), fun);
 }
 
 template <typename Vector, typename Fun>
-auto all_of(Vector&& v, Fun fun)
+auto all_of(Vector&& v, Fun fun) noexcept
 {
   return std::all_of(std::begin(v), std::end(v), fun);
 }
 
 template <typename Vector, typename Fun>
-bool none_of(Vector&& v, Fun fun)
+bool none_of(Vector&& v, Fun fun) noexcept
 {
   return std::none_of(std::begin(v), std::end(v), fun);
 }
@@ -210,7 +210,7 @@ void for_each_in_range(F&& func)
 
 template <typename... Args>
 constexpr std::array<ossia::string_view, sizeof...(Args)>
-make_string_array(Args&&... args)
+make_string_array(Args&&... args) noexcept
 {
   return std::array<ossia::string_view, sizeof...(Args)>{
       make_string_view(args)...};
@@ -220,20 +220,20 @@ make_string_array(Args&&... args)
 namespace detail {
 template <class T, std::size_t N, std::size_t... I>
 constexpr std::array<std::remove_cv_t<T>, N>
-    to_array_impl(T (&a)[N], std::index_sequence<I...>)
+    to_array_impl(T (&a)[N], std::index_sequence<I...>) noexcept
 {
     return { {a[I]...} };
 }
 }
 
 template <class T, std::size_t N>
-constexpr std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N])
+constexpr std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N]) noexcept
 {
     return detail::to_array_impl(a, std::make_index_sequence<N>{});
 }
 
 template<typename... Args>
-constexpr std::array<const char*, sizeof...(Args)> make_array(Args&&... args)
+constexpr std::array<const char*, sizeof...(Args)> make_array(Args&&... args) noexcept
 {
   return {args...};
 }

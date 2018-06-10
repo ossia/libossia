@@ -13,18 +13,18 @@ namespace ossia
 {
 struct string_hash
 {
-  std::size_t operator()(const std::string& s) const
+  std::size_t operator()(const std::string& s) const noexcept
   {
     return boost::hash<std::string>{}(s);
   }
 
-  std::size_t operator()(ossia::string_view s) const
+  std::size_t operator()(ossia::string_view s) const noexcept
   {
     return boost::hash_range(s.data(), s.data() + s.size());
   }
 
   template <std::size_t N>
-  std::size_t operator()(const char (&s)[N]) const
+  std::size_t operator()(const char (&s)[N]) const noexcept
   {
     return boost::hash_range(s, s + N - 1);
   }
@@ -33,43 +33,43 @@ struct string_hash
 struct string_equal
 {
   using is_transparent = std::true_type;
-  bool operator()(const std::string& s, const std::string& s2) const
+  bool operator()(const std::string& s, const std::string& s2) const noexcept
   {
     return s == s2;
   }
-  bool operator()(ossia::string_view s, const std::string& s2) const
+  bool operator()(ossia::string_view s, const std::string& s2) const noexcept
   {
     return s == s2;
   }
-  bool operator()(const std::string& s, ossia::string_view s2) const
+  bool operator()(const std::string& s, ossia::string_view s2) const noexcept
   {
     return s == s2;
   }
-  bool operator()(ossia::string_view s, ossia::string_view s2) const
+  bool operator()(ossia::string_view s, ossia::string_view s2) const noexcept
   {
     return s == s2;
   }
 
   template <std::size_t N>
-  bool operator()(const std::string& s, const char (&s2)[N]) const
+  bool operator()(const std::string& s, const char (&s2)[N]) const noexcept
   {
     return operator()(s, make_string_view<N>(s2));
   }
 
   template <std::size_t N>
-  bool operator()(ossia::string_view s, const char (&s2)[N]) const
+  bool operator()(ossia::string_view s, const char (&s2)[N]) const noexcept
   {
     return operator()(s, make_string_view<N>(s2));
   }
 
   template <std::size_t N>
-  bool operator()(const char (&s)[N], const std::string& s2) const
+  bool operator()(const char (&s)[N], const std::string& s2) const noexcept
   {
     return operator()(make_string_view<N>(s), s2);
   }
 
   template <std::size_t N>
-  bool operator()(const char (&s)[N], ossia::string_view s2) const
+  bool operator()(const char (&s)[N], ossia::string_view s2) const noexcept
   {
     return operator()(make_string_view<N>(s), s2);
   }

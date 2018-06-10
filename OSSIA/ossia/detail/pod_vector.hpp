@@ -14,15 +14,17 @@ struct pod_allocator
 
     using value_type = T;
 
-    auto allocate(std::size_t num)
+    static inline T* allocate(std::size_t num) noexcept
     {
       return (T*) std::malloc(sizeof(T) * num);
     }
 
-    void deallocate(T* p, std::size_t)
+    static inline void deallocate(T* p, std::size_t) noexcept
     {
       std::free(p);
     }
+
+    friend inline bool operator!=(pod_allocator lhs, pod_allocator rhs) noexcept { return false; }
 };
 
 template<typename T>
