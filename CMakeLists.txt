@@ -28,6 +28,10 @@ include(CMake/OssiaDeps.cmake)
 # Main library
 find_package(PortAudio)
 add_definitions(-DFMT_HEADER_ONLY=1)
+if(MSVC)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+endif()
 add_subdirectory(OSSIA)
 
 if(ANDROID)

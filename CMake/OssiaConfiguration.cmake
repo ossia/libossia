@@ -230,16 +230,19 @@ if(MSVC)
     set(OSSIA_COMPILE_OPTIONS
         "/wd4065" # switch statement contains default but no case labels
         "/wd4068" # pragma mark -
+        "/wd4221" # this object file does not define any previously undefined public symbols
         "/wd4250" # inherits via dominance
         "/wd4251" # DLL stuff
+        "/wd4267" # initializing: conversion from size_t to int, possible loss of data or 'argument': conversion from size_t to ..., possible loss of data
         "/wd4275" # DLL stuff
         "/wd4244" # return : conversion from foo to bar, possible loss of data
+        "/wd4305" # argument : truncation from double to float
+        "/wd4503" # decorated name length exceeded
+        "/wd4624" # destructor was implicityl defined as deleted
         "/wd4800" # conversion from int to bool, performance warning
         "/wd4804" # unsafe mix of const bool <= const int
         "/wd4805" # unsafe mix of const bool == const int
         "/wd4996" # SCL_SECURE_NO_WARNINGS
-        "/wd4503" # decorated name length exceeded
-        "/wd4305" # argument : truncation from double to float
         "/bigobj"
         ${OSSIA_LINK_OPTIONS}
     )
