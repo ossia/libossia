@@ -24,6 +24,7 @@ struct pod_allocator
       std::free(p);
     }
 
+    friend inline bool operator==(pod_allocator lhs, pod_allocator rhs) noexcept { return true; }
     friend inline bool operator!=(pod_allocator lhs, pod_allocator rhs) noexcept { return false; }
 };
 
