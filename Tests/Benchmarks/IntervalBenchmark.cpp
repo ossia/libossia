@@ -7,6 +7,7 @@
 #include <thread>
 #include <atomic>
 #include "../Editor/TestUtils.hpp"
+#include <ossia/detail/pod_vector.hpp>
 #if __has_include(<valgrind/callgrind.h>)
 #include <valgrind/callgrind.h>
 #define USE_CALLGRIND 1
@@ -16,7 +17,7 @@ class IntervalBenchmark : public QObject
 {
   Q_OBJECT
 
-    std::vector<std::vector<double>> data{4};
+    std::vector<ossia::double_vector> data{4};
     static const constexpr int benchmark_range[] = {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
                                                     700, 800, 900, 1000, 2000, 3000, 4000, 5000
                                                      , 6000, 7000, 8000, 9000, 10000

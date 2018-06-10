@@ -8,6 +8,7 @@
 #include <valgrind/callgrind.h>
 #include "../Editor/TestUtils.hpp"
 #include <ossia/dataflow/graph/graph_utils.hpp>
+#include <ossia/detail/pod_vector.hpp>
 
 
 
@@ -73,7 +74,7 @@ int main()
     tick(i++, &execution_state::commit);
     tick(i++, &execution_state::commit_ordered);
     tick(i++, &execution_state::commit_merged);
-    std::vector<double> counts;
+    ossia::double_vector counts;
     for(auto fun : {&execution_state::commit, &execution_state::commit_ordered, &execution_state::commit_merged})
     {
       int64_t count = 0;

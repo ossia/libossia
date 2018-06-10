@@ -2,6 +2,7 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/detail/pod_vector.hpp>
 
 #if defined(SCORE_BENCHMARK)
 #if __has_include(<valgrind/callgrind.h>)
@@ -13,7 +14,7 @@ namespace ossia
 
 struct cycle_count_bench
 {
-    std::vector<double>& m_tickDurations;
+    ossia::double_vector& m_tickDurations;
     uint64_t rdtsc()
     {
         unsigned int lo = 0;
@@ -28,7 +29,7 @@ struct cycle_count_bench
 
     uint64_t t0;
 
-    cycle_count_bench(std::vector<double>& v)
+    cycle_count_bench(ossia::double_vector& v)
       : m_tickDurations{v}, t0{rdtsc()}
     {
     }
@@ -42,10 +43,10 @@ struct cycle_count_bench
 
 struct clock_count_bench
 {
-    std::vector<double>& m_tickDurations;
+    ossia::double_vector& m_tickDurations;
     std::chrono::time_point<std::chrono::steady_clock> t0;
 
-    clock_count_bench(std::vector<double>& v)
+    clock_count_bench(ossia::double_vector& v)
       : m_tickDurations{v}, t0{std::chrono::steady_clock::now()}
     {
     }
@@ -262,7 +263,7 @@ template<typename BaseTick>
 struct benchmark_score_tick
 {
     BaseTick base;
-    std::vector<double> m_tickDurations;
+    ossia::double_vector m_tickDurations;
 
     void operator()(unsigned long frameCount, double seconds)
     {

@@ -27,4 +27,8 @@ struct pod_allocator
 
 template<typename T>
 using pod_vector = std::vector<T, pod_allocator<T>>;
+
+using int_vector = pod_vector<int>;
+using float_vector = pod_vector<float>;
+using double_vector = pod_vector<double>;
 }

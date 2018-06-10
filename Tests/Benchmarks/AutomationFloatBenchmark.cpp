@@ -5,6 +5,7 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <valgrind/callgrind.h>
 #include "../Editor/TestUtils.hpp"
 
@@ -68,7 +69,7 @@ int main()
     g.state(e);
     e.commit();
 
-    std::vector<double> counts;
+    ossia::double_vector counts;
     for(auto fun : {&execution_state::commit, &execution_state::commit_ordered, &execution_state::commit_merged})
     {
       int64_t count = 0;

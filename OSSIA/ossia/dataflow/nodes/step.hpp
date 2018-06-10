@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/detail/pod_vector.hpp>
 
 namespace ossia::nodes
 {
@@ -34,7 +35,7 @@ public:
       }
     }
   }
-  std::vector<float> values;
+  ossia::float_vector values;
   ossia::time_value dur{};
 
   std::string label() const noexcept override

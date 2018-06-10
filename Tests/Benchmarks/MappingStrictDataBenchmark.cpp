@@ -8,6 +8,7 @@
 #include <valgrind/callgrind.h>
 #include <random>
 #include "../Editor/TestUtils.hpp"
+#include <ossia/detail/pod_vector.hpp>
 
 
 static const constexpr int NUM_TAKES = 5;
@@ -44,7 +45,7 @@ int main()
     std::cout << "nodes\tcables\tmessages\tnormal\tordered\tmerged\n";
     for(int N : NUM_CURVES)
     {
-      std::vector<double> counts(3);
+      ossia::double_vector counts(3);
       double avg_num_cables{};
       double avg_msg_count{};
       bool must_break = false;

@@ -7,6 +7,7 @@
 #include <ossia/editor/state/state.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_set.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/ptr_set.hpp>
@@ -62,7 +63,7 @@ struct scenario_graph
 
   private:
      void update_components_cache() const;
-     mutable std::vector<int> m_components_cache;
+     mutable ossia::int_vector m_components_cache;
      mutable bool dirty = false;
      ossia::ptr_map<
          const time_sync*,

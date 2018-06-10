@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/detail/pod_vector.hpp>
 
 namespace ossia::nodes
 {
@@ -21,7 +22,7 @@ class sound final :
     void set_start(std::size_t v) { start = v; }
     void set_start_offset(std::size_t v) { start_offset = v; }
     void set_upmix(std::size_t v) { upmix = v; }
-    void set_sound(const std::vector<std::vector<float>>& vec)
+    void set_sound(const std::vector<ossia::float_vector>& vec)
     {
       m_data.resize(vec.size());
       for(std::size_t i = 0; i < vec.size(); i++)
@@ -29,7 +30,7 @@ class sound final :
         m_data[i].assign(vec[i].begin(), vec[i].end());
       }
     }
-    void set_sound(std::vector<std::vector<double>> vec)
+    void set_sound(std::vector<ossia::double_vector> vec)
     {
       m_data = std::move(vec);
     }
@@ -142,7 +143,7 @@ class sound final :
     std::size_t duration() const { return m_data.empty() ? 0 : m_data[0].size(); }
 
   private:
-    std::vector<std::vector<double>> m_data;
+    std::vector<ossia::double_vector> m_data;
     std::size_t start{};
     std::size_t start_offset{};
     std::size_t upmix{};

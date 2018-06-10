@@ -9,6 +9,7 @@
 #include <valgrind/callgrind.h>
 #include "../Editor/TestUtils.hpp"
 #include <cmath>
+#include <ossia/detail/pod_vector.hpp>
 
 
 static const constexpr int NUM_TAKES = 10;
@@ -30,7 +31,7 @@ int main()
   std::cout << "count\tnormal\tordered\tmerged\n";
   for(int N : NUM_CURVES)
   {
-    std::vector<double> counts(3);
+    ossia::double_vector counts(3);
     for(int i = 0; i < NUM_TAKES; i++)
     {
       audio_device device;

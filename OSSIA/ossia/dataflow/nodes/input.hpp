@@ -105,7 +105,7 @@ private:
   }
 
   // todo linearizeme
-  std::vector<std::vector<float>> m_data;
+  std::vector<ossia::float_vector> m_data;
 
   std::size_t m_startChan{};
   std::size_t m_numChan{};

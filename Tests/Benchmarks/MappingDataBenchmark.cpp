@@ -7,6 +7,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <valgrind/callgrind.h>
 #include "../Editor/TestUtils.hpp"
+#include <ossia/detail/pod_vector.hpp>
 
 #include <random>
 
@@ -41,7 +42,7 @@ int main()
   std::cout << "count\tmessages\tnormal\tordered\tmerged\n";
   for(int N : NUM_CURVES)
   {
-    std::vector<double> counts(3);
+    ossia::double_vector counts(3);
     double avg_msg_count{};
     for(int i = 0; i < NUM_TAKES; i++)
     {

@@ -3,6 +3,7 @@
 #include <ossia/dataflow/data.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #if defined(__EMSCRIPTEN__)
 #define GSL_USE_STD_BYTE 0
 #endif
@@ -45,7 +46,7 @@ public:
 class OSSIA_EXPORT virtual_audio_parameter final : public audio_parameter
 {
   // todo use a flat vector instead for perf
-  std::vector<std::vector<float>> m_audio_data;
+  std::vector<ossia::float_vector> m_audio_data;
 
 public:
   virtual_audio_parameter(int num_channels, ossia::net::node_base& n);
@@ -65,7 +66,7 @@ public:
   virtual ~virtual_audio_parameter();
 };
 
-using audio_mapping = std::vector<int>;
+using audio_mapping = ossia::int_vector;
 class OSSIA_EXPORT mapped_audio_parameter final : public audio_parameter
 {
 public:
