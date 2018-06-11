@@ -153,9 +153,9 @@ private Q_SLOTS:
     ossia::unit_t unit;
 
     // Construction
-    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
-      ossia::for_each_tagged(typename decltype(t)::type{}, [&] (auto u) {
-        unit = typename decltype(u)::type{};
+    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&x=unit] (auto t) {
+      ossia::for_each_tagged(typename decltype(t)::type{}, [&y=x] (auto u) {
+        y = typename decltype(u)::type{};
       });
     });
   }

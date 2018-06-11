@@ -11,14 +11,14 @@ namespace ossia
 template<typename T>
 struct EgurHash
 {
-    static const constexpr size_t shift = constexpr_log2(1 + sizeof(T));
-
     size_t operator()(const T* val) const noexcept
     {
+      static const constexpr size_t shift = constexpr_log2(1 + sizeof(T));
       return (size_t)(val) >> shift;
     }
     size_t operator()(const std::shared_ptr<T>& val) const noexcept
     {
+      static const constexpr size_t shift = constexpr_log2(1 + sizeof(T));
       return (size_t)(val.get()) >> shift;
     }
 };
