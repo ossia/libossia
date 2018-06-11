@@ -47,7 +47,7 @@ public:
     m_outlets.push_back(ossia::make_outlet<Port_T>());
   }
 
-  void run(token_request t, execution_state& e) override
+  void run(token_request t, exec_state_facade e) override
   {
   }
 };

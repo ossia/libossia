@@ -1,6 +1,5 @@
 #pragma once
-#include <ossia/dataflow/graph_edge.hpp>
-#include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/small_vector.hpp>
@@ -8,7 +7,29 @@
 namespace ossia
 {
 class graph;
+struct tvalue;
+class state;
 using token_request_vec = ossia::small_vector<token_request, 4>;
+
+using inlets = ossia::small_vector<inlet_ptr, 2>;
+using outlets = ossia::small_vector<outlet_ptr, 2>;
+struct exec_state_facade
+{
+  ossia::execution_state& impl;
+  int sampleRate() const;
+  int bufferSize() const;
+  int64_t samplesSinceStart() const;
+  double startDate() const;
+  double currentDate() const;
+
+  void insert(ossia::net::parameter_base& dest, const data_type& v);
+  void insert(ossia::net::parameter_base& dest, data_type&& v);
+  void insert(ossia::net::parameter_base& dest, const tvalue& v);
+  void insert(ossia::net::parameter_base& dest, tvalue&& v);
+  void insert(ossia::net::parameter_base& dest, const audio_port& v);
+  void insert(ossia::net::parameter_base& dest, const midi_port& v);
+  void insert(const ossia::state& v);
+};
 
 class OSSIA_EXPORT graph_node
 {
@@ -31,7 +52,7 @@ public:
 
   virtual void prepare(const execution_state& st) const noexcept;
   virtual bool consumes(const execution_state&) const noexcept;
-  virtual void run(token_request, execution_state&) noexcept;
+  virtual void run(token_request, exec_state_facade) noexcept;
   virtual std::string label() const noexcept;
 
   bool has_port_inputs() const noexcept;

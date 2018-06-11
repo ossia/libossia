@@ -96,7 +96,7 @@ struct my_node final : ossia::graph_node {
       outputs().push_back(ossia::make_outlet<ossia::value_port>());
     }
 
-    void run(ossia::token_request t, ossia::execution_state&) noexcept override {
+    void run(ossia::token_request t, ossia::exec_state_facade) noexcept override {
       if(auto a_float = pop_value<float>(this->inputs()[0])) {
         push_value(this->outputs()[0], 100 + 50 * std::cos(*a_float) * std::sin(10. * t.position));
       }

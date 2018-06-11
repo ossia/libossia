@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
 namespace ossia::nodes
@@ -17,7 +18,7 @@ public:
 
   }
 
-  void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+  void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
     // We want to send a trigger for each value change that happened between last_t and now
     if(t.date > t.prev_date)

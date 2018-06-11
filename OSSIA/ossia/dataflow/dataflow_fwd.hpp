@@ -1,12 +1,8 @@
 #pragma once
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/base/parameter.hpp>
+#include <ossia/detail/config.hpp>
 #include <eggs/variant.hpp>
-#include <ossia/network/common/path.hpp>
-
-#include <array>
-#include <deque>
-#include <vector>
+#include <utility>
+#include <memory>
 namespace std
 {
 template <typename T>
@@ -31,6 +27,15 @@ public:
 
 namespace ossia
 {
+namespace net
+{
+class parameter_base;
+class node_base;
+}
+namespace traversal
+{
+struct path;
+}
 using destination_t = eggs::variant<
   ossia::net::parameter_base*,
   ossia::traversal::path,

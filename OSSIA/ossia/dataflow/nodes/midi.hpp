@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/detail/flat_multiset.hpp>
+#include <ossia/dataflow/port.hpp>
 
 namespace ossia::nodes
 {
@@ -138,7 +139,7 @@ class midi final
     bool mustStop{};
     bool doTransport{};
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
     {
       ossia::midi_port* mp = midi_out.data.target<ossia::midi_port>();
 

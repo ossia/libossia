@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
-
+#include <ossia/dataflow/port.hpp>
 namespace ossia::nodes
 {
 class forward_node : public ossia::nonowning_graph_node
@@ -15,7 +15,7 @@ public:
     m_outlets.push_back(&midi_out);
   }
 
-  void run(token_request t, execution_state&) noexcept override
+  void run(token_request t, exec_state_facade) noexcept override
   {
     {
       auto i = audio_in.data.target<ossia::audio_port>();

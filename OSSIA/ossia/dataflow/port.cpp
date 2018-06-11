@@ -5,6 +5,7 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/dataflow/port.hpp>
 
 
 namespace ossia

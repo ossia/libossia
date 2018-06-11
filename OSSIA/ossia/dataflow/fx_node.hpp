@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/data.hpp>
 namespace ossia
 {
 inline const ossia::value& last(const ossia::value_vector<ossia::tvalue>& vec)

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <random>
 
 namespace ossia::nodes
@@ -15,11 +16,11 @@ struct rand_float final : public ossia::nonowning_graph_node
       m_outlets.push_back(&value_out);
     }
 
-    void run(ossia::token_request tk, ossia::execution_state& st) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade) noexcept override
     {
       thread_local std::mt19937 gen;
       auto& out = *value_out.data.target<ossia::value_port>();
-      out.add_value(dist(gen), tk.offset.impl);
+      out.add_value(dist(gen), t.offset.impl);
     }
 };
 }

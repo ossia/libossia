@@ -3,6 +3,8 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
+#include <ossia/detail/algorithms.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <rtmidi17/message.hpp>
 namespace ossia
 {

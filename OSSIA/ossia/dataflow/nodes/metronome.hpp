@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia/dataflow/port.hpp>
 
 namespace ossia::nodes
 {
@@ -35,7 +36,7 @@ class OSSIA_EXPORT metronome final :
     }
 
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
     {
       ossia::value_port* vp = value_out.data.target<ossia::value_port>();
       const auto& date = t.date;

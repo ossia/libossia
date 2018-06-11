@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/editor/curve/curve_segment/easing.hpp>
 #include <ossia/network/dataspace/color.hpp>
@@ -55,7 +56,7 @@ class gradient final : public ossia::graph_node
       }
     }
 
-    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
     {
       auto& out = *m_outlets[0]->data.target<ossia::value_port>();
 

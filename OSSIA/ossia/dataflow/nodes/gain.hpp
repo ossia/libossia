@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 
 namespace ossia::nodes
 {
@@ -19,7 +20,7 @@ struct gain final : public ossia::nonowning_graph_node
       m_outlets.push_back(&audio_out);
     }
 
-    void run(ossia::token_request t, ossia::execution_state& st) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade st) noexcept override
     {
       auto& vals = gain_in.data.target<ossia::value_port>()->get_data();
       if(!vals.empty())

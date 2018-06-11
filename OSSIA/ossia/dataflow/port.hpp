@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
-
-
+#include <ossia/network/common/path.hpp>
 namespace ossia
 {
 struct OSSIA_EXPORT port
@@ -115,7 +114,4 @@ outlet_ptr make_outlet(Args&&... args)
   return new outlet(T{}, std::forward<Args>(args)...);
 }
 
-using ports = std::vector<std::shared_ptr<port>>;
-using inlets = ossia::small_vector<inlet_ptr, 2>;
-using outlets = ossia::small_vector<outlet_ptr, 2>;
 }

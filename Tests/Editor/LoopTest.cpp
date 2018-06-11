@@ -212,7 +212,7 @@ private Q_SLOTS:
         l.state(0_tv, 9_tv, 0, 0_tv, 1.);
         ossia::execution_state e;
         for(auto tk : snd->requested_tokens)
-          ((ossia::graph_node*)snd.get())->run(tk, e);
+          ((ossia::graph_node*)snd.get())->run(tk, {e});
         auto op = snd->outputs()[0]->data.target<audio_port>()->samples;
         audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.4, 0.1, 0.2, 0.3, 0.4, 0.1}};
         for(int i = 0; i < 9; i++)
@@ -254,7 +254,7 @@ private Q_SLOTS:
 
       ossia::execution_state e;
       for(auto tk : snd->requested_tokens)
-        ((ossia::graph_node*)snd.get())->run(tk, e);
+        ((ossia::graph_node*)snd.get())->run(tk, {e});
 
 
       audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1}};

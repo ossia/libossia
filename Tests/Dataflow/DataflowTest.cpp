@@ -24,8 +24,8 @@ public:
     m_outlets = std::move(out);
   }
 
-  std::function<void(token_request t, execution_state& e)> fun;
-  void run(token_request t, execution_state& e) noexcept override
+  std::function<void(token_request t, exec_state_facade e)> fun;
+  void run(token_request t, exec_state_facade e) noexcept override
   {
     if(fun)
       fun(t, e);
@@ -96,7 +96,7 @@ struct debug_mock
   debug_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
   const int factor = 1;
   std::weak_ptr<node_mock> node;
-  void operator()(ossia::token_request tk, const execution_state& )
+  void operator()(ossia::token_request tk, ossia::exec_state_facade )
   {
     if(auto n = node.lock())
     {
@@ -112,7 +112,7 @@ struct execution_mock
   execution_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
   const int factor = 1;
   std::weak_ptr<node_mock> node;
-  void operator()(ossia::token_request tk, const execution_state& )
+  void operator()(ossia::token_request tk, ossia::exec_state_facade)
   {
     if(auto n = node.lock())
     {

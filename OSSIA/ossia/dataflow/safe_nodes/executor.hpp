@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/fx_node.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/safe_nodes/node.hpp>
 #include <ossia/dataflow/safe_nodes/tick_policies.hpp>
@@ -225,7 +226,7 @@ struct apply_control<false, N>
   {
       T1& a1;
       T3& a3;
-      ossia::execution_state& st;
+      ossia::exec_state_facade st;
       template<typename... Args>
       void operator()(const ossia::token_request& sub_tk,
                       Args&&... args) noexcept
@@ -248,7 +249,7 @@ struct apply_control<false, N>
   {
       T1& a1;
       T3& a3;
-      ossia::execution_state& st;
+      ossia::exec_state_facade st;
       State& s;
       template<typename... Args>
       void operator()(const ossia::token_request& sub_tk,
@@ -269,7 +270,7 @@ struct apply_control<false, N>
                                     const std::index_sequence<N2...>& n2,
                                     const std::index_sequence<N3...>& n3,
                                     const ossia::token_request& tk,
-                                    ossia::execution_state& st) noexcept
+                                    ossia::exec_state_facade st) noexcept
   {
     f(forwarder<T1, T3, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st}, tk, std::get<N2>(std::forward<T2>(a2))...);
   }
@@ -281,7 +282,7 @@ struct apply_control<false, N>
                                     const std::index_sequence<N2...>& n2,
                                     const std::index_sequence<N3...>& n3,
                                     const ossia::token_request& tk,
-                                    ossia::execution_state& st,
+                                    ossia::exec_state_facade st,
                                     State& s) noexcept
   {
     f(forwarder_state<T1, T3, State, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1, a3, st, s}, tk, std::get<N2>(std::forward<T2>(a2))...);
@@ -301,7 +302,7 @@ struct apply_control<false, N>
                        I1{}, I2{}, I3{}, std::forward<Args>(args)...);
   }
 
-  void run(ossia::token_request tk, ossia::execution_state& st) noexcept override
+  void run(ossia::token_request tk, ossia::exec_state_facade st) noexcept override
   {
     using inlets_indices = std::make_index_sequence<info::control_start>;
     using controls_indices = std::make_index_sequence<info::control_count>;

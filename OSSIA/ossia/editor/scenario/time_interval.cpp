@@ -5,6 +5,7 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/dataflow/nodes/forward_node.hpp>
 #include <algorithm>
 #include <iostream>

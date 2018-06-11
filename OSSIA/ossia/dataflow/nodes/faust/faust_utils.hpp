@@ -1,6 +1,7 @@
 #pragma once
 #include <faust/dsp/llvm-c-dsp.h>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 
 namespace ossia::nodes
 {

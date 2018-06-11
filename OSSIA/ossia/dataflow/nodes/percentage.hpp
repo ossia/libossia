@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 
 namespace ossia::nodes
 {
@@ -11,7 +12,7 @@ class percentage final : public ossia::graph_node
       outputs().push_back(ossia::make_outlet<ossia::value_port>(&d.address()));
     }
 
-    void run(ossia::token_request tok, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request tok, ossia::exec_state_facade e) noexcept override
     {
       outputs().back()->data.target<ossia::value_port>()->add_raw_value(ossia::tvalue{(float)tok.position});
     }

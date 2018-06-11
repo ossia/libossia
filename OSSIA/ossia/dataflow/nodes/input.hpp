@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/execution_state.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/dataflow/execution_state.hpp>
 
 namespace ossia::nodes
 {
@@ -26,19 +27,19 @@ public:
   void set_start(std::size_t v) { m_startChan = v; m_data.clear(); }
   void set_num_channel(std::size_t v) { m_numChan = v; m_data.clear(); }
 private:
-  ossia::net::node_base* get_params(ossia::execution_state& e)
+  ossia::net::node_base* get_params(ossia::exec_state_facade e)
   {
-    auto dev = ossia::find_if(e.audioDevices, [] (const ossia::net::device_base* dev) {
+    auto dev = ossia::find_if(e.impl.audioDevices, [] (const ossia::net::device_base* dev) {
       return dev->get_name() == "audio";
     });
-    if(dev != e.audioDevices.end())
+    if(dev != e.impl.audioDevices.end())
     {
       auto in = ossia::net::find_node((*dev)->get_root_node(), "/in/main");
       return in;
     }
     return {};
   }
-  void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+  void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
     // First read the requested channels at the end of "data".
     if(m_numChan == 0)

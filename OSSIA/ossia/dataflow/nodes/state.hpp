@@ -13,7 +13,7 @@ struct OSSIA_EXPORT state final : public ossia::graph_node
 
     ~state() override;
 
-    void run(ossia::token_request, ossia::execution_state& e) noexcept override;
+    void run(ossia::token_request, ossia::exec_state_facade e) noexcept override;
 
     ossia::state data;
 };

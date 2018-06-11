@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/dataflow/fx_node.hpp>
 #include <ossia/dataflow/execution_state.hpp>
@@ -133,7 +134,7 @@ bool graph_node::consumes(const execution_state&) const noexcept
   return false;
 }
 
-void graph_node::run(token_request t, execution_state&) noexcept
+void graph_node::run(token_request t, exec_state_facade) noexcept
 {
 }
 

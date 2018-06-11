@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/mapper/detail/mapper_visitor.hpp>
@@ -68,7 +69,7 @@ class OSSIA_EXPORT mapping final :
     }
 
   private:
-    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
     {
       if(!m_drive)
         return;

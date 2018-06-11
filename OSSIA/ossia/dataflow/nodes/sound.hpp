@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/dataflow/port.hpp>
 
 namespace ossia::nodes
 {
@@ -34,7 +35,7 @@ class sound final :
     {
       m_data = std::move(vec);
     }
-    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
     {
       if(m_data.empty())
         return;
@@ -173,7 +174,7 @@ class sound_ref final :
       m_data = std::move(vec);
     }
 
-    void run(ossia::token_request t, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
     {
       if(m_data.empty())
         return;

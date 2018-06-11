@@ -18,7 +18,7 @@ class faust final : public ossia::graph_node
       buildUserInterfaceCDSPInstance(m_dsp, &ex.glue);
     }
 
-    void run(ossia::token_request tk, ossia::execution_state&) noexcept override
+    void run(ossia::token_request tk, ossia::exec_state_facade) noexcept override
     {
       struct dsp_wrap
       {

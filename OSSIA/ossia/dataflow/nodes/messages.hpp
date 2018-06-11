@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/data.hpp>
 #include <ossia/editor/state/message.hpp>
 
 namespace ossia::nodes
@@ -13,7 +13,7 @@ class messages final : public ossia::graph_node
 
     }
 
-    void run(ossia::token_request, ossia::execution_state& e) noexcept override
+    void run(ossia::token_request, ossia::exec_state_facade e) noexcept override
     {
       for(auto& msg : data)
       {

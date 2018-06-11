@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/detail/math.hpp>
-#include <ossia/dataflow/execution_state.hpp>
 
 #include <boost/predef.h>
 
@@ -47,7 +47,7 @@ struct sine final : public ossia::nonowning_graph_node
       m_inlets.push_back(&freq_in);
       m_outlets.push_back(&audio_out);
     }
-    void run(const ossia::token_request t, ossia::execution_state& st) noexcept override
+    void run(const ossia::token_request t, ossia::exec_state_facade st) noexcept override
     {
       auto& vals = freq_in.data.target<ossia::value_port>()->get_data();
       if(!vals.empty())
@@ -62,12 +62,13 @@ struct sine final : public ossia::nonowning_graph_node
 #if BOOST_COMP_GNUC
         for(int64_t i = t.offset.impl; i < t.offset.impl + N; i++)
         {
-          audio[0][i] = sines.value(2. * M_PI * freq / st.sampleRate);
+          audio[0][i] = sines.value(2. * M_PI * freq / st.sampleRate());
         }
 #else
         // Uses the method in https://github.com/mbrucher/AudioTK/blob/master/ATK/Tools/SinusGeneratorFilter.cpp
-        auto frequ_cos = std::cos(ossia::two_pi * freq / st.sampleRate);
-        auto frequ_sin = std::sin(ossia::two_pi * freq / st.sampleRate);
+        const auto fs = st.sampleRate();
+        auto frequ_cos = std::cos(ossia::two_pi * freq / fs);
+        auto frequ_sin = std::sin(ossia::two_pi * freq / fs);
         for(int64_t i = t.offset.impl; i < t.offset.impl + N; i++)
         {
           auto new_cos = m_cos * frequ_cos - m_sin * frequ_sin;

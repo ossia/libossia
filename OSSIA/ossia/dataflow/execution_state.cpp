@@ -687,4 +687,41 @@ bool execution_state::in_local_scope(net::parameter_base& other) const
   OSSIA_EXEC_STATE_LOCK_READ(*this);
   return (is_in(other, m_valueState) || is_in(other, m_audioState) || is_in(other, m_midiState));
 }
+
+
+int exec_state_facade::sampleRate() const
+{ return impl.sampleRate; }
+
+int exec_state_facade::bufferSize() const
+{ return impl.bufferSize; }
+
+int64_t exec_state_facade::samplesSinceStart() const
+{ return impl.samples_since_start; }
+
+double exec_state_facade::startDate() const
+{ return impl.start_date; }
+
+double exec_state_facade::currentDate() const
+{ return impl.cur_date; }
+
+void exec_state_facade::insert(net::parameter_base& dest, const data_type& v)
+{ impl.insert(dest, v); }
+
+void exec_state_facade::insert(net::parameter_base& dest, data_type&& v)
+{ impl.insert(dest, std::move(v)); }
+
+void exec_state_facade::insert(net::parameter_base& dest, const tvalue& v)
+{ impl.insert(dest, v); }
+
+void exec_state_facade::insert(net::parameter_base& dest, tvalue&& v)
+{ impl.insert(dest, std::move(v)); }
+
+void exec_state_facade::insert(net::parameter_base& dest, const audio_port& v)
+{ impl.insert(dest, v); }
+
+void exec_state_facade::insert(net::parameter_base& dest, const midi_port& v)
+{ impl.insert(dest, v); }
+
+void exec_state_facade::insert(const state& v)
+{ impl.insert(v); }
 }

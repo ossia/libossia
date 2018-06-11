@@ -1,5 +1,7 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+#include <smallfun.hpp>
+
 namespace spdlog
 {
 class logger;
