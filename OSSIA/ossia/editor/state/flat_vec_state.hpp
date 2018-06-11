@@ -62,9 +62,10 @@ struct mono_state
 };
 
 #if defined(OSSIA_SMALL_VECTOR)
-  ossia::state_element& get_state_element(ossia::flat_vec_state::iterator iterator)
-  {
-    return *iterator;
-  }
+inline
+ossia::state_element& get_state_element(ossia::flat_vec_state::iterator iterator)
+{
+  return *iterator;
+}
 #endif
 }
