@@ -111,4 +111,10 @@ OSSIA_EXPORT void flatten_and_filter(state&, state_element&& element);
 //! These will also merge single addresses.
 OSSIA_EXPORT void merge_flatten_and_filter(state&, const state_element& element);
 OSSIA_EXPORT void merge_flatten_and_filter(state&, state_element&& element);
+
+inline
+ossia::state_element& get_state_element(ossia::state_element* iterator)
+{
+  return *iterator;
+}
 }

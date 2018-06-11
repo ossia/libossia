@@ -1,6 +1,4 @@
 #pragma once
-
-#include <ossia/dataflow/nodes/forward_node.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/optional.hpp>
@@ -18,6 +16,7 @@ namespace ossia
 {
 class time_event;
 class time_process;
+class graph_node;
 
 /**
  * @brief The time_interval class
@@ -34,7 +33,7 @@ class time_process;
 class OSSIA_EXPORT time_interval
 {
 public:
-  std::shared_ptr<ossia::nodes::interval> node;
+  std::shared_ptr<ossia::graph_node> node;
 
   auto get_date() const
   {

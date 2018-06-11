@@ -18,4 +18,10 @@ OSSIA_EXPORT void launch(state_element& e);
  * @brief print Print a \ref state_element
  */
 OSSIA_EXPORT std::ostream& print(std::ostream& os, const state_element& dt);
+
+inline
+ossia::state_element& get_state_element(std::vector<ossia::state_element>::iterator iterator)
+{
+  return *iterator;
+}
 }

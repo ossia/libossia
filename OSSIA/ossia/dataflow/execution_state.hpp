@@ -4,7 +4,7 @@
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
-#include <ossia/editor/state/flat_state.hpp>
+#include <ossia/editor/state/flat_vec_state.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_multimap.hpp>

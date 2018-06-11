@@ -1,14 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/dataflow/graph/graph_utils.hpp>
+
+#include <ossia/network/value/destination.hpp>
 #include <ossia/dataflow/execution_state.hpp>
-#include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/base/device.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
-#include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/audio/audio_parameter.hpp>
+
+
 namespace ossia
 {
 

@@ -4,6 +4,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/network/value/value.hpp>
 #if defined(__EMSCRIPTEN__)
 #define GSL_USE_STD_BYTE 0
 #endif

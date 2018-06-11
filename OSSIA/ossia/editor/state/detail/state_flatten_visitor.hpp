@@ -2,7 +2,6 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/editor/state/flat_state.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/value/value_algorithms.hpp>
 #include <ossia/network/value/value_traits.hpp>
@@ -622,8 +621,9 @@ struct state_flatten_visitor
     return &m.address.get();
   }
 
-  template <typename State_U, typename T>
-  static auto find_same_param(State_U& st, const T& incoming)
+private:
+  template <typename T>
+  static auto find_same_param(ossia::state& st, const T& incoming)
   {
     if constexpr(AssumeSameAddresses)
     {
@@ -704,39 +704,13 @@ struct state_flatten_visitor
     }
   }
 
-  template <typename T>
-  static auto find_same_param(ossia::flat_set_state& st, const T& incoming)
+  template <typename State, typename T>
+  static auto find_same_param(State& st, const T& incoming)
   {
     return st.find(incoming);
   }
 
-  template <typename T>
-  static auto find_same_param(ossia::mono_state& st, const T& incoming)
-  {
-    return st.find(incoming);
-  }
-
-  ossia::state_element& value(ossia::state_element* iterator)
-  {
-    return *iterator;
-  }
-  ossia::state_element& value(std::vector<ossia::state_element>::iterator iterator)
-  {
-    return *iterator;
-  }
-
-#if defined(OSSIA_SMALL_VECTOR)
-  ossia::state_element& value(ossia::flat_vec_state::iterator iterator)
-  {
-    return *iterator;
-  }
-#endif
-
-  ossia::state_element& value(ossia::flat_set_state::iterator iterator)
-  {
-    return iterator->second;
-  }
-
+public:
   template <typename Message_T>
   void operator()(Message_T&& incoming)
   {
@@ -753,36 +727,36 @@ struct state_flatten_visitor
       state_flatten_visitor_merger<State_T, std::remove_reference_t<decltype(it)>, MergeSingleValues> merger{state, it};
       // Workaround for a GDB bug if we use a generic lambda
       // in a template function (operator() here)
-      switch (value(it).which())
+      switch (get_state_element(it).which())
       {
         case 0:
           merger(
-              *value(it).template target<state_element_by_index<0>>(),
+              *get_state_element(it).template target<state_element_by_index<0>>(),
               std::forward<Message_T>(incoming));
           break;
         case 1:
           merger(
-              *value(it).template target<state_element_by_index<1>>(),
+              *get_state_element(it).template target<state_element_by_index<1>>(),
               std::forward<Message_T>(incoming));
           break;
         case 2:
           merger(
-              *value(it).template target<state_element_by_index<2>>(),
+              *get_state_element(it).template target<state_element_by_index<2>>(),
               std::forward<Message_T>(incoming));
           break;
         case 3:
           merger(
-              *value(it).template target<state_element_by_index<3>>(),
+              *get_state_element(it).template target<state_element_by_index<3>>(),
               std::forward<Message_T>(incoming));
           break;
         case 4:
           merger(
-              *value(it).template target<state_element_by_index<4>>(),
+              *get_state_element(it).template target<state_element_by_index<4>>(),
               std::forward<Message_T>(incoming));
           break;
         case 5:
           merger(
-              *value(it).template target<state_element_by_index<5>>(),
+              *get_state_element(it).template target<state_element_by_index<5>>(),
               std::forward<Message_T>(incoming));
           break;
         default:

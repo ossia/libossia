@@ -4,19 +4,12 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-
-#include <ossia/detail/algorithms.hpp>
-#include <ossia/detail/logger.hpp>
-#include <ossia/editor/exceptions.hpp>
 #include <ossia/dataflow/nodes/forward_node.hpp>
-#include <cassert>
-#include <hopscotch_map.h>
-#include <iostream>
-#include <map>
-#include <set>
+#include <ossia/editor/exceptions.hpp>
 
 namespace ossia
 {
+
 scenario::scenario():
   m_sg{*this}
 {
@@ -38,13 +31,13 @@ bool scenario::is_root_sync(ossia::time_sync& sync) const
   auto bool_expr = sync.get_expression().target<ossia::expressions::expression_bool>();
 
   auto res = !bool_expr || !bool_expr->evaluate() || &sync == m_nodes[0].get();
-  res &= ossia::all_of(
-            sync.get_time_events(),
-            [] (const std::shared_ptr<ossia::time_event>& ev) {
-        return ev->previous_time_intervals().empty();
-      });
+  for(const auto& ev : sync.get_time_events())
+  {
+    res &= ev->previous_time_intervals().empty();
+  }
   return res;
 }
+
 void scenario::start()
 {
   m_runningIntervals.container.reserve(m_intervals.size());
@@ -228,7 +221,6 @@ const ptr_container<time_interval>& scenario::get_time_intervals() const
 {
   return m_intervals;
 }
-
 void scenario::reset_subgraph(
     const ptr_container<time_sync>& syncs
     , const ptr_container<time_interval>& itvs
