@@ -4,10 +4,7 @@
 #include <ossia/detail/optional.hpp>
 #include <smallfun.hpp>
 #include <ossia_export.h>
-
-#include <functional>
 #include <memory>
-#include <string>
 
 /**
  * \file time_interval.hpp

@@ -3,6 +3,8 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/clock.hpp>
+#include <ossia/dataflow/token_request.hpp>
 #include <ossia-qt/js_utilities.hpp>
 #include <QMetaType>
 #include <QtTest>

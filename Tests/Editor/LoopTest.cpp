@@ -11,6 +11,7 @@
 #include <ossia/editor/loop/loop.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/editor/scenario/clock.hpp>
 #include <ossia/detail/pod_vector.hpp>
 namespace ossia
 {

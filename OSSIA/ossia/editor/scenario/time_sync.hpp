@@ -3,9 +3,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <functional>
 #include <memory>
-#include <string>
 #include <atomic>
 #include <ossia_export.h>
 
