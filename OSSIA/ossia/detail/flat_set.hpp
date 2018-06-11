@@ -1,5 +1,5 @@
 #pragma once
-#include <flat_set.hpp>
+#include <flat/flat_set.hpp>
 
 namespace ossia
 {
