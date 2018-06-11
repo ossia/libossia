@@ -1,18 +1,14 @@
 #pragma once
-
-#include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
-#include <ossia/editor/state/state.hpp>
-#include <ossia/detail/flat_map.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/pod_vector.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <ossia/dataflow/graph_node.hpp>
+#include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/ptr_set.hpp>
+#include <ossia/detail/ptr_container.hpp>
+#include <boost/graph/adjacency_list.hpp>
 #include <ossia_export.h>
-#include <set>
 namespace ossia
 {
 class graph;

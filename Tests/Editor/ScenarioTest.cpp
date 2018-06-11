@@ -5,6 +5,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/clock.hpp>
 #include <QtTest>
 #include <functional>
 #include <iostream>

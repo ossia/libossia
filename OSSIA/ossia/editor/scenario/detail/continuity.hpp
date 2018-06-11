@@ -2,6 +2,7 @@
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/loop/loop.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 namespace ossia
 {
 

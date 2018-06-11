@@ -1,14 +1,9 @@
 #pragma once
-
-#include <functional>
-#include <memory>
-#include <string>
-
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
-#include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 #include <cstdint>
+#include <memory>
 #include <ossia_export.h>
 
 /**
@@ -20,6 +15,7 @@ namespace ossia
 class state;
 class time_interval;
 class time_sync;
+class time_process;
 class scenario;
 class loop;
 /**

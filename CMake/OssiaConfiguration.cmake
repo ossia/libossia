@@ -62,6 +62,7 @@ set(OSSIA_SUBMODULES
     frozen
     weakjack
     verdigris
+    flat
     )
 
 foreach(submodule ${OSSIA_SUBMODULES})

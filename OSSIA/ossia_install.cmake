@@ -138,11 +138,23 @@ install(FILES
         COMPONENT Devel)
 
 # Install used libraries headers
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/RtMidi17/rtmidi17
+  DESTINATION include/
+  COMPONENT Devel)
+
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/variant/include/
         DESTINATION include
         COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
+        DESTINATION include
+        COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/flat/include/
+        DESTINATION include
+        COMPONENT Devel)
+
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/multi_index/include/
         DESTINATION include
         COMPONENT Devel)
 
