@@ -238,6 +238,12 @@ struct domain_visitor {
       SETFLOAT(x->m_max, *d.max);
     }
   }
+
+  void operator()(ossia::domain_base<bool>& d)
+  {
+    // nothing to do
+  }
+
   void operator()(ossia::domain_base<impulse>& d)
   {
     // nothing to do
@@ -296,7 +302,8 @@ struct domain_visitor {
   void operator()(ossia::vector_domain& d)
   {
     std::vector<t_atom> vamin, vamax;
-    value2atom minvisitor{vamin}, maxvisitor{vamax};
+    value2atom minvisitor{vamin};
+    value2atom maxvisitor{vamax};
 
     x->m_min_size = vamin.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : vamin.size();
     x->m_max_size = vamax.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : vamax.size();
