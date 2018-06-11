@@ -13,7 +13,7 @@ using token_request_vec = ossia::small_vector<token_request, 4>;
 
 using inlets = ossia::small_vector<inlet_ptr, 2>;
 using outlets = ossia::small_vector<outlet_ptr, 2>;
-struct exec_state_facade
+struct OSSIA_EXPORT exec_state_facade
 {
   ossia::execution_state& impl;
   int sampleRate() const;
