@@ -8,7 +8,7 @@ if(OSSIA_UNITY3D)
     if(APPLE)
         set_target_properties(ossia PROPERTIES
             PREFIX ""
-            SUFFIX "bundle"
+            SUFFIX ".bundle"
             )
         install(
             TARGETS ossia
