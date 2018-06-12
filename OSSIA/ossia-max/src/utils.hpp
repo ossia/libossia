@@ -332,6 +332,10 @@ struct domain_visitor {
       A_SETFLOAT(x->m_max, *d.max);
     }
   }
+  void operator()(ossia::domain_base<bool>& d)
+  {
+    // nothing to do
+  }
   void operator()(ossia::domain_base<impulse>& d)
   {
     // nothing to do
