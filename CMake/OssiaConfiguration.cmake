@@ -65,6 +65,8 @@ set(OSSIA_SUBMODULES
     flat
     )
 
+execute_process(COMMAND git submodule sync --recursive
+                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 foreach(submodule ${OSSIA_SUBMODULES})
     message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
     execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
