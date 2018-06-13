@@ -39,15 +39,20 @@ public:
 
 public:
   void write(QByteArray arg_1) W_SIGNAL(write, arg_1);
+  void read(QByteArray arg_1) W_SIGNAL(read, arg_1);
 
 public:
   void on_write(QByteArray b)
   {
     mSerialPort.write(b);
   }; W_SLOT(on_write)
+
   void on_read()
   {
-    qDebug() << mSerialPort.readAll();
+    while(mSerialPort.canReadLine())
+    {
+      read(mSerialPort.readLine());
+    }
   }; W_SLOT(on_read)
 };
 
@@ -80,6 +85,7 @@ private:
   QQmlComponent* mComponent{};
 
   serial_device* mDevice{};
+  QObject* mObject{};
   mutable serial_wrapper mSerialPort;
   QByteArray mCode;
 };

@@ -42,15 +42,56 @@ serial_protocol::serial_protocol(
         {
           case QQmlComponent::Status::Ready:
           {
-            auto item = mComponent->create();
-            item->setParent(mEngine->rootContext());
+            mObject = mComponent->create();
+            mObject->setParent(mEngine->rootContext());
 
             QVariant ret;
             QMetaObject::invokeMethod(
-                item, "createTree", Q_RETURN_ARG(QVariant, ret));
+                mObject, "createTree", Q_RETURN_ARG(QVariant, ret));
             qt::create_device<serial_device, serial_node, serial_protocol>(
                 *mDevice, ret.value<QJSValue>());
 
+            connect(&mSerialPort, &serial_wrapper::read,
+                    this, [&] (const QByteArray& a) {
+
+              QVariant ret;
+              QMetaObject::invokeMethod(
+                           mObject, "onMessage",
+                           Q_RETURN_ARG(QVariant, ret),
+                           Q_ARG(QVariant, QString::fromUtf8(a)));
+
+              auto arr = ret.value<QJSValue>();
+              // should be an array of { address, value } objects
+              if (!arr.isArray())
+                return;
+
+              QJSValueIterator it(arr);
+              while (it.hasNext())
+              {
+                it.next();
+                auto val = it.value();
+                auto addr = val.property("address");
+                if (!addr.isString())
+                  continue;
+
+                auto addr_txt = addr.toString().toStdString();
+                auto n = find_node(*mDevice, addr_txt);
+                if (!n)
+                  continue;
+
+                auto v = val.property("value");
+                if (v.isNull())
+                  continue;
+
+                if (auto addr = n->get_parameter())
+                {
+                  qDebug() << "Applied value"
+                           << QString::fromStdString(value_to_pretty_string(
+                                  qt::value_from_js(addr->value(), v)));
+                  addr->push_value(qt::value_from_js(addr->value(), v));
+                }
+              }
+            });
             return;
           }
           case QQmlComponent::Status::Loading:
@@ -61,6 +102,7 @@ serial_protocol::serial_protocol(
             return;
         }
       });
+
 }
 
 bool serial_protocol::pull(parameter_base&)
