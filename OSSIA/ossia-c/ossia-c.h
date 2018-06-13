@@ -1096,7 +1096,7 @@ void ossia_node_unset_refresh_rate(
 OSSIA_EXPORT
 int ossia_node_get_refresh_rate(
     ossia_node_t node,
-    int* ok = NULL);
+    int* ok);
 
 /**
  * @see ossia::net::set_priority
@@ -1120,7 +1120,7 @@ void ossia_node_unset_priority(
 OSSIA_EXPORT
 float ossia_node_get_priority(
     ossia_node_t node,
-    int* ok = NULL);
+    int* ok);
 
 /**
  * @see ossia::net::set_value_step_size
@@ -1144,7 +1144,7 @@ void ossia_node_unset_value_step_size(
 OSSIA_EXPORT
 double ossia_node_get_value_step_size(
     ossia_node_t node,
-    int* ok = NULL);
+    int* ok);
 
 
 /**
@@ -1170,7 +1170,7 @@ OSSIA_EXPORT
 void ossia_node_get_instance_bounds(
     ossia_node_t node,
     int* min, int* max,
-    int* ok = NULL);
+    int* ok);
 
 /**
  * @see ossia::net::set_default_value
@@ -1432,21 +1432,21 @@ float ossia_value_to_float(ossia_value_t val);
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_vec2f ossia_value_to_2f(ossia_value_t val);
+struct ossia_vec2f ossia_value_to_2f(ossia_value_t val);
 /**
  * @brief Get the value if it is a vec3f.
  * @return Undefined if ossia_value_get_type(val) != VEC3F_T
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_vec3f ossia_value_to_3f(ossia_value_t val);
+struct ossia_vec3f ossia_value_to_3f(ossia_value_t val);
 /**
  * @brief Get the value if it is a vec4f.
  * @return Undefined if ossia_value_get_type(val) != VEC4F_T
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_vec4f ossia_value_to_4f(ossia_value_t val);
+struct ossia_vec4f ossia_value_to_4f(ossia_value_t val);
 /**
  * @brief Get the value if it is an bool.
  * @return Undefined if ossia_value_get_type(val) != BOOL_T
@@ -1619,13 +1619,13 @@ void ossia_logger_init_heartbeat(ossia_logger_t log, int pid, const char* cmdlin
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_logger_set_level(ossia_logger_t log, log_level lvl);
+void ossia_logger_set_level(ossia_logger_t log, enum log_level lvl);
 /**
  * @brief Log a message.
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_log(ossia_logger_t log, log_level lvl, const char* message);
+void ossia_log(ossia_logger_t log, enum log_level lvl, const char* message);
 
 /**
  * @brief Free a logger instance.

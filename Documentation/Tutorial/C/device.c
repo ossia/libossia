@@ -5,9 +5,11 @@ void test_callback(void* n, ossia_value_t v)
 {
   int* count = (int*)n;
   *count += 1;
-  const char* str = ossia_value_convert_string(v);
+  char* str;
+  size_t sz;
+  ossia_value_convert_byte_array(v, &str, &sz);
   printf("Received: %s\n", str);
-  ossia_value_free_string(str);
+  ossia_string_free(str);
   ossia_value_free(v);
 }
 
