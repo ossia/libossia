@@ -22,8 +22,8 @@ class portaudio_engine final
 #if __has_include(<pa_jack.h>) && !defined(_MSC_VER)
       PaJack_SetClientName(name.c_str());
 #endif
-      int card_in_idx = -1;
-      int card_out_idx = -1;
+      int card_in_idx = paNoDevice;
+      int card_out_idx = paNoDevice;
 
       for(int i = 0; i < Pa_GetDeviceCount(); i++)
       {
@@ -37,22 +37,34 @@ class portaudio_engine final
           card_out_idx = i;
         }
       }
-      if(card_in_idx == -1)
+      if(card_in_idx == paNoDevice)
         card_in_idx = Pa_GetDefaultInputDevice();
-      if(card_out_idx == -1)
+      if(card_out_idx == paNoDevice)
         card_out_idx = Pa_GetDefaultOutputDevice();
-      if(card_in_idx == -1 || card_out_idx == -1)
-        throw std::runtime_error("Audio error: no default");
 
       auto devInInfo = Pa_GetDeviceInfo(card_in_idx);
       if(!devInInfo)
-        throw std::runtime_error("Audio error: no input device");
+      {
+        std::cerr << "Audio error: no input device" << std::endl;
+        inputs = 0;
+      }
+      else
+      {
+        inputs = std::min(inputs, devInInfo->maxInputChannels);
+      }
+
       auto devOutInfo = Pa_GetDeviceInfo(card_out_idx);
       if(!devOutInfo)
-        throw std::runtime_error("Audio error: no output device");
+      {
+        std::cerr << "Audio error: no ouitput device" << std::endl;
+        outputs = 0;
+      }
+      else
+      {
+        outputs = std::min(outputs, devOutInfo->maxOutputChannels);
+      }
 
-      inputs = std::min(inputs, devInInfo->maxInputChannels);
-      outputs = std::min(outputs, devOutInfo->maxOutputChannels);
+
 
       m_ins = inputs;
       m_outs = outputs;
@@ -74,8 +86,8 @@ class portaudio_engine final
       std::cerr << "=== stream start ===\n";
       PaStream* stream;
       auto ec = Pa_OpenStream(&stream,
-                              &inputParameters,
-                              &outputParameters,
+                              card_in_idx != paNoDevice ? &inputParameters : nullptr,
+                              card_out_idx != paNoDevice ? &outputParameters : nullptr,
                               rate,
                               bs, //paFramesPerBufferUnspecified,
                               paNoFlag,
