@@ -475,7 +475,7 @@ void oscquery_mirror_protocol::init()
     {
       n++;
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      if (n > 500)
+      if (n > 1500)
       {
         cleanup_connections();
         throw ossia::connection_error{

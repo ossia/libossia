@@ -4,14 +4,14 @@
 
 namespace ossia::nodes
 {
-struct OSSIA_EXPORT state final : public ossia::graph_node
+struct OSSIA_EXPORT state_writer final : public ossia::graph_node
 {
   public:
-    state(const ossia::state& other);
-    state(ossia::state&& other);
-    state() = default;
+    state_writer(const ossia::state& other);
+    state_writer(ossia::state&& other);
+    state_writer() = default;
 
-    ~state() override;
+    ~state_writer() override;
 
     void run(ossia::token_request, ossia::exec_state_facade e) noexcept override;
 
