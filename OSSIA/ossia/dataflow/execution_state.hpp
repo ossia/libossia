@@ -25,7 +25,7 @@ struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
     execution_state();
-    ossia::net::node_base* find_node(std::string_view name) const
+    ossia::net::node_base* find_node(std::string_view name) const noexcept
     {
       for(auto dev : allDevices)
       {
@@ -36,7 +36,7 @@ struct OSSIA_EXPORT execution_state
     }
 
     template<typename T>
-    auto get_value_or(std::string_view v, const T& val)
+    auto get_value_or(std::string_view v, const T& val) noexcept
     {
       if(auto node = find_node(v))
         return ossia::convert<T>(node->get_parameter()->value());

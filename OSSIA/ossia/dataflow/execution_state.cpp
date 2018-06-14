@@ -689,20 +689,23 @@ bool execution_state::in_local_scope(net::parameter_base& other) const
 }
 
 
-int exec_state_facade::sampleRate() const
+int exec_state_facade::sampleRate() const noexcept
 { return impl.sampleRate; }
 
-int exec_state_facade::bufferSize() const
+int exec_state_facade::bufferSize() const noexcept
 { return impl.bufferSize; }
 
-int64_t exec_state_facade::samplesSinceStart() const
+int64_t exec_state_facade::samplesSinceStart() const noexcept
 { return impl.samples_since_start; }
 
-double exec_state_facade::startDate() const
+double exec_state_facade::startDate() const noexcept
 { return impl.start_date; }
 
-double exec_state_facade::currentDate() const
+double exec_state_facade::currentDate() const noexcept
 { return impl.cur_date; }
+
+ossia::net::node_base* exec_state_facade::find_node(std::string_view name) const noexcept
+{ return impl.find_node(name); }
 
 void exec_state_facade::insert(net::parameter_base& dest, const data_type& v)
 { impl.insert(dest, v); }

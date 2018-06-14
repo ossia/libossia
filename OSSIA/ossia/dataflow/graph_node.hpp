@@ -16,11 +16,12 @@ using outlets = ossia::small_vector<outlet_ptr, 2>;
 struct OSSIA_EXPORT exec_state_facade
 {
   ossia::execution_state& impl;
-  int sampleRate() const;
-  int bufferSize() const;
-  int64_t samplesSinceStart() const;
-  double startDate() const;
-  double currentDate() const;
+  int sampleRate() const noexcept;
+  int bufferSize() const noexcept;
+  int64_t samplesSinceStart() const noexcept;
+  double startDate() const noexcept;
+  double currentDate() const noexcept;
+  ossia::net::node_base* find_node(std::string_view name) const noexcept;
 
   void insert(ossia::net::parameter_base& dest, const data_type& v);
   void insert(ossia::net::parameter_base& dest, data_type&& v);
