@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/hash.hpp>
 #include <hopscotch_set.h>
 #include <hopscotch_map.h>
 #include <ossia/detail/math.hpp>
@@ -7,21 +8,6 @@
 namespace ossia
 {
 
-// https://stackoverflow.com/q/20953390/1495627
-template<typename T>
-struct EgurHash
-{
-    size_t operator()(const T* val) const noexcept
-    {
-      static const constexpr size_t shift = constexpr_log2(1 + sizeof(T));
-      return (size_t)(val) >> shift;
-    }
-    size_t operator()(const std::shared_ptr<T>& val) const noexcept
-    {
-      static const constexpr size_t shift = constexpr_log2(1 + sizeof(T));
-      return (size_t)(val.get()) >> shift;
-    }
-};
 
 template<typename T>
 struct PointerPredicate

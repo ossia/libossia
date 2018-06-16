@@ -22,6 +22,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mpl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/murmur3.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/optional.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_set.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/pod_vector.hpp"

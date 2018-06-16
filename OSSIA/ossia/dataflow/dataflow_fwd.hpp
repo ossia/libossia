@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/hash.hpp>
 #include <eggs/variant.hpp>
 #include <utility>
 #include <memory>
@@ -9,17 +10,11 @@ template <typename T>
 class hash<std::pair<T*, T*>>
 {
 public:
-  void hash_combine(std::size_t& seed, const T& v)
-  {
-    std::hash<T> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-  }
-
   std::size_t operator()(const std::pair<T*, T*>& p) const
   {
     std::size_t seed = 0;
-    hash_combine(seed, p.first);
-    hash_combine(seed, p.second);
+    ossia::hash_combine(seed, p.first);
+    ossia::hash_combine(seed, p.second);
     return seed;
   }
 };

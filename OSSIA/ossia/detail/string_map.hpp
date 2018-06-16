@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/string_view.hpp>
-#include <boost/functional/hash.hpp>
+#include <ossia/detail/murmur3.hpp>
 #include <hopscotch_map.h>
 #include <string>
 
@@ -15,18 +15,24 @@ struct string_hash
 {
   std::size_t operator()(const std::string& s) const noexcept
   {
-    return boost::hash<std::string>{}(s);
+    uint32_t seed = 0;
+    ossia::murmur::murmur3_x86_32(s.data(), s.size(), seed, seed);
+    return seed;
   }
 
-  std::size_t operator()(ossia::string_view s) const noexcept
+  std::size_t operator()(std::string_view s) const noexcept
   {
-    return boost::hash_range(s.data(), s.data() + s.size());
+    uint32_t seed = 0;
+    ossia::murmur::murmur3_x86_32(s.data(), s.size(), seed, seed);
+    return seed;
   }
 
   template <std::size_t N>
   std::size_t operator()(const char (&s)[N]) const noexcept
   {
-    return boost::hash_range(s, s + N - 1);
+    uint32_t seed = 0;
+    ossia::murmur::murmur3_x86_32(s, N - 1, seed, seed);
+    return seed;
   }
 };
 

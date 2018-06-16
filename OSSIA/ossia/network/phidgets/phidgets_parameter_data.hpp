@@ -5,6 +5,7 @@
 #include <phidget22.h>
 #endif
 #include <string>
+#include <ossia/detail/hash.hpp>
 namespace ossia
 {
 struct phidget_handle_t
@@ -358,21 +359,15 @@ namespace std
 template<>
 class hash<ossia::phidget_id>
 {
-
-    inline void hash_combine(std::size_t& seed, int v)
-    {
-        std::hash<int> hasher;
-        seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-    }
   public:
 
     std::size_t operator()(const ossia::phidget_id& id)
     {
       std::size_t s = 0;
-      hash_combine(s, id.serialNumber);
-      hash_combine(s, id.hubPort);
-      hash_combine(s, id.channel);
-      hash_combine(s, id.isHubPort);
+      ossia::hash_combine(s, id.serialNumber);
+      ossia::hash_combine(s, id.hubPort);
+      ossia::hash_combine(s, id.channel);
+      ossia::hash_combine(s, id.isHubPort);
       return s;
     }
 

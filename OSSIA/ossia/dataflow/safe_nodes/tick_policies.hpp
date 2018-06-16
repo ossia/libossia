@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/safe_nodes/node.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <bitset>
 
 namespace ossia::safe_nodes
 {

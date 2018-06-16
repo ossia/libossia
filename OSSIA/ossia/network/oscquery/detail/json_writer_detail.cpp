@@ -189,7 +189,6 @@ void json_writer_impl::writeAttribute(
 void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
 {
   using namespace std;
-  using namespace boost;
   using namespace eggs::variants;
 
   auto addr = n.get_parameter();

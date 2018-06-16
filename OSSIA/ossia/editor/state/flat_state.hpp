@@ -20,7 +20,7 @@
 #include <ossia/network/dataspace/value_with_unit.hpp>
 //#include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
-#include <boost/functional/hash.hpp>
+#include <ossia/detail/hash.hpp>
 #include <ossia/detail/hash_map.hpp>
 namespace std
 {
@@ -43,10 +43,10 @@ struct hash<std::pair<ossia::net::parameter_base*, ossia::unit_t>>
     std::size_t operator()(const std::pair<ossia::net::parameter_base*, ossia::unit_t>& k) const
     {
       std::size_t seed = 0;
-      boost::hash_combine(seed, k.first);
-      boost::hash_combine(seed, k.second.v.which());
+      ossia::hash_combine(seed, k.first);
+      ossia::hash_combine(seed, k.second.v.which());
       auto res = ossia::apply(vis{}, k.second.v);
-      boost::hash_combine(seed, res);
+      ossia::hash_combine(seed, res);
 
       return seed;
     }
