@@ -393,34 +393,39 @@ void execution_state::commit()
 
 void execution_state::commit_priorized()
 {
-  // Here we use the priority of each node =>
-  state_flatten_visitor<ossia::flat_vec_state, false, true> vis{m_commitOrderedState};
+  // Here we use the priority of each node
+  ossia::flat_map<std::tuple<ossia::net::priority, int64_t, int>, std::vector<ossia::state_element>> m_priorizedMessagesCache;
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
   {
-    switch(it->second.size())
-    {
-      case 0:
-        continue;
-      case 1:
-      {
-        to_state_element(*it->first, it->second[0].first).launch();
-        break;
-      }
-      default:
-      {
-        m_commitOrderedState.clear();
-        m_commitOrderedState.reserve(it->second.size());
-        for(auto& val : it->second)
-        {
-          //std::cerr << "mergin : " <<  val.first.value << std::endl;
-          vis(to_state_element(*it->first, std::move(val.first)));
-        }
+    m_commitOrderedState.clear();
+    m_commitOrderedState.reserve(it->second.size());
+    state_flatten_visitor<ossia::flat_vec_state, false, true> vis{m_commitOrderedState};
 
-        m_commitOrderedState.launch();
-      }
+    int64_t cur_ts = 0; // timestamp
+    int cur_ms = 0; // message stamp
+    int cur_prio = 0;
+    if(const auto& p = ossia::net::get_priority(it->first->get_node()))
+      cur_prio = *p;
+
+    for(auto& val : it->second)
+    {
+      cur_ms = std::max(cur_ms, val.second);
+      cur_ts = std::max(cur_ts, val.first.timestamp);
+      vis(to_state_element(*it->first, std::move(val.first)));
     }
 
+    auto& idx = m_priorizedMessagesCache[std::make_tuple(cur_prio, cur_ts, cur_ms)];
+    for(auto& e : m_commitOrderedState)
+      idx.push_back(std::move(e));
+
     it->second.clear();
+  }
+
+  for(auto& vec : m_priorizedMessagesCache.container)
+  {
+    for(auto& mess : vec.second)
+      ossia::launch(mess);
+    vec.second.clear();
   }
 
   commit_common();
@@ -445,8 +450,9 @@ void execution_state::commit_ordered()
       vis(to_state_element(*it->first, std::move(val.first)));
     }
 
+    auto& idx = m_flatMessagesCache[std::make_pair(cur_ts, cur_ms)];
     for(auto& e : m_commitOrderedState)
-      m_flatMessagesCache[std::make_pair(cur_ts, cur_ms)].push_back(std::move(e));
+      idx.push_back(std::move(e));
 
     it->second.clear();
   }
