@@ -17,6 +17,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <regex>
 
 #include <ossia/detail/logger.hpp>
 #include <ossia-c/log/ossia_log.h>
