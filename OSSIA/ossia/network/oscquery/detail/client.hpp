@@ -2,8 +2,6 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
-#include <boost/config.hpp>
-#include <boost/version.hpp>
 #include <nano_signal_slot.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>

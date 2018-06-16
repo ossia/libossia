@@ -109,6 +109,22 @@ struct regex_cache
   std::mutex mutex;
 };
 
+void add_device_part(
+    std::string part, path& p)
+{
+  p.child_functions.push_back(
+        [=] (std::vector<ossia::net::node_base*>& x)
+  {
+    for(auto it = x.begin(); it != x.end(); )
+    {
+      if((*it)->get_device().get_name() != part)
+        it = x.erase(it);
+      else
+        ++it;
+    }
+  });
+}
+
 void add_relative_path(
     std::string& part, path& p)
 {
@@ -175,45 +191,56 @@ bool is_pattern(ossia::string_view address)
   return false;
 }
 
-ossia::optional<path> make_path(ossia::string_view address) try
+ossia::optional<path> make_path(std::string_view address) try
 {
-  path p{std::string(address), ossia::net::get_address_scope(address), {}};
+  const auto scope = ossia::net::get_address_scope(address);
+  path p{std::string(address), scope, {}};
 
   if(address.empty())
   {
     return p;
   }
 
-  const bool starts_any = boost::starts_with(p.pattern, "//");
-  if (!starts_any)
-  {
+  auto add_simple_address = [&] (std::string_view address) {
     // Split on "/"
-    auto parts = ossia::net::address_parts(p.pattern);
-
-    // Potentially remove first ":".
-    if (!parts[0].empty() && parts[0].back() == ':')
-      parts[0].resize(parts[0].size() - 1);
-
-    for (auto part : parts)
-    {
+    // TODO is this copy really necessary ?
+    for (auto part : ossia::net::address_parts(address))
       add_relative_path(part, p);
+  };
+
+  auto add_address = [&] (std::string_view address) {
+    if(boost::starts_with(address, "//"))
+    {
+      // Means that we can start at any point, of any node.
+      //* means all the nodes.
+      // We have to pass an array with all the devices ?
+      // We can't just make a big regex because of '..'
+      p.child_functions.push_back([] (auto& x) { return get_all_children(x); });
+
+      add_simple_address(address.substr(2));
     }
-  }
-  else
-  {
-    // Means that we can start at any point, of any node.
-    //* means all the nodes.
-    // We have to pass an array with all the devices ?
-    // We can't just make a big regex because of '..'
-    p.child_functions.push_back([] (auto& x) { return get_all_children(x); });
-
-    // Split on "/"
-    auto parts
-        = ossia::net::address_parts(ossia::string_view(p.pattern).substr(2));
-
-    for (auto part : parts)
+    else
     {
-      add_relative_path(part, p);
+      add_simple_address(address);
+    }
+  };
+
+  switch(scope)
+  {
+    case ossia::net::address_scope::relative:
+    case ossia::net::address_scope::absolute:
+    {
+      add_address(address);
+      break;
+    }
+
+    case ossia::net::address_scope::global:
+    {
+      // First add a match on the device
+      auto start = address.find_first_of('/') ;
+
+      add_device_part(std::string(address.data(), start - 1), p);
+      add_address({address.data() + start, address.size() - start});
     }
   }
 

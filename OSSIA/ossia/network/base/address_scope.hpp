@@ -20,5 +20,5 @@ enum class address_scope
  * @return the scope
  */
 OSSIA_EXPORT
-ossia::net::address_scope get_address_scope(ossia::string_view addr);
+ossia::net::address_scope get_address_scope(std::string_view addr);
 }

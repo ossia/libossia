@@ -6,12 +6,10 @@
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/common/extended_types.hpp>
-#include <ossia_export.h>
-
-#include <boost/any.hpp>
 #include <hopscotch_map.h>
 #include <string>
 #include <vector>
+#include <ossia_export.h>
 
 /**
  * \file node_attributes.hpp

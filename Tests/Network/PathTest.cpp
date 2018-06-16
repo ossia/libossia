@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #include <QtTest>
+#include <regex>
 #include <iostream>
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -541,6 +542,25 @@ private Q_SLOTS:
 
   }
 
+  void test_device()
+  {
+    ossia::net::generic_device device1{"test"};
+
+    auto& a1 = ossia::net::create_node(device1, "foo/bar");
+    auto& a2 = ossia::net::create_node(device1, "foo/bar");
+
+    ossia::net::generic_device device2{"boo"};
+
+    auto& b1 = ossia::net::create_node(device2, "foo/bar");
+    auto& b2 = ossia::net::create_node(device2, "foo/bar");
+
+    auto p = *traversal::make_path("boo:/*/bar.1");
+    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    traversal::apply(p, vec);
+
+    QCOMPARE(vec, (std::vector<ossia::net::node_base*>{&b2}));
+
+  }
 };
 
 QTEST_APPLESS_MAIN(PathTest)

@@ -8,6 +8,7 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia-qt/name_utils.hpp>
+#include <regex>
 // #include <ossia-qt/js_utilities.hpp>
 
 using namespace ossia;

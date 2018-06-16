@@ -25,11 +25,11 @@ bool apply_to_destination(
     case 1:
     {
       std::vector<ossia::net::node_base*> roots{};
-      auto& p = *address.target<ossia::traversal::path>();
-      //if(p.pattern.)
+
       for(auto n : devices)
         roots.push_back(&n->get_root_node());
 
+      auto& p = *address.target<ossia::traversal::path>();
       ossia::traversal::apply(p, roots);
 
       const bool unique = roots.size() == 1;

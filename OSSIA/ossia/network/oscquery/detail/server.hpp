@@ -4,8 +4,6 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/oscquery/detail/server_reply.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <boost/config.hpp>
-#include <boost/version.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/http/request.hpp>
 #include <websocketpp/server.hpp>
