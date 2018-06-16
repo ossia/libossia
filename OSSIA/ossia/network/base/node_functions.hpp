@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
-
+#include <ossia/network/base/address_scope.hpp>
 #include <ossia/network/value/destination.hpp>
 
 /**
@@ -157,21 +157,6 @@ auto find_or_create_parameter(ossia::net::node_base& root, ossia::string_view na
 OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
 
 void expand_ranges(std::string& str);
-
-enum class address_scope
-{
-  relative = 0,
-  absolute,
-  global
-};
-
-/**
- * @brief get_address_scope: return address scope (relative, absolute or globale)
- * @param addr: the address to process
- * @return the scope
- */
-OSSIA_EXPORT
-address_scope get_address_scope(ossia::string_view addr);
 
 /**
  * @brief list_all_child : list all node childs recursively

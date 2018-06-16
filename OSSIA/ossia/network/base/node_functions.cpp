@@ -6,6 +6,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
+#include <regex>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -552,7 +553,7 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
   return v;
 }
 
-address_scope get_address_scope(ossia::string_view addr)
+ossia::net::address_scope get_address_scope(ossia::string_view addr)
 {
   address_scope type = address_scope::relative;
   if (boost::starts_with(addr, "//"))

@@ -8,6 +8,8 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <ossia/network/base/address_scope.hpp>
+#include <regex>
 #include <hopscotch_set.h>
 
 namespace ossia
@@ -175,7 +177,7 @@ bool is_pattern(ossia::string_view address)
 
 ossia::optional<path> make_path(ossia::string_view address) try
 {
-  path p{std::string(address), {}};
+  path p{std::string(address), ossia::net::get_address_scope(address), {}};
 
   if(address.empty())
   {
@@ -235,4 +237,10 @@ bool match(const path& p, const ossia::net::node_base& node, ossia::net::node_ba
 }
 
 }
+
+std::regex regex_path::path_element::regex() const
+{
+  return std::regex(address);
+}
+
 }
