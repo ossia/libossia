@@ -200,7 +200,21 @@ void execution_state::register_inlet(const inlet& port)
     if(vp->is_event)
     {
       if(auto addr = port.address.target<ossia::net::parameter_base*>())
+      {
         register_parameter(**addr);
+      }
+      else if(auto p = port.address.target<ossia::traversal::path>())
+      {
+        std::vector<ossia::net::node_base*> roots{};
+
+        for(auto n : allDevices)
+          roots.push_back(&n->get_root_node());
+
+        ossia::traversal::apply(*p, roots);
+        for(auto n: roots)
+          if(auto param = n->get_parameter())
+          register_parameter(*param);
+      }
     }
   }
   else if(port.data.target<ossia::midi_port>())
