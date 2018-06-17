@@ -227,6 +227,24 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         DESTINATION include
         COMPONENT Devel)
 
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/boost)
+
+  set(BOOST_ARCHIVE "https://github.com/OSSIA/score-sdk/releases/download/sdk9/boost.tar.gz")
+  message("Download boost header for dev package from ${BOOST_ARCHIVE} to ${CMAKE_CURRENT_BINARY_DIR}/boost.tar.gz")
+  file(DOWNLOAD
+    ${BOOST_ARCHIVE}
+    ${CMAKE_CURRENT_BINARY_DIR}/boost.tar.gz)
+
+  message("Then unpack it...")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E tar xzf boost.tar.gz
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/boost
+        DESTINATION include
+        COMPONENT Devel)
+
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfigVersion.cmake"
