@@ -12,6 +12,7 @@ namespace net
 {
 class node_base;
 class parameter_base;
+class parameter_data;
 }
 
 /**
@@ -48,4 +49,7 @@ create_parameter(ossia::net::node_base& parent, std::string name, std::string ty
 OSSIA_EXPORT
 void update_parameter_type(
     const complex_type& t, ossia::net::parameter_base& node);
+
+OSSIA_EXPORT
+const ossia::net::parameter_data* default_parameter_for_type(std::string_view type);
 }

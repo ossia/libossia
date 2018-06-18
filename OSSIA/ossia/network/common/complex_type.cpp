@@ -112,8 +112,8 @@ net::parameter_base* setup_parameter(const complex_type& t, net::node_base& node
   return ossia::apply(setup_parameter_visitor{node}, t);
 }
 
-
-static const auto& parameter_creation_map()
+static
+const ossia::string_map<net::parameter_data>& parameter_creation_map()
 {
   static const auto map = [] {
     ossia::string_map<net::parameter_data> t;
@@ -223,6 +223,13 @@ static const auto& parameter_creation_map()
     return t;
   }();
   return map;
+}
+
+const ossia::net::parameter_data* default_parameter_for_type(std::string_view type)
+{
+  auto& map = parameter_creation_map();
+  auto it = map.find(type);
+  return it != map.end() ? &(it.value()) : nullptr;
 }
 
 net::parameter_base* try_setup_parameter(std::string str, net::node_base& node)
