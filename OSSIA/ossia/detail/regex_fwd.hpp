@@ -6,11 +6,11 @@ namespace std
     #if defined(_LIBCPP_VERSION)
     inline namespace __1 {
    #elif defined(__GLIBCXX__)
-    _GLIBCXX_BEGIN_NAMESPACE_CXX11
+    inline _GLIBCXX_BEGIN_NAMESPACE_CXX11
    #else
    #endif
     template<typename T>
-    class regex_traits;
+    struct regex_traits;
     template<typename T, typename Traits>
     class basic_regex;
 

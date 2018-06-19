@@ -12,7 +12,7 @@ namespace net
 {
 class node_base;
 class parameter_base;
-class parameter_data;
+struct parameter_data;
 }
 
 /**
