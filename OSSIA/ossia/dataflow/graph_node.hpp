@@ -3,6 +3,7 @@
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/string_view.hpp>
 
 namespace ossia
 {

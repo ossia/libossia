@@ -1,3 +1,5 @@
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_PROTOCOL_LEAPMOTION)
 #include "leapmotion_device.hpp"
 #include <Leap.h>
 
@@ -211,3 +213,4 @@ bool ossia::leapmotion_protocol::update(ossia::net::node_base& node_base)
 {
   return false;
 }
+#endif

@@ -16,7 +16,13 @@
 
 namespace std
 {
-#if defined(_LIBCPP_VERSION)
+#if defined(__EMSCRIPTEN__)
+inline namespace __2
+{
+template<typename T>
+class future;
+}
+#elif defined(_LIBCPP_VERSION)
 inline namespace __1
 {
 template<typename T>

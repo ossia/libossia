@@ -1,5 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_PROTOCOL_PHIDGETS)
+
 #include "phidgets_node.hpp"
 #include "phidgets_protocol.hpp"
 #include <ossia/network/base/parameter.hpp>
@@ -228,3 +231,4 @@ void phidget_hub_port_node::add_child_simple(std::unique_ptr<net::node_base> n)
   dev.on_node_created(*ptr);
 }
 }
+#endif

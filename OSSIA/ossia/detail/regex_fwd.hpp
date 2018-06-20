@@ -3,7 +3,9 @@
 
 namespace std
 {
-    #if defined(_LIBCPP_VERSION)
+   #if defined(__EMSCRIPTEN__)
+    inline namespace __2 {
+   #elif defined(_LIBCPP_VERSION)
     inline namespace __1 {
    #elif defined(__GLIBCXX__)
     inline _GLIBCXX_BEGIN_NAMESPACE_CXX11

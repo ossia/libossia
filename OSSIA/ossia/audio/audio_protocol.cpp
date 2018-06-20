@@ -52,7 +52,7 @@ ossia::audio_engine* make_audio_engine(
   if(!p)
   {
 #if defined(__EMSCRIPTEN__)
-    p = new ossia::sdl_protocol;
+    p = new ossia::sdl_protocol{rate, bs};
 #endif
   }
 

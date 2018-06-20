@@ -1,5 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_PROTOCOL_SERIAL)
 #include <ossia-qt/serial/serial_device.hpp>
 #include <ossia-qt/serial/serial_protocol.hpp>
 
@@ -33,3 +36,4 @@ node_base& serial_device::get_root_node()
 }
 }
 }
+#endif
