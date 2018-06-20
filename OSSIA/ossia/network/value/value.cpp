@@ -26,29 +26,33 @@ template class std::experimental::optional<ossia::value>;
 namespace ossia
 {
 
-template OSSIA_EXPORT impulse convert<impulse>(const ossia::value& val);
-template OSSIA_EXPORT int convert<int>(const ossia::value& val);
+template OSSIA_EXPORT impulse convert<ossia::impulse>(const ossia::value& val);
+template OSSIA_EXPORT int convert<int>( const ossia::value& val);
 template OSSIA_EXPORT float convert<float>(const ossia::value& val);
-template OSSIA_EXPORT double convert<double>(const ossia::value& val);
+template OSSIA_EXPORT double convert<double>( const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
 template OSSIA_EXPORT char convert<char>(const ossia::value& val);
-template OSSIA_EXPORT std::string
-convert<std::string>(const ossia::value& val);
-template OSSIA_EXPORT std::vector<ossia::value>
-convert<std::vector<ossia::value>>(const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 2>
-convert<std::array<float, 2>>(const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 3>
-convert<std::array<float, 3>>(const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 4>
-convert<std::array<float, 4>>(const ossia::value& val);
+template OSSIA_EXPORT std::string convert<std::string>(const ossia::value& val);
+template OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::value& val);
 
-template OSSIA_EXPORT std::array<float, 2>
-convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
-template OSSIA_EXPORT std::array<float, 3>
-convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
-template OSSIA_EXPORT std::array<float, 4>
-convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT impulse convert<ossia::impulse>(const ossia::impulse&, const ossia::value& val);
+template OSSIA_EXPORT int convert<int>(const int&, const ossia::value& val);
+template OSSIA_EXPORT float convert<float>(const float&, const ossia::value& val);
+template OSSIA_EXPORT double convert<double>(const double&, const ossia::value& val);
+template OSSIA_EXPORT bool convert<bool>(const bool&, const ossia::value& val);
+template OSSIA_EXPORT char convert<char>(const char&, const ossia::value& val);
+template OSSIA_EXPORT std::string convert<std::string>(const std::string&, const ossia::value& val);
+template OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(const std::vector<ossia::value>&, const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const std::array<float, 2>&, const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::array<float, 3>&, const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::array<float, 4>&, const ossia::value& val);
+
+template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
 destination::destination(const destination& other) = default;
 destination::destination(destination&& other) = default;
@@ -615,6 +619,18 @@ bool is_array(const ossia::value& val)
   return false;
 }
 
+struct lift_convert
+{
+  const ossia::value& newval;
+  template<typename T>
+  ossia::value operator()(const T& cur) { return convert(cur, newval); }
+
+  [[noreturn]]
+  ossia::value operator()()
+  {
+    throw invalid_value_type_error("lift: Invalid type");
+  }
+};
 ossia::value convert(const ossia::value& val, const ossia::value& cur)
 {
   auto t = cur.getType();
@@ -625,10 +641,9 @@ ossia::value convert(const ossia::value& val, const ossia::value& cur)
     case ossia::val_type::IMPULSE:
       return cur;
     default:
-      return lift(t, [&](auto t) -> ossia::value {
-        using ossia_type = typename decltype(t)::ossia_type;
-        return convert<ossia_type>(val);
-      });
+    {
+      return cur.apply(lift_convert{val});
+    }
   }
 }
 

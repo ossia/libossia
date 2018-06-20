@@ -28,6 +28,7 @@ struct value_converter
 template <>
 struct value_converter<ossia::impulse>
 {
+  ossia::impulse cur;
   template <typename U>
   ossia::impulse operator()(const U&)
   {
@@ -43,6 +44,8 @@ struct value_converter<ossia::impulse>
 template <typename T>
 struct numeric_value_converter
 {
+  T cur{};
+
   T operator()(impulse) const
   {
     return T{};
@@ -228,6 +231,7 @@ struct fmt_writer
 template <>
 struct value_converter<std::string>
 {
+  const std::string& cur;
   using T = std::string;
   T operator()(impulse) const
   {
@@ -285,6 +289,7 @@ struct value_converter<std::string>
 template <>
 struct value_converter<std::vector<ossia::value>>
 {
+  const std::vector<ossia::value>& cur;
   template <typename U>
   std::vector<ossia::value> operator()(const U& u)
   {
@@ -320,6 +325,7 @@ struct value_converter<std::vector<ossia::value>>
 template <std::size_t N>
 struct value_converter<std::array<float, N>>
 {
+  const std::array<float, N>& cur;
   template <typename U>
   std::array<float, N> operator()(const U&)
   {
@@ -330,6 +336,18 @@ struct value_converter<std::array<float, N>>
   {
     return v;
   }
+
+  template<std::size_t M>
+  std::array<float, N> operator()(std::array<float, M> v)
+  {
+    std::array<float, N> a = cur;
+    for(std::size_t i = 0; i < std::min(N, M); i++)
+    {
+      a[i] = v[i];
+    }
+    return a;
+  }
+
 
   std::array<float, N> operator()(float f)
   {
@@ -374,7 +392,14 @@ struct value_converter<std::array<float, N>>
 template <typename T>
 T convert(const ossia::value& val)
 {
-  return val.apply(detail::value_converter<T>{});
+  return val.apply(detail::value_converter<T>{T{}});
+}
+
+
+template <typename T>
+T convert(const T& cur, const ossia::value& val)
+{
+  return val.apply(detail::value_converter<T>{cur});
 }
 
 // Used to convert List in Vec2f, Vec3f, Vec4f...
