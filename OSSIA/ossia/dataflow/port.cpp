@@ -14,12 +14,12 @@ namespace ossia
 static void copy_to_local(
     const data_type& out, const destination& d, execution_state& in)
 {
-  in.insert(d.address(), out);
+  in.insert(d, out);
 }
 static void copy_to_local(
     data_type&& out, const destination& d, execution_state& in)
 {
-  in.insert(d.address(), std::move(out));
+  in.insert(d, std::move(out));
 }
 
 struct push_data

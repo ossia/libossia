@@ -178,7 +178,7 @@ struct value_port
   }
   */
 
-  void add_value(ossia::value&& v, int64_t timestamp)
+  void add_value(ossia::value&& v, int64_t timestamp = 0)
   {
     auto setup_value = [=] (ossia::tvalue& tval) {
       tval.timestamp = timestamp;

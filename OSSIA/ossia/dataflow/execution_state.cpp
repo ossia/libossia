@@ -498,20 +498,20 @@ void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
   }
 }
 
-void execution_state::insert(ossia::net::parameter_base& param, const data_type& v)
+void execution_state::insert(const ossia::destination& param, const data_type& v)
 {
   switch(v.which())
   {
     case 0:
     {
       auto audio = static_cast<const ossia::audio_port*>(v.target());
-      insert(param, std::move(*audio));
+      insert(param.address(), std::move(*audio));
       break;
     }
     case 1:
     {
       auto midi = static_cast<const ossia::midi_port*>(v.target());
-      insert(param, std::move(*midi));
+      insert(param.address(), std::move(*midi));
       break;
     }
     case 2:
@@ -519,7 +519,7 @@ void execution_state::insert(ossia::net::parameter_base& param, const data_type&
       OSSIA_EXEC_STATE_LOCK_WRITE(*this);
       auto val = static_cast<const ossia::value_port*>(v.target());
       int idx = m_msgIndex;
-      auto& st = m_valueState[&param];
+      auto& st = m_valueState[&param.address()];
 
       // here reserve is a pessimization if we push only a few values...
       // just letting log2 growth do its job is much better.
@@ -555,20 +555,20 @@ void execution_state::insert(ossia::net::parameter_base& param, const data_type&
     }
   }
 }
-void execution_state::insert(ossia::net::parameter_base& param, data_type&& v)
+void execution_state::insert(const ossia::destination& param, data_type&& v)
 {
   switch(v.which())
   {
     case 0:
     {
       auto audio = static_cast<ossia::audio_port*>(v.target());
-      insert(param, std::move(*audio));
+      insert(param.address(), std::move(*audio));
       break;
     }
     case 1:
     {
       auto midi = static_cast<ossia::midi_port*>(v.target());
-      insert(param, std::move(*midi));
+      insert(param.address(), std::move(*midi));
       break;
     }
     case 2:
@@ -576,10 +576,10 @@ void execution_state::insert(ossia::net::parameter_base& param, data_type&& v)
       OSSIA_EXEC_STATE_LOCK_WRITE(*this);
       auto val = static_cast<ossia::value_port*>(v.target());
       int idx = m_msgIndex;
-      auto& st = m_valueState[&param];
+      auto& st = m_valueState[&param.address()];
 
       // here reserve is a pessimization if we push only a few values...
-      // just letting log2 growth do its job is much better.switch(val->mix_method)
+      // just letting log2 growth do its job is much better.
 
       switch(val->mix_method)
       {
@@ -726,12 +726,6 @@ double exec_state_facade::currentDate() const noexcept
 
 ossia::net::node_base* exec_state_facade::find_node(std::string_view name) const noexcept
 { return impl.find_node(name); }
-
-void exec_state_facade::insert(net::parameter_base& dest, const data_type& v)
-{ impl.insert(dest, v); }
-
-void exec_state_facade::insert(net::parameter_base& dest, data_type&& v)
-{ impl.insert(dest, std::move(v)); }
 
 void exec_state_facade::insert(net::parameter_base& dest, const tvalue& v)
 { impl.insert(dest, v); }

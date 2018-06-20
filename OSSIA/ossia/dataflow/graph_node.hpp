@@ -23,8 +23,6 @@ struct OSSIA_EXPORT exec_state_facade
   double currentDate() const noexcept;
   ossia::net::node_base* find_node(std::string_view name) const noexcept;
 
-  void insert(ossia::net::parameter_base& dest, const data_type& v);
-  void insert(ossia::net::parameter_base& dest, data_type&& v);
   void insert(ossia::net::parameter_base& dest, const tvalue& v);
   void insert(ossia::net::parameter_base& dest, tvalue&& v);
   void insert(ossia::net::parameter_base& dest, const audio_port& v);
