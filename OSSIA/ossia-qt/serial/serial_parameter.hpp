@@ -9,7 +9,7 @@ namespace net
 {
 class serial_node;
 class serial_protocol;
-class serial_parameter final
+class OSSIA_EXPORT serial_parameter final
     : public ossia::net::generic_parameter
 {
   serial_parameter_data_base mData;

@@ -49,6 +49,7 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterUncreatableType<qt::qml_duration>(
       uri, 1, 0, "Duration", "Duration");
 
+#if !defined(__EMSCRIPTEN__)
   qmlRegisterSingletonType<qt::qml_singleton_device>(
       uri, 1, 0, "SingleDevice", [](QQmlEngine* e, QJSEngine*) -> QObject* {
         return &qt::qml_singleton_device::instance();
@@ -68,6 +69,7 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_binding>(uri, 1, 0, "BindingImpl");
   qmlRegisterType<qt::qml_callback>(uri, 1, 0, "CallbackImpl");
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");
+#endif
 
 
 #if defined(OSSIA_QML_SCORE)
