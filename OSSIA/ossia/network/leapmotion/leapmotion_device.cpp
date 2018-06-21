@@ -178,6 +178,7 @@ void leapmotion_protocol::set_device(net::device_base& dev)
   controller = std::make_unique<Leap::Controller>();
   controller->addListener(*listener);
   controller->setPolicy(Leap::Controller::POLICY_ALLOW_PAUSE_RESUME);
+  controller->setPolicy(Leap::Controller::POLICY_BACKGROUND_FRAMES);
 }
 
 leapmotion_protocol::~leapmotion_protocol()
