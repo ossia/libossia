@@ -264,10 +264,4 @@ bool match(const path& p, const ossia::net::node_base& node, ossia::net::node_ba
 }
 
 }
-
-std::regex regex_path::path_element::regex() const
-{
-  return std::regex(address);
-}
-
 }

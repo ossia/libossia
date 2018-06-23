@@ -27,7 +27,11 @@ namespace std
 }
 
 #if defined(_MSC_VER)
+#if defined(NDEBUG)
   static const constexpr auto sizeof_regex = 40;
+#else
+  static const constexpr auto sizeof_regex = 96;
+#endif
 #elif defined(_LIBCPP_VERSION)
   static const constexpr auto sizeof_regex = 64;
 #elif defined(__GLIBCXX__)

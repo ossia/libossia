@@ -26,11 +26,12 @@ public:
         ossia::node_map& nodes,
         ossia::graph_t& graph)
   {
-    flow_graph.~graph();
-    new (&flow_graph) tf::graph;
     flow_nodes.clear();
     start_nodes.clear();
     nodes_with_incoming_edges.clear();
+
+    flow_graph.~graph();
+    new (&flow_graph) tf::graph;
 
     if(logger)
     {

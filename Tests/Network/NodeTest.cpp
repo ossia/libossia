@@ -107,45 +107,45 @@ private Q_SLOTS:
     using namespace ossia::regex_path;
     {
       auto path = device("foo") / "bar" / any_instance("baz");
-      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bob/baz.2", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bar/baz", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
     }
 
     {
       auto path = device("foo") / any_node() / any_instance("baz");
-      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bob/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bar/baz", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
     }
 
     {
       auto path = device("foo") / any_path() / any_instance("baz");
-      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bob/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bar/baz", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
     }
 
     {
       auto path = device("foo") / any_between{"bob", "bar"} / any_instance("baz");
-      QVERIFY(std::regex_match("foo:/bar/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bob/baz.2", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bin/baz.2", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", path.regex()));
-      QVERIFY(std::regex_match("foo:/bar/baz", path.regex()));
-      QVERIFY(!std::regex_match("foo:/bar/baz/", path.regex()));
+      QVERIFY(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bin/baz.2", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
+      QVERIFY(std::regex_match("foo:/bar/baz", std::regex(path.address)));
+      QVERIFY(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
     }
 
     {
       auto path = any_path() / any_instance("baz");
       std::cerr << "regex: " << path;
-      auto regex = path.regex();
+      auto regex = std::regex(path.address);
       QVERIFY(std::regex_match("foo:/bar/baz.2", regex));
       QVERIFY(std::regex_match("blob:/baz.2", regex));
       QVERIFY(!std::regex_match("bin/baz.2", regex));
