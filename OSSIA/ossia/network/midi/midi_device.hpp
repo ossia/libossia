@@ -11,6 +11,7 @@ class OSSIA_EXPORT midi_device final : public ossia::net::device_base,
 public:
   midi_device(std::unique_ptr<ossia::net::protocol_base> prot);
 
+  using midi_node::get_name;
   node_base& set_name(std::string n) override;
 
   bool update_namespace();
