@@ -14,6 +14,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_multimap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_multiset.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/for_each.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json_fwd.hpp"
