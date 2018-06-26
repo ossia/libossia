@@ -421,11 +421,17 @@ struct OSSIA_EXPORT graph_base: graph_interface
     void remove_node(const node_ptr& n) final override
     {
       for(auto& port : n->inputs())
-        for(auto edge : port->sources)
+      {
+        auto s = port->sources;
+        for(auto edge : s)
           disconnect(edge);
+      }
       for(auto& port : n->outputs())
-        for(auto edge : port->targets)
+      {
+        auto s = port->targets;
+        for(auto edge : s)
           disconnect(edge);
+      }
 
       auto it = m_nodes.find(n);
       if (it != m_nodes.end())
