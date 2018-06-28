@@ -5,10 +5,16 @@ namespace std
 {
    #if defined(__EMSCRIPTEN__)
     inline namespace __2 {
+
    #elif defined(_LIBCPP_VERSION)
     inline namespace __1 {
+
    #elif defined(__GLIBCXX__)
-    inline _GLIBCXX_BEGIN_NAMESPACE_CXX11
+    #if _GLIBCXX_USE_CXX11_ABI
+      inline _GLIBCXX_BEGIN_NAMESPACE_CXX11
+    #else
+      _GLIBCXX_BEGIN_NAMESPACE_CXX11
+    #endif
    #else
    #endif
     template<typename T>
@@ -27,7 +33,11 @@ namespace std
 }
 
 #if defined(_MSC_VER)
+#if defined(NDEBUG)
   static const constexpr auto sizeof_regex = 40;
+#else
+  static const constexpr auto sizeof_regex = 96;
+#endif
 #elif defined(_LIBCPP_VERSION)
   static const constexpr auto sizeof_regex = 64;
 #elif defined(__GLIBCXX__)

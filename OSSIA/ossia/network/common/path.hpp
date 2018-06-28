@@ -53,7 +53,6 @@ struct OSSIA_EXPORT path_element
   {
     return address;
   }
-  std::regex regex() const;
 };
 
 //! Represents a device in a path, e.g. "foo:"

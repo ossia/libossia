@@ -69,7 +69,11 @@ bool midi_protocol::set_info(midi_info m)
 
     if (m_info.type == midi_info::Type::RemoteOutput)
     {
-      m_input->open_port(m_info.port);
+      if(m_dev)
+        m_input->open_port(m_info.port, m_dev->get_name());
+      else
+        m_input->open_port(m_info.port, "libossia MIDI input");
+
       m_input->set_callback([this] (rtmidi::message mess) {
         const auto chan = mess.get_channel();
         if(chan == 0)
@@ -156,7 +160,10 @@ bool midi_protocol::set_info(midi_info m)
     }
     else if (m_info.type == midi_info::Type::RemoteInput)
     {
-      m_output->open_port(m_info.port);
+      if(m_dev)
+        m_output->open_port(m_info.port, m_dev->get_name());
+      else
+        m_output->open_port(m_info.port, "libossia MIDI out");
     }
 
     return true;

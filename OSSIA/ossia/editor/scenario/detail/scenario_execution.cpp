@@ -542,9 +542,19 @@ void scenario::state(
 
       for (auto node : m_endNodes)
       {
-        process_this(
-            *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
-            m_runningIntervals, m_overticks.find(node)->second.offset);
+        auto it = m_overticks.find(node);
+        if(it != m_overticks.end())
+        {
+          process_this(
+              *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
+              m_runningIntervals, it->second.offset);
+        }
+        else
+        {
+          process_this(
+              *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
+              m_runningIntervals, tick_offset);
+        }
       }
 
       m_endNodes.clear();
