@@ -412,13 +412,6 @@ set(OSSIA_WS_CLIENT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_parameter.cpp")
 
-set(OSSIA_JAVA_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.hpp"
-    )
-
-set(OSSIA_JAVA_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java/ossia-java.cpp"
-    )
 set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.hpp"

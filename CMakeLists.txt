@@ -47,6 +47,10 @@ if(OSSIA_MAX)
     add_subdirectory(OSSIA/ossia-max)
 endif()
 
+if(OSSIA_JAVA)
+  add_subdirectory(OSSIA/ossia-java)
+endif()
+
 if(NOT WIN32)
 if(OSSIA_PYTHON)
     add_subdirectory(OSSIA/ossia-python OSSIA/ossia-python/pyossia)

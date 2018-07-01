@@ -224,17 +224,6 @@ if(OSSIA_CPP)
         )
 endif()
 
-if(OSSIA_JAVA)
-  target_sources(ossia PRIVATE ${OSSIA_JAVA_HEADERS} ${OSSIA_JAVA_SRCS})
-  target_include_directories(ossia PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-java"
-  )
-  target_include_directories(ossia SYSTEM PRIVATE
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/jni_hpp/test>
-  )
-endif()
-
 if(OSSIA_QT)
   qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
   target_sources(ossia PRIVATE ${cur_moc})
@@ -462,4 +451,3 @@ set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURREN
 if(NOT OSSIA_SANITIZE AND NOT OSSIA_DISABLE_COTIRE AND NOT DISABLE_COTIRE )
 cotire(ossia)
 endif()
-
