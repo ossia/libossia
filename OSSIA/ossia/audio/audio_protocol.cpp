@@ -35,6 +35,10 @@ ossia::audio_engine* make_audio_engine(
     p = new ossia::sdl_protocol{rate, bs};
   }
 #endif
+  else if (proto == "Dummy")
+  {
+    p = new ossia::dummy_engine{ name, inputs, outputs, rate, bs };
+  }
 
   if(!p)
   {
@@ -346,15 +350,6 @@ void audio_protocol::process_generic(
         mapped->audio[i] = {};
     }
   }
-
-  // Run a tick
-  if(self.replace_tick)
-  {
-    self.audio_tick = std::move(self.ui_tick);
-    self.ui_tick = {};
-    self.replace_tick = false;
-  }
-
 }
 
 static std::string default_audio_protocol() {

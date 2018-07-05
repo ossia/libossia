@@ -195,6 +195,14 @@ class portaudio_engine final
         proto->process_generic(*proto, float_input, float_output, (int)self.m_ins, (int)self.m_outs, nframes);
         proto->audio_tick(nframes, timeInfo->currentTime);
 
+        // Run a tick
+        if(proto->replace_tick)
+        {
+          proto->audio_tick = std::move(proto->ui_tick);
+          proto->ui_tick = {};
+          proto->replace_tick = false;
+        }
+
         self.processing = false;
       }
 

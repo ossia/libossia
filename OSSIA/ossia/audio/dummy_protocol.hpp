@@ -27,6 +27,14 @@ class dummy_engine final
           {
             proto->process_generic(*proto, nullptr, nullptr, 0, 0, m_bs);
             proto->audio_tick(m_bs, 0);
+
+            // Run a tick
+            if(proto->replace_tick)
+            {
+              proto->audio_tick = std::move(proto->ui_tick);
+              proto->ui_tick = {};
+              proto->replace_tick = false;
+            }
           }
           std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
         }

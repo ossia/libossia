@@ -42,8 +42,18 @@ class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
 
     void set_tick(fun_type&& t)
     {
-      ui_tick = std::move(t);
-      replace_tick = true;
+      if(engine)
+      {
+        ui_tick = std::move(t);
+        replace_tick = true;
+
+        while(replace_tick)
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      }
+      else
+      {
+        audio_tick = t;
+      }
     }
 
     void setup_tree(int inputs, int outputs);
