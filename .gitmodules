@@ -83,7 +83,7 @@
     url = https://github.com/Cycling74/max-sdk.git
 [submodule "3rdparty/verdigris"]
     path = 3rdparty/verdigris
-    url = https://github.com/woboq/verdigris
+    url = https://github.com/jcelerier/verdigris
 [submodule "3rdparty/weakjack"]
     path = 3rdparty/weakjack
     url = https://github.com/jcelerier/weakjack
