@@ -36,11 +36,11 @@ public:
   void updateCount();
   void reloadParentNode();
 public:
-  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
-  void countChanged(int count) W_SIGNAL(countChanged, count);
-  void nodeChanged(QString node) W_SIGNAL(nodeChanged, node);
-  void parentNodeChanged(QObject* parentNode) W_SIGNAL(parentNodeChanged, parentNode);
-  void deviceChanged(QObject* device) W_SIGNAL(deviceChanged, device);
+  void setValue_sig(const ossia::value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
+  void countChanged(int count) E_SIGNAL(OSSIA_EXPORT, countChanged, count);
+  void nodeChanged(QString node) E_SIGNAL(OSSIA_EXPORT, nodeChanged, node);
+  void parentNodeChanged(QObject* parentNode) E_SIGNAL(OSSIA_EXPORT, parentNodeChanged, parentNode);
+  void deviceChanged(QObject* device) E_SIGNAL(OSSIA_EXPORT, deviceChanged, device);
 
 public:
   void setCount(int count); W_SLOT(setCount);

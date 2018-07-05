@@ -42,7 +42,7 @@ class qml_breakpoint : public QQuickItem
     QEasingCurve::Type type() const { return m_type; }
 
   public:
-    void typeChanged(QEasingCurve::Type arg_1) W_SIGNAL(typeChanged, arg_1);
+    void typeChanged(QEasingCurve::Type arg_1) E_SIGNAL(OSSIA_EXPORT, typeChanged, arg_1);
 
   public:
     void setType(QEasingCurve::Type t) { if(m_type != t) { m_type = t; typeChanged(t); } }; W_SLOT(setType)
@@ -81,11 +81,11 @@ class qml_autom : public qml_process
     void setYMax(double yMax); W_SLOT(setYMax);
 
   public:
-    void targetChanged(QVariant target) W_SIGNAL(targetChanged, target);
-    void xMinChanged(double xMin) W_SIGNAL(xMinChanged, xMin);
-    void xMaxChanged(double xMax) W_SIGNAL(xMaxChanged, xMax);
-    void yMinChanged(double yMin) W_SIGNAL(yMinChanged, yMin);
-    void yMaxChanged(double yMax) W_SIGNAL(yMaxChanged, yMax);
+    void targetChanged(QVariant target) E_SIGNAL(OSSIA_EXPORT, targetChanged, target);
+    void xMinChanged(double xMin) E_SIGNAL(OSSIA_EXPORT, xMinChanged, xMin);
+    void xMaxChanged(double xMax) E_SIGNAL(OSSIA_EXPORT, xMaxChanged, xMax);
+    void yMinChanged(double yMin) E_SIGNAL(OSSIA_EXPORT, yMinChanged, yMin);
+    void yMaxChanged(double yMax) E_SIGNAL(OSSIA_EXPORT, yMaxChanged, yMax);
 
   private:
     void reset_impl() override;

@@ -95,10 +95,10 @@ public:
 
 
   void readPresetChanged(bool readPreset)
-  W_SIGNAL(readPresetChanged, readPreset)
+  E_SIGNAL(OSSIA_EXPORT, readPresetChanged, readPreset)
 
   void nameChanged(QString name)
-  W_SIGNAL(nameChanged, name)
+  E_SIGNAL(OSSIA_EXPORT, nameChanged, name)
 
   W_PROPERTY(bool, readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged, W_Final)
   W_PROPERTY(QString, name READ name WRITE setName NOTIFY nameChanged, W_Final)

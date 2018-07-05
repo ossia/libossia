@@ -22,7 +22,7 @@ class OSSIA_EXPORT audio_engine
     std::atomic_bool processing{};
 };
 
-class OSSIA_EXPORT audio_protocol : public ossia::net::protocol_base
+class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 {
   public:
     std::atomic_bool replace_tick{false};

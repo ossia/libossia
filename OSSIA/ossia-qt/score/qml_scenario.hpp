@@ -34,7 +34,7 @@ class qml_scenario : public qml_process
     void setStartSync(qml_sync* s); W_SLOT(setStartSync);
 
   public:
-    void startSyncChanged(qml_sync* arg_1) W_SIGNAL(startSyncChanged, arg_1);
+    void startSyncChanged(qml_sync* arg_1) E_SIGNAL(OSSIA_EXPORT, startSyncChanged, arg_1);
 
 private:
     void reset_impl() override;

@@ -365,6 +365,7 @@ endif()
 
 if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
   set_target_properties(ossia PROPERTIES
+      C_VISIBILITY_PRESET hidden
       CXX_VISIBILITY_PRESET hidden
       VISIBILITY_INLINES_HIDDEN 1
       )
@@ -380,6 +381,7 @@ if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
 else()
   set_target_properties(ossia PROPERTIES
       VERSION ${ossia_VERSION}
+      C_VISIBILITY_PRESET default
       CXX_VISIBILITY_PRESET default
       VISIBILITY_INLINES_HIDDEN 0)
 endif()

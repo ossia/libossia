@@ -33,7 +33,7 @@ class qml_sync : public QQuickItem
     void setExpr(QQmlScriptString expr); W_SLOT(setExpr);
 
   public:
-    void exprChanged(QQmlScriptString expr) W_SIGNAL(exprChanged, expr);
+    void exprChanged(QQmlScriptString expr) E_SIGNAL(OSSIA_EXPORT, exprChanged, expr);
 
   private:
     void reset();

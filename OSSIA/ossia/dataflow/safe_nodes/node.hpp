@@ -20,84 +20,6 @@ static constexpr auto make_node(Args&&... args)
   return std::tuple<Args...>{std::forward<Args>(args)...};
 }
 
-template<std::size_t N>
-using address_ins = std::array<address_in, N>;
-template<std::size_t N>
-using audio_ins = std::array<audio_in, N>;
-template<std::size_t N>
-using audio_outs = std::array<audio_out, N>;
-template<std::size_t N>
-using midi_ins = std::array<midi_in, N>;
-template<std::size_t N>
-using midi_outs = std::array<midi_out, N>;
-template<std::size_t N>
-using value_ins = std::array<value_in, N>;
-template<std::size_t N>
-using value_outs = std::array<value_out, N>;
-template<std::size_t N>
-using controls = std::array<control_in, N>;
-
-template<typename... Args>
-struct node_builder: Args...
-{
-  constexpr auto audio_ins() const { return *this; }
-  constexpr auto audio_outs() const { return *this; }
-  constexpr auto midi_ins() const { return *this; }
-  constexpr auto midi_outs() const { return *this; }
-  constexpr auto value_ins() const { return *this; }
-  constexpr auto value_outs() const { return *this; }
-  constexpr auto controls() const { return *this; }
-
-  template<typename... SArgs>
-  constexpr node_builder(SArgs&&... sargs): Args{sargs}... { }
-
-  template<std::size_t N>
-  constexpr auto address_ins(const address_in (&arg)[N]) const {
-    return node_builder<std::array<address_in, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-  template<std::size_t N>
-  constexpr auto audio_ins(const audio_in (&arg)[N]) const {
-    return node_builder<std::array<audio_in, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-  template<std::size_t N>
-  constexpr auto audio_outs(const audio_out (&arg)[N]) const {
-    return node_builder<std::array<audio_out, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-
-  template<std::size_t N>
-  constexpr auto midi_ins(const midi_in (&arg)[N]) const {
-    return node_builder<std::array<midi_in, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-  template<std::size_t N>
-  constexpr auto midi_outs(const midi_out (&arg)[N]) const {
-    return node_builder<std::array<midi_out, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-
-  template<std::size_t N>
-  constexpr auto value_ins(const value_in (&arg)[N]) const {
-    return node_builder<std::array<value_in, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-  template<std::size_t N>
-  constexpr auto value_outs(const value_out (&arg)[N]) const {
-    return node_builder<std::array<value_out, N>, Args...>{ossia::to_array(arg), static_cast<Args>(*this)...};
-  }
-  template<typename... Controls>
-  constexpr auto controls(Controls&&... ctrls) const {
-    return node_builder<std::tuple<Controls...>, Args...>{
-        std::make_tuple(ctrls...), static_cast<Args>(*this)...
-    };
-  }
-
-  constexpr auto build() const {
-    return std::tuple<Args...>{static_cast<Args>(*this)...};
-  }
-};
-
-constexpr auto create_node() {
-  return node_builder<>{};
-}
-
-
 template<typename T, typename...>
 struct is_port : std::false_type {};
 template<typename T, std::size_t N>
@@ -110,37 +32,12 @@ struct dummy_container {
     static constexpr auto end() { return (T*)nullptr; }
     static constexpr std::size_t size() { return 0; }
 };
-template <typename T, typename = int>
-struct has_info : std::false_type { };
-
-template <typename T>
-struct has_info <
-      T
-    , decltype((void) T::info, 0)
-> : std::true_type { };
 
 template<typename PortType, typename T>
 struct get_ports
 {
     constexpr auto operator()()
     {
-      if constexpr(has_info<T>::value)
-      {
-        using index = brigand::index_if<decltype(T::info), is_port<PortType, brigand::_1>>;
-
-        if constexpr(!std::is_same<index, brigand::no_such_type_>::value)
-        {
-          using array_type = brigand::at<decltype(T::info), index>;
-
-          return std::get<array_type>(T::info);
-        }
-        else
-        {
-          return dummy_container<PortType>{};
-        }
-      }
-      else
-      {
         if constexpr(std::is_same<PortType, value_in>::value)
         {
           return T::Metadata::value_ins;
@@ -182,7 +79,6 @@ struct get_ports
         {
           return dummy_container<PortType>{};
         }
-      }
     }
 };
 template<typename...>
@@ -195,26 +91,8 @@ struct get_controls
 {
     constexpr auto operator()()
     {
-      if constexpr(has_info<T>::value)
-      {
-        using index = brigand::index_if<decltype(T::info), is_controls<brigand::_1>>;
-
-        if constexpr(!std::is_same<index, brigand::no_such_type_>::value)
-        {
-          using tuple_type = brigand::at<decltype(T::info), index>;
-
-          return std::get<tuple_type>(T::info);
-        }
-        else
-        {
-          return std::tuple<>{};
-        }
-      }
-      else
-      {
-        using type = typename T::Metadata;
-        return type::controls;
-      }
+      using type = typename T::Metadata;
+      return type::controls;
     }
 };
 
@@ -246,22 +124,14 @@ struct info_functions
   using controls_type = decltype(get_controls<Node_T>{}());
   using controls_values_type = brigand::transform<controls_type, get_control_type<brigand::_1>>;
 
-  static constexpr auto audio_in_count =
-      get_ports<audio_in, Node_T>{}().size();
-  static constexpr auto audio_out_count =
-      get_ports<audio_out, Node_T>{}().size();
-  static constexpr auto midi_in_count =
-      get_ports<midi_in, Node_T>{}().size();
-  static constexpr auto midi_out_count =
-      get_ports<midi_out, Node_T>{}().size();
-  static constexpr auto value_in_count =
-      get_ports<value_in, Node_T>{}().size();
-  static constexpr auto value_out_count =
-      get_ports<value_out, Node_T>{}().size();
-  static constexpr auto control_count =
-      std::tuple_size<controls_type>::value;
-  static constexpr auto address_in_count =
-      get_ports<address_in, Node_T>{}().size();
+  static constexpr auto audio_in_count   = std::size(Node_T::Metadata::audio_ins);
+  static constexpr auto audio_out_count  = std::size(Node_T::Metadata::audio_outs);
+  static constexpr auto midi_in_count    = std::size(Node_T::Metadata::midi_ins);
+  static constexpr auto midi_out_count   = std::size(Node_T::Metadata::midi_outs);
+  static constexpr auto value_in_count   = std::size(Node_T::Metadata::value_ins);
+  static constexpr auto value_out_count  = std::size(Node_T::Metadata::value_outs);
+  static constexpr auto address_in_count = std::size(Node_T::Metadata::address_ins);
+  static constexpr auto control_count    = std::tuple_size_v<decltype(Node_T::Metadata::controls)>;
 
   static constexpr auto categorize_inlet(std::size_t i)
   {

@@ -24,8 +24,8 @@ public:
   void setDevice(QObject* device) override;
 
 public:
-  void triggered() W_SIGNAL(triggered);
-  void trigger() W_SIGNAL(trigger);
+  void triggered() E_SIGNAL(OSSIA_EXPORT, triggered);
+  void trigger() E_SIGNAL(OSSIA_EXPORT, trigger);
 
 private:
   void setupAddress(bool reading);

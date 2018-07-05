@@ -37,17 +37,17 @@ public:
   QString unit() const;
 
 public:
-  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
+  void setValue_sig(const ossia::value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
 
-  void valueTypeChanged(qml_val_type::val_type valueType) W_SIGNAL(valueTypeChanged, valueType);
-  void accessChanged(qml_access_mode::access_mode access) W_SIGNAL(accessChanged, access);
-  void boundingChanged(qml_bounding_mode::bounding_mode bounding) W_SIGNAL(boundingChanged, bounding);
+  void valueTypeChanged(qml_val_type::val_type valueType) E_SIGNAL(OSSIA_EXPORT, valueTypeChanged, valueType);
+  void accessChanged(qml_access_mode::access_mode access) E_SIGNAL(OSSIA_EXPORT, accessChanged, access);
+  void boundingChanged(qml_bounding_mode::bounding_mode bounding) E_SIGNAL(OSSIA_EXPORT, boundingChanged, bounding);
   void filterRepetitionsChanged(
-      qml_rep_filter::repetition_filter filterRepetitions) W_SIGNAL(filterRepetitionsChanged, filterRepetitions);
-  void minChanged(QVariant min) W_SIGNAL(minChanged, min);
-  void maxChanged(QVariant max) W_SIGNAL(maxChanged, max);
-  void valuesChanged(QVariantList values) W_SIGNAL(valuesChanged, values);
-  void unitChanged(QString unit) W_SIGNAL(unitChanged, unit);
+      qml_rep_filter::repetition_filter filterRepetitions) E_SIGNAL(OSSIA_EXPORT, filterRepetitionsChanged, filterRepetitions);
+  void minChanged(QVariant min) E_SIGNAL(OSSIA_EXPORT, minChanged, min);
+  void maxChanged(QVariant max) E_SIGNAL(OSSIA_EXPORT, maxChanged, max);
+  void valuesChanged(QVariantList values) E_SIGNAL(OSSIA_EXPORT, valuesChanged, values);
+  void unitChanged(QString unit) E_SIGNAL(OSSIA_EXPORT, unitChanged, unit);
 
 public:
   void qtVariantChanged(); W_SLOT(qtVariantChanged);

@@ -150,7 +150,7 @@ private:
   void setValue_slot(const ossia::value&); W_SLOT(setValue_slot);
 
 public:
-  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
+  void setValue_sig(const ossia::value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
 
 private:
   std::unique_ptr<node_base>

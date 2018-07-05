@@ -49,15 +49,15 @@ class OSSIA_EXPORT qml_logger : public QObject
   log_level logLevel() const;
 
 public:
-  void appNameChanged(QString appName) W_SIGNAL(appNameChanged, appName);
-  void appVersionChanged(QString appVersion) W_SIGNAL(appVersionChanged, appVersion);
-  void appCreatorChanged(QString appCreator) W_SIGNAL(appCreatorChanged, appCreator);
-  void loggerHostChanged(QString loggerHost) W_SIGNAL(loggerHostChanged, loggerHost);
-  void logQtMessagesChanged(bool logQtMessages) W_SIGNAL(logQtMessagesChanged, logQtMessages);
-  void heartbeatChanged(quint32 heartbeat) W_SIGNAL(heartbeatChanged, heartbeat);
-  void logLevelChanged(log_level logLevel) W_SIGNAL(logLevelChanged, logLevel);
-  void logFilterChanged(const QStringList& logFilter) W_SIGNAL(logFilterChanged, logFilter);
-  void filteredLog( int type, const QString& fileName, int line, const QString& msg) W_SIGNAL(filteredLog, type, fileName, line, msg);
+  void appNameChanged(QString appName) E_SIGNAL(OSSIA_EXPORT, appNameChanged, appName);
+  void appVersionChanged(QString appVersion) E_SIGNAL(OSSIA_EXPORT, appVersionChanged, appVersion);
+  void appCreatorChanged(QString appCreator) E_SIGNAL(OSSIA_EXPORT, appCreatorChanged, appCreator);
+  void loggerHostChanged(QString loggerHost) E_SIGNAL(OSSIA_EXPORT, loggerHostChanged, loggerHost);
+  void logQtMessagesChanged(bool logQtMessages) E_SIGNAL(OSSIA_EXPORT, logQtMessagesChanged, logQtMessages);
+  void heartbeatChanged(quint32 heartbeat) E_SIGNAL(OSSIA_EXPORT, heartbeatChanged, heartbeat);
+  void logLevelChanged(log_level logLevel) E_SIGNAL(OSSIA_EXPORT, logLevelChanged, logLevel);
+  void logFilterChanged(const QStringList& logFilter) E_SIGNAL(OSSIA_EXPORT, logFilterChanged, logFilter);
+  void filteredLog( int type, const QString& fileName, int line, const QString& msg) E_SIGNAL(OSSIA_EXPORT, filteredLog, type, fileName, line, msg);
 
 public:
   void connectLogger(); W_SLOT(connectLogger);

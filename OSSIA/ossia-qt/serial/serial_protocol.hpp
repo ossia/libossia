@@ -38,8 +38,8 @@ public:
   ~serial_wrapper();
 
 public:
-  void write(QByteArray arg_1) W_SIGNAL(write, arg_1);
-  void read(QByteArray arg_1) W_SIGNAL(read, arg_1);
+  void write(QByteArray arg_1) E_SIGNAL(OSSIA_EXPORT, write, arg_1);
+  void read(QByteArray arg_1) E_SIGNAL(OSSIA_EXPORT, read, arg_1);
 
 public:
   void on_write(QByteArray b)

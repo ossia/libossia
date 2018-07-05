@@ -67,7 +67,7 @@ public:
   void resetNode() override;
 
 public:
-  void setValue_sig(const value& arg_1) W_SIGNAL(setValue_sig, arg_1);
+  void setValue_sig(const value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
 
 private:
   void setValue_slot(const value&); W_SLOT(setValue_slot);
@@ -99,7 +99,7 @@ public:
   void setOn(QQmlScriptString on); W_SLOT(setOn);
 
 public:
-  void onChanged(QQmlScriptString on) W_SIGNAL(onChanged, on);
+  void onChanged(QQmlScriptString on) E_SIGNAL(OSSIA_EXPORT, onChanged, on);
 
 private:
   void on_node_deleted(const ossia::net::node_base&);
@@ -126,8 +126,8 @@ public:
   QVariant value() const;
 
 public:
-  void valueChanged(QVariant arg_1) W_SIGNAL(valueChanged, arg_1);
-  void setValue_sig(const ossia::value& arg_1) W_SIGNAL(setValue_sig, arg_1);
+  void valueChanged(QVariant arg_1) E_SIGNAL(OSSIA_EXPORT, valueChanged, arg_1);
+  void setValue_sig(const ossia::value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
 
 public:
   void setValue(QVariant value); W_SLOT(setValue);

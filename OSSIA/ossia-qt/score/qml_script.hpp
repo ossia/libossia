@@ -92,9 +92,9 @@ class qml_script : public qml_process
     QQmlScriptString script() const { return m_script; }
     void setScript(QQmlScriptString s) { m_script = s; }
   public:
-    void dateChanged(qint32 arg_1) W_SIGNAL(dateChanged, arg_1);
-    void positionChanged(double arg_1) W_SIGNAL(positionChanged, arg_1);
-    void scriptChanged(QQmlScriptString arg_1) W_SIGNAL(scriptChanged, arg_1);
+    void dateChanged(qint32 arg_1) E_SIGNAL(OSSIA_EXPORT, dateChanged, arg_1);
+    void positionChanged(double arg_1) E_SIGNAL(OSSIA_EXPORT, positionChanged, arg_1);
+    void scriptChanged(QQmlScriptString arg_1) E_SIGNAL(OSSIA_EXPORT, scriptChanged, arg_1);
 
   private:
     void reset_impl() override;

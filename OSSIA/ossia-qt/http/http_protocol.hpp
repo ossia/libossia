@@ -53,7 +53,7 @@ public:
     return js;
   }
 public:
-  void sig_push(const http_parameter* arg_1) W_SIGNAL(sig_push, arg_1);
+  void sig_push(const http_parameter* arg_1) E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1);
 
 private:
   void slot_push(const http_parameter*); W_SLOT(slot_push);

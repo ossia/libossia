@@ -41,11 +41,11 @@ public:
   void setEndTrig(QQmlScriptString s); W_SLOT(setEndTrig);
 
 public:
-  void intervalChanged(qml_interval* interval) W_SIGNAL(intervalChanged, interval);
-  void startTrigChanged(QQmlScriptString arg_1) W_SIGNAL(startTrigChanged, arg_1);
-  void endTrigChanged(QQmlScriptString arg_1) W_SIGNAL(endTrigChanged, arg_1);
-  void startCondChanged(QQmlScriptString arg_1) W_SIGNAL(startCondChanged, arg_1);
-  void endCondChanged(QQmlScriptString arg_1) W_SIGNAL(endCondChanged, arg_1);
+  void intervalChanged(qml_interval* interval) E_SIGNAL(OSSIA_EXPORT, intervalChanged, interval);
+  void startTrigChanged(QQmlScriptString arg_1) E_SIGNAL(OSSIA_EXPORT, startTrigChanged, arg_1);
+  void endTrigChanged(QQmlScriptString arg_1) E_SIGNAL(OSSIA_EXPORT, endTrigChanged, arg_1);
+  void startCondChanged(QQmlScriptString arg_1) E_SIGNAL(OSSIA_EXPORT, startCondChanged, arg_1);
+  void endCondChanged(QQmlScriptString arg_1) E_SIGNAL(OSSIA_EXPORT, endCondChanged, arg_1);
 
 private:
   void reset_impl() override;

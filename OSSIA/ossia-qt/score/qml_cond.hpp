@@ -64,8 +64,8 @@ public:
     void setSync(qml_sync* sync); W_SLOT(setSync);
 
 public:
-    void exprChanged(QQmlScriptString expr) W_SIGNAL(exprChanged, expr);
-    void syncChanged(qml_sync* sync) W_SIGNAL(syncChanged, sync);
+    void exprChanged(QQmlScriptString expr) E_SIGNAL(OSSIA_EXPORT, exprChanged, expr);
+    void syncChanged(qml_sync* sync) E_SIGNAL(OSSIA_EXPORT, syncChanged, sync);
 
 private:
     void reset();

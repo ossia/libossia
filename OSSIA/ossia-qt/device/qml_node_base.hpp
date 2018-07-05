@@ -67,23 +67,23 @@ public:
   void setMuted(bool muted); W_SLOT(setMuted);
 
 public:
-  void nodeChanged(QString node) W_SIGNAL(nodeChanged, node);
-  void deviceChanged(qml_device* device) W_SIGNAL(deviceChanged, device);
-  void pathChanged(QString path) W_SIGNAL(pathChanged, path);
+  void nodeChanged(QString node) E_SIGNAL(OSSIA_EXPORT, nodeChanged, node);
+  void deviceChanged(qml_device* device) E_SIGNAL(OSSIA_EXPORT, deviceChanged, device);
+  void pathChanged(QString path) E_SIGNAL(OSSIA_EXPORT, pathChanged, path);
 
-  void parentNodeChanged(qml_node_base* parentNode) W_SIGNAL(parentNodeChanged, parentNode);
+  void parentNodeChanged(qml_node_base* parentNode) E_SIGNAL(OSSIA_EXPORT, parentNodeChanged, parentNode);
 
-  void priorityChanged(qreal priority) W_SIGNAL(priorityChanged, priority);
-  void descriptionChanged(QString description) W_SIGNAL(descriptionChanged, description);
-  void extendedTypeChanged(QString extendedType) W_SIGNAL(extendedTypeChanged, extendedType);
-  void tagsChanged(QStringList tags) W_SIGNAL(tagsChanged, tags);
-  void refreshRateChanged(qint32 refreshRate) W_SIGNAL(refreshRateChanged, refreshRate);
-  void stepSizeChanged(qreal stepSize) W_SIGNAL(stepSizeChanged, stepSize);
-  void defaultValueChanged(QVariant defaultValue) W_SIGNAL(defaultValueChanged, defaultValue);
-  void criticalChanged(bool critical) W_SIGNAL(criticalChanged, critical);
-  void hiddenChanged(bool hidden) W_SIGNAL(hiddenChanged, hidden);
-  void disabledChanged(bool d) W_SIGNAL(disabledChanged, d);
-  void mutedChanged(bool muted) W_SIGNAL(mutedChanged, muted);
+  void priorityChanged(qreal priority) E_SIGNAL(OSSIA_EXPORT, priorityChanged, priority);
+  void descriptionChanged(QString description) E_SIGNAL(OSSIA_EXPORT, descriptionChanged, description);
+  void extendedTypeChanged(QString extendedType) E_SIGNAL(OSSIA_EXPORT, extendedTypeChanged, extendedType);
+  void tagsChanged(QStringList tags) E_SIGNAL(OSSIA_EXPORT, tagsChanged, tags);
+  void refreshRateChanged(qint32 refreshRate) E_SIGNAL(OSSIA_EXPORT, refreshRateChanged, refreshRate);
+  void stepSizeChanged(qreal stepSize) E_SIGNAL(OSSIA_EXPORT, stepSizeChanged, stepSize);
+  void defaultValueChanged(QVariant defaultValue) E_SIGNAL(OSSIA_EXPORT, defaultValueChanged, defaultValue);
+  void criticalChanged(bool critical) E_SIGNAL(OSSIA_EXPORT, criticalChanged, critical);
+  void hiddenChanged(bool hidden) E_SIGNAL(OSSIA_EXPORT, hiddenChanged, hidden);
+  void disabledChanged(bool d) E_SIGNAL(OSSIA_EXPORT, disabledChanged, d);
+  void mutedChanged(bool muted) E_SIGNAL(OSSIA_EXPORT, mutedChanged, muted);
 
 protected:
   void applyNodeAttributes();

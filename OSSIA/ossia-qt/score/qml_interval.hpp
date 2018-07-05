@@ -71,13 +71,13 @@ public:
     void stop(); W_SLOT(stop);
 
 public:
-    void nominalDurationChanged(qint32 nominalDuration) W_SIGNAL(nominalDurationChanged, nominalDuration);
-    void minDurationChanged(qint32 minDuration) W_SIGNAL(minDurationChanged, minDuration);
-    void maxDurationChanged(qint32 maxDuration) W_SIGNAL(maxDurationChanged, maxDuration);
-    void playDurationChanged(qint32 playDuration) W_SIGNAL(playDurationChanged, playDuration);
-    void followsChanged(qml_cond* follows) W_SIGNAL(followsChanged, follows);
-    void precedesChanged(qml_cond* precedes) W_SIGNAL(precedesChanged, precedes);
-    void speedChanged(double speed) W_SIGNAL(speedChanged, speed);
+    void nominalDurationChanged(qint32 nominalDuration) E_SIGNAL(OSSIA_EXPORT, nominalDurationChanged, nominalDuration);
+    void minDurationChanged(qint32 minDuration) E_SIGNAL(OSSIA_EXPORT, minDurationChanged, minDuration);
+    void maxDurationChanged(qint32 maxDuration) E_SIGNAL(OSSIA_EXPORT, maxDurationChanged, maxDuration);
+    void playDurationChanged(qint32 playDuration) E_SIGNAL(OSSIA_EXPORT, playDurationChanged, playDuration);
+    void followsChanged(qml_cond* follows) E_SIGNAL(OSSIA_EXPORT, followsChanged, follows);
+    void precedesChanged(qml_cond* precedes) E_SIGNAL(OSSIA_EXPORT, precedesChanged, precedes);
+    void speedChanged(double speed) E_SIGNAL(OSSIA_EXPORT, speedChanged, speed);
 
 private:
     void reset();
