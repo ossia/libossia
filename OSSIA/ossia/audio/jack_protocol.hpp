@@ -209,6 +209,14 @@ int jack_engine::process(jack_nframes_t nframes, void* arg)
 
     proto->process_generic(*proto, float_input, float_output, (int)inputs, (int)outputs, nframes);
     proto->audio_tick(nframes, 0);
+
+    // Run a tick
+    if(proto->replace_tick)
+    {
+      proto->audio_tick = std::move(proto->ui_tick);
+      proto->ui_tick = {};
+      proto->replace_tick = false;
+    }
     self.processing = false;
   }
   return 0;

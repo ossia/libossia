@@ -106,6 +106,14 @@ class sdl_protocol final
         proto->process_generic(*proto, nullptr, float_output, (int)self.inputs, (int)self.outputs, nframes / self.outputs);
         proto->audio_tick(nframes / self.outputs, 0);
 
+        // Run a tick
+        if(proto->replace_tick)
+        {
+          proto->audio_tick = std::move(proto->ui_tick);
+          proto->ui_tick = {};
+          proto->replace_tick = false;
+        }
+
         self.processing = false;
       }
     }

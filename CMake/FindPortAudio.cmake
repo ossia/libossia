@@ -107,8 +107,8 @@ if(NOT PORTAUDIO2_FOUND OR "${PORTAUDIO_INCLUDE_DIRS}" MATCHES "")
       add_library(PortAudio STATIC IMPORTED)
 
       include(CheckLibraryExists)
-      check_library_exists(${PORTAUDIO_LIBRARIES} PaJack_GetClientName "" PORTAUDIO_NEEDS_JACK)
-      if(PORTAUDIO_NEEDS_JACK)
+    check_library_exists(portaudio PaJack_GetClientName "${PORTAUDIO_LIBRARIES}" PORTAUDIO_NEEDS_JACK)
+    if(PORTAUDIO_NEEDS_JACK)
         find_library(Jack_LIBRARY NAMES jack)
         if(Jack_LIBRARY)
           set_target_properties(PortAudio
