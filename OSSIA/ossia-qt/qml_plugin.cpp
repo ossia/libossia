@@ -26,7 +26,6 @@
 #endif
 #include <ossia-qt/js_utilities.hpp>
 #include <qqml.h>
-
 namespace ossia
 {
 namespace qt

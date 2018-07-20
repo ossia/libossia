@@ -108,13 +108,13 @@ void process_offset(
       {
         pastEvents.insert(std::make_pair(date, ev_ptr.get()));
       }
-    }
 
-    // propagate offset processing to setup all TimeEvents
-    for (const auto& timeInterval : event.next_time_intervals())
-    {
-      process_offset(
-          timeInterval->get_end_event().get_time_sync(), offset, pastEvents);
+      // propagate offset processing to setup all TimeEvents
+      for (const auto& timeInterval : event.next_time_intervals())
+      {
+        process_offset(
+            timeInterval->get_end_event().get_time_sync(), offset, pastEvents);
+      }
     }
   }
 }
@@ -198,7 +198,9 @@ void scenario::transport(ossia::time_value offset, double pos)
     // offset TimeInterval's Clock
     const time_value intervalOffset = offset - start_date;
 
-    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration())
+    if (intervalOffset >= Zero
+    && intervalOffset <= cst.get_max_duration()
+    && sev.get_status() == time_event::status::HAPPENED)
     {
       cst.transport(intervalOffset);
       m_runningIntervals.insert(&cst);
@@ -301,7 +303,9 @@ void scenario::offset(ossia::time_value offset, double pos)
     // offset TimeInterval's Clock
     time_value intervalOffset = offset - start_date;
 
-    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration())
+    if (intervalOffset >= Zero
+    && intervalOffset <= cst.get_max_duration()
+    && sev.get_status() == time_event::status::HAPPENED)
     {
       cst.offset(intervalOffset);
       m_runningIntervals.insert(&cst);

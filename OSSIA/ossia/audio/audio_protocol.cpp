@@ -14,6 +14,12 @@ ossia::audio_engine* make_audio_engine(
     int& inputs, int& outputs, int& rate, int& bs)
 {
   ossia::audio_engine* p{};
+
+#if defined(__EMSCRIPTEN__)
+  rate = 44100; bs = 8192; inputs = 0; outputs = 2;
+  return new ossia::sdl_protocol{rate, bs};
+#endif
+
   if(0) { }
 #if __has_include(<portaudio.h>)
   else if(proto == "PortAudio")
@@ -29,12 +35,14 @@ ossia::audio_engine* make_audio_engine(
   }
 #endif
 
-#if defined(__EMSCRIPTEN__)
+#if __has_include(<SDL/SDL_audio.h>)
   else if(proto == "SDL")
   {
-    p = new ossia::sdl_protocol{rate, bs};
+    inputs = 0; outputs = 2;
+    return new ossia::sdl_protocol{rate, bs};
   }
 #endif
+
   else if (proto == "Dummy")
   {
     p = new ossia::dummy_engine{ name, inputs, outputs, rate, bs };
@@ -53,16 +61,18 @@ ossia::audio_engine* make_audio_engine(
     p = new ossia::jack_engine{name, inputs, outputs, rate, bs};
 #endif
   }
+
   if(!p)
   {
-#if defined(__EMSCRIPTEN__)
+#if __has_include(<SDL/SDL_audio.h>)
+    inputs = 0; outputs = 2;
     p = new ossia::sdl_protocol{rate, bs};
 #endif
   }
 
   if(!p)
   {
-    return new ossia::dummy_engine{name, inputs, outputs, rate, bs};
+    p = new ossia::dummy_engine{name, inputs, outputs, rate, bs};
   }
 
   return p;

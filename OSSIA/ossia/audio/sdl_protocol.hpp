@@ -14,6 +14,7 @@ class sdl_protocol final
   public:
     sdl_protocol(int& rate, int& bs)
     {
+      std::cerr << "SDL START\n";
       SDL_Init(SDL_INIT_AUDIO);
       m_desired.freq = rate;
       m_desired.format = AUDIO_S16SYS;
@@ -28,10 +29,12 @@ class sdl_protocol final
         return;
       }
 
+      std::cerr << "SDL OPEN\n";
       rate = m_obtained.freq;
       bs = m_obtained.samples;
 
       SDL_PauseAudio(0);
+      std::cerr << "SDL GO\n";
     }
 
     ~sdl_protocol() override
@@ -43,6 +46,7 @@ class sdl_protocol final
 
     void stop() override
     {
+      std::cerr << "SDL STOP\n";
       stop_processing = true;
       protocol = nullptr;
 
@@ -70,12 +74,14 @@ class sdl_protocol final
   private:
     static void SDLCallback(void* userData, Uint8* data, int nframes)
     {
+      std::cerr << "SDL TICK" << nframes << "\n";
       auto& self = *static_cast<sdl_protocol*>(userData);
       auto samples = reinterpret_cast<int16_t*>(data);
 
+      const auto n_samples = nframes / self.outputs;
       if(self.stop_processing)
       {
-        for(int i = 0; i < nframes; i++)
+        for(int i = 0; i < n_samples; i++)
         {
           samples[i] = 0;
         }
@@ -90,12 +96,12 @@ class sdl_protocol final
 
         for(int i = 0; i < self.outputs; i++)
         {
-          float_output[i] = float_data + i * nframes / self.outputs;
+          float_output[i] = float_data + i * n_samples;
         }
 
         int l_i = 0;
         int r_i = 0;
-        for(int j = 0; j < nframes; )
+        for(int j = 0; j < n_samples; )
         {
           float_output[0][l_i++] = samples[j++] / 32768.;
           float_output[1][r_i++] = samples[j++] / 32768.;
