@@ -49,7 +49,7 @@ minuit_protocol::minuit_protocol(
     throw ossia::connection_error{
         "minuit_protocol::minuit_protocol: "
         "Could not connect to port: "
-        + boost::lexical_cast<std::string>(local_port)};
+        + std::to_string(local_port)};
   }
 
   name_table.set_device_name(m_localName);
@@ -162,7 +162,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto check_unfinished = [&] {
     lock_type lock(m_nsRequestMutex);
-    return m_nsRequests.size() > 0 || m_pendingGetRequests > 0
+    return !m_nsRequests.empty() || m_pendingGetRequests > 0
            || status != std::future_status::ready;
   };
 
@@ -226,7 +226,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     m_getRequests.clear();
   }
 
-  return status == std::future_status::ready || node.children().size() != 0;
+  return status == std::future_status::ready || !node.children().empty();
 }
 
 void minuit_protocol::request(ossia::net::parameter_base& address)
@@ -401,7 +401,7 @@ void minuit_protocol::on_received_message(
 {
   ossia::string_view address{m.AddressPattern()};
 
-  if (address.size() > 0 && address[0] == '/')
+  if (!address.empty() && address[0] == '/')
   {
     ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
   }

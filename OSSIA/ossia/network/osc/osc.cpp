@@ -98,7 +98,7 @@ void osc_protocol::update_receiver()
     throw ossia::connection_error{
       "osc_protocol: "
       "Could not open port: "
-      + boost::lexical_cast<std::string>(m_local_port)};
+      + std::to_string(m_local_port)};
   }
 
   m_receiver->run();

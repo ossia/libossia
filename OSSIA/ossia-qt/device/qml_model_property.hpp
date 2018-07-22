@@ -44,7 +44,7 @@ public:
 
 public:
   void setCount(int count); W_SLOT(setCount);
-  void setNode(QString node); W_SLOT(setNode);
+  void setNode(const QString& node); W_SLOT(setNode);
   void setParentNode(QObject* parentNode); W_SLOT(setParentNode);
   void setDevice(QObject* device); W_SLOT(setDevice);
 

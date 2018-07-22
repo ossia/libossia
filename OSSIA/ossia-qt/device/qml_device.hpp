@@ -72,9 +72,9 @@ public:
 
   const qpointer_set<qml_model_property>& models() const { return m_models; }
 
-  bool openOSC(QString ip, int localPort, int remotePort); W_INVOKABLE(openOSC)
+  bool openOSC(const QString& ip, int localPort, int remotePort); W_INVOKABLE(openOSC)
   bool openOSCQueryServer(int WSport, int oscPort); W_INVOKABLE(openOSCQueryServer)
-  bool openOSCQueryClient(QString address, int localOscPort); W_INVOKABLE(openOSCQueryClient)
+  bool openOSCQueryClient(const QString& address, int localOscPort); W_INVOKABLE(openOSCQueryClient)
   bool openMIDIInputDevice(int device); W_INVOKABLE(openMIDIInputDevice)
   bool openMIDIOutputDevice(int device); W_INVOKABLE(openMIDIOutputDevice)
   QVariantMap getMIDIInputDevices() const; W_INVOKABLE(getMIDIInputDevices)
@@ -86,7 +86,7 @@ public:
   void setReadPreset(bool readPreset); W_INVOKABLE(setReadPreset)
 
   void savePreset(const QUrl& file); W_INVOKABLE(savePreset)
-  void loadPreset(QObject* root, QString file); W_INVOKABLE(loadPreset)
+  void loadPreset(QObject* root, const QString& file); W_INVOKABLE(loadPreset)
   void saveDevice(const QUrl& file); W_INVOKABLE(saveDevice)
 
   void setName(QString name); W_INVOKABLE(setName)
@@ -97,7 +97,7 @@ public:
   void readPresetChanged(bool readPreset)
   E_SIGNAL(OSSIA_EXPORT, readPresetChanged, readPreset)
 
-  void nameChanged(QString name)
+  void nameChanged(const QString& name)
   E_SIGNAL(OSSIA_EXPORT, nameChanged, name)
 
   W_PROPERTY(bool, readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged, W_Final)

@@ -158,7 +158,7 @@ void qml_device::setupLocal()
       m_name.toUtf8().toStdString());
 }
 
-bool qml_device::openOSC(QString ip, int localPort, int remotePort)
+bool qml_device::openOSC(const QString& ip, int localPort, int remotePort)
 {
   m_device.reset();
 
@@ -213,7 +213,7 @@ bool qml_device::openOSCQueryServer(int wsPort, int oscPort)
   return false;
 }
 
-bool qml_device::openOSCQueryClient(QString address, int localOscPort)
+bool qml_device::openOSCQueryClient(const QString& address, int localOscPort)
 {
   m_device.reset();
   try
@@ -575,7 +575,7 @@ void qml_device::recreate_preset(QObject* root)
   }
 }
 
-void qml_device::remap(QObject* root)
+void qml_device::remap(QObject* )
 {
   for_each_in_tuple(
       std::make_tuple(
@@ -657,7 +657,7 @@ void qml_device::clearEmptyElements()
       it = m_models.erase(it);
 }
 //#define PRESET_DEBUG 0
-void qml_device::loadPreset(QObject* root, QString file)
+void qml_device::loadPreset(QObject* root, const QString& file)
 {
   m_readPreset = false;
 #if defined(PRESET_DEBUG)
@@ -782,11 +782,11 @@ void qml_device::setName(QString name)
   if (m_name == name)
     return;
 
-  m_name = name;
+  m_name = std::move(name);
   if (m_device)
-    m_device->set_name(name.toUtf8().toStdString());
+    m_device->set_name(m_name.toUtf8().toStdString());
 
-  nameChanged(name);
+  nameChanged(m_name);
 }
 
 void qml_device::cleanup()

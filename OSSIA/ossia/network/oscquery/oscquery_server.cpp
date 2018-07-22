@@ -42,7 +42,7 @@ oscquery_server_protocol::oscquery_server_protocol(
   m_websocketServer->set_close_handler(
       [&](connection_handler hdl) { on_connectionClosed(hdl); });
   m_websocketServer->set_message_handler([&](
-      connection_handler hdl, const std::string& str) {
+      const connection_handler& hdl, const std::string& str) {
     auto res = on_WSrequest(hdl, str);
 
     if (!res.data.empty()
@@ -416,7 +416,7 @@ void oscquery_server_protocol::remove_node(
 }
 
 void oscquery_server_protocol::on_OSCMessage(
-    const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) try
+    const oscpack::ReceivedMessage& m, oscpack::IpEndpointName ip) try
 {
   ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
 
@@ -440,7 +440,7 @@ catch (...)
   logger().error("oscquery_server_protocol::on_OSCMessage: error.");
 }
 
-void oscquery_server_protocol::on_connectionOpen(connection_handler hdl) try
+void oscquery_server_protocol::on_connectionOpen(const connection_handler& hdl) try
 {
   {
     auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
@@ -466,7 +466,7 @@ catch (...)
   logger().error("oscquery_server_protocol::on_connectionOpen: error.");
 }
 
-void oscquery_server_protocol::on_connectionClosed(connection_handler hdl)
+void oscquery_server_protocol::on_connectionClosed(const connection_handler& hdl)
 {
   lock_t lock(m_clientsMutex);
   auto it = ossia::find(m_clients, hdl);
@@ -577,7 +577,7 @@ void oscquery_server_protocol::update_zeroconf()
 }
 
 ossia::oscquery::server_reply oscquery_server_protocol::on_WSrequest(
-    connection_handler hdl, const std::string& message)
+    const connection_handler& hdl, const std::string& message)
 {
   if (m_logger.inbound_logger)
     m_logger.inbound_logger->info("WS In: {}", message);

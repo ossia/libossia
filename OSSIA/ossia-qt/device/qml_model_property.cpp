@@ -78,7 +78,7 @@ void qml_model_property::on_device_deleted(QObject*)
   m_parentNode = nullptr;
 }
 
-void qml_model_property::setNode(QString node)
+void qml_model_property::setNode(const QString& node)
 {
   if (m_node == node)
     return;

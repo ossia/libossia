@@ -42,30 +42,30 @@ public:
     return value.get();
   }
 
-  destination(net::parameter_base& v);
-  destination(net::parameter_base& v, destination_index);
-  destination(net::parameter_base& v, destination_index, const ossia::unit_t&);
-  destination(net::parameter_base& v, const ossia::unit_t&);
+  destination(net::parameter_base& v) noexcept;
+  destination(net::parameter_base& v, destination_index) noexcept;
+  destination(net::parameter_base& v, destination_index, const ossia::unit_t&) noexcept;
+  destination(net::parameter_base& v, const ossia::unit_t&) noexcept;
 
-  destination(const destination& other);
-  destination(destination&& other);
-  destination& operator=(const destination&);
-  destination& operator=(destination&&);
+  destination(const destination& other) noexcept;
+  destination(destination&& other) noexcept;
+  destination& operator=(const destination&) noexcept;
+  destination& operator=(destination&&) noexcept;
 
-  bool operator==(const ossia::value&) const;
-  bool operator!=(const ossia::value&) const;
-  bool operator>(const ossia::value&) const;
-  bool operator>=(const ossia::value&) const;
-  bool operator<(const ossia::value&) const;
-  bool operator<=(const ossia::value&) const;
+  bool operator==(const ossia::value&) const noexcept;
+  bool operator!=(const ossia::value&) const noexcept;
+  bool operator>(const ossia::value&) const noexcept;
+  bool operator>=(const ossia::value&) const noexcept;
+  bool operator<(const ossia::value&) const noexcept;
+  bool operator<=(const ossia::value&) const noexcept;
 };
 
-OSSIA_EXPORT bool operator==(const destination&, const destination&);
-OSSIA_EXPORT bool operator!=(const destination&, const destination&);
+OSSIA_EXPORT bool operator==(const destination&, const destination&) noexcept;
+OSSIA_EXPORT bool operator!=(const destination&, const destination&) noexcept;
 OSSIA_EXPORT bool
-operator==(const destination&, const ossia::net::parameter_base&);
+operator==(const destination&, const ossia::net::parameter_base&) noexcept;
 OSSIA_EXPORT bool
-operator!=(const destination&, const ossia::net::parameter_base&);
+operator!=(const destination&, const ossia::net::parameter_base&) noexcept;
 
-OSSIA_EXPORT std::string to_pretty_string(const destination& d);
+OSSIA_EXPORT std::string to_pretty_string(const destination& d) noexcept;
 }

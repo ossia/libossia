@@ -5,7 +5,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 
-int main(int argc, char** argv)
+int main(int, char**)
 {
   auto local_proto_ptr = std::make_unique<ossia::net::multiplex_protocol>();
   ossia::net::multiplex_protocol& local_proto = *local_proto_ptr;

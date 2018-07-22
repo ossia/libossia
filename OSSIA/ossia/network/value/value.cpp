@@ -54,18 +54,43 @@ template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const s
 template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
 template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
-destination::destination(const destination& other) = default;
-destination::destination(destination&& other) = default;
+destination::destination(const destination& other) noexcept:
+  value{other.value}
+, index{other.index}
+, unit{other.unit}
+{
 
-destination& destination::operator=(const destination&) = default;
-destination& destination::operator=(destination&&) = default;
+}
+destination::destination(destination&& other) noexcept:
+  value{std::move(other.value)}
+, index{std::move(other.index)}
+, unit {std::move(other.unit )}
+{
+
+}
+
+destination& destination::operator=(const destination& other) noexcept
+{
+  value = other.value;
+  index = other.index;
+  unit  = other.unit;
+  return *this;
+}
+
+destination& destination::operator=(destination&& other) noexcept
+{
+  value = std::move(other.value);
+  index = std::move(other.index);
+  unit  = std::move(other.unit);
+  return *this;
+}
 
 value destination::pull() const
 {
   ossia::net::parameter_base& param = value.get();
   if(unit)
   {
-    auto other = param.get_unit();
+    const auto& other = param.get_unit();
     if(other && other != unit)
     {
       auto res = ossia::convert(param.value(), other, unit);
@@ -79,75 +104,75 @@ value destination::pull() const
   return param.value(index);
 }
 
-destination::destination(ossia::net::parameter_base& v) : value(v)
+destination::destination(ossia::net::parameter_base& v) noexcept : value(v)
 {
   // TODO should we also copy the unit of the address ?
 }
 
-destination::destination(ossia::net::parameter_base& v, destination_index idx)
+destination::destination(ossia::net::parameter_base& v, destination_index idx) noexcept
     : value(v), index(std::move(idx))
 {
   // TODO should we also copy the unit of the address ?
 }
 
 destination::destination(
-    ossia::net::parameter_base& v, destination_index idx, const ossia::unit_t& u)
+    ossia::net::parameter_base& v, destination_index idx, const ossia::unit_t& u) noexcept
     : value(v), index(std::move(idx)), unit{u}
 {
 }
 
-destination::destination(net::parameter_base& v, const unit_t& u)
+destination::destination(net::parameter_base& v, const unit_t& u) noexcept
     : value(v), unit{u}
 {
 }
 
-bool destination::operator==(const ossia::value& v) const
+bool destination::operator==(const ossia::value& v) const noexcept
 {
   return comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
-bool destination::operator!=(const ossia::value& v) const
+bool destination::operator!=(const ossia::value& v) const noexcept
 {
   return !comparisons::DestinationValue::apply(*this, v, std::equal_to<>{});
 }
 
-bool destination::operator>(const ossia::value& v) const
+bool destination::operator>(const ossia::value& v) const noexcept
 {
   return comparisons::DestinationValue::apply(*this, v, std::greater<>{});
 }
 
-bool destination::operator>=(const ossia::value& v) const
+bool destination::operator>=(const ossia::value& v) const noexcept
 {
   return comparisons::DestinationValue::apply(
       *this, v, std::greater_equal<>{});
 }
 
-bool destination::operator<(const ossia::value& v) const
+bool destination::operator<(const ossia::value& v) const noexcept
 {
   return comparisons::DestinationValue::apply(*this, v, std::less<>{});
 }
 
-bool destination::operator<=(const ossia::value& v) const
+bool destination::operator<=(const ossia::value& v) const noexcept
 {
   return comparisons::DestinationValue::apply(*this, v, std::less_equal<>{});
 }
 
-bool operator==(const destination& lhs, const destination& rhs)
+bool operator==(const destination& lhs, const destination& rhs) noexcept
 {
   return lhs.value == rhs.value && lhs.index == rhs.index;
 }
 
-bool operator!=(const destination& lhs, const destination& rhs)
+bool operator!=(const destination& lhs, const destination& rhs) noexcept
 {
   return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
-bool operator==(const destination& lhs, const ossia::net::parameter_base& rhs)
+bool operator==(const destination& lhs, const ossia::net::parameter_base& rhs) noexcept
 {
   return lhs.value == rhs && lhs.index.empty();
 }
 
-bool operator!=(const destination& lhs, const ossia::net::parameter_base& rhs)
+bool operator!=(const destination& lhs, const ossia::net::parameter_base& rhs) noexcept
 {
   return lhs.value != rhs || !lhs.index.empty();
 }
@@ -172,7 +197,7 @@ std::string to_pretty_string(const destination_index& index)
   return str;
 }
 
-std::string to_pretty_string(const destination& d)
+std::string to_pretty_string(const destination& d) noexcept
 {
   using namespace std::literals;
   return ossia::net::address_string_from_node(d.value.get())

@@ -92,11 +92,11 @@ private:
   // OSC callback
   void on_OSCMessage(
       const oscpack::ReceivedMessage& m,
-      const oscpack::IpEndpointName& ip);
+      oscpack::IpEndpointName ip);
 
   // Websocket callbacks
-  void on_connectionOpen(connection_handler hdl);
-  void on_connectionClosed(connection_handler hdl);
+  void on_connectionOpen(const connection_handler& hdl);
+  void on_connectionClosed(const connection_handler& hdl);
 
   // Local device callback
   void on_nodeCreated(const ossia::net::node_base&);
@@ -111,7 +111,7 @@ private:
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
   ossia::oscquery::server_reply
-  on_WSrequest(connection_handler hdl, const std::string& message);
+  on_WSrequest(const connection_handler& hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<websocket_server> m_websocketServer;
