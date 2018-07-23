@@ -16,7 +16,8 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
   if(res_vec.size() < audio.size())
     res_vec.resize(audio.size());
 
-  for(std::size_t chan = 0; chan < res_vec.size(); chan++)
+  auto min_chan = std::min(res_vec.size(), audio.size());
+  for(std::size_t chan = 0; chan < min_chan; chan++)
   {
     auto& src = audio[chan];
     auto& res = res_vec[chan];
