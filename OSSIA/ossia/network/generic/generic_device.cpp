@@ -14,16 +14,16 @@ generic_device::generic_device(std::string name)
     : device_base{std::make_unique<multiplex_protocol>()}
     , generic_node{std::move(name), *this}
 {
-  m_protocol->set_device(*this);
   m_capabilities.change_tree = true;
+  m_protocol->set_device(*this);
 }
 
 generic_device::generic_device(
     std::unique_ptr<ossia::net::protocol_base> protocol, std::string name)
     : device_base(std::move(protocol)), generic_node(std::move(name), *this)
 {
-  m_protocol->set_device(*this);
   m_capabilities.change_tree = true;
+  m_protocol->set_device(*this);
 }
 
 generic_device::~generic_device()
