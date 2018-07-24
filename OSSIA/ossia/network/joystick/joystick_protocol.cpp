@@ -374,8 +374,6 @@ namespace ossia {
 
         int32_t joystick_protocol::get_joystick_id(const int index)
         {
-            if (index < 0)
-                throw std::runtime_error("Invalid Index");
             return SDL_JoystickGetDeviceInstanceID(index);
         }
 
