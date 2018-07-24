@@ -11,6 +11,7 @@
 #cmakedefine OSSIA_PROTOCOL_SERIAL
 #cmakedefine OSSIA_PROTOCOL_PHIDGETS
 #cmakedefine OSSIA_PROTOCOL_LEAPMOTION
+#cmakedefine OSSIA_PROTOCOL_JOYSTICK
 
 // Additional features
 #cmakedefine OSSIA_DNSSD
