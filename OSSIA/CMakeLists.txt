@@ -111,6 +111,13 @@ if(OSSIA_PROTOCOL_LEAPMOTION)
   endif()
 endif()
 
+if(OSSIA_PROTOCOL_JOYSTICK)
+  find_package(SDL2)
+  if(NOT SDL2_FOUND)
+    set(OSSIA_PROTOCOL_JOYSTICK FALSE)
+  endif()
+endif()
+
 if (OSSIA_CI)
   if ( $ENV{TRAVIS} MATCHES true )
     message(STATUS "We're building on Travis, SHA: $ENV{TRAVIS_COMMIT}, TAG: $ENV{TRAVIS_TAG}")
@@ -209,6 +216,14 @@ if(OSSIA_PROTOCOL_LEAPMOTION)
   target_link_libraries(ossia PUBLIC LeapMotion)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} LeapMotion)
 endif()
+
+if(OSSIA_PROTOCOL_JOYSTICK)
+  target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
+  target_include_directories(ossia PRIVATE ${SDL2_INCLUDE_DIRS})
+  target_link_libraries(ossia PRIVATE SDL2)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
+endif()
+
 # Additional features
 if(OSSIA_C)
   target_sources(ossia PRIVATE ${OSSIA_C_HEADERS} ${OSSIA_C_SRCS})

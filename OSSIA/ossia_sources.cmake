@@ -379,7 +379,6 @@ set(OSSIA_SERIAL_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/serial/serial_parameter.cpp"
 )
 
-
 set(OSSIA_PHIDGETS_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/sensors.hpp"
 
@@ -397,6 +396,14 @@ set(OSSIA_LEAPMOTION_HEADERS
 
 set(OSSIA_LEAPMOTION_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.cpp")
+
+set(OSSIA_JOYSTICK_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/device_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.hpp")
+
+set(OSSIA_JOYSTICK_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/device_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.cpp")
 
 set(OSSIA_WS_CLIENT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_device.hpp"
