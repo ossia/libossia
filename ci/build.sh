@@ -463,9 +463,7 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      pushd $TRAVIS_BUILD_DIR/ossia-pd-package/
-      tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia
-      popd
+      pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia && popd
 
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
 
@@ -527,9 +525,7 @@ case "$TRAVIS_OS_NAME" in
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      pushd ${TRAVIS_BUILD_DIR}/ossia-max-package/
-      tar -czf ${ARTIFACTS_DIR}/ossia-max-osx.tar.gz ossia
-      popd
+      pushd ${TRAVIS_BUILD_DIR}/ossia-max-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-max-osx.tar.gz ossia && popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
       # _version.py is not valid in a non-git folder
@@ -593,8 +589,7 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
 
-      cd "$TRAVIS_BUILD_DIR/ossia-qml"
-      tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
+      cd "$TRAVIS_BUILD_DIR/ossia-qml" && tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
 
     else
       OSSIA_UNITY=1
@@ -627,15 +622,11 @@ case "$TRAVIS_OS_NAME" in
 
       if [[ "$BUILD_TYPE" == "Release" ]]; then
         if [[ "$OSSIA_STATIC" == "1" ]]; then
-          cd $TRAVIS_BUILD_DIR/install
-          tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz *
+          cd $TRAVIS_BUILD_DIR/install && tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz *
         else
-          cd $TRAVIS_BUILD_DIR/install/ossia-unity
-          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
+          cd $TRAVIS_BUILD_DIR/install/ossia-unity && tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
 
-          cd $TRAVIS_BUILD_DIR/install
-          rm -rf ossia-unity
-          tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz *
+          cd $TRAVIS_BUILD_DIR/install && rm -rf ossia-unity && tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz *
         fi
       fi
     fi
