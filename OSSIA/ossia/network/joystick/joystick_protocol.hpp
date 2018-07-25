@@ -21,7 +21,10 @@ class OSSIA_EXPORT joystick_protocol final : public ossia::net::protocol_base
 
 public:
   joystick_protocol(const int32_t joystick_id, const int joystick_index);
-  joystick_protocol(joystick_protocol&) = delete;
+  joystick_protocol(const joystick_protocol&) = delete;
+  joystick_protocol(joystick_protocol&&) = delete;
+  joystick_protocol& operator=(const joystick_protocol&) = delete;
+  joystick_protocol& operator=(joystick_protocol&&) = delete;
   ~joystick_protocol();
 
   void set_device(ossia::net::device_base& dev) override;

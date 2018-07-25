@@ -60,6 +60,7 @@ joystick_protocol_manager::joystick_protocol_manager()
 
 joystick_protocol_manager::~joystick_protocol_manager()
 {
+  SDL_Quit();
   stop_event_loop();
 }
 
@@ -285,6 +286,11 @@ void joystick_protocol::set_device(ossia::net::device_base& dev)
   const int button_count = SDL_JoystickNumButtons(m_joystick);
 
   //  Build PArameters Tree
+
+  m_axis_parameters.reserve(axis_count);
+  m_button_parameters.reserve(button_count);
+  m_hat_parameters.reserve(hat_count);
+
   for (int i = 0; i < axis_count; ++i)
     m_axis_parameters.push_back(device_parameter::create_device_parameter(
         root, "axis-" + std::to_string(i + 1), 0.0, val_type::FLOAT,

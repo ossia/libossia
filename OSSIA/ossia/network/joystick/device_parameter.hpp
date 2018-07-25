@@ -86,11 +86,11 @@ protected:
     return get_node().get_device().get_protocol();
   }
 
-  ossia::value m_current_value;
+  ossia::value m_current_value{};
 
-  const ossia::val_type m_type;
-  const ossia::bounding_mode m_bounding;
-  const ossia::access_mode m_access;
-  const ossia::domain m_domain;
+  const ossia::val_type m_type{};
+  const ossia::bounding_mode m_bounding{};
+  const ossia::access_mode m_access{};
+  const ossia::domain m_domain{};
 };
 }
