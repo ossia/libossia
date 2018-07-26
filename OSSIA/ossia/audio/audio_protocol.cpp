@@ -35,7 +35,7 @@ ossia::audio_engine* make_audio_engine(
   }
 #endif
 
-#if __has_include(<SDL/SDL_audio.h>)
+#if defined(OSSIA_HAS_SDL_AUDIO)
   else if(proto == "SDL")
   {
     inputs = 0; outputs = 2;
@@ -64,7 +64,7 @@ ossia::audio_engine* make_audio_engine(
 
   if(!p)
   {
-#if __has_include(<SDL/SDL_audio.h>)
+#if defined(OSSIA_HAS_SDL_AUDIO)
     inputs = 0; outputs = 2;
     p = new ossia::sdl_protocol{rate, bs};
 #endif

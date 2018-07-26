@@ -1,5 +1,7 @@
 #pragma once
-#if __has_include(<SDL/SDL_audio.h>)
+#include <ossia/detail/config.hpp>
+#if __has_include(<SDL/SDL_audio.h>) && !defined(OSSIA_PROTOCOL_JOYSTICK)
+#define OSSIA_HAS_SDL_AUDIO 1
 #include <ossia/audio/audio_protocol.hpp>
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
