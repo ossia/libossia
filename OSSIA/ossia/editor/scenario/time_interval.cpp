@@ -144,6 +144,7 @@ void time_interval::offset(ossia::time_value date)
 
 void time_interval::transport(time_value date)
 {
+  m_offset = date;
   m_date = date;
 
   compute_position();

@@ -345,7 +345,6 @@ void loop::state(
 
 void loop::start()
 {
-  m_lastDate = ossia::Zero;
   m_interval.get_start_event().set_status(time_event::status::PENDING);
 }
 
@@ -356,9 +355,10 @@ void loop::stop()
   m_interval.stop();
 
   m_interval.offset(Zero);
-
   m_interval.get_start_event().set_status(time_event::status::PENDING);
   m_interval.get_end_event().set_status(time_event::status::NONE);
+
+  m_lastDate = ossia::Zero;
 }
 
 void loop::pause()
