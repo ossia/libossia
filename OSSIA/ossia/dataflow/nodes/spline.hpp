@@ -84,10 +84,10 @@ class spline final :
       auto p = m_spline.evaluate(t.position);
       auto d = p.data();
 
-      vp->add_value(
+      vp->write_value(
             ossia::make_vec(
                       m_x + m_scaleX * d->result[0],
-                      m_y + m_scaleY * d->result[1]), t.date);
+                      m_y + m_scaleY * d->result[1]), t.tick_start());
     }
 
     ossia::outlet value_out{ossia::value_port{}};

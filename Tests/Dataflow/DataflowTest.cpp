@@ -75,7 +75,7 @@ auto pop_front(ossia::small_vector<T, N>& vec)
   }
 }
 
-auto pop_front(ossia::value_vector<ossia::tvalue> container)
+auto pop_front(ossia::value_vector<ossia::timed_value> container)
 {
   if(container.size() > 0)
   {
@@ -120,12 +120,12 @@ struct execution_mock
       auto& out_port = *n->outputs()[0]->data.target<value_port>();
 
       qDebug() << in_port.get_data().size();
-      ossia::tvalue elt = in_port.get_data().front();
+      ossia::timed_value elt = in_port.get_data().front();
       if(auto val = elt.value.target<std::vector<ossia::value>>())
       {
         auto v = *val;
         v.push_back(factor * (1+int(tk.date)));
-        out_port.add_raw_value(std::move(v));
+        out_port.write_value(std::move(v), 0);
       }
     }
   }

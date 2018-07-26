@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/dataflow/data_copy.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/dataflow.hpp>
@@ -7,6 +8,7 @@
 #include <ossia/dataflow/graph/breadth_first_search.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_ordering.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/ptr_set.hpp>
 
@@ -376,6 +378,8 @@ struct OSSIA_EXPORT graph_util
 
 struct OSSIA_EXPORT graph_base: graph_interface
 {
+    const std::vector<ossia::graph_node*>& get_nodes() const noexcept final override
+    { return m_node_list; }
 
     void recompute_maps()
     {
@@ -404,7 +408,8 @@ struct OSSIA_EXPORT graph_base: graph_interface
       //bench[n.get()];
 
       auto vtx = boost::add_vertex(n, m_graph);
-      m_nodes.insert({std::move(n), vtx});
+      //m_nodes.insert({std::move(n), vtx});
+      m_node_list.push_back(n.get());
       m_dirty = true;
       recompute_maps();
       return vtx;
@@ -445,6 +450,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
         }
         // no need to erase it since it won't be here after recompute_maps
       }
+      ossia::remove_one(m_node_list, n.get());
       m_dirty = true;
     }
 
@@ -468,12 +474,12 @@ struct OSSIA_EXPORT graph_base: graph_interface
           out_vtx = it2->second;
 
         // TODO check that two edges can be added
-        auto res = boost::add_edge(in_vtx, out_vtx, edge, m_graph);
+        /* auto res = */ boost::add_edge(in_vtx, out_vtx, edge, m_graph);
         recompute_maps();
-        if (res.second)
+        /*if (res.second)
         {
           m_edges.insert({std::move(edge), res.first});
-        }
+        }*/
         m_dirty = true;
       }
     }
@@ -517,6 +523,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
       }
       m_dirty = true;
       m_nodes.clear();
+      m_node_list.clear();
       m_edges.clear();
       m_graph.clear();
     }
@@ -533,6 +540,7 @@ struct OSSIA_EXPORT graph_base: graph_interface
 
     node_map m_nodes;
     edge_map m_edges;
+    std::vector<ossia::graph_node*> m_node_list;
 
     graph_t m_graph;
 

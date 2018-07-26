@@ -395,7 +395,7 @@ struct value_adder
     ossia::value v;
     void operator()() {
       // timestamp should be > all others so that it is always active ?
-      port.add_value(std::move(v));
+      port.write_value(std::move(v), 0);
     }
 };
 

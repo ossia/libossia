@@ -22,7 +22,7 @@ class OSSIA_EXPORT metronome final :
 
     std::string label() const noexcept override
     {
-      return "automation";
+      return "metronome";
     }
 
     void set_curve(std::shared_ptr<curve<double,float>> b)
@@ -53,7 +53,8 @@ class OSSIA_EXPORT metronome final :
       time_value cur{int64_t(m_curve->value_at(pos))};
 
       // TODO we should compute the derivative since the last tick in order to be precise
-      if(date > t.prev_date) {
+      if(date > t.prev_date)
+      {
         time_value elapsed = date - t.prev_date;
         if(m_metroPrevTick + elapsed < cur) {
           // not yet
@@ -63,7 +64,7 @@ class OSSIA_EXPORT metronome final :
         else
         {
           m_metroPrevTick = elapsed - cur;
-          vp->add_value(ossia::impulse{}, t.date);
+          vp->write_value(ossia::impulse{}, t.tick_start()); // TODO offset is wrong here
         }
       }
       else if(date < t.prev_date) {
@@ -76,7 +77,7 @@ class OSSIA_EXPORT metronome final :
         else
         {
           m_metroPrevTick = elapsed - cur;
-          vp->add_value(ossia::impulse{}, t.date);
+          vp->write_value(ossia::impulse{}, t.tick_start()); // TODO offset is wrong here
         }
       }
     }

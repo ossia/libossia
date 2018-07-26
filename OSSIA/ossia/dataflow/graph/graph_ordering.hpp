@@ -1,8 +1,11 @@
 #pragma once
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/dataflow/data_copy.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/graph_edge.hpp>
 
 namespace ossia
 {
@@ -200,7 +203,16 @@ struct env_writer
       // Copy to the buffer
       if (con.buffer && out.data && con.buffer.which() == out.data.which())
       {
-        eggs::variants::apply(copy_data{}, out.data, con.buffer);
+        const auto w = con.buffer.which();
+        if (w == out.data.which() && w != data_type::npos)
+        {
+          switch(w)
+          {
+            case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.data.target()), *reinterpret_cast<ossia::audio_delay_line*>(con.buffer.target())); break;
+            case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.data.target()) , *reinterpret_cast<ossia::midi_delay_line*>(con.buffer.target())); break;
+            case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.data.target()), *reinterpret_cast<ossia::value_delay_line*>(con.buffer.target())); break;
+          }
+        }
       }
       return false;
     }
@@ -209,7 +221,16 @@ struct env_writer
       // Copy to the buffer
       if (con.buffer && out.data && con.buffer.which() == out.data.which())
       {
-        eggs::variants::apply(copy_data{}, out.data, con.buffer);
+        const auto w = con.buffer.which();
+        if (w == out.data.which() && w != data_type::npos)
+        {
+          switch(w)
+          {
+            case 0: copy_data{}(*reinterpret_cast<const ossia::audio_port*>(out.data.target()), *reinterpret_cast<ossia::audio_delay_line*>(con.buffer.target())); break;
+            case 1: copy_data{}(*reinterpret_cast<const ossia::midi_port*>(out.data.target()) , *reinterpret_cast<ossia::midi_delay_line*>(con.buffer.target())); break;
+            case 2: copy_data{}(*reinterpret_cast<const ossia::value_port*>(out.data.target()), *reinterpret_cast<ossia::value_delay_line*>(con.buffer.target())); break;
+          }
+        }
       }
       return false;
     }

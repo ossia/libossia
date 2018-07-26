@@ -20,7 +20,7 @@ struct rand_float final : public ossia::nonowning_graph_node
     {
       thread_local std::mt19937 gen;
       auto& out = *value_out.data.target<ossia::value_port>();
-      out.add_value(dist(gen), t.offset.impl);
+      out.write_value(dist(gen), t.tick_start());
     }
 };
 }

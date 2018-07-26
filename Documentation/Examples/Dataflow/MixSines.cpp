@@ -12,7 +12,7 @@
 struct tick_all_nodes_bench
 {
     ossia::execution_state& e;
-    ossia::graph_base& g;
+    ossia::graph_interface& g;
 
     void operator()(unsigned long samples, double) const
     {
@@ -25,8 +25,8 @@ struct tick_all_nodes_bench
       e.samples_since_start += samples;
       ossia::time_value new_t{e.samples_since_start};
 
-      for(auto& node : g.m_nodes)
-        node.first->request(ossia::token_request{old_t, new_t});
+      for(auto& node : g.get_nodes())
+        node->request(ossia::token_request{old_t, new_t});
 
       g.state(e);
       e.commit();

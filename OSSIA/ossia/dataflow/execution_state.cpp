@@ -11,6 +11,7 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
+#include <ossia/dataflow/data_copy.hpp>
 namespace ossia
 {
 struct local_pull_visitor
@@ -67,15 +68,14 @@ struct global_pull_visitor
     {
       if(!val.is_event)
       {
-        val.add_raw_value(out.value());
+        copy_data{}(out, val);
       }
       else
       {
         auto it = state.m_receivedValues.find(const_cast<net::parameter_base*>(&out));
         if(it != state.m_receivedValues.end())
         {
-          for(ossia::value v : it->second)
-            val.add_raw_value(std::move(v));
+          copy_data{}(*it->first, it->second, val);
         }
       }
     }
@@ -259,7 +259,7 @@ void execution_state::reset()
   m_receivedMidi.clear();
 }
 
-ossia::message to_state_element(ossia::net::parameter_base& p, ossia::tvalue&& v)
+ossia::message to_state_element(ossia::net::parameter_base& p, ossia::typed_value&& v)
 {
   ossia::message m{p, std::move(v.value)};
   if(auto u = v.type.target<ossia::unit_t>())
@@ -268,7 +268,7 @@ ossia::message to_state_element(ossia::net::parameter_base& p, ossia::tvalue&& v
   return m;
 }
 
-ossia::message to_state_element(ossia::net::parameter_base& p, const ossia::tvalue& v)
+ossia::message to_state_element(ossia::net::parameter_base& p, const ossia::typed_value& v)
 {
   ossia::message m{p, v.value};
   if(auto u = v.type.target<ossia::unit_t>())
@@ -527,20 +527,20 @@ void execution_state::insert(const ossia::destination& param, const data_type& v
       {
         case ossia::data_mix_method::mix_replace:
         {
-          for(const auto& v : val->get_data())
+          for(const ossia::timed_value& v : val->get_data())
           {
-            auto it = ossia::find_if(st, [&] (const std::pair<tvalue, int>& val) { return val.first.timestamp == v.timestamp; });
+            auto it = ossia::find_if(st, [&] (const std::pair<typed_value, int>& val) { return val.first.timestamp == v.timestamp; });
             if(it != st.end())
-              it->first = v;
+              it->first = ossia::typed_value{v, val->index, val->type};
             else
-              st.emplace_back(v, idx++);
+              st.emplace_back(ossia::typed_value{v, val->index, val->type}, idx++);
           }
           break;
         }
         case ossia::data_mix_method::mix_append:
         {
           for(const auto& v : val->get_data())
-            st.emplace_back(v, idx++);
+            st.emplace_back(ossia::typed_value{v, val->index, val->type}, idx++);
           break;
         }
         case ossia::data_mix_method::mix_merge:
@@ -585,20 +585,20 @@ void execution_state::insert(const ossia::destination& param, data_type&& v)
       {
         case ossia::data_mix_method::mix_replace:
         {
-          for(auto& v : val->get_data())
+          for(ossia::timed_value& v : val->get_data())
           {
-            auto it = ossia::find_if(st, [&] (const std::pair<tvalue, int>& val) { return val.first.timestamp == v.timestamp; });
+            auto it = ossia::find_if(st, [&] (const std::pair<typed_value, int>& val) { return val.first.timestamp == v.timestamp; });
             if(it != st.end())
-              it->first = v;
+              it->first = ossia::typed_value{std::move(v), val->index, val->type};
             else
-              st.emplace_back(std::move(v), idx++);
+              st.emplace_back(ossia::typed_value{std::move(v), val->index, val->type}, idx++);
           }
           break;
         }
         case ossia::data_mix_method::mix_append:
         {
           for(auto& v : val->get_data())
-            st.emplace_back(std::move(v), idx++);
+            st.emplace_back(ossia::typed_value{std::move(v), val->index, val->type}, idx++);
           break;
         }
         case ossia::data_mix_method::mix_merge:
@@ -614,12 +614,12 @@ void execution_state::insert(const ossia::destination& param, data_type&& v)
   }
 }
 
-void execution_state::insert(ossia::net::parameter_base& param, const tvalue& v)
+void execution_state::insert(ossia::net::parameter_base& param, const typed_value& v)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   m_valueState[&param].emplace_back(v, m_msgIndex++);
 }
-void execution_state::insert(ossia::net::parameter_base& param, tvalue&& v)
+void execution_state::insert(ossia::net::parameter_base& param, typed_value&& v)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   m_valueState[&param].emplace_back(std::move(v), m_msgIndex++);
@@ -653,7 +653,7 @@ struct state_exec_visitor
     void operator()(const ossia::message& msg)
     {
       e.m_valueState[&msg.dest.address()].emplace_back(
-            ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit },
+            ossia::typed_value{ msg.message_value, msg.dest.index, msg.dest.unit },
             e.m_msgIndex++);
     }
 
@@ -681,7 +681,7 @@ void execution_state::insert(const ossia::state& v)
   }
 }
 
-static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>>& container)
+static bool is_in(net::parameter_base& other, const ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>>& container)
 {
   auto it = container.find(&other);
   if(it == container.end())
@@ -727,10 +727,10 @@ double exec_state_facade::currentDate() const noexcept
 ossia::net::node_base* exec_state_facade::find_node(std::string_view name) const noexcept
 { return impl.find_node(name); }
 
-void exec_state_facade::insert(net::parameter_base& dest, const tvalue& v)
+void exec_state_facade::insert(net::parameter_base& dest, const typed_value& v)
 { impl.insert(dest, v); }
 
-void exec_state_facade::insert(net::parameter_base& dest, tvalue&& v)
+void exec_state_facade::insert(net::parameter_base& dest, typed_value&& v)
 { impl.insert(dest, std::move(v)); }
 
 void exec_state_facade::insert(net::parameter_base& dest, const audio_port& v)

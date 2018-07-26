@@ -288,4 +288,17 @@ void update_parameter_type(const complex_type& t, net::parameter_base& addr)
 {
   ossia::apply(update_parameter_visitor{addr}, t);
 }
+
+ossia::value convert(
+    const ossia::value& v
+    , const ossia::complex_type& source_t
+    , const ossia::complex_type& dest_t)
+{
+  auto src_u = source_t.target<ossia::unit_t>();
+  auto tgt_u = dest_t.target<ossia::unit_t>();
+  if(src_u && tgt_u)
+    return ossia::convert(v, *src_u, *tgt_u);
+  // TODO else
+  return v;
+}
 }

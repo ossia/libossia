@@ -22,14 +22,14 @@ struct OSSIA_EXPORT time_value
 {
   static const constexpr auto infinity = std::numeric_limits<int64_t>::max();
 
-  time_value& operator=(double d) noexcept
+  constexpr time_value& operator=(double d) noexcept
   {
     impl = d;
     return *this;
   }
 
   /*! self addition operator */
-  time_value& operator+=(double d) noexcept
+  constexpr time_value& operator+=(double d) noexcept
   {
     if (infinite())
       impl = 0;
@@ -39,7 +39,7 @@ struct OSSIA_EXPORT time_value
     return *this;
   }
 
-  time_value& operator+=(ossia::time_value t) noexcept
+  constexpr time_value& operator+=(ossia::time_value t) noexcept
   {
     if (infinite() || t.infinite())
       impl = 0;
@@ -50,7 +50,7 @@ struct OSSIA_EXPORT time_value
   }
 
   /*! self substraction operator */
-  time_value& operator-=(double d) noexcept
+  constexpr time_value& operator-=(double d) noexcept
   {
     if (infinite())
       impl = 0;
@@ -60,7 +60,7 @@ struct OSSIA_EXPORT time_value
     return *this;
   }
 
-  time_value& operator-=(ossia::time_value t) noexcept
+  constexpr time_value& operator-=(ossia::time_value t) noexcept
   {
     if (infinite() || t.infinite())
       impl = 0;
@@ -92,7 +92,7 @@ struct OSSIA_EXPORT time_value
     return time_value{int64_t(impl - d)};
   }
 
-  time_value operator+(ossia::time_value t) const noexcept
+  constexpr time_value operator+(ossia::time_value t) const noexcept
   {
     if (infinite() || t.infinite())
     {
@@ -108,7 +108,7 @@ struct OSSIA_EXPORT time_value
     return time_value{int64_t(impl - d)};
   }
 
-  time_value operator-(ossia::time_value t) const noexcept
+  constexpr time_value operator-(ossia::time_value t) const noexcept
   {
     if (infinite() || t.infinite())
     {
@@ -149,7 +149,7 @@ struct OSSIA_EXPORT time_value
     return time_value{int64_t(impl * d)};
   }
 
-  friend double operator/(time_value lhs, time_value rhs) {
+  friend constexpr double operator/(time_value lhs, time_value rhs) {
     return double(lhs.impl) / double(rhs.impl);
   }
   constexpr operator int64_t() const noexcept
@@ -159,16 +159,16 @@ struct OSSIA_EXPORT time_value
 
   /*! is the time value infinite ?
    \return bool infinite */
-  bool infinite() const noexcept
+  constexpr bool infinite() const noexcept
   {
     return std::numeric_limits<int64_t>::max() == impl;
   }
 
-  bool operator==(ossia::time_value rhs) const noexcept
+  constexpr bool operator==(ossia::time_value rhs) const noexcept
   {
     return impl == rhs.impl;
   }
-  bool operator!=(ossia::time_value rhs) const noexcept
+  constexpr bool operator!=(ossia::time_value rhs) const noexcept
   {
     return impl != rhs.impl;
   }
@@ -176,12 +176,12 @@ struct OSSIA_EXPORT time_value
   int64_t impl;
 };
 
-OSSIA_EXPORT inline time_value operator"" _tv(long double v)
+OSSIA_EXPORT constexpr inline time_value operator"" _tv(long double v)
 {
   return time_value{int64_t(v)};
 }
 
-OSSIA_EXPORT inline time_value operator"" _tv(unsigned long long v)
+OSSIA_EXPORT constexpr inline time_value operator"" _tv(unsigned long long v)
 {
   return time_value{(int64_t)v};
 }
@@ -190,11 +190,11 @@ const constexpr time_value Infinite{time_value::infinity};
 const constexpr time_value Zero{0};
 const constexpr time_value One{1};
 
-OSSIA_EXPORT inline time_value abs(time_value t) {
+OSSIA_EXPORT constexpr inline time_value abs(time_value t) {
   return time_value{t.impl >= 0 ? t.impl : -t.impl};
 }
 
-OSSIA_EXPORT inline time_value norm(time_value t1, time_value t2) {
+OSSIA_EXPORT constexpr inline time_value norm(time_value t1, time_value t2) {
   if(t1.infinite() || t2.infinite())
     return Infinite;
   return time_value{t1.impl > t2.impl ? t1.impl - t2.impl : t2.impl - t1.impl};

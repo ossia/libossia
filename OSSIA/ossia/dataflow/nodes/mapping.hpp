@@ -39,30 +39,6 @@ class OSSIA_EXPORT mapping final :
 
     }
 
-    void set_driver(optional<ossia::destination> d)
-    {
-      if(d)
-      {
-        m_inlets.front()->address = &d->address();
-      }
-      else
-      {
-        m_inlets.front()->address = {};
-      }
-    }
-
-    void set_driven(optional<ossia::destination> d)
-    {
-      if(d)
-      {
-        m_outlets.front()->address = &d->address();
-      }
-      else
-      {
-        m_outlets.front()->address = {};
-      }
-    }
-
     void set_behavior(const ossia::behavior& b)
     {
       m_drive = b;
@@ -76,18 +52,17 @@ class OSSIA_EXPORT mapping final :
 
       auto& inlet = *m_inlets[0];
       auto& outlet = *m_outlets[0];
-      ossia::value_port* ip = inlet.data.target<ossia::value_port>();
-      ossia::value_port* op = outlet.data.target<ossia::value_port>();
+      const ossia::value_port& ip = *inlet.data.target<ossia::value_port>();
+      ossia::value_port& op = *outlet.data.target<ossia::value_port>();
 
       // TODO use correct unit / whatever ?
-      for(auto& tv : ip->get_data())
+      for(auto& tv : ip.get_data())
       {
         if(tv.value.valid())
         {
-          ossia::tvalue newval = tv;
-          newval.value = ossia::apply(ossia::detail::mapper_compute_visitor{}, tv.value, m_drive.v);
+          auto v = ossia::apply(ossia::detail::mapper_compute_visitor{}, tv.value, m_drive.v);
 
-          op->add_raw_value(std::move(newval));
+          op.write_value(std::move(v), tv.timestamp);
         }
       }
     }

@@ -6,7 +6,7 @@
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
 #include <ossia/detail/flat_map.hpp>
-#include <ossia/detail/flat_multimap.hpp>
+//#include <ossia/detail/flat_multimap.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/mutex.hpp>
 namespace ossia
@@ -71,8 +71,8 @@ struct OSSIA_EXPORT execution_state
 
     void insert(const ossia::destination& dest, const data_type& v);
     void insert(const ossia::destination& dest, data_type&& v);
-    void insert(ossia::net::parameter_base& dest, const tvalue& v);
-    void insert(ossia::net::parameter_base& dest, tvalue&& v);
+    void insert(ossia::net::parameter_base& dest, const typed_value& v);
+    void insert(ossia::net::parameter_base& dest, typed_value&& v);
     void insert(ossia::net::parameter_base& dest, const audio_port& v);
     void insert(ossia::net::parameter_base& dest, const midi_port& v);
     void insert(const ossia::state& v);
@@ -92,8 +92,8 @@ struct OSSIA_EXPORT execution_state
     ossia::small_vector<ossia::net::device_base*, 4> allDevices;
 
     // private:// disabled due to tests, but for some reason can't make friend work
-    using value_state_impl = ossia::flat_multimap<int64_t, std::pair<ossia::value, int>>;
-    ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<tvalue, int>>> m_valueState;
+    //using value_state_impl = ossia::flat_multimap<int64_t, std::pair<ossia::value, int>>;
+    ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>> m_valueState;
     ossia::fast_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
     ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<rtmidi::message>> m_midiState;
 

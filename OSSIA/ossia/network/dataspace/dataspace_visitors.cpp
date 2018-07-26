@@ -120,7 +120,7 @@ namespace detail
 template <typename Unit, typename = void>
 struct unit_accessor_helper
 {
-  char operator()(uint8_t n)
+  char operator()(uint8_t)
   {
     return 0;
   }

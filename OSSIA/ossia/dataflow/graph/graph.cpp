@@ -249,7 +249,7 @@ struct rescale_in
     }
     void operator()(ossia::value_port& port)
     {
-      value_vector<ossia::tvalue> values;
+      value_vector<ossia::timed_value> values;
       for(auto& val : port.get_data())
       {
         if(val.timestamp >= request.offset && val.timestamp < request.offset + request.date - prev_date)
@@ -325,7 +325,7 @@ void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
       int i = 0;
       void operator()(const ossia::value_port& p)
       {
-        for(const ossia::tvalue& val : p.get_data())
+        for(const ossia::timed_value& val : p.get_data())
           logger.log(spdlog::level::debug, "input {} (value): {}", i, val.value);
         i++;
       }
@@ -373,7 +373,7 @@ void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
       int i = 0;
       void operator()(const ossia::value_port& p)
       {
-        for(const ossia::tvalue& val : p.get_data())
+        for(const ossia::timed_value& val : p.get_data())
           logger.log(spdlog::level::debug, "output {} (value): {}", i, val.value);
         i++;
       }

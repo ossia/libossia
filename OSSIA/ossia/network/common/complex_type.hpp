@@ -6,6 +6,7 @@
 namespace ossia
 {
 struct unit_t;
+class value;
 using extended_type = std::string;
 
 namespace net
@@ -52,4 +53,10 @@ void update_parameter_type(
 
 OSSIA_EXPORT
 const ossia::net::parameter_data* default_parameter_for_type(std::string_view type);
+
+OSSIA_EXPORT
+ossia::value convert(
+    const ossia::value& v
+    , const ossia::complex_type& source_t
+    , const ossia::complex_type& dest_t);
 }

@@ -8,7 +8,8 @@
 namespace ossia
 {
 class graph;
-struct tvalue;
+struct timed_value;
+struct typed_value;
 class state;
 using token_request_vec = ossia::small_vector<token_request, 4>;
 
@@ -24,8 +25,8 @@ struct OSSIA_EXPORT exec_state_facade
   double currentDate() const noexcept;
   ossia::net::node_base* find_node(std::string_view name) const noexcept;
 
-  void insert(ossia::net::parameter_base& dest, const tvalue& v);
-  void insert(ossia::net::parameter_base& dest, tvalue&& v);
+  void insert(ossia::net::parameter_base& dest, const typed_value& v);
+  void insert(ossia::net::parameter_base& dest, typed_value&& v);
   void insert(ossia::net::parameter_base& dest, const audio_port& v);
   void insert(ossia::net::parameter_base& dest, const midi_port& v);
   void insert(const ossia::state& v);

@@ -17,7 +17,7 @@ class messages final : public ossia::graph_node
     {
       for(auto& msg : data)
       {
-        e.insert(msg.dest.address(), ossia::tvalue{ msg.message_value, msg.dest.index, msg.dest.unit });
+        e.insert(msg.dest.address(), ossia::typed_value{ msg.message_value, msg.dest.index, msg.dest.unit });
       }
     }
 

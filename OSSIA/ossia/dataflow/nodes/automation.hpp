@@ -73,10 +73,10 @@ class OSSIA_EXPORT automation final :
         return;
 
       ossia::value_port* vp = value_out.data.target<ossia::value_port>();
-      vp->add_value(
+      vp->write_value(
             ossia::apply(
               ossia::detail::compute_value_visitor{t.position, ossia::val_type::FLOAT},
-              m_drive), t.date);
+              m_drive), t.tick_start());
     }
 
     ossia::behavior m_drive;

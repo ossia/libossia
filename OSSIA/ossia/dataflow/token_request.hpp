@@ -6,13 +6,13 @@ namespace ossia
 
 struct token_request
 {
-    token_request() noexcept = default;
-    token_request(const token_request&) noexcept = default;
-    token_request(token_request&&) noexcept = default;
-    token_request& operator=(const token_request&) noexcept = default;
-    token_request& operator=(token_request&&) noexcept = default;
+    constexpr token_request() noexcept = default;
+    constexpr token_request(const token_request&) noexcept = default;
+    constexpr token_request(token_request&&) noexcept = default;
+    constexpr token_request& operator=(const token_request&) noexcept = default;
+    constexpr token_request& operator=(token_request&&) noexcept = default;
 
-    token_request(
+    constexpr token_request(
         ossia::time_value prev_d
         , ossia::time_value d
         , double pos
@@ -30,7 +30,7 @@ struct token_request
       }
     }
 
-    token_request(
+    constexpr token_request(
         ossia::time_value prev_d
         , ossia::time_value d
         , double pos
@@ -40,16 +40,36 @@ struct token_request
 
     }
 
-    token_request(ossia::time_value prev_d, ossia::time_value d, double pos) noexcept
+    constexpr token_request(ossia::time_value prev_d, ossia::time_value d, double pos) noexcept
       : token_request{prev_d, d, pos, time_value{}, 1.}
     {
 
     }
 
-    token_request(ossia::time_value prev_d, ossia::time_value d) noexcept
+    constexpr token_request(ossia::time_value prev_d, ossia::time_value d) noexcept
       : token_request{prev_d, d, 0., time_value{}, 1.}
     {
 
+    }
+
+    constexpr bool in_range(ossia::time_value global_time) const
+    {
+      return global_time.impl >= prev_date.impl && global_time.impl < date.impl;
+    }
+
+    constexpr ossia::time_value tick_start() const
+    {
+      return offset;
+    }
+
+    constexpr ossia::time_value to_tick_time(ossia::time_value global_time) const
+    {
+      return global_time - prev_date + offset;
+    }
+
+    constexpr ossia::time_value to_tick_time(int64_t global_time) const
+    {
+      return to_tick_time(ossia::time_value{global_time});
     }
 
     ossia::time_value prev_date{};

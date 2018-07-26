@@ -5,6 +5,7 @@
 #include <ossia/editor/curve/curve_segment/easing.hpp>
 #include <ossia/network/dataspace/color.hpp>
 #include <ossia/detail/flat_map.hpp>
+#include <ossia/network/base/parameter.hpp>
 
 namespace ossia::nodes
 {
@@ -25,17 +26,18 @@ class gradient final : public ossia::graph_node
       m_data = std::move(t);
     }
 
-    void handle_before_first(double position)
+    void handle_before_first(ossia::token_request tk)
     {
+      auto position = tk.position;
       auto& out = *m_outlets[0]->data.target<ossia::value_port>();
       auto beg = m_data.begin();
       if(beg->first >= position)
       {
-        out.add_raw_value(ossia::argb{beg->second}.dataspace_value);
+        out.write_value(ossia::argb{beg->second}.dataspace_value, tk.tick_start());
       }
       else if(!mustTween)
       {
-        out.add_raw_value(ossia::argb{beg->second}.dataspace_value);
+        out.write_value(ossia::argb{beg->second}.dataspace_value, tk.tick_start());
       }
       else
       {
@@ -52,7 +54,7 @@ class gradient final : public ossia::graph_node
             tween = ossia::argb{beg->second};
           }
         }
-        out.add_raw_value(ease_color(0., *tween, beg->first, beg->second, position).dataspace_value);
+        out.write_value(ease_color(0., *tween, beg->first, beg->second, position).dataspace_value, tk.tick_start());
       }
     }
 
@@ -63,10 +65,10 @@ class gradient final : public ossia::graph_node
       switch (m_data.size())
       {
         case 0:
-          out.add_raw_value(ossia::vec4f{0., 0., 0., 0.});
+          out.write_value(ossia::vec4f{0., 0., 0., 0.}, t.tick_start());
           return;
         case 1:
-          handle_before_first(t.position);
+          handle_before_first(t);
           return;
         default:
         {
@@ -74,22 +76,22 @@ class gradient final : public ossia::graph_node
           // Before start
           if (it_next == m_data.begin())
           {
-            handle_before_first(t.position);
+            handle_before_first(t);
             return;
           }
           // past end
           if (it_next == m_data.end())
           {
-            out.add_raw_value(ossia::argb{m_data.rbegin()->second}.dataspace_value);
+            out.write_value(ossia::argb{m_data.rbegin()->second}.dataspace_value, t.tick_start());
             return;
           }
 
           auto it_prev = it_next;
           --it_prev;
 
-          out.add_raw_value(
+          out.write_value(
                 ease_color(it_prev->first, it_prev->second,
-                           it_next->first, it_next->second, t.position).dataspace_value);
+                           it_next->first, it_next->second, t.position).dataspace_value, t.tick_start());
           return;
         }
       }

@@ -1,8 +1,10 @@
 #pragma once
 #include <ossia/dataflow/execution_state.hpp>
-#include <ossia/dataflow/graph/graph_utils.hpp>
+#include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <map>
 
 #if defined(SCORE_BENCHMARK)
 #if __has_include(<valgrind/callgrind.h>)
@@ -78,7 +80,7 @@ namespace ossia
 struct tick_all_nodes
 {
     ossia::execution_state& e;
-    ossia::graph_base& g;
+    ossia::graph_interface& g;
 
     void operator()(unsigned long samples, double) const
     {
@@ -88,8 +90,8 @@ struct tick_all_nodes
       e.samples_since_start += samples;
       const time_value new_date{e.samples_since_start};
 
-      for(auto& node : g.m_nodes)
-        node.first->request(
+      for(auto& node : g.get_nodes())
+        node->request(
                 token_request{old_date, new_date});
 
       g.state(e);
@@ -149,11 +151,11 @@ template<void(ossia::execution_state::*Commit)()>
 struct split_score_tick
 {
   public:
-    split_score_tick(ossia::execution_state& a, ossia::graph_base& b, ossia::time_interval& c):
+    split_score_tick(ossia::execution_state& a, ossia::graph_interface& b, ossia::time_interval& c):
       st{a}, g{b}, itv{c} { }
 
     ossia::execution_state& st;
-    ossia::graph_base& g;
+    ossia::graph_interface& g;
     ossia::time_interval& itv;
 
     static void do_cuts(
@@ -200,27 +202,27 @@ struct split_score_tick
       }
     }
 
-    void cut(ossia::graph_base& g)
+    void cut(ossia::graph_interface& g)
     {
       cuts.clear();
       requests.clear();
-      for(const auto& node : g.m_nodes)
+      for(const auto& node : g.get_nodes())
       {
-        for(const auto& tk : node.first->requested_tokens)
+        for(const auto& tk : node->requested_tokens)
         {
           cuts.insert(tk.offset);
           cuts.insert(tk.offset + std::abs(tk.date - tk.prev_date));
         }
       }
 
-      for(auto& node : g.m_nodes)
+      for(auto& node : g.get_nodes())
       {
-        if(!node.first->requested_tokens.empty())
+        if(!node->requested_tokens.empty())
         {
-          do_cuts(cuts, node.first->requested_tokens, node.first->requested_tokens.front().prev_date);
-          auto it = requests.insert({node.first.get(), { std::move(node.first->requested_tokens) , {} }});
+          do_cuts(cuts, node->requested_tokens, node->requested_tokens.front().prev_date);
+          auto it = requests.insert({node, { std::move(node->requested_tokens) , {} }});
           it.first->second.second = it.first->second.first.begin(); // set iterator to begin() of token requests
-          node.first->requested_tokens.clear();
+          node->requested_tokens.clear();
         }
       }
       for(auto& cut : cuts)
@@ -228,12 +230,12 @@ struct split_score_tick
         st.clear_local_state();
         st.get_new_values();
 
-        for(auto& node : g.m_nodes)
+        for(auto& node : g.get_nodes())
         {
-          auto& req = requests[node.first.get()];
+          auto& req = requests[node];
           if(req.second != req.first.end() && req.second->offset == cut)
           {
-            node.first->request(*req.second);
+            node->request(*req.second);
             ++req.second;
           }
         }

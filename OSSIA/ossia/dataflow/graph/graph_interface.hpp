@@ -28,6 +28,8 @@ public:
   virtual void clear() = 0;
 
   virtual void print(std::ostream&) = 0;
+
+  virtual const std::vector<ossia::graph_node*>& get_nodes() const noexcept = 0;
 };
 
 struct graph_setup_options

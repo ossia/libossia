@@ -86,7 +86,7 @@ void push_value(const ossia::outlet_ptr& p, ossia::value val) {
   if(p)
   {
     if(auto op = p->data.target<ossia::value_port>())
-      op->add_raw_value(std::move(val));
+      op->write_value(std::move(val), 0);
   }
 }
 

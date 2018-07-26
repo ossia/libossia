@@ -13,7 +13,8 @@ public:
   {
     m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
   }
-  ~step()
+
+  ~step() override
   {
 
   }
@@ -31,7 +32,7 @@ public:
       {
         if(i % dur == 0)
         {
-          port.add_value(values[(i / dur) % values.size()], i - t.prev_date + t.offset);
+          port.write_value(values[(i / dur) % values.size()], t.to_tick_time(i));
         }
       }
     }
