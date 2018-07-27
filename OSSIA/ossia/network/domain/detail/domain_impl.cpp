@@ -41,14 +41,17 @@ struct domain_prettyprint_visitor
   template <typename Domain>
   void operator()(const Domain& dom)
   {
-    writer.write("min: {}", *dom.min);
-    writer.write("max: {}", *dom.max);
-    // TODO values
+    writer.write("min: {} ; ", *dom.min);
+    writer.write("max: {} ; ", *dom.max);
+    writer << "values: {";
+    for(auto& e : dom.values)
+      writer <<  e << ", ";
+    writer << "}";
   }
 
   void operator()(const domain_base<bool>& dom)
   {
-    writer << true << "bool";
+    writer << "bool";
   }
   void operator()(const domain_base<impulse>& dom)
   {
@@ -58,22 +61,65 @@ struct domain_prettyprint_visitor
   template <std::size_t N>
   void operator()(const vecf_domain<N>& dom)
   {
-    writer << "array";
+    writer << "array: ";
+
+    writer << "min: [";
+    for(std::size_t i = 0; i < N; i++)
+    {
+      if(dom.min[i])
+        writer << *dom.min[i];
+      else
+        writer << "none";
+      if(i < N - 1)
+        writer << ",";
+    }
+    writer << "] ; max: [";
+    for(std::size_t i = 0; i < N; i++)
+    {
+      if(dom.max[i])
+        writer << *dom.max[i];
+      else
+        writer << "none";
+      if(i < N - 1)
+        writer << ",";
+    }
+    writer << "]";
+    // TODO values
   }
 
   void operator()(const domain_base<std::string>& dom)
   {
-    writer << "string";
+    writer << "string: {";
+    for(auto& e : dom.values)
+      writer << "\"" << e << "\", ";
+    writer << "}";
   }
 
   void operator()(const domain_base<ossia::value>& dom)
   {
     writer << "generic";
+    // TODO
   }
 
   void operator()(const vector_domain& dom)
   {
-    writer << "list";
+    writer << "list: ";
+
+    writer << "min: [";
+    for(std::size_t i = 0; i < dom.min.size(); i++)
+    {
+      writer << value_to_pretty_string(dom.min[i]);
+      if(i < dom.min.size() - 1)
+        writer << ",";
+    }
+    writer << "] ; max: [";
+    for(std::size_t i = 0; i < dom.max.size(); i++)
+    {
+      writer << value_to_pretty_string(dom.max[i]);
+      if(i < dom.max.size() - 1)
+        writer << ",";
+    }
+    writer << "]";
   }
 };
 

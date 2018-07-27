@@ -22,8 +22,10 @@ void set_min(domain& dom, const ossia::value& val)
 {
   if (dom && val.valid())
     return ossia::apply(domain_set_min_visitor{}, dom.v, val.v);
-  else if (dom) // Remove the value
+  else if (dom && !val.valid()) // Remove the value
     return ossia::apply_nonnull(domain_set_min_visitor{}, dom.v);
+  else if(!dom && val.valid())
+    dom = ossia::apply_nonnull(domain_min_creation_visitor{}, val.v);
 }
 
 void set_max(domain& dom, const ossia::value& val)
@@ -32,6 +34,8 @@ void set_max(domain& dom, const ossia::value& val)
     return ossia::apply(domain_set_max_visitor{}, dom.v, val.v);
   else if (dom)
     return ossia::apply_nonnull(domain_set_max_visitor{}, dom.v);
+  else if(!dom && val.valid())
+    dom = ossia::apply_nonnull(domain_max_creation_visitor{}, val.v);
 }
 
 void set_values(domain& dom, const std::vector<ossia::value>& val)

@@ -449,6 +449,90 @@ struct domain_minmax_creation_visitor
   }
 };
 
+struct domain_min_creation_visitor
+{
+  template <typename T>
+  OSSIA_INLINE domain operator()(T min)
+  {
+    return domain_base<T>(min, {});
+  }
+
+  OSSIA_INLINE domain operator()(bool min)
+  {
+    return domain_base<bool>{};
+  }
+
+  template <std::size_t N>
+  OSSIA_INLINE domain
+  operator()(const std::array<float, N>& lhs)
+  {
+    return vecf_domain<N>(lhs, {});
+  }
+
+  OSSIA_INLINE domain operator()(
+      const std::vector<ossia::value>& min)
+  {
+    return vector_domain(min, {});
+  }
+  OSSIA_INLINE domain
+  operator()(std::vector<ossia::value>&& min)
+  {
+    return vector_domain(std::move(min), std::vector<ossia::value>(min.size()));
+  }
+
+  OSSIA_INLINE domain operator()(impulse)
+  {
+    return domain_base<impulse>{};
+  }
+
+  OSSIA_INLINE domain operator()(const std::string&)
+  {
+    return domain_base<std::string>();
+  }
+};
+
+struct domain_max_creation_visitor
+{
+  template <typename T>
+  OSSIA_INLINE domain operator()(T max)
+  {
+    return domain_base<T>({}, max);
+  }
+
+  OSSIA_INLINE domain operator()(bool max)
+  {
+    return domain_base<bool>{};
+  }
+
+  template <std::size_t N>
+  OSSIA_INLINE domain
+  operator()(const std::array<float, N>& max)
+  {
+    return vecf_domain<N>({}, max);
+  }
+
+  OSSIA_INLINE domain operator()(
+      const std::vector<ossia::value>& max)
+  {
+    return vector_domain({}, max);
+  }
+  OSSIA_INLINE domain
+  operator()(std::vector<ossia::value>&& max)
+  {
+    return vector_domain(std::vector<ossia::value>(max.size()), std::move(max));
+  }
+
+  OSSIA_INLINE domain operator()(impulse)
+  {
+    return domain_base<impulse>{};
+  }
+
+  OSSIA_INLINE domain operator()(const std::string)
+  {
+    return domain_base<std::string>();
+  }
+};
+
 /**
  * @brief The domain_value_set_creation_visitor struct
  *
