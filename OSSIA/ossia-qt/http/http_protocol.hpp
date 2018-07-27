@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
 #include <wobjectdefs.h>
-#include <ossia-qt/http/http_parameter.hpp>
+#include <ossia/network/generic/wrapped_parameter.hpp>
+#include <ossia-qt/js_utilities.hpp>
 
 #include <QByteArray>
 #include <QJSValue>
@@ -17,10 +18,57 @@ namespace ossia
 {
 namespace net
 {
-class http_device;
-class http_node;
-class http_parameter;
 
+struct http_parameter_data_base
+{
+  http_parameter_data_base() = default;
+  http_parameter_data_base(const http_parameter_data_base&) = default;
+  http_parameter_data_base(http_parameter_data_base&&) = default;
+  http_parameter_data_base& operator=(const http_parameter_data_base&) = default;
+  http_parameter_data_base& operator=(http_parameter_data_base&&) = default;
+  http_parameter_data_base(const QJSValue& val)
+  {
+    auto r = val.property("request");
+    if (r.isString())
+    {
+      request = r.toString();
+
+      auto a = val.property("answer");
+      if (a.isCallable())
+      {
+        answer = a;
+      }
+    }
+  }
+
+  QString request;
+  QJSValue answer;
+};
+
+struct http_parameter_data : public parameter_data, public http_parameter_data_base
+{
+  using base_data_type = http_parameter_data_base;
+  http_parameter_data() = default;
+  http_parameter_data(const http_parameter_data&) = default;
+  http_parameter_data(http_parameter_data&&) = default;
+  http_parameter_data& operator=(const http_parameter_data&) = default;
+  http_parameter_data& operator=(http_parameter_data&&) = default;
+
+  http_parameter_data(const std::string& name) : parameter_data{name}
+  {
+  }
+
+  http_parameter_data(const QJSValue& val)
+      : parameter_data{ossia::qt::make_parameter_data(val)}
+      , http_parameter_data_base{val}
+  {
+  }
+
+  bool valid() const noexcept { return !request.isEmpty() || type; }
+};
+
+using http_parameter = wrapped_parameter<http_parameter_data>;
+using http_node = ossia::net::wrapped_node<http_parameter_data, http_parameter>;
 class OSSIA_EXPORT http_protocol final
     : public QObject
     , public ossia::net::protocol_base
@@ -67,9 +115,10 @@ private:
   QNetworkAccessManager* m_access{};
 
   QByteArray m_code;
-  http_device* m_device{};
+  ossia::net::device_base* m_device{};
   QList<std::pair<QNetworkReply*, const http_parameter*>> m_replies;
 };
+using http_device = ossia::net::wrapped_device<http_node, http_protocol>;
 }
 }
 

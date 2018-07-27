@@ -3,10 +3,10 @@
 #include <ossia/detail/config.hpp>
 #include <QtTest>
 #include <ossia/context.hpp>
-#include <ossia-qt/http/http.hpp>
 #include <ossia/network/midi/midi.hpp>
 #include <ossia/network/osc/osc.hpp>
-#include <ossia-qt/websocket-generic-client/ws_generic_client.hpp>
+#include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
+#include <ossia-qt/http/http_protocol.hpp>
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>

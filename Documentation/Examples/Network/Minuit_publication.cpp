@@ -83,10 +83,6 @@ int main()
   localFloatAddress->push_value(0.5);
   localStringAddress->push_value("hello world !"s);
 
-  // FIXME
-  // Destination d(localFloatNode);
-  // localDestinationAddress->push_value(&d);
-
   localTupleAddress->push_value(std::vector<ossia::value>{0., 1., 2.});
 
   // declare a distant program as a Minuit device

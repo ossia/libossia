@@ -1,11 +1,11 @@
 #pragma once
+#include <ossia-qt/js_utilities.hpp>
 #include <ossia/detail/logger.hpp>
-#include <wobjectdefs.h>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/generic/wrapped_parameter.hpp>
+#include <wobjectdefs.h>
 #include <QObject>
 #include <QSerialPort>
-#include <ossia-qt/js_utilities.hpp>
-#include <ossia-qt/serial/serial_parameter_data.hpp>
 
 class QQmlEngine;
 class QQmlComponent;
@@ -14,6 +14,53 @@ namespace ossia
 {
 namespace net
 {
+struct serial_parameter_data_base
+{
+  serial_parameter_data_base() = default;
+  serial_parameter_data_base(const serial_parameter_data_base&) = default;
+  serial_parameter_data_base(serial_parameter_data_base&&) = default;
+  serial_parameter_data_base& operator=(const serial_parameter_data_base&)
+      = default;
+  serial_parameter_data_base& operator=(serial_parameter_data_base&&) = default;
+  serial_parameter_data_base(const QJSValue& val)
+  {
+    auto r = val.property("request");
+    if (r.isString())
+    {
+      request = r.toString();
+    }
+    else
+    {
+      request = val.property("name").toString();
+    }
+  }
+
+  QString request;
+};
+
+struct serial_parameter_data final
+    : public parameter_data
+    , public serial_parameter_data_base
+{
+  using base_data_type = serial_parameter_data_base;
+  serial_parameter_data() = default;
+  serial_parameter_data(const serial_parameter_data&) = default;
+  serial_parameter_data(serial_parameter_data&&) = default;
+  serial_parameter_data& operator=(const serial_parameter_data&) = default;
+  serial_parameter_data& operator=(serial_parameter_data&&) = default;
+
+  serial_parameter_data(const std::string& name) : parameter_data{name}
+  {
+  }
+
+  serial_parameter_data(const QJSValue& val)
+      : parameter_data{ossia::qt::make_parameter_data(val)}
+      , serial_parameter_data_base{val}
+  {
+  }
+
+  bool valid() const noexcept { return !request.isEmpty() || type; }
+};
 class OSSIA_EXPORT serial_wrapper final
     : public QObject
 {
@@ -57,7 +104,8 @@ public:
 };
 
 
-class serial_device;
+using serial_parameter = wrapped_parameter<serial_parameter_data>;
+using serial_node = ossia::net::wrapped_node<serial_parameter_data, serial_parameter>;
 class OSSIA_EXPORT serial_protocol final
     : public QObject
     , public ossia::net::protocol_base
@@ -81,13 +129,15 @@ public:
   }
 
 private:
-  QQmlEngine* mEngine{};
-  QQmlComponent* mComponent{};
+  QQmlEngine* m_engine{};
+  QQmlComponent* m_component{};
 
-  serial_device* mDevice{};
-  QObject* mObject{};
-  mutable serial_wrapper mSerialPort;
-  QByteArray mCode;
+  ossia::net::device_base* m_device{};
+  QObject* m_object{};
+  mutable serial_wrapper m_serialPort;
+  QByteArray m_code;
 };
+using serial_device = ossia::net::wrapped_device<serial_node, serial_protocol>;
+
 }
 }

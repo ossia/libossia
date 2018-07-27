@@ -337,7 +337,6 @@ value variant_inbound_visitor::operator()() const
 ossia::complex_type get_type(const QJSValue& val)
 {
   // TODO handle other cases ? string, extended, etc...
-  qDebug() << val.isNumber() << val.isString();
   auto opt_t = get_enum<ossia::val_type>(val);
   if (opt_t)
     return *opt_t;
@@ -765,11 +764,25 @@ operator()(QVariant::Type type, const value& ossia_val)
     }
     case QVariant::List:
     {
-      // TODO
+      auto val = convert<std::vector<ossia::value>>(ossia_val);
+      QVariantList vars;
+      vars.reserve(val.size());
+      for(auto& v : val)
+      {
+        vars.push_back(v.apply(ossia_to_qvariant{}));
+      }
+      return vars;
     }
     case QVariant::StringList:
     {
-      // TODO list of string
+      auto val = convert<std::vector<ossia::value>>(ossia_val);
+      QStringList vars;
+      vars.reserve(val.size());
+      for(auto& v : val)
+      {
+        vars.push_back(QString::fromStdString(convert<std::string>(v)));
+      }
+      return vars;
     }
     case QVariant::Date:
     // TODO double ?
@@ -777,7 +790,6 @@ operator()(QVariant::Type type, const value& ossia_val)
     {
       // Use the ossia type instead
       return ossia_val.apply(*this);
-      break;
     }
   }
   return {};

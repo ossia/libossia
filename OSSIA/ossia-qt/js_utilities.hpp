@@ -504,7 +504,7 @@ void create_device(Device_T& device, QJSValue root)
   {
     it.next();
     create_node_rec<Device_T, Node_T, Protocol_T>(
-        it.value(), device, static_cast<Node_T&>(device));
+        it.value(), device, static_cast<Node_T&>(device.get_root_node()));
   }
 }
 

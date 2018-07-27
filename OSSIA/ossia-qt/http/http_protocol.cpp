@@ -1,10 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "http_protocol.hpp"
-#include <ossia-qt/http/http_parameter.hpp>
-#include <ossia-qt/http/http_parameter_data.hpp>
-#include <ossia-qt/http/http_device.hpp>
-#include <ossia-qt/http/http_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
 
 #include <QJSValueIterator>
@@ -41,7 +37,7 @@ http_protocol::http_protocol(QByteArray code)
             QVariant ret;
             QMetaObject::invokeMethod(
                 item, "createTree", Q_RETURN_ARG(QVariant, ret));
-            qt::create_device<http_device, http_node, http_protocol>(
+            qt::create_device<ossia::net::device_base, http_node, http_protocol>(
                 *m_device, ret.value<QJSValue>());
 
             return;
@@ -100,11 +96,8 @@ bool http_protocol::observe(parameter_base&, bool enable)
 
 void http_protocol::set_device(device_base& dev)
 {
-  if (auto htdev = dynamic_cast<http_device*>(&dev))
-  {
-    m_device = htdev;
-    m_component->setData(m_code, QUrl{});
-  }
+  m_device = &dev;
+  m_component->setData(m_code, QUrl{});
 }
 
 void http_protocol::slot_push(const http_parameter* addr_p)
@@ -151,7 +144,7 @@ void http_protocol::apply_reply(QJSValue arr)
       continue;
 
     auto addr_txt = addr.toString().toStdString();
-    auto n = find_node(*m_device, addr_txt);
+    auto n = ossia::net::find_node(m_device->get_root_node(), addr_txt);
     if (!n)
       continue;
 

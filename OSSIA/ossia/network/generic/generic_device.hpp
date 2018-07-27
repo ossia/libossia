@@ -7,8 +7,9 @@ namespace ossia
 {
 namespace net
 {
-class OSSIA_EXPORT generic_device final : public ossia::net::device_base,
-                                          public generic_node
+class OSSIA_EXPORT generic_device final
+    : public ossia::net::device_base
+    , public generic_node
 {
 public:
   explicit generic_device(std::string name = "");
@@ -35,5 +36,6 @@ public:
 
   ~generic_device();
 };
+
 }
 }

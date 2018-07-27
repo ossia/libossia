@@ -7,7 +7,6 @@
 #include <ossia/network/dataspace/orientation.hpp>
 #include <ossia/network/dataspace/position.hpp>
 #include <ossia/network/dataspace/speed.hpp>
-#include <ossia/network/dataspace/temperature.hpp>
 #include <ossia/network/dataspace/time.hpp>
 #include <functional>
 namespace ossia
