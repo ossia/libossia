@@ -3,6 +3,22 @@
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <vector>
+#include <string>
+#include <memory>
+namespace ossia
+{
+using audio_sample = double;
+using audio_array = std::vector<std::vector<audio_sample>>;
+
+struct audio_data
+{
+  std::string file_path;
+  audio_array data;
+};
+
+using audio_handle = std::shared_ptr<audio_data>;
+}
 
 namespace ossia::nodes
 {
@@ -169,9 +185,14 @@ class sound_ref final :
     void set_start_offset(std::size_t v) { start_offset = v; }
     void set_upmix(std::size_t v) { upmix = v; }
 
-    void set_sound(ossia::small_vector<gsl::span<double>, 8> vec)
+    void set_sound(const audio_handle& hdl)
     {
-      m_data = std::move(vec);
+      m_handle = hdl;
+      m_data.clear();
+      if(hdl)
+      {
+        m_data.assign(m_handle->data.begin(), m_handle->data.end());
+      }
     }
 
     void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
@@ -283,10 +304,11 @@ class sound_ref final :
     std::size_t duration() const { return m_data.empty() ? 0 : m_data[0].size(); }
 
   private:
-    ossia::small_vector<gsl::span<double>, 8> m_data;
+    ossia::small_vector<gsl::span<const double>, 8> m_data;
     std::size_t start{};
     std::size_t start_offset{};
     std::size_t upmix{};
     ossia::outlet audio_out{ossia::audio_port{}};
+    audio_handle m_handle;
 };
 }
