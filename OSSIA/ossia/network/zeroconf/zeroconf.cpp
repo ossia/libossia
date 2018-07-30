@@ -88,7 +88,7 @@ zeroconf_server make_zeroconf_server(
   server->set("LocalName", local_name);
   server->set("RemotePort", std::to_string(remote_port));
   server->set("Description", description);
-
+  server->set("WebSockets", "true");
   server->announce(local_port, description);
 
   return zeroconf_server{std::move(server)};
