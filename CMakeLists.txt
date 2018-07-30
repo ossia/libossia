@@ -1,6 +1,11 @@
 set(CMAKE_MODULE_PATH
   "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+
+if(APPLE AND EXISTS /usr/local/opt/qt5)
+  list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5")
+endif()
+
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(OSSIA CXX)
