@@ -454,7 +454,9 @@ struct domain_min_creation_visitor
   template <typename T>
   OSSIA_INLINE domain operator()(T min)
   {
-    return domain_base<T>(min, {});
+    domain_base<T> dom;
+    dom.min = std::move(min);
+    return dom;
   }
 
   OSSIA_INLINE domain operator()(bool min)
@@ -464,15 +466,22 @@ struct domain_min_creation_visitor
 
   template <std::size_t N>
   OSSIA_INLINE domain
-  operator()(const std::array<float, N>& lhs)
+  operator()(const std::array<float, N>& min)
   {
-    return vecf_domain<N>(lhs, {});
+    vecf_domain<N> dom;
+    for(int i = 0; i < N; i++)
+    {
+      dom.min[i] = min[i];
+    }
+    return dom;
   }
 
   OSSIA_INLINE domain operator()(
       const std::vector<ossia::value>& min)
   {
-    return vector_domain(min, {});
+    vector_domain dom;
+    dom.min = min;
+    return dom;
   }
   OSSIA_INLINE domain
   operator()(std::vector<ossia::value>&& min)
@@ -496,7 +505,9 @@ struct domain_max_creation_visitor
   template <typename T>
   OSSIA_INLINE domain operator()(T max)
   {
-    return domain_base<T>({}, max);
+    domain_base<T> dom;
+    dom.max = std::move(max);
+    return dom;
   }
 
   OSSIA_INLINE domain operator()(bool max)
@@ -508,18 +519,25 @@ struct domain_max_creation_visitor
   OSSIA_INLINE domain
   operator()(const std::array<float, N>& max)
   {
-    return vecf_domain<N>({}, max);
+    vecf_domain<N> dom;
+    for(int i = 0; i < N; i++)
+    {
+      dom.max[i] = max[i];
+    }
+    return dom;
   }
 
   OSSIA_INLINE domain operator()(
       const std::vector<ossia::value>& max)
   {
-    return vector_domain({}, max);
+    vector_domain dom;
+    dom.max = max;
+    return dom;
   }
   OSSIA_INLINE domain
   operator()(std::vector<ossia::value>&& max)
   {
-    return vector_domain(std::vector<ossia::value>(max.size()), std::move(max));
+    return vector_domain(std::move(max), std::vector<ossia::value>(max.size()));
   }
 
   OSSIA_INLINE domain operator()(impulse)
@@ -527,7 +545,7 @@ struct domain_max_creation_visitor
     return domain_base<impulse>{};
   }
 
-  OSSIA_INLINE domain operator()(const std::string)
+  OSSIA_INLINE domain operator()(const std::string&)
   {
     return domain_base<std::string>();
   }

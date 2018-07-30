@@ -29,7 +29,7 @@ struct json_parser_impl
   static bool
   ReadValue(const rapidjson::Value& val, ossia::bounding_mode& res);
   static bool ReadValue(const rapidjson::Value& val, ossia::access_mode& am);
-  static bool ReadValue(const rapidjson::Value& val, ossia::domain& res);
+  static bool ReadValue(const ossia::net::node_base&, const rapidjson::Value& val, ossia::domain& res);
   static bool ReadValue(const rapidjson::Value& val, ossia::unit_t& res);
   static bool ReadValue(const rapidjson::Value& val, ossia::net::tags& res);
   static bool

@@ -549,23 +549,38 @@ private Q_SLOTS:
   {
     using namespace ossia;
     { // No domain
-      domain d;
-      QVERIFY(get_min(d) == value{});
-      QVERIFY(get_max(d) == value{});
+      {
+        domain d;
+        QVERIFY(get_min(d) == value{});
+        QVERIFY(get_max(d) == value{});
+      }
+
+      {
+        domain d;
+        set_min(d, impulse{});
+        QVERIFY(get_min(d) == impulse{});
+        QVERIFY(get_max(d) == impulse{});
+      }
+      {
+        domain d;
+        set_max(d, impulse{});
+        QVERIFY(get_min(d) == impulse{});
+        QVERIFY(get_max(d) == impulse{});
+      }
 
 
-      set_min(d, impulse{});
-      QVERIFY(get_min(d) == value{});
-
-      set_max(d, impulse{});
-      QVERIFY(get_max(d) == value{});
-
-      set_min(d, int{});
-      QVERIFY(get_min(d) == value{});
-
-      set_max(d, int{});
-      QVERIFY(get_max(d) == value{});
-
+      {
+        domain d;
+        set_min(d, int{123});
+        QVERIFY(get_min(d) == int{123});
+        QVERIFY(get_max(d) == value{});
+      }
+      {
+        domain d;
+        set_max(d, int{123});
+        QVERIFY(get_max(d) == int{123});
+        QVERIFY(get_min(d) == value{});
+      }
       // etc...
     }
 

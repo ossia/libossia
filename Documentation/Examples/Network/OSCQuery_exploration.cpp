@@ -41,7 +41,6 @@ int main()
   // Display the tree in console
   explore(device.get_root_node());
 
-  std::cerr << device.get_root_node().find_child("foo")->get_parameter()->get_domain() << std::endl;
   while(true)
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 

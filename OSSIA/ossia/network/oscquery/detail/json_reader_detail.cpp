@@ -220,7 +220,56 @@ static bool ReadValueObject(const rapidjson::Value& val, domain& res)
   return false;
 }
 
-bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
+template<std::size_t N>
+vecf_domain<N> parse_vecf( const rapidjson::Value& val)
+{
+  vecf_domain<N> dom;
+  const auto& arr = val.GetArray();
+  for (std::size_t i = 0; i < std::min((std::size_t)arr.Size(), N); i++)
+  {
+    const rapidjson::Value& elt = arr[i];
+    if (elt.IsObject())
+    {
+      auto min_it = elt.FindMember("MIN");
+      auto max_it = elt.FindMember("MAX");
+      //auto values_it = elt.FindMember("VALS");
+
+      auto mem_end = elt.MemberEnd();
+
+      /* TODO values for vecf
+      if (values_it != mem_end)
+      {
+        if (values_it->value.IsArray())
+        {
+          for (auto& val : values_it->value.GetArray())
+          {
+            dom.values[i].insert(ReadValue(val));
+          }
+        }
+      }
+      */
+
+      if (min_it != mem_end)
+      {
+        float f;
+        if(json_parser_impl::ReadValue(min_it->value, f))
+          dom.min[i] = f;
+      }
+
+      if (max_it != mem_end)
+      {
+        float f;
+        if(json_parser_impl::ReadValue(max_it->value, f))
+          dom.max[i] = f;
+      }
+    }
+  }
+  return dom;
+}
+bool json_parser_impl::ReadValue(
+    const ossia::net::node_base& node
+    , const rapidjson::Value& val
+    , domain& res)
 {
   if (val.IsObject())
   {
@@ -228,50 +277,74 @@ bool json_parser_impl::ReadValue(const rapidjson::Value& val, domain& res)
   }
   else if (val.IsArray())
   {
-    // TODO handle vecf domains.
-    vector_domain dom;
-    dom.min.resize(val.GetArray().Size());
-    dom.max.resize(val.GetArray().Size());
-    dom.values.resize(val.GetArray().Size());
-
-    int i = 0;
-    for (const rapidjson::Value& elt : val.GetArray())
+    auto t = node.get_parameter()->get_value_type();
+    switch(t)
     {
-      if (elt.IsObject())
+      case ossia::val_type::VEC2F:
+        res = parse_vecf<2>(val);
+        return true;
+      case ossia::val_type::VEC3F:
+        res = parse_vecf<3>(val);
+        return true;
+      case ossia::val_type::VEC4F:
+        res = parse_vecf<4>(val);
+        return true;
+      case ossia::val_type::LIST:
       {
-        auto min_it = elt.FindMember("MIN");
-        auto max_it = elt.FindMember("MAX");
-        auto values_it = elt.FindMember("VALS");
+        vector_domain dom;
+        dom.min.resize(val.GetArray().Size());
+        dom.max.resize(val.GetArray().Size());
+        dom.values.resize(val.GetArray().Size());
 
-        auto mem_end = elt.MemberEnd();
-
-        if (values_it != mem_end)
+        int i = 0;
+        for (const rapidjson::Value& elt : val.GetArray())
         {
-          if (values_it->value.IsArray())
+          if (elt.IsObject())
           {
-            for (auto& val : values_it->value.GetArray())
+            auto min_it = elt.FindMember("MIN");
+            auto max_it = elt.FindMember("MAX");
+            auto values_it = elt.FindMember("VALS");
+
+            auto mem_end = elt.MemberEnd();
+
+            if (values_it != mem_end)
             {
-              dom.values[i].insert(ReadValue(val));
+              if (values_it->value.IsArray())
+              {
+                for (auto& val : values_it->value.GetArray())
+                {
+                  dom.values[i].insert(ReadValue(val));
+                }
+              }
+            }
+
+            if (min_it != mem_end)
+            {
+              dom.min[i] = ReadValue(min_it->value);
+            }
+
+            if (max_it != mem_end)
+            {
+              dom.max[i] = ReadValue(max_it->value);
             }
           }
+
+          i++;
         }
 
-        if (min_it != mem_end)
-        {
-          dom.min[i] = ReadValue(min_it->value);
-        }
-
-        if (max_it != mem_end)
-        {
-          dom.max[i] = ReadValue(max_it->value);
-        }
+        res = std::move(dom);
+        return true;
       }
 
-      i++;
+      default:
+      {
+        const rapidjson::Value& elt = *val.GetArray().Begin();
+        if(elt.IsObject())
+        {
+          return ReadValueObject(elt, res);
+        }
+      }
     }
-
-    res = std::move(dom);
-    return true;
   }
 
   return false;
@@ -335,6 +408,20 @@ static auto make_setter_pair()
           Attr::setter(node, std::move(res));
       });
 }
+
+template <>
+auto make_setter_pair<ossia::net::domain_attribute>()
+{
+  using Attr = ossia::net::domain_attribute;
+  return std::make_pair(
+      metadata<Attr>::key(),
+      [](const rapidjson::Value& val, ossia::net::node_base& node) {
+        typename Attr::type res;
+        if (json_parser_impl::ReadValue(node, val, res))
+          Attr::setter(node, std::move(res));
+      });
+}
+
 
 using reader_map_type = string_view_map<map_setter_fun>;
 
@@ -428,8 +515,6 @@ static ossia::val_type VecTypetag(const rapidjson::Value& val)
 void json_parser_impl::readObject(
     net::node_base& node, const rapidjson::Value& obj)
 {
-  auto& map = namespaceSetterMap();
-
   // If it's a real parameter
   if (obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
   {
@@ -574,6 +659,7 @@ void json_parser_impl::readObject(
     }
 
     // Read all the members
+    auto& map = namespaceSetterMap();
     auto memb_end = obj.MemberEnd();
     for (auto it = obj.MemberBegin(); it != memb_end; ++it)
     {
