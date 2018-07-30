@@ -613,12 +613,39 @@ void json_parser_impl::readObject(
       // We have a type. Now we read the value according to it.
       if (value_it != obj.MemberEnd())
       {
+        if(typetag == "m")
+          typetag = "iiii";
+        else if(typetag == "r")
+          typetag = "ffff";
         ossia::value res = node.get_parameter()->value();
-        int typetag_counter = 0;
-        bool ok = res.apply(oscquery::detail::json_to_value{
-            value_it->value, typetag, typetag_counter});
-        if (ok)
-          node.get_parameter()->set_value(std::move(res));
+        const rapidjson::Value& v = value_it->value;
+        if(typetag.size() == 1)
+        {
+          if(v.IsArray())
+          {
+            const auto& ar = v.GetArray();
+            if(!ar.Empty())
+            {
+              bool ok = res.apply(oscquery::detail::json_to_single_value{*ar.Begin()});
+              if (ok)
+                node.get_parameter()->set_value(std::move(res));
+            }
+          }
+          else
+          {
+            bool ok = res.apply(oscquery::detail::json_to_single_value{v});
+            if (ok)
+              node.get_parameter()->set_value(std::move(res));
+          }
+        }
+        else
+        {
+          int typetag_counter = 0;
+          bool ok = res.apply(oscquery::detail::json_to_value{
+              v, typetag, typetag_counter});
+          if (ok)
+            node.get_parameter()->set_value(std::move(res));
+        }
       }
 
       // Same for default value

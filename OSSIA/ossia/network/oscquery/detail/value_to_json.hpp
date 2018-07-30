@@ -328,6 +328,74 @@ struct json_to_value
   }
 };
 
+struct json_to_single_value
+{
+  const rapidjson::Value& val;
+  bool operator()(impulse) const
+  {
+    return val.IsNull();
+  }
+
+  bool operator()(int& res) const
+  {
+    bool b = val.IsInt();
+    if (b)
+      res = val.GetInt();
+    return b;
+  }
+
+  bool operator()(float& res) const
+  {
+    bool b = val.IsNumber();
+    if (b)
+      res = (float)val.GetDouble();
+    return b;
+  }
+
+  bool operator()(bool& res) const
+  {
+    bool b = val.IsBool();
+    if (b)
+      res = val.GetBool();
+    return b;
+  }
+
+  bool operator()(char& res) const
+  {
+    bool b = val.IsString() && val.GetStringLength() > 0;
+    if (b)
+      res = val.GetString()[0];
+    return b;
+  }
+
+  bool operator()(std::string& res) const
+  {
+    // TODO handle base 64
+    // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
+
+    bool b = val.IsString();
+    if (b)
+      res = std::string(val.GetString(), val.GetStringLength());
+    return b;
+  }
+
+  template <std::size_t N>
+  bool operator()(std::array<float, N>& res) const
+  {
+    return false;
+  }
+
+  bool operator()(std::vector<ossia::value>& res) const
+  {
+    return false;
+  }
+
+  bool operator()() const
+  {
+    throw std::runtime_error("json_to_value: no type");
+  }
+};
+
 inline ossia::value ReadValue(const rapidjson::Value& val)
 {
   switch (val.GetType())
