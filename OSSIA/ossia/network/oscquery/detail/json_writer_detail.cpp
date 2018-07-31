@@ -186,6 +186,37 @@ void json_writer_impl::writeAttribute(
   }
 }
 
+struct node_attribute_writer
+{
+  const net::node_base& n;
+  const json_writer_impl& writer;
+
+  template<typename T>
+  void operator()(const T&)
+  {
+    using Attr = typename T::type;
+    auto res = Attr::getter(n);
+    if (ossia::net::valid(res))
+    {
+      writer.writeKey(metadata<Attr>::key());
+      writer.writeValue(res);
+    }
+  }
+
+  void operator()(const ossia::type_tag<ossia::net::value_attribute>& attribute)
+  {
+    using Attr = ossia::net::value_attribute;
+    auto res = Attr::getter(n);
+    if (ossia::net::valid(res))
+    {
+      writer.writeKey(metadata<Attr>::key());
+      writer.writer.StartArray();
+      writer.writeValue(res);
+      writer.writer.EndArray();
+    }
+  }
+};
+
 void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
 {
   using namespace std;
@@ -204,15 +235,7 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   {
     // TODO it could be nice to have versions that take a parameter or a value
     // directly
-    ossia::for_each_tagged(base_attributes{}, [&](auto attr) {
-      using Attr = typename decltype(attr)::type;
-      auto res = Attr::getter(n);
-      if (ossia::net::valid(res))
-      {
-        this->writeKey(metadata<Attr>::key());
-        this->writeValue(res);
-      }
-    });
+    ossia::for_each_tagged(base_attributes{}, node_attribute_writer{n, *this});
   }
   else
   {
