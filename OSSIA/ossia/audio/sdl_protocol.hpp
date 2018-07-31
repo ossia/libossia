@@ -16,7 +16,6 @@ class sdl_protocol final
   public:
     sdl_protocol(int& rate, int& bs)
     {
-      std::cerr << "SDL START\n";
       SDL_Init(SDL_INIT_AUDIO);
       m_desired.freq = rate;
       m_desired.format = AUDIO_S16SYS;
@@ -27,16 +26,14 @@ class sdl_protocol final
 
       if (SDL_OpenAudio(&m_desired, &m_obtained) < 0)
       {
-        std::cerr << "Couldn't open audio: " << SDL_GetError() << std::endl;
-        return;
+        using namespace std::literals;
+        throw std::runtime_error("SDL: Couldn't open audio: "s + SDL_GetError());
       }
 
-      std::cerr << "SDL OPEN\n";
       rate = m_obtained.freq;
       bs = m_obtained.samples;
 
       SDL_PauseAudio(0);
-      std::cerr << "SDL GO\n";
     }
 
     ~sdl_protocol() override
@@ -48,7 +45,6 @@ class sdl_protocol final
 
     void stop() override
     {
-      std::cerr << "SDL STOP\n";
       stop_processing = true;
       protocol = nullptr;
 
@@ -76,7 +72,6 @@ class sdl_protocol final
   private:
     static void SDLCallback(void* userData, Uint8* data, int nframes)
     {
-      std::cerr << "SDL TICK" << nframes << "\n";
       auto& self = *static_cast<sdl_protocol*>(userData);
       auto samples = reinterpret_cast<int16_t*>(data);
 

@@ -42,6 +42,18 @@ class portaudio_engine final
       if(card_out_idx == paNoDevice)
         card_out_idx = Pa_GetDefaultOutputDevice();
 
+      if(card_out_idx != card_in_idx)
+      {
+        auto in = Pa_GetDeviceInfo(card_in_idx);
+        auto out = Pa_GetDeviceInfo(card_out_idx);
+
+        if(in->hostApi != paMME || out->hostApi != paMME)
+        {
+          card_in_idx = card_out_idx;
+        }
+      }
+
+
       auto devInInfo = Pa_GetDeviceInfo(card_in_idx);
       if(!devInInfo)
       {
@@ -56,7 +68,7 @@ class portaudio_engine final
       auto devOutInfo = Pa_GetDeviceInfo(card_out_idx);
       if(!devOutInfo)
       {
-        std::cerr << "Audio error: no ouitput device" << std::endl;
+        std::cerr << "Audio error: no output device" << std::endl;
         outputs = 0;
       }
       else
