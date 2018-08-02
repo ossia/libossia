@@ -97,6 +97,11 @@ public:
   void readPresetChanged(bool readPreset)
   E_SIGNAL(OSSIA_EXPORT, readPresetChanged, readPreset)
 
+  void presetFinishedLoading()
+  E_SIGNAL(OSSIA_EXPORT, presetFinishedLoading)
+  void presetFailedLoading(QString err)
+  E_SIGNAL(OSSIA_EXPORT, presetFailedLoading, err)
+
   void nameChanged(QString name)
   E_SIGNAL(OSSIA_EXPORT, nameChanged, name)
 
@@ -120,6 +125,7 @@ private:
   qpointer_set<qml_binding> m_bindings;
   qpointer_set<qml_callback> m_callbacks;
   bool m_readPreset{false};
+  bool m_loadingPreset{false};
   void recreate_preset(QObject* root);
 };
 
