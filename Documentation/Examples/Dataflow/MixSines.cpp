@@ -19,8 +19,7 @@ struct tick_all_nodes_bench
 #if __has_include(<valgrind/callgrind.h>)
       CALLGRIND_START_INSTRUMENTATION;
 #endif
-      e.clear_local_state();
-      e.get_new_values();
+      e.begin_tick();
       ossia::time_value old_t{e.samples_since_start};
       e.samples_since_start += samples;
       ossia::time_value new_t{e.samples_since_start};

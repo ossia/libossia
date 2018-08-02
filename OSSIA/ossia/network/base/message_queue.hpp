@@ -15,7 +15,9 @@ struct received_value
 class message_queue final : public Nano::Observer
 {
   public:
+    ossia::net::device_base& device;
     message_queue(ossia::net::device_base& dev)
+      : device{dev}
     {
       dev.on_parameter_removing
           .connect<&message_queue::on_param_removed>(*this);

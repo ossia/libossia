@@ -146,8 +146,7 @@ struct base_graph
 
   void state()
   {
-    e.clear_local_state();
-    e.get_new_values();
+    e.begin_tick();
     g.state(e);
     e.commit();
   }

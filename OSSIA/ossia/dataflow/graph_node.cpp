@@ -164,8 +164,7 @@ bool graph_node::has_local_inputs(const execution_state& st) const noexcept
       bool b = false;
 
       // TODO optimize by stopping when found
-      // TODO valueDevices -> generalize
-      apply_to_destination(inlet->address, st.allDevices,
+      apply_to_destination(inlet->address, st.exec_devices(),
                            [&] (ossia::net::parameter_base* addr, bool) {
         if (!b || st.in_local_scope(*addr))
           b = true;

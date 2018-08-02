@@ -84,8 +84,7 @@ struct tick_all_nodes
 
     void operator()(unsigned long samples, double) const
     {
-      e.clear_local_state();
-      e.get_new_values();
+      e.begin_tick();
       const time_value old_date{e.samples_since_start};
       e.samples_since_start += samples;
       const time_value new_date{e.samples_since_start};
@@ -109,8 +108,7 @@ struct buffer_tick
 
     void operator()(unsigned long frameCount, double seconds)
     {
-      st.clear_local_state();
-      st.get_new_values();
+      st.begin_tick();
       st.samples_since_start += frameCount;
       st.bufferSize = (int)frameCount;
       // we could run a syscall and call now() but that's a bit more costly.
@@ -135,8 +133,7 @@ struct precise_score_tick
       st.cur_date = seconds * 1e9;
       for(std::size_t i = 0; i < frameCount; i++)
       {
-        st.clear_local_state();
-        st.get_new_values();
+        st.begin_tick();
         st.samples_since_start++;
         itv.tick_offset(ossia::time_value{1}, 0_tv);
         g.state(st);
@@ -227,8 +224,7 @@ struct split_score_tick
       }
       for(auto& cut : cuts)
       {
-        st.clear_local_state();
-        st.get_new_values();
+        st.begin_tick();
 
         for(auto& node : g.get_nodes())
         {

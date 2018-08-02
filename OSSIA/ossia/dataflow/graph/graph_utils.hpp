@@ -85,7 +85,7 @@ struct OSSIA_EXPORT graph_util
 {
   static void pull_from_parameter(inlet& in, execution_state& e)
   {
-    apply_to_destination(in.address, e.allDevices, [&] (ossia::net::parameter_base* addr, bool) {
+    apply_to_destination(in.address, e.exec_devices(), [&] (ossia::net::parameter_base* addr, bool) {
       if (in.scope & port::scope_t::local)
       {
         e.find_and_copy(*addr, in);

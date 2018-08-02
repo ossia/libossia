@@ -61,7 +61,7 @@ struct graph_static final
       {
         if(m_dirty)
         {
-          update_fun(*this, e.allDevices);
+          update_fun(*this, e.exec_devices());
           m_enabled_cache.clear();
           m_dirty = false;
         }

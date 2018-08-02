@@ -1,16 +1,17 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
 #include <ossia/detail/flat_map.hpp>
-//#include <ossia/detail/flat_multimap.hpp>
+#include <ossia/detail/ptr_set.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/mutex.hpp>
+#include <smallfun.hpp>
 namespace ossia
 {
+class message_queue;
 struct local_pull_visitor;
 struct global_pull_visitor;
 struct state_exec_visitor;
@@ -25,9 +26,25 @@ struct OSSIA_EXPORT execution_state
     : public Nano::Observer
 {
     execution_state();
+    execution_state(const execution_state&) = delete;
+    execution_state(execution_state&&) = delete;
+    execution_state& operator=(const execution_state&) = delete;
+    execution_state& operator=(execution_state&&) = delete;
+    ~execution_state();
+
+    // To be called from the main thread
+    void register_device(ossia::net::device_base* d);
+    // TODO unregister device
+    void register_inlet(const ossia::inlet& port);
+    const ossia::small_vector<ossia::net::device_base*, 4>& edit_devices() const noexcept
+    { return m_devices_edit; }
+
+    // To be called from the execution thread
+    const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const noexcept
+    { return m_devices_exec; }
     ossia::net::node_base* find_node(std::string_view name) const noexcept
     {
-      for(auto dev : allDevices)
+      for(auto dev : m_devices_exec)
       {
         if(auto res = ossia::net::find_node(dev->get_root_node(), name))
           return res;
@@ -43,18 +60,8 @@ struct OSSIA_EXPORT execution_state
       return val;
     }
 
-    void register_device(ossia::net::device_base* d);
-    void register_device(ossia::net::midi::midi_device* d);
 
-    void register_parameter(ossia::net::parameter_base& p);
-    void unregister_parameter(ossia::net::parameter_base& p);
-    void register_midi_parameter(net::midi::midi_protocol& p);
-    void get_new_values();
-
-    void register_inlet(const ossia::inlet& port);
-
-
-    void clear_local_state();
+    void begin_tick();
 
     void clear_devices();
     void reset();
@@ -85,12 +92,6 @@ struct OSSIA_EXPORT execution_state
     double start_date{}; // in ns, for vst
     double cur_date{};
 
-    ossia::small_vector<ossia::net::device_base*, 4> valueDevices;
-    ossia::small_vector<ossia::net::midi::midi_protocol*, 2> midiDevices;
-    ossia::small_vector<ossia::net::device_base*, 2> audioDevices;
-
-    ossia::small_vector<ossia::net::device_base*, 4> allDevices;
-
     // private:// disabled due to tests, but for some reason can't make friend work
     //using value_state_impl = ossia::flat_multimap<int64_t, std::pair<ossia::value, int>>;
     ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>> m_valueState;
@@ -100,6 +101,21 @@ struct OSSIA_EXPORT execution_state
     mutable shared_mutex_t mutex;
 
   private:
+    void get_new_values();
+    void clear_local_state();
+
+    void register_parameter(ossia::net::parameter_base& p);
+    void unregister_parameter(ossia::net::parameter_base& p);
+    void register_midi_parameter(net::midi::midi_protocol& p);
+    ossia::small_vector<ossia::net::device_base*, 4> m_devices_edit;
+    ossia::small_vector<ossia::net::device_base*, 4> m_devices_exec;
+    struct device_operation
+    {
+      enum { REGISTER, UNREGISTER } operation{};
+      ossia::net::device_base* device{};
+    };
+    moodycamel::ReaderWriterQueue<device_operation> m_device_change_queue;
+
     std::list<message_queue> m_valueQueues;
 
     ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>> m_receivedValues;

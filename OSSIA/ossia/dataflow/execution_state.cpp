@@ -7,6 +7,7 @@
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/dataflow.hpp>
 #include <ossia/detail/apply.hpp>
+#include <ossia/network/base/message_queue.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
@@ -108,11 +109,14 @@ struct global_pull_visitor
     }
 };
 
+execution_state::~execution_state()
+{
+}
+
 void execution_state::clear_devices()
 {
-  valueDevices.clear();
-  allDevices.clear();
-  midiDevices.clear();
+  m_devices_edit.clear();
+  m_devices_exec.clear();
 }
 
 execution_state::execution_state()
@@ -124,46 +128,33 @@ execution_state::execution_state()
 
 void execution_state::register_device(net::device_base* d)
 {
-  if(d->get_name() == "audio")
-    audioDevices.push_back(d);
-  else
-    valueDevices.push_back(d);
-  allDevices.push_back(d);
+  m_devices_edit.push_back(d);
   m_valueQueues.emplace_back(*d);
-}
-
-void execution_state::register_device(net::midi::midi_device* d)
-{
-  valueDevices.push_back(d);
-  allDevices.push_back(d);
-  midiDevices.push_back(static_cast<ossia::net::midi::midi_protocol*>(&d->get_protocol()));
-  m_valueQueues.emplace_back(*d);
+  m_device_change_queue.enqueue({device_operation::REGISTER, d});
 }
 
 void execution_state::register_parameter(net::parameter_base& p)
 {
-  for(std::size_t i = 0; i < valueDevices.size(); i++)
+  auto device = &p.get_node().get_device();
+  for(auto& q : m_valueQueues)
   {
-    if(&p.get_node().get_device() == valueDevices[i])
+    if(&q.device == device)
     {
-      auto it = m_valueQueues.begin();
-      std::advance(it, i);
-      it->reg(p);
-      return;
+      q.reg(p);
+      break;
     }
   }
 }
 
 void execution_state::unregister_parameter(net::parameter_base& p)
 {
-  for(std::size_t i = 0; i < valueDevices.size(); i++)
+  auto device = &p.get_node().get_device();
+  for(auto& q : m_valueQueues)
   {
-    if(&p.get_node().get_device() == valueDevices[i])
+    if(&q.device == device)
     {
-      auto it = m_valueQueues.begin();
-      std::advance(it, i);
-      it->unreg(p);
-      return;
+      q.unreg(p);
+      break;
     }
   }
 }
@@ -207,7 +198,7 @@ void execution_state::register_inlet(const inlet& port)
       {
         std::vector<ossia::net::node_base*> roots{};
 
-        for(auto n : allDevices)
+        for(auto n : m_devices_edit)
           roots.push_back(&n->get_root_node());
 
         ossia::traversal::apply(*p, roots);
@@ -232,6 +223,26 @@ void execution_state::register_inlet(const inlet& port)
       {
         register_midi_parameter(*midi_addr);
       }
+    }
+  }
+}
+
+void execution_state::begin_tick()
+{
+  clear_local_state();
+  get_new_values();
+
+  device_operation op;
+  while(m_device_change_queue.try_dequeue(op))
+  {
+    switch(op.operation)
+    {
+      case device_operation::REGISTER:
+        m_devices_exec.push_back(op.device);
+        break;
+      case device_operation::UNREGISTER:
+        ossia::remove_erase(m_devices_exec, op.device);
+        break;
     }
   }
 }
@@ -328,7 +339,7 @@ void execution_state::advance_tick(std::size_t t)
           }
         }
         */
-  for(auto& dev : audioDevices)
+  for(auto& dev : m_devices_exec)
   {
     auto& proto = dev->get_protocol();
     if(auto ap = dynamic_cast<ossia::audio_protocol*>(&proto))

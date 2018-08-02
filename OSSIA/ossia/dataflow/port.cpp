@@ -76,7 +76,7 @@ static void copy_to_global(
 
 void outlet::write(execution_state& e)
 {
-  apply_to_destination(address, e.allDevices, [&] (ossia::net::parameter_base* addr, bool unique) {
+  apply_to_destination(address, e.exec_devices(), [&] (ossia::net::parameter_base* addr, bool unique) {
     if(unique)
     {
       if (scope & port::scope_t::local)

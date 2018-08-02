@@ -316,13 +316,13 @@ private Q_SLOTS:
       float audio_data[2][64] {{}};
       l.parent.start();
       ossia::execution_state e;
-      e.valueDevices = {&l.d};
+      e.register_device(&l.d);
       for(int64_t i = 1; i <= 14; i++) {
 
         float* chan = audio_data[0] + i - 1 ;
         l.aparam->audio = {{chan, 64 - i}};
         l.parent.state(ossia::time_value{i - 1}, ossia::time_value{i}, 0., ossia::time_value{0}, 1.);
-        e.clear_local_state();
+        e.begin_tick();
         l.g.state(e);
         e.commit();
       }
