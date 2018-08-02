@@ -8,6 +8,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/constexpr_string_map.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_set.hpp"
@@ -234,6 +236,7 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/flat_state.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/flat_vec_state.hpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/editor.hpp"
 
@@ -500,6 +503,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_chain_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/fx_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/token_request.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_utils.hpp"
