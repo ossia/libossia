@@ -30,10 +30,8 @@ cd  C:\projects\libossia
 mkdir build
 cd build
 
-$gen32 = "Visual Studio 15 2017"
-$gen64 = "Visual Studio 15 2017 Win64"
-$CommonFlags32 = '-T host=x64 -DOSSIA_EDITOR=0 -DOSSIA_DATAFLOW=0 -DCMAKE_BUILD_TYPE=Release -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_PD=0 -DOSSIA_PYTHON=0 -DOSSIA_QT=0 -DOSSIA_PROTOCOL_AUDIO=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install-32bit"'
-$CommonFlags64 = '-T host=x64 -DOSSIA_EDITOR=0 -DOSSIA_DATAFLOW=0 -DCMAKE_BUILD_TYPE=Release -DOSSIA_CI=1 -DOSSIA_TESTING=0 -DOSSIA_EXAMPLES=0 -DOSSIA_PD=0 -DOSSIA_PYTHON=0 -DOSSIA_QT=0 -DOSSIA_PROTOCOL_AUDIO=0 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install"'
+$CommonFlags32 = "-G""Visual Studio 15 2017""","-Thost=x64","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install-32bit"""
+$CommonFlags64 = "-G""Visual Studio 15 2017 Win64""","-Thost=x64","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   if ( Test-Path ${env:QTDIR}\bin\ ) {
@@ -63,12 +61,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake -G $gen32 $CommonFlags32 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=1 c:\projects\libossia > $LogFile
+  cmake $CommonFlags32 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ) {
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake -G $gen64 $CommonFlags64 -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF c:\projects\libossia > $LogFile
+  cmake $CommonFlags64 -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -77,7 +75,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake -G $gen32 $CommonFlags32 -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
+  cmake $CommonFlags32 -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
@@ -113,7 +111,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     pip.exe install twine
 
     cd C:\projects\libossia\build
-    cmake -G $gen32 $CommonFlags32 -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DOSSIA_STATIC=1 -DOSSIA_PYTHON=1 c:\projects\libossia > $LogFile
+    cmake $CommonFlags32 -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DOSSIA_STATIC=1 -DOSSIA_PYTHON=1 c:\projects\libossia > $LogFile
     CheckLastExitCode
   }
 
@@ -123,6 +121,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
-  cmake -G $gen64 $CommonFlags64 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_PD=0 -DOSSIA_STATIC=0 -DOSSIA_QT=1 -DOSSIA_QML=1 c:\projects\libossia > $LogFile
+  cmake $CommonFlags64 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_PD=0 -DOSSIA_STATIC=0 -DOSSIA_QT=1 -DOSSIA_QML=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 }
