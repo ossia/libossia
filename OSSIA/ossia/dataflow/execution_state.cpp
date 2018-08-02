@@ -128,9 +128,20 @@ execution_state::execution_state()
 
 void execution_state::register_device(net::device_base* d)
 {
-  m_devices_edit.push_back(d);
-  m_valueQueues.emplace_back(*d);
-  m_device_change_queue.enqueue({device_operation::REGISTER, d});
+  if(d)
+  {
+    m_devices_edit.push_back(d);
+    m_device_change_queue.enqueue({device_operation::REGISTER, d});
+  }
+}
+
+void execution_state::unregister_device(net::device_base* d)
+{
+  if(d)
+  {
+    ossia::remove_erase(m_devices_edit, d);
+    m_device_change_queue.enqueue({device_operation::UNREGISTER, d});
+  }
 }
 
 void execution_state::register_parameter(net::parameter_base& p)
@@ -198,7 +209,7 @@ void execution_state::register_inlet(const inlet& port)
       {
         std::vector<ossia::net::node_base*> roots{};
 
-        for(auto n : m_devices_edit)
+        for(auto n : m_devices_exec)
           roots.push_back(&n->get_root_node());
 
         ossia::traversal::apply(*p, roots);
@@ -239,10 +250,17 @@ void execution_state::begin_tick()
     {
       case device_operation::REGISTER:
         m_devices_exec.push_back(op.device);
+        m_valueQueues.emplace_back(*op.device);
         break;
       case device_operation::UNREGISTER:
+      {
         ossia::remove_erase(m_devices_exec, op.device);
+        auto it = ossia::find_if(m_valueQueues, [&] (auto& mq) { return &mq.device == op.device; });
+        if(it != m_valueQueues.end())
+          m_valueQueues.erase(it);
+
         break;
+      }
     }
   }
 }

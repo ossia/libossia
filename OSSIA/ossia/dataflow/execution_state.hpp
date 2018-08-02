@@ -32,14 +32,17 @@ struct OSSIA_EXPORT execution_state
     execution_state& operator=(execution_state&&) = delete;
     ~execution_state();
 
-    // To be called from the main thread
+    /// To be called from the edition thread ///
     void register_device(ossia::net::device_base* d);
-    // TODO unregister device
-    void register_inlet(const ossia::inlet& port);
+    void unregister_device(net::device_base* d);
+
     const ossia::small_vector<ossia::net::device_base*, 4>& edit_devices() const noexcept
     { return m_devices_edit; }
 
-    // To be called from the execution thread
+
+    /// To be called from the execution thread ///
+    void register_inlet(const ossia::inlet& port);
+
     const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const noexcept
     { return m_devices_exec; }
     ossia::net::node_base* find_node(std::string_view name) const noexcept
