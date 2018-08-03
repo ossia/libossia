@@ -6,10 +6,10 @@
 namespace ossia
 {
 template <typename>
-struct matching_type;
+struct qt_property_converter;
 
 template <>
-struct matching_type<float>
+struct qt_property_converter<float>
 {
   static constexpr const auto val = ossia::val_type::FLOAT;
   using type = float;
@@ -19,7 +19,7 @@ struct matching_type<float>
   }
 };
 template <>
-struct matching_type<double>
+struct qt_property_converter<double>
 {
   static constexpr const auto val = ossia::val_type::FLOAT;
   using type = float;
@@ -29,7 +29,7 @@ struct matching_type<double>
   }
 };
 template <>
-struct matching_type<int>
+struct qt_property_converter<int>
 {
   static constexpr const auto val = ossia::val_type::INT;
   using type = int32_t;
@@ -39,7 +39,7 @@ struct matching_type<int>
   }
 };
 template <>
-struct matching_type<bool>
+struct qt_property_converter<bool>
 {
   static constexpr const auto val = ossia::val_type::BOOL;
   using type = bool;
@@ -49,7 +49,7 @@ struct matching_type<bool>
   }
 };
 template <>
-struct matching_type<ossia::impulse>
+struct qt_property_converter<ossia::impulse>
 {
   static constexpr const auto val = ossia::val_type::IMPULSE;
   using type = ossia::impulse;
@@ -59,7 +59,7 @@ struct matching_type<ossia::impulse>
   }
 };
 template <>
-struct matching_type<std::string>
+struct qt_property_converter<std::string>
 {
   static constexpr const auto val = ossia::val_type::STRING;
   using type = std::string;
@@ -74,7 +74,7 @@ struct matching_type<std::string>
 };
 
 template <>
-struct matching_type<QString>
+struct qt_property_converter<QString>
 {
   static constexpr const auto val = ossia::val_type::STRING;
   using type = std::string;
@@ -85,7 +85,7 @@ struct matching_type<QString>
 };
 
 template <>
-struct matching_type<char>
+struct qt_property_converter<char>
 {
   static constexpr const auto val = ossia::val_type::CHAR;
   using type = char;
@@ -96,7 +96,7 @@ struct matching_type<char>
 };
 
 template <>
-struct matching_type<QChar>
+struct qt_property_converter<QChar>
 {
   static constexpr const auto val = ossia::val_type::CHAR;
   using type = char;
@@ -107,7 +107,7 @@ struct matching_type<QChar>
 };
 
 template <>
-struct matching_type<ossia::vec2f>
+struct qt_property_converter<ossia::vec2f>
 {
   static constexpr const auto val = ossia::val_type::VEC2F;
   using type = ossia::vec2f;
@@ -118,7 +118,7 @@ struct matching_type<ossia::vec2f>
 };
 
 template <>
-struct matching_type<ossia::vec3f>
+struct qt_property_converter<ossia::vec3f>
 {
   static constexpr const auto val = ossia::val_type::VEC3F;
   using type = ossia::vec3f;
@@ -129,7 +129,7 @@ struct matching_type<ossia::vec3f>
 };
 
 template <>
-struct matching_type<ossia::vec4f>
+struct qt_property_converter<ossia::vec4f>
 {
   static constexpr const auto val = ossia::val_type::VEC4F;
   using type = ossia::vec4f;
@@ -140,7 +140,7 @@ struct matching_type<ossia::vec4f>
 };
 
 template <>
-struct matching_type<std::vector<ossia::value>>
+struct qt_property_converter<std::vector<ossia::value>>
 {
   static constexpr const auto val = ossia::val_type::LIST;
   using type = std::vector<ossia::value>;
