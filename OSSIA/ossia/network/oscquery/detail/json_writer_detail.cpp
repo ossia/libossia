@@ -22,7 +22,16 @@ namespace detail
 
 void json_writer_impl::writeValue(const value& val) const
 {
+  const auto array = is_array(val);
+  if(!array)
+  {
+    writer.StartArray();
+  }
   val.apply(value_to_json{writer});
+  if(!array)
+  {
+    writer.EndArray();
+  }
 }
 
 void json_writer_impl::writeValue(bounding_mode b) const
@@ -200,19 +209,6 @@ struct node_attribute_writer
     {
       writer.writeKey(metadata<Attr>::key());
       writer.writeValue(res);
-    }
-  }
-
-  void operator()(const ossia::type_tag<ossia::net::value_attribute>& attribute)
-  {
-    using Attr = ossia::net::value_attribute;
-    auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
-    {
-      writer.writeKey(metadata<Attr>::key());
-      writer.writer.StartArray();
-      writer.writeValue(res);
-      writer.writer.EndArray();
     }
   }
 };
