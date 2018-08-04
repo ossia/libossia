@@ -427,8 +427,10 @@ json_writer::query_host_info(const oscquery_server_protocol& proto)
   wr.StartObject();
   wr.Key("NAME");
   wr.String(proto.get_device().get_name());
-  wr.Key("PORT");
+  wr.Key("OSC_PORT");
   wr.Int(proto.get_osc_port());
+  wr.Key("OSC_TRANSPORT");
+  wr.String("UDP");
 
   wr.Key("EXTENSIONS");
   wr.StartObject();
@@ -448,6 +450,8 @@ json_writer::query_host_info(const oscquery_server_protocol& proto)
   wr.Key("UNIT");
   wr.Bool(true);
   wr.Key("CRITICAL");
+  wr.Bool(true);
+  wr.Key("HTML");
   wr.Bool(true);
 
   wr.Key("STREAMING");

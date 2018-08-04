@@ -9,8 +9,8 @@ class dummy_engine final
   public:
     dummy_engine(std::string_view name, int& inputs, int& outputs, int rate, int bs)
     {
-      inputs = 0;
-      outputs = 0;
+      //inputs = 0;
+      //outputs = 0;
       m_rate = rate;
       m_bs = bs;
 
