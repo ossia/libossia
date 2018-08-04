@@ -66,7 +66,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ) {
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake $CommonFlags64 -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF c:\projects\libossia > $LogFile
+  cmake $CommonFlags64 -DOSSIA_MAX=1 -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -75,7 +75,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake $CommonFlags32 -DOSSIA_MAX=1 -DMAXSDK_MAINPATH="${env:APPVEYOR_BUILD_FOLDER}\max-sdk-7.3.3\source" -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
+  cmake $CommonFlags32 -DOSSIA_MAX=1 -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
