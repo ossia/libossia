@@ -74,6 +74,40 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
   ls .
 
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32-64bit.zip ossia
+
+  if (${env:APPVEYOR_REPO_TAG}){
+    $env:PATH="C:\msys64\usr\bin;${env:PATH}"
+
+    $VERSION=${env:APPVEYOR_REPO_TAG_NAME}
+
+    nuget install secure-file -ExcludeVersion
+    secure-file\tools\secure-file -decrypt ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc.appveyor.enc -out ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc -secret ${env:GPG_DECODE_KEY}
+
+    gpg.exe --fast-import ${env:APPVEYOR_BUILD_FOLDER}\ci\codesigning.asc
+
+    curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/"
+    $ARCHIVE_NAME="ossia-v${VERSION}-(Windows-amd64-32)-externals.zip"
+    copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32-64bit.zip ${ARCHIVE_NAME}
+
+    gpg.exe -ab --batch --yes ${ARCHIVE_NAME}
+    $SHA = sha256.exe ${ARCHIVE_NAME}
+    $SHA.substring(0,64) > "${ARCHIVE_NAME}.sha"
+
+    curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}"     "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}"     --basic
+    curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.asc" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.asc" --basic
+    curl.exe --user ossia:${env:DEKEN_PASSWORD} -T "${ARCHIVE_NAME}.sha" "https://puredata.info/Members/ossia/software/ossia/${VERSION}/${ARCHIVE_NAME}.sha" --basic
+  }
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-32bit" ){
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-pd.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
+  ls .
+
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ossia
 
 

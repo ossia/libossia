@@ -83,6 +83,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake $CommonFlags64 -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_PROTOCOL_MIDI=OFF  c:\projects\libossia > $LogFile
   CheckLastExitCode
 
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-32bit" ) {
+  $LogFile = "c:\projects\libossia\configure-pd.log"
+  cmake $CommonFlags32 -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_PROTOCOL_MIDI=OFF  c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ) {
   if ( Test-Path ${env:QTDIR-32bit}\bin\ ) {
     set $env:PATH=${env:QTDIR-32bit}\bin;${env:PATH};
