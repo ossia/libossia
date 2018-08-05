@@ -59,47 +59,40 @@ public:
   {
     m_inlets.reserve(info_functions<Node_T>::inlet_size);
     m_outlets.reserve(info_functions<Node_T>::outlet_size);
-    for(std::size_t i = 0; i < info_functions<Node_T>::audio_in_count; i++)
+    for(auto& port : Node_T::Metadata::audio_ins)
     {
       m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
     }
-    for(std::size_t i = 0; i < info_functions<Node_T>::midi_in_count; i++)
+    for(auto& port : Node_T::Metadata::midi_ins)
     {
       m_inlets.push_back(ossia::make_inlet<ossia::midi_port>());
     }
-    if constexpr(info_functions<Node_T>::value_in_count > 0)
-    {
-      constexpr const auto inlet_infos = get_ports<value_in, Node_T>{}();
-      for(std::size_t i = 0; i < info_functions<Node_T>::value_in_count; i++)
-      {
-        auto inlt = ossia::make_inlet<ossia::value_port>();
-
-        inlt->data.target<ossia::value_port>()->is_event = inlet_infos[i].is_event;
-        m_inlets.push_back(std::move(inlt));
-      }
-    }
-    for(std::size_t i = 0; i < info_functions<Node_T>::address_in_count; i++)
-    {
-      m_inlets.push_back(ossia::make_inlet<ossia::value_port>());
-    }
-    for(std::size_t i = 0; i < info_functions<Node_T>::control_count; i++)
+    for(auto& port : Node_T::Metadata::value_ins)
     {
       auto inlt = ossia::make_inlet<ossia::value_port>();
-
+      inlt->data.target<ossia::value_port>()->is_event = port.is_event;
+      m_inlets.push_back(std::move(inlt));
+    }
+    for(auto& port : Node_T::Metadata::address_ins)
+    {
+      m_inlets.push_back(ossia::make_inlet<ossia::value_port>()); // TODO ??
+    }
+    for(int i = 0; i < info_functions<Node_T>::control_count; i++)
+    {
+      auto inlt = ossia::make_inlet<ossia::value_port>();
       inlt->data.target<ossia::value_port>()->is_event = true;
-
       m_inlets.push_back(std::move(inlt));
     }
 
-    for(std::size_t i = 0; i < info_functions<Node_T>::audio_out_count; i++)
+    for(auto& port : Node_T::Metadata::audio_outs)
     {
       m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
     }
-    for(std::size_t i = 0; i < info_functions<Node_T>::midi_out_count; i++)
+    for(auto& port : Node_T::Metadata::midi_outs)
     {
       m_outlets.push_back(ossia::make_outlet<ossia::midi_port>());
     }
-    for(std::size_t i = 0; i < info_functions<Node_T>::value_out_count; i++)
+    for(auto& port : Node_T::Metadata::value_outs)
     {
       m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
     }
