@@ -115,7 +115,8 @@ private:
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<websocket_server> m_websocketServer;
 
-  net::zeroconf_server m_zeroconfServer;
+  net::zeroconf_server m_zeroconfServerWS;
+  net::zeroconf_server m_zeroconfServerOSC;
 
   // Listening status of the local software
   net::listened_parameters m_listening;

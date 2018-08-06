@@ -563,8 +563,22 @@ void oscquery_server_protocol::update_zeroconf()
 {
   try
   {
-    m_zeroconfServer = net::make_zeroconf_server(
-        get_device().get_name(), "_oscjson._tcp", "", m_wsPort, 0);
+    m_zeroconfServerWS = net::make_zeroconf_server(
+        get_device().get_name()+':'+std::to_string(m_oscPort), "_oscjson._tcp", "", m_wsPort, 0);
+  }
+  catch (const std::exception& e)
+  {
+    logger().error("oscquery_server_protocol::update_zeroconf: {}", e.what());
+  }
+  catch (...)
+  {
+    logger().error("oscquery_server_protocol::update_zeroconf: error.");
+  }
+
+  try
+  {
+    m_zeroconfServerOSC = net::make_zeroconf_server(
+        get_device().get_name()+':'+std::to_string(m_oscPort), "_osc._udp", "", m_oscPort, 0);
   }
   catch (const std::exception& e)
   {
