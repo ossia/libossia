@@ -347,6 +347,7 @@ if(WIN32)
     if(MINGW)
         target_link_libraries(ossia PRIVATE Mswsock)
     endif()
+    set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia$<$<CONFIG:Debug>:d>")
 endif()
 
 find_package(Threads)

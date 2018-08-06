@@ -31,3 +31,15 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "max" -Or $env:APPVEYOR_BUILD_TYPE -eq "Releas
   cmake --build . --config "${env:configuration}" > "$LogFile"
   CheckLastExitCode
 }
+
+if ( $env:APPVEYOR_BUILD_TYPE -eq "Release"){
+  cd C:\projects\libossia\build\
+  $LogFile = "C:\projects\libossia\build-Debug-${env:platform}.log"
+  cmake --build . --config Debug > "$LogFile"
+  CheckLastExitCode
+
+  cd C:\projects\libossia\build-32bit
+  $LogFile = "C:\projects\libossia\build-Debug-32bit.log"
+  cmake --build . --config Debug > "$LogFile"
+  CheckLastExitCode
+}

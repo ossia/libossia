@@ -36,6 +36,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-debug-win64.log"
+  cmake --build . --config Debug --target install > "$LogFile"
+  CheckLastExitCode
+
+
   cd ${env:APPVEYOR_BUILD_FOLDER}\install
   ls
 
@@ -45,6 +51,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-debug-win32.log"
+  cmake --build . --config Debug --target install > "$LogFile"
+  CheckLastExitCode
+
   cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
   ls
 
