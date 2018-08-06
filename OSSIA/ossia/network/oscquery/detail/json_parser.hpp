@@ -6,8 +6,41 @@ namespace ossia
 {
 namespace oscquery
 {
-
 //! Functions to parse replies to OSCQuery json requests
+struct host_info
+{
+  enum osc_transport { TCP, UDP };
+
+  std::string name;
+
+  optional<std::string> osc_ip;
+  optional<int> osc_port;
+  optional<osc_transport> osc_transport;
+
+  optional<std::string> ws_ip;
+  optional<int> ws_port;
+
+  ossia::string_map<bool> extensions;
+  bool ext_type{};
+  bool ext_access{};
+  bool ext_value{};
+  bool ext_range{};
+  bool ext_tags{};
+  bool ext_clipmode{};
+  bool ext_unit{};
+  bool ext_critical{};
+  bool ext_description{};
+
+  bool ext_html{};
+  bool ext_streaming{};
+  bool ext_listen{};
+
+  bool ext_path_changed{};
+  bool ext_path_added{};
+  bool ext_path_renamed{};
+  bool ext_path_removed{};
+};
+
 struct OSSIA_EXPORT json_parser
 {
   static std::shared_ptr<rapidjson::Document>
@@ -20,6 +53,7 @@ struct OSSIA_EXPORT json_parser
   static ossia::oscquery::message_type
   message_type(const rapidjson::Value& obj);
 
+  static host_info parse_host_info(const rapidjson::Value& obj);
   static void
   parse_namespace(ossia::net::node_base& root, const rapidjson::Value& obj);
   static void

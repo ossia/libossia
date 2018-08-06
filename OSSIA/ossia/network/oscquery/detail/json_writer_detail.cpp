@@ -454,13 +454,24 @@ json_writer::query_host_info(const oscquery_server_protocol& proto)
   wr.Bool(true);
   wr.Key("CRITICAL");
   wr.Bool(true);
+  wr.Key("DESCRIPTION");
+  wr.Bool(true);
+
   wr.Key("HTML");
   wr.Bool(true);
 
-  wr.Key("STREAMING");
+  wr.Key("OSC_STREAMING");
+  wr.Bool(true);
+
+  wr.Key("LISTEN");
+  wr.Bool(true);
+
+  wr.Key("ECHO");
   wr.Bool(true);
 
   wr.Key("PATH_CHANGED");
+  wr.Bool(false);
+  wr.Key("PATH_RENAMED");
   wr.Bool(false);
   wr.Key("PATH_ADDED");
   wr.Bool(true);
@@ -484,6 +495,43 @@ json_writer::string_t json_writer::query_namespace(const net::node_base& node)
 
   return buf;
 }
+
+json_writer::string_t json_writer::listen(string_view address)
+{
+  string_t buf;
+  writer_t wr(buf);
+
+  wr.StartObject();
+
+  write_json_key(wr, detail::command());
+  write_json(wr, detail::listen());
+
+  write_json_key(wr, detail::data());
+  write_json(wr, address);
+
+  wr.EndObject();
+
+  return buf;
+}
+
+json_writer::string_t json_writer::ignore(string_view address)
+{
+  string_t buf;
+  writer_t wr(buf);
+
+  wr.StartObject();
+
+  write_json_key(wr, detail::command());
+  write_json(wr, detail::ignore());
+
+  write_json_key(wr, detail::data());
+  write_json(wr, address);
+
+  wr.EndObject();
+
+  return buf;
+}
+
 
 json_writer::string_t json_writer::path_added(const net::node_base& n)
 {

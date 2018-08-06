@@ -468,7 +468,7 @@ void oscquery_server_protocol::on_connectionOpen(const connection_handler& hdl) 
     onClientConnected(con->get_remote_endpoint());
   }
   // Send the client a message with the OSC port
-  m_websocketServer->send_message(hdl, json_writer::device_info(m_oscPort));
+  // m_websocketServer->send_message(hdl, json_writer::device_info(m_oscPort));
 }
 catch (const std::exception& e)
 {
@@ -648,7 +648,6 @@ server_reply oscquery_server_protocol::on_BinaryWSrequest(
   {
     // TODO use proper ip / port
     h.ProcessPacket(message.data(), message.size(), {});
-
   }
   else
   {

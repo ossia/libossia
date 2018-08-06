@@ -22,9 +22,29 @@ namespace detail
 {
 
 // Attributes
+constexpr auto name()
+{
+  return "NAME";
+}
+constexpr auto osc_ip()
+{
+  return "OSC_IP";
+}
 constexpr auto osc_port()
 {
   return "OSC_PORT";
+}
+constexpr auto ws_ip()
+{
+  return "WS_IP";
+}
+constexpr auto ws_port()
+{
+  return "WS_PORT";
+}
+constexpr auto transport()
+{
+  return "TRANSPORT";
 }
 constexpr auto attribute_full_path()
 {
@@ -175,6 +195,10 @@ constexpr auto listen()
 {
   constexpr_return(ossia::make_string_view("LISTEN"));
 }
+constexpr auto ignore()
+{
+  constexpr_return(ossia::make_string_view("IGNORE"));
+}
 constexpr auto text_true()
 {
   constexpr_return(ossia::make_string_view("TRUE"));
@@ -182,14 +206,6 @@ constexpr auto text_true()
 constexpr auto text_false()
 {
   constexpr_return(ossia::make_string_view("FALSE"));
-}
-constexpr auto query_listen_true()
-{
-  constexpr_return(ossia::make_string_view("?LISTEN=TRUE"));
-}
-constexpr auto query_listen_false()
-{
-  constexpr_return(ossia::make_string_view("?LISTEN=FALSE"));
 }
 constexpr auto query_value()
 {
@@ -454,7 +470,10 @@ enum class message_type
   PathChanged,
   PathAdded,
   PathRemoved,
-  AttributesChanged
+  AttributesChanged,
+  HostInfo,
+  Listen,
+  Ignore
 };
 
 using key_map_type = string_view_map<ossia::string_view>;

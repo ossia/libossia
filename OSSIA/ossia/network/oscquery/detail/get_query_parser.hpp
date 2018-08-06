@@ -70,7 +70,10 @@ public:
     auto clt = proto.find_building_client(hdl);
 
     if (!clt)
+    {
+      // It's an http-connecting client - we can't open a streaming connection to it
       throw bad_request_error{"Client not found"};
+    }
 
     if(port != 0)
     {

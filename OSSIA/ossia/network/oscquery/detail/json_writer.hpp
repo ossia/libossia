@@ -84,6 +84,10 @@ public:
     return buf;
   }
 
+  // Listen messages
+  static string_t listen(ossia::string_view address);
+  static string_t ignore(ossia::string_view address);
+
   // Update messages
   //! Sent when a new node is added
   static string_t path_added(const ossia::net::node_base& n);

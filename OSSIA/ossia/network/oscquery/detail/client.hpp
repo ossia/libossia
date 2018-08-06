@@ -38,7 +38,7 @@ public:
 
     m_client.set_message_handler([handler = std::move(onMessage)](
         connection_handler hdl, client_t::message_ptr msg) {
-      handler(hdl, msg->get_raw_payload());
+      handler(hdl, msg->get_opcode(), msg->get_raw_payload());
     });
 
     m_client.set_close_handler([=](connection_handler hdl) {

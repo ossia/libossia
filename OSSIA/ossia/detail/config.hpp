@@ -60,16 +60,25 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #endif
 
-#if defined(__AVX__)
-#define RAPIDJSON_SSE42 1
-#elif defined (__SSE2__)
-#define RAPIDJSON_SSE2 1
+#if defined(__SANITIZE_ADDRESS__)
+  #define OSSIA_ASAN 1
+#elif defined(__has_feature)
+  #if __has_feature(address_sanitizer)
+    #define OSSIA_ASAN 1
+  #endif
 #endif
 
-#if defined(__ARM_NEON)
-#define RAPIDJSON_NEON 1
-#endif
+#if !defined(OSSIA_ASAN)
+  #if defined(__AVX__)
+    #define RAPIDJSON_SSE42 1
+  #elif defined (__SSE2__)
+    #define RAPIDJSON_SSE2 1
+  #endif
 
+  #if defined(__ARM_NEON)
+    #define RAPIDJSON_NEON 1
+  #endif
+#endif
 
 // https://github.com/Tencent/rapidjson/issues/1015
 #if !defined(RAPIDJSON_HAS_CXX11_RVALUE_REFS)
