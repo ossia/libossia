@@ -778,7 +778,7 @@ host_info json_parser::parse_host_info(const rapidjson::Value& doc)
   if(auto osc_ip = doc.FindMember("OSC_IP"); osc_ip != doc.MemberEnd())
   {
     if(osc_ip->value.IsString())
-      info.osc_ip = osc_ip->value.GetString();
+      info.osc_ip = std::string(osc_ip->value.GetString());
   }
   if(auto osc_port = doc.FindMember("OSC_PORT"); osc_port != doc.MemberEnd())
   {
@@ -801,7 +801,7 @@ host_info json_parser::parse_host_info(const rapidjson::Value& doc)
   if(auto ws_ip = doc.FindMember("WS_IP"); ws_ip != doc.MemberEnd())
   {
     if(ws_ip->value.IsString())
-      info.ws_ip = ws_ip->value.GetString();
+      info.ws_ip = std::string(ws_ip->value.GetString());
   }
   if(auto ws_port = doc.FindMember("WS_PORT"); ws_port != doc.MemberEnd())
   {
