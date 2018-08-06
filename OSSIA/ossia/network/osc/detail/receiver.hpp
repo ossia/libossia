@@ -86,7 +86,6 @@ public:
   {
   }
 
-protected:
   void ProcessMessage(
       const oscpack::ReceivedMessage& m,
       const oscpack::IpEndpointName& ip) override

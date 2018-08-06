@@ -109,6 +109,7 @@ private:
   void cleanup_connections();
 
   void query_send_message(const std::string& str);
+  void query_send_binary_message(const std::string& str);
   void query_send_message(const rapidjson::StringBuffer& str);
   bool query_connected();
   void query_stop();

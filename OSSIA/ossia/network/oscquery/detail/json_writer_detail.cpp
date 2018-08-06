@@ -10,8 +10,11 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/domain_to_json.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/detail/for_each.hpp>
+#include <ossia/network/osc/detail/message_generator.hpp>
+#include <ossia/network/osc/detail/osc_fwd.hpp>
 
 namespace ossia
 {
@@ -632,5 +635,52 @@ json_writer::string_t json_writer::attributes_changed_array(
 
   return buf;
 }
+
+
+std::string osc_writer::send_message(const net::parameter_base& p, const value& v)
+{
+  std::string s;
+
+  try
+  {
+    oscpack::MessageGenerator<oscquery::osc_outbound_visitor> m;
+
+    auto str = m(p.get_node().osc_address(), v);
+    s.assign(str.Data(), str.Size());
+  }
+  catch (const oscpack::OutOfBufferMemoryException&)
+  {
+    oscpack::DynamicMessageGenerator<oscquery::osc_outbound_visitor> m;
+
+    auto str = m(p.get_node().osc_address(), v);
+    s.assign(str.Data(), str.Size());
+  }
+
+  return s;
+}
+
+
+std::string osc_writer::send_message(const net::full_parameter_data& p, const value& v)
+{
+  std::string s;
+  try
+  {
+    oscpack::MessageGenerator<oscquery::osc_outbound_visitor> m;
+
+    auto str = m(p.address, v);
+    s.assign(str.Data(), str.Size());
+  }
+  catch (const oscpack::OutOfBufferMemoryException&)
+  {
+    oscpack::DynamicMessageGenerator<oscquery::osc_outbound_visitor> m;
+
+    auto str = m(p.address, v);
+    s.assign(str.Data(), str.Size());
+  }
+
+  return s;
+}
+
+
 }
 }

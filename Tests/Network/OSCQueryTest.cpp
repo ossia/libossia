@@ -138,7 +138,7 @@ private Q_SLOTS:
             n.set(refresh_rate_attribute{}, 100);
             n.set(value_step_size_attribute{}, 0.5);
             n.set(repetition_filter_attribute{}, repetition_filter::ON);
-            n.set(critical_attribute{}, true);
+            n.set(critical_attribute{}, false);
             n.set(unit_attribute{}, meter_per_second_u{});
             n.set(priority_attribute{}, 50);
             n.set(description_attribute{}, "Such a fancy node?! Incredible! すごい!!");
@@ -193,6 +193,80 @@ private Q_SLOTS:
 
         // should use QCOMPARE after device cleaning to avoid hang
         QCOMPARE(b, expected_value);
+    }
+
+    void test_oscquery_critical_http()
+    {
+        auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+        generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+        TestDeviceRef dev{serv}; (void) dev;
+        ossia::net::parameter_base* a{};
+        {
+            auto& n = find_or_create_node(serv, "/main");
+            a = n.create_parameter(ossia::val_type::FLOAT);
+            a->push_value(6);
+            n.set(critical_attribute{}, true);
+        }
+
+        // HTTP client
+        auto http_proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", 10000);
+        std::unique_ptr<generic_device> http_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(http_proto), "B"}};
+
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        http_proto->update(http_clt->get_root_node());
+
+        auto node = find_node(http_clt->get_root_node(), "/main");
+        QVERIFY(node);
+        auto param = node->get_parameter();
+        QVERIFY(param);
+        QCOMPARE(param->value().get<float>(), 6.f);
+
+        {
+            net::full_parameter_data d; d.address = "/main"; d.set_value(4.5f);
+            http_proto->push_raw(d); //  no way to send raw OSC through http requests: this will god through the OSC port
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        QCOMPARE(a->value().get<float>(), 4.5f);
+    }
+
+
+    void test_oscquery_critical_ws()
+    {
+        auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+        generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+        TestDeviceRef dev{serv}; (void) dev;
+        ossia::net::parameter_base* a{};
+        {
+            auto& n = find_or_create_node(serv, "/main");
+            a = n.create_parameter(ossia::val_type::FLOAT);
+            a->push_value(6);
+            n.set(critical_attribute{}, true);
+        }
+
+        // WS client
+        auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+        std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        ws_proto->update(ws_clt->get_root_node());
+        auto node = find_node(ws_clt->get_root_node(), "/main");
+        QVERIFY(node);
+        auto param = node->get_parameter();
+        QVERIFY(param);
+        QCOMPARE(param->value().get<float>(), 6.f);
+
+        {
+          param->push_value(4.5f); // This will god through the WS port
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        std::cout << "new value : " << a->value() << " expecting " << 4.5f << std::endl;
+        // should use QCOMPARE after device cleaning to avoid hang
+        QCOMPARE(a->value().get<float>(), 4.5f);
+
     }
 };
 

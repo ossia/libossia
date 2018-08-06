@@ -157,6 +157,24 @@ public:
     }
   }
 
+  void send_binary_message(const std::string& request)
+  {
+    if (!m_open)
+      return;
+
+    websocketpp::lib::error_code ec;
+
+    m_client.send(
+        m_hdl, request.data(), request.size(),
+        websocketpp::frame::opcode::binary, ec);
+
+    if (ec)
+    {
+      m_client.get_alog().write(
+          websocketpp::log::alevel::app, "Send Error: " + ec.message());
+    }
+  }
+
 private:
   using client_t = websocketpp::client<websocketpp::config::asio_client>;
   using scoped_lock = websocketpp::lib::lock_guard<websocketpp::lib::mutex>;

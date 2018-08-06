@@ -177,6 +177,16 @@ void oscquery_mirror_protocol::query_send_message(
   }
 }
 
+void oscquery_mirror_protocol::query_send_binary_message(
+    const std::string& str)
+{
+  if (!m_useHTTP)
+  {
+    m_websocketClient->send_binary_message(str);
+  }
+}
+
+
 bool oscquery_mirror_protocol::query_connected()
 {
   if (!m_useHTTP)
@@ -247,13 +257,13 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr)
   {
     // Push to server
     auto critical = addr.get_critical();
-    if (!critical && m_oscSender)
+    if ((!critical || m_useHTTP) && m_oscSender)
     {
       m_oscSender->send(addr, val);
     }
     else
     {
-      query_send_message(json_writer::send_message(addr, val));
+      query_send_binary_message(osc_writer::send_message(addr, val));
     }
 
     if (m_logger.outbound_listened_logger)
@@ -273,13 +283,13 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
   {
     // Push to server
     auto critical = addr.get_critical();
-    if (!critical && m_oscSender)
+    if ((!critical || m_useHTTP) && m_oscSender)
     {
       m_oscSender->send(addr, val);
     }
     else
     {
-      query_send_message(json_writer::send_message(addr, val));
+      query_send_binary_message(osc_writer::send_message(addr, val));
     }
     return true;
   }
@@ -290,6 +300,7 @@ bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::p
 {
   if (!m_useHTTP)
   {
+    /* TODO
     json_bundle_builder b;
     for(auto a : addresses)
     {
@@ -301,7 +312,8 @@ bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::p
       }
     }
 
-    m_websocketClient->send_message(b.finish());
+    m_websocketClient->send_binary_message(b.finish());
+    */
   }
   return false;
 }
@@ -310,6 +322,7 @@ bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::ful
 {
   if (!m_useHTTP)
   {
+    /* TODO
     json_bundle_builder b;
     for(const auto& addr : addresses)
     {
@@ -321,6 +334,7 @@ bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::ful
     }
 
     m_websocketClient->send_message(b.finish());
+    */
   }
   return false;
 }

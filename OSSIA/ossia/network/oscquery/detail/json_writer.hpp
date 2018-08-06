@@ -140,5 +140,14 @@ private:
       detail::json_writer_impl& p, const ossia::net::full_parameter_data&,
       const ossia::value&);
 };
+
+struct osc_writer
+{
+  static std::string
+  send_message(const ossia::net::parameter_base&, const ossia::value&);
+  static std::string
+  send_message(const ossia::net::full_parameter_data&, const ossia::value&);
+};
+
 }
 }

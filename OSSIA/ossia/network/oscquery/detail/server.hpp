@@ -60,7 +60,7 @@ public:
 #endif
           try
           {
-            auto res = h(hdl, msg->get_raw_payload());
+            auto res = h(hdl, msg->get_opcode(), msg->get_raw_payload());
             if (res.data.size() > 0)
             {
               send_message(hdl, res);
@@ -105,7 +105,7 @@ public:
 
       try
       {
-        ossia::oscquery::server_reply str = h(hdl, con->get_uri()->get_resource());
+        ossia::oscquery::server_reply str = h(hdl, websocketpp::frame::opcode::TEXT, con->get_uri()->get_resource());
 
         switch(str.type)
         {
@@ -205,6 +205,15 @@ public:
     con->send(
         message.GetString(), message.GetSize(),
         websocketpp::frame::opcode::text);
+  }
+
+  void
+  send_binary_message(connection_handler hdl, const std::string& message)
+  {
+    auto con = m_server.get_con_from_hdl(hdl);
+    con->send(
+        message.data(), message.size(),
+        websocketpp::frame::opcode::binary);
   }
 
   server_t& impl()
