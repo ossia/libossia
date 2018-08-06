@@ -1,5 +1,12 @@
 # All tests defined in this file are based on Qt Framework
 find_package(Qt5 5.6 REQUIRED COMPONENTS Core Test Qml)
+
+if(Qt5_VERSION VERSION_GREATER_EQUAL 5.11.0
+  AND "${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+  return() # Qt > 5.11 doesn't ship 32bit binary anymore
+endif()
+
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
