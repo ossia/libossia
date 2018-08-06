@@ -21,15 +21,19 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
     message("Downloading and extracting PureData windows binary")
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-      file(DOWNLOAD "https://ci.appveyor.com/api/buildjobs/a0urdqx1xuve5fbh/artifacts/Pure%20Data%20(bin%20X64).zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-2test1-64bit.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     else()
-      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-1test3.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-2test1.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     endif()
 
     # Extract Pd.
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+
+    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-0.48-2test1-64bit.msw" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    endif()
 
 endif()
 endif()
@@ -102,11 +106,7 @@ add_custom_target(pd_qml_examples SOURCES ${QMLS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
 if(MSVC)
-  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-    target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd.lib")
-  else()
-    target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
-  endif()
+  target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
 endif()
 
 add_linker_warnings_external(${PROJECT_NAME})
