@@ -31,6 +31,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Debug\ossiad.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Debug\
   }
 
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  copy ${env:APPVEYOR_BUILD_FOLDER}\install\Ossia ${env:QTDIR}\QML
+
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\test.log"
   cmake --build . --config "${env:configuration}" --target RUN_TESTS > "$LogFile"
   CheckLastExitCode
