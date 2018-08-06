@@ -53,7 +53,7 @@ template <typename X, typename Y>
  * A curve is a succession of \ref curve_segment.
  * It is used in a \ref Behavior to drive \ref automation or \ref mapper.
  */
-class OSSIA_EXPORT curve final : public curve_abstract
+class curve final : public curve_abstract
 {
 public:
   using abscissa_type = X;
