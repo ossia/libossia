@@ -345,6 +345,9 @@ void loop::state(
 
 void loop::start()
 {
+  if(m_lastDate == ossia::Infinite)
+    m_lastDate = ossia::Zero;
+
   m_interval.get_start_event().set_status(time_event::status::PENDING);
 }
 
