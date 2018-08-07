@@ -14,6 +14,22 @@ class QmlDeviceTest : public QObject
   Q_OBJECT
 
 private Q_SLOTS:
+
+  void test_client()
+  {
+    int argc{}; char** argv{};
+    QCoreApplication app(argc, argv);
+    QQmlEngine engine;
+    ossia::context context;
+
+    QQmlComponent component(&engine, "testdata/qml/TestClient.qml");
+    qDebug() << component.errorString();
+
+    auto item = component.create();
+    QVERIFY(item);
+  }
+
+
   void test_device()
   {
     int argc{}; char** argv{};
@@ -30,8 +46,8 @@ private Q_SLOTS:
     auto& dev = ossia::qt::qml_singleton_device::instance();
     auto node = ossia::net::find_node(dev.device().get_root_node(), "/bar/x");
     QVERIFY(node);
-
   }
+
 };
 
 
