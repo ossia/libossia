@@ -400,8 +400,7 @@ target_include_directories(ossia
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-# Note : should be SYSTEM PUBLIC but due to sakra/cotire:105 we cannot.
-target_include_directories(ossia
+target_include_directories(ossia SYSTEM
   PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
@@ -420,10 +419,7 @@ target_include_directories(ossia
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
-)
 
-target_include_directories(ossia SYSTEM
-  PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/RtMidi17>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>

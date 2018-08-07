@@ -176,8 +176,10 @@ if(OSSIA_SPLIT_DEBUG)
 #      -Wl,--compress-debug-sections=zlib
       -Wl,--dynamic-list-cpp-new
       -Wl,--dynamic-list-cpp-typeinfo
-      -Wno-unused-command-line-argument
     )
+    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+      set(GOLD_FLAGS ${GOLD_FLAGS} -Wno-unused-command-line-argument)
+    endif()
   endif()
 
   if(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -319,9 +321,12 @@ else()
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
   endif()
 
-  if(UNIX AND NOT CMAKE_COMPILER_IS_GNUCXX)
+  if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
       -Wno-gnu-statement-expression
+      -Wno-four-char-constants
+      -Wno-cast-align
+      -Wno-unused-local-typedef
       #-Wweak-vtables
     )
   endif()
@@ -332,7 +337,6 @@ else()
       -Wno-unused-parameter
       -Wno-unknown-pragmas
       -Wno-missing-braces
-      -Wno-four-char-constants
       -Wnon-virtual-dtor
       -pedantic
       -Wunused
@@ -343,15 +347,11 @@ else()
       -Wmissing-field-initializers
       ${OSSIA_LINK_OPTIONS}
   )
-  if(NOT CMAKE_COMPILER_IS_GNUCXX)
-    set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
-      -Wno-cast-align
-      -Wno-unused-local-typedef)
-  endif()
+
   if(OSSIA_CI)
-      if(NOT CMAKE_COMPILER_IS_GNUCXX)
+    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
           set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
-      endif()
+    endif()
   endif()
 
   if("${SUPPORTS_MISLEADING_INDENT_FLAG}")
