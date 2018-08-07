@@ -377,6 +377,7 @@ inline ossia::value init_value(ossia::val_type type)
  * @see @ref destination_index
  * @return The value if it is found, else nothing.
  */
+OSSIA_EXPORT
 ossia::value get_value_at_index(
     const ossia::value& val, const ossia::destination_index& idx);
 }
