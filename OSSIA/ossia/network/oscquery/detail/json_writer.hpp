@@ -88,6 +88,10 @@ public:
   static string_t listen(ossia::string_view address);
   static string_t ignore(ossia::string_view address);
 
+  // Extensions
+  static string_t start_osc_streaming(int local_server_port, int local_sender_port);
+
+
   // Update messages
   //! Sent when a new node is added
   static string_t path_added(const ossia::net::node_base& n);

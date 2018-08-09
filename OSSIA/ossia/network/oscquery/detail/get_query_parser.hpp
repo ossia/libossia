@@ -3,7 +3,6 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
-#include <boost/lexical_cast.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/detail/html_writer.hpp>
@@ -60,34 +59,6 @@ public:
     }
   }
 
-  static json_writer::string_t handle_osc_port(
-      oscquery_server_protocol& proto,
-      const oscquery_server_protocol::connection_handler& hdl,
-      int port,
-      int remotePort = 0)
-  {
-    // First we find for a corresponding client
-    auto clt = proto.find_building_client(hdl);
-
-    if (!clt)
-    {
-      // It's an http-connecting client - we can't open a streaming connection to it
-      throw bad_request_error{"Client not found"};
-    }
-
-    if(port != 0)
-    {
-      // Then we set-up the sender
-      clt->open_osc_sender(proto.get_logger(), port);
-      if(remotePort != 0)
-      {
-        clt->remote_sender_port = remotePort;
-      }
-    }
-
-    proto.enable_client(hdl);
-    return {};
-  }
 
   auto operator()(oscquery_server_protocol& proto, const oscquery_server_protocol::connection_handler& hdl)
   {
@@ -134,27 +105,6 @@ public:
           if (html_it != parameters.end())
           {
             return static_html_builder{}.build_tree(*node);
-          }
-
-          // SET_PORT
-          auto set_osc_port_it = parameters.find(detail::set_port());
-          if (set_osc_port_it != parameters.end())
-          {
-            auto remote_osc_port_it = parameters.find(detail::local_port());
-            if(remote_osc_port_it != parameters.end())
-            {
-              return handle_osc_port(
-                  proto,
-                    hdl,
-                    boost::lexical_cast<int>(set_osc_port_it->second),
-                    boost::lexical_cast<int>(remote_osc_port_it->second)
-                    );
-            }
-            else
-            {
-              return handle_osc_port(
-                  proto, hdl, boost::lexical_cast<int>(set_osc_port_it->second));
-            }
           }
 
           // ADD_NODE

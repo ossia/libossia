@@ -345,13 +345,19 @@ bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable
   if (enable)
   {
     auto str = address.get_node().osc_address();
-    query_send_message(json_writer::listen(str));
+
+    if (!m_useHTTP)
+      query_send_message(json_writer::listen(str));
+
     m_listening.insert(std::make_pair(std::move(str), &address));
   }
   else
   {
     const auto& str = address.get_node().osc_address();
-    query_send_message(json_writer::ignore(str));
+
+    if (!m_useHTTP)
+      query_send_message(json_writer::ignore(str));
+
     m_listening.erase(str);
   }
   return true;
@@ -609,9 +615,9 @@ bool oscquery_mirror_protocol::on_WSMessage(
             if(info.extensions["OSC_STREAMING"])
             {
               query_send_message(
-                  fmt::format("/?{}={}&{}={}"
-                              , detail::set_port(), m_oscServer->port()
-                              , detail::local_port(), m_oscSender->localPort()));
+                    json_writer::start_osc_streaming(
+                      m_oscServer->port(),
+                      m_oscSender->localPort()));
             }
           }
           else
@@ -619,23 +625,6 @@ bool oscquery_mirror_protocol::on_WSMessage(
             // TODO
           }
 
-          break;
-        }
-        case message_type::Device:
-        {
-          /*
-          // The ip of the OSC server on the server
-          m_oscSender
-              = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
-                  m_logger, to_ip(m_websocketHost),
-                  json_parser::get_port(*data));
-
-          // Send to the server the local receiver port
-          query_send_message(
-              fmt::format("/?{}={}&{}={}"
-                          , detail::set_port(), m_oscServer->port()
-                          , detail::local_port(), m_oscSender->localPort()));
-                          */
           break;
         }
         case message_type::Namespace:

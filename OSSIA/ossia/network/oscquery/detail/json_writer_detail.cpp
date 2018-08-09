@@ -532,6 +532,31 @@ json_writer::string_t json_writer::ignore(string_view address)
   return buf;
 }
 
+json_writer::string_t json_writer::start_osc_streaming(int local_server_port, int local_sender_port)
+{
+  string_t buf;
+  writer_t wr(buf);
+
+  wr.StartObject();
+
+  write_json_key(wr, detail::command());
+  write_json(wr, detail::start_osc_streaming());
+
+  write_json_key(wr, detail::data());
+  {
+    wr.StartObject();
+    write_json_key(wr, detail::local_server_port());
+    wr.Int(local_server_port);
+    write_json_key(wr, detail::local_sender_port());
+    wr.Int(local_sender_port);
+    wr.EndObject();
+  }
+
+  wr.EndObject();
+
+  return buf;
+}
+
 
 json_writer::string_t json_writer::path_added(const net::node_base& n)
 {

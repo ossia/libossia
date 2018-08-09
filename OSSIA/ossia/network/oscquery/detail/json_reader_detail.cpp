@@ -739,6 +739,7 @@ json_parser::message_type(const rapidjson::Value& obj)
       {detail::path_changed(), ossia::oscquery::message_type::PathChanged},
       {detail::path_removed(), ossia::oscquery::message_type::PathRemoved},
       {detail::attributes_changed(), ossia::oscquery::message_type::AttributesChanged},
+      {detail::start_osc_streaming(), ossia::oscquery::message_type::StartOscStreaming},
       {detail::listen(), ossia::oscquery::message_type::Listen},
       {detail::ignore(), ossia::oscquery::message_type::Ignore}
   };

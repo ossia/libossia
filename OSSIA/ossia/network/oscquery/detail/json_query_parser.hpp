@@ -38,6 +38,9 @@ struct json_query_answerer
     {
       switch (json_parser::message_type(doc))
       {
+        case message_type::StartOscStreaming:
+          handle_start_streaming(proto, hdl, doc);
+          break;
         case message_type::Listen:
           handle_listen(proto, hdl, doc);
           break;
@@ -52,6 +55,67 @@ struct json_query_answerer
     return rapidjson::StringBuffer{};
   }
 
+  static json_writer::string_t handle_start_streaming(
+      oscquery_server_protocol& proto,
+      const oscquery_server_protocol::connection_handler& hdl,
+      const rapidjson::Document& doc)
+  {
+    auto m = doc.FindMember("DATA");
+    if(m == doc.MemberEnd())
+      return {};
+    if(!m->value.IsObject())
+      return {};
+    auto obj = m->value.GetObject();
+    auto remote_server_port_it = obj.FindMember(detail::local_server_port().data());
+    auto remote_sender_port_it = obj.FindMember(detail::local_sender_port().data());
+
+    if(remote_server_port_it == obj.MemberEnd())
+      return {};
+    if(!remote_server_port_it->value.IsInt())
+      return {};
+
+    int remote_server = remote_server_port_it->value.GetInt();
+    int remote_sender = 0;
+
+    if(remote_sender_port_it != obj.MemberEnd())
+    {
+      if(remote_sender_port_it->value.IsInt())
+      {
+        remote_sender = remote_sender_port_it->value.GetInt();
+      }
+    }
+
+    return open_osc_sender(proto, hdl, remote_server, remote_sender);
+  }
+
+  static json_writer::string_t open_osc_sender(
+      oscquery_server_protocol& proto,
+      const oscquery_server_protocol::connection_handler& hdl,
+      int port,
+      int remotePort)
+  {
+    // First we find for a corresponding client
+    auto clt = proto.find_building_client(hdl);
+
+    if (!clt)
+    {
+      // It's an http-connecting client - we can't open a streaming connection to it
+      throw bad_request_error{"Client not found"};
+    }
+
+    if(port != 0)
+    {
+      // Then we set-up the sender
+      clt->open_osc_sender(proto.get_logger(), port);
+      if(remotePort != 0)
+      {
+        clt->remote_sender_port = remotePort;
+      }
+    }
+
+    proto.enable_client(hdl);
+    return {};
+  }
 
   static json_writer::string_t handle_listen(
       oscquery_server_protocol& proto,
@@ -68,7 +132,7 @@ struct json_query_answerer
     if(m == doc.MemberEnd())
       return {};
 
-    auto nodes = ossia::net::find_nodes(proto.get_device().get_root_node(), m->name.GetString());
+    auto nodes = ossia::net::find_nodes(proto.get_device().get_root_node(), m->value.GetString());
     for(auto n : nodes)
     {
       clt->start_listen(n->osc_address(), n->get_parameter());
@@ -91,7 +155,7 @@ struct json_query_answerer
     if(m == doc.MemberEnd())
       return {};
 
-    auto nodes = ossia::net::find_nodes(proto.get_device().get_root_node(), m->name.GetString());
+    auto nodes = ossia::net::find_nodes(proto.get_device().get_root_node(), m->value.GetString());
     for(auto n : nodes)
     {
       clt->stop_listen(n->osc_address());

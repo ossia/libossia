@@ -183,13 +183,17 @@ constexpr auto node_name()
 {
   constexpr_return(ossia::make_string_view("NAME"));
 }
-constexpr auto set_port()
+constexpr auto start_osc_streaming()
 {
-  constexpr_return(ossia::make_string_view("SET_PORT"));
+  constexpr_return(ossia::make_string_view("START_OSC_STREAMING"));
 }
-constexpr auto local_port()
+constexpr auto local_server_port()
 {
-  constexpr_return(ossia::make_string_view("LOCAL_PORT"));
+  constexpr_return(ossia::make_string_view("LOCAL_SERVER_PORT"));
+}
+constexpr auto local_sender_port()
+{
+  constexpr_return(ossia::make_string_view("LOCAL_SENDER_PORT"));
 }
 constexpr auto listen()
 {
@@ -472,6 +476,7 @@ enum class message_type
   PathRemoved,
   AttributesChanged,
   HostInfo,
+  StartOscStreaming,
   Listen,
   Ignore
 };
