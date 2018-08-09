@@ -8,7 +8,7 @@ namespace ossia
 {
 namespace oscquery
 {
-struct osc_outbound_visitor
+struct OSSIA_EXPORT osc_outbound_visitor
 {
 public:
   oscpack::OutboundPacketStream& p;
