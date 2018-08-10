@@ -2,7 +2,7 @@
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/network/oscquery/detail/server.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 

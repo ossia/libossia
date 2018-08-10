@@ -3,7 +3,7 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
-
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 namespace ossia
 {
 namespace oscquery

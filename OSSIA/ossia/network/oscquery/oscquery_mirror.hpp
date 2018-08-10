@@ -3,7 +3,6 @@
 #include <ossia/detail/json_fwd.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <readerwriterqueue.h>
 namespace osc
 {
@@ -26,6 +25,7 @@ struct parameter_data;
 }
 namespace oscquery
 {
+struct osc_outbound_visitor;
 class websocket_client;
 class http_get_request;
 struct http_client_context;

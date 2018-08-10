@@ -11,7 +11,7 @@
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <boost/algorithm/string.hpp>

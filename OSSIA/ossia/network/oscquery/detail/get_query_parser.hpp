@@ -6,6 +6,7 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/detail/html_writer.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 namespace ossia
 {
 namespace net

@@ -16,7 +16,6 @@
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor_impl.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 
 #include <ossia/detail/mutex.hpp>
