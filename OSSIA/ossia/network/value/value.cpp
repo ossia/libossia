@@ -551,7 +551,7 @@ struct value_prettyprint_visitor
   }
   void operator()(char c) const
   {
-    s << "char: " << c;
+    s << "char: \'" << c << "\'";
   }
   void operator()(std::string str) const
   {
