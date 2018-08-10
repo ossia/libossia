@@ -556,7 +556,7 @@ struct value_prettyprint_visitor
   void operator()(std::string str) const
   {
     boost::algorithm::replace_all(str, "\"", "\\\"");
-    s << "string: " << str;
+    s << "string: \"" << str << "\"";
   }
   void operator()(vec2f vec) const
   {
