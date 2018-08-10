@@ -1008,6 +1008,7 @@ const std::string ossia::presets::read_file(
     file.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
     file.open(filename);
     buffer << file.rdbuf();
+    file.close();
   }
   return buffer.str();
 }
