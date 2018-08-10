@@ -68,6 +68,8 @@ private Q_SLOTS:
             n3.set_unit("gain.db");
             n3.set_value(-12.56);
 
+            qDebug() << "gain.db value: " << n3.get_value().to_float();
+
             auto n4 = n1.create_argb("my_color");
             n4.set_value(opp::value::vec4f{0.1f,0.2f,0.3f,0.4f});
       
@@ -89,8 +91,13 @@ private Q_SLOTS:
             std::vector<opp::value> sublist;
             sublist.push_back("foo");
             sublist.push_back("bar");
+            sublist.push_back(36.25);
             list.push_back(sublist);
             n8.set_value(list);
+
+            QVERIFY(n8.get_value().is_list());
+            auto list2 = n8.get_value().to_list();
+            QCOMPARE(list2.size(),5);
       
             auto n9 = n1.create_int("my_int");
             n9.set_value(99);
@@ -155,6 +162,7 @@ private Q_SLOTS:
             QCOMPARE(n2.get_value().to_float(), 0.6f);        
             
             QCOMPARE(n3.get_value().to_float(), -12.56f);
+            qDebug() << "vecnf";
             
             QCOMPARE(n4.get_value().to_vec4f()[0], 0.1f);
             QCOMPARE(n4.get_value().to_vec4f()[1], 0.2f);
@@ -173,19 +181,25 @@ private Q_SLOTS:
             QCOMPARE(n7.get_value().to_vec4f()[2], 0.77f);
             QCOMPARE(n7.get_value().to_vec4f()[3], 0.87f);
 
+            QVERIFY(n8.get_value().is_list());
+            auto list = n8.get_value().to_list();
+            QCOMPARE(list.size(),5);
             QCOMPARE(n8.get_value().to_list()[0].to_int(), 3);
             QCOMPARE(n8.get_value().to_list()[1].to_float(), 2.68f);
             QCOMPARE(n8.get_value().to_list()[2].to_string(), "toto");
             QCOMPARE(n8.get_value().to_list()[3].to_char(), 'a');
             QCOMPARE(n8.get_value().to_list()[4].to_list()[0].to_string(), "foo");
             QCOMPARE(n8.get_value().to_list()[4].to_list()[1].to_string(), "bar");
+            QCOMPARE(n8.get_value().to_list()[4].to_list()[2].to_float(), 36.25);
 
+            qDebug() << "int";
             QCOMPARE(n9.get_value().to_int(), 99);
             
             QCOMPARE(n10.get_value().to_bool(), true);
             
             QCOMPARE(n11.get_value().to_string(), "truc muche");
             
+            qDebug() << "char";
             QCOMPARE(n12.get_value().to_char(), 'e');
           }
       
