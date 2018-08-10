@@ -30,6 +30,9 @@ value::~value()
 value::value(const value& v) : m_val{new ossia::value(*v.m_val)}
 {
 }
+value::value(char v) : m_val{new ossia::value(v)}
+{
+}
 value::value(int v) : m_val{new ossia::value(v)}
 {
 }
@@ -72,6 +75,10 @@ bool value::is_impulse() const
 {
   return m_val->getType() == ossia::val_type::IMPULSE;
 }
+bool value::is_char() const
+{
+  return m_val->getType() == ossia::val_type::CHAR;
+}
 bool value::is_int() const
 {
   return m_val->getType() == ossia::val_type::INT;
@@ -110,7 +117,10 @@ bool value::is_string() const
 {
   return m_val->getType() == ossia::val_type::STRING;
 }
-
+char value::to_char() const
+{
+  return ossia::convert<char>(*m_val);
+}
 int value::to_int() const
 {
   return ossia::convert<int>(*m_val);
@@ -169,6 +179,11 @@ value& value::operator=(const value& v)
   *m_val = *v.m_val;
   return *this;
 }
+value& value::operator=(char v)
+{
+  *m_val = v;
+  return *this;
+}
 value& value::operator=(int v)
 {
   *m_val = v;
@@ -216,6 +231,10 @@ value& value::operator=(std::string v)
 void value::set_impulse()
 {
   *m_val = ossia::impulse{};
+}
+void value::set_char(char v)
+{
+  *this = std::move(v);
 }
 void value::set_int(int v)
 {
@@ -518,6 +537,16 @@ void node::set_impulse()
   {
     m_node->remove_parameter();
     m_node->create_parameter(ossia::val_type::IMPULSE);
+  }
+
+}
+
+void node::set_char()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    m_node->create_parameter(ossia::val_type::CHAR);
   }
 
 }
@@ -849,6 +878,17 @@ node node::create_impulse(std::string addr)
   {
     auto n = &ossia::net::create_node(*m_node, addr);
     return node{n, n->create_parameter(ossia::val_type::IMPULSE)};
+  }
+
+  return {};
+}
+
+node node::create_char(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, n->create_parameter(ossia::val_type::CHAR)};
   }
 
   return {};
