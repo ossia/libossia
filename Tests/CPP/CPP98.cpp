@@ -49,7 +49,7 @@ private Q_SLOTS:
       
             // Create a node /foo/bar/baz of type float
             // and make it read-only on the network.
-            /*
+            
             opp::node n2 = n1.create_float("bar/baz")
                              .set_access(opp::Get)
                              .set_bounding(opp::Clip);
@@ -67,7 +67,7 @@ private Q_SLOTS:
             // Add an unit to the parameter:
             n3.set_unit("gain.db");
             n3.set_value(-12.56);
-      */
+
             auto n4 = n1.create_argb("my_color");
             n4.set_value(opp::value::vec4f{0.1f,0.2f,0.3f,0.4f});
       
