@@ -431,23 +431,28 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value)
       switch(N)
       {
         case 2:
-          val = ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
-          break;
+          if(value[0].IsDouble() && value[1].GetDouble())
+          {
+            return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
+          }
         case 3:
-          val = ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
-          break;
+          if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble())
+          {
+            return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
+          }
         case 4:
-          val = ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(), value[3].GetDouble());
-          break;
+          if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble() && value[3].GetDouble())
+          {
+            return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(), value[3].GetDouble());
+          }
         default:
         {
-          std::vector<ossia::value> v;
-          v.reserve(N);
-          for(std::size_t i = 0; i < N; i++)
+          std::vector<ossia::value> list;
+          list.reserve(N);
+          for(unsigned int i=0; i<N; i++)
           {
-            v.push_back(value[i].GetDouble());
+            list.push_back(json_to_ossia_value(value[i]));
           }
-          val = std::move(v);
         }
       }
       break;
