@@ -21,7 +21,7 @@ void printValueCallback(const OSSIA::Value * v) {
 
 void printValue(const OSSIA::Value * v)
 {
-    switch (v->getType())
+    switch (v->get_type())
     {
         case OSSIA::Value::Type::IMPULSE :
         {

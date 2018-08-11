@@ -46,8 +46,8 @@ private Q_SLOTS:
         auto second_val = second_op.target<ossia::value>();
         QVERIFY(first_val);
         QVERIFY(second_val);
-        QCOMPARE(first_val->getType(), val_type::IMPULSE);
-        QCOMPARE(second_val->getType(), val_type::BOOL);
+        QCOMPARE(first_val->get_type(), val_type::IMPULSE);
+        QCOMPARE(second_val->get_type(), val_type::BOOL);
 
         QVERIFY(evaluate(testImpulseExprC) == true);
 
@@ -285,7 +285,7 @@ private Q_SLOTS:
                                                           comparator::EQUAL,
                                                           new Destination(localImpulseNode2));
 
-        QVERIFY(testDestinationExprA->getType() == Expression::Type::ATOM);
+        QVERIFY(testDestinationExprA->get_type() == Expression::Type::ATOM);
         QVERIFY(evaluate(testDestinationExprA) == true);
 
         auto testDestinationExprB = make_expression_atom(new Destination(localBoolNode1),

@@ -16,7 +16,7 @@ std::string valueToString(OSSIA::Value* val) {
 
     std::stringstream ss;
 
-    switch (val->getType()) {
+    switch (val->get_type()) {
     case OSSIA::Value::Type::BOOL: {
         OSSIA::Bool* v = (OSSIA::Bool*)val;
         ss << "Bool " << v->value;
