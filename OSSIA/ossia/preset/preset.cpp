@@ -453,6 +453,7 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value)
           {
             list.push_back(json_to_ossia_value(value[i]));
           }
+          return list;
         }
       }
       break;
@@ -486,29 +487,8 @@ void explore(
 
     if (jsonval.IsArray())
     {
-      int arrsize = jsonval.Size();
-      bool is_num = true;
-      for (int i = 0; i < arrsize; ++i)
-      {
-        is_num &= jsonval[i].IsNumber();
-        if(!is_num)
-          break;
-      }
-
-      if(!is_num)
-      {
-        for (int i = 0; i < arrsize; ++i)
-        {
-          std::stringstream newroot;
-          newroot << root << "." << i;
-          explore(newroot.str(), jsonval[i], preset);
-        }
-      }
-      else
-      {
-        ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
-        preset->push_back(pp);
-      }
+      ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
+      preset->push_back(pp);
     }
   }
   else
