@@ -25,8 +25,8 @@ static inline constexpr bool is_vec(ossia::val_type v)
 
 inline bool same_vec_type(const ossia::value& lhs, const ossia::value& rhs)
 {
-  const auto first = lhs.getType();
-  const auto second = rhs.getType();
+  const auto first = lhs.get_type();
+  const auto second = rhs.get_type();
   if (first != second)
     return false;
 
@@ -315,7 +315,7 @@ struct state_flatten_visitor_merger
   template <std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, const message& incoming)
   {
-    auto t = incoming.message_value.getType();
+    auto t = incoming.message_value.get_type();
     using vec_type = decltype(existing.message_value);
     switch (t)
     {

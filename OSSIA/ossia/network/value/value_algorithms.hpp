@@ -22,12 +22,12 @@ struct value_merger
     {
       if (dest.valid() && src.valid())
       {
-        switch (src.getType())
+        switch (src.get_type())
         {
           case ossia::val_type::LIST:
           {
             auto& src_vec = src.template get<std::vector<ossia::value>>();
-            switch (dest.getType())
+            switch (dest.get_type())
             {
               case ossia::val_type::LIST:
                 merge_list(dest.get<std::vector<ossia::value>>(), src_vec);
@@ -49,7 +49,7 @@ struct value_merger
           case ossia::val_type::VEC2F:
           {
             auto& src_vec = src.template get<ossia::vec2f>();
-            switch (dest.getType())
+            switch (dest.get_type())
             {
               case ossia::val_type::LIST:
                 merge_list(dest.get<std::vector<ossia::value>>(), src_vec);
@@ -71,7 +71,7 @@ struct value_merger
           case ossia::val_type::VEC3F:
           {
             auto& src_vec = src.template get<ossia::vec3f>();
-            switch (dest.getType())
+            switch (dest.get_type())
             {
               case ossia::val_type::LIST:
                 merge_list(dest.get<std::vector<ossia::value>>(), src_vec);
@@ -93,7 +93,7 @@ struct value_merger
           case ossia::val_type::VEC4F:
           {
             auto& src_vec = src.template get<ossia::vec4f>();
-            switch (dest.getType())
+            switch (dest.get_type())
             {
               case ossia::val_type::LIST:
                 merge_list(dest.get<std::vector<ossia::value>>(), src_vec);
@@ -114,7 +114,7 @@ struct value_merger
           }
           default:
           {
-            switch (dest.getType())
+            switch (dest.get_type())
             {
               case ossia::val_type::LIST:
                 set_first_value(
@@ -237,7 +237,7 @@ struct value_merger
   {
     if (val.valid())
     {
-      switch (val.getType())
+      switch (val.get_type())
       {
         case ossia::val_type::INT:
           f = (float)val.template get<int>();

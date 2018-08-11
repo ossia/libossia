@@ -473,14 +473,14 @@ private Q_SLOTS:
   void test_tuple()
   {
     std::vector<ossia::value> t1{int32_t(5), float(0.2), std::string("abc")};
-    QVERIFY(t1[0].getType() == val_type::INT);
-    QVERIFY(t1[1].getType() == val_type::FLOAT);
-    QVERIFY(t1[2].getType() == val_type::STRING);
+    QVERIFY(t1[0].get_type() == val_type::INT);
+    QVERIFY(t1[1].get_type() == val_type::FLOAT);
+    QVERIFY(t1[2].get_type() == val_type::STRING);
 
     std::vector<ossia::value> t2 = t1;
-    QVERIFY(t2[0].getType() == val_type::INT);
-    QVERIFY(t2[1].getType() == val_type::FLOAT);
-    QVERIFY(t2[2].getType() == val_type::STRING);
+    QVERIFY(t2[0].get_type() == val_type::INT);
+    QVERIFY(t2[1].get_type() == val_type::FLOAT);
+    QVERIFY(t2[2].get_type() == val_type::STRING);
 
     QVERIFY(t1 == t2);
     QVERIFY(!(t1 != t2));

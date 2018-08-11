@@ -703,7 +703,7 @@ ossia::presets::write_json(const std::string& devicename, const preset& prst, bo
 std::string ossia_value_to_std_string(const ossia::value& val)
 {
   std::stringstream ss;
-  switch (val.getType())
+  switch (val.get_type())
   {
     case ossia::val_type::BOOL:
       ss << "Bool " << val.get<bool>();
@@ -1107,7 +1107,7 @@ void apply_preset_node(
           // addresses only on leaf nodes... maybe we should not have this
           // restriction.
           if (keys.empty())
-            newchild->create_parameter(val.getType());
+            newchild->create_parameter(val.get_type());
 
           apply_preset_node(*newchild, keys, val, keeparch, created_nodes, allow_nonterminal);
         }

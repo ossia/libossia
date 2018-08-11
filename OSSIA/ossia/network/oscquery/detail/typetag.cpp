@@ -76,7 +76,7 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
   auto val = addr.value();
   val.apply(osc_type_visitor{s});
 
-  switch (val.getType())
+  switch (val.get_type())
   {
     case ossia::val_type::LIST:
     case ossia::val_type::VEC2F:

@@ -73,49 +73,49 @@ value::value(std::string v) : m_val{new ossia::value(std::move(v))}
 
 bool value::is_impulse() const
 {
-  return m_val->getType() == ossia::val_type::IMPULSE;
+  return m_val->get_type() == ossia::val_type::IMPULSE;
 }
 bool value::is_char() const
 {
-  return m_val->getType() == ossia::val_type::CHAR;
+  return m_val->get_type() == ossia::val_type::CHAR;
 }
 bool value::is_int() const
 {
-  return m_val->getType() == ossia::val_type::INT;
+  return m_val->get_type() == ossia::val_type::INT;
 }
 bool value::is_float() const
 {
-  return m_val->getType() == ossia::val_type::FLOAT;
+  return m_val->get_type() == ossia::val_type::FLOAT;
 }
 bool value::is_bool() const
 {
-  return m_val->getType() == ossia::val_type::BOOL;
+  return m_val->get_type() == ossia::val_type::BOOL;
 }
 bool value::is_vec2f() const
 {
-  const auto t = m_val->getType();
+  const auto t = m_val->get_type();
   return t == ossia::val_type::VEC2F;
 }
 bool value::is_vec3f() const
 {
-  const auto t = m_val->getType();
+  const auto t = m_val->get_type();
   return t == ossia::val_type::VEC3F;
 }
 bool value::is_vec4f() const
 {
-  const auto t = m_val->getType();
+  const auto t = m_val->get_type();
   return t == ossia::val_type::VEC4F;
 }
 bool value::is_list() const
 {
-  const auto t = m_val->getType();
+  const auto t = m_val->get_type();
   return t == ossia::val_type::LIST || t == ossia::val_type::VEC2F
          || t == ossia::val_type::VEC3F || t == ossia::val_type::VEC4F;
 }
 
 bool value::is_string() const
 {
-  return m_val->getType() == ossia::val_type::STRING;
+  return m_val->get_type() == ossia::val_type::STRING;
 }
 char value::to_char() const
 {

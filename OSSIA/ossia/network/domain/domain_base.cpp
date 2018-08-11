@@ -85,7 +85,7 @@ domain make_domain(const std::vector<ossia::value>& vals)
 {
   if (vals.size() > 0)
   {
-    auto dom = init_domain(vals[0].getType());
+    auto dom = init_domain(vals[0].get_type());
     ossia::apply_nonnull(value_set_update_visitor{vals}, dom.v);
     return dom;
   }
@@ -120,7 +120,7 @@ domain make_domain(
   {
     if (vals.size() > 0)
     {
-      auto dom = init_domain(vals[0].getType());
+      auto dom = init_domain(vals[0].get_type());
       ossia::apply_nonnull(value_set_update_visitor{vals}, dom.v);
       return dom;
     }

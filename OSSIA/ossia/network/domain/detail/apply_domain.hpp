@@ -181,7 +181,7 @@ ossia::value apply_domain_visitor::operator()(
   std::vector<ossia::value> res = value;
   for (auto& val : res)
   {
-    if (val.getType() == ossia::value_trait<T>::ossia_enum)
+    if (val.get_type() == ossia::value_trait<T>::ossia_enum)
       val = ossia::apply_nonnull(
           list_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
   }
@@ -194,7 +194,7 @@ ossia::value apply_domain_visitor::operator()(
 {
   for (auto& val : value)
   {
-    if (val.getType() == ossia::value_trait<T>::ossia_enum)
+    if (val.get_type() == ossia::value_trait<T>::ossia_enum)
       val = ossia::apply_nonnull(
           list_apply_domain_helper<domain_base<T>>{*this, domain},
           std::move(val.v));

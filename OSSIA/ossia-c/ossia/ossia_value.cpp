@@ -127,7 +127,7 @@ ossia_type ossia_value_get_type(ossia_value_t val)
     return static_cast<ossia_type>(-1);
   }
 
-  return convert(val->value.getType());
+  return convert(val->value.get_type());
 }
 
 int ossia_value_to_int(ossia_value_t val)

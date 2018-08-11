@@ -658,7 +658,7 @@ struct lift_convert
 };
 ossia::value convert(const ossia::value& val, const ossia::value& cur)
 {
-  auto t = cur.getType();
+  auto t = cur.get_type();
   switch(t)
   {
     case ossia::val_type::NONE:

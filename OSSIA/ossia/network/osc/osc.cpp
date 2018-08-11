@@ -266,7 +266,7 @@ template <std::size_t N>
 static bool is_vec(std::vector<ossia::value>& t)
 {
   return t.size() == N && ossia::all_of(t, [](const ossia::value& val) {
-    return val.getType() == ossia::val_type::FLOAT;
+    return val.get_type() == ossia::val_type::FLOAT;
   });
 }
 
@@ -309,7 +309,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
     case 1:
     {
       auto val = osc_utilities::create_value(m.ArgumentsBegin());
-      auto addr = n->create_parameter(val.getType());
+      auto addr = n->create_parameter(val.get_type());
       addr->set_value(val);
       break;
     }

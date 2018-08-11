@@ -31,7 +31,7 @@ void message::launch()
     if (!unit || !addr_unit || unit == addr_unit)
     {
       auto cur = addr.value();
-      auto cur_t = cur.getType();
+      auto cur_t = cur.get_type();
       switch (cur_t)
       {
         case ossia::val_type::VEC2F:
@@ -104,7 +104,7 @@ void piecewise_vec_message<N>::launch()
     else
     {
       auto val = addr.value();
-      if (val.getType()
+      if (val.get_type()
           == ossia::value_trait<std::array<float, N>>::ossia_enum)
       {
         auto& v = val.get<std::array<float, N>>();
