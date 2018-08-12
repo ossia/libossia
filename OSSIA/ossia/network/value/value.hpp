@@ -275,7 +275,7 @@ public:
     return v.target<type>();
   }
 
-  ossia::val_type getType() const
+  ossia::val_type get_type() const
   {
     auto t = v.which();
     if (t == v.npos)

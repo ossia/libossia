@@ -258,7 +258,7 @@ int main()
 
 //void local_play_callback(const value& v)
 //{
-//    if (v.getType() == val_type::BOOL)
+//    if (v.get_type() == val_type::BOOL)
 //    {
 //        auto b = v.get<bool>();
 //        if (b)
@@ -272,13 +272,13 @@ int main()
 //{
 //    cout << "/score/test = ";
 
-//    if (v.getType() == val_type::LIST)
+//    if (v.get_type() == val_type::LIST)
 //    {
 //      auto t = v.get<std::vector<ossia::value>>();
 
 //        for (auto e : t)
 //        {
-//            if (e.getType() == val_type::FLOAT)
+//            if (e.get_type() == val_type::FLOAT)
 //            {
 //                auto f = e.get<float>();
 //                cout << f << " ";

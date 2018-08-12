@@ -101,11 +101,11 @@ TEST_CASE ("Parsing types") {
     REQUIRE(ossia::find(p, "/c") != p.end());
     REQUIRE(ossia::find(p, "/d") != p.end());
     REQUIRE(ossia::find(p, "/e") != p.end());
-    REQUIRE(ossia::find(p, "/a")->second.getType() == ossia::val_type::INT);
-    REQUIRE(ossia::find(p, "/b")->second.getType() == ossia::val_type::FLOAT);
-    REQUIRE(ossia::find(p, "/c")->second.getType() == ossia::val_type::BOOL);
-    REQUIRE(ossia::find(p, "/d")->second.getType() == ossia::val_type::STRING);
-    REQUIRE(ossia::find(p, "/e")->second.getType() == ossia::val_type::BOOL);
+    REQUIRE(ossia::find(p, "/a")->second.get_type() == ossia::val_type::INT);
+    REQUIRE(ossia::find(p, "/b")->second.get_type() == ossia::val_type::FLOAT);
+    REQUIRE(ossia::find(p, "/c")->second.get_type() == ossia::val_type::BOOL);
+    REQUIRE(ossia::find(p, "/d")->second.get_type() == ossia::val_type::STRING);
+    REQUIRE(ossia::find(p, "/e")->second.get_type() == ossia::val_type::BOOL);
 }
 
 TEST_CASE ("Building JSON array") {
@@ -366,7 +366,7 @@ TEST_CASE ("Types conversion") {
     std::string s ("bonjour");
 
     ossia::value v = c;
-    REQUIRE(v.getType() == ossia::val_type::CHAR);
+    REQUIRE(v.get_type() == ossia::val_type::CHAR);
     REQUIRE(*v.target<char>() == '2');
     p.push_back(std::make_pair ("/true", btrue));
     p.push_back(std::make_pair ("/false", bfalse));

@@ -379,7 +379,7 @@ private:
       {
         for(const ossia::value& val : value_to_test)
         {
-          local_addr[i]->set_value_type(val.getType());
+          local_addr[i]->set_value_type(val.get_type());
           local_addr[i]->push_value(val);
         }
       }
@@ -396,7 +396,7 @@ private:
       {
         for(const ossia::value& val : value_to_test)
         {
-          remote_addr[i]->set_value_type(val.getType());
+          remote_addr[i]->set_value_type(val.get_type());
           remote_addr[i]->push_value(val);
         }
       }

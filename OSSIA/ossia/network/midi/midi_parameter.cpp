@@ -62,7 +62,7 @@ ossia::value midi_parameter::value() const
 
 parameter_base& midi_parameter::set_value(const ossia::value& v)
 {
-  if (m_type == v.getType())
+  if (m_type == v.get_type())
     m_value = v;
   else
     m_value = ossia::convert(v, m_type);
@@ -73,7 +73,7 @@ parameter_base& midi_parameter::set_value(const ossia::value& v)
 
 parameter_base& midi_parameter::set_value(ossia::value&& v)
 {
-  if (m_type == v.getType())
+  if (m_type == v.get_type())
     m_value = std::move(v);
   else
     m_value = ossia::convert(std::move(v), m_type);
