@@ -118,6 +118,395 @@ private Q_SLOTS:
         }
     }
 
+    void test_json_impulse()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      auto json = oscquery::json_writer{}.query_namespace(dev.impulse_addr->get_node());
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "I"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+        QVERIFY(doc["VALUE"][0].IsNull());
+      }
+    }
+
+    void test_json_bool()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      {
+        dev.bool_addr->push_value(false);
+        auto json = oscquery::json_writer{}.query_namespace(dev.bool_addr->get_node());
+        qDebug() << json.GetString();
+        {
+          rapidjson::Document doc;
+          doc.Parse(json.GetString());
+          QVERIFY(doc.IsObject());
+          QVERIFY(doc.HasMember("TYPE"));
+          QVERIFY(doc.HasMember("VALUE"));
+          QVERIFY(doc["TYPE"].IsString());
+          QVERIFY(doc["TYPE"].GetString() == "F"s);
+
+          QVERIFY(doc["VALUE"].IsArray());
+          QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+          QVERIFY(doc["VALUE"][0].IsNull());
+        }
+      }
+      {
+        dev.bool_addr->push_value(true);
+        auto json = oscquery::json_writer{}.query_namespace(dev.bool_addr->get_node());
+        qDebug() << json.GetString();
+        {
+          rapidjson::Document doc;
+          doc.Parse(json.GetString());
+          QVERIFY(doc.IsObject());
+          QVERIFY(doc.HasMember("TYPE"));
+          QVERIFY(doc.HasMember("VALUE"));
+          QVERIFY(doc["TYPE"].IsString());
+          QVERIFY(doc["TYPE"].GetString() == "T"s);
+
+          QVERIFY(doc["VALUE"].IsArray());
+          QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+          QVERIFY(doc["VALUE"][0].IsNull());
+        }
+      }
+    }
+
+    void test_json_int()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.int_addr->push_value(1234);
+      auto json = oscquery::json_writer{}.query_namespace(dev.int_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "i"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+        QVERIFY(doc["VALUE"][0].IsInt());
+        QCOMPARE(doc["VALUE"][0].GetInt(), 1234);
+      }
+    }
+
+    void test_json_float()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.float_addr->push_value(1234.f);
+      auto json = oscquery::json_writer{}.query_namespace(dev.float_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "f"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 1234.f);
+      }
+    }
+
+    void test_json_string()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.string_addr->push_value("hello world");
+      auto json = oscquery::json_writer{}.query_namespace(dev.string_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "s"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+        QVERIFY(doc["VALUE"][0].IsString());
+        QCOMPARE(doc["VALUE"][0].GetString(), "hello world");
+      }
+    }
+
+
+    void test_json_char()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.char_addr->push_value('x');
+      auto json = oscquery::json_writer{}.query_namespace(dev.char_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "c"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+        QVERIFY(doc["VALUE"][0].IsString());
+        QCOMPARE(doc["VALUE"][0].GetString(), "x");
+      }
+    }
+
+
+    void test_json_vec2f()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.vec2f_addr->push_value(ossia::make_vec(123, 456));
+      auto json = oscquery::json_writer{}.query_namespace(dev.vec2f_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "ff"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 2);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 123.f);
+        QVERIFY(doc["VALUE"][1].IsFloat());
+        QCOMPARE(doc["VALUE"][1].GetFloat(), 456.f);
+      }
+    }
+
+    void test_json_vec3f()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.vec3f_addr->push_value(ossia::make_vec(123, 456, 789));
+      auto json = oscquery::json_writer{}.query_namespace(dev.vec3f_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "fff"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 3);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 123.f);
+        QVERIFY(doc["VALUE"][1].IsFloat());
+        QCOMPARE(doc["VALUE"][1].GetFloat(), 456.f);
+        QVERIFY(doc["VALUE"][2].IsFloat());
+        QCOMPARE(doc["VALUE"][2].GetFloat(), 789.f);
+      }
+    }
+
+
+    void test_json_vec4f()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.vec4f_addr->push_value(ossia::make_vec(123, 456, 789, 10));
+      auto json = oscquery::json_writer{}.query_namespace(dev.vec4f_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "ffff"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 4);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 123.f);
+        QVERIFY(doc["VALUE"][1].IsFloat());
+        QCOMPARE(doc["VALUE"][1].GetFloat(), 456.f);
+        QVERIFY(doc["VALUE"][2].IsFloat());
+        QCOMPARE(doc["VALUE"][2].GetFloat(), 789.f);
+        QVERIFY(doc["VALUE"][3].IsFloat());
+        QCOMPARE(doc["VALUE"][3].GetFloat(), 10.f);
+      }
+    }
+
+
+    void test_json_list()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.tuple_addr->push_value(
+            std::vector<ossia::value>{1.234,
+                                      "foobar",
+                                      std::vector<ossia::value>{ 45, 43},
+                                      std::vector<ossia::value>{ }
+             });
+      auto json = oscquery::json_writer{}.query_namespace(dev.tuple_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "fs[ii][]"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 4);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 1.234f);
+        QVERIFY(doc["VALUE"][1].IsString());
+        QCOMPARE(doc["VALUE"][1].GetString(), "foobar"s);
+        QVERIFY(doc["VALUE"][2].IsArray());
+        QCOMPARE(doc["VALUE"][2].GetArray().Size(), 2);
+        QCOMPARE(doc["VALUE"][2][0].GetInt(), 45);
+        QCOMPARE(doc["VALUE"][2][1].GetInt(), 43);
+        QVERIFY(doc["VALUE"][3].IsArray());
+        QCOMPARE(doc["VALUE"][3].GetArray().Size(), 0);
+      }
+    }
+    void test_json_rgba8()
+    {
+      /*
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.vec4f_addr->push_value(ossia::rgba8_u{});
+      dev.vec4f_addr->push_value(ossia::make_vec(123, 456, 789, 10));
+      auto json = oscquery::json_writer{}.query_namespace(dev.int_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "ffff"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 4);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 123.f);
+        QVERIFY(doc["VALUE"][1].IsFloat());
+        QCOMPARE(doc["VALUE"][1].GetFloat(), 456.f);
+        QVERIFY(doc["VALUE"][2].IsFloat());
+        QCOMPARE(doc["VALUE"][2].GetFloat(), 789.f);
+        QVERIFY(doc["VALUE"][3].IsFloat());
+        QCOMPARE(doc["VALUE"][3].GetFloat(), 10.f);
+      }
+      */
+    }
+
+    void test_json_unit_float()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.float_addr->set_unit(ossia::midigain_u{});
+      dev.float_addr->push_value(100);
+      auto json = oscquery::json_writer{}.query_namespace(dev.float_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "f"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 1);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 100.f);
+
+        QVERIFY(doc["UNIT"].IsString());
+        QVERIFY(doc["UNIT"].GetString() == "gain.midigain"s);
+      }
+    }
+
+    void test_json_unit_vec3()
+    {
+      using namespace std::literals;
+      generic_device serv{"foo"};
+      TestDeviceRef dev{serv};
+
+      dev.vec3f_addr->set_unit(ossia::cartesian_3d_u{});
+      dev.vec3f_addr->push_value(ossia::make_vec(1., 2., 3.));
+      auto json = oscquery::json_writer{}.query_namespace(dev.vec3f_addr->get_node());
+      qDebug() << json.GetString();
+      {
+        rapidjson::Document doc;
+        doc.Parse(json.GetString());
+        QVERIFY(doc.IsObject());
+        QVERIFY(doc.HasMember("TYPE"));
+        QVERIFY(doc.HasMember("VALUE"));
+        QVERIFY(doc["TYPE"].IsString());
+        QVERIFY(doc["TYPE"].GetString() == "fff"s);
+
+        QVERIFY(doc["VALUE"].IsArray());
+        QVERIFY(doc["VALUE"].GetArray().Size() == 3);
+        QVERIFY(doc["VALUE"][0].IsFloat());
+        QCOMPARE(doc["VALUE"][0].GetFloat(), 1.f);
+        QVERIFY(doc["VALUE"][1].IsFloat());
+        QCOMPARE(doc["VALUE"][1].GetFloat(), 2.f);
+        QVERIFY(doc["VALUE"][2].IsFloat());
+        QCOMPARE(doc["VALUE"][2].GetFloat(), 3.f);
+
+        QVERIFY(doc["UNIT"].IsString());
+        QVERIFY(doc["UNIT"].GetString() == "position.cart3D"s);
+      }
+    }
     void test_oscquery_http()
     {
         auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
@@ -268,6 +657,7 @@ private Q_SLOTS:
         QCOMPARE(a->value().get<float>(), 4.5f);
 
     }
+
 };
 
 

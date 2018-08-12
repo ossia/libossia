@@ -28,7 +28,7 @@ struct value_to_json
   }
   void operator()(bool v) const
   {
-    writer.Bool(v);
+    writer.Null(); // the value is already encoded in the typetag
   }
   void operator()(char v) const
   {
