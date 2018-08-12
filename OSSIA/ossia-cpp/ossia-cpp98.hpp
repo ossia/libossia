@@ -847,21 +847,21 @@ class OSSIA_EXPORT node
      * @return the created opp::node object
      */
     node create_opengl(std::string addr);
-    /**Polar: Polar 2-dimensional position (ie. ad: amplitude, distance)
+    /**Polar: Polar 2-dimensional position (ie. ad: azimuth, distance)
      * @brief creates a child node with tne given name,
      * and a vec2f parameter with the position.polar unit (aka ad)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_polar(std::string addr);
-    /**Spherical: Polar 3-dimensional position (ie. aed: amplitude, elevation, distance)
+    /**Spherical: Polar 3-dimensional position (ie. aed: azimuth, elevation, distance)
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.spherical unit (aka aed)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_spherical(std::string addr);
-    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, amplitude, Z)
+    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, azimuth, Z)
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.cylindrical unit (aka daz)
      * @param addr: the name of the created node
@@ -1136,11 +1136,11 @@ class OSSIA_EXPORT node
      *   + **opengl** (*gl*, *position.gl*):
      * Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
      *   + **spherical** (*aed*):
-     * Polar 3-dimensional position (ie. aed: amplitude, elevation, distance)
+     * Polar 3-dimensional position (ie. aed: azimuth, elevation, distance)
      *   + **polar** (*ad*):
-     * Polar 2-dimensional position (ie. ad: amplitude, distance)
+     * Polar 2-dimensional position (ie. ad: azimuth, distance)
      *   + **cylindrical** (*daz*):
-     * Mixed 3-dimensional position (ie. daz: distance, amplitude, Z)
+     * Mixed 3-dimensional position (ie. daz: distance, azimuth, Z)
      *
      *
      *
