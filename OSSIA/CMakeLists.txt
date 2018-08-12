@@ -25,7 +25,7 @@ if(OSSIA_QT)
     set(OSSIA_QT OFF)
   endif()
   if(NOT "${Qt5Quick_FOUND}")
-    set(OSSIA_QML OFF)
+    set(OSSIA_QT OFF)
   endif()
 endif()
 
