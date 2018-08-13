@@ -658,15 +658,15 @@ class OSSIA_EXPORT node
      * @brief adds a vec3f parameter to the current node, with the position.openGL unit (aka X, Y, Z)
      */
     void set_opengl();
-    /**Polar: Polar 2-dimensional position (ie. ad: amplitude, distance)
+    /**Polar: Polar 2-dimensional position (ie. ad: azimuth, distance)
      * @brief adds a vec2f parameter to the current node, with the position.polar unit
      */
     void set_polar();
-    /**Spherical: Polar 3-dimensional position (ie. aed: amplitude, elevation, distance)
+    /**Spherical: Polar 3-dimensional position (ie. aed: azimuth, elevation, distance)
      * @brief adds a vec3f parameter to the current node, with the position.spherical unit (aka aed)
      */
     void set_spherical();
-    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, amplitude, Z)
+    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, azimuth, Z)
      * @brief adds a vec3f parameter to the current node, with the position.cylindrical unit (aka daz)
      */
     void set_cylindrical();
