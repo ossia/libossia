@@ -238,7 +238,7 @@ private Q_SLOTS:
 
     p1->push_value(-5);
     p2->push_value(3.141);
-    p3->push_value(128);
+    p3->push_value('e');
     p4->push_value(true);
 
     const auto preset = ossia::presets::make_preset(dev);
