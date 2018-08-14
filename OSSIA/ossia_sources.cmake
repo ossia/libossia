@@ -399,18 +399,6 @@ set(OSSIA_WS_CLIENT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.cpp")
 
 set(OSSIA_QT_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_parameter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_signal.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property_reader.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
-
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/invoke.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
@@ -420,22 +408,9 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_logger.hpp"
     )
-set(OSSIA_QT_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_parameter.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_signal.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property_reader.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_logger.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.cpp"
 
+set(OSSIA_QT_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
@@ -455,6 +430,38 @@ set(OSSIA_QML_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml"
   )
 
+
+set(OSSIA_QT_DEVICE_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_signal.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property_reader.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_logger.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.hpp"
+    )
+
+set(OSSIA_QT_DEVICE_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_parameter.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_signal.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_property_reader.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_model_property.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node_base.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qml_logger.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_object_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_property_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device/qt_device.cpp"
+    )
 
 set(OSSIA_QT_SCORE_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/score/qml_autom.hpp"

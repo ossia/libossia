@@ -3,6 +3,8 @@
 #include "qml_plugin.hpp"
 #include <ossia/context.hpp>
 #include <QQmlEngine>
+
+#if defined(OSSIA_QML_DEVICE)
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_logger.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
@@ -11,6 +13,7 @@
 #include <ossia-qt/device/qml_property.hpp>
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_signal.hpp>
+#endif
 
 #if defined(OSSIA_QML_SCORE)
 #include <ossia-qt/score/qml_state.hpp>
@@ -49,6 +52,8 @@ void qml_plugin::reg(const char* uri)
       uri, 1, 0, "Duration", "Duration");
 
 #if !defined(__EMSCRIPTEN__)
+
+#if defined(OSSIA_QML_DEVICE)
   qmlRegisterSingletonType<qt::qml_singleton_device>(
       uri, 1, 0, "SingleDevice", [](QQmlEngine* e, QJSEngine*) -> QObject* {
         return &qt::qml_singleton_device::instance();
@@ -68,6 +73,8 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_binding>(uri, 1, 0, "BindingImpl");
   qmlRegisterType<qt::qml_callback>(uri, 1, 0, "CallbackImpl");
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");
+#endif
+
 #endif
 
 

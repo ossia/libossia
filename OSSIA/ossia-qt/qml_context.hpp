@@ -7,7 +7,6 @@
 #include <QQmlEngine>
 #include <QUrl>
 #include <ossia/preset/preset.hpp>
-#include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/score/qml_util.hpp>
 namespace spdlog
 {

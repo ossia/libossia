@@ -27,6 +27,9 @@ if(OSSIA_QT)
   if(NOT "${Qt5Quick_FOUND}")
     set(OSSIA_QT OFF)
   endif()
+  if(NOT DEFINED OSSIA_QML_DEVICE)
+    set(OSSIA_QML_DEVICE 1)
+  endif()
 endif()
 
 ### Protocol setup ###
@@ -251,14 +254,19 @@ if(OSSIA_QT)
     PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/verdigris/src>
    )
- add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
- if(OSSIA_DISABLE_QT_PLUGIN)
-   target_compile_definitions(ossia PRIVATE OSSIA_DISABLE_QT_PLUGIN)
- endif()
-endif()
+  add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
+  if(OSSIA_DISABLE_QT_PLUGIN)
+    target_compile_definitions(ossia PRIVATE OSSIA_DISABLE_QT_PLUGIN)
+  endif()
 
-if(OSSIA_QML_SCORE)
-    target_sources(ossia PRIVATE ${OSSIA_QT_SCORE_HEADERS} ${OSSIA_QT_SCORE_SRCS})
+  if(OSSIA_QML_DEVICE)
+      target_sources(ossia PRIVATE ${OSSIA_QT_DEVICE_HEADERS} ${OSSIA_QT_DEVICE_SRCS})
+  endif()
+
+  if(OSSIA_QML_SCORE)
+      target_sources(ossia PRIVATE ${OSSIA_QT_SCORE_HEADERS} ${OSSIA_QT_SCORE_SRCS})
+  endif()
+
 endif()
 
 if(OSSIA_DNSSD)
