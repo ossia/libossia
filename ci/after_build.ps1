@@ -23,9 +23,9 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   # add Qt/bin dir to PATH because tests need Qt DLL.
-  if ( Test-Path ${env:QTDIR}\bin\ ) {
-    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
-  }
+  ls ${env:QTDIR}\bin
+  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:QTDIR}/bin/","Process")            
+
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
