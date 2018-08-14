@@ -13,6 +13,7 @@ struct angle_unit
   using value_type = float;
   using concrete_type = Impl;
   using dataspace_type = angle_dataspace;
+  using is_multidimensional = std::false_type;
 };
 
 struct OSSIA_EXPORT radian_u : public angle_unit<radian_u>

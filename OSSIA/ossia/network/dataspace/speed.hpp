@@ -24,6 +24,7 @@ struct speed_unit
   using value_type = float;
   using concrete_type = Impl;
   using dataspace_type = speed_dataspace;
+  using is_multidimensional = std::false_type;
 };
 
 template <typename T>

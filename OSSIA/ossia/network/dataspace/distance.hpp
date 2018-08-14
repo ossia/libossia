@@ -28,6 +28,7 @@ struct distance_unit
   using value_type = float;
   using concrete_type = Impl;
   using dataspace_type = distance_dataspace;
+  using is_multidimensional = std::false_type;
 };
 
 template <typename T>

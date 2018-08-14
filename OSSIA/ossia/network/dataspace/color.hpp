@@ -10,8 +10,8 @@ template <typename Impl>
 struct color_unit
 {
   using is_unit = std::true_type;
-  using is_multidimensional
-      = std::true_type; // number of dimensiosn -> decltype(value)::size_value
+  using is_multidimensional = std::true_type;
+  // number of dimensiosn -> decltype(value)::size_value
   using neutral_unit = argb_u;
   using concrete_type = Impl;
   using dataspace_type = color_dataspace;

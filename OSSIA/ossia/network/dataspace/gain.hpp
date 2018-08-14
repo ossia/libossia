@@ -13,6 +13,7 @@ struct gain_unit
   using value_type = float;
   using concrete_type = Impl;
   using dataspace_type = gain_dataspace;
+  using is_multidimensional = std::false_type;
 };
 
 /** Utility functions taken from Jamoma TTBase.h **/
