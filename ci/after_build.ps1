@@ -23,17 +23,19 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
-  if ( $env:configuration -eq "Release" ){
-    mkdir ${env:APPVEYOR_BUILD_FOLDER}\build\Test\Release
-    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Release\ossia.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Release\
-  } else {
-    mkdir ${env:APPVEYOR_BUILD_FOLDER}\build\Test\Debug
-    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Debug\ossiad.dll ${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Debug\
-  }
-
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install.log"
   cmake --build . --config "${env:configuration}" --target install > "$LogFile"
   CheckLastExitCode
+
+  if ( $env:configuration -eq "Release" ){
+    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Release\ossia.dll "${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Release\"
+  } else {
+    copy ${env:APPVEYOR_BUILD_FOLDER}\build\OSSIA\Debug\ossiad.dll "${env:APPVEYOR_BUILD_FOLDER}\build\Tests\Debug\"
+  }
+
+  echo "============================================================"
+  ls "${env:APPVEYOR_BUILD_FOLDER}\build\Tests\${env:configuration}\"
+  echo "============================================================"
 
   copy ${env:APPVEYOR_BUILD_FOLDER}\install\Ossia ${env:QTDIR}\QML
 
