@@ -21,6 +21,12 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 }
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
+
+  # add Qt/bin dir to PATH because tests need Qt DLL.
+  if ( Test-Path ${env:QTDIR}\bin\ ) {
+    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
+  }
+
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install.log"
