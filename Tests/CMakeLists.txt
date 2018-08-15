@@ -182,9 +182,9 @@ if(MSVC)
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/Release/testdata/qml")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml")
 
-    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/Debug/testdata/qml/Ossia/qmldir"
-                "${CMAKE_CURRENT_BINARY_DIR}/Release/testdata/qml/Ossia/qmldir"
-                "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/Debug/testdata/qml/Ossia/qmldir-testing" "${CMAKE_CURRENT_BINARY_DIR}/Debug/testdata/qml/Ossia/qmldir")
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/Release/testdata/qml/Ossia/qmldir-testing" "${CMAKE_CURRENT_BINARY_DIR}/Release/testdata/qml/Ossia/qmldir")
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir-testing" "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml/Ossia/qmldir")
 else()
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/testdata" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../OSSIA/ossia-qt/Ossia" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/testdata/qml")

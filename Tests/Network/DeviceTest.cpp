@@ -49,34 +49,6 @@ template<>
 struct matching_domain<ossia::val_type::VEC4F>
 { using type = ossia::vecf_domain<4>; };
 
-ossia::domain make_domain(ossia::val_type t)
-{
-  switch(t)
-  {
-    case ossia::val_type::IMPULSE:
-      return ossia::domain_base<impulse>{};
-    case ossia::val_type::BOOL:
-      return ossia::domain_base<bool>{};
-    case ossia::val_type::INT:
-      return ossia::domain_base<int>{};
-    case ossia::val_type::FLOAT:
-      return ossia::domain_base<float>{};
-    case ossia::val_type::CHAR:
-      return ossia::domain_base<char>{};
-    case ossia::val_type::STRING:
-      return ossia::domain_base<std::string>();
-    case ossia::val_type::LIST:
-      return ossia::vector_domain{};
-    case ossia::val_type::VEC2F:
-      return ossia::vecf_domain<2>();
-    case ossia::val_type::VEC3F:
-      return ossia::vecf_domain<3>();
-    case ossia::val_type::VEC4F:
-      return ossia::vecf_domain<4>();
-    default:
-      return {};
-  }
-}
 
 struct remote_data
 {
@@ -477,7 +449,7 @@ private:
 
           for(int domain_i = 0; domain_i < N; domain_i++)
           {
-            vec[domain_i]->set_domain(make_domain(ossia::val_type(domain_i)));
+            vec[domain_i]->set_domain(init_domain(ossia::val_type(domain_i)));
           }
           push_all_values();
 
