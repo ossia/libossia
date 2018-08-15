@@ -42,22 +42,22 @@ void json_writer_impl::writeValue(bounding_mode b) const
   switch (b)
   {
     case ossia::bounding_mode::FREE:
-      writer.String("None");
+      writer.String("none");
       break;
     case ossia::bounding_mode::CLIP:
-      writer.String("Both");
+      writer.String("both");
       break;
     case ossia::bounding_mode::LOW:
-      writer.String("Low");
+      writer.String("low");
       break;
     case ossia::bounding_mode::HIGH:
-      writer.String("High");
+      writer.String("high");
       break;
     case ossia::bounding_mode::WRAP:
-      writer.String("Wrap");
+      writer.String("wrap");
       break;
     case ossia::bounding_mode::FOLD:
-      writer.String("Fold");
+      writer.String("fold");
       break;
     default:
       throw std::runtime_error("json_writer_impl: bad clip mode");
