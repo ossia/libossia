@@ -1715,7 +1715,7 @@ void node::save_preset(const std::string& filename)
       auto json = ossia::presets::make_json_preset(*m_node);
       ossia::presets::write_file(json,filename);
     }
-  } catch ( std::exception e)
+  } catch (const std::exception& e)
   {
     std::cerr << "can't make JSON preset file '" << filename
              << "', error: " << e.what() << std::endl;
@@ -1729,7 +1729,7 @@ void node::load_preset(const std::string& filename)
        auto json = ossia::presets::read_file(filename);
        ossia::presets::apply_json(json,*m_node);
      }
-   } catch ( std::exception e)
+   } catch (const std::exception& e)
    {
      std::cerr << "can't read JSON preset file '" << filename
               << "', error: " << e.what() << std::endl;
