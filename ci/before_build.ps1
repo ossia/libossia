@@ -40,7 +40,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-${env:configuration}.log"
   
-  cmake -G "Visual Studio 15 2017 Win64" -T host=x64 -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DOSSIA_EDITOR=1 -DOSSIA_DATAFLOW=1 -DOSSIA_QT=1 -DOSSIA_QML=1 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 15 2017 Win64" -T host=x64 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DOSSIA_EDITOR=1 -DOSSIA_DATAFLOW=1 -DOSSIA_QT=1 -DOSSIA_QML=1 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
 
   CheckLastExitCode
 
