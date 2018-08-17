@@ -57,6 +57,8 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_CI=1 \
           -DOSSIA_QT=1 \
           -DOSSIA_PD=0 \
+          -DOSSIA_CPP=1 \
+          -DOSSIA_C=1 \
           ..
 
         $CMAKE_BIN --build . -- -j2
