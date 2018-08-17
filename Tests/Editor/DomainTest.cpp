@@ -386,8 +386,8 @@ private Q_SLOTS:
     std::vector<ossia::value> t1{0, 0, 0};
     std::vector<ossia::value> t2{10, 10, 10};
     auto d4 = ossia::make_domain(t1, t2);
-    auto res = d4.apply(ossia::bounding_mode::CLIP, std::vector<ossia::value>{-10, 5, 2000});
-    QCOMPARE(res, (std::vector<ossia::value>{0, 5, 10}));
+    ossia::value res = d4.apply(ossia::bounding_mode::CLIP, std::vector<ossia::value>{-10, 5, 2000});
+    QCOMPARE(res, ossia::value(std::vector<ossia::value>{0, 5, 10}));
   }
 
   void test_clamp_address()

@@ -403,13 +403,13 @@ private Q_SLOTS:
         QVERIFY(doc["VALUE"][0].IsFloat());
         QCOMPARE(doc["VALUE"][0].GetFloat(), 1.234f);
         QVERIFY(doc["VALUE"][1].IsString());
-        QCOMPARE(doc["VALUE"][1].GetString(), "foobar"s);
+        QCOMPARE(doc["VALUE"][1].GetString(), "foobar");
         QVERIFY(doc["VALUE"][2].IsArray());
-        QCOMPARE(doc["VALUE"][2].GetArray().Size(), 2);
+        QCOMPARE(doc["VALUE"][2].GetArray().Size(), (unsigned int)2);
         QCOMPARE(doc["VALUE"][2][0].GetInt(), 45);
         QCOMPARE(doc["VALUE"][2][1].GetInt(), 43);
         QVERIFY(doc["VALUE"][3].IsArray());
-        QCOMPARE(doc["VALUE"][3].GetArray().Size(), 0);
+        QCOMPARE(doc["VALUE"][3].GetArray().Size(), (unsigned int)0);
       }
     }
     void test_json_rgba8()

@@ -204,17 +204,17 @@ TEST_CASE ("Preset from node with parameter and subnode")
     {   
         ossia::net::generic_device dev{""};
         auto& r = dev.get_root_node();
-        auto node = ossia::net::create_node(r, "/source");
-        node.create_parameter(ossia::val_type::STRING).push_value("Movie Player");
-        auto player_node = ossia::net::create_node(node, "/movie_player");
-        ossia::net::create_node(player_node, "/play").create_parameter(ossia::val_type::BOOL).push_value(true);
-        ossia::net::create_node(player_node, "/speed").create_parameter(ossia::val_type::FLOAT).push_value(0.5);
-        ossia::net::create_node(player_node, "/position").create_parameter(ossia::val_type::VEC2F).push_value(0.5,-0.8);
+        auto& node = ossia::net::create_node(r, "/source");
+        node.create_parameter(ossia::val_type::STRING)->push_value("Movie Player");
+        auto& player_node = ossia::net::create_node(node, "/movie_player");
+        ossia::net::create_node(player_node, "/play").create_parameter(ossia::val_type::BOOL)->push_value(true);
+        ossia::net::create_node(player_node, "/speed").create_parameter(ossia::val_type::FLOAT)->push_value(0.5);
+        ossia::net::create_node(player_node, "/position").create_parameter(ossia::val_type::VEC2F)->push_value(ossia::vec2f{0.5,-0.8});
 
-        auto grabber_node = ossia::net::create_node(node, "/video_grabber");
-        ossia::net::create_node(grabber_node, "/source").create_parameter(ossia::val_type::STRING).push_value("/dev/video0");
-        ossia::net::create_node(grabber_node, "/brightness").create_parameter(ossia::val_type::INT).push_value(1564);
-        ossia::net::create_node(grabber_node, "/strange_param").create_parameter(ossia::val_type::CHAR).push_value('e');
+        auto& grabber_node = ossia::net::create_node(node, "/video_grabber");
+        ossia::net::create_node(grabber_node, "/source").create_parameter(ossia::val_type::STRING)->push_value("/dev/video0");
+        ossia::net::create_node(grabber_node, "/brightness").create_parameter(ossia::val_type::INT)->push_value(1564);
+        ossia::net::create_node(grabber_node, "/strange_param").create_parameter(ossia::val_type::CHAR)->push_value('e');
 
         auto json = ossia::presets::make_json_preset(r);
         ossia::presets::write_file(json,"preset.json");
@@ -223,43 +223,44 @@ TEST_CASE ("Preset from node with parameter and subnode")
     {
         ossia::net::generic_device dev{""};
         auto& r = dev.get_root_node();
-        auto node = ossia::net::create_node(r, "/source");
-        node.create_parameter(ossia::val_type::STRING).push_value("None");
+        auto& node = ossia::net::create_node(r, "/source");
+        node.create_parameter(ossia::val_type::STRING)->push_value("None");
         
-        auto player_node = ossia::net::create_node(node, "/movie_player");
+        auto& player_node = ossia::net::create_node(node, "/movie_player");
         
         auto play = ossia::net::create_node(player_node, "/play").create_parameter(ossia::val_type::BOOL);
-        play.push_value(false);
+        play->push_value(false);
         
         auto speed = ossia::net::create_node(player_node, "/speed").create_parameter(ossia::val_type::FLOAT);
-        speed.push_value(5.64);
+        speed->push_value(5.64);
 
         auto position = ossia::net::create_node(player_node, "/position").create_parameter(ossia::val_type::VEC2F);
-        position.push_value(2.57,-40.8);
+        position->push_value(ossia::vec2f{.57,-40.8});
 
-        auto grabber_node = ossia::net::create_node(node, "/video_grabber");
+        auto& grabber_node = ossia::net::create_node(node, "/video_grabber");
         
         auto source = ossia::net::create_node(grabber_node, "/source").create_parameter(ossia::val_type::STRING);
-        source.push_value("/dev/null");
+        source->push_value("/dev/null");
 
         auto brightness = ossia::net::create_node(grabber_node, "/brightness").create_parameter(ossia::val_type::INT);
-        brightness.push_value(6542);
+        brightness->push_value(6542);
 
         auto strange = ossia::net::create_node(grabber_node, "/strange_param").create_parameter(ossia::val_type::CHAR);
-        strange.push_value('a');
+        strange->push_value('a');
 
-        REQUIRE_NO_THROWS{
+        REQUIRE_NOTHROW(
             auto json = ossia::presets::read_file("preset.json");
             ossia::presets::apply_json(json,r);
-        }
+        );
 
-        REQUIRE(node.value().get<std::string>() == "Movie Player");
-        REQUIRE(play.value().get<bool>() == true);
-        REQUIRE(speed.value().get<float>() == 0.5);
-        REQUIRE(position.value().get<vec2f>() == vec2f(0.5,-0.8));
-        REQUIRE(source.value().get<std::string>() == "/dev/video0");
-        REQUIRE(brightness.value().get<int>() == 1564);
-        REQUIRE(strange.value().get<char>() == 'e');
+        REQUIRE(node.get_parameter()->value().get<std::string>() == "Movie Player");
+        REQUIRE(play->value().get<bool>() == true);
+        REQUIRE(speed->value().get<float>() == 0.5);
+        auto val = ossia::vec2f{0.5,-0.8};
+        REQUIRE(position->value().get<ossia::vec2f>() == val);
+        REQUIRE(source->value().get<std::string>() == "/dev/video0");
+        REQUIRE(brightness->value().get<int>() == 1564);
+        REQUIRE(strange->value().get<char>() == 'e');
     }
 }
 
