@@ -1707,33 +1707,55 @@ bool node::get_zombie() const
   return {};
 }
 
-void node::save_preset(const std::string& filename)
+void node::save_preset(const std::string& f)
 {
   try{
     if (m_node)
     {
-      auto json = ossia::presets::make_json_preset(*m_node);
-      ossia::presets::write_file(json,filename);
+      std::string ext(".json");
+      if(f.size() > ext.size() 
+        && std::equal(f.begin() + f.size() - ext.size(), f.end(), ext.begin()))
+      {
+        auto json = ossia::presets::make_json_preset(*m_node);
+        ossia::presets::write_file(json,f);
+      }
+      else
+      {
+        auto preset = ossia::presets::make_preset(*m_node);
+        auto kiss = ossia::presets::to_string(preset);
+        ossia::presets::write_file(kiss, f);
+      }
     }
   } catch (const std::exception& e)
   {
-    std::cerr << "can't make JSON preset file '" << filename
+    std::cerr << "can't make preset file '" << f
              << "', error: " << e.what() << std::endl;
   }
 }
-void node::load_preset(const std::string& filename)
+void node::load_preset(const std::string& f)
 {
-   try{
-     if (m_node)
-     {
-       auto json = ossia::presets::read_file(filename);
-       ossia::presets::apply_json(json,*m_node);
-     }
-   } catch (const std::exception& e)
-   {
-     std::cerr << "can't read JSON preset file '" << filename
+  try{
+    if (m_node)
+    {
+      std::string ext(".json");
+      auto buf = ossia::presets::read_file(f);
+
+      if(f.size() > ext.size() 
+        && std::equal(f.begin() + f.size() - ext.size(), f.end(), ext.begin()))
+      {
+       ossia::presets::apply_json(buf,*m_node);
+      }
+      else
+      {
+        ossia::presets::apply_preset(buf, *m_node);
+      }
+    }
+  } 
+  catch (const std::exception& e)
+  {
+    std::cerr << "can't read preset file '" << f
               << "', error: " << e.what() << std::endl;
-   }
+  }
 }
 
 
