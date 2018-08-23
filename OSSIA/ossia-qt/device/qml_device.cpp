@@ -659,6 +659,14 @@ void qml_device::clearEmptyElements()
 //#define PRESET_DEBUG 0
 void qml_device::loadPreset(QObject* root, const QString& file)
 {
+  if(m_loadingPreset)
+    return;
+  m_loadingPreset = true;
+
+  struct set_to_false { bool& value; ~set_to_false() { value = false; } };
+  set_to_false _1{ m_loadingPreset };
+  set_to_false _2{ m_readPreset };
+
   m_readPreset = false;
 #if defined(PRESET_DEBUG)
   {
@@ -689,7 +697,6 @@ void qml_device::loadPreset(QObject* root, const QString& file)
 
     if (f.open(QIODevice::ReadOnly))
     {
-
       m_readPreset = true;
 
       // Then load the preset
@@ -709,48 +716,27 @@ void qml_device::loadPreset(QObject* root, const QString& file)
       }
 #endif
 
-      // Now as long as we are creating new models, update their count
-
-      /*{
-          std::size_t cur_model_size = m_models.size();
-          std::size_t prev_model_size;
-          do
-          {
-              prev_model_size = cur_model_size;
-              auto mlist = m_models;
-              for (auto model : mlist)
-              {
-                  if (model.second)
-                  {
-                      qml_model_property* m = model.first;
-
-                      m->updateCount();
-                  }
-                  QCoreApplication::processEvents();
-              }
-              cur_model_size = m_models.size();
-          } while (cur_model_size != prev_model_size);
-      }
-      */
       clearEmptyElements();
 
       // Finallt do a push of all properties registered
       recreate(root);
 
       clearEmptyElements();
-      m_readPreset = false;
+
+      presetFinishedLoading();
       return;
     }
   }
   catch (std::exception& e)
   {
     ossia::logger().error("{}", e.what());
+    presetFailedLoading(QString::fromUtf8(e.what()));
   }
   catch (...)
   {
+    presetFailedLoading("Unknown error");
   }
   ossia::logger().error("Could not load preset file: {}", file.toStdString());
-  m_readPreset = false;
 }
 
 void qml_device::saveDevice(const QUrl& file)
