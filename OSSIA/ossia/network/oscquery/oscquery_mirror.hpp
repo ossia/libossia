@@ -163,5 +163,8 @@ private:
   std::atomic_bool m_useHTTP{false};
   void start_http();
 };
+
+//! Use this function to load a device preset in the OSCQuery format.
+OSSIA_EXPORT void load_oscquery_device(ossia::net::device_base& dev, std::string json);
 }
 }

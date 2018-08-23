@@ -765,5 +765,14 @@ bool oscquery_mirror_protocol::on_BinaryWSMessage(oscquery_mirror_protocol::conn
 
   return {};
 }
+
+void load_oscquery_device(net::device_base& dev, std::string json)
+{
+  rapidjson::Document doc;
+  doc.Parse(json.c_str());
+  if(!doc.HasParseError())
+    json_parser::parse_namespace(dev.get_root_node(), doc);
+}
+
 }
 }
