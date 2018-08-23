@@ -195,6 +195,7 @@ static bool ReadValueObject(const rapidjson::Value& val, domain& res)
         vals.push_back(ReadValue(val));
       }
       res = ossia::make_domain(std::move(vals));
+      return true;
     }
   }
   else if (min_it != mem_end || max_it != mem_end)
