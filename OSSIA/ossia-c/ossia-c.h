@@ -3,15 +3,24 @@
 #include <stddef.h>
 
 /** @defgroup CAPI C API
- * C bindings of libossia. Covers networking.
+ * C bindings of libossia. Covers networking and presets.
  *
- * @{
- */
-/**
- * @file ossia-c.h
- */
-/**
  * ### API core concepts and ideas:
+ *
+ * The API can be used to declare or interact with a tree of parameters.
+ *
+ * There are mutiple namespaces :
+ *
+ * * The `ossia_protocol_*` functions allow interoperation with protocols supported by libossia.
+ * * The `ossia_device_*`, `ossia_node_*`, `ossia_parameter_*` functions are used to configure local or remote device trees.
+ * * The `ossia_domain_*` functions allow to define domains (min / max, or range of admissible values) for parameters.
+ * * The `ossia_value_*` functions allow to create and read the content of libossia values.
+ *   Simply put, such a value is an union of various types: int, float, string, etc.
+ * * The `ossia_logger_*` functions can be usd to set-up a simple WebSocket-based logging infrastructure.
+ *   The format of the logger messages is given [in this example](https://github.com/OSSIA/libossia/blob/master/Documentation/Examples/Common/Logger.cpp).
+ * * The `ossia_mq_*` functions can be used when a thread-safe lock-free queue is needed.
+ *   In particular, note that callbacks will be executed in different threads.
+ *   Hence, this mechanism is needed if the user of this API cannot make its program thread-safe.
  *
  * ### Multithreading notes:
  *
@@ -19,21 +28,17 @@
  * When working on the same device, however, one has to take care to lock.
  * e.g. the following cases are unsafe:
  *
- * |          Thread 1                |               Thread 2              |
- * |----------------------------------|-------------------------------------|
+ * |          Thread 1                  |               Thread 2                |
+ * |------------------------------------|---------------------------------------|
  * | `ossia_node_find(my_dev, "/foo");` | `ossia_node_create(my_dev, "/bar");`  |
- * |----------------------------------|-------------------------------------|
  * | `ossia_device_free(my_dev);`       | `ossia_device_get_root_node(my_dev);` |
- * |----------------------------------|-------------------------------------|
  *
  * While the following cases are safe:
  *
  * |          Thread 1                    |               Thread 2              |
  * |--------------------------------------|-------------------------------------|
  * | `ossia_node_find(my_dev, "/foo");`   | `ossia_node_create(other, "/bar");` |
- * |--------------------------------------|-------------------------------------|
  * | `ossia_parameter_push_i(addr, 123);` | `ossia_parameter_get_value(addr);`  |
- * |--------------------------------------|-------------------------------------|
  *
  * * Unsafe: Cannot be safely called from multiple threads.
  * * Safe: Can be safely called from multiple threads, may block.
@@ -44,8 +49,11 @@
  * Only functions marked as data-safe can be called in parallel on the same device,
  * and no function with weaker guarantees shall be called on the device at the same time
  * in another thread.
+ *
+ * @{
  */
 
+/** @file ossia-c.h */
 
 #if defined(_MSC_VER)
 #if !defined(WIN32_LEAN_AND_MEAN)
