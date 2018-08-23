@@ -69,8 +69,9 @@ struct osc_type_visitor
 
 static std::string get_osc_typetag_impl(const net::parameter_base& addr)
 {
-  if (addr.get_unit() == ossia::rgba_u{})
-    return "r";
+  using namespace std::literals;
+  if (addr.get_unit() == ossia::rgba8_u{})
+    return "r"s;
 
   std::string s;
   auto val = addr.value();
@@ -122,12 +123,11 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
 
         case oscpack::TypeTagValues::INT32_TYPE_TAG:
         case oscpack::TypeTagValues::INT64_TYPE_TAG:
+        case oscpack::TypeTagValues::TIME_TAG_TYPE_TAG:
           return ossia::val_type::INT;
 
         case oscpack::TypeTagValues::FLOAT_TYPE_TAG:
         case oscpack::TypeTagValues::DOUBLE_TYPE_TAG:
-        case oscpack::TypeTagValues::TIME_TAG_TYPE_TAG: // maybe something
-                                                        // else..
           return ossia::val_type::FLOAT;
 
         case oscpack::TypeTagValues::CHAR_TYPE_TAG:
@@ -145,7 +145,7 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
           return ossia::generic_buffer_type();
 
         case oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG:
-          return ossia::rgba_u{};
+          return ossia::rgba8_u{};
 
         default:
           break;

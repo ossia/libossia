@@ -4,6 +4,7 @@
 #include "json_writer.hpp"
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -709,49 +710,48 @@ json_writer::string_t json_writer::attributes_changed_array(
   return buf;
 }
 
+std::string write_value(std::string_view address, const value& v, const unit_t& u)
+{
+  std::string buffer;
+  buffer.resize(1024);
+  oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
+
+  while(true)
+  {
+    try
+    {
+      p << oscpack::BeginMessageN(address);
+      if(!u)
+      {
+        v.apply(oscquery::osc_outbound_visitor{p});
+      }
+      else
+      {
+        ossia::apply_nonnull([&] (const auto& dataspace) {
+          ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
+        }, u.v);
+      }
+      p << oscpack::EndMessage();
+      break;
+    }
+    catch(const oscpack::OutOfBufferMemoryException&)
+    {
+      buffer.resize(buffer.size() * 2);
+      p.Clear();
+    }
+  }
+
+  return buffer;
+}
 
 std::string osc_writer::send_message(const net::parameter_base& p, const value& v)
 {
-  std::string s;
-
-  try
-  {
-    oscpack::MessageGenerator<oscquery::osc_outbound_visitor> m;
-
-    auto str = m(p.get_node().osc_address(), v);
-    s.assign(str.Data(), str.Size());
-  }
-  catch (const oscpack::OutOfBufferMemoryException&)
-  {
-    oscpack::DynamicMessageGenerator<oscquery::osc_outbound_visitor> m;
-
-    auto str = m(p.get_node().osc_address(), v);
-    s.assign(str.Data(), str.Size());
-  }
-
-  return s;
+  return write_value(p.get_node().osc_address(), v, p.get_unit());
 }
-
 
 std::string osc_writer::send_message(const net::full_parameter_data& p, const value& v)
 {
-  std::string s;
-  try
-  {
-    oscpack::MessageGenerator<oscquery::osc_outbound_visitor> m;
-
-    auto str = m(p.address, v);
-    s.assign(str.Data(), str.Size());
-  }
-  catch (const oscpack::OutOfBufferMemoryException&)
-  {
-    oscpack::DynamicMessageGenerator<oscquery::osc_outbound_visitor> m;
-
-    auto str = m(p.address, v);
-    s.assign(str.Data(), str.Size());
-  }
-
-  return s;
+  return write_value(p.address, v, p.unit);
 }
 
 

@@ -15,62 +15,6 @@ namespace ossia
 {
 namespace net
 {
-/// Declaration is in osc_fwd.hpp
-inline void osc_outbound_visitor::operator()(impulse) const
-{
-}
-
-inline void osc_outbound_visitor::operator()(int32_t i) const
-{
-  p << int32_t(i);
-}
-
-inline void osc_outbound_visitor::operator()(float f) const
-{
-  p << float(f);
-}
-
-inline void osc_outbound_visitor::operator()(bool b) const
-{
-  p << int32_t(b);
-}
-
-inline void osc_outbound_visitor::operator()(char c) const
-{
-  p << int32_t(c);
-}
-
-inline void osc_outbound_visitor::operator()(const std::string& str) const
-{
-  p << (ossia::string_view)str;
-}
-
-inline void osc_outbound_visitor::operator()(vec2f vec) const
-{
-  p << vec[0] << vec[1];
-}
-
-inline void osc_outbound_visitor::operator()(vec3f vec) const
-{
-  p << vec[0] << vec[1] << vec[2];
-}
-
-inline void osc_outbound_visitor::operator()(vec4f vec) const
-{
-  p << vec[0] << vec[1] << vec[2] << vec[3];
-}
-
-inline void osc_outbound_visitor::operator()(const std::vector<value>& t) const
-{
-  for (const auto& val : t)
-  {
-    val.apply(*this);
-  }
-}
-
-inline void osc_outbound_visitor::operator()() const
-{
-}
 
 
 
@@ -90,6 +34,8 @@ struct osc_utilities
           return it->AsFloatUnchecked();
         case oscpack::DOUBLE_TYPE_TAG:
           return it->AsDoubleUnchecked();
+        case oscpack::TIME_TAG_TYPE_TAG:
+          return it->AsTimeTagUnchecked();
         case oscpack::CHAR_TYPE_TAG:
           return it->AsCharUnchecked();
         case oscpack::TRUE_TYPE_TAG:
@@ -124,6 +70,8 @@ struct osc_utilities
           return int32_t(it->AsFloatUnchecked());
         case oscpack::DOUBLE_TYPE_TAG:
           return int32_t(it->AsDoubleUnchecked());
+        case oscpack::TIME_TAG_TYPE_TAG:
+          return int32_t(it->AsTimeTagUnchecked());
         case oscpack::CHAR_TYPE_TAG:
           return int32_t(it->AsCharUnchecked());
         case oscpack::TRUE_TYPE_TAG:
@@ -158,6 +106,8 @@ struct osc_utilities
           return it->AsFloatUnchecked();
         case oscpack::DOUBLE_TYPE_TAG:
           return it->AsDoubleUnchecked();
+        case oscpack::TIME_TAG_TYPE_TAG:
+          return it->AsTimeTagUnchecked();
         case oscpack::CHAR_TYPE_TAG:
           return it->AsCharUnchecked();
         case oscpack::TRUE_TYPE_TAG:
@@ -183,15 +133,17 @@ struct osc_utilities
     switch (it->TypeTag())
     {
       case oscpack::INT32_TYPE_TAG:
-        return char{char(it->AsInt32Unchecked())};
+        return char(it->AsInt32Unchecked());
       case oscpack::INT64_TYPE_TAG:
-        return char{char(it->AsInt64Unchecked())};
+        return char(it->AsInt64Unchecked());
       case oscpack::FLOAT_TYPE_TAG:
-        return char{char(it->AsFloatUnchecked())};
+        return char(it->AsFloatUnchecked());
       case oscpack::DOUBLE_TYPE_TAG:
-        return char{char(it->AsDoubleUnchecked())};
+        return char(it->AsDoubleUnchecked());
+      case oscpack::TIME_TAG_TYPE_TAG:
+        return char(it->AsTimeTagUnchecked());
       case oscpack::CHAR_TYPE_TAG:
-        return char{char(it->AsCharUnchecked())};
+        return char(it->AsCharUnchecked());
       case oscpack::TRUE_TYPE_TAG:
         return char{'T'};
       case oscpack::FALSE_TYPE_TAG:
@@ -217,6 +169,8 @@ struct osc_utilities
         return float{it->AsFloatUnchecked()};
       case oscpack::DOUBLE_TYPE_TAG:
         return float{(float)it->AsDoubleUnchecked()};
+      case oscpack::TIME_TAG_TYPE_TAG:
+        return int32_t(it->AsTimeTagUnchecked());
       case oscpack::CHAR_TYPE_TAG:
         return char{it->AsCharUnchecked()};
       case oscpack::TRUE_TYPE_TAG:
@@ -227,6 +181,12 @@ struct osc_utilities
         return std::string{it->AsStringUnchecked()};
       case oscpack::SYMBOL_TYPE_TAG:
         return std::string{it->AsSymbolUnchecked()};
+      case oscpack::RGBA_COLOR_TYPE_TAG:
+      {
+        auto c = it->AsRgbaColorUnchecked();
+        return make_vec(uint8_t(c>>24 & 0xFF), uint8_t(c>>16 & 0xFF),
+                        uint8_t(c>>8  & 0xFF), uint8_t(c     & 0xFF));
+      }
       default:
         return ossia::impulse{};
     }
@@ -346,6 +306,15 @@ struct osc_inbound_visitor
     }
     else
     {
+      if constexpr(N == 4)
+      {
+        if(cur_it->TypeTag() == oscpack::RGBA_COLOR_TYPE_TAG)
+        {
+          auto c = cur_it->AsRgbaColorUnchecked();
+          return make_vec(uint8_t(c>>24 & 0xFF), uint8_t(c>>16 & 0xFF),
+                          uint8_t(c>>8  & 0xFF), uint8_t(c     & 0xFF));
+        }
+      }
       return vec;
     }
   }
@@ -373,61 +342,6 @@ struct osc_inbound_visitor
   }
 };
 
-struct osc_inbound_numeric_visitor
-{
-  osc_inbound_numeric_visitor(oscpack::ReceivedMessageArgumentIterator cur)
-      : cur_it{cur}
-  {
-  }
-
-  oscpack::ReceivedMessageArgumentIterator cur_it;
-  ossia::value operator()(ossia::impulse imp) const
-  {
-    return imp;
-  }
-
-  ossia::value operator()(int32_t i) const
-  {
-    return osc_utilities::get_int(cur_it, i);
-  }
-
-  ossia::value operator()(float f) const
-  {
-    return osc_utilities::get_float(cur_it, f);
-  }
-
-  ossia::value operator()(bool b) const
-  {
-    return osc_utilities::get_bool(cur_it, b);
-  }
-
-  ossia::value operator()(char c) const
-  {
-    return osc_utilities::get_char(cur_it, c);
-  }
-
-  ossia::value operator()(const std::string& str) const
-  {
-    return str;
-  }
-
-  template <std::size_t N>
-  ossia::value operator()(std::array<float, N> vec) const
-  {
-    return osc_utilities::get_float(cur_it, vec[0]);
-  }
-
-  ossia::value operator()(const std::vector<ossia::value>& t)
-  {
-    return osc_utilities::get_float(
-        cur_it, !t.empty() ? ossia::convert<float>(t[0]) : 0.f);
-  }
-
-  ossia::value operator()() const
-  {
-    return {};
-  }
-};
 
 struct osc_inbound_impulse_visitor
 {
@@ -478,18 +392,6 @@ inline ossia::value to_value(
 {
   if (beg_it != end_it)
     return current.apply(osc_inbound_visitor{beg_it, beg_it, end_it, N});
-  else
-    return current.apply(osc_inbound_impulse_visitor{});
-}
-
-// Used for domains :
-inline ossia::value to_numeric_value(
-    const ossia::value& current,
-    oscpack::ReceivedMessageArgumentIterator beg_it,
-    oscpack::ReceivedMessageArgumentIterator end_it)
-{
-  if (beg_it != end_it)
-    return current.apply(osc_inbound_numeric_visitor{beg_it});
   else
     return current.apply(osc_inbound_impulse_visitor{});
 }

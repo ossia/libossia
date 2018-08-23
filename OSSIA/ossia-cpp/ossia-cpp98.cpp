@@ -668,7 +668,15 @@ void node::set_rgba()
     m_node->remove_parameter();
     m_param = ossia::setup_parameter(ossia::rgba_u{}, *m_node);
   }
+}
 
+void node::set_rgba8()
+{
+  if (m_node)
+  {
+    m_node->remove_parameter();
+    ossia::setup_parameter(ossia::rgba8_u{}, *m_node);
+  }
 }
 
 void node::set_argb()
@@ -1023,6 +1031,16 @@ node node::create_rgba(std::string addr)
     return node{n, ossia::setup_parameter(ossia::rgba_u{}, *n)};
   }
 
+  return {};
+}
+
+node node::create_rgba8(std::string addr)
+{
+  if (m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n, ossia::setup_parameter(ossia::rgba8_u{}, *n)};
+  }
   return {};
 }
 
@@ -1713,7 +1731,7 @@ void node::save_preset(const std::string& f)
     if (m_node)
     {
       std::string ext(".json");
-      if(f.size() > ext.size() 
+      if(f.size() > ext.size()
         && std::equal(f.begin() + f.size() - ext.size(), f.end(), ext.begin()))
       {
         auto json = ossia::presets::make_json_preset(*m_node);
@@ -1740,7 +1758,7 @@ void node::load_preset(const std::string& f)
       std::string ext(".json");
       auto buf = ossia::presets::read_file(f);
 
-      if(f.size() > ext.size() 
+      if(f.size() > ext.size()
         && std::equal(f.begin() + f.size() - ext.size(), f.end(), ext.begin()))
       {
        ossia::presets::apply_json(buf,*m_node);
@@ -1750,7 +1768,7 @@ void node::load_preset(const std::string& f)
         ossia::presets::apply_preset(buf, *m_node);
       }
     }
-  } 
+  }
   catch (const std::exception& e)
   {
     std::cerr << "can't read preset file '" << f

@@ -267,6 +267,77 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Namespace>
   }
 };
 
+
+// Used for domains :
+
+struct osc_inbound_numeric_visitor
+{
+  osc_inbound_numeric_visitor(oscpack::ReceivedMessageArgumentIterator cur)
+      : cur_it{cur}
+  {
+  }
+
+  oscpack::ReceivedMessageArgumentIterator cur_it;
+  ossia::value operator()(ossia::impulse imp) const
+  {
+    return imp;
+  }
+
+  ossia::value operator()(int32_t i) const
+  {
+    return ossia::net::osc_utilities::get_int(cur_it, i);
+  }
+
+  ossia::value operator()(float f) const
+  {
+    return ossia::net::osc_utilities::get_float(cur_it, f);
+  }
+
+  ossia::value operator()(bool b) const
+  {
+    return ossia::net::osc_utilities::get_bool(cur_it, b);
+  }
+
+  ossia::value operator()(char c) const
+  {
+    return ossia::net::osc_utilities::get_char(cur_it, c);
+  }
+
+  ossia::value operator()(const std::string& str) const
+  {
+    return str;
+  }
+
+  template <std::size_t N>
+  ossia::value operator()(std::array<float, N> vec) const
+  {
+    return ossia::net::osc_utilities::get_float(cur_it, vec[0]);
+  }
+
+  ossia::value operator()(const std::vector<ossia::value>& t)
+  {
+    return ossia::net::osc_utilities::get_float(
+        cur_it, !t.empty() ? ossia::convert<float>(t[0]) : 0.f);
+  }
+
+  ossia::value operator()() const
+  {
+    return {};
+  }
+};
+
+inline ossia::value to_numeric_value(
+    const ossia::value& current,
+    oscpack::ReceivedMessageArgumentIterator beg_it,
+    oscpack::ReceivedMessageArgumentIterator end_it)
+{
+  if (beg_it != end_it)
+    return current.apply(osc_inbound_numeric_visitor{beg_it});
+  else
+    return current.apply(ossia::net::osc_inbound_impulse_visitor{});
+}
+
+
 inline ossia::domain get_domain(
     ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
@@ -280,7 +351,7 @@ inline ossia::domain get_domain(
   {
     auto cur_it = beg_it;
     ++beg_it;
-    val.push_back(ossia::net::to_numeric_value(cur, cur_it, beg_it));
+    val.push_back(to_numeric_value(cur, cur_it, beg_it));
   }
 
   return ossia::make_domain_from_osc(val, cur);

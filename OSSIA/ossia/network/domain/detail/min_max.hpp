@@ -469,7 +469,7 @@ struct domain_min_creation_visitor
   operator()(const std::array<float, N>& min)
   {
     vecf_domain<N> dom;
-    for(int i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       dom.min[i] = min[i];
     }
@@ -520,7 +520,7 @@ struct domain_max_creation_visitor
   operator()(const std::array<float, N>& max)
   {
     vecf_domain<N> dom;
-    for(int i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       dom.max[i] = max[i];
     }
@@ -593,7 +593,7 @@ struct domain_value_set_creation_visitor
   }
 
   template <std::size_t N>
-  domain operator()(const std::array<float, N>& dom)
+  domain operator()(const std::array<float, N>& )
   {
     vecf_domain<N> res;
     ossia::flat_set<float> vals;

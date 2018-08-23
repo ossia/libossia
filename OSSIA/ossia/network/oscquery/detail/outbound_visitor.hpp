@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/value/value.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
+#include <ossia/network/dataspace/color.hpp>
 namespace oscpack
 {
 class OutboundPacketStream;
@@ -9,7 +10,7 @@ namespace ossia
 {
 namespace oscquery
 {
-struct OSSIA_EXPORT osc_outbound_visitor
+struct osc_outbound_visitor
 {
 public:
   oscpack::OutboundPacketStream& p;
@@ -19,27 +20,27 @@ public:
 
   void operator()(int32_t i) const
   {
-    p << int32_t(i);
+    p << i;
   }
 
   void operator()(float f) const
   {
-    p << float(f);
+    p << f;
   }
 
   void operator()(bool b) const
   {
-    p << bool(b);
+    p << b;
   }
 
   void operator()(char c) const
   {
-    p << char(c);
+    p << c;
   }
 
   void operator()(const std::string& str) const
   {
-    p << (ossia::string_view)str;
+    p << std::string_view{str};
   }
 
   void operator()(vec2f vec) const
@@ -63,6 +64,21 @@ public:
     {
       val.apply(*this);
     }
+  }
+
+  template<typename T, typename U>
+  void operator()(const T& t, const U& u) const
+  {
+    (*this)(t);
+  }
+
+  void operator()(const vec4f& t, const ossia::rgba8_u& u) const
+  {
+    uint32_t r = (uint32_t)t[0] << 24;
+    uint32_t g = (uint32_t)t[1] << 16;
+    uint32_t b = (uint32_t)t[2] << 8;
+    uint32_t a = (uint32_t)t[3];
+    p << oscpack::RgbaColor(r + g + b + a);
   }
 
   void operator()() const

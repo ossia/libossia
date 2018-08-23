@@ -178,7 +178,7 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 
 bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& addresses)
 {
-  int N = 1024*1024;
+  constexpr int N = 1024*1024;
 
   try {
     auto buffer{std::make_unique<char[]>(N)};
@@ -210,7 +210,7 @@ bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& address
 
 bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  int N = 1024*1024;
+  constexpr int N = 1024*1024;
 
   try {
     auto buffer{std::make_unique<char[]>(N)};

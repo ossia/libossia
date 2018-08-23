@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/osc/detail/osc_fwd.hpp>
 
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 
@@ -30,6 +29,7 @@ namespace ossia
 {
 namespace net
 {
+struct osc_outbound_visitor;
 class generic_device;
 class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {

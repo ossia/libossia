@@ -47,6 +47,9 @@ struct OSSIA_EXPORT unit_t final
   unit_t(rgba_u t) : v{color_u{t}}
   {
   }
+  unit_t(rgba8_u t) : v{color_u{t}}
+  {
+  }
   unit_t(rgb_u t) : v{color_u{t}}
   {
   }
@@ -269,7 +272,7 @@ typename std::enable_if_t<is_unit<T>::value, bool> operator!=(T, T)
 }
 
 static const constexpr int dataspace_count = 8;
-static const constexpr int unit_count = 2 + 8 + 11 + 4 + 3 + 6 + 6 + 9;
+static const constexpr int unit_count = 2 + 9 + 11 + 4 + 3 + 6 + 6 + 9;
 }
 namespace std
 {

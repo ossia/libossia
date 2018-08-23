@@ -2,7 +2,6 @@
 #include <ossia/detail/mutex.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include <hopscotch_map.h>
@@ -24,7 +23,9 @@ namespace ossia
 {
 namespace net
 {
-class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
+struct osc_outbound_visitor;
+class OSSIA_EXPORT osc_protocol final
+    : public ossia::net::protocol_base
 {
 public:
   osc_protocol(std::string ip,
@@ -37,7 +38,7 @@ public:
   osc_protocol& operator=(const osc_protocol&) = delete;
   osc_protocol& operator=(osc_protocol&&) = delete;
 
-  ~osc_protocol();
+  ~osc_protocol() override;
 
   const std::string& get_ip() const;
   osc_protocol& set_ip(std::string);

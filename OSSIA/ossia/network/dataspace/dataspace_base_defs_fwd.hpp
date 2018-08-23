@@ -18,6 +18,7 @@ using radian = strong_value<radian_u>;
 // 8
 struct argb_u;
 struct rgba_u;
+struct rgba8_u;
 struct rgb_u;
 struct bgr_u;
 struct argb8_u;
@@ -36,6 +37,7 @@ struct cie_luv_u;
 
 using argb = strong_value<argb_u>;
 using rgba = strong_value<rgba_u>;
+using rgba8 = strong_value<rgba8_u>;
 using rgb = strong_value<rgb_u>;
 using bgr = strong_value<bgr_u>;
 using argb8 = strong_value<argb8_u>;

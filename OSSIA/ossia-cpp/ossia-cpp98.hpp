@@ -642,6 +642,10 @@ class OSSIA_EXPORT node
      * @brief adds a vec4f parameter to the current node, with the color.argb8 unit
      */
     void set_argb8();
+    /**RGBA8: 4 int numbers between 0 and 255 describing respectively Red, Green, Blue and Alpha color values
+     * @brief adds a vec4f parameter to the current node, with the color.rgba8 unit
+     */
+    void set_rgba8();
     /**HSV: 3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) color values in the HSV colorspace
      * @brief adds a vec3f parameter to the current node, with the color.hsv unit
      */
@@ -805,6 +809,13 @@ class OSSIA_EXPORT node
      * @return the created opp::node object
      */
     node create_rgba(std::string addr);
+    /**RGBA8: 4 int numbers between 0 and 255 describing respectively Red, Green, Blue and Alpha values
+     * @brief creates a child node with tne given name,
+     * and a vec4f parameter with the color.rgba8 unit
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_rgba8(std::string addr);
     /**ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.argb unit
