@@ -34,7 +34,7 @@ void list_units(InsertFun fun)
           // Add the unit in short form and long
           std::string s = boost::algorithm::to_lower_copy(std::string(un));
           fun(dataspace_name + "." + s, unit_type{});
-          fun(s, unit_type{});
+          fun(std::move(s), unit_type{});
         }
       });
     }
@@ -65,7 +65,9 @@ void list_units(InsertFun fun)
   fun("frequence",  ossia::frequency_u{});
   fun("frequency",  ossia::frequency_u{});
 
-  fun("col", ossia::dataspace_traits<color_u>::neutral_unit{});
+  fun("col", ossia::rgba8_u{});
+  fun("color", ossia::rgba8_u{});
+  // note !! we don't use the neutral (normalized argb) unit for color
 
   fun("rot", ossia::dataspace_traits<angle_u>::neutral_unit{});
   fun("rotation", ossia::dataspace_traits<angle_u>::neutral_unit{});

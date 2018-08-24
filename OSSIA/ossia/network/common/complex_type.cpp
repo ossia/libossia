@@ -121,11 +121,13 @@ const ossia::string_map<net::parameter_data>& parameter_creation_map()
         net::parameter_data p;
         p.type = u;
         p.unit = u;
-        t.insert({std::move(e), std::move(p)});
+        t[std::move(e)] = std::move(p);
     });
 
     auto add_simple = [&] (std::string s, ossia::val_type typ) {
-      net::parameter_data p; p.type = typ; t.insert({std::move(s), p});
+      net::parameter_data p;
+      p.type = typ;
+      t[std::move(s)] = p;
     };
 
     add_simple("int", ossia::val_type::INT);
@@ -190,7 +192,9 @@ const ossia::string_map<net::parameter_data>& parameter_creation_map()
     add_simple("bang", ossia::val_type::IMPULSE);
 
     auto add_ext = [&] (auto e) {
-      net::parameter_data p; p.type = e; t.insert({e, p});
+      net::parameter_data p;
+      p.type = e;
+      t.insert({e, p});
     };
     add_ext(generic_buffer_type());
     add_ext(filesystem_path_type());
@@ -201,7 +205,9 @@ const ossia::string_map<net::parameter_data>& parameter_creation_map()
     add_ext(list_type());
 
     auto add_ext_2 = [&] (auto e, auto ext) {
-      net::parameter_data p; p.type = ext; t.insert({e, p});
+      net::parameter_data p;
+      p.type = ext;
+      t.insert({e, p});
     };
     add_ext_2("path", filesystem_path_type());
     add_ext_2("file", filesystem_path_type());
