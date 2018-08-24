@@ -178,6 +178,12 @@ int main()
     address->add_callback(printValueCallback);
   }
 
+  {
+    auto& node = find_or_create_node(device, "/units/rgba8");
+    auto address = node.create_parameter(val_type::VEC4F);
+    node.set(unit_attribute{}, ossia::rgba8_u{});
+    address->add_callback(printValueCallback);
+  }
   // declare a distant program as an OSCQuery device
   auto oscq = std::make_unique<oscquery::oscquery_server_protocol>(1234, 5678);
   ossia::net::network_logger n;
