@@ -16,7 +16,7 @@ struct json_writer_impl
 
   void writeKey(ossia::string_view k) const;
 
-  void writeValue(const ossia::value& val) const;
+  void writeValue(const ossia::value& val, const ossia::unit_t& unit) const;
   void writeValue(ossia::bounding_mode b) const;
   void writeValue(ossia::access_mode b) const;
   void writeValue(const ossia::domain& d) const;
@@ -30,12 +30,12 @@ struct json_writer_impl
   void writeValue(const ossia::repetition_filter& i) const;
   void writeValue(const ossia::net::instance_bounds& i) const;
 
-  template <typename T>
-  void writeValue(const optional<T>& t) const
+  template <typename T, typename... Args>
+  void writeValue(const optional<T>& t, Args&&... args) const
   {
     if (t)
     {
-      writeValue(*t);
+      writeValue(*t, std::forward<Args>(args)...);
     }
     else
     {

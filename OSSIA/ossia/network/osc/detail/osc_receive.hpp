@@ -6,6 +6,7 @@
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <oscpack/osc/OscReceivedElements.h>
+#include <oscpack/osc/OscPrintReceivedElements.h>
 
 namespace ossia
 {

@@ -536,10 +536,66 @@ ossia::presets::preset ossia::presets::read_json(
   }
 }
 
+
+struct value_to_json_preset_value
+{
+  rapidjson::Document::AllocatorType& allocator;
+  rapidjson::Value operator()(ossia::impulse) const
+  {
+    return rapidjson::Value{};
+  }
+  rapidjson::Value operator()(int v) const
+  {
+    return rapidjson::Value{v};
+  }
+  rapidjson::Value operator()(float v) const
+  {
+    return rapidjson::Value{v};
+  }
+  rapidjson::Value operator()(bool v) const
+  {
+    return rapidjson::Value{v};
+  }
+  rapidjson::Value operator()(char v) const
+  {
+    return rapidjson::Value{&v, 1, allocator};
+  } // 1-char string
+  rapidjson::Value operator()(const std::string& v) const
+  {
+    return rapidjson::Value{v, allocator};
+  }
+
+  template <std::size_t N>
+  rapidjson::Value operator()(const std::array<float, N>& vec) const
+  {
+    rapidjson::Value v(rapidjson::kArrayType);
+    for (std::size_t i = 0; i < N; i++)
+    {
+      v.PushBack(vec[i], allocator);
+    }
+    return v;
+  }
+
+  rapidjson::Value operator()(const std::vector<ossia::value>& vec) const
+  {
+    rapidjson::Value v(rapidjson::kArrayType);
+    for (std::size_t i = 0; i < vec.size(); i++)
+    {
+      v.PushBack(vec[i].apply(*this), allocator);
+    }
+    return v;
+  }
+  rapidjson::Value operator()() const
+  {
+    throw std::runtime_error("value_to_json_value: no type");
+  }
+};
+
+
 rapidjson::Value ossia_to_json_value(
     const ossia::value& val, rapidjson::Document::AllocatorType& docallocator)
 {
-  return val.apply(ossia::oscquery::detail::value_to_json_value{docallocator});
+  return val.apply(value_to_json_preset_value{docallocator});
 }
 
 template <typename Alloc>
@@ -1281,7 +1337,7 @@ void make_json_from_node(rapidjson::Document& d, ossia::net::node_base* node)
   {
     if (param->get_value_type() != ossia::val_type::IMPULSE)
     {
-      rapidjson::Value v = param->value().apply(ossia::oscquery::detail::value_to_json_value{d.GetAllocator()});
+      rapidjson::Value v = param->value().apply(value_to_json_preset_value{d.GetAllocator()});
       rapidjson::Value name(node->get_name(),d.GetAllocator());
       d.AddMember(name, v, d.GetAllocator());
     }

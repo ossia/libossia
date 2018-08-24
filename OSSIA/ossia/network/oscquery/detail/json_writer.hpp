@@ -2,46 +2,13 @@
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
 #include <ossia/detail/for_each.hpp>
+#include <oscpack/ip/UdpSocket.h>
 namespace ossia
 {
+namespace net { class network_logger; }
 namespace oscquery
 {
 class oscquery_server_protocol;
-class json_bundle_builder
-{
-  public:
-    using string_t = rapidjson::StringBuffer;
-    using writer_t = rapidjson::Writer<string_t>;
-
-    json_bundle_builder()
-    {
-      m_writer.StartObject();
-    }
-
-    void add_message(const ossia::net::parameter_base& n, const ossia::value& val)
-    {
-      write_json_key(m_writer, n.get_node().osc_address());
-      m_impl.writeValue(val);
-    }
-
-    void add_message(const ossia::net::full_parameter_data& n, const ossia::value& val)
-    {
-      write_json_key(m_writer, n.address);
-      m_impl.writeValue(val);
-    }
-
-    string_t finish()
-    {
-      m_writer.EndObject();
-      return std::move(m_buf);
-    }
-
-  private:
-    string_t m_buf;
-    writer_t m_writer{m_buf};
-    detail::json_writer_impl m_impl{m_writer};
-};
-
 //! Creates the JSON message to send through OSCQuery
 class OSSIA_EXPORT json_writer
 {
@@ -105,11 +72,6 @@ public:
   static string_t attributes_changed(
       const ossia::net::node_base& n, ossia::string_view attribute);
 
-  static string_t
-  send_message(const ossia::net::parameter_base&, const ossia::value&);
-  static string_t
-  send_message(const ossia::net::full_parameter_data&, const ossia::value&);
-
   static string_t attributes_changed(
       const ossia::net::node_base& n,
       const std::vector<ossia::string_view>& attributes);
@@ -140,21 +102,18 @@ private:
   static void attributes_changed_impl(
       detail::json_writer_impl& p, const ossia::net::node_base& n,
       const std::vector<ossia::string_view>& attributes);
-
-  static void send_message_impl(
-      detail::json_writer_impl& p, const ossia::net::parameter_base&,
-      const ossia::value&);
-  static void send_message_impl(
-      detail::json_writer_impl& p, const ossia::net::full_parameter_data&,
-      const ossia::value&);
 };
 
 struct osc_writer
 {
   static std::string
-  send_message(const ossia::net::parameter_base&, const ossia::value&);
+  send_message(const ossia::net::parameter_base&, const ossia::value&, const ossia::net::network_logger&);
   static std::string
-  send_message(const ossia::net::full_parameter_data&, const ossia::value&);
+  send_message(const ossia::net::full_parameter_data&, const ossia::value&, const ossia::net::network_logger&);
+  static void
+  send_message(const ossia::net::parameter_base&, const ossia::value&, const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
+  static void
+  send_message(const ossia::net::full_parameter_data&, const ossia::value&, const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
 };
 
 }

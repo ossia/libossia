@@ -36,7 +36,7 @@ inline void write_json(
 inline void write_json(
     rapidjson::Writer<rapidjson::StringBuffer>& writer, const ossia::value& v)
 {
-  v.apply(value_to_json{writer});
+  v.apply(value_to_json{writer, {}});
 }
 
 //! Write a domain to json.
@@ -181,6 +181,7 @@ struct domain_to_json
   template <std::size_t N>
   void operator()(const ossia::vecf_domain<N>& dom)
   {
+    // TODO handle rgba case
     writer.StartArray();
     for (std::size_t i = 0; i < N; i++)
     {

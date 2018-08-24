@@ -2,7 +2,9 @@
 #include <ossia/detail/json.hpp>
 #include <ossia/network/value/value.hpp>
 #include <oscpack/osc/OscTypes.h>
-
+#include <ossia/network/dataspace/color.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <fmt/format.h>
 namespace ossia
 {
 namespace oscquery
@@ -14,6 +16,7 @@ namespace detail
 struct value_to_json
 {
   rapidjson::Writer<rapidjson::StringBuffer>& writer;
+  const ossia::unit_t& unit;
   void operator()(impulse) const
   {
     writer.Null();
@@ -42,12 +45,28 @@ struct value_to_json
   }
 
   template <std::size_t N>
-  void operator()(const std::array<float, N>& vec) const
+  void operator()(const std::array<float, N>& t) const
   {
+    if constexpr(N == 4)
+    {
+      if(unit == ossia::rgba8_u{})
+      {
+        auto r = (uint8_t)t[0];
+        auto g = (uint8_t)t[1];
+        auto b = (uint8_t)t[2];
+        auto a = (uint8_t)t[3];
+
+        writer.StartArray();
+        writer.String(fmt::format("#{:02X}{:02X}{:02X}{:02X}", r, g, b, a));
+        writer.EndArray();
+        return;
+      }
+    }
+
     writer.StartArray();
     for (std::size_t i = 0; i < N; i++)
     {
-      writer.Double(vec[i]);
+      writer.Double(t[i]);
     }
     writer.EndArray();
   }
@@ -67,65 +86,52 @@ struct value_to_json
   }
 };
 
-struct value_to_json_value
+static inline auto from_hex(char c)
 {
-  rapidjson::Document::AllocatorType& allocator;
-  rapidjson::Value operator()(impulse) const
+  // taken from https://stackoverflow.com/questions/34365746/whats-the-fastest-way-to-convert-hex-to-integer-in-c
+  struct Table
   {
-    return rapidjson::Value{};
-  }
-  rapidjson::Value operator()(int v) const
-  {
-    return rapidjson::Value{v};
-  }
-  rapidjson::Value operator()(float v) const
-  {
-    return rapidjson::Value{v};
-  }
-  rapidjson::Value operator()(bool v) const
-  {
-    return rapidjson::Value{v};
-  }
-  rapidjson::Value operator()(char v) const
-  {
-    return rapidjson::Value{&v, 1, allocator};
-  } // 1-char string
-  rapidjson::Value operator()(const std::string& v) const
-  {
-    return rapidjson::Value{v, allocator};
-  }
-
-  template <std::size_t N>
-  rapidjson::Value operator()(const std::array<float, N>& vec) const
-  {
-    rapidjson::Value v(rapidjson::kArrayType);
-    for (std::size_t i = 0; i < N; i++)
+    long long tab[128];
+    constexpr Table()
+      : tab {}
     {
-      v.PushBack(vec[i], allocator);
+      tab['0'] = 0;
+      tab['1'] = 1;
+      tab['2'] = 2;
+      tab['3'] = 3;
+      tab['4'] = 4;
+      tab['5'] = 5;
+      tab['6'] = 6;
+      tab['7'] = 7;
+      tab['8'] = 8;
+      tab['9'] = 9;
+      tab['a'] = 10;
+      tab['A'] = 10;
+      tab['b'] = 11;
+      tab['B'] = 11;
+      tab['c'] = 12;
+      tab['C'] = 12;
+      tab['d'] = 13;
+      tab['D'] = 13;
+      tab['e'] = 14;
+      tab['E'] = 14;
+      tab['f'] = 15;
+      tab['F'] = 15;
     }
-    return v;
-  }
 
-  rapidjson::Value operator()(const std::vector<ossia::value>& vec) const
-  {
-    rapidjson::Value v(rapidjson::kArrayType);
-    for (std::size_t i = 0; i < vec.size(); i++)
-    {
-      v.PushBack(vec[i].apply(*this), allocator);
-    }
-    return v;
-  }
-  rapidjson::Value operator()() const
-  {
-    throw std::runtime_error("value_to_json_value: no type");
-  }
-};
+    constexpr auto operator[](const std::size_t idx) const { return tab[idx]; }
+  };
+  static constexpr Table t;
+  return t[c];
+}
+
 
 struct json_to_value
 {
   const rapidjson::Value& val;
   ossia::string_view& typetags;
   int& typetag_cursor;
+  const ossia::unit_t& unit;
   bool operator()(impulse) const
   {
     typetag_cursor++;
@@ -187,6 +193,28 @@ struct json_to_value
   template <std::size_t N>
   bool operator()(std::array<float, N>& res) const
   {
+    if constexpr(N == 4)
+    {
+      if(typetags[typetag_cursor] == oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG)
+      {
+        typetag_cursor += 1;
+        bool b = val.IsString();
+        if(b)
+        {
+          std::string_view hex(val.GetString(), val.GetStringLength());
+          if(hex.size() == 9) // "#00000000"
+          {
+            res[0] = (from_hex(hex[1]) * 16 + from_hex(hex[2]));
+            res[1] = (from_hex(hex[3]) * 16 + from_hex(hex[4]));
+            res[2] = (from_hex(hex[5]) * 16 + from_hex(hex[6]));
+            res[3] = (from_hex(hex[7]) * 16 + from_hex(hex[8]));
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+
     typetag_cursor += N;
     bool b = val.IsArray();
     if (b)
@@ -225,7 +253,7 @@ struct json_to_value
         case oscpack::TypeTagValues::INFINITUM_TYPE_TAG:
         {
           ossia::impulse i;
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -234,7 +262,7 @@ struct json_to_value
         case oscpack::TypeTagValues::INT32_TYPE_TAG:
         {
           int32_t i{};
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -243,7 +271,7 @@ struct json_to_value
         case oscpack::TypeTagValues::FLOAT_TYPE_TAG:
         {
           float i{};
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -252,7 +280,7 @@ struct json_to_value
         case oscpack::TypeTagValues::CHAR_TYPE_TAG:
         {
           char i{};
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -263,7 +291,7 @@ struct json_to_value
         case oscpack::TypeTagValues::FALSE_TYPE_TAG:
         {
           bool i{};
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -274,7 +302,7 @@ struct json_to_value
         case oscpack::TypeTagValues::SYMBOL_TYPE_TAG:
         {
           std::string i;
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(std::move(i));
@@ -285,7 +313,7 @@ struct json_to_value
         {
           std::vector<ossia::value> i;
           ++typetag_cursor; // We skip the '['
-          if (!json_to_value{elt, typetags, typetag_cursor}(i))
+          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           ++typetag_cursor; // We skip the ']'
@@ -331,6 +359,8 @@ struct json_to_value
 struct json_to_single_value
 {
   const rapidjson::Value& val;
+  std::string_view typetags;
+
   bool operator()(impulse) const
   {
     return val.IsNull();
@@ -382,6 +412,27 @@ struct json_to_single_value
   template <std::size_t N>
   bool operator()(std::array<float, N>& res) const
   {
+    if constexpr(N == 4)
+    {
+      if(typetags[0] == oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG)
+      {
+        bool b = val.IsString();
+        if(b)
+        {
+          std::string_view hex(val.GetString(), val.GetStringLength());
+          if(hex.size() == 9) // "#00000000"
+          {
+            res[0] = (from_hex(hex[1]) * 16 + from_hex(hex[2]));
+            res[1] = (from_hex(hex[3]) * 16 + from_hex(hex[4]));
+            res[2] = (from_hex(hex[5]) * 16 + from_hex(hex[6]));
+            res[3] = (from_hex(hex[7]) * 16 + from_hex(hex[8]));
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+
     return false;
   }
 

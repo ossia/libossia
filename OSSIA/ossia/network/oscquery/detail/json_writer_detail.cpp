@@ -16,7 +16,7 @@
 #include <ossia/detail/for_each.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <ossia/network/osc/detail/osc_fwd.hpp>
-
+#include <ossia/detail/logger.hpp>
 namespace ossia
 {
 namespace oscquery
@@ -24,14 +24,14 @@ namespace oscquery
 namespace detail
 {
 
-void json_writer_impl::writeValue(const value& val) const
+void json_writer_impl::writeValue(const value& val, const ossia::unit_t& unit) const
 {
   const auto array = is_array(val);
   if(!array)
   {
     writer.StartArray();
   }
-  val.apply(value_to_json{writer});
+  val.apply(value_to_json{writer, unit});
   if(!array)
   {
     writer.EndArray();
@@ -148,14 +148,51 @@ using writer_map_fun
     = void (*)(const json_writer_impl&, const ossia::net::node_base&);
 using writer_map_type = string_view_map<writer_map_fun>;
 
+template<typename Attr>
+struct attr_pair_writer
+{
+  auto operator()()
+  {
+    return [] (const json_writer_impl& self, const ossia::net::node_base& n)
+    {
+      self.writeValue(Attr::getter(n));
+    };
+  }
+};
+
+template<>
+struct attr_pair_writer<ossia::net::value_attribute>
+{
+  auto operator()()
+  {
+    return [] (const json_writer_impl& self, const ossia::net::node_base& n)
+    {
+      if(auto p = n.get_parameter())
+        self.writeValue(ossia::net::value_attribute::getter(n), p->get_unit());
+      else
+        self.writeValue(ossia::net::value_attribute::getter(n), ossia::unit_t{});
+    };
+  }
+};
+
+template<>
+struct attr_pair_writer<ossia::net::default_value_attribute>
+{
+  auto operator()()
+  {
+    return [] (const json_writer_impl& self, const ossia::net::node_base& n)
+    {
+      if(auto p = n.get_parameter())
+        self.writeValue(ossia::net::default_value_attribute::getter(n), p->get_unit());
+      else
+        self.writeValue(ossia::net::default_value_attribute::getter(n), ossia::unit_t{});
+    };
+  }
+};
 template <typename Attr>
 static auto make_fun_pair()
 {
-  return std::make_pair(
-      metadata<Attr>::key(),
-      [](const json_writer_impl& self, const ossia::net::node_base& n) {
-        self.writeValue(Attr::getter(n));
-      });
+  return std::make_pair(metadata<Attr>::key(), attr_pair_writer<Attr>{}());
 }
 
 static const auto& attributesMap()
@@ -202,6 +239,7 @@ void json_writer_impl::writeAttribute(
 struct node_attribute_writer
 {
   const net::node_base& n;
+  const net::parameter_base& p;
   const json_writer_impl& writer;
 
   template<typename T>
@@ -213,6 +251,30 @@ struct node_attribute_writer
     {
       writer.writeKey(metadata<Attr>::key());
       writer.writeValue(res);
+    }
+  }
+
+  void operator()(const type_tag<ossia::net::value_attribute>&)
+  {
+    using T = type_tag<ossia::net::value_attribute>;
+    using Attr = typename T::type;
+    auto res = Attr::getter(n);
+    if (ossia::net::valid(res))
+    {
+      writer.writeKey(metadata<Attr>::key());
+      writer.writeValue(res, p.get_unit());
+    }
+  }
+
+  void operator()(const type_tag<ossia::net::default_value_attribute>&)
+  {
+    using T = type_tag<ossia::net::default_value_attribute>;
+    using Attr = typename T::type;
+    auto res = Attr::getter(n);
+    if (ossia::net::valid(res))
+    {
+      writer.writeKey(metadata<Attr>::key());
+      writer.writeValue(res, p.get_unit());
     }
   }
 };
@@ -235,7 +297,7 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   {
     // TODO it could be nice to have versions that take a parameter or a value
     // directly
-    ossia::for_each_tagged(base_attributes{}, node_attribute_writer{n, *this});
+    ossia::for_each_tagged(base_attributes{}, node_attribute_writer{n, *addr, *this});
   }
   else
   {
@@ -381,29 +443,6 @@ void json_writer::attributes_changed_impl(
     }
     wr.EndObject();
   }
-
-  wr.EndObject();
-}
-
-void json_writer::send_message_impl(
-    detail::json_writer_impl& p, const net::parameter_base& n, const value& val)
-{
-  auto& wr = p.writer;
-  wr.StartObject();
-
-  write_json_key(wr, n.get_node().osc_address());
-  p.writeValue(val);
-
-  wr.EndObject();
-}
-void json_writer::send_message_impl(
-    detail::json_writer_impl& p, const net::full_parameter_data& n, const value& val)
-{
-  auto& wr = p.writer;
-  wr.StartObject();
-
-  write_json_key(wr, n.address);
-  p.writeValue(val);
 
   wr.EndObject();
 }
@@ -606,32 +645,6 @@ json_writer::string_t json_writer::attributes_changed(
   return buf;
 }
 
-json_writer::string_t
-json_writer::send_message(const net::parameter_base& addr, const value& val)
-{
-  string_t buf;
-  writer_t wr(buf);
-
-  detail::json_writer_impl p{wr};
-
-  send_message_impl(p, addr, val);
-
-  return buf;
-}
-
-json_writer::string_t
-json_writer::send_message(const net::full_parameter_data& addr, const value& val)
-{
-  string_t buf;
-  writer_t wr(buf);
-
-  detail::json_writer_impl p{wr};
-
-  send_message_impl(p, addr, val);
-
-  return buf;
-}
-
 json_writer::string_t json_writer::attributes_changed(
     const net::node_base& n, const std::vector<ossia::string_view>& attributes)
 {
@@ -714,12 +727,12 @@ std::string write_value(std::string_view address, const value& v, const unit_t& 
 {
   std::string buffer;
   buffer.resize(1024);
-  oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
 
   while(true)
   {
     try
     {
+      oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
       p << oscpack::BeginMessageN(address);
       if(!u)
       {
@@ -732,26 +745,97 @@ std::string write_value(std::string_view address, const value& v, const unit_t& 
         }, u.v);
       }
       p << oscpack::EndMessage();
+      buffer.resize(p.Size());
       break;
     }
     catch(const oscpack::OutOfBufferMemoryException&)
     {
       buffer.resize(buffer.size() * 2);
-      p.Clear();
     }
   }
-
   return buffer;
 }
 
-std::string osc_writer::send_message(const net::parameter_base& p, const value& v)
+void write_value(std::string_view address, const value& v, const unit_t& u, oscpack::UdpTransmitSocket& socket)
 {
+  auto send_msg = [&] (oscpack::OutboundPacketStream& p) {
+    p << oscpack::BeginMessageN(address);
+    if(!u)
+    {
+      v.apply(oscquery::osc_outbound_visitor{p});
+    }
+    else
+    {
+      ossia::apply_nonnull([&] (const auto& dataspace) {
+        ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
+      }, u.v);
+    }
+    p << oscpack::EndMessage();
+    socket.Send(p.Data(), p.Size());
+  };
+
+  try
+  {
+    constexpr int BufferSize = 2048;
+    alignas(128) std::array<char, BufferSize> buffer;
+    oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
+    send_msg(p);
+  }
+  catch(const oscpack::OutOfBufferMemoryException&)
+  {
+    while(true)
+    {
+      std::string buffer;
+      buffer.resize(4096);
+      try
+      {
+        oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
+        send_msg(p);
+        break;
+      }
+      catch(...)
+      {
+        buffer.resize(buffer.size() * 2);
+      }
+    }
+  }
+}
+
+std::string osc_writer::send_message(const net::parameter_base& p, const value& v, const ossia::net::network_logger& logger)
+{
+  if (logger.outbound_logger)
+  {
+    logger.outbound_logger->info("Out: {} {}", p.get_node().osc_address(), v);
+  }
   return write_value(p.get_node().osc_address(), v, p.get_unit());
 }
 
-std::string osc_writer::send_message(const net::full_parameter_data& p, const value& v)
+std::string osc_writer::send_message(const net::full_parameter_data& p, const value& v, const ossia::net::network_logger& logger)
 {
+  if (logger.outbound_logger)
+  {
+    logger.outbound_logger->info("Out: {} {}", p.address, v);
+  }
   return write_value(p.address, v, p.unit);
+}
+
+
+void osc_writer::send_message(const net::parameter_base& p, const value& v, const ossia::net::network_logger& logger, oscpack::UdpTransmitSocket& socket)
+{
+  if (logger.outbound_logger)
+  {
+    logger.outbound_logger->info("Out: {} {}", p.get_node().osc_address(), v);
+  }
+  write_value(p.get_node().osc_address(), v, p.get_unit(), socket);
+}
+
+void osc_writer::send_message(const net::full_parameter_data& p, const value& v, const ossia::net::network_logger& logger, oscpack::UdpTransmitSocket& socket)
+{
+  if (logger.outbound_logger)
+  {
+    logger.outbound_logger->info("Out: {} {}", p.address, v);
+  }
+  write_value(p.address, v, p.unit, socket);
 }
 
 

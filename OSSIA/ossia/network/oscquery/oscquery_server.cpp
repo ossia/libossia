@@ -135,13 +135,13 @@ bool oscquery_server_protocol::push_impl(const T& addr)
       {
         if(client.sender)
         {
-          client.sender->send(addr, val);
+          ossia::oscquery::osc_writer::send_message(addr, val, m_logger, client.sender->socket());
         }
         else
         {
           m_websocketServer->send_binary_message(
                 client.connection,
-                osc_writer::send_message(addr, val));
+                osc_writer::send_message(addr, val, m_logger));
         }
       }
     }
@@ -151,7 +151,7 @@ bool oscquery_server_protocol::push_impl(const T& addr)
       for (auto& client : m_clients)
       {
         m_websocketServer->send_binary_message(
-            client.connection, osc_writer::send_message(addr, val));
+            client.connection, osc_writer::send_message(addr, val, m_logger));
       }
     }
 
@@ -172,6 +172,8 @@ bool oscquery_server_protocol::push_raw(const net::full_parameter_data& addr)
 
 bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::parameter_base*>& addresses)
 {
+  // TODO
+  /*
   json_bundle_builder b;
   for(auto a : addresses)
   {
@@ -192,11 +194,14 @@ bool oscquery_server_protocol::push_bundle(const std::vector<const ossia::net::p
       m_websocketServer->send_message(client.connection, str);
     }
   }
+  */
   return true;
 }
 
 bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
 {
+  // TODO
+  /*
   json_bundle_builder b;
   for(const auto& addr : addresses)
   {
@@ -216,6 +221,7 @@ bool oscquery_server_protocol::push_raw_bundle(const std::vector<ossia::net::ful
       m_websocketServer->send_message(client.connection, str);
     }
   }
+  */
   return true;
 }
 

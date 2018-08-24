@@ -614,12 +614,10 @@ void json_parser_impl::readObject(
       // We have a type. Now we read the value according to it.
 
       auto parse_oscquery_value =
-          [&] (const rapidjson::Value& v, bool& ok) {
-        if(typetag == "m")
-          typetag = "iiii";
-        else if(typetag == "r")
-          typetag = "ffff";
+          [&] (const rapidjson::Value& v, bool& ok)
+      {
         ossia::value res = node.get_parameter()->value();
+        const auto& u = node.get_parameter()->get_unit();
         if(typetag.size() == 1)
         {
           if(v.IsArray())
@@ -627,19 +625,18 @@ void json_parser_impl::readObject(
             const auto& ar = v.GetArray();
             if(!ar.Empty())
             {
-              ok = res.apply(oscquery::detail::json_to_single_value{*ar.Begin()});
+              ok = res.apply(oscquery::detail::json_to_single_value{*ar.Begin(), typetag});
             }
           }
           else
           {
-            ok = res.apply(oscquery::detail::json_to_single_value{v});
+            ok = res.apply(oscquery::detail::json_to_single_value{v, typetag});
           }
         }
         else
         {
           int typetag_counter = 0;
-          ok = res.apply(oscquery::detail::json_to_value{
-              v, typetag, typetag_counter});
+          ok = res.apply(oscquery::detail::json_to_value{v, typetag, typetag_counter, u});
         }
         return res;
       };

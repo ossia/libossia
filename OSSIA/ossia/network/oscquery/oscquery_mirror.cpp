@@ -1,4 +1,4 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_mirror.hpp"
 
@@ -259,11 +259,11 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr)
     auto critical = addr.get_critical();
     if ((!critical || m_useHTTP) && m_oscSender)
     {
-      m_oscSender->send(addr, val);
+      ossia::oscquery::osc_writer::send_message(addr, val, m_logger, m_oscSender->socket());
     }
     else
     {
-      query_send_binary_message(osc_writer::send_message(addr, val));
+      query_send_binary_message(osc_writer::send_message(addr, val, m_logger));
     }
 
     if (m_logger.outbound_listened_logger)
@@ -285,11 +285,11 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
     auto critical = addr.get_critical();
     if ((!critical || m_useHTTP) && m_oscSender)
     {
-      m_oscSender->send(addr, val);
+      ossia::oscquery::osc_writer::send_message(addr, val, m_logger, m_oscSender->socket());
     }
     else
     {
-      query_send_binary_message(osc_writer::send_message(addr, val));
+      query_send_binary_message(osc_writer::send_message(addr, val, m_logger));
     }
     return true;
   }
