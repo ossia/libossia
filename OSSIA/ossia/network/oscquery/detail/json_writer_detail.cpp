@@ -39,6 +39,7 @@ struct unit_writer
 
   void operator()(const ossia::meter_u&)
   {
+    // can be refactored with write_unit
     writer.writeKey("UNIT");
     writer.writer.StartArray();
     writer.writer.String("distance.m");
@@ -51,12 +52,18 @@ struct unit_writer
 
   void operator()(const ossia::argb8_u&)
   {
+    // write nothing since it's already given by the OSC "r" type
+  }
+
+  void operator()(const ossia::argb_u&)
+  {
+    // can be refactored with write_extended
     writer.writeKey("EXTENDED_TYPE");
     writer.writer.StartArray();
-    writer.writer.String("color.argb8.a");
-    writer.writer.String("color.argb8.r");
-    writer.writer.String("color.argb8.g");
-    writer.writer.String("color.argb8.b");
+    writer.writer.String("color.argb.a");
+    writer.writer.String("color.argb.r");
+    writer.writer.String("color.argb.g");
+    writer.writer.String("color.argb.b");
     writer.writer.EndArray();
   }
 
