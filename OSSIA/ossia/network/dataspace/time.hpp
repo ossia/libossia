@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-struct time_dataspace;
+struct time_u;
 struct second_u;
 template <typename Impl>
 struct timing_unit
@@ -12,7 +12,7 @@ struct timing_unit
   using neutral_unit = second_u;
   using value_type = float;
   using concrete_type = Impl;
-  using dataspace_type = time_dataspace;
+  using dataspace_type = time_u;
   using is_multidimensional = std::false_type;
 };
 

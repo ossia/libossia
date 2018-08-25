@@ -6,7 +6,7 @@ namespace ossia
 
 template <typename T>
 struct distance_ratio;
-struct distance_dataspace;
+struct distance_u;
 
 using meter_u = distance_ratio<std::ratio<1>>;
 using kilometer_u = distance_ratio<std::kilo>;
@@ -27,7 +27,7 @@ struct distance_unit
   using neutral_unit = meter_u;
   using value_type = float;
   using concrete_type = Impl;
-  using dataspace_type = distance_dataspace;
+  using dataspace_type = distance_u;
   using is_multidimensional = std::false_type;
 };
 

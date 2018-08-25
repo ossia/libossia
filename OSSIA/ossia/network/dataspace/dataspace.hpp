@@ -271,6 +271,18 @@ typename std::enable_if_t<is_unit<T>::value, bool> operator!=(T, T)
   return false;
 }
 
+template<typename T, typename = void>
+struct is_array_unit : public std::false_type
+{
+
+};
+
+template<typename T>
+struct is_array_unit<T, decltype(T{}.array_parameters())> : public std::true_type
+{
+
+};
+
 static const constexpr int dataspace_count = 8;
 static const constexpr int unit_count = 2 + 9 + 11 + 4 + 3 + 6 + 6 + 9;
 }

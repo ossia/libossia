@@ -15,7 +15,7 @@ struct radian_u;
 using degree = strong_value<degree_u>;
 using radian = strong_value<radian_u>;
 
-// 8
+// 9
 struct argb_u;
 struct rgba_u;
 struct rgba8_u;

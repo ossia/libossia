@@ -5,13 +5,13 @@ namespace ossia
 {
 
 struct quaternion_u;
-struct orientation_dataspace;
+struct orientation_u;
 template <typename Impl>
 struct orientation_unit
 {
   using is_unit = std::true_type;
   using is_multidimensional = std::true_type;
-  using dataspace_type = orientation_dataspace;
+  using dataspace_type = orientation_u;
   using neutral_unit = quaternion_u;
   using concrete_type = Impl;
 };

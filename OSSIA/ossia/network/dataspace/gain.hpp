@@ -4,7 +4,7 @@
 namespace ossia
 {
 struct linear_u;
-struct gain_dataspace;
+struct gain_u;
 template <typename Impl>
 struct gain_unit
 {
@@ -12,7 +12,7 @@ struct gain_unit
   using neutral_unit = linear_u;
   using value_type = float;
   using concrete_type = Impl;
-  using dataspace_type = gain_dataspace;
+  using dataspace_type = gain_u;
   using is_multidimensional = std::false_type;
 };
 

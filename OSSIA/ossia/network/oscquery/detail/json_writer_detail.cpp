@@ -24,6 +24,111 @@ namespace oscquery
 namespace detail
 {
 
+struct unit_writer
+{
+  const json_writer_impl& writer;
+  void operator()() {
+
+  }
+
+  template<typename T>
+  void operator()(const T&)
+  {
+    // general case, remove when everything has been implemented
+  }
+
+  void operator()(const ossia::meter_u&)
+  {
+    writer.writeKey("UNIT");
+    writer.writer.StartArray();
+    writer.writer.String("distance.m");
+    writer.writer.EndArray();
+  }
+
+  void operator()(const ossia::decimeter_u& u) { write_unit(u); }
+
+
+
+  void operator()(const ossia::argb8_u&)
+  {
+    writer.writeKey("EXTENDED_TYPE");
+    writer.writer.StartArray();
+    writer.writer.String("color.argb8.a");
+    writer.writer.String("color.argb8.r");
+    writer.writer.String("color.argb8.g");
+    writer.writer.String("color.argb8.b");
+    writer.writer.EndArray();
+  }
+
+  void operator()(const ossia::rgba_u& u) { write_extended(u); }
+
+
+
+  void operator()(const ossia::polar_u&)
+  {
+    writer.writeKey("UNIT");
+    writer.writer.StartArray();
+    writer.writer.String("distance.m");
+    writer.writer.String("angle.radian");
+    writer.writer.EndArray();
+
+    writer.writeKey("EXTENDED_TYPE");
+    writer.writer.StartArray();
+    writer.writer.String("polar.r");
+    writer.writer.String("polar.p");
+    writer.writer.EndArray();
+  }
+
+  template<typename T>
+  void write_unit(const T&)
+  {
+    writer.writeKey("UNIT");
+    writer.writer.StartArray();
+    writer.writer.String(
+          fmt::format(
+            "{}.{}"
+            , dataspace_traits<typename T::dataspace_type>::text()[0]
+            , unit_traits<T>::text()[0]));
+    writer.writer.EndArray();
+  }
+
+  template<typename T>
+  void write_extended(const T&)
+  {
+    writer.writeKey("EXTENDED_TYPE");
+
+    writer.writer.StartArray();
+    if constexpr(is_array_unit<T>::value)
+    {
+      for(char val : T::array_parameters())
+      {
+        writer.writer.String(
+              fmt::format(
+                "{}.{}.{}"
+                , dataspace_traits<typename T::dataspace_type>::text()[0]
+                , unit_traits<T>::text()[0]
+                , val));
+      }
+    }
+    else
+    {
+      writer.writer.String(
+            fmt::format(
+              "{}.{}"
+              , dataspace_traits<typename T::dataspace_type>::text()[0]
+              , unit_traits<T>::text()[0]));
+    }
+    writer.writer.EndArray();
+  }
+};
+
+
+
+
+
+
+
+
 void json_writer_impl::writeValue(const value& val, const ossia::unit_t& unit) const
 {
   const auto array = is_array(val);
@@ -86,11 +191,6 @@ void json_writer_impl::writeValue(access_mode b) const
 void json_writer_impl::writeValue(const domain& d) const
 {
   ossia::apply(domain_to_json{writer}, d);
-}
-
-void json_writer_impl::writeValue(const unit_t& d) const
-{
-  writer.String(ossia::get_pretty_unit_text(d));
 }
 
 void json_writer_impl::writeValue(const net::tags& tags) const
@@ -253,6 +353,34 @@ struct node_attribute_writer
       writer.writeValue(res);
     }
   }
+
+  void operator()(const type_tag<ossia::net::unit_attribute>&)
+  {
+    using T = type_tag<ossia::net::unit_attribute>;
+    using Attr = typename T::type;
+    auto res = Attr::getter(n);
+    if (ossia::net::valid(res))
+    {
+      ossia::apply_nonnull([&] (const auto& d) {
+        if(d) {
+          ossia::apply(unit_writer{writer}, d);
+        }
+      }, res.v);
+    }
+  }
+
+  void operator()(const type_tag<ossia::net::extended_type_attribute>&)
+  {
+    using T = type_tag<ossia::net::extended_type_attribute>;
+    using Attr = typename T::type;
+    auto res = Attr::getter(n);
+    if (ossia::net::valid(res))
+    {
+      writer.writeKey(metadata<Attr>::key());
+      writer.writeValue(res);
+    }
+  }
+
 
   void operator()(const type_tag<ossia::net::value_attribute>&)
   {

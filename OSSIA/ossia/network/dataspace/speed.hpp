@@ -15,7 +15,7 @@ using kilometer_per_hour_u = speed_ratio<std::ratio<1000, 3600>>;
 using knot_u = speed_ratio<std::ratio<1852, 3600>>;
 using foot_per_hour_u = speed_ratio<std::ratio<254 * 12, 3600 * 10000>>;
 using foot_per_second_u = speed_ratio<std::ratio<254 * 12, 10000>>;
-struct speed_dataspace;
+struct speed_u;
 template <typename Impl>
 struct speed_unit
 {
@@ -23,7 +23,7 @@ struct speed_unit
   using neutral_unit = meter_per_second_u;
   using value_type = float;
   using concrete_type = Impl;
-  using dataspace_type = speed_dataspace;
+  using dataspace_type = speed_u;
   using is_multidimensional = std::false_type;
 };
 
