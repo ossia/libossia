@@ -53,23 +53,26 @@ struct unit_writer
   void operator()(const ossia::argb8_u&)
   {
     // write nothing since it's already given by the OSC "r" type
+    // NOTE from PB: "r" is rgba8 - or are you wanting to "swap channels" here ?
   }
 
   void operator()(const ossia::argb_u&)
   {
     // can be refactored with write_extended
+    // NOTE from PB: from the specs, this is rgb, not argb
     writer.writeKey("EXTENDED_TYPE");
     writer.writer.StartArray();
-    writer.writer.String("color.argb.a");
-    writer.writer.String("color.argb.r");
-    writer.writer.String("color.argb.g");
-    writer.writer.String("color.argb.b");
+    writer.writer.String("color.rgb.a");
+    writer.writer.String("color.rgb.r");
+    writer.writer.String("color.rgb.g");
+    writer.writer.String("color.rgb.b");
     writer.writer.EndArray();
   }
 
   void operator()(const ossia::rgba_u& u) { write_extended(u); }
 
-
+  // NOTE from PB: we have to rename cart2D and cart3D to "cartesian" when exposing to OSC Query
+  // and, conversely to translate it back when reading from  OSC Query
 
   void operator()(const ossia::polar_u&)
   {
