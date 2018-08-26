@@ -13,6 +13,7 @@
 #include <oscpack/osc/OscTypes.h>
 #include <rapidjson/document.h>
 #include <ossia/network/generic/generic_node.hpp>
+#include <ossia/network/oscquery/detail/oscquery_units.hpp>
 
 namespace ossia
 {
@@ -353,9 +354,26 @@ bool json_parser_impl::ReadValue(
 
 bool json_parser_impl::ReadValue(const rapidjson::Value& val, unit_t& res)
 {
-  bool b = val.IsString();
+  bool b = val.IsArray();
   if (b)
-    res = parse_pretty_unit(get_string_view(val));
+  {
+    ossia::small_vector<std::string, 4> str;
+    for(auto& v : val.GetArray())
+    {
+      b &= v.IsString();
+      if(!b)
+        break;
+
+      str.push_back(v.GetString());
+    }
+
+    static detail::unit_parser parser;
+    if (auto it = parser.map.find(str); it != parser.map.end())
+    {
+      res = it->second;
+      return true;
+    }
+  }
   return b;
 }
 
@@ -542,8 +560,8 @@ void json_parser_impl::readObject(
     }
 
     // Look for the unit
-    auto unit_it = obj.FindMember(detail::attribute_unit());
-    if (unit_it != obj.MemberEnd())
+    if (auto unit_it = obj.FindMember(detail::attribute_unit());
+        unit_it != obj.MemberEnd())
     {
       ossia::unit_t u;
       ReadValue(unit_it->value, u);
@@ -551,11 +569,20 @@ void json_parser_impl::readObject(
         unit = std::move(u);
     }
 
-    // Look for an extended type
-    auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
-    if (ext_type_it != obj.MemberEnd() && ext_type_it->value.IsString())
+    if (auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
+        ext_type_it != obj.MemberEnd())
     {
-      ext_type = get_string(ext_type_it->value);
+      ossia::unit_t u;
+      ReadValue(ext_type_it->value, u);
+      if (u)
+      {
+        unit = std::move(u);
+      }
+      else if(ext_type_it->value.IsArray())
+      {
+        if(auto arr = ext_type_it->value.GetArray(); arr.Size() > 0)
+          ext_type = get_string(ext_type_it->value.GetArray()[0]);
+      }
     }
 
     // If any of these exist, we can create a parameter

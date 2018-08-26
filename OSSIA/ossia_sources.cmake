@@ -338,6 +338,7 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/value_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/domain_to_json.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_units.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
