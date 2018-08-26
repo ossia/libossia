@@ -212,9 +212,9 @@ struct unit_writer
   {
     writer.writeKey("EXTENDED_TYPE");
     writer.writer.StartArray();
-    writer.writer.String("cartesian.xyz.x");
-    writer.writer.String("cartesian.xyz.y");
-    writer.writer.String("cartesian.xyz.z");
+    writer.writer.String("position.cartesian.x");
+    writer.writer.String("position.cartesian.y");
+    writer.writer.String("position.cartesian.z");
     writer.writer.EndArray();
   }
 
@@ -222,8 +222,8 @@ struct unit_writer
   {
     writer.writeKey("EXTENDED_TYPE");
     writer.writer.StartArray();
-    writer.writer.String("cartesian.xyz.x");
-    writer.writer.String("cartesian.xyz.y");
+    writer.writer.String("position.cartesian.x");
+    writer.writer.String("position.cartesian.y");
     writer.writer.EndArray();
   }
 
