@@ -484,11 +484,8 @@ static auto& attributesSetterMap()
   return map;
 }
 
-static ossia::val_type VecTypetag(ossia::string_view typetag)
+static ossia::val_type read_vec_typetag(ossia::string_view typetag)
 {
-  //! \todo Important : in the oscquery spec, find out if the given type shall
-  //! be fixed or can vary.
-  //! How to specify it ? wildcards ? TYPETAG='*' ? TYPETAG='???'
   if (typetag == "ff" || typetag == "[ff]")
     return ossia::val_type::VEC2F;
   else if (typetag == "fff" || typetag == "[fff]")
@@ -501,31 +498,31 @@ static ossia::val_type VecTypetag(ossia::string_view typetag)
 
 //! Used to check if an actual value with multiple elements,
 //! such as [ 1, 3, "foo" ] has a special typetag
-static ossia::val_type VecTypetag(const rapidjson::Value& val)
+static ossia::val_type read_vec_typetag(const rapidjson::Value& val)
 {
   if (val.IsArray())
   {
     const auto n = val.Size();
-    if (n >= 2 && n <= 4)
+    switch(n)
     {
-      bool ok = ossia::all_of(val.GetArray(), [](const rapidjson::Value& v) {
-        return v.IsFloat();
-      });
-
-      if (ok)
-      {
-        switch (n)
-        {
-          case 2:
-            return ossia::val_type::VEC2F;
-          case 3:
-            return ossia::val_type::VEC3F;
-          case 4:
-            return ossia::val_type::VEC4F;
-          default:
-            break;
-        }
-      }
+      case 2:
+        if(val.GetArray()[0].IsFloat()
+        && val.GetArray()[1].IsFloat())
+          return ossia::val_type::VEC2F;
+        break;
+      case 3:
+        if(val.GetArray()[0].IsFloat()
+        && val.GetArray()[1].IsFloat()
+        && val.GetArray()[2].IsFloat())
+          return ossia::val_type::VEC3F;
+        break;
+      case 4:
+        if(val.GetArray()[0].IsFloat()
+        && val.GetArray()[1].IsFloat()
+        && val.GetArray()[2].IsFloat()
+        && val.GetArray()[3].IsFloat())
+          return ossia::val_type::VEC4F;
+        break;
     }
   }
   return ossia::val_type::LIST;
@@ -603,7 +600,8 @@ void json_parser_impl::readObject(
                                                               // "list_type()"
         const auto& e_type = *ext_type;
         if (e_type == generic_buffer_type()
-            || e_type == filesystem_path_type())
+            || e_type == filesystem_path_type()
+            || e_type == url_type())
         {
           actual_type = ossia::val_type::STRING;
         }
@@ -615,17 +613,17 @@ void json_parser_impl::readObject(
         else if (e_type == float_array_type())
         {
           // Look for Vec2f, Vec3f, Vec4f
-          actual_type = VecTypetag(typetag);
+          actual_type = read_vec_typetag(typetag);
           if (actual_type == ossia::val_type::LIST)
           {
             // We try to find through the actual values
             if (value_it != obj.MemberEnd())
             {
-              actual_type = VecTypetag(value_it->value);
+              actual_type = read_vec_typetag(value_it->value);
             }
             else if (default_value_it != obj.MemberEnd())
             {
-              actual_type = VecTypetag(default_value_it->value);
+              actual_type = read_vec_typetag(default_value_it->value);
             }
           }
         }

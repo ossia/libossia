@@ -39,7 +39,6 @@ struct osc_type_visitor
   }
   void operator()(const std::string& v)
   {
-    // TODO BLOB
     type += oscpack::TypeTagValues::STRING_TYPE_TAG;
   }
 
@@ -70,25 +69,34 @@ struct osc_type_visitor
 static std::string get_osc_typetag_impl(const net::parameter_base& addr)
 {
   using namespace std::literals;
-  if (addr.get_unit() == ossia::rgba8_u{})
-    return "r"s;
-
   std::string s;
-  auto val = addr.value();
-  val.apply(osc_type_visitor{s});
 
-  switch (val.get_type())
+  if (addr.get_unit() == ossia::rgba8_u{})
   {
-    case ossia::val_type::LIST:
-    case ossia::val_type::VEC2F:
-    case ossia::val_type::VEC3F:
-    case ossia::val_type::VEC4F:
-      // Erase the top-level '[ ]'
-      s.pop_back();
-      s.erase(0, 1);
-      break;
-    default:
-      break;
+    s += oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG;
+  }
+  else if(ossia::net::get_extended_type(addr.get_node()) == ossia::generic_buffer_type())
+  {
+    s += oscpack::TypeTagValues::BLOB_TYPE_TAG;
+  }
+  else
+  {
+    auto val = addr.value();
+    val.apply(osc_type_visitor{s});
+
+    switch (val.get_type())
+    {
+      case ossia::val_type::LIST:
+      case ossia::val_type::VEC2F:
+      case ossia::val_type::VEC3F:
+      case ossia::val_type::VEC4F:
+        // Erase the top-level '[ ]'
+        s.pop_back();
+        s.erase(0, 1);
+        break;
+      default:
+        break;
+    }
   }
 
   return s;

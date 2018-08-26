@@ -71,6 +71,14 @@ void list_units(InsertFun fun)
 
   fun("rot", ossia::dataspace_traits<angle_u>::neutral_unit{});
   fun("rotation", ossia::dataspace_traits<angle_u>::neutral_unit{});
+
+  fun("meter", ossia::meter_u{});
+  fun("decimeter", ossia::decimeter_u{});
+  fun("centimeter", ossia::centimeter_u{});
+  fun("millimeter", ossia::millimeter_u{});
+  fun("micrometer", ossia::micrometer_u{});
+  fun("nanometer", ossia::nanometer_u{});
+  fun("picometer", ossia::picometer_u{});
 }
 
 

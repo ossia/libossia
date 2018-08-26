@@ -251,10 +251,7 @@ struct node_attribute_writer
 
   void operator()(const type_tag<ossia::net::unit_attribute>&)
   {
-    using T = type_tag<ossia::net::unit_attribute>;
-    using Attr = typename T::type;
-    auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
+    if (auto res = p.get_unit())
     {
       ossia::apply_nonnull([&] (const auto& d) {
         if(d) {
@@ -266,25 +263,27 @@ struct node_attribute_writer
 
   void operator()(const type_tag<ossia::net::extended_type_attribute>&)
   {
-    using T = type_tag<ossia::net::extended_type_attribute>;
-    using Attr = typename T::type;
-    auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
+    if(!p.get_unit())
     {
-      writer.writeKey(metadata<Attr>::key());
-      writer.writeValue(res);
+      using T = type_tag<ossia::net::extended_type_attribute>;
+      using Attr = typename T::type;
+      auto res = Attr::getter(n);
+      if (ossia::net::valid(res))
+      {
+        writer.writeKey(metadata<Attr>::key());
+        writer.writer.StartArray();
+        writer.writeValue(res);
+        writer.writer.EndArray();
+      }
     }
   }
 
 
   void operator()(const type_tag<ossia::net::value_attribute>&)
   {
-    using T = type_tag<ossia::net::value_attribute>;
-    using Attr = typename T::type;
-    auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
+    if(auto res = p.value(); res.valid())
     {
-      writer.writeKey(metadata<Attr>::key());
+      writer.writeKey(metadata<ossia::net::value_attribute>::key());
       writer.writeValue(res, p.get_unit());
     }
   }

@@ -638,7 +638,6 @@ void node::set_buffer()
       m_node->remove_parameter();
       m_param = ossia::setup_parameter(ossia::generic_buffer_type(), *m_node);
   }
-
 }
 
 void node::set_filepath()

@@ -21,6 +21,10 @@ OSSIA_EXPORT extended_type generic_buffer_type();
 //! Only meaningful for strings.
 OSSIA_EXPORT extended_type filesystem_path_type();
 
+//! Represents an URL or URI : "http://foo.com/whatever", "120.10.10.15:123/foo",
+//! "mailto:john.smith@ossia.io"
+OSSIA_EXPORT extended_type url_type();
+
 //! Means that the array should be interpreted as a fixed float array (e.g.
 //! vec2f, etc)
 OSSIA_EXPORT extended_type float_array_type();

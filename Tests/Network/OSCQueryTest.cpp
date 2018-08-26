@@ -42,7 +42,6 @@ private Q_SLOTS:
         n.set(unit_attribute{}, meter_per_second_u{});
         n.set(priority_attribute{}, 50);
         n.set(description_attribute{}, "Such a fancy node?! Incredible! すごい!!");
-        n.set(extended_type_attribute{}, "custom");
         n.set(app_name_attribute{}, "AppName");
         n.set(app_version_attribute{}, "1.0.0");
         n.set(app_creator_attribute{}, "Lelouch vi Brittania");
@@ -104,9 +103,6 @@ private Q_SLOTS:
             QVERIFY((bool)get_description(n));
             QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));
 
-            QVERIFY((bool)get_extended_type(n));
-            QCOMPARE(*get_extended_type(n), std::string("custom"));
-
             QVERIFY((bool)get_app_name(n));
             QCOMPARE(*get_app_name(n), std::string("AppName"));
 
@@ -117,6 +113,97 @@ private Q_SLOTS:
             QCOMPARE(*get_app_creator(n), std::string("Lelouch vi Brittania"));
         }
     }
+
+    void test_oscquery_unit_1()
+    {
+        generic_device serv{"A"};
+
+        ossia::create_parameter(serv, "/main", "color.hsv");
+
+        // Node -> json
+        auto str = ossia::oscquery::json_writer::query_namespace(serv);
+        std::cerr << str.GetString() << std::endl;
+
+        // Clear the device
+        serv.clear_children();
+
+        // Parse json
+        rapidjson::Document doc;
+        doc.Parse( str.GetString() );
+
+        // Json -> node
+        ossia::oscquery::json_parser::parse_namespace(serv, doc);
+
+        {
+            auto node = find_node(serv, "/main");
+            QVERIFY(node);
+            auto& n = *node;
+
+            QVERIFY((bool)get_unit(n));
+            QCOMPARE(get_unit(n), ossia::unit_t(hsv_u{}));
+        }
+    }
+
+    void test_oscquery_unit_2()
+    {
+        generic_device serv{"A"};
+
+        ossia::create_parameter(serv, "/main", "centimeter");
+
+        // Node -> json
+        auto str = ossia::oscquery::json_writer::query_namespace(serv);
+        std::cerr << str.GetString() << std::endl;
+
+        // Clear the device
+        serv.clear_children();
+
+        // Parse json
+        rapidjson::Document doc;
+        doc.Parse( str.GetString() );
+
+        // Json -> node
+        ossia::oscquery::json_parser::parse_namespace(serv, doc);
+
+        {
+            auto node = find_node(serv, "/main");
+            QVERIFY(node);
+            auto& n = *node;
+
+            QVERIFY((bool)get_unit(n));
+            QCOMPARE(get_unit(n), ossia::unit_t(centimeter_u{}));
+        }
+    }
+
+    void test_oscquery_unit_3()
+    {
+        generic_device serv{"A"};
+
+        ossia::create_parameter(serv, "/main", "blob");
+
+        // Node -> json
+        auto str = ossia::oscquery::json_writer::query_namespace(serv);
+        std::cerr << str.GetString() << std::endl;
+
+        // Clear the device
+        serv.clear_children();
+
+        // Parse json
+        rapidjson::Document doc;
+        doc.Parse( str.GetString() );
+
+        // Json -> node
+        ossia::oscquery::json_parser::parse_namespace(serv, doc);
+
+        {
+            auto node = find_node(serv, "/main");
+            QVERIFY(node);
+            auto& n = *node;
+
+            QVERIFY((bool)get_extended_type(n));
+            QCOMPARE(get_extended_type(n), ossia::generic_buffer_type());
+        }
+    }
+
 
     void test_json_impulse()
     {
@@ -470,8 +557,9 @@ private Q_SLOTS:
         QVERIFY(doc["VALUE"][0].IsFloat());
         QCOMPARE(doc["VALUE"][0].GetFloat(), 100.f);
 
-        QVERIFY(doc["UNIT"].IsString());
-        QVERIFY(doc["UNIT"].GetString() == "gain.midigain"s);
+        QVERIFY(doc.HasMember("UNIT"));
+        QVERIFY(doc["UNIT"].IsArray());
+        QVERIFY(doc["UNIT"].GetArray()[0].GetString() == "gain.midigain"s);
       }
     }
 
@@ -503,8 +591,11 @@ private Q_SLOTS:
         QVERIFY(doc["VALUE"][2].IsFloat());
         QCOMPARE(doc["VALUE"][2].GetFloat(), 3.f);
 
-        QVERIFY(doc["UNIT"].IsString());
-        QVERIFY(doc["UNIT"].GetString() == "position.cart3D"s);
+        QVERIFY(doc.HasMember("EXTENDED_TYPE"));
+        QVERIFY(doc["EXTENDED_TYPE"].IsArray());
+        QVERIFY(doc["EXTENDED_TYPE"].GetArray()[0] == "position.cartesian.x"s);
+        QVERIFY(doc["EXTENDED_TYPE"].GetArray()[1] == "position.cartesian.y"s);
+        QVERIFY(doc["EXTENDED_TYPE"].GetArray()[2] == "position.cartesian.z"s);
       }
     }
     void test_oscquery_http()
