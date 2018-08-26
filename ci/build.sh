@@ -96,11 +96,11 @@ case "$TRAVIS_OS_NAME" in
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64-static.tar.gz *
         else
           # make unity3d package
-          cd $TRAVIS_BUILD_DIR/install/unity3d/
+          cd $TRAVIS_BUILD_DIR/install/ossia-unity/
           tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-linux_x86_64.tar.gz *
 
           cd $TRAVIS_BUILD_DIR/install
-          rm -rf unity3d
+          rm -rf ossai-unity
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64.tar.gz *
         fi
 
