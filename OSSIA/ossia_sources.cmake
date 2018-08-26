@@ -86,19 +86,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/wrapped_parameter.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.hpp"
@@ -173,10 +162,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/alias_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
@@ -298,6 +284,30 @@ set(OSSIA_CPP_HEADERS
 set(OSSIA_CPP_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp/ossia-cpp98.cpp"
     )
+
+set(OSSIA_OSC_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
+  )
+set(OSSIA_OSC_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+  )
+
+set(OSSIA_MINUIT_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_parser.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_name_table.hpp"
+  )
+set(OSSIA_MINUIT_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_impl.cpp"
+  )
 
 set(OSSIA_MIDI_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"

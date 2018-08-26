@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.9)
 project(libossia CXX)
 
 ### Project options ###
-set(OSSIA_PROTOCOLS OSC Minuit)
+set(OSSIA_PROTOCOLS)
 
 set(CMAKE_AUTOMOC 0)
 set(ossia_VERSION 1.0.0)
@@ -34,9 +34,6 @@ endif()
 
 ### Protocol setup ###
 # These two are always here:
-set(OSSIA_PROTOCOL_OSC 1)
-set(OSSIA_PROTOCOL_MINUIT 1)
-
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_AUDIO FALSE)
   set(OSSIA_PROTOCOL_MIDI FALSE)
@@ -176,6 +173,16 @@ if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
   target_link_libraries(ossia PRIVATE RtMidi17)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
+endif()
+
+if(OSSIA_PROTOCOL_OSC)
+  target_sources(ossia PRIVATE ${OSSIA_OSC_SRCS} ${OSSIA_OSC_HEADERS})
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSC)
+endif()
+
+if(OSSIA_PROTOCOL_MINUIT)
+  target_sources(ossia PRIVATE ${OSSIA_MINUIT_SRCS} ${OSSIA_MINUIT_HEADERS})
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Minuit)
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)

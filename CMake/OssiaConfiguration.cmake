@@ -35,6 +35,8 @@ option(OSSIA_QML_SCORE "Build QML bindings to scoring parts" OFF)
 # Protocols :
 option(OSSIA_PROTOCOL_AUDIO "Enable Audio protocol" ON)
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)
+option(OSSIA_PROTOCOL_OSC "Enable OSC protocol" ON)
+option(OSSIA_PROTOCOL_MINUIT "Enable Minuit protocol" ON)
 option(OSSIA_PROTOCOL_OSCQUERY "Enable OSCQuery protocol" ON)
 option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
