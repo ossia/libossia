@@ -29,7 +29,6 @@ struct xyz_u;
 // unused:
 struct hsl_u;
 struct cmyk8_u;
-struct xyz_u;
 struct yxy_u;
 struct hunter_lab_u;
 struct cie_lab_u;
