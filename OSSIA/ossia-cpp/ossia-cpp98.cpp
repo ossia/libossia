@@ -1793,37 +1793,53 @@ oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
 
 oscquery_server::~oscquery_server()
 {
-  using ossia::oscquery::oscquery_server_protocol;
-  if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+  try
   {
-    proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
-    proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
-  }
+    using ossia::oscquery::oscquery_server_protocol;
+    if(m_dev)
+    {
+      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+      {
+        proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
+        proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
+      }
 
-  delete m_dev;
+      delete m_dev;
+    }
+  }
+  catch(const std::exception& e)
+  {
+  }
 }
 
 void oscquery_server::setup(std::string name, int oscPort, int wsPort)
 {
   using ossia::oscquery::oscquery_server_protocol;
-  if(m_dev)
+
+  try
   {
-    if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+    if(m_dev)
     {
-      proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
-      proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
+      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+      {
+        proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
+        proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
+      }
+
+      delete m_dev;
     }
 
-    delete m_dev;
+    m_dev = new ossia::net::generic_device(
+        std::make_unique<oscquery_server_protocol>(oscPort, wsPort),
+        std::move(name));
+    if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+    {
+      proto->onClientConnected.connect<&oscquery_server::on_connection>(*this);
+      proto->onClientDisconnected.connect<&oscquery_server::on_disconnection>(*this);
+    }
   }
-
-  m_dev = new ossia::net::generic_device(
-      std::make_unique<oscquery_server_protocol>(oscPort, wsPort),
-      std::move(name));
-  if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+  catch(const std::exception& e)
   {
-    proto->onClientConnected.connect<&oscquery_server::on_connection>(*this);
-    proto->onClientDisconnected.connect<&oscquery_server::on_disconnection>(*this);
   }
 }
 

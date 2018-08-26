@@ -114,6 +114,7 @@ class DeviceTest : public QObject
   Q_OBJECT
 
 private Q_SLOTS:
+#if defined(OSSIA_PROTOCOL_OSC)
     void test_bundle()
     {
         ossia::net::generic_device osc_A{
@@ -218,6 +219,7 @@ private Q_SLOTS:
         QVERIFY(a3->value() == ossia::value{2.3});
         QVERIFY(a4->value() == ossia::value{2.3});
     }
+#endif
 
 
   /*! test life cycle and accessors functions */
@@ -227,14 +229,32 @@ private Q_SLOTS:
       ossia::net::generic_device local_device{"test" };
     }
     {
+#if defined(OSSIA_PROTOCOL_OSC)
       ossia::net::generic_device osc_device{
         std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc" };
+#endif
     }
     {
+#if defined(OSSIA_PROTOCOL_MINUIT)
       ossia::net::generic_device minuit_device{
         std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 13579, 13580), "test_minuit" };
+#endif
     }
   }
+
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+  void test_oscquery_multi()
+  {
+    try {
+
+    ossia::net::generic_device device1{std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 4567), "x"};
+    ossia::net::generic_device device2{std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 4567), "y"};
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    } catch (const std::exception& e) {
+
+    }
+  }
+#endif
 
   void test_midi()
   {
@@ -255,12 +275,15 @@ private Q_SLOTS:
     }
   }
 
+#if defined(OSSIA_PROTOCOL_OSC)
   void test_comm_osc()
   {
     test_comm_generic([] { return std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997); },
                       [] { return std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996); });
   }
+#endif
 
+#if defined(OSSIA_PROTOCOL_MINUIT)
   void test_comm_minuit()
   {
     test_comm_generic([] { return std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13579, 13580); },
@@ -293,13 +316,23 @@ private Q_SLOTS:
       }
     }
   }
+#endif
 
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
   void test_comm_oscquery()
   {
-    test_comm_generic([] { return std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678); },
-                      [] { return std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"); });
+    try {
+      test_comm_generic([] { return std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678); },
+                        [] { return std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"); });
+    }
+    catch(const std::exception& e) {
+      qDebug() << "Error : " << e.what();
+      QVERIFY(false);
+    }
   }
+#endif
 
+#if defined(OSSIA_PROTOCOL_HTTP)
   void test_http()
   {
     int argc{}; char** argv{};
@@ -336,6 +369,7 @@ private Q_SLOTS:
 
     app.exec();
   }
+#endif
 
 
 private:

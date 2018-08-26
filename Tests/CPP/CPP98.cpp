@@ -37,26 +37,51 @@ private Q_SLOTS:
     }
     W_SLOT(test_basic)
 
+    void test_multi()
+    {
+      using namespace std::literals;
+      try
+      {
+        qDebug() << "0";
+        auto dev = new opp::oscquery_server("supersoftware", 1234, 5678);
+
+        qDebug() << "1";
+        auto de2v = new opp::oscquery_server ("supersoftware", 1234, 5678);
+
+        qDebug() << "2";
+        delete de2v;
+        qDebug() << "3";
+        delete dev;
+
+        qDebug() << "4";
+      }
+      catch(const std::exception& e)
+      {
+        qDebug() << e.what();
+        QVERIFY(false);
+      }
+    }
+    W_SLOT(test_multi)
     void test_preset()
     {
       qDebug() << "start test_prest";
-      { 
+      {
             opp::oscquery_server server;
             opp::node root = server.get_root_node();
-      
+
             // Create a node /foo (just a container without parameter)
             opp::node n1 = root.create_child("foo");
-      
+
             // Create a node /foo/bar/baz of type float
             // and make it read-only on the network.
-            
+
             opp::node n2 = n1.create_float("bar/baz")
                              .set_access(opp::Get)
                              .set_bounding(opp::Clip);
             n2.set_min(0.5);
             n2.set_max(0.7);
             n2.set_value(0.6);
-      
+
             // This can be decomposed in several steps:
             // Create an empty node
             opp::node n3;
@@ -72,16 +97,16 @@ private Q_SLOTS:
 
             auto n4 = n1.create_argb("my_color");
             n4.set_value(opp::value::vec4f{0.1f,0.2f,0.3f,0.4f});
-      
+
             auto n5 = n1.create_vec2f("my_vec2f");
             n5.set_value(opp::value::vec2f{0.5f,0.6f});
-      
+
             auto n6 = n1.create_vec3f("my_vec3f");
             n6.set_value(opp::value::vec3f{0.56f,0.66f,0.76f});
-      
+
             auto n7 = n1.create_vec4f("my_vec4f");
             n7.set_value(opp::value::vec4f{0.57f,0.67f,0.77f,0.87f});
-      
+
             auto n8 = n1.create_list("my_list");
             std::vector<opp::value> list;
             list.push_back(3);
@@ -98,16 +123,16 @@ private Q_SLOTS:
             QVERIFY(n8.get_value().is_list());
             auto list2 = n8.get_value().to_list();
             QCOMPARE(list2.size(), (size_t)5);
-      
+
             auto n9 = n1.create_int("my_int");
             n9.set_value(99);
-      
+
             auto n10 = n1.create_bool("my_bool");
             n10.set_value(true);
-      
+
             auto n11 = n1.create_string("my_string");
             n11.set_value("truc muche");
-      
+
             auto n12 = n1.create_char("my_char");
             n12.set_value('e');
 
@@ -121,10 +146,10 @@ private Q_SLOTS:
             opp::node root = server.get_root_node();
 
             // recreate the tree and try to apply preset
-      
+
             // Create a node /foo (just a container without parameter)
             opp::node n1 = root.create_child("foo");
-      
+
             // Create a node /foo/bar/baz of type float
             // and make it read-only on the network.
             opp::node n2 = n1.create_float("bar/baz")
@@ -132,7 +157,7 @@ private Q_SLOTS:
                              .set_bounding(opp::Clip);
             n2.set_min(0.5);
             n2.set_max(0.7);
-      
+
             // This can be decomposed in several steps:
             // Create an empty node
             opp::node n3;
@@ -142,28 +167,28 @@ private Q_SLOTS:
             n3.set_float();
             // Add an unit to the parameter:
             n3.set_unit("gain.db");
-      
-            auto n4 = n1.create_argb("my_color");      
+
+            auto n4 = n1.create_argb("my_color");
             auto n5 = n1.create_vec2f("my_vec2f");
-            auto n6 = n1.create_vec3f("my_vec3f");      
-            auto n7 = n1.create_vec4f("my_vec4f");     
-            auto n8 = n1.create_list("my_list");     
-            auto n9 = n1.create_int("my_int");      
-            auto n10 = n1.create_bool("my_bool");      
+            auto n6 = n1.create_vec3f("my_vec3f");
+            auto n7 = n1.create_vec4f("my_vec4f");
+            auto n8 = n1.create_list("my_list");
+            auto n9 = n1.create_int("my_int");
+            auto n10 = n1.create_bool("my_bool");
             auto n11 = n1.create_string("my_string");
             auto n12 = n1.create_char("my_char");
-      
+
             qDebug() << "load preset";
 
-            root.load_preset("test.json");              
+            root.load_preset("test.json");
 
             qDebug() << "compare value";
 
-            QCOMPARE(n2.get_value().to_float(), 0.6f);        
-            
+            QCOMPARE(n2.get_value().to_float(), 0.6f);
+
             QCOMPARE(n3.get_value().to_float(), -12.56f);
             qDebug() << "vecnf";
-            
+
             QCOMPARE(n4.get_value().to_vec4f()[0], 0.1f);
             QCOMPARE(n4.get_value().to_vec4f()[1], 0.2f);
             QCOMPARE(n4.get_value().to_vec4f()[2], 0.3f);
@@ -194,15 +219,15 @@ private Q_SLOTS:
 
             qDebug() << "int";
             QCOMPARE(n9.get_value().to_int(), 99);
-            
+
             QCOMPARE(n10.get_value().to_bool(), true);
-            
+
             QCOMPARE(n11.get_value().to_string(), std::string("truc muche"));
-            
+
             qDebug() << "char";
             QCOMPARE(n12.get_value().to_char(), 'e');
           }
-      
+
     }
     W_SLOT(test_preset)
 

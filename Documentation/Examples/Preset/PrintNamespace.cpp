@@ -3,7 +3,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
@@ -25,10 +25,8 @@ std::string print_namespace(const node_base& deviceNode);
 int main()
 {
     // This program is named "A" and mirrors a remote device named "B".
-    ossia::net::generic_device device
-    {
-      std::make_unique<ossia::net::minuit_protocol>("A", "127.0.0.1", 6666, 9999),
-          "B"
+    ossia::net::generic_device device{
+      std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "B"
     };
 
     // explore the tree of B

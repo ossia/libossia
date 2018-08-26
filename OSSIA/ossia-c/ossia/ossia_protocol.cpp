@@ -50,38 +50,54 @@ void ossia_protocol_multiplex_expose_to(
 ossia_protocol_t
 ossia_protocol_osc_create(const char* ip, int in_port, int out_port)
 {
+#if defined(OSSIA_PROTOCOL_OSC)
   return safe_function(__func__, [=] {
     return new ossia_protocol{
         new ossia::net::osc_protocol(ip, in_port, out_port)};
   });
+#else
+  return nullptr;
+#endif
 }
 
 ossia_protocol_t ossia_protocol_minuit_create(
     const char* local_name, const char* ip, int in_port, int out_port)
 {
+#if defined(OSSIA_PROTOCOL_MINUIT)
   return safe_function(__func__, [=] {
     return new ossia_protocol{
         new ossia::net::minuit_protocol(local_name, ip, in_port, out_port)};
   });
+#else
+  return nullptr;
+#endif
 }
 
 ossia_protocol_t ossia_protocol_oscquery_server_create(
         int osc_port,
         int ws_port)
 {
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
   return safe_function(__func__, [=] {
     return new ossia_protocol{
         new ossia::oscquery::oscquery_server_protocol(osc_port, ws_port)};
   });
+#else
+  return nullptr;
+#endif
 }
 
 ossia_protocol_t ossia_protocol_oscquery_mirror_create(
         const char* host)
 {
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
   return safe_function(__func__, [=] {
     return new ossia_protocol{
         new ossia::oscquery::oscquery_mirror_protocol(host)};
   });
+#else
+  return nullptr;
+#endif
 }
 
 void ossia_protocol_free(ossia_protocol_t proto)

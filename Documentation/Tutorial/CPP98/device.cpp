@@ -26,7 +26,7 @@ int main()
 
 
   // Create a device
-  opp::oscquery_server dev("supersoftware");
+  opp::oscquery_server dev("supersoftware", 1234, 5678);
   opp::node root = dev.get_root_node();
 
   // Create a node /foo (just a container without parameter)
@@ -55,36 +55,36 @@ int main()
   //// Step 2. Creating another device to connect with the first one. ////
   ////////////////////////////////////////////////////////////////////////
 
+  {
+    opp::oscquery_mirror remote_dev("remote", "ws://127.0.0.1:5678");
+    // Request an update of the device.
+    remote_dev.refresh();
 
-  opp::oscquery_mirror remote_dev("remote", "ws://127.0.0.1:5678");
+    // We expect to find remote_n2 here, but in the general case
+    // network problems can happen so check the returned value.
+    opp::node remote_n2 = remote_dev.get_root_node().find_child("/foo/bar/baz");
+    if(!remote_n2)
+      return 1;
 
-  // Request an update of the device.
-  remote_dev.refresh();
+    // After some time n2 wil get the value that we send here:
+    remote_n2.set_value(0.1);
+    // It will however be filtered according to the domain we set, e.g.
+    // the result will be argb(0.5, 0.2, 0.5, 0.9).
+    remote_n2.set_value(0.8);
 
-  // We expect to find remote_n2 here, but in the general case
-  // network problems can happen so check the returned value.
-  opp::node remote_n2 = remote_dev.get_root_node().find_child("/foo/bar/baz");
-  if(!remote_n2)
-    return 1;
-
-  // After some time n2 wil get the value that we send here:
-  remote_n2.set_value(0.1);
-  // It will however be filtered according to the domain we set, e.g.
-  // the result will be argb(0.5, 0.2, 0.5, 0.9).
-  remote_n2.set_value(0.8);
-
-  //////////////////////////////////////////////////////
-  //// Step 3. Receiving changes through callbacks. ////
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //// Step 3. Receiving changes through callbacks. ////
+    //////////////////////////////////////////////////////
 
 
-  int count = 0;
-  remote_n2.set_value_callback(test_callback, &count);
+    int count = 0;
+    remote_n2.set_value_callback(test_callback, &count);
 
-  n2.set_value(0.5);
-  n2.set_value(0.9);
-  while(count < 2)
-    ;
+    n2.set_value(0.5);
+    n2.set_value(0.9);
+    while(count < 2)
+      ;
+  }
 
 
   // Node deletion:
@@ -93,9 +93,8 @@ int main()
   //root.remove_children();
 
   // Method 2 :
-  if (n1)root.remove_child(n1.get_name());
-  if (n2)root.remove_child(n2.get_name());
-  if (n3)root.remove_child(n3.get_name());
+  if (n1) root.remove_child(n1.get_name());
+  // n2 and n3 are child of n1 so they are removed too
 
   return 0;
 }

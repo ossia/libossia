@@ -12,7 +12,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/editor/state/message.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <iostream>
@@ -30,7 +30,7 @@ int main()
 {
   // Local device
   ossia::net::generic_device device{
-         std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 9998, 13579),
+         std::make_unique<ossia::oscquery::oscquery_server_protocol>(),
         "newDevice"};
 
   // Minuit tree building

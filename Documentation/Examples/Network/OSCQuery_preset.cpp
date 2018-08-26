@@ -1,5 +1,3 @@
-
-#include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/generic/generic_device.hpp>
@@ -86,8 +84,7 @@ int main(int argc, char** argv)
     try { remote_port = boost::lexical_cast<int>(argv[1]); } catch(...) {  };
   }
 
-  ossia::net::generic_device device{
-        std::make_unique<ossia::net::osc_protocol>("127.0.0.1", remote_port, 0), "OSCQuery Example"};
+  ossia::net::generic_device device{"OSCQuery Example"};
 
   if(argc > 2)
   {

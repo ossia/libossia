@@ -9,8 +9,7 @@
 #include <QtGui/QVector3D>
 #include <wobjectdefs.h>
 #include <wobjectimpl.h>
-#include <ossia/network/local/local.hpp>
-#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 
 class SomeObject : public QObject
 {
@@ -93,16 +92,10 @@ private Q_SLOTS:
     ossia::context context;
 
     ossia::qt::qt_device dev{
-      app,
-          std::make_unique<ossia::net::multiplex_protocol>(),
-          "newDevice" };
+      app, std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "newDevice" };
 
     obj2.setTutu(555);
     obj2.setVec3({1, 2, 3});
-
-    auto& proto = static_cast<ossia::net::multiplex_protocol&>(dev.get_protocol());
-    proto.expose_to(
-          std::make_unique<ossia::net::minuit_protocol>("score", "127.0.0.1", 13579, 9998));
 
     QTimer::singleShot(3000, [&] () { app.exit(); });
 

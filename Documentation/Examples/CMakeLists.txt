@@ -25,21 +25,25 @@ if(OSSIA_EDITOR)
   ossia_add_example(editor_automation "${CMAKE_CURRENT_SOURCE_DIR}/Editor/automation.cpp")
 endif()
 
-ossia_add_example(network_minuit_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_exploration.cpp")
-ossia_add_example(network_minuit_publication "${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_publication.cpp")
-ossia_add_example(network_minuit_publication_large "${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_publication_large.cpp")
+if(OSSIA_PROTOCOL_MINUIT)
+  ossia_add_example(network_minuit_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_exploration.cpp")
+  ossia_add_example(network_minuit_publication "${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_publication.cpp")
+  ossia_add_example(network_minuit_publication_large "${CMAKE_CURRENT_SOURCE_DIR}/Network/Minuit_publication_large.cpp")
+endif()
 
-ossia_add_example(network_osc "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC.cpp")
-ossia_add_example(network_osc_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_echo.cpp")
-ossia_add_example(network_osc_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_send.cpp")
+if(OSSIA_PROTOCOL_OSC)
+  ossia_add_example(network_osc "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC.cpp")
+  ossia_add_example(network_osc_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_echo.cpp")
+  ossia_add_example(network_osc_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_send.cpp")
+endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
   ossia_add_example(network_oscquery_publication "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication.cpp")
   ossia_add_example(network_oscquery_publication_simple "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication_simple.cpp")
   ossia_add_example(network_oscquery_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_exploration.cpp")
-
   ossia_add_example(network_oscquery_preset "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_preset.cpp")
 
+  ossia_add_example(pd_controller "${CMAKE_CURRENT_SOURCE_DIR}/Network/PdController.cpp")
   if(OSSIA_PROTOCOL_LEAPMOTION)
     ossia_add_example(network_leapmotion_oscquery "${CMAKE_CURRENT_SOURCE_DIR}/Network/LeapToOscQuery.cpp")
   endif()
@@ -51,4 +55,3 @@ ossia_add_example(preset_print_namespace "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Pri
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
 ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
 
-ossia_add_example(pd_controller "${CMAKE_CURRENT_SOURCE_DIR}/Network/PdController.cpp")
