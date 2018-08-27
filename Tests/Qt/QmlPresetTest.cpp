@@ -153,9 +153,9 @@ class QmlPresetTest : public QObject
         //item->dumpObjectTree();
         //dumpTree(item);
 
-        dev.savePreset(QUrl::fromLocalFile("/tmp/preset.json"));
+        dev.savePreset(QUrl::fromLocalFile("res_test_preset.json"));
 
-        dev.saveDevice(QUrl::fromLocalFile("/tmp/device.json"));
+        dev.saveDevice(QUrl::fromLocalFile("res_test_device.json"));
         print_device();
 
 
@@ -217,6 +217,8 @@ class QmlPresetTest : public QObject
 
       {
         QFile f(QDir().absolutePath() + "/testdata/qml/TestRecursivePreset.qml");
+        qDebug() << f.fileName();
+        exit(0);
         f.open(QIODevice::ReadOnly);
         QQmlComponent component(&engine);
         component.setData(f.readAll(), QUrl());
@@ -228,91 +230,64 @@ class QmlPresetTest : public QObject
 
         print_device();
 
-        dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-        //dev.recreate(item);
 
-        print_device();
 
-        auto check_preset = [&]
+#define check_preset()                                                                   \
+        {                                                                                \
+          auto& root = dev.device().get_root_node();                                     \
+          for(auto node : {                                                              \
+              "/foo.0/x", "/foo.0/y",                                                    \
+              "/foo.1/x", "/foo.1/y",                                                    \
+              "/foo.0/tata/bar.0/x",                                                     \
+              "/foo.0/tata/bar.0/y",                                                     \
+              "/foo.0/tata/bar.0/papa",                                                  \
+              "/foo.0/tata/bar.1/x",                                                     \
+              "/foo.0/tata/bar.1/y",                                                     \
+              "/foo.0/tata/bar.1/papa",                                                  \
+              "/foo.1/tata/bar.0/x",                                                     \
+              "/foo.1/tata/bar.0/y",                                                     \
+              "/foo.1/tata/bar.0/papa",                                                  \
+              "/foo.1/tata/bar.0/papa/baz.0",                                            \
+              "/foo.1/tata/bar.0/papa/baz.0/x",                                          \
+              "/foo.1/tata/bar.0/papa/baz.0/y",                                          \
+              "/foo.1/tata/bar.0/papa/baz.1/x",                                          \
+              "/foo.1/tata/bar.0/papa/baz.1/y",                                          \
+              "/foo.1/tata/bar.1/x",                                                     \
+              "/foo.1/tata/bar.1/y",                                                     \
+              "/foo.1/tata/bar.1/papa"                                                   \
+             })                                                                          \
+          {                                                                              \
+            auto found = ossia::net::find_node(root, node);                              \
+            qWarning() << "Looking for " << node;                                        \
+            QVERIFY(found);                                                              \
+          }                                                                              \
+          QVERIFY(root.children().size() == 2);                                          \
+          auto& foo_0 = *root.children()[0];                                             \
+          QVERIFY(foo_0.children().size() == 3);                                         \
+          auto& foo_0_tata = *foo_0.find_child(ossia::string_view("tata"));              \
+          QVERIFY(foo_0_tata.children().size() == 2);                                    \
+          QVERIFY(foo_0_tata.children()[0]->children().size() == 3);                     \
+          QVERIFY(foo_0_tata.children()[1]->children().size() == 3);                     \
+                                                                                         \
+          auto& foo_1 = *root.children()[1];                                             \
+          QVERIFY(foo_1.children().size() == 3);                                         \
+          auto& foo_1_tata = *foo_1.find_child(ossia::string_view("tata"));              \
+          QVERIFY(foo_1_tata.children().size() == 2);                                    \
+          QVERIFY(foo_1_tata.children()[0]->children().size() == 3);                     \
+          QVERIFY(foo_1_tata.children()[1]->children().size() == 3);                     \
+                                                                                         \
+        }                                                                               \
+
+        for(int count = 0; count < 4; count++)
         {
-          auto& root = dev.device().get_root_node();
-          for(auto node : {
-              "/foo.0/x", "/foo.0/y",
-              "/foo.1/x", "/foo.1/y",
-              "/foo.0/tata/bar.0/x",
-              "/foo.0/tata/bar.0/y",
-              "/foo.0/tata/bar.1/x",
-              "/foo.0/tata/bar.1/y",
-              "/foo.1/tata/bar.0/x",
-              "/foo.1/tata/bar.0/y",
-              "/foo.1/tata/bar.0/papa",
-              "/foo.1/tata/bar.0/papa/baz.0",
-              "/foo.1/tata/bar.0/papa/baz.0/x",
-              "/foo.1/tata/bar.0/papa/baz.0/y",
-              "/foo.1/tata/bar.0/papa/baz.1/x",
-              "/foo.1/tata/bar.0/papa/baz.1/y",
-              "/foo.1/tata/bar.1/x",
-              "/foo.1/tata/bar.1/y",
-             })
-          {
-            auto found = ossia::net::find_node(root, node);
-            QVERIFY(found);
-          }
-          QVERIFY(root.children().size() == 2);
-          auto& foo_0 = *root.children()[0];
-          QVERIFY(foo_0.children().size() == 3);
-          auto& foo_0_tata = *foo_0.find_child(ossia::string_view("tata"));
-          QVERIFY(foo_0_tata.children().size() == 2);
-          QVERIFY(foo_0_tata.children()[0]->children().size() == 3);
-          QVERIFY(foo_0_tata.children()[1]->children().size() == 3);
-
-          auto& foo_1 = *root.children()[1];
-          QVERIFY(foo_1.children().size() == 3);
-          auto& foo_1_tata = *foo_1.find_child(ossia::string_view("tata"));
-          QVERIFY(foo_1_tata.children().size() == 2);
-          QVERIFY(foo_1_tata.children()[0]->children().size() == 3);
-          QVERIFY(foo_1_tata.children()[1]->children().size() == 3);
-
-/*
+          dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
+          for(int i = 0; i < 100; i++)
+            qApp->processEvents();
           dumpTree(item);
-          dumpTree(&engine);
-          dumpTree(engine.rootContext());
+          print_device();
+          check_preset();
+        }
 
-          auto obj00 = item->findChild<QQuickItem*>("root0RectChild0");
-          auto obj01 = item->findChild<QQuickItem*>("root0RectChild1");
-          auto obj10 = item->findChild<QQuickItem*>("root1RectChild0");
-          auto obj11 = item->findChild<QQuickItem*>("root1RectChild1");
-          QVERIFY(obj00);
-          QVERIFY(obj01);
-          QVERIFY(obj10);
-          QVERIFY(obj11);
-
-          QVERIFY(obj00->position() == (QPointF{0, 0}));
-          QVERIFY(obj01->position() == (QPointF{5, 8}));
-          QVERIFY(obj10->position() == (QPointF{1, 2}));
-          QVERIFY(obj11->position() == (QPointF{3, 4}));
-          */
-        };
-        for(int i = 0; i < 10; i++)
-          qApp->processEvents();
-        check_preset();
-
-        dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-
-        for(int i = 0; i < 10; i++)
-          qApp->processEvents();
-
-        check_preset();
-        dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-
-        for(int i = 0; i < 10; i++)
-          qApp->processEvents();
-        check_preset();
-        dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
-
-        for(int i = 0; i < 10; i++)
-          qApp->processEvents();
-        check_preset();
         cleanup(item);
       }
     }

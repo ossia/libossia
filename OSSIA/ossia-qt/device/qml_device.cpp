@@ -391,8 +391,7 @@ void reset_items(QQuickItem* root)
   }
 }
 
-static bool processing_models = false;
-void setup_models(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
+static void setup_models(std::vector<ossia::qt::qml_model_property*>& added, qml_device& device) {
 
   auto mlist = device.models();
   for (auto model : mlist)
@@ -400,26 +399,30 @@ void setup_models(std::size_t cur_model_size, std::size_t prev_model_size, qml_d
     if (model.second)
     {
       qml_model_property* m = model.first;
-
       m->updateCount();
+      for(int i = 0; i < 100; i++)
+        QCoreApplication::processEvents();
     }
-    QCoreApplication::processEvents();
   }
-  cur_model_size = device.models().size();
 
-  if(cur_model_size != prev_model_size)
+  added.clear();
+  for(const auto& v : device.models())
   {
-    QTimer::singleShot(0, [=,&device] {
-      setup_models(cur_model_size, prev_model_size, device);
-    });
+    if(v.second && mlist.find(v.second.data()) == mlist.end())
+      added.push_back(v.second);
   }
-  else
+
+  if(!added.empty())
   {
-    processing_models = false;
+    device.m_preset_event_count++;
+    QTimer::singleShot(0, [&] {
+      setup_models(added, device);
+      device.m_preset_event_count--;
+    });
   }
 }
 
-void clear_models_preset(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
+void clear_models_preset(std::size_t prev_model_size, qml_device& device) {
 
   auto mlist = device.models();
   for (auto model : mlist)
@@ -427,52 +430,23 @@ void clear_models_preset(std::size_t cur_model_size, std::size_t prev_model_size
     if (model.second)
     {
       qml_model_property* m = model.first;
-
       m->setCount(0);
+      QCoreApplication::processEvents();
     }
-    QCoreApplication::processEvents();
   }
-  cur_model_size = device.models().size();
+  auto cur_model_size = device.models().size();
 
   if(cur_model_size != prev_model_size)
   {
+    device.m_preset_event_count++;
     QTimer::singleShot(0, [=,&device] {
-      clear_models_preset(cur_model_size, prev_model_size, device);
+      clear_models_preset(cur_model_size, device);
+      device.m_preset_event_count--;
     });
   }
   else
   {
     device.setReadPreset(false);
-    processing_models = false;
-  }
-}
-
-
-void setup_models_preset(std::size_t cur_model_size, std::size_t prev_model_size, qml_device& device) {
-
-  auto mlist = device.models();
-  for (auto model : mlist)
-  {
-    if (model.second)
-    {
-      qml_model_property* m = model.first;
-
-      m->updateCount();
-    }
-    QCoreApplication::processEvents();
-  }
-  cur_model_size = device.models().size();
-
-  if(cur_model_size != prev_model_size)
-  {
-    QTimer::singleShot(0, [=,&device] {
-      setup_models_preset(cur_model_size, prev_model_size, device);
-    });
-  }
-  else
-  {
-    device.setReadPreset(false);
-    processing_models = false;
   }
 }
 
@@ -511,8 +485,10 @@ void qml_device::recreate(QObject* root)
           }
         });
 
-    setup_models(m_models.size(), m_models.size(), *this);
-    while(processing_models)
+    std::vector<ossia::qt::qml_model_property*> added;
+    added.reserve(1024);
+    setup_models(added, *this);
+    while(m_preset_event_count != 0)
       qApp->processEvents();
     qApp->processEvents();
     qApp->processEvents();
@@ -562,12 +538,10 @@ void qml_device::recreate_preset(QObject* root)
           }
         });
 
-    clear_models_preset(m_models.size(), m_models.size(), *this);
-    while(processing_models)
+    clear_models_preset(m_models.size(), *this);
+    while(m_preset_event_count != 0)
       qApp->processEvents();
     //setup_models_preset(m_models.size(), m_models.size(), *this);
-    while(processing_models)
-      qApp->processEvents();
     qApp->processEvents();
     qApp->processEvents();
     qApp->processEvents();
@@ -675,6 +649,7 @@ void qml_device::loadPreset(QObject* root, const QString& file)
   set_to_false _2{ m_readPreset };
 
   m_readPreset = false;
+  m_preset_event_count = 0;
 #if defined(PRESET_DEBUG)
   {
     // Before recreate

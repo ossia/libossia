@@ -108,6 +108,7 @@ public:
   W_PROPERTY(bool, readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged, W_Final)
   W_PROPERTY(QString, name READ name WRITE setName NOTIFY nameChanged, W_Final)
 
+  int m_preset_event_count{};
 private:
   void setupLocal();
   void clearEmptyElements();

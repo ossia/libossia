@@ -1,5 +1,6 @@
 import Ossia 1.0 as Ossia
 import QtQuick 2.5
+import QtQml 2.11
 
 Item {
     Repeater {
@@ -40,23 +41,23 @@ Item {
                         Ossia.Node { node: "bar." + index; id: subn; parentNode: sub }
                         Ossia.Property on x { parentNode: subn }
                         Ossia.Property on y { parentNode: subn }
+                        Component.onCompleted: console.log(" RECT CHILD " + objectName + "CREATED")
                         Component.onDestruction: console.log(" RECT CHILD " + objectName + "DESTROYED")
 
                         Rectangle {
                             id: rccRec
-                            parent: prnt
                             objectName: "RectChildChild" + index
                             Ossia.Node {
                                 id: subsub
                                 node: "papa"
                                 parentNode: subn
                             }
-                            Repeater {
+                            Instantiator {
                                 model: Ossia.Instances { node: "baz"; parentNode: subsub;  }
                                 Item {
                                     objectName: rccRec.objectName + "-child" + index;
                                     parent: rccRec
-                                    onObjectNameChanged: console.log("Child name: " + objectName)
+                                    //onObjectNameChanged: console.log("Child name: " + objectName)
                                     Ossia.Node { node: "baz." + index; id: subsubn; parentNode: subsub }
                                     Ossia.Property on x { parentNode: subsubn }
                                     Ossia.Property on y { parentNode: subsubn }
