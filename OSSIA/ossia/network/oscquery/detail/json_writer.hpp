@@ -104,7 +104,8 @@ private:
       const std::vector<ossia::string_view>& attributes);
 };
 
-struct osc_writer
+// TODO this export is only needed for tests...
+struct OSSIA_EXPORT osc_writer
 {
   static std::string
   send_message(const ossia::net::parameter_base&, const ossia::value&, const ossia::net::network_logger&);
