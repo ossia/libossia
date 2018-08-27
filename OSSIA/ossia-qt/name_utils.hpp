@@ -1,7 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <QString>
 #include <vector>
-#include <ossia_export.h>
 
 namespace ossia
 {

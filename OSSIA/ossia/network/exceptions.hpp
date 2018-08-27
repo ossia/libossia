@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 #include <stdexcept>
 #include <string>
 

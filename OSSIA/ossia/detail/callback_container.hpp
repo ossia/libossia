@@ -2,7 +2,6 @@
 #include <ossia/detail/config.hpp>
 #include <list>
 #include <mutex>
-#include <ossia_export.h>
 #include <stdexcept>
 
 /**

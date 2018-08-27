@@ -2,7 +2,6 @@
 #include <ossia/network/common/parameter_properties.hpp>
 #include <eggs/variant.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia_export.h>
 namespace ossia
 {
 struct unit_t;

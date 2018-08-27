@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
-#include <ossia_export.h>
 #include <wobjectdefs.h>
 
 #include <QMetaType>

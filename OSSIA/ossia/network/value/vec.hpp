@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <array>
-#include <ossia_export.h>
 
 namespace ossia
 {

@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/string_view.hpp>
-#include <ossia_export.h>
 #include <string>
 #include <vector>
 namespace ossia

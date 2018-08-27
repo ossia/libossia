@@ -3,7 +3,6 @@
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/detail/any.hpp>
-#include <ossia_export.h>
 
 /**
  * \file any_map.hpp

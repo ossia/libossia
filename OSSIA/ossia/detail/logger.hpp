@@ -8,8 +8,6 @@
 #include <fmt/ostream.h>
 #include <spdlog/logger.h>
 
-#include <ossia_export.h>
-
 /**
  * \file logger.hpp
  */

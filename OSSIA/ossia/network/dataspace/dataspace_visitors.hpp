@@ -4,7 +4,6 @@
 #include <ossia/network/value/vec.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <bitset>
-#include <ossia_export.h>
 #include <type_traits>
 
 /**

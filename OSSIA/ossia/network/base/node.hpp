@@ -12,7 +12,6 @@
 #include <functional>
 #include <memory>
 #include <nano_signal_slot.hpp>
-#include <ossia_export.h>
 #include <string>
 #if defined(OSSIA_QT)
 class QString;

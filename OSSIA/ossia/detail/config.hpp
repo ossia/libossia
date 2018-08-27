@@ -1,6 +1,14 @@
 #pragma once
+#if __has_include(<ossia-config.hpp>)
 #include <ossia-config.hpp>
+#endif
+
+#if __has_include(<ossia-config.hpp>)
 #include <ossia_export.h>
+#else
+#define OSSIA_EXPORT
+#endif
+
 #if defined(__APPLE__)
 #include <MacTypes.h>
 #if defined(nil)

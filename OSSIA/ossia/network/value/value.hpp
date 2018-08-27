@@ -5,7 +5,6 @@
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <limits>
-#include <ossia_export.h>
 #include <string>
 #include <vector>
 
