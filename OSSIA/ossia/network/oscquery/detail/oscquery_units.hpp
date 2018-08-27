@@ -11,7 +11,7 @@ namespace std
 template<>
 struct hash<ossia::small_vector<std::string, 4>>
 {
-  std::size_t operator()(const ossia::small_vector<std::string, 4>& v)
+  std::size_t operator()(const ossia::small_vector<std::string, 4>& v) const noexcept
   {
     std::size_t seed{};
     for(auto& str : v)
