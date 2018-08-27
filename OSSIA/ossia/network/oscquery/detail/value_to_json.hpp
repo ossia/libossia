@@ -95,28 +95,28 @@ static inline auto from_hex(char c)
     constexpr Table()
       : tab {}
     {
-      tab['0'] = 0;
-      tab['1'] = 1;
-      tab['2'] = 2;
-      tab['3'] = 3;
-      tab['4'] = 4;
-      tab['5'] = 5;
-      tab['6'] = 6;
-      tab['7'] = 7;
-      tab['8'] = 8;
-      tab['9'] = 9;
-      tab['a'] = 10;
-      tab['A'] = 10;
-      tab['b'] = 11;
-      tab['B'] = 11;
-      tab['c'] = 12;
-      tab['C'] = 12;
-      tab['d'] = 13;
-      tab['D'] = 13;
-      tab['e'] = 14;
-      tab['E'] = 14;
-      tab['f'] = 15;
-      tab['F'] = 15;
+      tab[(int)'0'] = 0;
+      tab[(int)'1'] = 1;
+      tab[(int)'2'] = 2;
+      tab[(int)'3'] = 3;
+      tab[(int)'4'] = 4;
+      tab[(int)'5'] = 5;
+      tab[(int)'6'] = 6;
+      tab[(int)'7'] = 7;
+      tab[(int)'8'] = 8;
+      tab[(int)'9'] = 9;
+      tab[(int)'a'] = 10;
+      tab[(int)'A'] = 10;
+      tab[(int)'b'] = 11;
+      tab[(int)'B'] = 11;
+      tab[(int)'c'] = 12;
+      tab[(int)'C'] = 12;
+      tab[(int)'d'] = 13;
+      tab[(int)'D'] = 13;
+      tab[(int)'e'] = 14;
+      tab[(int)'E'] = 14;
+      tab[(int)'f'] = 15;
+      tab[(int)'F'] = 15;
     }
 
     constexpr auto operator[](const std::size_t idx) const { return tab[idx]; }

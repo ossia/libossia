@@ -162,13 +162,15 @@ public:
 
   void stop()
   {
-      // (temporarily?) changed to stop_listening()
-      // "Straight up stop forcibly stops a bunch of things
-      // in a way that bypasses most, if not all, of the cleanup routines"
+      // this change was undone because of OSSIA/libossia#416 :
 
-      //m_server.stop();
-      if(m_server.is_listening())
-        m_server.stop_listening();
+      // // (temporarily?) changed to stop_listening()
+      // // "Straight up stop forcibly stops a bunch of things
+      // // in a way that bypasses most, if not all, of the cleanup routines"
+      //if(m_server.is_listening())
+      //  m_server.stop_listening();
+
+      m_server.stop();
   }
 
   void close(connection_handler hdl)
