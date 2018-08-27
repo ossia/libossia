@@ -11,7 +11,13 @@
 #include <rapidjson/document.h>
 #include <ossia-c/preset/preset.h>
 #include <ossia/preset/preset.hpp>
+namespace Catch
+{
 
+std::string toString( ossia::value const& value ) {
+    return ossia::value_to_pretty_string(value);
+}
+}
 namespace ossia
 {
 auto find(ossia::presets::preset& p, ossia::string_view t)
@@ -32,39 +38,28 @@ TEST_CASE ("JSON array") {
     SECTION ("Basic array parsing") {
 
         std::string json = R"_({"a":[1, 2, 4, 8]})_";
-        REQUIRE(ossia::presets::read_json(json).size() == 4);
+        REQUIRE(ossia::presets::read_json(json).size() == 1);
+        REQUIRE(ossia::presets::read_json(json)[0].second == (std::vector<ossia::value>{1,2,4,8}));
     }
 
     SECTION ("Contents of array") {
         std::string json2 = R"_({"a":[[3, -6], [9, 2, 11]]})_";
         ossia::presets::preset p = ossia::presets::read_json(json2);
-        REQUIRE(p.size() == 5);
-        REQUIRE(ossia::find(p, "/a.0.0") != p.end());
-        REQUIRE(ossia::find(p, "/a.0.1") != p.end());
-        REQUIRE(ossia::find(p, "/a.1.0") != p.end());
-        REQUIRE(ossia::find(p, "/a.1.1") != p.end());
-        REQUIRE(ossia::find(p, "/a.1.2") != p.end());
-        auto i1 = ossia::find(p, "/a.0.0")->second.get<int32_t>();
-        auto i2 = ossia::find(p, "/a.0.1")->second.get<int32_t>();
-        auto i3 = ossia::find(p, "/a.1.0")->second.get<int32_t>();
-        auto i4 = ossia::find(p, "/a.1.1")->second.get<int32_t>();
-        auto i5 = ossia::find(p, "/a.1.2")->second.get<int32_t>();
-        REQUIRE(i1 == 3);
-        REQUIRE(i2 == -6);
-        REQUIRE(i3 == 9);
-        REQUIRE(i4 == 2);
-        REQUIRE(i5 == 11);
+        REQUIRE(p.size() == 1);
+        REQUIRE(p[0].second == (std::vector<ossia::value>{std::vector<ossia::value>{3, -6},std::vector<ossia::value>{9, 2, 11}}));
     }
 
     SECTION ("Empty array") {
         std::string json3 = R"_({"empty":[]})_";
-        REQUIRE(ossia::presets::read_json(json3).size() == 0);
+        REQUIRE(ossia::presets::read_json(json3).size() == 1);
+        REQUIRE(ossia::presets::read_json(json3)[0].second == (std::vector<ossia::value>{}));
     }
 }
 
 TEST_CASE ("Parsing nested objects") {
     std::string json = R"_({"a":{"c":{"d":13,"e":5}}, "b":{"f1":true, "f2":{"f3":false}}})_";
-    ossia::presets::preset p = ossia::presets::read_json(json);
+    ossia::presets::preset p = ossia::presets::read_json(json, false);
+
     REQUIRE(p.size() == 4);
     REQUIRE(ossia::find(p, "/a/c/d") != p.end());
     REQUIRE(ossia::find(p, "/a/c/e") != p.end());
@@ -88,14 +83,14 @@ TEST_CASE ("Empty object") {
     }
 
     SECTION ("Complex empty object") {
-        std::string empty = R"_({"a":{"b":[{"c":[],"d":{}},{}]},"e":{"f":[],"g":[{},{},{}]}})_";
-        REQUIRE(ossia::presets::read_json(empty).size() == 0);
+        std::string empty = R"_({"a":{"b":[{"d":{}},{}]},"e":{"g":[{},{},{}]}})_";
+        REQUIRE(ossia::presets::read_json(empty, false).size() == 0);
     }
 }
 
 TEST_CASE ("Parsing types") {
     std::string json = R"_({"a":1,"b":2.34234,"c":false, "d":"hello world","e":true})_";
-    ossia::presets::preset p = ossia::presets::read_json(json);
+    ossia::presets::preset p = ossia::presets::read_json(json, false);
     REQUIRE(ossia::find(p, "/a") != p.end());
     REQUIRE(ossia::find(p, "/b") != p.end());
     REQUIRE(ossia::find(p, "/c") != p.end());

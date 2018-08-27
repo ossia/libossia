@@ -74,7 +74,6 @@ private Q_SLOTS:
         n.set(unit_attribute{}, meter_per_second_u{});
         n.set(priority_attribute{}, 50);
         n.set(description_attribute{}, "Such a fancy node?! Incredible! すごい!!");
-        n.set(extended_type_attribute{}, "custom");
         n.set(app_name_attribute{}, "AppName");
         n.set(app_version_attribute{}, "1.0.0");
         n.set(app_creator_attribute{}, "Lelouch vi Brittania");
@@ -134,9 +133,6 @@ private Q_SLOTS:
 
         QVERIFY((bool)get_description(n));
         QCOMPARE(*get_description(n), std::string("Such a fancy node?! Incredible! すごい!!"));
-
-        QVERIFY((bool)get_extended_type(n));
-        QCOMPARE(*get_extended_type(n), std::string("custom"));
 
         QVERIFY((bool)get_app_name(n));
         QCOMPARE(*get_app_name(n), std::string("AppName"));
