@@ -506,6 +506,11 @@ class OSSIA_EXPORT node
     operator bool() const;
 
     /**
+     * @brief Return the parent of the node, or an invalid node if it is the root
+     */
+    node parent() const;
+
+    /**
      * @brief get a node's name
      * @return a string with the node's name
      */

@@ -355,7 +355,7 @@ node::node(node&& other)
 
 
 node::node(ossia::net::node_base* b)
-  : node{b, b ? b->get_parameter() : nullptr}
+  : node{b, (b ? b->get_parameter() : nullptr)}
 {
 }
 
@@ -430,7 +430,20 @@ node::~node()
   {
     m_node->about_to_be_deleted.disconnect<&node::cleanup>(*this);
     m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
+}
+}
+
+node node::parent() const
+{
+  if(m_node)
+  {
+    if(auto p = m_node->get_parent())
+    {
+      return node{p};
+    }
   }
+
+  return node{};
 }
 
 node::operator bool() const
