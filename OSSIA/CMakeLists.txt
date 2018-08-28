@@ -437,7 +437,6 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/RtMidi17>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
 
-      $<INSTALL_INTERFACE:include/nano-signal-slot>
       $<INSTALL_INTERFACE:include>
   )
 

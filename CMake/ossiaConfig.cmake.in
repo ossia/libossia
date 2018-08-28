@@ -1,0 +1,14 @@
+include(CMakeFindDependencyMacro)
+
+get_filename_component(OSSIA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+list(APPEND CMAKE_MODULE_PATH ${OSSIA_CMAKE_DIR})
+find_dependency(Boost 1.67 REQUIRED)
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+if(NOT TARGET ossia::ossia)
+  include("${OSSIA_CMAKE_DIR}/ossia-targets.cmake")
+endif()
+
+set(ossia_LIBRARIES ossia::ossia)
+target_compile_features(ossia::ossia INTERFACE cxx_std_17)

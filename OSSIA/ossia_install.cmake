@@ -240,15 +240,21 @@ write_basic_package_version_file(
   COMPATIBILITY AnyNewerVersion
 )
 
+configure_package_config_file(../CMake/ossiaConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/ossia
+)
 export(EXPORT ossia-targets
   FILE "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaTargets.cmake"
   NAMESPACE ossia::
 )
 
-configure_file(../CMake/ossiaConfig.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake"
-  COPYONLY
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfigVersion.cmake
+    DESTINATION lib/cmake/ossia
 )
+
 
 set(ConfigPackageLocation lib/cmake/ossia)
 install(EXPORT ossia-targets
