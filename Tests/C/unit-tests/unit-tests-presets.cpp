@@ -13,8 +13,8 @@
 #include <ossia/preset/preset.hpp>
 namespace Catch
 {
-
-std::string toString( ossia::value const& value ) {
+template<>
+std::string toString<ossia::value>(ossia::value const& value) {
     return ossia::value_to_pretty_string(value);
 }
 }
