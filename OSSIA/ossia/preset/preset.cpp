@@ -490,9 +490,34 @@ void explore(
 
     if (jsonval.IsArray())
     {
+      int arrsize = jsonval.Size();
+      bool is_not_obj = true;
+      for (int i = 0; i < arrsize; ++i)
+      {
+        is_not_obj &= !jsonval[i].IsObject();
+        if(!is_not_obj)
+          break;
+      }
+
+      if(!is_not_obj)
+      {
+        for (int i = 0; i < arrsize; ++i)
+        {
+          explore(fmt::format("{}.{}", root, i), jsonval[i], preset);
+        }
+      }
+      else
+      {
+        ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
+        preset->push_back(pp);
+      }
+    }
+    /*
+    if (jsonval.IsArray())
+    {
       ossia::presets::preset_pair pp(root, json_to_ossia_value(jsonval));
       preset->push_back(pp);
-    }
+    }*/
   }
   else
   {
