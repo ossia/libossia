@@ -37,6 +37,9 @@ struct OSSIA_EXPORT radian_u : public angle_unit<radian_u>
   }
 
   static ossia::domain_base<float> domain() { return {0.f, float(ossia::two_pi)}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::WRAP; }
+
 };
 
 struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
@@ -58,6 +61,9 @@ struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
     return self.dataspace_value * ossia::rad_to_deg;
   }
 
-  static ossia::domain_base<float> domain() { return {359.99996f, 360.f}; }
+  static ossia::domain_base<float> domain() { return {0.f, 360.f}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::WRAP; }
+
 };
 }

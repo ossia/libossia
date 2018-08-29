@@ -63,6 +63,9 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
   }
 
   static ossia::domain domain() { return {}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
+
 };
 
 

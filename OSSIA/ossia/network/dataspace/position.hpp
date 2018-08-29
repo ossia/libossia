@@ -43,6 +43,8 @@ struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
   }
 
   static ossia::domain domain() { return {}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
@@ -72,6 +74,9 @@ struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
   }
 
   static ossia::domain domain() { return {}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
+
 };
 
 // aed
@@ -95,7 +100,14 @@ struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
-  static ossia::domain domain() { return {}; }
+  static ossia::vecf_domain<3> domain() {
+    return vecf_domain<3>{
+      ossia::make_vec(0.f,0.f,0.f)
+    , ossia::make_vec(1.f,360.f,360.f)
+    };
+  }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 // ad
@@ -132,7 +144,14 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
             (float)(ossia::norm(x, y))};
   }
 
-  static ossia::domain domain() { return {}; }
+  static ossia::vecf_domain<2> domain() {
+    return vecf_domain<2>{
+      ossia::make_vec(0.f,0.f)
+    , ossia::make_vec(1.f,360.f)
+    };
+  }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
@@ -164,6 +183,8 @@ struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
   }
 
   static ossia::domain domain() { return {}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
@@ -189,8 +210,9 @@ struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
   static ossia::vecf_domain<3> domain() {
     return vecf_domain<3>{
       ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
+    , ossia::make_vec(1.f,360.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 }

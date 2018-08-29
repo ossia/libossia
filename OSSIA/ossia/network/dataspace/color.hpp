@@ -38,6 +38,8 @@ struct OSSIA_EXPORT argb_u : public color_unit<argb_u>
     };
   }
 
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+
   using value_type = vec4f;
 
   static constexpr strong_value<neutral_unit>
@@ -89,6 +91,8 @@ struct OSSIA_EXPORT rgba8_u : public color_unit<rgba8_u>
     };
   }
 
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+
 };
 
 struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
@@ -124,6 +128,7 @@ struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
     , ossia::make_vec(1.f,1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
@@ -159,6 +164,7 @@ struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 
 };
 
@@ -195,6 +201,7 @@ struct OSSIA_EXPORT bgr_u : public color_unit<bgr_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
@@ -232,6 +239,7 @@ struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
     , ossia::make_vec(255.f,255.f,255.f,255.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
@@ -258,6 +266,7 @@ struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
@@ -280,6 +289,7 @@ struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
@@ -319,6 +329,7 @@ struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
     , ossia::make_vec(255.f,255.f,255.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT cmyk8_u : public color_unit<cmyk8_u>
@@ -361,6 +372,7 @@ struct OSSIA_EXPORT xyz_u : public color_unit<xyz_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
@@ -383,6 +395,7 @@ struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
@@ -407,6 +420,7 @@ struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
@@ -427,6 +441,7 @@ struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 
 struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
@@ -447,5 +462,6 @@ struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
     , ossia::make_vec(1.f,1.f,1.f)
     };
   }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
 };
 }

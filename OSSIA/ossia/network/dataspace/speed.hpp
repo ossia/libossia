@@ -34,6 +34,8 @@ struct speed_ratio : public linear_unit<speed_unit<speed_ratio<T>>, T>
   using linear_unit<speed_unit<speed_ratio<T>>, T>::linear_unit;
 
   static ossia::domain domain() { return {}; }
+
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 template <>
