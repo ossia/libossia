@@ -170,7 +170,7 @@ char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
           {
             return ossia::apply_nonnull(
                 [=](const auto& u) {
-                  return detail::unit_accessor_helper<decltype(u)>{}(n);
+                  return detail::unit_accessor_helper<std::remove_const_t<std::remove_reference_t<decltype(u)>>>{}(n);
                 },
                 d);
           }
