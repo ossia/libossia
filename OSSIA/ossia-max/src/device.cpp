@@ -333,9 +333,11 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        multiplex.expose_to(
-            std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-                settings.oscport, settings.wsport));
+        auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
+              settings.oscport, settings.wsport);
+        oscq_proto->set_echo(true);
+
+        multiplex.expose_to(std::move(oscq_proto));
 
         std::vector<t_atom> a;
         a.resize(3);
