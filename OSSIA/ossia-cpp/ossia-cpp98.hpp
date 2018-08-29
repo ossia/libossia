@@ -19,7 +19,8 @@ class parameter_base;
 class device_base;
 }
 }
-/** @defgroup CPP98API C++98 API
+/**
+ * @defgroup CPP98API C++98 API
  * C++98 bindings of libossia: a modern C++, cross-environment distributed object model for creative coding.
  *
  * ossia-cpp (Safe C++) is a simplified C++ binding, kept compatible with C++98,
@@ -44,7 +45,8 @@ class device_base;
  */
 namespace opp
 {
-/**Access modes define if the parameter's value be accessed only on read, on
+/**
+ * Access modes define if the parameter's value be accessed only on read, on
  * write, or bidirectionnally
  * @brief Defines Write (Set), Read (Get) or Read/Write (Bi) access to the parameter's value
  */
@@ -89,12 +91,14 @@ class OSSIA_EXPORT value
 {
   public:
 
-    /** A container for a vector of 2 floats, supports sub-scripting
+    /**
+     * A container for a vector of 2 floats, supports sub-scripting
    * @brief container for a vector of 2 floats
    */
     struct vec2f {float data[2];
                   float& operator[](int i){return data[i];}};
-    /** A container for a vector of 3 floats, supports sub-scripting
+    /**
+     * A container for a vector of 3 floats, supports sub-scripting
    * @brief container for a vector of 3 floats
      */
     struct vec3f {float data[3];
@@ -105,7 +109,8 @@ class OSSIA_EXPORT value
     struct vec4f {float data[4];
                   float& operator[](int i){return data[i];}};
 
-    /** An empty container just to declare impulse value in CPP98
+    /**
+     * An empty container just to declare impulse value in CPP98
      *
      */
     struct impulse {};
@@ -461,7 +466,8 @@ struct OSSIA_EXPORT callback_index {
 };
 
 
-/**The nodes in the device are simply called "nodes" in the API. Nodes are identified with the OSC syntax: /foo/bar.
+/**
+ * The nodes in the device are simply called "nodes" in the API. Nodes are identified with the OSC syntax: /foo/bar.
  * Nodes per se don't carry any value; they have to be extended with parameters to be able to send and receive messages.
  * When multiple nodes with the same name are created, they will be appended instance numbers, separated with a dot.
  * E.g. when duplicating the node /foo, its duplicates will be named /foo.1, /foo.2, etc…
@@ -583,143 +589,178 @@ class OSSIA_EXPORT node
     //     Add parameters  //
     //*********************//
 
-    /**Impulse: no value; just a message.
+    /**
+     * Impulse: no value; just a message.
      * @brief adds an impulse parameter to the current node
      */
     void set_impulse();
-    /**Char: 8-bit value
+    /**
+     * Char: 8-bit value
      * @brief adds a char parameter to the current node
      */
     void set_char();
-    /**Integer: 32-bit int.
+    /**
+     * Integer: 32-bit int.
      * @brief adds an int parameter to the current node
      */
     void set_int();
-    /**Floating-point: 32-bit float.
+    /**
+     * Floating-point: 32-bit float.
      * @brief adds a float parameter to the current node
      */
     void set_float();
-    /**Boolean: true/false.
+    /**
+     * Boolean: true/false.
      * @brief adds a bool parameter to the current node
      */
     void set_bool();
-    /**Vec2f:  As an optimisation, vec2f is a specific type for 2 floats
+    /**
+     * Vec2f:  As an optimisation, vec2f is a specific type for 2 floats
      * @brief adds a vec2f parameter to the current node
      */
     void set_vec2f();
-    /**Vec3f: As an optimisation, vec3f is a specific type for 3 floats
+    /**
+     * Vec3f: As an optimisation, vec3f is a specific type for 3 floats
      * @brief adds a vec3f parameter to the current node
      */
     void set_vec3f();
-    /**Vec4f: As an optimisation, vec4f is a specific type for 4 floats
+    /**
+     * Vec4f: As an optimisation, vec4f is a specific type for 4 floats
      * @brief adds a vec4f parameter to the current node
      */
     void set_vec4f();
-    /**List: : a generic list of values: [3, 'a', 2.68, ["foo", "bar"]]
+    /**
+     * List: : a generic list of values: [3, 'a', 2.68, ["foo", "bar"]]
      * @brief adds a list parameter to the current node
      */
     void set_list();
-    /**String: a string of chars as defined  in the C++ standard library
+    /**
+     * String: a string of chars as defined  in the C++ standard library
      * @brief adds a string parameter to the current node
      */
     void set_string();
-    /**Generic buffer : when a string should be interpreted as a a raw binary blob.
+    /**
+     * Generic buffer : when a string should be interpreted as a a raw binary blob.
      * @brief adds a buffer parameter to the current node
      */
     void set_buffer();
-    /**File path : used for when a string is a filesystem path, like /home/self/sound.wav or c:\\document.txt
+    /**
+     * File path : used for when a string is a filesystem path, like /home/self/sound.wav or c:\\document.txt
      * @brief adds a filepath parameter to the current node
      */
     void set_filepath();
-    /**RGB: 3 float numbers between 0. and 1. describing respectively Red, Green and Blue color values
+    /**
+     * RGB: 3 float numbers between 0. and 1. describing respectively Red, Green and Blue color values
      * @brief adds a vec3f parameter to the current node, with the color.rgb unit
      */
     void set_rgb();
-    /**RGBA: 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha color values
+    /**
+     * RGBA: 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha color values
      * @brief adds a vec4f parameter to the current node, with the color.rgba unit
      */
     void set_rgba();
-    /**ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue color values
+    /**
+     * ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue color values
      * @brief adds a vec4f parameter to the current node, with the color.argb unit
      */
     void set_argb();
-    /**8 bits ARGB: 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue color values
+    /**
+     * 8 bits ARGB: 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue color values
      * @brief adds a vec4f parameter to the current node, with the color.argb8 unit
      */
     void set_argb8();
-    /**RGBA8: 4 int numbers between 0 and 255 describing respectively Red, Green, Blue and Alpha color values
+    /**
+     * RGBA8: 4 int numbers between 0 and 255 describing respectively Red, Green, Blue and Alpha color values
      * @brief adds a vec4f parameter to the current node, with the color.rgba8 unit
      */
     void set_rgba8();
-    /**HSV: 3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) color values in the HSV colorspace
+    /**
+     * HSV: 3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) color values in the HSV colorspace
      * @brief adds a vec3f parameter to the current node, with the color.hsv unit
      */
     void set_hsv();
-    /**Cart2D: Cartesian 2-dimensional position (i.e. X, Y)
+    /**
+     * Cart2D: Cartesian 2-dimensional position (i.e. X, Y)
      * @brief adds a vec2f parameter to the current node, with the position.cart2D unit
      */
     void set_cart2D();
-    /**Cart3D: Cartesian 3-dimensional position (ie. X, Y, Z)
+    /**
+     * Cart3D: Cartesian 3-dimensional position (ie. X, Y, Z)
      * @brief adds a vec3f parameter to the current node, with the position.cart3D unit
      */
     void set_cart3D();
-    /**OpenGL: Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
+    /**
+     * OpenGL: Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
      * @brief adds a vec3f parameter to the current node, with the position.openGL unit (aka X, Y, Z)
      */
     void set_opengl();
-    /**Polar: Polar 2-dimensional position (ie. ad: azimuth, distance)
+    /**
+     * Polar: Polar 2-dimensional position (ie. rp: radial distance, inclination angle, azimuth angle))
      * @brief adds a vec2f parameter to the current node, with the position.polar unit
      */
     void set_polar();
-    /**Spherical: Polar 3-dimensional position (ie. aed: azimuth, elevation, distance)
+    /**
+     * Spherical: Polar 3-dimensional position (ie. rtp: radial distance, inclination angle, azimuth angle)
      * @brief adds a vec3f parameter to the current node, with the position.spherical unit (aka aed)
      */
     void set_spherical();
-    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, azimuth, Z)
+    /**
+     * Cylindrical: Mixed 3-dimensional position (ie. rpz: radial distance, azimuth angle, height (Z))
      * @brief adds a vec3f parameter to the current node, with the position.cylindrical unit (aka daz)
      */
     void set_cylindrical();
-    /**radian: a angle expressed in radian
+    /**
+     * radian: a angle expressed in radian
      * @brief cadds a vec3f parameter to the current node, with the angle.radian unit
      */
     void set_angle_radian();
-    /**degree: a angle expressed in degrees
+    /**
+     * degree: a angle expressed in degrees
      * @brief adds a vec3f parameter to the current node, with theangle.radian unit
      */
     void set_angle_degree();
-    /**Quaternion: An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
+    /**
+     * Quaternion: An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
      * @brief adds a vec4f parameter to the current node, with the orientation.quaternion unit
      */
     void set_quaternion();
-    /**Euler: A triplet of angles (in degrees) describing the orientation of a rigid body with respect to a fixed coordinate system
+    /**
+     * Euler: A triplet of angles (in degrees) describing the orientation of a rigid body with respect to a fixed coordinate system
      * @brief adds a vec3f parameter to the current node, with the orientation.euler unit (aka Euler angles)
      */
     void set_euler();
-    /**Axis: An angle (a, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, a
+    /**
+     * Axis: An angle (a, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, w
      * @brief adds a vec4f parameter to the current node, with the orientation.axis unit
      */
     void set_axis();
-    /**deciBel: a single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal gain, <0dB describing a signal attenuation)
+    /**
+     * deciBel: a single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal gain, <0dB describing a signal attenuation)
      * @brief adds a float parameter to the current node, with the gain.decibel unit
      */
     void set_decibel();
-    /**midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
+    /**
+     * midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
      * @brief adds a float parameter to the current node, with the gain.midigain unit
      */
     void set_midigain();
-    /**linear: a linear gain in the [0. 1.) range, with 1. being the nominal level
+    /**
+     * linear: a linear gain in the [0. 1.) range, with 1. being the nominal level
      * @brief adds a float parameter to the current node, with the gain.linear unit
      */
     void set_linear();
-    /**frequency: a frequency expressed in Hertz
+    /**
+     * frequency: a frequency expressed in Hertz
      * @brief adds a float parameter to the current node, with the time.frequency unit
      */
     void set_frequency();
-    /**midi_pitch: a frequency expressed as a MIDI pitch (ie. 36 for C3)
+    /**
+     * midi_pitch: a frequency expressed as a MIDI pitch (ie. 36 for C3)
      * @brief adds a float parameter to the current node, with the time.midi_pitch unit
      */
     void set_midi_pitch();
-    /**bpm: a frequency expressed in beats per minute
+    /**
+     * bpm: a frequency expressed in beats per minute
      * @brief adds a float parameter to the current node, with the time.bpm unit
      */
     void set_bpm();
@@ -728,171 +769,197 @@ class OSSIA_EXPORT node
     //     Create Nodes with parameters   //
     //************************************//
 
-    /**Impulse: no value; just a message.
+    /**
+     * Impulse: no value; just a message.
      * @brief creates a child node with tne given name, and an impulse parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_impulse(std::string addr);
-    /**Char: 8-bit char.
+    /**
+     * Char: 8-bit char.
      * @brief creates a child node with tne given name, and a char parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_char(std::string addr);
-    /**Integer: 32-bit int.
+    /**
+     * Integer: 32-bit int.
      * @brief creates a child node with tne given name, and an int parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_int(std::string addr);
-    /**Floating-point: 32-bit float.
+    /**
+     * Floating-point: 32-bit float.
      * @brief creates a child node with tne given name, and a float parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_float(std::string addr);
-    /**Boolean: true/false.
+    /**
+     * Boolean: true/false.
      * @brief creates a child node with tne given name, and a bool parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_bool(std::string addr);
-    /**Vec2f: As an optimisation, vec2f is a specific type for 2 floats
+    /**
+     * Vec2f: As an optimisation, vec2f is a specific type for 2 floats
      * @brief creates a child node with tne given name, and a vec2f parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_vec2f(std::string addr);
-    /**Vec3f: As an optimisation, vec3f is a specific type for 3 floats
+    /**
+     * Vec3f: As an optimisation, vec3f is a specific type for 3 floats
      * @brief creates a child node with tne given name, and a vec3f parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_vec3f(std::string addr);
-    /**Vec4f: As an optimisation, vec4f is a specific type for 4 floats
+    /**
+     * Vec4f: As an optimisation, vec4f is a specific type for 4 floats
      * @brief creates a child node with tne given name, and a vec4f parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_vec4f(std::string addr);
-    /**List: : a generic list of values: [3, 'a', 2.68, ["foo", "bar"]]
+    /**
+     * List: : a generic list of values: [3, 'a', 2.68, ["foo", "bar"]]
      * @brief creates a child node with tne given name, and a list parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_list(std::string addr);
-    /**String: a string of chars as defined in the C++ standard library
+    /**
+     * String: a string of chars as defined in the C++ standard library
      * @brief creates a child node with tne given name, and a string parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_string(std::string addr);
-    /**Generic buffer : when a string should be interpreted as a a raw binary blob.
+    /**
+     * Generic buffer : when a string should be interpreted as a a raw binary blob.
      * @brief creates a child node with tne given name, and a buffer parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_buffer(std::string addr);
-    /**File path : used for when a string is a filesystem path, like /home/self/sound.wav or c:\\document.txt
+    /**
+     * File path : used for when a string is a filesystem path, like /home/self/sound.wav or c:\\document.txt
      * @brief creates a child node with tne given name, and a filepath parameter
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_filepath(std::string addr);
-    /**RGB: 3 float numbers between 0. and 1. describing respectively Red, Green and Blue values
+    /**
+     * RGB: 3 float numbers between 0. and 1. describing respectively Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the color.rgb unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_rgb(std::string addr);
-    /**RGBA: 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha values
+    /**
+     * RGBA: 4 float numbers between 0. and 1. describing respectively Red, Green, Blue and Alpha values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.rgba unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_rgba(std::string addr);
-    /**RGBA8: 4 int numbers between 0 and 255 describing respectively Red, Green, Blue and Alpha values
+    /**
+     * RGBA8: 4 int numbers between 0 and 255 describing respectively Red, Green, Blue and Alpha values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.rgba8 unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_rgba8(std::string addr);
-    /**ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue values
+    /**
+     * ARGB: 4 float numbers between 0. and 1. describing respectively Alpha, Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.argb unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_argb(std::string addr);
-    /**8 bits ARGB: 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue values
+    /**
+     * 8 bits ARGB: 4 int numbers between 0 and 255 describing respectively Alpha, Red, Green and Blue values
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the color.argb8 unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_argb8(std::string addr);
-    /**HSV:  3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) values in the HSV colorspace
+    /**
+     * HSV:  3 float numbers between 0. and 1. describing respectively Hue, Saturation and Value (Luminosity) values in the HSV colorspace
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the color.hsv unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_hsv(std::string addr);
-    /**Cart2D: Cartesian 2-dimensional position (i.e. X, Y)
+    /**
+     * Cart2D: Cartesian 2-dimensional position (i.e. X, Y)
      * @brief creates a child node with tne given name,
      * and a vec2f parameter with the position.cart2D unit (aka xy)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_cart2D(std::string addr);
-    /**Cart3D: Cartesian 3-dimensional position (ie. X, Y, Z)
+    /**
+     * Cart3D: Cartesian 3-dimensional position (ie. X, Y, Z)
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.cart3D unit (aka XYZ)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_cart3D(std::string addr);
-    /**OpenGL: Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
+    /**
+     * OpenGL: Cartesian 3-dimensional position (ie. X, Y, Z) in the OpenGL coordinate reference system
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the position.openGL unit (aka xyz)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_opengl(std::string addr);
-    /**Polar: Polar 2-dimensional position (ie. ad: azimuth, distance)
+    /**
+     * Polar: Polar 2-dimensional position (ie. rp: radial distance, inclination angle, azimuth angle))
      * @brief creates a child node with tne given name,
-     * and a vec2f parameter with the position.polar unit (aka ad)
+     * and a vec2f parameter with the position.polar unit (aka rp)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_polar(std::string addr);
-    /**Spherical: Polar 3-dimensional position (ie. aed: azimuth, elevation, distance)
+    /**
+     * Spherical: Polar 3-dimensional position (ie. rtp: radial distance, inclination angle, azimuth angle)
      * @brief creates a child node with tne given name,
-     * and a vec3f parameter with the position.spherical unit (aka aed)
+     * and a vec3f parameter with the position.spherical unit (aka rtp)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_spherical(std::string addr);
-    /**Cylindrical: Mixed 3-dimensional position (ie. daz: distance, azimuth, Z)
+    /**
+     * Cylindrical: Mixed 3-dimensional position (ie. rpz: radial distance, azimuth angle, height (Z))
      * @brief creates a child node with tne given name,
-     * and a vec3f parameter with the position.cylindrical unit (aka daz)
+     * and a vec3f parameter with the position.cylindrical unit (aka rpz)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_cylindrical(std::string addr);
 
-    /**radian: a angle expressed in radian
+    /**
+     * Radian: a angle expressed in radian
      * @brief creates a child node with tne given name,
      * and a float parameter with the angle.radian unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_angle_radian(std::string addr);
-    /**radian: a angle expressed in degrees
+    /**
+     * Degree: a angle expressed in degrees
      * @brief creates a child node with tne given name,
      * and a float parameter with the angle.radian unit
      * @param addr: the name of the created node
@@ -900,63 +967,72 @@ class OSSIA_EXPORT node
      */
     node create_angle_degree(std::string addr);
 
-    /**Quaternion: An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
+    /**
+     * Quaternion: An extension of the complex numbers for 3D orientation, in the form a+bi+cj+dk
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the orientation.quaternion unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_quaternion(std::string addr);
-    /**Euler: A triplet of angles (in degrees): {yaw, pitch, roll} describing the orientation of a rigid body with respect to a fixed coordinate system
+    /**
+     * Euler: A triplet of angles (in degrees): {yaw, pitch, roll} describing the orientation of a rigid body with respect to a fixed coordinate system
      * @brief creates a child node with tne given name,
      * and a vec3f parameter with the orientation.euler unit (aka Euler angles)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_euler(std::string addr);
-    /**Axis: An angle (w, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, w
+    /**
+     * Axis: An angle (w, in degrees) relative to a 3-dimensional vector, expressed in the order X, Y, Z, w
      * @brief creates a child node with tne given name,
      * and a vec4f parameter with the orientation.axis unit (aka xyza)
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_axis(std::string addr);
-    /**deciBel: a single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal gain, <0dB describing a signal attenuation)
+    /**
+     * deciBel: a single float value expressed in a logarithmic scale, typically to describe an audio gain (0dB being the nominal gain, <0dB describing a signal attenuation)
      * @brief creates a child node with tne given name,
      * and a float parameter with the gain.decibel unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_decibel(std::string addr);
-    /**midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
+    /**
+     * midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal level, 127 for +12dB
      * @brief creates a child node with tne given name,
      * and a float parameter with the gain.midigain unit in the [0 127) range
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_midigain(std::string addr);
-    /**linear: a linear gain in the [0. 1.) range, with 1. being the nominal level
+    /**
+     * linear: a linear gain in the [0. 1.) range, with 1. being the nominal level
      * @brief creates a child node with tne given name,
      * and a float parameter with the gain.linear unit in the [0. 1.) range
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_linear(std::string addr);
-    /**frequency: a frequency expressed in Hertz
+    /**
+     * frequency: a frequency expressed in Hertz
      * @brief creates a child node with tne given name,
      * and a float parameter with the time.frequency unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_frequency(std::string addr);
-    /**midi_pitch: a frequency expressed as a MIDI pitch (ie. 36 for C3)
+    /**
+     * midi_pitch: a frequency expressed as a MIDI pitch (ie. 36 for C3)
      * @brief creates a child node with tne given name,
      * and a float parameter with the time.midi_pitch unit
      * @param addr: the name of the created node
      * @return the created opp::node object
      */
     node create_midi_pitch(std::string addr);
-    /**bpm: a frequency expressed in beats per minute
+    /**
+     * bpm: a frequency expressed in beats per minute
      * @brief creates a child node with tne given name,
      * and a float parameter with the time.bpm unit
      * @param addr: the name of the created node
@@ -987,7 +1063,8 @@ class OSSIA_EXPORT node
      */
     opp::value fetch_value() const;
 
-    /**Parameter callbacks will inform you every time a parameter receives a message:
+    /**
+     * Parameter callbacks will inform you every time a parameter receives a message:
      * this will enable listening on the remote end,
      * ie. messages will be sent upon modification.
      * @brief sets a callback allowing to listen to this value
@@ -1016,7 +1093,8 @@ class OSSIA_EXPORT node
     //*********    Access mode:    ************//
 
 
-    /**Access mode is a metadata that categorizes parameters between:
+    /**
+     * Access mode is a metadata that categorizes parameters between:
      *
      * - GET: read-only
      * - SET: write-only
@@ -1043,7 +1121,8 @@ class OSSIA_EXPORT node
 
     //*********    Domain:    ************//
 
-    /**Domains allow to set a range of accepted values for a given parameter.<br>
+    /**
+     * Domains allow to set a range of accepted values for a given parameter.<br>
      * This range can be continuous (between a min and max), or discrete:  a set of accepted values.<br>
      * This function defines the minimum of a continuous range.<br>
      * This is only meaningful for nodes with parameters of numerical types (ie ints, floats, vecnfs and some lists)<br>
@@ -1060,7 +1139,8 @@ class OSSIA_EXPORT node
      * @see opp::node::get_bounding
      */
     opp::value get_min() const;
-    /**Domains allow to set a range of accepted values for a given parameter.<br>
+    /**
+     * Domains allow to set a range of accepted values for a given parameter.<br>
      * This range can be continuous (between a min and max), or discrete:  a set of accepted values.<br>
      * This function defines the maximum of a continuous range.<br>
      * This is only meaningful for nodes with parameters of numerical types (ie ints, floats, vecnfs and some lists)<br>
@@ -1077,7 +1157,8 @@ class OSSIA_EXPORT node
      * @see opp::node::get_bounding
      */
     opp::value get_max() const;
-    /**Domains allow to set a range of accepted values for a given parameter.<br>
+    /**
+     * Domains allow to set a range of accepted values for a given parameter.<br>
      * This range can be continuous (between a min and max), or discrete:  a set of accepted values.<br>
      * This function defines a set of accepted values.<br>
      * This is only meaningful for nodes with parameters of about any types except Impulse<br>
@@ -1099,7 +1180,8 @@ class OSSIA_EXPORT node
     //*********    Bounding mode:    ************//
 
 
-    /**The bounding mode tells what happens when a value is outside of the min / max:
+    /**
+     * The bounding mode tells what happens when a value is outside of the min / max:
      *
      * * **FREE** : no clipping; domain is only indicative.
      * * **CLIP** : clipped to the closest value in the range.
@@ -1125,7 +1207,8 @@ class OSSIA_EXPORT node
 
     //*********    Units:    ************//
 
-    /**Units give a semantic meaning to the value of a parameter. <br>
+    /**
+     * Units give a semantic meaning to the value of a parameter. <br>
      * Units are sorted by categories (coined "dataspace" ): every unit in a category is convertible to the other units in the same category. <br>
      * Every category has a neutral unit to/from which conversions are made. <br>
      *
@@ -1255,7 +1338,8 @@ class OSSIA_EXPORT node
 
     //*********    Other value management attributes:    ************//
 
-    /**A default value for a given node. Useful for resetting to a default state.
+    /**
+     * A default value for a given node. Useful for resetting to a default state.
      * @brief sets the default_value attribute of this node's parameter
      * @param v an opp::value with this node's parameter's default value
      * @return a reference to this node
@@ -1268,7 +1352,8 @@ class OSSIA_EXPORT node
      */
     value get_default_value();
 
-    /**When the repetition filter is enabled, if the same value is sent twice, the second time will be filtered out.
+    /**
+     * When the repetition filter is enabled, if the same value is sent twice, the second time will be filtered out.
      * @brief sets the repetition_filter attribute of this node's parameter
      * @param v an bool: true to filter out this node's parameter's value repetitions
      * @return a reference to this node
@@ -1280,7 +1365,8 @@ class OSSIA_EXPORT node
      */
     bool get_repetition_filter() const;
 
-    /**An optional value that says how often a value should be updated.
+    /**
+     * An optional value that says how often a value should be updated.
      * @brief sets the refresh_rate attribute of this node's parameter
      * @param v an int with this node's parameter's refresh_rate value
      * @return a reference to this node
@@ -1297,7 +1383,8 @@ class OSSIA_EXPORT node
      */
     int get_refresh_rate();
 
-    /**An optional value that says by which increment a value should change, for instance in a value editor.
+    /**
+     * An optional value that says by which increment a value should change, for instance in a value editor.
      * @brief sets the value_step_size attribute of this node's parameter
      * @param v the increment size
      * @return a reference to this node
@@ -1314,7 +1401,8 @@ class OSSIA_EXPORT node
      */
     double get_value_step_size();
 
-    /**Nodes with the highest priority should execute first.
+    /**
+     * Nodes with the highest priority should execute first.
      * @brief sets the priority attribute of this node's parameter
      * @param v a float with this node's parameter's priority value (higher numbers for higher priorities)
      * @return a reference to this node
@@ -1331,7 +1419,8 @@ class OSSIA_EXPORT node
      */
     float get_priority();
 
-    /**This attribute will disable a node: it will stop receiving and sending messages from/to the network.
+    /**
+     * This attribute will disable a node: it will stop receiving and sending messages from/to the network.
      * @brief sets the disabled attribute of this node's parameter
      * @param v a bool: true to disable this node's parameter
      * @return a reference to this node
@@ -1343,7 +1432,8 @@ class OSSIA_EXPORT node
      */
     bool get_disabled() const;
 
-    /**This attribute will disable a node: it will stop sending messages to the network. <br>
+    /**
+     * This attribute will disable a node: it will stop sending messages to the network. <br>
      * Unlike the "disabled" attribute, it won't propagate to other mirrored servers.
      * @brief sets the muted attribute of this node's parameter
      * @param v a bool: true to mute this node's parameter
@@ -1356,7 +1446,8 @@ class OSSIA_EXPORT node
      */
     bool get_muted() const;
 
-    /**This attribute informs the network protocol that the value has a particular importance
+    /**
+     * This attribute informs the network protocol that the value has a particular importance
      * and should if possible use a protocol not subject to message loss, eg TCP instead of UDP.
      * This is useful for instance for "play" messages.
      * @brief sets the critical attribute of this node's parameter
@@ -1375,7 +1466,8 @@ class OSSIA_EXPORT node
     //*********    Other informative attributes:    ************//
 
 
-    /**An optional textual description.
+    /**
+     * An optional textual description.
      * @brief sets this node's description attribute
      * @param v a string with the textual description of this node
      * @return a reference to this node
@@ -1387,7 +1479,8 @@ class OSSIA_EXPORT node
      */
     std::string get_description() const;
 
-    /**An optional array of tags for nodes, expressed as one string per tag.
+    /**
+     * An optional array of tags for nodes, expressed as one string per tag.
      * @brief sets his node's tags attribute
      * @param v a vector of strings with the desired tags of this node'
      * @return a reference to this node
@@ -1399,7 +1492,8 @@ class OSSIA_EXPORT node
      */
     std::vector<std::string> get_tags() const;
 
-    /**For nodes that can have instantiatable children, this sets the minimum and maximum number of children that can exist.
+    /**
+     * For nodes that can have instantiatable children, this sets the minimum and maximum number of children that can exist.
      * This is an optional attribute: it is not enforced and is only to be relied upon as a metadata.
      * @brief sets how many instances this node can have
      * @param min the minimum number of instances this node can have
@@ -1418,7 +1512,8 @@ class OSSIA_EXPORT node
      */
     std::pair<int, int> get_instance_bounds() const;
 
-    /**This attribute is to use for nodes that are not to be exposed to the network.
+    /**
+     * This attribute is to use for nodes that are not to be exposed to the network.
      * @brief sets this node's hidden attribute
      * @param v a bool: true to hide this node
      * @return a reference to this node
@@ -1430,7 +1525,8 @@ class OSSIA_EXPORT node
      */
     bool get_hidden() const;
 
-    /**This is a read-only attribute: it informs of whether a node is in a zombie state.
+    /**
+     * This is a read-only attribute: it informs of whether a node is in a zombie state.
      * A zombie node is an node in a remote device, whose source has been removed.
      * It is kept in the mirrors but marked as such.
      * @brief gets the zombie attribute of this node's parameter
@@ -1474,7 +1570,8 @@ class OSSIA_EXPORT node
 };
 
 
-/**A device represents a tree of parameters. <br>
+/**
+ * A device represents a tree of parameters. <br>
  * Local devices map to real parameters on the executable libossia is used with. For instance the frequency of a filter, etc.<br>
  * Devices can be mapped to different protocols: OSC, OSCQuery, Midi, etc.<br>
  * For the sake of simplicity, the safeC++ (opp) binding ties together device and protocol implementation: OSCQuery protocol here. <br>
@@ -1505,7 +1602,8 @@ class OSSIA_EXPORT oscquery_server
      * @brief OSCQuery Server default destructor
      */
     ~oscquery_server();
-    /**When created without arguments, a server can be exposed using the OSCQuery protocol
+    /**
+     * When created without arguments, a server can be exposed using the OSCQuery protocol
      * by giving it a name and optional OSC and websocket port numbers.
      * @brief sets up an OSCQuery Server with the appropriate device name and ports
      * @param name the name of the OSCQuery server
@@ -1514,7 +1612,8 @@ class OSSIA_EXPORT oscquery_server
      */
     void setup(std::string name, int oscPort = 1234, int wsPort = 5678);
 
-    /**The root node of the server can be useful to create sub_nodes, with opp::node::create_child and all opp::node::create_* methods.
+    /**
+     * The root node of the server can be useful to create sub_nodes, with opp::node::create_child and all opp::node::create_* methods.
      * @brief get this server's root opp::node
      * @return this server's root opp::node
      */
@@ -1552,14 +1651,16 @@ class OSSIA_EXPORT oscquery_server
     void* m_discon_ctx;
 };
 
-/**Remote devices are mirror images of local devices on other applications: remote controls, mobile apps, etc. Every parameter in a local device will be synchronized with the remote devices that connected to it.
+/**
+ * Remote devices are mirror images of local devices on other applications: remote controls, mobile apps, etc. Every parameter in a local device will be synchronized with the remote devices that connected to it.
  * @ingroup CPP98API
  * @brief The oscquery_mirror class allows to create a mirror image of a remote OSCQuery server
  */
 class OSSIA_EXPORT oscquery_mirror
 {
   public:
-    /**It is possible to create a OSCQuery mirror and to connect it to a remote device. <br>
+    /**
+     * It is possible to create a OSCQuery mirror and to connect it to a remote device. <br>
      * This will allow to build a tree of opp::node s, the structure of which can be discovered
      * by using get_root_node() and the opp::node::get_namespace(), opp::node::get_children() and opp::node::find_child() methods. <br>
      * See the CPP98 tutorial example of the Documentation folder at the root of the libossia repository for an example of this.
@@ -1573,18 +1674,21 @@ class OSSIA_EXPORT oscquery_mirror
      */
     ~oscquery_mirror();
 
-    /**Use get_root_node() in combination with opp::node::get_namespace(), opp::node::get_children() and opp::node::find_child() to build the mirror node tree.
+    /**
+     * Use get_root_node() in combination with opp::node::get_namespace(), opp::node::get_children() and opp::node::find_child() to build the mirror node tree.
      * @brief get this server's root opp::node
      * @return this server's root opp::node
      */
     node get_root_node() const;
 
-    /**If the structure of the remote server we're mirroring changed, we can refresh the image we have of it.
+    /**
+     * If the structure of the remote server we're mirroring changed, we can refresh the image we have of it.
      * @brief refresh the Mirror's namespace
      */
     void refresh();
 
-    /**When the connection the remote server we're mirroring  has been lost, we need to reconnect to it in order to go on with the operations.
+    /**
+     * When the connection the remote server we're mirroring  has been lost, we need to reconnect to it in order to go on with the operations.
      * @brief reconnect to the remote device
      * @param name the name of the remote device (server)
      * @param host the IP of the remote device (server)
