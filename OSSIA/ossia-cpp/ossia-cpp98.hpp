@@ -1620,6 +1620,19 @@ class OSSIA_EXPORT oscquery_server
     node get_root_node() const;
 
     /**
+     * If echo is on, incoming values from the network will be reflected at the output of the device
+     * @brief enable/disable this server's echo
+     */
+    void set_echo(bool echo);
+
+    /**
+     * If echo is on, incoming values from the network will be reflected at the output of the device
+     * @brief get this server's echo
+     * @return a boolean indicating if this server's echo is enabled
+     */
+    bool get_echo();
+
+    /**
      * @brief set a callback to be called when a connection is made to this device
      * @param c the connection_callback
      * @param ctx the callback context as a void*

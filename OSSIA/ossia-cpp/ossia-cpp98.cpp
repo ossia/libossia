@@ -1861,6 +1861,41 @@ node oscquery_server::get_root_node() const
   return node{&m_dev->get_root_node()};
 }
 
+void oscquery_server::set_echo(bool echo)
+{
+  try
+    {
+      if(m_dev)
+      {
+      using ossia::oscquery::oscquery_server_protocol;
+      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol())){
+       proto->set_echo(echo);
+      }
+    }
+  }
+  catch(const std::exception& e)
+  {
+  }
+}
+
+bool oscquery_server::get_echo()
+{
+  try
+    {
+      if(m_dev)
+      {
+      using ossia::oscquery::oscquery_server_protocol;
+      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol())){
+       return proto->echo();
+      }
+    }
+  }
+  catch(const std::exception& e)
+  {
+  }
+  return false;
+}
+
 void oscquery_server::set_connection_callback(connection_callback c, void* ctx)
 {
   m_con = c;
