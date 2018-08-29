@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 namespace ossia
 {
@@ -35,6 +36,8 @@ template <typename T>
 struct distance_ratio : public linear_unit<distance_unit<distance_ratio<T>>, T>
 {
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
+
+  static ossia::domain domain() { return {}; }
 };
 
 struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
@@ -58,6 +61,8 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
   {
     return float(self.dataspace_value * ppm);
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 

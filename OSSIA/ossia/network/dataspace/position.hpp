@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
+#include <ossia/network/domain/domain.hpp>
 namespace ossia
 {
 struct cartesian_3d_u;
@@ -40,6 +41,8 @@ struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
   {
     return self.dataspace_value;
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
@@ -67,6 +70,8 @@ struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
   {
     return {self.dataspace_value[0], self.dataspace_value[1]};
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 // aed
@@ -89,6 +94,8 @@ struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
   to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
+
+  static ossia::domain domain() { return {}; }
 };
 
 // ad
@@ -124,6 +131,8 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
     return {(float)(std::atan2(y, x) * rad_to_deg),
             (float)(ossia::norm(x, y))};
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
@@ -153,6 +162,8 @@ struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
     return {self.dataspace_value[0], self.dataspace_value[2],
             -self.dataspace_value[1]};
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
@@ -174,5 +185,12 @@ struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
   to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
+
+  static ossia::vecf_domain<3> domain() {
+    return vecf_domain<3>{
+      ossia::make_vec(0.f,0.f,0.f)
+    , ossia::make_vec(1.f,1.f,1.f)
+    };
+  }
 };
 }

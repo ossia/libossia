@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
+#include <ossia/network/domain/domain_base_impl.hpp>
 
 namespace ossia
 {
@@ -96,6 +97,8 @@ struct OSSIA_EXPORT linear_u : public gain_unit<linear_u>
   {
     return self.dataspace_value;
   }
+
+  static ossia::domain_base<float> domain() { return {0.f, 1.f}; }
 };
 
 struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
@@ -115,6 +118,8 @@ struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
   {
     return detail::LinearGainToMidi(self.dataspace_value);
   }
+
+  static ossia::domain_base<float> domain() { return {0.f, 127.f}; }
 };
 
 struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
@@ -134,6 +139,8 @@ struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
   {
     return detail::LinearGainToDecibelsClipped(self.dataspace_value);
   }
+
+  static ossia::domain_base<float> domain() { return {0.f, 1.f}; }
 };
 
 struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
@@ -153,5 +160,7 @@ struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
   {
     return 20.0 * (std::log10(self.dataspace_value));
   }
+
+  static ossia::domain_base<float> domain() { return {0.f, 1.f}; }
 };
 }

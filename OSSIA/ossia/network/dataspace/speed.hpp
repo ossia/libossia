@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
 #include <ossia/network/dataspace/dataspace_base_defs_fwd.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 namespace ossia
 {
@@ -31,6 +32,8 @@ template <typename T>
 struct speed_ratio : public linear_unit<speed_unit<speed_ratio<T>>, T>
 {
   using linear_unit<speed_unit<speed_ratio<T>>, T>::linear_unit;
+
+  static ossia::domain domain() { return {}; }
 };
 
 template <>

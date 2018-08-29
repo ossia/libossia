@@ -138,16 +138,38 @@ struct unit_accessor_helper<Unit, detail::enable_if_multidimensional<Unit>>
   }
 };
 }
+
+ossia::domain get_unit_default_domain(const ossia::unit_t& unit)
+{
+  if (unit)
+  {
+    return ossia::apply_nonnull(
+        [=](const auto& d) {
+          if (d)
+          {
+            return ossia::apply_nonnull(
+                [=](const auto& u) -> ossia::domain { return u.domain(); },
+                d);
+          }
+
+          return ossia::domain{};
+        },
+        unit.v);
+  }
+
+  return ossia::domain{};
+}
+
 char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
 {
   if (unit)
   {
     return ossia::apply_nonnull(
-        [=](auto d) {
+        [=](const auto& d) {
           if (d)
           {
             return ossia::apply_nonnull(
-                [=](auto u) {
+                [=](const auto& u) {
                   return detail::unit_accessor_helper<decltype(u)>{}(n);
                 },
                 d);

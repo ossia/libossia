@@ -13,6 +13,7 @@ namespace ossia
 {
 struct unit_t;
 class value;
+struct domain;
 struct value_with_unit;
 
 /**
@@ -44,6 +45,10 @@ ossia::string_view get_unit_text(const ossia::unit_t&);
  */
 OSSIA_EXPORT
 ossia::string_view get_unit_accessors(const ossia::unit_t&);
+
+
+OSSIA_EXPORT
+ossia::domain get_unit_default_domain(const ossia::unit_t&);
 
 /**
  * @brief get_pretty_unit_text Unit for human readability and debugging

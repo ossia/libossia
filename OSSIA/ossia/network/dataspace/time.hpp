@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
+#include <ossia/network/domain/domain.hpp>
 
 namespace ossia
 {
@@ -34,6 +35,7 @@ struct second_u : public timing_unit<second_u>
   {
     return self.dataspace_value;
   }
+  static ossia::domain domain() { return {}; }
 };
 
 struct bark_u : public timing_unit<bark_u>
@@ -53,6 +55,7 @@ struct bark_u : public timing_unit<bark_u>
   {
     return 6. * ossia::asinh(1.0 / (self.dataspace_value * 600.0));
   }
+  static ossia::domain domain() { return {}; }
 };
 
 struct bpm_u : public timing_unit<bpm_u>
@@ -73,6 +76,7 @@ struct bpm_u : public timing_unit<bpm_u>
   {
     return 60.0 / self.dataspace_value;
   }
+  static ossia::domain domain() { return {}; }
 };
 
 struct cent_u : public timing_unit<cent_u>
@@ -95,6 +99,7 @@ struct cent_u : public timing_unit<cent_u>
            + 1200.0 * std::log(1. / (440.0 * self.dataspace_value))
                  / ossia::ln_2;
   }
+  static ossia::domain domain() { return {}; }
 };
 
 struct frequency_u : public timing_unit<frequency_u>
@@ -115,6 +120,7 @@ struct frequency_u : public timing_unit<frequency_u>
   {
     return 1.0 / self.dataspace_value;
   }
+  static ossia::domain domain() { return {}; }
 };
 
 struct mel_u : public timing_unit<mel_u>
@@ -134,6 +140,8 @@ struct mel_u : public timing_unit<mel_u>
   {
     return 2595.0 * std::log10(1 + 1.0 / (self.dataspace_value * 700.0));
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 struct midi_pitch_u : public timing_unit<midi_pitch_u>
@@ -153,6 +161,8 @@ struct midi_pitch_u : public timing_unit<midi_pitch_u>
   {
     return 69.0 - 12.0 * std::log(440.0 * self.dataspace_value) / ossia::ln_2;
   }
+
+  static ossia::domain_base<float> domain() { return {0.f, 127.f}; }
 };
 
 struct millisecond_u : public timing_unit<millisecond_u>
@@ -173,6 +183,8 @@ struct millisecond_u : public timing_unit<millisecond_u>
   {
     return 1000.0 * self.dataspace_value;
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 struct sample_u : public timing_unit<sample_u>
@@ -192,6 +204,8 @@ from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value * rate;
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 
@@ -213,6 +227,8 @@ struct playback_speed_u : public timing_unit<playback_speed_u>
   {
     return exp_69_12 / (440.0 * self.dataspace_value);
   }
+
+  static ossia::domain domain() { return {}; }
 };
 
 // template<int N>

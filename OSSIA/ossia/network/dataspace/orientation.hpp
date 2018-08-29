@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
+#include <ossia/network/domain/domain_base_impl.hpp>
 
 namespace ossia
 {
@@ -42,6 +43,13 @@ struct OSSIA_EXPORT quaternion_u : public orientation_unit<quaternion_u>
   {
     return self.dataspace_value;
   }
+
+  static ossia::vecf_domain<4> domain() {
+    return vecf_domain<4>{
+      ossia::make_vec(0.f,0.f,0.f,0.f)
+    , ossia::make_vec(1.f,1.f,1.f,1.f)
+    };
+  }
 };
 
 struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
@@ -64,6 +72,13 @@ struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
   to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
+
+  static ossia::vecf_domain<4> domain() {
+    return vecf_domain<4>{
+      ossia::make_vec(0.f,0.f,0.f,0.f)
+    , ossia::make_vec(1.f,1.f,1.f,1.f)
+    };
+  }
 };
 
 struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
@@ -86,5 +101,12 @@ struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
   to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
+
+  static ossia::vecf_domain<4> domain() {
+    return vecf_domain<4>{
+      ossia::make_vec(0.f,0.f,0.f,0.f)
+    , ossia::make_vec(1.f,1.f,1.f,1.f)
+    };
+  }
 };
 }

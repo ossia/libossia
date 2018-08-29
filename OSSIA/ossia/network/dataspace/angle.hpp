@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
-
+#include <ossia/network/domain/domain_base_impl.hpp>
+#include <ossia/detail/math.hpp>
 namespace ossia
 {
 struct angle_u;
@@ -34,6 +35,8 @@ struct OSSIA_EXPORT radian_u : public angle_unit<radian_u>
   {
     return self.dataspace_value;
   }
+
+  static ossia::domain_base<float> domain() { return {0.f, float(ossia::two_pi)}; }
 };
 
 struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
@@ -54,5 +57,7 @@ struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
   {
     return self.dataspace_value * ossia::rad_to_deg;
   }
+
+  static ossia::domain_base<float> domain() { return {359.99996f, 360.f}; }
 };
 }
