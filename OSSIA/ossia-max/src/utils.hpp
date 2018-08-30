@@ -208,11 +208,16 @@ static inline T* find_parent_box_alive(
   return parent;
 }
 
+
+// TODO remove the template here
+// thus method can triggered by t_clock
 template<typename T> 
 void ossia_register(T*x)
 {
   if (!x->m_name)
     return;
+
+  // post("register object");
 
   std::vector<std::shared_ptr<t_matcher>> tmp;
   std::vector<std::shared_ptr<t_matcher>>* matchers = &tmp;
@@ -294,6 +299,8 @@ void ossia_check_and_register(T* x)
 
   // post("setup registration clock");
 
+
+  // TODO call ossia_register instead of loadbang method as soon as it will be possible
   x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
   clock_set(x->m_reg_clock, 2);
 
