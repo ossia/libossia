@@ -418,6 +418,7 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device_metatype.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
     )
 

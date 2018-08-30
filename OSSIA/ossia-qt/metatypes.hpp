@@ -9,6 +9,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia-qt/value_metatypes.hpp>
+#include <ossia-qt/device_metatype.hpp>
 
 #if defined(OSSIA_EDITOR)
 Q_DECLARE_METATYPE(ossia::state)
@@ -31,7 +32,6 @@ Q_DECLARE_METATYPE(ossia::unit_t)
 
 W_REGISTER_ARGTYPE(ossia::net::parameter_base*)
 W_REGISTER_ARGTYPE(ossia::net::node_base*)
-W_REGISTER_ARGTYPE(ossia::net::device_base*)
 W_REGISTER_ARGTYPE(ossia::net::protocol_base*)
 W_REGISTER_ARGTYPE(ossia::extended_attributes)
 
