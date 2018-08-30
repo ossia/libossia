@@ -208,13 +208,11 @@ static inline T* find_parent_box_alive(
   return parent;
 }
 
-template<typename T> bool
-ossia_register(T*x)
+template<typename T> 
+void ossia_register(T*x)
 {
   if (!x->m_name)
-    return false;
-
-  std::cout << "registering " << x << " " << x->m_name->s_name << std::endl;
+    return;
 
   std::vector<std::shared_ptr<t_matcher>> tmp;
   std::vector<std::shared_ptr<t_matcher>>* matchers = &tmp;
@@ -283,7 +281,7 @@ ossia_register(T*x)
     }
   }
 
-  return x->register_node(*matchers);
+  x->register_node(*matchers);
 }
 
 
@@ -294,10 +292,30 @@ void ossia_check_and_register(T* x)
   auto& map = ossia_max::instance().root_patcher;
   auto it = map.find(x->m_patcher_hierarchy.back());
 
+  // post("setup registration clock");
+
+  x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+  clock_set(x->m_reg_clock, 2);
+
+  /*
+  post("map size: %d", map.size());
+
+  if (it != map.end())
+  {
+    post("was root patcher loadbanged ? %d", it->second.is_loadbanged);
+  }
+  else
+  {
+    post("reach map list end !");
+  }
+  */
+
   // register object only if root patcher have been loadbanged
   // else the patcher itself will trig a registration on loadbang
-  if(it != map.end() && it->second.is_loadbanged)
+  if (it != map.end() && it->second.is_loadbanged)
+  {
     ossia_register(x);
+  }
 }
 
 template <typename T>

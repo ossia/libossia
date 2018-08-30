@@ -112,6 +112,8 @@ public:
 
   void* m_clock{};
   void* m_poll_clock{}; // value or message polling clock
+  void* m_reg_clock{}; // registration clock that should be init in constructor
+                       // and canceled by loadbang method
 
   float m_rate{10};
 

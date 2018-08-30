@@ -309,7 +309,15 @@ void object_base::get_hierarchy()
 
 void object_base::loadbang(object_base* x)
 {
-  if(!x->m_patcher_hierarchy.empty())
+  // post("loadbang mess");
+  if (x->m_reg_clock)
+  {
+    clock_unset(x->m_reg_clock);
+    clock_free((t_object*)x->m_reg_clock);
+    x->m_reg_clock = nullptr;
+  }
+
+  if (!x->m_patcher_hierarchy.empty())
   {
     auto& map = ossia_max::instance().root_patcher;
 
