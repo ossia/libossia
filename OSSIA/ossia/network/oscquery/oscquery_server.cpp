@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_server.hpp"
+#include <ossia/network/common/node_visitor.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
@@ -267,6 +268,14 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
     old.on_node_renamed
        .disconnect<&oscquery_server_protocol::on_nodeRenamed>(
            this);
+
+
+    ossia::net::visit_parameters(
+          old.get_root_node()
+        , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
+      if(p.callback_count() > 0)
+        observe(p, false);
+    });
   }
   m_device = &dev;
 
@@ -285,6 +294,13 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
           this);
 
   update_zeroconf();
+
+  ossia::net::visit_parameters(
+        dev.get_root_node()
+      , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
+    if(p.callback_count() > 0)
+      observe(p, true);
+  });
 }
 
 void oscquery_server_protocol::stop()

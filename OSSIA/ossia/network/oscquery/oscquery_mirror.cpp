@@ -3,6 +3,7 @@
 #include "oscquery_mirror.hpp"
 
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/common/node_visitor.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
@@ -394,6 +395,13 @@ void oscquery_mirror_protocol::set_device(net::device_base& dev)
 {
   m_device = &dev;
   init();
+
+  ossia::net::visit_parameters(
+        dev.get_root_node()
+      , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
+    if(p.callback_count() > 0)
+      observe(p, true);
+  });
 }
 
 void oscquery_mirror_protocol::run_commands()

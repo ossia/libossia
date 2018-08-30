@@ -42,6 +42,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/parameter_properties.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/websocket_log_sink.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/node_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/misc_visitors.hpp"
