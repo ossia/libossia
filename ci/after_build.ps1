@@ -94,6 +94,35 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\unity3d\
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-unity3d-win.zip .
 
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp" ){
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win64.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-debug-win64.log"
+  cmake --build . --config Debug --target install > "$LogFile"
+  CheckLastExitCode
+
+  # TODO remove those 2 lines
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install
+  ls
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build-32bit
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-debug-win32.log"
+  cmake --build . --config Debug --target install > "$LogFile"
+  CheckLastExitCode
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
+  cp ${env:APPVEYOR_BUILD_FOLDER}\install\bin\*.dll ${env:APPVEYOR_BUILD_FOLDER}\install-32bit\bin\
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-ossia-cpp.zip .
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 

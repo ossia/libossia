@@ -23,6 +23,9 @@ environment:
       QTDIR: C:\Qt\5.11\msvc2017_64
       QTDIR-32bit: C:\Qt\5.11\msvc2015
 
+    - APPVEYOR_BUILD_TYPE: ossia-cpp
+      configuration: Release
+
     - APPVEYOR_BUILD_TYPE: pd
       configuration: Release
 

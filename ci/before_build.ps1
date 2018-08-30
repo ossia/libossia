@@ -76,6 +76,21 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake $CommonFlags32 -DOSSIA_MAX=1 -DOSSIA_STATIC=1 -DOSSIA_PROTOCOL_MIDI=OFF -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp" ) {
+  $LogFile = "c:\projects\libossia\configure-opp.log"
+  cmake $CommonFlags64 -DOSSIA_STATIC=0 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_PROTOCOL_MIDI=OFF -DOSSIA_PROTOCOL_AUDIO=OFF -DOSSIA_PROTOCOL_LEAPMOTION=OFF -DOSSIA_PROTOCOL_PHIDGETS=OFF -DOSSIA_PROTOCOL_SERIAL=OFF -DOSSIA_PROTOCOL_JOYSTICK=OFF -DOSSIA_PROTOCOL_OSC=OFF -DOSSIA_PROTOCOL_MINUIT=OFF  c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
+  # now configure 32 bit version
+  cd ..
+  mkdir build-32bit
+  cd build-32bit
+
+  $LogFile = "c:\projects\libossia\configure-opp-32bit.log"
+  cmake $CommonFlags32 -DOSSIA_STATIC=0 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_PROTOCOL_MIDI=OFF -DOSSIA_PROTOCOL_AUDIO=OFF -DOSSIA_PROTOCOL_LEAPMOTION=OFF -DOSSIA_PROTOCOL_PHIDGETS=OFF -DOSSIA_PROTOCOL_SERIAL=OFF -DOSSIA_PROTOCOL_JOYSTICK=OFF -DOSSIA_PROTOCOL_OSC=OFF -DOSSIA_PROTOCOL_MINUIT=OFF  c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
   cmake $CommonFlags64 -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_PROTOCOL_MIDI=OFF  c:\projects\libossia > $LogFile

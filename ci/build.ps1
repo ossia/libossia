@@ -25,14 +25,14 @@ $LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-${env:platform
 cmake --build . --config "${env:configuration}" > "$LogFile"
 CheckLastExitCode
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "max" -Or $env:APPVEYOR_BUILD_TYPE -eq "Release"){
+if ( $env:APPVEYOR_BUILD_TYPE -eq "max" -Or $env:APPVEYOR_BUILD_TYPE -eq "Release" -Or $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp"){
   cd C:\projects\libossia\build-32bit
   $LogFile = "C:\projects\libossia\build-${env:APPVEYOR_BUILD_TYPE}-32bit.log"
   cmake --build . --config "${env:configuration}" > "$LogFile"
   CheckLastExitCode
 }
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "Release"){
+if ( $env:APPVEYOR_BUILD_TYPE -eq "Release" -Or $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp"){
   cd C:\projects\libossia\build\
   $LogFile = "C:\projects\libossia\build-Debug-${env:platform}.log"
   cmake --build . --config Debug > "$LogFile"
