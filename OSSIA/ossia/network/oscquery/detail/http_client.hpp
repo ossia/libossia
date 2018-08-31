@@ -27,7 +27,16 @@ public:
       , m_fun{std::move(f)}
       , m_err{std::move(err)}
   {
-    m_request << "GET " << path << " HTTP/1.1\r\n";
+    m_request << "GET ";
+    // Technically other characters should be encoded... but
+    // they aren't legal in OSC address patterns.
+    for(auto c : path)
+      if(c != ' ')
+        m_request << c;
+      else
+        m_request << "%20";
+
+    m_request << " HTTP/1.1\r\n";
     m_request << "Host: " << server << "\r\n";
     m_request << "Accept: */*\r\n";
     m_request << "Connection: close\r\n\r\n";
