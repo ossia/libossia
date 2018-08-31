@@ -165,11 +165,11 @@ install(
     TARGETS
         ${PROJECT_NAME}
     BUNDLE DESTINATION
-        "${OSSIA_MAX_INSTALL_FOLDER}/support"
+        ${OSSIA_MAX_INSTALL_FOLDER}/support
     RUNTIME DESTINATION
-        "${OSSIA_MAX_INSTALL_FOLDER}/support"
+        ${OSSIA_MAX_INSTALL_FOLDER}/support
     LIBRARY DESTINATION
-        "${OSSIA_MAX_INSTALL_FOLDER}/support"
+        ${OSSIA_MAX_INSTALL_FOLDER}/support
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -178,11 +178,11 @@ install(
     TARGETS
         ${OSSIA_EXT_LIST}
     BUNDLE DESTINATION
-        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
+        ${OSSIA_MAX_INSTALL_FOLDER}/externals
     RUNTIME DESTINATION
-        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
+        ${OSSIA_MAX_INSTALL_FOLDER}/externals
     LIBRARY DESTINATION
-        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
+        ${OSSIA_MAX_INSTALL_FOLDER}/externals
     COMPONENT
         ${PROJECT_NAME}
 )
