@@ -10,15 +10,17 @@ namespace ossia
 namespace oscquery
 {
 using tcp = asio::ip::tcp;
-class http_get_request: public std::enable_shared_from_this<http_get_request>
+
+
+template<typename Fun, typename Err>
+class http_get_request: public std::enable_shared_from_this<http_get_request<Fun, Err>>
 {
   fmt::MemoryWriter m_request;
 
 public:
-  http_get_request(
-      std::function<void(http_get_request&, const std::string&)> f,
-      std::function<void(http_get_request&)> err, asio::io_context& ctx,
-      const std::string& server, const std::string& port,
+  using std::enable_shared_from_this<http_get_request<Fun, Err>>::shared_from_this;
+  http_get_request(Fun f, Err err, asio::io_context& ctx,
+      const std::string& server,
       const std::string& path)
       : m_resolver(ctx)
       , m_socket(ctx)
@@ -34,7 +36,7 @@ public:
   void resolve(const std::string& server, const std::string& port)
   {
     m_resolver.async_resolve(
-        server, port, [self=shared_from_this()] (
+        server, port, [self=this->shared_from_this()] (
           const asio::error_code& err,
           const tcp::resolver::results_type& endpoints)
     { self->handle_resolve(err, endpoints); });
@@ -194,8 +196,8 @@ private:
   tcp::resolver m_resolver;
   tcp::socket m_socket;
   asio::streambuf m_response;
-  std::function<void(http_get_request&, const std::string&)> m_fun;
-  std::function<void(http_get_request&)> m_err;
+  Fun m_fun;
+  Err m_err;
 };
 }
 }

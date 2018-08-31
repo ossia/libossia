@@ -27,7 +27,6 @@ namespace oscquery
 {
 struct osc_outbound_visitor;
 class websocket_client;
-class http_get_request;
 struct http_client_context;
 struct http_responder;
 
@@ -99,7 +98,8 @@ public:
   void set_fail_callback(std::function<void()>);
 
 private:
-  friend struct http_responder;
+  friend struct http_answer;
+
   void init();
   using connection_handler = std::weak_ptr<void>;
   bool on_WSMessage(connection_handler hdl, const std::string& message);
@@ -109,9 +109,12 @@ private:
 
   void cleanup_connections();
 
-  void query_send_message(const std::string& str);
-  void query_send_binary_message(const std::string& str);
-  void query_send_message(const rapidjson::StringBuffer& str);
+  void http_send_message(const std::string& str);
+  void http_send_message(const rapidjson::StringBuffer& str);
+
+  void ws_send_message(const std::string& str);
+  void ws_send_binary_message(const std::string& str);
+  void ws_send_message(const rapidjson::StringBuffer& str);
   bool query_connected();
   void query_stop();
 
@@ -155,12 +158,12 @@ private:
   std::function<void()> m_commandCallback;
 
   std::thread m_wsThread;
-  std::string m_websocketHost;
-  std::string m_websocketPort;
+  std::string m_queryHost;
+  std::string m_queryPort;
+  std::string m_httpHost;
   int m_osc_port{};
 
   std::unique_ptr<http_client_context> m_http;
-  std::atomic_bool m_useHTTP{false};
   void start_http();
 };
 

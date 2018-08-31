@@ -23,7 +23,7 @@ bool is_valid_character_for_device(Char_T c)
 {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
          || (c >= '0' && c <= '9') || (c == '.') || (c == '~') || (c == '_')
-         || (c == '(') || (c == ')') || (c == '-');
+         || (c == '(') || (c == ')') || (c == '-') || (c == ' ');
 }
 /**
  * @brief Checks that a character is fit to be part of an address.
@@ -33,7 +33,7 @@ bool is_valid_character_for_name(Char_T c)
 {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
          || (c >= '0' && c <= '9') || (c == '.') || (c == '~') || (c == '_')
-         || (c == '(') || (c == ')') || (c == '-') || (c == ':');
+         || (c == '(') || (c == ')') || (c == '-') || (c == ':') || (c == ' ');
 }
 
 /**
@@ -41,7 +41,7 @@ bool is_valid_character_for_name(Char_T c)
  */
 constexpr ossia::string_view device_characters() noexcept
 {
-  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~().-"));
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~() .-"));
 }
 
 /**
@@ -49,7 +49,7 @@ constexpr ossia::string_view device_characters() noexcept
  */
 constexpr ossia::string_view name_characters() noexcept
 {
-  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~():.-"));
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~(): .-"));
 }
 
 /**
@@ -57,12 +57,12 @@ constexpr ossia::string_view name_characters() noexcept
  */
 constexpr ossia::string_view path_characters() noexcept
 {
-  constexpr_return(ossia::make_string_view("/a-zA-Z0-9_~():.-"));
+  constexpr_return(ossia::make_string_view("/a-zA-Z0-9_~(): .-"));
 }
 
 constexpr ossia::string_view name_characters_no_instance() noexcept
 {
-  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~():-"));
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~(): -"));
 }
 /**
  * @brief Characters valid in an OSSIA pattern-matching part.
@@ -73,7 +73,7 @@ constexpr ossia::string_view name_characters_no_instance() noexcept
  */
 constexpr ossia::string_view pattern_match_characters() noexcept
 {
-  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~():.*?,{}\\[\\]-"));
+  constexpr_return(ossia::make_string_view("a-zA-Z0-9_~(): .*?,{}\\[\\]-"));
 }
 
 /**

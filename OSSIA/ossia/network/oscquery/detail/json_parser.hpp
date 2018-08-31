@@ -21,24 +21,6 @@ struct host_info
   optional<int> ws_port;
 
   ossia::string_map<bool> extensions;
-  bool ext_type{};
-  bool ext_access{};
-  bool ext_value{};
-  bool ext_range{};
-  bool ext_tags{};
-  bool ext_clipmode{};
-  bool ext_unit{};
-  bool ext_critical{};
-  bool ext_description{};
-
-  bool ext_html{};
-  bool ext_streaming{};
-  bool ext_listen{};
-
-  bool ext_path_changed{};
-  bool ext_path_added{};
-  bool ext_path_renamed{};
-  bool ext_path_removed{};
 };
 
 struct OSSIA_EXPORT json_parser
