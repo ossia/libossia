@@ -86,8 +86,11 @@ artifacts:
   - path: ossia-qml-win64.zip
     name: ossia-qml-win64
     type: zip
+  - path: ossia-cpp-win.zip
+    name: ossia-cpp-win
+    type: zip
   - path: libossia-native-win*.zip
-    name: ossia-windonws
+    name: ossia-windows
     type: zip
   - path: pyossia*.whl
     name: pyossia-wheel-win

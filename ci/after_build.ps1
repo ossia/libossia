@@ -121,7 +121,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install-32bit
   cp ${env:APPVEYOR_BUILD_FOLDER}\install\bin\*.dll ${env:APPVEYOR_BUILD_FOLDER}\install-32bit\bin\
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-ossia-cpp.zip .
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-cpp-win.zip .
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
