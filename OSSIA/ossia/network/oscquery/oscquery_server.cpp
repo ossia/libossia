@@ -559,9 +559,13 @@ catch (...)
 void oscquery_server_protocol::on_nodeRenamed(
     const net::node_base& n, std::string oldname) try
 {
+  auto old_addr = n.osc_address();
+  auto it = old_addr.find_last_of('/');
+  old_addr.resize(it + 1);
+  old_addr += oldname;
   {
     // Local listening
-    m_listening.rename(oldname, n.osc_address());
+    m_listening.rename(old_addr, n.osc_address());
   }
 
   {
@@ -569,7 +573,7 @@ void oscquery_server_protocol::on_nodeRenamed(
     lock_t lock(m_clientsMutex);
     for (auto& client : m_clients)
     {
-      auto it = client.listening.find(oldname);
+      auto it = client.listening.find(old_addr);
       if(it != client.listening.end())
       {
         auto v = it->second;

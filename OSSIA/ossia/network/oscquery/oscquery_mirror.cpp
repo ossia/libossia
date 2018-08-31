@@ -392,7 +392,11 @@ void oscquery_mirror_protocol::on_nodeRenamed(
   // is because of a path_renamed oscquery message
   {
     // Local listening
-    m_listening.rename(oldname, n.osc_address());
+    auto old_addr = n.osc_address();
+    auto it = old_addr.find_last_of('/');
+    old_addr.resize(it + 1);
+    old_addr += oldname;
+    m_listening.rename(old_addr, n.osc_address());
   }
 
 }
