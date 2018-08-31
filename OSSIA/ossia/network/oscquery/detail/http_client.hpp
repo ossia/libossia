@@ -27,6 +27,7 @@ public:
       , m_fun{std::move(f)}
       , m_err{std::move(err)}
   {
+    m_request.buffer().reserve(100 + server.size() + path.size());
     m_request << "GET ";
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
@@ -36,10 +37,10 @@ public:
       else
         m_request << "%20";
 
-    m_request << " HTTP/1.1\r\n";
-    m_request << "Host: " << server << "\r\n";
-    m_request << "Accept: */*\r\n";
-    m_request << "Connection: close\r\n\r\n";
+    m_request << " HTTP/1.1\r\n"
+                 "Host: " << server << "\r\n"
+                 "Accept: */*\r\n"
+                 "Connection: close\r\n\r\n";
   }
 
   void resolve(const std::string& server, const std::string& port)

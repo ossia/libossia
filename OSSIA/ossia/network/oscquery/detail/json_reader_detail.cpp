@@ -921,8 +921,9 @@ void json_parser::parse_parameter_value(
 }
 
 // Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
-static auto splitParentChild(ossia::string_view s)
-    -> optional<std::pair<ossia::string_view, ossia::string_view>>
+static optional<std::pair<ossia::string_view, ossia::string_view>>
+splitParentChild(ossia::string_view s)
+
 {
   auto last_slash_pos = s.rfind('/');
   if (last_slash_pos != std::string::npos)
@@ -940,12 +941,13 @@ void json_parser::parse_path_added(
   if (dat_it != obj.MemberEnd())
   {
     auto& dat = dat_it->value;
-    auto path_it = dat.FindMember(detail::attribute_full_path());
-    if (path_it != dat.MemberEnd())
+    if(dat.IsString())
     {
-      auto opt_str = splitParentChild(get_string_view(path_it->value));
+      auto opt_str = splitParentChild(get_string_view(dat));
       if (opt_str)
       {
+        // TODO the spec changed
+        /*
         auto& str = *opt_str;
         auto node = ossia::net::find_node(root, str.first);
         if (node)
@@ -965,6 +967,7 @@ void json_parser::parse_path_added(
             detail::json_parser_impl::readObject(*cld, dat);
           }
         }
+        */
       }
     }
   }
