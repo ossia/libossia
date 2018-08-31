@@ -44,7 +44,7 @@ struct OSSIA_EXPORT json_parser
       ossia::net::node_base& root, const rapidjson::Value& obj,
       ossia::net::device_base& dev);
   static void
-  parse_path_added(ossia::net::node_base& map, const rapidjson::Value& obj);
+  parse_path_added(ossia::net::node_base& map, const std::string& full_path, const rapidjson::Value& obj);
   static void
   parse_path_removed(ossia::net::node_base& map, const rapidjson::Value& obj);
   static void

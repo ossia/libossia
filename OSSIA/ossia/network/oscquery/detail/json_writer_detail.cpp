@@ -371,7 +371,7 @@ void json_writer::path_added_impl(
   write_json(wr, detail::path_added());
 
   write_json_key(wr, detail::data());
-  p.writeNode(n);
+  wr.String(n.osc_address());
 
   wr.EndObject();
 }
@@ -386,7 +386,7 @@ void json_writer::path_changed_impl(
   write_json(wr, detail::path_changed());
 
   write_json_key(wr, detail::data());
-  p.writeNode(n);
+  wr.String(n.osc_address());
 
   wr.EndObject();
 }

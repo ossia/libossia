@@ -860,7 +860,7 @@ void json_parser::parse_namespace(
   if (path_it != obj.MemberEnd())
   {
     auto str = get_string_view(path_it->value);
-    auto node = ossia::net::find_node(root, str);
+    auto node = ossia::net::find_node(root.get_device().get_root_node(), str);
     if (node)
     {
       node->clear_children();
@@ -920,56 +920,51 @@ void json_parser::parse_parameter_value(
   }
 }
 
-// Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
-static optional<std::pair<ossia::string_view, ossia::string_view>>
-splitParentChild(ossia::string_view s)
 
+// Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
+static optional<std::pair<std::string, std::string>>
+splitParentChild(ossia::string_view s)
 {
   auto last_slash_pos = s.rfind('/');
   if (last_slash_pos != std::string::npos)
   {
     return std::make_pair(
-        s.substr(0, last_slash_pos), s.substr(last_slash_pos + 1));
+        std::string{s.substr(0, last_slash_pos)}, std::string{s.substr(last_slash_pos + 1)});
   }
   return ossia::none;
 }
 
 void json_parser::parse_path_added(
-    net::node_base& root, const rapidjson::Value& obj)
+    net::node_base& root, const std::string& full_path, const rapidjson::Value& obj)
 {
-  auto dat_it = obj.FindMember(detail::data());
-  if (dat_it != obj.MemberEnd())
-  {
-    auto& dat = dat_it->value;
-    if(dat.IsString())
-    {
-      auto opt_str = splitParentChild(get_string_view(dat));
-      if (opt_str)
-      {
-        // TODO the spec changed
-        /*
-        auto& str = *opt_str;
-        auto node = ossia::net::find_node(root, str.first);
-        if (node)
-        {
-          auto cld = node->find_child(str.second);
-          if (!cld)
-          {
-            auto cld = std::make_unique<ossia::net::generic_node>(std::string(str.second), node->get_device(), *node);
-            detail::json_parser_impl::readObject(*cld, dat);
-            node->add_child(std::move(cld));
-          }
-          else
-          {
-            ossia::net::set_zombie(*cld, false);
 
-            // Update the node:
-            detail::json_parser_impl::readObject(*cld, dat);
-          }
-        }
-        */
-      }
+  // TODO potential race condition there,
+  // if the node is created in-between the if / else
+  auto opt_str = splitParentChild(full_path);
+  auto& s = *opt_str;
+
+  if(auto parent = ossia::net::find_node(root, s.first))
+  {
+    if(auto cld = parent->find_child(s.second); !cld)
+    {
+      // The node does not exist
+      auto c = parent->create_child(s.second);
+      detail::json_parser_impl::readObject(*c, obj);
     }
+    else
+    {
+      // The node already exists, rescan it
+      ossia::net::set_zombie(*cld, false);
+      cld->clear_children();
+      cld->remove_parameter();
+      detail::json_parser_impl::readObject(*cld, obj);
+    }
+  }
+  else
+  {
+    // Neither the node nore its parent exists
+    auto& cld = ossia::net::create_node(root, full_path);
+    detail::json_parser_impl::readObject(cld, obj);
   }
 }
 
