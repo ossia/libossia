@@ -559,6 +559,25 @@ catch (...)
 void oscquery_server_protocol::on_nodeRenamed(
     const net::node_base& n, std::string oldname) try
 {
+  {
+    // Local listening
+    m_listening.rename(oldname, n.osc_address());
+  }
+
+  {
+    // Remote listening
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      auto it = client.listening.find(oldname);
+      if(it != client.listening.end())
+      {
+        auto v = it->second;
+        client.listening.erase(it);
+        client.listening.insert({n.osc_address(), v});
+      }
+    }
+  }
   /* TODO
   const auto mess = json_writer::attributes_changed(n, attr);
   lock_t lock(m_clientsMutex);

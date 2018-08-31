@@ -161,6 +161,10 @@ constexpr auto path_removed()
 {
   return "PATH_REMOVED";
 }
+constexpr auto path_renamed()
+{
+  return "PATH_RENAMED";
+}
 constexpr auto path_changed()
 {
   return "PATH_CHANGED";
@@ -474,6 +478,7 @@ enum class message_type
   PathChanged,
   PathAdded,
   PathRemoved,
+  PathRenamed,
   AttributesChanged,
   HostInfo,
   StartOscStreaming,

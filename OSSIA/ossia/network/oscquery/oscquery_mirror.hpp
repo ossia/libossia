@@ -120,6 +120,9 @@ private:
 
   void on_queryClose();
   void on_queryFail();
+
+  void on_nodeRenamed(const ossia::net::node_base &n, std::string oldname);
+
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<ossia::oscquery::websocket_client> m_websocketClient;

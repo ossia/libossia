@@ -45,6 +45,18 @@ public:
     }
   }
 
+  void rename(const key_type& oldk, const key_type& newk)
+  {
+    lock_t lock(m_mutex);
+    auto it = m_map.find(oldk);
+    if(it != m_map.end())
+    {
+      auto v = it->second;
+      m_map.erase(it);
+      m_map.insert({newk, v});
+    }
+  }
+
   void insert(const value_type& m)
   {
     lock_t lock(m_mutex);

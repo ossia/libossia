@@ -385,11 +385,52 @@ std::future<void> oscquery_mirror_protocol::update_future(net::node_base& b)
   return fut;
 }
 
+void oscquery_mirror_protocol::on_nodeRenamed(
+    const net::node_base& n, std::string oldname) try
+{
+  // Normally, the only reason this function could be called
+  // is because of a path_renamed oscquery message
+  {
+    // Local listening
+    m_listening.rename(oldname, n.osc_address());
+  }
+
+}
+catch (const std::exception& e)
+{
+  logger().error(
+      "oscquery_mirror_protocol::on_nodeRenamed: {}", e.what());
+}
+catch (...)
+{
+  logger().error("oscquery_mirror_protocol::on_nodeRenamed: error.");
+}
+
+
 void oscquery_mirror_protocol::set_device(net::device_base& dev)
 {
+  if(m_device)
+  {
+    auto& old = *m_device;
+    old.on_node_renamed
+       .disconnect<&oscquery_mirror_protocol::on_nodeRenamed>(
+           this);
+
+    ossia::net::visit_parameters(
+          old.get_root_node()
+        , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
+      if(p.callback_count() > 0)
+        observe(p, false);
+    });
+  }
+
   m_device = &dev;
+
   init();
 
+  m_device->on_node_renamed
+     .connect<&oscquery_mirror_protocol::on_nodeRenamed>(
+         this);
   ossia::net::visit_parameters(
         dev.get_root_node()
       , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
@@ -668,6 +709,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
           break;
         }
+
         case message_type::PathAdded:
         {
           auto dat_it = data->FindMember(detail::data());
@@ -708,6 +750,17 @@ bool oscquery_mirror_protocol::on_WSMessage(
             m_commandCallback();
           break;
         }
+
+        case message_type::PathRenamed:
+        {
+          m_functionQueue.enqueue([ this, doc = std::move(data) ] {
+            json_parser::parse_path_renamed(m_device->get_root_node(), *doc);
+          });
+          if (m_commandCallback)
+            m_commandCallback();
+          break;
+        }
+
         case message_type::PathChanged:
         {
           m_functionQueue.enqueue([ this, doc = std::move(data) ] {
@@ -717,6 +770,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
             m_commandCallback();
           break;
         }
+
         case message_type::PathRemoved:
         {
           m_functionQueue.enqueue([ this, doc = std::move(data) ] {
@@ -726,6 +780,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
             m_commandCallback();
           break;
         }
+
         case message_type::AttributesChanged:
         {
           m_functionQueue.enqueue([ this, doc = std::move(data) ] {

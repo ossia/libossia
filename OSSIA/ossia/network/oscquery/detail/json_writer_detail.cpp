@@ -531,13 +531,13 @@ json_writer::query_host_info(const oscquery_server_protocol& proto)
   wr.Key("ECHO");
   wr.Bool(true);
 
-  wr.Key("PATH_CHANGED");
+  wr.Key(detail::path_changed());
   wr.Bool(false);
-  wr.Key("PATH_RENAMED");
-  wr.Bool(false);
-  wr.Key("PATH_ADDED");
+  wr.Key(detail::path_renamed());
   wr.Bool(true);
-  wr.Key("PATH_REMOVED");
+  wr.Key(detail::path_added());
+  wr.Bool(true);
+  wr.Key(detail::path_removed());
   wr.Bool(true);
 
   wr.EndObject();

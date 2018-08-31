@@ -761,6 +761,7 @@ json_parser::message_type(const rapidjson::Value& obj)
       {detail::path_added(), ossia::oscquery::message_type::PathAdded},
       {detail::path_changed(), ossia::oscquery::message_type::PathChanged},
       {detail::path_removed(), ossia::oscquery::message_type::PathRemoved},
+      {detail::path_renamed(), ossia::oscquery::message_type::PathRenamed},
       {detail::attributes_changed(), ossia::oscquery::message_type::AttributesChanged},
       {detail::start_osc_streaming(), ossia::oscquery::message_type::StartOscStreaming},
       {detail::listen(), ossia::oscquery::message_type::Listen},
@@ -978,6 +979,37 @@ void json_parser::parse_path_removed(
     if (auto node = ossia::net::find_node(root, path))
     {
       ossia::net::set_zombie(*node, true);
+    }
+  }
+}
+
+void json_parser::parse_path_renamed(
+    net::node_base& root, const rapidjson::Value& obj)
+{
+  auto dat_it = obj.FindMember(detail::data());
+  if (dat_it != obj.MemberEnd())
+  {
+    if(dat_it->value.IsObject())
+    {
+      auto old_it = dat_it->value.FindMember("OLD");
+      auto new_it = dat_it->value.FindMember("NEW");
+
+      if(old_it != dat_it->value.MemberEnd() && new_it != dat_it->value.MemberEnd())
+      {
+        if(old_it->value.IsString() && new_it->value.IsString())
+        {
+          if(auto node = ossia::net::find_node(root, old_it->value.GetString()))
+          {
+            std::string_view new_path = get_string_view(new_it->value);
+            auto last_slash = new_path.find_last_of('/');
+            if(last_slash != std::string::npos)
+            {
+              auto last_part = new_path.substr(last_slash + 1);
+              node->set_name(std::string{last_part});
+            }
+          }
+        }
+      }
     }
   }
 }
