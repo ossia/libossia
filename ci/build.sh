@@ -625,7 +625,7 @@ case "$TRAVIS_OS_NAME" in
 
       cd "$TRAVIS_BUILD_DIR/ossia-qml" && tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
 
-    else if [[  "$BUILD_TYPE" == "ossia-cpp" ]]; then
+    elif [[  "$BUILD_TYPE" == "ossia-cpp" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
         -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
