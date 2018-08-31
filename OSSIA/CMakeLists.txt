@@ -111,7 +111,6 @@ endif()
 
 if(NOT TARGET RtMidi17)
   set(OSSIA_PROTOCOL_MIDI OFF)
-  set(OSSIA_DATAFLOW OFF)
 endif()
 
 if(NOT OSSIA_EDITOR)
@@ -120,6 +119,11 @@ endif()
 
 if(OSSIA_PROTOCOL_AUDIO)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} AUDIO)
+endif()
+
+if(NOT OSSIA_PROTOCOL_MIDI OR NOT OSSIA_PROTOCOL_AUDIO)
+  set(OSSIA_DATAFLOW OFF)
+  set(OSSIA_EDITOR OFF)
 endif()
 
 function(ossia_link_jack)
