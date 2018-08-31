@@ -74,7 +74,7 @@ public:
    * must not be invalidated upon removal.
    */
   using impl = typename std::list<T>;
-  using iterator = typename impl::const_iterator;
+  using iterator = typename impl::iterator;
 
   /**
    * @brief add_callback Add a new callback.
@@ -108,6 +108,15 @@ public:
     if (m_callbacks.size() == 1)
       on_removing_last_callback();
     m_callbacks.erase(it);
+  }
+
+  /**
+   * @brief Replaces an existing callback with another function.
+   */
+  void replace_callback(iterator it, T&& cb)
+  {
+    std::lock_guard<std::mutex> lck{m_mutx};
+    *m_callbacks.erase(it, it) = std::move(cb);
   }
 
   /**
