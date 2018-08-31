@@ -354,30 +354,6 @@ oscquery_server_protocol::find_client(const connection_handler& hdl)
   return nullptr;
 }
 
-oscquery_client*
-oscquery_server_protocol::find_building_client(const connection_handler& hdl)
-{
-  lock_t lock(m_buildingClientsMutex);
-
-  auto it = ossia::find(m_buildingClients, hdl);
-  if (it != m_buildingClients.end())
-    return &*it;
-  return nullptr;
-}
-
-void oscquery_server_protocol::enable_client(
-    const oscquery_server_protocol::connection_handler& hdl)
-{
-  lock_t l1(m_clientsMutex);
-  lock_t l2(m_buildingClientsMutex);
-
-  auto bld_it = ossia::find(m_buildingClients, hdl);
-  assert(bld_it != m_buildingClients.end());
-
-  m_clients.emplace_back(std::move(*bld_it));
-  m_buildingClients.erase(bld_it);
-}
-
 using map_setter_fun = void (*)(
     const std::pair<const std::string, std::string>& str,
     ossia::net::parameter_data&);
@@ -457,10 +433,19 @@ void oscquery_server_protocol::on_OSCMessage(
   {
     for(auto& c : m_clients)
     {
-      // TODO this is weird: udp does not really have a port...
-      if(ip.port != c.remote_sender_port) // TODO check for ip too
+      if(c.sender)
       {
-        c.sender->socket().Send(m.data(), m.size());
+        // TODO this is weird: udp does not really have a port...
+        if(ip.port != c.remote_sender_port) // TODO check for ip too
+        {
+          c.sender->socket().Send(m.data(), m.size());
+        }
+      }
+      else
+      {
+        m_websocketServer->send_binary_message(
+              c.connection,
+              std::string(m.data(), m.size()));
       }
     }
   }
@@ -476,20 +461,20 @@ catch (...)
 
 void oscquery_server_protocol::on_connectionOpen(const connection_handler& hdl) try
 {
-  {
-    auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
-    lock_t lock(m_buildingClientsMutex);
-    m_buildingClients.emplace_back(hdl);
-    asio::ip::tcp::socket& sock = con->get_raw_socket();
-    auto ip = sock.remote_endpoint().address().to_string();
-    if(ip.substr(0, 7) == "::ffff:")
-        ip = ip.substr(7);
+  auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
 
-    m_buildingClients.back().client_ip = ip;
-    onClientConnected(con->get_remote_endpoint());
+  asio::ip::tcp::socket& sock = con->get_raw_socket();
+  auto ip = sock.remote_endpoint().address().to_string();
+  if(ip.substr(0, 7) == "::ffff:")
+      ip = ip.substr(7);
+
+  {
+    lock_t lock(m_clientsMutex);
+    m_clients.emplace_back(hdl);
+    m_clients.back().client_ip = std::move(ip);
   }
-  // Send the client a message with the OSC port
-  // m_websocketServer->send_message(hdl, json_writer::device_info(m_oscPort));
+
+  onClientConnected(con->get_remote_endpoint());
 }
 catch (const std::exception& e)
 {

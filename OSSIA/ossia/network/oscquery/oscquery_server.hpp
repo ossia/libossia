@@ -75,12 +75,6 @@ private:
   // List of connected clients
   oscquery_client* find_client(const connection_handler& hdl);
 
-  // List of clients who connected but did not finish the connection procedure
-  oscquery_client* find_building_client(const connection_handler& hdl);
-
-  // Called when a client is built (it gave its osc port)
-  void enable_client(const connection_handler& hdl);
-
   void add_node(
       ossia::string_view path,
       const string_map<std::string>& parameters);
@@ -124,7 +118,6 @@ private:
   net::listened_parameters m_listening;
 
   // The clients connected to this server
-  std::vector<oscquery_client> m_buildingClients;
   std::vector<oscquery_client> m_clients;
 
   ossia::net::device_base* m_device{};
@@ -133,7 +126,6 @@ private:
   std::thread m_serverThread;
 
   // To lock m_clients
-  mutex_t m_buildingClientsMutex;
   mutex_t m_clientsMutex;
 
   // The local ports

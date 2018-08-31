@@ -95,7 +95,7 @@ struct json_query_answerer
       int remotePort)
   {
     // First we find for a corresponding client
-    auto clt = proto.find_building_client(hdl);
+    auto clt = proto.find_client(hdl);
 
     if (!clt)
     {
@@ -113,7 +113,6 @@ struct json_query_answerer
       }
     }
 
-    proto.enable_client(hdl);
     return {};
   }
 
