@@ -92,7 +92,9 @@ function(install_headers_rec theHeaders)
 
 endfunction()
 
-install_headers_rec("${API_HEADERS}")
+if(NOT OSSIA_CPP_ONLY)
+  install_headers_rec("${API_HEADERS}")
+endif()
 
 if(OSSIA_EDITOR)
   install_headers_rec("${OSSIA_EDITOR_HEADERS}")
@@ -106,7 +108,7 @@ endif()
 if(OSSIA_PROTOCOL_SERIAL)
   install_headers_rec("${OSSIA_SERIAL_HEADERS}")
 endif()
-if(OSSIA_PROTOCOL_OSCQUERY)
+if(OSSIA_PROTOCOL_OSCQUERY AND NOT OSSIA_CPP_ONLY)
   install_headers_rec("${OSSIA_OSCQUERY_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_WEBSOCKETS)
@@ -138,6 +140,7 @@ install(FILES
         COMPONENT Devel)
 
 # Install used libraries headers
+if(NOT OSSIA_CPP_ONLY)
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/RtMidi17/rtmidi17
   DESTINATION include/
   COMPONENT Devel)
@@ -185,15 +188,19 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp
         DESTINATION include
         COMPONENT Devel)
+
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.hpp
         DESTINATION include/
         COMPONENT Devel)
+
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/flat_hash_map/flat_hash_map.hpp
         DESTINATION include/
         COMPONENT Devel)
+
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/flat/include/flat
         DESTINATION include
         COMPONENT Devel)
+
 install(FILES
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
      ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_sc_map.h
@@ -228,10 +235,11 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         COMPONENT Devel)
 
 install(SCRIPT InstallBoost.cmake)
+
 install(DIRECTORY ${CMAKE_BINARY_DIR}/boost
         DESTINATION include
         COMPONENT Devel)
-
+endif()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
