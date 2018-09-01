@@ -53,6 +53,7 @@ class jack_engine final
 public:
   jack_engine(std::string name, int inputs, int outputs, int rate, int bs)
   {
+    stopped = true;
 #if defined(_WIN32)
     {
       if (!has_jackd_process())
@@ -128,6 +129,8 @@ public:
         jack_free(ports);
       }
     }
+
+    stopped = false;
   }
 
   ~jack_engine() override
@@ -163,14 +166,20 @@ public:
     stop_processing = true;
     protocol = nullptr;
     while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100)) ;
+    stopped = true;
   }
 
+  bool running() const override
+  {
+    return !stopped;
+  }
 private:
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
+    auto proto = self.protocol.load();
     if(self.stop_processing)
     {
       for(std::size_t i = 0; i < outputs; i++)
@@ -183,7 +192,6 @@ private:
       return 0;
     }
 
-    auto proto = self.protocol.load();
     if(proto)
     {
       self.processing = true;
@@ -216,6 +224,7 @@ private:
   std::atomic<jack_client_t*> client{};
   std::vector<jack_port_t*> input_ports;
   std::vector<jack_port_t*> output_ports;
+  std::atomic_bool stopped{};
 };
 }
 

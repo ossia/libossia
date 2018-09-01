@@ -132,6 +132,12 @@ class portaudio_engine final
       }
     }
 
+    bool running() const override
+    {
+      auto s = m_stream.load();
+      return s && Pa_IsStreamActive(m_stream);
+    }
+
     ~portaudio_engine() override
     {
       stop();
@@ -196,6 +202,7 @@ class portaudio_engine final
           for(std::size_t j = 0; j < nframes; j++)
             chan[j] = 0.;
         }
+
         return 0;
       }
 

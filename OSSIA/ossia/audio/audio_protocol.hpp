@@ -14,6 +14,7 @@ class OSSIA_EXPORT audio_engine
   public:
     virtual ~audio_engine();
 
+    virtual bool running() const = 0;
     virtual void stop() = 0;
     virtual void reload(audio_protocol* cur) = 0;
 
@@ -42,7 +43,7 @@ class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 
     void set_tick(fun_type&& t)
     {
-      if(engine)
+      if(engine && engine->running() && !engine->stop_processing)
       {
         ui_tick = std::move(t);
         replace_tick = true;

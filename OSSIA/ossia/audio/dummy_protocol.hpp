@@ -6,6 +6,7 @@ class dummy_engine final
     : public audio_engine
 {
   int m_rate{}, m_bs{};
+  std::atomic_bool m_active;
   public:
     dummy_engine(int rate, int bs)
     {
@@ -15,33 +16,54 @@ class dummy_engine final
       setup_thread();
     }
 
+    bool running() const override
+    {
+      return !m_runThread.joinable();
+    }
     void setup_thread()
     {
+      m_active = true;
+
       int us_per_buffer = 1e6 * double(m_bs) / double(m_rate);
       m_runThread = std::thread{[=] {
-        while(!stop_processing)
+        using clk = std::chrono::high_resolution_clock;
+        clk::time_point start = clk::now();
+        auto end = start;
+        while(m_active)
         {
-          if(auto proto = protocol.load())
+          std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
+          end = clk::now();
+          if(!stop_processing)
           {
-            proto->process_generic(*proto, nullptr, nullptr, 0, 0, m_bs);
-            proto->audio_tick(m_bs, 0);
-
-            // Run a tick
-            if(proto->replace_tick)
+            if(auto proto = protocol.load())
             {
-              proto->audio_tick = std::move(proto->ui_tick);
-              proto->ui_tick = {};
-              proto->replace_tick = false;
+              auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+              int samples = std::ceil(double(m_rate) * ns / 1e9);
+              proto->process_generic(*proto, nullptr, nullptr, 0, 0, samples);
+              proto->audio_tick(m_bs, 0);
+
+              // Run a tick
+              if(proto->replace_tick)
+              {
+                proto->audio_tick = std::move(proto->ui_tick);
+                proto->ui_tick = {};
+                proto->replace_tick = false;
+              }
             }
           }
-          std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
+          start = clk::now();
         }
       }};
     }
 
     ~dummy_engine() override
     {
+      m_active = false;
+      protocol = nullptr;
 
+      while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      if(m_runThread.joinable())
+        m_runThread.join();
     }
 
     void reload(audio_protocol* p) override
@@ -66,11 +88,6 @@ class dummy_engine final
     void stop() override
     {
       stop_processing = true;
-      protocol = nullptr;
-
-      while(processing) std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      if(m_runThread.joinable())
-        m_runThread.join();
     }
 
   private:

@@ -43,6 +43,11 @@ class sdl_protocol final
       SDL_Quit();
     }
 
+    bool running() const override
+    {
+      return SDL_GetAudioStatus() == SDL_audiostatus::SDL_AUDIO_PLAYING;
+    }
+
     void stop() override
     {
       stop_processing = true;
