@@ -7,10 +7,8 @@ class dummy_engine final
 {
   int m_rate{}, m_bs{};
   public:
-    dummy_engine(std::string_view name, int& inputs, int& outputs, int rate, int bs)
+    dummy_engine(int rate, int bs)
     {
-      //inputs = 0;
-      //outputs = 0;
       m_rate = rate;
       m_bs = bs;
 

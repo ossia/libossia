@@ -1,10 +1,10 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if __has_include(<SDL/SDL_audio.h>) && !defined(OSSIA_PROTOCOL_JOYSTICK)
-#define OSSIA_HAS_SDL_AUDIO 1
 #include <ossia/audio/audio_protocol.hpp>
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
+#define OSSIA_AUDIO_SDL 1
 
 namespace ossia
 {
@@ -14,7 +14,7 @@ class sdl_protocol final
   static constexpr int inputs = 0;
   static constexpr int outputs = 2;
   public:
-    sdl_protocol(int& rate, int& bs)
+    sdl_protocol(int rate, int bs)
     {
       SDL_Init(SDL_INIT_AUDIO);
       m_desired.freq = rate;

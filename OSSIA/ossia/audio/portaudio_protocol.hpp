@@ -6,6 +6,9 @@
 #if __has_include(<pa_jack.h>) && !defined(_MSC_VER)
 #include <pa_jack.h>
 #endif
+
+#define OSSIA_AUDIO_PORTAUDIO 1
+
 namespace ossia
 {
 class portaudio_engine final
@@ -14,7 +17,7 @@ class portaudio_engine final
   public:
     int m_ins{}, m_outs{};
     portaudio_engine(std::string name, std::string card_in, std::string card_out,
-                     int& inputs, int& outputs, int& rate, int& bs)
+                     int inputs, int outputs, int rate, int bs)
     {
       if(Pa_Initialize() != paNoError)
         throw std::runtime_error("Audio error");

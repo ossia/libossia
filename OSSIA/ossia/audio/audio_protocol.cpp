@@ -35,7 +35,7 @@ ossia::audio_engine* make_audio_engine(
   }
 #endif
 
-#if defined(OSSIA_HAS_SDL_AUDIO)
+#if defined(OSSIA_AUDIO_SDL)
   else if(proto == "SDL")
   {
     inputs = 0; outputs = 2;
@@ -45,7 +45,7 @@ ossia::audio_engine* make_audio_engine(
 
   else if (proto == "Dummy")
   {
-    p = new ossia::dummy_engine{ name, inputs, outputs, rate, bs };
+    p = new ossia::dummy_engine{rate, bs};
   }
 
   if(!p)
@@ -64,7 +64,7 @@ ossia::audio_engine* make_audio_engine(
 
   if(!p)
   {
-#if defined(OSSIA_HAS_SDL_AUDIO)
+#if defined(OSSIA_AUDIO_SDL)
     inputs = 0; outputs = 2;
     p = new ossia::sdl_protocol{rate, bs};
 #endif
@@ -72,7 +72,7 @@ ossia::audio_engine* make_audio_engine(
 
   if(!p)
   {
-    p = new ossia::dummy_engine{name, inputs, outputs, rate, bs};
+    p = new ossia::dummy_engine{rate, bs};
   }
 
   return p;
