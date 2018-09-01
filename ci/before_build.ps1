@@ -78,7 +78,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp" ) {
   $LogFile = "c:\projects\libossia\configure-opp.log"
-  cmake $CommonFlags64 -DOSSIA_STATIC=0 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_PROTOCOL_MIDI=OFF -DOSSIA_PROTOCOL_AUDIO=OFF -DOSSIA_PROTOCOL_LEAPMOTION=OFF -DOSSIA_PROTOCOL_PHIDGETS=OFF -DOSSIA_PROTOCOL_SERIAL=OFF -DOSSIA_PROTOCOL_JOYSTICK=OFF -DOSSIA_PROTOCOL_OSC=OFF -DOSSIA_PROTOCOL_MINUIT=OFF  c:\projects\libossia > $LogFile
+  cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=0 -DOSSIA_CPP_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -87,9 +87,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "c:\projects\libossia\configure-opp-32bit.log"
-  cmake $CommonFlags32 -DOSSIA_STATIC=0 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_PROTOCOL_MIDI=OFF -DOSSIA_PROTOCOL_AUDIO=OFF -DOSSIA_PROTOCOL_LEAPMOTION=OFF -DOSSIA_PROTOCOL_PHIDGETS=OFF -DOSSIA_PROTOCOL_SERIAL=OFF -DOSSIA_PROTOCOL_JOYSTICK=OFF -DOSSIA_PROTOCOL_OSC=OFF -DOSSIA_PROTOCOL_MINUIT=OFF  c:\projects\libossia > $LogFile
+  cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install-32bit" -DOSSIA_STATIC=0 -DOSSIA_CPP_ONLY=1 c:\projects\libossia > $LogFile  CheckLastExitCode
   CheckLastExitCode
-
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"

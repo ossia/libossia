@@ -111,24 +111,11 @@ case "$TRAVIS_OS_NAME" in
           -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-          -DOSSIA_C=0 \
-          -DOSSIA_CPP=1 \
           -DOSSIA_TESTING=0 \
           -DOSSIA_EXAMPLES=0 \
           -DOSSIA_STATIC=0 \
-          -DOSSIA_MAX=0 \
-          -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
-         -DOSSIA_PROTOCOL_MIDI=OFF \
-         -DOSSIA_PROTOCOL_AUDIO=OFF \
-         -DOSSIA_PROTOCOL_LEAPMOTION=OFF \
-         -DOSSIA_PROTOCOL_PHIDGETS=OFF \
-         -DOSSIA_PROTOCOL_SERIAL=OFF \
-         -DOSSIA_PROTOCOL_JOYSTICK=OFF \
-         -DOSSIA_PROTOCOL_OSC=OFF \
-         -DOSSIA_PROTOCOL_MINUIT=OFF \
-         -DOSSIA_QT=0 ..
-
+          -DOSSIA_CPP_ONLY=1 ..
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install
@@ -629,25 +616,12 @@ case "$TRAVIS_OS_NAME" in
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
         -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
-        -DOSSIA_C=0 \
-        -DOSSIA_CPP=1 \
         -DOSSIA_TESTING=0 \
         -DOSSIA_EXAMPLES=0 \
         -DOSSIA_STATIC=0 \
-        -DOSSIA_MAX=0 \
-        -DOSSIA_PD=0 \
         -DOSSIA_CI=1 \
-        -DOSSIA_PROTOCOL_MIDI=OFF \
-        -DOSSIA_PROTOCOL_AUDIO=OFF \
-        -DOSSIA_PROTOCOL_LEAPMOTION=OFF \
-        -DOSSIA_PROTOCOL_PHIDGETS=OFF \
-        -DOSSIA_PROTOCOL_SERIAL=OFF \
-        -DOSSIA_PROTOCOL_JOYSTICK=OFF \
-        -DOSSIA_PROTOCOL_OSC=OFF \
-        -DOSSIA_PROTOCOL_MINUIT=OFF \
         -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
-        -DOSSIA_QT=0 ..
-
+        -DOSSIA_CPP_ONLY=1 ..
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install
