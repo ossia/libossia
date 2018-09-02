@@ -42,7 +42,9 @@ case "$TRAVIS_OS_NAME" in
     export BOOST_ROOT=/opt/boost
 #    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
+    set +e
     source $QT_ENV_SCRIPT
+    set -e
     export LD_LIBRARY_PATH="/usr/lib64:$LD_LIBRARY_PATH"
 
     case "$BUILD_TYPE" in
