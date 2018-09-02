@@ -255,6 +255,9 @@ if(OSSIA_CPP)
     target_include_directories(ossia PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp"
         )
+    target_include_directories(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}"
+      )
 endif()
 
 if(OSSIA_QT)
