@@ -84,7 +84,7 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_EXAMPLES=0 \
           -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
-          -DOSSIA_QT=1 ..
+          -DOSSIA_QT=0 ..
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
