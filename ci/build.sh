@@ -1,6 +1,6 @@
-#!/bin/bash -x
+#!/bin/bash -ex
 # Note : to make the tests work under travis, they have to be changed in order not to require QApplication but only QCoreApplication
-set +e
+
 case "$TRAVIS_OS_NAME" in
   linux)
     export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
