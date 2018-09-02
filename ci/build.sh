@@ -169,16 +169,8 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                   -DOSSIA_STATIC=1 \
-                   -DOSSIA_TESTING=0 \
-                   -DOSSIA_EXAMPLES=0 \
-                   -DOSSIA_CI=1 \
-                   -DOSSIA_QT=0 \
-                   -DOSSIA_NO_QT=1 \
-                   -DOSSIA_PYTHON=0 \
-                   -DOSSIA_EDITOR=OFF \
-                   -DOSSIA_DATAFLOW=OFF \
-                   -DOSSIA_PROTOCOL_MIDI=OFF \
+                   -DOSSIA_PD_ONLY=1 \
+                   -DOSSIA_CI=1
                    ..
 
         # make a clone after initializing submodules (with Cmake)
@@ -190,7 +182,7 @@ case "$TRAVIS_OS_NAME" in
         popd
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+        $CMAKE_BIN --build . --target install
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
         tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_x86_64.tar.gz ossia
