@@ -22,6 +22,9 @@ class dummy_engine final
     }
     void setup_thread()
     {
+      m_active = false;
+      if(m_runThread.joinable())
+        m_runThread.join();
       m_active = true;
 
       int us_per_buffer = 1e6 * double(m_bs) / double(m_rate);
