@@ -40,22 +40,6 @@ class portaudio_engine final
           card_out_idx = i;
         }
       }
-      if(card_in_idx == paNoDevice)
-        card_in_idx = Pa_GetDefaultInputDevice();
-      if(card_out_idx == paNoDevice)
-        card_out_idx = Pa_GetDefaultOutputDevice();
-
-      if(card_out_idx != card_in_idx)
-      {
-        auto in = Pa_GetDeviceInfo(card_in_idx);
-        auto out = Pa_GetDeviceInfo(card_out_idx);
-
-        if(in->hostApi != paMME || out->hostApi != paMME)
-        {
-          card_in_idx = card_out_idx;
-        }
-      }
-
 
       auto devInInfo = Pa_GetDeviceInfo(card_in_idx);
       if(!devInInfo)
@@ -98,11 +82,16 @@ class portaudio_engine final
       outputParameters.suggestedLatency = 0.01;
       outputParameters.hostApiSpecificStreamInfo = nullptr;
 
+      PaStreamParameters* actualInput{};
+      if(card_in_idx != paNoDevice && inputs > 0)
+        actualInput = &inputParameters;
+      PaStreamParameters* actualOutput{};
+      if(card_out_idx != paNoDevice && outputs > 0)
+        actualOutput = &outputParameters;
       std::cerr << "=== stream start ===\n";
       PaStream* stream;
       auto ec = Pa_OpenStream(&stream,
-                              card_in_idx != paNoDevice ? &inputParameters : nullptr,
-                              card_out_idx != paNoDevice ? &outputParameters : nullptr,
+                              actualInput, actualOutput,
                               rate,
                               bs, //paFramesPerBufferUnspecified,
                               paNoFlag,
