@@ -112,7 +112,7 @@ case "$TRAVIS_OS_NAME" in
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DCMAKE_BUILD_TYPE=Release \
           -DOSSIA_TESTING=0 \
           -DOSSIA_EXAMPLES=0 \
           -DOSSIA_STATIC=0 \
