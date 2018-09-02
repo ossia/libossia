@@ -49,6 +49,7 @@ if(OSSIA_QML)
         TARGETS ossia
         LIBRARY DESTINATION Ossia/
         RUNTIME DESTINATION Ossia/
+        ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/tmp/
         )
     install(
         FILES
@@ -69,6 +70,7 @@ if(OSSIA_QML)
 endif()
 
 
+if(NOT OSSIA_QML_ONLY)
 # Default case, C / C++ library
 # Install
 install(TARGETS ossia
@@ -268,3 +270,4 @@ set(ConfigPackageLocation lib/cmake/ossia)
 install(EXPORT ossia-targets
         DESTINATION "${ConfigPackageLocation}"
         NAMESPACE ossia::)
+endif()
