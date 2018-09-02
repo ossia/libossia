@@ -253,10 +253,10 @@ endif()
 if(OSSIA_CPP)
     target_sources(ossia PRIVATE ${OSSIA_CPP_HEADERS} ${OSSIA_CPP_SRCS})
     target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/ossia-cpp"
         )
     target_include_directories(ossia PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}"
+      "${CMAKE_CURRENT_LIST_DIR}"
       )
 endif()
 
