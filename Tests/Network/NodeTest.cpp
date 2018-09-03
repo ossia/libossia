@@ -9,10 +9,11 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <ossia-qt/name_utils.hpp>
 #include <regex>
-// #include <ossia-qt/js_utilities.hpp>
 
+#if defined(OSSIA_QT)
+ #include <ossia-qt/js_utilities.hpp>
+#endif
 using namespace ossia;
 using namespace ossia::net;
 using namespace std::placeholders;
@@ -177,28 +178,29 @@ TEST_CASE ("test_complex_type", "test_complex_type")
 TEST_CASE ("test_sanitize", "test_sanitize")
 {
   using namespace std::literals;
-  REQUIRE(QString::fromStdString(sanitize_name("foo")) == QString("foo"));
-  REQUIRE(QString::fromStdString(sanitize_name("foo*")) == QString("foo_"));
-  REQUIRE(QString::fromStdString(sanitize_name("fo$o$*")) == QString("fo_o__"));
-  REQUIRE(QString::fromStdString(sanitize_name("")) == QString(""));
+  REQUIRE(sanitize_name("foo") == "foo"s);
+  REQUIRE(sanitize_name("foo*") == "foo_"s);
+  REQUIRE(sanitize_name("fo$o$*") == "fo_o__"s);
+  REQUIRE(sanitize_name("") == ""s);
 
-  REQUIRE(QString::fromStdString(sanitize_name("foo"s, {"foo"})) == QString("foo.1"));
-  REQUIRE(QString::fromStdString(sanitize_name("foo"s, {"foo", "foo.1"})) == QString("foo.2"));
+  REQUIRE(sanitize_name("foo"s, {"foo"}) == "foo.1"s);
+  REQUIRE(sanitize_name("foo"s, {"foo", "foo.1"}) == "foo.2"s);
 
-  REQUIRE(QString::fromStdString(sanitize_name("foo.1"s, {"foo"})) == QString("foo.1"));
-  REQUIRE(QString::fromStdString(sanitize_name("foo.1"s, {"foo.1"})) == QString("foo.2"));
-  REQUIRE(QString::fromStdString(sanitize_name("foo.1"s, {"foo", "foo.1"})) == QString("foo.2"));
+  REQUIRE(sanitize_name("foo.1"s, {"foo"}) == "foo.1"s);
+  REQUIRE(sanitize_name("foo.1"s, {"foo.1"}) == "foo.2"s);
+  REQUIRE(sanitize_name("foo.1"s, {"foo", "foo.1"}) == "foo.2"s);
 
-  REQUIRE(QString::fromStdString(sanitize_name("foo.2"s, {"foo"})) == QString("foo.2"));
-  REQUIRE(QString::fromStdString(sanitize_name("foo.2"s, {"foo", "foo.1"})) == QString("foo.2"));
+  REQUIRE(sanitize_name("foo.2"s, {"foo"}) == "foo.2"s);
+  REQUIRE(sanitize_name("foo.2"s, {"foo", "foo.1"}) == "foo.2"s);
 
-  REQUIRE(QString::fromStdString(sanitize_name("foo.3"s, {"foo"})) == QString("foo.3"));
-  REQUIRE(QString::fromStdString(sanitize_name("foo.3"s, {"foo", "foo.1"})) == QString("foo.3"));
+  REQUIRE(sanitize_name("foo.3"s, {"foo"}) == "foo.3"s);
+  REQUIRE(sanitize_name("foo.3"s, {"foo", "foo.1"}) == "foo.3"s);
 
 
   REQUIRE((ossia::net::sanitize_name("foo"s, {"foo"})) == "foo.1");
   REQUIRE((ossia::net::sanitize_name("foo"s, {"foo", "foo.1"})) == "foo.2");
 
+#if defined(OSSIA_QT)
   REQUIRE((ossia::net::sanitize_name(QString("foo"), {QString("foo")})) == "foo.1");
   REQUIRE((ossia::net::sanitize_name(QString("foo"), {QString("foo"), QString("foo.1")})) == "foo.2");
 
@@ -214,7 +216,6 @@ TEST_CASE ("test_sanitize", "test_sanitize")
   REQUIRE((ossia::net::sanitize_name(QString("State.2"), {QString("State.1")})) == "State.2");
   REQUIRE((ossia::net::sanitize_name(QString("State.2"), {QString("State.1"), QString("State.2")})) == "State.3");
 
-
   const char state1[]{'S', 't', 'a', 't', 'e', '.', '1'};
   REQUIRE((ossia::net::sanitize_name(
              QString("State.1"),
@@ -222,6 +223,7 @@ TEST_CASE ("test_sanitize", "test_sanitize")
   REQUIRE((ossia::net::sanitize_name(
              QString::fromLatin1(state1, 7),
   {QString::fromLatin1(state1, 7)})) == "State.2");
+#endif
 }
 
 

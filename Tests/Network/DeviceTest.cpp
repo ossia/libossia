@@ -31,6 +31,8 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #endif
+#include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include "TestUtils.hpp"
 
 using namespace ossia;
@@ -450,7 +452,7 @@ TEST_CASE ("test_comm_oscquery", "test_comm_oscquery")
                         [] { return std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"); });
     }
     catch(const std::exception& e) {
-      qDebug() << "Error : " << e.what();
+      std::cerr << "Error : " << e.what();
       REQUIRE(false);
     }
   }
