@@ -29,13 +29,13 @@ ossia_add_test(PathTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/PathTest.cpp")
 
 ossia_add_test(DeviceTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 ossia_add_test(NodeTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
-  
+
 if(OSSIA_EDITOR)
   ossia_add_test(AutomationTest
       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/AutomationTest.cpp"
       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TestUtils.hpp"
       )
-  
+
   if(NOT OSSIA_CI)
     # this test is too reliant on specific hardware capabilities to run on travis
     ossia_add_test(ClockTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ClockTest.cpp")
@@ -71,7 +71,7 @@ endif()
 
 if(OSSIA_QT)
   # The following lines are used to display the QMLs in the project view of IDEs
-  SET(QMLS 
+  SET(QMLS
     "${CMAKE_CURRENT_SOURCE_DIR}/testdata/http/http_example.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/testdata/qml/TestDevice.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/testdata/qml/TestDevice2.qml"
@@ -80,33 +80,33 @@ if(OSSIA_QT)
     "${CMAKE_CURRENT_SOURCE_DIR}/testdata/websocket/ws_icmc.qml"
   )
   add_custom_target(ossia_test_ui_qml SOURCES ${QMLS})
-  
+
   ossia_add_test(QtTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
   ossia_add_test(QmlTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
   ossia_add_test(QmlApiTest              "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlApiTest.cpp")
   ossia_add_test(QmlPresetTest           "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlPresetTest.cpp")
   ossia_add_test(JSTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/JSTest.cpp")
-  
+
   if(OSSIA_PROTOCOL_WEBSOCKETS)
-    ossia_add_test(WebSocketTest              "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
-  endif
-  
+    ossia_add_test(WebSocketTest         "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
+  endif()
+
   if(OSSIA_PROTOCOL_HTTP)
-    ossia_add_test(HttpTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpTest.cpp")
+    ossia_add_test(HttpTest              "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpTest.cpp")
   endif()
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
-  ossia_add_test(OSCQueryTest               "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTest.cpp")
-  ossia_add_test(OSCQueryColorTest          "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryColorTest.cpp")
+  ossia_add_test(OSCQueryTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTest.cpp")
+  ossia_add_test(OSCQueryColorTest       "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryColorTest.cpp")
 endif()
 
 if(OSSIA_PROTOCOL_PHIDGETS)
-  ossia_add_test(PhidgetTest                "${CMAKE_CURRENT_SOURCE_DIR}/Network/PhidgetTest.cpp")
+  ossia_add_test(PhidgetTest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/PhidgetTest.cpp")
 endif()
 
 if(OSSIA_CPP)
-  ossia_add_test(Cpp98Test                  "${CMAKE_CURRENT_SOURCE_DIR}/CPP/CPP98.cpp")
+  ossia_add_test(Cpp98Test               "${CMAKE_CURRENT_SOURCE_DIR}/CPP/CPP98.cpp")
 endif()
 
 if(OSSIA_C)
