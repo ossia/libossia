@@ -173,7 +173,7 @@ case "$TRAVIS_OS_NAME" in
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_PD_ONLY=1 \
-                   -DOSSIA_CI=1
+                   -DOSSIA_CI=1 \
                    ..
 
         # make a clone after initializing submodules (with Cmake)
