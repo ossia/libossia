@@ -83,7 +83,10 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
           -DOSSIA_TESTING=1 \
-          -DOSSIA_EXAMPLES=1 \
+          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_DATAFLOW=0 \
+          -DOSSIA_EDITOR=0 \
+          -DOSSIA_PROTOCOL_AUDIO=0 \
           -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
           -DOSSIA_QT=0 ..
@@ -112,7 +115,7 @@ case "$TRAVIS_OS_NAME" in
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          -DCMAKE_BUILD_TYPE=Release \
           -DOSSIA_TESTING=0 \
           -DOSSIA_EXAMPLES=0 \
           -DOSSIA_STATIC=0 \
@@ -133,15 +136,10 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                   -DOSSIA_STATIC=1 \
                    -DOSSIA_TESTING=1 \
                    -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_PD_ONLY=1 \
                    -DOSSIA_CI=1 \
-                   -DOSSIA_QT=0 \
-                   -DOSSIA_PYTHON=0 \
-                   -DOSSIA_EDITOR=OFF \
-                   -DOSSIA_DATAFLOW=OFF \
-                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
 
 
@@ -169,16 +167,8 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                   -DOSSIA_STATIC=1 \
-                   -DOSSIA_TESTING=0 \
-                   -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_PD_ONLY=1 \
                    -DOSSIA_CI=1 \
-                   -DOSSIA_QT=0 \
-                   -DOSSIA_NO_QT=1 \
-                   -DOSSIA_PYTHON=0 \
-                   -DOSSIA_EDITOR=OFF \
-                   -DOSSIA_DATAFLOW=OFF \
-                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
 
         # make a clone after initializing submodules (with Cmake)
@@ -190,7 +180,7 @@ case "$TRAVIS_OS_NAME" in
         popd
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+        $CMAKE_BIN --build . --target install
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
         tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_x86_64.tar.gz ossia
@@ -501,15 +491,9 @@ def get_versions():
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=0 \
-               -DOSSIA_PYTHON=0 \
-               -DOSSIA_PD=1 \
-               -DOSSIA_MAX=0 \
+               -DOSSIA_PD_ONLY=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_OSX_FAT_LIBRARIES=1 \
-               -DOSSIA_EDITOR=OFF \
-               -DOSSIA_DATAFLOW=OFF \
-               -DOSSIA_PROTOCOL_MIDI=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -632,10 +616,8 @@ def get_versions():
         tar -czf ${ARTIFACTS_DIR}/libossia-cpp-osx.tar.gz *
     else
       OSSIA_UNITY=1
-      OSSIA_QT=1
       if [[ "$OSSIA_STATIC" == "1" ]]; then
         OSSIA_UNITY=0
-        OSSIA_QT=0
       fi
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -646,7 +628,10 @@ def get_versions():
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=${OSSIA_QT} \
+               -DOSSIA_QT=0 \
+               -DOSSIA_DATAFLOW=0 \
+               -DOSSIA_EDITOR=0 \
+               -DOSSIA_PROTOCOL_AUDIO=0 \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
                -DOSSIA_UNITY3D=${OSSIA_UNITY} \
