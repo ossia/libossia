@@ -435,16 +435,19 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value)
           {
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
           }
+          break;
         case 3:
           if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble())
           {
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
           }
+          break;
         case 4:
           if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble() && value[3].GetDouble())
           {
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(), value[3].GetDouble());
           }
+          break;
         default:
         {
           std::vector<ossia::value> list;

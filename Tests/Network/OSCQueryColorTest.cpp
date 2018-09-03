@@ -75,7 +75,7 @@ TEST_CASE ("test_json_rgba8", "test_json_rgba8")
     REQUIRE(doc["VALUE"].IsArray());
     REQUIRE(doc["VALUE"].GetArray().Size() == 1);
     REQUIRE(doc["VALUE"][0].IsString());
-    REQUIRE(doc["VALUE"][0].GetString() == "#003B6FFF");
+    REQUIRE(doc["VALUE"][0].GetString() == "#003B6FFF"s);
   }
 }
 TEST_CASE ("test_parse_json_rgba8", "test_parse_json_rgba8")

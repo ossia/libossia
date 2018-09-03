@@ -338,7 +338,7 @@ TEST_CASE ("test_json_string", "test_json_string")
     REQUIRE(doc["VALUE"].IsArray());
     REQUIRE(doc["VALUE"].GetArray().Size() == 1);
     REQUIRE(doc["VALUE"][0].IsString());
-    REQUIRE(doc["VALUE"][0].GetString() == "hello world");
+    REQUIRE(doc["VALUE"][0].GetString() == "hello world"s);
   }
 }
 
@@ -364,7 +364,7 @@ TEST_CASE ("test_json_char", "test_json_char")
     REQUIRE(doc["VALUE"].IsArray());
     REQUIRE(doc["VALUE"].GetArray().Size() == 1);
     REQUIRE(doc["VALUE"][0].IsString());
-    REQUIRE(doc["VALUE"][0].GetString() == "x");
+    REQUIRE(doc["VALUE"][0].GetString() == "x"s);
   }
 }
 
@@ -486,7 +486,7 @@ TEST_CASE ("test_json_list", "test_json_list")
     REQUIRE(doc["VALUE"][0].IsFloat());
     REQUIRE(doc["VALUE"][0].GetFloat() == 1.234f);
     REQUIRE(doc["VALUE"][1].IsString());
-    REQUIRE(doc["VALUE"][1].GetString() == "foobar");
+    REQUIRE(doc["VALUE"][1].GetString() == "foobar"s);
     REQUIRE(doc["VALUE"][2].IsArray());
     REQUIRE(doc["VALUE"][2].GetArray().Size() == (unsigned int)2);
     REQUIRE(doc["VALUE"][2][0].GetInt() == 45);
