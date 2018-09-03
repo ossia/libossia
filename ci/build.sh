@@ -84,6 +84,9 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_STATIC=$OSSIA_STATIC \
           -DOSSIA_TESTING=0 \
           -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_DATAFLOW=0 \
+          -DOSSIA_EDITOR=0 \
+          -DOSSIA_PROTOCOL_AUDIO=0 \
           -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
           -DOSSIA_QT=0 ..
@@ -624,10 +627,8 @@ case "$TRAVIS_OS_NAME" in
         tar -czf ${ARTIFACTS_DIR}/libossia-cpp-osx.tar.gz *
     else
       OSSIA_UNITY=1
-      OSSIA_QT=1
       if [[ "$OSSIA_STATIC" == "1" ]]; then
         OSSIA_UNITY=0
-        OSSIA_QT=0
       fi
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
@@ -638,7 +639,10 @@ case "$TRAVIS_OS_NAME" in
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=${OSSIA_QT} \
+               -DOSSIA_QT=0 \
+               -DOSSIA_DATAFLOW=0 \
+               -DOSSIA_EDITOR=0 \
+               -DOSSIA_PROTOCOL_AUDIO=0 \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
                -DOSSIA_UNITY3D=${OSSIA_UNITY} \
