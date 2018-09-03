@@ -1,7 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
-#include <QtTest>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
+
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
@@ -15,78 +17,71 @@
 
 using namespace ossia;
 
-class AddressTest : public QObject
+TEST_CASE( "Addresses", "[Addresses]" )
 {
-    Q_OBJECT
+  ossia::net::generic_device device{"test"};
+  auto cld = device.create_child("child");
+  auto address = cld->create_parameter();
+  REQUIRE(address != nullptr);
+  if(address == nullptr)
+    return;
 
-    /*! test life cycle and accessors functions */
-    Q_SLOT void test_basic()
-    {
-        ossia::net::generic_device device{"test"};
-        auto cld = device.create_child("child");
-        auto address = cld->create_parameter();
-        QVERIFY(address != nullptr);
-        if(address == nullptr)
-          return;
+  REQUIRE(&address->get_node() == device.children().front().get());
+  REQUIRE(&address->get_node().get_device() == &device);
 
-        QVERIFY(&address->get_node() == device.children().front().get());
-        QVERIFY(&address->get_node().get_device() == &device);
+  REQUIRE(address->get_value_type() == val_type::IMPULSE);
 
-        QVERIFY(address->get_value_type() == val_type::IMPULSE);
+  address->set_value_type(val_type::INT);
+  REQUIRE(address->get_value_type() == val_type::INT);
 
-        address->set_value_type(val_type::INT);
-        QVERIFY(address->get_value_type() == val_type::INT);
+  REQUIRE(address->get_access() == ossia::access_mode::BI);
 
-        QVERIFY(address->get_access() == ossia::access_mode::BI);
+  address->set_access(ossia::access_mode::SET);
+  REQUIRE(address->get_access() == ossia::access_mode::SET);
 
-        address->set_access(ossia::access_mode::SET);
-        QVERIFY(address->get_access() == ossia::access_mode::SET);
+  REQUIRE(!address->get_domain());
 
-        QVERIFY(!address->get_domain());
+  address->set_domain(make_domain(0, 100));
+  REQUIRE(address->get_domain() == make_domain(0, 100));
 
-        address->set_domain(make_domain(0, 100));
-        QVERIFY(address->get_domain() == make_domain(0, 100));
+  REQUIRE(address->get_bounding() == ossia::bounding_mode::FREE);
 
-        QVERIFY(address->get_bounding() == ossia::bounding_mode::FREE);
+  address->set_bounding(ossia::bounding_mode::CLIP);
+  REQUIRE(address->get_bounding() == ossia::bounding_mode::CLIP);
 
-        address->set_bounding(ossia::bounding_mode::CLIP);
-        QVERIFY(address->get_bounding() == ossia::bounding_mode::CLIP);
+  REQUIRE(address->get_repetition_filter() == repetition_filter::OFF);
 
-        QVERIFY(address->get_repetition_filter() == repetition_filter::OFF);
+  address->set_repetition_filter(repetition_filter::ON);
+  REQUIRE(address->get_repetition_filter() == repetition_filter::ON);
+}
 
-        address->set_repetition_filter(repetition_filter::ON);
-        QVERIFY(address->get_repetition_filter() == repetition_filter::ON);
-    }
+// TODO add some checks
+TEST_CASE( "Units", "[Units]" )
+{
+  ossia::for_each_tagged(dataspace_u_list{}, [] (auto d_t) {
+    using type = typename decltype(d_t)::type;
+    ossia::for_each_tagged(type{}, [] (auto u_t) {
+      using utype = typename decltype(u_t)::type;
+      std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
+    });
+  });
+}
 
-    void test_units()
-    {
-      ossia::for_each_tagged(dataspace_u_list{}, [] (auto d_t) {
-        using type = typename decltype(d_t)::type;
-        ossia::for_each_tagged(type{}, [] (auto u_t) {
-          using utype = typename decltype(u_t)::type;
-          std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
-        });
-      });
-    }
+// TODO this is a benchmark not a test
+TEST_CASE( "Parameters", "[Parameters]")
+{
+  std::size_t k = 0;
+  Random r;
+  ossia::net::generic_device device{std::make_unique<ossia::oscquery::oscquery_server_protocol>(6677, 8899), "test"};
+  using namespace std::chrono;
+  for(int i = 0; i < 5000; i++)
+  {
+    auto& node = ossia::net::create_node(device.get_root_node(), "/blah");
+    auto t0 = steady_clock::now();
+    ossia::try_setup_parameter(r.getRandomString(), node);
+    auto t1 = steady_clock::now();
+    k += duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+  }
 
-    void test_try_setup_parameter()
-    {
-      Random r;
-      ossia::net::generic_device device{std::make_unique<ossia::oscquery::oscquery_server_protocol>(6677, 8899), "test"};
-      using namespace std::chrono;
-      for(int i = 0; i < 5000; i++)
-      {
-        auto& node = ossia::net::create_node(device.get_root_node(), "/blah");
-        auto t0 = steady_clock::now();
-        ossia::try_setup_parameter(r.getRandomString(), node);
-        auto t1 = steady_clock::now();
-        std::cout << duration_cast<std::chrono::nanoseconds>(t1 - t0).count() << std::endl;
-      }
-
-    }
-};
-
-QTEST_APPLESS_MAIN(AddressTest)
-
-#include "AddressTest.moc"
-
+  std::cout << "average time: " << double(k) / double(5000.) << std::endl;
+}

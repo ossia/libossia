@@ -1,55 +1,45 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
-#include <QtTest>
+
 #include <ossia/context.hpp>
 #include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
 #include <iostream>
-
+#include <QCoreApplication>
+#include <QTimer>
 using namespace ossia;
-class WebSocketTest : public QObject
+
+TEST_CASE ("test_websockets", "test_websockets")
 {
-    Q_OBJECT
+  int argc{}; char** argv{};
+  QCoreApplication app(argc, argv);
 
-private Q_SLOTS:
+  ossia::context context;
+  QFile f("testdata/websocket/ws_example.qml");
+  f.open(QFile::ReadOnly);
 
+  ossia::net::ws_generic_client_device ws_device{
+    std::make_unique<ossia::net::ws_generic_client_protocol>(
+          "ws://echo.websocket.org",
+          f.readAll()),
+        "test" };
 
-    void test_websockets()
+  // We have to wait a bit for the event loop to run.
+  QTimer t;
+  QObject::connect(&t, &QTimer::timeout, [&] () {
+    auto node = ossia::net::find_node(ws_device, "/tata/tutu");
+    if(node)
     {
-        int argc{}; char** argv{};
-        QCoreApplication app(argc, argv);
-
-        ossia::context context;
-        QFile f("testdata/websocket/ws_example.qml");
-        f.open(QFile::ReadOnly);
-
-        ossia::net::ws_generic_client_device ws_device{
-          std::make_unique<ossia::net::ws_generic_client_protocol>(
-                "ws://echo.websocket.org",
-                f.readAll()),
-              "test" };
-
-        // We have to wait a bit for the event loop to run.
-        QTimer t;
-        connect(&t, &QTimer::timeout, [&] () {
-          auto node = ossia::net::find_node(ws_device, "/tata/tutu");
-          if(node)
-          {
-            node->get_parameter()->push_value(32.325);
-          }
-        });
-        t.setInterval(1000);
-        t.setSingleShot(true);
-        t.start();
-
-        QTimer::singleShot(3000, [&] () { app.exit(); });
-
-        app.exec();
+      node->get_parameter()->push_value(32.325);
     }
-};
+  });
+  t.setInterval(1000);
+  t.setSingleShot(true);
+  t.start();
 
+  QTimer::singleShot(3000, [&] () { app.exit(); });
 
-QTEST_APPLESS_MAIN(WebSocketTest)
-
-#include "WebSocketTest.moc"
-
+  app.exec();
+}

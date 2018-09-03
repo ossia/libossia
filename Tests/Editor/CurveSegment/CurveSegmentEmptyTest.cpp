@@ -1,54 +1,42 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/editor/curve/curve_segment/empty.hpp>
-#include <QtTest>
 #include <iostream>
 
-using namespace ossia;
-
-class CurveSegmentEmptyTest : public QObject
+/*! test life cycle and accessors functions for bool type */
+TEST_CASE ("bool", "[bool]")
 {
-    Q_OBJECT
+  ossia::curve_segment_empty<bool> curveSegment;
 
-private:
+  REQUIRE(curveSegment(0., false, true) == false);
+  REQUIRE(curveSegment(0.25, false, true) == false);
+  REQUIRE(curveSegment(0.5, false, true) == false);
+  REQUIRE(curveSegment(0.75, false, true) == false);
+  REQUIRE(curveSegment(1., false, true) == false);
+}
 
-    /*! test life cycle and accessors functions for bool type */
-    Q_SLOT void test_bool()
-    {
-        curve_segment_empty<bool> curveSegment;
+/*! test life cycle and accessors functions for int type */
+TEST_CASE ("int", "[int]")
+{
+  ossia::curve_segment_empty<int> curveSegment;
 
-        QVERIFY(curveSegment(0., false, true) == false);
-        QVERIFY(curveSegment(0.25, false, true) == false);
-        QVERIFY(curveSegment(0.5, false, true) == false);
-        QVERIFY(curveSegment(0.75, false, true) == false);
-        QVERIFY(curveSegment(1., false, true) == false);
-    }
+  REQUIRE(curveSegment(0., 0, 1) == 0);
+  REQUIRE(curveSegment(0.25, 0, 1) == 0);
+  REQUIRE(curveSegment(0.5, 0, 1) == 0);
+  REQUIRE(curveSegment(0.75, 0, 1) == 0);
+  REQUIRE(curveSegment(1., 0, 1) == 0);
+}
 
-    /*! test life cycle and accessors functions for int type */
-    Q_SLOT void test_int()
-    {
-        curve_segment_empty<int> curveSegment;
-
-        QVERIFY(curveSegment(0., 0, 1) == 0);
-        QVERIFY(curveSegment(0.25, 0, 1) == 0);
-        QVERIFY(curveSegment(0.5, 0, 1) == 0);
-        QVERIFY(curveSegment(0.75, 0, 1) == 0);
-        QVERIFY(curveSegment(1., 0, 1) == 0);
-    }
-
-    /*! test life cycle and accessors functions for float type */
-    Q_SLOT void test_float()
-    {
-        curve_segment_empty<float> curveSegment;
-        QVERIFY(curveSegment(0., 0., 1.) == 0.);
-        QVERIFY(curveSegment(0.25, 0., 1.) == 0.);
-        QVERIFY(curveSegment(0.5, 0., 1.) == 0.);
-        QVERIFY(curveSegment(0.75, 0., 1.) == 0.);
-        QVERIFY(curveSegment(1., 0., 1.) == 0.);
-    }
-};
-
-QTEST_APPLESS_MAIN(CurveSegmentEmptyTest)
-
-#include "CurveSegmentEmptyTest.moc"
+/*! test life cycle and accessors functions for float type */
+TEST_CASE ("float", "[float]")
+{
+  ossia::curve_segment_empty<float> curveSegment;
+  REQUIRE(curveSegment(0., 0., 1.) == 0.);
+  REQUIRE(curveSegment(0.25, 0., 1.) == 0.);
+  REQUIRE(curveSegment(0.5, 0., 1.) == 0.);
+  REQUIRE(curveSegment(0.75, 0., 1.) == 0.);
+  REQUIRE(curveSegment(1., 0., 1.) == 0.);
+}

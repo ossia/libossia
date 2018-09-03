@@ -1,15 +1,20 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
-#include <QtTest>
+
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qt_device.hpp>
 #include <iostream>
-#include <QVector>
-#include <QtGui/QVector3D>
 #include <wobjectdefs.h>
 #include <wobjectimpl.h>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <QVector>
+#include <QTimer>
+#include <QCoreApplication>
+#include <QtGui/QVector3D>
 
 class SomeObject : public QObject
 {
@@ -74,36 +79,26 @@ public:
 };
 using namespace ossia;
 
-class QtDeviceTest : public QObject
+TEST_CASE ("test_device", "test_device")
 {
-  W_OBJECT(QtDeviceTest)
+  int argc{}; char** argv{};
+  QCoreApplication app(argc, argv);
 
-private Q_SLOTS:
-  void test_device()
-  {
-    int argc{}; char** argv{};
-    QCoreApplication app(argc, argv);
+  QObject obj1{&app};
+  Q_SET_OBJECT_NAME(obj1);
+  SomeObject obj2{&obj1};
+  Q_SET_OBJECT_NAME(obj2);
 
-    QObject obj1{&app};
-    Q_SET_OBJECT_NAME(obj1);
-    SomeObject obj2{&obj1};
-    Q_SET_OBJECT_NAME(obj2);
+  ossia::context context;
 
-    ossia::context context;
+  ossia::qt::qt_device dev{
+    app, std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "newDevice" };
 
-    ossia::qt::qt_device dev{
-      app, std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "newDevice" };
+  obj2.setTutu(555);
+  obj2.setVec3({1, 2, 3});
 
-    obj2.setTutu(555);
-    obj2.setVec3({1, 2, 3});
+  QTimer::singleShot(3000, [&] () { app.exit(); });
 
-    QTimer::singleShot(3000, [&] () { app.exit(); });
-
-    app.exec();
-  } W_SLOT(test_device);
-};
+  app.exec();
+}
 W_OBJECT_IMPL(SomeObject)
-W_OBJECT_IMPL(QtDeviceTest)
-
-
-QTEST_APPLESS_MAIN(QtDeviceTest)

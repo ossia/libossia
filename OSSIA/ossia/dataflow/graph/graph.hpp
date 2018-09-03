@@ -6,7 +6,7 @@ namespace ossia
 {
 
 class OSSIA_EXPORT graph final
-    : private graph_util
+    : public graph_util
     , public graph_base
 {
 public:

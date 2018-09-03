@@ -1,145 +1,134 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <ossia/editor/curve/curve_segment/power.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <QtTest>
+
 #include <iostream>
 
 using namespace ossia;
 
-class CurveTest : public QObject
+TEST_CASE ("test_basic", "test_basic")
 {
-  Q_OBJECT
+  //! \todo test clone()
+}
 
-private Q_SLOTS:
+TEST_CASE ("test_double_float", "test_double_float")
+{
+  // <double, float> curve
+  auto c = std::make_shared<curve<double, float>>();
+  REQUIRE(c != nullptr);
 
-  /*! test life cycle and accessors functions */
-    Q_SLOT
-  void test_basic()
-  {
-    //! \todo test clone()
-  }
+  curve_segment_linear<float> linearSegment;
 
-  Q_SLOT void test_double_float()
-  {
-    // <double, float> curve
-    auto c = std::make_shared<curve<double, float>>();
-    QVERIFY(c != nullptr);
+  c->set_x0(0.);
+  REQUIRE(c->get_x0() == 0.);
 
-    curve_segment_linear<float> linearSegment;
+  c->set_y0(0.);
+  REQUIRE(c->get_y0() == 0.);
 
-    c->set_x0(0.);
-    QVERIFY(c->get_x0() == 0.);
+  c->add_point(linearSegment, 1., 1.);
+  REQUIRE(c->get_points().size() == 1);
 
-    c->set_y0(0.);
-    QVERIFY(c->get_y0() == 0.);
+  c->add_point(linearSegment, 2., 0.);
+  REQUIRE(c->get_points().size() == 2);
 
-    c->add_point(linearSegment, 1., 1.);
-    QVERIFY(c->get_points().size() == 1);
+  REQUIRE(c->value_at(0.) == 0.);
+  REQUIRE(c->value_at(0.5) == 0.5);
+  REQUIRE(c->value_at(1.) == 1.);
+  REQUIRE(c->value_at(1.5) == 0.5);
+  REQUIRE(c->value_at(2.) == 0.);
 
-    c->add_point(linearSegment, 2., 0.);
-    QVERIFY(c->get_points().size() == 2);
+  c->set_y0(2.);
+  REQUIRE(c->get_y0() == 2.);
 
-    QVERIFY(c->value_at(0.) == 0.);
-    QVERIFY(c->value_at(0.5) == 0.5);
-    QVERIFY(c->value_at(1.) == 1.);
-    QVERIFY(c->value_at(1.5) == 0.5);
-    QVERIFY(c->value_at(2.) == 0.);
+  REQUIRE(c->value_at(0.) == 2.);
+  REQUIRE(c->value_at(0.5) == 1.5);
+  REQUIRE(c->value_at(1.) == 1.);
+  REQUIRE(c->value_at(1.5) == 0.5);
+  REQUIRE(c->value_at(2.) == 0.);
 
-    c->set_y0(2.);
-    QVERIFY(c->get_y0() == 2.);
+  c->remove_point(1.);
+  REQUIRE(c->get_points().size() == 1);
 
-    QVERIFY(c->value_at(0.) == 2.);
-    QVERIFY(c->value_at(0.5) == 1.5);
-    QVERIFY(c->value_at(1.) == 1.);
-    QVERIFY(c->value_at(1.5) == 0.5);
-    QVERIFY(c->value_at(2.) == 0.);
+  REQUIRE(c->value_at(0.) == 2.);
+  REQUIRE(c->value_at(0.5) == 1.5);
+  REQUIRE(c->value_at(1.) == 1.);
+  REQUIRE(c->value_at(1.5) == 0.5);
+  REQUIRE(c->value_at(2.) == 0.);
+}
 
-    c->remove_point(1.);
-    QVERIFY(c->get_points().size() == 1);
+TEST_CASE ("test_float_float", "test_float_float")
+{
+  auto c = std::make_shared<curve<float, float>>();
+  REQUIRE(c != nullptr);
 
-    QVERIFY(c->value_at(0.) == 2.);
-    QVERIFY(c->value_at(0.5) == 1.5);
-    QVERIFY(c->value_at(1.) == 1.);
-    QVERIFY(c->value_at(1.5) == 0.5);
-    QVERIFY(c->value_at(2.) == 0.);
-  }
+  curve_segment_linear<float> linearSegment;
 
-  Q_SLOT void test_float_float()
-  {
-    auto c = std::make_shared<curve<float, float>>();
-    QVERIFY(c != nullptr);
+  c->set_x0(-100.);
+  REQUIRE(c->get_x0() == -100.);
 
-    curve_segment_linear<float> linearSegment;
+  c->set_y0(-100.);
+  REQUIRE(c->get_y0() == -100.);
 
-    c->set_x0(-100.);
-    QVERIFY(c->get_x0() == -100.);
+  c->add_point(linearSegment, 0., 0.);
+  REQUIRE(c->get_points().size() == 1);
 
-    c->set_y0(-100.);
-    QVERIFY(c->get_y0() == -100.);
+  REQUIRE(c->value_at(-110.) == Approx(float(-100.)));
+  REQUIRE(c->value_at(-100.) == Approx(float(-100.)));
+  REQUIRE(c->value_at(-80.) == Approx(float(-80.)));
+  REQUIRE(c->value_at(-60.) == Approx(float(-60.)));
+  REQUIRE(c->value_at(-40.) == Approx(float(-40.)));
+  REQUIRE(c->value_at(-20.) == Approx(float(-20.)));
+  REQUIRE(c->value_at(-0.) == Approx(float(0.)));
+  REQUIRE(c->value_at(10.) == Approx(float(0.)));
+}
 
-    c->add_point(linearSegment, 0., 0.);
-    QVERIFY(c->get_points().size() == 1);
+TEST_CASE ("test_float_int", "test_float_int")
+{
+  auto c = std::make_shared<curve<float, int>>();
+  curve_segment_linear<int> linearSegment;
+  c->set_x0(-10.);
+  c->set_y0(-10);
+  c->add_point(linearSegment, 10., 10);
 
-    QVERIFY(qFuzzyCompare(c->value_at(-110.), float(-100.)));
-    QVERIFY(qFuzzyCompare(c->value_at(-100.), float(-100.)));
-    QVERIFY(qFuzzyCompare(c->value_at(-80.), float(-80.)));
-    QVERIFY(qFuzzyCompare(c->value_at(-60.), float(-60.)));
-    QVERIFY(qFuzzyCompare(c->value_at(-40.), float(-40.)));
-    QVERIFY(qFuzzyCompare(c->value_at(-20.), float(-20.)));
-    QVERIFY(qFuzzyCompare(c->value_at(-0.), float(0.)));
-    QVERIFY(qFuzzyCompare(c->value_at(10.), float(0.)));
-  }
+  REQUIRE(c->value_at(-10.) == -10);
+  REQUIRE(c->value_at(-9.5) == -9);
+  REQUIRE(c->value_at(-9.) == -9);
+  REQUIRE(c->value_at(-8.5) == -8);
+  REQUIRE(c->value_at(-8) == -8);
+  REQUIRE(c->value_at(-7.5) == -7);
+  REQUIRE(c->value_at(0.) == 0);
+  REQUIRE(c->value_at(10.) == 10);
+}
 
-  Q_SLOT void test_float_int()
-  {
-    auto c = std::make_shared<curve<float, int>>();
-    curve_segment_linear<int> linearSegment;
-    c->set_x0(-10.);
-    c->set_y0(-10);
-    c->add_point(linearSegment, 10., 10);
+TEST_CASE ("test_destination", "test_destination")
+{
+  ossia::net::generic_device device{"test"};
 
-    QVERIFY(c->value_at(-10.) == -10);
-    QCOMPARE(c->value_at(-9.5), -9);
-    QVERIFY(c->value_at(-9.) == -9);
-    QVERIFY(c->value_at(-8.5) == -8);
-    QVERIFY(c->value_at(-8) == -8);
-    QVERIFY(c->value_at(-7.5) == -7);
-    QVERIFY(c->value_at(0.) == 0);
-    QVERIFY(c->value_at(10.) == 10);
-  }
+  auto localTupleNode = device.create_child("my_tuple");
+  auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);
 
-  Q_SLOT void test_destination()
-  {
-    ossia::net::generic_device device{"test"};
+  std::vector<ossia::value> t{float{-1.}, float{0.}, float{1.}};
+  localTupleAddress->set_value(t);
 
-    auto localTupleNode = device.create_child("my_tuple");
-    auto localTupleAddress = localTupleNode->create_parameter(val_type::LIST);
+  auto c = std::make_shared<curve<double, float>>();
+  curve_segment_linear<float> linearSegment;
 
-    std::vector<ossia::value> t{float{-1.}, float{0.}, float{1.}};
-    localTupleAddress->set_value(t);
+  c->set_x0(0.);
 
-    auto c = std::make_shared<curve<double, float>>();
-    curve_segment_linear<float> linearSegment;
+  destination d(*localTupleAddress, ossia::destination_index{1});
+  c->set_y0_destination(d);
 
-    c->set_x0(0.);
+  REQUIRE(c->get_y0_destination() == d);
 
-    destination d(*localTupleAddress, ossia::destination_index{1});
-    c->set_y0_destination(d);
+  c->add_point(linearSegment, 1., 1.);
 
-    QVERIFY(c->get_y0_destination() == d);
-
-    c->add_point(linearSegment, 1., 1.);
-
-    QVERIFY(c->value_at(0.) == 0.);
-    QVERIFY(c->value_at(0.5) == 0.5);
-    QVERIFY(c->value_at(1.) == 1.);
-  }
-};
-
-QTEST_APPLESS_MAIN(CurveTest)
-
-#include "CurveTest.moc"
+  REQUIRE(c->value_at(0.) == 0.);
+  REQUIRE(c->value_at(0.5) == 0.5);
+  REQUIRE(c->value_at(1.) == 1.);
+}

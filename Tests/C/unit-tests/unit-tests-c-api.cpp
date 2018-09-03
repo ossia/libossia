@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <catch.hpp>
 
 #include <iostream>
 #include <ossia-c/preset/result.h>
@@ -12,64 +12,64 @@
 
 #include <ossia/ossia.hpp>
 
-TEST_CASE ("C API: Read JSON") {
-    const char* json = R"_(
-                       {"scene":
-                         {"cubes":
-                           [
-                             {"scale": {"x":1, "y":1, "z":0.5},
-                              "position": {"x":2, "y":0.5, "z":0},
-                              "color": {"r":192, "g":255, "b":225, "alpha":255}
-                             }
-                           ],
-                           "name": "Une scène"
-                         }
-                       }
-                       )_";
-    ossia_preset_t p;
+TEST_CASE ("C API: Read JSON", "[read]") {
+  const char* json = R"_(
+                     {"scene":
+                     {"cubes":
+                     [
+                     {"scale": {"x":1, "y":1, "z":0.5},
+                     "position": {"x":2, "y":0.5, "z":0},
+                     "color": {"r":192, "g":255, "b":225, "alpha":255}
+                     }
+                     ],
+                     "name": "Une scène"
+                     }
+                     }
+                     )_";
+  ossia_preset_t p;
 
-    REQUIRE(ossia_presets_read_json(json, &p) == OSSIA_PRESETS_OK);
+  REQUIRE(ossia_presets_read_json(json, &p) == OSSIA_PRESETS_OK);
 
-    int size;
-    REQUIRE(ossia_presets_size(p, &size) == OSSIA_PRESETS_OK);
-    REQUIRE(size == 11);
+  int size;
+  REQUIRE(ossia_presets_size(p, &size) == OSSIA_PRESETS_OK);
+  REQUIRE(size == 11);
 
-    ossia_presets_free(p);
+  ossia_presets_free(p);
 }
 
-TEST_CASE ("C API: Apply preset") {
+TEST_CASE ("C API: Apply preset", "[apply]") {
 
-    const char* json = R"_(
-                       {"scene":
-                         {"cubes":
-                           [
-                             {"scale": {"x":1, "y":1, "z":0.5},
-                              "position": {"x":2, "y":0.5, "z":0},
-                              "color": {"r":192, "g":255, "b":225, "alpha":255}
-                             }
-                           ],
-                            "name": "Une scène"
-                         }
-                       }
-                       )_";
-    ossia_preset_t p;
-    ossia_preset_result code;
+  const char* json = R"_(
+                     {"scene":
+                     {"cubes":
+                     [
+                     {"scale": {"x":1, "y":1, "z":0.5},
+                     "position": {"x":2, "y":0.5, "z":0},
+                     "color": {"r":192, "g":255, "b":225, "alpha":255}
+                     }
+                     ],
+                     "name": "Une scène"
+                     }
+                     }
+                     )_";
+  ossia_preset_t p;
+  ossia_preset_result code;
 
-    code = ossia_presets_read_json(json, &p);
+  code = ossia_presets_read_json(json, &p);
 
-    ossia_device dev_c{
-      std::make_unique<ossia::net::generic_device>(
-            "scene")};
+  ossia_device dev_c{
+    std::make_unique<ossia::net::generic_device>(
+          "scene")};
 
-    code = ossia_devices_apply_preset(&dev_c, p, false);
-    REQUIRE(code == OSSIA_PRESETS_OK);
+  code = ossia_devices_apply_preset(&dev_c, p, false);
+  REQUIRE(code == OSSIA_PRESETS_OK);
 
-    code = ossia_presets_free(p);
-    REQUIRE(code == OSSIA_PRESETS_OK);
+  code = ossia_presets_free(p);
+  REQUIRE(code == OSSIA_PRESETS_OK);
 }
 
 
-TEST_CASE ("C API: create pattern") {
+TEST_CASE ("C API: create pattern", "[pattern]") {
   auto proto = ossia_protocol_multiplex_create();
   auto dev = ossia_device_create(proto, "foo");
   ossia_node_t* n{};

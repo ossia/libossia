@@ -1,125 +1,118 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <QtTest>
+
 #include <iostream>
 
 using namespace ossia;
 using namespace ossia::expressions;
 using namespace std::placeholders;
 
-class ExpressionNotTest : public QObject
+
+bool m_result;
+bool m_result_callback_called;
+
+void result_callback(bool result)
 {
-    Q_OBJECT
+  m_result = result;
+  m_result_callback_called = true;
+}
 
-    bool m_result;
-    bool m_result_callback_called;
 
-    void result_callback(bool result)
-    {
-        m_result = result;
-        m_result_callback_called = true;
-    }
+/*! test life cycle and accessors functions */
+TEST_CASE ("test_basic", "test_basic")
+{
+  auto expression = make_expression_atom(false,
+                                         comparator::DIFFERENT,
+                                         false);
 
-private Q_SLOTS:
+  auto not_expression = make_expression_not(std::move(expression));
+  REQUIRE(not_expression != nullptr);
+  REQUIRE(evaluate(not_expression) == true);
+}
 
-    /*! test life cycle and accessors functions */
-    void test_basic()
-    {
-        auto expression = make_expression_atom(false,
-                                                 comparator::DIFFERENT,
-                                                 false);
+/*! test comparison operator */
+TEST_CASE ("test_comparison", "test_comparison")
+{
+  auto exprA = make_expression_atom(true,
+                                    comparator::EQUAL,
+                                    true);
 
-        auto not_expression = make_expression_not(std::move(expression));
-        QVERIFY(not_expression != nullptr);
-        QVERIFY(evaluate(not_expression) == true);
-    }
+  auto exprB = make_expression_atom(false,
+                                    comparator::EQUAL,
+                                    false);
 
-    /*! test comparison operator */
-    void test_comparison()
-    {
-        auto exprA = make_expression_atom(true,
-                                            comparator::EQUAL,
-                                            true);
+  auto exprC = make_expression_atom(true,
+                                    comparator::EQUAL,
+                                    true);
 
-        auto exprB = make_expression_atom(false,
-                                            comparator::EQUAL,
-                                            false);
+  auto not_exprA = make_expression_not(std::move(exprA));
+  auto not_exprB = make_expression_not(std::move(exprB));
+  auto not_exprC = make_expression_not(std::move(exprC));
 
-        auto exprC = make_expression_atom(true,
-                                            comparator::EQUAL,
-                                            true);
+  REQUIRE(expressions::expression_false() != *not_exprA);
+  REQUIRE(expressions::expression_true() != *not_exprA);
 
-        auto not_exprA = make_expression_not(std::move(exprA));
-        auto not_exprB = make_expression_not(std::move(exprB));
-        auto not_exprC = make_expression_not(std::move(exprC));
+  REQUIRE(*not_exprA != *not_exprB);
+  REQUIRE(*not_exprA == *not_exprC);
+  REQUIRE(*not_exprB != *not_exprC);
+}
 
-        QVERIFY(expressions::expression_false() != *not_exprA);
-        QVERIFY(expressions::expression_true() != *not_exprA);
+/*! test callback managment */
+TEST_CASE ("test_callback", "test_callback")
+{
+  // Local device
+  ossia::net::generic_device device{"test"};
 
-        QVERIFY(*not_exprA != *not_exprB);
-        QVERIFY(*not_exprA == *not_exprC);
-        QVERIFY(*not_exprB != *not_exprC);
-    }
+  auto localIntNode1 = device.create_child("my_int.1");
+  auto localIntAddress1 = localIntNode1->create_parameter(val_type::INT);
+  auto localIntNode2 = device.create_child("my_int.2");
+  auto localIntAddress2 = localIntNode2->create_parameter(val_type::INT);
 
-    /*! test callback managment */
-    void test_callback()
-    {
-        // Local device
-        ossia::net::generic_device device{"test"};
+  auto testDestinationExpr = make_expression_atom(destination(*localIntAddress1),
+                                                  comparator::DIFFERENT,
+                                                  destination(*localIntAddress2));
 
-        auto localIntNode1 = device.create_child("my_int.1");
-        auto localIntAddress1 = localIntNode1->create_parameter(val_type::INT);
-        auto localIntNode2 = device.create_child("my_int.2");
-        auto localIntAddress2 = localIntNode2->create_parameter(val_type::INT);
+  auto testDestinationExprNot = make_expression_not(std::move(testDestinationExpr));
 
-        auto testDestinationExpr = make_expression_atom(destination(*localIntAddress1),
-                                                          comparator::DIFFERENT,
-                                                          destination(*localIntAddress2));
+  expression_result_callback callback = std::bind(&result_callback, _1);
+  auto callback_index = add_callback(*testDestinationExprNot, callback);
 
-        auto testDestinationExprNot = make_expression_not(std::move(testDestinationExpr));
+  REQUIRE(callback_count(*testDestinationExprNot) == 1);
 
-        expression_result_callback callback = std::bind(&ExpressionNotTest::result_callback, this, _1);
-        auto callback_index = add_callback(*testDestinationExprNot, callback);
+  m_result = false;
+  m_result_callback_called = false;
 
-        QVERIFY(callback_count(*testDestinationExprNot) == 1);
+  localIntAddress1->push_value(5);
 
-        m_result = false;
-        m_result_callback_called = false;
+  REQUIRE((m_result_callback_called == true && m_result == false));
 
-        localIntAddress1->push_value(5);
+  m_result = false;
+  m_result_callback_called = false;
 
-        QVERIFY(m_result_callback_called == true && m_result == false);
+  localIntAddress2->push_value(5);
 
-        m_result = false;
-        m_result_callback_called = false;
+  REQUIRE((m_result_callback_called == true && m_result == true));
 
-        localIntAddress2->push_value(5);
+  m_result = false;
+  m_result_callback_called = false;
 
-        QVERIFY(m_result_callback_called == true && m_result == true);
+  localIntAddress2->push_value(10);
 
-        m_result = false;
-        m_result_callback_called = false;
+  REQUIRE((m_result_callback_called == true && m_result == false));
 
-        localIntAddress2->push_value(10);
+  remove_callback(*testDestinationExprNot, callback_index);
 
-        QVERIFY(m_result_callback_called == true && m_result == false);
+  REQUIRE(callback_count(*testDestinationExprNot) == 0);
 
-        remove_callback(*testDestinationExprNot, callback_index);
+  m_result = false;
+  m_result_callback_called = false;
 
-        QVERIFY(callback_count(*testDestinationExprNot) == 0);
+  localIntAddress2->push_value(5);
 
-        m_result = false;
-        m_result_callback_called = false;
-
-        localIntAddress2->push_value(5);
-
-        QVERIFY(m_result_callback_called == false && m_result == false);
-    }
-};
-
-QTEST_APPLESS_MAIN(ExpressionNotTest)
-
-#include "ExpressionNotTest.moc"
+  REQUIRE((m_result_callback_called == false && m_result == false));
+}

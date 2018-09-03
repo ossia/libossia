@@ -5,12 +5,13 @@
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/dataflow/token_request.hpp>
+#include <ossia/dataflow/graph_node.hpp>
+#if defined(OSSIA_QT)
 #include <ossia-qt/js_utilities.hpp>
-#include <QMetaType>
-#include <QtTest>
+#endif
 
 #include "../Network/TestUtils.hpp"
-
+/*
 namespace QTest {
 inline char* toString(const ossia::value &point)
 {
@@ -62,6 +63,7 @@ namespace ossia
 {
 using QTest::toString;
 }
+*/
 struct root_scenario
 {
   std::shared_ptr<ossia::time_sync> start_node{std::make_shared<ossia::time_sync>()};
@@ -105,6 +107,8 @@ std::ostream& operator<<(std::ostream& s, ossia::time_event::status st)
   }
   return s;
 }
+
+/*
 inline QDebug operator<<(QDebug d, ossia::time_event::status st)
 {
   switch(st)
@@ -142,4 +146,23 @@ inline QDebug operator<<(QDebug d, const ossia::small_vector<ossia::token_reques
 inline QDebug operator<<(QDebug d, const ossia::time_value&  s)
 {
   return d << s.impl;
+}
+*/
+
+inline
+std::ostream& operator<<(std::ostream& d, ossia::token_request t)
+{
+  d << (int64_t)t.date << " "
+    << t.position << " "
+    << (int64_t)t.offset << " "
+    << t.start_discontinuous << " "
+    << t.end_discontinuous << std::endl;
+  return d;
+}
+
+inline
+std::ostream& operator<<(std::ostream& d, decltype(ossia::graph_node::requested_tokens) t)
+{
+  for(auto tk : t) d << tk << ", ";
+  return d;
 }

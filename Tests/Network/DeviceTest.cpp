@@ -1,7 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
-#include <QtTest>
+
 #include <ossia/context.hpp>
 #include <ossia/network/midi/midi.hpp>
 #include <ossia/network/osc/osc.hpp>
@@ -12,6 +14,11 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/local/local.hpp>
+
+#if defined(OSSIA_QT)
+#include <QTimer>
+#include <QCoreApplication>
+#endif
 #include "TestUtils.hpp"
 
 using namespace ossia;
@@ -81,13 +88,146 @@ struct remote_data
   std::vector<ossia::net::parameter_base*> remote_addr;
 };
 
-class DeviceTest : public QObject
-{
-  Q_OBJECT
 
-private Q_SLOTS:
+
+const std::vector<ossia::value> value_to_test{
+  ossia::impulse{},
+  int32_t{0},
+  int32_t{-1000},
+  int32_t{1000},
+  float{0},
+  float{-1000},
+  float{1000},
+  bool{true},
+  bool{false},
+  char{},
+  char{'a'},
+  std::string{""},
+  std::string{"ossia"},
+  std::vector<ossia::value>{},
+  std::vector<ossia::value>{int32_t{0}},
+  std::vector<ossia::value>{int32_t{0}, int32_t{1}},
+  std::vector<ossia::value>{float{0}, int32_t{1}},
+  std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::impulse{}},
+  std::vector<ossia::value>{float{0}, float{1000}},
+  ossia::vec2f{},
+  ossia::vec3f{},
+  ossia::vec4f{}
+};
+
+template<typename FunProto1, typename FunProto2>
+void test_comm_generic(
+    FunProto1 local_proto,
+    FunProto2 remote_proto)
+{
+  int N = 10;
+  remote_data rem{std::move(local_proto), std::move(remote_proto)};
+  auto& local_addr = rem.local_addr;
+  auto& remote_addr = rem.remote_addr;
+
+  auto push_all_values = [&] {
+    for(int i = 0; i < N; i++)
+    {
+      for(const ossia::value& val : value_to_test)
+      {
+        local_addr[i]->set_value_type(val.get_type());
+        local_addr[i]->push_value(val);
+      }
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    for(int i = 0; i < N; i++)
+    {
+      local_addr[i]->set_value_type((ossia::val_type) i);
+      local_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    for(int i = 0; i < N; i++)
+    {
+      for(const ossia::value& val : value_to_test)
+      {
+        remote_addr[i]->set_value_type(val.get_type());
+        remote_addr[i]->push_value(val);
+      }
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    for(int i = 0; i < N; i++)
+    {
+      remote_addr[i]->set_value_type((ossia::val_type) i);
+      remote_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  };
+
+  push_all_values();
+
+
+  for(auto val : local_addr)
+  {
+    rem.local_device.get_protocol().observe(*val, true);
+  }
+  for(auto val : remote_addr)
+  {
+    rem.remote_device.get_protocol().observe(*val, true);
+  }
+  push_all_values();
+
+
+  auto test_all_values = [&] (std::vector<ossia::net::parameter_base*>& vec)
+  {
+    for(int access_i = 0; access_i < 3; access_i++)
+    {
+      for(int i = 0; i < N; i++)
+      {
+        vec[i]->set_access(access_mode(access_i));
+      }
+      push_all_values();
+      for(int bounding_i = 0 ; bounding_i < 6; bounding_i++)
+      {
+        for(int i = 0; i < N; i++)
+        {
+          vec[i]->set_bounding(bounding_mode(bounding_i));
+        }
+        push_all_values();
+
+        for(int domain_i = 0; domain_i < N; domain_i++)
+        {
+          vec[domain_i]->set_domain(init_domain(ossia::val_type(domain_i)));
+        }
+        push_all_values();
+
+
+        for(int domain_i = 0; domain_i < N; domain_i++)
+        {
+          auto val = ossia::init_value((ossia::val_type) domain_i);
+          auto dom = ossia::make_domain(val, val);
+          vec[domain_i]->set_domain(dom);
+        }
+        push_all_values();
+
+      }
+    }
+  };
+
+  test_all_values(local_addr);
+
+  for(int i = 0; i < 10; i++)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  test_all_values(remote_addr);
+
+  for(int i = 0; i < 10; i++)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+}
+
+
+
+
 #if defined(OSSIA_PROTOCOL_OSC)
-    void test_bundle()
+TEST_CASE ("test_bundle", "test_bundle")
     {
         ossia::net::generic_device osc_A{
           std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
@@ -114,13 +254,13 @@ private Q_SLOTS:
         b_proto.push_bundle({b1, b2, b3, b4});
 
         std::this_thread::sleep_for(std::chrono::microseconds(10000));
-        QVERIFY(a1->value() == ossia::value{1234.});
-        QVERIFY(a2->value() == ossia::value{1234.});
-        QVERIFY(a3->value() == ossia::value{1234.});
-        QVERIFY(a4->value() == ossia::value{1234.});
+        REQUIRE(a1->value() == ossia::value{1234.});
+        REQUIRE(a2->value() == ossia::value{1234.});
+        REQUIRE(a3->value() == ossia::value{1234.});
+        REQUIRE(a4->value() == ossia::value{1234.});
     }
 
-    void test_bundle_raw()
+TEST_CASE ("test_bundle_raw", "test_bundle_raw")
     {
         ossia::net::generic_device osc_A{
           std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
@@ -154,13 +294,13 @@ private Q_SLOTS:
         while(recv < 4)
           std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        QVERIFY(a1->value() == ossia::value{0.});
-        QVERIFY(a2->value() == ossia::value{1.});
-        QVERIFY(a3->value() == ossia::value{2.});
-        QVERIFY(a4->value() == ossia::value{3.});
+        REQUIRE(a1->value() == ossia::value{0.});
+        REQUIRE(a2->value() == ossia::value{1.});
+        REQUIRE(a3->value() == ossia::value{2.});
+        REQUIRE(a4->value() == ossia::value{3.});
     }
 
-    void test_pattern_match()
+TEST_CASE ("test_pattern_match", "test_pattern_match")
     {
         ossia::net::generic_device osc_A{
           std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997), "test_osc"};
@@ -186,16 +326,16 @@ private Q_SLOTS:
         while(recv < 4)
           std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        QVERIFY(a1->value() == ossia::value{2.3});
-        QVERIFY(a2->value() == ossia::value{2.3});
-        QVERIFY(a3->value() == ossia::value{2.3});
-        QVERIFY(a4->value() == ossia::value{2.3});
+        REQUIRE(a1->value() == ossia::value{2.3});
+        REQUIRE(a2->value() == ossia::value{2.3});
+        REQUIRE(a3->value() == ossia::value{2.3});
+        REQUIRE(a4->value() == ossia::value{2.3});
     }
 #endif
 
 
   /*! test life cycle and accessors functions */
-  void test_basic()
+TEST_CASE ("test_basic", "test_basic")
   {
     {
       ossia::net::generic_device local_device{"test" };
@@ -215,7 +355,7 @@ private Q_SLOTS:
   }
 
 #if defined(OSSIA_PROTOCOL_OSCQUERY)
-  void test_oscquery_multi()
+TEST_CASE ("test_oscquery_multi", "test_oscquery_multi")
   {
     try {
 
@@ -228,7 +368,7 @@ private Q_SLOTS:
   }
 #endif
 
-  void test_midi()
+TEST_CASE ("test_midi", "test_midi")
   {
     using namespace ossia::net::midi;
     try {
@@ -248,7 +388,7 @@ private Q_SLOTS:
   }
 
 #if defined(OSSIA_PROTOCOL_OSC)
-  void test_comm_osc()
+TEST_CASE ("test_comm_osc", "test_comm_osc")
   {
     test_comm_generic([] { return std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997); },
                       [] { return std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, 9996); });
@@ -256,7 +396,7 @@ private Q_SLOTS:
 #endif
 
 #if defined(OSSIA_PROTOCOL_MINUIT)
-  void test_comm_minuit()
+TEST_CASE ("test_comm_minuit", "test_comm_minuit")
   {
     test_comm_generic([] { return std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13579, 13580); },
                       [] { return std::make_unique<ossia::net::minuit_protocol>("score-remote", "127.0.0.1", 13580, 13579); });
@@ -291,7 +431,7 @@ private Q_SLOTS:
 #endif
 
 #if defined(OSSIA_PROTOCOL_OSCQUERY)
-  void test_comm_oscquery()
+TEST_CASE ("test_comm_oscquery", "test_comm_oscquery")
   {
     try {
       test_comm_generic([] { return std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678); },
@@ -299,13 +439,13 @@ private Q_SLOTS:
     }
     catch(const std::exception& e) {
       qDebug() << "Error : " << e.what();
-      QVERIFY(false);
+      REQUIRE(false);
     }
   }
 #endif
 
 #if defined(OSSIA_PROTOCOL_HTTP)
-  void test_http()
+TEST_CASE ("test_http", "test_http")
   {
     int argc{}; char** argv{};
     QCoreApplication app(argc, argv);
@@ -322,11 +462,11 @@ private Q_SLOTS:
 
     // For the sake of coverage...
     const auto& const_dev = http_device;
-    QCOMPARE(&http_device.get_root_node(), &const_dev.get_root_node());
+    REQUIRE(&http_device.get_root_node() == &const_dev.get_root_node());
 
     // We have to wait a bit for the event loop to run.
     QTimer t;
-    connect(&t, &QTimer::timeout, [&] () {
+    QObject::connect(&t, &QTimer::timeout, [&] () {
       auto node = ossia::net::find_node(http_device, "/tata/tutu");
       if(node)
       {
@@ -342,146 +482,4 @@ private Q_SLOTS:
     app.exec();
   }
 #endif
-
-
-private:
-  const std::vector<ossia::value> value_to_test{
-    ossia::impulse{},
-    int32_t{0},
-    int32_t{-1000},
-    int32_t{1000},
-    float{0},
-    float{-1000},
-    float{1000},
-    bool{true},
-    bool{false},
-    char{},
-    char{'a'},
-    std::string{""},
-    std::string{"ossia"},
-    std::vector<ossia::value>{},
-    std::vector<ossia::value>{int32_t{0}},
-    std::vector<ossia::value>{int32_t{0}, int32_t{1}},
-    std::vector<ossia::value>{float{0}, int32_t{1}},
-    std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::impulse{}},
-    std::vector<ossia::value>{float{0}, float{1000}},
-    ossia::vec2f{},
-    ossia::vec3f{},
-    ossia::vec4f{}
-  };
-
-  template<typename FunProto1, typename FunProto2>
-  void test_comm_generic(
-      FunProto1 local_proto,
-      FunProto2 remote_proto)
-  {
-    int N = 10;
-    remote_data rem{std::move(local_proto), std::move(remote_proto)};
-    auto& local_addr = rem.local_addr;
-    auto& remote_addr = rem.remote_addr;
-
-    auto push_all_values = [&] {
-      for(int i = 0; i < N; i++)
-      {
-        for(const ossia::value& val : value_to_test)
-        {
-          local_addr[i]->set_value_type(val.get_type());
-          local_addr[i]->push_value(val);
-        }
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-      for(int i = 0; i < N; i++)
-      {
-        local_addr[i]->set_value_type((ossia::val_type) i);
-        local_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-      for(int i = 0; i < N; i++)
-      {
-        for(const ossia::value& val : value_to_test)
-        {
-          remote_addr[i]->set_value_type(val.get_type());
-          remote_addr[i]->push_value(val);
-        }
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-      for(int i = 0; i < N; i++)
-      {
-        remote_addr[i]->set_value_type((ossia::val_type) i);
-        remote_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    };
-
-    push_all_values();
-
-
-    for(auto val : local_addr)
-    {
-      rem.local_device.get_protocol().observe(*val, true);
-    }
-    for(auto val : remote_addr)
-    {
-      rem.remote_device.get_protocol().observe(*val, true);
-    }
-    push_all_values();
-
-
-    auto test_all_values = [&] (std::vector<ossia::net::parameter_base*>& vec)
-    {
-      for(int access_i = 0; access_i < 3; access_i++)
-      {
-        for(int i = 0; i < N; i++)
-        {
-          vec[i]->set_access(access_mode(access_i));
-        }
-        push_all_values();
-        for(int bounding_i = 0 ; bounding_i < 6; bounding_i++)
-        {
-          for(int i = 0; i < N; i++)
-          {
-            vec[i]->set_bounding(bounding_mode(bounding_i));
-          }
-          push_all_values();
-
-          for(int domain_i = 0; domain_i < N; domain_i++)
-          {
-            vec[domain_i]->set_domain(init_domain(ossia::val_type(domain_i)));
-          }
-          push_all_values();
-
-
-          for(int domain_i = 0; domain_i < N; domain_i++)
-          {
-            auto val = ossia::init_value((ossia::val_type) domain_i);
-            auto dom = ossia::make_domain(val, val);
-            vec[domain_i]->set_domain(dom);
-          }
-          push_all_values();
-
-        }
-      }
-    };
-
-    test_all_values(local_addr);
-
-    for(int i = 0; i < 10; i++)
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-    test_all_values(remote_addr);
-
-    for(int i = 0; i < 10; i++)
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-  }
-
-};
-
-
-QTEST_APPLESS_MAIN(DeviceTest)
-
-#include "DeviceTest.moc"
 

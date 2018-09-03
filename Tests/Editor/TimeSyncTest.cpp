@@ -1,62 +1,54 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <QtTest>
+
 #include <iostream>
 
 using namespace ossia;
 
 void event_callback(time_event::status newStatus)
 {
-    ;
+  ;
 }
 
-class TimeSyncTest : public QObject
+
+/*! test life cycle and accessors functions */
+TEST_CASE ("test_basic", "test_basic")
 {
-    Q_OBJECT
+  auto node = std::make_shared<time_sync>();
+  REQUIRE(node != nullptr);
 
-private Q_SLOTS:
+  ossia::time_value date = node->get_date();
+  REQUIRE(date == Zero);
 
-    /*! test life cycle and accessors functions */
-    void test_basic()
-    {
-        auto node = std::make_shared<time_sync>();
-        QVERIFY(node != nullptr);
+  REQUIRE(node->get_expression() == expressions::expression_true());
 
-        ossia::time_value date = node->get_date();
-        QVERIFY(date == Zero);
+  auto expression = expressions::make_expression_true();
+  auto& expr_ref = *expression;
+  node->set_expression(std::move(expression));
 
-        QVERIFY(node->get_expression() == expressions::expression_true());
+  REQUIRE(node->get_expression() == expr_ref);
 
-        auto expression = expressions::make_expression_true();
-        auto& expr_ref = *expression;
-        node->set_expression(std::move(expression));
+  REQUIRE(node->get_time_events().size() == 0);
 
-        QVERIFY(node->get_expression() == expr_ref);
+  //! \todo test clone()
+}
 
-        QVERIFY(node->get_time_events().size() == 0);
+/*! test edition functions */
+TEST_CASE ("test_edition", "test_edition")
+{
+  auto node = std::make_shared<time_sync>();
+  REQUIRE(node != nullptr);
 
-        //! \todo test clone()
-    }
+  auto event = *(node->emplace(
+                   node->get_time_events().begin(),
+                   &event_callback, expressions::make_expression_true()));
 
-    /*! test edition functions */
-    void test_edition()
-    {
-        auto node = std::make_shared<time_sync>();
-        QVERIFY(node != nullptr);
+  REQUIRE(event != nullptr);
 
-        auto event = *(node->emplace(
-                           node->get_time_events().begin(),
-                           &event_callback, expressions::make_expression_true()));
-
-        QVERIFY(event != nullptr);
-
-        QVERIFY(node->get_time_events().size() == 1);
-    }
-};
-
-QTEST_APPLESS_MAIN(TimeSyncTest)
-
-#include "TimeSyncTest.moc"
+  REQUIRE(node->get_time_events().size() == 1);
+}

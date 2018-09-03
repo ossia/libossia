@@ -1,57 +1,49 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/device.hpp>
-#include <QtTest>
+
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <QQmlEngine>
+#include <QCoreApplication>
+#include <QDebug>
 #include <QQmlComponent>
 
-class QmlDeviceTest : public QObject
+
+TEST_CASE ("test_client", "test_client")
 {
-  Q_OBJECT
+  int argc{}; char** argv{};
+  QCoreApplication app(argc, argv);
+  QQmlEngine engine;
+  ossia::context context;
 
-private Q_SLOTS:
+  QQmlComponent component(&engine, "testdata/qml/TestClient.qml");
+  qDebug() << component.errorString();
 
-  void test_client()
-  {
-    int argc{}; char** argv{};
-    QCoreApplication app(argc, argv);
-    QQmlEngine engine;
-    ossia::context context;
-
-    QQmlComponent component(&engine, "testdata/qml/TestClient.qml");
-    qDebug() << component.errorString();
-
-    auto item = component.create();
-    QVERIFY(item);
-  }
+  auto item = component.create();
+  REQUIRE(item);
+}
 
 
-  void test_device()
-  {
-    int argc{}; char** argv{};
-    QCoreApplication app(argc, argv);
-    QQmlEngine engine;
-    ossia::context context;
+TEST_CASE ("test_device", "test_device")
+{
+  int argc{}; char** argv{};
+  QCoreApplication app(argc, argv);
+  QQmlEngine engine;
+  ossia::context context;
 
-    QQmlComponent component(&engine, "testdata/qml/TestDevice.qml");
-    qDebug() << component.errorString();
+  QQmlComponent component(&engine, "testdata/qml/TestDevice.qml");
+  qDebug() << component.errorString();
 
-    auto item = component.create();
-    QVERIFY(item);
+  auto item = component.create();
+  REQUIRE(item);
 
-    auto& dev = ossia::qt::qml_singleton_device::instance();
-    auto node = ossia::net::find_node(dev.device().get_root_node(), "/bar/x");
-    QVERIFY(node);
-  }
-
-};
-
-
-QTEST_APPLESS_MAIN(QmlDeviceTest)
-
-#include "QmlDeviceTest.moc"
+  auto& dev = ossia::qt::qml_singleton_device::instance();
+  auto node = ossia::net::find_node(dev.device().get_root_node(), "/bar/x");
+  REQUIRE(node);
+}
 

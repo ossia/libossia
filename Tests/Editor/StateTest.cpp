@@ -1,7 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
-#include <QtTest>
+
 #include <iostream>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/base/parameter.hpp>
@@ -49,13 +51,13 @@ struct mock_autom2
 
   float computeValue() { return 0.8; }
 };
-  void test_convert()
+  TEST_CASE ("test_convert", "test_convert")
   {
     auto res = ossia::convert(ossia::centimeter(5),  ossia::millimeter_u{});
 
-    QVERIFY(res == ossia::millimeter{50});
-    QVERIFY(res != ossia::millimeter{25});
-    QVERIFY(res != ossia::centimeter{5});
+    REQUIRE(res == ossia::millimeter{50});
+    REQUIRE(res != ossia::millimeter{25});
+    REQUIRE(res != ossia::centimeter{5});
     convert(ossia::centimeter(5),  ossia::rgb_u{});
 
     qDebug() << sizeof(ossia::unit_t)
@@ -67,7 +69,7 @@ struct mock_autom2
              << sizeof(eggs::variant<rgb_u>);
   }
 
-  void test_functional()
+  TEST_CASE ("test_functional", "test_functional")
   {
     generic_device dev{std::make_unique<local_protocol>(), "test"};
     auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
@@ -113,177 +115,167 @@ struct mock_autom2
 
 
 using namespace ossia::net;
-class StateTest : public QObject
+/*! test life cycle and accessors functions */
+TEST_CASE ("test_basic", "test_basic")
 {
-  Q_OBJECT
+  state s;
 
-private Q_SLOTS:
-  /*! test life cycle and accessors functions */
-  void test_basic()
-  {
-    state s;
+  REQUIRE((int32_t)s.size() == 0);
 
-    QCOMPARE((int32_t)s.size(), 0);
-
-    state substate;
-    s.add(substate);
-    QCOMPARE((int32_t)s.size(), 1);
+  state substate;
+  s.add(substate);
+  REQUIRE((int32_t)s.size() == 1);
 
 
-    state parent;
-    parent.add(std::move(s));
-    QCOMPARE((int32_t)parent.size(), 1);
-    QCOMPARE((int32_t)s.size(), 0);
+  state parent;
+  parent.add(std::move(s));
+  REQUIRE((int32_t)parent.size() == 1);
+  REQUIRE((int32_t)s.size() == 0);
 
-    state copy{parent};
-    QCOMPARE((int32_t)copy.size(), 1);
+  state copy{parent};
+  REQUIRE((int32_t)copy.size() == 1);
 
-  }
+}
 
-  void test_compare()
-  {
-    generic_device dev{"test"};
-    auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
+TEST_CASE ("test_compare", "test_compare")
+{
+  generic_device dev{"test"};
+  auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
-    message m0{{*n1, ossia::destination_index{0}}, 5.};
-    message m1{{*n1, ossia::destination_index{0}}, 5.};
-    QVERIFY(m0 == m1);
+  message m0{{*n1, ossia::destination_index{0}}, 5.};
+  message m1{{*n1, ossia::destination_index{0}}, 5.};
+  REQUIRE(m0 == m1);
 
-    state s1, s2;
-    QVERIFY(s1 == s2);
+  state s1, s2;
+  REQUIRE(s1 == s2);
 
-    s1.add(m0);
-    QVERIFY(s1 != s2);
-    QVERIFY(ossia::state_element(m0) != s1);
-    QVERIFY(ossia::state_element(m0) != s2);
+  s1.add(m0);
+  REQUIRE(s1 != s2);
+  REQUIRE(ossia::state_element(m0) != s1);
+  REQUIRE(ossia::state_element(m0) != s2);
 
-    s2.add(m1);
-    QVERIFY(s1 == s2);
+  s2.add(m1);
+  REQUIRE(s1 == s2);
 
-  }
+}
 
-  void test_remove()
-  {
-    generic_device dev{"test"};
-    auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
+TEST_CASE ("test_remove", "test_remove")
+{
+  generic_device dev{"test"};
+  auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
-    state s;
+  state s;
 
-    message m0{{*n1, ossia::destination_index{0}}, float{5.}};
-    s.add(m0);
-    s.remove(m0);
-    QCOMPARE((int)s.size(), 0);
-  }
+  message m0{{*n1, ossia::destination_index{0}}, float{5.}};
+  s.add(m0);
+  s.remove(m0);
+  REQUIRE((int)s.size() == 0);
+}
 
-  void test_flatten()
-  {
-    generic_device dev{"test"};
-    auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
+TEST_CASE ("test_flatten", "test_flatten")
+{
+  generic_device dev{"test"};
+  auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
-    message m0{{*n1, ossia::destination_index{0}}, float{5.}};
-    message m1{{*n1, ossia::destination_index{1}}, float{10.}};
-    message m2{{*n1, ossia::destination_index{2}}, float{15.}};
+  message m0{{*n1, ossia::destination_index{0}}, float{5.}};
+  message m1{{*n1, ossia::destination_index{1}}, float{10.}};
+  message m2{{*n1, ossia::destination_index{2}}, float{15.}};
 
-    state s1;
-    flatten_and_filter(s1, m0);
-    flatten_and_filter(s1, m1);
-    flatten_and_filter(s1, m2);
+  state s1;
+  flatten_and_filter(s1, m0);
+  flatten_and_filter(s1, m1);
+  flatten_and_filter(s1, m2);
 
-    QCOMPARE((int)s1.size(), 1);
+  REQUIRE((int)s1.size() == 1);
 
-    const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
-    QVERIFY(pw);
-    QVERIFY(pw->address == m0.dest.value);
-    std::vector<ossia::value> expected{float{5.}, float{10.}, float{15.}};
-    QVERIFY(pw->message_value == expected);
+  const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
+  REQUIRE(pw);
+  REQUIRE(pw->address == m0.dest.value);
+  std::vector<ossia::value> expected{float{5.}, float{10.}, float{15.}};
+  REQUIRE(pw->message_value == expected);
 
-    // permutations
-    state s2;
-    flatten_and_filter(s2, m2);
-    flatten_and_filter(s2, m1);
-    flatten_and_filter(s2, m0);
+  // permutations
+  state s2;
+  flatten_and_filter(s2, m2);
+  flatten_and_filter(s2, m1);
+  flatten_and_filter(s2, m0);
 
-    state s3;
-    flatten_and_filter(s3, m0);
-    flatten_and_filter(s3, m2);
-    flatten_and_filter(s3, m1);
+  state s3;
+  flatten_and_filter(s3, m0);
+  flatten_and_filter(s3, m2);
+  flatten_and_filter(s3, m1);
 
-    QVERIFY(s1 == s2);
-    QVERIFY(s1 == s3);
-    QVERIFY(s2 == s3);
-
-
-    flatten_and_filter(s1, m0);
-    QVERIFY(s1 == s2);
-
-    // Changing a value does overwrite
-    message m0_bis{{*n1, ossia::destination_index{0}}, float{7.}};
-    flatten_and_filter(s1, m0_bis);
-
-    ossia::print(std::cerr, s1.children()[0]);
-    std::cerr << std::endl;
-    state_element expected_bis = piecewise_message{*n1, std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
-    QVERIFY(s1.children()[0] == expected_bis);
-  }
-
-  void test_flatten_move()
-  {
-    generic_device dev{"test"};
-    auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
-
-    state_element m0 = message{{*n1, ossia::destination_index{0}}, float{5.}};
-    state_element m1 = message{{*n1, ossia::destination_index{1}}, float{10.}};
-    state_element m2 = message{{*n1, ossia::destination_index{2}}, float{15.}};
-
-    state s1;
-    flatten_and_filter(s1, m0);
-    flatten_and_filter(s1, m1);
-    flatten_and_filter(s1, m2);
-
-    QCOMPARE((int)s1.size(), 1);
-
-    const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
-    QVERIFY(pw);
-    QVERIFY(pw->address == m0.target<message>()->dest.value);
-    std::vector<ossia::value> expected{float{5.}, float{10.}, float{15.}};
-    QVERIFY(pw->message_value == expected);
-
-    // permutations
-    state s2;
-    flatten_and_filter(s2, m2);
-    flatten_and_filter(s2, m1);
-    flatten_and_filter(s2, m0);
-
-    state s3;
-    flatten_and_filter(s3, m0);
-    flatten_and_filter(s3, m2);
-    flatten_and_filter(s3, m1);
-
-    QVERIFY(s1 == s2);
-    QVERIFY(s1 == s3);
-    QVERIFY(s2 == s3);
+  REQUIRE(s1 == s2);
+  REQUIRE(s1 == s3);
+  REQUIRE(s2 == s3);
 
 
-    flatten_and_filter(s1, std::move(m0));
-    QVERIFY(s1 == s2);
+  flatten_and_filter(s1, m0);
+  REQUIRE(s1 == s2);
 
-    // Changing a value does overwrite
-    message m0_bis{{*n1, ossia::destination_index{0}}, float{7.}};
-    flatten_and_filter(s1, m0_bis);
+  // Changing a value does overwrite
+  message m0_bis{{*n1, ossia::destination_index{0}}, float{7.}};
+  flatten_and_filter(s1, m0_bis);
 
-    state_element expected_bis = piecewise_message{
-            *n1,
-            std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
-    QVERIFY(s1.children()[0] == expected_bis);
-  }
+  ossia::print(std::cerr, s1.children()[0]);
+  std::cerr << std::endl;
+  state_element expected_bis = piecewise_message{*n1, std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
+  REQUIRE(s1.children()[0] == expected_bis);
+}
 
-  /*! test execution functions */
-  void test_execution()
-  {
-    //! \todo test launch()
-  }
-};
+TEST_CASE ("test_flatten_move", "test_flatten_move")
+{
+  generic_device dev{"test"};
+  auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
 
-QTEST_APPLESS_MAIN(StateTest)
+  state_element m0 = message{{*n1, ossia::destination_index{0}}, float{5.}};
+  state_element m1 = message{{*n1, ossia::destination_index{1}}, float{10.}};
+  state_element m2 = message{{*n1, ossia::destination_index{2}}, float{15.}};
 
-#include "StateTest.moc"
+  state s1;
+  flatten_and_filter(s1, m0);
+  flatten_and_filter(s1, m1);
+  flatten_and_filter(s1, m2);
+
+  REQUIRE((int)s1.size() == 1);
+
+  const piecewise_message* pw = s1.children()[0].target<piecewise_message>();
+  REQUIRE(pw);
+  REQUIRE(pw->address == m0.target<message>()->dest.value);
+  std::vector<ossia::value> expected{float{5.}, float{10.}, float{15.}};
+  REQUIRE(pw->message_value == expected);
+
+  // permutations
+  state s2;
+  flatten_and_filter(s2, m2);
+  flatten_and_filter(s2, m1);
+  flatten_and_filter(s2, m0);
+
+  state s3;
+  flatten_and_filter(s3, m0);
+  flatten_and_filter(s3, m2);
+  flatten_and_filter(s3, m1);
+
+  REQUIRE(s1 == s2);
+  REQUIRE(s1 == s3);
+  REQUIRE(s2 == s3);
+
+
+  flatten_and_filter(s1, std::move(m0));
+  REQUIRE(s1 == s2);
+
+  // Changing a value does overwrite
+  message m0_bis{{*n1, ossia::destination_index{0}}, float{7.}};
+  flatten_and_filter(s1, m0_bis);
+
+  state_element expected_bis = piecewise_message{
+      *n1,
+      std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
+  REQUIRE(s1.children()[0] == expected_bis);
+}
+
+/*! test execution functions */
+TEST_CASE ("test_execution", "test_execution")
+{
+  //! \todo test launch()
+}
