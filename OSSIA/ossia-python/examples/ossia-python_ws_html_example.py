@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
-import pyossia.ossia_python as ossia
+import pyossia as ossia
 import time
 
 """

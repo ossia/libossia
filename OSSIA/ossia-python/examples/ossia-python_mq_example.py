@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import ossia_python as ossia
+import pyossia as ossia
 import time
 
 local_device = ossia.LocalDevice("newDevice")
