@@ -136,15 +136,10 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                   -DOSSIA_STATIC=1 \
                    -DOSSIA_TESTING=1 \
                    -DOSSIA_EXAMPLES=0 \
+                   -DOSSIA_PD_ONLY=1 \
                    -DOSSIA_CI=1 \
-                   -DOSSIA_QT=0 \
-                   -DOSSIA_PYTHON=0 \
-                   -DOSSIA_EDITOR=OFF \
-                   -DOSSIA_DATAFLOW=OFF \
-                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    ..
 
 
@@ -496,15 +491,9 @@ case "$TRAVIS_OS_NAME" in
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=0 \
-               -DOSSIA_PYTHON=0 \
-               -DOSSIA_PD=1 \
-               -DOSSIA_MAX=0 \
+               -DOSSIA_PD_ONLY=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_OSX_FAT_LIBRARIES=1 \
-               -DOSSIA_EDITOR=OFF \
-               -DOSSIA_DATAFLOW=OFF \
-               -DOSSIA_PROTOCOL_MIDI=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
