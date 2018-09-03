@@ -5,19 +5,31 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
-#include <ossia/network/midi/midi.hpp>
-#include <ossia/network/osc/osc.hpp>
-#include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
-#include <ossia-qt/http/http_protocol.hpp>
 #include <iostream>
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/local/local.hpp>
 
 #if defined(OSSIA_QT)
 #include <QTimer>
 #include <QCoreApplication>
+#endif
+#if defined(OSSIA_PROTOCOL_WEBSOCKETS)
+#include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_HTTP)
+#include <ossia-qt/http/http_protocol.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_OSC)
+#include <ossia/network/osc/osc.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_MIDI)
+#include <ossia/network/midi/midi.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_MINUIT)
+#include <ossia/network/minuit/minuit.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #endif
 #include "TestUtils.hpp"
 
