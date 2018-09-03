@@ -239,7 +239,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
         {
           if ( dev.name == name )
           {
-            protocol_name = "Minuit";
+            protocol_name = "minuit";
             minuit_settings = dev;
             break;
           }
@@ -276,7 +276,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       }
     }
 
-    if (protocol_name == "Minuit")
+    if (protocol_name == "minuit")
     {
       argc--;
       argv++;
