@@ -428,38 +428,35 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value)
     case rapidjson::kArrayType:
     {
       const auto N = value.Size();
+      auto handle_vec = [&] (const auto& value) {
+        std::vector<ossia::value> list;
+        list.reserve(N);
+        for(unsigned int i=0; i<N; i++)
+        {
+          list.push_back(json_to_ossia_value(value[i]));
+        }
+        return list;
+      };
       switch(N)
       {
         case 2:
           if(value[0].IsDouble() && value[1].GetDouble())
-          {
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
-          }
-          break;
+          else
+            return handle_vec(value);
         case 3:
           if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble())
-          {
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
-          }
-          break;
+          else
+            return handle_vec(value);
         case 4:
           if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble() && value[3].GetDouble())
-          {
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(), value[3].GetDouble());
-          }
-          break;
+          else
+            return handle_vec(value);
         default:
-        {
-          std::vector<ossia::value> list;
-          list.reserve(N);
-          for(unsigned int i=0; i<N; i++)
-          {
-            list.push_back(json_to_ossia_value(value[i]));
-          }
-          return list;
-        }
+          return handle_vec(value);
       }
-      break;
     }
     default:
       break;
@@ -1178,6 +1175,7 @@ void apply_preset_node(
       if (keeparch == ossia::presets::keep_arch_on)
       {
         ossia::logger().warn("{}:{}  {}", __LINE__, __FILE__, "Can't change device architecture");
+        throw std::runtime_error("preset loading: can't change device architecture");
       }
       else
       {

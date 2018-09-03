@@ -84,5 +84,6 @@ TEST_CASE ("C API: create pattern", "[pattern]") {
   REQUIRE(sz == sz2);
   ossia_node_array_free(n);
   ossia_node_array_free(n2);
-
+  ossia_device_free(dev);
+  ossia_protocol_free(proto);
 }
