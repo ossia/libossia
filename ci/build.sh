@@ -82,7 +82,7 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_CPP=1 \
           -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
-          -DOSSIA_TESTING=0 \
+          -DOSSIA_TESTING=1 \
           -DOSSIA_EXAMPLES=0 \
           -DOSSIA_DATAFLOW=0 \
           -DOSSIA_EDITOR=0 \
