@@ -12,10 +12,18 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/for_each.hpp>
 
+static constexpr auto constexpr_abs(float f)
+{
+  return f > 0 ? f : -f;
+}
+static constexpr auto constexpr_min(float f1, float f2)
+{
+  return f1 > f2 ? f2 : f1;
+}
 static constexpr inline bool fuzzy_equals(float p1, float p2)
 {
   using namespace std;
-  return (abs(p1 - p2) * 100000.f <= min(abs(p1), abs(p2)));
+  return (constexpr_abs(p1 - p2) * 100000.f <= constexpr_min(constexpr_abs(p1), constexpr_abs(p2)));
 }
 
 namespace ossia
