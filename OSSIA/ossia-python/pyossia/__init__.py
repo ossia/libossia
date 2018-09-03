@@ -232,5 +232,12 @@ try:
     # A Parameter can be reset to its default_value
     ossia.Parameter.reset = reset
     #ossia.Parameter.description = ossia.Node.description
+    
+    LocalDevice = ossia.LocalDevice
+    ValueType = ossia.ValueType 
+    Node = ossia.Node 
+    Parameter = ossia.Parameter
+    OSCQueryDevice = ossia.OSCQueryDevice
+
 except(ImportError):
     pass
