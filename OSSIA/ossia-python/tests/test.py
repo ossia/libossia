@@ -8,8 +8,7 @@ This ia a test for pyossia module, based on libossia python bindings
 import unittest
 
 # import pyossia module
-from pyossia import ossia
-import pyossia
+import pyossia as ossia
 
 # Python 2 compatibility
 import sys
