@@ -6,6 +6,9 @@ if(Qt5_VERSION VERSION_GREATER_EQUAL 5.11.0
   return() # Qt > 5.11 doesn't ship 32bit binary anymore
 endif()
 
+if(NOT Qt5Test_FOUND)
+  return()
+endif()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
