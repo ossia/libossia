@@ -82,8 +82,8 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_CPP=1 \
           -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
-          -DOSSIA_TESTING=0 \
-          -DOSSIA_EXAMPLES=0 \
+          -DOSSIA_TESTING=1 \
+          -DOSSIA_EXAMPLES=1 \
           -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
           -DOSSIA_QT=0 ..
@@ -664,10 +664,10 @@ case "$TRAVIS_OS_NAME" in
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz include lib
         else
-          cd $TRAVIS_BUILD_DIR/install/ossia-unity 
+          cd $TRAVIS_BUILD_DIR/install/ossia-unity
           tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
 
-          cd $TRAVIS_BUILD_DIR/install 
+          cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz include lib
         fi
       fi
