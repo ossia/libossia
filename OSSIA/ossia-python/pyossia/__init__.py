@@ -12,7 +12,7 @@ Change log
 0.0.* aka the first
 *******************
 First version of pyossia, still in alpha develeopment.
-        
+
 pyossia methods
 ===============
 """
@@ -232,12 +232,19 @@ try:
     # A Parameter can be reset to its default_value
     ossia.Parameter.reset = reset
     #ossia.Parameter.description = ossia.Node.description
-    
+
+    BoundingMode = ossia.BoundingMode
+    AccessMode = ossia.AccessMode
+    ValueType = ossia.ValueType
     LocalDevice = ossia.LocalDevice
-    ValueType = ossia.ValueType 
-    Node = ossia.Node 
+    ValueType = ossia.ValueType
+    Node = ossia.Node
     Parameter = ossia.Parameter
+    MinuitDevice = ossia.MinuitDevice
+    MidiDevice = ossia.MidiDevice
     OSCQueryDevice = ossia.OSCQueryDevice
+    MessageQueue = ossia.MessageQueue
+    GlobalMessageQueue = ossia.GlobalMessageQueue
 
 except(ImportError):
     pass

@@ -1,4 +1,4 @@
-import ossia_python as ossia
+import pyossia as ossia
 import time
 
 dev = ossia.MinuitDevice("score-remote", "127.0.0.1", 6666, 9999)

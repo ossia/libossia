@@ -10,7 +10,6 @@ import unittest
 # import pyossia module
 
 import pyossia as ossia
-#import ossia_python as ossia
 
 # Python 2 compatibility
 import sys

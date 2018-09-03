@@ -1,4 +1,4 @@
-import ossia_python as ossia
+import pyossia as ossia
 local_device = ossia.LocalDevice("newDevice")
 
 bool_node = local_device.add_node("/foo")
