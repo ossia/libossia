@@ -257,7 +257,7 @@ def get_versions():
         $CMAKE_BIN --build . -- -j2
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p {PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
         fi
         cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       ;;
