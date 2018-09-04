@@ -199,7 +199,8 @@ def reset(self):
 # this is need for building wheel.
 
 try:
-    from . import ossia_python as ossia
+    import importlib
+    ossia = importlib.import_module('ossia_python', package=None)
     # create a list of value_types available in OSSIA
     # maybe this is not necessary, just because 8'm a bit lazy
     __value_types__ = {'float':ossia.ValueType.Float,
