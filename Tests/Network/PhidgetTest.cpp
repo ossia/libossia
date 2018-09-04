@@ -1,5 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
@@ -11,28 +13,16 @@
 
 using namespace ossia;
 using namespace ossia::net;
-class PhidgetTest : public QObject
+TEST_CASE ("phidget", "phidget")
 {
-    Q_OBJECT
+  auto phid = new ossia::phidget_protocol;
+  auto prot = new ossia::net::multiplex_protocol;
+  ossia::net::generic_device dev{std::unique_ptr<ossia::net::multiplex_protocol>(prot), "phidgets"};
+  prot->expose_to(std::unique_ptr<ossia::phidget_protocol>(phid));
+  prot->expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>());
 
-private Q_SLOTS:
-    void test_exec()
-    {
-      auto phid = new ossia::phidget_protocol;
-      auto prot = new ossia::net::multiplex_protocol;
-      ossia::net::generic_device dev{std::unique_ptr<ossia::net::multiplex_protocol>(prot), "phidgets"};
-      prot->expose_to(std::unique_ptr<ossia::phidget_protocol>(phid));
-      prot->expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>());
-
-      using namespace std::chrono;
-      std::this_thread::sleep_for(2s);
-      phid->run_commands();
-      std::this_thread::sleep_for(10s);
-    }
-};
-
-
-QTEST_APPLESS_MAIN(PhidgetTest)
-
-#include "PhidgetTest.moc"
-
+  using namespace std::chrono;
+  std::this_thread::sleep_for(2s);
+  phid->run_commands();
+  std::this_thread::sleep_for(10s);
+}

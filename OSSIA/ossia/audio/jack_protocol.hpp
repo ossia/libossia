@@ -36,9 +36,15 @@ inline bool has_jackd_process()
   do
   {
     using namespace std::literals;
-    auto name = entry.szExeFile;
-    if(name == std::wstring(L"jackd.exe"))
-      return true;
+
+    const auto* name = entry.szExeFile;
+#if !defined(UNICODE)
+      if(name == std::string("jackd.exe"))
+        return true;
+#else
+      if(name == std::wstring(L"jackd.exe"))
+        return true;
+#endif
   } while( Process32Next(plist, &entry));
 
   CloseHandle(plist);
