@@ -107,6 +107,8 @@ TEST_CASE ("test_parse", "test_parse")
       "string: \"hello\"",
       "char: 'x'",
       "float: 1.2345",
+      "bool: true",
+      "bool: false",
       "list: []",
       "list: [ ]",
       "list: [char: '0']",
@@ -211,7 +213,7 @@ TEST_CASE ("test_vecnf", "test_vecnf")
   REQUIRE(loadPreset == preset);
 
   std::cerr << "Write json";
-  const auto json = ossia::presets::write_json("whatever", loadPreset, false);
+  const auto json = ossia::presets::write_json("whatever", loadPreset);
   std::cerr << json.c_str();
   std::cerr << "Read json";
   const auto read_json = ossia::presets::read_json(json, false);
@@ -246,10 +248,56 @@ TEST_CASE ("test_values", "test_values")
   REQUIRE(loadPreset == preset);
 
   std::cerr << "Write json";
-  const auto json = ossia::presets::write_json("whatever", loadPreset, false);
+  const auto json = ossia::presets::write_json("whatever", loadPreset);
   std::cerr << json.c_str();
   std::cerr << "Read json";
   const auto read_json = ossia::presets::read_json(json, false);
   std::cerr << ossia::presets::to_string(read_json).c_str();
 
+}
+
+TEST_CASE ("test_bool", "test_bool")
+{
+  std::cerr << "\n\n\ntest_bool\n\n\n";
+  using namespace std::literals;
+  ossia::net::generic_device dev{"mydevice"};
+  auto& root = dev.get_root_node();
+  ossia::net::set_app_creator(root, "test"s);
+  ossia::net::set_app_version(root, "v1.0"s);
+
+  auto& n1 = ossia::net::find_or_create_node(root, "/t");
+  auto a1 = n1.create_parameter(ossia::val_type::BOOL);
+  a1->push_value(true);
+
+  auto& n2 = ossia::net::find_or_create_node(root, "/f");
+  auto a2 = n2.create_parameter(ossia::val_type::BOOL);
+  a2->push_value(false);
+
+  auto preset = ossia::presets::make_preset(dev);
+  {
+    auto presetJSON = ossia::presets::write_json("mydevice", preset);
+    a1->push_value(false);
+    a2->push_value(true);
+    auto np = ossia::presets::read_json(presetJSON);
+    std::cerr << ossia::presets::to_string(np) << std::endl;
+
+    REQUIRE(preset == np);
+    REQUIRE_NOTHROW([&] {
+      ossia::presets::apply_preset(root, np, ossia::presets::keep_arch_on, {}, false, false);
+    } ());
+    REQUIRE(a1->value() == ossia::value{true});
+    REQUIRE(a2->value() == ossia::value{false});
+  }
+  {
+      auto presetTXT = ossia::presets::to_string(preset);
+      a1->push_value(false);
+      a2->push_value(true);
+      auto np = ossia::presets::from_string(presetTXT);
+      REQUIRE(preset == np);
+      REQUIRE_NOTHROW([&] {
+        ossia::presets::apply_preset(root, np, ossia::presets::keep_arch_on, {}, false, false);
+      } ());
+      REQUIRE(a1->value() == ossia::value{true});
+      REQUIRE(a2->value() == ossia::value{false});
+  }
 }

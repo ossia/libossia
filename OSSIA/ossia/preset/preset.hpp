@@ -35,7 +35,7 @@ using preset_pair = std::pair<std::string, ossia::value>;
 
 OSSIA_EXPORT preset read_json(const std::string&, bool skip_first_level = true);
 OSSIA_EXPORT std::string
-write_json(const std::string& devicename, const preset&, bool erase_first = true);
+write_json(const std::string& devicename, const preset&);
 
 OSSIA_EXPORT std::string to_string(const preset&);
 OSSIA_EXPORT preset from_string(const ossia::string_view& str);

@@ -547,7 +547,7 @@ struct value_prettyprint_visitor
   }
   void operator()(bool b) const
   {
-    s << "bool: " << b;
+    s << "bool: " << (b ? "true" : "false");
   }
   void operator()(char c) const
   {

@@ -204,6 +204,9 @@ TEST_CASE ("test_qml_repeater", "test_qml_repeater")
   dumpTree(item);
 }
 
+// does not work on Qt on windows :
+// https://bugreports.qt.io/browse/QTBUG-65261
+#if !defined(_MSC_VER)
 TEST_CASE ("test_model_recursive_preset", "test_model_recursive_preset")
 {
   int argc{}; char** argv{};
@@ -316,7 +319,7 @@ TEST_CASE ("test_model_recursive_preset", "test_model_recursive_preset")
     cleanup(item);
   }
 }
-
+#endif
 
 TEST_CASE ("test_model_preset_2", "test_model_preset_2")
 {

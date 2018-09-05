@@ -112,7 +112,7 @@ ossia_preset_result ossia_presets_write_json(
   {
     try
     {
-      *buffer = copy_string(ossia::presets::write_json(device, preset->impl, false));
+      *buffer = copy_string(ossia::presets::write_json(device, preset->impl));
       return OSSIA_PRESETS_OK;
     }
     catch (...)
@@ -750,7 +750,7 @@ void insert(
 }
 
 std::string
-ossia::presets::write_json(const std::string& devicename, const preset& prst, bool erase_first)
+ossia::presets::write_json(const std::string& devicename, const preset& prst)
 {
   rapidjson::Document d;
 
@@ -765,7 +765,7 @@ ossia::presets::write_json(const std::string& devicename, const preset& prst, bo
         keys, it->first, [](char c) { return c == '/'; },
         boost::token_compress_on);
 
-    if(erase_first && !keys.empty())
+    if(!keys.empty() && keys.front().empty())
       keys.erase(keys.begin()); // first element is empty
 
     auto& val = it->second;
@@ -1263,14 +1263,15 @@ ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
     {
       if (param->get_value_type() != ossia::val_type::IMPULSE)
       {
-        std::string key = n->get_name();
+        std::string key = "/" + n->get_name();
+        key.reserve(100);
         auto n1 = n->get_parent();
         while ( n1 != &node )
         {
-          key = n1->get_name() + "/" + key;
+          key.insert(0, "/" + n1->get_name());
           n1 = n1->get_parent();
         }
-        cue.push_back({key,param->value()});
+        cue.push_back({key, param->value()});
       }
     }
   }
