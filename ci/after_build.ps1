@@ -219,7 +219,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-qml.log"
-  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  cmake --build . --config Release --target install > "$LogFile"
+  CheckLastExitCode
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-qml-debug.log"
+  cmake --build . --config Debug --target install > "$LogFile"
   CheckLastExitCode
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\

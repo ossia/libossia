@@ -43,3 +43,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "Release" -Or $env:APPVEYOR_BUILD_TYPE -eq "os
   cmake --build . --config Debug > "$LogFile"
   CheckLastExitCode
 }
+
+if ( -Or $env:APPVEYOR_BUILD_TYPE -eq "ossia-qml" )
+{
+  cd C:\projects\libossia\build\
+  $LogFile = "C:\projects\libossia\build-Debug-${env:platform}.log"
+  cmake --build . --config Debug > "$LogFile"
+  CheckLastExitCode
+}

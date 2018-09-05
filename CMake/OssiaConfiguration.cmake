@@ -210,7 +210,7 @@ endif()
 
 if(OSSIA_QML_ONLY)
   set(OSSIA_NO_INSTALL 0)
-  set(OSSIA_STATIC 1)
+  set(OSSIA_STATIC 0)
   set(OSSIA_DATAFLOW 0)
   set(OSSIA_EDITOR 0)
   set(OSSIA_JAVA 0)

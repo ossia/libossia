@@ -49,7 +49,7 @@ if(OSSIA_QML)
         TARGETS ossia
         LIBRARY DESTINATION Ossia/
         RUNTIME DESTINATION Ossia/
-        ARCHIVE DESTINATION ${CMAKE_BINARY_DIR}/tmp/
+        ARCHIVE DESTINATION Ossia/
         )
     install(
         FILES
