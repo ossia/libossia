@@ -40,13 +40,13 @@ case "$TRAVIS_OS_NAME" in
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
         sudo sed -i -- 's/trusty/artful/g' sources.list
         sudo apt-get update -qq
-        sudo apt-get install -qq g++-6-arm-linux-gnueabihf
+        sudo apt-get install -qq g++-6-arm-linux-gnueabihf xz-utils
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
         popd
 
         # download, extract and mount raspberry pi image with gcc-6 installed
-        wget -nv https://www.dropbox.com/s/o61vwblh6b5ixu7/raspbian-stretch-ossia-full.img.tar.gz
-        tar -xf raspbian-stretch-ossia-full.img.tar.gz
+        wget -nv https://www.dropbox.com/s/v2x22yff1g3bk0y/raspbian-stretch-ossia-full.img.xz
+        unxz raspbian-stretch-ossia-full.img.xz
         mkdir -p /tmp/rpi/root
         sudo mount -o loop,offset=48234496,rw,sync raspbian-stretch-ossia-full.img /tmp/rpi/root/
 
