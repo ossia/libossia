@@ -40,7 +40,7 @@ case "$TRAVIS_OS_NAME" in
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
         sudo sed -i -- 's/trusty/artful/g' sources.list
         sudo apt-get update -qq
-        sudo apt-get install -qq g++-6-arm-linux-gnueabihf xz-utils
+        sudo apt-get install -qq g++-8-arm-linux-gnueabihf xz-utils
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
         popd
 
