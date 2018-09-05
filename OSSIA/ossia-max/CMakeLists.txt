@@ -122,6 +122,7 @@ endfunction()
 
 # Shim externals to allow objects to be found by Max search box
 set(OSSIA_EXT_LIST ossia.attribute ossia.parameter ossia.model ossia.view ossia.remote ossia.device ossia.client ossia.logger ossia.ossia)
+set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})
     string(REPLACE "." "_" ossia_lib_name ${ossiaExt})
     configure_file(src/empty_external.c.in ${CMAKE_CURRENT_BINARY_DIR}/${ossiaExt}.c)
@@ -129,7 +130,21 @@ foreach(ossiaExt ${OSSIA_EXT_LIST})
     target_link_libraries(${ossiaExt} PRIVATE ${PROJECT_NAME})
     target_include_directories(${ossiaExt} PRIVATE ${CMAKE_BINARY_DIR}/OSSIA)
     setup_max_external(${ossiaExt})
+
+    string(APPEND OSSIA_MAX_SYMBOLS "_${ossia_lib_name}_setup\n")
 endforeach()
+
+# We only export the Max required symbols.
+# This is of utmost importance for support in Max4Live : ossia and Ableton Live both use 
+# boost.asio, which leads to conflicts at runtime
+if(APPLE)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/symbols.txt" "${OSSIA_MAX_SYMBOLS}\n")
+  get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
+  set_property(TARGET ossia-max APPEND PROPERTY
+    LINK_FLAGS 
+      "-s -exported_symbols_list symbols.txt")
+  get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
+endif()
 
 set_target_properties(ossia.ossia PROPERTIES OUTPUT_NAME "ossia")
 
