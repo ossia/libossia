@@ -30,7 +30,7 @@ cd  C:\projects\libossia
 mkdir build
 cd build
 
-$CommonFlags32 = "-G""Visual Studio 15 2017""","-Thost=x64","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install-32bit"""
+$CommonFlags32 = "-G""Visual Studio 15 2017""","-Thost=x64","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
 $CommonFlags64 = "-G""Visual Studio 15 2017 Win64""","-Thost=x64","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
@@ -50,7 +50,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake $CommonFlags64 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=1 c:\projects\libossia > $LogFile
+  cmake $CommonFlags64 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=0 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -59,7 +59,25 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake $CommonFlags32 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=1 c:\projects\libossia > $LogFile
+  cmake $CommonFlags32 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=0 c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-unity3d" ) {
+  if ( Test-Path ${env:QTDIR}\bin\ ) {
+    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
+  }
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
+  cmake $CommonFlags64 -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
+  # now configure 32 bit version
+  cd ..
+  mkdir build-32bit
+  cd build-32bit
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
+  cmake $CommonFlags32 -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ) {

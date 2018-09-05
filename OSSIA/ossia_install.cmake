@@ -70,7 +70,7 @@ if(OSSIA_QML)
 endif()
 
 
-if(NOT OSSIA_QML_ONLY)
+if(NOT OSSIA_QML_ONLY AND NOT OSSIA_UNITY3D_ONLY)
 # Default case, C / C++ library
 # Install
 install(TARGETS ossia
