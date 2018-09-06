@@ -18,7 +18,7 @@ import com.sun.jna.Pointer;
 
 interface Ossia extends Library
 {
-  Ossia INSTANCE = (Ossia) Native.loadLibrary("/home/antoine/dev/OSSIA/build-libossia/OSSIA/libossia.so", Ossia.class);
+  Ossia INSTANCE = (Ossia) Native.loadLibrary("ossia", Ossia.class);
 
     //// Protocol ////
      Pointer ossia_protocol_multiplex_create ();
@@ -170,14 +170,14 @@ interface Ossia extends Library
      void ossia_node_set_tags(
         Pointer node,
         Pointer tags,
-        Pointer sz);
+        SizeT sz);
      void ossia_node_get_tags(
         Pointer node,
         Pointer tags,
         Pointer sz);
      void ossia_tags_free(
         Pointer tags,
-        Pointer sz);
+        SizeT sz);
 
      void ossia_node_set_hidden(
         Pointer node,
@@ -306,15 +306,15 @@ interface Ossia extends Library
      void ossia_parameter_push_in(
       Pointer property,
       int[] value,
-      int sz);
+      SizeT sz);
      void ossia_parameter_push_fn(
       Pointer property,
       float[] value,
-      int sz);
+      SizeT sz);
      void ossia_parameter_push_cn( // pushed as a string
       Pointer property,
       char[] value,
-      int sz);
+      SizeT sz);
 
 
      Pointer ossia_parameter_fetch_value (
@@ -362,9 +362,18 @@ interface Ossia extends Library
       Pointer domain,
       Pointer value);
 
+     void ossia_domain_get_values(
+      Pointer domain,
+      Pointer values,
+      Pointer sz);
+
+     void ossia_domain_set_values(
+      Pointer domain,
+      Pointer value,
+      SizeT n);
 
      void ossia_domain_free (
-      Pointer property);
+      Pointer d);
 
     //// Value ////
 
@@ -385,27 +394,23 @@ interface Ossia extends Library
      Pointer ossia_value_create_char (char value);
 
      Pointer ossia_value_create_string (String value);
+     Pointer ossia_value_create_byte_array (Pointer value, SizeT sz);
 
-     Pointer ossia_value_create_list (Pointer[] values, Pointer size);
-     Pointer ossia_value_create_fn (float[] values, Pointer size);
-     Pointer ossia_value_create_in (int[] values, Pointer size);
+     Pointer ossia_value_create_list (Pointer values, Pointer size);
+     Pointer ossia_value_create_fn (Pointer values, Pointer size);
+     Pointer ossia_value_create_in (Pointer values, Pointer size);
 
 
      void ossia_value_free (Pointer value);
 
 
      int ossia_value_get_type (Pointer type);
-
      int ossia_value_to_int (Pointer val);
-
      float ossia_value_to_float (Pointer val);
-
      Vec2F ossia_value_to_2f (Pointer val);
      Vec3F ossia_value_to_3f (Pointer val);
      Vec4F ossia_value_to_4f (Pointer val);
-
      boolean ossia_value_to_bool (Pointer val);
-
      char ossia_value_to_char (Pointer val);
 
     void ossia_value_to_byte_array (
@@ -425,7 +430,6 @@ interface Ossia extends Library
       Pointer size);
      void ossia_value_free_fn (Pointer tpl);
 
-
      void ossia_value_to_in(
       Pointer val_in,
       Pointer val_out,
@@ -434,11 +438,8 @@ interface Ossia extends Library
 
 
      int ossia_value_convert_int (Pointer val);
-
      float ossia_value_convert_float (Pointer val);
-
      boolean ossia_value_convert_bool (Pointer val);
-
      char ossia_value_convert_char (Pointer val);
 
      String ossia_value_convert_byte_array (
@@ -451,15 +452,10 @@ interface Ossia extends Library
       Pointer val_out,
       Pointer size);
 
-
-
      void ossia_string_free( Pointer str );
 
     /// LOG ///
-
      void ossia_set_debug_logger( Pointer fp );
-
-
      Pointer ossia_logger_create(String host, String app);
      void ossia_logger_init_heartbeat(Pointer log, int pid, String cmdline);
      void ossia_logger_set_level(Pointer log, int lvl);
@@ -467,8 +463,6 @@ interface Ossia extends Library
      void ossia_logger_free(Pointer log);
 
     /// MESSAGE QUEUE ///
-
-
     Pointer ossia_mq_create(Pointer device);
      void ossia_mq_register(Pointer mq, Pointer param);
      void ossia_mq_unregister(Pointer mq, Pointer param);
