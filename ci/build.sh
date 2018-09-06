@@ -27,6 +27,8 @@ if [[ "$BUILD_TYPE" == Rpi* ]]; then
   export RPI_ROOT_PATH=/opt/cross-pi-gcc-8.2.0
   export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
   export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+  export PATH=/opt/cross-pi-gcc/bin:${PATH}
+  export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:${LD_LIBRARY_PATH}
 fi
 
 mkdir -p ${ARTIFACTS_DIR}
