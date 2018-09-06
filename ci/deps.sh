@@ -35,12 +35,12 @@ case "$TRAVIS_OS_NAME" in
 
     shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
-        # install arm-linux-gnueabihf-g++-6 from artful
+        # install dependencies
         pushd /etc/apt
         sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
         sudo sed -i -- 's/trusty/artful/g' sources.list
         sudo apt-get update -qq
-        sudo apt-get install -qq g++-8-arm-linux-gnueabihf xz-utils
+        sudo apt-get install -qq xz-utils
         sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
         popd
 
