@@ -210,6 +210,7 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
                    -DOSSIA_PROTOCOL_MIDI=OFF \
+                   -DCROSS_COMPILER_PATH=${RPI_ROOT_PATH}/opt/gcc-8.1.0/bin \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -252,6 +253,7 @@ def get_versions():
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
+                   -DCROSS_COMPILER_PATH=${RPI_ROOT_PATH}/opt/gcc-8.1.0/bin \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -282,6 +284,7 @@ def get_versions():
                    -DOSSIA_CPP=1 \
                    -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
+                   -DCROSS_COMPILER_PATH=${RPI_ROOT_PATH}/opt/gcc-8.1.0/bin \
                    ..
 
         $CMAKE_BIN --build . -- -j2
