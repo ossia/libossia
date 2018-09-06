@@ -25,6 +25,7 @@ endif()
 
 include(OssiaConfiguration)
 cmake_policy(SET CMP0054 NEW)
+cmake_policy(SET CMP0056 NEW)
 cmake_policy(SET CMP0069 NEW)
 
 # Dependencies

@@ -333,21 +333,24 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
   set(OSSIA_DISABLE_COTIRE 1)
   set(ANDROID 1)
 else()
-    if(UNIX AND NOT APPLE)
-        find_program(LSB_RELEASE lsb_release)
-        if(LSB_RELEASE)
-          execute_process(COMMAND ${LSB_RELEASE} -i
-              OUTPUT_VARIABLE RELEASE_CODENAME
-              OUTPUT_STRIP_TRAILING_WHITESPACE
-          )
-        endif()
-    endif()
-
-  # broken in ubuntu 17.10
-  if(NOT "${RELEASE_CODENAME}" MATCHES "Ubuntu")
-    check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+  if(UNIX AND NOT APPLE)
+      find_program(LSB_RELEASE lsb_release)
+      if(LSB_RELEASE)
+        execute_process(COMMAND ${LSB_RELEASE} -i
+            OUTPUT_VARIABLE RELEASE_CODENAME
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+      endif()
   endif()
+
+  set(old_link_libs "${CMAKE_REQUIRED_LIBRARIES}")
+  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=lld")
+  check_cxx_compiler_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+
+  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold")
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
+  message("${GOLD_LINKER_SUPPORTED}")
+  set(CMAKE_REQUIRED_LIBRARIES "${old_link_libs}")
 
   if(OSSIA_SANITIZE AND NOT APPLE)
     set(LLD_LINKER_SUPPORTED 0)
