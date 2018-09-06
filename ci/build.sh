@@ -22,6 +22,13 @@ esac
 
 export CTEST_OUTPUT_ON_FAILURE=1
 
+if [[ "$BUILD_TYPE" == Rpi* ]]; then
+  #setup some environment variable to help CMAKE to find libraries for crosscompiling
+  export RPI_ROOT_PATH=/opt/cross-pi-gcc-8.2.0
+  export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
+  export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+fi
+
 mkdir -p ${ARTIFACTS_DIR}
 
 mkdir build
@@ -189,11 +196,6 @@ case "$TRAVIS_OS_NAME" in
       ;;
       RpiPdRelease)
 
-        #setup some environment variable to help CMAKE to find libraries
-        export RPI_ROOT_PATH=/tmp/rpi/root
-        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
-        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
-
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DBOOST_ROOT="/usr/include/boost" \
                    -DCMAKE_BUILD_TYPE=Release \
@@ -210,7 +212,7 @@ case "$TRAVIS_OS_NAME" in
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
                    -DOSSIA_PROTOCOL_MIDI=OFF \
-                   -DCROSS_COMPILER_PATH=${RPI_ROOT_PATH}/opt/gcc-8.1.0/bin \
+                   -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -222,10 +224,7 @@ case "$TRAVIS_OS_NAME" in
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       RpiPythonRelease)
-        #setup some environment variable to help CMAKE to find libraries
-        export RPI_ROOT_PATH=/tmp/rpi/root
-        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
-        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+        
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
@@ -253,7 +252,7 @@ def get_versions():
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DOSSIA_EDITOR=OFF \
                    -DOSSIA_DATAFLOW=OFF \
-                   -DCROSS_COMPILER_PATH=${RPI_ROOT_PATH}/opt/gcc-8.1.0/bin \
+                   -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -264,10 +263,6 @@ def get_versions():
         cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       ;;
       RpiRelease)
-        #setup some environment variable to help CMAKE to find libraries
-        export RPI_ROOT_PATH=/tmp/rpi/root
-        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
-        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
 
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DBOOST_ROOT="/usr/include/boost" \
@@ -284,7 +279,7 @@ def get_versions():
                    -DOSSIA_CPP=1 \
                    -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
-                   -DCROSS_COMPILER_PATH=${RPI_ROOT_PATH}/opt/gcc-8.1.0/bin \
+                   -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    ..
 
         $CMAKE_BIN --build . -- -j2

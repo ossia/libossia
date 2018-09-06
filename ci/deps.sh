@@ -36,13 +36,22 @@ case "$TRAVIS_OS_NAME" in
     shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
         # install dependencies
-        pushd /etc/apt
-        sudo cp /etc/apt/sources.list /etc/apt/sources.list_bak
-        sudo sed -i -- 's/trusty/artful/g' sources.list
-        sudo apt-get update -qq
         sudo apt-get install -qq xz-utils
-        sudo cp /etc/apt/sources.list_bak /etc/apt/sources.list
-        popd
+        wget https://github.com/OSSIA/raspberry-pi-cross-compilers/raw/master/gcc-8.2.0-rpi.tar.bz2
+        tar xf gcc-8.2.0-rpi.tar.bz2 
+        sudo mv cross-pi-gcc-8.2.0/ /opt/
+        sudo ln -s /opt/cross-pi-gcc-8.2.0 /opt/cross-pi-gcc
+        echo 'export PATH=/opt/cross-pi-gcc/bin:$PATH' >> ~/.bashrc
+        echo 'export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+        source ~/.bashrc
+        sudo ln -s /usr/include/arm-linux-gnueabihf/sys /usr/include/sys
+        sudo ln -s /usr/include/arm-linux-gnueabihf/bits /usr/include/bits
+        sudo ln -s /usr/include/arm-linux-gnueabihf/gnu /usr/include/gnu
+        sudo ln -s /usr/include/arm-linux-gnueabihf/asm /usr/include/asm
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crti.o /usr/lib/crti.o
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
+
 
         # download, extract and mount raspberry pi image with gcc-6 installed
         wget -nv https://www.dropbox.com/s/v2x22yff1g3bk0y/raspbian-stretch-ossia-full.img.xz
