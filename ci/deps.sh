@@ -36,8 +36,7 @@ case "$TRAVIS_OS_NAME" in
     shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
         # install dependencies
-        sudo apt-get install -qq xz-utils
-        wget https://github.com/OSSIA/raspberry-pi-cross-compilers/raw/master/gcc-8.2.0-rpi.tar.bz2
+        wget -nv https://www.dropbox.com/s/lwchd3va49sd43p/gcc-8.2.0-rpi.tar.bz2
         tar xf gcc-8.2.0-rpi.tar.bz2 
         sudo mv cross-pi-gcc-8.2.0/ /opt/
         sudo ln -s /opt/cross-pi-gcc-8.2.0 /opt/cross-pi-gcc
@@ -52,15 +51,6 @@ case "$TRAVIS_OS_NAME" in
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
 
-
-        # download, extract and mount raspberry pi image with gcc-6 installed
-        wget -nv https://www.dropbox.com/s/v2x22yff1g3bk0y/raspbian-stretch-ossia-full.img.xz
-        unxz raspbian-stretch-ossia-full.img.xz
-        mkdir -p /tmp/rpi/root
-        sudo mount -o loop,offset=48234496,rw,sync raspbian-stretch-ossia-full.img /tmp/rpi/root/
-
-        # Copy boost to system path and image path
-        sudo ln -s /opt/boost/boost /usr/include/boost
     elif [[ $BUILD_TYPE == *python* ]]; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
         if [[ "${PRE_CMD:-linux64}" == "linux32" ]]; then
