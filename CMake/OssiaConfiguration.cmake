@@ -36,7 +36,7 @@ option(OSSIA_UNITY3D "Build Unity3D bindings" OFF)
 option(OSSIA_QML "Build QML bindings" OFF)
 option(OSSIA_QML_ONLY "Build and install only QML bindings" OFF)
 option(OSSIA_QML_SCORE "Build QML bindings to scoring parts" OFF)
-
+option(OSSIA_NODEJS "Build Node.js bindings" OFF)
 # Protocols :
 option(OSSIA_PROTOCOL_AUDIO "Enable Audio protocol" ON)
 option(OSSIA_PROTOCOL_MIDI "Enable MIDI protocol" ON)

@@ -46,15 +46,19 @@ endif()
 
 # Bindings
 if(OSSIA_PD)
-    add_subdirectory(OSSIA/ossia-pd)
+  add_subdirectory(OSSIA/ossia-pd)
 endif()
 
 if(OSSIA_MAX)
-    add_subdirectory(OSSIA/ossia-max)
+  add_subdirectory(OSSIA/ossia-max)
 endif()
 
 if(OSSIA_JAVA)
   add_subdirectory(OSSIA/ossia-java)
+endif()
+
+if(OSSIA_NODEJS)
+  add_subdirectory(OSSIA/ossia-node)
 endif()
 
 if(NOT WIN32)
@@ -69,11 +73,10 @@ if(OSSIA_EXAMPLES)
 endif()
 
 if(OSSIA_TESTING)
-    enable_testing()
-    add_subdirectory(Tests)
+  enable_testing()
+  add_subdirectory(Tests)
 endif()
 
-set(OSSIA_GENVAR 1)
 if(OSSIA_GENVAR)
-    add_subdirectory(tools/gen_variant)
+  add_subdirectory(tools/gen_variant)
 endif()

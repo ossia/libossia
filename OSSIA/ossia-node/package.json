@@ -1,0 +1,24 @@
+{
+  "name": "ossia",
+  "version": "1.0.0",
+  "main": "ossia.js",
+  "description": "libossia",
+  "author": {
+    "name": "Ossia team",
+    "email": "ossia.collective@gmail.com",
+    "url": "http://ossia.io/"
+  },
+  "contributors": [],
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+    "bindings": "~1.2.1",
+    "nan": "^2.11.0",
+    "@mapbox/cmake-node-module": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OSSIA/libossia.git"
+  }
+}
