@@ -2,7 +2,8 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
-
+import io.ossia.Ossia;
+import io.ossia.Type;
 class example
 {
   public static void main(String args[])

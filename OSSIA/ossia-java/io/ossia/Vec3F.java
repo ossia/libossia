@@ -1,3 +1,4 @@
+package io.ossia;
 import com.sun.jna.Structure;
 
 public class Vec3F implements Structure.ByValue {

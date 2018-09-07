@@ -5,18 +5,13 @@
 // e.g. ~/sketchbook/sketch_123456/code/jna.jar
 
 // Then change the path to libossia.so/ossia.dll/libossia.dylib
-/*
-import Ossia.Type;
-import Ossia.Vec2f;
-import Ossia.Vec3f;
-import Ossia.Vec4f;
-*/
+package io.ossia;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
-interface Ossia extends Library
+public interface Ossia extends Library
 {
   Ossia INSTANCE = (Ossia) Native.loadLibrary("ossia", Ossia.class);
 

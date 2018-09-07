@@ -1,3 +1,4 @@
+package io.ossia;
 import com.sun.jna.IntegerType;
 import com.sun.jna.Native;
 

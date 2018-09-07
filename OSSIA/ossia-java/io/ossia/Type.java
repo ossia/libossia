@@ -1,3 +1,4 @@
+package io.ossia;
 public interface Type
 {
   public static final int FLOAT_T = 0;
