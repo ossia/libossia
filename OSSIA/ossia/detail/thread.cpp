@@ -58,6 +58,10 @@ std::string get_module_path()
     return "";
 }
 #else
+#include <limits>
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 #include <ossia/../../3rdparty/whereami/src/whereami.h>
 #include <ossia/../../3rdparty/whereami/src/whereami.c>
 namespace ossia
