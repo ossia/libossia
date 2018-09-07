@@ -199,12 +199,9 @@ case "$TRAVIS_OS_NAME" in
       RpiPdRelease)
 
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
-                   -DBOOST_ROOT="/usr/include/boost" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_CI=1 \
-                   -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
-                   -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    -DOSSIA_PD_ONLY=1 \
                    ..
@@ -229,14 +226,11 @@ case "$TRAVIS_OS_NAME" in
 def get_versions():
   return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
-                   -DBOOST_ROOT="/usr/include/boost" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
                    -DOSSIA_CI=1 \
-                   -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
-                   -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    -DOSSIA_PYTHON_ONLY=1 \
                    ..
@@ -251,7 +245,6 @@ def get_versions():
       RpiRelease)
 
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
-                   -DBOOST_ROOT="/usr/include/boost" \
                    -DOSSIA_PD=0 \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
@@ -263,8 +256,6 @@ def get_versions():
                    -DOSSIA_PYTHON=0 \
                    -DOSSIA_C=1 \
                    -DOSSIA_CPP=1 \
-                   -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
-                   -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
                    -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    ..
 
