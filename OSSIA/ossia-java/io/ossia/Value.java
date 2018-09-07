@@ -8,6 +8,10 @@ public class Value implements AutoCloseable
     impl = p;
   }
 
+  public Value()
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_impulse();
+  }
 
   public void set_impulse()
   {

@@ -42,6 +42,7 @@ add_jar(ossia-java
 set(CMAKE_JAR_CLASSES_PREFIX "")
 set(CMAKE_JAVA_INCLUDE_PATH "${CMAKE_CURRENT_BINARY_DIR}/jna.jar;${CMAKE_CURRENT_SOURCE_DIR}")
 add_jar(ossia-java-example example.java ENTRY_POINT example)
+add_jar(ossia-java-test test.java ENTRY_POINT test)
 
 
 # Copy the ossia shared object into the .jar

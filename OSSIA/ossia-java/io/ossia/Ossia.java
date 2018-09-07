@@ -409,9 +409,9 @@ public interface Ossia extends Library
      int ossia_value_get_type (Pointer type);
      int ossia_value_to_int (Pointer val);
      float ossia_value_to_float (Pointer val);
-     Vec2F ossia_value_to_2f (Pointer val);
-     Vec3F ossia_value_to_3f (Pointer val);
-     Vec4F ossia_value_to_4f (Pointer val);
+     Vec2F.ByValue ossia_value_to_2f (Pointer val);
+     Vec3F.ByValue ossia_value_to_3f (Pointer val);
+     Vec4F.ByValue ossia_value_to_4f (Pointer val);
      boolean ossia_value_to_bool (Pointer val);
      byte ossia_value_to_char (Pointer val);
 
@@ -454,9 +454,9 @@ public interface Ossia extends Library
       Pointer val_out,
       Pointer size);
 
-      Vec2F ossia_value_convert_2f (Pointer val);
-      Vec3F ossia_value_convert_3f (Pointer val);
-      Vec4F ossia_value_convert_4f (Pointer val);
+      Vec2F.ByValue ossia_value_convert_2f (Pointer val);
+      Vec3F.ByValue ossia_value_convert_3f (Pointer val);
+      Vec4F.ByValue ossia_value_convert_4f (Pointer val);
 
      void ossia_string_free( Pointer str );
 
