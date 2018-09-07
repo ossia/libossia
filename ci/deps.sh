@@ -47,8 +47,9 @@ case "$TRAVIS_OS_NAME" in
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crti.o /usr/lib/crti.o
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
+    fi
 
-    elif [[ $BUILD_TYPE == *python* ]]; then
+    if [[ $BUILD_TYPE == *python* ]]; then
       if [[ "$BUILD_TYPE" == "python_manylinux" ]]; then
         if [[ "${PRE_CMD:-linux64}" == "linux32" ]]; then
           docker pull quay.io/pypa/manylinux1_i686
@@ -72,13 +73,6 @@ case "$TRAVIS_OS_NAME" in
           sudo apt install -qq python3 python3-dev python3-pip
           sudo pip3 install twine
         fi
-      fi
-    fi
-    if [[ "$BUILD_TYPE" == "RpiPythonRelease" ]]; then
-      if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-        sudo pip install twine
-      else
-        sudo pip3 install twine
       fi
     fi
   ;;
