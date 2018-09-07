@@ -202,23 +202,15 @@ case "$TRAVIS_OS_NAME" in
                    -DBOOST_ROOT="/usr/include/boost" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
-                   -DOSSIA_STATIC=1 \
-                   -DOSSIA_TESTING=0 \
-                   -DOSSIA_EXAMPLES=0 \
                    -DOSSIA_CI=1 \
-                   -DOSSIA_QT=0 \
-                   -DOSSIA_PYTHON=0 \
-                   -DOSSIA_NO_QT=1 \
                    -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
-                   -DOSSIA_EDITOR=OFF \
-                   -DOSSIA_DATAFLOW=OFF \
-                   -DOSSIA_PROTOCOL_MIDI=OFF \
                    -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
+                   -DOSSIA_PD_ONLY=1 \
                    ..
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+        $CMAKE_BIN --build . --target install
 
         cd $TRAVIS_BUILD_DIR/ossia-pd-package
         tar -czf ${ARTIFACTS_DIR}/ossia-pd-linux_arm.tar.gz ossia
@@ -242,19 +234,11 @@ def get_versions():
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
-                   -DOSSIA_STATIC=1 \
-                   -DOSSIA_TESTING=0 \
-                   -DOSSIA_EXAMPLES=0 \
                    -DOSSIA_CI=1 \
-                   -DOSSIA_QT=0 \
-                   -DOSSIA_PYTHON=1 \
-                   -DOSSIA_NO_QT=1 \
-                   -DOSSIA_PD=0 \
                    -DALSA_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include \
                    -DALSA_LIBRARY=${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/libasound.so \
-                   -DOSSIA_EDITOR=OFF \
-                   -DOSSIA_DATAFLOW=OFF \
                    -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
+                   -DOSSIA_PYTHON_ONLY=1 \
                    ..
 
         $CMAKE_BIN --build . -- -j2
@@ -327,16 +311,8 @@ def get_versions():
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
           -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
-          -DOSSIA_STATIC=1 \
-          -DOSSIA_TESTING=0 \
-          -DOSSIA_EXAMPLES=0 \
           -DOSSIA_CI=1 \
-          -DOSSIA_PD=0 \
-          -DOSSIA_QT=0 \
-          -DOSSIA_QML=0 \
-          -DOSSIA_PYTHON=1 \
-          -DOSSIA_EDITOR=OFF \
-          -DOSSIA_DATAFLOW=OFF \
+          -DOSSIA_PYTHON_ONLY=1 \
           ..
 
         $CMAKE_BIN --build . -- -j2
@@ -359,16 +335,8 @@ def get_versions():
           -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-qml" \
-          -DOSSIA_STATIC=0 \
-          -DOSSIA_TESTING=0 \
-          -DOSSIA_EXAMPLES=0 \
           -DOSSIA_CI=1 \
-          -DOSSIA_PD=0 \
-          -DOSSIA_QT=1 \
-          -DOSSIA_QML=1 \
-          -DOSSIA_PYTHON=0 \
-          -DOSSIA_EDITOR=OFF \
-          -DOSSIA_DATAFLOW=OFF \
+          -DOSSIA_QML_ONLY=1 \
           ..
 
         $CMAKE_BIN --build . -- -j2
@@ -451,24 +419,14 @@ def get_versions():
     if [[ "$BUILD_TYPE" == "PdRelease" ]]; then
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
-               -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
-               -DOSSIA_TESTING=0 \
-               -DOSSIA_EXAMPLES=0 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=0 \
-               -DOSSIA_NO_QT=1 \
-               -DOSSIA_PYTHON=0 \
-               -DOSSIA_PD=1 \
-               -DOSSIA_MAX=0 \
+               -DOSSIA_PD_ONLY=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DOSSIA_OSX_FAT_LIBRARIES=1 \
-               -DOSSIA_EDITOR=OFF \
-               -DOSSIA_DATAFLOW=OFF \
-               -DOSSIA_PROTOCOL_MIDI=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -482,10 +440,8 @@ def get_versions():
     elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Debug \
-               -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
                -DOSSIA_TESTING=1 \
-               -DOSSIA_EXAMPLES=0 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
@@ -508,23 +464,13 @@ def get_versions():
 
     elif [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
-               -DOSSIA_STATIC=1 \
                -DOSSIA_SANITIZE=1 \
-               -DOSSIA_TESTING=0 \
-               -DOSSIA_EXAMPLES=0 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                -DOSSIA_CI=1 \
-               -DOSSIA_QT=0 \
-               -DOSSIA_NO_QT=1 \
-               -DOSSIA_PYTHON=0 \
-               -DOSSIA_PD=0 \
-               -DOSSIA_MAX=1 \
+               -DOSSIA_MAX_ONLY=1 \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
-               -DOSSIA_EDITOR=OFF \
-               -DOSSIA_PROTOCOL_MIDI=OFF \
-               -DOSSIA_DATAFLOW=OFF \
                ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
@@ -544,23 +490,15 @@ def get_versions():
 def get_versions():
   return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
-                 -DOSSIA_STATIC=1 \
                  -DOSSIA_SANITIZE=1 \
-                 -DOSSIA_TESTING=0 \
-                 -DOSSIA_EXAMPLES=0 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                  -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
                  -DPYTHON_LIBRARY=/usr/local/opt/python/Frameworks/Python.framework/Versions/${python}/lib/libpython${python}.dylib \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
-                 -DOSSIA_QT=0 \
-                 -DOSSIA_PYTHON=1 \
-                 -DOSSIA_PD=0 \
-                 -DOSSIA_MAX=0 \
+                 -DOSSIA_PYTHON_ONLY=1 \
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
-                 -DOSSIA_EDITOR=OFF \
-                 -DOSSIA_DATAFLOW=OFF \
                  ..
 
       $CMAKE_BIN --build . -- -j2
@@ -575,22 +513,13 @@ def get_versions():
       cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
-                 -DOSSIA_STATIC=0 \
                  -DOSSIA_SANITIZE=1 \
-                 -DOSSIA_TESTING=0 \
-                 -DOSSIA_EXAMPLES=0 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR"/ossia-qml \
                  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
                  -DOSSIA_CI=1 \
-                 -DOSSIA_QT=1 \
-                 -DOSSIA_PYTHON=0 \
-                 -DOSSIA_PD=0 \
-                 -DOSSIA_MAX=0 \
-                 -DOSSIA_QML=1 \
+                 -DOSSIA_QML_ONLY=1 \
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
-                 -DOSSIA_EDITOR=OFF \
-                 -DOSSIA_DATAFLOW=OFF \
                  ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install > /dev/null
