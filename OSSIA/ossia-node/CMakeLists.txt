@@ -4,6 +4,7 @@ include(node_modules/@mapbox/cmake-node-module/module.cmake)
 add_node_module(ossia-node
   INSTALL_PATH build/ossia-node.node
   NAN_VERSION 2.11.0
+  MINIMUM_NODE_ABI 64
   )
 
 target_sources(ossia-node INTERFACE
