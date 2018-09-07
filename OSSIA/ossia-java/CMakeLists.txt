@@ -19,12 +19,24 @@ set(CMAKE_JAVA_INCLUDE_PATH "${CMAKE_CURRENT_BINARY_DIR}/jna.jar;${CMAKE_CURRENT
 # compile ossia.java
 set(CMAKE_JAR_CLASSES_PREFIX "io/ossia")
 add_jar(ossia-java
+  io/ossia/Device.java
+  io/ossia/Node.java
+  io/ossia/OscQueryServer.java
+  io/ossia/OscQueryMirror.java
+  io/ossia/Parameter.java
+  io/ossia/Protocol.java
+  io/ossia/Value.java
+  io/ossia/Domain.java
+  io/ossia/MessageQueue.java
+
   io/ossia/Ossia.java
   io/ossia/Vec2F.java
   io/ossia/Vec3F.java
   io/ossia/Vec4F.java
   io/ossia/Type.java
-  io/ossia/SizeT.java)
+  io/ossia/SizeT.java
+
+)
 
 
 set(CMAKE_JAR_CLASSES_PREFIX "")

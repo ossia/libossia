@@ -2,27 +2,33 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
-import io.ossia.Ossia;
-import io.ossia.Type;
+import io.ossia.*;
+
 class example
 {
   public static void main(String args[])
   {
     System.out.println("Hello Ossia-Java");
 
-    Pointer proto = Ossia.INSTANCE.ossia_protocol_oscquery_server_create(1234, 5678);
-    Pointer device = Ossia.INSTANCE.ossia_device_create(proto, "processing");
+    Protocol p = new OscQueryServer(1234, 5678);
+    Device d = new Device(p, "processing");
 
-    Pointer root = Ossia.INSTANCE.ossia_device_get_root_node(device);
-    Pointer bar = Ossia.INSTANCE.ossia_node_create(root, "/foo/bar");
-    Pointer bar_p = Ossia.INSTANCE.ossia_node_create_parameter(root, Type.FLOAT_T);
+    Node root = d.getRootNode();
+    Node bar = root.createNode("/foo/bar");
+    Parameter bar_p = bar.createParameter(Type.FLOAT_T);
+    bar_p.push(1.2f);
 
-    Ossia.INSTANCE.ossia_parameter_push_f(bar_p, 1.2f);
+    Device mirror_d = new Device(new OscQueryMirror("ws://127.0.0.1:5678"), "mirror");
+    mirror_d.update();
+    Parameter mirror_bar_p = mirror_d.getRootNode().findNode("/foo/bar").getParameter();
 
-    while(Ossia.INSTANCE.ossia_value_to_float(Ossia.INSTANCE.ossia_parameter_get_value(bar_p)) == 1.2f)
+
+    System.out.println("Local value is: " + bar_p.getValue().asFloat());
+    while(bar_p.getValue().asFloat() == 1.2f)
     {
       try
       {
+        mirror_bar_p.push(1.4f);
         Thread.sleep(10);
       }
       catch(InterruptedException ex)
@@ -30,8 +36,6 @@ class example
         Thread.currentThread().interrupt();
       }
     }
-
-    Ossia.INSTANCE.ossia_device_free(device);
-    Ossia.INSTANCE.ossia_protocol_free(proto);
+    System.out.println("Local value is: " + bar_p.getValue().asFloat());
   }
 }

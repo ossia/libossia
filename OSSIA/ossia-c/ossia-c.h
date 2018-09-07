@@ -1591,6 +1591,36 @@ void ossia_value_convert_byte_array(ossia_value_t val, char** str, size_t* sz);
 OSSIA_EXPORT
 void ossia_value_convert_list(ossia_value_t val_in, ossia_value_t** out, size_t* size);
 
+/**
+ * @brief Get the value as a vec2f
+ *
+ * This function will do a best-effort conversion.
+ *
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+struct ossia_vec2f ossia_value_convert_2f(ossia_value_t val);
+
+/**
+ * @brief Get the value as a vec3f
+ *
+ * This function will do a best-effort conversion.
+ *
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+struct ossia_vec3f ossia_value_convert_3f(ossia_value_t val);
+
+/**
+ * @brief Get the value as a vec4f
+ *
+ * This function will do a best-effort conversion.
+ *
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+struct ossia_vec4f ossia_value_convert_4f(ossia_value_t val);
+
 
 OSSIA_EXPORT
 void ossia_string_free(char*);

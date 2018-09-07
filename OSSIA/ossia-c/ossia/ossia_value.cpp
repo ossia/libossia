@@ -293,6 +293,22 @@ int ossia_value_convert_bool(ossia_value_t val)
 {
   return convert_value<bool>(val);
 }
+ossia_vec2f ossia_value_convert_2f(ossia_value_t val)
+{
+  auto v = convert_value<ossia::vec2f>(val);
+  return {v[0], v[1]};
+}
+ossia_vec3f ossia_value_convert_3f(ossia_value_t val)
+{
+  auto v = convert_value<ossia::vec3f>(val);
+  return {v[0], v[1], v[2]};
+}
+ossia_vec4f ossia_value_convert_4f(ossia_value_t val)
+{
+  auto v = convert_value<ossia::vec4f>(val);
+  return {v[0], v[1], v[2], v[3]};
+}
+
 
 void ossia_value_convert_byte_array(ossia_value_t val, char** str, size_t* size)
 {

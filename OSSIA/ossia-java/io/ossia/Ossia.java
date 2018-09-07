@@ -10,6 +10,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
 
 public interface Ossia extends Library
 {
@@ -159,8 +160,14 @@ public interface Ossia extends Library
      void ossia_node_set_description(
         Pointer node,
         String description);
-     Pointer ossia_node_get_description(
+     String ossia_node_get_description(
         Pointer node);
+     void ossia_node_set_extended_type(
+        Pointer node,
+        String description);
+     String ossia_node_get_extended_type(
+        Pointer node);
+
 
      void ossia_node_set_tags(
         Pointer node,
@@ -294,21 +301,21 @@ public interface Ossia extends Library
       float v1, float v2, float v3, float v4);
      void ossia_parameter_push_c(
       Pointer property,
-      char value);
+      byte value);
      void ossia_parameter_push_s(
       Pointer property,
       String value);
      void ossia_parameter_push_in(
       Pointer property,
-      int[] value,
+      Pointer value,
       SizeT sz);
      void ossia_parameter_push_fn(
       Pointer property,
-      float[] value,
+      Pointer value,
       SizeT sz);
      void ossia_parameter_push_cn( // pushed as a string
       Pointer property,
-      char[] value,
+      Pointer value,
       SizeT sz);
 
 
@@ -386,7 +393,7 @@ public interface Ossia extends Library
 
      Pointer ossia_value_create_bool (int value);
 
-     Pointer ossia_value_create_char (char value);
+     Pointer ossia_value_create_char (byte value);
 
      Pointer ossia_value_create_string (String value);
      Pointer ossia_value_create_byte_array (Pointer value, SizeT sz);
@@ -406,7 +413,7 @@ public interface Ossia extends Library
      Vec3F ossia_value_to_3f (Pointer val);
      Vec4F ossia_value_to_4f (Pointer val);
      boolean ossia_value_to_bool (Pointer val);
-     char ossia_value_to_char (Pointer val);
+     byte ossia_value_to_char (Pointer val);
 
     void ossia_value_to_byte_array (
       Pointer val_in,
@@ -435,7 +442,7 @@ public interface Ossia extends Library
      int ossia_value_convert_int (Pointer val);
      float ossia_value_convert_float (Pointer val);
      boolean ossia_value_convert_bool (Pointer val);
-     char ossia_value_convert_char (Pointer val);
+     byte ossia_value_convert_char (Pointer val);
 
      String ossia_value_convert_byte_array (
       Pointer val_in,
@@ -446,6 +453,10 @@ public interface Ossia extends Library
       Pointer val_in,
       Pointer val_out,
       Pointer size);
+
+      Vec2F ossia_value_convert_2f (Pointer val);
+      Vec3F ossia_value_convert_3f (Pointer val);
+      Vec4F ossia_value_convert_4f (Pointer val);
 
      void ossia_string_free( Pointer str );
 
@@ -461,7 +472,7 @@ public interface Ossia extends Library
     Pointer ossia_mq_create(Pointer device);
      void ossia_mq_register(Pointer mq, Pointer param);
      void ossia_mq_unregister(Pointer mq, Pointer param);
-     int ossia_mq_pop(Pointer mq, Pointer address, Pointer value);
+     int ossia_mq_pop(Pointer mq, PointerByReference address, PointerByReference value);
      void ossia_mq_free(Pointer mq);
 
 }
