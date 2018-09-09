@@ -21,6 +21,22 @@ http_protocol::http_protocol(QByteArray code)
     , m_access{new QNetworkAccessManager}
     , m_code{code}
 {
+  connect(m_access, &QNetworkAccessManager::finished,
+          this, [this] (auto reply) {
+        QNetworkReply& rep = *reply;
+        auto it = m_replies.find(&rep);
+        const http_parameter& addr = *it.value();
+
+        auto ans = addr.data().answer;
+        if (ans.isCallable())
+        {
+          apply_reply(ans.call({QString(rep.readAll())}));
+        }
+
+        m_replies.erase(it);
+      },
+      Qt::QueuedConnection);
+
   connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
@@ -107,25 +123,7 @@ void http_protocol::slot_push(const http_parameter* addr_p)
   auto rep = m_access->get(QNetworkRequest(
       dat.replace("$val", qt::value_to_js_string(addr.value()))));
 
-  auto pair = std::make_pair(rep, &addr);
-
-  m_replies.push_back(pair);
-
-  connect(
-      rep, &QNetworkReply::readyRead, this,
-      [=]() {
-        QNetworkReply& rep = *pair.first;
-        const http_parameter& addr = *pair.second;
-
-        auto ans = addr.data().answer;
-        if (ans.isCallable())
-        {
-          apply_reply(ans.call({QString(rep.readAll())}));
-        }
-
-        m_replies.removeAll(pair);
-      },
-      Qt::QueuedConnection);
+  m_replies[rep] = &addr;
 }
 
 void http_protocol::apply_reply(QJSValue arr)

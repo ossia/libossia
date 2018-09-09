@@ -116,7 +116,7 @@ private:
 
   QByteArray m_code;
   ossia::net::device_base* m_device{};
-  QList<std::pair<QNetworkReply*, const http_parameter*>> m_replies;
+  tsl::hopscotch_map<QNetworkReply*, const http_parameter*> m_replies;
 };
 using http_device = ossia::net::wrapped_device<http_node, http_protocol>;
 }
