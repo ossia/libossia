@@ -112,7 +112,10 @@ public:
       = delete;
   wrapped_parameter& operator=(wrapped_parameter&& other)
       = delete;
-  ~wrapped_parameter() = default;
+  ~wrapped_parameter()
+  {
+    callback_container<value_callback>::callbacks_clear();
+  }
 
   const base_data_type& data() const
   { return m_data; }
