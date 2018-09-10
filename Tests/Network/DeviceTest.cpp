@@ -382,6 +382,7 @@ TEST_CASE ("test_oscquery_multi", "test_oscquery_multi")
   }
 #endif
 
+#ifdef OSSIA_PROTOCOL_MIDI
 TEST_CASE ("test_midi", "test_midi")
   {
     using namespace ossia::net::midi;
@@ -400,6 +401,7 @@ TEST_CASE ("test_midi", "test_midi")
     {
     }
   }
+#endif
 
 #if defined(OSSIA_PROTOCOL_OSC)
 TEST_CASE ("test_comm_osc", "test_comm_osc")
