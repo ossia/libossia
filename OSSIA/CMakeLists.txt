@@ -127,7 +127,12 @@ if(NOT OSSIA_PROTOCOL_MIDI OR NOT OSSIA_PROTOCOL_AUDIO)
 endif()
 
 function(ossia_link_jack)
-  find_path(Jack_INCLUDE_DIR NAMES jack/jack.h HINTS ${CMAKE_CURRENT_SOURCE_DIR})
+  find_path(Jack_INCLUDE_DIR 
+    NAMES jack/jack.h 
+    HINTS 
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      /opt/cross-pi-gcc/usr/include/
+      )
   if(Jack_INCLUDE_DIR)
     target_include_directories(ossia PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/weakjack>)
@@ -499,3 +504,5 @@ set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURREN
 if(NOT OSSIA_SANITIZE AND NOT OSSIA_DISABLE_COTIRE AND NOT DISABLE_COTIRE )
 cotire(ossia)
 endif()
+
+message(STATUS "Jack_INCLUDE_DIR : ${Jack_INCLUDE_DIR}")
