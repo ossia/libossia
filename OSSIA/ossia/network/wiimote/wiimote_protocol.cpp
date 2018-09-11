@@ -239,7 +239,8 @@ namespace net {
                     root, path + "wiimote-axis",
                     std::array<float, 3>{0.0, 0.0, 0.0},
                     m_wiimotes[wiimote_id]);
-        
+        parameters.wiimote_axis->set_unit(ossia::spherical_u{});
+
         parameters.
             wiimote_gravity = 
                 device_parameter::create_device_parameter(
@@ -249,6 +250,7 @@ namespace net {
                     bounding_mode::FREE,
                     access_mode::GET,
                     init_domain(val_type::VEC3F));
+        parameters.wiimote_gravity->set_unit(ossia::cartesian_3d_u{});
 
         // Nunchuk
 
@@ -278,6 +280,7 @@ namespace net {
                     root, path + "nunchuk-axis",
                     std::array<float, 3>{0.0, 0.0, 0.0},
                     m_wiimotes[wiimote_id]);
+        parameters.nunchuk_axis->set_unit(ossia::spherical_u{});
 
         parameters.
             nunchuk_gravity = 
@@ -288,6 +291,7 @@ namespace net {
                     bounding_mode::FREE,
                     access_mode::GET,
                     init_domain(val_type::VEC3F));
+        parameters.nunchuk_gravity->set_unit(ossia::cartesian_3d_u{});
 
         parameters.
             nunchuk_joystick = 
@@ -298,6 +302,7 @@ namespace net {
                     bounding_mode::FREE,
                     access_mode::GET,
                     init_domain(val_type::VEC2F));
+        parameters.nunchuk_joystick->set_unit(ossia::cartesian_2d_u{});
 
         if (m_enable_ir) {
             wiiuse_set_ir(m_wiimotes[wiimote_id], 1);   //  enable ir
