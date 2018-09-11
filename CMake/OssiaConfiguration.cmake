@@ -350,9 +350,6 @@ else()
   set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold")
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
-  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold -Wl,--threads -Wl,--thread-count")
-  check_cxx_compiler_flag("-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2" LINKER_THREADS_SUPPORTED)
-  set(CMAKE_REQUIRED_LIBRARIES "${old_link_libs}")
 
   if(OSSIA_SANITIZE AND NOT APPLE)
     set(LLD_LINKER_SUPPORTED 0)
@@ -362,6 +359,12 @@ else()
   elseif(GOLD_LINKER_SUPPORTED)
     set(LINKER_IS_GOLD 1)
   endif()
+endif()
+
+if(LINKER_IS_GOLD)
+  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold -Wl,--threads -Wl,--thread-count")
+  check_cxx_compiler_flag("-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2" LINKER_THREADS_SUPPORTED)
+  set(CMAKE_REQUIRED_LIBRARIES "${old_link_libs}")
 endif()
 
 if(OSSIA_SPLIT_DEBUG)
