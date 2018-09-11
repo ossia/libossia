@@ -404,6 +404,16 @@ set(OSSIA_JOYSTICK_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/device_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.cpp")
 
+set(OSSIA_WIIMOTE_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/device_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.hpp")
+
+set(OSSIA_WIIMOTE_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/device_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.cpp")
+
 set(OSSIA_WS_CLIENT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp")
 
