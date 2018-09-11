@@ -362,8 +362,12 @@ else()
 endif()
 
 if(LINKER_IS_GOLD)
-  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold -Wl,--threads -Wl,--thread-count")
+  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2")
   check_cxx_compiler_flag("-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2" LINKER_THREADS_SUPPORTED)
+  set(CMAKE_REQUIRED_LIBRARIES "${old_link_libs}")
+elseif(LINKER_IS_LLD)
+  set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=lld -Wl,--threads")
+  check_cxx_compiler_flag("-fuse-ld=lld -Wl,--threads" LINKER_THREADS_SUPPORTED)
   set(CMAKE_REQUIRED_LIBRARIES "${old_link_libs}")
 endif()
 
