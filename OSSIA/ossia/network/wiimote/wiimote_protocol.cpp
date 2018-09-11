@@ -23,27 +23,30 @@ namespace net {
             m_ready(false),
             m_enable_ir(enable_ir)
     {
-        std::printf("Wiimote Protocol CTOR\n");
+        std::printf(">>> Wiimote Protocol CTOR\n");
 
         m_wiimotes = wiiuse_init(MAX_WIIMOTES_COUNT);
 
-
-        std::printf("Looking for wiimote\n");
+        std::printf(">>> Looking for wiimote\n");
         const int found =
             wiiuse_find(m_wiimotes, MAX_WIIMOTES_COUNT, 1); // 10 sec (timeout)
 
-        if (found == 0)
+        if (found == 0) {
+            wiiuse_cleanup(m_wiimotes, MAX_WIIMOTES_COUNT);
             throw std::runtime_error("No Wiimotes were found\n");
+        }
 
-        std::printf("%u wiimotes were found\n", found);
+        std::printf(">>> %u wiimotes were found\n", found);
 
         m_wiimote_count = 
             wiiuse_connect(m_wiimotes, MAX_WIIMOTES_COUNT);
 
-        if (m_wiimote_count == 0) 
+        if (m_wiimote_count == 0) {
+            wiiuse_cleanup(m_wiimotes, MAX_WIIMOTES_COUNT);
             throw std::runtime_error("Wiimote connection failed\n");
+        }
 
-        std::cout << m_wiimote_count << " wiimotes were connected" << std::endl;
+        std::cout << "<<<" << m_wiimote_count << " wiimotes were connected" << std::endl;
     }
 
     wiimote_protocol::~wiimote_protocol()

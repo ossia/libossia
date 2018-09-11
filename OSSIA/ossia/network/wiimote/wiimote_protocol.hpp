@@ -70,7 +70,7 @@ namespace net {
             const bool m_enable_ir;
             std::thread m_event_thread;
 
-            struct wiimote_t **m_wiimotes;
+            struct wiimote_t **m_wiimotes{};
             unsigned int m_wiimote_count;
             ossia::net::device_base* m_device{};
     };
