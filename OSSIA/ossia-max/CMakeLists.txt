@@ -142,7 +142,7 @@ if(APPLE)
   get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
   set_property(TARGET ossia-max APPEND PROPERTY
     LINK_FLAGS 
-      "-s -exported_symbols_list symbols.txt")
+      "-s -exported_symbols_list ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt")
   get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
 endif()
 
