@@ -16,13 +16,14 @@ SET(CMAKE_FIND_ROOT_PATH ${RPI_ROOT_PATH}/opt/vc ${RPI_ROOT_PATH} ${RPI_ROOT_PAT
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 
-# for libraries and headers in the target directories
-SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 SET(CMAKE_LIBRARY_PATH "${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/;${RPI_ROOT_PATH}/lib/arm-linux-gnueabihf/")
 
 SET(CMAKE_SYSROOT ${RPI_ROOT_PATH})
+
+SET(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 
 # this doesn't seem to do much, at least it doesn't work on first try, we should export PKG_CONFIG_SYSROOT_DIR and PKG_CONFIG_LIBDIR before running cmake
 #SET(ENV{PKG_CONFIG_LIBDIR} "${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/")
