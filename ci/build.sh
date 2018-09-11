@@ -153,7 +153,7 @@ case "$TRAVIS_OS_NAME" in
 
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+        $CMAKE_BIN --build . --target install
 
         pushd "$TRAVIS_BUILD_DIR/3rdparty/pure-data"
           sudo apt-get install -qq autoconf libtool
@@ -257,7 +257,7 @@ def get_versions():
                    ..
 
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target install > /dev/null
+        $CMAKE_BIN --build . --target install
 
         cd $TRAVIS_BUILD_DIR/install
         if [[ "$OSSIA_STATIC" ==  "1" ]]; then
@@ -417,7 +417,7 @@ def get_versions():
                -DOSSIA_OSX_FAT_LIBRARIES=1 \
                ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install > /dev/null
+      $CMAKE_BIN --build . --target install
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
@@ -439,7 +439,7 @@ def get_versions():
                -DOSSIA_OSX_FAT_LIBRARIES=1 \
                ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install > /dev/null
+      $CMAKE_BIN --build . --target install
 
       mkdir -p ~/Documents/Pd/externals
       mv $TRAVIS_BUILD_DIR/ossia-pd-package/ossia ~/Documents/Pd/externals
@@ -461,7 +461,7 @@ def get_versions():
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install > /dev/null
+      $CMAKE_BIN --build . --target install
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
@@ -510,7 +510,7 @@ def get_versions():
                  -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                  ..
       $CMAKE_BIN --build . -- -j2
-      $CMAKE_BIN --build . --target install > /dev/null
+      $CMAKE_BIN --build . --target install
 
       cd "$TRAVIS_BUILD_DIR/ossia-qml" && tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
 
