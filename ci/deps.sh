@@ -40,6 +40,10 @@ case "$TRAVIS_OS_NAME" in
         tar xf gcc-8.2.0-rpi.tar.bz2 
         sudo mv cross-pi-gcc-8.2.0/ /opt/
         sudo ln -s /opt/cross-pi-gcc-8.2.0 /opt/cross-pi-gcc
+
+        echo 'export PATH=/opt/cross-pi-gcc/bin:$PATH' >> ~/.bashrc
+        echo 'export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+        source ~/.bashrc
         sudo ln -s /usr/include/arm-linux-gnueabihf/sys /usr/include/sys
         sudo ln -s /usr/include/arm-linux-gnueabihf/bits /usr/include/bits
         sudo ln -s /usr/include/arm-linux-gnueabihf/gnu /usr/include/gnu

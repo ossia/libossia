@@ -202,7 +202,6 @@ case "$TRAVIS_OS_NAME" in
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_CI=1 \
-                   -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    -DOSSIA_PD_ONLY=1 \
                    ..
 
@@ -231,7 +230,6 @@ def get_versions():
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
                    -DOSSIA_CI=1 \
-                   -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    -DOSSIA_PYTHON_ONLY=1 \
                    ..
 
@@ -256,7 +254,6 @@ def get_versions():
                    -DOSSIA_PYTHON=0 \
                    -DOSSIA_C=1 \
                    -DOSSIA_CPP=1 \
-                   -DCROSS_COMPILER_PATH=/opt/cross-pi-gcc-8.2.0/bin/ \
                    ..
 
         $CMAKE_BIN --build . -- -j2
