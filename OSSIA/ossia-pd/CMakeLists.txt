@@ -179,6 +179,11 @@ if(OSSIA_TESTING)
         COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.cmd
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
         )
+  elseif(APPLE)
+    add_test(NAME ossia-pd-loading-test
+        COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test-osx.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/unit-tests
+        )
   else()
     add_test(NAME ossia-pd-loading-test
         COMMAND ${CMAKE_CURRENT_LIST_DIR}/../../ci/pd-loading-test.sh

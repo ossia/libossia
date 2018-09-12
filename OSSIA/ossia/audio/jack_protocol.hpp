@@ -87,7 +87,7 @@ public:
       std::cerr << "JACK ERROR: " << str << std::endl;
     });
     jack_set_info_function([] (const char* str) {
-      std::cerr << "JACK INFO: " << str << std::endl;
+      //std::cerr << "JACK INFO: " << str << std::endl;
     });
 
     for(int i = 0; i < inputs; i++)
@@ -111,6 +111,8 @@ public:
     int err = jack_activate(client);
     if (err != 0)
     {
+      jack_deactivate(client);
+      jack_client_close(client);
       std::cerr << "JACK error: " << err << std::endl;
       throw std::runtime_error("Audio error: JACK cannot activate");
     }
