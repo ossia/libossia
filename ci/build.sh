@@ -428,7 +428,7 @@ def get_versions():
     elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Debug \
-               -DOSSIA_SANITIZE=1 \
+               -DOSSIA_SANITIZE=0 \
                -DOSSIA_TESTING=1 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
