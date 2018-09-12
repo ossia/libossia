@@ -448,6 +448,9 @@ def get_versions():
       tar xf pd-0.48-1test3.mac.tar.gz
       export PATH="${PWD}/Pd-0.48-1test3.app/Contents/Resources/bin:${PATH}"
 
+      echo "Test Pd loading on MacOS"
+      pd -path "${HOME}/Documents/Pd/externals" -nogui -lib ossia 2>&1 -send "pd quit;"
+
       $CMAKE_BIN --build . --target test
 
     elif [[ "$BUILD_TYPE" == "MaxRelease" ]]; then
