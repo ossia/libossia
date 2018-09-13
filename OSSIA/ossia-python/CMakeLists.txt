@@ -14,8 +14,11 @@ install(FILES ${CMAKE_CURRENT_LIST_DIR}/../../LICENSE
 DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python
 RENAME LICENSE.txt)
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/pyossia
-DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia_python)
+install(FILES
+  ${CMAKE_CURRENT_LIST_DIR}/pyossia/__init__.py
+  ${CMAKE_CURRENT_LIST_DIR}/pyossia/ossia_python.py
+  ${CMAKE_CURRENT_LIST_DIR}/pyossia/_version.py
+DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/pyossia)
 
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "We can't use pybind11 CMake module when cross-compiling.")
@@ -58,8 +61,3 @@ else()
                                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)"
     )
 endif()
-
-# file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
-#      DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
-# file(COPY ${CMAKE_SOURCE_DIR}/LICENSE
-#      DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/LICENSE.txt)
