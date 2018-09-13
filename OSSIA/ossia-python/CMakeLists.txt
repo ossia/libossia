@@ -4,6 +4,19 @@ message(STATUS "Update ossia-python dependency: pybind11")
 execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pybind11
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/setup.py
+  ${CMAKE_CURRENT_LIST_DIR}/versioneer.py
+  ${CMAKE_CURRENT_LIST_DIR}/setup.cfg
+  ${CMAKE_CURRENT_LIST_DIR}/README.rst
+DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/../../LICENSE
+DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python
+RENAME LICENSE.txt)
+
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/pyossia
+DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia_python)
+
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "We can't use pybind11 CMake module when cross-compiling.")
 
@@ -24,15 +37,10 @@ if(CMAKE_CROSSCOMPILING)
     if ($ENV{PYTHON_VERSION} MATCHES "3.5")
       set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".cpython-35m-arm-linux-gnueabihf.so")
     endif()
-    add_custom_command(TARGET ${PROJECT_NAME}
-      POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/setup.py bdist_wheel --plat-name linux-armv6l
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
 
-    add_custom_command(TARGET ${PROJECT_NAME}
-      POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+    install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
+                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)"
+    )
 
 else()
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11" pybind11)
@@ -46,13 +54,12 @@ else()
 
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
 
-    add_custom_command(TARGET ${PROJECT_NAME}
-      POST_BUILD
-      COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+    install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
+                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)"
+    )
 endif()
 
-file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
-     DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
-file(COPY ${CMAKE_SOURCE_DIR}/LICENSE
-     DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/LICENSE.txt)
+# file(COPY ${CMAKE_SOURCE_DIR}/OSSIA/ossia-python
+#      DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/)
+# file(COPY ${CMAKE_SOURCE_DIR}/LICENSE
+#      DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/LICENSE.txt)
