@@ -129,14 +129,14 @@ deploy:
     draft: false
     prerelease: false
     description: |+
-      # Draft release of OSSIA $TRAVIS_TAG
+      # Release of OSSIA $TRAVIS_TAG
 
-      * All macOS packages are fat binaries that should work on macOS from 10.9 to 10.12 & later.
+      * All macOS packages are fat binaries that should work on macOS from 10.9.
       * Packages ending in 'win32' are 32-bit, 'win64' are 64-bit and 'win' work on both architectures.
       * All Windows packages are built with VS2017.
       * Python packages are built with Python 2.7 and 3.4 on ubuntu 14.04, 2.7 and 3.6 version on macOSX.12 (from Homebrew) and 2.7 and 3.5 on Raspbian stretch.
       * QML packages are built with Homebrew's Qt version on macOS.
-      * QML packages are built with Qt 5.9.1 VS2017 64 on Windows.
+      * QML packages are built with Qt 5.11 VS2017 64bit (only) on Windows.
       * QML packages are meant to be put in the [QML Import Path](http://doc.qt.io/qt-5/qtqml-syntax-imports.html). For instance on macOS it should look like '/usr/local/Cellar/qt/5.9.1/qml/Ossia/qmldir'.
 
       Please consult [this wiki page](https://github.com/OSSIA/libossia/wiki/Integrations) to see what's here and what's missing.
