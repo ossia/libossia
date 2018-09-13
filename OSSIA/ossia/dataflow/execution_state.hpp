@@ -75,6 +75,7 @@ struct OSSIA_EXPORT execution_state
     void commit_common();
 
     void advance_tick(std::size_t);
+    void apply_device_changes();
 
     void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
     void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
