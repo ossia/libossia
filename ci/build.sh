@@ -266,6 +266,20 @@ def get_versions():
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_arm.tar.gz *
         fi
       ;;
+      Rpi-ossia-cpp)
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
+             -DOSSIA_CI=1 \
+             -DOSSIA_CPP_ONLY=1 \
+             ..
+
+        $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install
+
+        cd $TRAVIS_BUILD_DIR/install
+        tar -czf ${ARTIFACTS_DIR}/ossia-cpp-linux_arm.tar.gz *
+      ;;
       python_manylinux)
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
@@ -428,7 +442,7 @@ def get_versions():
     elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
 
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Debug \
-               -DOSSIA_SANITIZE=1 \
+               -DOSSIA_SANITIZE=0 \
                -DOSSIA_TESTING=1 \
                -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
