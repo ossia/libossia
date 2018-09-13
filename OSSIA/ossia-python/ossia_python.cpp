@@ -54,7 +54,7 @@ struct to_python_value
   {
     return py::none{};
   }
-    
+
   template <typename T>
   py::object operator()(const T& t) const
   {
@@ -517,13 +517,13 @@ class ossia_device_callback
   std::function<void(const py::object&)> m_on_node_removing;
 
 public:
-  ossia_device_callback(ossia::net::generic_device& device, 
+  ossia_device_callback(ossia::net::generic_device& device,
                         std::function<void(const py::object&)> on_node_created_clbk,
-                        std::function<void(const py::object&)> on_node_renamed_clbk, 
+                        std::function<void(const py::object&)> on_node_renamed_clbk,
                         std::function<void(const py::object&)> on_node_removing_clbk)
-  : m_device{device}, 
-  m_on_node_created(on_node_created_clbk), 
-  m_on_node_renamed(on_node_renamed_clbk), 
+  : m_device{device},
+  m_on_node_created(on_node_created_clbk),
+  m_on_node_renamed(on_node_renamed_clbk),
   m_on_node_removing(on_node_removing_clbk)
   {
     device.on_node_created.connect<&ossia_device_callback::on_node_created>(*this);
@@ -533,12 +533,12 @@ public:
 
 private:
   void on_node_created(const ossia::net::node_base& node)
-  { 
+  {
     m_on_node_created(py::cast(&node));
   }
 
   void on_node_renamed(const ossia::net::node_base& node)
-  { 
+  {
     m_on_node_renamed(py::cast(&node));
   }
 
@@ -643,21 +643,21 @@ PYBIND11_MODULE(ossia_python, m)
       .export_values();
 
   py::class_<ossia_device_callback>(m, "DeviceCallback")
-      .def(py::init<ossia_local_device&, 
-        std::function<void(const py::object&)>, 
-        std::function<void(const py::object&)>, 
+      .def(py::init<ossia_local_device&,
+        std::function<void(const py::object&)>,
+        std::function<void(const py::object&)>,
         std::function<void(const py::object&)>>())
-      .def(py::init<ossia_oscquery_device&, 
-        std::function<void(const py::object&)>, 
-        std::function<void(const py::object&)>, 
+      .def(py::init<ossia_oscquery_device&,
+        std::function<void(const py::object&)>,
+        std::function<void(const py::object&)>,
         std::function<void(const py::object&)>>())
-      .def(py::init<ossia_osc_device&, 
-        std::function<void(const py::object&)>, 
-        std::function<void(const py::object&)>, 
+      .def(py::init<ossia_osc_device&,
+        std::function<void(const py::object&)>,
+        std::function<void(const py::object&)>,
         std::function<void(const py::object&)>>())
-      .def(py::init<ossia_minuit_device&, 
-        std::function<void(const py::object&)>, 
-        std::function<void(const py::object&)>, 
+      .def(py::init<ossia_minuit_device&,
+        std::function<void(const py::object&)>,
+        std::function<void(const py::object&)>,
         std::function<void(const py::object&)>>());
 
   py::class_<std::vector<ossia::net::node_base*>>(m, "NodeVector")
@@ -681,7 +681,7 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "parameter", &ossia::net::node_base::get_parameter,
           py::return_value_policy::reference)
-      .def_property("description", 
+      .def_property("description",
         [](ossia::net::node_base& node) -> ossia::net::description {
           ossia::net::description empty{};
           return ossia::net::get_description(node).value_or(empty);
@@ -689,7 +689,7 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::description v) {
           ossia::net::set_description(node, v);
         })
-      .def_property("tags", 
+      .def_property("tags",
         [](ossia::net::node_base& node) -> ossia::net::tags {
           ossia::net::tags empty{};
           return ossia::net::get_tags(node).value_or(empty);
@@ -697,7 +697,7 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::tags v) {
           ossia::net::set_tags(node, v);
         })
-      .def_property("priority", 
+      .def_property("priority",
         [](ossia::net::node_base& node) -> ossia::net::priority {
           ossia::net::priority empty{};
           return ossia::net::get_priority(node).value_or(empty);
@@ -705,7 +705,7 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::priority v) {
           ossia::net::set_priority(node, v);
         })
-      .def_property("refresh_rate", 
+      .def_property("refresh_rate",
         [](ossia::net::node_base& node) -> ossia::net::refresh_rate {
           ossia::net::refresh_rate empty{};
           return ossia::net::get_refresh_rate(node).value_or(empty);
@@ -713,7 +713,7 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::refresh_rate v) {
           ossia::net::set_refresh_rate(node, v);
         })
-      .def_property("value_step_size", 
+      .def_property("value_step_size",
         [](ossia::net::node_base& node) -> ossia::net::value_step_size {
           ossia::net::value_step_size empty{};
           return ossia::net::get_value_step_size(node).value_or(empty);
@@ -721,7 +721,7 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::value_step_size v) {
           ossia::net::set_value_step_size(node, v);
         })
-      .def_property("extended_type", 
+      .def_property("extended_type",
         [](ossia::net::node_base& node) -> ossia::extended_type {
           ossia::extended_type empty{};
           return ossia::net::get_extended_type(node).value_or(empty);
@@ -729,7 +729,7 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::extended_type v) {
           ossia::net::set_extended_type(node, v);
         })
-      .def_property("instance_bounds", 
+      .def_property("instance_bounds",
         [](ossia::net::node_base& node) -> ossia::net::instance_bounds {
           ossia::net::instance_bounds empty{};
           return ossia::net::get_instance_bounds(node).value_or(empty);
@@ -737,32 +737,32 @@ PYBIND11_MODULE(ossia_python, m)
         [](ossia::net::node_base& node, const ossia::net::instance_bounds v) {
           ossia::net::set_instance_bounds(node, v);
         })
-      .def_property_readonly("zombie", 
+      .def_property_readonly("zombie",
         [](ossia::net::node_base& node) -> ossia::net::zombie {
           return ossia::net::get_zombie(node);
         })
-      .def_property("critical", 
+      .def_property("critical",
         [](ossia::net::node_base& node) -> ossia::net::critical {
           return ossia::net::get_critical(node);
         },
         [](ossia::net::node_base& node, const ossia::net::critical v) {
           ossia::net::set_critical(node, v);
         })
-      .def_property("disabled", 
+      .def_property("disabled",
         [](ossia::net::node_base& node) -> ossia::net::disabled {
           return ossia::net::get_disabled(node);
         },
         [](ossia::net::node_base& node, const ossia::net::disabled v) {
           ossia::net::set_disabled(node, v);
         })
-      .def_property("hidden", 
+      .def_property("hidden",
         [](ossia::net::node_base& node) -> ossia::net::hidden {
           return ossia::net::get_hidden(node);
         },
         [](ossia::net::node_base& node, const ossia::net::hidden v) {
           ossia::net::set_hidden(node, v);
         })
-      .def_property("muted", 
+      .def_property("muted",
         [](ossia::net::node_base& node) -> ossia::net::muted {
           return ossia::net::get_muted(node);
         },
@@ -824,7 +824,7 @@ PYBIND11_MODULE(ossia_python, m)
           &ossia::net::parameter_base::set_repetition_filter)
       .def_property(
           "unit",
-          [](ossia::net::parameter_base& addr) -> std::string { 
+          [](ossia::net::parameter_base& addr) -> std::string {
             return ossia::get_pretty_unit_text(addr.get_unit()); },
           [](ossia::net::parameter_base& addr, std::string u) {
             addr.set_unit(ossia::parse_pretty_unit(u));
@@ -849,7 +849,7 @@ PYBIND11_MODULE(ossia_python, m)
           "make_domain",
           [](ossia::net::parameter_base& addr, const std::vector<py::object>& values) {
             auto dom = ossia::init_domain(addr.get_value_type());
-            
+
             std::vector<ossia::value> vec;
             vec.reserve(values.size());
 
@@ -990,7 +990,7 @@ PYBIND11_MODULE(ossia_python, m)
         return py::none{};
         });
 
-  m.def("list_node_pattern", 
+  m.def("list_node_pattern",
     [] (const std::vector<py::object>& start_nodes, std::string pattern) -> std::vector<py::object> {
       std::vector<ossia::net::node_base*> vec;
       vec.reserve(start_nodes.size());
