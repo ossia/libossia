@@ -350,14 +350,13 @@ else()
   set(CMAKE_REQUIRED_LIBRARIES ${old_link_libs} "-fuse-ld=gold")
   check_cxx_compiler_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
-
   if(OSSIA_SANITIZE AND NOT APPLE)
     set(LLD_LINKER_SUPPORTED 0)
   endif()
   if(LLD_LINKER_SUPPORTED)
-    set(LINKER_IS_LLD 1)
+    set(LINKER_IS_LLD 1 CACHE INTERNAL "use lld linker")
   elseif(GOLD_LINKER_SUPPORTED)
-    set(LINKER_IS_GOLD 1)
+    set(LINKER_IS_GOLD 1 CACHE INTERNAL "use gold linker")
   endif()
 endif()
 
