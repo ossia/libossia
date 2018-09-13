@@ -13,8 +13,6 @@ cmake_policy(SET CMP0063 NEW)
 include(cotire)
 
 include(GenerateExportHeader)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 set(WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 
 if(APPLE)
@@ -53,7 +51,6 @@ else()
   endif()
 endif()
 
-
 if (OSSIA_CI)
   if ( $ENV{TRAVIS} MATCHES true )
     message(STATUS "We're building on Travis, SHA: $ENV{TRAVIS_COMMIT}, TAG: $ENV{TRAVIS_TAG}")
@@ -79,8 +76,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/git_info.cpp.in" "${CMAKE_CURRENT_BI
 
 target_sources(ossia PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/git_info.cpp" git_info.h)
 
-target_compile_definitions(ossia PUBLIC TINYSPLINE_DOUBLE_PRECISION)
-
 if(MSVC)
   target_compile_definitions(ossia
     PUBLIC
@@ -91,7 +86,6 @@ endif()
 if(NOT ANDROID)
   target_link_libraries(ossia PUBLIC Boost::boost)
 endif()
-
 
 ### Protocol setup ###
 # These two are always here:
@@ -113,7 +107,7 @@ if(NOT TARGET RtMidi17)
   set(OSSIA_PROTOCOL_MIDI OFF)
 endif()
 
-if(NOT OSSIA_EDITOR)
+if(NOT OSSIA_PROTOCOL_MIDI OR NOT OSSIA_PROTOCOL_AUDIO)
   set(OSSIA_DATAFLOW OFF)
 endif()
 
@@ -121,8 +115,7 @@ if(OSSIA_PROTOCOL_AUDIO)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} AUDIO)
 endif()
 
-if(NOT OSSIA_PROTOCOL_MIDI OR NOT OSSIA_PROTOCOL_AUDIO)
-  set(OSSIA_DATAFLOW OFF)
+if(NOT OSSIA_DATAFLOW)
   set(OSSIA_EDITOR OFF)
 endif()
 
@@ -136,7 +129,7 @@ function(ossia_link_jack)
   if(Jack_INCLUDE_DIR)
     target_include_directories(ossia PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/weakjack>)
-    target_include_directories(ossia PUBLIC ${Jack_INCLUDE_DIR})
+    target_include_directories(ossia PUBLIC $<BUILD_INTERFACE:${Jack_INCLUDE_DIR}>)
     target_link_libraries(ossia PUBLIC ${CMAKE_DL_LIBS})
   endif()
 endfunction()
@@ -240,7 +233,7 @@ if(OSSIA_PROTOCOL_JOYSTICK)
   find_package(SDL2)
   if(SDL2_FOUND)
     target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-    target_include_directories(ossia PRIVATE ${SDL2_INCLUDE_DIRS})
+    target_include_directories(ossia PRIVATE $<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>)
     target_link_libraries(ossia PRIVATE SDL2)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
   else()
@@ -252,18 +245,16 @@ endif()
 if(OSSIA_C)
   target_sources(ossia PRIVATE ${OSSIA_C_HEADERS} ${OSSIA_C_SRCS})
   target_include_directories(ossia PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c"
+      "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ossia-c>"
   )
 endif()
 
 if(OSSIA_CPP)
     target_sources(ossia PRIVATE ${OSSIA_CPP_HEADERS} ${OSSIA_CPP_SRCS})
     target_include_directories(ossia PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/ossia-cpp"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ossia-cpp>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
         )
-    target_include_directories(ossia PRIVATE
-      "${CMAKE_CURRENT_LIST_DIR}"
-      )
 endif()
 
 if(OSSIA_QT)
@@ -274,7 +265,7 @@ if(OSSIA_QT)
   target_link_libraries(ossia PUBLIC Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
   target_include_directories(ossia
     PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt"
+      "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt>"
     PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/verdigris/src>
    )
@@ -355,10 +346,12 @@ endif()
 source_group(Network REGULAR_EXPRESSION "ossia/network.*")
 
 # Compile options
-target_compile_definitions(ossia PUBLIC
-  RAPIDJSON_HAS_STDSTRING=1
-  $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
-  $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
+target_compile_definitions(ossia 
+  PUBLIC
+    RAPIDJSON_HAS_STDSTRING=1
+    TINYSPLINE_DOUBLE_PRECISION
+    $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
+    $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
 
 if(WIN32)
@@ -422,11 +415,19 @@ else()
       VISIBILITY_INLINES_HIDDEN 0)
 endif()
 
+if(OSSIA_HIDE_ALL_SYMBOLS)
+set_target_properties(ossia PROPERTIES
+    C_VISIBILITY_PRESET hidden
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN 1
+    )
+endif()
+
 generate_export_header(ossia BASE_NAME OSSIA)
 configure_file(ossia-config.hpp.in ossia-config.hpp)
 
 target_include_directories(ossia
-    INTERFACE
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
