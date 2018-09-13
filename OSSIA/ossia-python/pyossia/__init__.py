@@ -17,6 +17,9 @@ pyossia methods
 ===============
 """
 
+#import sys to get exception description
+import sys
+
 # these few lines are used to get versionning from git
 from ._version import get_versions
 __version__ = get_versions()['version']
@@ -248,4 +251,6 @@ try:
     GlobalMessageQueue = ossia.GlobalMessageQueue
 
 except(ImportError):
+    print("Can't import module 'ossia_python'")
+    print("Unexpected error:", sys.exc_info()[0])
     pass
