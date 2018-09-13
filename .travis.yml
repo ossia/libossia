@@ -66,6 +66,9 @@ matrix:
     env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
 
   - os: linux
+    env: BUILD_TYPE=Rpi-ossia-cpp
+
+  - os: linux
     env: BUILD_TYPE=python PYTHON_VERSION=2.7
 
   - os: linux
