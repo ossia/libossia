@@ -25,7 +25,9 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
 
-print('pyossia ' + __version__)
+import logging
+
+logging.info('pyossia ' + __version__)
 
 
 ######################################################
@@ -250,7 +252,13 @@ try:
     MessageQueue = ossia.MessageQueue
     GlobalMessageQueue = ossia.GlobalMessageQueue
 
-except(ImportError):
-    print("Can't import module 'ossia_python'")
-    print("Unexpected error:", sys.exc_info()[0])
-    pass
+except ImportError as error:
+    logging.info("Can't import module 'ossia_python'")
+    # Output expected ImportErrors.
+    logging.exception(error)
+    # Include the name and path attributes in output.
+    logging.error(f'error.name: {error.name}')
+    logging.error(f'error.path: {error.path}')
+except Exception as exception:
+    # Output unexpected Exceptions.
+    logging.log_exception(exception, False)
