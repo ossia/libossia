@@ -99,3 +99,6 @@
 [submodule "3rdparty/flat"]
 	path = 3rdparty/flat
 	url = https://github.com/jcelerier/flat
+[submodule "3rdparty/wiiuse"]
+	path = 3rdparty/wiiuse
+	url = https://github.com/aliefhooghe/wiiuse.git
