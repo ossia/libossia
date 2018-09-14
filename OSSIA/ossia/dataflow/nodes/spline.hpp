@@ -79,7 +79,7 @@ private:
   {
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
 
-    auto p = m_spline.evaluate(t.position);
+    auto p = m_spline.evaluate(t.position >= 0. ? t.position : 0.);
     auto d = p.data();
 
     vp->write_value(
