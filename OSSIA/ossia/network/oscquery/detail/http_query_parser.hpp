@@ -1,8 +1,10 @@
 #pragma once
 #include <ossia/detail/string_map.hpp>
-#include <boost/spirit/home/x3.hpp>
+
 #include <boost/fusion/adapted/std_pair.hpp>
-#include<map>
+#include <boost/spirit/home/x3.hpp>
+
+#include <map>
 /**
  * \file http_query_parser.hpp
  *
@@ -17,16 +19,17 @@ namespace ossia
 namespace oscquery
 {
 
-// See https://stackoverflow.com/questions/45948473/boost-spirit-porting-string-pairs-from-qi-to-x3/
+// See
+// https://stackoverflow.com/questions/45948473/boost-spirit-porting-string-pairs-from-qi-to-x3/
 template <typename T = std::string>
-auto& query() {
+auto& query()
+{
   using namespace boost::spirit::x3;
   static const auto s_pair
-      = rule<struct pair_, std::pair<std::string, T> > {"pair"}
-      = +~char_("&=") >> -('=' >> *~char_("&"));
-  static const auto s_query
-      = rule<struct query_, string_map<T>  > {"query"}
-      = s_pair % '&';
+      = rule<struct pair_, std::pair<std::string, T>>{"pair"}
+  = +~char_("&=") >> -('=' >> *~char_("&"));
+  static const auto s_query = rule<struct query_, string_map<T>>{"query"}
+  = s_pair % '&';
 
   return s_query;
 }

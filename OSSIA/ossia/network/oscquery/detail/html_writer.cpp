@@ -1,23 +1,21 @@
-#include <ossia/network/oscquery/detail/html_writer.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <fmt/format.h>
+#include <ossia/network/domain/domain.hpp>
+#include <ossia/network/oscquery/detail/html_writer.hpp>
 
+#include <fmt/format.h>
 
 namespace ossia::oscquery
 {
 
 html_builder::~html_builder()
 {
-
 }
 
 static_html_builder::~static_html_builder()
 {
-
 }
 
 struct static_html_builder_impl
@@ -41,28 +39,28 @@ struct static_html_builder_impl
 
   void build_node(ossia::net::node_base& node)
   {
-    if(auto p = node.get_parameter())
+    if (auto p = node.get_parameter())
     {
       w << "\n<p>";
       w << "<b>" << node.osc_address() << "</b> : " << p->value();
 
       auto& dom = p->get_domain();
       auto min = dom.get_min();
-      if(min.valid())
+      if (min.valid())
         w << " ; <b>Min</b>: " << min;
 
       auto max = dom.get_max();
-      if(max.valid())
+      if (max.valid())
         w << " ; <b>Max</b>: " << max;
 
-      if(auto u = p->get_unit())
+      if (auto u = p->get_unit())
       {
         w << " ; <b>Unit</b>: " << ossia::get_pretty_unit_text(u);
       }
       w << "</p>";
     }
 
-    for(auto cld : node.children_copy())
+    for (auto cld : node.children_copy())
     {
       build_node(*cld);
     }
@@ -81,5 +79,4 @@ std::string static_html_builder::build_tree(ossia::net::node_base& node)
 
   return w.str();
 }
-
 }

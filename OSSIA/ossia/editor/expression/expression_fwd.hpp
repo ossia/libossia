@@ -1,10 +1,12 @@
 #pragma once
-#include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/callback_container.hpp>
+
 #include <eggs/variant.hpp>
-#include <functional>
 #include <ossia_export.h>
+
+#include <functional>
 
 /**
  * \file expression_fwd.hpp
@@ -28,8 +30,9 @@ class expression_composition;
 class expression_not;
 class expression_pulse;
 class expression_generic;
-using expression_base = eggs::
-    variant<expression_atom, expression_bool, expression_composition, expression_not, expression_pulse, expression_generic>;
+using expression_base = eggs::variant<
+    expression_atom, expression_bool, expression_composition, expression_not,
+    expression_pulse, expression_generic>;
 
 // concept expression_base :
 //    public callback_container<expression_result_callback>

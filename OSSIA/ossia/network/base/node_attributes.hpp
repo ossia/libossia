@@ -1,15 +1,17 @@
 #pragma once
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_functions.hpp>
-#include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/extended_types.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <hopscotch_map.h>
+#include <ossia_export.h>
+
 #include <string>
 #include <vector>
-#include <ossia_export.h>
 
 /**
  * \file node_attributes.hpp
@@ -46,12 +48,14 @@ struct OSSIA_EXPORT instance_bounds
   int32_t min_instances = 0;
   int32_t max_instances = std::numeric_limits<int32_t>::max();
 
-  friend bool operator==(const instance_bounds& lhs, const instance_bounds& rhs)
+  friend bool
+  operator==(const instance_bounds& lhs, const instance_bounds& rhs)
   {
     return lhs.min_instances == rhs.min_instances
-        && lhs.max_instances == rhs.max_instances;
+           && lhs.max_instances == rhs.max_instances;
   }
-  friend bool operator!=(const instance_bounds& lhs, const instance_bounds& rhs)
+  friend bool
+  operator!=(const instance_bounds& lhs, const instance_bounds& rhs)
   {
     return !(lhs == rhs);
   }
@@ -66,7 +70,6 @@ struct OSSIA_EXPORT instance_bounds
     return is;
   }
 };
-
 
 //! Tags applied to a node: {"model", "interesting", ...}
 using tags = std::vector<std::string>;
@@ -114,9 +117,12 @@ using app_version = std::string;
 using app_creator = std::string;
 
 OSSIA_EXPORT ossia::string_view text_instance_bounds();
-OSSIA_EXPORT optional<instance_bounds> get_instance_bounds(const extended_attributes& n);
-OSSIA_EXPORT void set_instance_bounds(extended_attributes& n, optional<instance_bounds>);
-OSSIA_EXPORT void set_instance_bounds(ossia::net::node_base& n, optional<instance_bounds>);
+OSSIA_EXPORT optional<instance_bounds>
+get_instance_bounds(const extended_attributes& n);
+OSSIA_EXPORT void
+set_instance_bounds(extended_attributes& n, optional<instance_bounds>);
+OSSIA_EXPORT void
+set_instance_bounds(ossia::net::node_base& n, optional<instance_bounds>);
 
 OSSIA_EXPORT ossia::string_view text_tags();
 OSSIA_EXPORT optional<tags> get_tags(const extended_attributes& n);
@@ -124,10 +130,13 @@ OSSIA_EXPORT void set_tags(extended_attributes& n, optional<tags> v);
 OSSIA_EXPORT void set_tags(ossia::net::node_base& n, optional<tags> v);
 
 OSSIA_EXPORT ossia::string_view text_description();
-OSSIA_EXPORT optional<description> get_description(const extended_attributes& n);
-OSSIA_EXPORT void set_description(extended_attributes& n, optional<description> v);
+OSSIA_EXPORT optional<description>
+get_description(const extended_attributes& n);
+OSSIA_EXPORT void
+set_description(extended_attributes& n, optional<description> v);
 OSSIA_EXPORT void set_description(extended_attributes& n, const char* v);
-OSSIA_EXPORT void set_description(ossia::net::node_base& n, optional<description> v);
+OSSIA_EXPORT void
+set_description(ossia::net::node_base& n, optional<description> v);
 OSSIA_EXPORT void set_description(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_priority();
@@ -136,14 +145,20 @@ OSSIA_EXPORT void set_priority(extended_attributes& n, optional<priority> v);
 OSSIA_EXPORT void set_priority(ossia::net::node_base& n, optional<priority> v);
 
 OSSIA_EXPORT ossia::string_view text_refresh_rate();
-OSSIA_EXPORT optional<refresh_rate> get_refresh_rate(const extended_attributes& n);
-OSSIA_EXPORT void set_refresh_rate(extended_attributes& n, optional<refresh_rate> v);
-OSSIA_EXPORT void set_refresh_rate(ossia::net::node_base& n, optional<refresh_rate> v);
+OSSIA_EXPORT optional<refresh_rate>
+get_refresh_rate(const extended_attributes& n);
+OSSIA_EXPORT void
+set_refresh_rate(extended_attributes& n, optional<refresh_rate> v);
+OSSIA_EXPORT void
+set_refresh_rate(ossia::net::node_base& n, optional<refresh_rate> v);
 
 OSSIA_EXPORT ossia::string_view text_value_step_size();
-OSSIA_EXPORT optional<value_step_size> get_value_step_size(const extended_attributes& n);
-OSSIA_EXPORT void set_value_step_size(extended_attributes& n, optional<value_step_size> v);
-OSSIA_EXPORT void set_value_step_size(ossia::net::node_base& n, optional<value_step_size> v);
+OSSIA_EXPORT optional<value_step_size>
+get_value_step_size(const extended_attributes& n);
+OSSIA_EXPORT void
+set_value_step_size(extended_attributes& n, optional<value_step_size> v);
+OSSIA_EXPORT void
+set_value_step_size(ossia::net::node_base& n, optional<value_step_size> v);
 
 OSSIA_EXPORT ossia::string_view text_zombie();
 OSSIA_EXPORT zombie get_zombie(const extended_attributes& n);
@@ -161,34 +176,48 @@ OSSIA_EXPORT void set_recall_safe(extended_attributes& n, recall_safe v);
 OSSIA_EXPORT void set_recall_safe(ossia::net::node_base& n, recall_safe v);
 
 OSSIA_EXPORT ossia::string_view text_extended_type();
-OSSIA_EXPORT optional<extended_type> get_extended_type(const ossia::net::node_base& n);
-OSSIA_EXPORT void set_extended_type(extended_attributes& n, optional<extended_type> v);
-OSSIA_EXPORT void set_extended_type(ossia::net::node_base& n, optional<extended_type> v);
+OSSIA_EXPORT optional<extended_type>
+get_extended_type(const ossia::net::node_base& n);
+OSSIA_EXPORT void
+set_extended_type(extended_attributes& n, optional<extended_type> v);
+OSSIA_EXPORT void
+set_extended_type(ossia::net::node_base& n, optional<extended_type> v);
 
 OSSIA_EXPORT ossia::string_view text_app_name();
 OSSIA_EXPORT optional<app_name> get_app_name(const extended_attributes& n);
 OSSIA_EXPORT void set_app_name(extended_attributes& n, optional<app_name> v);
 OSSIA_EXPORT void set_app_name(ossia::net::node_base& n, optional<app_name> v);
-OSSIA_EXPORT void set_app_name(extended_attributes& n, const char* v); // to please clang
+OSSIA_EXPORT void
+set_app_name(extended_attributes& n, const char* v); // to please clang
 OSSIA_EXPORT void set_app_name(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_app_version();
-OSSIA_EXPORT optional<app_version> get_app_version(const extended_attributes& n);
-OSSIA_EXPORT void set_app_version(extended_attributes& n, optional<app_version> v);
-OSSIA_EXPORT void set_app_version(ossia::net::node_base& n, optional<app_version> v);
-OSSIA_EXPORT void set_app_version(extended_attributes& n, const char* v); // to please clang
+OSSIA_EXPORT optional<app_version>
+get_app_version(const extended_attributes& n);
+OSSIA_EXPORT void
+set_app_version(extended_attributes& n, optional<app_version> v);
+OSSIA_EXPORT void
+set_app_version(ossia::net::node_base& n, optional<app_version> v);
+OSSIA_EXPORT void
+set_app_version(extended_attributes& n, const char* v); // to please clang
 OSSIA_EXPORT void set_app_version(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_app_creator();
-OSSIA_EXPORT optional<app_creator> get_app_creator(const extended_attributes& n);
-OSSIA_EXPORT void set_app_creator(extended_attributes& n, optional<app_creator> v);
-OSSIA_EXPORT void set_app_creator(ossia::net::node_base& n, optional<app_creator> v);
-OSSIA_EXPORT void set_app_creator(extended_attributes& n, const char* v); // to please clang
+OSSIA_EXPORT optional<app_creator>
+get_app_creator(const extended_attributes& n);
+OSSIA_EXPORT void
+set_app_creator(extended_attributes& n, optional<app_creator> v);
+OSSIA_EXPORT void
+set_app_creator(ossia::net::node_base& n, optional<app_creator> v);
+OSSIA_EXPORT void
+set_app_creator(extended_attributes& n, const char* v); // to please clang
 OSSIA_EXPORT void set_app_creator(ossia::net::node_base& n, const char* v);
 
 OSSIA_EXPORT ossia::string_view text_default_value();
-OSSIA_EXPORT optional<ossia::value> get_default_value(const extended_attributes& n);
-OSSIA_EXPORT void set_default_value(extended_attributes& n, const ossia::value& v);
+OSSIA_EXPORT optional<ossia::value>
+get_default_value(const extended_attributes& n);
+OSSIA_EXPORT void
+set_default_value(extended_attributes& n, const ossia::value& v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::value&& v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, int v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, long v);
@@ -198,8 +227,10 @@ OSSIA_EXPORT void set_default_value(extended_attributes& n, float v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, double v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, const char* v);
 OSSIA_EXPORT void set_default_value(extended_attributes& n, ossia::none_t v);
-OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, const ossia::value& v);
-OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, ossia::value&& v);
+OSSIA_EXPORT void
+set_default_value(ossia::net::node_base& n, const ossia::value& v);
+OSSIA_EXPORT void
+set_default_value(ossia::net::node_base& n, ossia::value&& v);
 OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, int v);
 OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, long v);
 OSSIA_EXPORT void set_default_value(ossia::net::node_base& n, bool v);
@@ -225,19 +256,26 @@ OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
 OSSIA_EXPORT void set_domain(ossia::net::parameter_data& n, domain v);
 
 OSSIA_EXPORT ossia::string_view text_access_mode();
-OSSIA_EXPORT optional<access_mode> get_access_mode(const ossia::net::node_base& n);
+OSSIA_EXPORT optional<access_mode>
+get_access_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_access_mode(ossia::net::node_base& n, access_mode v);
-OSSIA_EXPORT void set_access_mode(ossia::net::parameter_data& n, access_mode v);
+OSSIA_EXPORT void
+set_access_mode(ossia::net::parameter_data& n, access_mode v);
 
 OSSIA_EXPORT ossia::string_view text_bounding_mode();
-OSSIA_EXPORT optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n);
+OSSIA_EXPORT optional<bounding_mode>
+get_bounding_mode(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_bounding_mode(ossia::net::node_base& n, bounding_mode v);
-OSSIA_EXPORT void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v);
+OSSIA_EXPORT void
+set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v);
 
 OSSIA_EXPORT ossia::string_view text_repetition_filter();
-OSSIA_EXPORT repetition_filter get_repetition_filter(const ossia::net::node_base& n);
-OSSIA_EXPORT void set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
-OSSIA_EXPORT void set_repetition_filter(ossia::net::parameter_data& n, repetition_filter v);
+OSSIA_EXPORT repetition_filter
+get_repetition_filter(const ossia::net::node_base& n);
+OSSIA_EXPORT void
+set_repetition_filter(ossia::net::node_base& n, repetition_filter v);
+OSSIA_EXPORT void
+set_repetition_filter(ossia::net::parameter_data& n, repetition_filter v);
 
 OSSIA_EXPORT ossia::string_view text_unit();
 OSSIA_EXPORT unit_t get_unit(const ossia::net::node_base& n);
@@ -259,8 +297,10 @@ OSSIA_EXPORT critical get_critical(const ossia::net::node_base& n);
 OSSIA_EXPORT void set_critical(ossia::net::node_base& n, critical v);
 OSSIA_EXPORT void set_critical(ossia::net::parameter_data& n, critical v);
 
-template<typename T>
-struct is_parameter_attribute : public std::false_type { };
+template <typename T>
+struct is_parameter_attribute : public std::false_type
+{
+};
 // Some macros to have minimal reflection facilities...
 #define OSSIA_ATTRIBUTE(Type, Name)                               \
   struct OSSIA_EXPORT Name##_attribute                            \
@@ -282,10 +322,12 @@ struct is_parameter_attribute : public std::false_type { };
     }                                                             \
   };
 
-#define OSSIA_PARAM_ATTRIBUTE(Type, Name) \
-  OSSIA_ATTRIBUTE(Type, Name) \
-template<> \
-struct is_parameter_attribute<Name##_attribute> : public std::true_type { };
+#define OSSIA_PARAM_ATTRIBUTE(Type, Name)                                 \
+  OSSIA_ATTRIBUTE(Type, Name)                                             \
+  template <>                                                             \
+  struct is_parameter_attribute<Name##_attribute> : public std::true_type \
+  {                                                                       \
+  };
 
 #define OSSIA_ATTRIBUTE_2(Type, Name, Text, Get, Set) \
   struct OSSIA_EXPORT Name##_attribute                \
@@ -312,8 +354,10 @@ OSSIA_ATTRIBUTE_2(
     ossia::value, value, ossia::net::text_value, ossia::net::clone_value,
     ossia::net::push_value)
 
-template<> \
-struct is_parameter_attribute<value_attribute> : public std::true_type { };
+template <>
+struct is_parameter_attribute<value_attribute> : public std::true_type
+{
+};
 
 OSSIA_PARAM_ATTRIBUTE(ossia::val_type, value_type)
 OSSIA_PARAM_ATTRIBUTE(ossia::domain, domain)

@@ -1,9 +1,11 @@
 #pragma once
+#include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/detail/optional.hpp>
-#include <smallfun.hpp>
+
 #include <ossia_export.h>
+#include <smallfun.hpp>
+
 #include <memory>
 
 /**
@@ -58,18 +60,19 @@ public:
     m_globalSpeed = g * m_speed;
   }
 
-
   void tick_current(ossia::time_value offset);
 
   void tick(ossia::time_value, double ratio = 1.0);
   void tick_offset(ossia::time_value, ossia::time_value offset);
-  //void tick_offset(ossia::time_value, double ratio, ossia::time_value offset);
+  // void tick_offset(ossia::time_value, double ratio, ossia::time_value
+  // offset);
 
   /*! to get the interval execution back
    \param const #TimeValue position
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
-  using exec_callback = optional<smallfun::function<void(double, ossia::time_value), 32>>;
+  using exec_callback
+      = optional<smallfun::function<void(double, ossia::time_value), 32>>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no
@@ -84,11 +87,13 @@ public:
    \return std::shared_ptr<#time_interval> */
   static std::shared_ptr<time_interval> create(
       time_interval::exec_callback, time_event&, time_event&,
-      time_value = Infinite, ossia::time_value = Zero, ossia::time_value = Infinite);
+      time_value = Infinite, ossia::time_value = Zero,
+      ossia::time_value = Infinite);
 
   time_interval(
       time_interval::exec_callback, time_event&, time_event&,
-      time_value = Infinite, ossia::time_value = Zero, ossia::time_value = Infinite);
+      time_value = Infinite, ossia::time_value = Zero,
+      ossia::time_value = Infinite);
 
   /*! desctructor */
   ~time_interval();
@@ -132,7 +137,8 @@ public:
 
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
-  void set_stateless_callback(smallfun::function<void(double, ossia::time_value), 32>);
+  void set_stateless_callback(
+      smallfun::function<void(double, ossia::time_value), 32>);
 
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
@@ -202,7 +208,9 @@ private:
   time_interval& operator=(const time_interval&) = delete;
   time_interval& operator=(time_interval&&) = delete;
   void compute_position();
-  void tick_impl(ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset);
+  void tick_impl(
+      ossia::time_value old_date, ossia::time_value new_date,
+      ossia::time_value offset);
 
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
@@ -222,7 +230,7 @@ private:
   time_value m_offset{}; /// the date the clock will run from
 
   time_value m_tick_offset{}; /// offset in the current tick
-  double m_speed{1.}; /// tick length is multiplied by this
+  double m_speed{1.};         /// tick length is multiplied by this
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
   bool m_running{false};

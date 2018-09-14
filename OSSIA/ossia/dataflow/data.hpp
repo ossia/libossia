@@ -1,9 +1,10 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
-#include <ossia/network/common/complex_type.hpp>
 #include <ossia/detail/small_vector.hpp>
-#include <ossia/network/domain/domain_base.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/domain/domain_base.hpp>
+
 #include <rtmidi17/message.hpp>
 namespace ossia
 {
@@ -24,11 +25,22 @@ struct midi_port
   value_vector<rtmidi::message> messages;
 };
 
-struct timed_value {
-  explicit timed_value(ossia::value&& v): value{std::move(v)} { }
-  explicit timed_value(const ossia::value& v): value{v} { }
-  explicit timed_value(ossia::value&& v, int64_t ts): value{std::move(v)}, timestamp{ts} { }
-  explicit timed_value(const ossia::value& v, int64_t ts): value{v}, timestamp{ts} { }
+struct timed_value
+{
+  explicit timed_value(ossia::value&& v) : value{std::move(v)}
+  {
+  }
+  explicit timed_value(const ossia::value& v) : value{v}
+  {
+  }
+  explicit timed_value(ossia::value&& v, int64_t ts)
+      : value{std::move(v)}, timestamp{ts}
+  {
+  }
+  explicit timed_value(const ossia::value& v, int64_t ts)
+      : value{v}, timestamp{ts}
+  {
+  }
 
   timed_value() = default;
   ~timed_value() = default;
@@ -41,28 +53,55 @@ struct timed_value {
   int64_t timestamp{};
 };
 
-struct typed_value {
-  explicit typed_value(ossia::value&& v)
-    : value{std::move(v)} { }
+struct typed_value
+{
+  explicit typed_value(ossia::value&& v) : value{std::move(v)}
+  {
+  }
   explicit typed_value(ossia::timed_value&& v)
-    : value{std::move(v.value)}, timestamp{v.timestamp} { }
+      : value{std::move(v.value)}, timestamp{v.timestamp}
+  {
+  }
   typed_value(ossia::value&& v, const destination_index& d)
-    : value{std::move(v)}, index{d} { }
-  typed_value(ossia::value&& v, const destination_index& d, const ossia::complex_type& u)
-    : value{std::move(v)}, index{d}, type{u} { }
-  typed_value(ossia::timed_value&& v, const destination_index& d, const ossia::complex_type& u)
-    : value{std::move(v.value)}, timestamp{v.timestamp}, index{d}, type{u} { }
+      : value{std::move(v)}, index{d}
+  {
+  }
+  typed_value(
+      ossia::value&& v, const destination_index& d,
+      const ossia::complex_type& u)
+      : value{std::move(v)}, index{d}, type{u}
+  {
+  }
+  typed_value(
+      ossia::timed_value&& v, const destination_index& d,
+      const ossia::complex_type& u)
+      : value{std::move(v.value)}, timestamp{v.timestamp}, index{d}, type{u}
+  {
+  }
 
-  explicit typed_value(const ossia::value& v)
-    : value{v} { }
+  explicit typed_value(const ossia::value& v) : value{v}
+  {
+  }
   explicit typed_value(const ossia::timed_value& v)
-    : value{v.value}, timestamp{v.timestamp} { }
+      : value{v.value}, timestamp{v.timestamp}
+  {
+  }
   typed_value(const ossia::value& v, const destination_index& d)
-    : value{v}, index{d} { }
-  typed_value(const ossia::value& v, const destination_index& d, const ossia::complex_type& u)
-    : value{v}, index{d}, type{u} { }
-  typed_value(const ossia::timed_value& v, const destination_index& d, const ossia::complex_type& u)
-    : value{v.value}, timestamp{v.timestamp}, index{d}, type{u} { }
+      : value{v}, index{d}
+  {
+  }
+  typed_value(
+      const ossia::value& v, const destination_index& d,
+      const ossia::complex_type& u)
+      : value{v}, index{d}, type{u}
+  {
+  }
+  typed_value(
+      const ossia::timed_value& v, const destination_index& d,
+      const ossia::complex_type& u)
+      : value{v.value}, timestamp{v.timestamp}, index{d}, type{u}
+  {
+  }
 
   typed_value() = default;
   ~typed_value() = default;
@@ -77,7 +116,7 @@ struct typed_value {
   ossia::complex_type type{};
 };
 
-enum data_mix_method: int8_t
+enum data_mix_method : int8_t
 {
   mix_append,
   mix_replace,
@@ -89,12 +128,14 @@ struct value_port
   //! Use this function to write from a node to an output port
   void write_value(const ossia::value& v, int64_t timestamp)
   {
-    switch(mix_method)
+    switch (mix_method)
     {
       case data_mix_method::mix_replace:
       {
-        auto it = ossia::find_if(data, [&] (const ossia::timed_value& val) { return val.timestamp == timestamp; });
-        if(it != data.end())
+        auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+          return val.timestamp == timestamp;
+        });
+        if (it != data.end())
         {
           it->value = v;
         }
@@ -119,12 +160,14 @@ struct value_port
 
   void write_value(ossia::value&& v, int64_t timestamp)
   {
-    switch(mix_method)
+    switch (mix_method)
     {
       case data_mix_method::mix_replace:
       {
-        auto it = ossia::find_if(data, [&] (const ossia::timed_value& val) { return val.timestamp == timestamp; });
-        if(it != data.end())
+        auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+          return val.timestamp == timestamp;
+        });
+        if (it != data.end())
         {
           it->value = std::move(v);
         }
@@ -152,7 +195,7 @@ struct value_port
       const ossia::destination_index& source_idx, // TODO handle me
       const ossia::complex_type& source_type) const
   {
-    if(source_type == type || !source_type)
+    if (source_type == type || !source_type)
     {
       // We can just take the value at the index
       return get_value_at_index(source, this->index);
@@ -160,7 +203,7 @@ struct value_port
     else
     {
       auto res = ossia::convert(source, source_type, type);
-      if(res.valid())
+      if (res.valid())
       {
         return get_value_at_index(res, this->index);
       }
@@ -172,27 +215,30 @@ struct value_port
   {
     // These values come from the local environemnt
     // Convert to the correct type / index
-    if(other.index == index && other.type == type)
+    if (other.index == index && other.type == type)
     {
       write_value(other.value, other.timestamp);
     }
     else
     {
-      write_value(filter_value(other.value, other.index, other.type), other.timestamp);
+      write_value(
+          filter_value(other.value, other.index, other.type), other.timestamp);
     }
   }
 
   void add_port_values(const ossia::value_port& other)
   {
     // These values come from another node: we just copy them blindly
-    switch(mix_method)
+    switch (mix_method)
     {
       case data_mix_method::mix_replace:
       {
-        for(const auto& v : other.get_data())
+        for (const auto& v : other.get_data())
         {
-          auto it = ossia::find_if(data, [&] (const ossia::timed_value& val) { return val.timestamp == v.timestamp; });
-          if(it != data.end())
+          auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+            return val.timestamp == v.timestamp;
+          });
+          if (it != data.end())
           {
             it->value = v.value;
           }
@@ -216,10 +262,12 @@ struct value_port
     }
   }
 
+  void add_global_values(
+      const ossia::net::parameter_base& param,
+      const value_vector<ossia::value>& vec);
 
-  void add_global_values(const ossia::net::parameter_base& param, const value_vector<ossia::value>& vec);
-
-  void add_global_value(const ossia::net::parameter_base& other, const ossia::value& v);
+  void add_global_value(
+      const ossia::net::parameter_base& other, const ossia::value& v);
 
   void set_data(const value_vector<ossia::timed_value>& vec)
   {
@@ -231,8 +279,14 @@ struct value_port
     data.clear();
   }
 
-  const value_vector<ossia::timed_value>& get_data() const { return data; }
-  value_vector<ossia::timed_value>& get_data() { return data; }
+  const value_vector<ossia::timed_value>& get_data() const
+  {
+    return data;
+  }
+  value_vector<ossia::timed_value>& get_data()
+  {
+    return data;
+  }
 
   ossia::domain domain;
   ossia::bounding_mode bounding{};
@@ -242,6 +296,7 @@ struct value_port
   bool is_event{};
   data_mix_method mix_method{};
   ossia::timed_value t;
+
 private:
   value_vector<ossia::timed_value> data;
 };
@@ -260,5 +315,4 @@ struct value_delay_line
 {
   std::vector<value_vector<ossia::typed_value>> data;
 };
-
 }

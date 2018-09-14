@@ -1,14 +1,16 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
+#include <ossia/detail/string_view.hpp>
+
 #include <algorithm>
 #include <array>
 #include <iostream>
 #include <iterator>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
-#include <ossia/detail/string_view.hpp>
+#include <type_traits>
 
 /**
  * \file algorithms.hpp
@@ -75,20 +77,16 @@ void remove_one_if(Vector& v, const Function& val)
   }
 }
 
-template<typename Vector, typename Value>
+template <typename Vector, typename Value>
 void remove_erase(Vector& v, const Value& val)
 {
-  v.erase(
-      std::remove(v.begin(), v.end(), val),
-      v.end());
+  v.erase(std::remove(v.begin(), v.end(), val), v.end());
 }
 
-template<typename Vector, typename Function>
+template <typename Vector, typename Function>
 void remove_erase_if(Vector& v, const Function& val)
 {
-  v.erase(
-      std::remove_if(v.begin(), v.end(), val),
-      v.end());
+  v.erase(std::remove_if(v.begin(), v.end(), val), v.end());
 }
 
 template <typename Vector, typename Fun>
@@ -183,7 +181,8 @@ void for_each_in_tuple(
 template <class F, class... Ts>
 void for_each_in_tuple(const std::tuple<Ts...>& tuple, F&& func)
 {
-  for_each_in_tuple(tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+  for_each_in_tuple(
+      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <class F>
@@ -191,9 +190,11 @@ void for_each_in_tuple(const std::tuple<>& tuple, const F& func)
 {
 }
 
-
-template<std::size_t N>
-struct num { static const constexpr auto value = N; };
+template <std::size_t N>
+struct num
+{
+  static const constexpr auto value = N;
+};
 
 template <class F, std::size_t... Is>
 void for_each_in_range(F&& func, std::index_sequence<Is...>)
@@ -207,23 +208,25 @@ void for_each_in_range(F&& func)
   for_each_in_range(std::forward<F>(func), std::make_index_sequence<N>());
 }
 
-namespace detail {
+namespace detail
+{
 template <class T, std::size_t N, std::size_t... I>
 constexpr std::array<std::remove_cv_t<T>, N>
-    to_array_impl(T (&a)[N], std::index_sequence<I...>) noexcept
+to_array_impl(T (&a)[N], std::index_sequence<I...>) noexcept
 {
-    return { {a[I]...} };
+  return {{a[I]...}};
 }
 }
 
 template <class T, std::size_t N>
 constexpr std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N]) noexcept
 {
-    return detail::to_array_impl(a, std::make_index_sequence<N>{});
+  return detail::to_array_impl(a, std::make_index_sequence<N>{});
 }
 
-template<typename... Args>
-constexpr std::array<const char*, sizeof...(Args)> make_array(Args&&... args) noexcept
+template <typename... Args>
+constexpr std::array<const char*, sizeof...(Args)>
+make_array(Args&&... args) noexcept
 {
   return {args...};
 }

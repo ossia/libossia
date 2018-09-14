@@ -29,7 +29,8 @@ struct OSSIA_EXPORT quaternion_u : public orientation_unit<quaternion_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(ossia::make_string_array("distance.m", "distance.m", "distance.m", "distance.m"));
+    constexpr_return(ossia::make_string_array(
+        "distance.m", "distance.m", "distance.m", "distance.m"));
   }
   using value_type = vec4f;
   static constexpr strong_value<neutral_unit>
@@ -38,20 +39,21 @@ struct OSSIA_EXPORT quaternion_u : public orientation_unit<quaternion_u>
     return self;
   }
 
-  static constexpr value_type
-  from_neutral(strong_value<neutral_unit> self)
+  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value;
   }
 
-  static ossia::vecf_domain<4> domain() {
-    return vecf_domain<4>{
-      ossia::make_vec(0.f,0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<4> domain()
+  {
+    return vecf_domain<4>{ossia::make_vec(0.f, 0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f, 1.f)};
   }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::FREE;
+  }
 };
 
 struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
@@ -66,7 +68,8 @@ struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(ossia::make_string_array("angle.degree", "angle.degree", "angle.degree"));
+    constexpr_return(ossia::make_string_array(
+        "angle.degree", "angle.degree", "angle.degree"));
   }
   using value_type = vec4f;
 
@@ -75,13 +78,15 @@ struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(360.f,360.f,360.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(360.f, 360.f, 360.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::WRAP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::WRAP;
+  }
 };
 
 struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
@@ -96,7 +101,8 @@ struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(ossia::make_string_array("distance.m", "distance.m", "distance.m", "angle.degree"));
+    constexpr_return(ossia::make_string_array(
+        "distance.m", "distance.m", "distance.m", "angle.degree"));
   }
   using value_type = vec4f;
 
@@ -105,13 +111,15 @@ struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
-  static ossia::vecf_domain<4> domain() {
-    return vecf_domain<4>{
-      ossia::make_vec(0.f,0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f,360.f)
-    };
+  static ossia::vecf_domain<4> domain()
+  {
+    return vecf_domain<4>{ossia::make_vec(0.f, 0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f, 360.f)};
   }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::FREE;
+  }
 };
 }

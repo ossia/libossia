@@ -33,8 +33,12 @@
 #endif
 
 /// Constexpr support ///
-#define constexpr_return(X) do { constexpr auto constexpr_return_x_ = X; return constexpr_return_x_; } while(0)
-
+#define constexpr_return(X)                 \
+  do                                        \
+  {                                         \
+    constexpr auto constexpr_return_x_ = X; \
+    return constexpr_return_x_;             \
+  } while (0)
 
 /// Inline support ///
 #if defined(__GNUC__)
@@ -69,30 +73,29 @@
 #endif
 
 #if defined(__SANITIZE_ADDRESS__)
-  #define OSSIA_ASAN 1
+#define OSSIA_ASAN 1
 #elif defined(__has_feature)
-  #if __has_feature(address_sanitizer)
-    #define OSSIA_ASAN 1
-  #endif
+#if __has_feature(address_sanitizer)
+#define OSSIA_ASAN 1
+#endif
 #endif
 
 #if !defined(OSSIA_ASAN)
-  #if defined(__AVX__)
-    #define RAPIDJSON_SSE42 1
-  #elif defined (__SSE2__)
-    #define RAPIDJSON_SSE2 1
-  #endif
+#if defined(__AVX__)
+#define RAPIDJSON_SSE42 1
+#elif defined(__SSE2__)
+#define RAPIDJSON_SSE2 1
+#endif
 
-  #if defined(__ARM_NEON)
-    #define RAPIDJSON_NEON 1
-  #endif
+#if defined(__ARM_NEON)
+#define RAPIDJSON_NEON 1
+#endif
 #endif
 
 // https://github.com/Tencent/rapidjson/issues/1015
 #if !defined(RAPIDJSON_HAS_CXX11_RVALUE_REFS)
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
 #endif
-
 
 #define BOOST_MATH_DISABLE_FLOAT128
 #define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE 1

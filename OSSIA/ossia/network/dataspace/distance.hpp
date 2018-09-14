@@ -37,7 +37,10 @@ struct distance_ratio : public linear_unit<distance_unit<distance_ratio<T>>, T>
 {
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
 
-  static ossia::domain domain() { return {}; }
+  static ossia::domain domain()
+  {
+    return {};
+  }
 };
 
 struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
@@ -49,10 +52,15 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
   using value_type = float;
   double ppm{}; // pixels per meter
 
-  void set_ppcm(double v) { ppm = v * 100.; }
-  void set_dpi(double v) { ppm = v / 254.; }
-  strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  void set_ppcm(double v)
+  {
+    ppm = v * 100.;
+  }
+  void set_dpi(double v)
+  {
+    ppm = v / 254.;
+  }
+  strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return float(self.dataspace_value / ppm);
   }
@@ -62,12 +70,16 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
     return float(self.dataspace_value * ppm);
   }
 
-  static ossia::domain domain() { return {}; }
+  static ossia::domain domain()
+  {
+    return {};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
-
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::FREE;
+  }
 };
-
 
 template <>
 struct unit_traits<meter_u>

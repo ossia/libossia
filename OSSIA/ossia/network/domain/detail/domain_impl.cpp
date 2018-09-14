@@ -1,9 +1,10 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/value/value.hpp>
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <fmt/format.h>
 
 namespace ossia
@@ -44,8 +45,8 @@ struct domain_prettyprint_visitor
     writer.write("min: {} ; ", *dom.min);
     writer.write("max: {} ; ", *dom.max);
     writer << "values: {";
-    for(auto& e : dom.values)
-      writer <<  e << ", ";
+    for (auto& e : dom.values)
+      writer << e << ", ";
     writer << "}";
   }
 
@@ -64,23 +65,23 @@ struct domain_prettyprint_visitor
     writer << "array: ";
 
     writer << "min: [";
-    for(std::size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
     {
-      if(dom.min[i])
+      if (dom.min[i])
         writer << *dom.min[i];
       else
         writer << "none";
-      if(i < N - 1)
+      if (i < N - 1)
         writer << ",";
     }
     writer << "] ; max: [";
-    for(std::size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
     {
-      if(dom.max[i])
+      if (dom.max[i])
         writer << *dom.max[i];
       else
         writer << "none";
-      if(i < N - 1)
+      if (i < N - 1)
         writer << ",";
     }
     writer << "]";
@@ -90,7 +91,7 @@ struct domain_prettyprint_visitor
   void operator()(const domain_base<std::string>& dom)
   {
     writer << "string: {";
-    for(auto& e : dom.values)
+    for (auto& e : dom.values)
       writer << "\"" << e << "\", ";
     writer << "}";
   }
@@ -106,17 +107,17 @@ struct domain_prettyprint_visitor
     writer << "list: ";
 
     writer << "min: [";
-    for(std::size_t i = 0; i < dom.min.size(); i++)
+    for (std::size_t i = 0; i < dom.min.size(); i++)
     {
       writer << value_to_pretty_string(dom.min[i]);
-      if(i < dom.min.size() - 1)
+      if (i < dom.min.size() - 1)
         writer << ",";
     }
     writer << "] ; max: [";
-    for(std::size_t i = 0; i < dom.max.size(); i++)
+    for (std::size_t i = 0; i < dom.max.size(); i++)
     {
       writer << value_to_pretty_string(dom.max[i]);
-      if(i < dom.max.size() - 1)
+      if (i < dom.max.size() - 1)
         writer << ",";
     }
     writer << "]";
@@ -125,7 +126,7 @@ struct domain_prettyprint_visitor
 
 std::string domain::to_pretty_string() const
 {
-  if(bool(*this))
+  if (bool(*this))
   {
     fmt::MemoryWriter s;
 
@@ -239,10 +240,10 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
   }
 }
 
-
 template <>
 template <typename U>
-ossia::value numeric_clamp<domain_base<bool>>::operator()(bounding_mode b, U&& val) const
+ossia::value numeric_clamp<domain_base<bool>>::
+operator()(bounding_mode b, U&& val) const
 {
   switch (b)
   {
@@ -474,7 +475,8 @@ operator()(bounding_mode b, const std::vector<ossia::value>& val) const
 
 template <>
 template <std::size_t N>
-ossia::value numeric_clamp<domain_base<bool>>::operator()(bounding_mode b, std::array<float, N> val) const
+ossia::value numeric_clamp<domain_base<bool>>::
+operator()(bounding_mode b, std::array<float, N> val) const
 {
   constexpr bool min = false, max = true;
   switch (b)

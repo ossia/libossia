@@ -1,11 +1,13 @@
 #pragma once
 
 #include <ossia/editor/scenario/time_value.hpp>
+
+#include <ossia_export.h>
+
 #include <atomic>
 #include <chrono>
 #include <functional>
 #include <memory>
-#include <ossia_export.h>
 #include <thread>
 
 namespace ossia

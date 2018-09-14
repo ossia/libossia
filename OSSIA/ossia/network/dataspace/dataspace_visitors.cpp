@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
@@ -12,17 +12,18 @@
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
+
 #include <hopscotch_map.h>
 
 namespace ossia
 {
 /// Checks ///
 
-bool check_units_convertible(const ossia::unit_t& lhs, const ossia::unit_t& rhs)
+bool check_units_convertible(
+    const ossia::unit_t& lhs, const ossia::unit_t& rhs)
 {
   return lhs.which() == rhs.which();
 }
-
 
 /// Parse ///
 ossia::string_view get_dataspace_text(const unit_t& u)
@@ -78,7 +79,7 @@ unit_t parse_pretty_unit(ossia::string_view text)
 {
   static const auto map = [] {
     ossia::string_map<ossia::unit_t> t;
-    ossia::detail::list_units([&] (std::string str, auto u) {
+    ossia::detail::list_units([&](std::string str, auto u) {
       boost::to_lower(str);
       t.insert({std::move(str), std::move(u)});
     });
@@ -86,10 +87,10 @@ unit_t parse_pretty_unit(ossia::string_view text)
   }();
 
   auto it = map.find(boost::to_lower_copy(std::string(text)));
-  if(it != map.end())
-   return it->second;
+  if (it != map.end())
+    return it->second;
   else
-   return {};
+    return {};
 }
 
 unit_t parse_dataspace(ossia::string_view text)
@@ -148,8 +149,7 @@ ossia::domain get_unit_default_domain(const ossia::unit_t& unit)
           if (d)
           {
             return ossia::apply_nonnull(
-                [=](const auto& u) -> ossia::domain { return u.domain(); },
-                d);
+                [=](const auto& u) -> ossia::domain { return u.domain(); }, d);
           }
 
           return ossia::domain{};
@@ -170,7 +170,8 @@ char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
           {
             return ossia::apply_nonnull(
                 [=](const auto& u) {
-                  return detail::unit_accessor_helper<std::remove_const_t<std::remove_reference_t<decltype(u)>>>{}(n);
+                  return detail::unit_accessor_helper<std::remove_const_t<
+                      std::remove_reference_t<decltype(u)>>>{}(n);
                 },
                 d);
           }

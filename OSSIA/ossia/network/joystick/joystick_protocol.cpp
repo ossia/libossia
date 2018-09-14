@@ -1,10 +1,12 @@
 
 
-#include <SDL2/SDL.h>
-#include <thread>
+#include "joystick_protocol.hpp"
 
 #include "device_parameter.hpp"
-#include "joystick_protocol.hpp"
+
+#include <SDL2/SDL.h>
+
+#include <thread>
 
 namespace ossia::net
 {
@@ -301,12 +303,12 @@ void joystick_protocol::set_device(ossia::net::device_base& dev)
         root, "button-" + std::to_string(i + 1), false, val_type::BOOL,
         bounding_mode::CLIP, access_mode::GET, init_domain(val_type::BOOL)));
 
-  for (int i = 0; i < hat_count; ++i) {
-    auto param =
-        device_parameter::create_device_parameter(
-            root, "hat-" + std::to_string(i + 1), std::array<float, 2>{0.0, 0.0},
-            val_type::VEC2F, bounding_mode::FREE, access_mode::GET,
-            init_domain(val_type::VEC2F));
+  for (int i = 0; i < hat_count; ++i)
+  {
+    auto param = device_parameter::create_device_parameter(
+        root, "hat-" + std::to_string(i + 1), std::array<float, 2>{0.0, 0.0},
+        val_type::VEC2F, bounding_mode::FREE, access_mode::GET,
+        init_domain(val_type::VEC2F));
     param->set_unit(ossia::cartesian_2d_u{});
     m_hat_parameters.push_back(param);
   }

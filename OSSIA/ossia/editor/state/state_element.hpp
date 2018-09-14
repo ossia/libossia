@@ -2,6 +2,7 @@
 #include <ossia/editor/state/message.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <ossia/editor/state/state_element_fwd.hpp>
+
 #include <ossia_export.h>
 
 /**
@@ -19,8 +20,8 @@ OSSIA_EXPORT void launch(state_element& e);
  */
 OSSIA_EXPORT std::ostream& print(std::ostream& os, const state_element& dt);
 
-inline
-ossia::state_element& get_state_element(std::vector<ossia::state_element>::iterator iterator)
+inline ossia::state_element&
+get_state_element(std::vector<ossia::state_element>::iterator iterator)
 {
   return *iterator;
 }

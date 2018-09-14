@@ -6,17 +6,15 @@ namespace ossia::nodes
 {
 struct OSSIA_EXPORT state_writer final : public ossia::graph_node
 {
-  public:
-    state_writer(const ossia::state& other);
-    state_writer(ossia::state&& other);
-    state_writer() = default;
+public:
+  state_writer(const ossia::state& other);
+  state_writer(ossia::state&& other);
+  state_writer() = default;
 
-    ~state_writer() override;
+  ~state_writer() override;
 
-    void run(ossia::token_request, ossia::exec_state_facade e) noexcept override;
+  void run(ossia::token_request, ossia::exec_state_facade e) noexcept override;
 
-    ossia::state data;
+  ossia::state data;
 };
-
 }
-

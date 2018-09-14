@@ -5,8 +5,9 @@
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
 #include <hopscotch_map.h>
-#include <string>
+
 #include <atomic>
+#include <string>
 
 namespace oscpack
 {
@@ -24,14 +25,12 @@ namespace ossia
 namespace net
 {
 struct osc_outbound_visitor;
-class OSSIA_EXPORT osc_protocol final
-    : public ossia::net::protocol_base
+class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
 public:
-  osc_protocol(std::string ip,
-               uint16_t remote_port,
-               uint16_t local_port,
-               ossia::optional<std::string> expose_name = ossia::none);
+  osc_protocol(
+      std::string ip, uint16_t remote_port, uint16_t local_port,
+      ossia::optional<std::string> expose_name = ossia::none);
 
   osc_protocol(const osc_protocol&) = delete;
   osc_protocol(osc_protocol&&) = delete;
@@ -57,11 +56,14 @@ public:
   bool pull(ossia::net::parameter_base& parameter_base) override;
 
   bool push(const ossia::net::parameter_base& parameter_base) override;
-  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool
+  push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool
+  push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
 
-  bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
+  bool
+  observe(ossia::net::parameter_base& parameter_base, bool enable) override;
 
 private:
   void on_received_message(
@@ -84,12 +86,10 @@ private:
   std::string m_ip;
 
   uint16_t m_remote_port{}; /// the port that a remote device opens
-  uint16_t
-      m_local_port{}; /// the port where a remote device sends OSC messages
-                      /// to (opened in this library)
-  std::atomic_bool
-      m_learning{}; /// if the device is currently learning from inbound
-                    /// messages.
+  uint16_t m_local_port{};  /// the port where a remote device sends OSC
+                           /// messages to (opened in this library)
+  std::atomic_bool m_learning{}; /// if the device is currently learning from
+                                 /// inbound messages.
   optional<std::string> m_expose{};
 };
 }

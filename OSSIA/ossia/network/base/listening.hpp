@@ -49,7 +49,7 @@ public:
   {
     lock_t lock(m_mutex);
     auto it = m_map.find(oldk);
-    if(it != m_map.end())
+    if (it != m_map.end())
     {
       auto v = it->second;
       m_map.erase(it);
@@ -83,6 +83,7 @@ private:
 namespace net
 {
 class parameter_base;
-using listened_parameters = locked_map<string_map<ossia::net::parameter_base*>>;
+using listened_parameters
+    = locked_map<string_map<ossia::net::parameter_base*>>;
 }
 }

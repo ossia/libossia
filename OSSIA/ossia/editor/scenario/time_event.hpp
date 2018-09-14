@@ -2,9 +2,11 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+
+#include <ossia_export.h>
+
 #include <cstdint>
 #include <memory>
-#include <ossia_export.h>
 
 /**
  * \file time_event.hpp
@@ -44,11 +46,11 @@ public:
   };
 
   /**
-     * @brief The OffsetBehavior enum
-     * Describes what happens when a parent scenario
-     * does an offset beyond this event. This is useful to
-     * make default cases for the scenario.
-     */
+   * @brief The OffsetBehavior enum
+   * Describes what happens when a parent scenario
+   * does an offset beyond this event. This is useful to
+   * make default cases for the scenario.
+   */
   enum class offset_behavior : int8_t
   {
     EXPRESSION_TRUE,  //! The condition is considered True
@@ -79,7 +81,6 @@ public:
   {
     return m_processes;
   }
-
 
   void tick(ossia::time_value date, double pos, ossia::time_value offset);
 

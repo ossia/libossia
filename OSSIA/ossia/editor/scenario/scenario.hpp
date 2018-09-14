@@ -1,13 +1,15 @@
 #pragma once
-#include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/pod_vector.hpp>
-#include <ossia/detail/flat_map.hpp>
-#include <ossia/detail/ptr_set.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/detail/ptr_set.hpp>
+#include <ossia/detail/small_vector.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+
 #include <boost/graph/adjacency_list.hpp>
+
 #include <ossia_export.h>
 namespace ossia
 {
@@ -31,43 +33,34 @@ class scenario;
 using scenario_graph_vertex = time_sync*;
 using scenario_graph_edge = time_interval*;
 
-
 struct scenario_graph
 {
-    using graph_t = boost::adjacency_list<
-      boost::vecS,
-      boost::vecS,
-      boost::undirectedS,
-      scenario_graph_vertex,
+  using graph_t = boost::adjacency_list<
+      boost::vecS, boost::vecS, boost::undirectedS, scenario_graph_vertex,
       scenario_graph_edge>;
 
-    scenario& scenar;
-    graph_t graph;
+  scenario& scenar;
+  graph_t graph;
 
-    scenario_graph(scenario& sc);
+  scenario_graph(scenario& sc);
 
-    small_sync_vec get_roots() const;
+  small_sync_vec get_roots() const;
 
-    void add_vertice(scenario_graph_vertex timeSync);
-    void add_edge(scenario_graph_edge itv);
-    void remove_vertice(scenario_graph_vertex timeSync);
-    void remove_edge(scenario_graph_edge itv);
+  void add_vertice(scenario_graph_vertex timeSync);
+  void add_edge(scenario_graph_edge itv);
+  void remove_vertice(scenario_graph_vertex timeSync);
+  void remove_edge(scenario_graph_edge itv);
 
-    void reset_component(ossia::time_sync& sync) const;
-    ossia::small_vector<ossia::time_sync*, 4> sibling_roots(
-        const ossia::time_sync& sync) const;
+  void reset_component(ossia::time_sync& sync) const;
+  ossia::small_vector<ossia::time_sync*, 4>
+  sibling_roots(const ossia::time_sync& sync) const;
 
-  private:
-     void update_components_cache() const;
-     mutable ossia::int_vector m_components_cache;
-     mutable bool dirty = false;
-     ossia::ptr_map<
-         const time_sync*,
-         graph_t::vertex_descriptor> vertices;
-     ossia::ptr_map<
-         const time_interval*,
-         graph_t::edge_descriptor> edges;
-
+private:
+  void update_components_cache() const;
+  mutable ossia::int_vector m_components_cache;
+  mutable bool dirty = false;
+  ossia::ptr_map<const time_sync*, graph_t::vertex_descriptor> vertices;
+  ossia::ptr_map<const time_interval*, graph_t::edge_descriptor> edges;
 };
 
 class OSSIA_EXPORT scenario final : public time_process
@@ -75,7 +68,6 @@ class OSSIA_EXPORT scenario final : public time_process
 public:
   scenario();
   ~scenario() override;
-
 
   /*! add a #time_interval and its #time_syncs into the scenario if they
    don't
@@ -113,7 +105,8 @@ private:
   void offset(ossia::time_value, double pos) override;
 
   void state(
-      ossia::time_value from, ossia::time_value to, double pos, ossia::time_value tick_offset, double gspeed) override;
+      ossia::time_value from, ossia::time_value to, double pos,
+      ossia::time_value tick_offset, double gspeed) override;
 
   void start() override;
   void stop() override;
@@ -124,9 +117,8 @@ private:
   bool is_root_sync(ossia::time_sync& sync) const;
 
   void reset_subgraph(
-      const ptr_container<time_sync>&
-      , const ptr_container<time_interval>&
-      , time_sync& root);
+      const ptr_container<time_sync>&, const ptr_container<time_interval>&,
+      time_sync& root);
 
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
@@ -143,22 +135,19 @@ private:
   sync_set m_endNodes; // used as cache
   scenario_graph m_sg; // used as cache
 
-
   ossia::time_value m_lastDate{ossia::Infinite};
 
   bool process_this(
-      time_sync& node,
-      small_event_vec& pendingEvents,
-      small_event_vec& maxReachedEvents,
-      interval_set& started, interval_set& stopped,
-      ossia::time_value tick_offset);
+      time_sync& node, small_event_vec& pendingEvents,
+      small_event_vec& maxReachedEvents, interval_set& started,
+      interval_set& stopped, ossia::time_value tick_offset);
   static void make_happen(
       time_event& event, interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset);
   static void make_dispose(time_event& event, interval_set& stopped);
-  bool trigger_sync(time_sync& node,
-                    small_event_vec& pending, small_event_vec& maxReachedEv,
-                    interval_set& started, interval_set& stopped,
-                    ossia::time_value tick_offset, bool maxReached);
+  bool trigger_sync(
+      time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
+      interval_set& started, interval_set& stopped,
+      ossia::time_value tick_offset, bool maxReached);
 };
 }

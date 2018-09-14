@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <cstdint>
 #include <limits>
 namespace ossia
@@ -13,16 +14,16 @@ namespace ossia
  * * ossia::val_type */
 enum class val_type : int8_t
 {
-  FLOAT, //! float
-  INT,   //! int32_t
-  VEC2F, //! array<float, 2>
-  VEC3F, //! array<float, 3>
-  VEC4F, //! array<float, 4>
+  FLOAT,   //! float
+  INT,     //! int32_t
+  VEC2F,   //! array<float, 2>
+  VEC3F,   //! array<float, 3>
+  VEC4F,   //! array<float, 4>
   IMPULSE, //! ossia::impulse
-  BOOL, //! bool
-  STRING, //! std::string
-  LIST, //! std::vector<value>
-  CHAR, //! char
+  BOOL,    //! bool
+  STRING,  //! std::string
+  LIST,    //! std::vector<value>
+  CHAR,    //! char
   NONE = std::numeric_limits<int8_t>::max()
 };
 
@@ -33,7 +34,7 @@ enum class access_mode : int8_t
 {
   BI,  //! The value can be retrieved and changed
   GET, //! The value can be retrieved
-  SET //! The value can be changed
+  SET  //! The value can be changed
 };
 
 /**

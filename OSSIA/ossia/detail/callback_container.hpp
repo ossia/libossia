@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <list>
 #include <mutex>
 #include <stdexcept>
@@ -175,7 +176,7 @@ protected:
    * stop listening somewhere...
    *
    * \see \ref on_removing_last_callback
-  */
+   */
   virtual void on_first_callback_added()
   {
   }
@@ -193,5 +194,4 @@ private:
   impl m_callbacks;
   mutable std::mutex m_mutx;
 };
-
 }

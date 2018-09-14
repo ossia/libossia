@@ -148,8 +148,8 @@ struct domain_to_json
           writer.EndObject();
         }
         else if (
-                 (min_count > i && dom.min[i].valid())
-                 || (max_count > i && dom.max[i].valid()))
+            (min_count > i && dom.min[i].valid())
+            || (max_count > i && dom.max[i].valid()))
         {
           writer.StartObject();
           if (dom.min[i].valid())
@@ -259,7 +259,6 @@ struct domain_to_json
     */
   }
 };
-
 }
 }
 }

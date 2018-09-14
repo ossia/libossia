@@ -1,7 +1,9 @@
 #pragma once
 #include <ossia/editor/expression/expression_fwd.hpp>
-#include <memory>
+
 #include <ossia_export.h>
+
+#include <memory>
 
 namespace ossia
 {
@@ -51,6 +53,5 @@ private:
     expr->on_removing_last_callback(*this);
   }
 };
-
 }
 }

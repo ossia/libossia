@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/expression/expression_atom.hpp>
 
@@ -91,14 +91,14 @@ void expression_atom::on_first_callback_added()
   if (auto d = m_first.target<destination>())
   {
     m_firstCallback = d->address().add_callback(
-        [&,d](const ossia::value&) { first_value_callback(d->pull()); });
+        [&, d](const ossia::value&) { first_value_callback(d->pull()); });
   }
 
   // start second operand observation if it is a Destination
   if (auto d = m_second.target<destination>())
   {
     m_secondCallback = d->address().add_callback(
-        [&,d](const ossia::value&) { second_value_callback(d->pull()); });
+        [&, d](const ossia::value&) { second_value_callback(d->pull()); });
   }
 }
 

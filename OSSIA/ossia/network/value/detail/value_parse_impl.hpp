@@ -7,9 +7,10 @@
 #define BOOST_PHOENIX_USING_LIBCPP
 #endif
 #include <ossia/network/base/name_validation.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <boost/fusion/adapted.hpp>
 #include <boost/spirit/home/x3.hpp>
-#include <ossia/network/value/value.hpp>
 #endif
 BOOST_FUSION_ADAPT_STRUCT(ossia::impulse)
 namespace ossia
@@ -22,29 +23,38 @@ namespace parse
 using namespace boost::fusion;
 namespace x3 = boost::spirit::x3;
 
-using x3::skip;
+using x3::char_;
 using x3::int_;
 using x3::real_parser;
-using x3::char_;
+using x3::skip;
 
-template<int N>
-struct array_parser {
+template <int N>
+struct array_parser
+{
   std::array<float, N> arr;
   int pos = 0;
-  void insert(float x) { arr[pos] = x; pos++; }
-  void operator=(float x) { arr[pos] = x; pos++; }
-  operator std::array<float, N>() { return arr; }
+  void insert(float x)
+  {
+    arr[pos] = x;
+    pos++;
+  }
+  void operator=(float x)
+  {
+    arr[pos] = x;
+    pos++;
+  }
+  operator std::array<float, N>()
+  {
+    return arr;
+  }
 };
 
 struct BoolParse_map : x3::symbols<bool>
 {
   BoolParse_map()
   {
-    add
-        ("bool: true", true)
-        ("bool: false", false)
-        ("bool: 1", true)
-        ("bool: 0", false);
+    add("bool: true",
+        true)("bool: false", false)("bool: 1", true)("bool: 0", false);
   }
 };
 
@@ -61,16 +71,19 @@ struct EscapedChar : x3::symbols<const char>
   EscapedChar()
   {
     add("\\\"", '\"');
-
   }
 };
 using float_p = real_parser<float, x3::real_policies<float>>;
 
-const auto o_impulse__def = x3::lit("impulse") [ ([] (auto&){ return ossia::impulse{}; }) ];
-const auto o_str__def = "string: \"" >> (x3::lexeme[ *(EscapedChar() | (char_  - '"')) ]) >> '"';
+const auto o_impulse__def
+    = x3::lit("impulse")[([](auto&) { return ossia::impulse{}; })];
+const auto o_str__def
+    = "string: \"" >> (x3::lexeme[*(EscapedChar() | (char_ - '"'))]) >> '"';
 const auto o_vec2__def = "vec2f: [" >> float_p() >> "," >> float_p() >> "]";
-const auto o_vec3__def = "vec3f: [" >> float_p() >> "," >> float_p() >> "," >> float_p() >> "]";
-const auto o_vec4__def = "vec4f: [" >> float_p() >> "," >> float_p() >> "," >> float_p() >> "," >> float_p() >> "]";
+const auto o_vec3__def
+    = "vec3f: [" >> float_p() >> "," >> float_p() >> "," >> float_p() >> "]";
+const auto o_vec4__def = "vec4f: [" >> float_p() >> "," >> float_p() >> ","
+                         >> float_p() >> "," >> float_p() >> "]";
 const auto o_list__def = "list: [" >> *(value_ % x3::lit(",")) >> "]";
 
 BOOST_SPIRIT_DEFINE(o_impulse_)
@@ -80,36 +93,32 @@ BOOST_SPIRIT_DEFINE(o_vec3_)
 BOOST_SPIRIT_DEFINE(o_vec4_)
 BOOST_SPIRIT_DEFINE(o_list_)
 
-
-const auto value__def
-           = ("float: " >> float_p())
-    | ("char: '" >> (char_ - "'") >> "'")
-    | ("int: " >> int_)
-    | BoolParse_map{}
-    | o_impulse_
-    | o_str_
-    | o_vec2_
-    | o_vec3_
-    | o_vec4_
-    | o_list_
-    ;
+const auto value__def = ("float: " >> float_p())
+                        | ("char: '" >> (char_ - "'") >> "'")
+                        | ("int: " >> int_) | BoolParse_map{} | o_impulse_
+                        | o_str_ | o_vec2_ | o_vec3_ | o_vec4_ | o_list_;
 
 BOOST_SPIRIT_DEFINE(value_)
 
-
 const x3::rule<class address_, std::string> address_ = "address";
-const auto address__def = x3::lexeme [ (+("/" >> +x3::char_(std::string{ossia::net::name_characters()})) | "/") ];
+const auto address__def = x3::lexeme[(
+    +("/" >> +x3::char_(std::string{ossia::net::name_characters()})) | "/")];
 BOOST_SPIRIT_DEFINE(address_)
 
-const x3::rule<class preset_pair_, std::pair<std::string, ossia::value>> preset_pair_ = "preset_pair";
-const auto preset_pair__def = x3::lexeme [ +x3::char_(std::string{ossia::net::path_characters()}) >> x3::lit("\t") ] >> value_ ;
+const x3::rule<class preset_pair_, std::pair<std::string, ossia::value>>
+    preset_pair_ = "preset_pair";
+const auto preset_pair__def
+    = x3::lexeme
+          [+x3::char_(std::string{ossia::net::path_characters()})
+           >> x3::lit("\t")]
+      >> value_;
 BOOST_SPIRIT_DEFINE(preset_pair_)
 
-const x3::rule<class preset_, std::vector<std::pair<std::string, ossia::value>>> preset_ = "preset";
-const auto preset__def = *(preset_pair_ % x3::lexeme [ x3::eol ]);
+const x3::rule<
+    class preset_, std::vector<std::pair<std::string, ossia::value>>>
+    preset_ = "preset";
+const auto preset__def = *(preset_pair_ % x3::lexeme[x3::eol]);
 BOOST_SPIRIT_DEFINE(preset_)
 }
-
 }
-
 }

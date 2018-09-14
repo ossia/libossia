@@ -1,15 +1,15 @@
 #pragma once
+#include <ossia/detail/mutex.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
-
-#include <ossia/detail/mutex.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+
+#include <hopscotch_map.h>
+
 #include <atomic>
 #include <future>
-#include <hopscotch_map.h>
 #include <set>
 #include <string>
 
@@ -62,13 +62,15 @@ public:
   bool update(ossia::net::node_base& node_base) override;
 
   bool pull(ossia::net::parameter_base& parameter_base) override;
-  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool
+  push_raw(const ossia::net::full_parameter_data& parameter_base) override;
   std::future<void> pull_async(parameter_base&) override;
   void request(ossia::net::parameter_base& parameter_base) override;
 
   bool push(const ossia::net::parameter_base& parameter_base) override;
 
-  bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
+  bool
+  observe(ossia::net::parameter_base& parameter_base, bool enable) override;
   bool observe_quietly(
       ossia::net::parameter_base& parameter_base, bool enable) override;
 
@@ -90,7 +92,7 @@ private:
   std::string m_localName;
   std::string m_ip;
   uint16_t m_remotePort{}; /// the port that a remote device opens
-  uint16_t m_localPort{};  /// the port where a remote device sends OSC messages
+  uint16_t m_localPort{}; /// the port where a remote device sends OSC messages
                           /// to (opened in this library)
 
   listened_parameters m_listening;

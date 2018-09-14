@@ -1,21 +1,20 @@
 #include "node_functions.hpp"
-#include <ossia/network/common/path.hpp>
-#include <ossia/network/common/complex_type.hpp>
+
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/common/path.hpp>
 
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
-#include <regex>
+#include <bitset>
 #include <iostream>
 #include <iterator>
+#include <regex>
 #include <string>
 #include <utility>
 #include <vector>
-#include <bitset>
-
-#include <ossia/detail/small_vector.hpp>
-
 
 namespace ossia
 {
@@ -63,7 +62,7 @@ static node_base& find_or_create_node_rec(
     {
       // There are still nodes since we found a slash
       return find_or_create_node_rec(
-            *cld, address.substr(first_slash_index + 1));
+          *cld, address.substr(first_slash_index + 1));
     }
     else
     {
@@ -72,7 +71,7 @@ static node_base& find_or_create_node_rec(
 
       // Recurse on it
       return find_or_create_node_rec(
-            child, address.substr(first_slash_index + 1));
+          child, address.substr(first_slash_index + 1));
     }
   }
   else
@@ -110,7 +109,7 @@ static node_base& create_node_rec(
     {
       // Create a node
       auto child = node.create_child(std::string(cur));
-      if(!child)
+      if (!child)
         throw std::runtime_error{"create_node_rec: cannot create the node"};
 
       // Recurse on it
@@ -121,7 +120,7 @@ static node_base& create_node_rec(
   {
     // Create and return the node
     auto child = node.create_child(std::string(address));
-    if(!child)
+    if (!child)
       throw std::runtime_error{"create_node_rec: cannot create the node"};
     return *child;
   }
@@ -187,15 +186,15 @@ find_or_create_node(node_base& dev, string_view parameter_base, bool reading)
 
 std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
 {
-  if(!ossia::traversal::is_pattern(pattern))
+  if (!ossia::traversal::is_pattern(pattern))
   {
     auto node = ossia::net::find_node(dev, pattern);
-    if(node)
+    if (node)
       return {node};
     else
       return {};
   }
-  else if(auto path = traversal::make_path(pattern))
+  else if (auto path = traversal::make_path(pattern))
   {
     std::vector<node_base*> nodes{&dev};
     traversal::apply(*path, nodes);
@@ -204,7 +203,7 @@ std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
   else
   {
     auto node = ossia::net::find_node(dev, pattern);
-    if(node)
+    if (node)
       return {node};
     else
       return {};
@@ -214,7 +213,8 @@ std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
 // The following code, up to and including `List expand(const Range & range)`
 // originates from Rosetta Code, under GNU FDL:
 // https://rosettacode.org/wiki/Brace_expansion#C.2B.2B
-namespace detail {
+namespace detail
+{
 
 template <typename ForwardIterator>
 class tokenizer
@@ -223,46 +223,64 @@ class tokenizer
   ForwardIterator _tbegin, _tend, _end;
 
 public:
-
   tokenizer(ForwardIterator begin, ForwardIterator end)
-    : _tbegin(begin), _tend(begin), _end(end)
-  { }
+      : _tbegin(begin), _tend(begin), _end(end)
+  {
+  }
 
   template <typename Lambda>
   bool next(Lambda istoken)
   {
-    if (_tbegin == _end) {
+    if (_tbegin == _end)
+    {
       return false;
     }
     _tbegin = _tend;
-    for (; _tend != _end && !istoken(*_tend); ++_tend) {
-      if (*_tend == '\\' && std::next(_tend) != _end) {
+    for (; _tend != _end && !istoken(*_tend); ++_tend)
+    {
+      if (*_tend == '\\' && std::next(_tend) != _end)
+      {
         ++_tend;
       }
     }
-    if (_tend == _tbegin && _tend != _end) {
+    if (_tend == _tbegin && _tend != _end)
+    {
       _tend++;
     }
     return _tbegin != _end;
   }
 
-  ForwardIterator begin() const { return _tbegin; }
-  ForwardIterator end()   const { return _tend; }
-  bool operator==(char c) { return *_tbegin == c; }
-
+  ForwardIterator begin() const
+  {
+    return _tbegin;
+  }
+  ForwardIterator end() const
+  {
+    return _tend;
+  }
+  bool operator==(char c)
+  {
+    return *_tbegin == c;
+  }
 };
 
 template <typename List>
-void append_all(List & lista, const List & listb)
+void append_all(List& lista, const List& listb)
 {
-  if (listb.size() == 1) {
-    for (auto & a : lista) {
+  if (listb.size() == 1)
+  {
+    for (auto& a : lista)
+    {
       a += listb.back();
     }
-  } else {
+  }
+  else
+  {
     List tmp;
-    for (auto & a : lista) {
-      for (auto & b : listb) {
+    for (auto& a : lista)
+    {
+      for (auto& b : listb)
+      {
         tmp.push_back(a + b);
       }
     }
@@ -271,43 +289,58 @@ void append_all(List & lista, const List & listb)
 }
 
 template <typename String, typename List, typename Tokenizer>
-List expand(Tokenizer & token)
+List expand(Tokenizer& token)
 {
 
-  std::vector<List> alts{ { String() } };
+  std::vector<List> alts{{String()}};
 
-  while (token.next([](char c) { return c == '{' || c == ',' || c == '}'; })) {
+  while (token.next([](char c) { return c == '{' || c == ',' || c == '}'; }))
+  {
 
-    if (token == '{') {
+    if (token == '{')
+    {
       append_all(alts.back(), expand<String, List>(token));
-    } else if (token == ',') {
-      alts.push_back({ String() });
-    } else if (token == '}') {
-      if (alts.size() == 1) {
-        for (auto & a : alts.back()) {
+    }
+    else if (token == ',')
+    {
+      alts.push_back({String()});
+    }
+    else if (token == '}')
+    {
+      if (alts.size() == 1)
+      {
+        for (auto& a : alts.back())
+        {
           a = '{' + a + '}';
         }
         return alts.back();
-      } else {
-        for (std::size_t i = 1; i < alts.size(); i++) {
-          alts.front().insert(alts.front().end(),
-                              std::make_move_iterator(std::begin(alts[i])),
-                              std::make_move_iterator(std::end(alts[i])));
+      }
+      else
+      {
+        for (std::size_t i = 1; i < alts.size(); i++)
+        {
+          alts.front().insert(
+              alts.front().end(), std::make_move_iterator(std::begin(alts[i])),
+              std::make_move_iterator(std::end(alts[i])));
         }
         return std::move(alts.front());
       }
-    } else {
-      for (auto & a : alts.back()) {
+    }
+    else
+    {
+      for (auto& a : alts.back())
+      {
         a.append(token.begin(), token.end());
       }
     }
-
   }
 
-  List result{ String{ '{' } };
+  List result{String{'{'}};
   append_all(result, alts.front());
-  for (std::size_t i = 1; i < alts.size(); i++) {
-    for (auto & a : result) {
+  for (std::size_t i = 1; i < alts.size(); i++)
+  {
+    for (auto& a : result)
+    {
       a += ',';
     }
     append_all(result, alts[i]);
@@ -320,19 +353,22 @@ List expand(Tokenizer & token)
 template <
     typename ForwardIterator,
     typename String = std::basic_string<
-      typename std::iterator_traits<ForwardIterator>::value_type
-      >,
-    typename List = std::vector<String>
-    >
+        typename std::iterator_traits<ForwardIterator>::value_type>,
+    typename List = std::vector<String>>
 List expand(ForwardIterator begin, ForwardIterator end)
 {
   detail::tokenizer<ForwardIterator> token(begin, end);
-  List list{ String() };
-  while (token.next([](char c) { return c == '{'; })) {
-    if (token == '{') {
+  List list{String()};
+  while (token.next([](char c) { return c == '{'; }))
+  {
+    if (token == '{')
+    {
       detail::append_all(list, detail::expand<String, List>(token));
-    } else {
-      for (auto & a : list) {
+    }
+    else
+    {
+      for (auto& a : list)
+      {
         a.append(token.begin(), token.end());
       }
     }
@@ -343,19 +379,18 @@ List expand(ForwardIterator begin, ForwardIterator end)
 template <
     typename Range,
     typename String = std::basic_string<typename Range::value_type>,
-    typename List = std::vector<String>
-    >
-List expand(const Range & range)
+    typename List = std::vector<String>>
+List expand(const Range& range)
 {
   using Iterator = typename Range::const_iterator;
   return expand<Iterator, String, List>(std::begin(range), std::end(range));
 }
 
-
 void expand_ranges(std::string& str)
 {
   {
-    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
+    static const std::regex reg{
+        R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
 
     struct rx_triple
     {
@@ -364,46 +399,45 @@ void expand_ranges(std::string& str)
     };
     ossia::small_vector<rx_triple, 4> positions;
 
-    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
+    std::regex_iterator<std::string::iterator> rit(
+        str.begin(), str.end(), reg);
     std::regex_iterator<std::string::iterator> rend;
 
-    for(auto it = rit; it != rend; ++it)
+    for (auto it = rit; it != rend; ++it)
     {
       int fst = std::stoi(it->str(1));
       int lst = std::stoi(it->str(2));
       int inc = std::stoi(it->str(3));
-      if(inc != 0)
+      if (inc != 0)
       {
-        positions.push_back(rx_triple{
-                              (std::size_t)it->position(),
-                              (std::size_t)it->length(),
-                              std::min(fst,lst),
-                              std::max(fst,lst),
-                              inc
-                            });
+        positions.push_back(
+            rx_triple{(std::size_t)it->position(), (std::size_t)it->length(),
+                      std::min(fst, lst), std::max(fst, lst), inc});
       }
     }
 
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    for (auto it = positions.rbegin(); it != positions.rend(); ++it)
     {
       std::string rep{"{"};
       rep.reserve(3 * std::abs((it->last - it->first) / it->increment));
-      if(it->increment > 0)
+      if (it->increment > 0)
       {
-        for(int64_t v = it->first; v <= it->last; v += it->increment) {
+        for (int64_t v = it->first; v <= it->last; v += it->increment)
+        {
           rep += std::to_string(v);
           rep += ',';
         }
       }
       else
       {
-        for(int64_t v = it->last; v <= it->first; v += it->increment) {
+        for (int64_t v = it->last; v <= it->first; v += it->increment)
+        {
           rep += std::to_string(v);
           rep += ',';
         }
       }
 
-      if(rep.back() == ',')
+      if (rep.back() == ',')
       {
         rep.back() = '}';
         str.replace(it->start, it->length, rep);
@@ -421,31 +455,30 @@ void expand_ranges(std::string& str)
     };
     ossia::small_vector<rx_double, 4> positions;
 
-    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), reg);
+    std::regex_iterator<std::string::iterator> rit(
+        str.begin(), str.end(), reg);
     std::regex_iterator<std::string::iterator> rend;
 
-    for(auto it = rit; it != rend; ++it)
+    for (auto it = rit; it != rend; ++it)
     {
       int fst = std::stoi(it->str(1));
       int lst = std::stoi(it->str(2));
-      positions.push_back(rx_double{
-                            (std::size_t)it->position(),
-                            (std::size_t)it->length(),
-                            std::min(fst,lst),
-                            std::max(fst,lst)
-                          });
+      positions.push_back(rx_double{(std::size_t)it->position(),
+                                    (std::size_t)it->length(),
+                                    std::min(fst, lst), std::max(fst, lst)});
     }
 
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    for (auto it = positions.rbegin(); it != positions.rend(); ++it)
     {
       std::string rep{"{"};
       rep.reserve(3 * std::abs((it->last - it->first)));
-      for(int64_t v = it->first; v <= it->last; v ++) {
+      for (int64_t v = it->first; v <= it->last; v++)
+      {
         rep += std::to_string(v);
         rep += ',';
       }
 
-      if(rep.back() == ',')
+      if (rep.back() == ',')
       {
         rep.back() = '}';
         str.replace(it->start, it->length, rep);
@@ -468,53 +501,55 @@ std::string canonicalize_str(std::string str)
     };
     ossia::small_vector<rx_pos, 4> positions;
 
-    std::regex_iterator<std::string::iterator> rit ( str.begin(), str.end(), rx_class);
+    std::regex_iterator<std::string::iterator> rit(
+        str.begin(), str.end(), rx_class);
     std::regex_iterator<std::string::iterator> rend;
 
-    for(auto it = rit; it != rend; ++it)
+    for (auto it = rit; it != rend; ++it)
     {
       auto str = it->str();
       str = str.substr(1, str.size() - 2);
       std::bitset<128> bits;
 
-      for(int i = 0, N = str.size(); i < N; )
+      for (int i = 0, N = str.size(); i < N;)
       {
-        if((N - i) > 2)
+        if ((N - i) > 2)
         {
-          if(str[i+1] == '-' && (int) str[i+2] > (int) str[i])
+          if (str[i + 1] == '-' && (int)str[i + 2] > (int)str[i])
           {
-            for(int ch = (int) str[i]; ch <= (int) str[i+2]; ++ch)
+            for (int ch = (int)str[i]; ch <= (int)str[i + 2]; ++ch)
               bits[ch] = true;
             i += 2;
           }
           else
           {
-            bits[(int) str[i]] = true;
+            bits[(int)str[i]] = true;
             i++;
           }
         }
         else
         {
-          bits[(int) str[i]] = true;
+          bits[(int)str[i]] = true;
           i++;
         }
       }
-      positions.push_back(rx_pos{(std::size_t)it->position(), (std::size_t)it->length(), bits});
+      positions.push_back(rx_pos{(std::size_t)it->position(),
+                                 (std::size_t)it->length(), bits});
     }
 
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+    for (auto it = positions.rbegin(); it != positions.rend(); ++it)
     {
       std::string rep{"{"};
-      for(std::size_t i = 0; i < it->chars.size(); ++i)
+      for (std::size_t i = 0; i < it->chars.size(); ++i)
       {
-        if(it->chars[i])
+        if (it->chars[i])
         {
-          rep += (char) i;
+          rep += (char)i;
           rep += ',';
         }
       }
 
-      if(rep.back() == ',')
+      if (rep.back() == ',')
       {
         rep.back() = '}';
         str.replace(it->start, it->length, rep);
@@ -530,7 +565,7 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
 {
   std::vector<node_base*> v;
 
-  if(is_brace_expansion(pattern))
+  if (is_brace_expansion(pattern))
   {
     // 1. Replace all [ ] with { } form
     auto str = canonicalize_str(std::string(pattern));
@@ -540,7 +575,7 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
 
     // 3. Create nodes
     v.reserve(expanded.size());
-    for(const auto& addr : expanded)
+    for (const auto& addr : expanded)
     {
       v.push_back(&ossia::net::create_node(dev, addr));
     }
@@ -567,7 +602,8 @@ ossia::net::address_scope get_address_scope(ossia::string_view addr)
   else
   {
     auto first_slash = addr.find("/");
-    if (first_slash != std::string::npos && first_slash > 1 && addr[first_slash - 1] == ':')
+    if (first_slash != std::string::npos && first_slash > 1
+        && addr[first_slash - 1] == ':')
       type = address_scope::global;
   }
   return type;
@@ -575,25 +611,24 @@ ossia::net::address_scope get_address_scope(ossia::string_view addr)
 
 std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
 {
-  std::vector<ossia::net::node_base*> children
-      = node->children_copy();
+  std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
 
-  ossia::sort(children, [](auto n1, auto n2)
-    {
-      std::string s1 = n1->get_name();
-      std::string s2 = n2->get_name();
+  ossia::sort(children, [](auto n1, auto n2) {
+    std::string s1 = n1->get_name();
+    std::string s2 = n2->get_name();
 
-      boost::algorithm::to_lower(s1);
-      boost::algorithm::to_lower(s2);
+    boost::algorithm::to_lower(s1);
+    boost::algorithm::to_lower(s2);
 
-      return s1 < s2;
-    });
+    return s1 < s2;
+  });
 
-  ossia::sort(children, [](auto n1, auto n2)
-    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+  ossia::sort(children, [](auto n1, auto n2) {
+    return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
+  });
 
-  for (auto it = children.begin(); it != children.end(); it++ )
+  for (auto it = children.begin(); it != children.end(); it++)
   {
     list.push_back(*it);
     auto nested_list = list_all_child(*it);
@@ -603,11 +638,8 @@ std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
   return list;
 }
 
-
-std::vector<parameter_base*>
-find_or_create_parameter(node_base& node,
-                         const std::string& address,
-                         const std::string& type)
+std::vector<parameter_base*> find_or_create_parameter(
+    node_base& node, const std::string& address, const std::string& type)
 {
   // search for child that matches name but without parameter
   // and create parameter on that node if it exists
@@ -615,7 +647,7 @@ find_or_create_parameter(node_base& node,
 
   std::vector<std::string> names;
 
-  if(is_brace_expansion(address))
+  if (is_brace_expansion(address))
   {
     // 1. Replace all [ ] with { } form
     auto str = canonicalize_str(address);
@@ -628,7 +660,6 @@ find_or_create_parameter(node_base& node,
     names.push_back(address);
   }
 
-
   std::vector<node_base*> nodes{};
   nodes.reserve(names.size());
 
@@ -636,17 +667,16 @@ find_or_create_parameter(node_base& node,
   for (auto n : found_nodes)
   {
     if (n->get_parameter())
-      // this will create a new node with the name incremented by one (e.g. foo.1)
+      // this will create a new node with the name incremented by one (e.g.
+      // foo.1)
       nodes.push_back(&ossia::net::create_node(*n, n->get_name()));
     else
       nodes.push_back(n);
 
-    ossia::remove_one_if(names, [&] (auto& s) {
-      return s == n->get_name();
-    });
+    ossia::remove_one_if(names, [&](auto& s) { return s == n->get_name(); });
   }
 
-  for(auto s : names)
+  for (auto s : names)
     nodes.push_back(&ossia::net::create_node(node, s));
 
   std::vector<parameter_base*> parameters{};
@@ -654,7 +684,7 @@ find_or_create_parameter(node_base& node,
 
   for (auto n : nodes)
   {
-    if(auto param = ossia::try_setup_parameter(type, *n))
+    if (auto param = ossia::try_setup_parameter(type, *n))
       parameters.push_back(param);
   }
 

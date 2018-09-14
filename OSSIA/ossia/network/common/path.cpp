@@ -1,16 +1,19 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/node.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/network/base/address_scope.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/path.hpp>
+
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <ossia/network/base/address_scope.hpp>
-#include <regex>
+
 #include <hopscotch_set.h>
+
+#include <regex>
 
 namespace ossia
 {
@@ -109,15 +112,12 @@ struct regex_cache
   std::mutex mutex;
 };
 
-void add_device_part(
-    std::string part, path& p)
+void add_device_part(std::string part, path& p)
 {
-  p.child_functions.push_back(
-        [=] (std::vector<ossia::net::node_base*>& x)
-  {
-    for(auto it = x.begin(); it != x.end(); )
+  p.child_functions.push_back([=](std::vector<ossia::net::node_base*>& x) {
+    for (auto it = x.begin(); it != x.end();)
     {
-      if((*it)->get_device().get_name() != part)
+      if ((*it)->get_device().get_name() != part)
         it = x.erase(it);
       else
         ++it;
@@ -125,8 +125,7 @@ void add_device_part(
   });
 }
 
-void add_relative_path(
-    std::string& part, path& p)
+void add_relative_path(std::string& part, path& p)
 {
   if (part != "..")
   {
@@ -135,9 +134,10 @@ void add_relative_path(
       std::lock_guard<std::mutex> _(map.mutex);
 
       auto it = map.map.find(part);
-      if(it != map.map.end())
+      if (it != map.map.end())
       {
-        p.child_functions.push_back([r=it->second](auto& v) { match_with_regex(v, r); });
+        p.child_functions.push_back(
+            [r = it->second](auto& v) { match_with_regex(v, r); });
       }
       else
       {
@@ -149,19 +149,30 @@ void add_relative_path(
         std::string res = "^";
         res.reserve(part.size() + 16);
 
-        static const auto qmark = "[" + std::string(ossia::net::name_characters()) + "]?";
-        static const auto smark = "[" + std::string(ossia::net::name_characters()) + "]*";
-        for(std::size_t i = 0, N = part.size(); i < N; i++)
+        static const auto qmark
+            = "[" + std::string(ossia::net::name_characters()) + "]?";
+        static const auto smark
+            = "[" + std::string(ossia::net::name_characters()) + "]*";
+        for (std::size_t i = 0, N = part.size(); i < N; i++)
         {
-          if(part[i] == '(') res.append("\\(");
-          else if(part[i] == ')') res.append("\\)");
-          else if(part[i] == '{') res.append("(");
-          else if(part[i] == '}') res.append(")");
-          else if(part[i] == ',') res.append("|");
-          else if(part[i] == '?') res.append(qmark);
-          else if(part[i] == '*') res.append(smark);
-          else if(part[i] == '!') res.append(regex_path::any_instance::instance_regex());
-          else res += part[i];
+          if (part[i] == '(')
+            res.append("\\(");
+          else if (part[i] == ')')
+            res.append("\\)");
+          else if (part[i] == '{')
+            res.append("(");
+          else if (part[i] == '}')
+            res.append(")");
+          else if (part[i] == ',')
+            res.append("|");
+          else if (part[i] == '?')
+            res.append(qmark);
+          else if (part[i] == '*')
+            res.append(smark);
+          else if (part[i] == '!')
+            res.append(regex_path::any_instance::instance_regex());
+          else
+            res += part[i];
         }
         res += "$";
 
@@ -173,18 +184,18 @@ void add_relative_path(
   }
   else
   {
-    p.child_functions.push_back([] (auto& x) { return get_parent(x); });
+    p.child_functions.push_back([](auto& x) { return get_parent(x); });
   }
 }
 
 bool is_pattern(ossia::string_view address)
 {
-  if(boost::starts_with(address, "//"))
+  if (boost::starts_with(address, "//"))
     return true;
   static const auto pred = boost::is_any_of("?*[]{}!");
-  for(char c : address)
+  for (char c : address)
   {
-    if(pred(c))
+    if (pred(c))
       return true;
   }
 
@@ -196,26 +207,26 @@ ossia::optional<path> make_path(std::string_view address) try
   const auto scope = ossia::net::get_address_scope(address);
   path p{std::string(address), scope, {}};
 
-  if(address.empty())
+  if (address.empty())
   {
     return p;
   }
 
-  auto add_simple_address = [&] (std::string_view address) {
+  auto add_simple_address = [&](std::string_view address) {
     // Split on "/"
     // TODO is this copy really necessary ?
     for (auto part : ossia::net::address_parts(address))
       add_relative_path(part, p);
   };
 
-  auto add_address = [&] (std::string_view address) {
-    if(boost::starts_with(address, "//"))
+  auto add_address = [&](std::string_view address) {
+    if (boost::starts_with(address, "//"))
     {
       // Means that we can start at any point, of any node.
       //* means all the nodes.
       // We have to pass an array with all the devices ?
       // We can't just make a big regex because of '..'
-      p.child_functions.push_back([] (auto& x) { return get_all_children(x); });
+      p.child_functions.push_back([](auto& x) { return get_all_children(x); });
 
       add_simple_address(address.substr(2));
     }
@@ -225,7 +236,7 @@ ossia::optional<path> make_path(std::string_view address) try
     }
   };
 
-  switch(scope)
+  switch (scope)
   {
     case ossia::net::address_scope::relative:
     case ossia::net::address_scope::absolute:
@@ -237,7 +248,7 @@ ossia::optional<path> make_path(std::string_view address) try
     case ossia::net::address_scope::global:
     {
       // First add a match on the device
-      auto start = address.find_first_of('/') ;
+      auto start = address.find_first_of('/');
 
       add_device_part(std::string(address.data(), start - 1), p);
       add_address({address.data() + start, address.size() - start});
@@ -256,12 +267,13 @@ bool match(const path& p, const ossia::net::node_base& node)
   return match(p, node, node.get_device().get_root_node());
 }
 
-bool match(const path& p, const ossia::net::node_base& node, ossia::net::node_base& root)
+bool match(
+    const path& p, const ossia::net::node_base& node,
+    ossia::net::node_base& root)
 {
   std::vector<ossia::net::node_base*> vec{&root};
   apply(p, vec);
   return ossia::find(vec, &node) != std::end(vec);
 }
-
 }
 }

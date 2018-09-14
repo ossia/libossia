@@ -1,6 +1,7 @@
 #pragma once
-#include <memory>
 #include <ossia_export.h>
+
+#include <memory>
 #include <utility>
 /**
  * \file curve_abstract.hpp

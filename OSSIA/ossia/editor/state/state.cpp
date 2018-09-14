@@ -1,12 +1,12 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/editor/state/state_element.hpp>
-
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
-#include <ossia/network/base/parameter.hpp>
+#include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
+
 #include <iostream>
 
 namespace ossia
@@ -47,9 +47,15 @@ void state::remove(const state_element& e)
       std::remove(m_children.begin(), m_children.end(), e), m_children.end());
 }
 
-void state::remove(std::vector<state_element>::iterator e) { m_children.erase(e); }
+void state::remove(std::vector<state_element>::iterator e)
+{
+  m_children.erase(e);
+}
 
-void state::remove(std::vector<state_element>::const_iterator e) { m_children.erase(e); }
+void state::remove(std::vector<state_element>::const_iterator e)
+{
+  m_children.erase(e);
+}
 
 void state::reserve(std::size_t s)
 {
@@ -78,16 +84,19 @@ void flatten_and_filter(ossia::state& state, const state_element& element)
 
 void flatten_and_filter(ossia::state& state, state_element&& element)
 {
-  ossia::apply(state_flatten_visitor<ossia::state, false>{state}, std::move(element));
+  ossia::apply(
+      state_flatten_visitor<ossia::state, false>{state}, std::move(element));
 }
 
-void merge_flatten_and_filter(ossia::state& state, const state_element& element)
+void merge_flatten_and_filter(
+    ossia::state& state, const state_element& element)
 {
   ossia::apply(state_flatten_visitor<ossia::state, true>{state}, element);
 }
 
 void merge_flatten_and_filter(ossia::state& state, state_element&& element)
 {
-  ossia::apply(state_flatten_visitor<ossia::state, true>{state}, std::move(element));
+  ossia::apply(
+      state_flatten_visitor<ossia::state, true>{state}, std::move(element));
 }
 }

@@ -1,17 +1,17 @@
 #pragma once
-#include <ossia/network/base/name_validation.hpp>
-#include <ossia/network/common/parameter_properties.hpp>
-
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/locked_container.hpp>
+#include <ossia/detail/mutex.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/network/base/name_validation.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 
-#include <ossia/detail/mutex.hpp>
+#include <nano_signal_slot.hpp>
+
 #include <functional>
 #include <memory>
-#include <nano_signal_slot.hpp>
 #include <string>
 #if defined(OSSIA_QT)
 class QString;
@@ -113,7 +113,6 @@ public:
 
   void set(ossia::string_view str, bool value);
 
-
   template <typename Attribute, typename T>
   void set(Attribute a, const T& value);
   template <typename Attribute, typename T>
@@ -194,7 +193,10 @@ public:
   //! If childrens are /foo, /bar, bar.1, returns true only for bar.
   bool is_root_instance(const ossia::net::node_base& child) const;
 
-  const std::string& osc_address() const { return m_oscAddressCache; }
+  const std::string& osc_address() const
+  {
+    return m_oscAddressCache;
+  }
   virtual void on_address_change();
 
   //! The node subclasses must call this in their destructor.
@@ -212,8 +214,6 @@ protected:
   mutable shared_mutex_t m_mutex;
   extended_attributes m_extended{0};
   std::string m_oscAddressCache;
-
 };
-
 }
 }

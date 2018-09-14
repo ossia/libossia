@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/math.hpp>
+
 #include <cmath>
 #include <ossia_export.h>
 
@@ -102,8 +103,7 @@ struct cubicInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < T(0.5)) ? 4. * ipow(t, 3)
-                        : 0.5 * ipow((2. * t) - 2, 3) + 1.;
+    return (t < T(0.5)) ? 4. * ipow(t, 3) : 0.5 * ipow((2. * t) - 2, 3) + 1.;
   }
 };
 
@@ -157,8 +157,7 @@ struct quinticInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < 0.5) ? 16. * ipow(t, 5)
-                     : 0.5 * ipow((2. * t) - 2., 5) + 1.;
+    return (t < 0.5) ? 16. * ipow(t, 5) : 0.5 * ipow((2. * t) - 2., 5) + 1.;
   }
 };
 
@@ -271,12 +270,12 @@ struct elasticInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < 0.5)
-               ? 0.5 * std::sin(13. * half_pi * (2. * t))
-                     * ossia::exp2(10. * ((2. * t) - 1.))
-               : 0.5 * (std::sin(-13. * half_pi * ((2. * t - 1) + 1))
-                            * ossia::exp2(-10. * (2. * t - 1.))
-                        + 2.);
+    return (t < 0.5) ? 0.5 * std::sin(13. * half_pi * (2. * t))
+                           * ossia::exp2(10. * ((2. * t) - 1.))
+                     : 0.5
+                           * (std::sin(-13. * half_pi * ((2. * t - 1) + 1))
+                                  * ossia::exp2(-10. * (2. * t - 1.))
+                              + 2.);
   }
 };
 
@@ -304,11 +303,12 @@ struct backInOut
   constexpr T operator()(T t) const
   {
     return (t < 0.5)
-               ? 0.5 * (ipow(2. * t, 3)
-                        - (2. * t) * std::sin((2. * t) * pi))
-               : 0.5 * (1. - (ipow(1. - (2. * t - 1.), 3)
-                              - (1. - (2. * t - 1.))
-                                    * std::sin((1. - (2. * t - 1.)) * pi)))
+               ? 0.5 * (ipow(2. * t, 3) - (2. * t) * std::sin((2. * t) * pi))
+               : 0.5
+                         * (1.
+                            - (ipow(1. - (2. * t - 1.), 3)
+                               - (1. - (2. * t - 1.))
+                                     * std::sin((1. - (2. * t - 1.)) * pi)))
                      + 0.5;
   }
 };

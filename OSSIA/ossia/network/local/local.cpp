@@ -1,7 +1,7 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/generic/generic_parameter.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/local/local.hpp>
 
 namespace ossia
@@ -56,7 +56,7 @@ bool multiplex_protocol::update(ossia::net::node_base& node)
 
 void multiplex_protocol::stop()
 {
-  for(auto& proto : m_protocols)
+  for (auto& proto : m_protocols)
     proto->stop();
 }
 
@@ -98,13 +98,12 @@ void multiplex_protocol::stop_expose_to(const protocol_base& p)
   m_protocols.erase(
       ossia::remove_if(
           m_protocols, [&](const auto& ptr) { return ptr.get() == &p; }),
-              m_protocols.end());
+      m_protocols.end());
 }
 
 void ossia::net::multiplex_protocol::clear()
 {
   m_protocols.clear();
 }
-
 }
 }

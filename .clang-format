@@ -69,10 +69,20 @@ TabWidth: 2
 UseTab: Never
 
 SortIncludes: true
+IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^"'
     Priority:        1
-  - Regex:           '^<ossia/'
+  - Regex:           '^<ossia/detail/config'
     Priority:        2
-  - Regex:           '.\*'
+  - Regex:           '^<ossia/'
     Priority:        3
+  - Regex:           '^<boost'
+    Priority:        4
+  - Regex:           '^<Q'
+    Priority:        5
+  - Regex:           '<([[:alnum:]_]+\/?)+.(h|hpp)>'
+    Priority:        7
+  - Regex:           '<[[:alnum:]]+>'
+    Priority:        800
+

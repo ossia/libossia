@@ -2,34 +2,36 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/dataspace/dataspace_fwd.hpp>
-#include <ossia/network/value/destination.hpp>
 #include <ossia/network/base/value_callback.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/dataspace/dataspace_fwd.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
-#include <functional>
-#include <memory>
+#include <ossia/network/value/destination.hpp>
+
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
-#include <vector>
+
 #include <ciso646>
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace std
 {
 #if defined(__EMSCRIPTEN__)
 inline namespace __2
 {
-template<typename T>
+template <typename T>
 class future;
 }
 #elif defined(_LIBCPP_VERSION)
 inline namespace __1
 {
-template<typename T>
+template <typename T>
 class future;
 }
 #else
-template<typename T>
+template <typename T>
 class future;
 #endif
 }
@@ -57,7 +59,9 @@ struct full_parameter_data;
 class OSSIA_EXPORT parameter_base : public callback_container<value_callback>
 {
 public:
-  parameter_base(ossia::net::node_base& n): m_node{n} { }
+  parameter_base(ossia::net::node_base& n) : m_node{n}
+  {
+  }
   parameter_base(const parameter_base&) = delete;
   parameter_base(parameter_base&&) = delete;
   parameter_base& operator=(const parameter_base&) = delete;
@@ -66,7 +70,10 @@ public:
   using callback_index = callback_container<value_callback>::iterator;
   virtual ~parameter_base();
 
-  ossia::net::node_base& get_node() const { return m_node; }
+  ossia::net::node_base& get_node() const
+  {
+    return m_node;
+  }
 
   /// Value getters ///
   /**
@@ -160,7 +167,10 @@ public:
     return m_disabled || m_muted;
   } //! by default there is no filter
 
-  const ossia::unit_t& get_unit() const { return m_unit; }
+  const ossia::unit_t& get_unit() const
+  {
+    return m_unit;
+  }
   virtual parameter_base& set_unit(const ossia::unit_t& v);
 
   // Shared across the network
@@ -191,6 +201,5 @@ inline bool operator!=(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs != &rhs;
 }
-
 }
 }

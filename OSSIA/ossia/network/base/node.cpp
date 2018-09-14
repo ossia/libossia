@@ -1,19 +1,22 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/node_functions.hpp>
-#include <ossia/network/domain/domain.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/path.hpp>
-#include <ossia/detail/logger.hpp>
-#include <iostream>
-#include <spdlog/spdlog.h>
+#include <ossia/network/domain/domain.hpp>
+
 #include <boost/algorithm/string/predicate.hpp>
+
+#include <spdlog/spdlog.h>
+
+#include <iostream>
 #if defined(OSSIA_QT)
 #include <ossia-qt/name_utils.hpp>
 #endif
@@ -51,7 +54,7 @@ void node_base::set(string_view str, bool value)
   auto opt = ossia::has_attribute(*this, str);
   if (opt != value)
   {
-    if(value)
+    if (value)
       ossia::set_attribute((extended_attributes&)*this, str);
     else
       ossia::unset_attribute((extended_attributes&)*this, str);
@@ -128,7 +131,7 @@ bool node_base::is_root_instance(const node_base& child) const
 
 void node_base::on_address_change()
 {
-  for(auto& cld : m_children)
+  for (auto& cld : m_children)
   {
     cld->on_address_change();
   }
@@ -221,8 +224,8 @@ bool node_base::remove_child(const std::string& name)
   std::unique_ptr<ossia::net::node_base> cld;
   {
     write_lock_t lock{m_mutex};
-    auto it
-        = find_if(m_children, [&](const auto& c) { return c->get_name() == n; });
+    auto it = find_if(
+        m_children, [&](const auto& c) { return c->get_name() == n; });
 
     if (it != m_children.end())
     {
@@ -254,7 +257,8 @@ bool node_base::remove_child(const node_base& n)
   std::unique_ptr<ossia::net::node_base> cld;
   {
     write_lock_t lock{m_mutex};
-    auto it = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
+    auto it
+        = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
 
     if (it != m_children.end())
     {
@@ -314,6 +318,5 @@ std::vector<node_base*> node_base::children_copy() const
   SPDLOG_TRACE((&ossia::logger()), "unlocking(children_copy)");
   return copy;
 }
-
 }
 }

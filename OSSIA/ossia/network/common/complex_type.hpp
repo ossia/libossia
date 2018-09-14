@@ -1,7 +1,8 @@
 #pragma once
-#include <ossia/network/common/parameter_properties.hpp>
-#include <eggs/variant.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
+
+#include <eggs/variant.hpp>
 namespace ossia
 {
 struct unit_t;
@@ -42,8 +43,8 @@ ossia::net::parameter_base*
 try_setup_parameter(std::string t, ossia::net::node_base& node);
 
 OSSIA_EXPORT
-ossia::net::parameter_base*
-create_parameter(ossia::net::node_base& parent, std::string name, std::string type);
+ossia::net::parameter_base* create_parameter(
+    ossia::net::node_base& parent, std::string name, std::string type);
 
 //! Change the type of a parameter according to a complex type.
 OSSIA_EXPORT
@@ -51,11 +52,11 @@ void update_parameter_type(
     const complex_type& t, ossia::net::parameter_base& node);
 
 OSSIA_EXPORT
-const ossia::net::parameter_data* default_parameter_for_type(std::string_view type);
+const ossia::net::parameter_data*
+default_parameter_for_type(std::string_view type);
 
 OSSIA_EXPORT
 ossia::value convert(
-    const ossia::value& v
-    , const ossia::complex_type& source_t
-    , const ossia::complex_type& dest_t);
+    const ossia::value& v, const ossia::complex_type& source_t,
+    const ossia::complex_type& dest_t);
 }

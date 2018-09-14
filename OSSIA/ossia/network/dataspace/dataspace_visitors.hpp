@@ -1,9 +1,11 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/network/value/vec.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/value/vec.hpp>
+
 #include <bitset>
+
 #include <type_traits>
 
 /**
@@ -45,7 +47,6 @@ ossia::string_view get_unit_text(const ossia::unit_t&);
  */
 OSSIA_EXPORT
 ossia::string_view get_unit_accessors(const ossia::unit_t&);
-
 
 OSSIA_EXPORT
 ossia::domain get_unit_default_domain(const ossia::unit_t&);

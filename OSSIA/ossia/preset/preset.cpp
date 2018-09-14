@@ -1,12 +1,19 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <ossia/detail/json.hpp>
+#include <ossia/detail/logger.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/oscquery/detail/value_to_json.hpp>
+#include <ossia/network/value/detail/value_parse_impl.hpp>
+#include <ossia/preset/exception.hpp>
+#include <ossia/preset/preset.hpp>
 
 #include <boost/algorithm/string.hpp>
-#include <cstdio>
-#include <iostream>
-#include <memory>
+
 #include <rapidjson/allocators.h>
 #include <rapidjson/document.h>
 #include <rapidjson/filewritestream.h>
@@ -14,25 +21,19 @@
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
+
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <regex>
 
-#include <ossia/detail/logger.hpp>
 #include <ossia-c/log/ossia_log.h>
-#include <ossia/preset/exception.hpp>
-#include <ossia-c/preset/preset.h>
-#include <ossia/preset/preset.hpp>
-#include <ossia-c/preset/result.h>
-
-#include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia-c/ossia/ossia_utils.hpp>
-#include <ossia/network/value/detail/value_parse_impl.hpp>
-#include <ossia/network/base/node_functions.hpp>
-#include <ossia/network/base/device.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/node.hpp>
+#include <ossia-c/preset/preset.h>
+#include <ossia-c/preset/result.h>
 
 #if defined(GetObject)
 #undef GetObject
@@ -61,338 +62,342 @@ struct ossia_preset
 
 /// C functions ///
 
-extern "C" {
-static ossia_preset_result lippincott();
-
-ossia_preset_result
-ossia_presets_read_json(const char* str, ossia_preset_t* presetptr)
+extern "C"
 {
-  if (presetptr == nullptr)
+  static ossia_preset_result lippincott();
+
+  ossia_preset_result
+  ossia_presets_read_json(const char* str, ossia_preset_t* presetptr)
   {
-    return OSSIA_PRESETS_INVALID_PTR;
+    if (presetptr == nullptr)
+    {
+      return OSSIA_PRESETS_INVALID_PTR;
+    }
+
+    *presetptr = nullptr;
+    if (str != nullptr)
+    {
+      try
+      {
+        *presetptr = new ossia_preset(
+            ossia::presets::read_json(std::string(str), false));
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_EMPTY_JSON;
   }
 
-  *presetptr = nullptr;
-  if (str != nullptr)
+  ossia_preset_result ossia_presets_free(ossia_preset_t preset)
   {
-    try
+    if (preset != nullptr)
     {
-      *presetptr
-          = new ossia_preset(ossia::presets::read_json(std::string(str), false));
-      return OSSIA_PRESETS_OK;
+      try
+      {
+        delete preset;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
     }
-    catch (...)
-    {
-      return lippincott();
-    }
+    return OSSIA_PRESETS_OK;
   }
-  return OSSIA_PRESETS_EMPTY_JSON;
-}
 
-ossia_preset_result ossia_presets_free(ossia_preset_t preset)
-{
-  if (preset != nullptr)
+  ossia_preset_result ossia_presets_write_json(
+      const ossia_preset_t preset, const char* device, const char** buffer)
   {
-    try
+    if (preset)
     {
-      delete preset;
+      try
+      {
+        *buffer
+            = copy_string(ossia::presets::write_json(device, preset->impl));
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
     }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return OSSIA_PRESETS_OK;
-}
-
-ossia_preset_result ossia_presets_write_json(
-    const ossia_preset_t preset, const char* device, const char** buffer)
-{
-  if (preset)
-  {
-    try
-    {
-      *buffer = copy_string(ossia::presets::write_json(device, preset->impl));
-      return OSSIA_PRESETS_OK;
-    }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return OSSIA_PRESETS_NULL_PRESET;
-}
-
-ossia_preset_result ossia_presets_size(const ossia_preset_t preset, int* size)
-{
-  if (preset)
-  {
-    try
-    {
-      *size = preset->impl.size();
-      return OSSIA_PRESETS_OK;
-    }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return OSSIA_PRESETS_NULL_PRESET;
-}
-
-ossia_preset_result
-ossia_presets_to_string(const ossia_preset_t preset, const char** buffer)
-{
-  if (preset)
-  {
-    try
-    {
-      *buffer = copy_string(ossia::presets::to_string(preset->impl));
-      return OSSIA_PRESETS_OK;
-    }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return OSSIA_PRESETS_NULL_PRESET;
-}
-
-ossia_preset_result
-ossia_devices_write_json(const ossia_device_t odev, const char** buffer)
-{
-  if (odev != nullptr)
-  {
-    try
-    {
-      assert(odev->device);
-      *buffer = copy_string(ossia::presets::write_json(*(odev->device)));
-      return OSSIA_PRESETS_OK;
-    }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return OSSIA_PRESETS_NULL_DEVICE;
-}
-
-ossia_preset_result ossia_devices_apply_preset(
-    ossia_device_t odevptr, ossia_preset_t preset, bool keep_arch)
-{
-  if (!odevptr)
-  {
-    return OSSIA_PRESETS_INVALID_PTR;
-  }
-  if (!preset)
-  {
     return OSSIA_PRESETS_NULL_PRESET;
   }
-  try
-  {
-    ossia::presets::keep_arch_type keep_arch_token;
-    if (keep_arch)
-      keep_arch_token = ossia::presets::keep_arch_on;
-    else
-      keep_arch_token = ossia::presets::keep_arch_off;
 
-    if (!odevptr->device)
+  ossia_preset_result
+  ossia_presets_size(const ossia_preset_t preset, int* size)
+  {
+    if (preset)
     {
-      return OSSIA_PRESETS_NULL_DEVICE;
+      try
+      {
+        *size = preset->impl.size();
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
     }
-
-    ossia::presets::apply_preset(
-          odevptr->device->get_root_node(), preset->impl, keep_arch_token/*, {}, false*/);
-  }
-  catch (...)
-  {
-    return lippincott();
-  }
-  return OSSIA_PRESETS_OK;
-}
-
-ossia_preset_result
-ossia_devices_make_preset(ossia_device_t odev, ossia_preset_t* presetptr)
-{
-  if (presetptr == nullptr)
-  {
-    return OSSIA_PRESETS_INVALID_PTR;
+    return OSSIA_PRESETS_NULL_PRESET;
   }
 
-  *presetptr = nullptr;
-  if (odev != nullptr)
+  ossia_preset_result
+  ossia_presets_to_string(const ossia_preset_t preset, const char** buffer)
   {
+    if (preset)
+    {
+      try
+      {
+        *buffer = copy_string(ossia::presets::to_string(preset->impl));
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_NULL_PRESET;
+  }
+
+  ossia_preset_result
+  ossia_devices_write_json(const ossia_device_t odev, const char** buffer)
+  {
+    if (odev != nullptr)
+    {
+      try
+      {
+        assert(odev->device);
+        *buffer = copy_string(ossia::presets::write_json(*(odev->device)));
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_NULL_DEVICE;
+  }
+
+  ossia_preset_result ossia_devices_apply_preset(
+      ossia_device_t odevptr, ossia_preset_t preset, bool keep_arch)
+  {
+    if (!odevptr)
+    {
+      return OSSIA_PRESETS_INVALID_PTR;
+    }
+    if (!preset)
+    {
+      return OSSIA_PRESETS_NULL_PRESET;
+    }
     try
     {
-      assert(odev->device);
-      *presetptr
-          = new ossia_preset(ossia::presets::make_preset(odev->device->get_root_node()));
-      return OSSIA_PRESETS_OK;
+      ossia::presets::keep_arch_type keep_arch_token;
+      if (keep_arch)
+        keep_arch_token = ossia::presets::keep_arch_on;
+      else
+        keep_arch_token = ossia::presets::keep_arch_off;
+
+      if (!odevptr->device)
+      {
+        return OSSIA_PRESETS_NULL_DEVICE;
+      }
+
+      ossia::presets::apply_preset(
+          odevptr->device->get_root_node(), preset->impl,
+          keep_arch_token /*, {}, false*/);
     }
     catch (...)
     {
       return lippincott();
     }
+    return OSSIA_PRESETS_OK;
   }
-  return OSSIA_PRESETS_NULL_DEVICE;
-}
 
-ossia_preset_result
-ossia_devices_to_string(ossia_device_t odev, const char** buffer)
-{
-  if (odev != nullptr)
+  ossia_preset_result
+  ossia_devices_make_preset(ossia_device_t odev, ossia_preset_t* presetptr)
   {
+    if (presetptr == nullptr)
+    {
+      return OSSIA_PRESETS_INVALID_PTR;
+    }
+
+    *presetptr = nullptr;
+    if (odev != nullptr)
+    {
+      try
+      {
+        assert(odev->device);
+        *presetptr = new ossia_preset(
+            ossia::presets::make_preset(odev->device->get_root_node()));
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_NULL_DEVICE;
+  }
+
+  ossia_preset_result
+  ossia_devices_to_string(ossia_device_t odev, const char** buffer)
+  {
+    if (odev != nullptr)
+    {
+      try
+      {
+        assert(odev->device);
+        *buffer = copy_string(ossia::presets::to_string(*(odev->device)));
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_NULL_DEVICE;
+  }
+
+  ossia_preset_result ossia_devices_get_node(
+      ossia_device_t odev, const char* addr, ossia_node_t* nodeptr)
+  {
+    if (nodeptr == nullptr)
+    {
+      return OSSIA_PRESETS_INVALID_PTR;
+    }
+    if (addr == nullptr)
+    {
+      return OSSIA_PRESETS_INVALID_ADDRESS;
+    }
+    if (odev != nullptr)
+    {
+      try
+      {
+        assert(odev->device);
+        auto gotnode
+            = ossia::presets::get_node(odev->device->get_root_node(), addr);
+        if (gotnode == nullptr)
+        {
+          return OSSIA_PRESETS_INVALID_ADDRESS;
+        }
+        *nodeptr = convert(gotnode);
+        return OSSIA_PRESETS_OK;
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_NULL_DEVICE;
+  }
+
+  ossia_preset_result ossia_devices_get_child(
+      ossia_node_t root, const char* childname, ossia_node_t* nodeptr)
+  {
+    if (nodeptr == nullptr)
+    {
+      return OSSIA_PRESETS_INVALID_PTR;
+    }
+    if (childname == nullptr)
+    {
+      return OSSIA_PRESETS_INVALID_ADDRESS;
+    }
+    if (root == nullptr)
+    {
+      return OSSIA_PRESETS_NULL_NODE;
+    }
     try
     {
-      assert(odev->device);
-      *buffer = copy_string(ossia::presets::to_string(*(odev->device)));
-      return OSSIA_PRESETS_OK;
-    }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return OSSIA_PRESETS_NULL_DEVICE;
-}
-
-ossia_preset_result ossia_devices_get_node(
-    ossia_device_t odev, const char* addr, ossia_node_t* nodeptr)
-{
-  if (nodeptr == nullptr)
-  {
-    return OSSIA_PRESETS_INVALID_PTR;
-  }
-  if (addr == nullptr)
-  {
-    return OSSIA_PRESETS_INVALID_ADDRESS;
-  }
-  if (odev != nullptr)
-  {
-    try
-    {
-      assert(odev->device);
-      auto gotnode
-          = ossia::presets::get_node(odev->device->get_root_node(), addr);
+      auto gotnode = ossia::presets::get_node(*convert_node(root), childname);
       if (gotnode == nullptr)
       {
         return OSSIA_PRESETS_INVALID_ADDRESS;
       }
       *nodeptr = convert(gotnode);
-      return OSSIA_PRESETS_OK;
     }
     catch (...)
     {
       return lippincott();
     }
+    return OSSIA_PRESETS_OK;
   }
-  return OSSIA_PRESETS_NULL_DEVICE;
-}
 
-ossia_preset_result ossia_devices_get_child(
-    ossia_node_t root, const char* childname, ossia_node_t* nodeptr)
-{
-  if (nodeptr == nullptr)
+  bool ossia_presets_has_key(const ossia_preset_t preset, const char* key)
   {
-    return OSSIA_PRESETS_INVALID_PTR;
-  }
-  if (childname == nullptr)
-  {
-    return OSSIA_PRESETS_INVALID_ADDRESS;
-  }
-  if (root == nullptr)
-  {
-    return OSSIA_PRESETS_NULL_NODE;
-  }
-  try
-  {
-    auto gotnode = ossia::presets::get_node(*convert_node(root), childname);
-    if (gotnode == nullptr)
+    if (preset && key)
     {
-      return OSSIA_PRESETS_INVALID_ADDRESS;
-    }
-    *nodeptr = convert(gotnode);
-  }
-  catch (...)
-  {
-    return lippincott();
-  }
-  return OSSIA_PRESETS_OK;
-}
-
-bool ossia_presets_has_key(const ossia_preset_t preset, const char* key)
-{
-  if (preset && key)
-  {
-    try
-    {
-      return preset->find(key) != preset->impl.end();
-    }
-    catch (...)
-    {
-      return lippincott();
-    }
-  }
-  return false;
-}
-
-ossia_preset_result ossia_presets_key_to_string(
-    const ossia_preset_t preset, const char* key, const char** buffer)
-{
-  if (preset && key)
-  {
-    try
-    {
-      auto it = preset->find(key);
-      if (it != preset->impl.end())
+      try
       {
-        *buffer = copy_string(ossia::convert<std::string>(it->second));
-        return OSSIA_PRESETS_OK;
+        return preset->find(key) != preset->impl.end();
       }
-      else
+      catch (...)
       {
-        return OSSIA_PRESETS_KEY_NOT_FOUND;
+        return lippincott();
       }
     }
-    catch (...)
-    {
-      return lippincott();
-    }
+    return false;
   }
-  return OSSIA_PRESETS_NULL_PRESET;
-}
 
-ossia_preset_result ossia_presets_key_to_value(
-    const ossia_preset_t preset, const char* key, ossia_value_t* buffer)
-{
-  if (preset && key)
+  ossia_preset_result ossia_presets_key_to_string(
+      const ossia_preset_t preset, const char* key, const char** buffer)
   {
-    try
+    if (preset && key)
     {
-      auto it = preset->find(key);
-      if (it != preset->impl.end())
+      try
       {
-        *buffer = convert(it->second);
-        return OSSIA_PRESETS_OK;
+        auto it = preset->find(key);
+        if (it != preset->impl.end())
+        {
+          *buffer = copy_string(ossia::convert<std::string>(it->second));
+          return OSSIA_PRESETS_OK;
+        }
+        else
+        {
+          return OSSIA_PRESETS_KEY_NOT_FOUND;
+        }
       }
-      else
+      catch (...)
       {
-        return OSSIA_PRESETS_KEY_NOT_FOUND;
+        return lippincott();
       }
     }
-    catch (...)
-    {
-      return lippincott();
-    }
+    return OSSIA_PRESETS_NULL_PRESET;
   }
-  return OSSIA_PRESETS_NULL_PRESET;
-}
 
-ossia_preset_result ossia_free_string(const char* strptr)
-{
-  delete[] strptr;
-  return OSSIA_PRESETS_OK;
-}
+  ossia_preset_result ossia_presets_key_to_value(
+      const ossia_preset_t preset, const char* key, ossia_value_t* buffer)
+  {
+    if (preset && key)
+    {
+      try
+      {
+        auto it = preset->find(key);
+        if (it != preset->impl.end())
+        {
+          *buffer = convert(it->second);
+          return OSSIA_PRESETS_OK;
+        }
+        else
+        {
+          return OSSIA_PRESETS_KEY_NOT_FOUND;
+        }
+      }
+      catch (...)
+      {
+        return lippincott();
+      }
+    }
+    return OSSIA_PRESETS_NULL_PRESET;
+  }
+
+  ossia_preset_result ossia_free_string(const char* strptr)
+  {
+    delete[] strptr;
+    return OSSIA_PRESETS_OK;
+  }
 
 } // extern "C"
 
@@ -428,30 +433,36 @@ ossia::value json_to_ossia_value(const rapidjson::Value& value)
     case rapidjson::kArrayType:
     {
       const auto N = value.Size();
-      auto handle_vec = [&] (const auto& value) {
+      auto handle_vec = [&](const auto& value) {
         std::vector<ossia::value> list;
         list.reserve(N);
-        for(unsigned int i=0; i<N; i++)
+        for (unsigned int i = 0; i < N; i++)
         {
           list.push_back(json_to_ossia_value(value[i]));
         }
         return list;
       };
-      switch(N)
+      switch (N)
       {
         case 2:
-          if(value[0].IsDouble() && value[1].GetDouble())
+          if (value[0].IsDouble() && value[1].GetDouble())
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
           else
             return handle_vec(value);
         case 3:
-          if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble())
-            return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
+          if (value[0].IsDouble() && value[1].GetDouble()
+              && value[2].GetDouble())
+            return ossia::make_vec(
+                value[0].GetDouble(), value[1].GetDouble(),
+                value[2].GetDouble());
           else
             return handle_vec(value);
         case 4:
-          if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble() && value[3].GetDouble())
-            return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(), value[3].GetDouble());
+          if (value[0].IsDouble() && value[1].GetDouble()
+              && value[2].GetDouble() && value[3].GetDouble())
+            return ossia::make_vec(
+                value[0].GetDouble(), value[1].GetDouble(),
+                value[2].GetDouble(), value[3].GetDouble());
           else
             return handle_vec(value);
         default:
@@ -492,11 +503,11 @@ void explore(
       for (int i = 0; i < arrsize; ++i)
       {
         is_not_obj &= !jsonval[i].IsObject();
-        if(!is_not_obj)
+        if (!is_not_obj)
           break;
       }
 
-      if(!is_not_obj)
+      if (!is_not_obj)
       {
         for (int i = 0; i < arrsize; ++i)
         {
@@ -523,9 +534,8 @@ void explore(
   }
 }
 
-ossia::presets::preset ossia::presets::read_json(
-    const std::string& str,
-    bool skip_first_level)
+ossia::presets::preset
+ossia::presets::read_json(const std::string& str, bool skip_first_level)
 {
   preset prst;
   std::string preset;
@@ -537,16 +547,16 @@ ossia::presets::preset ossia::presets::read_json(
 
   if (!doc.HasParseError())
   {
-    if(!skip_first_level)
+    if (!skip_first_level)
     {
       explore("", doc, &prst);
     }
     else
     {
-      if(doc.IsObject())
+      if (doc.IsObject())
       {
         const auto& obj = doc.GetObject();
-        if(obj.MemberCount() > 0)
+        if (obj.MemberCount() > 0)
         {
           explore("", obj.MemberBegin()->value, &prst);
         }
@@ -560,7 +570,6 @@ ossia::presets::preset ossia::presets::read_json(
     throw exc;
   }
 }
-
 
 struct value_to_json_preset_value
 {
@@ -615,7 +624,6 @@ struct value_to_json_preset_value
     throw std::runtime_error("value_to_json_value: no type");
   }
 };
-
 
 rapidjson::Value ossia_to_json_value(
     const ossia::value& val, rapidjson::Document::AllocatorType& docallocator)
@@ -765,7 +773,7 @@ ossia::presets::write_json(const std::string& devicename, const preset& prst)
         keys, it->first, [](char c) { return c == '/'; },
         boost::token_compress_on);
 
-    if(!keys.empty() && keys.front().empty())
+    if (!keys.empty() && keys.front().empty())
       keys.erase(keys.begin()); // first element is empty
 
     auto& val = it->second;
@@ -821,18 +829,17 @@ std::string ossia::presets::to_string(const preset& pr)
   return str;
 }
 
-ossia::presets::preset ossia::presets::from_string(const ossia::string_view& str)
+ossia::presets::preset
+ossia::presets::from_string(const ossia::string_view& str)
 {
   preset ps;
 
   using boost::spirit::x3::phrase_parse;
   using ossia::detail::parse::preset_;
   auto first = str.cbegin(), last = str.cend();
-  bool r = phrase_parse(first, last,
-                        preset_,
-                        boost::spirit::x3::ascii::space,
-                        ps);
-  if(!r)
+  bool r = phrase_parse(
+      first, last, preset_, boost::spirit::x3::ascii::space, ps);
+  if (!r)
     ossia::logger().error("ossia::presetss::from_string error: {}", str);
   return ps;
 }
@@ -1056,22 +1063,21 @@ void ossia::presets::write_file(
     ossia::string_view content, ossia::string_view filename)
 {
   std::ofstream out;
-  out.exceptions ( std::ofstream::failbit | std::ofstream::badbit );
+  out.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   std::string sf(filename.data(), filename.size());
   out.open(sf);
   out << content;
   out.close();
 }
 
-const std::string ossia::presets::read_file(
-    const std::string& filename)
+const std::string ossia::presets::read_file(const std::string& filename)
 {
   std::stringstream buffer;
   // output json file if needed
   if (!filename.empty())
   {
     std::ifstream file;
-    file.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     file.open(filename);
     buffer << file.rdbuf();
     file.close();
@@ -1117,8 +1123,7 @@ bool instance_string_compare(
 void apply_preset_node(
     ossia::net::node_base& root, std::vector<std::string> keys,
     const ossia::value& val, ossia::presets::keep_arch_type keeparch,
-    std::vector<ossia::net::node_base*>& created_nodes,
-    bool allow_nonterminal)
+    std::vector<ossia::net::node_base*>& created_nodes, bool allow_nonterminal)
 {
   if (keys.size() == 0)
   {
@@ -1153,7 +1158,8 @@ void apply_preset_node(
         if (currentkey == childName)
         {
           child_exists = true;
-          apply_preset_node(*child, keys, val, keeparch, created_nodes, allow_nonterminal);
+          apply_preset_node(
+              *child, keys, val, keeparch, created_nodes, allow_nonterminal);
         }
         else
         {
@@ -1164,7 +1170,8 @@ void apply_preset_node(
           {
             currentkey.resize(currentkey.size() - 2);
             child_exists = true;
-            apply_preset_node(*child, keys, val, keeparch, created_nodes, allow_nonterminal);
+            apply_preset_node(
+                *child, keys, val, keeparch, created_nodes, allow_nonterminal);
           }
         }
       }
@@ -1174,8 +1181,11 @@ void apply_preset_node(
     {
       if (keeparch == ossia::presets::keep_arch_on)
       {
-        ossia::logger().warn("{}:{}  {}", __LINE__, __FILE__, "Can't change device architecture");
-        throw std::runtime_error("preset loading: can't change device architecture");
+        ossia::logger().warn(
+            "{}:{}  {}", __LINE__, __FILE__,
+            "Can't change device architecture");
+        throw std::runtime_error(
+            "preset loading: can't change device architecture");
       }
       else
       {
@@ -1191,7 +1201,9 @@ void apply_preset_node(
           if (keys.empty())
             newchild->create_parameter(val.get_type());
 
-          apply_preset_node(*newchild, keys, val, keeparch, created_nodes, allow_nonterminal);
+          apply_preset_node(
+              *newchild, keys, val, keeparch, created_nodes,
+              allow_nonterminal);
         }
       }
     }
@@ -1218,8 +1230,7 @@ void on_instance_creation(
 void ossia::presets::apply_preset(
     ossia::net::node_base& node, const ossia::presets::preset& preset,
     ossia::presets::keep_arch_type keeparch,
-    presets::instance_functions functions,
-    bool allow_nonterminal,
+    presets::instance_functions functions, bool allow_nonterminal,
     bool remove_first)
 {
   std::vector<ossia::net::node_base*> created_nodes;
@@ -1230,18 +1241,20 @@ void ossia::presets::apply_preset(
     boost::split(
         keys, itpp->first, [](char c) { return c == '/'; },
         boost::token_compress_on);
-    if(remove_first)
+    if (remove_first)
     {
-      if(!keys.empty())
+      if (!keys.empty())
         keys.erase(keys.begin()); // first subtring is empty
     }
-    if(!allow_nonterminal)
+    if (!allow_nonterminal)
     {
-      if(!keys.empty())
-        keys.erase(keys.begin()); // then we have to remove the "initial" key which is the device name
+      if (!keys.empty())
+        keys.erase(keys.begin()); // then we have to remove the "initial" key
+                                  // which is the device name
     }
-    if(node.get_parent())
-      keys.erase(keys.begin()); // remove another one in case node is not a root
+    if (node.get_parent())
+      keys.erase(
+          keys.begin()); // remove another one in case node is not a root
 
     apply_preset_node(
         node, keys, itpp->second, keeparch, created_nodes, allow_nonterminal);
@@ -1266,7 +1279,7 @@ ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
         std::string key = "/" + n->get_name();
         key.reserve(100);
         auto n1 = n->get_parent();
-        while ( n1 != &node )
+        while (n1 != &node)
         {
           key.insert(0, "/" + n1->get_name());
           n1 = n1->get_parent();
@@ -1360,45 +1373,47 @@ void make_json_from_node(rapidjson::Document& d, ossia::net::node_base* node)
   rapidjson::Document subdoc(&d.GetAllocator());
   subdoc.SetObject();
 
-  if(auto param = node->get_parameter())
+  if (auto param = node->get_parameter())
   {
     if (param->get_value_type() != ossia::val_type::IMPULSE)
     {
-      rapidjson::Value v = param->value().apply(value_to_json_preset_value{d.GetAllocator()});
-      rapidjson::Value name(node->get_name(),d.GetAllocator());
+      rapidjson::Value v
+          = param->value().apply(value_to_json_preset_value{d.GetAllocator()});
+      rapidjson::Value name(node->get_name(), d.GetAllocator());
       d.AddMember(name, v, d.GetAllocator());
     }
   }
 
-  std::vector<ossia::net::node_base*> children
-      = node->children_copy();
+  std::vector<ossia::net::node_base*> children = node->children_copy();
 
   if (children.empty())
     return;
 
-  ossia::sort(children, [](auto n1, auto n2)
-    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+  ossia::sort(children, [](auto n1, auto n2) {
+    return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
+  });
 
-  for (auto it = children.begin(); it != children.end(); it++ )
+  for (auto it = children.begin(); it != children.end(); it++)
   {
     make_json_from_node(subdoc, *it);
   }
 
-  rapidjson::Value name(node->get_name(),d.GetAllocator());
+  rapidjson::Value name(node->get_name(), d.GetAllocator());
   d.AddMember(name, subdoc, d.GetAllocator());
 }
 
-const std::string ossia::presets::make_json_preset(const ossia::net::node_base& node)
+const std::string
+ossia::presets::make_json_preset(const ossia::net::node_base& node)
 {
-  std::vector<ossia::net::node_base*> children
-      = node.children_copy();
+  std::vector<ossia::net::node_base*> children = node.children_copy();
 
-  ossia::sort(children, [](auto n1, auto n2)
-    { return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2); });
+  ossia::sort(children, [](auto n1, auto n2) {
+    return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
+  });
 
   rapidjson::Document doc;
   doc.SetObject();
-  for (auto it = children.begin(); it != children.end(); it++ )
+  for (auto it = children.begin(); it != children.end(); it++)
   {
     make_json_from_node(doc, *it);
   }
@@ -1411,21 +1426,19 @@ const std::string ossia::presets::make_json_preset(const ossia::net::node_base& 
 }
 
 void apply_json_member_to_node(
-    rapidjson::Value::ConstMemberIterator object,
-    ossia::net::node_base& node,
+    rapidjson::Value::ConstMemberIterator object, ossia::net::node_base& node,
     ossia::presets::func_t fn)
 {
-  if(object->value.IsObject())
+  if (object->value.IsObject())
   {
     for (auto it = object->value.MemberBegin();
-         it != object->value.MemberEnd();
-         ++it)
+         it != object->value.MemberEnd(); ++it)
     {
       std::string name = it->name.GetString();
-      auto n = ossia::net::find_node(node,it->name.GetString());
+      auto n = ossia::net::find_node(node, it->name.GetString());
       if (n && !ossia::net::get_recall_safe(*n))
       {
-          apply_json_member_to_node(it, *n, fn);
+        apply_json_member_to_node(it, *n, fn);
       }
     }
   }
@@ -1443,7 +1456,8 @@ void apply_json_member_to_node(
   }
 }
 
-bool ossia::presets::apply_json(const std::string& json, ossia::net::node_base& node, func_t fn)
+bool ossia::presets::apply_json(
+    const std::string& json, ossia::net::node_base& node, func_t fn)
 {
   rapidjson::Document doc;
   doc.Parse(json.c_str());
@@ -1451,11 +1465,9 @@ bool ossia::presets::apply_json(const std::string& json, ossia::net::node_base& 
     return false;
   else
   {
-    if(doc.IsObject())
+    if (doc.IsObject())
     {
-      for (auto it = doc.MemberBegin();
-           it != doc.MemberEnd();
-           ++it)
+      for (auto it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
       {
         std::string name = it->name.GetString();
         auto n = ossia::net::find_node(node, name);
@@ -1467,15 +1479,14 @@ bool ossia::presets::apply_json(const std::string& json, ossia::net::node_base& 
   return true;
 }
 
-
-void ossia::presets::apply_preset(const std::string& kiss,
-                  ossia::net::node_base& node,
-                  ossia::presets::func_t fn)
+void ossia::presets::apply_preset(
+    const std::string& kiss, ossia::net::node_base& node,
+    ossia::presets::func_t fn)
 {
   auto preset = ossia::presets::from_string(kiss);
   for (auto& p : preset)
   {
-    if(auto n = ossia::net::find_node(node, p.first))
+    if (auto n = ossia::net::find_node(node, p.first))
     {
       if (ossia::net::get_recall_safe(*n))
         continue;
@@ -1483,7 +1494,7 @@ void ossia::presets::apply_preset(const std::string& kiss,
       if (auto param = n->get_parameter())
       {
         param->push_value(p.second);
-        if(fn)
+        if (fn)
           fn(n);
       }
     }

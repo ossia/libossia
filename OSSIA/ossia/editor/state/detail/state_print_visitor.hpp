@@ -1,10 +1,11 @@
 #pragma once
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -27,8 +28,8 @@ struct state_print_visitor
 
   void operator()(const message& m)
   {
-    out << padding << "message: " << ossia::to_pretty_string(m.dest)
-        << " => " << ossia::value_to_pretty_string(m.message_value);
+    out << padding << "message: " << ossia::to_pretty_string(m.dest) << " => "
+        << ossia::value_to_pretty_string(m.message_value);
 
     out << "\n";
   }

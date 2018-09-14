@@ -1,30 +1,35 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/detail/algorithms.hpp>
-#include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/loop/loop.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/scenario/detail/continuity.hpp>
-#include <ossia/editor/exceptions.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/nodes/forward_node.hpp>
+#include <ossia/detail/algorithms.hpp>
+#include <ossia/editor/exceptions.hpp>
+#include <ossia/editor/loop/loop.hpp>
+#include <ossia/editor/scenario/detail/continuity.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/state/state_element.hpp>
 namespace ossia
 {
-loop::loop(time_value patternDuration,
-           time_interval::exec_callback patternIntervalCallback,
-           time_event::exec_callback patternStartEventCallback,
-           time_event::exec_callback patternEndEventCallback
-           )
-  : m_startEvent(**m_startNode.emplace(
-                   m_startNode.get_time_events().begin(),
-                   std::move(patternStartEventCallback)))
-  , m_endEvent(**m_endNode.emplace(
-                   m_endNode.get_time_events().begin(),
-                   std::move(patternEndEventCallback)))
-  , m_interval{std::move(patternIntervalCallback), m_startEvent, m_endEvent, patternDuration, patternDuration, patternDuration}
+loop::loop(
+    time_value patternDuration,
+    time_interval::exec_callback patternIntervalCallback,
+    time_event::exec_callback patternStartEventCallback,
+    time_event::exec_callback patternEndEventCallback)
+    : m_startEvent(**m_startNode.emplace(
+          m_startNode.get_time_events().begin(),
+          std::move(patternStartEventCallback)))
+    , m_endEvent(**m_endNode.emplace(
+          m_endNode.get_time_events().begin(),
+          std::move(patternEndEventCallback)))
+    , m_interval{std::move(patternIntervalCallback),
+                 m_startEvent,
+                 m_endEvent,
+                 patternDuration,
+                 patternDuration,
+                 patternDuration}
 {
   node = std::make_shared<ossia::nodes::loop>();
-  if(patternDuration <= 0)
+  if (patternDuration <= 0)
   {
     throw std::runtime_error{"Loop duration cannot be null"};
   }
@@ -38,8 +43,8 @@ loop::~loop()
 
 void loop::offset(ossia::time_value offset, double pos)
 {
-  time_value patternOffset{
-    int64_t(std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
+  time_value patternOffset{int64_t(
+      std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
   m_interval.offset(patternOffset);
   m_lastDate = offset;
   /*
@@ -68,8 +73,8 @@ void loop::offset(ossia::time_value offset, double pos)
 
 void loop::transport(ossia::time_value offset, double pos)
 {
-  time_value patternOffset{
-    int64_t(std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
+  time_value patternOffset{int64_t(
+      std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
   m_interval.transport(patternOffset);
   m_lastDate = offset;
 }
@@ -78,12 +83,12 @@ void loop::make_happen(time_event& event)
 {
   event.m_status = time_event::status::HAPPENED;
 
-  if(&event == &m_startEvent)
+  if (&event == &m_startEvent)
   {
     m_interval.start();
     mark_start_discontinuous{}(m_interval);
   }
-  else if(&event == &m_endEvent)
+  else if (&event == &m_endEvent)
   {
     m_interval.stop();
     mark_end_discontinuous{}(m_interval);
@@ -98,17 +103,17 @@ void loop::make_dispose(time_event& event)
   if (event.m_status == time_event::status::HAPPENED)
   {
     throw execution_error(
-          "time_event::dispose: "
-          "HAPPENED event cannot be disposed");
+        "time_event::dispose: "
+        "HAPPENED event cannot be disposed");
     return;
   }
 
   event.m_status = time_event::status::DISPOSED;
-  if(&event == &m_startEvent)
+  if (&event == &m_startEvent)
   {
     make_dispose(m_endEvent);
   }
-  else if(&event == &m_endEvent)
+  else if (&event == &m_endEvent)
   {
     m_interval.stop();
     mark_end_discontinuous{}(m_interval);
@@ -118,7 +123,9 @@ void loop::make_dispose(time_event& event)
     (event.m_callback)(event.m_status);
 }
 
-bool loop::process_sync(ossia::time_sync& node, ossia::time_event& ev, bool event_pending, bool maximalDurationReached)
+bool loop::process_sync(
+    ossia::time_sync& node, ossia::time_event& ev, bool event_pending,
+    bool maximalDurationReached)
 {
   if (!event_pending)
   {
@@ -183,14 +190,14 @@ bool loop::process_sync(ossia::time_sync& node, ossia::time_event& ev, bool even
   return true;
 }
 
-
 void loop::state(
-    ossia::time_value from, ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
+    ossia::time_value from, ossia::time_value date, double pos,
+    ossia::time_value tick_offset, double gspeed)
 {
   node->request({from, date, pos, tick_offset, gspeed});
   m_interval.set_parent_speed(gspeed);
   // if date hasn't been processed already
-  //if (date != m_lastDate)
+  // if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
 
@@ -202,17 +209,21 @@ void loop::state(
     auto& end_ev = *m_endNode.get_time_events()[0];
     const auto& itv_dur = m_interval.get_nominal_duration();
     auto isSimpleLoop = [&] {
-      return m_startNode.get_expression() == ossia::expressions::expression_true() &&
-          start_ev.get_expression() == ossia::expressions::expression_true() &&
-          m_endNode.get_expression() == ossia::expressions::expression_true() &&
-          end_ev.get_expression() == ossia::expressions::expression_true();
+      return m_startNode.get_expression()
+                 == ossia::expressions::expression_true()
+             && start_ev.get_expression()
+                    == ossia::expressions::expression_true()
+             && m_endNode.get_expression()
+                    == ossia::expressions::expression_true()
+             && end_ev.get_expression()
+                    == ossia::expressions::expression_true();
     };
 
-    if(isSimpleLoop())
+    if (isSimpleLoop())
     {
-      if(tick_amount >= 0)
+      if (tick_amount >= 0)
       {
-        if(m_interval.get_date() == 0)
+        if (m_interval.get_date() == 0)
         {
           start_ev.tick(0_tv, 0., tick_offset);
           m_interval.set_offset(0_tv);
@@ -220,10 +231,10 @@ void loop::state(
           m_interval.tick_current(tick_offset);
         }
 
-        while(tick_amount > 0)
+        while (tick_amount > 0)
         {
           const auto cur_date = m_interval.get_date();
-          if(cur_date + tick_amount < itv_dur)
+          if (cur_date + tick_amount < itv_dur)
           {
             m_interval.tick_offset(tick_amount, tick_offset);
             break;
@@ -239,7 +250,7 @@ void loop::state(
             end_ev.tick(0_tv, 0., tick_offset);
             m_interval.stop();
 
-            if(tick_amount > 0)
+            if (tick_amount > 0)
             {
               m_interval.offset(time_value{});
               m_interval.start();
@@ -252,10 +263,10 @@ void loop::state(
       }
       else
       {
-        while(tick_amount < 0)
+        while (tick_amount < 0)
         {
           const auto cur_date = m_interval.get_date();
-          if(cur_date + tick_amount >= Zero)
+          if (cur_date + tick_amount >= Zero)
           {
             m_interval.tick_offset(tick_amount, tick_offset);
             break;
@@ -269,12 +280,12 @@ void loop::state(
             tick_offset += this_tick;
 
             end_ev.tick(0_tv, 0., tick_offset);
-            //m_interval.stop();
+            // m_interval.stop();
 
-            if(tick_amount < 0)
+            if (tick_amount < 0)
             {
               m_interval.offset(itv_dur);
-              //m_interval.start();
+              // m_interval.start();
               start_ev.tick(0_tv, 0., tick_offset);
             }
           }
@@ -283,13 +294,13 @@ void loop::state(
     }
     else
     {
-      switch(m_startEvent.get_status())
+      switch (m_startEvent.get_status())
       {
         case time_event::status::NONE:
         case time_event::status::PENDING:
         {
           process_sync(m_startNode, m_startEvent, true, false);
-          if(m_startEvent.get_status() != time_event::status::HAPPENED)
+          if (m_startEvent.get_status() != time_event::status::HAPPENED)
           {
             m_startEvent.set_status(time_event::status::PENDING);
             m_endEvent.set_status(time_event::status::NONE);
@@ -310,7 +321,6 @@ void loop::state(
       else
         m_interval.tick_offset(tick_amount, tick_offset);
 
-
       switch (m_endEvent.get_status())
       {
         case time_event::status::NONE:
@@ -318,14 +328,18 @@ void loop::state(
           if (m_interval.get_date() >= m_interval.get_min_duration())
           {
             m_endEvent.set_status(time_event::status::PENDING);
-            process_sync(m_endNode, m_endEvent, true, m_interval.get_date() >= m_interval.get_max_duration());
+            process_sync(
+                m_endNode, m_endEvent, true,
+                m_interval.get_date() >= m_interval.get_max_duration());
           }
           break;
         }
 
         case time_event::status::PENDING:
         {
-          process_sync(m_endNode, m_endEvent, true, m_interval.get_date() >= m_interval.get_max_duration());
+          process_sync(
+              m_endNode, m_endEvent, true,
+              m_interval.get_date() >= m_interval.get_max_duration());
           break;
         }
         case time_event::status::HAPPENED:
@@ -339,13 +353,12 @@ void loop::state(
         stop();
       }
     }
-
   }
 }
 
 void loop::start()
 {
-  if(m_lastDate == ossia::Infinite)
+  if (m_lastDate == ossia::Infinite)
     m_lastDate = ossia::Zero;
 
   m_interval.get_start_event().set_status(time_event::status::PENDING);

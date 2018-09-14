@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain.hpp>
+
 #include <iostream>
 namespace ossia
 {
@@ -203,9 +204,9 @@ inline void convert_compatible_domain(domain& dom, ossia::val_type newtype)
   {
     dom = convert_domain(dom, newtype);
   }
-  else if(dom.which() == list_index)
+  else if (dom.which() == list_index)
   {
-    switch(newtype)
+    switch (newtype)
     {
       case ossia::val_type::VEC2F:
       case ossia::val_type::VEC3F:

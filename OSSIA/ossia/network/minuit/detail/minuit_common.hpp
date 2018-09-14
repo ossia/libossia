@@ -1,8 +1,9 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/network/value/value.hpp>
 #include <ossia/network/exceptions.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <exception>
 
 namespace ossia

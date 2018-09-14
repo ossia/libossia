@@ -2,12 +2,14 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_base.hpp>
 #include <ossia/network/value/value.hpp>
+
 #include <brigand/algorithms/fold.hpp>
 namespace ossia
 {
 
 #include <ossia/network/dataspace/dataspace_strong_variants.hpp>
-//! Unit attached with a corresponding value. e.g. a specific color, or position.
+//! Unit attached with a corresponding value. e.g. a specific color, or
+//! position.
 struct OSSIA_EXPORT value_with_unit final
 {
   strong_value_variant v;

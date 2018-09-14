@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/algorithms.hpp>
-
 #include <ossia/detail/ptr_set.hpp>
+
 #include <vector>
 
 namespace ossia

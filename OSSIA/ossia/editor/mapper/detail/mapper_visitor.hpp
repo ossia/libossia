@@ -1,9 +1,9 @@
 #pragma once
+#include <ossia/detail/apply.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/curve/curve_abstract.hpp>
 #include <ossia/misc_visitors.hpp>
-#include <ossia/detail/apply.hpp>
 
 namespace ossia
 {
@@ -182,7 +182,7 @@ struct mapper_compute_visitor
       if (it_driver == t_driver.end())
         break;
 
-      if(it_driver->valid() && e_drive)
+      if (it_driver->valid() && e_drive)
       {
         t_value.push_back(ossia::apply(*this, it_driver->v, e_drive.v));
       }
@@ -205,6 +205,5 @@ struct mapper_compute_visitor
     return {};
   }
 };
-
 }
 }

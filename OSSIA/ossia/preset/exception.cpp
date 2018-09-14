@@ -1,6 +1,7 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "exception.hpp"
+
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -51,5 +52,4 @@ ossiaException_InvalidAddress::ossiaException_InvalidAddress(
           line, filename, details, "Invalid address")
 {
 }
-
 }

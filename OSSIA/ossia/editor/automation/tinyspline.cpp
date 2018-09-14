@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "tinyspline.h"
 
 #include <math.h> /* fabs, sqrt */
@@ -9,10 +9,10 @@
 #include <string.h> /* memcpy, memmove, strcmp */
 
 /********************************************************
-*                                                       *
-* Error handling                                        *
-*                                                       *
-********************************************************/
+ *                                                       *
+ * Error handling                                        *
+ *                                                       *
+ ********************************************************/
 #define TRY(x, y)         \
   y = (tsError)setjmp(x); \
   if (y == 0)             \
@@ -24,10 +24,10 @@
 #define ETRY }
 
 /********************************************************
-*                                                       *
-* Internal functions                                    *
-*                                                       *
-********************************************************/
+ *                                                       *
+ * Internal functions                                    *
+ *                                                       *
+ ********************************************************/
 void ts_internal_deboornet_copy(
     const tsDeBoorNet* original, tsDeBoorNet* copy, jmp_buf buf)
 {
@@ -119,7 +119,7 @@ void ts_internal_bspline_fill_knots(
   const size_t n_knots = original->n_knots;
   const size_t deg = original->deg;
   const size_t order = deg + 1; /* Using deg+1 instead of original->order
- * ensures order >= 1. */
+                                 * ensures order >= 1. */
   tsReal fac; /* The factor used to calculate the knot values. */
   size_t i;   /* Used in for loops. */
 
@@ -216,10 +216,12 @@ void ts_internal_bspline_resize(
   const size_t nn_ctrlp = n_ctrlp + n; /* The new length of ctrlp. */
   const size_t nn_knots = n_knots + n; /* The new length of knots. */
   const size_t sof_ncnk = (nn_ctrlp * dim + nn_knots) * sof_f;
-  const size_t min_n_ctrlp = n < 0 ? nn_ctrlp : n_ctrlp; /* The minimum of
-*the control points old and new size. */
-  const size_t min_n_knots = n < 0 ? nn_knots : n_knots; /* the minimum of
-*the knots old and new size. */
+  const size_t min_n_ctrlp
+      = n < 0 ? nn_ctrlp : n_ctrlp; /* The minimum of
+                                     *the control points old and new size. */
+  const size_t min_n_knots
+      = n < 0 ? nn_knots : n_knots; /* the minimum of
+                                     *the knots old and new size. */
 
   tsReal* from_ctrlp = bspline->ctrlp;
   tsReal* from_knots = bspline->knots;
@@ -293,7 +295,7 @@ void ts_internal_bspline_insert_knot(
   tsReal* from; /* The pointer to copy the values from. */
   tsReal* to;   /* The pointer to copy the values to. */
   int stride;   /* The stride of the next pointer to copy. Will be negative
-  *later on, thus use int. */
+                 *later on, thus use int. */
   size_t i;     /* Used in for loops. */
 
   if (deBoorNet->s + n > bspline->order)
@@ -308,7 +310,7 @@ void ts_internal_bspline_insert_knot(
     return;
 
   N = deBoorNet->h + 1; /* n > 0 implies s <= deg implies a regular evaluation
- * implies h+1 is valid. */
+                         * implies h+1 is valid. */
 
   /* 1. Copy all necessary control points and knots from
    *    the original B-Spline.
@@ -354,10 +356,12 @@ void ts_internal_bspline_insert_knot(
 
   from -= dim;
   to += (N - n) * dim;
-  stride = -(int)(N - n + 1) * (int)dim; /* N = h+1 with h = deg-s
-   * (ts_internal_bspline_evaluate) implies N = deg-s+1 = order-s.
-   * n <= order-s implies N-n+1 >= order-s - order-s + 1 = 1. Thus,
-   * -(int)(N-n+1) <= -1. */
+  stride = -(int)(N - n + 1)
+           * (int)dim; /* N = h+1 with h = deg-s
+                        * (ts_internal_bspline_evaluate) implies N = deg-s+1 =
+                        * order-s. n <= order-s implies N-n+1 >= order-s -
+                        * order-s + 1 = 1. Thus,
+                        * -(int)(N-n+1) <= -1. */
 
   for (i = 0; i < n; i++)
   { /* c) */
@@ -383,7 +387,7 @@ void ts_internal_bspline_evaluate(
   const size_t order = bspline->order;
   const size_t dim = bspline->dim;
   const size_t sof_c = dim * sizeof(tsReal); /* The size of a single
-*control points.*/
+                                              *control points.*/
   size_t k;
   size_t s;
   tsReal uk;   /* The actual used u. */
@@ -853,10 +857,10 @@ void ts_internal_bspline_set_knots(
 }
 
 /********************************************************
-*                                                       *
-* Interface implementation                              *
-*                                                       *
-********************************************************/
+ *                                                       *
+ * Interface implementation                              *
+ *                                                       *
+ ********************************************************/
 void ts_deboornet_default(tsDeBoorNet* deBoorNet)
 {
   deBoorNet->u = 0.f;

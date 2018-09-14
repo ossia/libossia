@@ -38,9 +38,7 @@ struct dependency_connection
 };
 
 using connection = eggs::variant<
-immediate_glutton_connection,
-immediate_strict_connection,
-delayed_glutton_connection,
-delayed_strict_connection,
-dependency_connection>;
+    immediate_glutton_connection, immediate_strict_connection,
+    delayed_glutton_connection, delayed_strict_connection,
+    dependency_connection>;
 }

@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 #include "phidgetspp.hpp"
@@ -13,7 +13,7 @@ phidget_device::phidget_device(PhidgetHandle hdl) : m_handle{hdl}
   Phidget_getDeviceClass(m_handle, &m_class);
   Phidget_getDeviceID(m_handle, &m_id);
   Phidget_getDeviceSerialNumber(m_handle, &m_serial);
-  //Phidget_getDeviceStatus(m_handle, &m_status);
+  // Phidget_getDeviceStatus(m_handle, &m_status);
   // Phidget_getSerialNumber(m_handle, &m_serial);
 
   const char* name;
@@ -89,19 +89,12 @@ void phidget_device::set_label(const std::string& n)
   m_label = n;
 }
 
-
-
-
-phidget_channel::phidget_channel(
-    PhidgetHandle device
-    , PhidgetHandle hdl)
-  : m_device{device}
-  , m_handle{hdl}
+phidget_channel::phidget_channel(PhidgetHandle device, PhidgetHandle hdl)
+    : m_device{device}, m_handle{hdl}
 {
   Phidget_getChannelClass(m_handle, &m_class);
   Phidget_getChannelSubclass(m_handle, &m_subclass);
   Phidget_getChannel(m_handle, &m_channel_id);
-
 
   const char* name;
   if (!Phidget_getChannelName(m_handle, &name))
@@ -157,32 +150,32 @@ void phidgets_manager::open()
   PhidgetManager_create(&m_hdl);
   PhidgetManager_setOnAttachHandler(
       m_hdl,
-      [] (PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
+      [](PhidgetManagerHandle phidm, void* ptr, PhidgetHandle phid) {
         auto& self = *(phidgets_manager*)ptr;
         int ok;
         Phidget_getIsChannel(phid, &ok);
-        if(ok)
+        if (ok)
         {
           std::cerr << "phidget is channel !!! \n";
           PhidgetHandle hub;
-          if(Phidget_getHub(phid, &hub) == EPHIDGET_OK)
+          if (Phidget_getHub(phid, &hub) == EPHIDGET_OK)
           {
             std::cerr << "\thub ok: " << hub << std::endl;
           }
 
           PhidgetHandle parent;
-          if(Phidget_getParent(phid, &parent) == EPHIDGET_OK)
+          if (Phidget_getParent(phid, &parent) == EPHIDGET_OK)
           {
             std::cerr << "\tparent ok: " << parent << std::endl;
             auto oldpar = parent;
-            while(parent)
+            while (parent)
             {
-              if(Phidget_getParent(parent, &parent) != EPHIDGET_OK)
+              if (Phidget_getParent(parent, &parent) != EPHIDGET_OK)
               {
-                std::cerr << "no parent anymore\n" ;
+                std::cerr << "no parent anymore\n";
                 break;
               }
-              else if(parent == oldpar)
+              else if (parent == oldpar)
               {
                 std::cerr << "parent == oldpar\n";
                 break;
@@ -192,7 +185,6 @@ void phidgets_manager::open()
                 std::cerr << "\t new parent: " << parent << "\n";
               }
             }
-
           }
         }
 
@@ -206,7 +198,7 @@ void phidgets_manager::open()
 
   PhidgetManager_setOnDetachHandler(
       m_hdl,
-      [](PhidgetManagerHandle phidm, void *ptr, PhidgetHandle phid) {
+      [](PhidgetManagerHandle phidm, void* ptr, PhidgetHandle phid) {
         auto& self = *(phidgets_manager*)ptr;
         auto it = std::find_if(
             self.m_phidgets.begin(), self.m_phidgets.end(),

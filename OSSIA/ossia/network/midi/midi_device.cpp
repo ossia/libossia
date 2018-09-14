@@ -1,6 +1,7 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "midi_device.hpp"
+
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
@@ -24,7 +25,8 @@ bool midi_device::update_namespace()
   clear_children();
 
   // TODO set type list and send as raw bytes
-  m_parameter = std::make_unique<midi_parameter>(address_info{{}, address_info::Type::Any, {}}, *this);
+  m_parameter = std::make_unique<midi_parameter>(
+      address_info{{}, address_info::Type::Any, {}}, *this);
 
   try
   {

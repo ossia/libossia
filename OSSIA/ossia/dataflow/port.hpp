@@ -7,7 +7,7 @@ struct OSSIA_EXPORT port
 {
   data_type data;
 
-  enum scope_t: int8_t
+  enum scope_t : int8_t
   {
     none = 1 << 0,
     local = 1 << 1,
@@ -113,5 +113,4 @@ outlet_ptr make_outlet(Args&&... args)
 {
   return new outlet(T{}, std::forward<Args>(args)...);
 }
-
 }

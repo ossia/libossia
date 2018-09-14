@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
@@ -96,8 +97,7 @@ public:
       on_parameter_created; // The parameter being created
   Nano::Signal<void(const parameter_base&)>
       on_parameter_removing; // The node whose parameter was removed
-  Nano::Signal<void(const parameter_base&)>
-      on_message; // A received value
+  Nano::Signal<void(const parameter_base&)> on_message; // A received value
   Nano::Signal<void(ossia::string_view, const ossia::value& val)>
       on_unhandled_message; // A received value on a non-existing address
 
@@ -157,7 +157,8 @@ void node_base::set(ossia::string_view str, optional<T>&& value)
   auto opt = ossia::get_optional_attribute<T>(*this, str);
   if (opt != value)
   {
-    ossia::set_optional_attribute((extended_attributes&)*this, str, std::move(value));
+    ossia::set_optional_attribute(
+        (extended_attributes&)*this, str, std::move(value));
     get_device().on_attribute_modified(*this, str);
   }
 }
@@ -183,6 +184,5 @@ void node_base::set(Attribute a, T&& value)
   typename Attribute::type val = std::move(value);
   a.setter(*this, std::move(val));
 }
-
 }
 }

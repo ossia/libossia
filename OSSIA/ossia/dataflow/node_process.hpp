@@ -14,8 +14,7 @@ public:
   void offset(ossia::time_value, double pos) override;
   void transport(ossia::time_value date, double pos) override;
 
-  void
-  state(
+  void state(
       ossia::time_value from, ossia::time_value to, double relative_position,
       ossia::time_value tick_offset, double gspeed) override;
 
@@ -25,6 +24,4 @@ public:
   void resume() override;
   void mute_impl(bool) override;
 };
-
-
 }

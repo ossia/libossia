@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
@@ -11,7 +11,6 @@ time_sync::time_sync() : m_expression(expressions::make_expression_true())
 }
 
 time_sync::~time_sync() = default;
-
 
 time_value time_sync::get_date() const
 {
@@ -83,10 +82,11 @@ void time_sync::observe_expression(bool observe)
 {
   // start expression observation; dummy callback used.
   // Do not remove it : else the expressions will stop listening.
-  return observe_expression(observe, [] (bool) {});
+  return observe_expression(observe, [](bool) {});
 }
 
-void time_sync::observe_expression(bool observe, ossia::expressions::expression_result_callback cb)
+void time_sync::observe_expression(
+    bool observe, ossia::expressions::expression_result_callback cb)
 {
   if (!m_expression || *m_expression == expressions::expression_true()
       || *m_expression == expressions::expression_false())

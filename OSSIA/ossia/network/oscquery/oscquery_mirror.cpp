@@ -1,20 +1,21 @@
-﻿// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+﻿// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_mirror.hpp"
 
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/common/node_visitor.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
 namespace ossia
@@ -25,7 +26,7 @@ struct http_answer
 {
   oscquery_mirror_protocol& self;
 
-  template<typename T, typename S>
+  template <typename T, typename S>
   void operator()(T& req, const S& str)
   {
     if (self.on_WSMessage({}, str))
@@ -37,7 +38,7 @@ struct http_answer
 
 struct http_error
 {
-  template<typename T>
+  template <typename T>
   void operator()(T& req)
   {
     req.close();
@@ -46,12 +47,11 @@ struct http_error
 
 using http_request = http_get_request<http_answer, http_error>;
 
-
 struct http_client_context
 {
-    std::thread thread;
-    asio::io_service context;
-    std::shared_ptr<asio::io_service::work> worker;
+  std::thread thread;
+  asio::io_service context;
+  std::shared_ptr<asio::io_service::work> worker;
 };
 /*
 auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
@@ -77,10 +77,10 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 
 oscquery_mirror_protocol::oscquery_mirror_protocol(
     std::string host, uint16_t local_osc_port)
-  : m_queryHost{std::move(host)}
-  , m_httpHost{m_queryHost}
-  , m_osc_port{local_osc_port}
-  , m_http{std::make_unique<http_client_context>()}
+    : m_queryHost{std::move(host)}
+    , m_httpHost{m_queryHost}
+    , m_osc_port{local_osc_port}
+    , m_http{std::make_unique<http_client_context>()}
 {
   auto port_idx = m_queryHost.find_last_of(':');
   if (port_idx != std::string::npos)
@@ -88,7 +88,8 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(
   else
     m_queryPort = "80";
 
-  // for http, host should be only the name, e.g. example.com instead of http://example.com:1234
+  // for http, host should be only the name, e.g. example.com instead of
+  // http://example.com:1234
   if (port_idx != std::string::npos)
     m_httpHost.erase(m_httpHost.begin() + port_idx, m_httpHost.end());
   if (boost::starts_with(m_httpHost, "http://"))
@@ -153,8 +154,7 @@ void oscquery_mirror_protocol::cleanup_connections()
 void oscquery_mirror_protocol::http_send_message(const std::string& str)
 {
   auto hrq = std::make_shared<http_request>(
-        http_answer{*this}, http_error{},
-        m_http->context, m_httpHost, str);
+      http_answer{*this}, http_error{}, m_http->context, m_httpHost, str);
   hrq->resolve(m_httpHost, m_queryPort);
 }
 
@@ -162,8 +162,8 @@ void oscquery_mirror_protocol::http_send_message(
     const rapidjson::StringBuffer& str)
 {
   auto hrq = std::make_shared<http_request>(
-        http_answer{*this}, http_error{},
-        m_http->context, m_httpHost, str.GetString());
+      http_answer{*this}, http_error{}, m_http->context, m_httpHost,
+      str.GetString());
   hrq->resolve(m_httpHost, m_queryPort);
 }
 
@@ -180,13 +180,11 @@ void oscquery_mirror_protocol::ws_send_message(
     m_websocketClient->send_message(str);
 }
 
-void oscquery_mirror_protocol::ws_send_binary_message(
-    const std::string& str)
+void oscquery_mirror_protocol::ws_send_binary_message(const std::string& str)
 {
   if (m_websocketClient)
     m_websocketClient->send_binary_message(str);
 }
-
 
 bool oscquery_mirror_protocol::query_connected()
 {
@@ -260,7 +258,8 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr)
     auto critical = addr.get_critical();
     if ((!critical || m_websocketClient) && m_oscSender)
     {
-      ossia::oscquery::osc_writer::send_message(addr, val, m_logger, m_oscSender->socket());
+      ossia::oscquery::osc_writer::send_message(
+          addr, val, m_logger, m_oscSender->socket());
     }
     else
     {
@@ -286,7 +285,8 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
     auto critical = addr.get_critical();
     if ((!critical || m_websocketClient) && m_oscSender)
     {
-      ossia::oscquery::osc_writer::send_message(addr, val, m_logger, m_oscSender->socket());
+      ossia::oscquery::osc_writer::send_message(
+          addr, val, m_logger, m_oscSender->socket());
     }
     else
     {
@@ -297,45 +297,47 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
   return false;
 }
 
-bool oscquery_mirror_protocol::push_bundle(const std::vector<const ossia::net::parameter_base*>& addresses)
+bool oscquery_mirror_protocol::push_bundle(
+    const std::vector<const ossia::net::parameter_base*>& addresses)
 {
-    /* TODO
-    json_bundle_builder b;
-    for(auto a : addresses)
+  /* TODO
+  json_bundle_builder b;
+  for(auto a : addresses)
+  {
+    const ossia::net::parameter_base& addr = *a;
+    ossia::value val = net::filter_value(addr);
+    if (val.valid())
     {
-      const ossia::net::parameter_base& addr = *a;
-      ossia::value val = net::filter_value(addr);
-      if (val.valid())
-      {
-        b.add_message(addr, val);
-      }
+      b.add_message(addr, val);
     }
+  }
 
-    m_websocketClient->send_binary_message(b.finish());
-    */
+  m_websocketClient->send_binary_message(b.finish());
+  */
   return false;
 }
 
-bool oscquery_mirror_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
+bool oscquery_mirror_protocol::push_raw_bundle(
+    const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-    /* TODO
-    json_bundle_builder b;
-    for(const auto& addr : addresses)
+  /* TODO
+  json_bundle_builder b;
+  for(const auto& addr : addresses)
+  {
+    ossia::value val = net::filter_value(addr);
+    if (val.valid())
     {
-      ossia::value val = net::filter_value(addr);
-      if (val.valid())
-      {
-        b.add_message(addr, val);
-      }
+      b.add_message(addr, val);
     }
+  }
 
-    m_websocketClient->send_message(b.finish());
-    */
+  m_websocketClient->send_message(b.finish());
+  */
   return false;
 }
 
-
-bool oscquery_mirror_protocol::observe(net::parameter_base& address, bool enable)
+bool oscquery_mirror_protocol::observe(
+    net::parameter_base& address, bool enable)
 {
   if (enable)
   {
@@ -398,49 +400,44 @@ void oscquery_mirror_protocol::on_nodeRenamed(
     old_addr += oldname;
     m_listening.rename(old_addr, n.osc_address());
   }
-
 }
 catch (const std::exception& e)
 {
-  logger().error(
-      "oscquery_mirror_protocol::on_nodeRenamed: {}", e.what());
+  logger().error("oscquery_mirror_protocol::on_nodeRenamed: {}", e.what());
 }
 catch (...)
 {
   logger().error("oscquery_mirror_protocol::on_nodeRenamed: error.");
 }
 
-
 void oscquery_mirror_protocol::set_device(net::device_base& dev)
 {
-  if(m_device)
+  if (m_device)
   {
     auto& old = *m_device;
-    old.on_node_renamed
-       .disconnect<&oscquery_mirror_protocol::on_nodeRenamed>(
-           this);
+    old.on_node_renamed.disconnect<&oscquery_mirror_protocol::on_nodeRenamed>(
+        this);
 
     ossia::net::visit_parameters(
-          old.get_root_node()
-        , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
-      if(p.callback_count() > 0)
-        observe(p, false);
-    });
+        old.get_root_node(),
+        [&](ossia::net::node_base& n, ossia::net::parameter_base& p) {
+          if (p.callback_count() > 0)
+            observe(p, false);
+        });
   }
 
   m_device = &dev;
 
   init();
 
-  m_device->on_node_renamed
-     .connect<&oscquery_mirror_protocol::on_nodeRenamed>(
-         this);
+  m_device->on_node_renamed.connect<&oscquery_mirror_protocol::on_nodeRenamed>(
+      this);
   ossia::net::visit_parameters(
-        dev.get_root_node()
-      , [&] (ossia::net::node_base& n, ossia::net::parameter_base& p) {
-    if(p.callback_count() > 0)
-      observe(p, true);
-  });
+      dev.get_root_node(),
+      [&](ossia::net::node_base& n, ossia::net::parameter_base& p) {
+        if (p.callback_count() > 0)
+          observe(p, true);
+      });
 }
 
 void oscquery_mirror_protocol::run_commands()
@@ -489,26 +486,25 @@ void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
 void oscquery_mirror_protocol::init()
 {
   m_oscServer = std::make_unique<osc::receiver>(
-        m_osc_port,
-        [=](const oscpack::ReceivedMessage& m,
-            const oscpack::IpEndpointName& ip) {
-          this->on_OSCMessage(m, ip);
-  });
+      m_osc_port,
+      [=](const oscpack::ReceivedMessage& m,
+          const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); });
 
   m_websocketClient = std::make_unique<websocket_client>(
-                        [=] (connection_handler hdl, websocketpp::frame::opcode::value op, std::string& msg) {
-    switch (op)
-    {
-      case websocketpp::frame::opcode::value::TEXT:
-        this->on_WSMessage(hdl, msg);
-        break;
-      case websocketpp::frame::opcode::value::BINARY:
-        this->on_BinaryWSMessage(hdl, msg);
-        break;
-      default:
-        break;
-    }
-  });
+      [=](connection_handler hdl, websocketpp::frame::opcode::value op,
+          std::string& msg) {
+        switch (op)
+        {
+          case websocketpp::frame::opcode::value::TEXT:
+            this->on_WSMessage(hdl, msg);
+            break;
+          case websocketpp::frame::opcode::value::BINARY:
+            this->on_BinaryWSMessage(hdl, msg);
+            break;
+          default:
+            break;
+        }
+      });
 
   start_http();
 
@@ -533,9 +529,9 @@ void oscquery_mirror_protocol::init()
     {
       cleanup_connections();
       throw ossia::connection_error{
-        "oscquery_mirror_protocol::oscquery_mirror_protocol: "
-        "Could not connect to "
-        + m_queryHost};
+          "oscquery_mirror_protocol::oscquery_mirror_protocol: "
+          "Could not connect to "
+          + m_queryHost};
     }
   }
 
@@ -622,23 +618,21 @@ bool oscquery_mirror_protocol::on_WSMessage(
         {
           // The ip of the OSC server on the server
           auto info = json_parser::parse_host_info(*data);
-          if(!info.osc_ip)
+          if (!info.osc_ip)
             info.osc_ip = m_queryHost;
-          if(!info.osc_port)
+          if (!info.osc_port)
             info.osc_port = boost::lexical_cast<int>(m_queryPort);
-          if(info.osc_transport == host_info::UDP)
+          if (info.osc_transport == host_info::UDP)
           {
-            m_oscSender
-                = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
-                    m_logger, to_ip(*info.osc_ip), *info.osc_port);
+            m_oscSender = std::make_unique<
+                osc::sender<oscquery::osc_outbound_visitor>>(
+                m_logger, to_ip(*info.osc_ip), *info.osc_port);
 
             // Send to the server the local receiver port
-            if(info.extensions["OSC_STREAMING"])
+            if (info.extensions["OSC_STREAMING"])
             {
-              ws_send_message(
-                    json_writer::start_osc_streaming(
-                      m_oscServer->port(),
-                      m_oscSender->localPort()));
+              ws_send_message(json_writer::start_osc_streaming(
+                  m_oscServer->port(), m_oscSender->localPort()));
             }
           }
           else
@@ -673,12 +667,14 @@ bool oscquery_mirror_protocol::on_WSMessage(
               }
               else
               {
-                m_device->on_unhandled_message(p->address, detail::ReadValue(*data));
+                m_device->on_unhandled_message(
+                    p->address, detail::ReadValue(*data));
               }
             }
             else
             {
-              m_device->on_unhandled_message(p->address, oscquery::detail::ReadValue(*data));
+              m_device->on_unhandled_message(
+                  p->address, oscquery::detail::ReadValue(*data));
             }
 
             p->promise.set_value();
@@ -687,28 +683,31 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
           else // if update from critical param
           {
-              for(auto it = data->MemberBegin(), end = data->MemberEnd(); it != end; ++it)
+            for (auto it = data->MemberBegin(), end = data->MemberEnd();
+                 it != end; ++it)
+            {
+              auto path = get_string_view(it->name);
+              if (!path.empty() && path[0] == '/')
               {
-                auto path = get_string_view(it->name);
-                if(!path.empty() && path[0] == '/')
+                auto node
+                    = ossia::net::find_node(m_device->get_root_node(), path);
+                if (node)
                 {
-                    auto node = ossia::net::find_node(m_device->get_root_node(), path);
-                    if(node)
+                  auto addr = node->get_parameter();
+                  if (addr)
                   {
-                    auto addr = node->get_parameter();
-                    if (addr)
-                    {
-                      auto val = addr->value();
-                      json_parser::parse_value(*addr, it->value);
-                      //val.apply(detail::json_to_value_unchecked{it->value});
-                      m_device->on_message(*addr);
-                      continue;
-                    }
+                    auto val = addr->value();
+                    json_parser::parse_value(*addr, it->value);
+                    // val.apply(detail::json_to_value_unchecked{it->value});
+                    m_device->on_message(*addr);
+                    continue;
                   }
                 }
-
-                m_device->on_unhandled_message(path, detail::ReadValue(it->value));
               }
+
+              m_device->on_unhandled_message(
+                  path, detail::ReadValue(it->value));
+            }
           }
 
           break;
@@ -720,23 +719,24 @@ bool oscquery_mirror_protocol::on_WSMessage(
           if (dat_it != data->MemberEnd())
           {
             auto& dat = dat_it->value;
-            if(dat.IsString())
+            if (dat.IsString())
             {
               std::string full_path{dat.GetString(), dat.GetStringLength()};
 
-              m_functionQueue.enqueue([ this,f=std::move(full_path)] {
-                auto on_result = [this,f] (auto& req, const auto& res) {
+              m_functionQueue.enqueue([this, f = std::move(full_path)] {
+                auto on_result = [this, f](auto& req, const auto& res) {
                   auto data = json_parser::parse(res);
                   if (data->IsNull())
                   {
                     if (m_logger.inbound_logger)
                       m_logger.inbound_logger->warn(
-                            "Invalid WS message received: {}", res);
+                          "Invalid WS message received: {}", res);
                     return;
                   }
 
-                  m_functionQueue.enqueue([ this, f, data] {
-                    json_parser::parse_path_added(get_device().get_root_node(), f, *data);
+                  m_functionQueue.enqueue([this, f, data] {
+                    json_parser::parse_path_added(
+                        get_device().get_root_node(), f, *data);
                   });
                   if (m_commandCallback)
                     m_commandCallback();
@@ -744,8 +744,9 @@ bool oscquery_mirror_protocol::on_WSMessage(
                   req.close();
                 };
 
-                auto hrq = std::make_shared<http_get_request<decltype(on_result), http_error>>(
-                      on_result, http_error{}, m_http->context, m_httpHost, f);
+                auto hrq = std::make_shared<
+                    http_get_request<decltype(on_result), http_error>>(
+                    on_result, http_error{}, m_http->context, m_httpHost, f);
                 hrq->resolve(m_httpHost, m_queryPort);
               });
             }
@@ -757,7 +758,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
         case message_type::PathRenamed:
         {
-          m_functionQueue.enqueue([ this, doc = std::move(data) ] {
+          m_functionQueue.enqueue([this, doc = std::move(data)] {
             json_parser::parse_path_renamed(m_device->get_root_node(), *doc);
           });
           if (m_commandCallback)
@@ -767,7 +768,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
         case message_type::PathChanged:
         {
-          m_functionQueue.enqueue([ this, doc = std::move(data) ] {
+          m_functionQueue.enqueue([this, doc = std::move(data)] {
             json_parser::parse_path_changed(m_device->get_root_node(), *doc);
           });
           if (m_commandCallback)
@@ -777,7 +778,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
         case message_type::PathRemoved:
         {
-          m_functionQueue.enqueue([ this, doc = std::move(data) ] {
+          m_functionQueue.enqueue([this, doc = std::move(data)] {
             json_parser::parse_path_removed(m_device->get_root_node(), *doc);
           });
           if (m_commandCallback)
@@ -787,7 +788,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
         case message_type::AttributesChanged:
         {
-          m_functionQueue.enqueue([ this, doc = std::move(data) ] {
+          m_functionQueue.enqueue([this, doc = std::move(data)] {
             json_parser::parse_attributes_changed(
                 m_device->get_root_node(), *doc);
           });
@@ -819,12 +820,13 @@ bool oscquery_mirror_protocol::on_WSMessage(
   return true;
 }
 
-bool oscquery_mirror_protocol::on_BinaryWSMessage(oscquery_mirror_protocol::connection_handler hdl, const std::string& message)
+bool oscquery_mirror_protocol::on_BinaryWSMessage(
+    oscquery_mirror_protocol::connection_handler hdl,
+    const std::string& message)
 {
-  auto handler = [=](const oscpack::ReceivedMessage& m,
-      const oscpack::IpEndpointName& ip) {
-    this->on_OSCMessage(m, ip);
-  };
+  auto handler
+      = [=](const oscpack::ReceivedMessage& m,
+            const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); };
   osc::listener<decltype(handler)> h{handler};
   // TODO use proper ip / port
   h.ProcessPacket(message.data(), message.size(), {});
@@ -836,9 +838,8 @@ void load_oscquery_device(net::device_base& dev, std::string json)
 {
   rapidjson::Document doc;
   doc.Parse(json.c_str());
-  if(!doc.HasParseError())
+  if (!doc.HasParseError())
     json_parser::parse_namespace(dev.get_root_node(), doc);
 }
-
 }
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/network/base/node.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#include <ossia/network/base/node.hpp>
 
 namespace ossia::net::midi
 {

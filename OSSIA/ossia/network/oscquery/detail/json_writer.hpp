@@ -1,11 +1,15 @@
 #pragma once
+#include <ossia/detail/for_each.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
-#include <ossia/detail/for_each.hpp>
+
 #include <oscpack/ip/UdpSocket.h>
 namespace ossia
 {
-namespace net { class network_logger; }
+namespace net
+{
+class network_logger;
+}
 namespace oscquery
 {
 class oscquery_server_protocol;
@@ -56,8 +60,8 @@ public:
   static string_t ignore(ossia::string_view address);
 
   // Extensions
-  static string_t start_osc_streaming(int local_server_port, int local_sender_port);
-
+  static string_t
+  start_osc_streaming(int local_server_port, int local_sender_port);
 
   // Update messages
   //! Sent when a new node is added
@@ -85,10 +89,9 @@ public:
   static string_t paths_removed(const std::vector<std::string>& vec);
 
   static string_t attributes_changed_array(
-      const std::
-          vector<std::
-                     pair<const ossia::net::node_base*, std::vector<ossia::string_view>>>&
-              vec);
+      const std::vector<std::pair<
+          const ossia::net::node_base*, std::vector<ossia::string_view>>>&
+          vec);
 
 private:
   static void
@@ -107,15 +110,18 @@ private:
 // TODO this export is only needed for tests...
 struct OSSIA_EXPORT osc_writer
 {
-  static std::string
-  send_message(const ossia::net::parameter_base&, const ossia::value&, const ossia::net::network_logger&);
-  static std::string
-  send_message(const ossia::net::full_parameter_data&, const ossia::value&, const ossia::net::network_logger&);
-  static void
-  send_message(const ossia::net::parameter_base&, const ossia::value&, const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
-  static void
-  send_message(const ossia::net::full_parameter_data&, const ossia::value&, const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
+  static std::string send_message(
+      const ossia::net::parameter_base&, const ossia::value&,
+      const ossia::net::network_logger&);
+  static std::string send_message(
+      const ossia::net::full_parameter_data&, const ossia::value&,
+      const ossia::net::network_logger&);
+  static void send_message(
+      const ossia::net::parameter_base&, const ossia::value&,
+      const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
+  static void send_message(
+      const ossia::net::full_parameter_data&, const ossia::value&,
+      const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
 };
-
 }
 }

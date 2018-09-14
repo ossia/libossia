@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/value/value.hpp>
+
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
 namespace oscpack

@@ -4,11 +4,13 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
-#include <iostream>
-#include <memory>
+
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscPrintReceivedElements.h>
+
+#include <iostream>
+#include <memory>
 #include <string>
 namespace osc
 {
@@ -34,14 +36,12 @@ public:
   template <typename... Args>
   void send(const ossia::net::parameter_base& address, Args&&... args)
   {
-    send_base(
-        address.get_node().osc_address(), std::forward<Args>(args)...);
+    send_base(address.get_node().osc_address(), std::forward<Args>(args)...);
   }
   template <typename... Args>
   void send(const ossia::net::full_parameter_data& address, Args&&... args)
   {
-    send_base(
-          address.address, std::forward<Args>(args)...);
+    send_base(address.address, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
@@ -71,7 +71,11 @@ public:
     return m_socket.LocalPort();
   }
 
-  oscpack::UdpTransmitSocket& socket() { return m_socket; }
+  oscpack::UdpTransmitSocket& socket()
+  {
+    return m_socket;
+  }
+
 private:
   void debug(const oscpack::OutboundPacketStream& out)
   {

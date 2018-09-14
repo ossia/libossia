@@ -1,8 +1,9 @@
 #pragma once
+#include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/value/value_traits.hpp>
-#include <ossia/detail/flat_set.hpp>
+
 #include <type_traits>
 
 namespace ossia
@@ -84,14 +85,11 @@ struct OSSIA_EXPORT domain_base
   {
   }
   domain_base(
-      value_type v1, value_type v2,
-      const ossia::flat_set<value_type>& vals)
+      value_type v1, value_type v2, const ossia::flat_set<value_type>& vals)
       : min{v1}, max{v2}, values{vals}
   {
   }
-  domain_base(
-      value_type v1, value_type v2,
-      ossia::flat_set<value_type>&& vals)
+  domain_base(value_type v1, value_type v2, ossia::flat_set<value_type>&& vals)
       : min{v1}, max{v2}, values{std::move(vals)}
   {
   }
@@ -159,9 +157,7 @@ struct OSSIA_EXPORT vector_domain
   {
   }
   vector_domain(const vector_domain& other) noexcept
-      : min(other.min)
-      , max(other.max)
-      , values(other.values)
+      : min(other.min), max(other.max), values(other.values)
   {
   }
 
@@ -363,8 +359,7 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   {
   }
   domain_base(
-      value_type&& v1, value_type&& v2,
-      ossia::flat_set<value_type>&& vals)
+      value_type&& v1, value_type&& v2, ossia::flat_set<value_type>&& vals)
       : min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)}
   {
   }

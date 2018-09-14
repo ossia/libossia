@@ -1,23 +1,24 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
-#include <cassert>
-#include <iostream>
 #include <ossia/editor/state/message.hpp>
 #include <ossia/editor/state/state.hpp>
+
+#include <cassert>
+#include <iostream>
 
 namespace ossia
 {
 clock::clock(ossia::time_interval& cst, double ratio)
     : m_interval{cst}
     , m_ratio(ratio)
-    , m_duration{
-          cst.get_max_duration().infinite() ? time_value::infinity
-                                            : cst.get_max_duration() * ratio}
+    , m_duration{cst.get_max_duration().infinite()
+                     ? time_value::infinity
+                     : cst.get_max_duration() * ratio}
     , m_granularity{1}
     , m_running{false}
     , m_paused{false}
@@ -103,7 +104,8 @@ bool clock::tick()
       = duration_cast<microseconds>(clock_type::now() - m_lastTime).count();
 
   // how much ticks it represents ?
-  droppedTicks = ossia::llround(std::floor(double(deltaInUs) / double(m_granularity)));
+  droppedTicks
+      = ossia::llround(std::floor(double(deltaInUs) / double(m_granularity)));
 
   // adjust date and elapsed time considering the dropped ticks
   if (droppedTicks)

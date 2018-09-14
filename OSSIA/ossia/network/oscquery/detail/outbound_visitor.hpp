@@ -1,7 +1,8 @@
 #pragma once
-#include <ossia/network/value/value.hpp>
-#include <oscpack/osc/OscOutboundPacketStream.h>
 #include <ossia/network/dataspace/color.hpp>
+#include <ossia/network/value/value.hpp>
+
+#include <oscpack/osc/OscOutboundPacketStream.h>
 namespace oscpack
 {
 class OutboundPacketStream;
@@ -66,7 +67,7 @@ public:
     }
   }
 
-  template<typename T, typename U>
+  template <typename T, typename U>
   void operator()(const T& t, const U& u) const
   {
     (*this)(t);

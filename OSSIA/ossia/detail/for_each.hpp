@@ -25,27 +25,28 @@ namespace ossia
  */
 // Invokes the functor with every type
 
-template<typename T>
+template <typename T>
 struct type_tag
 {
   using type = T;
 };
 
-template <template<typename...> typename T, typename... Args, typename F>
+template <template <typename...> typename T, typename... Args, typename F>
 constexpr void for_each(T<Args...>, F f)
 {
-  (f.template operator ()<Args>(), ...);
+  (f.template operator()<Args>(), ...);
 }
 
-template <template<typename...> typename T, typename... Args, typename F>
+template <template <typename...> typename T, typename... Args, typename F>
 constexpr void for_each_tagged(T<Args...>, F f)
 {
   (f(type_tag<Args>{}), ...);
 }
 
-template <typename... Args, typename F> constexpr void for_each_type(F f)
+template <typename... Args, typename F>
+constexpr void for_each_type(F f)
 {
-  (f.template operator ()<Args>(), ...);
+  (f.template operator()<Args>(), ...);
 }
 
 template <typename... Args, typename F>
@@ -59,7 +60,7 @@ constexpr void for_each_type_tagged(F f)
 template <typename... Args, typename F>
 constexpr void for_each_type_if(F&& f)
 {
-  (f.template operator ()<Args>() || ...);
+  (f.template operator()<Args>() || ...);
 }
 
 template <typename... Args, typename F>

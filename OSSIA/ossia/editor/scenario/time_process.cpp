@@ -1,7 +1,7 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/editor/scenario/time_process.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
 
 namespace ossia
 {
@@ -28,7 +28,7 @@ void time_process::resume()
 void time_process::mute(bool m)
 {
   m_unmuted = !m;
-  if(node)
+  if (node)
     node->set_mute(m);
   mute_impl(m);
 }

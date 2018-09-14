@@ -1,10 +1,12 @@
 #pragma once
 #include <ossia/editor/expression/expression_fwd.hpp>
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
-#include <memory>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <ossia_export.h>
+
+#include <memory>
 
 /**
  * \file expression_pulse.hpp

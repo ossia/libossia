@@ -3,9 +3,11 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <memory>
-#include <atomic>
+
 #include <ossia_export.h>
+
+#include <atomic>
+#include <memory>
 
 /**
  * \file time_sync.hpp
@@ -96,7 +98,8 @@ public:
 
   /* enable observation of the Expression */
   void observe_expression(bool);
-  void observe_expression(bool, ossia::expressions::expression_result_callback cb);
+  void
+  observe_expression(bool, ossia::expressions::expression_result_callback cb);
 
   //! Resets the internal state. Necessary when restarting an execution.
   void reset();
@@ -121,7 +124,7 @@ public:
   //! Boolean : true if the evaluation was finished due to the max bound
   callback_container<std::function<void(bool)>> finished_evaluation;
 
-  enum class status: int8_t
+  enum class status : int8_t
   {
     NOT_DONE,
     DONE_TRIGGERED,
@@ -132,13 +135,32 @@ public:
     return m_status;
   }
 
-  void set_sync_rate(time_value v) { m_sync_rate = v; }
-  time_value get_sync_rate() const { return m_sync_rate; }
-  bool has_sync_rate() const { return !m_sync_rate.infinite(); }
+  void set_sync_rate(time_value v)
+  {
+    m_sync_rate = v;
+  }
+  time_value get_sync_rate() const
+  {
+    return m_sync_rate;
+  }
+  bool has_sync_rate() const
+  {
+    return !m_sync_rate.infinite();
+  }
 
-  void set_trigger_date(time_value v) { m_trigger_date = v; }
-  time_value get_trigger_date() const { return m_trigger_date;}
-  bool has_trigger_date() const { return !m_trigger_date.infinite();}
+  void set_trigger_date(time_value v)
+  {
+    m_trigger_date = v;
+  }
+  time_value get_trigger_date() const
+  {
+    return m_trigger_date;
+  }
+  bool has_trigger_date() const
+  {
+    return !m_trigger_date.infinite();
+  }
+
 private:
   ossia::expression_ptr m_expression;
   ptr_container<time_event> m_timeEvents;

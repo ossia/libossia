@@ -1,8 +1,10 @@
 #pragma once
 
 #include <ossia/editor/scenario/time_value.hpp>
-#include <memory>
+
 #include <ossia_export.h>
+
+#include <memory>
 #include <string>
 
 /**
@@ -41,38 +43,39 @@ public:
    */
   virtual void state(
       ossia::time_value from, ossia::time_value to, double pos,
-      ossia::time_value tick_offset, double gspeed) = 0;
+      ossia::time_value tick_offset, double gspeed)
+      = 0;
 
   /**
-  * @brief start
-  *
-  * Will be called when
-  * the parent time interval is started.
-  */
+   * @brief start
+   *
+   * Will be called when
+   * the parent time interval is started.
+   */
   virtual void start();
 
   /**
-  * @brief stop
-  *
-  * Will be called when
-  * the parent time interval is stopped.
-  */
+   * @brief stop
+   *
+   * Will be called when
+   * the parent time interval is stopped.
+   */
   virtual void stop();
 
   /**
-  * @brief stop
-  *
-  * Will be called when
-  * the parent time interval is paused.
-  */
+   * @brief stop
+   *
+   * Will be called when
+   * the parent time interval is paused.
+   */
   virtual void pause();
 
   /**
-  * @brief resume
-  *
-  * Will be called when
-  * the parent time interval is resumed.
-  */
+   * @brief resume
+   *
+   * Will be called when
+   * the parent time interval is resumed.
+   */
   virtual void resume();
 
   /**
@@ -95,7 +98,6 @@ public:
 
   //! True if the process is enabled.
   bool enabled() const;
-
 
 protected:
   //! Reimplement this to have a special behaviour on mute

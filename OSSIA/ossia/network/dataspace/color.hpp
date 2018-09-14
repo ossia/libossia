@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/network/dataspace/dataspace_base.hpp>
-
 #include <ossia/network/domain/domain_base_impl.hpp>
 // Algorithms taken from http://www.easyrgb.com
 namespace ossia
@@ -31,14 +30,16 @@ struct OSSIA_EXPORT argb_u : public color_unit<argb_u>
     constexpr_return(ossia::make_string_view("argb"));
   }
 
-  static ossia::vecf_domain<4> domain() {
-    return vecf_domain<4>{
-      ossia::make_vec(0.f,0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<4> domain()
+  {
+    return vecf_domain<4>{ossia::make_vec(0.f, 0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f, 1.f)};
   }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 
   using value_type = vec4f;
 
@@ -48,8 +49,7 @@ struct OSSIA_EXPORT argb_u : public color_unit<argb_u>
     return self;
   }
 
-  static constexpr value_type
-  from_neutral(strong_value<neutral_unit> self)
+  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value;
   }
@@ -84,15 +84,16 @@ struct OSSIA_EXPORT rgba8_u : public color_unit<rgba8_u>
         self.dataspace_value[3] * 255., self.dataspace_value[0] * 255.);
   }
 
-  static ossia::vecf_domain<4> domain() {
-    return vecf_domain<4>{
-      ossia::make_vec(0.f,0.f,0.f,0.f)
-    , ossia::make_vec(255.f,255.f,255.f,255.f)
-    };
+  static ossia::vecf_domain<4> domain()
+  {
+    return vecf_domain<4>{ossia::make_vec(0.f, 0.f, 0.f, 0.f),
+                          ossia::make_vec(255.f, 255.f, 255.f, 255.f)};
   }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
-
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
@@ -122,13 +123,15 @@ struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
             self.dataspace_value[3], self.dataspace_value[0]};
   }
 
-  static ossia::vecf_domain<4> domain() {
-    return vecf_domain<4>{
-      ossia::make_vec(0.f,0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<4> domain()
+  {
+    return vecf_domain<4>{ossia::make_vec(0.f, 0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
@@ -158,14 +161,15 @@ struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
             self.dataspace_value[3]};
   }
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
-
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT bgr_u : public color_unit<bgr_u>
@@ -195,13 +199,15 @@ struct OSSIA_EXPORT bgr_u : public color_unit<bgr_u>
             self.dataspace_value[1]};
   }
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
@@ -233,13 +239,15 @@ struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
         self.dataspace_value[2] * 255., self.dataspace_value[3] * 255.);
   }
 
-  static ossia::vecf_domain<4> domain() {
-    return vecf_domain<4>{
-      ossia::make_vec(0.f,0.f,0.f,0.f)
-    , ossia::make_vec(255.f,255.f,255.f,255.f)
-    };
+  static ossia::vecf_domain<4> domain()
+  {
+    return vecf_domain<4>{ossia::make_vec(0.f, 0.f, 0.f, 0.f),
+                          ossia::make_vec(255.f, 255.f, 255.f, 255.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
@@ -260,13 +268,15 @@ struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
@@ -283,13 +293,15 @@ struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
 
   using value_type = vec3f;
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
@@ -323,13 +335,15 @@ struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
         255. * (1. - self.dataspace_value[3]));
   }
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(255.f,255.f,255.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(255.f, 255.f, 255.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT cmyk8_u : public color_unit<cmyk8_u>
@@ -366,13 +380,15 @@ struct OSSIA_EXPORT xyz_u : public color_unit<xyz_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
@@ -389,13 +405,15 @@ struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
 
   using value_type = vec3f;
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
@@ -414,13 +432,15 @@ struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
   to_neutral(strong_value<concrete_type> self);
   static value_type from_neutral(strong_value<neutral_unit> self);
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
@@ -435,13 +455,15 @@ struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
   }
   using value_type = vec3f;
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 
 struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
@@ -456,12 +478,14 @@ struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
   }
   using value_type = vec3f;
 
-  static ossia::vecf_domain<3> domain() {
-    return vecf_domain<3>{
-      ossia::make_vec(0.f,0.f,0.f)
-    , ossia::make_vec(1.f,1.f,1.f)
-    };
+  static ossia::vecf_domain<3> domain()
+  {
+    return vecf_domain<3>{ossia::make_vec(0.f, 0.f, 0.f),
+                          ossia::make_vec(1.f, 1.f, 1.f)};
   }
-  static constexpr auto bounding() { return ossia::bounding_mode::CLIP; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::CLIP;
+  }
 };
 }

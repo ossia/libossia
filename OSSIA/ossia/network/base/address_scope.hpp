@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <string_view>
 
 namespace ossia::net
@@ -10,12 +11,14 @@ namespace ossia::net
 enum class address_scope
 {
   relative = 0, //! The address begins with '//', it can start from anywhere
-  absolute, //! The address is a standard OSC one: /foo/bar
-  global //! Like absolute, but the address has a device specified: device:/foo.
+  absolute,     //! The address is a standard OSC one: /foo/bar
+  global        //! Like absolute, but the address has a device specified:
+                //! device:/foo.
 };
 
 /**
- * @brief get_address_scope: return address scope (relative, absolute or globale)
+ * @brief get_address_scope: return address scope (relative, absolute or
+ * globale)
  * @param addr: the address to process
  * @return the scope
  */

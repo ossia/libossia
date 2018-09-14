@@ -1,7 +1,7 @@
-#include <ossia/network/base/node_attributes.hpp>
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 
 namespace ossia
@@ -24,7 +24,7 @@ namespace net
   }                                                            \
   ossia::string_view text_##Name()                             \
   {                                                            \
-    constexpr_return(ossia::make_string_view(String));                           \
+    constexpr_return(ossia::make_string_view(String));         \
   }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(Type, Name, String) \
@@ -38,7 +38,7 @@ namespace net
   }                                                              \
   void set_##Name(extended_attributes& n, const Type& i)         \
   {                                                              \
-    set_attribute(n, String, i);                      \
+    set_attribute(n, String, i);                                 \
   }                                                              \
   void set_##Name(extended_attributes& n, ossia::none_t i)       \
   {                                                              \
@@ -50,7 +50,7 @@ namespace net
   }                                                              \
   void set_##Name(ossia::net::node_base& n, const Type& i)       \
   {                                                              \
-    n.set(ossia::string_view(String), i);             \
+    n.set(ossia::string_view(String), i);                        \
   }                                                              \
   void set_##Name(ossia::net::node_base& n, ossia::none_t i)     \
   {                                                              \
@@ -58,7 +58,7 @@ namespace net
   }                                                              \
   ossia::string_view text_##Name()                               \
   {                                                              \
-    constexpr_return(ossia::make_string_view(String));                             \
+    constexpr_return(ossia::make_string_view(String));           \
   }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(Type, Name, String) \
@@ -76,11 +76,11 @@ namespace net
   }                                                                 \
   void set_##Name(ossia::net::node_base& n, Type i)                 \
   {                                                                 \
-    n.set(ossia::string_view(String), i);                \
+    n.set(ossia::string_view(String), i);                           \
   }                                                                 \
   ossia::string_view text_##Name()                                  \
   {                                                                 \
-    constexpr_return(ossia::make_string_view(String));                                \
+    constexpr_return(ossia::make_string_view(String));              \
   }
 
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
@@ -200,7 +200,6 @@ void set_app_version(ossia::net::node_base& n, const char* arg)
   else
     set_app_version(n, ossia::none);
 }
-
 
 void set_default_value(extended_attributes& n, int arg)
 {
@@ -396,7 +395,6 @@ void set_disabled(ossia::net::parameter_data& n, disabled v)
 {
   n.disabled = v;
 }
-
 
 ossia::string_view text_critical()
 {

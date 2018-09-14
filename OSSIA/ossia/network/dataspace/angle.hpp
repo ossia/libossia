@@ -1,7 +1,7 @@
 #pragma once
+#include <ossia/detail/math.hpp>
 #include <ossia/network/dataspace/dataspace_base.hpp>
 #include <ossia/network/domain/domain_base_impl.hpp>
-#include <ossia/detail/math.hpp>
 namespace ossia
 {
 struct angle_u;
@@ -30,16 +30,20 @@ struct OSSIA_EXPORT radian_u : public angle_unit<radian_u>
     return self;
   }
 
-  static constexpr value_type
-  from_neutral(strong_value<neutral_unit> self)
+  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value;
   }
 
-  static ossia::domain_base<float> domain() { return {0.f, float(ossia::two_pi)}; }
+  static ossia::domain_base<float> domain()
+  {
+    return {0.f, float(ossia::two_pi)};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::WRAP; }
-
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::WRAP;
+  }
 };
 
 struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
@@ -55,15 +59,19 @@ struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
     return {self.dataspace_value * ossia::deg_to_rad};
   }
 
-  static constexpr value_type
-  from_neutral(strong_value<neutral_unit> self)
+  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value * ossia::rad_to_deg;
   }
 
-  static ossia::domain_base<float> domain() { return {0.f, 360.f}; }
+  static ossia::domain_base<float> domain()
+  {
+    return {0.f, 360.f};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::WRAP; }
-
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::WRAP;
+  }
 };
 }

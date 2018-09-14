@@ -1,11 +1,14 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/value/value_traits.hpp>
-#include <boost/type_traits/function_traits.hpp>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/home/x3.hpp>
+#include <boost/type_traits/function_traits.hpp>
+
 #include <fmt/format.h>
 namespace ossia
 {
@@ -105,59 +108,59 @@ struct numeric_value_converter
 template <>
 struct value_converter<int> : public numeric_value_converter<int>
 {
-    using numeric_value_converter<int>::operator();
-    int operator()(const std::string& v) const
+  using numeric_value_converter<int>::operator();
+  int operator()(const std::string& v) const
+  {
+    try
     {
-      try
-      {
-        using boost::spirit::x3::int_;
-        int x{};
-        boost::spirit::x3::parse(v.begin(), v.end(), int_, x);
-        return x;
-      }
-      catch (...)
-      {
-        return int{};
-      }
+      using boost::spirit::x3::int_;
+      int x{};
+      boost::spirit::x3::parse(v.begin(), v.end(), int_, x);
+      return x;
     }
+    catch (...)
+    {
+      return int{};
+    }
+  }
 };
 template <>
 struct value_converter<float> : public numeric_value_converter<float>
 {
-    using numeric_value_converter<float>::operator();
-    float operator()(const std::string& v) const
+  using numeric_value_converter<float>::operator();
+  float operator()(const std::string& v) const
+  {
+    try
     {
-      try
-      {
-        using boost::spirit::x3::float_;
-        float x{};
-        boost::spirit::x3::parse(v.begin(), v.end(), float_, x);
-        return x;
-      }
-      catch (...)
-      {
-        return int{};
-      }
+      using boost::spirit::x3::float_;
+      float x{};
+      boost::spirit::x3::parse(v.begin(), v.end(), float_, x);
+      return x;
     }
+    catch (...)
+    {
+      return int{};
+    }
+  }
 };
 template <>
 struct value_converter<double> : public numeric_value_converter<double>
 {
-    using numeric_value_converter<double>::operator();
-    double operator()(const std::string& v) const
+  using numeric_value_converter<double>::operator();
+  double operator()(const std::string& v) const
+  {
+    try
     {
-      try
-      {
-        using boost::spirit::x3::double_;
-        double x{};
-        boost::spirit::x3::parse(v.begin(), v.end(), double_, x);
-        return x;
-      }
-      catch (...)
-      {
-        return int{};
-      }
+      using boost::spirit::x3::double_;
+      double x{};
+      boost::spirit::x3::parse(v.begin(), v.end(), double_, x);
+      return x;
     }
+    catch (...)
+    {
+      return int{};
+    }
+  }
 };
 template <>
 struct value_converter<bool> : public numeric_value_converter<bool>
@@ -170,63 +173,64 @@ struct value_converter<char> : public numeric_value_converter<char>
 
 struct fmt_writer
 {
-    fmt::MemoryWriter& wr;
+  fmt::MemoryWriter& wr;
 
-    void operator()(impulse) const
+  void operator()(impulse) const
+  {
+    wr << "impulse";
+  }
+  void operator()(int32_t v) const
+  {
+    wr << v;
+  }
+  void operator()(float v) const
+  {
+    wr << v;
+  }
+  void operator()(bool v) const
+  {
+    if (v)
+      wr << "true";
+    else
+      wr << "false";
+  }
+  void operator()(char v) const
+  {
+    wr << v;
+  }
+  void operator()(const std::string& v) const
+  {
+    wr << v;
+  }
+  void operator()() const
+  {
+  }
+  template <std::size_t N>
+  void operator()(std::array<float, N> v) const
+  {
+    wr << '[' << v[0];
+    for (std::size_t i = 1; i < N; i++)
+      wr << ", " << v[i];
+    wr << ']';
+  }
+  void operator()(const std::vector<ossia::value>& v) const
+  {
+    using namespace std::literals;
+    wr << '[';
+    const auto n = v.size();
+    if (n > 0)
     {
-      wr << "impulse";
-    }
-    void operator()(int32_t v) const
-    {
-      wr << v;
-    }
-    void operator()(float v) const
-    {
-      wr << v;
-    }
-    void operator()(bool v) const
-    {
-      if(v) wr << "true";
-      else  wr << "false";
-    }
-    void operator()(char v) const
-    {
-      wr << v;
-    }
-    void operator()(const std::string& v) const
-    {
-      wr << v;
-    }
-    void operator()() const
-    {
-    }
-    template <std::size_t N>
-    void operator()(std::array<float, N> v) const
-    {
-      wr << '[' << v[0];
-      for (std::size_t i = 1; i < N; i++)
-        wr << ", " << v[i];
-      wr << ']';
-    }
-    void operator()(const std::vector<ossia::value>& v) const
-    {
-      using namespace std::literals;
-      wr << '[';
-      const auto n = v.size();
-      if (n > 0)
+      v[0].apply(*this);
+
+      for (std::size_t i = 1; i < n; i++)
       {
-        v[0].apply(*this);
-
-        for (std::size_t i = 1; i < n; i++)
-        {
-          wr << ", ";
-          v[i].apply(*this);
-        }
+        wr << ", ";
+        v[i].apply(*this);
       }
-      wr << ']';
     }
+    wr << ']';
+  }
 };
-
 
 template <>
 struct value_converter<std::string>
@@ -337,17 +341,16 @@ struct value_converter<std::array<float, N>>
     return v;
   }
 
-  template<std::size_t M>
+  template <std::size_t M>
   std::array<float, N> operator()(std::array<float, M> v)
   {
     std::array<float, N> a = cur;
-    for(std::size_t i = 0; i < std::min(N, M); i++)
+    for (std::size_t i = 0; i < std::min(N, M); i++)
     {
       a[i] = v[i];
     }
     return a;
   }
-
 
   std::array<float, N> operator()(float f)
   {
@@ -394,7 +397,6 @@ T convert(const ossia::value& val)
 {
   return val.apply(detail::value_converter<T>{T{}});
 }
-
 
 template <typename T>
 T convert(const T& cur, const ossia::value& val)
@@ -463,7 +465,8 @@ extern template int ossia::convert<int>(const ossia::value&);
 extern template char ossia::convert<char>(const ossia::value&);
 extern template bool ossia::convert<bool>(const ossia::value&);
 extern template std::string ossia::convert<std::string>(const ossia::value&);
-extern template std::vector<ossia::value> ossia::convert<std::vector<ossia::value>>(const ossia::value&);
+extern template std::vector<ossia::value>
+ossia::convert<std::vector<ossia::value>>(const ossia::value&);
 extern template ossia::vec2f ossia::convert<ossia::vec2f>(const ossia::value&);
 extern template ossia::vec3f ossia::convert<ossia::vec3f>(const ossia::value&);
 extern template ossia::vec4f ossia::convert<ossia::vec4f>(const ossia::value&);

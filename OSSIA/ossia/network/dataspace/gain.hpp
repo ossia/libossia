@@ -67,9 +67,10 @@ T DecibelsToMidi(const T value)
 {
   return value <= -DecibelHeadroom
              ? 0.
-             : 100. * std::exp(
-                          ossia::log1p(value / DecibelHeadroom)
-                          / GainMidiPowPow2);
+             : 100.
+                   * std::exp(
+                         ossia::log1p(value / DecibelHeadroom)
+                         / GainMidiPowPow2);
 }
 
 template <typename T>
@@ -92,15 +93,20 @@ struct OSSIA_EXPORT linear_u : public gain_unit<linear_u>
     return self;
   }
 
-  static constexpr value_type
-  from_neutral(strong_value<neutral_unit> self)
+  static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
     return self.dataspace_value;
   }
 
-  static ossia::domain_base<float> domain() { return {0.f, 1.f}; }
+  static ossia::domain_base<float> domain()
+  {
+    return {0.f, 1.f};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::LOW;
+  }
 };
 
 struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
@@ -121,9 +127,15 @@ struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
     return detail::LinearGainToMidi(self.dataspace_value);
   }
 
-  static ossia::domain_base<float> domain() { return {0.f, 127.f}; }
+  static ossia::domain_base<float> domain()
+  {
+    return {0.f, 127.f};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::LOW;
+  }
 };
 
 struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
@@ -144,9 +156,15 @@ struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
     return detail::LinearGainToDecibelsClipped(self.dataspace_value);
   }
 
-  static ossia::domain_base<float> domain() { return {-96.f, 12.f}; }
+  static ossia::domain_base<float> domain()
+  {
+    return {-96.f, 12.f};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::LOW;
+  }
 };
 
 struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
@@ -167,8 +185,14 @@ struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
     return 20.0 * (std::log10(self.dataspace_value));
   }
 
-  static ossia::domain_base<float> domain() { return {-96.f, 12.f}; }
+  static ossia::domain_base<float> domain()
+  {
+    return {-96.f, 12.f};
+  }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
+  static constexpr auto bounding()
+  {
+    return ossia::bounding_mode::FREE;
+  }
 };
 }

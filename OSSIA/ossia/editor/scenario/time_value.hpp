@@ -3,9 +3,10 @@
 #if defined(__APPLE__)
 #include <mach/time_value.h>
 #endif
+#include <ossia_export.h>
+
 #include <cinttypes>
 #include <limits>
-#include <ossia_export.h>
 
 /**
  * \file time_value.hpp
@@ -149,7 +150,8 @@ struct OSSIA_EXPORT time_value
     return time_value{int64_t(impl * d)};
   }
 
-  friend constexpr double operator/(time_value lhs, time_value rhs) {
+  friend constexpr double operator/(time_value lhs, time_value rhs)
+  {
     return double(lhs.impl) / double(rhs.impl);
   }
   constexpr operator int64_t() const noexcept
@@ -190,15 +192,18 @@ const constexpr time_value Infinite{time_value::infinity};
 const constexpr time_value Zero{0};
 const constexpr time_value One{1};
 
-OSSIA_EXPORT constexpr inline time_value abs(time_value t) {
+OSSIA_EXPORT constexpr inline time_value abs(time_value t)
+{
   return time_value{t.impl >= 0 ? t.impl : -t.impl};
 }
 
-OSSIA_EXPORT constexpr inline time_value norm(time_value t1, time_value t2) {
-  if(t1.infinite() || t2.infinite())
+OSSIA_EXPORT constexpr inline time_value norm(time_value t1, time_value t2)
+{
+  if (t1.infinite() || t2.infinite())
     return Infinite;
   return time_value{t1.impl > t2.impl ? t1.impl - t2.impl : t2.impl - t1.impl};
 }
 }
 
-//static_assert(std::is_pod<ossia::time_value>::value, "bug introduced somewhere");
+// static_assert(std::is_pod<ossia::time_value>::value, "bug introduced
+// somewhere");

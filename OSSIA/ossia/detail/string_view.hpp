@@ -1,7 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <string_view>
+
 #include <array>
+
+#include <string_view>
 
 namespace ossia
 {
@@ -28,5 +30,4 @@ make_string_array(Args&&... args) noexcept
   return std::array<ossia::string_view, sizeof...(Args)>{
       make_string_view(args)...};
 }
-
 }

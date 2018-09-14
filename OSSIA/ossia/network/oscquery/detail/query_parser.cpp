@@ -1,17 +1,21 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "query_parser.hpp"
-#include <ossia/network/base/parameter_data.hpp>
+
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/oscquery/detail/http_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/container/static_vector.hpp>
 #include <boost/lexical_cast.hpp>
-#include <ossia/detail/small_vector.hpp>
+
 #include <hopscotch_map.h>
+
 #include <string>
 #include <vector>
 
@@ -251,7 +255,8 @@ void query_parser::parse(
 }
 
 void query_parser::parse(
-    net::value_attribute attr, const std::string& data, net::parameter_data& res)
+    net::value_attribute attr, const std::string& data,
+    net::parameter_data& res)
 {
   // attr.setter(res, data);
   // Note : we can leverage the fact that this is called after the unit, type,
@@ -279,7 +284,8 @@ void query_parser::parse(
 }
 
 void query_parser::parse(
-    net::unit_attribute attr, const std::string& data, net::parameter_data& res)
+    net::unit_attribute attr, const std::string& data,
+    net::parameter_data& res)
 {
   res.unit = parse_pretty_unit(data);
 }

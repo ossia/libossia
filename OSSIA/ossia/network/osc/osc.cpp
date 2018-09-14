@@ -1,20 +1,21 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <boost/algorithm/string.hpp>
+
 #include <oscpack/osc/OscPrintReceivedElements.h>
-#include <ossia/network/osc/detail/osc.hpp>
-#include <ossia/network/osc/detail/osc_receive.hpp>
 namespace ossia
 {
 namespace net
@@ -22,11 +23,12 @@ namespace net
 using sender_t = osc::sender<osc_outbound_visitor>;
 
 osc_protocol::osc_protocol(
-    std::string ip, uint16_t remote_port, uint16_t local_port, ossia::optional<std::string> expose)
-  : m_ip{std::move(ip)}
-  , m_remote_port{remote_port}
-  , m_local_port{local_port}
-  , m_expose{std::move(expose)}
+    std::string ip, uint16_t remote_port, uint16_t local_port,
+    ossia::optional<std::string> expose)
+    : m_ip{std::move(ip)}
+    , m_remote_port{remote_port}
+    , m_local_port{local_port}
+    , m_expose{std::move(expose)}
 {
   update_sender();
   update_receiver();
@@ -87,18 +89,17 @@ void osc_protocol::update_sender()
 void osc_protocol::update_receiver()
 {
   m_receiver = std::make_unique<osc::receiver>(
-                 m_local_port, [=] (
-                    const oscpack::ReceivedMessage& m,
-                    const oscpack::IpEndpointName& ip) {
-    this->on_received_message(m, ip);
-  });
+      m_local_port, [=](const oscpack::ReceivedMessage& m,
+                        const oscpack::IpEndpointName& ip) {
+        this->on_received_message(m, ip);
+      });
 
   if (m_receiver->port() != m_local_port)
   {
     throw ossia::connection_error{
-      "osc_protocol: "
-      "Could not open port: "
-      + std::to_string(m_local_port)};
+        "osc_protocol: "
+        "Could not open port: "
+        + std::to_string(m_local_port)};
   }
 
   m_receiver->run();
@@ -106,16 +107,12 @@ void osc_protocol::update_receiver()
 
 void osc_protocol::update_zeroconf()
 {
-  if(!m_expose)
+  if (!m_expose)
     return;
   try
   {
     m_zeroconfServer = net::make_zeroconf_server(
-                         *m_expose,
-                         "_osc._udp",
-                         *m_expose,
-                         m_local_port,
-                         m_remote_port);
+        *m_expose, "_osc._udp", *m_expose, m_local_port, m_remote_port);
   }
   catch (const std::exception& e)
   {
@@ -176,15 +173,17 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
   return false;
 }
 
-bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& addresses)
+bool osc_protocol::push_bundle(
+    const std::vector<const parameter_base*>& addresses)
 {
-  constexpr int N = 1024*1024;
+  constexpr int N = 1024 * 1024;
 
-  try {
+  try
+  {
     auto buffer{std::make_unique<char[]>(N)};
     oscpack::OutboundPacketStream str(buffer.get(), N);
     str << oscpack::BeginBundleImmediate();
-    for(auto a : addresses)
+    for (auto a : addresses)
     {
       const ossia::net::parameter_base& addr = *a;
       if (addr.get_access() == ossia::access_mode::GET)
@@ -201,22 +200,25 @@ bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& address
     str << oscpack::EndBundle();
     m_sender->socket().Send(str.Data(), str.Size());
   }
-  catch (const oscpack::OutOfBufferMemoryException&) {
+  catch (const oscpack::OutOfBufferMemoryException&)
+  {
     return false;
   }
 
   return true;
 }
 
-bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses)
+bool osc_protocol::push_raw_bundle(
+    const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  constexpr int N = 1024*1024;
+  constexpr int N = 1024 * 1024;
 
-  try {
+  try
+  {
     auto buffer{std::make_unique<char[]>(N)};
     oscpack::OutboundPacketStream str(buffer.get(), N);
     str << oscpack::BeginBundleImmediate();
-    for(const auto& addr : addresses)
+    for (const auto& addr : addresses)
     {
       if (addr.get_access() == ossia::access_mode::GET)
         continue;
@@ -232,7 +234,8 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_
     str << oscpack::EndBundle();
     m_sender->socket().Send(str.Data(), str.Size());
   }
-  catch (const oscpack::OutOfBufferMemoryException&) {
+  catch (const oscpack::OutOfBufferMemoryException&)
+  {
     return false;
   }
 
@@ -242,7 +245,8 @@ bool osc_protocol::push_raw_bundle(const std::vector<ossia::net::full_parameter_
 bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
-    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
+    m_listening.insert(
+        std::make_pair(address.get_node().osc_address(), &address));
   else
     m_listening.erase(address.get_node().osc_address());
 
@@ -266,8 +270,8 @@ template <std::size_t N>
 static bool is_vec(std::vector<ossia::value>& t)
 {
   return t.size() == N && ossia::all_of(t, [](const ossia::value& val) {
-    return val.get_type() == ossia::val_type::FLOAT;
-  });
+           return val.get_type() == ossia::val_type::FLOAT;
+         });
 }
 
 void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
@@ -325,8 +329,8 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       else
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
-        addr->set_value(osc_utilities::create_list(
-                          m.ArgumentsBegin(), m.ArgumentCount()));
+        addr->set_value(
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
@@ -342,8 +346,8 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       else
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
-        addr->set_value(osc_utilities::create_list(
-                          m.ArgumentsBegin(), m.ArgumentCount()));
+        addr->set_value(
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
@@ -359,8 +363,8 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       else
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
-        addr->set_value(osc_utilities::create_list(
-                          m.ArgumentsBegin(), m.ArgumentCount()));
+        addr->set_value(
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
       }
       break;
     }
@@ -368,7 +372,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
     {
       auto addr = n->create_parameter(ossia::val_type::LIST);
       addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
+          osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
       break;
     }
   }

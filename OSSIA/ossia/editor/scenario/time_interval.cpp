@@ -1,24 +1,28 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/nodes/forward_node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
-#include <ossia/dataflow/nodes/forward_node.hpp>
+
 #include <algorithm>
 #include <iostream>
 namespace ossia
 {
 
-void time_interval::tick_impl(ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset)
+void time_interval::tick_impl(
+    ossia::time_value old_date, ossia::time_value new_date,
+    ossia::time_value offset)
 {
   m_tick_offset = offset;
   m_date = new_date;
   compute_position();
 
-  node->request({old_date, new_date, m_position, m_tick_offset, m_globalSpeed});
+  node->request(
+      {old_date, new_date, m_position, m_tick_offset, m_globalSpeed});
 
   state(old_date, new_date);
   if (m_callback)
@@ -32,7 +36,8 @@ void time_interval::tick_current(ossia::time_value offset)
 
 void time_interval::tick(time_value date, double ratio)
 {
-  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed / ratio), m_tick_offset);
+  tick_impl(
+      m_date, m_date + std::ceil(date.impl * m_speed / ratio), m_tick_offset);
 }
 
 void time_interval::tick_offset(time_value date, ossia::time_value offset)
@@ -42,7 +47,8 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset)
 
 std::shared_ptr<time_interval> time_interval::create(
     time_interval::exec_callback callback, time_event& startEvent,
-    time_event& endEvent, ossia::time_value nominal, ossia::time_value min, ossia::time_value max)
+    time_event& endEvent, ossia::time_value nominal, ossia::time_value min,
+    ossia::time_value max)
 {
   auto timeInterval = std::make_shared<time_interval>(
       std::move(callback), startEvent, endEvent, nominal, min, max);
@@ -55,7 +61,8 @@ std::shared_ptr<time_interval> time_interval::create(
 
 time_interval::time_interval(
     time_interval::exec_callback callback, time_event& startEvent,
-    time_event& endEvent, ossia::time_value nominal, ossia::time_value min, ossia::time_value max)
+    time_event& endEvent, ossia::time_value nominal, ossia::time_value min,
+    ossia::time_value max)
     : m_callback(std::move(callback))
     , m_start(startEvent)
     , m_end(endEvent)
@@ -100,7 +107,8 @@ void time_interval::start()
 void time_interval::stop()
 {
   // stop all time processes
-  for (const std::shared_ptr<ossia::time_process>& timeProcess : get_time_processes())
+  for (const std::shared_ptr<ossia::time_process>& timeProcess :
+       get_time_processes())
   {
     timeProcess->stop();
   }
@@ -205,26 +213,28 @@ void time_interval::resume()
 
 void time_interval::set_callback(time_interval::exec_callback cb)
 {
-  if(cb)
+  if (cb)
     m_callback = std::move(*cb);
   else
     m_callback = {};
 }
 
-void time_interval::set_callback(smallfun::function<void (double, time_value), 32> cb)
+void time_interval::set_callback(
+    smallfun::function<void(double, time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
 
 void time_interval::set_stateless_callback(time_interval::exec_callback cb)
 {
-  if(cb)
+  if (cb)
     m_callback = std::move(*cb);
   else
     m_callback = {};
 }
 
-void time_interval::set_stateless_callback(smallfun::function<void (double, time_value), 32> cb)
+void time_interval::set_stateless_callback(
+    smallfun::function<void(double, time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
@@ -245,7 +255,7 @@ time_interval::set_nominal_duration(ossia::time_value durationNominal)
   if (m_nominal > m_max)
     set_max_duration(m_nominal);
 
-  if(m_date > m_nominal)
+  if (m_date > m_nominal)
     m_date = m_nominal;
 
   return *this;
@@ -256,8 +266,7 @@ const time_value& time_interval::get_min_duration() const
   return m_min;
 }
 
-time_interval&
-time_interval::set_min_duration(ossia::time_value durationMin)
+time_interval& time_interval::set_min_duration(ossia::time_value durationMin)
 {
   m_min = durationMin;
 
@@ -272,8 +281,7 @@ const time_value& time_interval::get_max_duration() const
   return m_max;
 }
 
-time_interval&
-time_interval::set_max_duration(ossia::time_value durationMax)
+time_interval& time_interval::set_max_duration(ossia::time_value durationMax)
 {
   m_max = durationMax;
 
@@ -293,8 +301,7 @@ time_event& time_interval::get_end_event() const
   return m_end;
 }
 
-void time_interval::add_time_process(
-    std::shared_ptr<time_process> timeProcess)
+void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
 {
   if (!timeProcess)
     return;
@@ -302,7 +309,6 @@ void time_interval::add_time_process(
   // todo what if the interval started
   if (m_running)
     timeProcess->start();
-
 
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
@@ -326,5 +332,4 @@ void time_interval::cleanup()
 {
   m_processes.clear();
 }
-
 }

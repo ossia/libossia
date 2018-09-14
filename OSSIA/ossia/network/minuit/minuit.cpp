@@ -1,17 +1,16 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/minuit/minuit.hpp>
-#include <ossia/network/base/parameter_data.hpp>
-#include <ossia/network/osc/detail/osc.hpp>
-
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/string_view.hpp>
+#include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/detail/minuit_parser.hpp>
+#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/osc/detail/osc_receive.hpp>
+
 #include <oscpack/osc/OscPrintReceivedElements.h>
 
 namespace ossia
@@ -273,7 +272,6 @@ bool minuit_protocol::push_raw(const full_parameter_data& addr)
   }
 
   return false;
-
 }
 
 bool minuit_protocol::push(const ossia::net::parameter_base& addr)
@@ -298,7 +296,8 @@ bool minuit_protocol::observe(ossia::net::parameter_base& address, bool enable)
   if (enable)
   {
     this->m_sender->send(act, address, "enable");
-    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
+    m_listening.insert(
+        std::make_pair(address.get_node().osc_address(), &address));
   }
   else
   {
@@ -315,7 +314,8 @@ bool minuit_protocol::observe_quietly(
     ossia::net::parameter_base& address, bool enable)
 {
   if (enable)
-    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
+    m_listening.insert(
+        std::make_pair(address.get_node().osc_address(), &address));
   else
     m_listening.erase(address.get_node().osc_address());
 

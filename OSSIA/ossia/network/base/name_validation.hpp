@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/string_view.hpp>
+
 #include <string>
 #include <vector>
 namespace ossia
@@ -93,7 +94,6 @@ bool is_brace_expansion(ossia::string_view);
  * Given /bar/baz, returns {"bar, baz"}.
  * Given bar/baz, returns {"bar, baz"}.
  */
-OSSIA_EXPORT std::vector<std::string>
-address_parts(ossia::string_view src);
+OSSIA_EXPORT std::vector<std::string> address_parts(ossia::string_view src);
 }
 }

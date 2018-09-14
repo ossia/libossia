@@ -1,9 +1,12 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/string_view.hpp>
-#include <cstring>
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
+
+#include <cstring>
 
 inline std::string get_string(const rapidjson::Value& val)
 {

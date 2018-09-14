@@ -1,11 +1,13 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/value/value.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <boost/algorithm/string/replace.hpp>
+
 #include <cassert>
 #include <iostream>
 namespace ossia
@@ -41,7 +43,7 @@ node_base* generic_node_base::get_parent() const
 void generic_node_base::on_address_change()
 {
   m_oscAddressCache = ossia::net::osc_parameter_string(*this);
-  for(auto& cld : m_children)
+  for (auto& cld : m_children)
   {
     cld->on_address_change();
   }
@@ -94,7 +96,8 @@ ossia::net::parameter_base* generic_node::get_parameter() const
   return m_parameter.get();
 }
 
-void generic_node::set_parameter(std::unique_ptr<ossia::net::parameter_base> addr)
+void generic_node::set_parameter(
+    std::unique_ptr<ossia::net::parameter_base> addr)
 {
   remove_parameter();
   if (addr)
@@ -104,7 +107,8 @@ void generic_node::set_parameter(std::unique_ptr<ossia::net::parameter_base> add
   }
 }
 
-ossia::net::parameter_base* generic_node::create_parameter(ossia::val_type type)
+ossia::net::parameter_base*
+generic_node::create_parameter(ossia::val_type type)
 {
   // clear former address
   remove_parameter();

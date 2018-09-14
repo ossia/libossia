@@ -1,8 +1,7 @@
 #pragma once
-#include <ossia/network/value/value.hpp>
-
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/value/value.hpp>
 
 namespace ossia
 {

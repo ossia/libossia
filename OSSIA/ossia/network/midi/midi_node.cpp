@@ -1,8 +1,8 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/midi/midi_parameter.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_node.hpp>
+#include <ossia/network/midi/midi_parameter.hpp>
 
 namespace ossia
 {
@@ -37,8 +37,7 @@ midi_node::midi_node(midi_device& aDevice, node_base& aParent)
 {
 }
 
-midi_node::midi_node(midi_device& aDevice)
-    : m_device{aDevice}
+midi_node::midi_node(midi_device& aDevice) : m_device{aDevice}
 {
 }
 

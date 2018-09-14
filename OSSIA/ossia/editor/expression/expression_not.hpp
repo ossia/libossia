@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include <ossia/editor/expression/expression_fwd.hpp>
+
 #include <ossia_export.h>
+
+#include <memory>
 
 /**
  * \file expression_not.hpp

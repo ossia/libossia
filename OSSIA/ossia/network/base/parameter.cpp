@@ -1,9 +1,10 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
-#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
+
 #include <future>
 /*
 template class ossia::callback_container<ossia::value_callback>;
@@ -76,17 +77,21 @@ std::string address_string_from_node(const ossia::net::parameter_base& addr)
   return address_string_from_node(addr.get_node());
 }
 
-std::string relative_address_string_from_nodes(const ossia::net::node_base& node, const ossia::net::node_base& parent)
+std::string relative_address_string_from_nodes(
+    const ossia::net::node_base& node, const ossia::net::node_base& parent)
 {
   std::string addr = ossia::net::address_string_from_node(node);
   // TODO how to deal with multiple parents ?
   std::string parent_addr = ossia::net::address_string_from_node(parent);
-  if ( parent_addr.back() != '/' ) parent_addr += "/";
+  if (parent_addr.back() != '/')
+    parent_addr += "/";
 
   if (addr.find(parent_addr) != std::string::npos)
   {
     return addr.substr(parent_addr.size());
-  } else {
+  }
+  else
+  {
     return node.get_name();
   }
 }
@@ -178,7 +183,6 @@ value parameter_base::fetch_value()
   return value();
 }
 
-
 ossia::repetition_filter parameter_base::get_repetition_filter() const
 {
   return m_repetitionFilter;
@@ -201,8 +205,7 @@ parameter_base& parameter_base::set_unit(const unit_t& u)
   if (m_unit != u)
   {
     m_unit = u;
-    m_node.get_device().on_attribute_modified(
-        m_node, text_unit());
+    m_node.get_device().on_attribute_modified(m_node, text_unit());
   }
   return *this;
 }
@@ -265,7 +268,8 @@ void push_value(const destination& d, const value_with_unit& v)
   addr.push_value(ossia::to_value(v)); // TODO what about destination_index ??
 }
 
-std::ostream& operator<<(std::ostream& s, const ossia::net::parameter_base& addr)
+std::ostream&
+operator<<(std::ostream& s, const ossia::net::parameter_base& addr)
 {
   return s << ossia::net::address_string_from_node(addr);
 }

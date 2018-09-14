@@ -1,8 +1,8 @@
 #pragma once
-#include <ossia/network/dataspace/dataspace.hpp>
-#include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/size.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 
 namespace ossia
 {

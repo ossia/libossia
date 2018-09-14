@@ -1,12 +1,12 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/dataspace/value_with_unit.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/message.hpp>
-#include <ossia/network/value/value_traits.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/dataspace/value_with_unit.hpp>
+#include <ossia/network/value/value_traits.hpp>
 namespace ossia
 {
 void message::launch()
@@ -23,7 +23,8 @@ void message::launch()
     else
     {
       // Convert from this message's unit to the address's unit
-      addr.push_value(ossia::convert(std::move(message_value), unit, addr_unit));
+      addr.push_value(
+          ossia::convert(std::move(message_value), unit, addr_unit));
     }
   }
   else
@@ -68,8 +69,8 @@ void message::launch()
     {
       addr.push_value(ossia::to_value(ossia::convert(
           ossia::merge(
-              ossia::convert(ossia::net::get_value(addr), unit), std::move(message_value),
-              dest.index),
+              ossia::convert(ossia::net::get_value(addr), unit),
+              std::move(message_value), dest.index),
           addr_unit)));
     }
   }
@@ -144,7 +145,8 @@ void piecewise_vec_message<N>::launch()
       }
       */
 
-      addr.push_value(ossia::convert(std::move(message_value), unit, addr_unit));
+      addr.push_value(
+          ossia::convert(std::move(message_value), unit, addr_unit));
     }
     else
     {
@@ -169,7 +171,8 @@ void piecewise_vec_message<N>::launch()
               merge(       // Merge the automation value with the "unit" value
                   convert( // Put the current value in the Unit domain
                       ossia::net::get_value(addr), unit),
-                  std::move(message_value), // Compute the output of the automation
+                  std::move(
+                      message_value), // Compute the output of the automation
                   used_values),
               addr.get_unit())));
     }

@@ -1,8 +1,9 @@
 #pragma once
+#include <ossia/detail/small_vector.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
-#include <ossia/network/base/node_functions.hpp>
-#include <ossia/detail/small_vector.hpp>
+
 #include <oscpack/osc/OscOutboundPacketStream.h>
 
 #include <array>
@@ -23,7 +24,8 @@ inline oscpack::OutboundPacketStream& operator<<(
 }
 
 inline oscpack::OutboundPacketStream& operator<<(
-    oscpack::OutboundPacketStream& p, const ossia::net::parameter_base& address)
+    oscpack::OutboundPacketStream& p,
+    const ossia::net::parameter_base& address)
 {
   p << address.get_node().osc_address();
 
@@ -86,8 +88,8 @@ private:
   void subfunc(Arg1&& arg1, Args&&... args)
   {
     static_assert(
-        !std::is_pointer<std::remove_cv_t<std::remove_reference_t<Arg1>>>::
-            value,
+        !std::is_pointer<
+            std::remove_cv_t<std::remove_reference_t<Arg1>>>::value,
         "Do not send raw string literals");
     p << arg1;
     subfunc(args...);
@@ -136,8 +138,8 @@ private:
   void subfunc(Arg1&& arg1, Args&&... args)
   {
     static_assert(
-        !std::is_pointer<std::remove_cv_t<std::remove_reference_t<Arg1>>>::
-            value,
+        !std::is_pointer<
+            std::remove_cv_t<std::remove_reference_t<Arg1>>>::value,
         "Do not send raw string literals");
     p << arg1;
     subfunc(args...);

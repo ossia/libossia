@@ -1,14 +1,14 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <ossia/network/oscquery/detail/server.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/detail/server.hpp>
 
 namespace osc
 {
-template<typename T>
+template <typename T>
 class sender;
 }
 namespace ossia
@@ -81,7 +81,6 @@ public:
     sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
         l, client_ip, port);
   }
-
 };
 }
 }

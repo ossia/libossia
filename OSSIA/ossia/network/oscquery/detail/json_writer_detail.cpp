@@ -1,38 +1,41 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "json_writer_detail.hpp"
+
 #include "json_writer.hpp"
+
+#include <ossia/detail/for_each.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
-#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/oscquery/detail/attributes.hpp>
-#include <ossia/network/oscquery/detail/domain_to_json.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/detail/for_each.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <ossia/network/osc/detail/osc_fwd.hpp>
+#include <ossia/network/oscquery/detail/attributes.hpp>
+#include <ossia/network/oscquery/detail/domain_to_json.hpp>
 #include <ossia/network/oscquery/detail/oscquery_units.hpp>
-#include <ossia/detail/logger.hpp>
+#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/value/value.hpp>
 namespace ossia
 {
 namespace oscquery
 {
 namespace detail
 {
-void json_writer_impl::writeValue(const value& val, const ossia::unit_t& unit) const
+void json_writer_impl::writeValue(
+    const value& val, const ossia::unit_t& unit) const
 {
   const auto array = is_array(val);
-  if(!array)
+  if (!array)
   {
     writer.StartArray();
   }
   val.apply(value_to_json{writer, unit});
-  if(!array)
+  if (!array)
   {
     writer.EndArray();
   }
@@ -110,12 +113,12 @@ void json_writer_impl::writeValue(int32_t i) const
 }
 void json_writer_impl::writeValue(float i) const
 {
-  if(!writer.Double(i))
-      writer.Null();
+  if (!writer.Double(i))
+    writer.Null();
 }
 void json_writer_impl::writeValue(double i) const
 {
-  if(!writer.Double(i))
+  if (!writer.Double(i))
     writer.Null();
 }
 void json_writer_impl::writeValue(bool i) const
@@ -143,44 +146,44 @@ using writer_map_fun
     = void (*)(const json_writer_impl&, const ossia::net::node_base&);
 using writer_map_type = string_view_map<writer_map_fun>;
 
-template<typename Attr>
+template <typename Attr>
 struct attr_pair_writer
 {
   auto operator()()
   {
-    return [] (const json_writer_impl& self, const ossia::net::node_base& n)
-    {
+    return [](const json_writer_impl& self, const ossia::net::node_base& n) {
       self.writeValue(Attr::getter(n));
     };
   }
 };
 
-template<>
+template <>
 struct attr_pair_writer<ossia::net::value_attribute>
 {
   auto operator()()
   {
-    return [] (const json_writer_impl& self, const ossia::net::node_base& n)
-    {
-      if(auto p = n.get_parameter())
+    return [](const json_writer_impl& self, const ossia::net::node_base& n) {
+      if (auto p = n.get_parameter())
         self.writeValue(ossia::net::value_attribute::getter(n), p->get_unit());
       else
-        self.writeValue(ossia::net::value_attribute::getter(n), ossia::unit_t{});
+        self.writeValue(
+            ossia::net::value_attribute::getter(n), ossia::unit_t{});
     };
   }
 };
 
-template<>
+template <>
 struct attr_pair_writer<ossia::net::default_value_attribute>
 {
   auto operator()()
   {
-    return [] (const json_writer_impl& self, const ossia::net::node_base& n)
-    {
-      if(auto p = n.get_parameter())
-        self.writeValue(ossia::net::default_value_attribute::getter(n), p->get_unit());
+    return [](const json_writer_impl& self, const ossia::net::node_base& n) {
+      if (auto p = n.get_parameter())
+        self.writeValue(
+            ossia::net::default_value_attribute::getter(n), p->get_unit());
       else
-        self.writeValue(ossia::net::default_value_attribute::getter(n), ossia::unit_t{});
+        self.writeValue(
+            ossia::net::default_value_attribute::getter(n), ossia::unit_t{});
     };
   }
 };
@@ -237,7 +240,7 @@ struct node_attribute_writer
   const net::parameter_base& p;
   const json_writer_impl& writer;
 
-  template<typename T>
+  template <typename T>
   void operator()(const T&)
   {
     using Attr = typename T::type;
@@ -253,17 +256,20 @@ struct node_attribute_writer
   {
     if (auto res = p.get_unit())
     {
-      ossia::apply_nonnull([&] (const auto& d) {
-        if(d) {
-          ossia::apply(unit_writer{writer}, d);
-        }
-      }, res.v);
+      ossia::apply_nonnull(
+          [&](const auto& d) {
+            if (d)
+            {
+              ossia::apply(unit_writer{writer}, d);
+            }
+          },
+          res.v);
     }
   }
 
   void operator()(const type_tag<ossia::net::extended_type_attribute>&)
   {
-    if(!p.get_unit())
+    if (!p.get_unit())
     {
       using T = type_tag<ossia::net::extended_type_attribute>;
       using Attr = typename T::type;
@@ -278,10 +284,9 @@ struct node_attribute_writer
     }
   }
 
-
   void operator()(const type_tag<ossia::net::value_attribute>&)
   {
-    if(auto res = p.value(); res.valid())
+    if (auto res = p.value(); res.valid())
     {
       writer.writeKey(metadata<ossia::net::value_attribute>::key());
       writer.writeValue(res, p.get_unit());
@@ -319,7 +324,8 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   {
     // TODO it could be nice to have versions that take a parameter or a value
     // directly
-    ossia::for_each_tagged(base_attributes{}, node_attribute_writer{n, *addr, *this});
+    ossia::for_each_tagged(
+        base_attributes{}, node_attribute_writer{n, *addr, *this});
   }
   else
   {
@@ -594,7 +600,8 @@ json_writer::string_t json_writer::ignore(string_view address)
   return buf;
 }
 
-json_writer::string_t json_writer::start_osc_streaming(int local_server_port, int local_sender_port)
+json_writer::string_t
+json_writer::start_osc_streaming(int local_server_port, int local_sender_port)
 {
   string_t buf;
   writer_t wr(buf);
@@ -618,7 +625,6 @@ json_writer::string_t json_writer::start_osc_streaming(int local_server_port, in
 
   return buf;
 }
-
 
 json_writer::string_t json_writer::path_added(const net::node_base& n)
 {
@@ -727,10 +733,9 @@ json_writer::paths_removed(const std::vector<std::string>& vec)
 }
 
 json_writer::string_t json_writer::attributes_changed_array(
-    const std::
-        vector<std::
-                   pair<const net::node_base*, std::vector<ossia::string_view>>>&
-            vec)
+    const std::vector<
+        std::pair<const net::node_base*, std::vector<ossia::string_view>>>&
+        vec)
 {
   string_t buf;
   writer_t wr(buf);
@@ -745,32 +750,35 @@ json_writer::string_t json_writer::attributes_changed_array(
   return buf;
 }
 
-std::string write_value(std::string_view address, const value& v, const unit_t& u)
+std::string
+write_value(std::string_view address, const value& v, const unit_t& u)
 {
   std::string buffer;
   buffer.resize(1024);
 
-  while(true)
+  while (true)
   {
     try
     {
       oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
       p << oscpack::BeginMessageN(address);
-      if(!u)
+      if (!u)
       {
         v.apply(oscquery::osc_outbound_visitor{p});
       }
       else
       {
-        ossia::apply_nonnull([&] (const auto& dataspace) {
-          ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
-        }, u.v);
+        ossia::apply_nonnull(
+            [&](const auto& dataspace) {
+              ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
+            },
+            u.v);
       }
       p << oscpack::EndMessage();
       buffer.resize(p.Size());
       break;
     }
-    catch(const oscpack::OutOfBufferMemoryException&)
+    catch (const oscpack::OutOfBufferMemoryException&)
     {
       buffer.resize(buffer.size() * 2);
     }
@@ -778,19 +786,23 @@ std::string write_value(std::string_view address, const value& v, const unit_t& 
   return buffer;
 }
 
-void write_value(std::string_view address, const value& v, const unit_t& u, oscpack::UdpTransmitSocket& socket)
+void write_value(
+    std::string_view address, const value& v, const unit_t& u,
+    oscpack::UdpTransmitSocket& socket)
 {
-  auto send_msg = [&] (oscpack::OutboundPacketStream& p) {
+  auto send_msg = [&](oscpack::OutboundPacketStream& p) {
     p << oscpack::BeginMessageN(address);
-    if(!u)
+    if (!u)
     {
       v.apply(oscquery::osc_outbound_visitor{p});
     }
     else
     {
-      ossia::apply_nonnull([&] (const auto& dataspace) {
-        ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
-      }, u.v);
+      ossia::apply_nonnull(
+          [&](const auto& dataspace) {
+            ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
+          },
+          u.v);
     }
     p << oscpack::EndMessage();
     socket.Send(p.Data(), p.Size());
@@ -803,9 +815,9 @@ void write_value(std::string_view address, const value& v, const unit_t& u, oscp
     oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
     send_msg(p);
   }
-  catch(const oscpack::OutOfBufferMemoryException&)
+  catch (const oscpack::OutOfBufferMemoryException&)
   {
-    while(true)
+    while (true)
     {
       std::string buffer;
       buffer.resize(4096);
@@ -815,7 +827,7 @@ void write_value(std::string_view address, const value& v, const unit_t& u, oscp
         send_msg(p);
         break;
       }
-      catch(...)
+      catch (...)
       {
         buffer.resize(buffer.size() * 2);
       }
@@ -823,7 +835,9 @@ void write_value(std::string_view address, const value& v, const unit_t& u, oscp
   }
 }
 
-std::string osc_writer::send_message(const net::parameter_base& p, const value& v, const ossia::net::network_logger& logger)
+std::string osc_writer::send_message(
+    const net::parameter_base& p, const value& v,
+    const ossia::net::network_logger& logger)
 {
   if (logger.outbound_logger)
   {
@@ -832,7 +846,9 @@ std::string osc_writer::send_message(const net::parameter_base& p, const value& 
   return write_value(p.get_node().osc_address(), v, p.get_unit());
 }
 
-std::string osc_writer::send_message(const net::full_parameter_data& p, const value& v, const ossia::net::network_logger& logger)
+std::string osc_writer::send_message(
+    const net::full_parameter_data& p, const value& v,
+    const ossia::net::network_logger& logger)
 {
   if (logger.outbound_logger)
   {
@@ -841,8 +857,10 @@ std::string osc_writer::send_message(const net::full_parameter_data& p, const va
   return write_value(p.address, v, p.unit);
 }
 
-
-void osc_writer::send_message(const net::parameter_base& p, const value& v, const ossia::net::network_logger& logger, oscpack::UdpTransmitSocket& socket)
+void osc_writer::send_message(
+    const net::parameter_base& p, const value& v,
+    const ossia::net::network_logger& logger,
+    oscpack::UdpTransmitSocket& socket)
 {
   if (logger.outbound_logger)
   {
@@ -851,7 +869,10 @@ void osc_writer::send_message(const net::parameter_base& p, const value& v, cons
   write_value(p.get_node().osc_address(), v, p.get_unit(), socket);
 }
 
-void osc_writer::send_message(const net::full_parameter_data& p, const value& v, const ossia::net::network_logger& logger, oscpack::UdpTransmitSocket& socket)
+void osc_writer::send_message(
+    const net::full_parameter_data& p, const value& v,
+    const ossia::net::network_logger& logger,
+    oscpack::UdpTransmitSocket& socket)
 {
   if (logger.outbound_logger)
   {
@@ -859,7 +880,5 @@ void osc_writer::send_message(const net::full_parameter_data& p, const value& v,
   }
   write_value(p.address, v, p.unit, socket);
 }
-
-
 }
 }

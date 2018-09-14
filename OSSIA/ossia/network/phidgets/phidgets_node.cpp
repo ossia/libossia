@@ -1,13 +1,14 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 
 #include "phidgets_node.hpp"
 #include "phidgets_protocol.hpp"
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/node_functions.hpp>
+
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/parameter.hpp>
 namespace ossia
 {
 
@@ -23,90 +24,92 @@ phidget_node::~phidget_node()
 
 void phidget_node::set_parameter(std::unique_ptr<net::parameter_base> a)
 {
-  if(!a && m_parameter)
+  if (!a && m_parameter)
     m_device.on_parameter_removing(*m_parameter);
 
   m_parameter = std::move(a);
 
-  if(m_parameter)
+  if (m_parameter)
     m_device.on_parameter_created(*m_parameter);
 }
 
-phidget_node::phidget_node(PhidgetHandle hdl, net::device_base& d, net::node_base& p)
-  : m_hdl{hdl}, m_device{d}, m_parent{p}
+phidget_node::phidget_node(
+    PhidgetHandle hdl, net::device_base& d, net::node_base& p)
+    : m_hdl{hdl}, m_device{d}, m_parent{p}
 {
-    id = phidget_handle_t{m_hdl};
-    std::string name = "Phidget";
+  id = phidget_handle_t{m_hdl};
+  std::string name = "Phidget";
 
-    const char* arr{};
-    int chan{false};
-    Phidget_getIsChannel(hdl, &chan);
-    if(chan)
+  const char* arr{};
+  int chan{false};
+  Phidget_getIsChannel(hdl, &chan);
+  if (chan)
+  {
+    Phidget_getChannelName(hdl, &arr);
+    if (arr && strlen(arr) > 0)
     {
-      Phidget_getChannelName(hdl, &arr);
-      if(arr && strlen(arr) > 0)
+      name = arr;
       {
-        name = arr;
+        uint32_t chan_count;
+        auto err = Phidget_getDeviceChannelCount(
+            hdl, PHIDCHCLASS_NOTHING, &chan_count);
+        if (err == EPHIDGET_OK && chan_count > 1)
         {
-          uint32_t chan_count;
-          auto err = Phidget_getDeviceChannelCount(hdl, PHIDCHCLASS_NOTHING, &chan_count);
-          if(err == EPHIDGET_OK && chan_count > 1)
+          int c;
+          err = Phidget_getChannel(hdl, &c);
+          if (err == EPHIDGET_OK)
           {
-            int c;
-            err = Phidget_getChannel(hdl, &c);
-            if(err == EPHIDGET_OK)
-            {
-              name += "." + std::to_string(c);
-            }
+            name += "." + std::to_string(c);
           }
-        }
-      }
-      else
-      {
-        Phidget_getChannelClassName(hdl, &arr);
-        if(arr && strlen(arr) > 0)
-        {
-          name = arr;
         }
       }
     }
     else
     {
-      Phidget_getDeviceLabel(hdl, &arr);
-      if(arr && strlen(arr) > 0)
+      Phidget_getChannelClassName(hdl, &arr);
+      if (arr && strlen(arr) > 0)
+      {
+        name = arr;
+      }
+    }
+  }
+  else
+  {
+    Phidget_getDeviceLabel(hdl, &arr);
+    if (arr && strlen(arr) > 0)
+    {
+      name = arr;
+    }
+    else
+    {
+
+      Phidget_getDeviceName(hdl, &arr);
+      if (arr && strlen(arr) > 0)
       {
         name = arr;
       }
       else
       {
-
-        Phidget_getDeviceName(hdl, &arr);
-        if(arr && strlen(arr) > 0)
+        Phidget_getDeviceClassName(hdl, &arr);
+        if (arr && strlen(arr) > 0)
         {
           name = arr;
         }
-        else
-        {
-          Phidget_getDeviceClassName(hdl, &arr);
-          if(arr && strlen(arr) > 0)
-          {
-            name = arr;
-          }
-        }
       }
     }
+  }
 
-    /*
-    {
-      int port{};
-      Phidget_getHubPort(hdl, &port);
-      name += "-";
-      name += std::to_string(port);
-      name += "-";
-    }
-    */
-    m_name = ossia::net::sanitize_name(name, p.children_names());
-    this->m_oscAddressCache = ossia::net::osc_parameter_string(*this);
+  /*
+  {
+    int port{};
+    Phidget_getHubPort(hdl, &port);
+    name += "-";
+    name += std::to_string(port);
+    name += "-";
+  }
+  */
+  m_name = ossia::net::sanitize_name(name, p.children_names());
+  this->m_oscAddressCache = ossia::net::osc_parameter_string(*this);
 }
 
 net::device_base& phidget_node::get_device() const
@@ -161,10 +164,6 @@ void phidget_node::add_child_simple(std::unique_ptr<net::node_base> n)
 }
 }
 
-
-
-
-
 namespace ossia
 {
 
@@ -172,8 +171,9 @@ phidget_hub_port_node::~phidget_hub_port_node()
 {
 }
 
-phidget_hub_port_node::phidget_hub_port_node(PhidgetHandle hdl, int num, net::device_base& d, net::node_base& p)
-  : m_hdl{hdl}, m_device{d}, m_parent{p}
+phidget_hub_port_node::phidget_hub_port_node(
+    PhidgetHandle hdl, int num, net::device_base& d, net::node_base& p)
+    : m_hdl{hdl}, m_device{d}, m_parent{p}
 {
   std::string name = "Port." + std::to_string(num);
   m_name = ossia::net::sanitize_name(name, p.children_names());

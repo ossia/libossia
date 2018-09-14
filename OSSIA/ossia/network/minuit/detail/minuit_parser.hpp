@@ -1,12 +1,13 @@
 #pragma once
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/base/node_attributes.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/minuit/detail/minuit_common.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/detail/small_vector.hpp>
+
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
 
@@ -267,7 +268,6 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Namespace>
   }
 };
 
-
 // Used for domains :
 
 struct osc_inbound_numeric_visitor
@@ -336,7 +336,6 @@ inline ossia::value to_numeric_value(
   else
     return current.apply(ossia::net::osc_inbound_impulse_visitor{});
 }
-
 
 inline ossia::domain get_domain(
     ossia::net::parameter_base& addr,
@@ -741,7 +740,8 @@ public:
           switch (op)
           {
             case minuit_operation::Listen:
-              minuit_behavior<minuit_command::Answer, minuit_operation::Listen>{}(
+              minuit_behavior<
+                  minuit_command::Answer, minuit_operation::Listen>{}(
                   proto, dev, m);
               break;
             case minuit_operation::Get:
@@ -749,7 +749,8 @@ public:
                   proto, dev, m);
               break;
             case minuit_operation::Namespace:
-              minuit_behavior<minuit_command::Answer, minuit_operation::Namespace>{}(
+              minuit_behavior<
+                  minuit_command::Answer, minuit_operation::Namespace>{}(
                   proto, dev, m);
               break;
             default:
@@ -762,15 +763,18 @@ public:
           switch (op)
           {
             case minuit_operation::Listen:
-              minuit_behavior<minuit_command::Request, minuit_operation::Listen>{}(
+              minuit_behavior<
+                  minuit_command::Request, minuit_operation::Listen>{}(
                   proto, dev, m);
               break;
             case minuit_operation::Get:
-              minuit_behavior<minuit_command::Request, minuit_operation::Get>{}(
+              minuit_behavior<
+                  minuit_command::Request, minuit_operation::Get>{}(
                   proto, dev, m);
               break;
             case minuit_operation::Namespace:
-              minuit_behavior<minuit_command::Request, minuit_operation::Namespace>{}(
+              minuit_behavior<
+                  minuit_command::Request, minuit_operation::Namespace>{}(
                   proto, dev, m);
               break;
             default:
@@ -783,7 +787,8 @@ public:
           switch (op)
           {
             case minuit_operation::Listen:
-              minuit_behavior<minuit_command::Error, minuit_operation::Listen>{}(
+              minuit_behavior<
+                  minuit_command::Error, minuit_operation::Listen>{}(
                   proto, dev, m);
               break;
             case minuit_operation::Get:
@@ -791,7 +796,8 @@ public:
                   proto, dev, m);
               break;
             case minuit_operation::Namespace:
-              minuit_behavior<minuit_command::Error, minuit_operation::Namespace>{}(
+              minuit_behavior<
+                  minuit_command::Error, minuit_operation::Namespace>{}(
                   proto, dev, m);
               break;
             default:

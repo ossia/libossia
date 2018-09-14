@@ -4,7 +4,6 @@
 
 // Courtesy of tinyspline library, MIT license.
 #include <ossia/editor/automation/tinysplinecpp.h>
-
 #include <ossia/editor/curve/behavior.hpp>
 
 namespace ossia::nodes
@@ -47,51 +46,50 @@ struct spline_data
   }
 };
 
-class spline final :
-    public ossia::nonowning_graph_node
+class spline final : public ossia::nonowning_graph_node
 {
-  public:
-    spline()
-    {
-      m_outlets.push_back(&value_out);
-    }
+public:
+  spline()
+  {
+    m_outlets.push_back(&value_out);
+  }
 
-    ~spline() override
-    {
+  ~spline() override
+  {
+  }
 
-    }
+  std::string label() const noexcept override
+  {
+    return "spline";
+  }
 
-    std::string label() const noexcept override
-    {
-      return "spline";
-    }
+  void set_spline(const spline_data& t)
+  {
+    m_spline = tinyspline::BSpline(3, 2, t.points.size(), TS_CLAMPED);
 
-    void set_spline(const spline_data& t)
-    {
-      m_spline = tinyspline::BSpline(3, 2, t.points.size(), TS_CLAMPED);
+    ts_bspline_set_ctrlp(
+        m_spline.data(),
+        reinterpret_cast<const tinyspline::real*>(t.points.data()),
+        m_spline.data());
+  }
 
-      ts_bspline_set_ctrlp(
-          m_spline.data(),
-          reinterpret_cast<const tinyspline::real*>(t.points.data()),
-          m_spline.data());
-    }
+private:
+  void
+  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  {
+    ossia::value_port* vp = value_out.data.target<ossia::value_port>();
 
-  private:
-    void run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
-    {
-      ossia::value_port* vp = value_out.data.target<ossia::value_port>();
+    auto p = m_spline.evaluate(t.position);
+    auto d = p.data();
 
-      auto p = m_spline.evaluate(t.position);
-      auto d = p.data();
+    vp->write_value(
+        ossia::make_vec(
+            m_x + m_scaleX * d->result[0], m_y + m_scaleY * d->result[1]),
+        t.tick_start());
+  }
 
-      vp->write_value(
-            ossia::make_vec(
-                      m_x + m_scaleX * d->result[0],
-                      m_y + m_scaleY * d->result[1]), t.tick_start());
-    }
-
-    ossia::outlet value_out{ossia::value_port{}};
-    tinyspline::BSpline m_spline;
-    double m_x{}, m_y{}, m_scaleX{1.}, m_scaleY{1.};
+  ossia::outlet value_out{ossia::value_port{}};
+  tinyspline::BSpline m_spline;
+  double m_x{}, m_y{}, m_scaleX{1.}, m_scaleY{1.};
 };
 }

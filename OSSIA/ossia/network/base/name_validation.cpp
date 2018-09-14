@@ -1,11 +1,14 @@
 #include "name_validation.hpp"
-#include <ossia/network/base/node.hpp>
+
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/network/base/node.hpp>
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <algorithm>
 #include <boost/lexical_cast.hpp>
+
+#include <algorithm>
 namespace ossia
 {
 namespace net
@@ -137,7 +140,8 @@ sanitize_name(std::string name, const std::vector<std::string>& brethren)
   }
 }
 
-void sanitize_name(std::string& name, const ossia::net::node_base::children_t& brethren)
+void sanitize_name(
+    std::string& name, const ossia::net::node_base::children_t& brethren)
 {
   sanitize_name(name);
   bool is_here = false;
@@ -225,11 +229,11 @@ std::vector<std::string> address_parts(ossia::string_view src)
 
   if (!src.empty())
   {
-    if(src.front() == '/')
+    if (src.front() == '/')
     {
       src.remove_prefix(1);
     }
-    if(!src.empty() && src.back() == '/')
+    if (!src.empty() && src.back() == '/')
     {
       src.remove_suffix(1);
     }
@@ -246,32 +250,31 @@ bool is_brace_expansion(string_view s)
   int brace_count = 0;
   int arr_count = 0;
 
-  for(std::size_t i = 0; i < s.size(); i++)
+  for (std::size_t i = 0; i < s.size(); i++)
   {
-    if(s[i] == '{')
+    if (s[i] == '{')
     {
       brace_count++;
     }
-    else if(s[i] == '[')
+    else if (s[i] == '[')
     {
       arr_count++;
     }
-    else if(s[i] == '}')
+    else if (s[i] == '}')
     {
       brace_count--;
-      if(brace_count < 0)
+      if (brace_count < 0)
         return false;
     }
-    else if(s[i] == ']')
+    else if (s[i] == ']')
     {
       arr_count--;
-      if(arr_count < 0)
+      if (arr_count < 0)
         return false;
     }
   }
 
   return brace_count == 0 && arr_count == 0;
 }
-
 }
 }

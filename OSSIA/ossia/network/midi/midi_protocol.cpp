@@ -1,9 +1,9 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
 #include <ossia/network/midi/midi.hpp>
 
-#include <ossia/detail/logger.hpp>
 #include <rtmidi17/message.hpp>
 #if !defined(__EMSCRIPTEN__)
 #include <rtmidi17/rtmidi17.hpp>
@@ -11,9 +11,11 @@
 namespace rtmidi
 {
 class midi_in
-{};
+{
+};
 class midi_out
-{};
+{
+};
 }
 #endif
 namespace ossia
@@ -24,8 +26,12 @@ namespace midi
 {
 midi_protocol::midi_protocol()
 #if !defined(__EMSCRIPTEN__)
-    : m_input{std::make_unique<rtmidi::midi_in>(rtmidi::API::UNSPECIFIED, "ossia-in")}
-    , m_output{std::make_unique<rtmidi::midi_out>(rtmidi::API::UNSPECIFIED, "ossia-out")}
+    : m_input{std::make_unique<rtmidi::midi_in>(
+          rtmidi::API::UNSPECIFIED, "ossia-in")}
+    , m_output
+{
+  std::make_unique<rtmidi::midi_out>(rtmidi::API::UNSPECIFIED, "ossia-out")
+}
 #endif
 {
 }
@@ -69,17 +75,17 @@ bool midi_protocol::set_info(midi_info m)
 
     if (m_info.type == midi_info::Type::RemoteOutput)
     {
-      if(m_dev)
+      if (m_dev)
         m_input->open_port(m_info.port, m_dev->get_name());
       else
         m_input->open_port(m_info.port, "libossia MIDI input");
 
-      m_input->set_callback([this] (rtmidi::message mess) {
+      m_input->set_callback([this](rtmidi::message mess) {
         const auto chan = mess.get_channel();
-        if(chan == 0)
+        if (chan == 0)
           return;
 
-        if(m_registers)
+        if (m_registers)
         {
           messages.enqueue(mess);
         }
@@ -160,7 +166,7 @@ bool midi_protocol::set_info(midi_info m)
     }
     else if (m_info.type == midi_info::Type::RemoteInput)
     {
-      if(m_dev)
+      if (m_dev)
         m_output->open_port(m_info.port, m_dev->get_name());
       else
         m_output->open_port(m_info.port, "libossia MIDI out");
@@ -174,7 +180,7 @@ bool midi_protocol::set_info(midi_info m)
     return false;
   }
 #else
-    return false;
+  return false;
 #endif
 }
 
@@ -263,7 +269,7 @@ bool midi_protocol::pull(parameter_base& address)
       return false;
   }
 #else
-    return false;
+  return false;
 #endif
 }
 
@@ -333,23 +339,25 @@ bool midi_protocol::push(const parameter_base& address)
 
       case address_info::Type::PC_N:
       {
-        m_output->send_message(rtmidi::message::program_change(adrinfo.channel, adrinfo.note));
+        m_output->send_message(
+            rtmidi::message::program_change(adrinfo.channel, adrinfo.note));
         return true;
       }
 
       case address_info::Type::PB:
       {
-        m_output->send_message(rtmidi::message::pitch_bend(adrinfo.channel, adrs.getValue().get<int32_t>()));
+        m_output->send_message(rtmidi::message::pitch_bend(
+            adrinfo.channel, adrs.getValue().get<int32_t>()));
         return true;
       }
 
       case address_info::Type::Any:
       {
-        if(auto v = adrs.getValue().target<std::vector<ossia::value>>())
+        if (auto v = adrs.getValue().target<std::vector<ossia::value>>())
         {
           rtmidi::message m;
           m.bytes.reserve(v->size());
-          for(const auto& val : *v)
+          for (const auto& val : *v)
           {
             m.bytes.push_back(ossia::convert<int32_t>(val));
           }
@@ -374,12 +382,14 @@ bool midi_protocol::push(const parameter_base& address)
     return false; // TODO log error.
   }
 #else
-    return false;
+  return false;
 #endif
 }
 
 bool midi_protocol::push_raw(const full_parameter_data& parameter_base)
-{ return false; }
+{
+  return false;
+}
 
 bool midi_protocol::observe(parameter_base& address, bool enable)
 {

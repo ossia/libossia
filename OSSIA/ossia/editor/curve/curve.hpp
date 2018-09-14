@@ -1,19 +1,21 @@
 #pragma once
 
+#include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/curve/curve_abstract.hpp>
 #include <ossia/editor/curve/curve_segment.hpp>
 #include <ossia/editor/curve/curve_segment/easing.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/destination.hpp>
 #include <ossia/network/value/value.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/base/node.hpp>
-#include <ossia/detail/flat_map.hpp>
+
+#include <ossia_export.h>
+
 #include <functional>
 #include <map>
 #include <memory>
-#include <ossia_export.h>
 #include <utility>
 #include <vector>
 
@@ -171,8 +173,7 @@ private:
 };
 
 template <typename X, typename Y>
-inline
-void curve<X, Y>::reset()
+inline void curve<X, Y>::reset()
 {
   m_y0_cacheUsed = false;
   if (m_originalPoints)
@@ -180,9 +181,8 @@ void curve<X, Y>::reset()
 }
 
 template <typename X, typename Y>
-inline
-bool curve<X, Y>::add_point(
-    ossia::curve_segment<Y> segment, X abscissa, Y value)
+inline bool
+curve<X, Y>::add_point(ossia::curve_segment<Y> segment, X abscissa, Y value)
 {
   if (m_scaleBounds)
     m_originalPoints->emplace(abscissa, std::make_pair(value, segment));
@@ -192,15 +192,13 @@ bool curve<X, Y>::add_point(
 }
 
 template <typename X, typename Y>
-inline
-bool curve<X, Y>::remove_point(X abscissa)
+inline bool curve<X, Y>::remove_point(X abscissa)
 {
   return m_points.erase(abscissa) > 0;
 }
 
 template <typename X, typename Y>
-inline
-Y curve<X, Y>::value_at(X abscissa) const
+inline Y curve<X, Y>::value_at(X abscissa) const
 {
   X lastAbscissa = get_x0();
   Y lastValue = get_y0();
@@ -229,15 +227,13 @@ Y curve<X, Y>::value_at(X abscissa) const
 }
 
 template <typename X, typename Y>
-inline
-curve_type curve<X, Y>::get_type() const
+inline curve_type curve<X, Y>::get_type() const
 {
   return std::make_pair(curve_segment_type_map<X>, curve_segment_type_map<Y>);
 }
 
 template <typename X, typename Y>
-inline
-X curve<X, Y>::get_x0() const
+inline X curve<X, Y>::get_x0() const
 {
   if (!m_x0_destination)
     return m_x0;
@@ -253,8 +249,7 @@ X curve<X, Y>::get_x0() const
 }
 
 template <typename X, typename Y>
-inline
-Y curve<X, Y>::get_y0() const
+inline Y curve<X, Y>::get_y0() const
 {
   if (!m_y0_destination)
     return m_y0;
@@ -310,65 +305,56 @@ Y curve<X, Y>::get_y0() const
 }
 
 template <typename X, typename Y>
-inline
-void curve<X, Y>::set_x0(X value)
+inline void curve<X, Y>::set_x0(X value)
 {
   m_x0 = value;
 }
 
 template <typename X, typename Y>
-inline
-void curve<X, Y>::set_y0(Y value)
+inline void curve<X, Y>::set_y0(Y value)
 {
   m_y0 = value;
 }
 
 template <typename X, typename Y>
-inline
-ossia::optional<destination> curve<X, Y>::get_x0_destination() const
+inline ossia::optional<destination> curve<X, Y>::get_x0_destination() const
 {
   return m_x0_destination;
 }
 
 template <typename X, typename Y>
-inline
-ossia::optional<destination> curve<X, Y>::get_y0_destination() const
+inline ossia::optional<destination> curve<X, Y>::get_y0_destination() const
 {
   return m_y0_destination;
 }
 
 template <typename X, typename Y>
-inline
-void curve<X, Y>::set_x0_destination(const destination& destination)
+inline void curve<X, Y>::set_x0_destination(const destination& destination)
 {
   m_x0_destination = destination;
 }
 
 template <typename X, typename Y>
-inline
-void curve<X, Y>::set_y0_destination(const destination& destination)
+inline void curve<X, Y>::set_y0_destination(const destination& destination)
 {
   m_y0_destination = destination;
 }
 
 template <typename X, typename Y>
-inline
-typename curve<X, Y>::map_type curve<X, Y>::get_points() const
+inline typename curve<X, Y>::map_type curve<X, Y>::get_points() const
 {
   return m_points;
 }
 
 template <typename X, typename Y>
-inline
-void curve<X, Y>::set_scale_bounds(Y min, Y max, Y end)
+inline void curve<X, Y>::set_scale_bounds(Y min, Y max, Y end)
 {
   m_scaleBounds = scale_info{min, max, Y{}, end};
   m_originalPoints = map_type{};
 }
 
 template <typename X, typename Y>
-inline
-Y curve<X, Y>::convert_to_template_type_value(
+inline Y curve<X, Y>::convert_to_template_type_value(
     const value& v, ossia::destination_index::const_iterator idx)
 {
   using namespace ossia;
@@ -435,7 +421,6 @@ Y curve<X, Y>::convert_to_template_type_value(
 
   return v.apply(vis);
 }
-
 
 /**
  * @brief The constant_curve class

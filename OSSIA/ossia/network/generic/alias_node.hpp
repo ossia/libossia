@@ -1,8 +1,8 @@
 #pragma once
-#include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/network/domain/domain_base.hpp>
+#include <ossia/network/generic/generic_node.hpp>
 
 namespace ossia
 {
@@ -38,15 +38,13 @@ private:
   ossia::net::node_base* m_origin{};
 };
 
-class OSSIA_EXPORT alias_path final :
-    public generic_node_base,
-    public ossia::net::parameter_base
+class OSSIA_EXPORT alias_path final : public generic_node_base,
+                                      public ossia::net::parameter_base
 {
 public:
-    alias_path(
-        std::string name,
-        ossia::net::device_base& aDevice,
-        ossia::net::node_base& parent);
+  alias_path(
+      std::string name, ossia::net::device_base& aDevice,
+      ossia::net::node_base& parent);
 
   ~alias_path();
 
@@ -69,23 +67,23 @@ private:
   std::future<void> pull_value_async() override;
   void request_value() override;
   ossia::value value() const override;
-  parameter_base&push_value(const ossia::value&) override;
-  parameter_base&push_value(ossia::value&&) override;
-  parameter_base&push_value() override;
-  parameter_base&set_value(const ossia::value&) override;
-  parameter_base&set_value(ossia::value&&) override;
+  parameter_base& push_value(const ossia::value&) override;
+  parameter_base& push_value(ossia::value&&) override;
+  parameter_base& push_value() override;
+  parameter_base& set_value(const ossia::value&) override;
+  parameter_base& set_value(ossia::value&&) override;
   void set_value_quiet(const ossia::value& v) override;
   void set_value_quiet(ossia::value&& v) override;
   val_type get_value_type() const override;
-  parameter_base&set_value_type(val_type) override;
+  parameter_base& set_value_type(val_type) override;
   access_mode get_access() const override;
-  parameter_base&set_access(access_mode) override;
-  const domain&get_domain() const override;
-  parameter_base&set_domain(const domain&) override;
+  parameter_base& set_access(access_mode) override;
+  const domain& get_domain() const override;
+  parameter_base& set_domain(const domain&) override;
   bounding_mode get_bounding() const override;
-  parameter_base&set_bounding(bounding_mode) override;
+  parameter_base& set_bounding(bounding_mode) override;
 
-  template<typename Fun>
+  template <typename Fun>
   void do_for_nodes(Fun f);
 
   std::vector<ossia::net::node_base*> m_roots;

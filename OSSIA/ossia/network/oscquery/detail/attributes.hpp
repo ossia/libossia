@@ -1,11 +1,11 @@
 #pragma once
-#include <ossia/network/base/parameter.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
-#include <ossia/detail/string_view.hpp>
 #include <brigand/sequences/list.hpp>
 
 /**
@@ -433,42 +433,46 @@ struct metadata<net::app_name_attribute>
   }
 };
 
-using base_attributes = brigand::
-    list<typetag_attribute, net::value_attribute, net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute, net::repetition_filter_attribute, net::unit_attribute, net::default_value_attribute>;
+using base_attributes = brigand::list<
+    typetag_attribute, net::value_attribute, net::domain_attribute,
+    net::access_mode_attribute, net::bounding_mode_attribute,
+    net::repetition_filter_attribute, net::unit_attribute,
+    net::default_value_attribute>;
 
-using base_attributes_without_type = brigand::
-    list<net::value_attribute, net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute, net::repetition_filter_attribute, net::unit_attribute, net::default_value_attribute>;
+using base_attributes_without_type = brigand::list<
+    net::value_attribute, net::domain_attribute, net::access_mode_attribute,
+    net::bounding_mode_attribute, net::repetition_filter_attribute,
+    net::unit_attribute, net::default_value_attribute>;
 
-using extended_attributes = brigand::
-    list<net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute, net::value_step_size_attribute, net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute, net::disabled_attribute, net::extended_type_attribute, net::description_attribute, net::app_name_attribute, net::app_creator_attribute, net::app_version_attribute>;
+using extended_attributes = brigand::list<
+    net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
+    net::value_step_size_attribute, net::instance_bounds_attribute,
+    net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
+    net::extended_type_attribute, net::description_attribute,
+    net::app_name_attribute, net::app_creator_attribute,
+    net::app_version_attribute>;
 
-using attributes_when_reading = brigand::list<net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute, net::repetition_filter_attribute, net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute, net::value_step_size_attribute, net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute, net::disabled_attribute, net::description_attribute, net::app_name_attribute, net::app_creator_attribute, net::app_version_attribute>;
+using attributes_when_reading = brigand::list<
+    net::domain_attribute, net::access_mode_attribute,
+    net::bounding_mode_attribute, net::repetition_filter_attribute,
+    net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
+    net::value_step_size_attribute, net::instance_bounds_attribute,
+    net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
+    net::description_attribute, net::app_name_attribute,
+    net::app_creator_attribute, net::app_version_attribute>;
 
 using all_attributes = brigand::list<
-typetag_attribute,
-net::unit_attribute,
-net::extended_type_attribute,
+    typetag_attribute, net::unit_attribute, net::extended_type_attribute,
 
-net::value_attribute,
-net::default_value_attribute,
+    net::value_attribute, net::default_value_attribute,
 
-net::domain_attribute,
-net::access_mode_attribute,
-net::bounding_mode_attribute,
-net::repetition_filter_attribute,
-net::tags_attribute,
-net::refresh_rate_attribute,
-net::priority_attribute,
-net::value_step_size_attribute,
-net::instance_bounds_attribute,
-net::critical_attribute,
-net::hidden_attribute,
-net::disabled_attribute,
-net::description_attribute,
-net::app_name_attribute,
-net::app_creator_attribute,
-net::app_version_attribute
->;
+    net::domain_attribute, net::access_mode_attribute,
+    net::bounding_mode_attribute, net::repetition_filter_attribute,
+    net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
+    net::value_step_size_attribute, net::instance_bounds_attribute,
+    net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
+    net::description_attribute, net::app_name_attribute,
+    net::app_creator_attribute, net::app_version_attribute>;
 }
 enum class message_type
 {

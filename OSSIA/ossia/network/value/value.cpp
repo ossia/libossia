@@ -1,6 +1,8 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
@@ -8,9 +10,9 @@
 #include <ossia/network/value/value_algorithms.hpp>
 #include <ossia/network/value/value_comparison.hpp>
 #include <ossia/network/value/value_traits.hpp>
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/base/node_functions.hpp>
+
 #include <boost/algorithm/string/replace.hpp>
+
 #include <sstream>
 
 /*
@@ -27,53 +29,66 @@ namespace ossia
 {
 
 template OSSIA_EXPORT impulse convert<ossia::impulse>(const ossia::value& val);
-template OSSIA_EXPORT int convert<int>( const ossia::value& val);
+template OSSIA_EXPORT int convert<int>(const ossia::value& val);
 template OSSIA_EXPORT float convert<float>(const ossia::value& val);
-template OSSIA_EXPORT double convert<double>( const ossia::value& val);
+template OSSIA_EXPORT double convert<double>(const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
 template OSSIA_EXPORT char convert<char>(const ossia::value& val);
-template OSSIA_EXPORT std::string convert<std::string>(const ossia::value& val);
-template OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const ossia::value& val);
+template OSSIA_EXPORT std::string
+convert<std::string>(const ossia::value& val);
+template OSSIA_EXPORT std::vector<ossia::value>
+convert<std::vector<ossia::value>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 2>
+convert<std::array<float, 2>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 3>
+convert<std::array<float, 3>>(const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 4>
+convert<std::array<float, 4>>(const ossia::value& val);
 
-template OSSIA_EXPORT impulse convert<ossia::impulse>(const ossia::impulse&, const ossia::value& val);
+template OSSIA_EXPORT impulse
+convert<ossia::impulse>(const ossia::impulse&, const ossia::value& val);
 template OSSIA_EXPORT int convert<int>(const int&, const ossia::value& val);
-template OSSIA_EXPORT float convert<float>(const float&, const ossia::value& val);
-template OSSIA_EXPORT double convert<double>(const double&, const ossia::value& val);
+template OSSIA_EXPORT float
+convert<float>(const float&, const ossia::value& val);
+template OSSIA_EXPORT double
+convert<double>(const double&, const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const bool&, const ossia::value& val);
 template OSSIA_EXPORT char convert<char>(const char&, const ossia::value& val);
-template OSSIA_EXPORT std::string convert<std::string>(const std::string&, const ossia::value& val);
-template OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(const std::vector<ossia::value>&, const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const std::array<float, 2>&, const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::array<float, 3>&, const ossia::value& val);
-template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::array<float, 4>&, const ossia::value& val);
+template OSSIA_EXPORT std::string
+convert<std::string>(const std::string&, const ossia::value& val);
+template OSSIA_EXPORT std::vector<ossia::value>
+convert<std::vector<ossia::value>>(
+    const std::vector<ossia::value>&, const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(
+    const std::array<float, 2>&, const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(
+    const std::array<float, 3>&, const ossia::value& val);
+template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(
+    const std::array<float, 4>&, const ossia::value& val);
 
-template OSSIA_EXPORT std::array<float, 2> convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
-template OSSIA_EXPORT std::array<float, 3> convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
-template OSSIA_EXPORT std::array<float, 4> convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 2>
+convert<std::array<float, 2>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 3>
+convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
+template OSSIA_EXPORT std::array<float, 4>
+convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
-destination::destination(const destination& other) noexcept:
-  value{other.value}
-, index{other.index}
-, unit{other.unit}
+destination::destination(const destination& other) noexcept
+    : value{other.value}, index{other.index}, unit{other.unit}
 {
-
 }
-destination::destination(destination&& other) noexcept:
-  value{std::move(other.value)}
-, index{std::move(other.index)}
-, unit {std::move(other.unit )}
+destination::destination(destination&& other) noexcept
+    : value{std::move(other.value)}
+    , index{std::move(other.index)}
+    , unit{std::move(other.unit)}
 {
-
 }
 
 destination& destination::operator=(const destination& other) noexcept
 {
   value = other.value;
   index = other.index;
-  unit  = other.unit;
+  unit = other.unit;
   return *this;
 }
 
@@ -81,20 +96,20 @@ destination& destination::operator=(destination&& other) noexcept
 {
   value = std::move(other.value);
   index = std::move(other.index);
-  unit  = std::move(other.unit);
+  unit = std::move(other.unit);
   return *this;
 }
 
 value destination::pull() const
 {
   ossia::net::parameter_base& param = value.get();
-  if(unit)
+  if (unit)
   {
     const auto& other = param.get_unit();
-    if(other && other != unit)
+    if (other && other != unit)
     {
       auto res = ossia::convert(param.value(), other, unit);
-      if(res.valid())
+      if (res.valid())
       {
         return get_value_at_index(res, index);
       }
@@ -109,14 +124,16 @@ destination::destination(ossia::net::parameter_base& v) noexcept : value(v)
   // TODO should we also copy the unit of the address ?
 }
 
-destination::destination(ossia::net::parameter_base& v, destination_index idx) noexcept
+destination::destination(
+    ossia::net::parameter_base& v, destination_index idx) noexcept
     : value(v), index(std::move(idx))
 {
   // TODO should we also copy the unit of the address ?
 }
 
 destination::destination(
-    ossia::net::parameter_base& v, destination_index idx, const ossia::unit_t& u) noexcept
+    ossia::net::parameter_base& v, destination_index idx,
+    const ossia::unit_t& u) noexcept
     : value(v), index(std::move(idx)), unit{u}
 {
 }
@@ -167,12 +184,14 @@ bool operator!=(const destination& lhs, const destination& rhs) noexcept
   return lhs.value != rhs.value || lhs.index != rhs.index;
 }
 
-bool operator==(const destination& lhs, const ossia::net::parameter_base& rhs) noexcept
+bool operator==(
+    const destination& lhs, const ossia::net::parameter_base& rhs) noexcept
 {
   return lhs.value == rhs && lhs.index.empty();
 }
 
-bool operator!=(const destination& lhs, const ossia::net::parameter_base& rhs) noexcept
+bool operator!=(
+    const destination& lhs, const ossia::net::parameter_base& rhs) noexcept
 {
   return lhs.value != rhs || !lhs.index.empty();
 }
@@ -595,8 +614,9 @@ ossia::value parse_pretty_value(ossia::string_view str)
   using boost::spirit::x3::phrase_parse;
   using ossia::detail::parse::value_;
   auto first = str.cbegin(), last = str.cend();
-  bool r = phrase_parse(first, last, value_, boost::spirit::x3::ascii::space, val);
-  if(!r)
+  bool r = phrase_parse(
+      first, last, value_, boost::spirit::x3::ascii::space, val);
+  if (!r)
     ossia::logger().error("ossia::parse_pretty_value error: {}", str);
   return val;
 }
@@ -647,11 +667,13 @@ bool is_array(const ossia::value& val)
 struct lift_convert
 {
   const ossia::value& newval;
-  template<typename T>
-  ossia::value operator()(const T& cur) { return convert(cur, newval); }
+  template <typename T>
+  ossia::value operator()(const T& cur)
+  {
+    return convert(cur, newval);
+  }
 
-  [[noreturn]]
-  ossia::value operator()()
+  [[noreturn]] ossia::value operator()()
   {
     throw invalid_value_type_error("lift: Invalid type");
   }
@@ -659,7 +681,7 @@ struct lift_convert
 ossia::value convert(const ossia::value& val, const ossia::value& cur)
 {
   auto t = cur.get_type();
-  switch(t)
+  switch (t)
   {
     case ossia::val_type::NONE:
       return {};
@@ -674,7 +696,7 @@ ossia::value convert(const ossia::value& val, const ossia::value& cur)
 
 ossia::value convert(const ossia::value& val, ossia::val_type newtype)
 {
-  if(newtype != ossia::val_type::NONE)
+  if (newtype != ossia::val_type::NONE)
   {
     return lift(newtype, [&](auto t) -> ossia::value {
       using ossia_type = typename decltype(t)::ossia_type;
@@ -732,12 +754,12 @@ std::ostream& operator<<(std::ostream& s, const std::array<float, 3>& vec)
 
 std::ostream& operator<<(std::ostream& s, const std::array<float, 4>& vec)
 {
-  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3] << "]";
+  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3]
+    << "]";
   return s;
 }
 
-std::ostream&
-operator<<(std::ostream& s, const std::vector<std::string>& list)
+std::ostream& operator<<(std::ostream& s, const std::vector<std::string>& list)
 {
   const int n = list.size();
 
@@ -755,11 +777,9 @@ operator<<(std::ostream& s, const std::vector<std::string>& list)
   return s;
 }
 
-std::istream&
-operator>>(std::istream& s, std::vector<std::string>& list)
+std::istream& operator>>(std::istream& s, std::vector<std::string>& list)
 {
   // TODO
   return s;
 }
 }
-

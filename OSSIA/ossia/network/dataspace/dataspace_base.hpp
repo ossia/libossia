@@ -1,8 +1,10 @@
 #pragma once
-#include <ossia/network/value/vec.hpp>
-#include <ossia/detail/string_view.hpp>
 #include <ossia/detail/math.hpp>
+#include <ossia/detail/string_view.hpp>
+#include <ossia/network/value/vec.hpp>
+
 #include <ratio>
+
 #include <type_traits>
 namespace ossia
 {
@@ -32,24 +34,22 @@ struct strong_value : Unit
   {
   }
   OSSIA_INLINE constexpr strong_value(const strong_value& other) noexcept
-      : Unit{other}
-      , dataspace_value{other.dataspace_value}
+      : Unit{other}, dataspace_value{other.dataspace_value}
   {
   }
   OSSIA_INLINE constexpr strong_value(strong_value&& other) noexcept
-    : Unit{other}
-    , dataspace_value{other.dataspace_value}
+      : Unit{other}, dataspace_value{other.dataspace_value}
   {
   }
   OSSIA_INLINE strong_value& operator=(const strong_value& other) noexcept
   {
-    ((Unit&) *this) = other;
+    ((Unit&)*this) = other;
     dataspace_value = other.dataspace_value;
     return *this;
   }
   OSSIA_INLINE strong_value& operator=(strong_value&& other) noexcept
   {
-    ((Unit&) *this) = other;
+    ((Unit&)*this) = other;
     dataspace_value = other.dataspace_value;
     return *this;
   }
@@ -138,9 +138,8 @@ struct strong_value : Unit
 template <typename T, typename Ratio_T>
 struct linear_unit : public T
 {
-  OSSIA_INLINE static constexpr
-      strong_value<typename T::neutral_unit>
-      to_neutral(strong_value<typename T::concrete_type> self)
+  OSSIA_INLINE static constexpr strong_value<typename T::neutral_unit>
+  to_neutral(strong_value<typename T::concrete_type> self)
   {
     return {self.dataspace_value * ratio()};
   }

@@ -1,6 +1,7 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/thread.hpp>
+
 #include <string>
 
 #if defined(_MSC_VER)
@@ -21,7 +22,6 @@ int get_pid()
 {
   return GetCurrentProcessId();
 }
-
 }
 #else
 
@@ -42,20 +42,18 @@ int get_pid()
 {
   return getpid();
 }
-
 }
 
 #endif
 
-
 #if defined(__EMSCRIPTEN__)
 std::string get_exe_path()
 {
-    return "";
+  return "";
 }
 std::string get_module_path()
 {
-    return "";
+  return "";
 }
 #else
 #include <ossia/../../3rdparty/whereami/src/whereami.h>
@@ -93,7 +91,6 @@ std::string get_module_path()
 
   return path;
 }
-
 }
 
 #endif

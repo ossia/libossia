@@ -1,8 +1,11 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/logger.hpp>
+
 #include <asio.hpp>
 #include <asio/placeholders.hpp>
+
 #include <utility>
 
 namespace ossia
@@ -11,16 +14,17 @@ namespace oscquery
 {
 using tcp = asio::ip::tcp;
 
-
-template<typename Fun, typename Err>
-class http_get_request: public std::enable_shared_from_this<http_get_request<Fun, Err>>
+template <typename Fun, typename Err>
+class http_get_request
+    : public std::enable_shared_from_this<http_get_request<Fun, Err>>
 {
   fmt::MemoryWriter m_request;
 
 public:
-  using std::enable_shared_from_this<http_get_request<Fun, Err>>::shared_from_this;
-  http_get_request(Fun f, Err err, asio::io_context& ctx,
-      const std::string& server,
+  using std::enable_shared_from_this<
+      http_get_request<Fun, Err>>::shared_from_this;
+  http_get_request(
+      Fun f, Err err, asio::io_context& ctx, const std::string& server,
       const std::string& path)
       : m_resolver(ctx)
       , m_socket(ctx)
@@ -31,14 +35,16 @@ public:
     m_request << "GET ";
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
-    for(auto c : path)
-      if(c != ' ')
+    for (auto c : path)
+      if (c != ' ')
         m_request << c;
       else
         m_request << "%20";
 
     m_request << " HTTP/1.1\r\n"
-                 "Host: " << server << "\r\n"
+                 "Host: "
+              << server
+              << "\r\n"
                  "Accept: */*\r\n"
                  "Connection: close\r\n\r\n";
   }
@@ -46,10 +52,12 @@ public:
   void resolve(const std::string& server, const std::string& port)
   {
     m_resolver.async_resolve(
-        server, port, [self=this->shared_from_this()] (
-          const asio::error_code& err,
-          const tcp::resolver::results_type& endpoints)
-    { self->handle_resolve(err, endpoints); });
+        server, port,
+        [self = this->shared_from_this()](
+            const asio::error_code& err,
+            const tcp::resolver::results_type& endpoints) {
+          self->handle_resolve(err, endpoints);
+        });
   }
 
   void close()
@@ -66,9 +74,9 @@ private:
     {
       asio::async_connect(
           m_socket, endpoints,
-          [self=shared_from_this()] (const asio::error_code& err, auto&&) {
-        self->handle_connect(err);
-      });
+          [self = shared_from_this()](const asio::error_code& err, auto&&) {
+            self->handle_connect(err);
+          });
     }
     else
     {
@@ -84,9 +92,9 @@ private:
       asio::const_buffer request(m_request.data(), m_request.size());
       asio::async_write(
           m_socket, request,
-          [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
-        self->handle_write_request(err);
-      });
+          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
+            self->handle_write_request(err);
+          });
     }
     else
     {
@@ -101,9 +109,9 @@ private:
     {
       asio::async_read_until(
           m_socket, m_response, "\r\n",
-            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
-          self->handle_read_status_line(err);
-        });
+          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
+            self->handle_read_status_line(err);
+          });
     }
     else
     {
@@ -138,9 +146,9 @@ private:
       // Read the response headers, which are terminated by a blank line.
       asio::async_read_until(
           m_socket, m_response, "\r\n\r\n",
-            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
-          self->handle_read_headers(err);
-        });
+          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
+            self->handle_read_headers(err);
+          });
     }
     else
     {
@@ -162,9 +170,9 @@ private:
       // Start reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
-            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
-          self->handle_read_content(err);
-        });
+          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
+            self->handle_read_content(err);
+          });
     }
     else
     {
@@ -180,9 +188,9 @@ private:
       // Continue reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
-            [self=shared_from_this()] (const asio::error_code& err, auto&&...) {
-          self->handle_read_content(err);
-        });
+          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
+            self->handle_read_content(err);
+          });
     }
     else if (err != asio::error::eof)
     {
@@ -197,7 +205,8 @@ private:
       auto end = asio::buffers_end(dat);
       auto sz = end - begin;
       std::string str;
-      str.reserve(sz + 16); // for RapidJSON simd parsing which reads past bounds
+      str.reserve(
+          sz + 16); // for RapidJSON simd parsing which reads past bounds
       str.assign(begin, end);
       m_fun(*this, str);
     }

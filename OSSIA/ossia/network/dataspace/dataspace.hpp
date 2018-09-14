@@ -8,15 +8,16 @@
 #include <ossia/network/dataspace/position.hpp>
 #include <ossia/network/dataspace/speed.hpp>
 #include <ossia/network/dataspace/time.hpp>
+
 #include <functional>
 namespace ossia
 {
 #include <ossia/network/dataspace/dataspace_base_variants.hpp>
 //!  Units give a semantic meaning to the value of a parameter.<br>
-//! They are sorted by categories: every unit in a category is convertible to the other units in the same category.<br>
-//! Every category (coined "dataspace") has a neutral unit to/from which conversions are made.<br>
+//! They are sorted by categories: every unit in a category is convertible to
+//! the other units in the same category.<br> Every category (coined
+//! "dataspace") has a neutral unit to/from which conversions are made.<br>
 //! \see opp::node::set_unit for a list of all availble units
-
 
 struct OSSIA_EXPORT unit_t final
 {
@@ -271,16 +272,15 @@ typename std::enable_if_t<is_unit<T>::value, bool> operator!=(T, T)
   return false;
 }
 
-template<typename T, typename = void>
+template <typename T, typename = void>
 struct is_array_unit : public std::false_type
 {
-
 };
 
-template<typename T>
-struct is_array_unit<T, decltype(T{}.array_parameters())> : public std::true_type
+template <typename T>
+struct is_array_unit<T, decltype(T{}.array_parameters())>
+    : public std::true_type
 {
-
 };
 
 static const constexpr int dataspace_count = 8;

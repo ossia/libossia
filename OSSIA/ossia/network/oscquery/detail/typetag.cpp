@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
 namespace ossia
@@ -75,7 +75,9 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
   {
     s += oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG;
   }
-  else if(ossia::net::get_extended_type(addr.get_node()) == ossia::generic_buffer_type())
+  else if (
+      ossia::net::get_extended_type(addr.get_node())
+      == ossia::generic_buffer_type())
   {
     s += oscpack::TypeTagValues::BLOB_TYPE_TAG;
   }

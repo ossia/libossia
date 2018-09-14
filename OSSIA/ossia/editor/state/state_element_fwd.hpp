@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <eggs/variant.hpp>
 /**
  * \file state_element_fwd.hpp
@@ -22,8 +23,9 @@ class state;
  * \see \ref state
  * \see state_element.hpp
  */
-using state_element = eggs::
-    variant<message, state, piecewise_message, piecewise_vec_message<2>, piecewise_vec_message<3>, piecewise_vec_message<4>>;
+using state_element = eggs::variant<
+    message, state, piecewise_message, piecewise_vec_message<2>,
+    piecewise_vec_message<3>, piecewise_vec_message<4>>;
 
 template <std::size_t N>
 using state_element_by_index =

@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <cmath>
+
 #include <utility>
 /**
  * \file math.hpp
@@ -11,39 +13,36 @@
 namespace ossia
 {
 #if defined(__ANDROID_API__)
-using ::remainder;
-using ::exp2;
-using ::log1p;
 using ::asinh;
+using ::exp2;
 using ::fma;
 using ::llround;
+using ::log1p;
+using ::remainder;
 #else
-using std::remainder;
-using std::exp2;
-using std::log1p;
 using std::asinh;
+using std::exp2;
 using std::fma;
 using std::llround;
+using std::log1p;
+using std::remainder;
 #endif
-const constexpr auto pi
-    = 3.141592653589793238462643383279502884;
-const constexpr auto two_pi
-    = 6.283185307179586476925286766559005768;
-const constexpr auto half_pi
-    = 1.570796326794896619231321691639751442;
-const constexpr auto rad_to_deg
-    = 5.729577951308232087679815481410517033e+01;
-const constexpr auto deg_to_rad
-    = 1.745329251994329576923690768488612713e-02;
-const constexpr auto ln_2
-    = 6.931471805599453094172321214581765680e-01;
+const constexpr auto pi = 3.141592653589793238462643383279502884;
+const constexpr auto two_pi = 6.283185307179586476925286766559005768;
+const constexpr auto half_pi = 1.570796326794896619231321691639751442;
+const constexpr auto rad_to_deg = 5.729577951308232087679815481410517033e+01;
+const constexpr auto deg_to_rad = 1.745329251994329576923690768488612713e-02;
+const constexpr auto ln_2 = 6.931471805599453094172321214581765680e-01;
 
-template<typename T>
+template <typename T>
 T ipow(T x, int N) noexcept
 {
-    T res = x;
-    for(int i = 1; i < N; i++) { res *= x; }
-    return res;
+  T res = x;
+  for (int i = 1; i < N; i++)
+  {
+    res *= x;
+  }
+  return res;
 }
 
 template <typename T>
@@ -85,8 +84,7 @@ OSSIA_INLINE constexpr T clamp_max(T d, const T max) noexcept
  * @brief clamp Returns the value bounded by a min and a max
  */
 template <class T>
-OSSIA_INLINE constexpr T
-clamp(T d, const T min, const T max) noexcept
+OSSIA_INLINE constexpr T clamp(T d, const T min, const T max) noexcept
 {
   return clamp_min(clamp_max(d, max), min);
 }
@@ -94,8 +92,7 @@ clamp(T d, const T min, const T max) noexcept
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008
 template <class T>
-OSSIA_INLINE constexpr T
-wrap(const T val, const T low, const T high) noexcept
+OSSIA_INLINE constexpr T wrap(const T val, const T low, const T high) noexcept
 {
   if ((val >= low) && (val < high))
     return val;
@@ -106,23 +103,21 @@ wrap(const T val, const T low, const T high) noexcept
 }
 
 template <class T>
-OSSIA_INLINE constexpr T
-fold(const T val, const T low, const T high) noexcept
+OSSIA_INLINE constexpr T fold(const T val, const T low, const T high) noexcept
 {
   if ((val >= low) && (val <= high))
     return val;
   else
   {
-    return low +
-        std::fabs(
-          ossia::remainder(val - low, 2. * std::fabs(low - high)));
+    return low
+           + std::fabs(
+                 ossia::remainder(val - low, 2. * std::fabs(low - high)));
   }
 }
 
 template <class T>
-OSSIA_INLINE constexpr
-std::pair<T,T> div(T num, T denom) noexcept
+OSSIA_INLINE constexpr std::pair<T, T> div(T num, T denom) noexcept
 {
-  return { num / denom, num % denom };
+  return {num / denom, num % denom};
 }
 }

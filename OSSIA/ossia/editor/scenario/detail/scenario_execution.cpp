@@ -1,37 +1,40 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
-#include <ossia/detail/logger.hpp>
-#include <ossia/editor/exceptions.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_set.hpp>
+#include <ossia/detail/logger.hpp>
+#include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
-#include <cassert>
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
+
+#include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/graph/graphviz.hpp>
+#include <boost/graph/labeled_graph.hpp>
+#include <boost/graph/topological_sort.hpp>
+
 #include <hopscotch_map.h>
+
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <set>
-#include <boost/graph/connected_components.hpp>
-#include <boost/graph/breadth_first_search.hpp>
-#include <boost/graph/labeled_graph.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/graph/graphviz.hpp>
 
 namespace ossia
 {
 void scenario::make_happen(
-    time_event& event,
-    interval_set& started, interval_set& stopped,
+    time_event& event, interval_set& started, interval_set& stopped,
     ossia::time_value tick_offset)
 {
   event.m_status = time_event::status::HAPPENED;
 
   // stop previous TimeIntervals
-  for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.previous_time_intervals())
+  for (const std::shared_ptr<ossia::time_interval>& timeInterval :
+       event.previous_time_intervals())
   {
     timeInterval->stop();
     mark_end_discontinuous{}(*timeInterval);
@@ -41,7 +44,8 @@ void scenario::make_happen(
   event.tick(0_tv, 0., tick_offset);
 
   // setup next TimeIntervals
-  for (const std::shared_ptr<ossia::time_interval>& timeInterval : event.next_time_intervals())
+  for (const std::shared_ptr<ossia::time_interval>& timeInterval :
+       event.next_time_intervals())
   {
     timeInterval->start();
     timeInterval->tick_current(tick_offset);
@@ -116,7 +120,7 @@ bool scenario::trigger_sync(
   if (*node.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
-    if(!node.has_trigger_date())
+    if (!node.has_trigger_date())
     {
       if (!node.is_observing_expression())
         expressions::update(*node.m_expression);
@@ -131,54 +135,59 @@ bool scenario::trigger_sync(
 
     // at this point we can assume we are going to trigger.
     const auto& cur_date = this->node->requested_tokens.back().date;
-    if(node.has_trigger_date())
+    if (node.has_trigger_date())
     {
       bool ok = true;
-      for(const auto& ev : node.get_time_events())
+      for (const auto& ev : node.get_time_events())
       {
-        for(const auto& cst : ev->previous_time_intervals())
+        for (const auto& cst : ev->previous_time_intervals())
         {
-          if(cst->get_start_event().get_status() == ossia::time_event::status::HAPPENED)
+          if (cst->get_start_event().get_status()
+              == ossia::time_event::status::HAPPENED)
           {
             ok &= (cst->get_date() == m_itv_end_map.find(cst.get())->second);
           }
-          if(!ok)
+          if (!ok)
             break;
         }
-        if(!ok)
+        if (!ok)
           break;
       }
 
-      if(!ok)
+      if (!ok)
         return false;
       else
       {
         maximalDurationReached = true;
 
-        for(const auto& ev : node.get_time_events())
+        for (const auto& ev : node.get_time_events())
         {
-          for(const auto& cst : ev->previous_time_intervals())
+          for (const auto& cst : ev->previous_time_intervals())
           {
             m_itv_end_map.erase(cst.get());
           }
         }
       }
     }
-    else if(node.has_sync_rate())
+    else if (node.has_sync_rate())
     {
       // compute absolute date at which it should execute,
       // assuming we start at the next tick
       // TODO div by zero
-      time_value expected_date{node.get_sync_rate().impl * (1 + cur_date.impl / node.get_sync_rate().impl)};
+      time_value expected_date{
+          node.get_sync_rate().impl
+          * (1 + cur_date.impl / node.get_sync_rate().impl)};
       node.set_trigger_date(expected_date);
       auto diff_date = expected_date - cur_date;
 
-      // compute the "fake max" date at which intervals must end for this to work
-      for(const auto& ev : node.get_time_events())
+      // compute the "fake max" date at which intervals must end for this to
+      // work
+      for (const auto& ev : node.get_time_events())
       {
-        for(const auto& cst : ev->previous_time_intervals())
+        for (const auto& cst : ev->previous_time_intervals())
         {
-          m_itv_end_map.insert(std::make_pair(cst.get(), cst->get_date() + diff_date));
+          m_itv_end_map.insert(
+              std::make_pair(cst.get(), cst->get_date() + diff_date));
         }
       }
       node.observe_expression(false);
@@ -199,7 +208,7 @@ bool scenario::trigger_sync(
     if (expressions::evaluate(expr))
     {
       make_happen(*ev, started, stopped, tick_offset);
-      if(maximalDurationReached)
+      if (maximalDurationReached)
         maxReachedEv.push_back(ev);
     }
     else
@@ -225,11 +234,9 @@ bool scenario::trigger_sync(
 }
 
 bool scenario::process_this(
-    time_sync& node,
-    small_event_vec& pendingEvents,
-    small_event_vec& maxReachedEvents,
-    interval_set& started, interval_set& stopped,
-    ossia::time_value tick_offset)
+    time_sync& node, small_event_vec& pendingEvents,
+    small_event_vec& maxReachedEvents, interval_set& started,
+    interval_set& stopped, ossia::time_value tick_offset)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
@@ -238,9 +245,8 @@ bool scenario::process_this(
   std::size_t pendingCount = 0;
 
   bool maximalDurationReached = false;
-  auto on_pending = [&] (ossia::time_event* timeEvent)
-  {
-    if(!ossia::contains(pendingEvents, timeEvent))
+  auto on_pending = [&](ossia::time_event* timeEvent) {
+    if (!ossia::contains(pendingEvents, timeEvent))
     {
       pendingCount++;
       pendingEvents.push_back(timeEvent);
@@ -329,10 +335,9 @@ bool scenario::process_this(
     return false;
   }
 
-  return trigger_sync(node,
-                      pendingEvents, maxReachedEvents,
-                      started, stopped,
-                      tick_offset, maximalDurationReached);
+  return trigger_sync(
+      node, pendingEvents, maxReachedEvents, started, stopped, tick_offset,
+      maximalDurationReached);
 }
 
 enum progress_mode
@@ -343,11 +348,12 @@ enum progress_mode
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void scenario::state(
-    ossia::time_value from, ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
+    ossia::time_value from, ossia::time_value date, double pos,
+    ossia::time_value tick_offset, double gspeed)
 {
   node->request({from, date, pos, tick_offset, gspeed});
   // ossia::logger().info("scenario::state starts");
-  //if (date != m_lastDate)
+  // if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
     m_lastDate = date;
@@ -362,9 +368,9 @@ void scenario::state(
     m_endNodes.container.reserve(m_nodes.size());
     m_overticks.container.reserve(m_nodes.size());
 
-    for(auto it  = m_runningIntervals.begin(); it != m_runningIntervals.end(); )
+    for (auto it = m_runningIntervals.begin(); it != m_runningIntervals.end();)
     {
-      if((*it)->get_end_event().get_status() == time_event::status::HAPPENED)
+      if ((*it)->get_end_event().get_status() == time_event::status::HAPPENED)
         it = m_runningIntervals.erase(it);
       else
         ++it;
@@ -382,19 +388,19 @@ void scenario::state(
     m_pendingEvents.clear();
     m_maxReachedEvents.clear();
 
-    for(auto& n : m_rootNodes)
+    for (auto& n : m_rootNodes)
     {
-      if(!n->is_observing_expression())
+      if (!n->is_observing_expression())
       {
-        n->observe_expression(true, [n] (bool b) {
-          if(b)
+        n->observe_expression(true, [n](bool b) {
+          if (b)
             n->trigger_request = true;
         });
       }
 
-      if(n->trigger_request)
+      if (n->trigger_request)
       {
-        if(m_waitingNodes.find(n) != m_waitingNodes.end())
+        if (m_waitingNodes.find(n) != m_waitingNodes.end())
         {
           // it will execute soon after
           continue;
@@ -402,10 +408,11 @@ void scenario::state(
         else
         {
           auto& evs = n->get_time_events();
-          for(auto& e : evs)
+          for (auto& e : evs)
           {
             const auto st = e->get_status();
-            if(st == ossia::time_event::status::HAPPENED || st == ossia::time_event::status::DISPOSED)
+            if (st == ossia::time_event::status::HAPPENED
+                || st == ossia::time_event::status::DISPOSED)
             {
               m_sg.reset_component(*n);
               break;
@@ -414,17 +421,17 @@ void scenario::state(
           m_waitingNodes.insert(n);
         }
       }
-
     }
 
-    for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end(); )
+    for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end();)
     {
       auto n = *it;
-      // Note: we pass m_runningIntervals as stopped because it does not matter:
-      // by design, no interval could be stopped at this point since it's the
-      // root scenarios. So this prevents initializing a dummy class.
+      // Note: we pass m_runningIntervals as stopped because it does not
+      // matter: by design, no interval could be stopped at this point since
+      // it's the root scenarios. So this prevents initializing a dummy class.
       bool res = process_this(
-          *n, m_pendingEvents, m_maxReachedEvents, m_runningIntervals, m_runningIntervals, tick_offset);
+          *n, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
+          m_runningIntervals, tick_offset);
       if (res)
       {
         it = m_waitingNodes.erase(it);
@@ -438,17 +445,14 @@ void scenario::state(
 
     m_pendingEvents.clear();
 
-    auto run_interval = [&] (ossia::time_interval& interval,
-                             ossia::time_value tick,
-                             ossia::time_value offset)
-    {
+    auto run_interval = [&](ossia::time_interval& interval,
+                            ossia::time_value tick, ossia::time_value offset) {
       const auto& cst_old_date = interval.get_date();
       auto cst_max_dur = interval.get_max_duration();
       const auto end_node = &interval.get_end_event().get_time_sync();
 
-
       auto it = m_itv_end_map.find(&interval);
-      if(it != m_itv_end_map.end() && it->second < cst_max_dur)
+      if (it != m_itv_end_map.end() && it->second < cst_max_dur)
       {
         cst_max_dur = it->second;
       }
@@ -459,22 +463,25 @@ void scenario::state(
       // so that the state is not 1.01*automation for instance.
       if (!cst_max_dur.infinite())
       {
-        // TODO instead if(tick < cst_max_dur - cst_old_date) while taking speed into account
-        auto max_tick = time_value{int64_t((cst_max_dur - cst_old_date) / interval.get_speed())};
+        // TODO instead if(tick < cst_max_dur - cst_old_date) while taking
+        // speed into account
+        auto max_tick = time_value{
+            int64_t((cst_max_dur - cst_old_date) / interval.get_speed())};
         auto diff = tick - max_tick;
-        if(diff <= 0)
+        if (diff <= 0)
         {
-          if(tick != 0)
+          if (tick != 0)
             interval.tick_offset(tick, offset);
         }
         else
         {
-          if(max_tick != 0)
+          if (max_tick != 0)
           {
             interval.tick_offset(max_tick, offset);
           }
 
-          const auto ot = ossia::time_value{int64_t(interval.get_speed() * diff)};
+          const auto ot
+              = ossia::time_value{int64_t(interval.get_speed() * diff)};
           const auto node_it = m_overticks.lower_bound(end_node);
           if (node_it != m_overticks.end() && (end_node == node_it->first))
           {
@@ -490,7 +497,10 @@ void scenario::state(
           }
           else
           {
-            m_overticks.insert(node_it, std::make_pair(end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
+            m_overticks.insert(
+                node_it,
+                std::make_pair(
+                    end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
           }
         }
       }
@@ -498,7 +508,7 @@ void scenario::state(
       {
         interval.tick_offset(tick, offset);
       }
-      if(interval.get_date() >= interval.get_min_duration())
+      if (interval.get_date() >= interval.get_min_duration())
         m_endNodes.insert(end_node);
     };
 
@@ -543,7 +553,7 @@ void scenario::state(
       for (auto node : m_endNodes)
       {
         auto it = m_overticks.find(node);
-        if(it != m_overticks.end())
+        if (it != m_overticks.end())
         {
           process_this(
               *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
@@ -565,14 +575,7 @@ void scenario::state(
   // ossia::logger().info("scenario::state ends");
 }
 
-
-
-
-
-
-
-scenario_graph::scenario_graph(scenario& sc):
-  scenar{sc}
+scenario_graph::scenario_graph(scenario& sc) : scenar{sc}
 {
 }
 
@@ -582,11 +585,13 @@ small_sync_vec scenario_graph::get_roots() const
 
   small_sync_vec res;
 
-  int root_comp = m_components_cache[vertices.at(scenar.get_start_time_sync().get())];
+  int root_comp
+      = m_components_cache[vertices.at(scenar.get_start_time_sync().get())];
 
-  for(auto& tn : scenar.get_time_syncs())
+  for (auto& tn : scenar.get_time_syncs())
   {
-    if(scenar.is_root_sync(*tn) && m_components_cache[vertices.at(tn.get())] != root_comp)
+    if (scenar.is_root_sync(*tn)
+        && m_components_cache[vertices.at(tn.get())] != root_comp)
     {
       res.push_back(tn.get());
     }
@@ -597,7 +602,7 @@ small_sync_vec scenario_graph::get_roots() const
 
 void scenario_graph::update_components_cache() const
 {
-  if(dirty)
+  if (dirty)
   {
     m_components_cache.resize(boost::num_vertices(graph));
     boost::connected_components(graph, m_components_cache.data());
@@ -605,17 +610,18 @@ void scenario_graph::update_components_cache() const
   }
 }
 
-ossia::small_vector<ossia::time_sync*, 4> scenario_graph::sibling_roots(
-    const time_sync& sync) const
+ossia::small_vector<ossia::time_sync*, 4>
+scenario_graph::sibling_roots(const time_sync& sync) const
 {
   update_components_cache();
 
   ossia::small_vector<ossia::time_sync*, 4> res;
   auto comp = m_components_cache[vertices.at(&sync)];
 
-  for(const auto& s : scenar.get_time_syncs())
+  for (const auto& s : scenar.get_time_syncs())
   {
-    if(m_components_cache[vertices.at(s.get())] == comp && scenar.is_root_sync(*s))
+    if (m_components_cache[vertices.at(s.get())] == comp
+        && scenar.is_root_sync(*s))
     {
       res.push_back(s.get());
     }
@@ -631,19 +637,19 @@ void scenario_graph::reset_component(time_sync& sync) const
   std::vector<std::shared_ptr<ossia::time_sync>> to_disable_sync;
   std::vector<std::shared_ptr<ossia::time_interval>> to_disable_itv;
   auto comp = m_components_cache[vertices.at(&sync)];
-  for(auto s : scenar.get_time_syncs())
+  for (auto s : scenar.get_time_syncs())
   {
     auto this_comp = m_components_cache[vertices.at(s.get())];
-    if(this_comp == comp)
+    if (this_comp == comp)
     {
       to_disable_sync.push_back(s);
-      for(auto& ev : s->get_time_events())
+      for (auto& ev : s->get_time_events())
       {
-        for(auto& cst : ev->previous_time_intervals())
+        for (auto& cst : ev->previous_time_intervals())
         {
           to_disable_itv.push_back(cst);
         }
-        for(auto& cst : ev->next_time_intervals())
+        for (auto& cst : ev->next_time_intervals())
         {
           to_disable_itv.push_back(cst);
         }

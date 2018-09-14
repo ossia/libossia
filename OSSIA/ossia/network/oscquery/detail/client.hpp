@@ -1,7 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
+
 #include <nano_signal_slot.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
@@ -36,10 +38,11 @@ public:
       onOpen();
     });
 
-    m_client.set_message_handler([handler = std::move(onMessage)](
-        connection_handler hdl, client_t::message_ptr msg) {
-      handler(hdl, msg->get_opcode(), msg->get_raw_payload());
-    });
+    m_client.set_message_handler(
+        [handler = std::move(onMessage)](
+            connection_handler hdl, client_t::message_ptr msg) {
+          handler(hdl, msg->get_opcode(), msg->get_raw_payload());
+        });
 
     m_client.set_close_handler([=](connection_handler hdl) {
       {

@@ -1,10 +1,12 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
+#include <ossia/detail/regex_fwd.hpp>
 #include <ossia/network/base/address_scope.hpp>
 #include <ossia/network/base/name_validation.hpp>
-#include <string>
-#include <ossia/detail/regex_fwd.hpp>
+
 #include <smallfun.hpp>
+
+#include <string>
 
 namespace ossia
 {
@@ -68,7 +70,9 @@ struct OSSIA_EXPORT any_instance : public path_element
 {
   static std::string instance_regex()
   {
-    static const auto str = "(\\.[" + std::string(ossia::net::name_characters_no_instance()) + "]+)?";
+    static const auto str
+        = "(\\.[" + std::string(ossia::net::name_characters_no_instance())
+          + "]+)?";
     return str;
   }
   explicit any_instance(std::string s)
@@ -210,7 +214,9 @@ struct OSSIA_EXPORT path
   /** A list of function for the location of elements.
    * Each function will be called on the next step.
    */
-  using child_function = smallfun::function<void(std::vector<ossia::net::node_base*>&), sizeof_regex + sizeof(void*)>;
+  using child_function = smallfun::function<
+      void(std::vector<ossia::net::node_base*>&),
+      sizeof_regex + sizeof(void*)>;
   std::vector<child_function> child_functions;
 
   friend bool operator==(const path& lhs, const path& rhs)
@@ -243,18 +249,18 @@ OSSIA_EXPORT void
 apply(const path& p, std::vector<ossia::net::node_base*>& nodes);
 
 //! Root is the device node
-OSSIA_EXPORT bool
-match(const path& p, const ossia::net::node_base& node);
+OSSIA_EXPORT bool match(const path& p, const ossia::net::node_base& node);
 
 //! Try to match from the given root.
-OSSIA_EXPORT bool
-match(const path& p, const ossia::net::node_base& node, ossia::net::node_base& root);
+OSSIA_EXPORT bool match(
+    const path& p, const ossia::net::node_base& node,
+    ossia::net::node_base& root);
 }
 }
 
 namespace std
 {
-template<>
+template <>
 struct hash<ossia::traversal::path>
 {
   std::size_t operator()(const ossia::traversal::path& p) const

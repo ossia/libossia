@@ -1,10 +1,10 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/editor/expression/expression.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_process.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/exceptions.hpp>
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/editor/scenario/time_process.hpp>
 
 namespace ossia
 {
@@ -16,7 +16,7 @@ time_event::time_event(
     , m_status(time_event::status::NONE)
     , m_expression(std::move(anExpression))
 {
-  if(!m_expression)
+  if (!m_expression)
     m_expression = ossia::expressions::make_expression_true();
 }
 
@@ -27,8 +27,7 @@ void time_event::set_callback(time_event::exec_callback callback)
   m_callback = callback;
 }
 
-void time_event::add_time_process(
-    std::shared_ptr<time_process> timeProcess)
+void time_event::add_time_process(std::shared_ptr<time_process> timeProcess)
 {
   if (!timeProcess)
     return;
@@ -51,9 +50,10 @@ void time_event::remove_time_process(time_process* timeProcess)
   }
 }
 
-void time_event::tick(ossia::time_value date, double pos, ossia::time_value offset)
+void time_event::tick(
+    ossia::time_value date, double pos, ossia::time_value offset)
 {
-  for(auto& proc : m_processes)
+  for (auto& proc : m_processes)
   {
     proc->start();
     proc->state(0_tv, date, pos, offset, 1.);

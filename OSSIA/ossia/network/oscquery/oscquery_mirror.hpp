@@ -3,6 +3,7 @@
 #include <ossia/detail/json_fwd.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
+
 #include <readerwriterqueue.h>
 namespace osc
 {
@@ -41,9 +42,12 @@ public:
   std::future<void> pull_async(net::parameter_base&) override;
   void request(net::parameter_base&) override;
   bool push(const net::parameter_base&) override;
-  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
-  bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
+  bool
+  push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool
+  push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(
+      const std::vector<ossia::net::full_parameter_data>&) override;
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
@@ -121,7 +125,7 @@ private:
   void on_queryClose();
   void on_queryFail();
 
-  void on_nodeRenamed(const ossia::net::node_base &n, std::string oldname);
+  void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
@@ -171,6 +175,7 @@ private:
 };
 
 //! Use this function to load a device preset in the OSCQuery format.
-OSSIA_EXPORT void load_oscquery_device(ossia::net::device_base& dev, std::string json);
+OSSIA_EXPORT void
+load_oscquery_device(ossia::net::device_base& dev, std::string json);
 }
 }

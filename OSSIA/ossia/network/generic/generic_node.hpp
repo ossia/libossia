@@ -2,6 +2,7 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
+
 #include <functional>
 #include <map>
 namespace ossia
@@ -15,6 +16,7 @@ class OSSIA_EXPORT generic_node_base : public ossia::net::node_base
 protected:
   ossia::net::device_base& m_device;
   ossia::net::node_base* const m_parent{};
+
 public:
   generic_node_base() = delete;
   generic_node_base(const generic_node_base&) = delete;
@@ -48,8 +50,8 @@ public:
   ossia::net::parameter_base* get_parameter() const final override;
   ossia::net::parameter_base*
   create_parameter(ossia::val_type type) final override;
-  void
-  set_parameter(std::unique_ptr<ossia::net::parameter_base> addr) final override;
+  void set_parameter(
+      std::unique_ptr<ossia::net::parameter_base> addr) final override;
   bool remove_parameter() final override;
 
 protected:

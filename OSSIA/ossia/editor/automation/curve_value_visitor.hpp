@@ -1,8 +1,8 @@
 #pragma once
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/network/value/value.hpp>
-#include <ossia/detail/small_vector.hpp>
 namespace ossia
 {
 namespace detail

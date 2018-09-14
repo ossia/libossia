@@ -1,8 +1,11 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/curve/curve_abstract.hpp>
-#include <memory>
+
 #include <ossia_export.h>
+
+#include <memory>
 #include <vector>
 
 /**

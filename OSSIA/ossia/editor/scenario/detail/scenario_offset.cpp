@@ -1,16 +1,17 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_sync.hpp>
-
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/flat_multimap.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/exceptions.hpp>
-#include <ossia/detail/flat_multimap.hpp>
-#include <cassert>
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
+
 #include <hopscotch_map.h>
+
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <set>
@@ -104,7 +105,7 @@ void process_offset(
     // add HAPPENED event to offset event list
     if (eventStatus == time_event::status::HAPPENED)
     {
-      if(!ev_ptr->get_time_processes().empty())
+      if (!ev_ptr->get_time_processes().empty())
       {
         pastEvents.insert(std::make_pair(date, ev_ptr.get()));
       }
@@ -188,9 +189,10 @@ void scenario::transport(ossia::time_value offset, double pos)
     const auto& sev = cst.get_start_event();
     const auto& stn = sev.get_time_sync();
     const auto start_date = sev.get_time_sync().get_date();
-    const bool all_empty = ossia::all_of(stn.get_time_events(), [] (const auto& ev) {
-      return ev->previous_time_intervals().empty();
-    });
+    const bool all_empty
+        = ossia::all_of(stn.get_time_events(), [](const auto& ev) {
+            return ev->previous_time_intervals().empty();
+          });
 
     if (all_empty && &stn != m_nodes[0].get())
       continue;
@@ -198,9 +200,8 @@ void scenario::transport(ossia::time_value offset, double pos)
     // offset TimeInterval's Clock
     const time_value intervalOffset = offset - start_date;
 
-    if (intervalOffset >= Zero
-    && intervalOffset <= cst.get_max_duration()
-    && sev.get_status() == time_event::status::HAPPENED)
+    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration()
+        && sev.get_status() == time_event::status::HAPPENED)
     {
       cst.transport(intervalOffset);
       m_runningIntervals.insert(&cst);
@@ -303,9 +304,8 @@ void scenario::offset(ossia::time_value offset, double pos)
     // offset TimeInterval's Clock
     time_value intervalOffset = offset - start_date;
 
-    if (intervalOffset >= Zero
-    && intervalOffset <= cst.get_max_duration()
-    && sev.get_status() == time_event::status::HAPPENED)
+    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration()
+        && sev.get_status() == time_event::status::HAPPENED)
     {
       cst.offset(intervalOffset);
       m_runningIntervals.insert(&cst);

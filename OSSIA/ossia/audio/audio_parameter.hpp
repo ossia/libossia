@@ -2,10 +2,10 @@
 
 #include <ossia/dataflow/data.hpp>
 #include <ossia/dataflow/graph_node.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/detail/pod_vector.hpp>
-#include <ossia/network/value/value.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/pod_vector.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/value/value.hpp>
 #if defined(__EMSCRIPTEN__)
 #define GSL_USE_STD_BYTE 0
 #endif
@@ -23,7 +23,6 @@ public:
   audio_parameter(ossia::net::node_base& n);
 
   virtual ~audio_parameter();
-
 
   void clone_value(audio_vector& res) const;
   void push_value(const audio_port& port);
@@ -57,7 +56,7 @@ public:
   {
     const auto chan = m_audio_data.size();
     audio.resize(chan);
-    for(std::size_t i = 0; i < chan; i++)
+    for (std::size_t i = 0; i < chan; i++)
     {
       m_audio_data[i].resize(bs);
       audio[i] = m_audio_data[i];
@@ -74,18 +73,20 @@ class OSSIA_EXPORT mapped_audio_parameter final : public audio_parameter
 public:
   audio_mapping mapping;
   bool is_output{false};
-  mapped_audio_parameter(bool output, audio_mapping m, ossia::net::node_base& n);
+  mapped_audio_parameter(
+      bool output, audio_mapping m, ossia::net::node_base& n);
 
   virtual ~mapped_audio_parameter();
 };
 
-class OSSIA_EXPORT texture_generic_parameter : public ossia::net::parameter_base
+class OSSIA_EXPORT texture_generic_parameter
+    : public ossia::net::parameter_base
 {
   int32_t m_tex{};
 
 public:
   texture_generic_parameter(ossia::net::node_base& n)
-    : ossia::net::parameter_base{n}
+      : ossia::net::parameter_base{n}
   {
   }
 
@@ -160,7 +161,8 @@ public:
   }
 };
 
-
 OSSIA_EXPORT
-void do_fade(bool start_discontinuous, bool end_discontinuous, audio_channel& ap, std::size_t start, std::size_t end);
+void do_fade(
+    bool start_discontinuous, bool end_discontinuous, audio_channel& ap,
+    std::size_t start, std::size_t end);
 }

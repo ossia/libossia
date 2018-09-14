@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/dataspace/dataspace.hpp>
 
 namespace ossia
@@ -108,8 +108,9 @@ xyz_u::to_neutral(strong_value<xyz_u::concrete_type> self)
 xyz_u::value_type xyz_u::from_neutral(strong_value<xyz_u::neutral_unit> self)
 {
   auto translate = [](auto var) {
-    return 100. * ((var > 0.04045) ? std::pow((var + 0.055) / 1.055, 2.4)
-                                   : var / 12.92);
+    return 100.
+           * ((var > 0.04045) ? std::pow((var + 0.055) / 1.055, 2.4)
+                              : var / 12.92);
   };
   auto var_R = translate(self.dataspace_value[1]);
   auto var_G = translate(self.dataspace_value[2]);

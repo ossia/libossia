@@ -1,13 +1,12 @@
 #pragma once
-#include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
 
 namespace ossia::net
 {
 
-template<typename T, typename Parameter_T>
-class wrapped_node
-    : public ossia::net::node_base
+template <typename T, typename Parameter_T>
+class wrapped_node : public ossia::net::node_base
 {
   ossia::net::device_base& m_device;
   ossia::net::node_base* m_parent{};
@@ -18,7 +17,7 @@ public:
   wrapped_node(
       const T& data, ossia::net::device_base& aDevice,
       ossia::net::node_base& aParent)
-    : m_device{aDevice}, m_parent{&aParent}
+      : m_device{aDevice}, m_parent{&aParent}
   {
     m_name = data.name;
     if (data.valid())
@@ -26,7 +25,7 @@ public:
   }
 
   wrapped_node(const T& data, ossia::net::device_base& aDevice)
-    : m_device{aDevice}
+      : m_device{aDevice}
   {
     m_name = data.name;
     if (data.valid())
@@ -92,46 +91,42 @@ private:
   }
 };
 
-template<typename T>
-class wrapped_parameter final
-    : public ossia::net::generic_parameter
+template <typename T>
+class wrapped_parameter final : public ossia::net::generic_parameter
 {
 public:
   using base_data_type = typename T::base_data_type;
-  wrapped_parameter(
-      const T& data,
-      ossia::net::node_base& node_base)
-    : generic_parameter{data, node_base}, m_data{data}
+  wrapped_parameter(const T& data, ossia::net::node_base& node_base)
+      : generic_parameter{data, node_base}, m_data{data}
   {
   }
 
   wrapped_parameter() = delete;
   wrapped_parameter(const wrapped_parameter& other) = delete;
   wrapped_parameter(wrapped_parameter&& other) = delete;
-  wrapped_parameter& operator=(const wrapped_parameter& other)
-      = delete;
-  wrapped_parameter& operator=(wrapped_parameter&& other)
-      = delete;
+  wrapped_parameter& operator=(const wrapped_parameter& other) = delete;
+  wrapped_parameter& operator=(wrapped_parameter&& other) = delete;
   ~wrapped_parameter()
   {
     callback_container<value_callback>::callbacks_clear();
   }
 
   const base_data_type& data() const
-  { return m_data; }
+  {
+    return m_data;
+  }
 
   base_data_type& data()
-  { return m_data; }
+  {
+    return m_data;
+  }
 
 private:
   base_data_type m_data;
 };
 
-
-template<typename Node_T, typename Protocol_T>
-class wrapped_device final
-    : public ossia::net::device_base
-    , public Node_T
+template <typename Node_T, typename Protocol_T>
+class wrapped_device final : public ossia::net::device_base, public Node_T
 {
 public:
   wrapped_device() = delete;
@@ -140,11 +135,9 @@ public:
   wrapped_device& operator=(const wrapped_device&) = delete;
   wrapped_device& operator=(wrapped_device&&) = delete;
 
-  wrapped_device(
-      std::unique_ptr<Protocol_T> protocol_base,
-      std::string name)
-    : device_base(std::move(protocol_base))
-    , Node_T{typename Node_T::data_type{name}, *this}
+  wrapped_device(std::unique_ptr<Protocol_T> protocol_base, std::string name)
+      : device_base(std::move(protocol_base))
+      , Node_T{typename Node_T::data_type{name}, *this}
   {
     m_protocol->set_device(*this);
   }

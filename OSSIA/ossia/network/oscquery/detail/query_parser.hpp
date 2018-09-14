@@ -10,12 +10,12 @@ struct parameter_data;
 namespace oscquery
 {
 /**
-* @brief The query_parser class
-*
-* Parse OSCQuery queries received by a server.
-* The queries are similar to the GET part of an http request.
-* i.e. /a/b?value, etc...
-*/
+ * @brief The query_parser class
+ *
+ * Parse OSCQuery queries received by a server.
+ * The queries are similar to the GET part of an http request.
+ * i.e. /a/b?value, etc...
+ */
 class query_parser
 {
 public:
@@ -90,8 +90,8 @@ public:
   static void parse(
       net::domain_attribute attr, const std::string& data,
       net::parameter_data& res);
-  static void
-  parse(net::tags_attribute, const std::string& data, net::parameter_data& res);
+  static void parse(
+      net::tags_attribute, const std::string& data, net::parameter_data& res);
   static void parse(
       net::instance_bounds_attribute attr, const std::string& data,
       net::parameter_data& res);

@@ -1,8 +1,9 @@
 #pragma once
+#include <phidget22.h>
+
 #include <functional>
 #include <iostream>
 #include <mutex>
-#include <phidget22.h>
 namespace ppp
 {
 /*

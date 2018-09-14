@@ -5,4 +5,6 @@
 /**
  * @namespace ossia Open Scenario Systems for Interactive Applications
  */
-namespace ossia { }
+namespace ossia
+{
+}

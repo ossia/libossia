@@ -1,14 +1,14 @@
 
 #pragma once
 
-#include <vector>
+#include "device_parameter.hpp"
 
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
-#include "device_parameter.hpp"
+#include <vector>
 
 typedef struct _SDL_Joystick SDL_Joystick;
 

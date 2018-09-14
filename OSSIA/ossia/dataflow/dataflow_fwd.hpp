@@ -1,9 +1,12 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/hash.hpp>
+
 #include <eggs/variant.hpp>
-#include <utility>
+
 #include <memory>
+#include <utility>
 namespace std
 {
 template <typename T>
@@ -32,10 +35,8 @@ namespace traversal
 struct path;
 }
 using destination_t = eggs::variant<
-  ossia::net::parameter_base*,
-  ossia::traversal::path,
-  ossia::net::node_base*
->;
+    ossia::net::parameter_base*, ossia::traversal::path,
+    ossia::net::node_base*>;
 struct execution_state;
 class graph_node;
 struct graph_edge;
@@ -57,5 +58,6 @@ struct midi_delay_line;
 struct value_delay_line;
 
 using data_type = eggs::variant<audio_port, midi_port, value_port>;
-using delay_line_type = eggs::variant<audio_delay_line, midi_delay_line, value_delay_line>;
+using delay_line_type
+    = eggs::variant<audio_delay_line, midi_delay_line, value_delay_line>;
 }

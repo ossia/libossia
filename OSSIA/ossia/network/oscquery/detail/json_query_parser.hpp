@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 namespace ossia
 {
 namespace oscquery
@@ -18,8 +18,7 @@ struct json_query_answerer
 {
   template <typename Protocol>
   auto operator()(
-      Protocol& proto,
-      const typename Protocol::connection_handler& hdl,
+      Protocol& proto, const typename Protocol::connection_handler& hdl,
       const rapidjson::Document& doc)
   {
     auto& dev = proto.get_device();
@@ -61,25 +60,27 @@ struct json_query_answerer
       const rapidjson::Document& doc)
   {
     auto m = doc.FindMember("DATA");
-    if(m == doc.MemberEnd())
+    if (m == doc.MemberEnd())
       return {};
-    if(!m->value.IsObject())
+    if (!m->value.IsObject())
       return {};
     auto obj = m->value.GetObject();
-    auto remote_server_port_it = obj.FindMember(detail::local_server_port().data());
-    auto remote_sender_port_it = obj.FindMember(detail::local_sender_port().data());
+    auto remote_server_port_it
+        = obj.FindMember(detail::local_server_port().data());
+    auto remote_sender_port_it
+        = obj.FindMember(detail::local_sender_port().data());
 
-    if(remote_server_port_it == obj.MemberEnd())
+    if (remote_server_port_it == obj.MemberEnd())
       return {};
-    if(!remote_server_port_it->value.IsInt())
+    if (!remote_server_port_it->value.IsInt())
       return {};
 
     int remote_server = remote_server_port_it->value.GetInt();
     int remote_sender = 0;
 
-    if(remote_sender_port_it != obj.MemberEnd())
+    if (remote_sender_port_it != obj.MemberEnd())
     {
-      if(remote_sender_port_it->value.IsInt())
+      if (remote_sender_port_it->value.IsInt())
       {
         remote_sender = remote_sender_port_it->value.GetInt();
       }
@@ -90,8 +91,7 @@ struct json_query_answerer
 
   static json_writer::string_t open_osc_sender(
       oscquery_server_protocol& proto,
-      const oscquery_server_protocol::connection_handler& hdl,
-      int port,
+      const oscquery_server_protocol::connection_handler& hdl, int port,
       int remotePort)
   {
     // First we find for a corresponding client
@@ -99,15 +99,16 @@ struct json_query_answerer
 
     if (!clt)
     {
-      // It's an http-connecting client - we can't open a streaming connection to it
+      // It's an http-connecting client - we can't open a streaming connection
+      // to it
       throw bad_request_error{"Client not found"};
     }
 
-    if(port != 0)
+    if (port != 0)
     {
       // Then we set-up the sender
       clt->open_osc_sender(proto.get_logger(), port);
-      if(remotePort != 0)
+      if (remotePort != 0)
       {
         clt->remote_sender_port = remotePort;
       }
@@ -128,11 +129,12 @@ struct json_query_answerer
       throw bad_request_error{"Client not found"};
 
     auto m = doc.FindMember("DATA");
-    if(m == doc.MemberEnd())
+    if (m == doc.MemberEnd())
       return {};
 
-    auto nodes = ossia::net::find_nodes(proto.get_device().get_root_node(), m->value.GetString());
-    for(auto n : nodes)
+    auto nodes = ossia::net::find_nodes(
+        proto.get_device().get_root_node(), m->value.GetString());
+    for (auto n : nodes)
     {
       clt->start_listen(n->osc_address(), n->get_parameter());
     }
@@ -151,11 +153,12 @@ struct json_query_answerer
       throw bad_request_error{"Client not found"};
 
     auto m = doc.FindMember("DATA");
-    if(m == doc.MemberEnd())
+    if (m == doc.MemberEnd())
       return {};
 
-    auto nodes = ossia::net::find_nodes(proto.get_device().get_root_node(), m->value.GetString());
-    for(auto n : nodes)
+    auto nodes = ossia::net::find_nodes(
+        proto.get_device().get_root_node(), m->value.GetString());
+    for (auto n : nodes)
     {
       clt->stop_listen(n->osc_address());
     }

@@ -12,13 +12,13 @@
 #else
 
 #ifdef __has_include
-  #if __has_include(<any>) && (__cplusplus > 201402L)
-    #define OSSIA_USE_STD_ANY 1
-  #else
-    #define OSSIA_USE_BOOST_ANY 1
-  #endif
+#if __has_include(<any>) && (__cplusplus > 201402L)
+#define OSSIA_USE_STD_ANY 1
 #else
-  #define OSSIA_USE_BOOST_ANY 1
+#define OSSIA_USE_BOOST_ANY 1
+#endif
+#else
+#define OSSIA_USE_BOOST_ANY 1
 #endif
 #endif
 

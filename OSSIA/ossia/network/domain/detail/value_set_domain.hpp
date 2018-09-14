@@ -30,36 +30,39 @@ struct value_set_clamp
 
 struct value_set_get_visitor
 {
-    template <typename T>
-    std::vector<ossia::value> operator()(const ossia::domain_base<T>& dom)
-    {
-      return std::vector<ossia::value>(false, true);
-    }
-    std::vector<ossia::value> operator()(const ossia::domain_base<ossia::impulse>& dom)
-    {
-      return std::vector<ossia::value>{};
-    }
+  template <typename T>
+  std::vector<ossia::value> operator()(const ossia::domain_base<T>& dom)
+  {
+    return std::vector<ossia::value>(false, true);
+  }
+  std::vector<ossia::value>
+  operator()(const ossia::domain_base<ossia::impulse>& dom)
+  {
+    return std::vector<ossia::value>{};
+  }
 
-    std::vector<ossia::value> operator()(const ossia::vector_domain& dom)
+  std::vector<ossia::value> operator()(const ossia::vector_domain& dom)
+  {
+    std::vector<ossia::value> v(dom.values.size());
+    for (std::size_t i = 0; i < dom.values.size(); i++)
     {
-      std::vector<ossia::value> v(dom.values.size());
-      for(std::size_t i = 0; i < dom.values.size(); i++)
-      {
-        v[i] = std::vector<ossia::value>(dom.values[i].begin(), dom.values[i].end());
-      }
-      return v;
+      v[i] = std::vector<ossia::value>(
+          dom.values[i].begin(), dom.values[i].end());
     }
+    return v;
+  }
 
-    template<std::size_t N>
-    std::vector<ossia::value> operator()(const ossia::vecf_domain<N>& dom)
+  template <std::size_t N>
+  std::vector<ossia::value> operator()(const ossia::vecf_domain<N>& dom)
+  {
+    std::vector<ossia::value> v(N);
+    for (std::size_t i = 0; i < N; i++)
     {
-      std::vector<ossia::value> v(N);
-      for(std::size_t i = 0; i < N; i++)
-      {
-        v[i] = std::vector<ossia::value>(dom.values[i].begin(), dom.values[i].end());
-      }
-      return v;
+      v[i] = std::vector<ossia::value>(
+          dom.values[i].begin(), dom.values[i].end());
     }
+    return v;
+  }
 };
 
 struct value_set_update_visitor

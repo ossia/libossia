@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/expression/expression_fwd.hpp>
+
 #include <ossia_export.h>
 
 /**

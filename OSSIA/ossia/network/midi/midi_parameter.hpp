@@ -2,6 +2,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/midi/detail/channel.hpp>
+
 #include <boost/lexical_cast.hpp>
 namespace ossia::net::midi
 {
@@ -18,7 +19,7 @@ struct address_info
     CC_N,      // /12/CC/64 123,
     PC,        // /12/PC 32
     PC_N,      // /12/PC/32 Impulse
-    PB,         // /12/PB -8192 -> 8191
+    PB,        // /12/PB -8192 -> 8191
     Any
   };
 
@@ -99,7 +100,7 @@ struct address_info
 
   ossia::domain defaultDomain()
   {
-    if(type != Type::PB && type != Type::Any)
+    if (type != Type::PB && type != Type::Any)
       return ossia::make_domain(defaultValue(0), defaultValue(127));
     return ossia::make_domain(-8192, 8191);
   }
@@ -132,7 +133,10 @@ class midi_parameter : public ossia::net::parameter_base
 
 public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
-  midi_protocol& get_protocol() const { return m_protocol; }
+  midi_protocol& get_protocol() const
+  {
+    return m_protocol;
+  }
 
   const address_info& info() const;
 

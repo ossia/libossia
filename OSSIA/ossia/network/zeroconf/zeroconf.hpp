@@ -1,10 +1,12 @@
 #pragma once
+#include <ossia_export.h>
+
 #include <cinttypes>
 #include <memory>
-#include <ossia-config.hpp>
-#include <ossia_export.h>
 #include <string>
 #include <vector>
+
+#include <ossia-config.hpp>
 
 namespace servus
 {

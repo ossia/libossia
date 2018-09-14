@@ -1,9 +1,10 @@
 #pragma once
-#include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/detail/string_view.hpp>
-#include <ossia/network/value/value.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/osc/detail/osc_fwd.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
 
@@ -15,8 +16,6 @@ namespace ossia
 {
 namespace net
 {
-
-
 
 struct osc_utilities
 {
@@ -184,8 +183,9 @@ struct osc_utilities
       case oscpack::RGBA_COLOR_TYPE_TAG:
       {
         auto c = it->AsRgbaColorUnchecked();
-        return make_vec(uint8_t(c>>24 & 0xFF), uint8_t(c>>16 & 0xFF),
-                        uint8_t(c>>8  & 0xFF), uint8_t(c     & 0xFF));
+        return make_vec(
+            uint8_t(c >> 24 & 0xFF), uint8_t(c >> 16 & 0xFF),
+            uint8_t(c >> 8 & 0xFF), uint8_t(c & 0xFF));
       }
       default:
         return ossia::impulse{};
@@ -204,14 +204,17 @@ struct osc_utilities
     return t;
   }
 
-  static ossia::value create_any(
-      oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
+  static ossia::value
+  create_any(oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
   {
-    switch(numArguments)
+    switch (numArguments)
     {
-      case 0: return ossia::impulse{};
-      case 1: return create_value(cur_it);
-      default: return create_list(cur_it, numArguments);
+      case 0:
+        return ossia::impulse{};
+      case 1:
+        return create_value(cur_it);
+      default:
+        return create_list(cur_it, numArguments);
     }
   }
 };
@@ -306,13 +309,14 @@ struct osc_inbound_visitor
     }
     else
     {
-      if constexpr(N == 4)
+      if constexpr (N == 4)
       {
-        if(cur_it->TypeTag() == oscpack::RGBA_COLOR_TYPE_TAG)
+        if (cur_it->TypeTag() == oscpack::RGBA_COLOR_TYPE_TAG)
         {
           auto c = cur_it->AsRgbaColorUnchecked();
-          return make_vec(uint8_t(c>>24 & 0xFF), uint8_t(c>>16 & 0xFF),
-                          uint8_t(c>>8  & 0xFF), uint8_t(c     & 0xFF));
+          return make_vec(
+              uint8_t(c >> 24 & 0xFF), uint8_t(c >> 16 & 0xFF),
+              uint8_t(c >> 8 & 0xFF), uint8_t(c & 0xFF));
         }
       }
       return vec;
@@ -341,7 +345,6 @@ struct osc_inbound_visitor
     return {};
   }
 };
-
 
 struct osc_inbound_impulse_visitor
 {
@@ -375,12 +378,13 @@ inline ossia::value filter_value(
   }
 }
 
-template<typename Addr_T>
+template <typename Addr_T>
 inline ossia::value filter_value(const Addr_T& addr)
 {
-  auto val = filter_value(addr.get_domain(), addr.value(), addr.get_bounding());
+  auto val
+      = filter_value(addr.get_domain(), addr.value(), addr.get_bounding());
   auto filtered = addr.filter_value(val);
-  if(!filtered)
+  if (!filtered)
     return val;
   return {};
 }

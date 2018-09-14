@@ -6,7 +6,6 @@ namespace ossia::nodes
 class forward_node : public ossia::nonowning_graph_node
 {
 public:
-
   forward_node()
   {
     m_inlets.push_back(&audio_in);

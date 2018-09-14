@@ -1,12 +1,12 @@
 #pragma once
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
-#include <ossia/detail/small_vector.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/detail/html_writer.hpp>
+#include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 namespace ossia
 {
 namespace net
@@ -60,11 +60,13 @@ public:
     }
   }
 
-
-  auto operator()(oscquery_server_protocol& proto, const oscquery_server_protocol::connection_handler& hdl)
+  auto operator()(
+      oscquery_server_protocol& proto,
+      const oscquery_server_protocol::connection_handler& hdl)
   {
-    return [&proto,&hdl] (ossia::string_view path, string_map<std::string>&& parameters) -> server_reply
-    {
+    return [&proto, &hdl](
+               ossia::string_view path,
+               string_map<std::string>&& parameters) -> server_reply {
       // Here we handle the url elements relative to oscquery
       if (parameters.size() == 0)
       {
@@ -92,7 +94,6 @@ public:
           // First check if we have the path
           if (!node)
             throw node_not_found_error{std::string(path)};
-
 
           // LISTEN
           auto listen_it = parameters.find(detail::listen());

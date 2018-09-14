@@ -3,6 +3,6 @@
 
 namespace ossia
 {
-template<typename K, typename V>
+template <typename K, typename V>
 using flat_multimap = fc::vector_multimap<K, V>;
 }

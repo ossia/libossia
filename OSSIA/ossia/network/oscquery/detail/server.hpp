@@ -1,9 +1,11 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/oscquery/detail/server_reply.hpp>
 #include <ossia/network/exceptions.hpp>
+#include <ossia/network/oscquery/detail/server_reply.hpp>
+
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/http/request.hpp>
 #include <websocketpp/server.hpp>
@@ -30,9 +32,12 @@ public:
     m_server.set_socket_init_handler(
         [](websocketpp::connection_hdl, asio::ip::tcp::socket& s) {
           asio::ip::tcp::no_delay option(true);
-          try {
-          s.set_option(option);
-          } catch(...) {
+          try
+          {
+            s.set_option(option);
+          }
+          catch (...)
+          {
             ossia::logger().warn("Could not set TCP nodelay option");
           }
         });
@@ -105,13 +110,16 @@ public:
 
       try
       {
-        ossia::oscquery::server_reply str = h(hdl, websocketpp::frame::opcode::TEXT, con->get_uri()->get_resource());
+        ossia::oscquery::server_reply str
+            = h(hdl, websocketpp::frame::opcode::TEXT,
+                con->get_uri()->get_resource());
 
-        switch(str.type)
+        switch (str.type)
         {
           case server_reply::data_type::json:
           {
-            con->replace_header("Content-Type", "application/json; charset=utf-8");
+            con->replace_header(
+                "Content-Type", "application/json; charset=utf-8");
             str.data += "\0";
             break;
           }
@@ -162,15 +170,15 @@ public:
 
   void stop()
   {
-      // this change was undone because of OSSIA/libossia#416 :
+    // this change was undone because of OSSIA/libossia#416 :
 
-      // // (temporarily?) changed to stop_listening()
-      // // "Straight up stop forcibly stops a bunch of things
-      // // in a way that bypasses most, if not all, of the cleanup routines"
-      //if(m_server.is_listening())
-      //  m_server.stop_listening();
+    // // (temporarily?) changed to stop_listening()
+    // // "Straight up stop forcibly stops a bunch of things
+    // // in a way that bypasses most, if not all, of the cleanup routines"
+    // if(m_server.is_listening())
+    //  m_server.stop_listening();
 
-      m_server.stop();
+    m_server.stop();
   }
 
   void close(connection_handler hdl)
@@ -185,7 +193,8 @@ public:
     con->send(message);
   }
 
-  void send_message(connection_handler hdl, const ossia::oscquery::server_reply& message)
+  void send_message(
+      connection_handler hdl, const ossia::oscquery::server_reply& message)
   {
     auto con = m_server.get_con_from_hdl(hdl);
     switch (message.type)
@@ -209,13 +218,11 @@ public:
         websocketpp::frame::opcode::text);
   }
 
-  void
-  send_binary_message(connection_handler hdl, const std::string& message)
+  void send_binary_message(connection_handler hdl, const std::string& message)
   {
     auto con = m_server.get_con_from_hdl(hdl);
     con->send(
-        message.data(), message.size(),
-        websocketpp::frame::opcode::binary);
+        message.data(), message.size(), websocketpp::frame::opcode::binary);
   }
 
   server_t& impl()

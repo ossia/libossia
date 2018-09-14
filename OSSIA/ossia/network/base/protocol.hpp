@@ -1,11 +1,13 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/network/common/network_logger.hpp>
-#include <vector>
-#include <future>
-#include <memory>
 
 #include <ossia_export.h>
+
+#include <future>
+#include <memory>
+#include <vector>
 
 namespace ossia
 {
@@ -59,17 +61,18 @@ public:
   /**
    * @brief Send many values in one go if the protocol supports it
    */
-  virtual bool push_bundle(const std::vector<const ossia::net::parameter_base*>&);
+  virtual bool
+  push_bundle(const std::vector<const ossia::net::parameter_base*>&);
 
-   /**
-    * @brief Send a value to the network.
-    */
+  /**
+   * @brief Send a value to the network.
+   */
   virtual bool push_raw(const full_parameter_data&) = 0;
 
-   /**
-    * @brief Send a value to the network.
-    */
-   virtual bool push_raw_bundle(const std::vector<full_parameter_data>&);
+  /**
+   * @brief Send a value to the network.
+   */
+  virtual bool push_raw_bundle(const std::vector<full_parameter_data>&);
 
   /**
    * @brief Notify the network that a parameter should be listened to.
@@ -120,7 +123,9 @@ public:
     return m_logger;
   }
 
-  virtual void stop() { }
+  virtual void stop()
+  {
+  }
 
 protected:
   network_logger m_logger;

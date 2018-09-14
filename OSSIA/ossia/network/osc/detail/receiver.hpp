@@ -1,11 +1,13 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
-#include <functional>
-#include <iostream>
-#include <memory>
+
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscDebug.h>
 #include <oscpack/osc/OscPacketListener.h>
+
+#include <functional>
+#include <iostream>
+#include <memory>
 #include <sstream>
 #include <thread>
 

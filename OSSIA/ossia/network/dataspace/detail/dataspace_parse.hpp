@@ -1,11 +1,12 @@
 #pragma once
+#include <ossia/detail/for_each.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_parse.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_list.hpp>
-#include <ossia/detail/for_each.hpp>
+
 #include <brigand/algorithms/wrap.hpp>
 #include <brigand/sequences/list.hpp>
 namespace ossia
@@ -200,8 +201,8 @@ struct make_unit_symbols_sub_helper
       {
         res.clear();
 
-        res.append(ds.data(), ds.size());  // color
-        res += '.'; // color.
+        res.append(ds.data(), ds.size()); // color
+        res += '.';                       // color.
 
         res.append(un.data(), un.size()); // color.rgb
 
@@ -213,8 +214,8 @@ struct make_unit_symbols_sub_helper
 };
 
 template <typename Dataspace, typename Unit>
-struct
-    make_unit_symbols_sub_helper<Dataspace, Unit, enable_if_multidimensional<Unit>>
+struct make_unit_symbols_sub_helper<
+    Dataspace, Unit, enable_if_multidimensional<Unit>>
 {
   void operator()(unit_parse_symbols_t& map)
   {
@@ -230,8 +231,8 @@ struct
       {
         res.clear();
 
-        res.append(ds.data(), ds.size());  // color
-        res += '.'; // color.
+        res.append(ds.data(), ds.size()); // color
+        res += '.';                       // color.
 
         res.append(un.data(), un.size()); // color.rgb
 

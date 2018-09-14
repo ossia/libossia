@@ -1,14 +1,16 @@
 #pragma once
 
 #include <ossia/detail/string_view.hpp>
+#include <ossia/preset/exception.hpp>
+
+#include <ossia_export.h>
+
+#include <fstream>
 #include <functional>
 #include <map>
 #include <memory>
-#include <ossia/preset/exception.hpp>
-#include <ossia_export.h>
 #include <regex>
 #include <string>
-#include <fstream>
 
 namespace ossia
 {
@@ -27,13 +29,13 @@ namespace presets
 {
 using preset = std::vector<std::pair<std::string, ossia::value>>;
 
-using instance_functions = std::
-    vector<std::
-               pair<std::regex, std::function<void(const ossia::net::node_base&)>>>;
+using instance_functions = std::vector<
+    std::pair<std::regex, std::function<void(const ossia::net::node_base&)>>>;
 
 using preset_pair = std::pair<std::string, ossia::value>;
 
-OSSIA_EXPORT preset read_json(const std::string&, bool skip_first_level = true);
+OSSIA_EXPORT preset
+read_json(const std::string&, bool skip_first_level = true);
 OSSIA_EXPORT std::string
 write_json(const std::string& devicename, const preset&);
 
@@ -61,8 +63,7 @@ OSSIA_EXPORT std::string write_json(const ossia::net::device_base& deviceBase);
 OSSIA_EXPORT void
 write_file(ossia::string_view string, ossia::string_view filename);
 
-OSSIA_EXPORT const std::string
-read_file(const std::string& filename);
+OSSIA_EXPORT const std::string read_file(const std::string& filename);
 
 /**
  * @brief make_json_preset create a JSON preset
@@ -83,10 +84,8 @@ typedef void (*func_t)(ossia::net::node_base* n);
  * @param fn : function to call just after push a value
  * @return true if there is no parse error
  */
-OSSIA_EXPORT bool
-apply_json(const std::string& json,
-           ossia::net::node_base& node,
-           func_t fn = nullptr);
+OSSIA_EXPORT bool apply_json(
+    const std::string& json, ossia::net::node_base& node, func_t fn = nullptr);
 
 /**
  * @brief apply_preset : apply simple preset to a node
@@ -97,26 +96,20 @@ apply_json(const std::string& json,
  * @param fn : function to call just after push a value
  */
 OSSIA_EXPORT void apply_preset(
-    const std::string& kiss,
-    ossia::net::node_base& node,
-    func_t fn = nullptr);
+    const std::string& kiss, ossia::net::node_base& node, func_t fn = nullptr);
 
 // DEPRECATED keep it for backward compatibility
 OSSIA_EXPORT void apply_preset(
     ossia::net::node_base&, const presets::preset&,
-    keep_arch_type t = keep_arch_on,
-    presets::instance_functions = {},
-    bool allow_nonterminal = false,
-    bool remove_first = true);
+    keep_arch_type t = keep_arch_on, presets::instance_functions = {},
+    bool allow_nonterminal = false, bool remove_first = true);
 
-OSSIA_EXPORT presets::preset
-make_preset(ossia::net::node_base&);
+OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&);
 
 OSSIA_EXPORT ossia::net::node_base*
 get_node(ossia::net::node_base&, const std::string&);
 
-OSSIA_EXPORT std::string
-to_string(const ossia::net::device_base& ossiadev);
+OSSIA_EXPORT std::string to_string(const ossia::net::device_base& ossiadev);
 
 } // namespace presets
 } // namespace ossia

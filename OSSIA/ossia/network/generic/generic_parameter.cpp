@@ -1,15 +1,14 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/common/complex_type.hpp>
-#include <ossia/network/generic/generic_parameter.hpp>
-
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/value/value_conversion.hpp>
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/network/exceptions.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/value/value.hpp>
+#include <ossia/network/value/value_conversion.hpp>
 
 namespace ossia
 {
@@ -35,7 +34,8 @@ generic_parameter::generic_parameter(
     , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
     , m_value(init_value(m_valueType))
 {
-  m_repetitionFilter = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
+  m_repetitionFilter
+      = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
   update_parameter_type(data.type, *this);
 }
 
@@ -69,7 +69,8 @@ generic_parameter::push_value(const ossia::value& value)
   return *this;
 }
 
-ossia::net::generic_parameter& generic_parameter::push_value(ossia::value&& value)
+ossia::net::generic_parameter&
+generic_parameter::push_value(ossia::value&& value)
 {
   set_value(std::move(value));
 
@@ -283,9 +284,9 @@ generic_parameter::set_bounding(ossia::bounding_mode boundingMode)
 
 bool generic_parameter::filter_value(const ossia::value& val) const
 {
-  return m_disabled || m_muted ||
-      (get_repetition_filter() == ossia::repetition_filter::ON
-       && val == m_previousValue);
+  return m_disabled || m_muted
+         || (get_repetition_filter() == ossia::repetition_filter::ON
+             && val == m_previousValue);
 }
 
 void generic_parameter::on_first_callback_added()
@@ -322,6 +323,5 @@ generic_parameter& generic_parameter::set_unit(const unit_t& v)
   m_node.get_device().on_attribute_modified(m_node, text_unit());
   return *this;
 }
-
 }
 }

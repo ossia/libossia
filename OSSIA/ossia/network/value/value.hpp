@@ -1,9 +1,10 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
+#include <ossia/detail/string_view.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/value/value_base.hpp>
-#include <ossia/network/common/parameter_properties.hpp>
-#include <ossia/detail/string_view.hpp>
+
 #include <limits>
 #include <string>
 #include <vector>

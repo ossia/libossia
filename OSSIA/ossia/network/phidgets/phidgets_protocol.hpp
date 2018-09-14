@@ -1,13 +1,15 @@
 #pragma once
+#include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/optional.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/phidgets/phidgets_parameter_data.hpp>
-#include <ossia/detail/hash_map.hpp>
+
 #include <readerwriterqueue.h>
-#include <ossia/detail/optional.hpp>
 
 namespace ossia
 {
-namespace net {
+namespace net
+{
 class device_base;
 }
 class phidget_node;
@@ -39,8 +41,7 @@ public:
   bool push_raw(const ossia::net::full_parameter_data&) override;
 
 private:
-
-  ossia::net::node_base*  get_parent(ossia::phidget_handle_t hdl);
+  ossia::net::node_base* get_parent(ossia::phidget_handle_t hdl);
   PhidgetManagerHandle m_hdl{};
 
   void on_deviceCreated(PhidgetHandle phid);

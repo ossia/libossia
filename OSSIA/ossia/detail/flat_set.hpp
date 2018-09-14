@@ -3,6 +3,6 @@
 
 namespace ossia
 {
-template<typename K>
+template <typename K>
 using flat_set = fc::vector_set<K>;
 }

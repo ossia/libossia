@@ -2,9 +2,11 @@
 #include <ossia/editor/state/destination_qualifiers.hpp>
 #include <ossia/network/value/destination.hpp>
 #include <ossia/network/value/value.hpp>
+
+#include <ossia_export.h>
+
 #include <bitset>
 #include <memory>
-#include <ossia_export.h>
 #include <utility>
 
 /**
@@ -37,14 +39,12 @@ struct OSSIA_EXPORT message
 
   friend bool operator==(const message& lhs, const message& rhs)
   {
-    return lhs.dest == rhs.dest
-           && lhs.message_value == rhs.message_value;
+    return lhs.dest == rhs.dest && lhs.message_value == rhs.message_value;
   }
 
   friend bool operator!=(const message& lhs, const message& rhs)
   {
-    return lhs.dest != rhs.dest
-           || lhs.message_value != rhs.message_value;
+    return lhs.dest != rhs.dest || lhs.message_value != rhs.message_value;
   }
 
   message() = delete;

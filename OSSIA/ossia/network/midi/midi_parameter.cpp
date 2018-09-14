@@ -1,5 +1,5 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+// This is an open source non-commercial project. Dear PVS-Studio, please check
+// it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/midi/midi.hpp>
 #include <ossia/network/midi/midi_parameter.hpp>
 
@@ -10,13 +10,14 @@ namespace net
 namespace midi
 {
 midi_parameter::midi_parameter(address_info info, node_base& parent)
-  : ossia::net::parameter_base{parent}
+    : ossia::net::parameter_base{parent}
     , m_info{info}
     , m_protocol{dynamic_cast<midi_protocol&>(
           parent.get_device().get_protocol())}
     , m_domain{m_info.defaultDomain()}
     , m_type{m_info.matchingType()}
-    , m_value{m_info.defaultValue(m_info.type == address_info::Type::PB ? 0 : 64)}
+    , m_value{
+          m_info.defaultValue(m_info.type == address_info::Type::PB ? 0 : 64)}
 {
 }
 

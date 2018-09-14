@@ -1,7 +1,9 @@
 #pragma once
 #include <ossia/network/phidgets/detail/sensors.hpp>
-#include <algorithm>
+
 #include <eggs/variant.hpp>
+
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -65,8 +67,14 @@ public:
     return (bool)ok;
   }
 
-  Phidget_DeviceClass device_class() const { return m_class; }
-  Phidget_DeviceID device_id() const { return m_id; }
+  Phidget_DeviceClass device_class() const
+  {
+    return m_class;
+  }
+  Phidget_DeviceID device_id() const
+  {
+    return m_id;
+  }
 
   void set_label(const std::string& n);
 
@@ -87,9 +95,8 @@ private:
   std::string m_label;
   int m_serial{};
 
-  //std::unique_ptr<interface_kit> m_ik;
+  // std::unique_ptr<interface_kit> m_ik;
 };
-
 
 struct phidget_channel
 {
@@ -133,8 +140,7 @@ public:
   }
 
 private:
-  phidget_channel(PhidgetHandle device
-                  , PhidgetHandle hdl);
+  phidget_channel(PhidgetHandle device, PhidgetHandle hdl);
   phidget_channel(const phidget_channel&) = delete;
   phidget_channel(phidget_channel&&) = delete;
   phidget_channel& operator=(const phidget_channel&) = delete;
