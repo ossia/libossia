@@ -15,7 +15,27 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/expression/expression_generic.hpp>
 #include "TestUtils.hpp"
+
+struct expression_generic_test final
+    : ossia::expressions::expression_generic_base
+{
+  expression_generic_test(bool& the_b): b{the_b} { }
+  bool& b;
+
+  void update() { }
+  bool evaluate() const { return b; }
+  void on_first_callback_added(ossia::expressions::expression_generic&) { }
+  void on_removing_last_callback(ossia::expressions::expression_generic&) { }
+};
+
+auto make_expression_test(bool& b)
+{
+  return ossia::expressions::make_expression_generic<expression_generic_test>(b);
+}
+
 namespace ossia
 {
 
@@ -136,17 +156,41 @@ TEST_CASE ("test_execution", "test_execution")
 
 TEST_CASE ("test_inf", "test_inf")
 {
-  bool b = false;
-  try {
+  REQUIRE_THROWS([] {
     loop l{0_tv, time_interval::exec_callback{}, time_event::exec_callback{},
            time_event::exec_callback{}};
     l.start();
     l.state(0_tv, 1_tv, 0, 0_tv, 1.);
-  } catch(...) {
-    b = true;
-  }
-  REQUIRE(b);
+  }());
 }
+
+
+TEST_CASE ("test_inf_trigger", "test_inf_trigger")
+{
+  using namespace ossia::expressions;
+
+  loop l{ossia::Infinite, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
+  bool b = false;
+
+  l.get_time_interval().set_min_duration(0_tv);
+  l.get_time_interval().set_max_duration(ossia::Infinite);
+  l.get_time_interval().set_nominal_duration(0_tv);
+  l.get_end_timesync().set_expression(::make_expression_test(b));
+
+  l.start();
+  l.state(0_tv, 10_tv, 0, 0_tv, 1.);
+  REQUIRE(l.get_time_interval().get_date() == 10_tv);
+  l.state(10_tv, 20_tv, 0, 0_tv, 1.);
+  REQUIRE(l.get_time_interval().get_date() == 20_tv);
+  b = true;
+  l.state(20_tv, 25_tv, 0, 0_tv, 1.);
+  REQUIRE(l.get_time_interval().get_date() == 0_tv);
+  b = false;
+  l.state(25_tv, 30_tv, 0, 0_tv, 1.);
+  REQUIRE(l.get_time_interval().get_date() == 5_tv);
+
+}
+
 
 TEST_CASE ("test_loop_sound", "test_loop_sound")
 {

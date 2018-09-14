@@ -209,5 +209,16 @@ expression_ptr make_expression_pulse(Args&&... args)
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_pulse>, std::forward<Args>(args)...);
 }
+
+template<typename T, typename... Args>
+expression_ptr make_expression_generic(Args&&... args)
+{
+  static_assert(std::is_base_of<expression_generic_base, T>::value,
+                "Must inherit from expression_generic_base");
+
+  return std::make_unique<expression_base>(
+        eggs::variants::in_place<expression_generic>,
+        std::make_unique<T>(std::forward<Args>(args)...));
+}
 }
 }

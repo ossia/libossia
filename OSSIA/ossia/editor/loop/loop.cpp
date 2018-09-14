@@ -196,7 +196,7 @@ void loop::state(
 
     m_lastDate = date;
 
-    ossia::time_value tick_amount = date - prev_last_date;
+    ossia::time_value tick_amount = date - from;
 
     auto& start_ev = *m_startNode.get_time_events()[0];
     auto& end_ev = *m_endNode.get_time_events()[0];
@@ -308,7 +308,7 @@ void loop::state(
       if (prev_last_date == Infinite)
         m_interval.tick_offset(date, tick_offset);
       else
-        m_interval.tick_offset(ossia::time_value{(date - prev_last_date)}, tick_offset);
+        m_interval.tick_offset(tick_amount, tick_offset);
 
 
       switch (m_endEvent.get_status())

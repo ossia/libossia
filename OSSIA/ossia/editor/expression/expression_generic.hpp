@@ -52,16 +52,5 @@ private:
   }
 };
 
-template<typename T, typename... Args>
-auto make_expression_generic(Args&&... args)
-{
-  static_assert(std::is_base_of<expression_generic_base, T>::value,
-                "Must inherit from expression_generic_base");
-
-  return std::make_unique<expression_base>(expression_generic{
-        std::make_unique<T>(std::forward<Args>(args)...)
-        });
-}
-
 }
 }
