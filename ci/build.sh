@@ -214,7 +214,7 @@ case "$TRAVIS_OS_NAME" in
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
       RpiPythonRelease)
-        
+
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
@@ -234,6 +234,7 @@ def get_versions():
                    ..
 
         $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
           ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
@@ -318,6 +319,8 @@ def get_versions():
           ..
 
         $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install
+
         # now we just want to install the wheel and run the tests
         ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
         ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
@@ -507,6 +510,8 @@ def get_versions():
                  ..
 
       $CMAKE_BIN --build . -- -j2
+      $CMAKE_BIN --build . --target install
+
       # now we just want to install the wheel and run the tests
       ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
       ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py

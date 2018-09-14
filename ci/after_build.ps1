@@ -24,7 +24,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   # add Qt/bin dir to PATH because tests need Qt DLL.
   ls ${env:QTDIR}\bin
-  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:QTDIR}/bin/","Process")            
+  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:QTDIR}/bin/","Process")
 
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
@@ -207,7 +207,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   mv ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\ossia ${env:HOME}\Documents\Pd\externals\
 
   # add pd/bin folder to environment path variable
-  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-pd/pd/bin/","Process")            
+  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-pd/pd/bin/","Process")
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 

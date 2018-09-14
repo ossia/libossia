@@ -238,11 +238,8 @@ void execution_state::register_inlet(const inlet& port)
   }
 }
 
-void execution_state::begin_tick()
+void execution_state::apply_device_changes()
 {
-  clear_local_state();
-  get_new_values();
-
   device_operation op;
   while(m_device_change_queue.try_dequeue(op))
   {
@@ -263,6 +260,12 @@ void execution_state::begin_tick()
       }
     }
   }
+}
+void execution_state::begin_tick()
+{
+  clear_local_state();
+  get_new_values();
+  apply_device_changes();
 }
 
 void execution_state::clear_local_state()
