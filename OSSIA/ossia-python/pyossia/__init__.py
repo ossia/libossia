@@ -203,7 +203,7 @@ def reset(self):
 
 try:
     import importlib
-    ossia = importlib.import_module('ossia_python', package=None)
+    ossia = importlib.import_module('.ossia_python', 'pyossia')
     # create a list of value_types available in OSSIA
     # maybe this is not necessary, just because 8'm a bit lazy
     __value_types__ = {'float':ossia.ValueType.Float,
