@@ -54,7 +54,7 @@ class TestAll(unittest.TestCase):
         """
         print the actual version of pyossia
         """
-        self.assertEqual(isinstance(pyossia.__version__, str), True)
+        self.assertEqual(isinstance(ossia.__version__, str), True)
 
     def test_int(self):
         """
