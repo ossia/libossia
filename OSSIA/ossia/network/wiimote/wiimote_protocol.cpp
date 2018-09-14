@@ -1,17 +1,8 @@
 
 #include <wiiuse.h>
-#include <chrono>
 #include "wiimote_protocol.hpp"
 
-
-
-//  FOR DEBUG
-#include <unistd.h>
-
-using namespace ossia;
-using namespace device;
-
-
+using namespace device; //  device_parameter
 
 namespace ossia {
 namespace net {
@@ -23,11 +14,8 @@ namespace net {
             m_ready(false),
             m_enable_ir(enable_ir)
     {
-        std::printf(">>> Wiimote Protocol CTOR\n");
-
         m_wiimotes = wiiuse_init(MAX_WIIMOTES_COUNT);
 
-        std::printf(">>> Looking for wiimote\n");
         const int found =
             wiiuse_find(m_wiimotes, MAX_WIIMOTES_COUNT, 1); // 10 sec (timeout)
 
@@ -36,8 +24,6 @@ namespace net {
             throw std::runtime_error("No Wiimotes were found\n");
         }
 
-        std::printf(">>> %u wiimotes were found\n", found);
-
         m_wiimote_count = 
             wiiuse_connect(m_wiimotes, MAX_WIIMOTES_COUNT);
 
@@ -45,8 +31,6 @@ namespace net {
             wiiuse_cleanup(m_wiimotes, MAX_WIIMOTES_COUNT);
             throw std::runtime_error("Wiimote connection failed\n");
         }
-
-        std::cout << "<<<" << m_wiimote_count << " wiimotes were connected" << std::endl;
     }
 
     wiimote_protocol::~wiimote_protocol()
@@ -66,7 +50,6 @@ namespace net {
 
     void wiimote_protocol::set_device(ossia::net::device_base& dev)
     {
-        std::printf("Set Device\n");
         m_device = &dev;
 
         if (m_running)
@@ -114,8 +97,6 @@ namespace net {
 
         wiimote_parameters& parameters = 
             m_wiimotes_parameters[wiimote_id];
-
-        std::cout << "Creating parameters for wiimote " << wiimote_id << std::endl;
 
         //  Buttons parameters
         parameters.
@@ -235,11 +216,14 @@ namespace net {
 
         parameters.
             wiimote_axis =
-                device_parameter::create_device_parameter<axis_parameter>(
+                device_parameter::create_device_parameter(
                     root, path + "wiimote-axis",
                     std::array<float, 3>{0.0, 0.0, 0.0},
-                    m_wiimotes[wiimote_id]);
-        parameters.wiimote_axis->set_unit(ossia::spherical_u{});
+                    val_type::VEC3F,
+                    bounding_mode::FREE,
+                    access_mode::GET,
+                    init_domain(val_type::VEC3F));
+        parameters.wiimote_axis->set_unit(ossia::euler_u{});
 
         parameters.
             wiimote_gravity = 
@@ -276,11 +260,14 @@ namespace net {
         // motion
         parameters.
             nunchuk_axis = 
-                device_parameter::create_device_parameter<axis_parameter>(
+                device_parameter::create_device_parameter(
                     root, path + "nunchuk-axis",
                     std::array<float, 3>{0.0, 0.0, 0.0},
-                    m_wiimotes[wiimote_id]);
-        parameters.nunchuk_axis->set_unit(ossia::spherical_u{});
+                    val_type::VEC3F,
+                    bounding_mode::FREE,
+                    access_mode::GET,
+                    init_domain(val_type::VEC3F));
+        parameters.nunchuk_axis->set_unit(ossia::euler_u{});
 
         parameters.
             nunchuk_gravity = 
@@ -330,14 +317,8 @@ namespace net {
 
     void wiimote_protocol::wiimote_event_loop(wiimote_protocol *self)
     {
-        std::printf("Starting Event Loop\n");
         const unsigned int wiimote_count = 
             self->m_wiimote_count;
-
-        static int i = 0;
-        if (i != 0)
-            std::printf("FATAAL MEGA HORRIBLE ERROR : event loop started more than one time\n");
-        i++;
 
         while (self->m_running) {
 
@@ -348,12 +329,7 @@ namespace net {
 
             if (ret > 0) {
 
-                std::printf("Received a wiimote Event\n");
-
                 for (unsigned int i = 0; i < wiimote_count; ++i) {
-
-                    if (!WIIMOTE_IS_CONNECTED(self->m_wiimotes[i]))
-                        std::printf("Wiimote %u is deconected\n", i);
 
                     const WIIUSE_EVENT_TYPE ev_type =
                         self->m_wiimotes[i]->event;
@@ -362,19 +338,6 @@ namespace net {
 
                         case WIIUSE_EVENT:
                             handle_wiimote_event(self, i);
-                            break;
-
-                        case WIIUSE_DISCONNECT:
-					    case WIIUSE_UNEXPECTED_DISCONNECT:
-                            std::printf("Wiimote %u was disconneted\n", i);
-                            break;
-
-                        case WIIUSE_NUNCHUK_INSERTED:
-                            std::printf("A nunchuk extension was inserted\n");
-                            break;
-
-                        case WIIUSE_NUNCHUK_REMOVED:
-                            std::printf("A nunchuk extension was removed\n");
                             break;
 
                         default:
@@ -409,9 +372,9 @@ namespace net {
             wiimote_axis-> 
                 push_value(
                     std::array<float, 3>{
-                        wiimote->orient.roll,
+                        wiimote->orient.yaw,
                         wiimote->orient.pitch,
-                        wiimote->orient.yaw});
+                        wiimote->orient.roll});
 
         parameters.
             wiimote_gravity->
@@ -458,9 +421,9 @@ namespace net {
             parameters.nunchuk_axis->
                 push_value(
                     std::array<float, 3>{
-                        nunchuk->orient.roll,
+                        nunchuk->orient.yaw,
                         nunchuk->orient.pitch,
-                        nunchuk->orient.yaw});
+                        nunchuk->orient.roll});
 
             parameters.nunchuk_gravity->
                 push_value(

@@ -64,35 +64,5 @@ namespace net {
 
         wiiuse_set_leds(m_wiimote, led_mask);
     }
-
-    //----
-
-    axis_parameter::axis_parameter(
-        net::node_base& node,
-        struct wiimote_t *wiimote)
-    : device_parameter(
-        node, 
-        val_type::VEC3F, 
-        bounding_mode::FREE, 
-        access_mode::GET, 
-        init_domain(val_type::VEC3F)),
-        m_wiimote(wiimote)
-    {
-        //TODO set_unit()
-        std::cout << "axis parameter CTOR" << std::endl;
-    }
-
-    void axis_parameter::on_first_callback_added()
-    {
-        //  TODO activer/desactiver
-        std::cout << "axis parameter first callback added" << std::endl;
-    }
-
-    void axis_parameter::on_removing_last_callback()
-    {
-        std::cout << "axis parameter last callback removed" << std::endl;
-    }
-
-
 }
 }

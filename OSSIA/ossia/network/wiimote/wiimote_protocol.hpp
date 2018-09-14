@@ -27,13 +27,13 @@ namespace net {
         typedef struct {
                 std::map<uint16_t, device::device_parameter*> button_parameters;
 
-                axis_parameter *wiimote_axis{};
+                device::device_parameter *wiimote_axis{};
                 device::device_parameter *wiimote_gravity{};
 
                 device::device_parameter *nunchuk_button_c{};
                 device::device_parameter *nunchuk_button_z{};
 
-                axis_parameter *nunchuk_axis{};
+                device::device_parameter *nunchuk_axis{};
                 device::device_parameter *nunchuk_gravity{};
                 device::device_parameter *nunchuk_joystick{};
 

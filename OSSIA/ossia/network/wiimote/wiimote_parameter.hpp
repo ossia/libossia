@@ -43,22 +43,5 @@ namespace net {
             static std::map<wiimote_t*, uint8_t> m_led_mask;
     };
 
-
-    class axis_parameter : public device::device_parameter {
-
-        public:
-            axis_parameter(
-                ossia::net::node_base& node,
-                struct wiimote_t *wiimote);
-
-        protected:
-            void device_update_value() override {}
-            void on_first_callback_added() override;
-            void on_removing_last_callback() override;
-
-        private:
-            struct wiimote_t *m_wiimote;
-    };
-
 }
 }
