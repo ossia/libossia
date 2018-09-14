@@ -45,6 +45,11 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset)
   tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset);
 }
 
+void time_interval::tick_offset_speed_precomputed(time_value date, ossia::time_value offset)
+{
+  tick_impl(m_date, m_date + date.impl, offset);
+}
+
 std::shared_ptr<time_interval> time_interval::create(
     time_interval::exec_callback callback, time_event& startEvent,
     time_event& endEvent, ossia::time_value nominal, ossia::time_value min,

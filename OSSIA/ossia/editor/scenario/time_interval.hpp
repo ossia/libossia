@@ -64,6 +64,7 @@ public:
 
   void tick(ossia::time_value, double ratio = 1.0);
   void tick_offset(ossia::time_value, ossia::time_value offset);
+  void tick_offset_speed_precomputed(ossia::time_value, ossia::time_value offset);
   // void tick_offset(ossia::time_value, double ratio, ossia::time_value
   // offset);
 

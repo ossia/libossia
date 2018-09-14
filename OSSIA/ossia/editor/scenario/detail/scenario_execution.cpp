@@ -345,6 +345,11 @@ enum progress_mode
   PROGRESS_MIN,
   PROGRESS_MAX
 };
+
+ossia::time_value clamp_zero(ossia::time_value t)
+{
+   return t >= 0 ? t : 0_tv;
+}
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void scenario::state(
@@ -463,45 +468,61 @@ void scenario::state(
       // so that the state is not 1.01*automation for instance.
       if (!cst_max_dur.infinite())
       {
-        // TODO instead if(tick < cst_max_dur - cst_old_date) while taking
-        // speed into account
-        auto max_tick = time_value{
-            int64_t((cst_max_dur - cst_old_date) / interval.get_speed())};
-        auto diff = tick - max_tick;
-        if (diff <= 0)
+        if(auto s = interval.get_speed(); BOOST_LIKELY(s >= 0.))
         {
-          if (tick != 0)
-            interval.tick_offset(tick, offset);
-        }
-        else
-        {
-          if (max_tick != 0)
+          auto max_tick = time_value{cst_max_dur - cst_old_date};
+          auto diff = s * tick - max_tick;
+          if (diff <= 0)
           {
-            interval.tick_offset(max_tick, offset);
-          }
-
-          const auto ot
-              = ossia::time_value{int64_t(interval.get_speed() * diff)};
-          const auto node_it = m_overticks.lower_bound(end_node);
-          if (node_it != m_overticks.end() && (end_node == node_it->first))
-          {
-            auto& cur = const_cast<overtick&>(node_it->second);
-
-            if (ot < cur.min)
-              cur.min = ot;
-            if (ot > cur.max)
-            {
-              cur.max = ot;
-              cur.offset = tick_offset + tick_ms - cur.max;
-            }
+            if (tick != 0)
+              interval.tick_offset(tick, offset);
           }
           else
           {
-            m_overticks.insert(
-                node_it,
-                std::make_pair(
-                    end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
+            if (max_tick != 0)
+            {
+              interval.tick_offset_speed_precomputed(max_tick, offset);
+            }
+
+            const auto ot
+                = ossia::time_value{int64_t(diff)};
+            const auto node_it = m_overticks.lower_bound(end_node);
+            if (node_it != m_overticks.end() && (end_node == node_it->first))
+            {
+              auto& cur = const_cast<overtick&>(node_it->second);
+
+              if (ot < cur.min)
+                cur.min = ot;
+              if (ot > cur.max)
+              {
+                cur.max = ot;
+                cur.offset = tick_offset + tick_ms - cur.max;
+              }
+            }
+            else
+            {
+              m_overticks.insert(
+                  node_it,
+                  std::make_pair(
+                      end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
+            }
           }
+        }
+        else
+        {
+          if (tick * s < cst_old_date)
+          {
+            if (tick != 0)
+              interval.tick_offset(tick, offset);
+          }
+          else
+          {
+            if (tick != 0)
+            {
+              interval.tick_offset_speed_precomputed(ossia::time_value{-cst_old_date.impl}, offset);
+            }
+          }
+          // no overtick support for running backwards for now - we just stop at zero
         }
       }
       else
