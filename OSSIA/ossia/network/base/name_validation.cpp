@@ -155,14 +155,12 @@ void sanitize_name(
     auto pos = name.find_last_of('.');
     if (pos != std::string::npos)
     {
-      try
+      int n{};
+      if(boost::conversion::detail::try_lexical_convert(name.substr(pos + 1), n))
       {
-        name_instance
-            = boost::lexical_cast<int>(name.substr(pos + 1)); // OPTIMIZEME
+        // OPTIMIZEME
+        name_instance = n;
         root_name = name.substr(0, pos);
-      }
-      catch (...)
-      {
       }
     }
   }
@@ -183,15 +181,11 @@ void sanitize_name(
     if (same_root && (n_name[root_len] == '.'))
     {
       // Instance
-      try
+      int n{};
+      // OPTIMIZEME
+      if(boost::conversion::detail::try_lexical_convert(n_name.substr(root_len + 1), n))
       {
-        int n = boost::lexical_cast<int>(
-            n_name.substr(root_len + 1)); // OPTIMIZEME
         instance_num.push_back(n);
-      }
-      catch (...)
-      {
-        continue;
       }
     }
     // case where we have the "default" instance without .0
