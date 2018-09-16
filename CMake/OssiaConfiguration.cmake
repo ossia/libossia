@@ -370,8 +370,10 @@ else()
 
   if(LINKER_IS_GOLD)
     check_cxx_linker_flag("-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2" LINKER_THREADS_SUPPORTED)
+    check_cxx_linker_flag("-fuse-ld=gold -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
   elseif(LINKER_IS_LLD)
     check_cxx_linker_flag("-fuse-ld=lld -Wl,--threads" LINKER_THREADS_SUPPORTED)
+    check_cxx_linker_flag("-fuse-ld=lld -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
   endif()
 endif()
 
@@ -505,13 +507,11 @@ else()
         -Wl,-Bsymbolic-functions
       )
 
-      if(LINKER_IS_GOLD OR LINKER_IS_LLD)
-        if(NOT OSSIA_SANITIZE)
-            set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-              ${DEBUG_SPLIT_FLAG}
-              -Wl,--gdb-index
-            )
-        endif()
+      if(GDB_INDEX_SUPPORTED AND NOT OSSIA_SANITIZE)
+        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+            ${DEBUG_SPLIT_FLAG}
+            -Wl,--gdb-index
+        )
       endif()
     endif()
   endif()
