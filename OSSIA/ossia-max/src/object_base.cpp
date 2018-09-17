@@ -296,6 +296,24 @@ object_base::object_base()
 
 }
 
+object_base::~object_base()
+{
+  if(m_loadbanged)
+  {
+    auto& root_map = ossia_max::instance().root_patcher;
+    const auto& it = root_map.find(m_patcher_hierarchy.back());
+
+    if(it != root_map.end())
+    {
+      it->second.dec();
+      if(it->second.count == 0)
+      {
+          root_map.erase(it);
+      }
+    }
+  }
+}
+
 void object_base::get_hierarchy()
 {
   t_object* patcher = get_patcher(&m_object);
@@ -309,7 +327,6 @@ void object_base::get_hierarchy()
 
 void object_base::loadbang(object_base* x)
 {
-  // post("loadbang mess");
   if (x->m_reg_clock)
   {
     clock_unset(x->m_reg_clock);
@@ -319,27 +336,21 @@ void object_base::loadbang(object_base* x)
 
   if (!x->m_patcher_hierarchy.empty())
   {
+    x->m_loadbanged = true;
     auto& map = ossia_max::instance().root_patcher;
 
     std::pair<ossia_max::RootMap::iterator, bool> res = map.insert(
                 std::pair<t_object*,ossia_max::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));
 
-    if (!res.second)
-    {
-      // key already exists, then increment count
-      ossia_max::root_descriptor& desc = (res.first)->second;
-      desc.inc();
+
+    ossia_max::root_descriptor& desc = (res.first)->second;
+    desc.inc();
 #if OSSIA_MAX_AUTOREGISTER
-      if (!desc.is_loadbanged)
-        clock_delay(ossia_max::instance().m_reg_clock,1);
-#endif
-    }
-    else
+    if (!desc.is_loadbanged)
     {
-#if OSSIA_MAX_AUTOREGISTER
       clock_delay(ossia_max::instance().m_reg_clock,1);
-#endif
     }
+#endif
   }
 }
 
