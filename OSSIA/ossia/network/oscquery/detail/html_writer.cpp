@@ -6,6 +6,7 @@
 #include <ossia/network/oscquery/detail/html_writer.hpp>
 
 #include <fmt/format.h>
+#include <ossia/network/value/format_value.hpp>
 
 namespace ossia::oscquery
 {
@@ -20,44 +21,42 @@ static_html_builder::~static_html_builder()
 
 struct static_html_builder_impl
 {
-  fmt::MemoryWriter& w;
+  fmt::memory_buffer& w;
   void build_header(ossia::net::node_base& node)
   {
-    w << R"_(<!doctype html>
+    fmt::format_to(w, R"_(<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>OSCQuery server</title>
 </head>
-<body>)_";
+<body>)_");
   }
 
   void build_footer()
   {
-    w << R"_(</body></html>)_";
+    fmt::format_to(w, R"_(</body></html>)_");
   }
 
   void build_node(ossia::net::node_base& node)
   {
     if (auto p = node.get_parameter())
     {
-      w << "\n<p>";
-      w << "<b>" << node.osc_address() << "</b> : " << p->value();
+      fmt::format_to(w, "\n<p>");
+      fmt::format_to(w, "<b>{}</b> : {}", node.osc_address(), p->value());
 
       auto& dom = p->get_domain();
       auto min = dom.get_min();
       if (min.valid())
-        w << " ; <b>Min</b>: " << min;
+        fmt::format_to(w, " ; <b>Min</b>: {}", min);
 
       auto max = dom.get_max();
       if (max.valid())
-        w << " ; <b>Max</b>: " << max;
+        fmt::format_to(w, " ; <b>Max</b>: {}", max);
 
       if (auto u = p->get_unit())
-      {
-        w << " ; <b>Unit</b>: " << ossia::get_pretty_unit_text(u);
-      }
-      w << "</p>";
+        fmt::format_to(w, " ; <b>Unit</b>: {}",  ossia::get_pretty_unit_text(u));
+      fmt::format_to(w, "</p>");
     }
 
     for (auto cld : node.children_copy())
@@ -69,14 +68,14 @@ struct static_html_builder_impl
 
 std::string static_html_builder::build_tree(ossia::net::node_base& node)
 {
-  fmt::MemoryWriter w;
-  w.buffer().reserve(150000);
+  fmt::memory_buffer w;
+  w.reserve(150000);
 
   static_html_builder_impl bld{w};
   bld.build_header(node);
   bld.build_node(node);
   bld.build_footer();
 
-  return w.str();
+  return std::string(w.data(), w.size());
 }
 }

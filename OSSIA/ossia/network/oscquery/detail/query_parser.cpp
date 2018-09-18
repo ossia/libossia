@@ -14,7 +14,7 @@
 #include <boost/container/static_vector.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 
 #include <string>
 #include <vector>

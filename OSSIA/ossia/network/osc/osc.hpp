@@ -4,7 +4,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 
 #include <atomic>
 #include <string>

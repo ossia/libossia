@@ -13,7 +13,7 @@
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 
 namespace ossia
 {
@@ -252,10 +252,7 @@ unit_t to_unit(const value_with_unit& v)
 
 std::string to_pretty_string(const value_with_unit& v)
 {
-  fmt::MemoryWriter s;
-  s << value_to_pretty_string(to_value(v)) << " "
-    << get_pretty_unit_text(to_unit(v));
-  return s.str();
+  return fmt::format("{} {}", value_to_pretty_string(to_value(v)), get_pretty_unit_text(to_unit(v)));
 }
 
 /// Merge ///

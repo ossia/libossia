@@ -88,9 +88,7 @@ void explore(const ossia::net::node_base& node)
     }
 
     using namespace fmt;
-    fmt::MemoryWriter w;
-    w << *child;
-    std::cerr << w.str() << "\n";
+    fmt::print(stderr, "{}", *child);
 
     explore(*child);
   }

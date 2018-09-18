@@ -93,6 +93,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/format_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/destination.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/impulse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/value_base.hpp"

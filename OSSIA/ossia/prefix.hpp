@@ -18,7 +18,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 
 #include <functional>
 #include <list>

@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 #include <wobjectdefs.h>
 namespace ossia
 {

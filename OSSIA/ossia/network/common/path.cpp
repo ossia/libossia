@@ -11,7 +11,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
-#include <hopscotch_set.h>
+#include <tsl/hopscotch_set.h>
 
 #include <regex>
 

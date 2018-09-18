@@ -4,8 +4,8 @@
 #include <ossia/detail/hash.hpp>
 #include <ossia/detail/math.hpp>
 
-#include <hopscotch_map.h>
-#include <hopscotch_set.h>
+#include <tsl/hopscotch_map.h>
+#include <tsl/hopscotch_set.h>
 
 #include <type_traits>
 namespace ossia

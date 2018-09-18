@@ -9,15 +9,6 @@
 #include <string>
 #include <vector>
 
-/**
- * \file value.hpp
- */
-namespace fmt
-{
-template <typename T>
-class BasicWriter;
-}
-
 namespace ossia
 {
 namespace detail
@@ -384,14 +375,6 @@ ossia::value get_value_at_index(
 
 namespace std
 {
-OSSIA_EXPORT std::ostream&
-operator<<(std::ostream& s, const std::vector<ossia::value>& list);
-OSSIA_EXPORT std::ostream&
-operator<<(std::ostream& s, const std::array<float, 2ul>& vec);
-OSSIA_EXPORT std::ostream&
-operator<<(std::ostream& s, const std::array<float, 3ul>& vec);
-OSSIA_EXPORT std::ostream&
-operator<<(std::ostream& s, const std::array<float, 4ul>& vec);
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream&, const std::vector<std::string>& list);
 OSSIA_EXPORT std::istream&

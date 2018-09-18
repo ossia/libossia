@@ -6,7 +6,7 @@
 #include <ossia/network/oscquery/detail/server_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 #include <nano_signal_slot.hpp>
 
 #include <atomic>

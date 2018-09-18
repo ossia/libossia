@@ -17,7 +17,7 @@
 #include <boost/graph/labeled_graph.hpp>
 #include <boost/graph/topological_sort.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 
 #include <cassert>
 #include <iostream>

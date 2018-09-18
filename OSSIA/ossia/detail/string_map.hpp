@@ -2,7 +2,7 @@
 #include <ossia/detail/murmur3.hpp>
 #include <ossia/detail/string_view.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 
 #include <string>
 

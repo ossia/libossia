@@ -10,6 +10,7 @@
 #include <ossia/network/value/value_algorithms.hpp>
 #include <ossia/network/value/value_comparison.hpp>
 #include <ossia/network/value/value_traits.hpp>
+#include <ossia/network/value/format_value.hpp>
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -545,66 +546,9 @@ bool operator<=(const value& lhs, const value& rhs)
   }
 }
 
-namespace
-{
-template <typename Vis>
-struct value_prettyprint_visitor
-{
-  Vis& s;
-
-  void operator()(impulse) const
-  {
-    s << "impulse";
-  }
-  void operator()(int32_t i) const
-  {
-    s << "int: " << i;
-  }
-  void operator()(float f) const
-  {
-    s << "float: " << f;
-  }
-  void operator()(bool b) const
-  {
-    s << "bool: " << (b ? "true" : "false");
-  }
-  void operator()(char c) const
-  {
-    s << "char: \'" << c << "\'";
-  }
-  void operator()(std::string str) const
-  {
-    boost::algorithm::replace_all(str, "\"", "\\\"");
-    s << "string: \"" << str << "\"";
-  }
-  void operator()(vec2f vec) const
-  {
-    s.write("vec2f: {}", vec);
-  }
-  void operator()(vec3f vec) const
-  {
-    s.write("vec3f: {}", vec);
-  }
-  void operator()(vec4f vec) const
-  {
-    s.write("vec4f: {}", vec);
-  }
-  void operator()(const std::vector<ossia::value>& t) const
-  {
-    s.write("list: {}", t);
-  }
-  void operator()() const
-  {
-    s << "invalid";
-  }
-};
-}
-
 std::string value_to_pretty_string(const ossia::value& val)
 {
-  fmt::MemoryWriter s;
-  val.apply(value_prettyprint_visitor<fmt::MemoryWriter>{s});
-  return s.str();
+  return fmt::format("{}", val);
 }
 
 ossia::value parse_pretty_value(ossia::string_view str)
@@ -713,52 +657,6 @@ value::~value() noexcept
 
 namespace std
 {
-std::ostream&
-operator<<(std::ostream& s, const std::vector<ossia::value>& list)
-{
-
-  const int n = list.size();
-
-  s << "[";
-  for (int i = 0; i < n; i++)
-  {
-    const auto& val = list[i];
-
-    if (val.valid())
-    {
-      fmt::MemoryWriter w;
-      ossia::value_prettyprint_visitor<fmt::MemoryWriter> vis{w};
-      ossia::apply_nonnull(vis, val.v);
-      s << w.str();
-    }
-    if (i < n - 1)
-    {
-      s << ", ";
-    }
-  }
-  s << "]";
-  return s;
-}
-
-std::ostream& operator<<(std::ostream& s, const std::array<float, 2>& vec)
-{
-  s << "[" << vec[0] << ", " << vec[1] << "]";
-  return s;
-}
-
-std::ostream& operator<<(std::ostream& s, const std::array<float, 3>& vec)
-{
-  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << "]";
-  return s;
-}
-
-std::ostream& operator<<(std::ostream& s, const std::array<float, 4>& vec)
-{
-  s << "[" << vec[0] << ", " << vec[1] << ", " << vec[2] << ", " << vec[3]
-    << "]";
-  return s;
-}
-
 std::ostream& operator<<(std::ostream& s, const std::vector<std::string>& list)
 {
   const int n = list.size();

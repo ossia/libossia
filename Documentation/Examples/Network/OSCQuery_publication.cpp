@@ -17,6 +17,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
 #include <iostream>
 #include <memory>
@@ -187,7 +188,7 @@ int main()
   // declare a distant program as an OSCQuery device
   auto oscq = std::make_unique<oscquery::oscquery_server_protocol>(1234, 5678);
   ossia::net::network_logger n;
-  n.inbound_logger = spdlog::stdout_color_mt("console");
+  n.inbound_logger = spdlog::stdout_logger_mt("console");
   n.outbound_logger = n.inbound_logger;
   oscq->set_logger(n);
   local_proto.expose_to(std::move(oscq));

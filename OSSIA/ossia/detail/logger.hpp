@@ -5,7 +5,6 @@
 // They have to be in this order
 #define SPDLOG_FINAL final
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <spdlog/logger.h>
 
 /**

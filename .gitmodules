@@ -30,7 +30,7 @@
     url = https://github.com/cameron314/readerwriterqueue
 [submodule "3rdparty/hopscotch-map"]
     path = 3rdparty/hopscotch-map
-    url = https://github.com/tessil/hopscotch-map.git
+    url = https://github.com/jcelerier/hopscotch-map.git
 [submodule "3rdparty/pure-data"]
     path = 3rdparty/pure-data
     #url = https://github.com/avilleret/pure-data.git

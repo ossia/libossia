@@ -4,8 +4,7 @@
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/domain_conversion.hpp>
 #include <ossia/network/value/value.hpp>
-
-#include <fmt/format.h>
+#include <ossia/network/value/format_value.hpp>
 
 namespace ossia
 {
@@ -38,89 +37,52 @@ value domain::apply(bounding_mode b, ossia::value&& val) const
 
 struct domain_prettyprint_visitor
 {
-  fmt::MemoryWriter& writer;
   template <typename Domain>
-  void operator()(const Domain& dom)
+  std::string operator()(const Domain& dom)
   {
-    writer.write("min: {} ; ", *dom.min);
-    writer.write("max: {} ; ", *dom.max);
-    writer << "values: {";
-    for (auto& e : dom.values)
-      writer << e << ", ";
-    writer << "}";
+    if(dom.min && dom.max)
+      return fmt::format("min: {} ; max: {} ; values: {}", *dom.min, *dom.max, dom.values);
+    else if(dom.min)
+      return fmt::format("min: {} ; values: {}", *dom.min, dom.values);
+    else if(dom.max)
+      return fmt::format("max: {} ; values: {}", *dom.max, dom.values);
+    else
+      return fmt::format("values: {}", dom.values);
   }
 
-  void operator()(const domain_base<bool>& dom)
+  std::string operator()(const domain_base<bool>& )
   {
-    writer << "bool";
+    using namespace std::literals;
+    return "bool"s;
   }
-  void operator()(const domain_base<impulse>& dom)
+
+  std::string operator()(const domain_base<impulse>& )
   {
-    writer << "impulse";
+    using namespace std::literals;
+    return "impulse"s;
   }
 
   template <std::size_t N>
-  void operator()(const vecf_domain<N>& dom)
+  std::string operator()(const vecf_domain<N>& dom)
   {
-    writer << "array: ";
-
-    writer << "min: [";
-    for (std::size_t i = 0; i < N; i++)
-    {
-      if (dom.min[i])
-        writer << *dom.min[i];
-      else
-        writer << "none";
-      if (i < N - 1)
-        writer << ",";
-    }
-    writer << "] ; max: [";
-    for (std::size_t i = 0; i < N; i++)
-    {
-      if (dom.max[i])
-        writer << *dom.max[i];
-      else
-        writer << "none";
-      if (i < N - 1)
-        writer << ",";
-    }
-    writer << "]";
-    // TODO values
+    return fmt::format("array: min: {} ; max: {} ; values : {}", dom.min, dom.max, dom.values);
   }
 
-  void operator()(const domain_base<std::string>& dom)
+  std::string operator()(const domain_base<std::string>& dom)
   {
-    writer << "string: {";
-    for (auto& e : dom.values)
-      writer << "\"" << e << "\", ";
-    writer << "}";
+    return fmt::format("stro,g: values : {}", dom.values);
   }
 
-  void operator()(const domain_base<ossia::value>& dom)
+  std::string operator()(const domain_base<ossia::value>& dom)
   {
-    writer << "generic";
+    using namespace std::literals;
     // TODO
+    return "generic"s;
   }
 
-  void operator()(const vector_domain& dom)
+  std::string operator()(const vector_domain& dom)
   {
-    writer << "list: ";
-
-    writer << "min: [";
-    for (std::size_t i = 0; i < dom.min.size(); i++)
-    {
-      writer << value_to_pretty_string(dom.min[i]);
-      if (i < dom.min.size() - 1)
-        writer << ",";
-    }
-    writer << "] ; max: [";
-    for (std::size_t i = 0; i < dom.max.size(); i++)
-    {
-      writer << value_to_pretty_string(dom.max[i]);
-      if (i < dom.max.size() - 1)
-        writer << ",";
-    }
-    writer << "]";
+    return fmt::format("list: min: {} ; max: {} ; values : {}", dom.min, dom.max, dom.values);
   }
 };
 
@@ -128,11 +90,7 @@ std::string domain::to_pretty_string() const
 {
   if (bool(*this))
   {
-    fmt::MemoryWriter s;
-
-    ossia::apply_nonnull(
-        domain_prettyprint_visitor{s}, (domain_base_variant&)*this);
-    return s.str();
+    return ossia::apply_nonnull(domain_prettyprint_visitor{}, (domain_base_variant&)*this);
   }
   else
   {

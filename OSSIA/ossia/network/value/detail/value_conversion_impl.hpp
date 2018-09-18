@@ -173,34 +173,34 @@ struct value_converter<char> : public numeric_value_converter<char>
 
 struct fmt_writer
 {
-  fmt::MemoryWriter& wr;
+  fmt::memory_buffer& wr;
 
   void operator()(impulse) const
   {
-    wr << "impulse";
+    fmt::format_to(wr, "impulse");
   }
   void operator()(int32_t v) const
   {
-    wr << v;
+    fmt::format_to(wr, "{}", v);
   }
   void operator()(float v) const
   {
-    wr << v;
+    fmt::format_to(wr, "{}", v);
   }
   void operator()(bool v) const
   {
     if (v)
-      wr << "true";
+      fmt::format_to(wr, "true");
     else
-      wr << "false";
+      fmt::format_to(wr, "false");
   }
   void operator()(char v) const
   {
-    wr << v;
+    fmt::format_to(wr, "{}", v);
   }
   void operator()(const std::string& v) const
   {
-    wr << v;
+    fmt::format_to(wr, "{}", v);
   }
   void operator()() const
   {
@@ -208,15 +208,15 @@ struct fmt_writer
   template <std::size_t N>
   void operator()(std::array<float, N> v) const
   {
-    wr << '[' << v[0];
+    fmt::format_to(wr, "[{}", v[0]);
     for (std::size_t i = 1; i < N; i++)
-      wr << ", " << v[i];
-    wr << ']';
+      fmt::format_to(wr, ", {}", v[i]);
+    fmt::format_to(wr, "]");
   }
   void operator()(const std::vector<ossia::value>& v) const
   {
     using namespace std::literals;
-    wr << '[';
+    fmt::format_to(wr, "[");
     const auto n = v.size();
     if (n > 0)
     {
@@ -224,11 +224,11 @@ struct fmt_writer
 
       for (std::size_t i = 1; i < n; i++)
       {
-        wr << ", ";
+        fmt::format_to(wr, ", ");
         v[i].apply(*this);
       }
     }
-    wr << ']';
+    fmt::format_to(wr, "]");
   }
 };
 
@@ -243,13 +243,11 @@ struct value_converter<std::string>
   }
   T operator()(int32_t v) const
   {
-    return fmt::FormatInt(v).str();
+    return fmt::format("{}", v);
   }
   T operator()(float v) const
   {
-    fmt::MemoryWriter out;
-    out << v;
-    return out.str();
+    return fmt::format("{}", v);
   }
   T operator()(bool v) const
   {
@@ -273,20 +271,20 @@ struct value_converter<std::string>
   template <std::size_t N>
   T operator()(std::array<float, N> v) const
   {
-    fmt::MemoryWriter out;
-    out << '[' << v[0];
+    fmt::memory_buffer wr;
+    fmt::format_to(wr, "[{}", v[0]);
     for (std::size_t i = 1; i < N; i++)
-      out << ", " << v[i];
-    out << ']';
-    return out.str();
+      fmt::format_to(wr, ", {}", v[i]);
+    fmt::format_to(wr, "]");
+    return std::string(wr.data(), wr.size());
   }
 
   T operator()(const std::vector<ossia::value>& v) const
   {
     using namespace std::literals;
-    fmt::MemoryWriter out;
-    fmt_writer{out}(v);
-    return out.str();
+    fmt::memory_buffer wr;
+    fmt_writer{wr}(v);
+    return std::string(wr.data(), wr.size());
   }
 };
 

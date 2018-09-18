@@ -8,6 +8,7 @@
 #include <ossia/dataflow/graph/graph_utils.hpp>
 #include <ossia/dataflow/graph/node_executors.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>
+#include <ossia/network/value/format_value.hpp>
 
 #include <spdlog/spdlog.h>
 namespace ossia

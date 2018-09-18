@@ -62,8 +62,8 @@ void dumpTree(QQuickItem* root)
 void print_device()
 {
   auto& dev = ossia::qt::qml_singleton_device::instance();
-  fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-  qDebug() << c.str().c_str();
+  std::string c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+  qDebug() << c.c_str();
 }
 
 void cleanup(QObject* item)

@@ -5,12 +5,12 @@
 #include <ossia/detail/logger.hpp>
 
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/callback_container.hpp>
-
 #include <smallfun.hpp>
 
 #include <iostream>
@@ -65,7 +65,8 @@ context::context()
 
 context::context(const std::vector<spdlog::sink_ptr>& sinks)
 {
-  spdlog::create("ossia", sinks.begin(), sinks.end());
+  auto log = logger_ptr();
+  log->sinks() = sinks;
   ossia_global_init();
 }
 

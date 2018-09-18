@@ -4,6 +4,7 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
+#include <ossia/network/value/format_value.hpp>
 
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscOutboundPacketStream.h>

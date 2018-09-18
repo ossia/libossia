@@ -102,9 +102,9 @@ int main(int argc, char** argv)
 
   ossia::oscquery::load_oscquery_device(device, json_example);
 
-  fmt::MemoryWriter w;
+  std::string w;
   ossia::net::debug_recursively(w, device.get_root_node());
-  std::cout << w.c_str() << std::endl;
+  std::cout << w << std::endl;
 }
 
 

@@ -20,6 +20,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/value/value.hpp>
+#include <ossia/network/value/format_value.hpp>
 namespace ossia
 {
 namespace oscquery

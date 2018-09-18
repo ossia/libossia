@@ -7,7 +7,7 @@
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <hopscotch_map.h>
+#include <tsl/hopscotch_map.h>
 #include <ossia_export.h>
 
 #include <string>

@@ -3,7 +3,7 @@
 #include <wobjectdefs.h>
 #include <ossia-qt/score/qml_sync.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
-#include <hopscotch_set.h>
+#include <tsl/hopscotch_set.h>
 
 namespace ossia
 {

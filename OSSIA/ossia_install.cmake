@@ -189,7 +189,7 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/brigand/include/brigand
         DESTINATION include
         COMPONENT Devel)
 
-install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/fmt
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/include/fmt
         DESTINATION include
         COMPONENT Devel)
 
@@ -209,13 +209,8 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/flat/include/flat
         DESTINATION include
         COMPONENT Devel)
 
-install(FILES
-     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_map.h
-     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_sc_map.h
-     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_hash.h
-     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_set.h
-     ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/src/hopscotch_sc_set.h
-        DESTINATION include/
+install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include/tsl
+        DESTINATION include
         COMPONENT Devel)
 
 install(FILES

@@ -54,9 +54,7 @@ void explore(const ossia::net::node_base& node)
       addr->pull_value();
     }
 
-    fmt::MemoryWriter w;
-    w << *child;
-    std::cerr << w.str() << "\n";
+    fmt::print("{}\n", *child);
 
     explore(*child);
   }

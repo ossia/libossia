@@ -22,11 +22,14 @@ public:
   log_sink() = default;
   ~log_sink() override;
 
+  void set_pattern(const std::string &pattern) override { }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
   void log(const spdlog::details::log_msg& msg) override
   {
-    std::cerr << msg.formatted.str() << std::endl;
+    std::cerr.write(msg.raw.data(), msg.raw.size());
+    std::cerr << std::endl;
     l(msg.level,
-      QString::fromUtf8(msg.formatted.data(), msg.formatted.size()));
+      QString::fromUtf8(msg.raw.data(), msg.raw.size()));
   }
 
   void flush() override

@@ -8,7 +8,7 @@
 
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
-
+#include <fmt/ostream.h>
 namespace ossia
 {
 namespace net

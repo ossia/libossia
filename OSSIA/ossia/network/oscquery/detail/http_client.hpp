@@ -18,7 +18,7 @@ template <typename Fun, typename Err>
 class http_get_request
     : public std::enable_shared_from_this<http_get_request<Fun, Err>>
 {
-  fmt::MemoryWriter m_request;
+  fmt::memory_buffer m_request;
 
 public:
   using std::enable_shared_from_this<
@@ -31,22 +31,23 @@ public:
       , m_fun{std::move(f)}
       , m_err{std::move(err)}
   {
-    m_request.buffer().reserve(100 + server.size() + path.size());
-    m_request << "GET ";
+    m_request.reserve(100 + server.size() + path.size());
+    fmt::format_to(m_request, "GET");
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
     for (auto c : path)
       if (c != ' ')
-        m_request << c;
+        fmt::format_to(m_request, "{}", c);
       else
-        m_request << "%20";
+        fmt::format_to(m_request, "%20");
 
-    m_request << " HTTP/1.1\r\n"
-                 "Host: "
-              << server
-              << "\r\n"
-                 "Accept: */*\r\n"
-                 "Connection: close\r\n\r\n";
+
+    fmt::format_to(m_request,
+                   " HTTP/1.1\r\n"
+                   "Host: {}"
+                   "\r\n"
+                   "Accept: */*\r\n"
+                   "Connection: close\r\n\r\n", server);
   }
 
   void resolve(const std::string& server, const std::string& port)

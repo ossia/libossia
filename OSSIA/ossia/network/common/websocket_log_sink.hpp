@@ -5,6 +5,7 @@
 #include <eggs/variant.hpp>
 #include <readerwriterqueue.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
 #include <atomic>
 
@@ -159,6 +160,8 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
   {
   }
 
+  void set_pattern(const std::string &pattern) override { }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 private:
   rapidjson::StringBuffer buffer;
   std::shared_ptr<websocket_threaded_connection> socket;
