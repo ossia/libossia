@@ -10,6 +10,137 @@ namespace ossia
 namespace max
 {
 
+void ossia_register(object_base* x)
+{
+  if (x->m_reg_clock)
+  {
+    clock_unset(x->m_reg_clock);
+    clock_free((t_object*)x->m_reg_clock);
+    x->m_reg_clock = nullptr;
+  }
+
+  if (!x->m_name)
+    return;
+
+  std::vector<std::shared_ptr<t_matcher>> tmp;
+  std::vector<std::shared_ptr<t_matcher>>* matchers = &tmp;
+
+  if (x->m_addr_scope == ossia::net::address_scope::global)
+  {
+    auto nodes = ossia::max::find_global_nodes(x->m_name->s_name);
+
+    tmp.reserve(nodes.size());
+    for (auto n : nodes)
+    {
+      tmp.emplace_back(std::make_shared<t_matcher>(n, (object_base*)nullptr));
+    }
+  }
+  else
+  {
+    int l;
+    ossia::max::device* device =
+        find_parent_box_alive<ossia::max::device>(x, 0, &l);
+    ossia::max::client* client =
+        find_parent_box_alive<ossia::max::client>(x, 0, &l);
+
+    model* model = nullptr;
+    view* view = nullptr;
+    int view_level = 0, model_level = 0;
+    int start_level = 0;
+
+    if ( x->m_otype == object_class::view || x->m_otype == object_class::model)
+    {
+      start_level = 1;
+    }
+
+    if (x->m_addr_scope == ossia::net::address_scope::relative)
+    {
+      // then try to locate a parent view or model
+      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
+      {
+        view = find_parent_box_alive<ossia::max::view>(
+              x, start_level, &view_level);
+      }
+
+      if (!view)
+      {
+        model = find_parent_box_alive<ossia::max::model>(
+              x, start_level, &model_level);
+      }
+    }
+
+    if (view)
+    {
+      matchers = &view->m_matchers;
+    }
+    else if (model)
+    {
+      matchers = &model->m_matchers;
+    } else if (client)
+    {
+      matchers = &client->m_matchers;
+    } else if (device)
+    {
+      matchers = &device->m_matchers;
+    }
+    else
+    {
+      tmp.emplace_back(std::make_shared<t_matcher>(&ossia_max::get_default_device()->get_root_node(), (object_base*)nullptr));
+    }
+  }
+
+  switch( x->m_otype )
+  {
+    case object_class::remote:
+      static_cast<max::remote*>(x)->register_node(*matchers);
+      break;
+    case object_class::view:
+      static_cast<max::view*>(x)->register_node(*matchers);
+      break;
+    case object_class::param:
+      static_cast<max::parameter*>(x)->register_node(*matchers);
+      break;
+    case object_class::model:
+      static_cast<max::model*>(x)->register_node(*matchers);
+      break;
+    case object_class::attribute:
+      static_cast<max::attribute*>(x)->register_node(*matchers);
+      break;
+    default:
+      break;
+  }
+}
+
+void ossia_check_and_register(object_base* x)
+{
+  x->get_hierarchy();
+  auto& map = ossia_max::instance().root_patcher;
+  auto it = map.find(x->m_patcher_hierarchy.back());
+
+  x->m_reg_clock = clock_new(x, (method) ossia_register);
+  clock_delay(x->m_reg_clock, 2);
+
+  /*
+  post("map size: %d", map.size());
+
+  if (it != map.end())
+  {
+    post("was root patcher loadbanged ? %d", it->second.is_loadbanged);
+  }
+  else
+  {
+    post("reach map list end !");
+  }
+  */
+
+  // register object only if root patcher have been loadbanged
+  // else the patcher itself will trig a registration on loadbang
+  if (it != map.end() && it->second.is_loadbanged)
+  {
+    ossia_register(x);
+  }
+}
+
 bool find_peer(object_base* x)
 {
     t_symbol* classname = object_classname(x);

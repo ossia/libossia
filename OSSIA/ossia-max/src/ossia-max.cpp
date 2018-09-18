@@ -234,26 +234,22 @@ void register_quarantinized()
 {
   for (auto model : model::quarantine().copy())
   {
-    ossia_register<ossia::max::model>(
-          static_cast<ossia::max::model*>(model));
+    ossia_register(model);
   }
 
   for (auto parameter : parameter::quarantine().copy())
   {
-    ossia_register<ossia::max::parameter>(
-          static_cast<ossia::max::parameter*>(parameter));
+    ossia_register(parameter);
   }
 
   for (auto view : view::quarantine().copy())
   {
-    ossia_register<ossia::max::view>(
-          static_cast<ossia::max::view*>(view));
+    ossia_register(view);
   }
 
   for (auto remote : remote::quarantine().copy())
   {
-    ossia_register<ossia::max::remote>(
-          static_cast<ossia::max::remote*>(remote));
+    ossia_register(remote);
   }
 }
 

@@ -165,6 +165,11 @@ public:
   // constructor
   object_base();
 
+  // dtor
+  ~object_base();
+
+  bool m_loadbanged{}; // true if object receive a loadbang
+
   std::mutex bindMutex;
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order
 
