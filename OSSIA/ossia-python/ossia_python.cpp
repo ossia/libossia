@@ -28,7 +28,6 @@ namespace pybind11
 
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/detail/logger.hpp>
-#include <spdlog/spdlog.h>
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
@@ -38,6 +37,8 @@ namespace pybind11
 #include <ossia/network/common/path.hpp>
 
 #include <Python.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
 namespace py = pybind11;
 
