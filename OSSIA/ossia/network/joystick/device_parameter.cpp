@@ -26,6 +26,7 @@ void device_parameter::device_value_change_event(const ossia::value& val)
   if (val.valid())
   {
     m_current_value = val;
+    send(val);
     get_protocol().push(*this);
   }
 }
