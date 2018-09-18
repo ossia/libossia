@@ -30,7 +30,7 @@ void printValueCallback(const value& v);
 int main()
 {
   // Create a protocol that will connect to the given websocket address
-  auto protocol = new ossia::oscquery::oscquery_mirror_protocol{"ws://192.168.1.52:2345"};
+  auto protocol = new ossia::oscquery::oscquery_mirror_protocol{"ws://127.0.0.1:5678"};
   protocol->set_logger(network_logger{ossia::logger_ptr(), ossia::logger_ptr()});
 
   // Create a device that wil attach to this protocol
