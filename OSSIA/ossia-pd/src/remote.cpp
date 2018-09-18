@@ -109,11 +109,7 @@ bool remote::do_registration(const std::vector<t_matcher>& matchers)
 
         // if there is a node without parameter it might be a model
         // then look if that node have an eponyme child
-
-        fmt::MemoryWriter path;
-        fmt::BasicStringRef<char> name_fmt(name.data(), name.size());
-        path << name_fmt << "/" << name_fmt;
-        n = ossia::net::find_node(*n, path.str());
+        n = ossia::net::find_node(*n, fmt::format("{}/{}", name, name));
 
         if (n && n->get_parameter()){
           m_matchers.emplace_back(node, this);

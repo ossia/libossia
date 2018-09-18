@@ -129,10 +129,7 @@ bool attribute::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
       } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
-        fmt::MemoryWriter path;
-        fmt::BasicStringRef<char> name_fmt(name.data(), name.size());
-        path << name_fmt << "/" << name_fmt;
-        auto node = ossia::net::find_node(*n, path.str());
+        auto node = ossia::net::find_node(*n, fmt::format("{}/{}", name, name));
         if (node){
           m_matchers.emplace_back(std::make_shared<t_matcher>(node, this));
         }

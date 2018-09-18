@@ -678,9 +678,9 @@ void qml_device::loadPreset(QObject* root, const QString& file)
 #if defined(PRESET_DEBUG)
   {
     // Before recreate
-    fmt::MemoryWriter w;
+    std::string w;
     ossia::net::debug_recursively(w, this->device().get_root_node());
-    qDebug() << "1:\n\n" << w.str().c_str();
+    qDebug() << "1:\n\n" << w.c_str();
   }
 #endif
 
@@ -689,9 +689,9 @@ void qml_device::loadPreset(QObject* root, const QString& file)
 #if defined(PRESET_DEBUG)
   {
     // After recreate
-    fmt::MemoryWriter w;
+    std::string w;
     ossia::net::debug_recursively(w, this->device().get_root_node());
-    qDebug() << "2:\n\n" << w.str().c_str();
+    qDebug() << "2:\n\n" << w.c_str();
   }
 #endif
   try
@@ -717,9 +717,9 @@ void qml_device::loadPreset(QObject* root, const QString& file)
 #if defined(PRESET_DEBUG)
       {
         // After preset
-        fmt::MemoryWriter w;
+        std::string w;
         ossia::net::debug_recursively(w, this->device().get_root_node());
-        qDebug() << "3:\n\n" << w.str().c_str();
+        qDebug() << "3:\n\n" << w.c_str();
       }
 #endif
 

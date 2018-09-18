@@ -586,8 +586,8 @@ TEST_CASE ("test_sub_item", "test_sub_item")
         auto item = component.create();
         REQUIRE(item);
 
-        fmt::MemoryWriter c; ossia::net::debug_recursively(c, dev.device().get_root_node());
-        std::cerr << c.str();
+        std::string c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+        std::cerr << c.c_str();
 
         for(int i = 0; i < 10;i ++)
         {

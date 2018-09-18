@@ -23,7 +23,7 @@ struct vecf_domain { std::string v; };
 }
 namespace gen_variant
 {
-using str_writer = fmt::MemoryWriter;
+using str_writer = fmt::memory_buffer;
 template<typename T>
 struct var_member
 {

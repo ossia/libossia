@@ -509,7 +509,6 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
 
 std::string object_path_absolute(object_base* x)
 {
-  fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
   vs.reserve(8);
 
@@ -555,16 +554,17 @@ std::string object_path_absolute(object_base* x)
         = find_parent_box_alive<ossia::max::model>(tmp_model, 1, &model_level);
   }
 
+  fmt::memory_buffer fullpath;
   auto rit = vs.rbegin();
   for (; rit != vs.rend(); ++rit)
   {
-    fullpath << "/" << *rit;
+    fmt::format_to(fullpath, "/{}", *rit);
   }
 
   if (vs.empty())
-    fullpath << "/";
+    fmt::format_to(fullpath, "/");
 
-  return fullpath.str();
+  return std::string(fullpath.data(), fullpath.size());
 }
 
 void trig_output_value(ossia::net::node_base* node)

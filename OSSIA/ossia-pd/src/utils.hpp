@@ -333,7 +333,7 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 #pragma mark Prototype
 
 std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol);
-std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath);
+std::string string_from_path(const std::vector<std::string>& vs);
 
 /**
  * @brief register_quarantinized Try to register all quarantinized objects
@@ -472,62 +472,6 @@ static inline T* find_parent_alive(
 }
 
 #pragma mark template
-
-/**
- * @brief get_absolute_path
- * @param
- *
- *
- * @return std::string with full path to object from root device in an OSC
- * style (with '/')
- */
-/*
-template<typename T>
-std::string get_absolute_path(T* x, typename T::is_model* = nullptr)
-{
-  fmt::MemoryWriter fullpath;
-  std::vector<std::string> vs;
-
-  vs.push_back(x->m_name->s_name);
-
-  model* m = nullptr;
-  int model_level = 0;
-
-  int start_level = 0;
-  if (std::is_same<T, model>::value)
-    start_level = 1;
-
-  m = (model*)find_parent_alive(
-      &x->m_obj, "ossia.model", start_level, &model_level);
-  model* tmp = nullptr;
-
-  while (m)
-  {
-    vs.push_back(m->m_name->s_name);
-    tmp = m;
-    m = (model*)find_parent_alive(
-        &tmp->m_obj, "ossia.model", 1, &model_level);
-  }
-
-  t_eobj* obj = tmp ? &tmp->m_obj : &x->m_obj;
-
-  int device_level = 0;
-  int client_level = 0;
-
-  // FIXme TODO use get root device instead
-  auto device = (ossia::pd::device*)find_parent(obj, "ossia.device", 0, &device_level);
-  auto client = (ossia::pd::client*)find_parent(obj, "ossia.client", 0, &client_level);
-
-  if (client)
-    fullpath << client->m_name->s_name << ":";
-  if (device)
-    fullpath << device->m_name->s_name << ":";
-  else
-    fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
-
-  return string_from_path(vs, fullpath);
-}
-*/
 
 std::string get_absolute_path(object_base* x);
 

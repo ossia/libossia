@@ -352,28 +352,26 @@ void object_base::is_deleted(const ossia::net::node_base& n)
 
 void object_base::set_description()
 {
-  fmt::MemoryWriter description;
+  fmt::memory_buffer description;
   for (int i = 0; i < m_description_size; i++)
   {
     switch(m_description[i].a_type)
     {
       case A_SYMBOL:
-        description << m_description[i].a_w.w_symbol->s_name << " ";
+        fmt::format("{} ", m_description[i].a_w.w_symbol->s_name);
         break;
       case A_FLOAT:
-        {
-          description << m_description[i].a_w.w_float << " ";
-          break;
-        }
+        fmt::format("{} ", m_description[i].a_w.w_float);
+        break;
       default:
-        ;
+        break;
     }
   }
 
   for (t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
-    ossia::net::set_description(*node, description.str());
+    ossia::net::set_description(*node, std::string(description.data(), description.size()));
   }
 }
 

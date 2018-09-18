@@ -82,17 +82,18 @@ std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
   return tags;
 }
 
-std::string string_from_path(const std::vector<std::string>& vs, fmt::MemoryWriter& fullpath)
+std::string string_from_path(const std::vector<std::string>& vs)
 {
+  fmt::memory_buffer b;
   auto rit = vs.rbegin();
   for (; rit != vs.rend(); ++rit)
   {
-    fullpath << "/" << *rit;
+    fmt::format_to(b, "/{}", *rit);
   }
   if (vs.empty())
-    fullpath << "/";
+    fmt::format_to(b, "/");
 
-  return fullpath.str();
+  return std::string(b.data(), b.size());
 }
 
 void register_quarantinized()
@@ -109,7 +110,6 @@ void register_quarantinized()
 
 std::string get_absolute_path(object_base* x)
 {
-  fmt::MemoryWriter fullpath;
   std::vector<std::string> vs;
   vs.reserve(8);
 
@@ -177,7 +177,7 @@ std::string get_absolute_path(object_base* x)
     fullpath << ossia_pd::instance().get_default_device()->get_name() << ":";
   */
 
-  return string_from_path(vs, fullpath);
+  return string_from_path(vs);
 }
 
 std::vector<object_base*> find_child_to_register(object_base* x, t_gobj* start_list, t_symbol* classname)

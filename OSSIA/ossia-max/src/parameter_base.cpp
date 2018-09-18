@@ -258,15 +258,11 @@ void parameter_base::set_range()
           senum.push_back(m_range[i].a_w.w_sym->s_name);
         else if (m_range[i].a_type == A_FLOAT)
         {
-          fmt::MemoryWriter ss;
-          ss << m_range[i].a_w.w_float;
-          senum.push_back(ss.str());
+          senum.push_back(fmt::format("{}", m_range[i].a_w.w_float));
         }
         else if (m_range[i].a_type == A_LONG)
         {
-          fmt::MemoryWriter ss;
-          ss << m_range[i].a_w.w_long;
-          senum.push_back(ss.str());
+          senum.push_back(fmt::format("{}", m_range[i].a_w.w_long));
         }
         else
           break;
