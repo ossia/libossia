@@ -1,9 +1,7 @@
 
 #include "wiimote_protocol.hpp"
-
 #include <wiiuse.h>
 
-using namespace device; //  device_parameter
 
 namespace ossia
 {
@@ -271,15 +269,15 @@ void wiimote_protocol::handle_wiimote_event(
   //-
 
   for (auto& cpl : parameters.button_parameters)
-    cpl.second->push_value(
+    cpl.second->device_value_change_event(
         IS_PRESSED(self->m_wiimotes[wiimote_id], cpl.first));
 
   // Update wiimote axis
 
-  parameters.wiimote_axis->push_value(std::array<float, 3>{
+  parameters.wiimote_axis->device_value_change_event(std::array<float, 3>{
       wiimote->orient.yaw, wiimote->orient.pitch, wiimote->orient.roll});
 
-  parameters.wiimote_gravity->push_value(std::array<float, 3>{
+  parameters.wiimote_gravity->device_value_change_event(std::array<float, 3>{
       wiimote->gforce.x, wiimote->gforce.y, wiimote->gforce.z});
 
   if (self->m_enable_ir)
@@ -295,16 +293,16 @@ void wiimote_protocol::handle_wiimote_event(
     //  If at least one ir dot is visible
     if (n >= 1u)
     {
-      parameters.ir_cursor->push_value(std::array<float, 2>{
+      parameters.ir_cursor->device_value_change_event(std::array<float, 2>{
           (static_cast<float>(wiimote->ir.x + wiimote->ir.offset[0]))
               / static_cast<float>(wiimote->ir.vres[0]),
           (static_cast<float>(wiimote->ir.y + wiimote->ir.offset[1]))
               / static_cast<float>(wiimote->ir.vres[1])});
-      parameters.ir_detection->push_value(true);
+      parameters.ir_detection->device_value_change_event(true);
     }
     else
     {
-      parameters.ir_detection->push_value(false);
+      parameters.ir_detection->device_value_change_event(false);
     }
   }
 
@@ -316,19 +314,19 @@ void wiimote_protocol::handle_wiimote_event(
 
     // Update nunchuk parameters
 
-    parameters.nunchuk_axis->push_value(std::array<float, 3>{
+    parameters.nunchuk_axis->device_value_change_event(std::array<float, 3>{
         nunchuk->orient.yaw, nunchuk->orient.pitch, nunchuk->orient.roll});
 
-    parameters.nunchuk_gravity->push_value(std::array<float, 3>{
+    parameters.nunchuk_gravity->device_value_change_event(std::array<float, 3>{
         nunchuk->gforce.x, nunchuk->gforce.y, nunchuk->gforce.z});
 
-    parameters.nunchuk_joystick->push_value(
+    parameters.nunchuk_joystick->device_value_change_event(
         std::array<float, 2>{nunchuk->js.x, nunchuk->js.y});
 
-    parameters.nunchuk_button_c->push_value(
+    parameters.nunchuk_button_c->device_value_change_event(
         IS_PRESSED(nunchuk, NUNCHUK_BUTTON_C));
 
-    parameters.nunchuk_button_z->push_value(
+    parameters.nunchuk_button_z->device_value_change_event(
         IS_PRESSED(nunchuk, NUNCHUK_BUTTON_Z));
   }
 }
