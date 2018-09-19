@@ -95,8 +95,8 @@ struct formatter<ossia::net::node_base>
     {
       return format_to(
             ctx.begin(),
-            "{:<{}}{} : {}, AccessMode({}), BoundingMode({}), Domain({}), Unit({})"
-            , num_indent, n.get_name()
+            "{:<{}} : {}, AccessMode({}), BoundingMode({}), Domain({}), Unit({})"
+            , n.get_name(), num_indent
             , p->value(), p->get_access(), p->get_bounding(), p->get_domain(), ossia::get_pretty_unit_text(p->get_unit()));
     }
     else
