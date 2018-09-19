@@ -137,7 +137,7 @@ endforeach()
 # We only export the Max required symbols.
 # This is of utmost importance for support in Max4Live : ossia and Ableton Live both use 
 # boost.asio, which leads to conflicts at runtime
-if(APPLE)
+if(APPLE AND CMAKE_BUILD_TYPE MATCHES Release)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/symbols.txt" "${OSSIA_MAX_SYMBOLS}\n")
   get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
   set_property(TARGET ossia-max APPEND PROPERTY
