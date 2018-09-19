@@ -2,14 +2,14 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 0,
-			"revision" : 0,
-			"architecture" : "x86",
+			"major" : 7,
+			"minor" : 3,
+			"revision" : 5,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 227.0, 126.0, 1236.0, 477.0 ],
+		"rect" : [ 1148.0, 1133.0, 1236.0, 477.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -38,6 +38,19 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-11",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 706.0, 207.0, 180.0, 22.0 ],
+					"style" : "",
+					"text" : "position"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
 					"id" : "obj-8",
 					"linecount" : 2,
@@ -46,6 +59,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 668.5, 403.0, 235.0, 35.0 ],
+					"presentation_linecount" : 2,
 					"presentation_rect" : [ 668.5, 403.0, 235.0, 35.0 ],
 					"style" : "",
 					"text" : "test.assert address_output_after_instances_creation"
@@ -235,6 +249,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 490.0, 403.0, 146.0, 35.0 ],
+					"presentation_linecount" : 2,
 					"presentation_rect" : [ 490.0, 403.0, 146.0, 35.0 ],
 					"style" : "",
 					"text" : "test.assert address_output_on_load"
@@ -258,10 +273,10 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 0,
-							"revision" : 0,
-							"architecture" : "x86",
+							"major" : 7,
+							"minor" : 3,
+							"revision" : 5,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -331,7 +346,7 @@
 									"patching_rect" : [ 149.0, 173.0, 129.0, 22.0 ],
 									"presentation_rect" : [ 149.0, 173.0, 129.0, 22.0 ],
 									"style" : "",
-									"text" : "source.4/position"
+									"text" : "source.1/position"
 								}
 
 							}
@@ -347,7 +362,7 @@
 									"presentation_linecount" : 2,
 									"presentation_rect" : [ 33.0, 173.0, 50.0, 35.0 ],
 									"style" : "",
-									"text" : "0.34 0. 1."
+									"text" : "0.28 0 1"
 								}
 
 							}
@@ -541,7 +556,16 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-11", 1 ],
+					"order" : 0,
+					"source" : [ "obj-7", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-3", 1 ],
+					"order" : 1,
 					"source" : [ "obj-7", 0 ]
 				}
 
