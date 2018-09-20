@@ -421,7 +421,17 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
   {
     if ( ossia::traversal::match(*m_path, node) )
     {
-      m_parent_node = node.get_parent();
+      if(m_addr_scope == net::address_scope::relative)
+      {
+        m_parent_node = node.get_parent();
+        std::string name(m_name->s_name);
+        size_t pos = name.find('/', 0);
+        while(pos != std::string::npos)
+        {
+          m_parent_node = node.get_parent();
+          pos = name.find('/',pos+1);
+        }
+      }
       m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
       fill_selection();
     }
