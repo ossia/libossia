@@ -414,6 +414,17 @@ set(OSSIA_WIIMOTE_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.cpp")
 
+set(OSSIA_ARTNET_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/device_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.hpp")
+
+set(OSSIA_ARTNET_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/device_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.cpp")
+  
+
 set(OSSIA_WS_CLIENT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp")
 

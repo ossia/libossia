@@ -250,6 +250,15 @@ if(OSSIA_PROTOCOL_WIIMOTE)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Wiimote)
 endif()
 
+if (OSSIA_PROTOCOL_ARTNET)
+  set(LIBARTNET_DIR ${OSSIA_3RDPARTY_FOLDER}/libartnet)
+  add_subdirectory(${LIBARTNET_DIR} libartnet)
+  target_sources(ossia PRIVATE ${OSSIA_ARTNET_SRCS} ${OSSIA_ARTNET_HEADERS})
+  target_link_libraries(ossia PRIVATE libartnet)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} artnet)
+endif()
+  
+
 # Additional features
 if(OSSIA_C)
   target_sources(ossia PRIVATE ${OSSIA_C_HEADERS} ${OSSIA_C_SRCS})
