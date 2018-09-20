@@ -45,7 +45,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 706.0, 207.0, 180.0, 22.0 ],
 					"style" : "",
-					"text" : "position"
+					"text" : "spat/source.1/position"
 				}
 
 			}
@@ -346,7 +346,7 @@
 									"patching_rect" : [ 149.0, 173.0, 129.0, 22.0 ],
 									"presentation_rect" : [ 149.0, 173.0, 129.0, 22.0 ],
 									"style" : "",
-									"text" : "source.1/position"
+									"text" : "source.4/position"
 								}
 
 							}
