@@ -358,10 +358,10 @@ void object_base::set_description()
     switch(m_description[i].a_type)
     {
       case A_SYMBOL:
-        fmt::format("{} ", m_description[i].a_w.w_symbol->s_name);
+        fmt::format_to(description, "{} ", m_description[i].a_w.w_symbol->s_name);
         break;
       case A_FLOAT:
-        fmt::format("{} ", m_description[i].a_w.w_float);
+        fmt::format_to(description, "{} ", m_description[i].a_w.w_float);
         break;
       default:
         break;
