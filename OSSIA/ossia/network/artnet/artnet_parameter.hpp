@@ -13,18 +13,19 @@ namespace net
 {
 
   class artnet_parameter : public device_parameter {
+    using dmx_buffer = artnet_protocol::dmx_buffer;
 
     public:
       artnet_parameter(
         net::node_base& node,
-        artnet_node artnet_node,
+        dmx_buffer* buffer,
         const unsigned int channel); 
       ~artnet_parameter();
     
     private:
       void device_update_value() override;
 
-      artnet_node m_node;
+      dmx_buffer& m_buffer;
       const unsigned int m_channel;
   };
 
