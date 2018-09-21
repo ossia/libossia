@@ -110,6 +110,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_parse.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_merge.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_convert.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_list.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/list_units.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/make_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/make_unit.hpp"
@@ -432,6 +433,7 @@ set(OSSIA_QT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device_metatype.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/matching_type.hpp"
     )
 
 set(OSSIA_QT_SRCS
