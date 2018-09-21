@@ -2,6 +2,8 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "context.hpp"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <ossia/detail/logger.hpp>
 
 #include <spdlog/spdlog.h>
