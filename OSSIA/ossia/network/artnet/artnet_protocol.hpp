@@ -5,15 +5,15 @@
 #include <cstdint>
 #include <thread>
 
-#include "device_parameter.hpp"
+
 
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
 
-#include <artnet/artnet.h>
-
 #define DMX_CHANNEL_COUNT 512
+
+typedef void *artnet_node;
 
 namespace ossia
 {
@@ -37,12 +37,7 @@ public:
   bool update(ossia::net::node_base&) override;
 
 private:
-  static void update_loop(artnet_protocol* instance);
-
-  std::array<uint8_t, DMX_CHANNEL_COUNT> m_channel_value;
-  std::thread m_update_thread;
   ossia::net::device_base* m_device{};
-
   artnet_node m_node;
 };
 }
