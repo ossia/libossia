@@ -152,12 +152,12 @@ t_matcher::~t_matcher()
 
         for (auto remote : ossia_max::instance().remotes.copy())
         {
-          ossia::remove_one_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
+          ossia::remove_erase_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
         }
 
         for (auto attribute : ossia_max::instance().attributes.copy())
         {
-          ossia::remove_one_if(attribute->m_matchers, [this] (auto& other) { return *other == *this; });
+          ossia::remove_erase_if(attribute->m_matchers, [this] (auto& other) { return *other == *this; });
         }
 
         purge_parent(node);
