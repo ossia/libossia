@@ -1,4 +1,5 @@
 
+#include <chrono>
 #include <artnet/artnet.h>
 
 #include "artnet_protocol.hpp"
@@ -12,12 +13,32 @@ namespace ossia
 namespace net
 {
 
+artnet_protocol::dmx_buffer::dmx_buffer()
+: dirty(false)
+{
+  std::memset(data, 0, DMX_CHANNEL_COUNT);
+}
+
+int artnet_protocol::dmx_buffer::send(artnet_node node)
+{
+  return 
+    artnet_send_dmx(
+      node, 0, 
+      DMX_CHANNEL_COUNT, 
+      data);
+}
+
 ////
 
-artnet_protocol::artnet_protocol()
+artnet_protocol::artnet_protocol(const unsigned int update_frequency)
+: m_running(true),
+  m_update_frequency(update_frequency)
 {
-  //  Do not specify ip adress for now, will choose one
-  m_node = artnet_new(NULL, 1);
+  if (update_frequency < 1 || update_frequency > 44)
+    throw std::runtime_error("DMX 512 update frequencie must be in the range [0, 44] Hz");
+
+  //  Do not specify ip adress for now, artnet will choose one
+  m_node = artnet_new(NULL, 0);
 
   if (m_node == NULL)
     throw std::runtime_error("Artnet new failed");
@@ -35,6 +56,9 @@ artnet_protocol::artnet_protocol()
 
 artnet_protocol::~artnet_protocol()
 {
+  m_running = false;
+  if (m_update_thread.joinable())
+    m_update_thread.join();
   artnet_destroy(m_node);
 }
 
@@ -44,13 +68,12 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
 
   auto& root = dev.get_root_node();
 
-  //for (unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-  //  device_parameter::create_device_parameter<artnet_parameter>(
-  //    root, "Channel-" + std::to_string(i+1), 255, m_node, i);
+  for (unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
+    device_parameter::create_device_parameter<artnet_parameter>(
+      root, "Channel-" + std::to_string(i+1), 0, &m_buffer, i);
 
-  const unsigned int i = 19;
-  device_parameter::create_device_parameter<artnet_parameter>(
-      root, "Channel-" + std::to_string(i+1), 255, m_node, i);
+  m_update_thread = 
+    std::thread(update_function, this);
 }
 
 bool artnet_protocol::pull(net::parameter_base& param)
@@ -78,6 +101,27 @@ bool artnet_protocol::update(ossia::net::node_base&)
   return true;
 }
 
+void artnet_protocol::update_function(artnet_protocol *instance)
+{
+  auto& buffer = instance->m_buffer;
+  auto node = instance->m_node;
+  const auto delay = 
+    std::chrono::milliseconds(
+      static_cast<int>(
+        1000.0f / 
+        static_cast<float>(instance->m_update_frequency)));
+
+  while(instance->m_running) {
+
+    if (buffer.dirty) {
+      std::printf("Updating\n");
+      buffer.send(node);
+      buffer.dirty = false;
+    }
+
+    std::this_thread::sleep_for(delay);
+  }
+}
 
 }
 }
