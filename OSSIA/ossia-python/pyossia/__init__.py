@@ -257,8 +257,6 @@ except ImportError as error:
     # Output expected ImportErrors.
     logging.exception(error)
     # Include the name and path attributes in output.
-    logging.error(f'error.name: {error.name}')
-    logging.error(f'error.path: {error.path}')
 except Exception as exception:
     # Output unexpected Exceptions.
     logging.log_exception(exception, False)
