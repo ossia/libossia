@@ -21,15 +21,18 @@ struct max_msp_log_sink final :
 {
     void log(const spdlog::details::log_msg& msg) override
     {
+      std::string s(msg.raw.data(), msg.raw.size());
       switch(msg.level)
       {
       case spdlog::level::warn:
       case spdlog::level::err:
-        error("%s", msg.raw.str().c_str());
+      {
+        error("%s", s.c_str());
         break;
+      }
 
       default:
-        post("%s", msg.raw.str().c_str());
+        post("%s", s.c_str());
         break;
       }
     }
@@ -37,6 +40,9 @@ struct max_msp_log_sink final :
     void flush() override
     {
     }
+
+    void set_pattern(const std::string &pattern) override { }
+    void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 };
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
