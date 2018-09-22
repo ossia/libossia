@@ -137,7 +137,6 @@ t_matcher::~t_matcher()
 {
   if(node && owner)
   {
-
     // purge selection
     ossia::remove_one(owner->m_node_selection,this);
 
@@ -184,8 +183,6 @@ t_matcher::~t_matcher()
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        std::cout << "DISconnect node " << static_cast<void*>(node)
-                  << " to is_deleted fn of " << static_cast<void*>(owner) << std::endl;
         node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
       }
 
@@ -244,6 +241,7 @@ void t_matcher::enqueue_value(ossia::value v)
 
 void t_matcher::output_value()
 {
+  m_lock = true;
   if(owner)
   {
     std::lock_guard<std::mutex> lock(owner->bindMutex);
@@ -276,6 +274,7 @@ void t_matcher::output_value()
       val.apply(vm);
     }
   }
+  m_lock=false;
 }
 
 void t_matcher::set_parent_addr()

@@ -59,6 +59,8 @@ public:
   { return (get_node() == rhs.node); }
 
   void set_dead(){ m_dead = true; }
+  void set_zombie(){ m_zombie = true; }
+  bool is_locker(){ return m_lock; }
 
   std::vector<ossia::value> m_set_pool;
 
@@ -71,7 +73,9 @@ private:
 
   moodycamel::ConcurrentQueue<ossia::value> m_queue_list;
 
-  bool m_dead{};
+  bool m_dead{}; // true when Max object is being deleted
+  bool m_zombie{}; // true if node is deleted, t_matcher should be deleted asap
+  bool m_lock{};
   t_atom m_addr{};
 };
 

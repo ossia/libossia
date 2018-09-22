@@ -347,9 +347,9 @@ bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matc
       bool continue_flag = false;
 
       // avoid to register the same node twice
-      for (auto& m : m_matchers)
+      for (auto& m_m : m_matchers)
       {
-        if ( m->get_node() == n && m->get_parent() == this )
+        if ( m_m->get_node() == n && m_m->get_parent() == this )
         {
           continue_flag = true;
           break;
