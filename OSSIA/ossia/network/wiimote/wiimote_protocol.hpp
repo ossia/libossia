@@ -27,20 +27,21 @@ class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
 
   typedef struct
   {
-    std::map<uint16_t, device::device_parameter*> button_parameters;
+    std::map<uint16_t, device_parameter*> button_parameters;
 
-    device::device_parameter* wiimote_axis{};
-    device::device_parameter* wiimote_gravity{};
+    device_parameter* wiimote_axis{};
+    device_parameter* wiimote_gravity{};
 
-    device::device_parameter* nunchuk_button_c{};
-    device::device_parameter* nunchuk_button_z{};
+    device_parameter* nunchuk_button_c{};
+    device_parameter* nunchuk_button_z{};
 
-    device::device_parameter* nunchuk_axis{};
-    device::device_parameter* nunchuk_gravity{};
-    device::device_parameter* nunchuk_joystick{};
+    device_parameter* nunchuk_axis{};
+    device_parameter* nunchuk_gravity{};
+    device_parameter* nunchuk_joystick{};
 
-    device::device_parameter* ir_cursor;
-    device::device_parameter* ir_detection;
+    device_parameter* ir_cursor;
+    device_parameter* ir_detection;
+
   } wiimote_parameters;
 
 public:

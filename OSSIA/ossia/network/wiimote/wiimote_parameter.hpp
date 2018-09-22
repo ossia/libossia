@@ -12,7 +12,7 @@ namespace ossia
 namespace net
 {
 
-class rumble_parameter : public device::device_parameter
+class rumble_parameter : public device_parameter
 {
 
 public:
@@ -25,7 +25,7 @@ private:
   struct wiimote_t* m_wiimote;
 };
 
-class led_parameter : public device::device_parameter
+class led_parameter : public device_parameter
 {
 
 public:

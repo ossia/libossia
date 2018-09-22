@@ -3,8 +3,6 @@
 
 #include <wiiuse.h>
 
-using namespace ossia;
-using namespace device;
 
 namespace ossia
 {

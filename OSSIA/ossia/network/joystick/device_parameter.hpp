@@ -22,6 +22,9 @@ public:
 
   virtual ~device_parameter();
 
+  //  Must be called when the hardware send a new value 
+  //  (typicaly from an event loop)
+  //  This will NOT call device_update_value() in order to avoid loop
   void device_value_change_event(const ossia::value& value);
 
   void pull_value() override;
@@ -79,6 +82,7 @@ public:
 protected:
   virtual void device_update_value()
   {
+    //  Here should be the code that actualy make the hardware update to current value
   }
 
   auto& get_protocol()

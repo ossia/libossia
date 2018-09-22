@@ -1,9 +1,7 @@
 
 #include "device_parameter.hpp"
 
-using namespace ossia;
-
-namespace device
+namespace ossia::net
 {
 
 device_parameter::device_parameter(

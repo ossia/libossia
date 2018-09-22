@@ -8,7 +8,7 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/value/value.hpp>
 
-namespace device
+namespace ossia::net
 {
 
 class device_parameter : public ossia::net::parameter_base
@@ -22,6 +22,9 @@ public:
 
   virtual ~device_parameter();
 
+  //  Must be called when the hardware send a new value 
+  //  (typicaly from an event loop)
+  //  This will NOT call device_update_value() in order to avoid loop
   void device_value_change_event(const ossia::value& value);
 
   void pull_value() override;
@@ -58,7 +61,7 @@ public:
     return *this;
   }
 
-  template <typename ParamType = device_parameter, class... T>
+  template <class ParamType = device_parameter, class... T>
   static ParamType* create_device_parameter(
       ossia::net::node_base& root_node, const std::string& path,
       const ossia::value& initial_value, const T&... ctor_args)
@@ -79,6 +82,7 @@ public:
 protected:
   virtual void device_update_value()
   {
+    //  Here should be the code that actualy make the hardware update to current value
   }
 
   auto& get_protocol()
@@ -86,11 +90,11 @@ protected:
     return get_node().get_device().get_protocol();
   }
 
-  ossia::value m_current_value;
+  ossia::value m_current_value{};
 
-  const ossia::val_type m_type;
-  const ossia::bounding_mode m_bounding;
-  const ossia::access_mode m_access;
-  const ossia::domain m_domain;
+  const ossia::val_type m_type{};
+  const ossia::bounding_mode m_bounding{};
+  const ossia::access_mode m_access{};
+  const ossia::domain m_domain{};
 };
 }
