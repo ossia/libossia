@@ -257,7 +257,7 @@ void scenario_graph::remove_vertice(scenario_graph_vertex timeSync)
   if (it != vertices.end())
   {
     boost::clear_vertex(it->second, graph);
-    // boost::remove_vertex(it->second, graph);
+    boost::remove_vertex(it->second, graph);
     vertices.erase(it);
     dirty = true;
   }

@@ -44,6 +44,7 @@ public:
       for (auto vtx : m_topo_order_cache)
       {
         auto node = gr[vtx].get();
+        assert(gr[vtx].get());
         m_all_nodes.push_back(node);
       }
     }

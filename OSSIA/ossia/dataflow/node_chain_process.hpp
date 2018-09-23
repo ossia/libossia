@@ -25,10 +25,10 @@ struct node_chain_process final : public ossia::time_process
     m_lastDate = to;
   }
 
-  void add_node(std::shared_ptr<ossia::graph_node> n)
+  void add_node(int64_t idx, std::shared_ptr<ossia::graph_node> n)
   {
     // n->set_prev_date(this->m_lastDate);
-    nodes.push_back(std::move(n));
+    nodes.insert(nodes.begin() + idx, std::move(n));
   }
 
   void stop() override
