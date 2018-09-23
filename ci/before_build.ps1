@@ -110,12 +110,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake $CommonFlags64 -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_PROTOCOL_MIDI=OFF  c:\projects\libossia > $LogFile
+  cmake $CommonFlags64 -DOSSIA_PD_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-32bit" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake $CommonFlags32 -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_PROTOCOL_MIDI=OFF  c:\projects\libossia > $LogFile
+  cmake $CommonFlags32 -DOSSIA_PD_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ) {
@@ -124,7 +124,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake -G "Visual Studio 15 2017" -T host=x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_EDITOR=0 -DOSSIA_DATAFLOW=0 -DCMAKE_PREFIX_PATH="${env:QTDIR-32bit}\lib\cmake\Qt5" -DOSSIA_STATIC=1 -DOSSIA_PD=1 -DOSSIA_QT=0 -DOSSIA_PROTOCOL_MIDI=OFF -DOSSIA_EXAMPLES=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DOSSIA_PYTHON=0 -DOSSIA_QML=0 -DOSSIA_EDITOR=OFF -DOSSIA_DATAFLOW=OFF c:\projects\libossia > $LogFile
+  cmake -G "Visual Studio 15 2017" -T host=x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_PD_ONLY=1-DOSSIA_CI=1 -DOSSIA_TESTING=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ) {
