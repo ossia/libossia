@@ -44,7 +44,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "Release" -Or $env:APPVEYOR_BUILD_TYPE -eq "os
   CheckLastExitCode
 }
 
-if ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-qml" )
+if ( $env:APPVEYOR_BUILD_TYPE -eq "qml" )
 {
   cd C:\projects\libossia\build\
   $LogFile = "C:\projects\libossia\build-Debug-${env:platform}.log"
