@@ -1,18 +1,17 @@
 
 #pragma once
 
-#include <array>
-#include <cstdint>
-#include <thread>
-
-
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
 
+#include <array>
+#include <cstdint>
+#include <thread>
+
 #define DMX_CHANNEL_COUNT 512
 
-typedef void *artnet_node;
+typedef void* artnet_node;
 
 namespace ossia
 {
@@ -21,12 +20,12 @@ namespace net
 
 class OSSIA_EXPORT artnet_protocol final : public ossia::net::protocol_base
 {
-  public:
-
-  struct dmx_buffer {
+public:
+  struct dmx_buffer
+  {
     dmx_buffer();
     int send(artnet_node node);
-    
+
     uint8_t data[DMX_CHANNEL_COUNT];
     bool dirty;
   };
@@ -44,7 +43,7 @@ class OSSIA_EXPORT artnet_protocol final : public ossia::net::protocol_base
   bool update(ossia::net::node_base&) override;
 
 private:
-  static void update_function(artnet_protocol *instance);
+  static void update_function(artnet_protocol* instance);
 
   std::thread m_update_thread;
   bool m_running;
