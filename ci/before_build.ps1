@@ -119,12 +119,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ) {
-  if ( Test-Path ${env:QTDIR-32bit}\bin\ ) {
-    set $env:PATH=${env:QTDIR-32bit}\bin;${env:PATH};
-  }
-
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake -G "Visual Studio 15 2017" -T host=x64 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_PD_ONLY=1-DOSSIA_CI=1 -DOSSIA_TESTING=1 c:\projects\libossia > $LogFile
+  cmake $CommonFlags32 -DOSSIA_PD_ONLY=1 -DOSSIA_TESTING=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ) {
