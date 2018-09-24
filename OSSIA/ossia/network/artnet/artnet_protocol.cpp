@@ -38,7 +38,7 @@ artnet_protocol::artnet_protocol(const unsigned int update_frequency)
     throw std::runtime_error("DMX 512 update frequencie must be in the range [0, 44] Hz");
 
   //  Do not specify ip adress for now, artnet will choose one
-  m_node = artnet_new(NULL, 0);
+  m_node = artnet_new(NULL, 1);
 
   if (m_node == NULL)
     throw std::runtime_error("Artnet new failed");
@@ -52,6 +52,8 @@ artnet_protocol::artnet_protocol(const unsigned int update_frequency)
 
   if (artnet_start(m_node) != ARTNET_EOK)
     throw std::runtime_error("Artnet Start failed");
+
+  std::printf("ARTNET CTOR OK\n");
 }
 
 artnet_protocol::~artnet_protocol()
