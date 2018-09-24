@@ -32,7 +32,11 @@ artnet_protocol::artnet_protocol(const unsigned int update_frequency)
 {
   if (update_frequency < 1 || update_frequency > 44)
     throw std::runtime_error(
-        "DMX 512 update frequencie must be in the range [0, 44] Hz");
+        "DMX 512 update frequencie must be in the range [0, 44] Hz"); 
+
+  //  44  hz limit apply because we send 512 byte frames.
+  //  It seem to be possible to send only some value and thus 
+  //   update at higher frequencies => Work TODO
 
   //  Do not specify ip adress for now, artnet will choose one
   m_node = artnet_new(NULL, 1);
