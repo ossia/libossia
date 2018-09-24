@@ -52,7 +52,7 @@ public:
   void output_value();
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_parent() const { return owner; }
-  t_atom* get_atom_addr_ptr() { return &m_addr; }
+  const t_atom* get_atom_addr_ptr() const { return &m_addr; }
   void set_parent_addr();
 
   inline bool operator==(const t_matcher& rhs)
@@ -60,7 +60,8 @@ public:
 
   void set_dead(){ m_dead = true; }
   void set_zombie(){ m_zombie = true; }
-  bool is_locked(){ return m_lock; }
+  bool is_zombie() const { return  m_zombie; }
+  bool is_locked() const { return m_lock; }
 
   std::vector<ossia::value> m_set_pool;
 
@@ -109,7 +110,7 @@ public:
   bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted{};
-  bool m_lock{false};
+  bool m_lock{false}; // attribute lock
   long m_queue_length{64};
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
@@ -174,7 +175,7 @@ public:
 
   bool m_loadbanged{}; // true if object receive a loadbang
 
-  std::mutex bindMutex;
+  std::mutex m_bind_mutex;
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order
 
 

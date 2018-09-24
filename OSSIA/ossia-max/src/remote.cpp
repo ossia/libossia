@@ -396,7 +396,18 @@ bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matc
 
 bool remote::unregister()
 {
-  m_matchers.clear();
+  auto copy = m_matchers;
+  for (auto& m : copy)
+  {
+    if(m->is_locked())
+    {
+      m->set_zombie();
+    }
+    else
+    {
+      ossia::remove_erase(m_matchers, m);
+    }
+  }
 
   object_quarantining<remote>(this);
 
@@ -441,31 +452,59 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   // it makes no sens to sens to change when an attribute changes
   if ( attribute == ossia::net::text_refresh_rate() )
   {
-    // assume all matchers have the same bounding_mode
+    // assume all matchers have the same refresh_rate
     assert(!x->m_matchers.empty());
-    ossia::max::t_matcher& m = *x->m_matchers[0];
-    ossia::net::node_base* node = m.get_node();
 
-    auto rate = ossia::net::get_refresh_rate(*node);
-    if (rate)
+    std::shared_ptr<ossia::max::t_matcher> good_one{};
+
+    for(auto& m : x->m_matchers)
     {
-      x->m_rate_min = *rate;
-      x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
+      if(!m->is_zombie())
+      {
+        good_one = m;
+        break;
+      }
     }
-    notify(x, nullptr, gensym("attr_modified"), 0L, 0L);
+
+    if(good_one)
+    {
+      ossia::net::node_base* node = good_one->get_node();
+
+      auto rate = ossia::net::get_refresh_rate(*node);
+      if (rate)
+      {
+        x->m_rate_min = *rate;
+        x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
+      }
+      notify(x, nullptr, gensym("attr_modified"), 0L, 0L);
+    }
 
   } else if ( attribute == ossia::net::text_unit()) {
     // assume all matchers have the same bounding_mode
     assert(!x->m_matchers.empty());
-    ossia::max::t_matcher& m = *x->m_matchers[0];
-    ossia::net::node_base* node = m.get_node();
-    ossia::net::parameter_base* param = node->get_parameter();
 
-    if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
+    std::shared_ptr<ossia::max::t_matcher> good_one{};
+
+    for(auto& m : x->m_matchers)
     {
-      x->m_ounit = param->get_unit();
-      std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-      x->m_unit = gensym(unit.c_str());
+      if(!m->is_zombie())
+      {
+        good_one = m;
+        break;
+      }
+    }
+
+    if(good_one)
+    {
+      ossia::net::node_base* node = good_one->get_node();
+      ossia::net::parameter_base* param = node->get_parameter();
+
+      if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
+      {
+        x->m_ounit = param->get_unit();
+        std::string unit = ossia::get_pretty_unit_text(param->get_unit());
+        x->m_unit = gensym(unit.c_str());
+      }
     }
 
   }  else if ( attribute == ossia::net::text_extended_type() ){

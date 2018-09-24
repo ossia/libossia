@@ -107,7 +107,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
 
 void purge_parent(ossia::net::node_base* node)
 {
-    // remove parent node recursively if they are no used anymore
+    // remove parent node recursively if they are not used anymore
   if (auto pn = node->get_parent())
   {
     pn->remove_child(*node);
@@ -151,7 +151,21 @@ t_matcher::~t_matcher()
 
         for (auto remote : ossia_max::instance().remotes.copy())
         {
-          ossia::remove_erase_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
+          for (auto m : remote->m_matchers)
+          {
+            if(*m == *this)
+            {
+              if(m->is_locked())
+              {
+                m->set_zombie();
+              }
+              else
+              {
+                ossia::remove_erase(remote->m_matchers,m);
+              }
+            }
+          }
+          // ossia::remove_erase_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
         }
 
         for (auto attribute : ossia_max::instance().attributes.copy())
@@ -179,7 +193,7 @@ t_matcher::~t_matcher()
       }
     } else {
 
-      if (!owner->m_is_deleted)
+      if (!owner->m_is_deleted && !m_zombie)
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
@@ -241,10 +255,10 @@ void t_matcher::enqueue_value(ossia::value v)
 
 void t_matcher::output_value()
 {
-  m_lock = true;
-  if(owner)
+  if(owner && !m_lock)
   {
-    std::lock_guard<std::mutex> lock(owner->bindMutex);
+    m_lock=true;
+    // std::lock_guard<std::mutex> lock(owner->m_bind_mutex);
     ossia::value val;
     while(m_queue_list.try_dequeue(val))
     {
@@ -273,8 +287,8 @@ void t_matcher::output_value()
       vm.x = (object_base*)owner;
       val.apply(vm);
     }
+    m_lock=false;
   }
-  m_lock=false;
 }
 
 void t_matcher::set_parent_addr()
@@ -358,23 +372,31 @@ void object_base::is_deleted(const ossia::net::node_base& n)
     m_is_deleted = true;
     for(auto nd : m_node_selection)
     {
-        if(nd->get_node() == &n)
-            nd->set_dead();
+      if(nd->get_node() == &n)
+      {
+        if(nd->is_locked())
+          nd->set_zombie();
+        nd->set_dead();
+      }
     }
     for(auto& nd : m_matchers)
     {
-        if(nd->get_node() == &n)
-            nd->set_dead();
-    }
+      if(nd->get_node() == &n)
+      {
+        if(nd->is_locked())
+          nd->set_zombie();
+        nd->set_dead();
+      }
+    }    
     m_node_selection.erase(ossia::remove_if(
       m_node_selection,
       [&] (const t_matcher* m) {
-        return m->get_node() == &n;
+        return (m->get_node() == &n) && !m->is_locked();
     }), m_node_selection.end());
     m_matchers.erase(ossia::remove_if(
       m_matchers,
       [&] (const std::shared_ptr<t_matcher>& m) {
-        return m->get_node() == &n;
+        return (m->get_node() == &n) && !m->is_locked();
     }), m_matchers.end());
     m_is_deleted = false;
 }

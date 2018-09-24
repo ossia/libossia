@@ -435,7 +435,7 @@ std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const o
   {
     for (auto& m : x->m_matchers)
     {
-      if (node == m->get_node())
+      if (node == m->get_node() && !m->is_zombie())
       {
         matchers.push_back(m.get());
         break;
