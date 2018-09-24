@@ -48,9 +48,6 @@ artnet_protocol::artnet_protocol(const unsigned int update_frequency)
   artnet_set_long_name(m_node, ARTNET_NODE_LONG_NAME);
   artnet_set_node_type(m_node, ARTNET_RAW);
 
-  artnet_set_port_type(m_node, 0, ARTNET_ENABLE_INPUT, ARTNET_PORT_DMX);
-  artnet_set_port_addr(m_node, 0, ARTNET_INPUT_PORT, 0);
-
   if (artnet_start(m_node) != ARTNET_EOK)
     throw std::runtime_error("Artnet Start failed");
 
