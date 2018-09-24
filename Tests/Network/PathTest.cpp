@@ -544,12 +544,12 @@ TEST_CASE ("test_device", "test_device")
 {
   ossia::net::generic_device device1{"test"};
 
-  auto& a1 = ossia::net::create_node(device1, "foo/bar");
-  auto& a2 = ossia::net::create_node(device1, "foo/bar");
+  ossia::net::create_node(device1, "foo/bar");
+  ossia::net::create_node(device1, "foo/bar");
 
   ossia::net::generic_device device2{"boo"};
 
-  auto& b1 = ossia::net::create_node(device2, "foo/bar");
+  ossia::net::create_node(device2, "foo/bar");
   auto& b2 = ossia::net::create_node(device2, "foo/bar");
 
   auto p = *traversal::make_path("boo:/*/bar.1");

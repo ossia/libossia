@@ -18,7 +18,7 @@ TEST_CASE ("Device exceptions") {
 
   auto rootnode = localDevice.get_root_node().create_child("root");
   auto childnode = rootnode->create_child("child");
-  auto childaddr = childnode->create_parameter(ossia::val_type::BOOL);
+  childnode->create_parameter(ossia::val_type::BOOL);
 
   SECTION("Invalid address: target node has children") {
     ossia::presets::preset preset;
