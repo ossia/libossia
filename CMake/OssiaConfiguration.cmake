@@ -51,7 +51,7 @@ option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidge
 option(OSSIA_PROTOCOL_LEAPMOTION "Enable Leapmotion protocol" OFF) # Requires LeapMotion Orion library
 option(OSSIA_PROTOCOL_JOYSTICK "Enable Joystick protocol" OFF)  # Requires SDL2 library
 option(OSSIA_PROTOCOL_WIIMOTE "Enable Wiimote Protocol" OFF) #use wiiuse
-option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" OFF) #use libartnet
+option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" ON) #use libartnet
 option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
