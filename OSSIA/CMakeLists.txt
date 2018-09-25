@@ -76,13 +76,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/git_info.cpp.in" "${CMAKE_CURRENT_BI
 
 target_sources(ossia PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/git_info.cpp" git_info.h)
 
-if(MSVC)
-  target_compile_definitions(ossia
-    PUBLIC
-      __cpp_constexpr=201304
-      __cpp_variable_templates=201304
-  )
-endif()
 if(NOT ANDROID)
   target_link_libraries(ossia PUBLIC Boost::boost)
 endif()
@@ -257,7 +250,7 @@ if (OSSIA_PROTOCOL_ARTNET)
   target_link_libraries(ossia PRIVATE libartnet)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} artnet)
 endif()
-  
+
 
 # Additional features
 if(OSSIA_C)
