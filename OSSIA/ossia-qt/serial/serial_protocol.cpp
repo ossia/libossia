@@ -123,6 +123,9 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr)
     case ossia::val_type::INT:
       str.replace("$val", QString::number(ad.getValue().get<int32_t>()));
       break;
+    case ossia::val_type::STRING:
+      str.replace("$val", QString::fromStdString(ad.getValue().get<std::string>()));
+      break;
     case ossia::val_type::IMPULSE:
       break;
     default:
