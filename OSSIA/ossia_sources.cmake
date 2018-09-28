@@ -105,6 +105,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/value_traits.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/value_algorithms.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/value_variant_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/value_hash.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/vec.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_parse.hpp"
@@ -425,7 +426,7 @@ set(OSSIA_ARTNET_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/device_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.cpp")
-  
+
 
 set(OSSIA_WS_CLIENT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp")

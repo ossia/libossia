@@ -16,6 +16,7 @@ state_writer::~state_writer() = default;
 void state_writer::run(
     ossia::token_request, ossia::exec_state_facade e) noexcept
 {
-  e.insert(data);
+  data.launch();
+  //e.insert(data);
 }
 }
