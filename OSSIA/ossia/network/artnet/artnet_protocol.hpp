@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <ossia/network/base/protocol.hpp>

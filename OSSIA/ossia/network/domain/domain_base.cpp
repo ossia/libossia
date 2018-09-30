@@ -234,7 +234,7 @@ value apply_domain(const domain& dom, bounding_mode b, ossia::value&& val)
   {
     return ossia::apply(apply_domain_visitor{b}, ossia::move(val.v), dom.v);
   }
-  return val;
+  return std::move(val);
 }
 
 domain init_domain(ossia::val_type type)

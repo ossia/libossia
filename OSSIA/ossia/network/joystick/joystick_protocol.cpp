@@ -1,8 +1,5 @@
-
-
 #include "joystick_protocol.hpp"
-
-#include "device_parameter.hpp"
+#include <ossia/network/common/device_parameter.hpp>
 
 #include <SDL2/SDL.h>
 

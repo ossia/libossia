@@ -90,7 +90,7 @@ std::string domain::to_pretty_string() const
 {
   if (bool(*this))
   {
-    return ossia::apply_nonnull(domain_prettyprint_visitor{}, (domain_base_variant&)*this);
+    return ossia::apply_nonnull(domain_prettyprint_visitor{}, (const domain_base_variant&)*this);
   }
   else
   {
@@ -738,7 +738,7 @@ value generic_clamp::operator()(bounding_mode b, const value& v) const
 value generic_clamp::operator()(bounding_mode b, value&& v) const
 {
   if (b == bounding_mode::FREE)
-    return v;
+    return std::move(v);
 
   const auto& values = domain.values;
   if (values.empty())

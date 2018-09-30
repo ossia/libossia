@@ -1,8 +1,6 @@
-
 #pragma once
-
-#include "artnet_protocol.hpp"
-#include "device_parameter.hpp"
+#include <ossia/network/artnet/artnet_protocol.hpp>
+#include <ossia/network/common/device_parameter.hpp>
 
 #include <artnet/artnet.h>
 

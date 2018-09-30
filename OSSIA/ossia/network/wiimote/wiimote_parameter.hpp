@@ -1,8 +1,5 @@
-
 #pragma once
-
-#include "device_parameter.hpp"
-
+#include <ossia/network/common/device_parameter.hpp>
 #include <cstdint>
 
 struct wiimote_t;

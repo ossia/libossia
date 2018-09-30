@@ -80,6 +80,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/complex_type.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"
@@ -161,6 +162,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/complex_type.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/debug.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_parameter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.cpp"
@@ -400,30 +402,25 @@ set(OSSIA_LEAPMOTION_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.cpp")
 
 set(OSSIA_JOYSTICK_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/device_parameter.hpp"
+
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.hpp")
 
 set(OSSIA_JOYSTICK_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/device_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.cpp")
 
 set(OSSIA_WIIMOTE_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/device_parameter.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.hpp")
 
 set(OSSIA_WIIMOTE_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/device_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.cpp")
 
 set(OSSIA_ARTNET_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/device_parameter.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.hpp")
 
 set(OSSIA_ARTNET_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/device_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.cpp")
 

@@ -1,12 +1,10 @@
-
 #pragma once
-
-#include "device_parameter.hpp"
-#include "wiimote_parameter.hpp"
-
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/common/device_parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
+
+#include <ossia/network/wiimote/wiimote_parameter.hpp>
 
 #include <array>
 #include <cstdint>
