@@ -56,6 +56,7 @@ struct scenario_graph
   sibling_roots(const ossia::time_sync& sync) const;
 
 private:
+  void recompute_maps();
   void update_components_cache() const;
   mutable ossia::int_vector m_components_cache;
   mutable bool dirty = false;

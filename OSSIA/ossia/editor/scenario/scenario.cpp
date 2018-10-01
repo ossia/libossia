@@ -239,6 +239,7 @@ void scenario::reset_subgraph(
 void scenario_graph::add_vertice(scenario_graph_vertex timeSync)
 {
   vertices[timeSync] = boost::add_vertex(timeSync, graph);
+  recompute_maps();
   dirty = true;
 }
 
@@ -248,6 +249,7 @@ void scenario_graph::add_edge(scenario_graph_edge itv)
                    vertices[&itv->get_start_event().get_time_sync()],
                    vertices[&itv->get_end_event().get_time_sync()], itv, graph)
                    .first;
+  recompute_maps();
   dirty = true;
 }
 
@@ -258,7 +260,7 @@ void scenario_graph::remove_vertice(scenario_graph_vertex timeSync)
   {
     boost::clear_vertex(it->second, graph);
     boost::remove_vertex(it->second, graph);
-    vertices.erase(it);
+    recompute_maps();
     dirty = true;
   }
 }
@@ -269,8 +271,38 @@ void scenario_graph::remove_edge(scenario_graph_edge itv)
   if (it != edges.end())
   {
     boost::remove_edge(it->second, graph);
-    edges.erase(it);
+    recompute_maps();
     dirty = true;
   }
+}
+
+
+void scenario_graph::recompute_maps()
+{
+  vertices.clear();
+  edges.clear();
+  {
+    auto [vbegin,vend] = boost::vertices(graph);
+    for(auto it = vbegin; it != vend; ++it)
+    {
+      auto k = *it;
+      auto n = graph[k];
+      assert(n);
+
+      vertices.insert({n, k});
+    }
+  }
+  {
+    auto [ebegin,eend] = boost::edges(graph);
+    for(auto it = ebegin; it != eend; ++it)
+    {
+      auto k = *it;
+      auto n = graph[k];
+      assert(n);
+
+      edges.insert({n, k});
+    }
+  }
+
 }
 }

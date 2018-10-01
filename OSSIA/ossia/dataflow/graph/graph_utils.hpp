@@ -435,7 +435,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
     m_nodes.clear();
     m_edges.clear();
     auto vertices = boost::vertices(m_graph);
-    for (auto it = vertices.first; it != vertices.second; it++)
+    for (auto it = vertices.first; it != vertices.second; ++it)
     {
       graph_vertex_t k = *it;
       node_ptr n = m_graph[k];
@@ -445,7 +445,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
     }
 
     auto edges = boost::edges(m_graph);
-    for (auto it = edges.first; it != edges.second; it++)
+    for (auto it = edges.first; it != edges.second; ++it)
     {
       graph_edge_t k = *it;
       edge_ptr n = m_graph[k];
