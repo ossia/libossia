@@ -35,9 +35,10 @@ public:
     {
       if (perf_map)
       {
-        for (auto n : nodes)
+        for (const auto& n : nodes)
         {
           graph_node* node = n.first.get();
+          (*perf_map)[node] = ossia::none;
           flow_nodes.insert({node, std::make_unique<cont_node>(
                                        flow_graph, node_exec_logger_bench{
                                                        cur_state, *perf_map,
