@@ -6,7 +6,8 @@
 #define OSSIA_USE_BOOST_ANY 1
 #elif defined(_MSC_VER)
 #define OSSIA_USE_BOOST_ANY 1
-#elif defined(__APPLE__) && (__cplusplus < 201703L)
+#elif defined(__APPLE__)
+// APPLE && (__cplusplus < 201703L) <- "|| "error: call to unavailable function 'any_cast': introduced in macOS 10.14"
 #define OSSIA_USE_BOOST_ANY 1
 
 #else
