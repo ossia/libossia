@@ -31,7 +31,7 @@ namespace ossia
 {
 void set_thread_realtime(std::thread& t)
 {
-#if !defined(__EMSCRIPTEN__)
+#if !defined(__EMSCRIPTEN__) && !defined(_WIN32)
   sched_param sch_params;
   sch_params.sched_priority = 99;
   pthread_setschedparam(t.native_handle(), SCHED_FIFO, &sch_params);

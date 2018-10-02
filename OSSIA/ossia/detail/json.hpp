@@ -2,7 +2,12 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/detail/string_view.hpp>
-
+#if defined(_WIN32)
+#include <windows.h>
+#ifdef GetObject
+#undef GetObject
+#endif
+#endif
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 
