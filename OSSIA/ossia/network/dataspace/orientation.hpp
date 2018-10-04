@@ -71,7 +71,7 @@ struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
     constexpr_return(ossia::make_string_array(
         "angle.degree", "angle.degree", "angle.degree"));
   }
-  using value_type = vec4f;
+  using value_type = vec3f;
 
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self);
