@@ -27,7 +27,7 @@ struct address_in
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr address_in(const char (&name)[N]) : name{name, N}
+  constexpr address_in(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
@@ -36,7 +36,7 @@ struct audio_in
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr audio_in(const char (&name)[N]) : name{name, N}
+  constexpr audio_in(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
@@ -45,7 +45,7 @@ struct audio_out
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr audio_out(const char (&name)[N]) : name{name, N}
+  constexpr audio_out(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
@@ -55,13 +55,13 @@ struct value_in
   const bool is_event{true};
 
   template <std::size_t N>
-  constexpr value_in(const char (&name)[N]) : name{name, N}
+  constexpr value_in(const char (&name)[N]) : name{name, N-1}
   {
   }
 
   template <std::size_t N>
   constexpr value_in(const char (&name)[N], bool b)
-      : name{name, N}, is_event{b}
+      : name{name, N-1}, is_event{b}
   {
   }
 };
@@ -70,7 +70,7 @@ struct value_out
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr value_out(const char (&name)[N]) : name{name, N}
+  constexpr value_out(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
@@ -79,7 +79,7 @@ struct midi_in
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr midi_in(const char (&name)[N]) : name{name, N}
+  constexpr midi_in(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
@@ -88,7 +88,7 @@ struct midi_out
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr midi_out(const char (&name)[N]) : name{name, N}
+  constexpr midi_out(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
@@ -97,7 +97,7 @@ struct control_in
   const std::string_view name;
 
   template <std::size_t N>
-  constexpr control_in(const char (&name)[N]) : name{name, N}
+  constexpr control_in(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
