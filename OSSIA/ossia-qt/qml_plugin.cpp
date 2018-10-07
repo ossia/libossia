@@ -27,6 +27,17 @@
 #include <ossia-qt/score/qml_loop.hpp>
 #include <ossia-qt/score/qml_script.hpp>
 #endif
+
+#if defined(OSSIA_PROTOCOL_SERIAL)
+#include <ossia-qt/serial/serial_protocol.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_HTTP)
+#include <ossia-qt/http/http_protocol.hpp>
+#endif
+#if defined(OSSIA_PROTOCOL_WEBSOCKETS)
+#include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
+#endif
+
 #include <ossia-qt/js_utilities.hpp>
 #include <qqml.h>
 namespace ossia
@@ -75,6 +86,15 @@ void qml_plugin::reg(const char* uri)
   qmlRegisterType<qt::qml_model_property>(uri, 1, 0, "Instances");
 #endif
 
+#if defined(OSSIA_PROTOCOL_SERIAL)
+  qmlRegisterType<ossia::net::Serial>(uri, 1, 0, "Serial");
+#endif
+#if defined(OSSIA_PROTOCOL_WEBSOCKETS)
+  qmlRegisterType<ossia::net::WS>(uri, 1, 0, "WebSockets");
+#endif
+#if defined(OSSIA_PROTOCOL_HTTP)
+  qmlRegisterType<ossia::net::HTTP>(uri, 1, 0, "Http");
+#endif
 #endif
 
 

@@ -131,6 +131,9 @@ private:
 };
 
 using ws_generic_client_device = ossia::net::wrapped_device<ws_generic_client_node, ws_generic_client_protocol>;
+class OSSIA_EXPORT WS : public QObject
+{
+};
 }
 }
 

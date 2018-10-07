@@ -139,5 +139,8 @@ private:
 };
 using serial_device = ossia::net::wrapped_device<serial_node, serial_protocol>;
 
+class OSSIA_EXPORT Serial : public QObject {
+};
+
 }
 }

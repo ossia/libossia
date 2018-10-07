@@ -119,6 +119,9 @@ private:
   tsl::hopscotch_map<QNetworkReply*, const http_parameter*> m_replies;
 };
 using http_device = ossia::net::wrapped_device<http_node, http_protocol>;
+class OSSIA_EXPORT HTTP : public QObject
+{
+};
 }
 }
 
