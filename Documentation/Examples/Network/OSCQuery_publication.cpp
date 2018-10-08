@@ -113,6 +113,7 @@ int main()
     auto& node = find_or_create_node(device, "/test/my_string");
     auto address = node.create_parameter(val_type::STRING);
     node.set(critical_attribute{}, true);
+    node.set(domain_attribute{}, ossia::make_domain(std::vector<std::string>{"foo"s, "bar"s, "hello world"s}));
     address->add_callback(printValueCallback);
     address->push_value("hello world"s);
   }

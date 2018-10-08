@@ -16,6 +16,7 @@ TEST_CASE ("basic", "[basic]")
 {
   using namespace std::literals;
   opp::oscquery_server server{"banana"};
+
   auto root = server.get_root_node();
   auto argb = root
       .create_child("foo")

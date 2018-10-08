@@ -1856,9 +1856,14 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
   }
 }
 
+bool oscquery_server::connected() const
+{
+  return bool(m_dev);
+}
+
 node oscquery_server::get_root_node() const
 {
-  return node{&m_dev->get_root_node()};
+  return m_dev ? node{&m_dev->get_root_node()} : node{};
 }
 
 void oscquery_server::set_echo(bool echo)
@@ -1881,13 +1886,12 @@ void oscquery_server::set_echo(bool echo)
 bool oscquery_server::get_echo()
 {
   try
+  {
+    if(m_dev)
     {
-      if(m_dev)
-      {
       using ossia::oscquery::oscquery_server_protocol;
-      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol())){
-       return proto->echo();
-      }
+      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
+        return proto->echo();
     }
   }
   catch(const std::exception& e)

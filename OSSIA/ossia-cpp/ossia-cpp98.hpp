@@ -1654,6 +1654,10 @@ class OSSIA_EXPORT oscquery_server
      */
     void remove_disconnection_callback();
 
+    /**
+     * @brief Returns true if the server is connected
+     */
+    bool connected() const;
   private:
     void on_connection(const std::string&);
     void on_disconnection(const std::string&);
