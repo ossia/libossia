@@ -33,8 +33,14 @@ struct value_set_get_visitor
   template <typename T>
   std::vector<ossia::value> operator()(const ossia::domain_base<T>& dom)
   {
-    return std::vector<ossia::value>(false, true);
+    return std::vector<ossia::value>(dom.values.begin(), dom.values.end());
   }
+
+  std::vector<ossia::value> operator()(const ossia::domain_base<bool>&)
+  {
+    return std::vector<ossia::value>{ossia::value{false}, ossia::value{true}};
+  }
+
   std::vector<ossia::value>
   operator()(const ossia::domain_base<ossia::impulse>& dom)
   {
