@@ -493,17 +493,18 @@ else()
     -fdata-sections
   )
 
-  if(NOT APPLE)
-    set(OSSIA_LINK_OPTIONS
-      -Wl,--gc-sections
-      -Wl,--as-needed
-    )
-  else()
-    set(OSSIA_LINK_OPTIONS
-      -Wl,-dead_strip
-    )
+  if(NOT WIN32)
+    if(NOT APPLE)
+      set(OSSIA_LINK_OPTIONS
+        -Wl,--gc-sections
+        -Wl,--as-needed
+      )
+    else()
+      set(OSSIA_LINK_OPTIONS
+        -Wl,-dead_strip
+      )
+    endif()
   endif()
-
 
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
