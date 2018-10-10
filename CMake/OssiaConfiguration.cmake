@@ -84,6 +84,12 @@ foreach(submodule ${OSSIA_SUBMODULES})
                     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 endforeach()
 
+if(OSSIA_PROTOCOL_ARTNET)
+    message(" -> ${OSSIA_3RDPARTY_FOLDER}/libartnet")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/libartnet
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+endif()
+
 execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 message(STATUS "...done")
