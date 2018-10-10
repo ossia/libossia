@@ -12,6 +12,7 @@ option(OSSIA_NO_SONAME "Set NO_SONAME property" ON)
 option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
 option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
+option(OSSIA_USE_FAST_LINKER "Use a faster linker (GNU gold or LLVM lld). Fails on some Ubuntu systems" OFF)
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
 option(OSSIA_DATAFLOW "Dataflow features" ON)
 option(OSSIA_EDITOR "Editor features" ON)
@@ -363,24 +364,26 @@ else()
     set(CMAKE_REQUIRED_LIBRARIES "${old_link_libs}")
   endmacro()
 
-  check_cxx_linker_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
-  check_cxx_linker_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
+  if(OSSIA_USE_FAST_LINKER)
+    check_cxx_linker_flag("-fuse-ld=lld" LLD_LINKER_SUPPORTED)
+    check_cxx_linker_flag("-fuse-ld=gold" GOLD_LINKER_SUPPORTED)
 
-  if(OSSIA_SANITIZE AND NOT APPLE)
-    set(LLD_LINKER_SUPPORTED 0)
-  endif()
-  if(LLD_LINKER_SUPPORTED)
-    set(LINKER_IS_LLD 1 CACHE INTERNAL "use lld linker")
-  elseif(GOLD_LINKER_SUPPORTED)
-    set(LINKER_IS_GOLD 1 CACHE INTERNAL "use gold linker")
-  endif()
+    if(OSSIA_SANITIZE AND NOT APPLE)
+      set(LLD_LINKER_SUPPORTED 0)
+    endif()
+    if(LLD_LINKER_SUPPORTED)
+      set(LINKER_IS_LLD 1 CACHE INTERNAL "use lld linker")
+    elseif(GOLD_LINKER_SUPPORTED)
+      set(LINKER_IS_GOLD 1 CACHE INTERNAL "use gold linker")
+    endif()
 
-  if(LINKER_IS_GOLD)
-    check_cxx_linker_flag("-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2" LINKER_THREADS_SUPPORTED)
-    check_cxx_linker_flag("-fuse-ld=gold -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
-  elseif(LINKER_IS_LLD)
-    check_cxx_linker_flag("-fuse-ld=lld -Wl,--threads" LINKER_THREADS_SUPPORTED)
-    check_cxx_linker_flag("-fuse-ld=lld -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
+    if(LINKER_IS_GOLD)
+      check_cxx_linker_flag("-fuse-ld=gold -Wl,--threads -Wl,--thread-count,2" LINKER_THREADS_SUPPORTED)
+      check_cxx_linker_flag("-fuse-ld=gold -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
+    elseif(LINKER_IS_LLD)
+      check_cxx_linker_flag("-fuse-ld=lld -Wl,--threads" LINKER_THREADS_SUPPORTED)
+      check_cxx_linker_flag("-fuse-ld=lld -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
+    endif()
   endif()
 endif()
 
@@ -439,7 +442,11 @@ set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 
 # We disable debug infos on OS X on travis because it takes up too much space
 if(OSSIA_CI AND APPLE OR OSSIA_NO_DEBUG_INFO)
-  set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g0 ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g0")
+endif()
+
+if(OSSIA_CI)
+  set(OSSIA_USE_FAST_LINKER ON)
 endif()
 
 if(OSSIA_STATIC)
@@ -456,30 +463,30 @@ endif()
 
 # Compiler & linker flags
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "-DNOGDI -DLF_FACESIZE=32 ${CMAKE_CXX_FLAGS}")
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
-    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
+  set(CMAKE_CXX_FLAGS "-DNOGDI -DLF_FACESIZE=32 ${CMAKE_CXX_FLAGS}")
+  set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
+  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
+  set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /PDBCompress /OPT:REF /OPT:ICF")
 
-    set(OSSIA_COMPILE_OPTIONS
-        "/wd4065" # switch statement contains default but no case labels
-        "/wd4068" # pragma mark -
-        "/wd4221" # this object file does not define any previously undefined public symbols
-        "/wd4250" # inherits via dominance
-        "/wd4251" # DLL stuff
-        "/wd4267" # initializing: conversion from size_t to int, possible loss of data or 'argument': conversion from size_t to ..., possible loss of data
-        "/wd4275" # DLL stuff
-        "/wd4244" # return : conversion from foo to bar, possible loss of data
-        "/wd4305" # argument : truncation from double to float
-        "/wd4503" # decorated name length exceeded
-        "/wd4624" # destructor was implicityl defined as deleted
-        "/wd4800" # conversion from int to bool, performance warning
-        "/wd4804" # unsafe mix of const bool <= const int
-        "/wd4805" # unsafe mix of const bool == const int
-        "/wd4996" # SCL_SECURE_NO_WARNINGS
-        "/bigobj"
-        ${OSSIA_LINK_OPTIONS}
-    )
+  set(OSSIA_COMPILE_OPTIONS
+      "/wd4065" # switch statement contains default but no case labels
+      "/wd4068" # pragma mark -
+      "/wd4221" # this object file does not define any previously undefined public symbols
+      "/wd4250" # inherits via dominance
+      "/wd4251" # DLL stuff
+      "/wd4267" # initializing: conversion from size_t to int, possible loss of data or 'argument': conversion from size_t to ..., possible loss of data
+      "/wd4275" # DLL stuff
+      "/wd4244" # return : conversion from foo to bar, possible loss of data
+      "/wd4305" # argument : truncation from double to float
+      "/wd4503" # decorated name length exceeded
+      "/wd4624" # destructor was implicityl defined as deleted
+      "/wd4800" # conversion from int to bool, performance warning
+      "/wd4804" # unsafe mix of const bool <= const int
+      "/wd4805" # unsafe mix of const bool == const int
+      "/wd4996" # SCL_SECURE_NO_WARNINGS
+      "/bigobj"
+      ${OSSIA_LINK_OPTIONS}
+  )
 else()
   if(CMAKE_BUILD_TYPE MATCHES Release)
     set(OSSIA_COMPILE_OPTIONS
