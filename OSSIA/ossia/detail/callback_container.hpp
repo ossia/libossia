@@ -111,6 +111,7 @@ public:
     m_callbacks.erase(it);
   }
 
+
   /**
    * @brief Replaces an existing callback with another function.
    */
@@ -118,6 +119,41 @@ public:
   {
     std::lock_guard<std::mutex> lck{m_mutx};
     *m_callbacks.erase(it, it) = std::move(cb);
+  }
+  void replace_callbacks(impl&& cbs)
+  {
+    std::lock_guard<std::mutex> lck{m_mutx};
+    m_callbacks = std::move(cbs);
+  }
+
+  class disabled_callback
+  {
+  public:
+    explicit disabled_callback(callback_container& self)
+      : self{self}, old_callbacks{self.m_callbacks}
+    {
+
+    }
+
+    ~disabled_callback()
+    {
+      self.replace_callbacks(old_callbacks);
+    }
+
+  private:
+    callback_container& self;
+    callback_container::impl old_callbacks;
+  };
+
+  disabled_callback disable_callback(iterator it)
+  {
+    std::lock_guard<std::mutex> lck{m_mutx};
+    disabled_callback dis{*this};
+
+    // TODO should we also call on_removing_last_blah ?
+    // I don't think so : it's supposed to be a short operation
+    m_callbacks.erase(it);
+    return dis;
   }
 
   /**

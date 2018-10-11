@@ -410,14 +410,14 @@ QJSValue js_value_outbound_visitor::to_enum(qml_val_type::val_type t) const
 
 QJSValue js_value_outbound_visitor::operator()(impulse) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Impulse));
   return v;
 }
 
 QJSValue js_value_outbound_visitor::operator()(int32_t val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Int));
   v.setProperty("value", int32_t(val));
   return v;
@@ -425,7 +425,7 @@ QJSValue js_value_outbound_visitor::operator()(int32_t val) const
 
 QJSValue js_value_outbound_visitor::operator()(float val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Float));
   v.setProperty("value", val);
   return v;
@@ -433,7 +433,7 @@ QJSValue js_value_outbound_visitor::operator()(float val) const
 
 QJSValue js_value_outbound_visitor::operator()(bool val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Bool));
   v.setProperty("value", val);
   return v;
@@ -441,7 +441,7 @@ QJSValue js_value_outbound_visitor::operator()(bool val) const
 
 QJSValue js_value_outbound_visitor::operator()(char val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Char));
   v.setProperty("value", val);
   return v;
@@ -449,7 +449,7 @@ QJSValue js_value_outbound_visitor::operator()(char val) const
 
 QJSValue js_value_outbound_visitor::operator()(const std::string& val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::String));
   v.setProperty("value", QString::fromStdString(val));
   return v;
@@ -472,7 +472,7 @@ js_value_outbound_visitor::make_list(const std::vector<value>& arr) const
 QJSValue js_value_outbound_visitor::
 operator()(const std::vector<ossia::value>& val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::List));
   v.setProperty("value", make_list(val));
   return v;
@@ -480,7 +480,7 @@ operator()(const std::vector<ossia::value>& val) const
 
 QJSValue js_value_outbound_visitor::operator()(vec2f val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Vec2f));
   v.setProperty("value", make_array(val));
   return v;
@@ -488,7 +488,7 @@ QJSValue js_value_outbound_visitor::operator()(vec2f val) const
 
 QJSValue js_value_outbound_visitor::operator()(vec3f val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Vec3f));
   v.setProperty("value", make_array(val));
   return v;
@@ -496,7 +496,7 @@ QJSValue js_value_outbound_visitor::operator()(vec3f val) const
 
 QJSValue js_value_outbound_visitor::operator()(vec4f val) const
 {
-  QJSValue v;
+  QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::Vec4f));
   v.setProperty("value", make_array(val));
   return v;

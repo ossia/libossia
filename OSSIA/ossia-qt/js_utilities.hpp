@@ -432,7 +432,7 @@ struct OSSIA_EXPORT js_string_outbound_visitor
 
 OSSIA_EXPORT ossia::value value_from_js(const QJSValue& v);
 
-inline ossia::value value_from_js(ossia::value cur, const QJSValue& v)
+inline ossia::value value_from_js(const ossia::value& cur, const QJSValue& v)
 {
   return cur.apply(js_value_inbound_visitor{v});
 }
@@ -516,7 +516,7 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
   if (data.name.empty())
     return;
 
-  auto node = new Node_T{data, device, parent};
+  auto node = new Node_T{std::move(data), device, parent};
   parent.add_child(std::unique_ptr<ossia::net::node_base>(node));
 
   device.on_node_created(*node);

@@ -15,21 +15,21 @@ class wrapped_node : public ossia::net::node_base
 public:
   using data_type = T;
   wrapped_node(
-      const T& data, ossia::net::device_base& aDevice,
+      T&& data, ossia::net::device_base& aDevice,
       ossia::net::node_base& aParent)
       : m_device{aDevice}, m_parent{&aParent}
   {
     m_name = data.name;
     if (data.valid())
-      m_parameter = std::make_unique<Parameter_T>(data, *this);
+      m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
 
-  wrapped_node(const T& data, ossia::net::device_base& aDevice)
+  wrapped_node(T&& data, ossia::net::device_base& aDevice)
       : m_device{aDevice}
   {
     m_name = data.name;
     if (data.valid())
-      m_parameter = std::make_unique<Parameter_T>(data, *this);
+      m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
 
   ~wrapped_node() override
@@ -92,12 +92,14 @@ private:
 };
 
 template <typename T>
-class wrapped_parameter final : public ossia::net::generic_parameter
+class wrapped_parameter : public ossia::net::generic_parameter
 {
 public:
   using base_data_type = typename T::base_data_type;
-  wrapped_parameter(const T& data, ossia::net::node_base& node_base)
-      : generic_parameter{data, node_base}, m_data{data}
+
+  wrapped_parameter(T&& data, ossia::net::node_base& node_base)
+      : generic_parameter{data, node_base}
+      , m_data(std::move(data))
   {
   }
 
