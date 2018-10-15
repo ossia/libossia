@@ -13,8 +13,8 @@ namespace ossia
 scenario::scenario() : m_sg{*this}
 {
   // create the start TimeSync
-  add_time_sync(std::make_shared<time_sync>());
   node = std::make_shared<ossia::nodes::scenario>();
+  add_time_sync(std::make_shared<time_sync>());
 }
 
 scenario::~scenario()
@@ -162,6 +162,8 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
   if (!contains(m_intervals, itv))
   {
     m_sg.add_edge(itv.get());
+    if(bool b = node->muted())
+      itv->mute(true);
     m_intervals.push_back(std::move(itv));
   }
 }
@@ -185,6 +187,8 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   if (!contains(m_nodes, timeSync))
   {
     m_sg.add_vertice(timeSync.get());
+    if(bool b = node->muted())
+      timeSync->mute(true);
     m_nodes.push_back(std::move(timeSync));
   }
 }
@@ -233,6 +237,19 @@ void scenario::reset_subgraph(
     itv->stop();
     m_runningIntervals.erase(itv.get());
     m_itv_end_map.erase(itv.get());
+  }
+}
+
+void scenario::mute_impl(bool m)
+{
+  std::cerr << (void*) this << " mute => " << m << std::endl;
+  for (auto& itv : get_time_intervals())
+  {
+    itv->mute(m);
+  }
+  for (auto& s : get_time_syncs())
+  {
+    s->mute(m);
   }
 }
 

@@ -76,6 +76,7 @@ private:
       bool maxReached);
   void make_happen(time_event& event);
   void make_dispose(time_event& event);
+  void mute_impl(bool) override;
 
   time_sync m_startNode;
   time_sync m_endNode;

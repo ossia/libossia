@@ -148,6 +148,7 @@ public:
   /* To be called before deletion, to break the shared_ptr cycle */
   void cleanup();
 
+  void mute(bool m);
 private:
   time_event::exec_callback m_callback;
 

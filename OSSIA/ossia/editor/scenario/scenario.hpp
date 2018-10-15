@@ -115,6 +115,7 @@ private:
   void resume() override;
 
   void transport(ossia::time_value offset, double pos) override;
+  void mute_impl(bool) override;
   bool is_root_sync(ossia::time_sync& sync) const;
 
   void reset_subgraph(

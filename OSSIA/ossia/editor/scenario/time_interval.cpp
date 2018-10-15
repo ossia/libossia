@@ -67,14 +67,14 @@ time_interval::time_interval(
     time_interval::exec_callback callback, time_event& startEvent,
     time_event& endEvent, ossia::time_value nominal, ossia::time_value min,
     ossia::time_value max)
-    : m_callback(std::move(callback))
+    : node{std::make_shared<ossia::nodes::interval>()}
+    , m_callback(std::move(callback))
     , m_start(startEvent)
     , m_end(endEvent)
     , m_nominal(nominal)
     , m_min(min)
     , m_max(max)
 {
-  node = std::make_shared<ossia::nodes::interval>();
 }
 
 time_interval::~time_interval()
@@ -314,6 +314,9 @@ void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
   if (m_running)
     timeProcess->start();
 
+  if(bool b = node->muted())
+    timeProcess->mute(b);
+
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
   {
@@ -335,5 +338,14 @@ void time_interval::remove_time_process(time_process* timeProcess)
 void time_interval::cleanup()
 {
   m_processes.clear();
+}
+
+void time_interval::mute(bool m)
+{
+  node->set_mute(m);
+  for(auto& p : get_time_processes())
+  {
+    p->mute(m);
+  }
 }
 }

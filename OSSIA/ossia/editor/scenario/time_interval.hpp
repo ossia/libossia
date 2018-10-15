@@ -32,7 +32,7 @@ class graph_node;
 class OSSIA_EXPORT time_interval
 {
 public:
-  std::shared_ptr<ossia::graph_node> node;
+  const std::shared_ptr<ossia::graph_node> node;
 
   auto get_date() const
   {
@@ -202,6 +202,7 @@ public:
   }
 
   void cleanup();
+  void mute(bool);
 
 private:
   time_interval(const time_interval&) = delete;

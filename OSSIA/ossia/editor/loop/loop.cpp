@@ -123,6 +123,13 @@ void loop::make_dispose(time_event& event)
     (event.m_callback)(event.m_status);
 }
 
+void loop::mute_impl(bool m)
+{
+  m_startNode.mute(m);
+  m_endNode.mute(m);
+  m_interval.mute(m);
+}
+
 bool loop::process_sync(
     ossia::time_sync& node, ossia::time_event& ev, bool event_pending,
     bool maximalDurationReached)

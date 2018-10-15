@@ -3,6 +3,7 @@
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 
@@ -35,6 +36,8 @@ void time_event::add_time_process(std::shared_ptr<time_process> timeProcess)
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
   {
+    if(bool b = m_timesync.muted())
+      timeProcess->mute(true);
     m_processes.push_back(std::move(timeProcess));
   }
 }
@@ -112,5 +115,13 @@ void time_event::cleanup()
   set_callback({});
   m_previous_time_intervals.clear();
   m_next_time_intervals.clear();
+}
+
+void time_event::mute(bool m)
+{
+  for(auto& p : get_time_processes())
+  {
+    p->mute(m);
+  }
 }
 }

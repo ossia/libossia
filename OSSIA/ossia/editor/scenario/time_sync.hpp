@@ -107,6 +107,8 @@ public:
   /* To be called before deletion, to break the shared_ptr cycle */
   void cleanup();
 
+  void mute(bool b);
+  bool muted() const noexcept { return m_muted; }
   /*! Execution callbacks
    *
    * Used to be notified when the #time_sync is triggered.
@@ -172,5 +174,6 @@ private:
   status m_status = status::NOT_DONE;
   bool m_observe = false;
   bool m_evaluating = false;
+  bool m_muted = false;
 };
 }

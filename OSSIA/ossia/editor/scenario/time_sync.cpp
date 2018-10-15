@@ -52,6 +52,7 @@ time_sync& time_sync::set_expression(expression_ptr exp)
 time_sync::iterator time_sync::insert(
     time_sync::const_iterator pos, std::shared_ptr<time_event> ev)
 {
+  if(m_muted) ev->mute(true);
   return m_timeEvents.insert(pos, std::move(ev));
 }
 
@@ -135,5 +136,15 @@ void time_sync::cleanup()
   entered_evaluation.callbacks_clear();
   left_evaluation.callbacks_clear();
   finished_evaluation.callbacks_clear();
+}
+
+void time_sync::mute(bool m)
+{
+  if(m != m_muted)
+  {
+    m_muted = m;
+    for(const auto& e : get_time_events())
+      e->mute(m);
+  }
 }
 }
