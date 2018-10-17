@@ -93,8 +93,8 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
     {
       if (n_name[i] != root_name[i])
       {
-        break;
         same_root = false;
+        break;
       }
     }
 
