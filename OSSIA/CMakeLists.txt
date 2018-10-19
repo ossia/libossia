@@ -299,16 +299,8 @@ if(OSSIA_DNSSD)
 endif()
 
 if(OSSIA_DATAFLOW)
-  find_package(TBB)
-  if(TARGET tbb)
-    set(OSSIA_PARALLEL 1)
-    target_include_directories(ossia PRIVATE
-      ${TBB_INCLUDE_DIRS})
-    target_link_libraries(ossia PRIVATE
-        debug ${TBB_LIBRARIES_DEBUG}
-        optimized ${TBB_LIBRARIES_RELEASE}
-        general ${TBB_LIBRARIES})
-  endif()
+  set(OSSIA_PARALLEL 1)
+  target_link_libraries(ossia PRIVATE tbb)
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 

@@ -50,7 +50,12 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/RtMidi17" EXCLUDE_FROM_ALL)
 endif()
 
-if (OSSIA_PROTOCOL_OSC OR 1) # FIXME is OSC really mandatory ?
+if(OSSIA_DATAFLOW)
+  message(STATUS "Update tbb")
+  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/tbb" EXCLUDE_FROM_ALL)
+endif()
+
+if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
   message(STATUS "Update OSSIA OSC Protocol dependency : oscpack")
   execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/oscpack
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
