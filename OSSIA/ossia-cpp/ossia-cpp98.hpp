@@ -1702,10 +1702,17 @@ class OSSIA_EXPORT oscquery_mirror
     node get_root_node() const;
 
     /**
-     * If the structure of the remote server we're mirroring changed, we can refresh the image we have of it.
+     * Refresh the whole namespace, useful right after connecting
+     * This will deleta and recreate all nodes on mirror namespace.
      * @brief refresh the Mirror's namespace
      */
     void refresh();
+
+    /**
+     *  Apply the device's tree changes on the mirrored tree.
+     *  @brief update mirror's namespace with changes since last update() call
+     */
+    void update();
 
     /**
      * When the connection the remote server we're mirroring  has been lost, we need to reconnect to it in order to go on with the operations.

@@ -1974,6 +1974,13 @@ void oscquery_mirror::refresh()
         .update(m_dev->get_root_node());
 }
 
+void oscquery_mirror::update()
+{
+  if(m_dev)
+    static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
+        m_dev->get_protocol()).run_commands();
+}
+
 void oscquery_mirror::reconnect(std::string name, std::string host)
 {
   if (m_dev)
