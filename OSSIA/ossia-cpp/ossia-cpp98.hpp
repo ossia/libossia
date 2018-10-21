@@ -553,14 +553,14 @@ class OSSIA_EXPORT node
      * @param addr is a string corresponding to the desired child node's name
      * @return the child node
      */
-    node find_child(std::string addr);
+    node find_child(std::string addr) const;
 
     /**
      * @brief finds children matching pattern
      * @param pattern to match
      * @return found children vector
      */
-    std::vector<node> find_children(std::string pattern);
+    std::vector<node> find_children(std::string pattern) const;
 
     /**
      * @brief removes a child node, described by its name

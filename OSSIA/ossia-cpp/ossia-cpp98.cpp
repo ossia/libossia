@@ -496,12 +496,12 @@ std::vector<node> node::get_children() const
   return res;
 }
 
-node node::find_child(std::string addr)
+node node::find_child(std::string addr) const
 {
   return m_node ? node{ossia::net::find_node(*m_node, addr)} : node{};
 }
 
-std::vector<node> node::find_children(std::string addr)
+std::vector<node> node::find_children(std::string addr) const
 {
   std::vector<node> res;
   if (!m_node)
