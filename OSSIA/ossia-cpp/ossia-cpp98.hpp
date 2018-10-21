@@ -443,6 +443,9 @@ typedef void (*connection_callback)(void*, const std::string&);
  * @see opp::osquery_server::set_disconnection_callback
  */
 typedef void (*disconnection_callback)(void*, const std::string&);
+/** @brief container for a parameter creation callback
+ */
+typedef void (*parameter_created_callback)(void*, const opp::node&);
 
 /**
  * @ingroup CPP98API
@@ -1712,8 +1715,23 @@ class OSSIA_EXPORT oscquery_mirror
      */
     void reconnect(std::string name, std::string host);
 
+    /**
+     * @brief set a callback to be called when a parameter is created
+     * @param c the parameter_created_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_parameter_created_callback(parameter_created_callback c, void* ctx);
+    /**
+     * @brief remove the previously set parameter_created_callback
+     */
+    void remove_parameter_created_callback();
+
   private:
+    void on_parameter_created(const ossia::net::parameter_base&);
+
     ossia::net::device_base* m_dev;
+    parameter_created_callback m_param;
+    void* m_param_ctx;
 };
 }
 

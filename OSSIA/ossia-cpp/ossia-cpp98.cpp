@@ -1938,17 +1938,24 @@ void oscquery_server::on_disconnection(const std::string& str)
   }
 }
 
-oscquery_mirror::oscquery_mirror(std::string name, std::string host) try
+oscquery_mirror::oscquery_mirror(std::string name, std::string host)
+  : m_param{}
+  , m_param_ctx{}
 {
-  m_dev = new ossia::net::generic_device(
-      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
-}
-catch (...)
-{
+  try
+  {
+    m_dev = new ossia::net::generic_device(
+              std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
+    m_dev->on_parameter_created.connect<&oscquery_mirror::on_parameter_created>(*this);
+  }
+  catch (...)
+  {
+  }
 }
 
 oscquery_mirror::~oscquery_mirror()
 {
+  m_dev->on_parameter_created.disconnect<&oscquery_mirror::on_parameter_created>(*this);
   delete m_dev;
 }
 
@@ -1973,5 +1980,24 @@ void oscquery_mirror::reconnect(std::string name, std::string host)
     delete m_dev;
   m_dev = new ossia::net::generic_device(
       std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
+}
+
+void oscquery_mirror::set_parameter_created_callback(parameter_created_callback c, void* ctx)
+{
+  m_param = c;
+  m_param_ctx = ctx;
+}
+
+void oscquery_mirror::remove_parameter_created_callback()
+{
+  set_parameter_created_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_parameter_created(const ossia::net::parameter_base& param)
+{
+  if(m_param)
+  {
+    m_param(m_param_ctx, node{&param.get_node()});
+  }
 }
 }
