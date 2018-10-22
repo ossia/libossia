@@ -445,7 +445,7 @@ typedef void (*connection_callback)(void*, const std::string&);
 typedef void (*disconnection_callback)(void*, const std::string&);
 /** @brief container for a parameter creation callback
  */
-typedef void (*parameter_created_callback)(void*, const opp::node&);
+typedef void (*parameter_callback)(void*, const opp::node&);
 
 /**
  * @ingroup CPP98API
@@ -1724,21 +1724,36 @@ class OSSIA_EXPORT oscquery_mirror
 
     /**
      * @brief set a callback to be called when a parameter is created
-     * @param c the parameter_created_callback
+     * @param c the parameter_callback
      * @param ctx the callback context as a void*
      */
-    void set_parameter_created_callback(parameter_created_callback c, void* ctx);
+    void set_parameter_created_callback(parameter_callback c, void* ctx);
     /**
-     * @brief remove the previously set parameter_created_callback
+     * @brief remove the previously set parameter_callback
      */
     void remove_parameter_created_callback();
 
+    /**
+     * @brief set a callback to be called when a parameter is removed
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_parameter_removed_callback(parameter_callback c, void* ctx);
+    /**
+     * @brief remove the previously set parameter_callback
+     */
+    void remove_parameter_removed_callback();
   private:
     void on_parameter_created(const ossia::net::parameter_base&);
+    void on_parameter_removed(const ossia::net::parameter_base& param);
 
     ossia::net::device_base* m_dev;
-    parameter_created_callback m_param;
+    parameter_callback m_param;
     void* m_param_ctx;
+
+    parameter_callback m_rm_param;
+    void* m_rm_param_ctx;
+
 };
 }
 
