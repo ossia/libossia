@@ -538,6 +538,35 @@ TEST_CASE ("test_match_instances", "test_match_instances")
     REQUIRE(ossia::contains(addresses, "/foo/bar.2/baz.1"));
   }
 
+  {
+    ossia::net::create_node(device1, "spot.1");
+    ossia::net::create_node(device1, "spot.2");
+    ossia::net::create_node(device1, "spot.15");
+    ossia::net::create_node(device1, "spot.count");
+    ossia::net::create_node(device1, "spot_count");
+    {
+      auto match = ossia::net::find_nodes(device1, "/spot!");
+      auto addresses = to_string(match);
+
+      REQUIRE(match.size() == 4);
+      REQUIRE(ossia::contains(addresses, "/spot.1"));
+      REQUIRE(ossia::contains(addresses, "/spot.2"));
+      REQUIRE(ossia::contains(addresses, "/spot.15"));
+      REQUIRE(ossia::contains(addresses, "/spot.count"));
+    }
+
+    {
+      auto match = ossia::net::find_nodes(device1, "/spot\\.*");
+      auto addresses = to_string(match);
+
+      REQUIRE(match.size() == 4);
+      REQUIRE(ossia::contains(addresses, "/spot.1"));
+      REQUIRE(ossia::contains(addresses, "/spot.2"));
+      REQUIRE(ossia::contains(addresses, "/spot.15"));
+      REQUIRE(ossia::contains(addresses, "/spot.count"));
+    }
+  }
+
 }
 
 TEST_CASE ("test_device", "test_device")
