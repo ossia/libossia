@@ -1939,10 +1939,13 @@ void oscquery_server::on_disconnection(const std::string& str)
 }
 
 oscquery_mirror::oscquery_mirror(std::string name, std::string host)
-  : m_param{}
+  : m_dev{}
+  , m_param{}
   , m_param_ctx{}
   , m_rm_param{}
   , m_rm_param_ctx{}
+  , m_name{name}
+  , m_host{host}
 {
   try
   {
@@ -1951,16 +1954,20 @@ oscquery_mirror::oscquery_mirror(std::string name, std::string host)
     m_dev->on_parameter_created.connect<&oscquery_mirror::on_parameter_created>(*this);
     m_dev->on_parameter_removing.connect<&oscquery_mirror::on_parameter_removed>(*this);
   }
-  catch (...)
+  catch (const std::exception& e)
   {
+    std::cerr << "Can't connect to oscquery device '" << name << "': " << e.what() << std::endl;
   }
 }
 
 oscquery_mirror::~oscquery_mirror()
 {
-  m_dev->on_parameter_created.disconnect<&oscquery_mirror::on_parameter_created>(*this);
-  m_dev->on_parameter_removing.disconnect<&oscquery_mirror::on_parameter_removed>(*this);
-  delete m_dev;
+  if(m_dev)
+  {
+    m_dev->on_parameter_created.disconnect<&oscquery_mirror::on_parameter_created>(*this);
+    m_dev->on_parameter_removing.disconnect<&oscquery_mirror::on_parameter_removed>(*this);
+    delete m_dev;
+  }
 }
 
 node oscquery_mirror::get_root_node() const
@@ -1988,9 +1995,28 @@ void oscquery_mirror::update()
 void oscquery_mirror::reconnect(std::string name, std::string host)
 {
   if (m_dev)
+  {
     delete m_dev;
-  m_dev = new ossia::net::generic_device(
-      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
+    m_dev=nullptr;
+  }
+
+  if(name == "" && host == "")
+  {
+    name = m_name;
+    host = m_host;
+  }
+
+  try
+  {
+    m_dev = new ossia::net::generic_device(
+              std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
+    m_dev->on_parameter_created.connect<&oscquery_mirror::on_parameter_created>(*this);
+    m_dev->on_parameter_removing.connect<&oscquery_mirror::on_parameter_removed>(*this);
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << "Can't connect to oscquery device '" << name << "': " << e.what() << std::endl;
+  }
 }
 
 void oscquery_mirror::set_parameter_created_callback(parameter_callback c, void* ctx)

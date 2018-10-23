@@ -1720,7 +1720,13 @@ class OSSIA_EXPORT oscquery_mirror
      * @param name the name of the remote device (server)
      * @param host the IP of the remote device (server)
      */
-    void reconnect(std::string name, std::string host);
+    void reconnect(std::string name = "", std::string host = "");
+
+    /**
+     * @brief is_connected
+     * @return true if mirror is already connected
+     */
+    bool is_connected() const { return m_dev != nullptr; }
 
     /**
      * @brief set a callback to be called when a parameter is created
@@ -1754,6 +1760,8 @@ class OSSIA_EXPORT oscquery_mirror
     parameter_callback m_rm_param;
     void* m_rm_param_ctx;
 
+    std::string m_name;
+    std::string m_host;
 };
 }
 
