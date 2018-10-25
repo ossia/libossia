@@ -99,6 +99,7 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   ossia_add_test(OSCQueryTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTest.cpp")
   ossia_add_test(OSCQueryColorTest       "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryColorTest.cpp")
+  ossia_add_test(OSCQueryTreeCallbackTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTreeCallbackTest.cpp")
 endif()
 
 if(OSSIA_PROTOCOL_PHIDGETS)
