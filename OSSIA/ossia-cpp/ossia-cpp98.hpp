@@ -443,9 +443,12 @@ typedef void (*connection_callback)(void*, const std::string&);
  * @see opp::osquery_server::set_disconnection_callback
  */
 typedef void (*disconnection_callback)(void*, const std::string&);
-/** @brief container for a parameter creation callback
+/** @brief container for a parameter creation/deletion callback
  */
 typedef void (*parameter_callback)(void*, const opp::node&);
+/** @brief container for a node creation/deletion callback
+ */
+typedef void (*node_callback)(void*, const opp::node&);
 
 /**
  * @ingroup CPP98API
@@ -1749,16 +1752,48 @@ class OSSIA_EXPORT oscquery_mirror
      * @brief remove the previously set parameter_callback
      */
     void remove_parameter_removed_callback();
+
+    /**
+     * @brief set a callback to be called when a node is created
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_node_created_callback(node_callback c, void* ctx);
+    /**
+     * @brief remove the previously set node_callback
+     */
+    void remove_node_created_callback();
+
+    /**
+     * @brief set a callback to be called when a node is removed
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_node_removed_callback(node_callback c, void* ctx);
+    /**
+     * @brief remove the previously set node_callback
+     */
+    void remove_node_removed_callback();
+
   private:
     void on_parameter_created(const ossia::net::parameter_base&);
-    void on_parameter_removed(const ossia::net::parameter_base& param);
+    void on_parameter_removed(const ossia::net::parameter_base&);
+
+    void on_node_created(const ossia::net::node_base&);
+    void on_node_removed(const ossia::net::node_base&);
 
     ossia::net::device_base* m_dev;
-    parameter_callback m_param;
+    parameter_callback m_param_cb;
     void* m_param_ctx;
 
-    parameter_callback m_rm_param;
+    parameter_callback m_rm_param_cb;
     void* m_rm_param_ctx;
+
+    node_callback m_node_cb;
+    void* m_node_ctx;
+
+    node_callback m_rm_node_cb;
+    void* m_rm_node_ctx;
 
     std::string m_name;
     std::string m_host;

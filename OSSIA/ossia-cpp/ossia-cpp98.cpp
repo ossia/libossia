@@ -1940,10 +1940,14 @@ void oscquery_server::on_disconnection(const std::string& str)
 
 oscquery_mirror::oscquery_mirror(std::string name, std::string host)
   : m_dev{}
-  , m_param{}
+  , m_param_cb{}
   , m_param_ctx{}
-  , m_rm_param{}
+  , m_rm_param_cb{}
   , m_rm_param_ctx{}
+  , m_node_cb{}
+  , m_node_ctx{}
+  , m_rm_node_cb{}
+  , m_rm_node_ctx{}
   , m_name{name}
   , m_host{host}
 {
@@ -1953,6 +1957,8 @@ oscquery_mirror::oscquery_mirror(std::string name, std::string host)
               std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
     m_dev->on_parameter_created.connect<&oscquery_mirror::on_parameter_created>(*this);
     m_dev->on_parameter_removing.connect<&oscquery_mirror::on_parameter_removed>(*this);
+    m_dev->on_node_created.connect<&oscquery_mirror::on_node_created>(*this);
+    m_dev->on_node_removing.connect<&oscquery_mirror::on_node_removed>(*this);
   }
   catch (const std::exception& e)
   {
@@ -1966,6 +1972,8 @@ oscquery_mirror::~oscquery_mirror()
   {
     m_dev->on_parameter_created.disconnect<&oscquery_mirror::on_parameter_created>(*this);
     m_dev->on_parameter_removing.disconnect<&oscquery_mirror::on_parameter_removed>(*this);
+    m_dev->on_node_created.disconnect<&oscquery_mirror::on_node_created>(*this);
+    m_dev->on_node_removing.disconnect<&oscquery_mirror::on_node_removed>(*this);
     delete m_dev;
   }
 }
@@ -2012,6 +2020,8 @@ void oscquery_mirror::reconnect(std::string name, std::string host)
               std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(host), name);
     m_dev->on_parameter_created.connect<&oscquery_mirror::on_parameter_created>(*this);
     m_dev->on_parameter_removing.connect<&oscquery_mirror::on_parameter_removed>(*this);
+    m_dev->on_node_created.connect<&oscquery_mirror::on_node_created>(*this);
+    m_dev->on_node_removing.connect<&oscquery_mirror::on_node_removed>(*this);
   }
   catch (const std::exception& e)
   {
@@ -2021,7 +2031,7 @@ void oscquery_mirror::reconnect(std::string name, std::string host)
 
 void oscquery_mirror::set_parameter_created_callback(parameter_callback c, void* ctx)
 {
-  m_param = c;
+  m_param_cb = c;
   m_param_ctx = ctx;
 }
 
@@ -2032,15 +2042,15 @@ void oscquery_mirror::remove_parameter_created_callback()
 
 void oscquery_mirror::on_parameter_created(const ossia::net::parameter_base& param)
 {
-  if(m_param)
+  if(m_param_cb)
   {
-    m_param(m_param_ctx, node{&param.get_node()});
+    m_param_cb(m_param_ctx, node{&param.get_node()});
   }
 }
 
 void oscquery_mirror::set_parameter_removed_callback(parameter_callback c, void* ctx)
 {
-  m_rm_param = c;
+  m_rm_param_cb = c;
   m_rm_param_ctx = ctx;
 }
 
@@ -2051,9 +2061,47 @@ void oscquery_mirror::remove_parameter_removed_callback()
 
 void oscquery_mirror::on_parameter_removed(const ossia::net::parameter_base& param)
 {
-  if(m_rm_param)
+  if(m_rm_param_cb)
   {
-    m_rm_param(m_rm_param_ctx, node{&param.get_node()});
+    m_rm_param_cb(m_rm_param_ctx, node{&param.get_node()});
+  }
+}
+
+void oscquery_mirror::set_node_created_callback(node_callback c, void* ctx)
+{
+  m_node_cb = c;
+  m_node_ctx = ctx;
+}
+
+void oscquery_mirror::remove_node_created_callback()
+{
+  set_node_created_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_node_created(const ossia::net::node_base& n)
+{
+  if(m_node_cb)
+  {
+    m_node_cb(m_node_ctx, opp::node{n.get_parent()->find_child(n.get_name())});
+  }
+}
+
+void oscquery_mirror::set_node_removed_callback(node_callback c, void* ctx)
+{
+  m_rm_node_cb= c;
+  m_rm_node_ctx = ctx;
+}
+
+void oscquery_mirror::remove_node_removed_callback()
+{
+  set_node_removed_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_node_removed(const ossia::net::node_base& n)
+{
+  if(m_rm_node_cb)
+  {
+    m_rm_node_cb(m_rm_node_ctx, opp::node{n.get_parent()->find_child(n.get_name())});
   }
 }
 }
