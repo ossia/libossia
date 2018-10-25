@@ -24,12 +24,78 @@ struct TestNestedNodes
   ossia::net::parameter_base* bar_param = bar_node->create_parameter(val_type::FLOAT);
 };
 
-/*
+static std::vector<std::string> created_params;
+static std::vector<std::string> removed_params;
+static std::vector<std::string> created_nodes;
+static std::vector<std::string> removed_nodes;
+
+static std::vector<std::string> add_params;
+static std::vector<std::string> rm_params;
+static std::vector<std::string> add_nodes;
+static std::vector<std::string> rm_nodes;
+static int count{0};
+
+#define LOOP_DELAY 500ms
+
+void reset()
+{
+  created_nodes.clear();
+  removed_nodes.clear();
+  created_params.clear();
+  removed_params.clear();
+  count=0;
+}
+
+void check(opp::oscquery_mirror& client)
+{
+  reset();
+  while(count++<10 || (
+          created_nodes.size()  != add_nodes.size()
+       && removed_nodes.size()  != rm_nodes.size()
+       && created_params.size() != add_params.size()
+       && removed_params.size() != rm_params.size()))
+  {
+    std::cout << "up" << std::endl;
+    client.update();
+    std::this_thread::sleep_for(LOOP_DELAY);
+  }
+
+  CHECK(created_nodes.size() == add_nodes.size());
+  CHECK(removed_nodes.size() == rm_nodes.size());
+  CHECK(created_params.size() == add_params.size());
+  CHECK(removed_params.size() == rm_params.size());
+
+  for(auto& n : add_nodes)
+    CHECK(client.get_root_node().find_children(n).size() == 1);
+
+  for(auto& n : add_params)
+  {
+    auto children = client.get_root_node().find_children(n);
+    CHECK(children.size() == 1);
+    if(!children.empty())
+      CHECK(children[0].has_parameter());
+  }
+
+  for(auto& n : rm_nodes)
+    CHECK(client.get_root_node().find_children(n).size() == 0);
+
+  for(auto& n : rm_params)
+  {
+    auto children = client.get_root_node().find_children(n);
+    if(!children.empty())
+      CHECK(!children[0].has_parameter());
+  }
+
+  add_params.clear();
+  rm_params.clear();
+  add_nodes.clear();
+  rm_nodes.clear();
+}
+
 TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_creation_cb")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  // TestDeviceRef dev{serv}; (void) dev;
 
   std::vector<std::string> created_names;
   std::vector<std::string> removed_names;
@@ -42,7 +108,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::cout << "create parameter : " << n.get_name() << std::endl;
     std::vector<std::string>* vec = static_cast<std::vector<std::string>*>(context);
     vec->push_back(n.get_name());
-  }, &created_names);
+  }, &created_params);
 
   client.set_parameter_removed_callback(
         [](void* context, const opp::node& n)
@@ -50,7 +116,23 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::cout << "remove parameter : " << n.get_name() << std::endl;
     std::vector<std::string>* vec = static_cast<std::vector<std::string>*>(context);
     vec->push_back(n.get_name());
-  }, &removed_names);
+  }, &removed_params);
+
+  client.set_node_created_callback(
+        [](void* context, const opp::node& n)
+  {
+    std::cout << "create node : " << n.get_name() << std::endl;
+    std::vector<std::string>* vec = static_cast<std::vector<std::string>*>(context);
+    vec->push_back(n.get_name());
+  }, &created_nodes);
+
+  client.set_node_removed_callback(
+        [](void* context, const opp::node& n)
+  {
+    std::cout << "remove node : " << n.get_name() << std::endl;
+    std::vector<std::string>* vec = static_cast<std::vector<std::string>*>(context);
+    vec->push_back(n.get_name());
+  }, &removed_nodes);
 
   while(!client.is_connected())
   {
@@ -59,50 +141,40 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::this_thread::sleep_for(100ms);
   }
 
-  find_or_create_node(serv, "/main");
+  std::cout << "step 1" << std::endl;
 
   serv.create_child("foo")->create_parameter(ossia::val_type::BOOL);
 
+  add_nodes.push_back("foo");
+  add_params.push_back("foo");
+
+  check(client);
+
+  std::cout << "step 2" << std::endl;
+
   auto node = serv.create_child("bar");
+  add_nodes.push_back("bar");
+
   node->create_parameter(ossia::val_type::STRING);
-  node->create_child("nested")->create_parameter(ossia::val_type::INT);
+  add_params.push_back("bar");
 
-  std::this_thread::sleep_for(1s);
-  std::cout << "update client" << std::endl;
-  client.update();
-  std::this_thread::sleep_for(1s);
+  auto nested = node->create_child("nested");
+  add_nodes.push_back("bar/nested");
 
-  serv.remove_child("bar");
+  nested->create_parameter(ossia::val_type::INT);
+  add_params.push_back("bar/nested");
 
-  std::cout << "update client" << std::endl;
-  client.update();
-  std::this_thread::sleep_for(1s);
+  check(client);
 
-  std::cout << "vector size:"
-            << "\ncreated: " << created_names.size()
-            << "\nremoved: " << removed_names.size()
-            << std::endl;
-  std::cout << "update client" << std::endl;
-  client.update();
-  std::this_thread::sleep_for(1s);
-}
-*/
+  std::cout << "step 3" << std::endl;
+  CHECK(serv.remove_child("bar"));
 
-std::vector<std::string> created_params;
-std::vector<std::string> removed_params;
-std::vector<std::string> created_nodes;
-std::vector<std::string> removed_nodes;
-int count{0};
+  rm_nodes.push_back("bar");
+  rm_params.push_back("bar");
+  rm_nodes.push_back("bar/nested");
+  rm_params.push_back("bar/nested");
 
-#define LOOP_DELAY 500ms
-
-void reset()
-{
-  created_nodes.clear();
-  removed_nodes.clear();
-  created_params.clear();
-  removed_params.clear();
-  count=0;
+  check(client);
 }
 
 TEST_CASE ("test_oscquery_complex_node_creation_cb", "test_oscquery_complex_node_creation_cb")
@@ -142,7 +214,7 @@ TEST_CASE ("test_oscquery_complex_node_creation_cb", "test_oscquery_complex_node
     std::cout << "remove node : " << n.get_name() << std::endl;
     std::vector<std::string>* vec = static_cast<std::vector<std::string>*>(context);
     vec->push_back(n.get_name());
-  }, &removed_params);
+  }, &removed_nodes);
 
   while(!client.is_connected())
   {
@@ -153,102 +225,44 @@ TEST_CASE ("test_oscquery_complex_node_creation_cb", "test_oscquery_complex_node
 
   auto& root = serv.get_root_node();
 
-  auto truc = root.create_child("truc");
-  auto muche = root.create_child("muche");
-
-  while(created_nodes.empty() && count++<4)
-  {
-    std::cout << "update client" << std::endl;
-    client.update();
-    std::this_thread::sleep_for(LOOP_DELAY);
-  }
-
   std::cout << "step 1" << std::endl;
-  REQUIRE(created_nodes.size() == 2);
-  REQUIRE(removed_nodes.empty());
-  REQUIRE(created_params.empty());
-  REQUIRE(removed_params.empty());
 
-  reset();
+  auto truc = root.create_child("truc");
+  add_nodes.push_back("truc");
+  auto muche = root.create_child("muche");
+  add_nodes.push_back("muche");
 
-  truc->create_parameter(val_type::INT);
-  muche->create_parameter(val_type::INT);
-  auto foo = muche->create_child("foo");
-
-  while(created_params.empty() && count++<4)
-  {
-    std::cout << "update client" << std::endl;
-    client.update();
-    std::this_thread::sleep_for(LOOP_DELAY);
-  }
-
-  while(created_nodes.empty() && count++<8)
-  {
-    std::cout << "update client" << std::endl;
-    client.update();
-    std::this_thread::sleep_for(LOOP_DELAY);
-  }
+  check(client);
 
   std::cout << "step 2" << std::endl;
-  REQUIRE(created_nodes.size() == 1);
-  REQUIRE(removed_nodes.empty());
-  REQUIRE(created_params.size() == 2);
-  REQUIRE(removed_params.empty());
 
-  reset();
+  truc->create_parameter(val_type::INT);
+  add_params.push_back("truc");
+  muche->create_parameter(val_type::INT);
+  add_params.push_back("muche");
+  auto foo = muche->create_child("foo");
+  add_nodes.push_back("muche/foo");
 
-  root.remove_child("truc");
-  muche->remove_parameter();
-  foo->create_parameter(val_type::BOOL);
-
-  while(removed_params.empty() && count++<8)
-  {
-    std::cout << "update client" << std::endl;
-    client.update();
-    std::this_thread::sleep_for(LOOP_DELAY);
-  }
+  check(client);
 
   std::cout << "step 3" << std::endl;
-  REQUIRE(created_nodes.empty());
-  REQUIRE(removed_nodes.size() == 1);
-  REQUIRE(created_params.size() == 1);
-  REQUIRE(removed_params.size() == 2);
 
-  reset();
+  REQUIRE(root.remove_child("truc"));
+  rm_nodes.push_back("truc");
+
+  muche->remove_parameter();
+  rm_params.push_back("muche");
+
+  foo->create_parameter(val_type::BOOL);
+  add_params.push_back("muche/foo");
+
+  check(client);
 
   root.remove_child("truc");
   root.remove_child("muche");
-
-  while(removed_nodes.empty())
-  {
-    std::cout << "update client" << std::endl;
-    client.update();
-    std::this_thread::sleep_for(LOOP_DELAY);
-  }
+  rm_nodes.push_back("truc");
+  rm_nodes.push_back("muche");
 
   std::cout << "step 4" << std::endl;
-  REQUIRE(created_nodes.empty());
-  REQUIRE(removed_nodes.size() == 2);
-  REQUIRE(created_params.empty());
-  REQUIRE(removed_params.empty());
-
-  reset();
-
-
-
-  /*
-  std::cout << "remove 'nested' node" << std::endl;
-  root.remove_child("nested");
-
-  std::cout << "update client" << std::endl;
-  client.update();
-  std::this_thread::sleep_for(LOOP_DELAY);
-*/
-  std::cout << "vector size:"
-            << "\ncreated: " << created_params.size()
-            << "\nremoved: " << removed_params.size()
-            << std::endl;
-  std::cout << "update client" << std::endl;
-  client.update();
-  std::this_thread::sleep_for(LOOP_DELAY);
+  check(client);
 }
