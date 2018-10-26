@@ -137,7 +137,7 @@ public:
 
     ~disabled_callback()
     {
-      self.replace_callbacks(old_callbacks);
+      self.replace_callbacks(std::move(old_callbacks));
     }
 
   private:

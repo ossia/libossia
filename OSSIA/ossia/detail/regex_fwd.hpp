@@ -19,8 +19,15 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
 #endif
 #else
 #endif
+
+#if defined(_MSC_VER)
+template <typename T>
+class regex_traits;
+#else
 template <typename T>
 struct regex_traits;
+#endif
+
 template <typename T, typename Traits>
 class basic_regex;
 
