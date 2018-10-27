@@ -78,7 +78,7 @@ public:
  \param X target point abscissa
  \param Y target point ordinate
  \return bool */
-  bool add_point(ossia::curve_segment<Y> segment, X abscissa, Y value);
+  bool add_point(ossia::curve_segment<Y>&& segment, X abscissa, Y value);
 
   /*! remove a point from the curve
  \param X point abscissa
@@ -182,7 +182,7 @@ inline void curve<X, Y>::reset()
 
 template <typename X, typename Y>
 inline bool
-curve<X, Y>::add_point(ossia::curve_segment<Y> segment, X abscissa, Y value)
+curve<X, Y>::add_point(ossia::curve_segment<Y>&& segment, X abscissa, Y value)
 {
   if (m_scaleBounds)
     m_originalPoints->emplace(abscissa, std::make_pair(value, segment));
