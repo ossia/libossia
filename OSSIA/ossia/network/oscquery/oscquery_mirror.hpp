@@ -3,7 +3,7 @@
 #include <ossia/detail/json_fwd.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
-
+#include <ossia/network/oscquery/host_info.hpp>
 #include <readerwriterqueue.h>
 namespace osc
 {
@@ -101,6 +101,8 @@ public:
   void set_disconnect_callback(std::function<void()>);
   void set_fail_callback(std::function<void()>);
 
+  host_info get_host_info() const noexcept;
+
 private:
   friend struct http_answer;
 
@@ -171,6 +173,7 @@ private:
   int m_osc_port{};
 
   std::unique_ptr<http_client_context> m_http;
+  host_info m_host_info;
   void start_http();
 };
 

@@ -110,17 +110,19 @@ void generic_node::set_parameter(
 ossia::net::parameter_base*
 generic_node::create_parameter(ossia::val_type type)
 {
-  // clear former address
-  remove_parameter();
+  if(!m_parameter)
+  {
+    // setup new parameter
+    m_parameter = std::make_unique<ossia::net::generic_parameter>(*this);
+    m_parameter->set_value_type(type);
 
-  // edit new address
-  m_parameter = std::make_unique<ossia::net::generic_parameter>(*this);
-
-  // set type
-  m_parameter->set_value_type(type);
-
-  // notify observers
-  m_device.on_parameter_created(*m_parameter);
+    // notify observers
+    m_device.on_parameter_created(*m_parameter);
+  }
+  else
+  {
+    m_parameter->set_value_type(type);
+  }
 
   return m_parameter.get();
 }

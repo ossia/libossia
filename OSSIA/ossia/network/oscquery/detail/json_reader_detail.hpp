@@ -40,6 +40,11 @@ struct json_parser_impl
 
   static void
   readObject(ossia::net::node_base& node, const rapidjson::Value& obj);
+
+  static void readParameter(net::node_base& node, const rapidjson::Value& obj);
+
+  static void
+  reloadObject(ossia::net::node_base& node, const rapidjson::Value& obj);
 };
 }
 

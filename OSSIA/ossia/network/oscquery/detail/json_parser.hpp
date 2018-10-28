@@ -1,33 +1,14 @@
 #pragma once
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/json_reader_detail.hpp>
-
+#include <ossia/network/oscquery/host_info.hpp>
 #include <memory>
+
 namespace ossia
 {
 namespace oscquery
 {
 //! Functions to parse replies to OSCQuery json requests
-struct host_info
-{
-  enum osc_transport
-  {
-    TCP,
-    UDP
-  };
-
-  std::string name;
-
-  optional<std::string> osc_ip;
-  optional<int> osc_port;
-  optional<osc_transport> osc_transport;
-
-  optional<std::string> ws_ip;
-  optional<int> ws_port;
-
-  ossia::string_map<bool> extensions;
-};
-
 struct OSSIA_EXPORT json_parser
 {
   static std::shared_ptr<rapidjson::Document>
