@@ -1775,6 +1775,18 @@ class OSSIA_EXPORT oscquery_mirror
      */
     void remove_node_removed_callback();
 
+    /**
+     * @brief Set on removed behavior
+     * @param mode : delete node when removed if false, mark it as zombie instead (default)
+     */
+    void set_zombie_on_remove(bool b);
+
+    /**
+     * @brief get_zombie_on_removed
+     * @return
+     */
+    bool get_zombie_on_remove() const;
+
   private:
     void on_parameter_created(const ossia::net::parameter_base&);
     void on_parameter_removed(const ossia::net::parameter_base&);

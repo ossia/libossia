@@ -1016,7 +1016,7 @@ void json_parser::parse_path_added(
 }
 
 void json_parser::parse_path_removed(
-    net::node_base& root, const rapidjson::Value& obj)
+    net::node_base& root, const rapidjson::Value& obj, bool zombie_on_remove)
 {
   auto dat_it = obj.FindMember(detail::data());
   if (dat_it != obj.MemberEnd())
@@ -1024,7 +1024,14 @@ void json_parser::parse_path_removed(
     auto path = get_string_view(dat_it->value);
     if (auto node = ossia::net::find_node(root, path))
     {
-      ossia::net::set_zombie(*node, true);
+      if( zombie_on_remove )
+      {
+        ossia::net::set_zombie(*node, true);
+      }
+      else
+      {
+        node->get_parent()->remove_child(*node);
+      }
     }
   }
 }

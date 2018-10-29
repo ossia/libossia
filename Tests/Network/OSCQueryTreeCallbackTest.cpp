@@ -50,15 +50,17 @@ void reset()
 void check(opp::oscquery_mirror& client)
 {
   reset();
-  while(count++<10 && (
-          created_nodes.size()  != add_nodes.size()
-       && removed_nodes.size()  != rm_nodes.size()
-       && created_params.size() != add_params.size()
-       && removed_params.size() != rm_params.size()))
+  while(count++<10)
   {
     std::cout << "up" << std::endl;
     client.update();
     std::this_thread::sleep_for(LOOP_DELAY);
+
+    if( created_nodes.size()  == add_nodes.size()
+        && removed_nodes.size()  == rm_nodes.size()
+        && created_params.size() == add_params.size()
+        && removed_params.size() == rm_params.size() )
+      break;
   }
 
   CHECK(created_nodes.size() == add_nodes.size());
@@ -103,6 +105,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   opp::oscquery_mirror client("B");
   client.refresh();
+  client.set_zombie_on_remove(false);
   client.set_parameter_created_callback(
         [](void* context, const opp::node& n)
   {
@@ -268,6 +271,7 @@ TEST_CASE ("test_fast_fast_simple_node_creation_cb", "test_fast_fast_simple_node
   std::vector<std::string> removed_names;
 
   auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 1234);
+  ws_proto->set_zombie_on_remove(false);
   auto ws_clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));

@@ -786,7 +786,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
         case message_type::PathRemoved:
         {
           m_functionQueue.enqueue([this, doc = std::move(data)] {
-            json_parser::parse_path_removed(m_device->get_root_node(), *doc);
+            json_parser::parse_path_removed(m_device->get_root_node(), *doc, m_zombie_on_remove);
           });
           if (m_commandCallback)
             m_commandCallback();

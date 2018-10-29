@@ -98,6 +98,18 @@ public:
    */
   void request_remove_node(net::node_base&);
 
+  /**
+   * @brief Define behavior when a node is removed : mark it as zombie if true (default), remove it otherwise.
+   * @param zombie_on_removed
+   */
+  void set_zombie_on_remove(bool zombie_on_remove){ m_zombie_on_remove = zombie_on_remove; }
+
+  /**
+   * @brief Get zombie on removed move
+   * @return
+   */
+  bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
+
   void set_disconnect_callback(std::function<void()>);
   void set_fail_callback(std::function<void()>);
 
@@ -175,6 +187,8 @@ private:
   std::unique_ptr<http_client_context> m_http;
   host_info m_host_info;
   void start_http();
+
+  bool m_zombie_on_remove{true};
 };
 
 //! Use this function to load a device preset in the OSCQuery format.

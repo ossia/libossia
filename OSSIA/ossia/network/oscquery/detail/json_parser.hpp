@@ -33,7 +33,7 @@ struct OSSIA_EXPORT json_parser
       ossia::net::node_base& map, const std::string& full_path,
       const rapidjson::Value& obj);
   static void
-  parse_path_removed(ossia::net::node_base& map, const rapidjson::Value& obj);
+  parse_path_removed(ossia::net::node_base& map, const rapidjson::Value& obj, bool zombie_on_removed = true);
   static void
   parse_path_renamed(ossia::net::node_base& map, const rapidjson::Value& obj);
   static void

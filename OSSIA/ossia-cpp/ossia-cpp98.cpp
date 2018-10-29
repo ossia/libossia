@@ -2104,4 +2104,21 @@ void oscquery_mirror::on_node_removed(const ossia::net::node_base& n)
     m_rm_node_cb(m_rm_node_ctx, opp::node{n.get_parent()->find_child(n.get_name())});
   }
 }
+
+void oscquery_mirror::set_zombie_on_remove(bool f)
+{
+  if(m_dev)
+    static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
+        m_dev->get_protocol()).set_zombie_on_remove(f);
+}
+
+bool oscquery_mirror::get_zombie_on_remove() const
+{
+  bool f{false};
+  if(m_dev)
+    f = static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
+        m_dev->get_protocol()).get_zombie_on_remove();
+
+  return f;
+}
 }
