@@ -101,7 +101,7 @@
 	url = https://github.com/jcelerier/flat
 [submodule "3rdparty/wiiuse"]
 	path = 3rdparty/wiiuse
-	url = https://github.com/aliefhooghe/wiiuse.git
+	url = https://github.com/OSSIA/wiiuse.git
 [submodule "3rdparty/tbb"]
 	path = 3rdparty/tbb
 	url = https://github.com/jcelerier/tbb
