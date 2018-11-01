@@ -43,8 +43,7 @@ void state::add(state_element&& e)
 
 void state::remove(const state_element& e)
 {
-  m_children.erase(
-      std::remove(m_children.begin(), m_children.end(), e), m_children.end());
+  ossia::remove_erase(m_children, e);
 }
 
 void state::remove(std::vector<state_element>::iterator e)

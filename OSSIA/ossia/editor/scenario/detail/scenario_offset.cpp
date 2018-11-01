@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/nodes/state.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_multimap.hpp>
 #include <ossia/detail/logger.hpp>
@@ -8,6 +9,8 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/state/detail/state_flatten_visitor.hpp>
+#include <ossia/editor/state/flat_vec_state.hpp>
 
 #include <tsl/hopscotch_map.h>
 
@@ -126,6 +129,7 @@ void scenario::transport(ossia::time_value offset, double pos)
   // a temporary list to order all past events to build the
   // offset state
   past_events_map pastEvents;
+  pastEvents.container.reserve(this->m_intervals.size() * 1.5 * pos);
 
   m_runningIntervals.clear();
 
@@ -222,6 +226,7 @@ void scenario::offset(ossia::time_value offset, double pos)
   // a temporary list to order all past events to build the
   // offset state
   past_events_map pastEvents;
+  pastEvents.container.reserve(this->m_intervals.size() * 1.5 * pos);
 
   m_runningIntervals.clear();
 
@@ -280,10 +285,22 @@ void scenario::offset(ossia::time_value offset, double pos)
   // build offset state from all ordered past events
   if (unmuted())
   {
+    ossia::state state;
+
     for (const auto& e : pastEvents)
     {
-      e.second->tick(0_tv, 0., 0_tv);
+      for(const auto& proc : e.second->get_time_processes())
+      {
+        if(auto p = dynamic_cast<const ossia::nodes::state_writer*>(proc->node.get()))
+        {
+          merge_flatten_and_filter(state, p->data);
+        }
+      }
+
+      // does not guarantee the order
+      // e.second->tick(0_tv, 0., 0_tv);
     }
+    state.launch();
   }
 
   // offset all TimeIntervals
