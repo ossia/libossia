@@ -32,7 +32,7 @@ else()
 
       endif()
     endif()
-    set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" )
+    set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" CACHE INTERNAL "")
     find_package(Boost REQUIRED)
   endif()
 
@@ -52,6 +52,7 @@ endif()
 
 if(OSSIA_DATAFLOW)
   message(STATUS "Update tbb")
+  set(TBB_LINKAGE "STATIC" CACHE "" INTERNAL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/tbb" EXCLUDE_FROM_ALL)
 endif()
 
