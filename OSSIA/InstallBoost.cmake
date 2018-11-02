@@ -3,10 +3,10 @@ if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/boost)
   message("Download boost header for dev package from ${BOOST_ARCHIVE} to ${CMAKE_CURRENT_BINARY_DIR}/boost.tar.gz")
   file(DOWNLOAD
     ${BOOST_ARCHIVE}
-    ${CMAKE_BINARY_DIR}/boost.tar.gz)
+    ${CMAKE_CURRENT_BINARY_DIR}/boost.tar.gz)
 
   message("Then unpack it...")
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E tar xzf boost.tar.gz
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endif()
