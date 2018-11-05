@@ -210,17 +210,20 @@ void param_removing_cb(const ossia::net::parameter_base& p)
 void check2(ossia::net::generic_device& client)
 {
   reset();
-  while(count++<10 && (
-          created_nodes.size()  != add_nodes.size()
-       && removed_nodes.size()  != rm_nodes.size()
-       && created_params.size() != add_params.size()
-       && removed_params.size() != rm_params.size()))
+  while(count++<10)
   {
     std::cout << "up" << std::endl;
     static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
         client.get_protocol())
         .run_commands();
     std::this_thread::sleep_for(LOOP_DELAY);
+
+
+    if( created_nodes.size()  == add_nodes.size()
+        && removed_nodes.size()  == rm_nodes.size()
+        && created_params.size() == add_params.size()
+        && removed_params.size() == rm_params.size() )
+      break;
   }
 
   CHECK(created_nodes.size() == add_nodes.size());
@@ -228,30 +231,37 @@ void check2(ossia::net::generic_device& client)
   CHECK(created_params.size() == add_params.size());
   CHECK(removed_params.size() == rm_params.size());
 
+  std::cout << "check add_nodes" << std::endl;
   for(auto& n : add_nodes)
   {
+    std::cout << "\t" << n << std::endl;
     auto nodes = ossia::net::find_nodes(client.get_root_node(), n);
     CHECK(nodes.size() == 1);
   }
 
+  std::cout << "check add_params" << std::endl;
   for(auto& n : add_params)
   {
+    std::cout << "\t" << n << std::endl;
     auto children = ossia::net::find_nodes(client.get_root_node(), n);
     CHECK(children.size() == 1);
     if(!children.empty())
       CHECK(children[0]->get_parameter() != nullptr);
   }
 
+  std::cout << "check rm_nodes" << std::endl;
   for(auto& n : rm_nodes)
   {
+    std::cout << "\t" << n << std::endl;
     auto nodes = ossia::net::find_nodes(client.get_root_node(), n);
     CHECK(nodes.size() == 0);
   }
 
+  std::cout << "check rm_params" << std::endl;
   for(auto& n : rm_params)
   {
+    std::cout << "\t" << n << std::endl;
     auto children = ossia::net::find_nodes(client.get_root_node(), n);
-    CHECK(children.size() == 1);
     if(!children.empty())
       CHECK(children[0]->get_parameter() == nullptr);
   }
@@ -264,6 +274,10 @@ void check2(ossia::net::generic_device& client)
 
 TEST_CASE ("test_fast_fast_simple_node_creation_cb", "test_fast_fast_simple_node_creation_cb")
 {
+
+  std::cout << "\n==========="
+            << "\n|FAST-FAST|"
+            << "\n===========\n";
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
